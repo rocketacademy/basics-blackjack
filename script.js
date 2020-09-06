@@ -119,6 +119,38 @@ var findAce = function (hand) {
   return foundAce;
 };
 
+// display hand + details
+var displayHand = function (hand, handValue) {
+  var message = 'Hand:<br>';
+  var printHandIndex = 0;
+  while (printHandIndex < hand.length) {
+    message = message + '- ' + hand[printHandIndex].name + ' of ' + hand[printHandIndex].suit + '<br>';
+    printHandIndex = printHandIndex + 1;
+  }
+  message = message + 'Hand value: ' + handValue;
+  return message;
+};
+// hit + stand instructions
+var instructions = function () {
+  var text = '';
+  text = '<br><br> Please enter "hit" or "stand" to continue<br><br>';
+  text = text + 'Hit: to draw another card.<br>Stand: to lock in your hand<br><br>NOTE! If you hit and you get more than 21, you lose!';
+  return text;
+};
+// resolve hand function
+var resolveHands = function (userValue, comValue) {
+  var gameEndText = '';
+  if (comValue > 21 || userValue > comValue) {
+    gameEndText = 'You won!';
+  } else if (userValue < comValue) {
+    gameEndText = 'You lost!';
+  } else if (userValue == comValue) {
+    gameEndText = 'You did well but you tied!';
+  } else {
+    gameEndText = 'Sorry, there is an error, please refresh the page and notify Bryan!';
+  }
+  return gameEndText;
+};
 // create and shuffle deck
 var freshDeck = createDeck();
 
@@ -130,7 +162,7 @@ var main = function (input) {
   var comHandValue = 0;
   if (mode == 'initialize') {
     mode = 'draw hand';
-    myOutputValue = 'Welcome, you are playing blackjack. You are playing against a computer player, the dealer.<br><br>';
+    myOutputValue = 'Welcome, you are playing Blackjack. <br>You are up against a computer, the dealer.<br><br>';
     myOutputValue = myOutputValue + 'Winner: higher hand value<br>';
     myOutputValue = myOutputValue + 'Immediate win: Blackjack (10/J/Q/K + A)<br>';
     myOutputValue = myOutputValue + 'Immediate lose: hand value > 21<br>The dealer ALWAYS hits if their hand is below 17!<br><br>';
@@ -147,29 +179,79 @@ var main = function (input) {
     comHand.push(gameDeck.pop());
     comHand.push(gameDeck.pop());
     comHandValue = countHandValue(comHand);
-    console.log(comHand);
-    console.log(comHandValue);
 
     // display user hand
-    myOutputValue = 'Your hand:<br>- ' + userHand[0].name + ' of ' + userHand[0].suit + '<br>- ' + userHand[1].name + ' of ' + userHand[1].suit + '<br>';
-    myOutputValue = myOutputValue + 'Hand value: ' + userHandValue;
+    myOutputValue = 'Your ' + displayHand(userHand, userHandValue) + instructions();
+
     // check for blackjacks
     if (userHandValue == 21 && comHandValue == 21) {
-      mode = 'round end';
-      myOutputValue = 'Blackjack! However, both of you got it... truly unfortunate. You tied!<br><br>' + myOutputValue + '<br><br>';
-      myOutputValue = myOutputValue + 'Computer hand:<br>- ' + comHand[0].name + ' of ' + comHand[0].suit + '<br>- ' + comHand[1].name + ' of ' + comHand[1].suit + '<br>';
+      mode = 'end of round';
+      myOutputValue = 'Blackjack! However, both of you got it... truly unfortunate. You tied!<br><br>' + displayHand(userHand, userHandValue) + '<br><br>';
+      myOutputValue = myOutputValue + '<br><br> Com ' + displayHand(comHand, comHandValue);
     } else if (userHandValue == 21) {
-      mode = 'round end';
-      myOutputValue = 'Blackjack! You won!<br><br>' + myOutputValue + '<br><br>';
-      myOutputValue = myOutputValue + 'Computer hand:<br>- ' + comHand[0].name + ' of ' + comHand[0].suit + '<br>- ' + comHand[1].name + ' of ' + comHand[1].suit + '<br>';
+      mode = 'end of round';
+      myOutputValue = 'Blackjack! You won!<br><br>' + displayHand(userHand, userHandValue) + '<br><br>';
+      myOutputValue = myOutputValue + '<br><br> Com ' + displayHand(comHand, comHandValue);
     } else if (comHandValue == 21) {
-      mode = 'round end';
-      myOutputValue = 'Computer Blackjack! You lost!<br><br>' + myOutputValue + '<br><br>';
-      myOutputValue = myOutputValue + 'Computer hand:<br>- ' + comHand[0].name + ' of ' + comHand[0].suit + '<br>- ' + comHand[1].name + ' of ' + comHand[1].suit + '<br>';
+      mode = 'end of round';
+      myOutputValue = 'Computer Blackjack! You lost!<br><br>' + displayHand(userHand, userHandValue) + '<br><br>';
+      myOutputValue = myOutputValue + '<br><br> Com ' + displayHand(comHand, comHandValue);
     }
   } else if (mode == 'hit or stand') {
     // rest of game happens here
-  } else if (mode == 'round end') {
+    // code comHand; goal: x > 17
+    var comHandResolved = false;
+    while (comHandResolved == false) {
+      comHandValue = countHandValue(comHand);
+      if (comHandValue >= 17) {
+        comHandResolved = true;
+      } else if (comHandValue < 17) {
+        comHand.push(gameDeck.pop());
+      }
+    }
+    console.log(comHand);
+    console.log(comHandValue);
+
+    // input validation, only 'hit or 'stand';
+    // if hit: draw card, check lose conditions, if x < 21, display hand, else, lose screen
+    if (input.toLowerCase() == 'hit') {
+      userHand.push(gameDeck.pop());
+      userHandValue = countHandValue(userHand);
+      // display user hand
+      myOutputValue = 'Your ' + displayHand(userHand, userHandValue) + instructions();
+      userHandValue = 22;
+      comHandValue = 22;
+      // end of round conditions
+      if (userHandValue == 21) {
+        // auto-stand
+        mode = 'end of round';
+        myOutputValue = 'Good job, you hit 21 on the dot!<br><br>' + resolveHands(userHandValue, comHandValue) + '<br><br>Your ' + displayHand(userHand, userHandValue);
+        myOutputValue = myOutputValue + '<br><br> Com ' + displayHand(comHand, comHandValue);
+      } else if (userHandValue > 21) {
+        mode = 'end of round';
+        if (comHandValue > 21) {
+          myOutputValue = 'You exceeded 21!! :() <br>But so did the computer you lucky person! <br><br>Your ' + displayHand(userHand, userHandValue);
+          myOutputValue = myOutputValue + '<br><br> Com ' + displayHand(comHand, comHandValue);
+        } else {
+          myOutputValue = 'You lost! Your hand value exceeded 21!<br><br>Your ' + displayHand(userHand, userHandValue);
+          myOutputValue = myOutputValue + '<br><br> Com ' + displayHand(comHand, comHandValue);
+        }
+      }
+    } else if (input.toLowerCase() == 'stand') {
+      userHandValue = countHandValue(userHand);
+      // stand goes into mode = 'end of round'
+      // compare hand values
+      mode = 'end of round';
+      myOutputValue = resolveHands(userHandValue, comHandValue);
+      myOutputValue = myOutputValue + 'Your ' + displayHand(userHand, userHandValue);
+      myOutputValue = myOutputValue + '<br><br> Com ' + displayHand(comHand, comHandValue);
+    } else {
+      myOutputValue = 'Error detected! Please only input "hit" or "stand". Thank you.<br><br>';
+      // display user hand
+      userHandValue = countHandValue(userHand);
+      myOutputValue = myOutputValue + displayHand(userHand, userHandValue) + instructions();
+    }
+  } else if (mode == 'end of round') {
     // if continue... input > mode = 'draw hand'
     // do I need to have a "reshuffle deck" function?
     // if deck.length < 10... newdeck(); or something
