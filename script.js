@@ -38,6 +38,9 @@ var createDeck = function () {
       var cardValue = indexRanks;
       if (cardName == 1) {
         cardName = 'Ace';
+        cardValue = 11;
+        // define ace value as 11 all the way. if handValue > 10, -11 to total value
+        // vs. coding a function to redefine the value for ace
       }
       if (cardName == 11) {
         cardName = 'Jack';
@@ -100,7 +103,7 @@ var countHandValue = function (hand) {
   }
   return handValue;
 };
-// define ace function
+// find ace function
 var findAce = function (hand) {
   var foundAce = false;
   var handIndex = 0;
@@ -113,7 +116,6 @@ var findAce = function (hand) {
     }
     handIndex = handIndex + 1;
   }
-  console.log(foundAce);
   return foundAce;
 };
 
@@ -137,21 +139,8 @@ var main = function (input) {
     myOutputValue = myOutputValue + 'Instructions will continue to guide you, please enjoy!';
   } else if (mode == 'draw hand') {
     // user hand
-    // userHand.push(gameDeck.pop());
-    // userHand.push(gameDeck.pop());
-    userHand = [{
-      name: 'Ace',
-      suit: 'Diamonds',
-      rank: 1,
-      value: 1,
-    },
-    {
-      name: 'Jack',
-      suit: 'Diamonds',
-      rank: 11,
-      value: 10,
-    },
-    ];
+    userHand.push(gameDeck.pop());
+    userHand.push(gameDeck.pop());
     userHandValue = countHandValue(userHand);
     // com hand
     comHand.push(gameDeck.pop());
@@ -159,26 +148,36 @@ var main = function (input) {
     comHandValue = countHandValue(comHand);
     console.log(comHand);
     console.log(comHandValue);
-    // finding ace
-    findAce(userHand);
-    findAce(comHand);
-    // change value of ace based on hand value
-    // if (handValue <= 10) {
-    //   currCard.value = 11;
-    // } else if (handValue > 10) {
-    //   currCard.value = 1;
-    // }
+
     // display user hand
     myOutputValue = 'Your hand:<br>- ' + userHand[0].name + ' of ' + userHand[0].suit + '<br>- ' + userHand[1].name + ' of ' + userHand[1].suit + '<br>';
     myOutputValue = myOutputValue + 'Hand value: ' + userHandValue;
     // check for blackjacks
     if (userHandValue == 21 && comHandValue == 21) {
-      myOutputValue = 'Blackjack! However, both of you got it... truly unfortunate. You tied!<br><br>' + myOutputValue;
+      myOutputValue = 'Blackjack! However, both of you got it... truly unfortunate. You tied!<br><br>' + myOutputValue + '<br><br>';
+      myOutputValue = myOutputValue + 'Computer hand:<br>- ' + comHand[0].name + ' of ' + comHand[0].suit + '<br>- ' + comHand[1].name + ' of ' + comHand[1].suit + '<br>';
     } else if (userHandValue == 21) {
-      myOutputValue = 'Blackjack! You won!<br><br>' + myOutputValue;
+      myOutputValue = 'Blackjack! You won!<br><br>' + myOutputValue + '<br><br>';
+      myOutputValue = myOutputValue + 'Computer hand:<br>- ' + comHand[0].name + ' of ' + comHand[0].suit + '<br>- ' + comHand[1].name + ' of ' + comHand[1].suit + '<br>';
     } else if (comHandValue == 21) {
-      myOutputValue = 'Blackjack! You lost!<br><br>' + myOutputValue;
+      myOutputValue = 'Computer Blackjack! You lost!<br><br>' + myOutputValue + '<br><br>';
+      myOutputValue = myOutputValue + 'Computer hand:<br>- ' + comHand[0].name + ' of ' + comHand[0].suit + '<br>- ' + comHand[1].name + ' of ' + comHand[1].suit + '<br>';
     }
   }
   return myOutputValue;
 };
+
+// cheat card
+// userHand = [{
+//   name: 'Ace',
+//   suit: 'Diamonds',
+//   rank: 1,
+//   value: 11,
+// },
+// {
+//   name: 'Jack',
+//   suit: 'Diamonds',
+//   rank: 11,
+//   value: 10,
+// },
+// ];
