@@ -5,9 +5,9 @@
 // gameplay turns represented by main()
 
 // sequence: game play turns represented by the main function
-// 1. deck is shuffled
-// 2. cards analyzed for win conditions (blackjack)
-// 3. cards are displayed to the user -> computer cards are hidden, duh...
+// 1. deck is shuffled - DONE
+// 2. cards analyzed for win conditions (blackjack) - DONE
+// 3. cards are displayed to the user -> computer cards are hidden, duh... - DONE
 // 4. after above, new action... user to decide "hit" or "stand"
 // 5. computer also decides hit or stand
 
@@ -138,6 +138,7 @@ var main = function (input) {
     myOutputValue = myOutputValue + 'Smash the button again and you will get your hand. <br>';
     myOutputValue = myOutputValue + 'Instructions will continue to guide you, please enjoy!';
   } else if (mode == 'draw hand') {
+    mode = 'hit or stand';
     // user hand
     userHand.push(gameDeck.pop());
     userHand.push(gameDeck.pop());
@@ -154,30 +155,27 @@ var main = function (input) {
     myOutputValue = myOutputValue + 'Hand value: ' + userHandValue;
     // check for blackjacks
     if (userHandValue == 21 && comHandValue == 21) {
+      mode = 'round end';
       myOutputValue = 'Blackjack! However, both of you got it... truly unfortunate. You tied!<br><br>' + myOutputValue + '<br><br>';
       myOutputValue = myOutputValue + 'Computer hand:<br>- ' + comHand[0].name + ' of ' + comHand[0].suit + '<br>- ' + comHand[1].name + ' of ' + comHand[1].suit + '<br>';
     } else if (userHandValue == 21) {
+      mode = 'round end';
       myOutputValue = 'Blackjack! You won!<br><br>' + myOutputValue + '<br><br>';
       myOutputValue = myOutputValue + 'Computer hand:<br>- ' + comHand[0].name + ' of ' + comHand[0].suit + '<br>- ' + comHand[1].name + ' of ' + comHand[1].suit + '<br>';
     } else if (comHandValue == 21) {
+      mode = 'round end';
       myOutputValue = 'Computer Blackjack! You lost!<br><br>' + myOutputValue + '<br><br>';
       myOutputValue = myOutputValue + 'Computer hand:<br>- ' + comHand[0].name + ' of ' + comHand[0].suit + '<br>- ' + comHand[1].name + ' of ' + comHand[1].suit + '<br>';
     }
+  } else if (mode == 'hit or stand') {
+    // rest of game happens here
+  } else if (mode == 'round end') {
+    // if continue... input > mode = 'draw hand'
+    // do I need to have a "reshuffle deck" function?
+    // if deck.length < 10... newdeck(); or something
+  } else {
+    // error mode, ask to refresh and notify for debugging
+    myOutputValue = 'There has been an error. Please refresh the page and continue play if you want. However, please do Bryan a favor and inform him that there was this error.';
   }
   return myOutputValue;
 };
-
-// cheat card
-// userHand = [{
-//   name: 'Ace',
-//   suit: 'Diamonds',
-//   rank: 1,
-//   value: 11,
-// },
-// {
-//   name: 'Jack',
-//   suit: 'Diamonds',
-//   rank: 11,
-//   value: 10,
-// },
-// ];
