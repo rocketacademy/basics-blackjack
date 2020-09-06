@@ -140,11 +140,11 @@ var instructions = function () {
 var resolveHands = function (userValue, comValue) {
   var gameEndText = '';
   if (comValue > 21 || userValue > comValue) {
-    gameEndText = 'You won!';
+    gameEndText = 'You won!<br>To continue, hit the button to reset your hand<br><br>';
   } else if (userValue < comValue) {
-    gameEndText = 'You lost!';
+    gameEndText = 'You lost!<br>To continue, hit the button to reset your hand<br><br>';
   } else if (userValue == comValue) {
-    gameEndText = 'You did well but you tied!';
+    gameEndText = 'You did well but you tied!<br>To continue, hit the button to reset your hand<br><br>';
   } else {
     gameEndText = 'Sorry, there is an error, please refresh the page and notify Bryan!';
   }
@@ -185,16 +185,19 @@ var main = function (input) {
     // check for blackjacks (22 for double 'ace')
     if (userHandValue == 21 && comHandValue == 21) {
       mode = 'end of round';
-      myOutputValue = 'Blackjack! However, both of you got it... truly unfortunate. You tied!<br><br>' + displayHand(userHand, userHandValue) + '<br><br>';
-      myOutputValue = myOutputValue + '<br><br> Com ' + displayHand(comHand, comHandValue);
+      myOutputValue = 'Blackjack! However, both of you got it... truly unfortunate. You tied!<br>To continue, hit the button to reset your hand<br><br>';
+      myOutputValue = myOutputValue + displayHand(userHand, userHandValue) + '<br><br>';
+      myOutputValue = myOutputValue + 'Com ' + displayHand(comHand, comHandValue);
     } else if (userHandValue == 21 || userHandValue == 22) {
       mode = 'end of round';
-      myOutputValue = 'Blackjack! You won!<br><br>' + displayHand(userHand, userHandValue) + '<br><br>';
-      myOutputValue = myOutputValue + '<br><br> Com ' + displayHand(comHand, comHandValue);
+      myOutputValue = 'Blackjack! You won!<br>To continue, hit the button to reset your hand<br><br>';
+      myOutputValue = myOutputValue + displayHand(userHand, userHandValue) + '<br><br>';
+      myOutputValue = myOutputValue + 'Com ' + displayHand(comHand, comHandValue);
     } else if (comHandValue == 21 || comHandValue == 22) {
       mode = 'end of round';
-      myOutputValue = 'Computer Blackjack! You lost!<br><br>' + displayHand(userHand, userHandValue) + '<br><br>';
-      myOutputValue = myOutputValue + '<br><br> Com ' + displayHand(comHand, comHandValue);
+      myOutputValue = 'Computer Blackjack! You lost!<br>To continue, hit the button to reset your hand<br><br>';
+      myOutputValue = myOutputValue + displayHand(userHand, userHandValue) + '<br><br>';
+      myOutputValue = myOutputValue + 'Com ' + displayHand(comHand, comHandValue);
     }
   } else if (mode == 'hit or stand') {
     // rest of game happens here
@@ -225,15 +228,17 @@ var main = function (input) {
       if (userHandValue == 21) {
         // auto-stand
         mode = 'end of round';
-        myOutputValue = 'Good job, you hit 21 on the dot!<br><br>' + resolveHands(userHandValue, comHandValue) + '<br><br>Your ' + displayHand(userHand, userHandValue);
+        myOutputValue = 'Good job, you hit 21 on the dot!<br><br>' + resolveHands(userHandValue, comHandValue) + 'Your ' + displayHand(userHand, userHandValue);
         myOutputValue = myOutputValue + '<br><br> Com ' + displayHand(comHand, comHandValue);
       } else if (userHandValue > 21) {
         mode = 'end of round';
         if (comHandValue > 21) {
-          myOutputValue = 'You exceeded 21!! :() <br>But so did the computer you lucky person! <br><br>Your ' + displayHand(userHand, userHandValue);
+          myOutputValue = 'You exceeded 21!! :( <br>But so did the computer you lucky person!<br>To continue, hit the button to reset your hand<br><br>';
+          myOutputValue = myOutputValue + 'Your ' + displayHand(userHand, userHandValue);
           myOutputValue = myOutputValue + '<br><br> Com ' + displayHand(comHand, comHandValue);
         } else {
-          myOutputValue = 'You lost! Your hand value exceeded 21!<br><br>Your ' + displayHand(userHand, userHandValue);
+          myOutputValue = 'You lost! Your hand value exceeded 21!<br>To continue, hit the button to reset your hand<br><br>';
+          myOutputValue = myOutputValue + 'Your ' + displayHand(userHand, userHandValue);
           myOutputValue = myOutputValue + '<br><br> Com ' + displayHand(comHand, comHandValue);
         }
       }
@@ -254,6 +259,10 @@ var main = function (input) {
     }
   } else if (mode == 'end of round') {
     // if continue... input > mode = 'draw hand'
+    myOutputValue = 'Great, hand emptied, to continue hit the button again to draw a new hand!';
+    mode = 'draw hand';
+    userHand = [];
+    comHand = [];
     // do I need to have a "reshuffle deck" function?
     // if deck.length < 10... newdeck(); or something
   } else {
