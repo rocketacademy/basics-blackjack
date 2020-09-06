@@ -1,68 +1,71 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>SWE101 Blackjack</title>
-        <meta charset="UTF-8">
-        <style>
-            *{
-              box-sizing:border-box;
-            }
 
-            #header{
-              text-align:center;
-            }
+<head>
+  <title>SWE101 Blackjack</title>
+  <meta charset="UTF-8">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
-            #container{
-              margin:20px auto;
-              padding:20px;
-              background-color:pink;
-              max-width:300px;
-            }
+    #header {
+      text-align: center;
+    }
 
-            input{
-              width:70%;
-              margin-right:4px;
-            }
+    #container {
+      margin: 20px auto;
+      padding: 20px;
+      background-color: pink;
+      max-width: 300px;
+    }
 
-            button{
-              font-size:7px;
-              width:20%;
-            }
+    input {
+      width: 70%;
+      margin-right: 4px;
+    }
 
-            #output{
-              margin:20px auto;
-              padding:20px;
-              background-color:grey;
-              width:100%;
-            }
-        </style>
-    </head>
-    <body>
-        <h1 id="header">SWE 101! Blackjack 🚀</h1>
-        <div id="container">
-            <input id="my-input"/>
-            <button id="my-button">submit</button>
-            <p>output:</p>
-            <div id="output">
-            </div>
-        </div>
-        <script src="script.js"></script>
-        <script>
-            var button = document.querySelector('#my-button');
+    button {
+      font-size: 7px;
+      width: 20%;
+    }
 
-            button.addEventListener('click', function(){
+    #output {
+      margin: 20px auto;
+      padding: 20px;
+      background-color: grey;
+      width: 100%;
+    }
+  </style>
+</head>
 
-              var input = document.querySelector('#my-input');
+<body>
+  <h1 id="header">SWE 101! Blackjack 🚀</h1>
+  <div id="container">
+    <input id="my-input" />
+    <button id="my-button">submit</button>
+    <p>output:</p>
+    <div id="output">Welcome to Bryan's blackjack! Please hit the button to receive further instructions!
+    </div>
+  </div>
+  <script src="script.js"></script>
+  <script>
+    var button = document.querySelector('#my-button');
 
-              var result = main(input.value);
+    button.addEventListener('click', function () {
 
-              var output = document.querySelector('#output');
+      var input = document.querySelector('#my-input');
 
-              output.innerHTML = result;
+      var result = main(input.value);
 
-              input.value = "";
-            });
+      var output = document.querySelector('#output');
 
-        </script>
-    </body>
+      output.innerHTML = result;
+
+      input.value = "";
+    });
+
+  </script>
+</body>
+
 </html>

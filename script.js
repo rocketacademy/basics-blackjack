@@ -5,17 +5,22 @@
 // gameplay turns represented by main()
 
 // sequence: game play turns represented by the main function
-// deck is shuffled
-// cards analyzed for win conditions (blackjack)
-// cards are displayed to the user -> computer cards are hidden, duh...
-// after above, new action... user to decide "hit" or "stand"
-// computer also decides hit or stand
+// 1. deck is shuffled
+// 2. cards analyzed for win conditions (blackjack)
+// 3. cards are displayed to the user -> computer cards are hidden, duh...
+// 4. after above, new action... user to decide "hit" or "stand"
+// 5. computer also decides hit or stand
 
 // for user choice to hit or stand... new action of user has different logic
 // means game must have a mode to deal with this
 
 // when user makes decision, cards are analyzed for winning conditions
 // also analyzed for losing conditions...
+
+// global variables
+var mode = 'initialize';
+var userHand = [];
+var comHand = [];
 
 var createDeck = function () {
   // deck array
@@ -25,7 +30,6 @@ var createDeck = function () {
   var indexSuits = 0;
   while (indexSuits < suits.length) {
     var currSuit = suits[indexSuits];
-    console.log(currSuit);
     // 13 ranks... ace to king - rank to define "card positions"
     var indexRanks = 1;
     while (indexRanks <= 13) {
@@ -53,22 +57,128 @@ var createDeck = function () {
         rank: indexRanks,
         value: cardValue,
       };
-      console.log('rank: ' + indexRanks);
-      console.log('value: ' + cardValue);
-      console.log(card);
       deck.push(card);
       indexRanks = indexRanks + 1;
     }
     indexSuits = indexSuits + 1;
   }
+  return deck;
 };
 
-var defineAce = function () {
-  // if hand value > 10, ace = 1, if hand value <= 10, ace = 11
+// randomizer to shuffle deck
+var getRandomIndex = function (size) {
+  return Math.floor(Math.random() * size);
 };
+// shuffle deck function
+var shuffleDeck = function (cards) {
+  var index = 0;
+
+  while (index < cards.length) {
+    var randomIndex = getRandomIndex(cards.length);
+
+    var currentItem = cards[index];
+
+    var randomItem = cards[randomIndex];
+
+    cards[index] = randomItem;
+    cards[randomIndex] = currentItem;
+
+    index = index + 1;
+  }
+
+  return cards;
+};
+
+// function to define hand value
+var countHandValue = function (hand) {
+  var index = 0;
+  var handValue = 0;
+  while (index < hand.length) {
+    var currCard = hand[index];
+    handValue = handValue + currCard.value;
+    index = index + 1;
+  }
+  return handValue;
+};
+// define ace function
+var findAce = function (hand) {
+  var foundAce = false;
+  var handIndex = 0;
+  // while loop to find ace
+  while (handIndex < hand.length) {
+    var currCard = hand[handIndex];
+    if (currCard.name == 'Ace') {
+      foundAce = true;
+      return foundAce;
+    }
+    handIndex = handIndex + 1;
+  }
+  console.log(foundAce);
+  return foundAce;
+};
+
+// create and shuffle deck
+var freshDeck = createDeck();
 
 // BLACKJACK LETS GO!!
 var main = function (input) {
   var myOutputValue = 'hello world';
+  var gameDeck = shuffleDeck(freshDeck);
+  var userHandValue = 0;
+  var comHandValue = 0;
+  if (mode == 'initialize') {
+    mode = 'draw hand';
+    myOutputValue = 'Welcome, you are playing blackjack. You are playing against a computer player, the dealer.<br><br>';
+    myOutputValue = myOutputValue + 'Winner: higher hand value<br>';
+    myOutputValue = myOutputValue + 'Immediate win: Blackjack (10/J/Q/K + A)<br>';
+    myOutputValue = myOutputValue + 'Immediate lose: hand value > 21<br>The dealer ALWAYS hits if their hand is below 17!<br><br>';
+    myOutputValue = myOutputValue + 'Numbers = their value<br>Ace = 1 or 11<br>J-Q-K = 10<br><br>';
+    myOutputValue = myOutputValue + 'Smash the button again and you will get your hand. <br>';
+    myOutputValue = myOutputValue + 'Instructions will continue to guide you, please enjoy!';
+  } else if (mode == 'draw hand') {
+    // user hand
+    // userHand.push(gameDeck.pop());
+    // userHand.push(gameDeck.pop());
+    userHand = [{
+      name: 'Ace',
+      suit: 'Diamonds',
+      rank: 1,
+      value: 1,
+    },
+    {
+      name: 'Jack',
+      suit: 'Diamonds',
+      rank: 11,
+      value: 10,
+    },
+    ];
+    userHandValue = countHandValue(userHand);
+    // com hand
+    comHand.push(gameDeck.pop());
+    comHand.push(gameDeck.pop());
+    comHandValue = countHandValue(comHand);
+    console.log(comHand);
+    console.log(comHandValue);
+    // finding ace
+    findAce(userHand);
+    findAce(comHand);
+    // change value of ace based on hand value
+    // if (handValue <= 10) {
+    //   currCard.value = 11;
+    // } else if (handValue > 10) {
+    //   currCard.value = 1;
+    // }
+    // display user hand
+    myOutputValue = 'Your hand:<br>- ' + userHand[0].name + ' of ' + userHand[0].suit + '<br>- ' + userHand[1].name + ' of ' + userHand[1].suit + '<br>';
+    myOutputValue = myOutputValue + 'Hand value: ' + userHandValue;
+    // check for blackjacks
+    if (userHandValue == 21 && comHandValue == 21) {
+      myOutputValue = 'Blackjack! However, both of you got it... truly unfortunate. You tied!<br><br>' + myOutputValue;
+    } else if (userHandValue == 21) {
+      myOutputValue = 'Blackjack! You won!<br><br>' + myOutputValue;
+    } else if (comHandValue == 21) {
+      myOutputValue = 'Blackjack! You lost!<br><br>' + myOutputValue;
+    }
+  }
   return myOutputValue;
 };
