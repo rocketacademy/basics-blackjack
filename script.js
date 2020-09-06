@@ -105,14 +105,13 @@ var countHandValue = function (hand) {
 };
 // find ace function
 var findAce = function (hand) {
-  var foundAce = false;
+  var foundAce = 0;
   var handIndex = 0;
   // while loop to find ace
   while (handIndex < hand.length) {
     var currCard = hand[handIndex];
     if (currCard.name == 'Ace') {
-      foundAce = true;
-      return foundAce;
+      foundAce = foundAce + 1;
     }
     handIndex = handIndex + 1;
   }
@@ -183,16 +182,16 @@ var main = function (input) {
     // display user hand
     myOutputValue = 'Your ' + displayHand(userHand, userHandValue) + instructions();
 
-    // check for blackjacks
+    // check for blackjacks (22 for double 'ace')
     if (userHandValue == 21 && comHandValue == 21) {
       mode = 'end of round';
       myOutputValue = 'Blackjack! However, both of you got it... truly unfortunate. You tied!<br><br>' + displayHand(userHand, userHandValue) + '<br><br>';
       myOutputValue = myOutputValue + '<br><br> Com ' + displayHand(comHand, comHandValue);
-    } else if (userHandValue == 21) {
+    } else if (userHandValue == 21 || userHandValue == 22) {
       mode = 'end of round';
       myOutputValue = 'Blackjack! You won!<br><br>' + displayHand(userHand, userHandValue) + '<br><br>';
       myOutputValue = myOutputValue + '<br><br> Com ' + displayHand(comHand, comHandValue);
-    } else if (comHandValue == 21) {
+    } else if (comHandValue == 21 || comHandValue == 22) {
       mode = 'end of round';
       myOutputValue = 'Computer Blackjack! You lost!<br><br>' + displayHand(userHand, userHandValue) + '<br><br>';
       myOutputValue = myOutputValue + '<br><br> Com ' + displayHand(comHand, comHandValue);
@@ -203,6 +202,8 @@ var main = function (input) {
     var comHandResolved = false;
     while (comHandResolved == false) {
       comHandValue = countHandValue(comHand);
+      // factoring in ace 1/11
+      comHandValue = comHandValue - (10 * findAce(comHand));
       if (comHandValue >= 17) {
         comHandResolved = true;
       } else if (comHandValue < 17) {
@@ -217,10 +218,9 @@ var main = function (input) {
     if (input.toLowerCase() == 'hit') {
       userHand.push(gameDeck.pop());
       userHandValue = countHandValue(userHand);
+      userHandValue = userHandValue - (10 * findAce(userHand));
       // display user hand
       myOutputValue = 'Your ' + displayHand(userHand, userHandValue) + instructions();
-      userHandValue = 22;
-      comHandValue = 22;
       // end of round conditions
       if (userHandValue == 21) {
         // auto-stand
@@ -239,6 +239,7 @@ var main = function (input) {
       }
     } else if (input.toLowerCase() == 'stand') {
       userHandValue = countHandValue(userHand);
+      userHandValue = userHandValue - (10 * findAce(userHand));
       // stand goes into mode = 'end of round'
       // compare hand values
       mode = 'end of round';
