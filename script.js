@@ -308,24 +308,26 @@ var main = function (input) {
     // checking for burst
     if (playerPoints > 21) {
       myOutputValue = 'You lost! You went over 21! ' + myOutputValue;
-      gameMode == 'gameOver';
-    }
-    if (cpuPoints > 21) {
+      gameMode = 'gameOver';
+    } else if (cpuPoints > 21) {
       myOutputValue = 'You won! CPU went over 21! ' + myOutputValue;
-      gameMode == 'gameOver';
+      gameMode = 'gameOver';
+    } else if (playerPoints > 21 && cpuPoints > 21) {
+      myOutputValue = 'You tied! You both went over 21! ' + myOutputValue;
+      gameMode = 'gameOver';
     }
 
     // when user stands
     if (input == 'stand') {
       if (playerPoints > cpuPoints) {
         myOutputValue = 'You won! ' + myOutputValue;
-        gameMode == 'gameOver';
+        gameMode = 'gameOver';
       } else if (cpuPoints > playerPoints) {
         myOutputValue = 'You lost! ' + myOutputValue;
-        gameMode == 'gameOver';
+        gameMode = 'gameOver';
       } else {
         myOutputValue = 'You tied! ' + myOutputValue;
-        gameMode == 'gameOver';
+        gameMode = 'gameOver';
       }
     }
 
