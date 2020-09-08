@@ -235,31 +235,31 @@ var main = function (input) {
     }
 
     console.log('game starts');
-    playerFirstHand.push(playerDeck.pop());
-    computerHand.push(computerDeck.pop());
-    playerFirstHand.push(playerDeck.pop());
-    computerHand.push(computerDeck.pop());
+    playerFirstHand.push(deck.pop());
+    computerHand.push(deck.pop());
+    playerFirstHand.push(deck.pop());
+    computerHand.push(deck.pop());
     playerFirstHandPoints = getPoints(playerFirstHand);
     computerPoints = getPoints(computerHand);
   } else if (mode == 'stand') {
     // Computer draws if the computer's points are less than 17 or lower than the player.
     while (computerPoints < 17) {
-      computerHand.push(computerDeck.pop());
+      computerHand.push(deck.pop());
       computerPoints = getPoints(computerHand);
     }
 
     while (computerPoints < playerHighestPoints) {
-      computerHand.push(computerDeck.pop());
+      computerHand.push(deck.pop());
       computerPoints = getPoints(computerHand);
     }
   } else if (mode == 'hit') {
     // Deal cards
-    playerFirstHand.push(playerDeck.pop());
+    playerFirstHand.push(deck.pop());
     playerFirstHandPoints = getPoints(playerFirstHand);
 
     // Deal cards to a second hand if there is a split
     if (playerSecondHand.length > 0) {
-      playerSecondHand.push(playerDeck.pop());
+      playerSecondHand.push(deck.pop());
       playerSecondHandPoints = getPoints(playerSecondHand);
     }
 
@@ -269,7 +269,7 @@ var main = function (input) {
     while ((playerFirstHandPoints == 21 || playerSecondHandPoints == 21)
     && (computerPoints < playerFirstHandPoints || computerPoints < playerSecondHandPoints)
     && (computerPoints < 21)) {
-      computerHand.push(computerDeck.pop());
+      computerHand.push(deck.pop());
       computerPoints = getPoints(computerHand);
     }
   } else if (mode == 'split') {
@@ -278,8 +278,8 @@ var main = function (input) {
       playerSecondHand = playerFirstHand.splice(0, 1);
 
       // draw cards for player
-      playerFirstHand.push(playerDeck.pop());
-      playerSecondHand.push(playerDeck.pop());
+      playerFirstHand.push(deck.pop());
+      playerSecondHand.push(deck.pop());
       playerFirstHandPoints = getPoints(playerFirstHand);
       playerSecondHandPoints = getPoints(playerSecondHand);
 
@@ -287,7 +287,7 @@ var main = function (input) {
       while ((playerFirstHandPoints == 21 || playerSecondHandPoints == 21)
       && (computerPoints < playerFirstHandPoints || computerPoints < playerSecondHandPoints)
       && (computerPoints < 21)) {
-        computerHand.push(computerDeck.pop());
+        computerHand.push(deck.pop());
         computerPoints = getPoints(computerHand);
       }
     } else {
