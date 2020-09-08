@@ -10,6 +10,8 @@ module.exports = {
     ecmaVersion: 11,
   },
   rules: {
+    // Allow function param reassign for object properties
+    'no-param-reassign': ['error', { props: false }],
     // Don't enforce ===
     eqeqeq: 'off',
     // Disable func-names rule so that we can have anonymous functions
