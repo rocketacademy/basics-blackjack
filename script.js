@@ -79,13 +79,28 @@ var deck = shuffleCards(makeDeck());
 // Decks used for testing code
 var playerDeck = [
   {
-    name: 'ace',
+    name: 'eight',
     suit: 'hearts',
-    rank: 1,
+    rank: 8,
   },
   {
-    name: 'king',
+    name: 'eight',
     suit: 'spades',
+    rank: 8,
+  },
+  {
+    name: 'two',
+    suit: 'hearts',
+    rank: 2,
+  },
+  {
+    name: 'two',
+    suit: 'spades',
+    rank: 2,
+  },
+  {
+    name: 'jack',
+    suit: 'hearts',
     rank: 10,
   },
   {
@@ -93,17 +108,32 @@ var playerDeck = [
     suit: 'spades',
     rank: 10,
   },
-];
-var computerDeck = [
   {
     name: 'ace',
     suit: 'hearts',
     rank: 1,
   },
   {
-    name: 'king',
+    name: 'nine',
+    suit: 'hearts',
+    rank: 9,
+  },
+  {
+    name: 'nine',
     suit: 'spades',
-    rank: 10,
+    rank: 9,
+  },
+];
+var computerDeck = [
+  {
+    name: 'two',
+    suit: 'hearts',
+    rank: 2,
+  },
+  {
+    name: 'nine',
+    suit: 'spades',
+    rank: 9,
   },
   {
     name: 'jack',
@@ -113,7 +143,8 @@ var computerDeck = [
 ];
 
 // Create empty hand for player and computer
-var playerHand = [];
+var playerFirstHand = [];
+var playerSecondHand = [];
 var computerHand = [];
 
 // function to check for ace
@@ -146,9 +177,9 @@ var getPoints = function (hand) {
 
 // display hand
 var displayHand = function (hand) {
-  result = '';
+  var result = '';
   for (let i = 0; i < hand.length; i += 1) {
-    result += hand[i].name + ' of ' + hand[i].suit + ' ';
+    result += hand[i].name + ' of ' + hand[i].suit + ', ';
   }
 
   return result;
@@ -158,14 +189,27 @@ var displayHand = function (hand) {
 var mode;
 
 // Variables to store points
-var computerPoints;
-var playerPoints;
+var computerPoints = 0;
+var playerFirstHandPoints = 0;
+var playerSecondHandPoints = 0;
+var playerHighestPoints = 0;
+
+// function that returns true if there are 2 cards of the same rank
+var checkPair = function (hand) {
+  var result = false;
+  if (hand[0].name == hand[1].name) {
+    result = true;
+  }
+  return result;
+};
+
+var checkedPairBefore = false;
 
 // --------------------------------------------------------------------------------------------
 // User clicks submit button to deal cards.
 // The cards are analyzed for any game winning conditions. (Blackjack)
 // The cards are displayed to the user.
-// Then begins a new action, where the user has to decide something: do they hit or stand.
+// Then begins a new action, where the user has to decide something: do they hit or stand or split.
 // The computer also decides to hit or stand.
 // ----------------------------------------------------------------------------------------------
 
@@ -177,70 +221,153 @@ var main = function (input) {
 
   if (mode == '') {
     // User clicks submit button to deal 2 cards at the start of the game
-    if (playerHand.length > 0) {
-      // If player accidentally click submit without an input
-      return 'You have entered an invalid word. Please enter \'hit\' or \'stand\' <br><br> Your current hand: ' + displayHand(playerHand) + '<br>Your points = ' + playerPoints;
+    if (playerFirstHand.length > 0) {
+      // If player accidentally click submit without an input when it is not the start of the game
+      myOutputValue += 'You have entered an invalid word. Please enter \'hit\' or \'stand\' or \'split\' <br><br>';
+
+      if (playerSecondHand.length > 0) {
+        myOutputValue += 'Your 1st hand: ' + displayHand(playerFirstHand) + '<br>1st hand points = ' + playerFirstHandPoints;
+        myOutputValue += '<br>Your 2nd hand: ' + displayHand(playerSecondHand) + '<br>2nd hand points = ' + playerSecondHandPoints;
+      } else {
+        myOutputValue += 'Your current hand: ' + displayHand(playerFirstHand) + '<br>Your points = ' + playerHighestPoints;
+      }
+      return myOutputValue;
     }
+
     console.log('game starts');
-    playerHand.push(deck.pop());
-    computerHand.push(deck.pop());
-    playerHand.push(deck.pop());
-    computerHand.push(deck.pop());
+    playerFirstHand.push(playerDeck.pop());
+    computerHand.push(computerDeck.pop());
+    playerFirstHand.push(playerDeck.pop());
+    computerHand.push(computerDeck.pop());
+    playerFirstHandPoints = getPoints(playerFirstHand);
+    computerPoints = getPoints(computerHand);
   } else if (mode == 'stand') {
     // Computer draws if the computer's points are less than 17 or lower than the player.
     while (computerPoints < 17) {
-      computerHand.push(deck.pop());
+      computerHand.push(computerDeck.pop());
       computerPoints = getPoints(computerHand);
     }
 
-    while (computerPoints < playerPoints) {
-      computerHand.push(deck.pop());
+    while (computerPoints < playerHighestPoints) {
+      computerHand.push(computerDeck.pop());
       computerPoints = getPoints(computerHand);
     }
   } else if (mode == 'hit') {
     // Deal cards
-    playerHand.push(deck.pop());
-    playerPoints = getPoints(playerHand);
-    computerPoints = getPoints(computerHand);
-    while (playerPoints == 21 && computerPoints < playerPoints) {
-      computerHand.push(deck.pop());
-      computerPoints = getPoints(computerHand);
-    }
-  } else {
-    if (playerHand.length > 0) {
-      // If player accidentally click submit with an invalid input
-      return 'You have entered an invalid word. Please enter \'hit\' or \'stand\' <br><br> Your current hand: ' + displayHand(playerHand) + '<br>Your points = ' + playerPoints;
+    playerFirstHand.push(playerDeck.pop());
+    playerFirstHandPoints = getPoints(playerFirstHand);
+
+    // Deal cards to a second hand if there is a split
+    if (playerSecondHand.length > 0) {
+      playerSecondHand.push(playerDeck.pop());
+      playerSecondHandPoints = getPoints(playerSecondHand);
     }
 
-    if (playerHand.length == 0) {
+    computerPoints = getPoints(computerHand);
+
+    // computer draw a card in attempt to draw if the player gets blackjack for either hand
+    while ((playerFirstHandPoints == 21 || playerSecondHandPoints == 21)
+    && (computerPoints < playerFirstHandPoints || computerPoints < playerSecondHandPoints)
+    && (computerPoints < 21)) {
+      computerHand.push(computerDeck.pop());
+      computerPoints = getPoints(computerHand);
+    }
+  } else if (mode == 'split') {
+    // divide player's hand into 2 if there are 2 cards in his hand, if not send error message.
+    if (playerFirstHand.length == 2) {
+      playerSecondHand = playerFirstHand.splice(0, 1);
+
+      // draw cards for player
+      playerFirstHand.push(playerDeck.pop());
+      playerSecondHand.push(playerDeck.pop());
+      playerFirstHandPoints = getPoints(playerFirstHand);
+      playerSecondHandPoints = getPoints(playerSecondHand);
+
+      // computer draw a card in attempt to draw if the player gets blackjack for either hand
+      while ((playerFirstHandPoints == 21 || playerSecondHandPoints == 21)
+      && (computerPoints < playerFirstHandPoints || computerPoints < playerSecondHandPoints)
+      && (computerPoints < 21)) {
+        computerHand.push(computerDeck.pop());
+        computerPoints = getPoints(computerHand);
+      }
+    } else {
+      return 'Are you a troll? Please enter \'hit\' or \'stand\'';
+    }
+  } else {
+    // When player inputs an invalid word at the start or during the game
+    if (playerFirstHand.length > 0) {
+      // If player accidentally click submit without an input when it is not the start of the game
+      myOutputValue += 'You have entered an invalid word. Please enter \'hit\' or \'stand\' or \'split\'<br><br>';
+
+      if (playerSecondHand.length > 0) {
+        myOutputValue += 'Your 1st hand: ' + displayHand(playerFirstHand) + '<br>1st hand points = ' + playerFirstHandPoints;
+        myOutputValue += '<br>Your 2nd hand: ' + displayHand(playerSecondHand) + '<br>2nd hand points = ' + playerSecondHandPoints;
+      } else {
+        myOutputValue += 'Your current hand: ' + displayHand(playerFirstHand) + '<br>Your points = ' + playerFirstHandPoints;
+      }
+      return myOutputValue;
+    }
+
+    if (playerFirstHand.length == 0) {
       return 'You have entered an invalid word. Please click the submit button without any input to start the game.';
     }
   }
 
-  // calculate points in player and computer hand
-  playerPoints = getPoints(playerHand);
+  // Ask if player wants to split if there are 2 of the same kind of cards
+  if (checkPair(playerFirstHand) == true) {
+    // if player had already mentioned not to split, don't ask the player to split again
+    if (checkedPairBefore == false) {
+      checkedPairBefore = true;
+      return 'You have two of the same kind of cards: ' + displayHand(playerFirstHand) + '.<br><br>Input \'split\' to split your cards or \'hit\' to draw a card or \'stand\' to end your turn.';
+    }
+  }
+
+  // calculate points in player and computer hands
+  playerFirstHandPoints = getPoints(playerFirstHand);
   computerPoints = getPoints(computerHand);
-  console.log('player points: ');
-  console.log(playerPoints);
+  console.log('player first hand points: ');
+  console.log(playerFirstHandPoints);
   console.log('computer points');
   console.log(computerPoints);
+  if (playerSecondHand.length > 0) {
+    playerSecondHandPoints = getPoints(playerSecondHand);
+    console.log('player second hand points: ');
+    console.log(playerSecondHandPoints);
+  }
 
   // display hand cards to player and total score.
-  myOutputValue += 'Your current hand: ' + displayHand(playerHand);
+  if (playerSecondHand.length > 0) {
+    myOutputValue += 'Your 1st hand: ' + displayHand(playerFirstHand) + '<br>1st hand points = ' + playerFirstHandPoints;
+    myOutputValue += '<br>Your 2nd hand: ' + displayHand(playerSecondHand) + '<br>2nd hand points = ' + playerSecondHandPoints;
 
-  myOutputValue += '<br>Your points = ' + playerPoints;
+    // Find higher score of the player's hands
+    if (playerFirstHandPoints > playerSecondHandPoints && playerFirstHandPoints <= 21) {
+      playerHighestPoints = playerFirstHandPoints;
+    } else if (playerSecondHandPoints > playerFirstHandPoints && playerSecondHandPoints <= 21) {
+      playerHighestPoints = playerSecondHandPoints;
+    } else if (playerFirstHandPoints == playerSecondHandPoints) {
+      playerHighestPoints = playerFirstHandPoints;
+    } else {
+      playerHighestPoints = 22;
+    }
+  } else {
+    myOutputValue += 'Your current hand: ' + displayHand(playerFirstHand);
+
+    playerHighestPoints = playerFirstHandPoints;
+    myOutputValue += '<br>Your points = ' + playerHighestPoints;
+  }
 
   // check for winning conditions
-  // If player and computer both gets 21, or both get over 21, or (if mode is stand and computer and player's points are the same), its a tie
+  // If player and computer both gets 21 or over 21 or (if mode is stand and both points are equal), its a tie
   // If player gets 21 or computer gets over 21, player wins
   // If computer gets 21 or player gets over 21, computer wins
   // else continue the game by asking for player if he wants to hit or stand
-  if ((playerPoints == 21 && computerPoints == 21) || (playerPoints > 21 && computerPoints > 21) || (mode == 'stand' && playerPoints == computerPoints)) {
-    myOutputValue += '<br><br>Computer points = ' + computerPoints + '<br>Computer hand: ' + displayHand(computerHand) + '<br><br>It\'s a tie!';
-  } else if (playerPoints == 21 || computerPoints > 21 || (mode == 'stand' && playerPoints > computerPoints)) {
-    myOutputValue += '<br><br>Computer points = ' + computerPoints + '<br>Computer hand: ' + displayHand(computerHand) + '<br><br>You win!';
-  } else if (computerPoints == 21 || playerPoints > 21 || (mode == 'stand' && playerPoints < computerPoints)) {
-    myOutputValue += '<br><br>Computer points = ' + computerPoints + '<br>Computer hand: ' + displayHand(computerHand) + '<br><br>Computer wins!';
+  if ((playerHighestPoints == 21 && computerPoints == 21) || (playerHighestPoints > 21 && computerPoints > 21) || (mode == 'stand' && playerHighestPoints == computerPoints)) {
+    myOutputValue += '<br><br>Computer hand: ' + displayHand(computerHand) + '<br>Computer points = ' + computerPoints + '<br><br>It\'s a tie!';
+  } else if (playerHighestPoints == 21 || computerPoints > 21 || (mode == 'stand' && playerHighestPoints > computerPoints)) {
+    myOutputValue += '<br><br>Computer hand: ' + displayHand(computerHand) + '<br>Computer points = ' + computerPoints + '<br><br>You win!';
+  } else if (computerPoints == 21 || playerHighestPoints > 21 || (mode == 'stand' && playerHighestPoints < computerPoints)) {
+    myOutputValue += '<br><br>Computer hand: ' + displayHand(computerHand) + '<br>Computer points = ' + computerPoints + '<br><br>Computer wins!';
   } else {
     myOutputValue += '<br><br>Please enter \'hit\' to deal 1 more card to yourself or \'stand\' if you are satisfied with your cards.';
   }
