@@ -1,3 +1,5 @@
+/* eslint-disable no-lonely-if */
+/* eslint-disable no-restricted-syntax */
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-unused-vars */
 /*
@@ -31,10 +33,13 @@ const playerName = 'Player';
 const dealerName = 'Dealer';
 const lineBreak = '<br/>';
 var roundWinner = '';
-var playerChosenMode = '';
 // A variable to indicate whether the game is already started or not.
 // This is to avoid unnecessary input validation and card dealing
 var bGameStarted = false;
+// Variable to store the last found total value for the player
+// This will be used while comparing the dealer value
+// Will be reset at the start of next round
+var lastTotalPlayerValue = 0;
 
 // Function to create a single card object from the suit name and card value
 var makeSingleCard = function (cardSuit, cardValue) {
@@ -145,14 +150,21 @@ var isCardAce = function (cardName) {
   return ((cardName == cardAce));
 };
 
+var validateCardDeck = function (lengthLimit) {
+  if (cardDeck.length <= lengthLimit) {
+    return false;
+  }
+  return true;
+};
+
 var verifyWithAceCardValues = function (currentTotalValue, numberOfAces) {
   if (numberOfAces <= 0) {
     return currentTotalValue;
   }
   var tempValue = currentTotalValue;
   var aceFaceValue = 11;
-  tempValue = currentTotalValue - numberOfAces;
-  tempValue = currentTotalValue + (numberOfAces * aceFaceValue);
+  tempValue -= numberOfAces;
+  tempValue += (numberOfAces * aceFaceValue);
   while (true) {
     if (tempValue > playLimitValue) {
       tempValue -= aceFaceValue;
@@ -176,36 +188,58 @@ var verifyPalyerHands = function () {
   var returnValue = '';
   var totalPlayerFaceValue = 0;
   var numOfAceCards = 0;
+  // while calculating the total value in the initial level, the value considered for Ace is 1
   for (const playerCard of arrayPlayerHands) {
     totalPlayerFaceValue += playerCard.FaceValue;
-    if (playerCard.Name = cardAce) {
+    if (playerCard.Name == cardAce) {
       numOfAceCards += 1;
     }
   }
-
-  if (totalPlayerFaceValue > playLimitValue) {
-    roundWinner = dealerName;
-    returnValue = lineBreak + GameStatus.Bust + '!! You lost the round.' + lineBreak;
-    gameStatusPlayer = GameStatus.Bust;
-  } else if (totalPlayerFaceValue == playLimitValue) {
-    roundWinner = playerName;
-  } else {
-    // Check for the possibilites with Ace Cards
-
-    roundWinner = '';
+  // to prevent the loop from continuing infintely
+  var bVerifiedAceCards = false;
+  while (true) {
+    if (totalPlayerFaceValue > playLimitValue) {
+      roundWinner = dealerName;
+      returnValue = lineBreak + GameStatus.Bust + '!! You lost the round.' + lineBreak;
+      gameStatusPlayer = GameStatus.Bust;
+      break;
+    } else if (totalPlayerFaceValue == playLimitValue) {
+      roundWinner = playerName;
+      break;
+    } else {
+      // If calculated once, no need to do verification again
+      if (!bVerifiedAceCards) {
+        bVerifiedAceCards = true;
+        // Check for the possibilites with Ace Cards
+        var tempValue = verifyWithAceCardValues(totalPlayerFaceValue, numOfAceCards);
+        // If the returned value is not same as the already calculated value, choose the new value
+        if (totalPlayerFaceValue != tempValue) {
+          totalPlayerFaceValue = tempValue;
+        } else {
+          break;
+        }
+      } else {
+        break;
+      }
+      roundWinner = '';
+    }
   }
+
+  lastTotalPlayerValue = totalPlayerFaceValue;
+
   if (roundWinner == playerName) {
     returnValue = 'Player Win!!. You won the round and you made 1 and 1/2 times your bet!!' + lineBreak;
     // done with this round.
+    returnValue += askForSubmit() + lineBreak;
     // remove the current cards in hand
     arrayPlayerHands = [];
-  } else { // Winner is the dealer
-    console.log('Player is not winner. Game Status: ', gameStatusPlayer);
-
+    bGameStarted = false;
+  } else {
     // Dealer will ask whether player would like to take another card or not: Hit or Stand
     if (gameStatusPlayer != GameStatus.Bust) {
       returnValue += askForPlayerInput();
     } else {
+      bGameStarted = false;
       returnValue += askForSubmit();
     }
   }
@@ -216,12 +250,29 @@ var verifyPalyerHands = function () {
 // 17 or higher stay with their hand
 // If the dealer busts i.e. sum > 21, every player wins twice the bet
 // If the dealer doesn't bust, only the player with value greater than the dealer wins
-var verifyDealerHands = function () {
+var verifyDealerHands = function (bVerifiedAceCards) {
   var totalDealerFaceValue = 0;
   var returnValue = '';
+  var numOfAceCards = 0;
   for (const dealerCard of arrayDealerHands) {
     totalDealerFaceValue += dealerCard.FaceValue;
+    if (dealerCard.Name == cardAce) {
+      numOfAceCards += 1;
+    }
   }
+
+  // Check for the Ace values
+  // If calculated once, no need to do verification again
+  if (!bVerifiedAceCards) {
+    bVerifiedAceCards = true;
+    // Check for the possibilites with Ace Cards
+    var tempValue = verifyWithAceCardValues(totalDealerFaceValue, numOfAceCards);
+    // If the returned value is not same as the already calculated value, choose the new value
+    if (totalDealerFaceValue != tempValue) {
+      totalDealerFaceValue = tempValue;
+    }
+  }
+
   returnValue = 'Dealer total face value: ' + totalDealerFaceValue + lineBreak;
   // Dealer has to hit, if the current sum is less than 17.
   if (totalDealerFaceValue < dealerLimitValue) {
@@ -229,40 +280,28 @@ var verifyDealerHands = function () {
       bGameStarted = false;
       return 'Not enough cards to play further. Please refresh the page to start a new game.';
     }
-    // Check for Ace card here
     returnValue += 'Dealer has to make a choice to Hit or Stand';
-
-    // // Dealer will decide to take a hit, if the difference between the maximum limit and current face value is
-    // // less than 10
-    // if ((playLimitValue - totalDealerFaceValue) > 9) {
-    //   returnValue += lineBreak + "Dealer choice: Hit" + lineBreak;
-    //   printMessageToDoc(returnValue);
-    //   returnValue = '';
-    //   arrayDealerHands.push(cardDeck.pop());
-    //   return verifyDealerHands();
-    // }
-    // else {
-    //   // Dealer chooses to stand by
-    //   returnValue += lineBreak + "Dealer choice: Stand" + lineBreak;
-    //   printMessageToDoc(returnValue);
-    //   returnValue = '';
-    //   return askForPlayerInput();
-    // }
-
+    returnValue += lineBreak + 'Dealer choice: Hit' + lineBreak;
     printMessageToDoc(returnValue);
     returnValue = '';
     arrayDealerHands.push(cardDeck.pop());
-    return verifyDealerHands();
+    // Since a new card is added, need to check for ace cards again
+    bVerifiedAceCards = false;
+    return verifyDealerHands(bVerifiedAceCards);
   }
   // 17 or higher stay with their hand
   // Check whether the player has a value greater than the dealer
-  if ((totalDealerFaceValue > dealerLimitValue) && (totalDealerFaceValue < playLimitValue)) {
-    // Check for Ace
-    var totalPlayerFaceValue = 0;
-    for (const playerCard of arrayPlayerHands) {
-      totalPlayerFaceValue += playerCard.FaceValue;
-    }
-    if (totalPlayerFaceValue > totalDealerFaceValue) {
+  if ((totalDealerFaceValue >= dealerLimitValue) && (totalDealerFaceValue < playLimitValue)) {
+    // Dealer chooses to stand by
+    returnValue += lineBreak + 'Dealer choice: Stand' + lineBreak;
+    printMessageToDoc(returnValue);
+    returnValue = '';
+
+    // var totalPlayerFaceValue = 0;
+    // for (const playerCard of arrayPlayerHands) {
+    //   totalPlayerFaceValue += playerCard.FaceValue;
+    // }
+    if (lastTotalPlayerValue > totalDealerFaceValue) {
       roundWinner = playerName;
     } else {
       roundWinner = dealerName;
@@ -283,11 +322,13 @@ var verifyDealerHands = function () {
   return returnValue;
 };
 
-var validateCardDeck = function (lengthLimit) {
-  if (cardDeck.length <= lengthLimit) {
-    return false;
-  }
-  return true;
+var resetVariables = function () {
+  bGameStarted = true;
+  // Deal the cards, for the first time
+  arrayDealerHands = [];
+  arrayPlayerHands = [];
+  roundWinner = '';
+  lastTotalPlayerValue = 0;
 };
 
 var main = function (input) {
@@ -320,7 +361,7 @@ var main = function (input) {
     } if (input == GameStatus.Stand) {
       // Player has stopped taking new cards.
       // Now the turn of dealer to face up the already taken face down card
-      outputValue += verifyDealerHands();
+      outputValue += verifyDealerHands(false);
 
       outputValue += lineBreak + 'Cards with the player: ' + lineBreak;
       arrayPlayerHands.forEach(printAllCardsMessage);
@@ -336,19 +377,19 @@ var main = function (input) {
 
     // return askForPlayerInput();
   }
-  bGameStarted = true;
-  // Deal the cards, for the first time
-  arrayDealerHands = [];
-  arrayPlayerHands = [];
+  if (!bGameStarted) { // Shuffle the cards before dealing the cards
+    // Shuffling is only needed if it's a new game
+    cardDeck = shuffleCardDeck(cardDeck);
+  }
+  resetVariables();
   if (!validateCardDeck(4)) {
     bGameStarted = false;
     return 'Not enough cards to play further. Please refresh the page to start a new game.';
   }
-  // Shuffle the cards before dealing the cards
-  cardDeck = shuffleCardDeck(cardDeck);
   // Deal 2 cards each between the player and the dealer
   // the dealer deals a card face up to each player, and one card up to themselves.
-  // Everyone is dealt one more face up card, besides the dealer, whose second card is dealt face down
+  // Everyone is dealt one more face up card, besides the dealer,
+  //  whose second card is dealt face down
   arrayPlayerHands.push(cardDeck.pop());
   arrayPlayerHands.push(cardDeck.pop());
 
