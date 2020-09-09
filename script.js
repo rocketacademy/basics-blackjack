@@ -1,3 +1,27 @@
+// -------------------------------------------------------------------------------------------------
+// Program Logic:
+// 1. User clicks submit button to deal cards.
+// 2. The cards are analyzed for any game winning conditions. (Blackjack)
+//  2.1 If there are, display who wins.
+//  2.2 Else move on.
+// 3. Display cards to player.
+// 4. Begin a new action, where the user has to decide something: do they hit or stand or split.
+//  4.1 If split, split cards into 2 piles and deal 1 card to each pile and repeat 4.
+//  4.2 If stand, analyse the cards:
+//    4.2.1 if computer card is higher, computer wins.
+//    4.2.2 else computer hits till it wins or busts (exceed 21 points).
+//  4.3 If hit, deal 1 card to player and check if player gets 21 points.
+//    4.3.1 If player gets 21 points, computer hits till it wins or busts.
+//    4.3.2 Else move on.
+// 5. Calculate computer and player's points and player's highest points (if there's >1 pile)
+// 6. Analyse who wins:
+//  6.1 If both get 21/over 21/(if mode is stand and both points are equal), its a tie.
+//  6.2 If player gets 21 or computer gets over 21, player wins.
+//  6.3 If computer gets 21 or player gets over 21, computer wins.
+//  6.4 else continue the game by asking for player if he wants to hit or stand then go back to 4.
+// 7. Display who wins.
+// -------------------------------------------------------------------------------------------------
+
 // Create a deck.
 var makeDeck = function () {
   // create the empty deck at the beginning
@@ -204,14 +228,6 @@ var checkPair = function (hand) {
 };
 
 var checkedPairBefore = false;
-
-// --------------------------------------------------------------------------------------------
-// User clicks submit button to deal cards.
-// The cards are analyzed for any game winning conditions. (Blackjack)
-// The cards are displayed to the user.
-// Then begins a new action, where the user has to decide something: do they hit or stand or split.
-// The computer also decides to hit or stand.
-// ----------------------------------------------------------------------------------------------
 
 var main = function (input) {
   var myOutputValue = '';
