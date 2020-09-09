@@ -118,15 +118,20 @@ var getHandSum = function (hand) {
 
 // Return whether the hand contains a Blackjack combination
 var isBlackjack = function (hand) {
-  if (hand.length === 2 && getHandSum(hand) === sumLimit) {
-    return true;
-  }
-  return false;
+  return hand.length === 2 && getHandSum(hand) === sumLimit;
 };
 
 // Convert hand to a string where objects within the array are stringified
 var convertHandToString = function (hand) {
-  // Arrow function syntax (i.e. "=>") is a shorthand function syntax
+  // The map function takes a function F as input, and returns a new array A_new after applying
+  // F to each element e_orig in the original array A_orig. F takes e_orig as input and F's
+  // return value is e_new, the element at the same index as e_orig in A_new.
+  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map
+  // Arrow function syntax (i.e. "=>") is a shorthand function syntax in JS.
+  // The equivalent function in traditional function syntax would be:
+  // function (card) {
+  //   return card.name;
+  // }
   return `[${hand.map((card) => card.name)}]`;
 };
 
@@ -201,26 +206,26 @@ var main = function (input) {
   var computerHandSum = getHandSum(computerHand);
   if (computerHandSum <= dealerHitThreshold) {
     dealCardToHand(computerHand);
+    // Update computer hand sum after dealing new card
+    computerHandSum = getHandSum(computerHand);
     // If bust, show computer that she busts
-    if (getHandSum(computerHand) > sumLimit) {
+    if (computerHandSum > sumLimit) {
       gameOver = true;
       return `${getDefaultOutput()} <br>
       Computer has busted and loses. Please refresh to play again.`;
     }
-    // Update computer hand sum
-    computerHandSum = getHandSum(computerHand);
   }
 
   // If player and computer have both not busted and chosen to stand, decide who wins
   if (playerHasChosenToStand && computerHandSum > dealerHitThreshold) {
+    // The game is always over after this point
+    gameOver = true;
     // If player hand sum is greater than computer hand sum, player wins!
     if (getHandSum(playerHand) > computerHandSum) {
-      gameOver = true;
       return `${getDefaultOutput()} <br>
         Player wins! Please refresh to play again.`;
     }
     // Else, computer wins
-    gameOver = true;
     return `${getDefaultOutput()} <br>
       Computer wins! Please refresh to play again.`;
   }
