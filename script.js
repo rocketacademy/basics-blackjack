@@ -1,3 +1,5 @@
+/* eslint-disable no-constant-condition */
+/* eslint-disable brace-style */
 /* eslint-disable no-lonely-if */
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-param-reassign */
@@ -112,11 +114,6 @@ var shuffleCardDeck = function (originalCardDesk) {
   return originalCardDesk;
 };
 
-var askForPlayerInput = function () {
-  var msg = lineBreak + 'Choose an option: <b>' + GameStatus.Hit + '</b> or <b>' + GameStatus.Stand + '</b>' + lineBreak;
-  return msg;
-};
-
 // Variable to hold the complete deck of cards
 // Call the shuffle function while loading the script
 var cardDeck = shuffleCardDeck(makeDeck());
@@ -124,6 +121,15 @@ console.log(cardDeck);
 var arrayDealerHands = [];
 var arrayPlayerHands = [];
 var arrayPlayerSecondHand = []; // will come into play if Split is applicable
+
+/// ////////////////////////////
+// Message Formating functions
+/// ///////////////////////////
+var askForPlayerInput = function () {
+  var msg = lineBreak + 'Choose an option: <b>' + GameStatus.Hit + '</b> or <b>'
+  + GameStatus.Stand + '</b>' + lineBreak;
+  return msg;
+};
 
 var cardFormat = function (singleCard) {
   var message = singleCard.Name + ' of ' + singleCard.SuitName + '. Value: ' + singleCard.FaceValue;
@@ -135,6 +141,7 @@ var cardFormat = function (singleCard) {
 var printMessageToDoc = function (message) {
   document.getElementById('msg_para').innerHTML = message;
 };
+
 var combinedCardDetails = '';
 var printAllCardsToDoc = function (itemCard, arrIndex) {
   document.getElementById('msg_para').innerHTML += cardFormat(itemCard);
@@ -145,10 +152,30 @@ var printAllCardsMessage = function (itemCard, arrIndex) {
   // console.log(combinedCardDetails);
 };
 
-var askForSubmit = function () {
-  var message = lineBreak + 'Press <b>submit</b> button to deal next set of cards' + lineBreak;
+var askForSubmit = function (currentMessage) {
+  var message = currentMessage.replace(askForPlayerInput(), '');
+  message = lineBreak + 'Press <b>submit</b> button to deal next set of cards' + lineBreak;
+  message += 'OR' + lineBreak;
+  message += 'To start a new set of game, please refresh the page.' + lineBreak;
   return message;
 };
+
+var addNoteToMessage = function () {
+  var message = lineBreak
+  + '<b>NB</b>: If 2 options are to be specified, write both options in the input area. e.g: <b>Hit Stand</b>' + lineBreak
+  + 'Applicable only when two inputs are asked for.';
+  return message;
+};
+
+var invalidInputMessage = function () {
+  var message = 'Given input was wrong. Not able to continue further.'
+  + 'Please refresh the page to start a new game.';
+  return message;
+};
+
+/// ///////////////////////////
+// Validation functions
+/// /////////////////////////
 
 // Validates the card name at current index with that of the previous element
 var isSameCardName = function (singleCard, arrIndex, processingArray) {
@@ -177,6 +204,10 @@ var validateCardDeck = function (lengthLimit) {
   }
   return true;
 };
+
+/// //////////////
+// Game functions
+/// //////////////
 
 var verifyWithAceCardValues = function (currentTotalValue, numberOfAces) {
   if (numberOfAces <= 0) {
@@ -249,9 +280,9 @@ var verifyPalyerHands = function (playerHandCardsArray) {
   lastTotalPlayerValue = totalPlayerFaceValue;
 
   if (roundWinner == playerName) {
-    returnValue = 'Player Win!!. You won the round and you made 1 and 1/2 times your bet!!' + lineBreak;
+    returnValue = lineBreak + 'Player Win!!. You won the round and you made 1 and 1/2 times your bet!!' + lineBreak;
     // done with this round.
-    returnValue += askForSubmit() + lineBreak;
+    returnValue += askForSubmit(returnValue) + lineBreak;
     // remove the current cards in hand
     playerHandCardsArray = [];
     bGameStarted = false;
@@ -261,7 +292,7 @@ var verifyPalyerHands = function (playerHandCardsArray) {
       returnValue += askForPlayerInput();
     } else {
       bGameStarted = false;
-      returnValue += askForSubmit();
+      returnValue += askForSubmit(returnValue);
     }
   }
   return returnValue;
@@ -294,16 +325,16 @@ var verifyDealerHands = function (bVerifiedAceCards) {
     }
   }
 
-  returnValue = 'Dealer total face value: ' + totalDealerFaceValue + lineBreak;
+  // returnValue += lineBreak + 'Intermediate state of Dealer Cards:' + lineBreak;
+  returnValue += lineBreak + 'Dealer total face value: ' + totalDealerFaceValue + lineBreak;
   // Dealer has to hit, if the current sum is less than 17.
   if (totalDealerFaceValue < dealerLimitValue) {
     if (!validateCardDeck(1)) {
       bGameStarted = false;
       return 'Not enough cards to play further. Please refresh the page to start a new game.';
     }
-    returnValue += 'Dealer has to make a choice to Hit or Stand';
-    returnValue += lineBreak + 'Dealer choice: Hit' + lineBreak;
-    printMessageToDoc(returnValue);
+    // returnValue += 'Dealer chose: Hit' + lineBreak;
+    // printMessageToDoc(returnValue);
     returnValue = '';
     arrayDealerHands.push(cardDeck.pop());
     // Since a new card is added, need to check for ace cards again
@@ -314,14 +345,10 @@ var verifyDealerHands = function (bVerifiedAceCards) {
   // Check whether the player has a value greater than the dealer
   if ((totalDealerFaceValue >= dealerLimitValue) && (totalDealerFaceValue < playLimitValue)) {
     // Dealer chooses to stand by
-    returnValue += lineBreak + 'Dealer choice: Stand' + lineBreak;
-    printMessageToDoc(returnValue);
+    // returnValue += lineBreak + 'Dealer choice: Stand' + lineBreak;
+    // printMessageToDoc(returnValue);
     returnValue = '';
 
-    // var totalPlayerFaceValue = 0;
-    // for (const playerCard of arrayPlayerHands) {
-    //   totalPlayerFaceValue += playerCard.FaceValue;
-    // }
     if (lastTotalPlayerValue > totalDealerFaceValue) {
       roundWinner = playerName;
     } else {
@@ -338,7 +365,7 @@ var verifyDealerHands = function (bVerifiedAceCards) {
     returnValue += 'Dealer Wins!!. You lost your bet.' + lineBreak;
   }
   // done with this round.
-  returnValue += askForSubmit();
+  returnValue += askForSubmit(returnValue);
   bGameStarted = false;
   return returnValue;
 };
@@ -354,45 +381,122 @@ var resetVariables = function () {
   bSplit = false;
 };
 
+var handleHitOrStandChoice = function (input, playerHandCardsArray, playerSetName) {
+  var outputValue = '';
+  if (input == GameStatus.Hit) {
+    if (!validateCardDeck(1)) {
+      bGameStarted = false;
+      return 'Not enough cards to play further. Please refresh the page to start a new game.';
+    }
+    playerHandCardsArray.push(cardDeck.pop());
+    console.log(playerHandCardsArray);
+
+    outputValue += lineBreak + 'Cards with the player in the ' + playerSetName + ': ' + lineBreak;
+    playerHandCardsArray.forEach(printAllCardsMessage);
+    outputValue += combinedCardDetails;
+
+    combinedCardDetails = '';
+    outputValue += verifyPalyerHands(playerHandCardsArray);
+  } else if (input == GameStatus.Stand) {
+    // Player has stopped taking new cards.
+    // Now the turn of dealer to face up the already taken face down card
+    outputValue += verifyDealerHands(false);
+
+    outputValue += lineBreak + 'Cards with the player in the ' + playerSetName + ': ' + lineBreak;
+    playerHandCardsArray.forEach(printAllCardsMessage);
+    outputValue += combinedCardDetails;
+    combinedCardDetails = '';
+
+    outputValue += lineBreak + 'Cards with the Dealer: ' + lineBreak;
+    arrayDealerHands.forEach(printAllCardsMessage);
+    outputValue += combinedCardDetails;
+    combinedCardDetails = '';
+  }
+  return outputValue;
+};
+
+var decideSplitSet = function (winnerFirstSet, winnerSecondSet) {
+  var disRegardItem = 0;
+  // If player failed with the first set and won with the Split set,
+  // treat the split set as the only set remaining
+  if ((dealerName == winnerFirstSet) && (playerName == winnerSecondSet)) {
+    // Since the first set failed with the dealer, the only set to be considered is second set
+    arrayPlayerHands = [];
+    arrayPlayerHands.push(arrayPlayerSecondHand);
+    arrayPlayerSecondHand = [];
+    bSplit = false;
+    disRegardItem = 1;
+  }
+  // If there is no winner for the first set, but for the second set dealer is the winner,
+  // disregard the second set
+  else if ((winnerFirstSet == '') && (dealerName == winnerSecondSet)) {
+    arrayPlayerSecondHand = [];
+    bSplit = false;
+    disRegardItem = 2;
+  }
+  // If there is no winner for the first round and player is the winner of the second round,
+  // dis regard the first set
+  else if ((winnerFirstSet == '') && (playerName == winnerSecondSet)) {
+    arrayPlayerHands = [];
+    bSplit = false;
+    disRegardItem = 1;
+  }
+  return disRegardItem;
+};
+
+var isValidInput = function (inputValueArray) {
+  for (const option of inputValueArray) {
+    if ((option !== GameStatus.Hit) && (GameStatus.Stand !== option)) {
+      return false;
+    }
+  }
+  return true;
+};
+
 var main = function (input) {
   console.log(arrayPlayerHands);
   console.log(arrayDealerHands);
   console.log(cardDeck);
   printMessageToDoc('');
 
+  var inputValueArray = input.toString().split(' ');
+
   var outputValue = '';
   if (bGameStarted) {
-    console.log('Inside the game started consition.');
-    console.log('input: ', input);
-    if (input == GameStatus.Hit) {
-      if (!validateCardDeck(1)) {
-        bGameStarted = false;
-        return 'Not enough cards to play further. Please refresh the page to start a new game.';
+    if ((inputValueArray.length !== 0)) {
+      // If an input is given, validate whether it is one of the option
+      if (!isValidInput(inputValueArray)) {
+        return invalidInputMessage();
       }
-      arrayPlayerHands.push(cardDeck.pop());
-      console.log(arrayPlayerHands);
 
-      outputValue += 'Cards with the player: ' + lineBreak;
-      arrayPlayerHands.forEach(printAllCardsMessage);
-      outputValue += combinedCardDetails;
+      // If there is no input skip the following and continue as it's a new game
+      console.log('Inside the game started consition.');
+      console.log('input: ', inputValueArray);
+      outputValue += handleHitOrStandChoice(inputValueArray[0], arrayPlayerHands, (bSplit ? 'First Set' : ''));
+      if (playerName == roundWinner) {
+        return outputValue;
+      }
+      var winnerFirstSet = roundWinner;
+      roundWinner = '';
+      if (bSplit) {
+        if (inputValueArray.length != 2) {
+          return invalidInputMessage();
+        }
+        // If the player has specified inputs for both set of cards, continue with the next set
+        // this flag might have set to false, in case the previous set of cards was a failure
+        bGameStarted = true;
+        var tempReturnValue = handleHitOrStandChoice(inputValueArray[1], arrayPlayerSecondHand, 'Split Set');
+        var winnerSplitSet = roundWinner;
+        roundWinner = '';
+        var disRegardItem = decideSplitSet(winnerFirstSet, winnerSplitSet);
 
-      combinedCardDetails = '';
-      outputValue += verifyPalyerHands(arrayPlayerHands);
-      return outputValue;
-    } if (input == GameStatus.Stand) {
-      // Player has stopped taking new cards.
-      // Now the turn of dealer to face up the already taken face down card
-      outputValue += verifyDealerHands(false);
-
-      outputValue += lineBreak + 'Cards with the player: ' + lineBreak;
-      arrayPlayerHands.forEach(printAllCardsMessage);
-      outputValue += combinedCardDetails;
-      combinedCardDetails = '';
-
-      outputValue += lineBreak + 'Cards with the Dealer: ' + lineBreak;
-      arrayDealerHands.forEach(printAllCardsMessage);
-      outputValue += combinedCardDetails;
-      combinedCardDetails = '';
+        if (disRegardItem == 1) {
+          outputValue = '';
+        } else if (disRegardItem == 2) {
+          tempReturnValue = '';
+        }
+        outputValue += tempReturnValue;
+      }
       return outputValue;
     }
   }
@@ -411,6 +515,7 @@ var main = function (input) {
   //  whose second card is dealt face down
   arrayPlayerHands.push(cardDeck.pop());
   arrayPlayerHands.push(cardDeck.pop());
+
   // Check whether Splitting is needed or not
   bSplit = checkForSplit();
   if (bSplit) {
@@ -447,24 +552,17 @@ var main = function (input) {
     arrayPlayerSecondHand.forEach(printAllCardsMessage);
     outputValue += combinedCardDetails;
     combinedCardDetails = '';
-
+    bGameStarted = true;
     outputValue += verifyPalyerHands(arrayPlayerSecondHand);
     var winnerSecondSet = roundWinner;
     roundWinner = '';
     // If player failed with the first set and won with the Split set,
     // treat the split set as the only set remaining
-    if ((dealerName == winnerNormalSet) && (playerName == winnerSecondSet)) {
-      // Since the first set failed with the dealer, the only set to be considered is second set
-      arrayPlayerHands = [];
-      arrayPlayerHands.push(arrayPlayerSecondHand);
-      arrayPlayerSecondHand = [];
-    }
     // The case in which a winner can't be found, conitnue to play
+    decideSplitSet(winnerNormalSet, winnerSecondSet);
   }
 
-  outputValue += lineBreak
-   + '<b>NB</b>: If 2 options are to be specified, write both options in the input area. e.g: <b>Hit Stand</b>' + lineBreak
-   + 'Applicable only when two inputs are asked for.';
+  outputValue += addNoteToMessage();
 
   return outputValue;
 };
