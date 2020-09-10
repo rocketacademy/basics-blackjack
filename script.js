@@ -16,11 +16,13 @@ const cardJack = 'Jack';
 const cardKing = 'King';
 const cardQueen = 'Queen';
 // constants for the suits
-const suitClubs = 'Clubs';
-const suitSpades = 'Spades';
-const suitHearts = 'Hearts';
-const suitDiamonds = 'Diamonds';
-const suitList = [suitHearts, suitDiamonds, suitSpades, suitClubs];
+const Suits = {
+  suitClubs: 'Clubs',
+  suitSpades: 'Spades',
+  suitHearts: 'Hearts',
+  suitDiamonds: 'Diamonds',
+};
+const suitList = [Suits.suitHearts, Suits.suitDiamonds, Suits.suitSpades, Suits.suitClubs];
 // constants for game results
 const playLimitValue = 21;
 // Dealer has to hit, if the current sum is less than 17.
@@ -40,6 +42,7 @@ var bGameStarted = false;
 // This will be used while comparing the dealer value
 // Will be reset at the start of next round
 var lastTotalPlayerValue = 0;
+var bSplit = false; // when there is a split happened this variable will be set to true.
 
 // Function to create a single card object from the suit name and card value
 var makeSingleCard = function (cardSuit, cardValue) {
@@ -120,6 +123,7 @@ var cardDeck = shuffleCardDeck(makeDeck());
 console.log(cardDeck);
 var arrayDealerHands = [];
 var arrayPlayerHands = [];
+var arrayPlayerSecondHand = []; // will come into play if Split is applicable
 
 var cardFormat = function (singleCard) {
   var message = singleCard.Name + ' of ' + singleCard.SuitName + '. Value: ' + singleCard.FaceValue;
@@ -144,6 +148,23 @@ var printAllCardsMessage = function (itemCard, arrIndex) {
 var askForSubmit = function () {
   var message = lineBreak + 'Press <b>submit</b> button to deal next set of cards' + lineBreak;
   return message;
+};
+
+// Validates the card name at current index with that of the previous element
+var isSameCardName = function (singleCard, arrIndex, processingArray) {
+  if (arrIndex === 0) {
+    // No need to test the first array as there is nothing to be compared to
+    return true;
+  }
+  // Checks for each element, whether previous element's  value is same.
+  return (singleCard.Name === processingArray[arrIndex - 1].Name);
+};
+
+// This function checks whether there is a need to split
+// Checking has to be done with Rank. Since rank corresponds to the card Name,
+// here comparison is done with Card Name
+var checkForSplit = function () {
+  return arrayPlayerHands.every(isSameCardName);
 };
 
 var isCardAce = function (cardName) {
@@ -183,13 +204,13 @@ var verifyWithAceCardValues = function (currentTotalValue, numberOfAces) {
 // Function that decides the winner of that turn.
 // If the player value = 21, player wins
 // If the player value > 21, player lost = Bust
-var verifyPalyerHands = function () {
+var verifyPalyerHands = function (playerHandCardsArray) {
   var gameStatusPlayer = '';
   var returnValue = '';
   var totalPlayerFaceValue = 0;
   var numOfAceCards = 0;
   // while calculating the total value in the initial level, the value considered for Ace is 1
-  for (const playerCard of arrayPlayerHands) {
+  for (const playerCard of playerHandCardsArray) {
     totalPlayerFaceValue += playerCard.FaceValue;
     if (playerCard.Name == cardAce) {
       numOfAceCards += 1;
@@ -232,7 +253,7 @@ var verifyPalyerHands = function () {
     // done with this round.
     returnValue += askForSubmit() + lineBreak;
     // remove the current cards in hand
-    arrayPlayerHands = [];
+    playerHandCardsArray = [];
     bGameStarted = false;
   } else {
     // Dealer will ask whether player would like to take another card or not: Hit or Stand
@@ -327,8 +348,10 @@ var resetVariables = function () {
   // Deal the cards, for the first time
   arrayDealerHands = [];
   arrayPlayerHands = [];
+  arrayPlayerSecondHand = [];
   roundWinner = '';
   lastTotalPlayerValue = 0;
+  bSplit = false;
 };
 
 var main = function (input) {
@@ -353,10 +376,8 @@ var main = function (input) {
       arrayPlayerHands.forEach(printAllCardsMessage);
       outputValue += combinedCardDetails;
 
-      // compare the card value
-      // outputValue += askForPlayerInput();
       combinedCardDetails = '';
-      outputValue += verifyPalyerHands();
+      outputValue += verifyPalyerHands(arrayPlayerHands);
       return outputValue;
     } if (input == GameStatus.Stand) {
       // Player has stopped taking new cards.
@@ -374,15 +395,13 @@ var main = function (input) {
       combinedCardDetails = '';
       return outputValue;
     }
-
-    // return askForPlayerInput();
   }
   if (!bGameStarted) { // Shuffle the cards before dealing the cards
     // Shuffling is only needed if it's a new game
     cardDeck = shuffleCardDeck(cardDeck);
   }
   resetVariables();
-  if (!validateCardDeck(4)) {
+  if (!validateCardDeck(6)) {
     bGameStarted = false;
     return 'Not enough cards to play further. Please refresh the page to start a new game.';
   }
@@ -392,14 +411,14 @@ var main = function (input) {
   //  whose second card is dealt face down
   arrayPlayerHands.push(cardDeck.pop());
   arrayPlayerHands.push(cardDeck.pop());
-
+  // Check whether Splitting is needed or not
+  bSplit = checkForSplit();
+  if (bSplit) {
+    arrayPlayerSecondHand.push(arrayPlayerHands.pop());
+    arrayPlayerHands.push(cardDeck.pop());
+    arrayPlayerSecondHand.push(cardDeck.pop());
+  }
   console.log(arrayPlayerHands);
-
-  outputValue += 'Cards with the player: ' + lineBreak;
-  arrayPlayerHands.forEach(printAllCardsMessage);
-  outputValue += combinedCardDetails;
-  combinedCardDetails = '';
-  // arrayPlayerHands.forEach(printAllCardsToDoc);
 
   arrayDealerHands.push(cardDeck.pop());
   arrayDealerHands.push(cardDeck.pop());
@@ -408,6 +427,44 @@ var main = function (input) {
   outputValue += lineBreak + 'Face up card of the dealer: ' + lineBreak
     + cardFormat(arrayDealerHands[0]) + lineBreak;
 
-  outputValue += verifyPalyerHands();
+  outputValue += 'Result of the below set of Cards with the player: ' + lineBreak;
+  arrayPlayerHands.forEach(printAllCardsMessage);
+  outputValue += combinedCardDetails;
+  combinedCardDetails = '';
+
+  outputValue += verifyPalyerHands(arrayPlayerHands);
+  var winnerNormalSet = roundWinner;
+  // If player in any set, he will be declared as the round winner.
+  // No need to verify for Split hand cards
+  if (roundWinner == playerName) {
+    return outputValue;
+  }
+  // If the player fails or there is no specific winner at this time,
+  //  check for split and continue playing with that set
+  roundWinner = '';
+  if (bSplit) {
+    outputValue += lineBreak + lineBreak + 'Playing with the split card set: ' + lineBreak;
+    arrayPlayerSecondHand.forEach(printAllCardsMessage);
+    outputValue += combinedCardDetails;
+    combinedCardDetails = '';
+
+    outputValue += verifyPalyerHands(arrayPlayerSecondHand);
+    var winnerSecondSet = roundWinner;
+    roundWinner = '';
+    // If player failed with the first set and won with the Split set,
+    // treat the split set as the only set remaining
+    if ((dealerName == winnerNormalSet) && (playerName == winnerSecondSet)) {
+      // Since the first set failed with the dealer, the only set to be considered is second set
+      arrayPlayerHands = [];
+      arrayPlayerHands.push(arrayPlayerSecondHand);
+      arrayPlayerSecondHand = [];
+    }
+    // The case in which a winner can't be found, conitnue to play
+  }
+
+  outputValue += lineBreak
+   + '<b>NB</b>: If 2 options are to be specified, write both options in the input area. e.g: <b>Hit Stand</b>' + lineBreak
+   + 'Applicable only when two inputs are asked for.';
+
   return outputValue;
 };
