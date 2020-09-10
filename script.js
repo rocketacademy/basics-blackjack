@@ -1,15 +1,13 @@
-/* eslint-disable dot-notation */
 var makeDeck = function () {
   // create the empty deck at the beginning
   var deck = [];
-
   var suits = ['hearts', 'diamonds', 'clubs', 'spades'];
 
   var suitIndex = 0;
   while (suitIndex < suits.length) {
     // make a variable of the current suit
     var currentSuit = suits[suitIndex];
-    console.log('current suit : ' + currentSuit);
+    // console.log('current suit : ' + currentSuit);
 
     // loop to create all cards in this suit
     // rank 1-13
@@ -41,7 +39,7 @@ var makeDeck = function () {
         value: cardValue,
       };
 
-      console.log('rank : ' + rankCounter + ' value of card: ' + cardValue);
+      // console.log('rank : ' + rankCounter + ' value of card: ' + cardValue);
 
       // add the card to the deck
       deck.push(card);
@@ -89,15 +87,34 @@ var deal = function (hand) {
 
 // set limit for blackjack
 var totalLimit = 21;
+// dealer minimum value;
+var dealerMinValue = 17;
 // decide if the game has ended
 var gamenEnds = false;
 var sumOfHand = function (hand) {
-
+  var sum = 0;
+  for (let i = 0; i < hand.length; i += 1) {
+    var currentCard = hand[i];
+    sum += hand[i].value;
+    if ((currentCard.rank == 1) && (sum > totalLimit)) {
+      sum -= 10;
+    }
+  }
+};
+var convertHandToString = function (hand) {
+  return `[${hand.map((card) => card.name)}]`;
 };
 
+var getDefaultOutput = function () {
+  return `Player has hand ${convertHandToString(playerHand)} with sum ${JSON.stringify(sumOfHand(playerHand))}. <br>
+    Dealer has hand ${convertHandToString(dealerHand)} with sum ${JSON.stringify(sumOfHand(dealerHand))}. <br>`;
+};
+// when player inputs hit and submits
+var hit = function () {
+  deal(playerHand);
+};
 // Main game play
 var main = function (input) {
-  var myOutputValue = '';
   // check if game has ended
   if (gamenEnds) {
     return 'The game has ended. Please refresh the page to try again.';
@@ -108,23 +125,54 @@ var main = function (input) {
     deal(dealerHand);
     deal(playerHand);
     deal(dealerHand);
+    sumOfHand(playerHand);
+    sumOfHand(dealerHand);
+    // check for blackjack
+    if (sumOfHand(dealerHand) === totalLimit) {
+      gamenEnds = true;
+      return getDefaultOutput() + 'Dealer has blackjack and dealer wins.';
+    }
+    if (sumOfHand(playerHand) === totalLimit) {
+      gamenEnds = true;
+      return getDefaultOutput() + 'Player wins.';
+    }
+    if (playerHand.length == 2 || playerHand.length > 2) {
+      return getDefaultOutput() + 'Please enter Hit or Stay';
+    }
   }
-  // get sum of playerhand and computer hand
-
-  // eslint-disable-next-line quotes
-  var sumOfPlayerHand = PlayerHand[0]["value"] + combinedPlayerHand[1]["value"];
-  var sumOfDealerHand = combinedDealerHand[0]['value'] + combinedDealerHand[1]['value'];
-  myOutputValue = 'You have been dealt ' + combinedPlayerHand[0]['name'] + ' of ' + combinedPlayerHand[0]['suit']
-  + ' and ' + combinedPlayerHand[1]['name'] + ' of ' + combinedPlayerHand[1]['suit'] + '<br> <br>Dealer has been dealt '
-  + combinedDealerHand[0]['name'] + ' of ' + combinedDealerHand[0]['suit'] + ' and ' + combinedDealerHand[0]['name'] + ' of '
-  + combinedDealerHand[0]['suit'] + '<br> <br> Please input your decision to hit or to stay';
-  if (input == 'hit' && sumOfPlayerHand < 21) {
-    combinedPlayerHand.push(deck.pop());
+  // Player choose to hit or to stand
+  if (input == 'Hit') {
+    hit(playerHand);
+    if (sumOfHand(playerHand) < totalLimit) {
+      return getDefaultOutput() + ' Please enter Hit or Stay';
+    } if (sumOfHand(playerHand) > totalLimit) {
+      gamenEnds = true;
+      return getDefaultOutput() + ' Player lose as your hand is above 21';
+    }
   }
 
-  console.log(combinedPlayerHand);
-  console.log(combinedDealerHand);
-  console.log(sumOfPlayerHand);
-  console.log(sumOfDealerHand);
-  return myOutputValue;
+  if (input == 'Stay') {
+    // check if dealer has to hit
+    if (sumOfHand(dealerHand) < dealerMinValue) {
+      deal(dealerHand);
+    }
+    if ((sumOfHand(dealerHand) > sumOfHand(playerHand))
+        && (sumOfHand(dealerHand) < totalLimit)) {
+      gamenEnds = true;
+      return getDefaultOutput() + ' Dealer wins';
+    } if (sumOfHand(dealerHand > totalLimit)) {
+      gamenEnds = true;
+      return getDefaultOutput() + ' Player wins';
+    } if (sumOfHand(dealerHand) < sumOfHand(playerHand)) {
+      gamenEnds = true;
+      return getDefaultOutput() + ' Player wins';
+    } if (sumOfHand(dealerHand) == sumOfHand(playerHand)) {
+      gamenEnds = true;
+      return getDefaultOutput() + ' Dealer wins';
+    } if (sumOfHand(dealerHand) > totalLimit) {
+      gamenEnds = true;
+      return getDefaultOutput() + ' Player wins';
+    }
+  }
+  return getDefaultOutput() + ' Please input Hit or Stay';
 };
