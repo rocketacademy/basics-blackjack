@@ -489,7 +489,6 @@ var main = function (input) {
         var winnerSplitSet = roundWinner;
         roundWinner = '';
         var disRegardItem = decideSplitSet(winnerFirstSet, winnerSplitSet);
-
         if (disRegardItem == 1) {
           outputValue = '';
         } else if (disRegardItem == 2) {
