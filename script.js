@@ -163,11 +163,6 @@ var computerDeck = [
   },
 ];
 
-// Create empty hand for player and computer
-var playerFirstHand = [];
-var playerSecondHand = [];
-var computerHand = [];
-
 // function to check for ace
 var checkAce = function (hand) {
   var result = false;
@@ -178,6 +173,17 @@ var checkAce = function (hand) {
   }
   return result;
 };
+
+// function that returns true if there are 2 cards of the same rank
+var checkPair = function (hand) {
+  var result = false;
+  if (hand[0].name == hand[1].name) {
+    result = true;
+  }
+  return result;
+};
+
+var checkedPairBefore = false;
 
 // Function to calculate points in hand
 var getPoints = function (hand) {
@@ -209,22 +215,16 @@ var displayHand = function (hand) {
 // create mode
 var mode;
 
+// Create empty hand for player and computer
+var playerFirstHand = [];
+var playerSecondHand = [];
+var computerHand = [];
+
 // Variables to store points
 var computerPoints = 0;
 var playerFirstHandPoints = 0;
 var playerSecondHandPoints = 0;
 var playerHighestPoints = 0;
-
-// function that returns true if there are 2 cards of the same rank
-var checkPair = function (hand) {
-  var result = false;
-  if (hand[0].name == hand[1].name) {
-    result = true;
-  }
-  return result;
-};
-
-var checkedPairBefore = false;
 
 var main = function (input) {
   var myOutputValue = '';
