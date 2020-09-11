@@ -70,12 +70,13 @@ var getSum = function (hand) {
   return sum;
 };
 var gameDeck = shuffleCards(makeDeck());
-var playerHand = [];
-var computerHand = [];
 
 var dealCards = function (hand) {
   hand.push(gameDeck.pop());
 };
+
+var playerHand = [];
+var computerHand = [];
 
 var main = function (input) {
   var myOutputValue = '';
@@ -128,19 +129,22 @@ var main = function (input) {
         return 'You lose! Your sum: ' + getSum(playerHand) + '<br>My sum: ' + getSum(computerHand);
       } if ((getSum(playerHand) > 21)) {
         return 'Game over. Bust! Your sum: ' + getSum(playerHand) + '<br>My sum: ' + getSum(computerHand);
-      } if ((getSum(computerHand > 21))) {
+      } if ((getSum(computerHand) > 21)) {
         return 'Game over. Bust! Your sum: ' + getSum(playerHand) + '<br>My sum: ' + getSum(computerHand);
       }
     }
     if (input == 'hit') {
       dealCards(playerHand);
+      getSum(playerHand);
+      console.log(dealCards(playerHand));
+      console.log(getSum(playerHand));
       if ((getSum(playerHand) < 21) && (getSum(playerHand)) > (getSum(computerHand))) {
         return 'You win! Your sum: ' + getSum(playerHand) + '<br>My sum: ' + getSum(computerHand);
       } if ((getSum(computerHand) < 21) && (getSum(computerHand) > getSum(playerHand))) {
         return 'You lose! Your sum: ' + getSum(playerHand) + '<br>My sum: ' + getSum(computerHand);
       } if ((getSum(playerHand) > 21)) {
         return 'Game over. Bust! Your sum: ' + getSum(playerHand) + '<br>My sum: ' + getSum(computerHand);
-      } if ((getSum(computerHand > 21))) {
+      } if ((getSum(computerHand) > 21)) {
         return 'Game over. Bust! Your sum: ' + getSum(playerHand) + '<br>My sum: ' + getSum(computerHand);
       }
     }
