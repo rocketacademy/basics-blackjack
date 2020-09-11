@@ -1,22 +1,20 @@
 // -------------------------------------------------------------------------------------------------
 // PROGRAM LOGIC:
-// 1. User clicks submit button to deal 2 cards at the start of the game. Move on.
-// 2. Ask if player wants to split, stand or hit if there are 2 of the same kind of cards.
-//  2.1 If split, split cards into 2 piles and deal 1 card to each pile.
-//    2.1.1 computer draw a card in attempt to tie if the player gets blackjack for either hand.
-//    2.1.2 If player dont get blackjack, move on.
-//  2.2 If stand, computer draws if the computer's points are less than 17 or lower than the player's highest score. Move on.
-//  2.3 If hit, deal cards then computer draw a card in attempt to tie if the player gets blackjack for either hand. Move on.
-// 3. Calculate points in player's and computer's hands.
-// 4. Add player's hands cards to myOutputValue and find player's highest score .
-// 5. Analyse who wins:
-//  5.1 If both get 21/over 21/(if mode is stand and both points are equal), its a tie. Move on.
-//  5.2 If player gets 21 or computer gets over 21, player wins. Move on.
-//  5.3 If computer gets 21 or player gets over 21, computer wins. Move on.
-//  5.4 else continue the game by asking for player if he wants to hit or stand. Move on.
-// 6. Display myOutputValue:
-//  6.1 If reached from 5.4: Display 5.4. If player inputs stand, go to 2.2. If hit, go to 2.3.
-//  6.2 Else: display who wins, computer's and player's hands, and their points.
+// 1.1 If start of game user clicks submit button to deal 2 cards. Move on.
+// 1.2 If split, split cards into 2 piles and deal 1 card to each pile. Move on.
+// 1.3 If stand, Move on.
+// 1.4 If hit, deal cards then move on.
+// 2. Calculate points in player's and computer's hands.
+// 3. Add player's hands cards to myOutputValue and find player's highest score .
+// 4. Ask if player wants to split, stand or hit if there are 2 of the same kind of cards. If yes, go to 1.2. If not move on.
+// 5. If playerHighestPoints < 21 and player did not stand, ask player to hit or stand. If stand, go to 1.3. If hit, go to 1.4.
+// 6. While computerPoints < 17, < playerHighestPoints or not equal to 21, computer draw cards in attempt to tie or win.
+// 7. Analyse who wins:
+//  7.1 If both get 21/over 21/(if mode is stand and both points are equal), its a tie. Move on.
+//  7.2 If player gets 21 or computer gets over 21, player wins. Move on.
+//  7.3 If computer gets 21 or player gets over 21, computer wins. Move on.
+//  7.4 else display error message.
+// 8. Display myOutputValue who wins, computer's and player's hands, and their points.
 // -------------------------------------------------------------------------------------------------
 
 // Create a deck.
@@ -147,14 +145,19 @@ var playerDeck = [
 ];
 var computerDeck = [
   {
+    name: 'five',
+    suit: 'hearts',
+    rank: 2,
+  },
+  {
     name: 'two',
     suit: 'hearts',
     rank: 2,
   },
   {
-    name: 'nine',
+    name: 'five',
     suit: 'spades',
-    rank: 9,
+    rank: 5,
   },
   {
     name: 'jack',
@@ -246,68 +249,35 @@ var main = function (input) {
       return myOutputValue;
     }
 
-    // 1. User clicks submit button to deal 2 cards at the start of the game.
+    // 1.1 If start of game user clicks submit button to deal 2 cards. Move on.
     console.log('game starts');
-    playerFirstHand.push(deck.pop());
-    computerHand.push(deck.pop());
-    playerFirstHand.push(deck.pop());
-    computerHand.push(deck.pop());
-    playerFirstHandPoints = getPoints(playerFirstHand);
-    computerPoints = getPoints(computerHand);
-  } else if (mode == 'stand') {
-    // 2.2 Computer draws if the computer's points are less than 17 or lower than the player's highest score. Move on.
-    while (computerPoints < 17) {
-      computerHand.push(deck.pop());
-      computerPoints = getPoints(computerHand);
-    }
-
-    while (computerPoints < playerHighestPoints) {
-      computerHand.push(deck.pop());
-      computerPoints = getPoints(computerHand);
-    }
-  } else if (mode == 'hit') {
-    //  2.3 If hit, deal cards then computer draw a card in attempt to tie if the player gets blackjack for either hand. Move on.
-
-    // Deal cards
-    playerFirstHand.push(deck.pop());
-    playerFirstHandPoints = getPoints(playerFirstHand);
-
-    // Deal cards to a second hand if there is a split
-    if (playerSecondHand.length > 0) {
-      playerSecondHand.push(deck.pop());
-      playerSecondHandPoints = getPoints(playerSecondHand);
-    }
-
-    computerPoints = getPoints(computerHand);
-
-    // computer draw a card in attempt to tie if the player gets blackjack for either hand.
-    while ((playerFirstHandPoints == 21 || playerSecondHandPoints == 21)
-    && (computerPoints < playerFirstHandPoints || computerPoints < playerSecondHandPoints)
-    && (computerPoints < 21)) {
-      computerHand.push(deck.pop());
-      computerPoints = getPoints(computerHand);
-    }
+    playerFirstHand.push(playerDeck.pop());
+    computerHand.push(computerDeck.pop());
+    playerFirstHand.push(playerDeck.pop());
+    computerHand.push(computerDeck.pop());
   } else if (mode == 'split') {
-    // 2.1 If split, split cards into 2 piles and deal 1 card to each pile.
+    // 1.2 If split, split cards into 2 piles and deal 1 card to each pile. Move on.
     // divide player's hand into 2 if there are 2 cards in his hand, if not send error message.
     if (playerFirstHand.length == 2) {
       playerSecondHand = playerFirstHand.splice(0, 1);
 
       // draw cards for player
-      playerFirstHand.push(deck.pop());
-      playerSecondHand.push(deck.pop());
-      playerFirstHandPoints = getPoints(playerFirstHand);
-      playerSecondHandPoints = getPoints(playerSecondHand);
-
-      // 2.1.1 computer draw a card in attempt to tie if the player gets blackjack for either hand.
-      while ((playerFirstHandPoints == 21 || playerSecondHandPoints == 21)
-      && (computerPoints < playerFirstHandPoints || computerPoints < playerSecondHandPoints)
-      && (computerPoints < 21)) {
-        computerHand.push(deck.pop());
-        computerPoints = getPoints(computerHand);
-      }
+      playerFirstHand.push(playerDeck.pop());
+      playerSecondHand.push(playerDeck.pop());
     } else {
       return 'Are you a troll? Please enter \'hit\' or \'stand\'';
+    }
+  } else if (mode == 'stand') {
+    // 1.3 move on.
+  } else if (mode == 'hit') {
+    // 1.4 If hit, deal cards then move on.
+
+    // Deal cards
+    playerFirstHand.push(playerDeck.pop());
+
+    // Deal cards to a second hand if there is a split
+    if (playerSecondHand.length > 0) {
+      playerSecondHand.push(playerDeck.pop());
     }
   } else {
     // When player inputs an invalid word at the start or during the game
@@ -329,16 +299,7 @@ var main = function (input) {
     }
   }
 
-  // 2. Ask if player wants to split, stand or hit if there are 2 of the same kind of cards.
-  if (checkPair(playerFirstHand) == true) {
-    // if player had already mentioned not to split, don't ask the player to split again
-    if (checkedPairBefore == false) {
-      checkedPairBefore = true;
-      return 'You have two of the same kind of cards: ' + displayHand(playerFirstHand) + '.<br><br>Input \'split\' to split your cards or \'hit\' to draw a card or \'stand\' to end your turn.';
-    }
-  }
-
-  // 3. calculate points in player and computer hands
+  // 2. calculate points in player and computer hands
   playerFirstHandPoints = getPoints(playerFirstHand);
   computerPoints = getPoints(computerHand);
   console.log('player first hand points: ');
@@ -351,7 +312,7 @@ var main = function (input) {
     console.log(playerSecondHandPoints);
   }
 
-  // 4. Add player's hands cards to myOutputValue and find player's highest score .
+  // 3. Add player's hands cards to myOutputValue and find player's highest score .
   if (playerSecondHand.length > 0) {
     myOutputValue += 'Your 1st hand: ' + displayHand(playerFirstHand) + '<br>1st hand points = ' + playerFirstHandPoints;
     myOutputValue += '<br>Your 2nd hand: ' + displayHand(playerSecondHand) + '<br>2nd hand points = ' + playerSecondHandPoints;
@@ -369,15 +330,42 @@ var main = function (input) {
   } else {
     myOutputValue += 'Your current hand: ' + displayHand(playerFirstHand);
 
-    playerHighestPoints = playerFirstHandPoints;
+    if (playerFirstHandPoints <= 21) {
+      playerHighestPoints = playerFirstHandPoints;
+    } else {
+      playerHighestPoints = 22;
+    }
+
     myOutputValue += '<br>Your points = ' + playerHighestPoints;
   }
 
-  // 5. Analyse who wins:
-  //  5.1 If both get 21/over 21/(if mode is stand and both points are equal), its a tie. Move on.
-  //  5.2 If player gets 21 or computer gets over 21, player wins. Move on.
-  //  5.3 If computer gets 21 or player gets over 21, computer wins. Move on.
-  //  5.4 else continue the game by asking for player if he wants to hit or stand. Move on.
+  // 4. Ask if player wants to split, stand or hit if there are 2 of the same kind of cards. If yes, go to 1.2. If not move on.
+  if (checkPair(playerFirstHand) == true) {
+    // if player had already mentioned not to split, don't ask the player to split again
+    if (checkedPairBefore == false) {
+      checkedPairBefore = true;
+      return 'You have two of the same kind of cards: ' + displayHand(playerFirstHand) + '.<br><br>Input \'split\' to split your cards or \'hit\' to draw a card or \'stand\' to end your turn.';
+    }
+  }
+
+  // 5. If playerHighestPoints < 21 and player did not stand, ask player to hit or stand.
+  if (playerHighestPoints < 21 && mode != 'stand') {
+    myOutputValue += '<br><br>Please enter \'hit\' to deal 1 more card to yourself or \'stand\' if you are satisfied with your cards.';
+    return myOutputValue;
+  }
+
+  // 6. While computerPoints < 17, < playerHighestPoints or not equal to 21, computer draw cards in attempt to tie or win.
+  while (computerPoints < 17
+    || (computerPoints < playerHighestPoints && playerHighestPoints <= 21)) {
+    computerHand.push(computerDeck.pop());
+    computerPoints = getPoints(computerHand);
+  }
+
+  // 7. Analyse who wins:
+  //  7.1 If both get 21/over 21/(if mode is stand and both points are equal), its a tie. Move on.
+  //  7.2 If player gets 21 or computer gets over 21, player wins. Move on.
+  //  7.3 If computer gets 21 or player gets over 21, computer wins. Move on.
+  //  7.4 else display error message.
   if ((playerHighestPoints == 21 && computerPoints == 21) || (playerHighestPoints > 21 && computerPoints > 21) || (mode == 'stand' && playerHighestPoints == computerPoints)) {
     myOutputValue += '<br><br>Computer hand: ' + displayHand(computerHand) + '<br>Computer points = ' + computerPoints + '<br><br>It\'s a tie!';
   } else if (playerHighestPoints == 21 || computerPoints > 21 || (mode == 'stand' && playerHighestPoints > computerPoints)) {
@@ -385,9 +373,9 @@ var main = function (input) {
   } else if (computerPoints == 21 || playerHighestPoints > 21 || (mode == 'stand' && playerHighestPoints < computerPoints)) {
     myOutputValue += '<br><br>Computer hand: ' + displayHand(computerHand) + '<br>Computer points = ' + computerPoints + '<br><br>Computer wins!';
   } else {
-    myOutputValue += '<br><br>Please enter \'hit\' to deal 1 more card to yourself or \'stand\' if you are satisfied with your cards.';
+    return 'Error! Please refresh the webpage to restart the game!';
   }
 
-  // 6. Display myOutputValue
+  // 8. Display myOutputValue
   return myOutputValue;
 };
