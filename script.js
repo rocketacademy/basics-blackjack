@@ -93,14 +93,21 @@ var dealerMinValue = 17;
 var gamenEnds = false;
 var sumOfHand = function (hand) {
   var sum = 0;
+  var currentCard;
+  var acePresent = false;
   for (let i = 0; i < hand.length; i += 1) {
-    var currentCard = hand[i];
+    currentCard = hand[i];
     sum += hand[i].value;
-    if ((currentCard.rank == 1) && (sum > totalLimit)) {
-      sum -= 10;
+    if (currentCard.rank === 1) {
+      acePresent = true;
     }
   }
+  if ((acePresent == true && sum > totalLimit && hand.length > 2)) {
+    sum -= 10;
+  }
+  return sum;
 };
+
 var convertHandToString = function (hand) {
   return `[${hand.map((card) => card.name)}]`;
 };
@@ -109,11 +116,11 @@ var getDefaultOutput = function () {
   return `Player has hand ${convertHandToString(playerHand)} with sum ${JSON.stringify(sumOfHand(playerHand))}. <br>
     Dealer has hand ${convertHandToString(dealerHand)} with sum ${JSON.stringify(sumOfHand(dealerHand))}. <br>`;
 };
-// when player inputs hit and submits
+  // when player inputs hit and submits
 var hit = function () {
   deal(playerHand);
 };
-// Main game play
+  // Main game play
 var main = function (input) {
   // check if game has ended
   if (gamenEnds) {
