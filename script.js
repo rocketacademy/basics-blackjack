@@ -1,3 +1,4 @@
+
 var cards = [
   {
     name: 'ace',
@@ -7,7 +8,8 @@ var cards = [
     name: '2',
     suit: 'hearts',
     rank: 2
-  }, {
+  },
+  {
     name: '3',
     suit: 'hearts',
     rank: 3
@@ -259,16 +261,16 @@ var handSum = function (hand) {
     sum -= 10;
   }
   return sum;
-};
 
+}
 
 var dealCards = function () {
   for (var j = 0; j < 2; j++) {
-    computerCards[j] = shuffledCards.pop();
+    computerCards[j] = shuffledCards.shift();
     computerScore = computerScore + computerCards[j].rank;
   };
   for (var i = 0; i < 2; i++) {
-    userCards[i] = shuffledCards.pop();
+    userCards[i] = shuffledCards.shift();
     userScore = userScore + userCards[i].rank;
   };
 
@@ -276,7 +278,7 @@ var dealCards = function () {
 };
 
 var drawCards = function (hand) {
-  hand.push(shuffledCards.pop())
+  hand.push(shuffledCards.shift())
 }
 var userCards = [];
 var userScore = handSum(userCards);
@@ -287,18 +289,18 @@ var computerScore = handSum(computerCards);
 
 
 var handLimit = 21;
-var computerStayThreshold = 16;
+
 
 var cardToString = function (hand) {
   return `[${hand.map((cards) => cards.name)}]`;
 }
 
-
+var myOutputValue = "";
 
 var main = function (input) {
 
   if (gameMode == "game over") {
-    var myOutputValue = "Game is over. Hit refresh";
+    myOutputValue = "Game is over. Hit refresh";
     return myOutputValue;
   }
 
@@ -328,13 +330,13 @@ var main = function (input) {
     console.log("userblackjack" + userBlackjack);
     console.log("computerblackjack" + computerBlackjack);
 
-    var myOutputValue = 'user: ' + cardToString(userCards) + "<br>" + 'computer: ' + computerCards[0].name + "face down card <br>" + 'User Type: hit or stay ';
+    myOutputValue = 'user: ' + cardToString(userCards) + "<br>" + 'computer: ' + computerCards[0].name + "face down card <br>" + 'User Type: hit or stay ';
     if (userBlackjack == true) {
       gameMode = "game over";
-      var myOutputValue = "User Blackjack! user:" + cardToString(userCards) + "<br>" + 'computer: ' + cardToString(computerCards);
+      myOutputValue = "User Blackjack! user:" + cardToString(userCards) + "<br>" + 'computer: ' + cardToString(computerCards);
     } else if (computerBlackjack == true) {
       gameMode = "game over";
-      var myOutputValue = "Computer Blackjack! user:" + cardToString(userCards) + "<br>" + 'computer: ' + cardToString(computerCards);
+      myOutputValue = "Computer Blackjack! user:" + cardToString(userCards) + "<br>" + 'computer: ' + cardToString(computerCards);
     };
 
     return myOutputValue;
@@ -345,16 +347,16 @@ var main = function (input) {
       drawCards(userCards);
       userScore = handSum(userCards);
       if (userScore > handLimit) {
-        var myOutputValue = 'user: ' + cardToString(userCards) + "<br>" + 'computer: ' + computerCards[0].name + "face down card <br>" + 'You lost!';
+        myOutputValue = 'user: ' + cardToString(userCards) + "<br>" + 'computer: ' + computerCards[0].name + "face down card <br>" + 'You lost!';
         gameMode = "game over";
       } else {
-        var myOutputValue = 'user: ' + cardToString(userCards) + "<br>" + 'computer: ' + computerCards[0].name + "face down card <br>" + 'User Type: hit or stay ';
+        myOutputValue = 'user: ' + cardToString(userCards) + "<br>" + 'computer: ' + computerCards[0].name + "face down card <br>" + 'User Type: hit or stay ';
       }
     } else if (input == "stay") {
       gameMode = "computer turn";
-      var myOutputValue = 'user: ' + cardToString(userCards) + "<br>" + 'computer: ' + computerCards[0].name + "face down card <br>" + 'Computer Turn ';
+      myOutputValue = 'user: ' + cardToString(userCards) + "<br>" + 'computer: ' + cardToString(computerCards) + 'Computer Turn ';
     } else {
-      var myOutputValue = "please type hit or stay"
+      myOutputValue = "please type hit or stay"
     }
 
 
@@ -368,44 +370,82 @@ var main = function (input) {
   if (gameMode == "computer turn") {
     var computerScore = handSum(computerCards);
     var userScore = handSum(userCards);
-    if (computerScore < computerStayThreshold) {
-      drawCards(computerCards);
-      computerScore = handSum(computerCards);
+    var computerStayThreshold = 16;
 
+    // if the computer score is less than threshold, draw card 
+    if (computerScore < computerStayThreshold) {
+      while (computerScore < computerStayThreshold) {
+        drawCards(computerCards);
+        computerScore = handSum(computerCards);
+      }
       console.log("computer cards")
       console.log(computerCards)
 
       console.log("userscore " + userScore);
       console.log("computerscore " + computerScore);
+      myOutputValue = 'user: ' + cardToString(userCards) + "<br>" + 'computer: ' + cardToString(computerCards)
 
+
+      // if computer scores exceeds 21, user won
       if (computerScore > handLimit) {
-        var myOutputValue = 'user: ' + cardToString(userCards) + "<br>" + 'computer: ' + cardToString(computerCards) + "computer bust. You won";
+        myOutputValue = 'user: ' + cardToString(userCards) + "<br>" + 'computer: ' + cardToString(computerCards) + "computer bust. You won";
         gameMode = "game over"
-      }
-    }
+        // if the computer score is more than threshold, compare the scores of computer vs user
+      } else if (computerScore >= computerStayThreshold) {
 
-    if (computerScore > computerStayThreshold) {
+        if (computerScore > userScore) {
+          console.log("computer won")
+          console.log(computerScore > userScore)
+
+          console.log("userscore" + userScore);
+          console.log("computerscore " + computerScore);
+
+          myOutputValue = 'user: ' + cardToString(userCards) + "<br>" + 'computer: ' + cardToString(computerCards) + "You lost";
+          gameMode = "game over";
+        } else if (computerScore < userScore) {
+
+          console.log("computer lost")
+          console.log(computerScore < userScore)
+
+          myOutputValue = 'user: ' + cardToString(userCards) + "<br>" + 'computer: ' + cardToString(computerCards) + "You won";
+          gameMode = "game over"
+        } else {
+          console.log("drew")
+          console.log(computerScore == userscore)
+
+          myOutputValue = 'user: ' + cardToString(userCards) + "<br>" + 'computer: ' + cardToString(computerCards) + "You draw";
+          gameMode = "game over"
+        }
+      }
+    } else if (computerScore >= computerStayThreshold) {
+
       if (computerScore > userScore) {
-        console.log("userscore " + userScore);
+        console.log("computer won")
+        console.log(computerScore > userScore)
+
+        console.log("userscore" + userScore);
         console.log("computerscore " + computerScore);
 
-        var myOutputValue = 'user: ' + cardToString(userCards) + "<br>" + 'computer: ' + cardToString(computerCards) + "You lost";
+        myOutputValue = 'user: ' + cardToString(userCards) + "<br>" + 'computer: ' + cardToString(computerCards) + "You lost";
         gameMode = "game over";
       } else if (computerScore < userScore) {
-        var myOutputValue = 'user: ' + cardToString(userCards) + "<br>" + 'computer: ' + cardToString(computerCards) + "You won";
+
+        console.log("computer lost")
+        console.log(computerScore < userScore)
+
+        myOutputValue = 'user: ' + cardToString(userCards) + "<br>" + 'computer: ' + cardToString(computerCards) + "You won";
         gameMode = "game over"
       } else {
-        var myOutputValue = 'user: ' + cardToString(userCards) + "<br>" + 'computer: ' + cardToString(computerCards) + "You draw";
+        console.log("drew")
+        console.log(computerScore == userscore)
+
+        myOutputValue = 'user: ' + cardToString(userCards) + "<br>" + 'computer: ' + cardToString(computerCards) + "You draw";
         gameMode = "game over"
       }
 
     }
-
-
     return myOutputValue;
   }
 
   return myOutputValue;
 }
-
-
