@@ -113,10 +113,38 @@ var main = function (input) {
       return '<br>Computer got black jack! You lose. Your sum: ' + getSum(playerHand) + '<br>My sum: ' + getSum(computerHand);
     }
     if (input == 'stand') {
+<<<<<<< HEAD
       while (getSum(computerHand) < 17) {
         dealCards(computerHand);
       }
       if (getSum(playerHand) < 21 && getSum(playerHand) > getSum(computerHand)) {
+=======
+      getSum(playerHand);
+      console.log('stand player hand: ' + getSum(playerHand));
+      getSum(computerHand);
+      console.log('stand computer hand: ' + getSum(computerHand));
+      while (getSum(computerHand) < 17) {
+        dealCards(computerHand);
+        if (getSum(computerHand) > 21 && getSum(playerHand) < 21) {
+          return 'Computer gets bust. You win! Your sum: ' + getSum(playerHand) + '<br>My sum: ' + getSum(computerHand);
+        }
+        if ((getSum(playerHand) < 21) && (getSum(playerHand)) > (getSum(computerHand))) {
+          return 'You win! Your sum: ' + getSum(playerHand) + '<br>My sum: ' + getSum(computerHand);
+        } if ((getSum(computerHand) < 21) && (getSum(computerHand) > getSum(playerHand))) {
+          return 'You lose! Your sum: ' + getSum(playerHand) + '<br>My sum: ' + getSum(computerHand);
+        } if ((getSum(playerHand) > 21)) {
+          return 'Game over. Bust! Your sum: ' + getSum(playerHand) + '<br>My sum: ' + getSum(computerHand);
+        } if ((getSum(computerHand) > 21)) {
+          return 'Game over. Bust! Your sum: ' + getSum(playerHand) + '<br>My sum: ' + getSum(computerHand);
+        }
+      }
+    } else if (input == 'hit') {
+      dealCards(playerHand);
+      getSum(playerHand);
+      console.log(dealCards(playerHand));
+      console.log(getSum(playerHand));
+      if ((getSum(playerHand) < 21) && (getSum(playerHand)) > (getSum(computerHand))) {
+>>>>>>> 66263d0d9f41de9cb555d90c33e057cfadd84958
         return 'You win! Your sum: ' + getSum(playerHand) + '<br>My sum: ' + getSum(computerHand);
       } if (getSum(computerHand) < 21 && getSum(computerHand) > getSum(playerHand)) {
         return 'You lose! Your sum: ' + getSum(playerHand) + '<br>My sum: ' + getSum(computerHand);
@@ -126,7 +154,10 @@ var main = function (input) {
       if (getSum(computerHand) > 21) {
         return 'Game over. Bust! Your sum: ' + getSum(playerHand) + '<br>My sum: ' + getSum(computerHand);
       }
+
+      console.log(playerHand);
     }
+<<<<<<< HEAD
   } else if (input == 'hit') {
     dealCards(playerHand);
     getSum(playerHand);
@@ -146,5 +177,7 @@ var main = function (input) {
       return 'Game over. Bust! Your sum: ' + getSum(playerHand) + '<br>My sum: ' + getSum(computerHand);
     }
     console.log(playerHand);
+=======
+>>>>>>> 66263d0d9f41de9cb555d90c33e057cfadd84958
   }
 };
