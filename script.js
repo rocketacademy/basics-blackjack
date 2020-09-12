@@ -16,7 +16,6 @@
 // global variables
 var mode = 'initialize';
 var userHand = [];
-var userSplitHand = [];
 var comHand = [];
 var createDeck = function () {
   // deck array
@@ -186,27 +185,6 @@ var main = function (input) {
       myOutputValue = 'Computer Blackjack! You lost!<br>To continue, hit the button to reset your hand<br><br>';
       myOutputValue = myOutputValue + displayHand(userHand, userHandValue) + '<br><br>';
       myOutputValue = myOutputValue + 'Com ' + displayHand(comHand, comHandValue);
-    }
-    // split function
-    if (userHand[0].rank == userHand[1].rank) {
-      myOutputValue = 'You have doubles!<br>' + myOutputValue + '<br>';
-      myOutputValue = myOutputValue + 'Would you like to split your hand?<br>Please enter "yes" or "no"';
-      mode = 'split';
-    }
-  } else if (mode == 'split') {
-    if (input.toLowerCase() == 'yes') {
-      userSplitHand.push(userHand.pop());
-      userHand.push(gameDeck.pop());
-      userSplitHand.push(gameDeck.pop());
-      userHandValue = countHandValue(userHand);
-      userSplitHandValue = countHandValue(userSplitHand);
-      myOutputValue = 'You hand is now split!<br>';
-      myOutputValue = 'Your 1st ' + displayHand(userHand, userHandValue) + '<br>';
-      myOutputValue = 'Your 2nd ' + displayHand(userSplitHand, userSplitHandValue) + hitStandInstructions();
-      mode = 'hit or stand split';
-    } else if (input.toLowerCase() == 'no') {
-      myOutputValue = 'Your ' + displayHand(userHand, userHandValue) + hitStandInstructions();
-      mode = 'hit or stand';
     }
   } else if (mode == 'hit or stand') {
     // rest of game happens here
