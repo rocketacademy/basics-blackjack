@@ -333,10 +333,10 @@ var main = function (input) {
     myOutputValue = 'user: ' + cardToString(userCards) + "<br>" + 'computer: ' + computerCards[0].name + "face down card <br>" + 'User Type: hit or stay ';
     if (userBlackjack == true) {
       gameMode = "game over";
-      myOutputValue = "User Blackjack! user:" + cardToString(userCards) + "<br>" + 'computer: ' + cardToString(computerCards);
+      myOutputValue = "User Blackjack! <br> user:" + cardToString(userCards) + "<br>" + 'computer: ' + cardToString(computerCards);
     } else if (computerBlackjack == true) {
       gameMode = "game over";
-      myOutputValue = "Computer Blackjack! user:" + cardToString(userCards) + "<br>" + 'computer: ' + cardToString(computerCards);
+      myOutputValue = "Computer Blackjack! <br> user:" + cardToString(userCards) + "<br>" + 'computer: ' + cardToString(computerCards);
     };
 
     return myOutputValue;
@@ -388,7 +388,7 @@ var main = function (input) {
 
       // if computer scores exceeds 21, user won
       if (computerScore > handLimit) {
-        myOutputValue = 'user: ' + cardToString(userCards) + "<br>" + 'computer: ' + cardToString(computerCards) + "computer bust. You won";
+        myOutputValue = 'user: ' + cardToString(userCards) + "<br>" + 'computer: ' + cardToString(computerCards) + "<br> computer bust. You won";
         gameMode = "game over"
         // if the computer score is more than threshold, compare the scores of computer vs user
       } else if (computerScore >= computerStayThreshold) {
@@ -400,20 +400,20 @@ var main = function (input) {
           console.log("userscore" + userScore);
           console.log("computerscore " + computerScore);
 
-          myOutputValue = 'user: ' + cardToString(userCards) + "<br>" + 'computer: ' + cardToString(computerCards) + "You lost";
+          myOutputValue = 'user: ' + cardToString(userCards) + "<br>" + 'computer: ' + cardToString(computerCards) + "<br> You lost";
           gameMode = "game over";
         } else if (computerScore < userScore) {
 
           console.log("computer lost")
           console.log(computerScore < userScore)
 
-          myOutputValue = 'user: ' + cardToString(userCards) + "<br>" + 'computer: ' + cardToString(computerCards) + "You won";
+          myOutputValue = 'user: ' + cardToString(userCards) + "<br>" + 'computer: ' + cardToString(computerCards) + "<br> You won";
           gameMode = "game over"
         } else {
           console.log("drew")
           console.log(computerScore == userscore)
 
-          myOutputValue = 'user: ' + cardToString(userCards) + "<br>" + 'computer: ' + cardToString(computerCards) + "You draw";
+          myOutputValue = 'user: ' + cardToString(userCards) + "<br>" + 'computer: ' + cardToString(computerCards) + "<br> You draw";
           gameMode = "game over"
         }
       }
@@ -426,20 +426,20 @@ var main = function (input) {
         console.log("userscore" + userScore);
         console.log("computerscore " + computerScore);
 
-        myOutputValue = 'user: ' + cardToString(userCards) + "<br>" + 'computer: ' + cardToString(computerCards) + "You lost";
+        myOutputValue = 'user: ' + cardToString(userCards) + "<br>" + 'computer: ' + cardToString(computerCards) + "<br> You lost";
         gameMode = "game over";
       } else if (computerScore < userScore) {
 
         console.log("computer lost")
         console.log(computerScore < userScore)
 
-        myOutputValue = 'user: ' + cardToString(userCards) + "<br>" + 'computer: ' + cardToString(computerCards) + "You won";
+        myOutputValue = 'user: ' + cardToString(userCards) + "<br>" + 'computer: ' + cardToString(computerCards) + "<br> You won";
         gameMode = "game over"
       } else {
         console.log("drew")
         console.log(computerScore == userscore)
 
-        myOutputValue = 'user: ' + cardToString(userCards) + "<br>" + 'computer: ' + cardToString(computerCards) + "You draw";
+        myOutputValue = 'user: ' + cardToString(userCards) + "<br>" + 'computer: ' + cardToString(computerCards) + "<br> You draw";
         gameMode = "game over"
       }
 
