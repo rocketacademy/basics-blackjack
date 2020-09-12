@@ -123,17 +123,22 @@ var main = function (input) {
       console.log('stand player hand: ' + getSum(playerHand));
       getSum(computerHand);
       console.log('stand computer hand: ' + getSum(computerHand));
-      if ((getSum(playerHand) < 21) && (getSum(playerHand)) > (getSum(computerHand))) {
-        return 'You win! Your sum: ' + getSum(playerHand) + '<br>My sum: ' + getSum(computerHand);
-      } if ((getSum(computerHand) < 21) && (getSum(computerHand) > getSum(playerHand))) {
-        return 'You lose! Your sum: ' + getSum(playerHand) + '<br>My sum: ' + getSum(computerHand);
-      } if ((getSum(playerHand) > 21)) {
-        return 'Game over. Bust! Your sum: ' + getSum(playerHand) + '<br>My sum: ' + getSum(computerHand);
-      } if ((getSum(computerHand) > 21)) {
-        return 'Game over. Bust! Your sum: ' + getSum(playerHand) + '<br>My sum: ' + getSum(computerHand);
+      while (getSum(computerHand) < 17) {
+        dealCards(computerHand);
+        if (getSum(computerHand) > 21 && getSum(playerHand) < 21) {
+          return 'Computer gets bust. You win! Your sum: ' + getSum(playerHand) + '<br>My sum: ' + getSum(computerHand);
+        }
+        if ((getSum(playerHand) < 21) && (getSum(playerHand)) > (getSum(computerHand))) {
+          return 'You win! Your sum: ' + getSum(playerHand) + '<br>My sum: ' + getSum(computerHand);
+        } if ((getSum(computerHand) < 21) && (getSum(computerHand) > getSum(playerHand))) {
+          return 'You lose! Your sum: ' + getSum(playerHand) + '<br>My sum: ' + getSum(computerHand);
+        } if ((getSum(playerHand) > 21)) {
+          return 'Game over. Bust! Your sum: ' + getSum(playerHand) + '<br>My sum: ' + getSum(computerHand);
+        } if ((getSum(computerHand) > 21)) {
+          return 'Game over. Bust! Your sum: ' + getSum(playerHand) + '<br>My sum: ' + getSum(computerHand);
+        }
       }
-    }
-    if (input == 'hit') {
+    } else if (input == 'hit') {
       dealCards(playerHand);
       getSum(playerHand);
       console.log(dealCards(playerHand));
@@ -147,7 +152,8 @@ var main = function (input) {
       } if ((getSum(computerHand) > 21)) {
         return 'Game over. Bust! Your sum: ' + getSum(playerHand) + '<br>My sum: ' + getSum(computerHand);
       }
+
+      console.log(playerHand);
     }
-    console.log(playerHand);
   }
 };
