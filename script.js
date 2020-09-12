@@ -330,7 +330,7 @@ var main = function (input) {
     console.log("userblackjack" + userBlackjack);
     console.log("computerblackjack" + computerBlackjack);
 
-    myOutputValue = 'user: ' + cardToString(userCards) + "<br>" + 'computer: ' + computerCards[0].name + "face down card <br>" + 'User Type: hit or stay ';
+    myOutputValue = 'user: ' + cardToString(userCards) + "<br>" + 'computer: ' + computerCards[0].name + ", face down card <br>" + 'User Type: hit or stay ';
     if (userBlackjack == true) {
       gameMode = "game over";
       myOutputValue = "User Blackjack! <br> user:" + cardToString(userCards) + "<br>" + 'computer: ' + cardToString(computerCards);
@@ -347,16 +347,16 @@ var main = function (input) {
       drawCards(userCards);
       userScore = handSum(userCards);
       if (userScore > handLimit) {
-        myOutputValue = 'user: ' + cardToString(userCards) + "<br>" + 'computer: ' + computerCards[0].name + "face down card <br>" + 'You lost!';
+        myOutputValue = 'user: ' + cardToString(userCards) + "<br>" + 'computer: ' + computerCards[0].name + ", face down card <br>" + 'You lost!';
         gameMode = "game over";
       } else {
-        myOutputValue = 'user: ' + cardToString(userCards) + "<br>" + 'computer: ' + computerCards[0].name + "face down card <br>" + 'User Type: hit or stay ';
+        myOutputValue = 'user: ' + cardToString(userCards) + "<br>" + 'computer: ' + computerCards[0].name + ", face down card <br>" + 'User Type: hit or stay ';
       }
     } else if (input == "stay") {
       gameMode = "computer turn";
-      myOutputValue = 'user: ' + cardToString(userCards) + "<br>" + 'computer: ' + cardToString(computerCards) + 'Computer Turn ';
+      myOutputValue = 'user: ' + cardToString(userCards) + "<br>" + 'computer: ' + cardToString(computerCards) + '<br>Computer Turn ';
     } else {
-      myOutputValue = "please type hit or stay"
+      myOutputValue = 'user: ' + cardToString(userCards) + "<br>" + 'computer: ' + computerCards[0].name + ", face down card" + "<br> Please type hit or stay"
     }
 
 
