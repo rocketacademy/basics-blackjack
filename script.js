@@ -129,7 +129,7 @@ var main = function (input) {
 
       console.log(playerHand);
     }
-  } else if (input == 'hit') {
+  } if (input == 'hit') {
     dealCards(playerHand);
     getSum(playerHand);
     console.log(dealCards(playerHand));
