@@ -16,8 +16,8 @@
     #container {
       margin: 20px auto;
       padding: 20px;
-      background-color: pink;
-      max-width: 300px;
+      background-color: rgb(247, 228, 176);
+      max-width: 700px;
     }
 
     input {
@@ -33,7 +33,8 @@
     #output {
       margin: 20px auto;
       padding: 20px;
-      background-color: rgb(231, 213, 213);
+      background-color: rgb(186, 188, 221);
+      color: rgb(38, 48, 15);
       width: 100%;
     }
   </style>
@@ -41,10 +42,20 @@
 
 <body>
   <h1 id="header">SWE 101! Blackjack 🚀</h1>
+  <!-- https://stackoverflow.com/questions/40839715/avoid-reload-page-after-innerhtml-update-with-function-call -->
+  <!-- <form> -->
   <div id="container">
+    <label for="player-name">Player Name:</label>
+    <input id="player-name" required /><br>
+    <br>
+    <label for="bet-amount">Bet Amount:</label>
+    <input id="bet-amount" type="number" required /><br>
+    <br>
 
-    <input id="my-input" />
-    <button id="my-button">submit</button>
+    <label for="my-input">Player Options:</label>
+    <input id="my-input" maxlength="12" /><br>
+    <br>
+    <button id="my-button" type="button">Submit</button>
 
     <p id="msg_para"></p>
 
@@ -52,6 +63,7 @@
     <div id="output">
     </div>
   </div>
+  <!-- </form> -->
   <script src="script.js"></script>
   <script>
     var button = document.querySelector('#my-button');

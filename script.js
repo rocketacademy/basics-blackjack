@@ -33,7 +33,7 @@ const dealerLimitValue = 17;
 const GameStatus = {
   Bust: 'Bust', Hit: 'Hit', Stand: 'Stand', Tie: 'Tie',
 };
-const playerName = 'Player';
+var playerName = 'Player';
 const dealerName = 'Dealer';
 const lineBreak = '<br/>';
 var roundWinner = '';
@@ -45,6 +45,7 @@ var bGameStarted = false;
 // Will be reset at the start of next round
 var lastTotalPlayerValue = 0;
 var bSplit = false; // when there is a split happened this variable will be set to true.
+var betAmount = 0;
 
 // Function to create a single card object from the suit name and card value
 var makeSingleCard = function (cardSuit, cardValue) {
@@ -280,7 +281,8 @@ var verifyPalyerHands = function (playerHandCardsArray) {
   lastTotalPlayerValue = totalPlayerFaceValue;
 
   if (roundWinner == playerName) {
-    returnValue = lineBreak + 'Player Win!!. You won the round and you made 1 and 1/2 times your bet!!' + lineBreak;
+    betAmount = betAmount * 1.5;
+    returnValue = lineBreak + playerName + ' Wins!!. You won the round and made ' + betAmount + '!!' + lineBreak;
     // done with this round.
     returnValue += askForSubmit(returnValue) + lineBreak;
     // remove the current cards in hand
@@ -360,9 +362,10 @@ var verifyDealerHands = function (bVerifiedAceCards) {
   }
 
   if (roundWinner == playerName) {
-    returnValue += 'Player Win!!. You won the round and made twice of your bet!!' + lineBreak;
+    betAmount = betAmount * 2;
+    returnValue += playerName + ' Wins!!. You won the round and made ' + betAmount + ' !!' + lineBreak;
   } else {
-    returnValue += 'Dealer Wins!!. You lost your bet.' + lineBreak;
+    returnValue += 'Dealer Wins!!. ' + playerName + ' lost the bet.' + lineBreak;
   }
   // done with this round.
   returnValue += askForSubmit(returnValue);
@@ -391,7 +394,7 @@ var handleHitOrStandChoice = function (input, playerHandCardsArray, playerSetNam
     playerHandCardsArray.push(cardDeck.pop());
     console.log(playerHandCardsArray);
 
-    outputValue += lineBreak + 'Cards with the player in the ' + playerSetName + ': ' + lineBreak;
+    outputValue += lineBreak + 'Cards with the player : ' + playerName + ' in the ' + playerSetName + ': ' + lineBreak;
     playerHandCardsArray.forEach(printAllCardsMessage);
     outputValue += combinedCardDetails;
 
@@ -402,7 +405,7 @@ var handleHitOrStandChoice = function (input, playerHandCardsArray, playerSetNam
     // Now the turn of dealer to face up the already taken face down card
     outputValue += verifyDealerHands(false);
 
-    outputValue += lineBreak + 'Cards with the player in the ' + playerSetName + ': ' + lineBreak;
+    outputValue += lineBreak + 'Cards with the player : ' + playerName + ' in the ' + playerSetName + ': ' + lineBreak;
     playerHandCardsArray.forEach(printAllCardsMessage);
     outputValue += combinedCardDetails;
     combinedCardDetails = '';
@@ -452,12 +455,35 @@ var isValidInput = function (inputValueArray) {
   }
   return true;
 };
+// Function to read the player name and bet amount from the inputs.
+var readInputInfo = function ()
+{
+  var nameElement = document.querySelector('#player-name');
+  if (nameElement.value.length == 0)
+  {
+    return false;
+  }
+  var betAmountElement = document.querySelector('#bet-amount');
+  if (betAmountElement.value.length == 0)
+  {
+    return false;
+  }
+  playerName = nameElement.value;
+  betAmount = betAmountElement.value;
+  return true;
+};
 
 var main = function (input) {
   console.log(arrayPlayerHands);
   console.log(arrayDealerHands);
   console.log(cardDeck);
   printMessageToDoc('');
+
+  // Read the player name and the bet amount specified
+  if (!readInputInfo())
+  {
+    return 'Please provide the Player Name and Bet Amount';
+  }
 
   var inputValueArray = input.toString().split(' ');
 
@@ -472,7 +498,7 @@ var main = function (input) {
       // If there is no input skip the following and continue as it's a new game
       console.log('Inside the game started consition.');
       console.log('input: ', inputValueArray);
-      outputValue += handleHitOrStandChoice(inputValueArray[0], arrayPlayerHands, (bSplit ? 'First Set' : ''));
+      outputValue += handleHitOrStandChoice(inputValueArray[0], arrayPlayerHands, (bSplit ? 'First Set' : 'set'));
       if (playerName == roundWinner) {
         return outputValue;
       }
@@ -531,7 +557,7 @@ var main = function (input) {
   outputValue += lineBreak + 'Face up card of the dealer: ' + lineBreak
     + cardFormat(arrayDealerHands[0]) + lineBreak;
 
-  outputValue += 'Result of the below set of Cards with the player: ' + lineBreak;
+  outputValue += 'Result of the below set of cards with the player: ' + playerName + lineBreak;
   arrayPlayerHands.forEach(printAllCardsMessage);
   outputValue += combinedCardDetails;
   combinedCardDetails = '';
