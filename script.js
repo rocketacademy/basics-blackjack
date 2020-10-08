@@ -9,6 +9,7 @@ var allComputerHands = [];//contain computer's list of hands
 var gameState = '' //Restart & shuffle cards , deal cards, analyze winning conditions, hit or stand
 var playerX = 1;
 
+
 //Create a new deck
 var deck;
 
@@ -51,57 +52,64 @@ var main = function (input) {
         gameState = 'hitOrStand';
       }
 
-    } else if (gameState == 'hitOrStand' && playerX < numOfPlayers) {
+    } else if (gameState == 'hitOrStand' && playerX <= numOfPlayers) {
       console.log(playerX, 'playerX');
-      console.log(playerCumulativeScores[0], 'playerCUmulativeScore');
-      console.log(allPlayersHands[0], `currentPlayer's hand`);
 
       while (playerX <= numOfPlayers) {
-        var j = 0;
-        while (j < 1) {
-          if (playerCumulativeScores[playerX - 1] < 17) {
-            var addCard = deck.pop();
-            console.log(addCard, 'addCard');
-            allPlayersHands[playerX - 1].push(addCard);
-            playerCumulativeScores[playerX - 1] += addCard.score;
-            myOutputValue = `You need to draw another card. Your score is now ${playerCumulativeScores[playerX - 1]}.`;
-            console.log('1');
+        if (playerCumulativeScores[playerX - 1] < 17) {
+          var addCard = deck.pop();
+          console.log(addCard, 'addCard');
+          allPlayersHands[playerX - 1].push(addCard);
+          playerCumulativeScores[playerX - 1] += addCard.score;
+          console.log('1');
+          return myOutputValue = `Player ${playerX}, you need to draw another card. You drew ${addCard.name}. <br> Your score is now ${playerCumulativeScores[playerX - 1]}.`;
 
-          } else if (playerCumulativeScores[playerX - 1] == 21) {
-            myOutputValue = `Player ${playerX} wins the round as player has 21 points with 2 cards!`
-            j += 1;
-            console.log('2');
 
-          } else if (playerCumulativeScores[playerX - 1] > 21) {
-            myOutputValue = `Player ${playerX} has lost as his current points is more than 25.`;
-            j += 1;
-            console.log('3');
+        } else if (playerCumulativeScores[playerX - 1] == 21) {
+          myOutputValue = `Player ${playerX} wins the round as player has 21 points!`
+          console.log('2');
 
-          } else if (input == 'h') {
-            var addCard = deck.pop();
-            console.log(addCard, 'addCard');
-            allPlayersHands[playerX - 1].push(addCard);
-            playerCumulativeScores[playerX - 1] += addCard.score;
-
-            myOutputValue = `Player ${playerX} chooses to hit. <br> The new card is ${addCard.name}. <br> Your total current points is now ${playerCumulativeScores[playerX - 1]}`;
-
-          } else if (input == 's') {
-            myOutputValue = `Player ${playerX} chooses to stand. No new card is drawn. <br> Your current points is now ${playerCumulativeScores[playerX - 1]}`;
-            j += 1;
+          if (allPlayersHands[playerX - 1].length == 2) {
+            myOutputValue += `<br> Blackjack with 2 cards! <br><br> Player ${playerX + 1} is next`;
           } else {
-            j += 1;
+            myOutputValue += + `<br><br> Player ${playerX + 1} is next.`;
           }
+          playerX += 1;
+          return myOutputValue;
+
+        } else if (playerCumulativeScores[playerX - 1] > 21) {
+
+          console.log('3');
+          myOutputValue = `Player ${playerX} has lost as his current points of ${playerCumulativeScores[playerX - 1]} is more than 21. <br><br> Player ${playerX + 1} is next.`;
+
+          playerX += 1;
+          return myOutputValue;
+
+        } else if (input == 'h') {
+          var addCard = deck.pop();
+          console.log(addCard, 'addCard');
+          allPlayersHands[playerX - 1].push(addCard);
+          playerCumulativeScores[playerX - 1] += addCard.score;
+
+          myOutputValue = `Player ${playerX} chooses to hit. <br> The new card is ${addCard.name}. <br> Your total current points is now ${playerCumulativeScores[playerX - 1]}. Press submit to evaluate.`;
+
+        } else if (input == 's') {
+
+          myOutputValue = `Player ${playerX} chooses to stand. No new card is drawn. <br> Your current points is now ${playerCumulativeScores[playerX - 1]}. <br><br> Player ${playerX + 1} is next.`;
+
+          playerX += 1;
+          return myOutputValue;
+
+        } else {
+          console.log(playerX, 'playerX');
+          myOutputValue = 'Please enter s or h';
           return myOutputValue;
         }
-        playerX += 1;
-        console.log(playerX, 'playerX');
+
       }
     }
-
     return myOutputValue;
-    // var hitOrStand = 0; //false being stand
   }
-
   return myOutputValue;
 };
 
@@ -144,15 +152,6 @@ var dealTwoCardsToDealer = function () {
 
   return myOutputValue;
 }
-
-
-
-
-
-
-
-
-
 
 
 // cards is an array of card objects
