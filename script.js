@@ -1,6 +1,7 @@
 //Global State Trackers
 var numOfPlayers = 0;
 var playerCumulativeScores = []; // cumulative amount of their $bet here
+var computerCumulativeScore = 0;
 var currentPlayerBets = []; //cumulative current amount of player bets
 
 var allPlayersHands = []; //contains players' list of hands
@@ -23,13 +24,63 @@ var main = function (input) {
 
     gameState = 'numOfPlayers'
     myOutputValue = `Deck is reshuffled. Please choose the number of players.`;
+
   } else if (gameState == 'numOfPlayers') {
     numOfPlayers = Number(input);
     console.log(numOfPlayers, 'numOfPlayers');
     gameState = 'enterBet'
     return myOutputValue = `You chose ${numOfPlayers}. Please enter the bet amount next for each player.`;
+
+  } else if (gameState == 'computerTurn') {
+    //reveal facedown card & evaluate current score
+    var displayComputerCards = displayAllComputerCards();
+    myOutputValue = `Dealer reveals face down card and has cards ${displayComputerCards}.`;
+    gameState = 'autoHitOrStand';
+
+    if (computerCumulativeScore == 21) {
+      myOutputValue += `Blackjack! <br><br> Game results to be evaluated next.`;
+    } else {
+      myOutputValue += `<br><br> Click submit to see Dealer's next move.`
+    }
+
+  } else if (gameState == 'autoHitOrStand') {
+    if (computerCumulativeScore < 17) {
+      myOutputValue = computerDrawAddCard();
+
+    } else if (computerCumulativeScore > 21) {
+      myOutputValue = `Computer has gone bust with ${computerCumulativeScore} score. <br><br> Game results to be evaluated next. `;
+      gameState = 'evaluateGame';
+
+    } else if (computerCumulativeScore < 21 && computerCumulativeScore >= 17) {
+      // calculate the probability of success of drawing another card that will lead to 21 points
+      var pointsRemaining = 21 - computerCumulativeScore;
+      var winningCards = deck.filter(card =>
+        card.score <= pointsRemaining || card.score == 11 //referring to original score of Ace
+      );
+
+      console.log(winningCards);
+
+      var numOfWinningCards = winningCards.length
+      var pSuccess = (numOfWinningCards / deck.length * 100).toFixed(0);
+      myOutputValue = `Number of cards with score ${pointsRemaining} is ${numOfWinningCards} of ${pSuccess}% of success.`;
+
+      if (pSuccess > 50) {
+        myOutputValue += computerDrawAddCard;
+      } else {
+        myOutputValue += `<br><br> Computer shall stand, and evalute results next.`
+        gameState = 'evaluateGame'
+      }
+
+    } else if (computerCumulativeScore == 21) {
+      myOutputValue = `Computer has a score 21. No further cards need to be drawn. <br><br> Game results to be evaluated next.`;
+      gameState = 'evaluateGame'
+    }
+
+    //calculate the probability of drawing another card that is higher than the highestHand in the allPlayersHands
+
   }
 
+  //The entire process from each player entering a bet to players choosing to hit or stand & evaluating their results if they win blackjack or exceed 21 points.
   while (playerX <= numOfPlayers) { // To ask for input 1 by 1 using the while and nested if
     if (gameState == 'enterBet' && playerX < numOfPlayers) {
       myOutputValue = playersEnterBets(input);
@@ -40,7 +91,7 @@ var main = function (input) {
       playerX = 1;
       gameState = 'deal';
 
-    } else if (gameState == 'deal' && playerX < numOfPlayers) {
+    } else if (gameState == 'deal' && playerX <= numOfPlayers) {
       while (playerX < numOfPlayers) { // to display everything at 1 shot using while + if 
         myOutputValue += dealTwoCardsToPlayer();
         playerX += 1;
@@ -64,19 +115,12 @@ var main = function (input) {
         } else if (playerCumulativeScores[playerX - 1] == 21 && allPlayersHands[playerX - 1].length == 2) {
           myOutputValue = `Blackjack! Player ${playerX} wins the round as player has 21 points!` + outputNextPlayer();
 
-          // if (playerX < numOfPlayers) {
-          //   myOutputValue += + `<br><br> Player ${playerX + 1} is next.`;
-          // }
           playerX += 1;
           return myOutputValue;
           //End Result #2 = user's score is more than 21 and loses automatically
         } else if (playerCumulativeScores[playerX - 1] > 21) {
 
           myOutputValue = `Player ${playerX} has lost as his current points of ${playerCumulativeScores[playerX - 1]} is more than 21.` + outputNextPlayer();
-
-          // if (playerX < numOfPlayers) {
-          //   myOutputValue += + `<br><br> Player ${playerX + 1} is next.`;
-          // }
 
           playerX += 1;
           return myOutputValue;
@@ -90,16 +134,13 @@ var main = function (input) {
 
           myOutputValue = `Player ${playerX} chooses to stand. No new card is drawn. <br> Your current points is now ${playerCumulativeScores[playerX - 1]}.` + outputNextPlayer();
 
-          // if (playerX < numOfPlayers) {
-          //   myOutputValue += `<br><br> Player ${playerX + 1} is next.`;
-          // }
-
           playerX += 1;
           return myOutputValue;
 
         } else {
           console.log(playerX, 'playerX');
-          myOutputValue = `Player ${playerX}, your existing cards are ${allPlayersHands[playerX - 1].name} Please enter s or h`;
+          var displayedCards = displayExistingCards();
+          myOutputValue = `Player ${playerX}, your existing cards are ${displayedCards} Please enter s or h`;
           return myOutputValue;
         }
 
@@ -110,12 +151,66 @@ var main = function (input) {
   return myOutputValue;
 };
 
+var computerDrawAddCard = function () {
+  var addCard = deck.pop();
+
+  console.log(addCard, 'addCard');
+
+  allComputerHands.push(addCard);
+
+  if (addCard == 'Ace' && computerCumulativeScore <= 10) {
+    computerCumulativeScore += 1;
+  } else {
+    computerCumulativeScore += addCard.score;
+  }
+  return `Computer drew ${addCard.name}. <br><br>Computer total current points is now ${computerCumulativeScore}.`;
+}
+
+var displayAllComputerCards = function () {
+
+  var i = 0;
+  var myOutputValue = '';
+
+  while (i < allComputerHands.length) {
+    computerCumulativeScore += allComputerHands[i].score;
+    if (i == allComputerHands.length - 1) {
+      myOutputValue += allComputerHands[i].name
+    } else {
+      myOutputValue += ' ' + allComputerHands[i].name + ', ';
+    }
+    console.log(myOutputValue);
+    i += 1;
+  }
+  myOutputValue += `<br> Computer's total score is ${computerCumulativeScore}`;
+  return myOutputValue;
+
+
+}
+
+
+var displayExistingCards = function () {
+  var i = 0;
+  var myOutputValue = '';
+  while (i < allPlayersHands[playerX - 1].length) {
+    if (i == allPlayersHands[playerX - 1].length - 1) {
+      myOutputValue += allPlayersHands[playerX - 1][i].name
+    } else {
+      myOutputValue += ' ' + allPlayersHands[playerX - 1][i].name + ', ';
+    }
+    console.log(myOutputValue);
+    i += 1;
+  }
+
+
+  return myOutputValue;
+}
 
 var outputNextPlayer = function () {
   if (playerX < numOfPlayers) {
     var myOutputValue = `<br><br> Player ${playerX + 1} is next.`;
   } else {
     var myOutputValue = '<br><br> Computer turn next.';
+    gameState = 'computerTurn';
   }
   return myOutputValue;
 }
@@ -134,8 +229,6 @@ var playerDrawAddCard = function () {
   }
   return `You drew ${addCard.name}. <br><br>Your total current points is now ${playerCumulativeScores[playerX - 1]}.`;
 }
-
-
 
 
 var playersEnterBets = function (input) {
@@ -162,16 +255,15 @@ var dealTwoCardsToPlayer = function () {
 }
 
 var dealTwoCardsToDealer = function () {
-  var computerHand = []; //creating a single player's hand 
   var myOutputValue = "";
 
-  computerHand.push(deck.pop());
-  computerHand.push(deck.pop());
+  allComputerHands.push(deck.pop());
+  allComputerHands.push(deck.pop());
 
 
-  var totalPoints = computerHand[0].score
+  totalScore = allComputerHands[0].score
 
-  myOutputValue = `Computer is dealt ${computerHand[0].name} and a faced down card. It has a current visible score of ${totalPoints}.`;
+  myOutputValue = `Computer is dealt ${allComputerHands[0].name} and a faced down card. It has a current visible score of ${totalScore}.`;
 
   return myOutputValue;
 }
