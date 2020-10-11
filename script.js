@@ -90,11 +90,12 @@ var main = function (input) {
             myOutputValue = `Player ${playerX} wins 2x his initial bet of $${currentPlayerBets[i]}. ${displayEquity(playerX)}.`
           }
         } else {
+          //dealer busts and player busts
           //player retains initial bet
           currentPlayerEquity[i] += currentPlayerBets[i];
           myOutputValue = `It is a draw! Player ${playerX} retains his initial bet of $${currentPlayerBets[i]}. ${displayEquity(playerX)}.`
         }
-      } else if (computerCumulativeScore < 21) { // if computer did not bust 
+      } else if (computerCumulativeScore <= 21) { // if computer did not bust 
         if (playerCumulativeScores[i] > 21) { // if computer did not bust and player busts
           myOutputValue = `Player ${playerX} went bust while Dealer did not. Player ${playerX} loses the initial bet of $${currentPlayerBets[i]}. ${displayEquity(playerX)}.`
 
@@ -107,8 +108,11 @@ var main = function (input) {
         } else if (playerCumulativeScores[i] < computerCumulativeScore) {
           //player loses initial bet
           myOutputValue = `Player ${playerX} loses his initial bet of $${currentPlayerBets[i]}. ${displayEquity(playerX)}.`
-
-        } else {
+        } else if (playerCumulativeScores[i] == 21 && allPlayersHands[i].length == 2) {
+          currentPlayerEquity[i] += currentPlayerBets[i] * 1.5;
+          myOutputValue = `Blackjack! Player ${playerX} wins 1.5x his initial bet of $${currentPlayerBets[i]}. ${displayEquity(playerX)}.`
+          console.log(allComputerHands[i], `currentplayer's hand`);
+        } else { // it is a draw
           //player retains initial bet
           currentPlayerEquity[i] += currentPlayerBets[i];
           myOutputValue = `It is a draw! Player ${playerX} retains his initial bet of ${currentPlayerBets[i]}. ${displayEquity(playerX)}.`
@@ -327,13 +331,20 @@ var playersEnterBets = function (input) {
 var dealTwoCardsToPlayer = function () {
   var playerHand = []; //creating a single player's hand 
   var myOutputValue = "";
+  var totalPoints = 0;
 
   playerHand.push(deck.pop());
   playerHand.push(deck.pop());
+
   allPlayersHands.push(playerHand); //[[0,1], [  ], [  ]]
   console.log(allPlayersHands, `storing each player's hand`);
 
-  var totalPoints = playerHand[0].score + playerHand[1].score;
+  if (playerHand[0].name == 'Ace' && playerHand[1].name == 'Ace') {
+    totalPoints = 2;
+  } else {
+    totalPoints = playerHand[0].score + playerHand[1].score;
+  }
+
   playerCumulativeScores.push(totalPoints);
 
   myOutputValue = `Player ${playerX} is dealt ${allPlayersHands[playerX - 1][0].name} and ${allPlayersHands[playerX - 1][1].name} and has a current total score of ${totalPoints}. <br><br>`;
