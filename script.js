@@ -13,7 +13,6 @@ var allComputerHands = [];//contain computer's list of hands
 var gameState = '' //Restart & shuffle cards , deal cards, analyze winning conditions, hit or stand
 var playerX = 1;
 
-//***Also need to restart game from 'enterbet'***
 
 //Create a new deck
 var deck;
@@ -39,7 +38,7 @@ var main = function (input) {
     console.log(currentPlayerEquity, 'currentPlayerEquity');
 
     gameState = 'enterBet'
-    return myOutputValue = `You chose ${numOfPlayers}. Please enter the bet amount next for each player.`;
+    return myOutputValue = `You chose ${numOfPlayers} number of players. <br><br> All players are have $100 to start with. <br><br> Please enter the bet amount next for each player.`;
 
   } else if (gameState == 'computerTurn') {
     //reveal facedown card & evaluate current score
@@ -74,40 +73,45 @@ var main = function (input) {
   } else if (gameState == 'evaluateGame') {
     var i = playerX - 1;
     while (i < numOfPlayers) {
-      // if Dealer busts
+      console.log(i, 'value of i');
+      // if Dealer busts and player did not bust
       if (computerCumulativeScore > 21) {
         if (playerCumulativeScores[i] <= 21) {
-          if (playerCumulativeScores[i] == 21 && allComputerHands[i].length == 2) {
+
+          if (playerCumulativeScores[i] == 21 && allPlayersHands[i].length == 2) {
             //player wins 1.5x their bet
             currentPlayerEquity[i] += currentPlayerBets[i] * 1.5;
-            myOutputValue = `Player ${playerX} wins 1.5x his initial bet of ${currentPlayerBets[i]}. ${displayEquity(playerX)}.`
+            myOutputValue = `Blackjack! Player ${playerX} wins 1.5x his initial bet of $${currentPlayerBets[i]}. ${displayEquity(playerX)}.`
             console.log(allComputerHands[i], `currentplayer's hand`);
 
           } else {
             //player wins 2x their bet
             currentPlayerEquity[i] += currentPlayerBets[i] * 2;
-            myOutputValue = `Player ${playerX} wins 1.5x his initial bet of ${currentPlayerBets[i]}. ${displayEquity(playerX)}.`
+            myOutputValue = `Player ${playerX} wins 2x his initial bet of $${currentPlayerBets[i]}. ${displayEquity(playerX)}.`
           }
         } else {
           //player retains initial bet
           currentPlayerEquity[i] += currentPlayerBets[i];
-          myOutputValue = `Player ${playerX} retains his initial bet of ${currentPlayerBets[i]}. ${displayEquity(playerX)}.`
+          myOutputValue = `It is a draw! Player ${playerX} retains his initial bet of $${currentPlayerBets[i]}. ${displayEquity(playerX)}.`
         }
-      } else { // if computer cumulative score <= 21
-        if (playerCumulativeScores[i] > computerCumulativeScore) {
+      } else if (computerCumulativeScore < 21) { // if computer did not bust 
+        if (playerCumulativeScores[i] > 21) { // if computer did not bust and player busts
+          myOutputValue = `Player ${playerX} went bust while Dealer did not. Player ${playerX} loses the initial bet of $${currentPlayerBets[i]}. ${displayEquity(playerX)}.`
+
+          //else if computer and player both did not bust...
+        } else if (playerCumulativeScores[i] > computerCumulativeScore) {
           //player wins 2x their bet
           currentPlayerEquity[i] += currentPlayerBets[i] * 2;
-          myOutputValue = `Player ${playerX} wins 2x his initial bet of ${currentPlayerBets[i]}. ${displayEquity(playerX)}.`
+          myOutputValue = `Player ${playerX} wins 2x his initial bet of $${currentPlayerBets[i]}. ${displayEquity(playerX)}.`
 
         } else if (playerCumulativeScores[i] < computerCumulativeScore) {
           //player loses initial bet
-          // currentPlayerEquity[i] -= currentPlayerBets[i];
-          myOutputValue = `Player ${playerX} loses his initial bet of ${currentPlayerBets[i]}. ${displayEquity(playerX)}.`
+          myOutputValue = `Player ${playerX} loses his initial bet of $${currentPlayerBets[i]}. ${displayEquity(playerX)}.`
 
         } else {
           //player retains initial bet
           currentPlayerEquity[i] += currentPlayerBets[i];
-          myOutputValue = `Player ${playerX} retains his initial bet of ${currentPlayerBets[i]}. ${displayEquity(playerX)}.`
+          myOutputValue = `It is a draw! Player ${playerX} retains his initial bet of ${currentPlayerBets[i]}. ${displayEquity(playerX)}.`
         }
       }
 
@@ -116,19 +120,35 @@ var main = function (input) {
       playerX += 1;
       i += 1;
 
-      if (i >= numOfPlayers) {
-        myOutputValue = `Press submit to start the next round.`;
-      }
-
       return myOutputValue;
     }
 
+    if (i == numOfPlayers) {
+      gameState = 'restartGame';
+      return myOutputValue = `Press submit to start the next round.`;
+    }
+
+  } else if (gameState == 'restartGame') {
+    deck = shuffleCards(makeDeck());
+    console.log(deck, `shuffledDeck`);
+    gameState = 'enterBet';
+
+    //reinitialize global states to restart game
+    playerCumulativeScores = [];
+    computerCumulativeScore = 0;
+    currentPlayerBets = [];
+    allPlayersHands = [];
+    allComputerHands = [];
+    playerX = 1;
+
+    myOutputValue = 'Deck is reshuffled. Player 1 to enter $ bet next.'
+    console.log('reached here');
   }
 
   //The entire process from each player entering a bet to players choosing to hit or stand & evaluating their results if they win blackjack or exceed 21 points.
   while (playerX <= numOfPlayers) { // To ask for input 1 by 1 using the while and nested if
     if (gameState == 'enterBet' && playerX < numOfPlayers) {
-      myOutputValue = playersEnterBets(input);
+      myOutputValue = playersEnterBets(input) + `<br>Please enter the bet for Player ${playerX + 1} next.`;
       playerX += 1;
 
     } else if (gameState == 'enterBet' && playerX == numOfPlayers) {
@@ -143,7 +163,7 @@ var main = function (input) {
       }
 
       if (playerX == numOfPlayers) {
-        myOutputValue += dealTwoCardsToPlayer() + dealTwoCardsToDealer() + `<br><br> Player 1 shall choose to hit or stand next. <br><br> Type 'h' for hit and 's' for stand.`;
+        myOutputValue += dealTwoCardsToPlayer() + dealTwoCardsToDealer() + `<br><br> During each player's turn, submit 's' to stand and 'h' to hit. <br><br> Click submit to begin Player 1's turn. `;
         playerX = 1;
         gameState = 'hitOrStand';
       }
@@ -158,14 +178,14 @@ var main = function (input) {
 
           //End Result #1 = Blackjack
         } else if (playerCumulativeScores[i] == 21 && allPlayersHands[i].length == 2) {
-          myOutputValue = `Blackjack! Player ${playerX} wins the round as player has 21 points!` + outputNextPlayer();
+          myOutputValue = `Blackjack! Player ${playerX} wins the round with ${allPlayersHands[i][0].name} & ${allPlayersHands[i][1].name}.` + outputNextPlayer();
 
           playerX += 1;
           return myOutputValue;
           //End Result #2 = user's score is more than 21 and loses automatically
         } else if (playerCumulativeScores[i] > 21) {
 
-          myOutputValue = `Player ${playerX} has lost as his current points of ${playerCumulativeScores[i]} is more than 21.` + outputNextPlayer();
+          myOutputValue = `Player ${playerX} is bust! His or her current points of ${playerCumulativeScores[i]} is more than 21.` + outputNextPlayer();
 
           playerX += 1;
           return myOutputValue;
@@ -181,7 +201,7 @@ var main = function (input) {
 
         } else if (input == 's') {
 
-          myOutputValue = `Player ${playerX} chooses to stand. No new card is drawn. <br> Your current points is now ${playerCumulativeScores[i]}.` + outputNextPlayer();
+          myOutputValue = `Player ${playerX} chooses to stand. No new card is drawn. <br> Your current score is now ${playerCumulativeScores[i]}.` + outputNextPlayer();
 
           playerX += 1;
           return myOutputValue;
@@ -189,7 +209,7 @@ var main = function (input) {
         } else {
           console.log(playerX, 'playerX');
           var displayedCards = displayExistingCards();
-          myOutputValue = `Player ${playerX}, your existing cards are ${displayedCards} Please enter s or h`;
+          myOutputValue = `Player ${playerX}, your existing cards are ${displayedCards} with a total score of ${playerCumulativeScores[i]}.<br><br>Please enter 's' to stand or 'h' to hit.`;
           return myOutputValue;
         }
 
@@ -223,7 +243,7 @@ var computerDrawAddCard = function () {
     computerCumulativeScore += addCard.score
   }
 
-  return `Computer drew ${addCard.name}. <br><br>Computer total current points is now ${computerCumulativeScore}.`;
+  return `Dealer drew ${addCard.name}. <br><br>Dealer total score is now ${computerCumulativeScore}.`;
 }
 
 var displayAllComputerCards = function () {
@@ -241,7 +261,7 @@ var displayAllComputerCards = function () {
     console.log(myOutputValue);
     i += 1;
   }
-  myOutputValue += `<br> Computer's total score is ${computerCumulativeScore}`;
+  myOutputValue += `<br> Dealer's total score is ${computerCumulativeScore}`;
   return myOutputValue;
 
 
