@@ -3,6 +3,7 @@ var playerHand = [];
 var playerHandSumValue = Number();
 var computerHandSumValue = Number();
 var computerHand = [];
+var computerHandLength = computerHand.length;
 
 var shuffledDeck = [];
 
@@ -131,15 +132,22 @@ var shuffleCards = function (deck, lengthOfDeck) {
 var main = function (input) {
   var myOutputValue = 'Hello world';
   if (gameMode == dealStartingHand) {
-    shuffledDeck = shuffleCards(makeDeck(), deck.length);
-    console.log('shuffled deck is ');
-    console.log(shuffledDeck);
-    // deal cards, one at a time to each user'
+    // initialise all arrays and necssary values to 0;
+    playerHand = [];
+    playerHandSumValue = 0;
+    computerHand = [];
+    computerHandSumValue = 0;
 
+    // shuffle cards
+    shuffledDeck = shuffleCards(makeDeck(), deck.length);
+    /* [completed]: check to see if deck is shuffled correctly
+      *console.log('shuffled deck is ');
+      *console.log(shuffledDeck); */
+
+    // deal cards + store in array, alternating btw user and computer
     for (var i = 0; i < 2; i++) {
       dealCardToPlayerAndUpdateSumValue(playerHand, playerHand.length);
       dealCardToComputerAndUpdateSumValue(computerHand, computerHand.length);
-      // dealCardnUpdateSumValue(computerHand, computerHand.length, computerHandSumValue);
     }
     console.log('player hand is ');
     console.log(playerHand);
@@ -152,46 +160,55 @@ var main = function (input) {
   if (gameMode == firstRound) {
     console.log(`game mode is ${gameMode}`);
 
-    // determine sum value of cards in player and computer's hand
+    // compare sum value of cards in player and computer's hand
+    console.log(`playerHandSumValue is  ${playerHandSumValue}`);
+    console.log(`computerHandSumValue is  ${computerHandSumValue}`);
 
-    for (var i = 0; i < playerHand.length; i++) {
-      console.log(`value of card at iteration ${i} is `);
-      console.log(playerHand[i].blckJckValue);
-      playerHandSumValue = playerHand[i].blckJckValue + playerHandSumValue;
+    // Manage player's actions (i.e. stay vs hit)
+    // if player inputs 'stay', change game mode to final round
+    if (input == 'stay') {
+      gameMode = finalRound;
+      return 'Player, you\'ve chosen to stay with your current cards. click submit to continue';
+      // if player clicks inputs '', draw a card for him and update his array
     }
-    console.log('sum value of cards in player 1 hand is');
-    console.log(playerHandSumValue);
-
-    for (var i = 0; i < computerHand.length; i++) {
-      console.log(`value of card at iteration ${i} is `);
-      console.log(computerHand[i].blckJckValue);
-      computerHandSumValue = computerHand[i].blckJckValue + computerHandSumValue;
+    if (input == '') {
+      console.log('player has chosen to hit');
+      dealCardToPlayerAndUpdateSumValue(playerHand, playerHand.length);
     }
-    console.log('sum value of cards in computer\'s hand is');
-    console.log(computerHandSumValue);
 
+    // Manage game-ending conditions (Blackjacks)
     if ((playerHandSumValue == 21) || (computerHandSumValue == 21)) {
+      // Player hits blackjack and wins
       if (playerHandSumValue == 21) {
         console.log('\'Blackjack! player wins!\'');
         myOutputValue = 'Blackjack! player wins!';
       }
+      // Computer hits blackjack and win
       if (computerHandSumValue == 21) {
         console.log('\'Blackjack! computer wins!\'');
         myOutputValue = 'Blackjack! computer wins';
       }
-    }
-    else {
-      myOutputValue = `player, the value of your cards is ${playerHandSumValue}; type 'hit' to draw another card, else 'stand' to stick with this value`;
-      var PlayerDecision = input;
+    // Manage game-ending conditions (player exceeds 21)
+    } else if (playerHandSumValue > 21) {
+      myOutputValue = 'player, you lose! you\'ve exceeded 21!';
 
-      if (PlayerDecision == 'hit') {
-        playerHand.push(shuffledDeck.pop());
-        console.log();// how to record new value in playerhandsumvalue?
-      } else if (input == 'stand') {
-
-      }
+    //
+    } else if (playerHandSumValue < 21) {
+      var cardDrawn = `${playerHand[playerHand.length - 1].name} of ${playerHand[playerHand.length - 1].suit}`;
+      myOutputValue = `You drew a ${cardDrawn}. Your hand's value is ${playerHandSumValue}. Click 'submit' to hit, else type 'stay' to stick with your current number `;
+      return myOutputValue;
     }
   }
+  if (gameMode == finalRound) {
+    if (playerHandSumValue > computerHandSumValue) {
+      myOutputValue = `Player wins! <br>Value of your playing hand: ${playerHandSumValue} <br> Value of computer's playing hand ${computerHandSumValue}`;
+    } if (computerHandSumValue > playerHandSumValue) {
+      myOutputValue = `Computer wins! <br>Value of your playing hand: ${playerHandSumValue} <br> Value of computer's playing hand ${computerHandSumValue}`;
+    } if (playerHandSumValue == computerHandSumValue) {
+      myOutputValue = `it's a tie! <br>Value of your playing hand: ${playerHandSumValue} <br> Value of computer's playing hand ${computerHandSumValue}`;
+    }
+  }
+  gameMode = dealStartingHand;
   return myOutputValue;
 };
 /*
@@ -215,4 +232,19 @@ if (gameMode== firstRound)
     * if player2 >21, player 1 wins
     * if player 1  sum of rank is (<=21) AND (>player 2 sum of rank): player 1 wins
     * if player 2  sum of rank is (<=21) AND (>player 1 sum of rank): player 2 wins
-*/
+
+    for (var i = 0; i < playerHand.length; i++) {
+  console.log(`value of card at iteration ${i} is `);
+  console.log(playerHand[i].blckJckValue);
+  playerHandSumValue = playerHand[i].blckJckValue + playerHandSumValue;
+}
+console.log('sum value of cards in player 1 hand is');
+console.log(playerHandSumValue);
+
+for (var i = 0; i < computerHand.length; i++) {
+  console.log(`value of card at iteration ${i} is `);
+  console.log(computerHand[i].blckJckValue);
+  computerHandSumValue = computerHand[i].blckJckValue + computerHandSumValue;
+}
+console.log('sum value of cards in computer\'s hand is');
+console.log(computerHandSumValue); */
