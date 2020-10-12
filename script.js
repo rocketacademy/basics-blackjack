@@ -1,15 +1,15 @@
+// Global variables
 var deck = [];
 var playerHand = [];
 var playerHandSumValue = Number();
 var computerHandSumValue = Number();
 var computerHand = [];
-var computerHandLength = computerHand.length;
 
 var shuffledDeck = [];
 
 var dealStartingHand = ' deal the starting hand to players';
-var firstRound = 'first round';
-var finalRound = 'final round';
+var playerAnalyseHand = 'round for player to analyse his hand and make decisions wrt hitting or staying';
+var revealCards = 'round where player and computer reveal their cards';
 var gameMode = dealStartingHand;
 
 // make a deck
@@ -42,7 +42,9 @@ var makeDeck = function () {
       }
       // set value of picture cards (less ace) to 10
       var blckJckValue = rankCounter;
-      if (blckJckValue == 11) {
+      if (blckJckValue == 1) {
+        blckJckValue = 11;
+      } else if (blckJckValue == 11) {
         blckJckValue = 10;
       } else if (blckJckValue == 12) {
         blckJckValue = 10;
@@ -71,41 +73,49 @@ var makeDeck = function () {
   return deck;
 };
 
-/* // function to push cards from deck to appropriate player hand, then update respective sumValue
-var dealCardnUpdateSumValue = function (chosenHand, lengthOfChosenHand, appropriateSumValue) {
-  // pop card from deck and put in player/computer's hand
-
-  chosenHand.push(shuffledDeck.pop());
-  var newCard = chosenHand[lengthOfChosenHand].name + ' of' + chosenHand[lengthOfChosenHand].suit;
-  console.log(`card drawn was ${newCard}`);
-
-  var updatedSumValue = Number();
-  // calculate sum value of player/computer's hand
-  for (var i = 0; i < chosenHand.length; i++) {
-    appropriateSumValue = chosenHand[i].blckJckValue + appropriateSumValue;
-  }
-  return appropriateSumValue;
-}; */
-
-// function to push cards from deck to appropriate player hand, then update respective sumValue
+// Function title: Function to push cards from deck to appropriate player hand, then update respective sumValue
 var dealCardToPlayerAndUpdateSumValue = function (chosenHand, lengthOfChosenHand) {
   // pop card from deck and put in player/computer's hand
   chosenHand.push(shuffledDeck.pop());
   var newCard = chosenHand[lengthOfChosenHand].name + ' of' + chosenHand[lengthOfChosenHand].suit;
   console.log(`card drawn was ${newCard}`);
-  // calculate sum value of player/computer's hand
+
+  // if the drawn card is an Ace, its value will be reduced to 1 if playerHandSumValue>21
+  if ((chosenHand[lengthOfChosenHand].name == 'ace') && (playerHandSumValue + chosenHand[lengthOfChosenHand].blckJckValue > 21)) {
+    chosenHand[lengthOfChosenHand].blckJckValue = 1;
+  }
+  // else if card drawn is not an ace, but its value will cause player to exceed 21, then previously drawn aces will be counted as 1.
+  if ((playerHandSumValue + chosenHand[lengthOfChosenHand].blckJckValue) > 21) {
+    for (var i = 0; i < lengthOfChosenHand; i++) {
+      if ((chosenHand[i].name == 'ace') && (playerHandSumValue > 21)) {
+        chosenHand[i].blckJckValue = 1;
+        playerHandSumValue = playerHandSumValue - 10;// this updates the playerHandSumValue since the value in the hand is now reduced by 10 (i.e. 11-1)
+      }
+    }
+  }// calculate sum value of player's hand
   playerHandSumValue = chosenHand[lengthOfChosenHand].blckJckValue + playerHandSumValue;
 
   return playerHandSumValue;
 };
-// function to push cards from deck to  computer hand, then update respective sumValue
+// Function title: function to push cards from deck to  computer hand, then update respective sumValue
 var dealCardToComputerAndUpdateSumValue = function (chosenHand, lengthOfChosenHand) {
   // pop card from deck and put in player/computer's hand
   chosenHand.push(shuffledDeck.pop());
   var newCard = chosenHand[lengthOfChosenHand].name + ' of' + chosenHand[lengthOfChosenHand].suit;
   console.log(`card drawn was ${newCard}`);
-
-  // calculate sum value of player/computer's hand
+  // if the drawn card is an Ace, its value will be reduced to 1 if computerHandSumValue>21
+  if ((chosenHand[lengthOfChosenHand].name == 'ace') && (computerHandSumValue + chosenHand[lengthOfChosenHand].blckJckValue > 21)) {
+    chosenHand[lengthOfChosenHand].blckJckValue = 1;
+  }
+  // else if card drawn is not an ace, but its value will cause player to exceed 21, then previously drawn aces will be counted as 1.
+  if ((computerHandSumValue + chosenHand[lengthOfChosenHand].blckJckValue) > 21) {
+    for (var i = 0; i < lengthOfChosenHand; i++) {
+      if ((chosenHand[i].name == 'ace') && (computerHandSumValue > 21)) {
+        chosenHand[i].blckJckValue = 1;
+        computerHandSumValue = computerHandSumValue - 10;// this updates the computerHandSumValue since the value in the hand is now reduced by 10 (i.e. 11-1)
+      }
+    }
+  }// calculate sum value of computer's hand
   computerHandSumValue = chosenHand[lengthOfChosenHand].blckJckValue + computerHandSumValue;
   return computerHandSumValue;
 };
@@ -129,6 +139,23 @@ var shuffleCards = function (deck, lengthOfDeck) {
   return deck;
 };
 
+var getAceValue = function (userInput) {
+  var aceValue = Number();
+  if (userInput == 1) {
+    aceValue = 1;
+  }
+  else if (userInput == 11) {
+    aceValue = 11;
+  }
+  playerHand[playerHand.length - 1].blckJckValue = aceValue;
+};
+// searh player's hand for an ace, return 0 if true, 1 if false;
+for (var i = 0; i < playerHand.length; i++) {
+  if (playerHand[i].name == 'ace') {
+    blckJckValue = userInput;
+  }
+}
+
 var main = function (input) {
   var myOutputValue = 'Hello world';
   if (gameMode == dealStartingHand) {
@@ -149,15 +176,19 @@ var main = function (input) {
       dealCardToPlayerAndUpdateSumValue(playerHand, playerHand.length);
       dealCardToComputerAndUpdateSumValue(computerHand, computerHand.length);
     }
+
+    // if player hand contains an Ace, get his input on what the value should be
+    // update the playerhandSumValue
     console.log('player hand is ');
     console.log(playerHand);
     console.log('computer hand is ');
     console.log(computerHand);
-    gameMode = firstRound;
+    gameMode = playerAnalyseHand;
     myOutputValue = `Player, you drew a ${playerHand[0].name} of ${playerHand[0].suit} and a a ${playerHand[1].name} of ${playerHand[1].suit}. <br> your hand's value is ${playerHandSumValue} <br> Click 'submit' to hit`;
+
     return myOutputValue;
   }
-  if (gameMode == firstRound) {
+  if (gameMode == playerAnalyseHand) {
     console.log(`game mode is ${gameMode}`);
 
     // compare sum value of cards in player and computer's hand
@@ -168,7 +199,7 @@ var main = function (input) {
     // if player inputs 'stay', change game mode to final round
     if (input == 'stay') {
       console.log('user has decided to stay');
-      gameMode = finalRound;
+      gameMode = revealCards;
       return 'Player, you\'ve chosen to stay with your current cards. click submit to continue';
 
       // if player clicks inputs '', draw a card for him and update his array
@@ -189,7 +220,7 @@ var main = function (input) {
       return `You drew a ${cardDrawn}. Your hand's value is ${playerHandSumValue}. Click 'submit' to hit, else type 'stay' to stick with your current number`;
     }
   }
-  if (gameMode == finalRound) {
+  if (gameMode == revealCards) {
     console.log(`gameMode is now ${gameMode}`);
     while ((computerHandSumValue < 17) && (computerHandSumValue <= 21)) {
       console.log('computerHandSumValue is less than 17');
@@ -228,8 +259,8 @@ var main = function (input) {
 if (gameMode==dealStartingHand)
 * make a deck, shuffle it
 *deal 2 cards to each player
-* gameMode==firstRound
-if (gameMode== firstRound)
+* gameMode==playerAnalyseHand
+if (gameMode== playerAnalyseHand)
 * if player has 21, win; if computer has 21, win.
 * Else /if either player != 21{
   * let player decide to take any amt of cards by clicking submit. (i.e. if input=='', deal card to player)
