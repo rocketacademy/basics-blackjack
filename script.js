@@ -167,17 +167,35 @@ var main = function (input) {
     // Manage player's actions (i.e. stay vs hit)
     // if player inputs 'stay', change game mode to final round
     if (input == 'stay') {
+      console.log('user has decided to stay');
       gameMode = finalRound;
       return 'Player, you\'ve chosen to stay with your current cards. click submit to continue';
+
       // if player clicks inputs '', draw a card for him and update his array
-    }
-    if (input == '') {
+    } if (input == '') {
       console.log('player has chosen to hit');
       dealCardToPlayerAndUpdateSumValue(playerHand, playerHand.length);
     }
 
-    // Manage game-ending conditions (Blackjacks)
-    if ((playerHandSumValue == 21) || (computerHandSumValue == 21)) {
+    // Manage game-ending conditions (player exceeds 21)
+    if (playerHandSumValue > 21) {
+      console.log('user\'s input exceeded 21');
+      gameMode = dealStartingHand;
+      return `player, you lose!  You drew a ${playerHand[playerHand.length - 1].name} of ${playerHand[playerHand.length - 1].suit}, making your hand value ${playerHandSumValue}`;
+    }
+    if (playerHandSumValue <= 21) {
+      console.log('user input is still below 21');
+      var cardDrawn = `${playerHand[playerHand.length - 1].name} of ${playerHand[playerHand.length - 1].suit}`;
+      return `You drew a ${cardDrawn}. Your hand's value is ${playerHandSumValue}. Click 'submit' to hit, else type 'stay' to stick with your current number`;
+    }
+  }
+  if (gameMode == finalRound) {
+    console.log(`gameMode is now ${gameMode}`);
+    if (playerHandSumValue == computerHandSumValue) {
+      myOutputValue = `it's a tie! <br>Value of your playing hand: ${playerHandSumValue} <br> Value of computer's playing hand ${computerHandSumValue}`;
+
+      // Manage game-ending conditions (Blackjacks)
+    } else if ((playerHandSumValue == 21) || (computerHandSumValue == 21)) {
       // Player hits blackjack and wins
       if (playerHandSumValue == 21) {
         console.log('\'Blackjack! player wins!\'');
@@ -188,24 +206,12 @@ var main = function (input) {
         console.log('\'Blackjack! computer wins!\'');
         myOutputValue = 'Blackjack! computer wins';
       }
-    // Manage game-ending conditions (player exceeds 21)
-    } else if (playerHandSumValue > 21) {
-      myOutputValue = 'player, you lose! you\'ve exceeded 21!';
-
-    //
-    } else if (playerHandSumValue < 21) {
-      var cardDrawn = `${playerHand[playerHand.length - 1].name} of ${playerHand[playerHand.length - 1].suit}`;
-      myOutputValue = `You drew a ${cardDrawn}. Your hand's value is ${playerHandSumValue}. Click 'submit' to hit, else type 'stay' to stick with your current number `;
-      return myOutputValue;
     }
-  }
-  if (gameMode == finalRound) {
     if (playerHandSumValue > computerHandSumValue) {
-      myOutputValue = `Player wins! <br>Value of your playing hand: ${playerHandSumValue} <br> Value of computer's playing hand ${computerHandSumValue}`;
-    } if (computerHandSumValue > playerHandSumValue) {
-      myOutputValue = `Computer wins! <br>Value of your playing hand: ${playerHandSumValue} <br> Value of computer's playing hand ${computerHandSumValue}`;
-    } if (playerHandSumValue == computerHandSumValue) {
-      myOutputValue = `it's a tie! <br>Value of your playing hand: ${playerHandSumValue} <br> Value of computer's playing hand ${computerHandSumValue}`;
+      myOutputValue = `Player wins! <br>Value of your playing hand: ${playerHandSumValue} <br> Value of computer's playing hand: ${computerHandSumValue}`;
+    }
+    if ((computerHandSumValue > playerHandSumValue) && (computerHandSumValue < 21)) {
+      myOutputValue = `Computer wins! <br>Value of your playing hand: ${playerHandSumValue} <br> Value of computer's playing hand: ${computerHandSumValue}`;
     }
   }
   gameMode = dealStartingHand;
@@ -248,3 +254,9 @@ for (var i = 0; i < computerHand.length; i++) {
 }
 console.log('sum value of cards in computer\'s hand is');
 console.log(computerHandSumValue); */
+
+/*
+player lose conditions
+1. exceed 21;
+2. computer is larger than player, and still under 21.
+3. computer gets backjack */
