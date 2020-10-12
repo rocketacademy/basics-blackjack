@@ -92,9 +92,9 @@ var dealCardToHand = function (hand) {
 
 // Get sum of cards in hand
 var getHandSum = function (hand) {
-  var handContainsAce = false;
+  var numAcesInHand = 0;
   var sum = 0;
-  for (var i = 0; i < hand.length; i += 1) {
+  for (let i = 0; i < hand.length; i += 1) {
     var currCard = hand[i];
     // If card rank is 2-10, value is same as rank
     if (currCard.rank >= 2 && currCard.rank <= 10) {
@@ -104,14 +104,21 @@ var getHandSum = function (hand) {
       sum += 10;
       // If card is Ace, value is 11 by default
     } else if (currCard.rank === 1) {
-      handContainsAce = true;
+      numAcesInHand += 1;
       sum += 11;
     }
   }
-  // If sum is greater than sum limit and hand contains Ace,
-  // Convert Ace from value of 11 to value of 1.
-  if (sum > sumLimit && handContainsAce) {
-    sum -= 10;
+  // If sum is greater than sum limit and hand contains Aces, convert Aces from value of 11
+  // to value of 1, until sum is less than or equal to sum limit or there are no more Aces.
+  if (sum > sumLimit && numAcesInHand > 0) {
+    for (let i = 0; i < numAcesInHand; i += 1) {
+      sum -= 10;
+      // If the sum is less than sumLimit before converting all Ace values from
+      // 11 to 1, break out of the loop and return the current sum.
+      if (sum <= sumLimit) {
+        break;
+      }
+    }
   }
   return sum;
 };
