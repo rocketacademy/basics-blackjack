@@ -181,7 +181,7 @@ var main = function (input) {
     if (playerHandSumValue > 21) {
       console.log('user\'s input exceeded 21');
       gameMode = dealStartingHand;
-      return `player, you lose!  You drew a ${playerHand[playerHand.length - 1].name} of ${playerHand[playerHand.length - 1].suit}, making your hand value ${playerHandSumValue}`;
+      return `player, you lose!  You drew a ${playerHand[playerHand.length - 1].name} of ${playerHand[playerHand.length - 1].suit}, making your hand value ${playerHandSumValue}. <br> Click 'submit' to restart the game. `;
     }
     if (playerHandSumValue <= 21) {
       console.log('user input is still below 21');
@@ -191,6 +191,11 @@ var main = function (input) {
   }
   if (gameMode == finalRound) {
     console.log(`gameMode is now ${gameMode}`);
+    while ((computerHandSumValue < 17) && (computerHandSumValue <= 21)) {
+      console.log('computerHandSumValue is less than 17');
+      dealCardToComputerAndUpdateSumValue(computerHand, computerHand.length);
+      console.log(`sum value of computer's hand is ${computerHandSumValue}`);
+    }
     if (playerHandSumValue == computerHandSumValue) {
       myOutputValue = `it's a tie! <br>Value of your playing hand: ${playerHandSumValue} <br> Value of computer's playing hand ${computerHandSumValue}`;
 
@@ -206,15 +211,17 @@ var main = function (input) {
         console.log('\'Blackjack! computer wins!\'');
         myOutputValue = 'Blackjack! computer wins';
       }
-    }
-    if (playerHandSumValue > computerHandSumValue) {
+      // player win conditions
+    } else if ((playerHandSumValue > computerHandSumValue) || (computerHandSumValue > 21)) {
       myOutputValue = `Player wins! <br>Value of your playing hand: ${playerHandSumValue} <br> Value of computer's playing hand: ${computerHandSumValue}`;
     }
+    // player lose conditions
     if ((computerHandSumValue > playerHandSumValue) && (computerHandSumValue < 21)) {
       myOutputValue = `Computer wins! <br>Value of your playing hand: ${playerHandSumValue} <br> Value of computer's playing hand: ${computerHandSumValue}`;
     }
   }
   gameMode = dealStartingHand;
+  myOutputValue = myOutputValue + '<br>Click submit to restart the game';
   return myOutputValue;
 };
 /*
