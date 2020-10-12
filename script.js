@@ -67,13 +67,6 @@ var shuffleCards = function (cards) {
   console.log(cards)
   return cards;
 };
-var deck = shuffleCards(makeDeck());
-var currentMode = '';
-var playerHand = [];
-var computerHand = [];
-var justStarted = true;
-
-
 var computeScore = function (hand) {
   var totalScore = 0
   for (index = 0; index < hand.length; index++) {
@@ -90,111 +83,124 @@ var computePlayersOpenCardScore = function (hand) {
   return totalScore;
 }
 
-var playerPressHit = function (input) {
-  if (input == 'h') {//Player Bust Scenario (Player presses HIT) - 
+
+var computerMustTake = function () {
+  computerHand.push(deck.pop());
+  return computeScore(computerHand);
+}
+
+var deck = shuffleCards(makeDeck());
+var currentMode = '';
+var playerHand = [];
+var computerHand = [];
+var finish = false;
+
+var main = function (input) {
+  var myOutputValue = '';
+  //computer gets one face up and one face down cards
+  var computerCardFaceDown = deck.pop();
+  var computerCardFaceUp = deck.pop();
+
+  //player gets two cards
+  var playerCard1 = deck.pop();
+  var playerCard2 = deck.pop();
+  console.log('player card name' + playerCard1.name);
+  console.log('player card suit' + playerCard1.suit);
+  console.log('player card rank' + playerCard1.rank);
+  console.log('player card name' + playerCard2.name);
+  console.log('player card suit' + playerCard2.suit);
+  console.log('player card rank' + playerCard2.rank);
+  console.log('computer face up card rank' + computerCardFaceUp.rank);
+  console.log('computer face down card rank' + computerCardFaceDown.rank);
+  if (playerHand.length == 0) {
+    //push the player cards to playerhand array
+    playerHand.push(playerCard1);
+    playerHand.push(playerCard2);
+  }
+  //push the computer cards to computer hand array
+  computerHand.push(computerCardFaceDown);
+  computerHand.push(computerCardFaceUp);
+
+  var currentComputerScore = computeScore(computerHand)
+  var playerScore = computeScore(playerHand);
+
+  //I want to check  bj logic
+  if (currentComputerScore == 21 && computerHand.length == 2) {
+    console.log(currentComputerScore);
+    finish = true;
+    myOutputValue = 'computer wins! computer has bj';
+  }
+  if (playerScore == 21 && playerHand.length == 2) {
+    console.log(playerScore);
+    finish = true;
+    myOutputValue = 'player wins! player has bj';
+  } else {
+    myOutputValue += '<br>' + playerHand[0].name + ' of ' + playerHand[0].suit;
+    myOutputValue += '<br>' + playerHand[1].name + ' of ' + playerHand[1].suit;
+    currentMode = 'hit or stand'
+
+  }
+  console.log('player hand', playerHand);
+  console.log('input', input);
+  console.log('current mode', currentMode);
+
+  if (input == 'h' && currentMode == 'hit or stand') {
+    //Player Bust Scenario(Player presses HIT) -
     //This means player's open cards are >= 21
     //Deal a new card
-    var newPlayerCard = deck.pop()
+    var newPlayerCard = deck.pop();
     //Add the new card to the player's hand
-    playerHand.push(newPlayerCard)
+    playerHand.push(newPlayerCard);
     //Count the player's open cards
-    var playerOpenCardsCount = computePlayersOpenCardScore(playerHand)
+    var playerScore = computeScore(playerHand)
+    // var playerCardsCount = computePlayersOpenCardScore(playerHand);
+    myOutputValue += '<br>' + newPlayerCard.name + 'of ' + newPlayerCard.suit;
     //Check if player busts
-    if (playerOpenCardsCount >= 21) {
-      //Print "Computer Wins!"
-      //Exit
+    if (playerScore >= 21) {
+      myOutputValue = 'computer wins!! You busted';
+      finish = true;
     }
   }
-}
-var computerMustTake = function () {
-  computerHand.push(deck.pop())
-  return computeScore(computerHand)
-}
+  // if no one has bj and total score of 3 cards for player
+  console.log('player hand', playerHand);
+  var playerScore = computeScore(playerHand);
+  myOutputValue += `<br> You have  ${playerScore} `;
 
-var playerPressStand = function (input) {//Player Stand Scenario (Player presses STAND) 
-  //- This means player's open cards are < 21, the turn shifts to the computer
-  if (input == 's') {
-    var currentComputerScore = computeScore(computerHand)
-    var playerScore = computeScore(playerHand)
 
+  if (input == 's' && currentMode == 'hit or stand mode') {
+    var currentComputerScore = computeScore(computerHand);
     while (currentComputerScore < 17) {
-      currentComputerScore = computerMustTake()
+      currentComputerScore = computerMustTake();
     }
-    // Definitely confirm plus guarantee the currentComputerScore will be > 16
+    // the currentComputerScore will be > 16
     // Check the computer's hand to see if it bust
     if (currentComputerScore > 21) {
       if (playerScore > 21) {
-        myOutputValue = 'its tie!'
+        myOutputValue = 'its tie!';
+        finish = true;
       } else {
-        myOutputValue = 'player wins!'
+        myOutputValue = 'player wins!';
+        finish = true;
       }
     }// if both compuetr and player bust
     else if (playerScore > 21) {
-      myOutputValue = 'computer wins!'
+      myOutputValue = 'computer wins! but both busts';
     }// if both cards are < 21 then whoever closer to 21 wins
     // computerScore is 20
     // playerScore is 15
     else if (currentComputerScore > playerScore) {
-      myOutputValue = 'computer wins!'
+      myOutputValue = 'computer wins! closer to 21';
     }
     else if (playerScore > currentComputerScore) {
-      myOutputValue = 'player wins!'
+      myOutputValue = 'player wins! closer to 21';
     }
     else {
-      myOutputValue = 'its tie!'
+      myOutputValue = 'its tie!';
     }
   }
-}
-var blackJack = function () {
-  var currentComputerScore = computeScore(computerHand)
-  var playerScore = computeScore(playerHand)
+  var currentComputerScore = computeScore(computerHand);
+  var playerScore = computeScore(playerHand);
+  myOutputValue += `<br> Please press 'h' for hit and 's' for stand!!`;
 
-  if (currentComputerScore == 21) {
-    myOutputValue = 'computer wins!';
-  }
-  else if (playerScore == 21) {
-    myOutputValue = 'player wins!';
-  }
-}
-var main = function (input) {
-  var myOutputValue = '';
-  if (justStarted == true) {
-    //computer gets one face up and one face down cards
-    var computerCardFaceDown = deck.pop();
-    var computerCardFaceUp = deck.pop();
-
-    //player gets two cards
-    var playerCard1 = deck.pop();
-    var playerCard2 = deck.pop();
-    console.log('player card name' + playerCard1.name);
-    console.log('player card suit' + playerCard1.suit);
-    console.log('player card rank' + playerCard1.rank);
-    console.log('player card name' + playerCard2.name);
-    console.log('player card suit' + playerCard2.suit);
-    console.log('player card rank' + playerCard2.rank);
-    console.log('computer face up card rank' + computerCardFaceUp.rank);
-    console.log('computer face down card rank' + computerCardFaceDown.rank);
-    //push the player cards to playerhand array
-    playerHand.push(playerCard1);
-    playerHand.push(playerCard2);
-    //playerHand = [playerCard1, playerCard2, new card, new card]
-    var currentComputerScore = computeScore(computerHand)
-    var playerScore = computeScore(playerHand)
-    //playerHand[0] this card will always be the first card that you pushed in
-    computerHand.push(computerCardFaceDown);
-    computerHand.push(computerCardFaceUp);
-  }
-  //I want to check  bj logic
-  if (blackJack(computerHand)) {
-    justStarted = false;
-    myOutputValue = 'Game over';
-  }
-  else if (blackJack(playerHand)) {
-    justStarted = false;
-    myOutputValue = 'Game over';
-  } else {
-    var playerScore = computeScore(playerHand)
-    myOutputValue = `You have  ${playerScore} <br> Please press 'h' for hit and 's' for stand!!`
-    currentMode = 'hit or stand'
-  }
   return myOutputValue;
+}
