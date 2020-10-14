@@ -1,68 +1,82 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>SWE101 Blackjack</title>
-        <meta charset="UTF-8">
-        <style>
-            *{
-              box-sizing:border-box;
-            }
 
-            #header{
-              text-align:center;
-            }
+<head>
+  <title>SWE101 Blackjack</title>
+  <meta charset="UTF-8">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
-            #container{
-              margin:20px auto;
-              padding:20px;
-              background-color:pink;
-              max-width:300px;
-            }
+    #header {
+      text-align: center;
+    }
 
-            input{
-              width:70%;
-              margin-right:4px;
-            }
+    #container {
+      margin: 20px auto;
+      padding: 20px;
+      background-color: pink;
+      max-width: 300px;
+    }
 
-            button{
-              font-size:7px;
-              width:20%;
-            }
+    input {
+      width: 70%;
+      margin-right: 4px;
+    }
 
-            #output{
-              margin:20px auto;
-              padding:20px;
-              background-color:grey;
-              width:100%;
-            }
-        </style>
-    </head>
-    <body>
-        <h1 id="header">SWE 101! Blackjack 🚀</h1>
-        <div id="container">
-            <input id="my-input"/>
-            <button id="my-button">submit</button>
-            <p>output:</p>
-            <div id="output">
-            </div>
-        </div>
-        <script src="script.js"></script>
-        <script>
-            var button = document.querySelector('#my-button');
+    button {
+      font-size: 7px;
+      width: 20%;
+    }
 
-            button.addEventListener('click', function(){
+    #output {
+      margin: 20px auto;
+      padding: 20px;
+      background-color: grey;
+      width: 100%;
+    }
+  </style>
+</head>
 
-              var input = document.querySelector('#my-input');
+<body>
+  <h1 id="header">SWE 101! Blackjack 🚀</h1>
+  <div id="container">
+    <input id="my-input" />
+    <button id="my-button">submit</button>
+    <p>output:</p>
+    <div id="output">
+      Click Submit to play!<br><br>
+      The aim of the game is to get as close to 21 points without going over.<br><br>
+      You can choose to hit if you want to draw more cards, or stay once you think you have enough points to win against
+      the dealer. <br><br>
+      The dealer will then draw cards for their hand. If they have 17 or more, they will not draw.<br><br>
+      If you get two cards of the same rank, you can choose to split your cards into 2 hands and play them
+      separately.<br><br>
+      However, once you split your cards, you will only get dealt an additional card for each hand then forced to stay
+      while the dealer continues to draw.<br><br>
+      Good luck!
+    </div>
 
-              var result = main(input.value);
+  </div>
+  <script src="script.js"></script>
+  <script>
+    var button = document.querySelector('#my-button');
 
-              var output = document.querySelector('#output');
+    button.addEventListener('click', function () {
 
-              output.innerHTML = result;
+      var input = document.querySelector('#my-input');
 
-              input.value = "";
-            });
+      var result = main(input.value);
 
-        </script>
-    </body>
+      var output = document.querySelector('#output');
+
+      output.innerHTML = result;
+
+      input.value = "";
+    });
+
+  </script>
+</body>
+
 </html>
