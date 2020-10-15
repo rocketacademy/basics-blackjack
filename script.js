@@ -1,71 +1,60 @@
+// =================================================================================.
 // =================================================================================
 // ========== GLOBAL VARIABLES =====================================================
 // =================================================================================
+// =================================================================================
 
-// overall game stats
+// RESET FOR EACH NEW GAME
 var round = 0;
-var numOfHands = 2; // total no of hands playing (incl dealer)
+var numOfPlayers = 0; // total no of players (EXclude dealer)
+var playerNames = ['Dealer']; // array for player names - position 0 is 'dealer' so player 1 takes position 1, player 2 position 2 etc
 
-// card arrays
+// RESET FOR EACH NEW ROUND
 var deck = [];
-var player1stHand = [];
-var player2ndHand = [];
-var dealerHand = [];
+var playerHandsLeft = 0; // player hands now playing (EXclude dealer).. +1 for split; -1 if BJ/Bust
+var whichPlayer = 1; // which player - to use as index for playerNames array
 
-// sums of cards
-var player1stSum = 0;
-var player2ndSum = 0;
-var dealerSum = 0;
-
-// player modes
-var PLAYER = 'Player';
-var DEALER = 'Dealer';
-var whoIsPlaying = PLAYER; // default to player first, cos dealer always go last
-
-// split or not
+// STATS FOR EACH HAND
+var gameStats = []; // array (each hand as 1 object) - if split, 2 objects (2 hands) for same player
+var index = 0; // which position in gameStats array
+var currHand = ''; // for each player hand currently playing, this uses above index to get the correct object in gameStats array
+// 'hand' attribute in object in gameStats array - if split, set as HAND_1 / HAND_2 (iso default '')
 var HAND_1 = 'Hand 1';
 var HAND_2 = 'Hand 2';
-var hand = ''; // Default blank means no split of hands
 
-// game modes
-var START_GAME = 'START_GAME';
-var ASK_SPLIT = 'ASK_SPLIT';
-var SPLIT = 'SPLIT';
-var KICKOFF = 'KICKOFF';
-var HIT = 'HIT';
-var STAND = 'STAND';
+// GAME MODES
+var START_GAME = 'START_GAME'; // for each new round; main action is to create and shuffle deck
+var DEAL_PLAYER_INIT_CARDS = 'DEAL_PLAYER_INIT_CARDS'; // for each player; main action is to deal 2 cards & chk if same rank
+var ASK_SPLIT = 'ASK_SPLIT'; // this is activated if first 2 cards are of equal rank
+var SPLIT = 'SPLIT'; // split into 2 hands for player
+var KICKOFF = 'KICKOFF'; // this displays first 2 cards dealt, check blackjack & ask player to hit/stand
+var HIT = 'HIT'; // deal 1 new card, check blackjack/bust, else ask player to hit/stand
+var STAND = 'STAND'; // go on to player's 2nd hand OR to next player OR to dealer
 var DEALER_TURN = 'DEALER_TURN';
-var CONCLUDE = 'CONCLUDE';
-var END_OF_ROUND = 'END_OF_ROUND';
+var CONCLUDE = 'CONCLUDE'; // determine win/lose for player hands still remaining (ie have not blackjack/bust)
+var END_OF_ROUND = 'END_OF_ROUND'; // reset relevant global variables for the next round
 var gameMode = START_GAME;
 
 // =================================================================================
+// =================================================================================
 // ========== HELPER FUNCTIONS  ====================================================
+// =================================================================================
 // =================================================================================
 
 // reset variables for new round
 var reset = function () {
-  // overall game stats
-  numOfHands = 2;
+  playerHandsLeft = 0;
+  whichPlayer = 1;
 
-  // card arrays
-  player1stHand = [];
-  player2ndHand = [];
-  dealerHand = [];
+  gameStats = [];
+  index = 0;
+  currHand = '';
 
-  // sums of cards
-  player1stSum = 0;
-  player2ndSum = 0;
-  dealerSum = 0;
-
-  // player modes
-  whoIsPlaying = PLAYER;
-  hand = '';
-
-  // game modes
   gameMode = START_GAME;
 };
-// ------------------------------------------------
+
+// -------------------------------------------------------------------------
+
 // create a new deck of cards
 var makeDeck = function () {
   var newdeck = [];
@@ -108,7 +97,9 @@ var makeDeck = function () {
   // console.log(newdeck);
   return newdeck;
 };
-// ------------------------------------------------
+
+// -------------------------------------------------------------------------
+
 // shuffle deck of cards
 var shuffleDeck = function () {
   var counter = 0;
@@ -123,22 +114,16 @@ var shuffleDeck = function () {
 
     counter += 1;
   }
-  // console.log('shuffled deck');
+  // console.log('shuffled');
   // console.log(deck);
 };
-// ------------------------------------------------
+
+// -------------------------------------------------------------------------
+
 // displays the cards in an array
 var displayCards = function () {
   // pull out the correct card array (ok since we will only read but not modify the array)
-  var array = dealerHand;
-
-  if (whoIsPlaying == PLAYER) {
-    if (hand == HAND_2) {
-      array = player2ndHand;
-    } else {
-      array = player1stHand;
-    }
-  }
+  var array = currHand.cards;
 
   // create message using above array
   var message = '';
@@ -151,20 +136,13 @@ var displayCards = function () {
 
   return message;
 };
-// ------------------------------------------------
-// calculate best possible sum for the cards & update global variables for sums
-var sumUpCards = function () {
-  // STEP 1 - choose player or dealer array
-  // pull out the correct card array (ok since we will only read but not modify the array)
-  var array = dealerHand;
 
-  if (whoIsPlaying == PLAYER) {
-    if (hand == HAND_2) {
-      array = player2ndHand;
-    } else {
-      array = player1stHand;
-    }
-  }
+// -------------------------------------------------------------------------
+
+// calculate best possible sum for the cards & update gameStats array
+var sumUpCards = function () {
+  // STEP 1 - pull out the correct card array (ok since we will only read but not modify the array)
+  var array = currHand.cards;
 
   // STEP 2 - declare local variables
   var score = 0; // best sum of cards
@@ -214,91 +192,89 @@ var sumUpCards = function () {
   console.log('max ' + max);
   console.log('final score ' + score);
 
-  // STEP 5 - update global variables for final sums
-  dealerSum = score;
-
-  if (whoIsPlaying == PLAYER) {
-    if (hand == HAND_2) {
-      player2ndSum = score;
-    } else {
-      player1stSum = score;
-    }
-  }
+  // STEP 5 - update gameStats array
+  currHand.cardSum = score;
 
   // STEP 6 - return the sum
   return score;
 };
 
-// ------------------------------------------------
+// -------------------------------------------------------------------------
+
 // generate message for player if blackjack/bust
+// update status of the hand to 'Blackjack' or 'Bust' inside gameStats array
+// also update playerHandsLeft
+// then go to next hand or end round
 var msgBJackOrBust = function (sum) {
-  // player is out of game if blackjack/bust
-  // therefore update num of hands left in the game (note this num incl dealer)
-  numOfHands = numOfHands - 1;
+  var message = '';
 
-  // *********CASE 1************
-  // if only dealer left, round is over
+  // if bust
+  currHand.status = 'Bust';
+  message = '<br><br> ....you have BUST! Its ok, try again next time....';
 
-  if (numOfHands == 1) {
-    gameMode = END_OF_ROUND;
-
-    // tag on this message to below winning/losing message to end the round
-    var message = `<br><br> No more player hands left to play. This is the end of round ${round}.
-          <br><br> Click to start another round. Or enter 'end' to exit the game.`;
-
-    // winning message if blackjack
-    if (sum == 21) {
-      return ` <br><br> BLACKJACK! You won! Congrats! ${message}`;
-    }
-
-    // losing message if bust
-    return `<br><br> ....you have BUST! Its ok, try again next time....${message}`;
-  }
-
-  // *********CASE 2************
-  // otherwise continue with the round
-  // end this turn and go to next turn
-
-  gameMode = STAND; // go to next turn
-
-  // winning message if blackjack
+  // if blackjack
   if (sum == 21) {
-    return '<br><br> BLACKJACK! You won! Congrats! <br><br> Click submit to exit your turn.';
+    currHand.status = 'Blackjack';
+    message = '<br><br> BLACKJACK! You won! Congrats!';
   }
 
-  // losing message if bust
-  return '<br><br> ....you have BUST! Its ok, try again next time....<br><br> Click submit to exit your turn.';
+  // next, remaining steps determine if continue round or not
+
+  // player is out of game if blackjack/bust
+  // therefore update num of hands left in the game (note this num excludes dealer)
+  playerHandsLeft -= 1;
+  console.log('Due to Blackjack / Bust - playerHandsLeft');
+  console.log(playerHandsLeft);
+
+  // CASE 1 - continue with the round (go to STAND for next player hand / dealer)
+  gameMode = STAND;
+
+  // CASE 2 - end this round if everyone blackjack/bust so no more player hands left
+  if (playerHandsLeft == 0) {
+    gameMode = END_OF_ROUND;
+    return `${message} <br><br> No more player hands left to play. This is the end of round ${round}.
+          <br><br> Click to start another round. Or enter 'end' to exit the game.`;
+  }
+
+  return `${message} <br><br> Click submit to exit your turn.`;
 };
-// ------------------------------------------------
-// generate message for player if win/lose
-var msgWinLose = function (playersum) {
-  var message = `<br><br>Your cards add up to: ${playersum}`;
 
-  if (playersum > dealerSum) {
-    message = `${message} <br><br> You WIN! Congrats!`;
+// -------------------------------------------------------------------------
+
+// generate message for player whether win/lose/tie versus dealer
+var msgWinLose = function (playersum) {
+  var message = `<br>Your cards add up to: ${playersum}.`;
+  var dealerCardSum = gameStats[0].cardSum;
+
+  if (playersum > dealerCardSum) {
+    message = `${message} <br> You WIN! Congrats!`;
+  } else if (playersum < dealerCardSum) {
+    message = `${message} <br> You LOST! It's ok, try again next time!`;
   } else {
-    message = `${message} <br><br> You LOST! It's ok, try again next time!`;
+    message = `${message} <br> Its a TIE! Not bad!`;
   }
+
   return message;
 };
+
+// =================================================================================
 // =================================================================================
 // ========= MAIN FUNCTION =========================================================
 // =================================================================================
+// =================================================================================
 
 var main = function (input) {
-  // ************* DECLARE LOCAL VARIABLES ********************
+  // @@@@@@@@@@@@@ DECLARE LOCAL VARIABLES @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
   var sum = 0; // temp store sum for cards
   var message = '';
 
-  // ************* PROCESSING USER INPUTS *********************
+  // @@@@@@@@@@@@@ PROCESSING USER INPUTS @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
   // note placement eg we asked for input "yes" or 'no' in ASK_SPLIT mode
-  // so code must put b4 ASK_SPLIT's if cond (else ASK_SPLIT will run b4 we can change the game mode
+  // so code must put b4 ASK_SPLIT's if cond (else ASK_SPLIT will run b4 we change the game mode)
   if (input == 'yes') {
     gameMode = SPLIT;
-    hand = HAND_1;
-    numOfHands += 1;
     return 'You have decided to SPLIT your hand. <br><br> Click submit to create your 2 new hands!';
   }
 
@@ -307,162 +283,289 @@ var main = function (input) {
     return 'You have chosen NOT to split. <br><br>Click submit to continue.';
   }
 
-  // use player's choice to hit or stand to directly go into the correct game mode
-  // will go directly to run HIT/STAND modes since there is no Return inserted here to end code run
-  if (input == 'hit') {
-    gameMode = HIT;
-  }
+  // -------------------------------------------------------------------------
 
+  // if player chose 'stand' then directly go into the STAND game mode
+  // STAND mode will directly run after this since there is no Return inserted here to end code run
   if (input == 'stand') {
     gameMode = STAND;
   }
 
-  // if player chooses to end the whole game
+  // -------------------------------------------------------------------------
+
+  // if player chooses to end the whole game, reset everything to initial default values
   if (input == 'end') {
     reset();
+
+    // STATS FOR EACH GAME
     round = 0;
-    return 'Thanks for playing! Hope to see you again!';
+    numOfPlayers = 0;
+    playerNames = ['Dealer'];
+
+    return 'Thanks for playing! Hope to see you again! <br><br> And if you wish to play again, just enter the number of players and click submit.';
   }
 
-  // ************* VARIOUS GAME MODES ***********************
+  // @@@@@@@@@@@@@ VARIOUS GAME MODES @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
-  // create and shuffle deck.......deal 2 cards each
+  // START_GAME
+  // this runs for each new ROUND
+  // if it is a also new GAME - also update num of players
+  // update round & reset playerHandsLeft
+  // create and shuffle deck.......deal 2 cards for dealer...ask player 1 to start
   if (gameMode == START_GAME) {
+    // CASE 1 - NEW GAME
+    /// below 2 steps only take place at start of a New GAME
+
+    // 1. input validation at start of game for total no of players
+    if (round == 0 && !(input >= 1)) {
+      return 'Please enter a numerical figure for the total number of players and click submit.';
+    }
+
+    // 2. update no of players at start of game
+    if (round == 0) {
+      numOfPlayers = Number(input);
+    }
+
+    // CASE 2 - NEW ROUND
+    // below steps all take place at start of every New ROUND in the game
+
+    // update the round number & no of hands (before any split) for current round
     round += 1;
-    console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ROUND ' + round);
+    playerHandsLeft = numOfPlayers; // total no of player hands (before any split option)
 
     // create & shuffle deck
     deck = makeDeck();
     shuffleDeck();
+    // check - why below line cannot work?
+    // deck = shuffleDeck(makeDeck());
 
+    console.log('****************************************** ROUND ' + round);
     console.log(deck);
+    console.log('playerHandsLeft');
+    console.log(playerHandsLeft);
 
-    // deal 2 cards each
-    player1stHand = [deck.pop(), deck.pop()];
-    dealerHand = [deck.pop(), deck.pop()];
-
-    console.log('-----START GAME --------------');
-    console.log('player1stHand');
-    console.log(player1stHand);
-    console.log('dealerHand');
-    console.log(dealerHand);
-
-    // for testing split case & also caln of Aces by creating 2 Aces
-    player1stHand[0] = {
-      name: 'Ace',
-      rank: 1,
-      suit: 'testA',
+    // deal 2 cards....create and store initial stats for dealer
+    var dealerStats = {
+      who: 'Dealer',
+      nameindex: '',
+      hand: '',
+      status: 'Playing',
+      cards: [deck.pop(), deck.pop()],
+      cardSum: 0,
     };
-    player1stHand[1] = {
-      name: 'Ace',
-      rank: 1,
-      suit: 'testB',
-    };
-    console.log('TEST for SPLIT - player1stHand');
-    console.log(player1stHand);
 
-    // update game mode to run to next stage KICKOFF
-    // but if player's cards are same rank then go to ASK_SPLIT mode to ask if want to split
-    gameMode = KICKOFF; // position this before the if cond below else any setting to ASK_SPLIT will get overridden
+    gameStats.push(dealerStats);
 
-    if (player1stHand[0].rank == player1stHand[1].rank) {
-      gameMode = ASK_SPLIT;
+    console.log('gameStats');
+    console.log(gameStats);
+
+    // update next game mode...output a message for player 1 to proceed
+    gameMode = DEAL_PLAYER_INIT_CARDS;
+
+    if (round == 1) {
+      message = 'Player 1 shall go first. <br><br> But first, please enter your NAME and click submit.';
+    } else {
+      message = `${playerNames[1]} (Player 1) shall go first. <br><br>Click submit to view your 2 cards. Good luck!`;
     }
 
-    return `Welcome to Round ${round} ! <br><br>Player shall go first. <br><br>Click submit to view your 2 cards. Good luck!`;
+    return `Welcome all ${numOfPlayers} players! <br><br> This is Round ${round} <br><br> ${message}`;
   }
 
-  // ------------------------------------------------
+  // -------------------------------------------------------------------------
+
+  // DEAL_PLAYER_INIT_CARDS
+  // this runs for each PLAYER
+  // if it is a also new GAME - also store player's name
+  // deal 2 cards for player......update index & currHand
+  // check if the 2 cards are same rank - if yes go to SPLIT
+  // otherwise go to KICKOFF game mode
+  if (gameMode == DEAL_PLAYER_INIT_CARDS) {
+    console.log('**************************** DEAL_PLAYER_INTT_CARDS');
+
+    // store player's name in very 1st round
+    // note - player 1 asked to submit name in START_GAME
+    // while remaining players asked to submit name in STAND
+    if (round == 1) {
+      if (input == '') {
+        return 'Please enter your name and click submit.';
+      }
+      var name = input;
+      playerNames.push(name);
+    }
+
+    // deal 2 cards....create and store initial stats for player
+    var playerStats = {
+      who: 'Player ' + whichPlayer,
+      nameindex: whichPlayer,
+      hand: '',
+      status: 'Playing',
+      cards: [deck.pop(), deck.pop()],
+      cardSum: 0,
+    };
+
+    gameStats.push(playerStats);
+
+    // update currHand (and index) only after creating object
+    // otherwise currHand will be 'undefined'
+    // this is done to pull out correct object in gameStats array
+    index += 1;
+    currHand = gameStats[index];
+
+    // player 1 only - for testing split case & also caln of Aces by creating 2 Aces
+    if (whichPlayer == 1) { // added this if cond, else code will run everytime this game mode runs
+      gameStats[1].cards[0] = {
+        name: 'Ace',
+        rank: 1,
+        suit: 'testA',
+      };
+      gameStats[1].cards[1] = {
+        name: 'Ace',
+        rank: 1,
+        suit: 'testB',
+      };
+    }
+
+    console.log('whichPlayer');
+    console.log(whichPlayer);
+    console.log('playerNames');
+    console.log(playerNames);
+    console.log('index');
+    console.log(index);
+    console.log('currHand');
+    console.log(currHand);
+    console.log('gameStats');
+    console.log(gameStats);
+
+    // update game mode to direct go KICKOFF (put b4 IF so it dosen't override game mode fr IF cond)
+    // but if player's cards are of same rank then directly enter ASK_SPLIT to ask if want to split
+    gameMode = KICKOFF;
+
+    if (currHand.cards[0].rank == currHand.cards[1].rank) {
+      gameMode = ASK_SPLIT;
+    }
+  }
+
+  // -------------------------------------------------------------------------
+
+  // ASK_SPLIT
   // ask player if want to split
   if (gameMode == ASK_SPLIT) {
-    return `${whoIsPlaying}, <br><br>You have drawn 2 cards of the same rank: :<br> ${displayCards()}
-    <br> Please enter 'yes' or 'no' and click submit.
-    <br><br> If you enter 'yes', we will split your cards into 2 seperate hands and deal each hand 1 more card each.
-    So you can play 2 hands and have 2 chances to win!
+    console.log('**************************** ASK_SPLIT');
+    return `Hi ${playerNames[whichPlayer]} (${currHand.who}), <br><br>You have drawn 2 cards of the same rank: <br> ${displayCards()}
+    <br> Enter 'yes' or 'no' and click submit.
+    <br><br> If you enter 'yes', we will split your cards into 2 seperate hands and deal each hand 1 more card.
+    <br>So you can play 2 hands and have 2 chances to win!
     <br><br> If you enter 'no', you can play your current hand as usual.`;
   }
 
-  // ------------------------------------------------
+  // -------------------------------------------------------------------------
+
+  // SPLIT
   // split player's original hand into 2 seperate hands and deal a new card to each hand
+  // update playerHandsLeft
+  // display cards and ask player to proceed to play the 1st hand
   if (gameMode == SPLIT) {
-    var firstCard = player1stHand[0];
-    var secondCard = player1stHand[1];
-    player1stHand = [firstCard, deck.pop()];
-    player2ndHand = [secondCard, deck.pop()];
+    console.log('**************************** SPLIT');
 
-    console.log('-----SPLIT--------------');
-    console.log('player1stHand');
-    console.log(player1stHand);
-    console.log('player2ndHand');
-    console.log(player2ndHand);
+    // STEP 1 - SPLIT INTO 2 HANDS
 
-    // display the 2 new hands
-    var show1stHand = displayCards();
-    hand = HAND_2; // temp revert to HAND_2 to display correct cards in 'show2ndHand' below
+    var orig1stCard = currHand.cards[0];
+    var orig2ndCard = currHand.cards[1];
+
+    // update the current details in gameStats array
+    currHand.hand = HAND_1; // iso '', update as the 1st hand from the split
+    currHand.cards = [orig1stCard, deck.pop()]; // use the 1st card dealt + deal 1 more card
+
+    // add hand no 2 from the splitting as the next item in gameStats array
+    var secondHand = {
+      who: 'Player ' + whichPlayer,
+      nameindex: whichPlayer,
+      hand: HAND_2, // 2nd hand from the split
+      status: 'Playing',
+      cards: [orig2ndCard, deck.pop()], // use 2nd card dealt previously + deal 1 more card
+      cardSum: 0,
+    };
+
+    gameStats.push(secondHand);
+
+    console.log('gameStats');
+    console.log(gameStats);
+
+    // STEP 2 - DISPLAY THE 2 NEW HANDS & UPDATE GAME VARIABLES
+
+    // temp update index & currHand
+    // this is to pull out next item for display (ie the newly added hand 2 for this player)
+    index += 1;
+    currHand = gameStats[index];
     var show2ndHand = displayCards();
-    hand = HAND_1; // revert back to HAND_1
+
+    // revert index & currHand back to previous (ie hand 1 for this player)
+    // pull out hand 1 for display
+    index -= 1;
+    currHand = gameStats[index];
+    var show1stHand = displayCards();
+
+    playerHandsLeft += 1; // add 1 since spliiting adds an additional player hand to the game
+    console.log('playerHandsLeft');
+    console.log(playerHandsLeft);
 
     gameMode = KICKOFF;
 
-    return `Your 2 hands are: <br><br> First Hand: <br>${show1stHand} <br><br> Second Hand: <br>${show2ndHand}
+    return `${playerNames[whichPlayer]} (${currHand.who}): <br><br>Your 2 hands are: 
+    <br><br> First Hand: <br>${show1stHand} <br><br> Second Hand: <br>${show2ndHand}
     <br><br>Please click submit to start with your FIRST hand.`;
   }
 
-  // ------------------------------------------------
+  // -------------------------------------------------------------------------
+
+  // KICKOFF
   // display and sum up 1st 2 cards for player
   // check for blackjack (not possible to bust)
   // ask player to hit or stand
   if (gameMode == KICKOFF) {
-    console.log('-----KICKOFF--------------');
+    console.log('**************************** KICKOFF for Round ' + round + ' for ' + currHand.who + '(' + currHand.hand + ')');
 
     sum = sumUpCards();
 
-    console.log('player1stSum');
-    console.log(player1stSum);
-    console.log('player2ndSum');
-    console.log(player2ndSum);
+    console.log('gameStats');
+    console.log(gameStats);
 
-    message = `${whoIsPlaying} ${hand}: 
+    message = `Hi ${playerNames[whichPlayer]} (${currHand.who}) ${currHand.hand}: 
     <br><br>You have drawn:<br> ${displayCards()}
-    <br> The cards add up to: <br> ${sum}`;
+    <br> The cards add up to: ${sum}`;
 
     // Check for BLACK JACK (here not possible to BUST)
     if (sum == 21) {
       return `${message} ${msgBJackOrBust(sum)}`;
     }
 
+    // game will proceed to HIT unless player enter "stand"
+    gameMode = HIT;
+
     // if never black jack then ask player to hit or stand
-    return `${message} <br><br> Enter 'hit' to draw 1 more card. <br> Or enter 'stand' to end your turn.`;
+    return `${message} <br><br> Click submit to draw 1 more card ('hit'). <br> Or enter 'stand' and submit to end your turn.`;
   }
 
-  // ------------------------------------------------
-  // deal 1 card....display & sum all cards...chk blackjack/bust...ask player hit/stand
+  // -------------------------------------------------------------------------
+
+  // HIT
+  // deal 1 card....display & sum all cards
+  // chk blackjack/bust...else ask player hit/stand
   if (gameMode == HIT) {
+    console.log('**************************** HIT');
+
     // deal a new card
     var newCard = deck.pop();
-
-    if (hand == HAND_2) {
-      player2ndHand.push(newCard);
-    } else {
-      player1stHand.push(newCard);
-    }
-
-    console.log('-----HIT--------------');
-    console.log('player1stHand');
-    console.log(player1stHand);
-    console.log('player2ndHand');
-    console.log(player2ndHand);
+    currHand.cards.push(newCard);
 
     // calculate sum
     sum = sumUpCards();
 
-    console.log('player1stSum');
-    console.log(player1stSum);
-    console.log('player2ndSum');
-    console.log(player2ndSum);
+    console.log('gameStats');
+    console.log(gameStats);
 
     // basic message to display cards and sum
-    message = `${whoIsPlaying} ${hand}: , 
+    message = `${playerNames[whichPlayer]} (${currHand.who}) ${currHand.hand}: 
     <br><br>1 more card has been drawn - ${newCard.name} of ${newCard.suit}.
     <br> Here are all the cards:<br> ${displayCards()}
     <br> The cards add up to: ${sum}`;
@@ -473,51 +576,76 @@ var main = function (input) {
     }
 
     // if never BLACKJACK/BUST then ask player to HIT/STAND
-    return `${message} <br><br> Enter 'hit' to draw 1 more card.
-    <br> Or enter 'stand' to end your turn.`;
+    // game will continue in HIT unless player enters "stand"
+    return `${message} <br><br> Click submit to draw 1 more card ('hit').
+    <br> Or enter 'stand' and submit to end your turn.`;
   }
 
-  // ------------------------------------------------
+  // -------------------------------------------------------------------------
+
+  // STAND
   // player chose to stand so start next turn
-  // in this case the next turn is either player's hand 2 (if there is one) or dealer's turn
+  // this can be same player's 2nd hand, or next player, or dealer
   if (gameMode == STAND) {
-    // go to hand 2 only if player split earlier and has completed hand 1
-    if (hand == HAND_1) {
+    console.log('**************************** STAND');
+
+    // CASE 1
+    // if there is a 2nd hand remaining for the same player, just go to 2nd hand
+    if (currHand.hand == HAND_1) {
       gameMode = KICKOFF;
-      hand = HAND_2;
+      index += 1;
+      currHand = gameStats[index];
       return 'You have completed your 1st hand. <br><br>Please click submit to start your SECOND hand.';
     }
 
-    // otherwise its dealer's turn
-    whoIsPlaying = DEALER;
+    // CASE 2
+    // if this is NOT YET the last player, go to next player's turn
+    // note - index & currHand updated in DEAL_PLAYER_INIT_CARDS
+    // ie after deal cards & create object in gameStats array else currHand will return 'undefined'
+    if (whichPlayer != numOfPlayers) {
+      gameMode = DEAL_PLAYER_INIT_CARDS;
+      whichPlayer += 1; // update which player is now going to be dealt his/her first 2 cards
+
+      if (round == 1) { // ask for player's name only if round 1
+        return `It is now Player ${whichPlayer}'s turn. <br><br> But first, please enter your name and click submit.`;
+      }
+
+      return `It is now ${playerNames[whichPlayer]} (Player ${whichPlayer})'s turn. Click submit to continue.`;
+    }
+
+    // CASE 3
+    // otherwise its the dealer's turn
     gameMode = DEALER_TURN;
+    index = 0; // dealer is first position in gameStats array
+    currHand = gameStats[index];
     return 'It is now dealer\'s turn. Click submit to continue.';
   }
 
-  // ------------------------------------------------
-  // display cards & sum of dealer & auto deal so long as sum < 17 & check for blackjack/bust
+  // -------------------------------------------------------------------------
+
+  // DEALER_TURN
+  // display cards & sum of dealer & auto deal so long as sum < 17
+  // check for blackjack/bust...otherwise go to CONCLUDE to see who win/lost
   if (gameMode == DEALER_TURN) {
-    console.log('-----DEALER TURN--------------');
+    console.log('**************************** DEALER TURN');
 
     sum = sumUpCards();
 
     // display dealer's 1st two cards
-    message = `${whoIsPlaying} has drawn:<br> ${displayCards()}
-    <br> The cards add up to: <br> ${sum} <br>`;
+    message = `Dealer has drawn:<br> ${displayCards()}
+      <br> The cards add up to: <br> ${sum} <br>`;
 
     // deal automatically if sum < 17
     while (sum < 17) {
       var dealerCard = deck.pop();
-      dealerHand.push(dealerCard);
-      message = `${message}<br> Sum ${sum} less than 17, so a new card is drawn:
-      <br> ${dealerCard.name} of ${dealerCard.suit}`;
+      currHand.cards.push(dealerCard);
+      message = `${message}<br> Sum ${sum} is less than 17, so a new card is drawn:
+        <br> ${dealerCard.name} of ${dealerCard.suit}`;
       sum = sumUpCards();
     }
 
-    console.log('dealerHand');
-    console.log(dealerHand);
-    console.log('dealerSum');
-    console.log(dealerSum);
+    console.log('gameStats');
+    console.log(gameStats);
 
     // check for BLACK JACK
     if (sum == 21) {
@@ -530,40 +658,40 @@ var main = function (input) {
     if (sum > 21) {
       gameMode = END_OF_ROUND;
       return `${message} <br><br> Sum is ${sum} - BUST! Dealer lost!
-      <br><br> YOU HAVE WON!...Click to start another round. Or enter 'end' to exit the game.`;
+      <br><br> Congrats you have all WON!...Click to start another round. Or enter 'end' to exit the game.`;
     }
 
     // If never BLACKJACK/BUST then go conclude mode to see who won
     gameMode = CONCLUDE;
 
-    return `${message} <br><br> Since sum is ${sum} which is 17 or more, dealer shall end turn.
-    <br><br> Here are all the dealer's cards:<br> ${displayCards()}
-    <br><br> 'Let's see the results. Click submit to continue.`;
+    return `${message} <br><br> Since sum ${sum} is 17 or more, dealer shall end turn.
+      <br><br> Here are all the dealer's cards:<br> ${displayCards()}
+      <br><br> 'Let's see the results. Click submit to continue.`;
   }
 
-  // ------------------------------------------------
-  // if player and dealer both never blackjack/bust then reach this mode
-  // compare the sums - player wins only if higher sum than dealer (no tie)
+  // -------------------------------------------------------------------------
+
+  // CONCLUDE
+  // if player(s) and dealer both never blackjack/bust then reach this mode
+  // compare and decide win/lose... ask if continue next round/end game
   if (gameMode == CONCLUDE) {
-    message = `Dealer's cards add up to ${dealerSum}`;
+    console.log('**************************** CONCLUDE');
+    console.log('playerNames');
+    console.log(playerNames);
+    console.log('gameStats');
+    console.log(gameStats);
 
-    // FIRST case - display for 1st hand if it has not blackjack/bust (ie < 21)
-    if (player1stSum < 21) {
-      var name = '';
+    message = `Dealer's cards add up to ${gameStats[0].cardSum}`;
 
-      // address player properly - add 'hand 1' if player opted to split earlier
-      if (hand == '') {
-        name = 'Player';
-      } else {
-        name = 'Player Hand 1';
+    // display win/lose for each player hand that has not yet blackjack/bust
+    // counter starts at 1 - no need to consider dealer stats at position 0 in gameStats array
+    var counter = 1;
+    while (counter < gameStats.length) { // note gameStats.length includes dealer
+      var thisHand = gameStats[counter];
+      if (thisHand.status == 'Playing') {
+        message = `${message} <br><br> ${playerNames[thisHand.nameindex]} (${thisHand.who}) ${thisHand.hand}: ${msgWinLose(thisHand.cardSum)}`;
       }
-
-      message = `${message} <br><br> ${name}: ${msgWinLose(player1stSum)}`;
-    }
-
-    // SECOND CASE - display for 2nd hand only if there is one & has not blackjack/bust (ie < 21)
-    if (player2ndSum < 21 && hand == HAND_2) {
-      message = `${message} <br><br> ${whoIsPlaying} ${hand}: ${msgWinLose(player2ndSum)}`;
+      counter += 1;
     }
 
     gameMode = END_OF_ROUND;
@@ -572,9 +700,13 @@ var main = function (input) {
     return `${message} <br><br> This is the end of round ${round}. Click to start another round. Or enter 'end' to exit the game.`;
   }
 
-  // ------------------------------------------------
-  // if player chooses to play aonther round, reset game variables
+  // -------------------------------------------------------------------------
+
+  // gameMode == END_OF_ROUND
+  // if player chooses to play another round, reset global variables for the round
   if (gameMode == END_OF_ROUND) {
+    console.log('**************************** END_OF_ROUND');
+
     reset();
 
     return 'Let\'s start a new round! Click to continue!';
