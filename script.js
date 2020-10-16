@@ -80,7 +80,7 @@ var main = function (input) {
       appendPictures('computer-hand',allComputerHands,'computer');
 
     } else if (computerCumulativeScore > 21) {
-      myOutputValue = `Computer has gone bust with ${computerCumulativeScore} score. <br><br> Game results to be evaluated next. `;
+      myOutputValue = `Computer has gone bust with score of ${computerCumulativeScore} . <br><br> Game results to be evaluated next. `;
       gameState = 'evaluateGame';
       playerX = 1; //reset to playerX = 1
 
@@ -593,7 +593,7 @@ var newDealToPlayer = function () {
 var displayVirtualCards = function(card){
   var imgSrc='';
   //get directory for each of the cards
-    imgSrc ='./Single_Cards/'+card.suit.toUpperCase()+ '-' +card.rank;
+    imgSrc ='./Single_Cards'+card.suit.toUpperCase()+ '-' +card.rank;
     console.log(imgSrc,'imgSrc');
     if(card.rank >= 11 && card.rank <= 13){
       imgSrc +='-'+ card.name.toUpperCase();
