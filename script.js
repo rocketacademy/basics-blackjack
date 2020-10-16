@@ -27,19 +27,20 @@ var main = function (input) {
   // Create and shuffle deck
   if (gameState == '') {
 
-    //Shuffle Deck Gif Displayed
+    //Shuffle Deck Gif Displayed and Audio
     var shuffleGif = document.createElement('img');
     shuffleGif.setAttribute("id","shuffleCard")
-    shuffleGif.src = 'https://j.gifs.com/zvG7Y8.gif'
+    shuffleGif.src = './shuffle.gif';
 
 
     var shuffleAudio = document.createElement('audio');
+    shuffleAudio.setAttribute('id','epicMusic')
     shuffleAudio.src = './music/shuffle.mp3';
     shuffleAudio.autoplay = true;
     shuffleAudio.volume = 0.3;
-
-   document.body.append(shuffleGif);
-   document.body.append(shuffleAudio);
+  
+    document.body.append(shuffleGif);
+    document.body.append(shuffleAudio);
 
     deck = shuffleCards(makeDeck());
 
@@ -47,13 +48,17 @@ var main = function (input) {
 
     gameState = 'shuffledDeck';
     myOutputValue = `Shuffling the Deck...`;
+    window.setTimeout(main,13300);
 
   }else if(gameState == `shuffledDeck`){
+    removeElement('epicMusic');
+    removeElement('shuffleCard');
+
     myOutputValue = `Deck is shuffled. Please input the number of players.`;
     gameState = 'numOfPlayers';
 
     //Remove shuffling Gif
-    removeElement('shuffleCard');
+    
 
   } else if (gameState == 'numOfPlayers') {
     if(input == ''){
@@ -160,15 +165,33 @@ var main = function (input) {
 
     if (i == numOfPlayers) {
       gameState = 'restartGame';
-      return myOutputValue = `Press submit to start the next round.`;
+      clearBox('player-hand');
+      clearBox('computer-hand');
+
+       //Shuffle Deck Gif Displayed and Audio
+    var shuffleGif = document.createElement('img');
+    shuffleGif.setAttribute("id","shuffleCard2")
+    shuffleGif.src = './clapping.gif';
+
+
+    var shuffleAudio = document.createElement('audio');
+    shuffleAudio.src = './music/shuffle.mp3';
+    shuffleAudio.setAttribute('id','epicMusic');
+    shuffleAudio.autoplay = true;
+    shuffleAudio.volume = 0.3;
+
+   document.body.append(shuffleGif);
+   document.body.append(shuffleAudio);
+      return myOutputValue = `Thanks for playing! Press submit to start the next round.`;
     }
 
   } else if (gameState == 'restartGame') {
+    
+    removeElement('epicMusic');
+    removeElement('shuffleCard2');
 
     deck = shuffleCards(makeDeck());
-    console.log(deck, `shuffledDeck`);
-    clearBox('player-hand');
-    clearBox('computer-hand');
+
     
 
     //reinitialize global states to restart game
