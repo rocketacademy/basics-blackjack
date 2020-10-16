@@ -11,13 +11,18 @@
 
     #header {
       text-align: center;
+      background-color: antiquewhite;
+      margin: 20px auto;
+      padding: 20px;
+      max-width: 500px;
     }
 
     #container {
       margin: 20px auto;
       padding: 20px;
-      background-color: pink;
+      background-color: rgb(10, 191, 236);
       max-width: 500px;
+
     }
 
     input {
@@ -56,9 +61,10 @@
 
     img {
       display: inline;
-      width: 20%;
-      height: 20%;
+      width: 25%;
+      height: 25%;
       padding: 0.5em;
+
     }
 
     #shuffleCard {
@@ -68,42 +74,50 @@
       width: 60%;
       height: 60%;
     }
+
+    body {
+      background-image: url(https://ih1.redbubble.net/image.379601685.6062/st,small,507x507-pad,600x600,f8f8f8.u7.jpg);
+      background-repeat: repeat-x repeat-y;
+      background-size: 10%;
+    }
   </style>
 </head>
 
 <body>
-  <h1 id="header">SWE 101! Blackjack 🚀</h1>
-  <div id="container">
-    <input id="my-input" />
-    <button id="my-button">submit</button>
-    <p>output:</p>
-    <div id="output">
-      Hi, please press "Submit" to begin!
+  <div id=overlay>
+    <h1 id="header">SWE 101! Blackjack 🚀</h1>
+    <div id="container">
+      <input id="my-input" />
+      <button id="my-button">submit</button>
+      <p>output:</p>
+      <div id="output">
+        Hi, please press "Submit" to begin!
+      </div>
+      <p id="player-hand"></p>
+
+      <div></div>
+      <p id="computer-hand"></p>
+      <div id="overlay">
+      </div>
     </div>
-    <p id="player-hand"></p>
+    <script src="script.js"></script>
+    <script>
+      var button = document.querySelector('#my-button');
 
-    <div></div>
-    <p id="computer-hand"></p>
+      button.addEventListener('click', function () {
 
-  </div>
-  <script src="script.js"></script>
-  <script>
-    var button = document.querySelector('#my-button');
+        var input = document.querySelector('#my-input');
 
-    button.addEventListener('click', function () {
+        var result = main(input.value);
 
-      var input = document.querySelector('#my-input');
+        var output = document.querySelector('#output');
 
-      var result = main(input.value);
+        output.innerHTML = result;
 
-      var output = document.querySelector('#output');
+        input.value = "";
+      });
 
-      output.innerHTML = result;
-
-      input.value = "";
-    });
-
-  </script>
+    </script>
 </body>
 
 </html>

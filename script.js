@@ -31,8 +31,16 @@ var main = function (input) {
     var shuffleGif = document.createElement('img');
     shuffleGif.setAttribute("id","shuffleCard")
     shuffleGif.src = 'https://j.gifs.com/zvG7Y8.gif'
-    // var displayGif = document.querySelector('#player-hand');
+
+
+    var shuffleAudio = document.createElement('audio');
+    shuffleAudio.src = './music/shuffle.mp3';
+    shuffleAudio.type = 'audio/mpeg';
+    shuffleAudio.autoplay = true;
+    shuffleAudio.volume = 0.3;
+
    document.body.append(shuffleGif);
+   document.body.append(shuffleAudio);
 
     deck = shuffleCards(makeDeck());
 
@@ -602,6 +610,12 @@ var displayVirtualCards = function(card){
     console.log(imgSrc,'imgSrc');
     
   return imgSrc;
+}
+
+var displayShufflingAudio = function(){
+  var sound = document.createElement('audio');
+  sound.src = './music/shuffle.mp3';
+  return sound.src;
 }
 
 var clearBox = function(elementID){
