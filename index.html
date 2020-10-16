@@ -17,7 +17,7 @@
       margin: 20px auto;
       padding: 20px;
       background-color: pink;
-      max-width: 300px;
+      max-width: 500px;
     }
 
     input {
@@ -36,6 +36,38 @@
       background-color: grey;
       width: 100%;
     }
+
+    #player-hands {
+      background-color: white;
+      border: 2px solid red;
+      padding: 10px;
+      margin: 10px;
+
+
+    }
+
+    #computer-hands {
+      background-color: white;
+      border: 2px solid red;
+      padding: 10px;
+      margin: 10px;
+
+    }
+
+    img {
+      display: inline;
+      width: 20%;
+      height: 20%;
+      padding: 0.5em;
+    }
+
+    #shuffleCard {
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+      width: 60%;
+      height: 60%;
+    }
   </style>
 </head>
 
@@ -48,6 +80,11 @@
     <div id="output">
       Hi, please press "Submit" to begin!
     </div>
+    <p id="player-hand"></p>
+
+    <div></div>
+    <p id="computer-hand"></p>
+
   </div>
   <script src="script.js"></script>
   <script>
