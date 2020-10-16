@@ -19,13 +19,25 @@ var splitHands = [];
 //Create a new deck
 var deck;
 
-//
+var printerGif = document.createElement('img');
+    printerGif.setAttribute("id","vegas")
+    printerGif.src = './vegas.gif';
+    document.body.append(printerGif);
+
+// function to remove gif and audio
+
+var removeGIFandAudio = function() {
+    removeElement('epicMusic');
+    removeElement('shuffleCard');
+}
+
 
 var main = function (input) {
 
   var myOutputValue = '';
   // Create and shuffle deck
   if (gameState == '') {
+    removeElement('vegas');
 
     //Shuffle Deck Gif Displayed and Audio
     var shuffleGif = document.createElement('img');
@@ -48,11 +60,9 @@ var main = function (input) {
 
     gameState = 'shuffledDeck';
     myOutputValue = `Shuffling the Deck...`;
-    window.setTimeout(main,13300);
+    window.setTimeout(removeGIFandAudio,13300);
 
   }else if(gameState == `shuffledDeck`){
-    removeElement('epicMusic');
-    removeElement('shuffleCard');
 
     myOutputValue = `Deck is shuffled. Please input the number of players.`;
     gameState = 'numOfPlayers';
