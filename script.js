@@ -593,7 +593,7 @@ var newDealToPlayer = function () {
 var displayVirtualCards = function(card){
   var imgSrc='';
   //get directory for each of the cards
-    imgSrc ='./Single_Cards'+card.suit.toUpperCase()+ '-' +card.rank;
+    imgSrc ='./Single_Cards/'+card.suit.toUpperCase()+ '-' +card.rank;
     console.log(imgSrc,'imgSrc');
     if(card.rank >= 11 && card.rank <= 13){
       imgSrc +='-'+ card.name.toUpperCase();
