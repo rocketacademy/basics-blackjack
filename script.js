@@ -34,7 +34,7 @@ var main = function (input) {
 
 
     var shuffleAudio = document.createElement('audio');
-    shuffleAudio.src = '/music/shuffle.mp3';
+    shuffleAudio.src = './music/shuffle.mp3';
     shuffleAudio.type = 'audio/mpeg';
     shuffleAudio.autoplay = true;
     shuffleAudio.volume = 0.3;
