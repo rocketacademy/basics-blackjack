@@ -58,9 +58,10 @@ var main = function (input) {
 
     console.log(deck, 'shuffledDeck');
 
+    window.setTimeout(removeGIFandAudio,13300);
     gameState = 'shuffledDeck';
     myOutputValue = `Shuffling the Deck...`;
-    window.setTimeout(removeGIFandAudio,13300);
+    window.setTimeout(main,13500);
 
   }else if(gameState == `shuffledDeck`){
 
