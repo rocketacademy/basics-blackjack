@@ -27,15 +27,21 @@ var printerGif = document.createElement('img');
 // function to remove gif and audio
 
 var removeGIFandAudio = function() {
+  console.log('removeGif is called');
+  if(removedPictures == false){
     removeElement('epicMusic');
     removeElement('shuffleCard');
+    removedPictures = true;
+  }
 }
 
 var removedPictures = false;
 
+//global value for removeGif timeout reference - output is some 'number';
+var ref;
 
 var main = function (input) {
-
+  console.log('outside of condition');
   var myOutputValue = '';
   // Create and shuffle deck
   if (gameState == '') {
@@ -51,7 +57,7 @@ var main = function (input) {
     shuffleAudio.setAttribute('id','epicMusic')
     shuffleAudio.src = './music/shuffle.mp3';
     shuffleAudio.autoplay = true;
-    shuffleAudio.volume = 0.3;
+    shuffleAudio.volume = 0.1;
   
     document.body.append(shuffleGif);
     document.body.append(shuffleAudio);
@@ -60,20 +66,33 @@ var main = function (input) {
 
     console.log(deck, 'shuffledDeck');
 
-    window.setTimeout(removeGIFandAudio,13300);
+    // // code will run no matter if I click it or not after x seconds
+    // window.setTimeout(removeGIFandAudio,13300);
+
+    //Assigning output of setTimeout to ref
+    ref = window.setTimeout(removeGIFandAudio,13300);
+    
     gameState = 'shuffledDeck';
     myOutputValue = `Shuffling the Deck...`;
-    removedPictures = true;
-  }else if(gameState == `shuffledDeck`){
+    
+    window.setTimeout(function(){
+        var result = main();
+        var output = document.querySelector('#output');
+        output.innerHTML = result;
+    },2500);
 
+
+    console.log('timeout');
+
+  }else if(gameState == `shuffledDeck`){
+    console.log('after timeout');
     myOutputValue = `Deck is shuffled. Please input the number of players.`;
     gameState = 'numOfPlayers';
 
+    window.clearTimeout(ref);
     //Remove shuffling Gif & audio when clicked
-    if(removedPictures == false){
     removeGIFandAudio();
-    };
-    
+  
   } else if (gameState == 'numOfPlayers') {
     if(input == ''){
            return myOutputValue = 'Please enter a number greater than 0 of players.';
