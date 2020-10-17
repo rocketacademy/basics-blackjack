@@ -79,7 +79,7 @@ var main = function (input) {
         var result = main();
         var output = document.querySelector('#output');
         output.innerHTML = result;
-    },2500);
+    },13300);
 
 
     console.log('timeout');
