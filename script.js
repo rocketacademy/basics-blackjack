@@ -21,7 +21,7 @@ var deck;
 
 var printerGif = document.createElement('img');
     printerGif.setAttribute("id","vegas")
-    printerGif.src = './pictures/vegas.gif';
+    printerGif.src = 'https://gfycat.com/richcoordinatedbluefish';
     document.body.append(printerGif);
 
 // function to remove gif and audio
