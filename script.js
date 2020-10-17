@@ -31,6 +31,8 @@ var removeGIFandAudio = function() {
     removeElement('shuffleCard');
 }
 
+var removedPictures = false;
+
 
 var main = function (input) {
 
@@ -61,15 +63,17 @@ var main = function (input) {
     window.setTimeout(removeGIFandAudio,13300);
     gameState = 'shuffledDeck';
     myOutputValue = `Shuffling the Deck...`;
-
+    removedPictures = true;
   }else if(gameState == `shuffledDeck`){
 
     myOutputValue = `Deck is shuffled. Please input the number of players.`;
     gameState = 'numOfPlayers';
 
     //Remove shuffling Gif & audio when clicked
+    if(removedPictures == false){
     removeGIFandAudio();
-
+    };
+    
   } else if (gameState == 'numOfPlayers') {
     if(input == ''){
            return myOutputValue = 'Please enter a number greater than 0 of players.';
