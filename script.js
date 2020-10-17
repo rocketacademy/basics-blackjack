@@ -21,7 +21,7 @@ var deck;
 
 var printerGif = document.createElement('img');
     printerGif.setAttribute("id","vegas")
-    printerGif.src = './vegas.gif';
+    printerGif.src = './pictures/vegas.gif';
     document.body.append(printerGif);
 
 // function to remove gif and audio
@@ -42,7 +42,7 @@ var main = function (input) {
     //Shuffle Deck Gif Displayed and Audio
     var shuffleGif = document.createElement('img');
     shuffleGif.setAttribute("id","shuffleCard")
-    shuffleGif.src = './shuffle.gif';
+    shuffleGif.src = './pictures/shuffle.gif';
 
 
     var shuffleAudio = document.createElement('audio');
@@ -181,7 +181,7 @@ var main = function (input) {
        //Shuffle Deck Gif Displayed and Audio
     var shuffleGif = document.createElement('img');
     shuffleGif.setAttribute("id","shuffleCard2")
-    shuffleGif.src = './clapping.gif';
+    shuffleGif.src = './pictures/clapping.gif';
 
 
     var shuffleAudio = document.createElement('audio');
