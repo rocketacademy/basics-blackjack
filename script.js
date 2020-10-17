@@ -21,7 +21,7 @@ var deck;
 
 var printerGif = document.createElement('img');
     printerGif.setAttribute("id","vegas")
-    printerGif.src = 'https://gfycat.com/richcoordinatedbluefish';
+    printerGif.src = './pictures/vegas.gif';
     document.body.append(printerGif);
 
 // function to remove gif and audio
@@ -67,8 +67,8 @@ var main = function (input) {
     myOutputValue = `Deck is shuffled. Please input the number of players.`;
     gameState = 'numOfPlayers';
 
-    //Remove shuffling Gif
-    
+    //Remove shuffling Gif & audio when clicked
+    removeGIFandAudio();
 
   } else if (gameState == 'numOfPlayers') {
     if(input == ''){
