@@ -211,7 +211,8 @@ var main = function (input) {
 
   if (gameMode == CHECK_FOR_SPLIT) {
     console.log(`game mode is ${gameMode}`);
-    if ((playerHand[0].rank == playerHand[1].rank) && (input == 'split')) {
+
+    if (input == 'split') {
       console.log('playerhand [0]] is equls to playerHand [1]');
 
       console.log('attempting to execute split deck');
@@ -241,13 +242,18 @@ var main = function (input) {
       gameMode = ANALYSE_HAND;
       return 'You have chosen not to split your hand. Click \'submit\' to hit, else type \'stay\' to stick with the current cards';
     }
-    message = 'Would you like to split your hand? If yes, enter \'split\'; else, enter \'no\'';
+
+    if (playerHand[0].rank == playerHand[1].rank) {
+      return 'Would you like to split your hand? If yes, enter \'split\'; else, enter \'no\'';
+    }
+
     // update the playerhandSumValue
     console.log('player hand is ');
     console.log(playerHand);
     console.log('computer hand is ');
     console.log(computerHand);
     myOutputValue = `Player, your hand contains a ${playerHand[0].name} of ${playerHand[0].suit} and  ${playerHand[1].name} of ${playerHand[1].suit}. <br> The value is ${playerHandSumValue}.<br>${message}`;
+    gameMode = ANALYSE_HAND;
     return myOutputValue;
   }
 
