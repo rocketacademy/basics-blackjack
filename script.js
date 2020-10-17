@@ -480,9 +480,13 @@ var dealTwoCardsToDealer = function () {
   var cardImage = displayVirtualCards(allComputerHands[0]);
   var imageTag = document.createElement('img');
   imageTag.src = cardImage;
-  listCards.appendChild(imageTag);
-  computerDisplay.appendChild(listCards);
 
+  var coverCard= document.createElement('img');
+  coverCard.src = './Single_Cards/JOKER-2.png';
+
+  listCards.appendChild(imageTag);
+  listCards.appendChild(coverCard);
+  computerDisplay.appendChild(listCards);
   
   return myOutputValue;
 }
@@ -638,7 +642,7 @@ var displayVirtualCards = function(card){
     if(card.rank >= 11 && card.rank <= 13){
       imgSrc +='-'+ card.name.toUpperCase();
     }
-    imgSrc += '.svg';
+    imgSrc += '.png';
     console.log(imgSrc,'imgSrc');
     
   return imgSrc;
