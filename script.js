@@ -349,7 +349,7 @@ var main = function (input) {
       }
       // output message for the last player and first player to place bet
       else {
-        myOutputValue = `Welcome ${players[playerIndex].name}!<br><br>${players[0].name}, enter your bet amount and click submit.`;
+        myOutputValue = `Welcome ${players[playerIndex].name}!<br><br>${players[0].name}, you have 500 credits. Enter your bet amount and click submit.`;
         playerIndex = 0;
         gameMode = placeBets;
       }
@@ -412,7 +412,7 @@ var main = function (input) {
     myOutputValue = `Computer shows:<br>${getCardName(computer.hand[0])}<br><br>`;
     playerIndex = 0;
     while (playerIndex < numberOfPlayers) {
-      myOutputValue = myOutputValue + `${getPlayerHand(players[playerIndex])}<br><br>`;
+      myOutputValue = myOutputValue + `${getPlayerHand(players[playerIndex])}<br>`;
       playerIndex = playerIndex + 1;
     }
     playerIndex = 0;
