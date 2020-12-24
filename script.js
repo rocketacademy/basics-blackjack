@@ -60,10 +60,37 @@ var shuffleTheDeck = function(inputDeck){
 
 // Function 3
 // computes total value of hand
-var sumHand = function(inputArray){
+var sumHand = function(initialInput){
+  var inputArray = initialInput; // to avoid modifying the original hand order
   var totalSum = 0;
+
+  // if there is an ace, this has to be considered LAST. swap with last card
+  for (var j = 0; j < inputArray.length; j++){
+    if (inputArray[j].rank == 1){
+      var tempHolder = inputArray[inputArray.length - 1];
+      inputArray[inputArray.length - 1] = inputArray[j];
+      inputArray[j] = tempHolder;
+    }
+  }
+
+  // loop through and add the cards
   for (var i = 0; i < inputArray.length; i++){
-    totalSum += inputArray[i].rank;
+    // console.log(i);
+    // console.log(inputArray[i].rank);
+    if (inputArray[i].rank > 10){
+      // add 10 if it is a picture card
+      // console.log('10');
+      totalSum += 10;
+    } else if (inputArray[i].rank > 1) {
+        totalSum += inputArray[i].rank;
+    } else if (inputArray[i].rank == 1){
+        // console.log('ace');
+        if (totalSum < 11){
+          totalSum += 11;
+        } else {
+          totalSum += 1;
+        }
+    }
   }
   return totalSum;
 } 
@@ -73,7 +100,7 @@ var sumHand = function(inputArray){
 var printHandOutcome = function(playerHandArray, person){
   var cardsPrint = `--- ${person}\'s cards --- `;
   for (var i = 0; i < playerHandArray.length; i++){
-    cardsPrint = cardsPrint + '<br>' + playerHandArray[i].rank 
+    cardsPrint = cardsPrint + '<br>' + playerHandArray[i].name 
     + ' of ' + playerHandArray[i].suit;
   }
   cardsPrint = cardsPrint + '<br><br>' + `--- ${person}\'s Total Value ---`
@@ -91,30 +118,42 @@ var checkWin = function(playerSum, dealerSum, currentGameMode){
 
     if (sumHand(playerSum) == 21) {
       // game mode playerturn and player gets 21 = win
+      console.log('The player scored a perfect 21');
       outcome = 'win';
     } else if (sumHand(playerSum) > 21) {
       // game mode playerturn and player busts = lose
+      console.log('The player busted!')
       outcome = 'lose';
     } else if (sumHand(playerSum)< 21){
       // game mode playerturn and player doesn't bust = continue
       outcome = 'continue';
+      console.log('The player is still safe. He can sit or stand.')
+    } else {
+      outcome = 'tie';
+      console.log('There was a tie. Interesting.')
     }
 
   } else if (currentGameMode == 'dealerTurn'){
     
     if (sumHand(dealerSum) > 21){
       // game mode dealerturn and dealer busts = win
+      console.log('The dealer overdrew and busted.')
       outcome = 'win';
     } else if (sumHand(dealerSum) < sumHand(playerSum)){
       // game mode dealerturn and player > dealer = win
+      console.log('Everyone opens their hands. The player had ' + sumHand(playerHand) + ' while the dealer had ' + sumHand(dealerHand));
+      console.log('Player beat dealer. Player wins') 
       outcome = 'win';
     } else if (sumHand(dealerSum) > sumHand(playerSum)){
-      // game mode dealerturn and player < dealer = lose 
+      // game mode dealerturn and player < dealer = lose
+      console.log('Everyone opens their hands. The player had ' + sumHand(playerHand) + ' while the dealer had ' + sumHand(dealerHand));
+      console.log('Dealer beat player. Dealer wins') 
       outcome = 'lose';
+    } else {
+      outcome = 'tie';
+      console.log('There was a tie. Interesting.')
     }
-    
   }
-  
   return outcome;
 }
 
@@ -132,9 +171,9 @@ mainDeck = shuffleTheDeck(mainDeck);
 
 // MAIN FUNCTION
 // Each gameplay turn is represented by the main function
+// Used console logs to tell story
 var main = function (input) {
   var myOutputValue;
-  var winStatus;
 
   // Step 3: Deal to player, dealer, player, dealer
   if (gameMode == 'dealCards'){
@@ -148,6 +187,9 @@ var main = function (input) {
     myOutputValue = 'PLAYER TURN <br><br>' 
     + printHandOutcome(playerHand, 'Player')
     + '<br><br>' + 'input (hit/stand)';
+    // story
+    console.log('The cards were dealt');
+    console.log('Player scored: ' + sumHand(playerHand));
   }
 
   // Step 5: user HITS during player mode (get another card)
@@ -156,14 +198,20 @@ var main = function (input) {
     myOutputValue = 'PLAYER TURN <br><br>' 
     + printHandOutcome(playerHand, 'Player')
     + '<br><br>' + 'input (hit/stand)';
+    // story
+    console.log('Player hit. His hand is now: ' + sumHand(playerHand));
   }
 
-  // Step 6: user STANDS during player mode (end turn)
+  // Step 6: user STANDS during player mode. Dealer's turn
   if (gameMode == 'playerTurn' && input == 'stand'){
+    console.log('Player stand. His hand is now: ' + sumHand(playerHand));
+    console.log('Dealer opens his cards. He has ' + sumHand(dealerHand));
     gameMode = 'dealerTurn';
     while ( sumHand(dealerHand) < 16 ){
       dealerHand.push(mainDeck.pop());
+      console.log('The dealer hand was less than 16. He drew another card. He now has ' + sumHand(dealerHand));
     }
+    console.log('The dealer can no longer draw cards.')
   }
 
   // Step 7: Update myOutputValue if the player wins or loses
@@ -180,8 +228,13 @@ var main = function (input) {
     + printHandOutcome(playerHand, 'player')
     + '<br><br>'
     + printHandOutcome(dealerHand, 'Dealer');
+  } else if (checkWin(playerHand, dealerHand, gameMode) == 'tie'){
+    myOutputValue = "!! TIE !!<br> 'no one won' <br><br>";
+    myOutputValue = myOutputValue
+    + printHandOutcome(playerHand, 'player')
+    + '<br><br>'
+    + printHandOutcome(dealerHand, 'Dealer');
   }
-
 
   return myOutputValue;
 };
