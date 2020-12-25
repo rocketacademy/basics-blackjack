@@ -61,7 +61,7 @@ var shuffleTheDeck = function(inputDeck){
 // Function 3
 // computes total value of hand
 var sumHand = function(initialInput){
-  var inputArray = initialInput; // to avoid modifying the original hand order
+  var inputArray = initialInput.slice(); // to avoid modifying the original hand order
   var totalSum = 0;
 
   // if there is an ace, this has to be considered LAST. swap with last card
@@ -157,8 +157,24 @@ var checkWin = function(playerSum, dealerSum, currentGameMode){
   return outcome;
 }
 
+// Function 6
+// Input validation
+var inputValidation = function(playerInput, gameRoundCount){
+  var inputStatus = true;
+  // for gameMode = playerTurn
+  if (gameRoundCount > 1 && gameMode == 'playerTurn' && !(playerInput == 'hit' || playerInput == 'stand')){
+      inputStatus = false;
+    }
+  return inputStatus;
+}
+
+
+// ######################################################################
+// START OF GAME
+
 // Step 0: Declare variables, set default game mode
 var gameMode = 'dealCards';
+var clickSubmitCount = 0;
 playerHand = [];
 dealerHand = [];
 
@@ -173,6 +189,7 @@ mainDeck = shuffleTheDeck(mainDeck);
 // Each gameplay turn is represented by the main function
 // Used console logs to tell story
 var main = function (input) {
+  clickSubmitCount++;
   var myOutputValue;
 
   // Step 3: Deal to player, dealer, player, dealer
@@ -190,6 +207,13 @@ var main = function (input) {
     // story
     console.log('The cards were dealt');
     console.log('Player scored: ' + sumHand(playerHand));
+  }
+
+  // Step 4: Validate user input
+  if (!inputValidation(input,clickSubmitCount)){
+    myOutputValue = '🙅‍♂️ Invalid input. <br> Please input \'hit\' or \'stand\' <br><br>'
+    + printHandOutcome(playerHand, 'Player');
+    return myOutputValue;
   }
 
   // Step 5: user HITS during player mode (get another card)
@@ -215,20 +239,21 @@ var main = function (input) {
   }
 
   // Step 7: Update myOutputValue if the player wins or loses
-  if (checkWin(playerHand, dealerHand, gameMode) == 'win'){
+  var outcome = checkWin(playerHand, dealerHand, gameMode);
+  if (outcome == 'win'){
     myOutputValue = "💰💰💰 YOU WIN!! :) <br><br>";
     myOutputValue = myOutputValue
     + printHandOutcome(playerHand, 'player')
     + '<br><br>' 
     + printHandOutcome(dealerHand, 'Dealer');
 
-  } else if (checkWin(playerHand, dealerHand, gameMode) == 'lose'){
+  } else if (outcome == 'lose'){
     myOutputValue = "💸💸💸 YOU LOSE :( <br><br>";
     myOutputValue = myOutputValue
     + printHandOutcome(playerHand, 'player')
     + '<br><br>'
     + printHandOutcome(dealerHand, 'Dealer');
-  } else if (checkWin(playerHand, dealerHand, gameMode) == 'tie'){
+  } else if (outcome == 'tie'){
     myOutputValue = "!! TIE !!<br> 'no one won' <br><br>";
     myOutputValue = myOutputValue
     + printHandOutcome(playerHand, 'player')
