@@ -1,3 +1,5 @@
+// FINAL BASE SUBMISSION 26 NOV
+
 // Function 1
 // Creates the deck of cards
 var makeDeck = function(){
