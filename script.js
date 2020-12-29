@@ -58,10 +58,47 @@ var shuffleDeck = function (deck) {
   return deck;
 };
 
+// get card value from a function when a card is given to function as input
+var cardScore = function (card) {
+  var BlackjackCardScore;
+  if (card.name == 'Jack' || card.name == 'Queen' || card.name == 'King') {
+    BlackjackCardScore = 10;
+  }
+  else if (card.name == 'Ace') {
+    BlackjackCardScore = 11;
+  }
+  else {
+    BlackjackCardScore = card.rank;
+  }
+  return BlackjackCardScore;
+};
+
+var shuffledCards = shuffleDeck(makeDeck());
+var playerHand = [];
+var computerHand = [];
+var gameMode;
+
+var dealCard = function (deck) {
+  deck.push(shuffledCards.pop());
+  return deck;
+};
+
+var handScore = function (handDeck) {
+  var counter = 0;
+  var handScoreTotal = 0;
+  while (counter < handDeck.length) {
+    handScoreTotal += cardScore(handDeck[counter]);
+    counter += 1;
+  }
+  return handScoreTotal;
+};
+
 // On submit button being pressed, a card is drawn by computer and player to be compared
 var main = function (input) {
-  // create a shuffled pack of cards
-  var shuffledCards = shuffleDeck(makeDeck());
-  var myOutputValue = shuffledCards;
-  return myOutputValue;
+  // player dealt two cards
+  dealCard(playerHand);
+  dealCard(playerHand);
+  console.log(playerHand);
+  console.log(handScore(playerHand));
+  console.log(computerHand);
 };
