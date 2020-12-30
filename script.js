@@ -12,12 +12,12 @@
 // Either the game ends or continues.
 
 // global variables
-var mode = 'cards are picked';
+var MODE = 'CARDS ARE PICKED';
 var myOutputValue = '';
-var playerCard1 = {};
-var playerCard2 = {};
-var computerCard1 = {};
-var computerCard2 = {};
+var playerArray = [];
+var computerArray = [];
+var playerPoints = 0;
+var computerPoints = 0;
 
 // deck of cards, presented in an object
 var makeDeck = function () {
@@ -77,61 +77,179 @@ var shuffleCards = function (cards) {
   return cards;
 };
 
-// displaying player and computer cards helper function
-var displayCards = function () {
-  return `Player card 1: ${playerCard1.name} of ${playerCard1.suit}<br>
-    Player card 2: ${playerCard2.name} of ${playerCard2.suit}<br>
-    <br>
-    Computer card 1: ${computerCard1.name} of ${computerCard1.suit}<br>
-    Computer card 2: ${computerCard2.name} of ${computerCard2.suit}`;
-};
-
-// check for winning conditions function
-var checkForWinningConditions = function () {
-  var message = `You got ${playerCard1.rank + playerCard2.rank}<br>
-    The computer got ${computerCard1.rank + computerCard2.rank}<br><br>`;
-
-  if (playerCard1.rank + playerCard2.rank == 21) {
-    message += `BLACKJACK !!<br><br>
-    YOU WIN !!`;
-    return message;
+// displaying player/ computer cards helper function
+var displayCards = function (who, whoseArray) {
+  var message = '';
+  var i = 0;
+  while (i < whoseArray.length) {
+    message += `${who} card ${i + 1}: ${whoseArray[i].name} of ${whoseArray[i].suit}<br>`;
+    i += 1;
   }
 
-  if (playerCard1.rank + playerCard2.rank > 21) {
-    message += `You bust!<br>
-    YOU LOSE !!`;
-    return message;
-  }
-
-  if (computerCard1.rank + computerCard2.rank > 21) {
-    message += `Dealer busts!<br>
-    YOU WIN !!`;
-    return message;
-  }
-
-  if (playerCard1.rank + playerCard2.rank > computerCard1.rank + computerCard2.rank) {
-    message += 'YOU WIN !!';
-  } else if (computerCard1.rank + computerCard2.rank > playerCard1.rank + playerCard2.rank) {
-    message += 'YOU LOSE !!';
-  } else {
-    message += 'IT\'S A TIE';
-  }
   return message;
 };
 
+// checking for blackjack or bust (conditions where game ends)
+var checkForBlackjackOrBust = function (who, whoseArray, whosePoints) {
+  var result = `${displayCards(who, whoseArray)} ${displayPoints(whoseArray)}<br><br>`;
+  if (whosePoints > 21) {
+    result += 'BUST !! ' + who + ' LOSES';
+  }
+  if (whosePoints == 21) {
+    result += 'BLACKJACK !! ' + who + ' WINS !! ';
+  }
+  return result;
+};
+
+// displaying the computer's first card
+var displayComputerCard1 = function () {
+  return `Computer card 1: ${computerArray[0].name} of ${computerArray[0].suit}`;
+};
+
+// calculating player/ computer points
+var calcSumCards = function (whoseArray) {
+  var sumCards = 0;
+  var j = 0;
+  while (j < whoseArray.length) {
+    sumCards += whoseArray[j].rank;
+    j += 1;
+  }
+  return sumCards;
+};
+
+// displaying player/ computer points
+var displayPoints = function (whoseArray) {
+  return 'Total points: ' + calcSumCards(whoseArray);
+};
+
+// displaying player/ computer cards and points
+var displayCardsAndPoints = function (who, whoseArray) {
+  return displayCards(who, whoseArray) + displayPoints(whoseArray); };
+
 var main = function (input) {
-  while (mode == 'cards are picked') {
-    var cards = shuffleCards(makeDeck());
+  var cards = shuffleCards(makeDeck());
+
+  if (MODE == 'CARDS ARE PICKED') {
     // obtaining player cards
-    playerCard1 = cards.pop();
-    playerCard2 = cards.pop();
+    playerArray.push(cards.pop());
+    playerArray.push(cards.pop());
+
+    // calculating player points
+    playerPoints = calcSumCards(playerArray);
+
+    // checking for blackjack or bust (conditions where game ends)
+    if (playerPoints == 21 || playerPoints > 21) {
+      myOutputValue = checkForBlackjackOrBust('Player', playerArray, playerPoints);
+      return myOutputValue;
+    }
 
     // obtaining computer cards
-    computerCard1 = cards.pop();
-    computerCard2 = cards.pop();
+    computerArray.push(cards.pop());
+    computerArray.push(cards.pop());
 
-    // check for winning conditions and display player's and computer's cards
-    myOutputValue = checkForWinningConditions() + '<br><br>' + displayCards();
+    // change mode to allow player to hit or stand
+    MODE = 'PLAYER CHOICE, HIT OR STAND?';
+
+    // display player's cards, and computer's first card
+    myOutputValue = `${displayCardsAndPoints('Player', playerArray)}<br><br>
+    ${displayComputerCard1()}<br><br><br>
+    Would you like to hit or stand?`;
+    return myOutputValue;
+  }
+
+  // change mode, enable player to make choice, hit or stand
+  if (MODE == 'PLAYER CHOICE, HIT OR STAND?') {
+    if (!(input == 'hit' || input == 'stand')) {
+      myOutputValue = 'Please enter \'hit\' or \'stand\'';
+      return myOutputValue;
+    }
+    // if player chooses 'hit', another card is drawn and added to existing cards
+    if (input == 'hit') {
+      playerArray.push(cards.pop());
+      playerPoints = calcSumCards(playerArray);
+      // check for blackjack or bust (game ends)
+      if (playerPoints == 21 || playerPoints > 21) {
+        myOutputValue = checkForBlackjackOrBust('Player', playerArray, playerPoints);
+      } else {
+        // or else player can choose whether or not to draw another card
+        myOutputValue = displayCardsAndPoints('Player', playerArray) + '<br><br>Would you like to \'hit\' or \'stand\' ?';
+      }
+      return myOutputValue;
+    }
+
+    // if player chooses not to draw another card, it becomes the computer's turn (change mode)
+    if (input == 'stand') {
+      computerPoints = calcSumCards(computerArray);
+      // check if computer has got blackjack or bust
+      if (computerPoints == 21 || computerPoints > 21) {
+        myOutputValue = checkForBlackjackOrBust('Computer', computerArray, computerPoints);
+      } else {
+        MODE = 'COMPUTER CHOICE';
+        myOutputValue = `You currently have :<br><br>
+        ${displayCardsAndPoints('Player', playerArray)}<br><br>
+        ${displayCardsAndPoints('Computer', computerArray)}<br><br>
+        It is now the computer's turn`;
+      }
+      return myOutputValue;
+    }
+  }
+
+  if (MODE == 'COMPUTER CHOICE') {
+    // if computer hand is <= 16, computer has to hit
+    if (computerPoints <= 16) {
+      computerArray.push(cards.pop());
+      MODE = 'DETERMINE WINNER';
+      myOutputValue = `Computer hits!<br>
+      ${displayCardsAndPoints('Computer', computerArray)}`;
+      return myOutputValue;
+    }
+    // if computer hand is >= 17, computer has to stand
+    if (computerPoints >= 17) {
+      MODE = 'DETERMINE WINNER';
+      myOutputValue = `Computer stands<br>
+      ${displayCardsAndPoints('Computer', computerArray)}`;
+      return myOutputValue;
+    }
+  }
+
+  if (MODE == 'DETERMINE WINNER') {
+    playerPoints = calcSumCards(playerArray);
+    computerPoints = calcSumCards(computerArray);
+
+    // checking if computer has bust or blackjack
+    if (computerPoints == 21 || computerPoints > 21) {
+      myOutputValue = checkForBlackjackOrBust('Computer', computerArray, computerPoints);
+      return myOutputValue;
+    }
+
+    // checking to see if player or computer wins
+    myOutputValue = `${displayCardsAndPoints('Player', playerArray)}<br><br>
+    ${displayCardsAndPoints('Computer', computerArray)}<br><br>`;
+
+    if (playerPoints > computerPoints) {
+      myOutputValue += 'YOU WIN !!';
+    } else if (computerPoints > playerPoints) {
+      myOutputValue += 'COMPUTER WINS !!';
+    } else {
+      myOutputValue += 'It\'s a TIE !!';
+    }
+
     return myOutputValue;
   }
 };
+  // comparing player and computer cards
+//   if (MODE == 'DETERMINE WINNER') {
+//     myOutputValue = checkForWinningConditions() + `<br>Enter 'y' to play again,
+//     or 'n' to exit the game`;
+//     if (input == 'y' || input == 'n') {
+//       if (input == 'y') {
+//         playerArray = [];
+//         computerArray = [];
+//         MODE = 'CARDS ARE PICKED';
+//       } else if (input == 'n') {
+//         myOutputValue =
+//       }
+//     }
+
+//     return myOutputValue;
+//   }
