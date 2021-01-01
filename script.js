@@ -89,15 +89,24 @@ var displayCards = function (who, whoseArray) {
   return message;
 };
 
+// displaying player/ computer points
+var displayPoints = function (whosePoints) {
+  return 'Total points: ' + whosePoints;
+};
+
 // checking for blackjack or bust (conditions where game ends)
-var checkForBlackjackOrBust = function (who, whoseArray, whosePoints) {
-  var result = `${displayCards(who, whoseArray)} ${displayPoints(whoseArray)}<br><br>`;
+var blackjackOrBust = function (who, whoseArray, whosePoints) {
+  var result = `${displayCards(who, whoseArray)} ${displayPoints(whosePoints)}<br><br>`;
   if (whosePoints > 21) {
+    MODE = 'CARDS ARE PICKED';
     result += 'BUST !! ' + who + ' LOSES';
   }
   if (whosePoints == 21) {
+    MODE = 'CARDS ARE PICKED';
     result += 'BLACKJACK !! ' + who + ' WINS !! ';
   }
+
+  result += '<br>Click submit to start a new game';
   return result;
 };
 
@@ -107,24 +116,39 @@ var displayComputerCard1 = function () {
 };
 
 // calculating player/ computer points
-var calcSumCards = function (whoseArray) {
+var calcPoints = function (whoseArray) {
   var sumCards = 0;
   var j = 0;
   while (j < whoseArray.length) {
     sumCards += whoseArray[j].rank;
     j += 1;
   }
+
+  // if player/ computer points is <= 11 and there is an Ace present, 10 is added to score
+  var k = 0;
+  while (k < whoseArray.length) {
+    if (sumCards <= 11) {
+      if (whoseArray[k].rank == 1) {
+        sumCards += 10;
+      }
+    }
+    k += 1;
+  }
   return sumCards;
 };
 
-// displaying player/ computer points
-var displayPoints = function (whoseArray) {
-  return 'Total points: ' + calcSumCards(whoseArray);
+// displaying player/ computer cards and points
+var displayCardsAndPoints = function (who, whoseArray, whosePoints) {
+  return displayCards(who, whoseArray) + displayPoints(whosePoints);
 };
 
-// displaying player/ computer cards and points
-var displayCardsAndPoints = function (who, whoseArray) {
-  return displayCards(who, whoseArray) + displayPoints(whoseArray); };
+// clear player and computer arrays
+var clearArraysAndPoints = function () {
+  computerArray = [];
+  playerArray = [];
+  computerPoints = 0;
+  playerPoints = 0;
+};
 
 var main = function (input) {
   var cards = shuffleCards(makeDeck());
@@ -135,11 +159,12 @@ var main = function (input) {
     playerArray.push(cards.pop());
 
     // calculating player points
-    playerPoints = calcSumCards(playerArray);
+    playerPoints = calcPoints(playerArray);
 
-    // checking for blackjack or bust (conditions where game ends)
+    // checking for blackjack or bust (conditions where game ends), clear data for next game
     if (playerPoints == 21 || playerPoints > 21) {
-      myOutputValue = checkForBlackjackOrBust('Player', playerArray, playerPoints);
+      myOutputValue = blackjackOrBust('Player', playerArray, playerPoints);
+      clearArraysAndPoints();
       return myOutputValue;
     }
 
@@ -151,7 +176,7 @@ var main = function (input) {
     MODE = 'PLAYER CHOICE, HIT OR STAND?';
 
     // display player's cards, and computer's first card
-    myOutputValue = `${displayCardsAndPoints('Player', playerArray)}<br><br>
+    myOutputValue = `${displayCardsAndPoints('Player', playerArray, playerPoints)}<br><br>
     ${displayComputerCard1()}<br><br><br>
     Would you like to hit or stand?`;
     return myOutputValue;
@@ -166,65 +191,77 @@ var main = function (input) {
     // if player chooses 'hit', another card is drawn and added to existing cards
     if (input == 'hit') {
       playerArray.push(cards.pop());
-      playerPoints = calcSumCards(playerArray);
+
+      // calculate points with extra card
+      playerPoints = calcPoints(playerArray);
+
       // check for blackjack or bust (game ends)
       if (playerPoints == 21 || playerPoints > 21) {
-        myOutputValue = checkForBlackjackOrBust('Player', playerArray, playerPoints);
+        myOutputValue = blackjackOrBust('Player', playerArray, playerPoints);
+        clearArraysAndPoints();
       } else {
         // or else player can choose whether or not to draw another card
-        myOutputValue = displayCardsAndPoints('Player', playerArray) + '<br><br>Would you like to \'hit\' or \'stand\' ?';
+        myOutputValue = displayCardsAndPoints('Player', playerArray, playerPoints) + '<br><br>Would you like to \'hit\' or \'stand\' ?';
       }
       return myOutputValue;
     }
 
     // if player chooses not to draw another card, it becomes the computer's turn (change mode)
     if (input == 'stand') {
-      computerPoints = calcSumCards(computerArray);
-      // check if computer has got blackjack or bust
+      // calculate computer points with variable Ace
+      computerPoints = calcPoints(computerArray);
+
+      // check if computer has got blackjack or bust (game ends)
       if (computerPoints == 21 || computerPoints > 21) {
-        myOutputValue = checkForBlackjackOrBust('Computer', computerArray, computerPoints);
+        myOutputValue = blackjackOrBust('Computer', computerArray, computerPoints);
+        clearArraysAndPoints();
       } else {
         MODE = 'COMPUTER CHOICE';
         myOutputValue = `You currently have :<br><br>
-        ${displayCardsAndPoints('Player', playerArray)}<br><br>
-        ${displayCardsAndPoints('Computer', computerArray)}<br><br>
-        It is now the computer's turn`;
+        ${displayCardsAndPoints('Player', playerArray, playerPoints)}<br><br>
+        ${displayCardsAndPoints('Computer', computerArray, computerPoints)}<br><br>
+        It is now the computer's turn<br>
+        Click submit to continue`;
       }
       return myOutputValue;
     }
   }
 
+  // mode changed, computer's turn (hit or stand)
   if (MODE == 'COMPUTER CHOICE') {
     // if computer hand is <= 16, computer has to hit
     if (computerPoints <= 16) {
+      // adding the extra card to computer's array
       computerArray.push(cards.pop());
-      MODE = 'DETERMINE WINNER';
-      myOutputValue = `Computer hits!<br>
-      ${displayCardsAndPoints('Computer', computerArray)}`;
-      return myOutputValue;
+      // calculating computer's points with the extra card
+      computerPoints = calcPoints(computerArray);
+
+      myOutputValue = 'Computer hits!<br><br>';
+      // checking if computer has bust or blackjack (game ends)
+      if (computerPoints == 21 || computerPoints > 21) {
+        myOutputValue += blackjackOrBust('Computer', computerArray, computerPoints);
+        clearArraysAndPoints();
+      } else {
+        myOutputValue += `${displayCardsAndPoints('Computer', computerArray, computerPoints)}<br><br>
+        Click submit to see who wins`;
+        MODE = 'DETERMINE WINNER';
+      }
     }
+
     // if computer hand is >= 17, computer has to stand
     if (computerPoints >= 17) {
+      myOutputValue = `Computer stands<br>${displayCardsAndPoints('Computer', computerArray, computerPoints)}<br><br>
+      Click submit to see who wins`;
       MODE = 'DETERMINE WINNER';
-      myOutputValue = `Computer stands<br>
-      ${displayCardsAndPoints('Computer', computerArray)}`;
-      return myOutputValue;
     }
+
+    return myOutputValue;
   }
 
+  // determining the winner
   if (MODE == 'DETERMINE WINNER') {
-    playerPoints = calcSumCards(playerArray);
-    computerPoints = calcSumCards(computerArray);
-
-    // checking if computer has bust or blackjack
-    if (computerPoints == 21 || computerPoints > 21) {
-      myOutputValue = checkForBlackjackOrBust('Computer', computerArray, computerPoints);
-      return myOutputValue;
-    }
-
-    // checking to see if player or computer wins
-    myOutputValue = `${displayCardsAndPoints('Player', playerArray)}<br><br>
-    ${displayCardsAndPoints('Computer', computerArray)}<br><br>`;
+    myOutputValue = `${displayCardsAndPoints('Computer', computerArray, computerPoints)}<br><br>
+    ${displayCardsAndPoints('Player', playerArray, playerPoints)}<br><br>`;
 
     if (playerPoints > computerPoints) {
       myOutputValue += 'YOU WIN !!';
@@ -234,22 +271,10 @@ var main = function (input) {
       myOutputValue += 'It\'s a TIE !!';
     }
 
+    myOutputValue += '<br>Click submit to start a new game';
+    MODE = 'CARDS ARE PICKED';
+    clearArraysAndPoints();
+
     return myOutputValue;
   }
 };
-  // comparing player and computer cards
-//   if (MODE == 'DETERMINE WINNER') {
-//     myOutputValue = checkForWinningConditions() + `<br>Enter 'y' to play again,
-//     or 'n' to exit the game`;
-//     if (input == 'y' || input == 'n') {
-//       if (input == 'y') {
-//         playerArray = [];
-//         computerArray = [];
-//         MODE = 'CARDS ARE PICKED';
-//       } else if (input == 'n') {
-//         myOutputValue =
-//       }
-//     }
-
-//     return myOutputValue;
-//   }
