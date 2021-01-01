@@ -1,33 +1,34 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>SWE101 Blackjack</title>
-        <meta charset="UTF-8">
-        <style>
-            *{
-              box-sizing:border-box;
-            }
+  <head>
+    <title>SWE101 Blackjack</title>
+    <meta charset="UTF-8" />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
 
-            #header{
-              text-align:center;
-            }
+      #header {
+        text-align: center;
+      }
 
-            #container{
-              margin:20px auto;
-              padding:20px;
-              background-color:pink;
-              max-width:300px;
-            }
+      #container {
+        margin: 20px auto;
+        padding: 20px;
+        background-color: pink;
+        max-width: 300px;
+      }
 
-            input{
-              width:70%;
-              margin-right:4px;
-            }
+      input {
+        width: 70%;
+        margin-right: 4px;
+      }
 
-            button{
-              font-size:7px;
-              width:20%;
-            }
+      button {
+        font-size: 7px;
+        width: 20%;
+      }
+
 
             #output{
               margin:20px auto;
@@ -50,19 +51,18 @@
         <script>
             var button = document.querySelector('#my-button');
 
-            button.addEventListener('click', function(){
 
-              var input = document.querySelector('#my-input');
+      button.addEventListener("click", function () {
+        var input = document.querySelector("#my-input");
 
-              var result = main(input.value);
+        var result = main(input.value);
 
-              var output = document.querySelector('#output');
+        var output = document.querySelector("#output");
 
-              output.innerHTML = result;
+        output.innerHTML = result;
 
-              input.value = "";
-            });
-
-        </script>
-    </body>
+        input.value = "";
+      });
+    </script>
+  </body>
 </html>
