@@ -1,29 +1,31 @@
-// There will be only two players. One human and one computer.
-// The computer will always be the dealer. The dealer has to hit if their hand is below 17.
-// The player who is closer to 21 wins the hand. Aces can be 1 or 11.
-
-// Deck is shuffled.
-// User clicks submit button to deal cards.
-// The cards are analysed for any game winning conditions. (E.g. Blackjack)
-// The cards are displayed to the user.
-// Then begins a new action, where the user has to decide whether to hit or stand, using the submit button to submit their choice.
-// When the user makes a decision the cards are analysed for winning conditions. They are also analysed for losing conditions, since it's possible for any player to lose now.
-// The computer also decides to hit or stand automatically based on game rules.
-// Either the game ends or continues.
-
 // global variables
-var MODE = 'CARDS ARE PICKED';
+var MODE = 'WHAT IS YOUR NAME?';
 var myOutputValue = '';
 var playerArray = [];
 var computerArray = [];
 var playerPoints = 0;
 var computerPoints = 0;
+var playerHand1 = [];
+var playerHand2 = [];
+var playerName = '';
+// var singleCard = {
+//   name: 'jack',
+//   suit: 'hearts',
+//   rank: 11,
+};
+
+/***********
+************
+************
+************ LIST OF FUNCTIONS
+************
+************
+***********/
 
 // deck of cards, presented in an object
 var makeDeck = function () {
   var deck = [];
-  var suits = ['hearts', 'diamonds', 'clubs', 'spades'];
-
+  var suits = ['♥️', '♦️', '♣️', '♠️'];
   var suitIndex = 0;
   while (suitIndex < suits.length) {
     var currentSuit = suits[suitIndex];
@@ -94,27 +96,6 @@ var displayPoints = function (whosePoints) {
   return 'Total points: ' + whosePoints;
 };
 
-// checking for blackjack or bust (conditions where game ends)
-var blackjackOrBust = function (who, whoseArray, whosePoints) {
-  var result = `${displayCards(who, whoseArray)} ${displayPoints(whosePoints)}<br><br>`;
-  if (whosePoints > 21) {
-    MODE = 'CARDS ARE PICKED';
-    result += 'BUST !! ' + who + ' LOSES';
-  }
-  if (whosePoints == 21) {
-    MODE = 'CARDS ARE PICKED';
-    result += 'BLACKJACK !! ' + who + ' WINS !! ';
-  }
-
-  result += '<br>Click submit to start a new game';
-  return result;
-};
-
-// displaying the computer's first card
-var displayComputerCard1 = function () {
-  return `Computer card 1: ${computerArray[0].name} of ${computerArray[0].suit}`;
-};
-
 // calculating player/ computer points
 var calcPoints = function (whoseArray) {
   var sumCards = 0;
@@ -137,6 +118,31 @@ var calcPoints = function (whoseArray) {
   return sumCards;
 };
 
+// checking for blackjack or bust (conditions where game ends)
+var blackjackOrBust = function (who, whoseArray, whosePoints) {
+  var result = `${displayCards(who, whoseArray)} ${displayPoints(whosePoints)}<br><br>`;
+  if (whosePoints > 21) {
+    MODE = 'CARDS ARE PICKED';
+    result += 'BUST !! ' + who + ' LOSES';
+  }
+
+  if (whosePoints == 21) {
+    MODE = 'CARDS ARE PICKED';
+    result += 'BLACKJACK !! ' + who + ' WINS !! ';
+  }
+
+  if (calcPoints(playerHand2) != 0) {
+    MODE = 'THERE IS A SECOND HAND!';
+  }
+  result += '<br>Click submit to start another game';
+  return result;
+};
+
+// displaying the computer's first card
+var displayComputerCard1 = function () {
+  return `Computer card 1: ${computerArray[0].name} of ${computerArray[0].suit}`;
+};
+
 // displaying player/ computer cards and points
 var displayCardsAndPoints = function (who, whoseArray, whosePoints) {
   return displayCards(who, whoseArray) + displayPoints(whosePoints);
@@ -150,15 +156,88 @@ var clearArraysAndPoints = function () {
   playerPoints = 0;
 };
 
+/// /////
+/// /////
+/// /////
+/// /////
+/// /////
+/// ///// START OF GAME LOGIC
+/// /////
+/// /////
+/// /////
+/// /////
+/// /////
+
 var main = function (input) {
   var cards = shuffleCards(makeDeck());
+
+  if (MODE == 'WHAT IS YOUR NAME?') {
+    // asking for player name
+    if (input != '') {
+      playerName = input;
+      myOutputValue = `Hi ${playerName} 🙂, click 'submit' to see your cards`;
+      MODE = 'CARDS ARE PICKED';
+    } else {
+      myOutputValue = 'Please enter your name';
+    }
+
+    return myOutputValue;
+  }
 
   if (MODE == 'CARDS ARE PICKED') {
     // obtaining player cards
     playerArray.push(cards.pop());
     playerArray.push(cards.pop());
 
-    // calculating player points
+    myOutputValue = displayCards('Player', playerArray);
+    // if player draws 2 cards of the same rank, cards can be split
+    if (playerArray[0].rank == playerArray[1].rank) {
+      myOutputValue += `<br>Would you like to split your cards ${playerName}?<br>Please enter 'y' or 'n' `;
+      MODE = 'TO SPLIT OR NOT TO SPLIT';
+    } else {
+      // regular play continues
+      myOutputValue += `<br>Click 'submit' to continue ${playerName}`;
+      MODE = 'CALCULATING PLAYER POINTS';
+    }
+    return myOutputValue;
+  }
+
+  // change mode, enable player to make choice, split or not to split
+  if (MODE == 'TO SPLIT OR NOT TO SPLIT') {
+    // player chooses to split their hand
+    if (input == 'y') {
+      playerHand1.push(playerArray[0]);
+      playerHand1.push(cards.pop());
+      console.log(playerHand1);
+
+      playerHand2.push(playerArray[1]);
+      playerHand2.push(cards.pop());
+      console.log(playerHand2);
+
+      playerArray = playerHand1;
+
+      myOutputValue = `${playerName}, this is your first hand<br><br>
+     ${displayCards('Player', playerArray)}<br>
+      Click 'submit' to continue`;
+      MODE = 'CALCULATING PLAYER POINTS';
+
+      // player chooses not to split their hand
+    } else if (input == 'n') {
+      myOutputValue = `${playerName}, you chose to keep your original cards<br>
+      ${displayCards('Player', playerArray)}<br>
+      Click 'submit' to continue`;
+      MODE = 'CALCULATING PLAYER POINTS';
+
+      // error message
+    } else {
+      myOutputValue = 'Please enter either \'y\' or \'n\'';
+    }
+
+    return myOutputValue;
+  }
+
+  // calculating player points
+  if (MODE == 'CALCULATING PLAYER POINTS') {
     playerPoints = calcPoints(playerArray);
 
     // checking for blackjack or bust (conditions where game ends), clear data for next game
@@ -172,13 +251,14 @@ var main = function (input) {
     computerArray.push(cards.pop());
     computerArray.push(cards.pop());
 
-    // change mode to allow player to hit or stand
-    MODE = 'PLAYER CHOICE, HIT OR STAND?';
-
     // display player's cards, and computer's first card
     myOutputValue = `${displayCardsAndPoints('Player', playerArray, playerPoints)}<br><br>
     ${displayComputerCard1()}<br><br><br>
-    Would you like to hit or stand?`;
+    Would you like to 'hit' or 'stand'?`;
+
+    // change mode to allow player to hit or stand
+    MODE = 'PLAYER CHOICE, HIT OR STAND?';
+
     return myOutputValue;
   }
 
@@ -233,29 +313,37 @@ var main = function (input) {
     if (computerPoints <= 16) {
       // adding the extra card to computer's array
       computerArray.push(cards.pop());
+
       // calculating computer's points with the extra card
       computerPoints = calcPoints(computerArray);
 
       myOutputValue = 'Computer hits!<br><br>';
+
       // checking if computer has bust or blackjack (game ends)
       if (computerPoints == 21 || computerPoints > 21) {
         myOutputValue += blackjackOrBust('Computer', computerArray, computerPoints);
         clearArraysAndPoints();
+
+        // if computer points is still <= 16, computer has to draw another card
+      } else if (computerPoints <= 16) {
+        myOutputValue += `${displayCardsAndPoints('Computer', computerArray, computerPoints)}<br><br>
+        Computer has to hit again. Click submit to continue`;
+        MODE = 'COMPUTER CHOICE';
       } else {
         myOutputValue += `${displayCardsAndPoints('Computer', computerArray, computerPoints)}<br><br>
         Click submit to see who wins`;
         MODE = 'DETERMINE WINNER';
       }
-    }
 
+      return myOutputValue;
+    }
     // if computer hand is >= 17, computer has to stand
     if (computerPoints >= 17) {
       myOutputValue = `Computer stands<br>${displayCardsAndPoints('Computer', computerArray, computerPoints)}<br><br>
       Click submit to see who wins`;
       MODE = 'DETERMINE WINNER';
+      return myOutputValue;
     }
-
-    return myOutputValue;
   }
 
   // determining the winner
@@ -264,17 +352,38 @@ var main = function (input) {
     ${displayCardsAndPoints('Player', playerArray, playerPoints)}<br><br>`;
 
     if (playerPoints > computerPoints) {
-      myOutputValue += 'YOU WIN !!';
+      myOutputValue += `${playerName}, YOU WIN !! 🏆`;
     } else if (computerPoints > playerPoints) {
       myOutputValue += 'COMPUTER WINS !!';
     } else {
       myOutputValue += 'It\'s a TIE !!';
     }
 
-    myOutputValue += '<br>Click submit to start a new game';
-    MODE = 'CARDS ARE PICKED';
-    clearArraysAndPoints();
+    myOutputValue += '<br>Click submit to start another game';
 
+    // game ends, clear arrays and points for the next game
+    clearArraysAndPoints();
+    playerHand1 = [];
+    MODE = 'CARDS ARE PICKED';
+
+    // checking if a second hand exists
+    if (calcPoints(playerHand2) != 0) {
+      MODE = 'THERE IS A SECOND HAND!';
+    }
+    return myOutputValue;
+  }
+
+  if (MODE == 'THERE IS A SECOND HAND!') {
+    // if the second hand does exist, we need 2 copies of playerHand2
+    playerArray = playerHand2.slice();
+    console.log(playerArray);
+    playerPoints = calcPoints(playerArray);
+    myOutputValue = `${playerName}, this is your second hand<br><br>
+      ${displayCards('Player', playerArray)}<br><br>
+      Click 'submit' to see continue`;
+    MODE = 'CALCULATING PLAYER POINTS';
+    // clear playerHand2 so that the game can terminate
+    playerHand2 = [];
     return myOutputValue;
   }
 };
