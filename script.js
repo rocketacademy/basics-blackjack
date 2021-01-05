@@ -44,7 +44,7 @@ var makeDeck = function () {
   return deck;
 };
 
-// function 2: shuffle cards
+// shuffle cards
 // get a random index from an array given it's size
 var getRandomIndex = function (size) {
   return Math.floor(Math.random() * size);
@@ -101,13 +101,37 @@ var dealCardToHand = function () {
 var sumOfHand = function (handArray) {
   var sum = 0;
   handArray.forEach((card) => {
-    if (card.rank <= 10) {
+    if (card.rank > 1 && card.rank <= 10) {
       sum += card.rank;
     } else if (card.rank > 10) {
       sum += 10;
+    } else if (card.rank == 1) {
+      if (sum <= 10) {
+        sum += 11;
+      } else if (sum > 10) {
+        sum += 1;
+      }
     }
   });
   return sum;
+};
+
+// TODO: suit to emoji function and implement it
+var convertSuitToEmoji = function (suitName) {
+  var emoji = '';
+  if (suitName == 'diamonds') {
+    emoji = '♦️';
+  }
+  if (suitName == 'hearts') {
+    emoji = '♥️';
+  }
+  if (suitName == 'spades') {
+    emoji = '♠️';
+  }
+  if (suitName == 'clubs') {
+    emoji = '♣️';
+  }
+  return emoji;
 };
 
 // this function help to display the hand array nicely,
@@ -115,7 +139,7 @@ var sumOfHand = function (handArray) {
 var displayHandArray = function (handArray) {
   var drawnCardArray = [];
   for (let i = 0; i < handArray.length; i += 1) {
-    var drawnCard = ` ${handArray[i].name} of ${handArray[i].suit}`;
+    var drawnCard = ` ${handArray[i].name} of ${convertSuitToEmoji(handArray[i].suit)}`;
     drawnCardArray.push(drawnCard);
   }
   return drawnCardArray;
@@ -123,6 +147,9 @@ var displayHandArray = function (handArray) {
 
 // this function determine the winner of the game, output player or dealer
 var determineWinner = function () {
+  if (sumOfHand(dealerHandArray) > maxSum) {
+    return 'The dealer busted! You win!';
+  }
   if (sumOfHand(playerHandArray) > sumOfHand(dealerHandArray)) {
     return 'You win!';
   }
@@ -132,9 +159,10 @@ var determineWinner = function () {
   if (sumOfHand(playerHandArray) == sumOfHand(dealerHandArray)) {
     return 'It\'s a tie';
   }
+  if (dealerHandArray.length == 2 && sumOfHand(dealerHandArray) == 21) {
+    return 'The dealer had a black Jack, Dealer win!';
+  }
 };
-
-// TODO: suit to emoji function
 
 var currGameMode = 'dealCards';
 
@@ -170,7 +198,7 @@ var main = function (input) {
     // return the player his drawn cards and tell him the sum of his cards
 
     // if the player's 2 cards sum is = 21, its a black jack and he automacally wins
-    if (sumOfHand(playerHandArray) == 12) {
+    if (sumOfHand(playerHandArray) == 21) {
       return `You had: ${displayHandArray(playerHandArray)} <br> Your sum is ${sumOfHand(playerHandArray)} <br> It's a Black Jack! You won! <br> Refresh to start new game.`;
     }
 
@@ -185,11 +213,11 @@ var main = function (input) {
 
       // if the player busted(sum > 21), the player loses and the dealer wins
       if (sumOfHand(playerHandArray) > maxSum) {
-        return `Your new card is ${playerHandArray[playerHandArray.length - 1].name} of ${playerHandArray[playerHandArray.length - 1].suit} <br> Your sum now is ${sumOfHand(playerHandArray)} <br> You busted! <br> Refresh to start new game.`;
+        return `Now you have ${displayHandArray(playerHandArray)} <br> Your sum now is ${sumOfHand(playerHandArray)} <br> You busted! <br> Refresh to start new game.`;
       }
-      return `Your new card is ${playerHandArray[playerHandArray.length - 1].name} of ${playerHandArray[playerHandArray.length - 1].suit} <br> Your sum now is ${sumOfHand(playerHandArray)} <br> Enter 'hit' to draw another card or 'stand' to stay at current hand`;
-      // or 'stand', which is stay at his current hand
+      return `Now you have ${displayHandArray(playerHandArray)} <br> Your sum now is ${sumOfHand(playerHandArray)} <br> Enter 'hit' to draw another card or 'stand' to stay at current hand`;
     }
+    // or 'stand', which is stay at his current hand
     if (input == 'stand') {
       // change game mode to dealer action
       currGameMode = 'dealerAction';
@@ -210,23 +238,12 @@ var main = function (input) {
     // if the sum of the two cards is <= 16, the dealer needs to the hit another card
     // untill the sum is > 16
     // winning conditions as above
-    if (sumOfHand(dealerHandArray) <= minSum) {
-      for (let i = 0; i < dealerHandArray.length; i += 1) {
+    for (let i = 0; i < dealerHandArray.length; i += 1) {
+      if (sumOfHand(dealerHandArray) <= minSum) {
         dealerCard = dealCardToHand();
         dealerHandArray.push(dealerCard);
-        var dealerNewCard = `${dealerHandArray[dealerHandArray.length - 1].name} of ${dealerHandArray[dealerHandArray.length - 1].suit}`;
-        return `The dealer drawed a new card, which is ${dealerNewCard} <br> The dealer had: ${displayHandArray(dealerHandArray)} <br> The dealer sum is ${sumOfHand(dealerHandArray)} <br> ${determineWinner()} <br> Refresh to start new game`;
-      }
-
-      // if the sum of the 2 dealer cards = 21, its a black jack and the dealer wins
-      if (dealerHandArray.length == 2 && sumOfHand(dealerHandArray) == 21) {
-        return `The dealer had: ${displayHandArray(dealerHandArray)} <br> The dealer sum is ${sumOfHand(dealerHandArray)} <br> It's a Black Jack! The dealer wins! <br> Refresh to start new game.`;
-      }
-
-      // if the dealer busted(sum > 21), the dealer loses and the player wins
-      if (sumOfHand(dealerHandArray) > maxSum) {
-        return `The dealer had: ${displayHandArray(dealerHandArray)} <br> The dealer busted! You won! <br> Refresh to start new game.`;
       }
     }
+    return `The dealer drawed a new card. <br> The dealer had: ${displayHandArray(dealerHandArray)} <br> The dealer sum is ${sumOfHand(dealerHandArray)} <br> ${determineWinner()} <br> Refresh to start new game`;
   }
 };
