@@ -1,5 +1,5 @@
 // global variables
-var MODE = 'WHAT IS YOUR NAME?';
+var MODE = 'HOW MANY PLAYERS?';
 var myOutputValue = '';
 var playerArray = [];
 var computerArray = [];
@@ -9,7 +9,7 @@ var playerHand1 = [];
 var playerHand2 = [];
 var playerName = '';
 var betAmount = 0;
-
+var players = [];
 // var singleCard = {
 //   name: 'jack',
 //   suit: 'hearts',
@@ -84,9 +84,9 @@ var shuffleCards = function (cards) {
 // displaying player/ computer cards
 var displayCards = function (who, whoseArray) {
   var message = '';
-  var i = 0;
-  while (i < whoseArray.length) {
-    message += `${who}'s card ${i + 1}: ${whoseArray[i].name} of ${whoseArray[i].suit}<br>`;
+  var i = 1;
+  while (i <= whoseArray.length) {
+    message += `${who}'s card ${i}: ${whoseArray[i].name} of ${whoseArray[i].suit}<br>`;
     i += 1;
   }
 
@@ -103,6 +103,10 @@ var calcPoints = function (whoseArray) {
   var sumCards = 0;
   var j = 0;
   while (j < whoseArray.length) {
+    if (whoseArray[j].rank == 11 || whoseArray[j].rank == 12 || whoseArray[j].rank == 13) {
+      whoseArray[j].rank = 10;
+    }
+
     sumCards += whoseArray[j].rank;
     j += 1;
   }
@@ -190,15 +194,11 @@ var main = function (input) {
   var cards = shuffleCards(makeDeck());
 
   // asking how many people are playing
-  // if (MODE == 'HOW MANY PLAYERS?') {
-  //   var numPlayers = input;
-
-  //   players = [];
-  //   for (var playerIndex = 0; playerIndex < numPlayers; playerIndex++) {
-  //     players.push('player' + [playerIndex + 1]);
-  //     console.log(players);
-  //   }
-  // }
+  // generate 2 cards for each player + the dealer
+  // playerCardsArray = [ [player1Cards], [player2Cards], etc...]
+  // need to keep track of which player is playing, currentPlayer ? change mode?
+  //
+  //
 
   if (MODE == 'WHAT IS YOUR NAME?') {
     // asking for player name
