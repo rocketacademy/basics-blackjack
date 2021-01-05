@@ -1,5 +1,5 @@
 // ------------------------------------------------
-// Blackjack V2 (Splitting)
+// Blackjack V2 (Include Input Validation)
 // ------------------------------------------------
 
 /** Created an ordered deck of 52 cards */
@@ -212,29 +212,36 @@ var displayOutcome = function (outcome) {
 var main = function (input) {
   // Check which mode game is in to activate respective logic
   // [a] When game is over
-  if (gameOver == true) {
+  if (gameOver === true) {
     outputGameOver();
   }
   // [b] When user chooses to hit
-  if (input == 'hit') {
+  if (input === 'hit') {
     mode = HIT_MODE;
     return "Hit 'Submit' again to view your new card & total points.";
   }
   // [c] When user chooses to stand
-  if (input == 'stand') {
+  if (input === 'stand') {
     mode = STAND_MODE;
     return "Hit 'Submit' again to see what the Dealer's score is.";
   }
   // [d] When user chooses to split cards
-  if (input == 'split') {
+  if (input === 'split') {
     mode = SPLIT_MODE;
     return "Hit 'Submit' again to see your new 2nd card for each set.";
   }
 
   // [1] In this mode, the game starts off by dealing 2 cards to each
-  if (mode == DEAL_CARDS_MODE) {
-    if (gameOver == true) {
+  if (mode === DEAL_CARDS_MODE) {
+    if (gameOver === true) {
       outputGameOver();
+    }
+
+    // Input validation to ensure player moves forward appropriately
+    if (player1.cards.length >= 2) {
+      if (input !== 'hit' || input !== 'stand') {
+        return 'Enter either "hit" or "stand" to continue..';
+      }
     }
 
     // Deal cards to Player & Dealer
@@ -250,13 +257,13 @@ var main = function (input) {
     }
 
     // If player is dealt blackjack, game is over.
-    if (dealtBlackJack(player1.points, player1.cards.length) == true) {
+    if (dealtBlackJack(player1.points, player1.cards.length) === true) {
       gameOver = true;
       return `${displayBlackjackMessage(player1)}`;
     }
 
     // If dealer is dealt blackjack, game is over.
-    if (dealtBlackJack(dealer.points, dealer.cards.length) == true) {
+    if (dealtBlackJack(dealer.points, dealer.cards.length) === true) {
       gameOver = true;
       return `${displayBlackjackMessage(dealer)}`;
     }
@@ -265,8 +272,8 @@ var main = function (input) {
   }
 
   // [2] In this mode, the player continues to hit cards.
-  if (mode == HIT_MODE) {
-    if (gameOver == true) {
+  if (mode === HIT_MODE) {
+    if (gameOver === true) {
       outputGameOver();
     }
 
@@ -276,28 +283,34 @@ var main = function (input) {
     player1.optimiseAces();
 
     // End the game if the user busts his hand, dealer automatically wins.
-    if (handBurst(player1.points) == true) {
+    if (handBurst(player1.points) === true) {
       gameOver = true;
       return `Player 1 is out of the game! <br> Player drew: ${forEachCard(player1.cards)} <br>Bust with ${player1.points} points. <br><br>Dealer wins. <br><br> Please refresh to play again.`;
     }
 
-    return `Player's current cards: ${forEachCard(player1.cards)} <br> Total points: ${player1.points}<br><br> Type in 'hit' to get another card.
+    return `Player's current cards: ${forEachCard(player1.cards)} <br> Total points: ${player1.points}<br><br>Hit 'submit' to get another card. Otherwise, 
     <br> Type in 'stand' to remain`;
   }
 
   // [3] In this mode, Player gets a card each for his split hands.
-  if (mode == SPLIT_MODE) {
+  if (mode === SPLIT_MODE) {
     // New card is added to each split set
     player1.splitCards();
     player1.receiveCard(SPLIT_MODE);
 
     // Check for BlackJack for both split sets
-    if (dealtBlackJack(player1.firstSetPoints, player1.firstSet.length) == true) {
+    if (dealtBlackJack(player1.firstSetPoints, player1.firstSet.length) === true) {
       gameOver = true;
       return `${displayBlackjackMessage(player1, SPLIT_MODE)}`;
-    } if (dealtBlackJack(player1.secondSetPoints, player1.secondSet.length == true)) {
+    } if (dealtBlackJack(player1.secondSetPoints, player1.secondSet.length === true)) {
       gameOver = true;
       return `${displayBlackjackMessage(player1, SPLIT_MODE)}`;
+    }
+
+    // Optimise Ace cards for Dealer
+    if ((dealer.points < 17) || (dealer.points < player1.points && dealer.points < 21)) {
+      dealer.receiveCard();
+      dealer.optimiseAces();
     }
 
     // Move to compare player & dealer scores.
@@ -311,6 +324,7 @@ var main = function (input) {
     // Aces if it exists, will be optimised to get best score.
     dealer.optimiseAces();
 
+    // Optimise Ace cards for Dealer
     if ((dealer.points < 17) || (dealer.points < player1.points && dealer.points < 21)) {
       dealer.receiveCard();
       dealer.optimiseAces();
@@ -322,20 +336,20 @@ var main = function (input) {
   }
 
   // [5] In this mode, we are comparing the scores between dealer & player (STAND).
-  if (mode == SCORING_MODE_STAND) {
+  if (mode === SCORING_MODE_STAND) {
     if ((dealer.points > player1.points) && (!handBurst(dealer.points))) {
       return `${displayOutcome('dealerWins')}`;
     }
     if ((dealer.points < player1.points) || (handBurst(dealer.points))) {
       return `${displayOutcome('playerWins')}`;
     }
-    if (dealer.points == player1.points) {
+    if (dealer.points === player1.points) {
       return `${displayOutcome('draw')}`;
     }
   }
 
   // [6] In this mode, we are comparing the scores between dealer & player (SPLIT).
-  if (mode == SCORING_MODE_SPLIT) {
+  if (mode === SCORING_MODE_SPLIT) {
     // Extra winning conditions for SPLIT_MODE
     if (dealer.points < player1.firstSetPoints || dealer.points < player1.secondSetPoints
        || (handBurst(dealer.points))) {
@@ -349,14 +363,9 @@ var main = function (input) {
        || (!handBurst(dealer.points))) {
       return `${displayOutcome('player1SplitBothLose')}`;
     }
-    if ((dealer.points == player1.firstSetPoints && dealer.points == player1.secondSetPoints)
+    if ((dealer.points === player1.firstSetPoints && dealer.points === player1.secondSetPoints)
        || (!handBurst(dealer.points))) {
       return "It's a draw! All card sets have the same points!";
     }
   }
 };
-
-// -- Betting --
-// Include Bet property for Player object
-
-// if Dealer busts, Player gets double his bet
