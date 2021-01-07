@@ -1,5 +1,5 @@
 // ------------------------------------------------
-// Blackjack V2 (Include Input Validation)
+// Blackjack V3 (Refactor Player Object + Add Betting)
 // ------------------------------------------------
 
 /** Created an ordered deck of 52 cards */
@@ -71,6 +71,7 @@ var drawCard = function (fromDeck) {
   return card;
 };
 
+var BETTING_MODE = 'BETTING_MODE';
 var DEAL_CARDS_MODE = 'DEAL_CARDS_MODE';
 var HIT_MODE = 'HIT_MODE';
 var STAND_MODE = 'STAND_MODE';
@@ -79,52 +80,74 @@ var SCORING_MODE_STAND = 'SCORING_MODE_STAND';
 var SCORING_MODE_SPLIT = 'SCORING_MODE_SPLIT';
 
 // Set default game mode to dealing the first 2 cards for each player.
-var mode = DEAL_CARDS_MODE;
+var mode = BETTING_MODE;
 var gameOver = false;
 
-/** Represents the player or dealer. */
-var Player = {
-  init() {
-    this.cards = []; // Store Player cards (object).
-    this.rank = []; // Track individual rank of cards .
-    this.points = 0; // Used to tally against max game score.
+// ------------------------------------------------
+// Refactored
+// ------------------------------------------------
+var sum = function (arr) {
+  var sumPoints = arr.reduce((a, b) => a + b);
+  return sumPoints;
+};
 
-    // In SPLIT_MODE, Player cards are split into 2 arrays
-    this.firstSet = [];
-    this.firstSetPoints = 0;
-    this.secondSet = [];
-    this.secondSetPoints = 0;
+const Player = {
+  init() {
+    this.name = '';
+    this.handArr = []; // Keep track of Player cards & rank of cards
+    this.pointsArr = []; // Used to track points of cards (whether split or not)
+    this.bet = 0;
 
     return this;
   },
   /** Player is dealt card along with information stored above */
   receiveCard(gameMode = HIT_MODE) {
     if (gameMode === HIT_MODE) {
-      var topCard = drawCard(shuffledDeck);
-      this.cards.push(topCard);
-      this.rank.push(topCard.rank);
-      this.points += topCard.points;
+      const topCard = drawCard(shuffledDeck);
+      this.handArr.push(topCard);
+      this.pointsArr.push(topCard.points);
     }
-    if (gameMode === SPLIT_MODE) {
-      this.firstSet.push(drawCard(shuffledDeck));
-      this.firstSetPoints += this.firstSet[0].points + this.firstSet[1].points;
 
-      this.secondSet.push(drawCard(shuffledDeck));
-      this.secondSetPoints += this.secondSet[0].points + this.secondSet[1].points;
+    // Activated only in SPLIT_MODE after Player has received 2 cards
+    if (gameMode === SPLIT_MODE) {
+      // Two cards for each new split set
+      const newCard1 = drawCard(shuffledDeck);
+      const newCard2 = drawCard(shuffledDeck);
+
+      // Push 2 arrays each containing 1st/2nd card respectively to handArr
+      var setOne = this.handArr.splice(0, 1);
+      var setTwo = this.handArr.splice(0, 1);
+      this.handArr.push(setOne, setTwo);
+
+      // Tally points for both hands in handArr
+      var setOnePoints = this.pointsArr[0];
+      var setTwoPoints = this.pointsArr[1];
+      this.pointsArr = [[setOnePoints], [setTwoPoints]];
+
+      // After hand has been split, push 1 new card to each split set
+      this.handArr[0].push(newCard1);
+      this.handArr[1].push(newCard2);
+
+      // Push new card points to pointsArr (which is now made of 2 arrays)
+      this.pointsArr[0].push(newCard1.points);
+      this.pointsArr[1].push(newCard2.points);
     }
   },
-  /** Player's exisiting cards are split into 2 individual arrays */
-  splitCards() {
-    this.firstSet.push(this.cards[0]);
-    this.secondSet.push(this.cards[1]);
-  },
-  /** Player's cards are optimised to get best possible score */
+  /** Cards are optimised to attain best possible score (SPLIT_MODE not factored in) */
   optimiseAces() {
-    if (this.points > 21 && this.rank.includes(1)) {
+    var totalPoints = sum(this.pointsArr);
+    var rankArr = [];
+
+    // Push rank of card to de termine if Ace exists
+    this.handArr.forEach((cardObj) => rankArr.push(cardObj.rank));
+
+    // If the points greater than game limit AND rank includes an Ace
+    if (totalPoints > 21 && rankArr.includes(1)) {
       this.points = this.points - 10;
       // Remove the current rank of the Ace so as to deduct 10 points once per Ace
-      this.rank = this.rank.filter((i) => i !== 1);
+      rankArr = rankArr.filter((i) => i !== 1);
     }
+    return totalPoints;
   },
 };
 
@@ -165,44 +188,71 @@ var forEachCard = function (playerCards) {
 /** Output Blackjack message */
 var displayBlackjackMessage = function (player, gameMode = DEAL_CARDS_MODE) {
   if (gameMode === DEAL_CARDS_MODE) {
-    return `🃏 Blackjack 🃏 <br> Player drew: ${forEachCard(player.cards)} <br> Total points: ${player.points} <br><br> Player 1 Wins! <br>
-        <br> Game Over. Please refresh to play again.`;
+    return `🃏 Blackjack 🃏 <br> Player drew: ${forEachCard(player.handArr)} <br> 
+            Total points: ${sum(player.pointsArr)} <br><br> Player 1 Wins! <br>
+            You now have $${player1.bet * 1.5}! 💰 <br>
+            <br> Game Over. Please refresh to play again.`;
   } if (gameMode === SPLIT_MODE) {
-    return `🃏 Blackjack 🃏 <br> Player cards (1st Set): ${forEachCard(player.firstSet)} <br> Player points (1st Set): ${player.firstSetPoints} <br> Player cards (2nd Set): ${forEachCard(player.secondSet)} <br> Player points (2nd Set): ${player.secondSetPoints} <br><br> Player 1 Wins! <br><br> Game Over. Please refresh to play again.`;
+    return `🃏 Blackjack 🃏 <br> Player cards (1st Set): ${forEachCard(player.handarr[0])} <br> Player points (1st Set): ${player.pointsArr[0]} <br> 
+            Player cards (2nd Set): ${forEachCard(player.handarr[1])} <br> Player points (2nd Set): ${player.pointsArr[1]} <br><br> 
+            You now have $${player1.bet * 1.5}! 💰 <br>
+            Player 1 Wins! <br><br> Game Over. Please refresh to play again.`;
   }
 };
 
 /** Output winning messages */
-var displayOutcome = function (outcome) {
+var displayOutcome = function (outcome, gameMode = SCORING_MODE_STAND) {
   var outputMsg = '';
 
+  var allDealerCards = forEachCard(dealer.handArr);
+  var totalDealerPoints = sum(dealer.pointsArr);
+  var playerBet = player1.bet;
+  // var playerWinnings = player1.be
+
+  if (gameMode === SCORING_MODE_STAND) {
   // Assign each possible array of cards to a variable
-  var allPlayer1Cards = forEachCard(player1.cards);
-  var firstSplitPlayer1Cards = forEachCard(player1.firstSet);
-  var secondSplitPlayer1Cards = forEachCard(player1.secondSet);
-  var allDealerCards = forEachCard(dealer.cards);
+    var allPlayer1Cards = forEachCard(player1.handArr);
+    var totalPlayer1Points = sum(player1.pointsArr);
+    var playersHandInfoStandMode = `Player cards: ${allPlayer1Cards} <br> Player score: ${totalPlayer1Points}  <br> 
+                                    Dealer cards: ${allDealerCards} <br> Dealer score: ${totalDealerPoints} <br><br>
+                                    Player's bet: $${playerBet} <br><br>`;
 
-  // Winning conditions after STAND_MODE
-  if (outcome == 'playerWins') {
-    outputMsg = ` Player cards: ${allPlayer1Cards} <br> Player score: ${player1.points}  <br> Dealer cards: ${allDealerCards} <br> Dealer score: ${dealer.points} <br><br> Player Wins!`;
-  }
-  if (outcome == 'dealerWins') {
-    outputMsg = `Player cards: ${allPlayer1Cards} <br> Player score: ${player1.points}  <br> Dealer cards: ${allDealerCards} <br> Dealer score: ${dealer.points} <br><br> Dealer Wins!`;
-  }
-  if (outcome == 'draw') {
-    outputMsg = `Player cards: ${allPlayer1Cards} <br> Player score: ${player1.points}  <br> Dealer cards: ${allDealerCards} <br> Dealer score: ${dealer.points} <br><br> It's a draw!`;
+    // Winning conditions after STAND_MODE
+    if (outcome == 'playerWins') {
+      outputMsg = playersHandInfoStandMode + 'Player Wins!';
+    }
+    if (outcome == 'dealerWins') {
+      outputMsg = playersHandInfoStandMode + 'Dealer Wins!';
+    }
+    if (outcome == 'draw') {
+      outputMsg = playersHandInfoStandMode + "It's a draw!";
+    }
   }
 
-  // Winnining conditions after SPLIT_MODE:
-  if (outcome == 'player1SplitOneWin') {
-    outputMsg = `Player cards (1st Set): ${firstSplitPlayer1Cards} <br> Player points (1st Set): ${player1.firstSetPoints} <br> Player cards (2nd Set): ${secondSplitPlayer1Cards} <br> Player points (2nd Set): ${player1.secondSetPoints} <br> Dealer cards: ${allDealerCards} <br> Dealer score: ${dealer.points} <br><br> One of Player 1's set wins. <br> Hence, Player 1 wins!`;
+  if (gameMode === SCORING_MODE_SPLIT) {
+    var firstSplitPlayer1Cards = forEachCard(player1.handArr[0]);
+    var totalPlayer1FirstSplitPoints = sum(player1.pointsArr[0]);
+
+    var secondSplitPlayer1Cards = forEachCard(player1.handArr[1]);
+    var totalPlayer1SecondSplitPoints = sum(player1.pointsArr[1]);
+
+    var playersHandInfoSplitMode = `Player cards (1st Set): ${firstSplitPlayer1Cards} <br> Player points (1st Set): ${totalPlayer1FirstSplitPoints} <br> 
+                                    Player cards (2nd Set): ${secondSplitPlayer1Cards} <br> Player points (2nd Set): ${totalPlayer1SecondSplitPoints} <br><br>
+                                    Dealer cards: ${allDealerCards} <br> Dealer score: ${totalDealerPoints} <br><br>
+                                    Player's bet: $${playerBet} <br><br>`;
+
+    // Winnining conditions after SPLIT_MODE:
+    if (outcome == 'player1SplitOneWin') {
+      outputMsg = playersHandInfoSplitMode + "One of Player 1's set wins. <br> Hence, Player 1 wins!";
+    }
+    if (outcome == 'player1SplitBothWin') {
+      outputMsg = playersHandInfoSplitMode + 'Both Player 1 sets wins!';
+    }
+    if (outcome == 'player1SplitBothLose') {
+      outputMsg = playersHandInfoSplitMode + "Both Player 1 sets lose to the Dealer's. Dealer wins!";
+    }
   }
-  if (outcome == 'player1SplitBothWin') {
-    outputMsg = `Player cards (1st Set): ${firstSplitPlayer1Cards} <br> Player points (1st Set): ${player1.firstSetPoints} <br> Player cards (2nd Set): ${secondSplitPlayer1Cards} <br> Player points (2nd Set): ${player1.secondSetPoints} <br> Dealer cards: ${allDealerCards} <br> Dealer score: ${dealer.points} <br><br>  Both Player 1 sets wins!`;
-  }
-  if (outcome == 'player1SplitBothLose') {
-    outputMsg = `Player cards (1st Set): ${firstSplitPlayer1Cards} <br> Player points (1st Set): ${player1.firstSetPoints} <br> Player cards (2nd Set): ${secondSplitPlayer1Cards} <br> Player points (2nd Set): ${player1.secondSetPoints} <br> Dealer cards: ${allDealerCards} <br> Dealer score: ${dealer.points} <br><br>  Both Player 1 sets lose to the Dealer's. Dealer wins!`;
-  }
+
   outputMsg += '<br><br> Game Over. Please refresh to play again.';
 
   return outputMsg;
@@ -231,6 +281,16 @@ var main = function (input) {
     return "Hit 'Submit' again to see your new 2nd card for each set.";
   }
 
+  if (mode === BETTING_MODE) {
+    if (isNaN(Number(input)) === true || input === '') {
+      return 'Please input a number for your bet.';
+    }
+    player1.bet = Number(input);
+    mode = DEAL_CARDS_MODE;
+
+    return `💵 You placed a bet of $${player1.bet}. 💵  <br><br> Hit 'submit' to see your hand.`;
+  }
+
   // [1] In this mode, the game starts off by dealing 2 cards to each
   if (mode === DEAL_CARDS_MODE) {
     if (gameOver === true) {
@@ -238,7 +298,7 @@ var main = function (input) {
     }
 
     // Input validation to ensure player moves forward appropriately
-    if (player1.cards.length >= 2) {
+    if (player1.handArr.length >= 2) {
       if (input !== 'hit' || input !== 'stand') {
         return 'Enter either "hit" or "stand" to continue..';
       }
@@ -252,23 +312,25 @@ var main = function (input) {
     }
 
     // If player is dealt a pair, give option to split
-    if (player1.rank[0] === player1.rank[1]) {
-      return `Player drew: ${forEachCard(player1.cards)} <br> Total points: ${player1.points} <br><br> Type in 'split' to get split cards. <br>Type in 'hit' to get another card. <br> Type in 'stand' to remain.`;
+    if (player1.handArr[0].rank === player1.handArr[1].rank) {
+      return `Player drew: ${forEachCard(player1.handArr)} <br> Total points: ${sum(player1.pointsArr)} <br><br> 
+              Type 'split' to get split cards. <br>Type 'hit' to get another card. <br> Type 'stand' to remain.`;
     }
 
     // If player is dealt blackjack, game is over.
-    if (dealtBlackJack(player1.points, player1.cards.length) === true) {
+    if (dealtBlackJack(sum(player1.pointsArr), player1.handArr.length) === true) {
       gameOver = true;
       return `${displayBlackjackMessage(player1)}`;
     }
 
     // If dealer is dealt blackjack, game is over.
-    if (dealtBlackJack(dealer.points, dealer.cards.length) === true) {
+    if (dealtBlackJack(sum(dealer.pointsArr), dealer.handArr.length) === true) {
       gameOver = true;
       return `${displayBlackjackMessage(dealer)}`;
     }
 
-    return `Player drew: ${forEachCard(player1.cards)} <br> Total points: ${player1.points} <br><br> Type in 'hit' to get another card. <br> Type in 'stand' to remain.`;
+    return `Player drew: ${forEachCard(player1.handArr)} <br> Total points: ${sum(player1.pointsArr)} <br><br> 
+            Type 'hit' to get another card. <br> Type 'stand' to remain.`;
   }
 
   // [2] In this mode, the player continues to hit cards.
@@ -277,38 +339,41 @@ var main = function (input) {
       outputGameOver();
     }
 
-    // Player is dealt card since he/she has selected to "hit".
-    player1.receiveCard();
-    // Aces if it exists, will be optimised to get best score.
-    player1.optimiseAces();
+    player1.receiveCard(); // Player is dealt card since he/she has selected to "hit".
+    player1.optimiseAces(); // Aces if it exists, will be optimised to get best score.
 
     // End the game if the user busts his hand, dealer automatically wins.
-    if (handBurst(player1.points) === true) {
+    if (handBurst(sum(player1.pointsArr)) === true) {
       gameOver = true;
-      return `Player 1 is out of the game! <br> Player drew: ${forEachCard(player1.cards)} <br>Bust with ${player1.points} points. <br><br>Dealer wins. <br><br> Please refresh to play again.`;
+      return `Player 1 is out of the game! <br> Player drew: ${forEachCard(player1.handArr)} <br>
+              Bust with ${sum(player1.pointsArr)} points. <br><br>
+              Dealer wins. <br><br> Please refresh to play again.`;
     }
 
-    return `Player's current cards: ${forEachCard(player1.cards)} <br> Total points: ${player1.points}<br><br>Hit 'submit' to get another card. Otherwise, 
-    <br> Type in 'stand' to remain`;
+    return `Player's current cards: ${forEachCard(player1.handArr)} <br> Total points: ${sum(player1.pointsArr)}<br><br>
+            Hit 'submit' to get another card. Otherwise, <br> Type 'stand' to remain`;
   }
 
   // [3] In this mode, Player gets a card each for his split hands.
   if (mode === SPLIT_MODE) {
     // New card is added to each split set
-    player1.splitCards();
     player1.receiveCard(SPLIT_MODE);
+    player1.bet = player1.bet * 2;
 
     // Check for BlackJack for both split sets
-    if (dealtBlackJack(player1.firstSetPoints, player1.firstSet.length) === true) {
+    if (dealtBlackJack(sum(player1.pointsArr), player1.handArr[0].length) === true) {
+      player1.bet = (player1.bet) * 1.5 / 2;
       gameOver = true;
       return `${displayBlackjackMessage(player1, SPLIT_MODE)}`;
-    } if (dealtBlackJack(player1.secondSetPoints, player1.secondSet.length === true)) {
+    } if (dealtBlackJack(sum(player1.pointsArr), player1.handArr[1].length === true)) {
+      player1.bet = (player1.bet) * 1.5 / 2;
       gameOver = true;
       return `${displayBlackjackMessage(player1, SPLIT_MODE)}`;
     }
 
     // Optimise Ace cards for Dealer
-    if ((dealer.points < 17) || (dealer.points < player1.points && dealer.points < 21)) {
+    // eslint-disable-next-line max-len
+    if ((sum(dealer.pointsArr) < 17) || (sum(dealer.pointsArr) < sum(player1.pointsArr) && sum(dealer.pointsArr) < 21)) {
       dealer.receiveCard();
       dealer.optimiseAces();
     }
@@ -316,7 +381,9 @@ var main = function (input) {
     // Move to compare player & dealer scores.
     mode = SCORING_MODE_SPLIT;
 
-    return `Player 1: <br> 1st set of split cards: ${forEachCard(player1.firstSet)} <br> 1st split set points: ${player1.firstSetPoints}<br> 2nd set of split cards: ${forEachCard(player1.secondSet)} <br> 2nd split set points: ${player1.secondSetPoints}<br><br> Hit 'Submit' to continue.`;
+    return `Player 1: <br> 1st set of split cards: ${forEachCard(player1.handArr[0])} <br> 1st split set points: ${sum(player1.pointsArr[0])}
+            <br> 2nd set of split cards: ${forEachCard(player1.handArr[1])} <br> 2nd split set points: ${sum(player1.pointsArr[1])}<br><br> 
+            Hit 'Submit' to continue.`;
   }
 
   // [4] In this mode, the dealer is the one being dealt the cards.
@@ -325,11 +392,13 @@ var main = function (input) {
     dealer.optimiseAces();
 
     // Optimise Ace cards for Dealer
-    if ((dealer.points < 17) || (dealer.points < player1.points && dealer.points < 21)) {
+    // eslint-disable-next-line max-len
+    if ((sum(dealer.pointsArr) < 17) || (sum(dealer.pointsArr) < sum(player1.pointsArr) && sum(dealer.pointsArr) < 21)) {
       dealer.receiveCard();
       dealer.optimiseAces();
 
-      return `Dealer's current cards: ${forEachCard(dealer.cards)} <br> Dealer points: ${dealer.points}<br><br> Hit 'Submit' for Dealer to continue hitting.`;
+      return `Dealer's current cards: ${forEachCard(dealer.handArr)} <br> Dealer points: ${sum(dealer.pointsArr)}<br><br> 
+              Hit 'Submit' for Dealer to continue hitting.`;
     }
     // Move to compare player & dealer scores.
     mode = SCORING_MODE_STAND;
@@ -337,34 +406,44 @@ var main = function (input) {
 
   // [5] In this mode, we are comparing the scores between dealer & player (STAND).
   if (mode === SCORING_MODE_STAND) {
-    if ((dealer.points > player1.points) && (!handBurst(dealer.points))) {
+    if ((sum(dealer.pointsArr) > sum(player1.pointsArr)) && (!handBurst(sum(dealer.pointsArr)))) {
+      player1.bet = 0;
       return `${displayOutcome('dealerWins')}`;
     }
-    if ((dealer.points < player1.points) || (handBurst(dealer.points))) {
+    if ((sum(dealer.pointsArr) < sum(player1.pointsArr)) || (handBurst(sum(dealer.pointsArr)))) {
+      player1.bet += player1.bet;
       return `${displayOutcome('playerWins')}`;
     }
-    if (dealer.points === player1.points) {
+    if (sum(dealer.pointsArr) === sum(player1.pointsArr)) {
       return `${displayOutcome('draw')}`;
     }
   }
 
   // [6] In this mode, we are comparing the scores between dealer & player (SPLIT).
   if (mode === SCORING_MODE_SPLIT) {
-    // Extra winning conditions for SPLIT_MODE
-    if (dealer.points < player1.firstSetPoints || dealer.points < player1.secondSetPoints
-       || (handBurst(dealer.points))) {
-      return `${displayOutcome('player1SplitOneWin')}`;
+    // Store total points in variables
+    var dealerPoints = sum(dealer.pointsArr);
+    var player1SetOnePoints = sum(player1.pointsArr[0]);
+    var player1SetTwoPoints = sum(player1.pointsArr[1]);
+
+    // Winning conditions for SPLIT_MODE
+    if (dealerPoints < player1SetOnePoints || dealerPoints < player1SetTwoPoints
+       || (handBurst(dealerPoints))) {
+      player1.bet += player1.bet;
+      return `${displayOutcome('player1SplitOneWin', mode)}`;
     }
-    if ((dealer.points < player1.firstSetPoints && dealer.points < player1.secondSetPoints)
-       || (handBurst(dealer.points))) {
-      return `${displayOutcome('player1SplitBothWin')}`;
+    if ((dealerPoints < player1SetOnePoints && dealerPoints < player1SetTwoPoints)
+       || (handBurst(sum(dealer.pointsArr)))) {
+      player1.bet = player1.bet * 2;
+      return `${displayOutcome('player1SplitBothWin', mode)}`;
     }
-    if ((dealer.points > player1.firstSetPoints && dealer.points > player1.secondSetPoints)
-       || (!handBurst(dealer.points))) {
-      return `${displayOutcome('player1SplitBothLose')}`;
+    if ((dealerPoints > player1SetOnePoints && dealerPoints > player1SetTwoPoints)
+       || (!handBurst(dealerPoints))) {
+      player1.bet -= player1.bet;
+      return `${displayOutcome('player1SplitBothLose', mode)}`;
     }
-    if ((dealer.points === player1.firstSetPoints && dealer.points === player1.secondSetPoints)
-       || (!handBurst(dealer.points))) {
+    if ((dealerPoints === player1SetOnePoints && dealerPoints === player1SetTwoPoints)
+       || (!handBurst(dealerPoints))) {
       return "It's a draw! All card sets have the same points!";
     }
   }
