@@ -96,71 +96,6 @@ var sumHand = function (initialInput) {
 };
 
 // Function 4
-// prints out and computes results
-var printHandOutcome = function (playerHandArray, person) {
-  var cardsPrint = `--- ${person} cards --- `;
-  for (var i = 0; i < playerHandArray.length; i++) {
-    cardsPrint = cardsPrint + '<br>' + playerHandArray[i].name
-    + ' of ' + playerHandArray[i].suit;
-  }
-  cardsPrint = cardsPrint + '<br><br>' + `--- ${person} Total Value ---`
-    + '<br>' + sumHand(playerHandArray)
-    + '<br><br>';
-
-  return cardsPrint;
-};
-
-// Function 5
-// Check if player wins or loses
-// Based on gameMode, win/lose/continue
-var checkWin = function (playerSum, dealerSum, currentGameMode) {
-  var outcome;
-
-  if (currentGameMode == 'playerTurn' || currentGameMode == 'playerSplitHand1' || currentGameMode == 'playerSplitHand2') {
-    if (sumHand(playerSum) == 21) {
-      // game mode playerturn and player gets 21 = win
-      console.log('The player scored a perfect 21');
-      outcome = 'win';
-    } else if (sumHand(playerSum) > 21) {
-      // game mode playerturn and player busts = lose
-      console.log('The player busted!');
-      outcome = 'lose';
-    } else if (sumHand(playerSum) < 21) {
-      // game mode playerturn and player doesn't bust = continue
-      outcome = 'continue';
-      console.log('The player is still safe. He can sit or stand.');
-    } else {
-      outcome = 'tie';
-      console.log('There was a tie. Interesting.');
-    }
-  } else if (currentGameMode == 'dealerTurn') {
-    if (sumHand() > 21) {
-      // game mode dealerturn and dealer busts = win
-      console.log('The dealer overdrew and busted.');
-      outcome = 'win';
-    } else {
-      outcome = 'continue';
-    }
-  } else if (currentGameMode == 'resultsTime') {
-    if ((sumHand(dealerSum) < sumHand(playerSum)) && playerSum < 21) {
-      // game mode dealerturn and player > dealer = win
-      console.log('Everyone opens their hands. The player had ' + sumHand(playerHand) + ' while the dealer had ' + sumHand(dealerHand));
-      console.log('Player beat dealer. Player wins');
-      outcome = 'win';
-    } else if ((sumHand(dealerSum) > sumHand(playerSum) && dealerSum < 21)) {
-      // game mode dealerturn and player < dealer = lose
-      console.log('Everyone opens their hands. The player had ' + sumHand(playerHand) + ' while the dealer had ' + sumHand(dealerHand));
-      console.log('Dealer beat player. Dealer wins');
-      outcome = 'lose';
-    } else {
-      outcome = 'tie';
-      console.log('There was a tie. Interesting.');
-    }
-  }
-  return outcome;
-};
-
-// Function 6
 // Input validation
 var inputValidation = function (playerInput, gameRoundCount) {
   var inputStatus = true;
@@ -171,35 +106,11 @@ var inputValidation = function (playerInput, gameRoundCount) {
   return inputStatus;
 };
 
-// Function 7
-// Print out message depending on win/lose/tie outcome
-// inputs: outcome from function 5, the two people's hand and names
-var printOutcomeMessage = function (outcome, p1Hand, p2Hand, p1Name, p2Name) {
-  var outcomeMsg = '';
-  var titleMsg = '';
-  if (outcome == 'win') {
-    titleMsg = `💰💰💰 ${p1Name.toUpperCase()} WIN!! :) <br><br>`;
-    outcomeMsg = printHandOutcome(p1Hand, p1Name)
-    + printHandOutcome(p2Hand, p2Name);
-    return titleMsg + outcomeMsg;
-  } if (outcome == 'lose') {
-    titleMsg = `💸💸💸 ${p1Name.toUpperCase()} LOSE :( <br><br>`;
-    outcomeMsg = printHandOutcome(p1Hand, p1Name)
-    + printHandOutcome(p2Hand, p2Name);
-    return titleMsg + outcomeMsg;
-  } if (outcome == 'tie') {
-    titleMsg = "!! TIE !!<br> 'no one won' <br><br>";
-    outcomeMsg = printHandOutcome(p1Hand, p1Name)
-    + printHandOutcome(p2Hand, p2Name);
-    return titleMsg + outcomeMsg;
-  }
-};
-
-// Function 8
+// Function 5
 // For each player, print out cards. compute score.
-var printPlayerHands = function(inputFunction){
+var printPlayerHands = function(allPlayerHandsArray){
   var listOfHands = "====== THE TABLE ======";
-  for (var i = 0; i < inputFunction.length; i++){
+  for (var i = 0; i < allPlayerHandsArray.length; i++){
     if (i == 0) {
       listOfHands += "<br> 👨 Dealer: <br>";
     } else{
@@ -214,14 +125,56 @@ var printPlayerHands = function(inputFunction){
       } else{
         listOfHands += "<br> 💸 "; 
       }
-      listOfHands += "Player " + i + ": <br>";
+      listOfHands += "Player " + i + ": <br> ";
     }
-    for (var j = 0; j < inputFunction[i].length; j++){
-      listOfHands += inputFunction[i][j].rank + " ";
+    listOfHands += " ";
+    for (var j = 0; j < allPlayerHandsArray[i].length; j++){
+      listOfHands += "  ___  ";
     }
-    listOfHands += "(Total = " + sumHand(inputFunction[i]) +") ";
+    listOfHands += "<br>";
+    for (var j = 0; j < allPlayerHandsArray[i].length; j++){
+      // listOfHands += allPlayerHandsArray[i][j].rank + " ";
+      listOfHands += makeASCIIcard(allPlayerHandsArray[i][j]) ;
+    }
+    listOfHands += "<br>";
+    for (var j = 0; j < allPlayerHandsArray[i].length; j++){
+      // listOfHands += "----";
+      listOfHands += "|___|";
+    }
+    listOfHands += "<br> (Total = " + sumHand(allPlayerHandsArray[i]) +") ";
   }
   return listOfHands;
+}
+
+// Function 6
+// ASCII-fication of cards
+    //  ___
+    // |8 ♠️|
+    // |___|
+var makeASCIIcard = function(cardObject){
+  var cardStrImg = "";
+  var cardTitle = "";
+  var cardSuit = ""
+
+  if (cardObject.suit == "clubs"){
+    cardSuit = "♣️";
+  } else if (cardObject.suit == "diamonds"){
+    cardSuit = "♦️"; 
+  } else if (cardObject.suit == "hearts"){
+    cardSuit = "♥️";
+  } else if (cardObject.suit == "spades"){
+    cardSuit = "♠️";
+  }
+
+  if (isNaN(cardObject.name)){
+    cardTitle = cardObject.name.substring(0, 1).toUpperCase() + " ";
+  } else if (cardObject.rank == 10) {
+    cardTitle = cardObject.rank;
+  } else {
+    cardTitle = cardObject.rank + " ";
+  }
+  cardStrImg += "|" + cardTitle + cardSuit + "|";
+  return cardStrImg;
 }
 
 
@@ -316,7 +269,7 @@ var main = function (input) {
     if (currentPlayer == 0){
       currentPlayer = 1;
     }
-    
+
     // Player action
     console.log("Current Player: " + currentPlayer);
     if (input == "h"){

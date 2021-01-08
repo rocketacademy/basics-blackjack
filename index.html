@@ -10,13 +10,19 @@
 
       #header {
         text-align: center;
+        color: white;
       }
 
       #container {
         margin: 20px auto;
         padding: 20px;
-        background-color: pink;
+        background-color: white;
         max-width: 300px;
+        background-image: url(https://i.pinimg.com/originals/a8/fd/bf/a8fdbf1c5f0d41da7465f5cd93204c13.png);
+        background-repeat: repeat-x repeat-y;
+        background-size: 10%;
+        opacity: 0.9;
+        border-radius: 10%;
       }
 
       input {
@@ -47,12 +53,16 @@
       }
     </style>
   </head>
-  <body>
+  <body
+    style="
+      background-image: url('https://cdn.hswstatic.com/gif/how-to-play-blackjack-lead.jpg');
+    "
+  >
     <h1 id="header">♣️ ♦️ ♥️ ♠️ Blackjack ♣️ ♦️ ♥️ ♠️</h1>
     <div id="container">
       <input id="my-input" />
       <button id="my-button">submit</button>
-      <p>output:</p>
+      <!--<p>output:</p> -->
       <div id="output">Welcome! Input number of players to begin!</div>
       <div id="output2">👨 The dealer waits!</div>
     </div>
