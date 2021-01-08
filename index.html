@@ -1,68 +1,80 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>SWE101 Blackjack</title>
-        <meta charset="UTF-8">
-        <style>
-            *{
-              box-sizing:border-box;
-            }
+  <head>
+    <title>SWE101 Blackjack</title>
+    <meta charset="UTF-8" />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
 
-            #header{
-              text-align:center;
-            }
+      #header {
+        text-align: center;
+      }
 
-            #container{
-              margin:20px auto;
-              padding:20px;
-              background-color:pink;
-              max-width:300px;
-            }
+      #container {
+        margin: 20px auto;
+        padding: 20px;
+        background-color: pink;
+        max-width: 300px;
+      }
 
-            input{
-              width:70%;
-              margin-right:4px;
-            }
+      input {
+        width: 70%;
+        margin-right: 4px;
+      }
 
-            button{
-              font-size:7px;
-              width:20%;
-            }
+      button {
+        font-size: 7px;
+        width: 20%;
+      }
 
-            #output{
-              margin:20px auto;
-              padding:20px;
-              background-color:grey;
-              width:100%;
-            }
-        </style>
-    </head>
-    <body>
-        <h1 id="header">SWE 101! Blackjack 🚀</h1>
-        <div id="container">
-            <input id="my-input"/>
-            <button id="my-button">submit</button>
-            <p>output:</p>
-            <div id="output">
-            </div>
-        </div>
-        <script src="script.js"></script>
-        <script>
-            var button = document.querySelector('#my-button');
+      #output {
+        margin: 20px auto;
+        padding: 20px;
+        background-color: grey;
+        width: 100%;
+      }
 
-            button.addEventListener('click', function(){
+      #output2 {
+        margin: 20px auto;
+        padding: 20px;
+        background-color: rgb(53, 101, 77);
+        border-style: solid;
+        border-color: brown;
+        border-width: thick;
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <h1 id="header">♣️ ♦️ ♥️ ♠️ Blackjack ♣️ ♦️ ♥️ ♠️</h1>
+    <div id="container">
+      <input id="my-input" />
+      <button id="my-button">submit</button>
+      <p>output:</p>
+      <div id="output">Welcome! Input number of players to begin!</div>
+      <div id="output2">👨 The dealer waits!</div>
+    </div>
 
-              var input = document.querySelector('#my-input');
+    <script src="script.js"></script>
+    <script>
+      var button = document.querySelector("#my-button");
 
-              var result = main(input.value);
+      button.addEventListener("click", function () {
+        var input = document.querySelector("#my-input");
 
-              var output = document.querySelector('#output');
+        var result = main(input.value);
+        var result2 = printPlayerHands(individualHands);
 
-              output.innerHTML = result;
+        var output = document.querySelector("#output");
+        var output2 = document.querySelector("#output2");
 
-              input.value = "";
-            });
+        output.innerHTML = result;
+        output2.innerHTML = result2;
 
-        </script>
-    </body>
+        input.value = "";
+      });
+    </script>
+  </body>
 </html>

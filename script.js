@@ -112,6 +112,7 @@ var printHandOutcome = function (playerHandArray, person) {
 
 // Function 5
 // Check if player wins or loses
+// Based on gameMode, win/lose/continue
 var checkWin = function (playerSum, dealerSum, currentGameMode) {
   var outcome;
 
@@ -194,6 +195,36 @@ var printOutcomeMessage = function (outcome, p1Hand, p2Hand, p1Name, p2Name) {
   }
 };
 
+// Function 8
+// For each player, print out cards. compute score.
+var printPlayerHands = function(inputFunction){
+  var listOfHands = "====== THE TABLE ======";
+  for (var i = 0; i < inputFunction.length; i++){
+    if (i == 0) {
+      listOfHands += "<br> 👨 Dealer: <br>";
+    } else{
+      if (playerResults[i] == "stand"){
+        listOfHands += "<br> 👍 ";
+      } else if (playerResults[i] == "pending"){
+        listOfHands += "<br> ⌛ "; 
+      } else if (playerResults[i].substring(0, 3) == "win"){
+        listOfHands += "<br> 💰 "; 
+      } else if (playerResults[i].substring(0, 3) == "tie"){
+        listOfHands += "<br> 😅 "; 
+      } else{
+        listOfHands += "<br> 💸 "; 
+      }
+      listOfHands += "Player " + i + ": <br>";
+    }
+    for (var j = 0; j < inputFunction[i].length; j++){
+      listOfHands += inputFunction[i][j].rank + " ";
+    }
+    listOfHands += "(Total = " + sumHand(inputFunction[i]) +") ";
+  }
+  return listOfHands;
+}
+
+
 var testDeck = [
   {
     name: 5,
@@ -211,13 +242,15 @@ var testDeck = [
 // START OF GAME
 
 // Step 0: Declare variables, set default game mode
-var gameMode = 'dealCards';
-var resultMode = 'nobodyLostYet';
-var clickSubmitCount = 0;
-var playerSplitStatus = 0;
-var playerHand = [];
-var playerSplitHand = [];
-var dealerHand = [];
+// game modes: inputPlayerCount -> dealCards -> playerNTurn -> 
+var gameMode = 'inputPlayerCount';
+var numberOfPlayers = 0;
+var currentPlayer = 0;
+// var resultMode = 'nobodyLostYet';
+// var clickSubmitCount = 0;
+// var playerSplitStatus = 0;
+var individualHands = [];
+var playerResults = [];
 var hitStandMsg = 'Input (hit/stand)';
 
 // Step 1: Create a new deck of cards
@@ -230,152 +263,106 @@ mainDeck = shuffleTheDeck(mainDeck);
 // Each gameplay turn is represented by the main function
 // Used console logs to tell story
 var main = function (input) {
-  clickSubmitCount++;
+  // clickSubmitCount++;
   var titleMsg;
   var myOutputValue;
+  console.log("======");
+  console.log("gamemode: " + gameMode);
 
-  // Step 3: Deal to player, dealer, player, dealer
-  if (gameMode == 'dealCards') {
-    playerHand.push(testDeck[0]);// mainDeck.pop());
-    dealerHand.push(mainDeck.pop());
-    playerHand.push(testDeck[1]);// mainDeck.pop());
-    dealerHand.push(mainDeck.pop());
+  // Step 3: Input number of players
+  if (gameMode == 'inputPlayerCount') {
+    if (isNaN(input) || input == "" ){
+      myOutputValue = "Please input a number!";
+    } else{
+      numberOfPlayers = input;
+      for (var i = 0; i <= numberOfPlayers; i++){
+        individualHands.push([]);
+        playerResults.push("pending")
+      }
 
-    // story
-    console.log('The cards were dealt');
-    console.log('Player scored: ' + sumHand(playerHand));
-
-    // Set up result in output message
-    myOutputValue = 'PLAYER TURN <br><br>'
-    + printHandOutcome(playerHand, 'Player');
-
-    // player drew two identically ranked cards. Player offered option to split
-    // otherwise, player can hit/stand
-    if (playerHand[0].rank == playerHand[1].rank) {
-      myOutputValue = myOutputValue + 'Would you like to split? (Y/N)';
-      gameMode = 'playerSplit';
-    } else {
-      // regular game
-      myOutputValue = myOutputValue + hitStandMsg;
-      gameMode = 'playerTurn';
+      console.log("players: " + numberOfPlayers);
+      console.log("hands: " + individualHands);
+      gameMode = "dealCards"
+      myOutputValue = `Shuffling deck...<br>Click Submit to continue!`;
+      return myOutputValue;
     }
-  }
+  };
 
-  // Step 3.1: If player offered split
-  if (gameMode == 'playerSplit' && clickSubmitCount > 1) {
-    if (input == 'Y') {
-      // player chose to split
-      titleMsg = 'You chose to split. Let\'s look at your first hand';
-      playerSplitStatus = 1;
-      gameMode = 'playerSplitHand1';
-      playerSplitHand.push(playerHand.pop());
-      playerHand.push(mainDeck.pop());
-      playerSplitHand.push(mainDeck.pop());
-
-      myOutputValue = titleMsg + '<br><br>'
-      + printHandOutcome(playerHand, 'Player hand 1')
-      + printHandOutcome(playerSplitHand, 'Player hand 2')
-      + hitStandMsg;
-    } else if (input == 'N') {
-      // player chose not to split
-      titleMsg = 'You chose not to split';
-      gameMode = 'playerTurn';
-      myOutputValue = titleMsg + '<br><br>'
-      + printHandOutcome(playerHand, 'Player')
-      + hitStandMsg;
+  // Step 4: Deal cards to each player
+  if (gameMode == 'dealCards'){
+    for (var i = 0; i < 2; i++){
+      for(var j = 0; j <= numberOfPlayers; j++){
+      individualHands[j].push(mainDeck.pop())
     }
-    clickSubmitCount = 0;
-  }
-
-  // Step 4: Validate user input
-  if (!inputValidation(input, clickSubmitCount)) {
-    myOutputValue = '🙅‍♂️ Invalid input. <br> Please input \'hit\' or \'stand\' <br><br>'
-    + printHandOutcome(playerHand, 'Player');
+    }
+    myOutputValue = "Player 1 will now take his turn. Click Submit to continue.";
+    gameMode = "playerTakeTurns";
     return myOutputValue;
   }
 
-  // Step 5.1: user HITS during player mode (get another card)
-  if (gameMode == 'playerTurn' && input == 'hit') {
-    playerHand.push(mainDeck.pop());
-    myOutputValue = printHandOutcome(playerHand, 'Player') + hitStandMsg;
-    // story
-    console.log('Player hit. His hand is now: ' + sumHand(playerHand));
-  }
-
-  // Step 5.2.1: user HITS during playerSplitHand1
-  if (gameMode == 'playerSplitHand1' && input == 'hit') {
-    playerHand.push(mainDeck.pop());
-    myOutputValue = printHandOutcome(playerHand, 'Player hand 1') + hitStandMsg;
-  }
-
-  // Step 5.2.2: user HITS during playerSplitHand2
-  if (gameMode == 'playerSplitHand2' && input == 'hit') {
-    console.log('druity');
-    playerSplitHand.push(mainDeck.pop());
-    myOutputValue = printHandOutcome(playerSplitHand, 'Player hand 2') + hitStandMsg;
-  }
-
-  if (resultMode == 'playerHand1LostEarly' && input == '') {
-    gameMode = 'playerSplitHand2';
-    resultMode = 'pendingPlayer2Result';
-    myOutputValue = 'Let\'s move on to your 2nd hand.<br><br>' + printHandOutcome(playerSplitHand, 'Player hand 2') + hitStandMsg;
-  }
-
-  // Step 6: user STANDS during player mode.
-  if (gameMode == 'playerTurn' && input == 'stand') {
-    console.log('Player stand. His hand is now: ' + sumHand(playerHand));
-    gameMode = 'dealerTurn';
-  } else if (gameMode == 'playerSplitHand1' && input == 'stand') {
-    gameMode = 'playerSplitHand2';
-    myOutputValue = 'Let\'s move on to your 2nd hand <br><br>'
-    + printHandOutcome(playerSplitHand, 'Player hand 2')
-    + hitStandMsg;
-  } else if (gameMode == 'playerSplitHand2' && input == 'stand') {
-    gameMode = 'playerSplitEnd2';
-    resultMode = 'everyoneHasStood';
-    myOutputValue = printHandOutcome(playerSplitHand, 'Player (split)') + 'Click next to see result';
-  }
-
-  // Step 7: Dealer's turn
-  if (gameMode == 'dealerTurn' || gameMode == 'playerSplitEnd2') {
-    console.log('Dealer opens his cards. He has ' + sumHand(dealerHand));
-
-    while (sumHand(dealerHand) < 16) {
-      dealerHand.push(mainDeck.pop());
-      console.log('The dealer hand was less than 16. He drew another card. He now has ' + sumHand(dealerHand));
+  // Step 6: If Dealer's turn
+  if (gameMode == "dealerTurn"){
+    while (sumHand(individualHands[0]) < 16) {
+      individualHands[0].push(mainDeck.pop());
+      console.log('The dealer hand was less than 16. He drew another card. He now has ' + sumHand(individualHands[0]));
     }
     console.log('The dealer can no longer draw cards.');
     gameMode = 'resultsTime';
   }
 
-  // Step 7: Update myOutputValue if the player wins or loses
-  var outcome = checkWin(playerHand, dealerHand, gameMode);
-  var outcome2 = checkWin(playerSplitHand, dealerHand, gameMode);
-  if ((outcome == 'win' || outcome == 'lose' || outcome == 'tie') && (resultMode == 'nobodyLostYet' || resultMode == 'everyoneHasStood' || resultMode == 'playerHand2LostEarly')) {
-    myOutputValue = printOutcomeMessage(outcome, playerHand, dealerHand, 'Player', 'Dealer');
-    if (playerSplitStatus == 1) {
-      myOutputValue = printOutcomeMessage(outcome, playerHand, dealerHand, 'Player hand 1', 'Dealer hand');
-      myOutputValue += 'Click submit to proceed to next hand.';
-      if (gameMode == 'playerSplitHand1' && resultMode == 'nobodyLostYet') {
-        resultMode = 'playerHand1LostEarly';
-      } else { resultMode = 'playerHand1ResultShown'; }
+  // Step 5: Players take turns to hit/stand
+  if (gameMode == "playerTakeTurns"){
+    // If variable is 0, the 1st player should go first.
+    if (currentPlayer == 0){
+      currentPlayer = 1;
     }
+    
+    // Player action
+    console.log("Current Player: " + currentPlayer);
+    if (input == "h"){
+      individualHands[currentPlayer].push(mainDeck.pop())
+    } 
+    if (input == "s") {
+      myOutputValue = "Player " + currentPlayer + " chose to stand.";
+      playerResults[currentPlayer] = "stand";
+      console.log("stand master" + playerResults[currentPlayer]);
+      currentPlayer += 1;
+      if (currentPlayer > numberOfPlayers){
+        myOutputValue += "<br><br> The Dealer will now take his turn. Click Submit to continue.";
+        gameMode = "dealerTurn";
+      }else{
+        myOutputValue += "<br><br> Player "+ currentPlayer+" will now take his turn. Click Submit to continue.";
+      }
+      
+      return myOutputValue;
+    }
+
+    myOutputValue = "Player " + currentPlayer + ", do you hit or stand? (h/s)";
   }
 
-  if ((outcome2 == 'win' || outcome2 == 'lose' || outcome2 == 'tie') && (gameMode == 'playerSplitHand2' || resultMode == 'playerHand2ResultNext')) {
-    myOutputValue = printOutcomeMessage(outcome2, playerSplitHand, dealerHand, 'Player hand 2', 'Dealer hand');
-    if (gameMode == 'playerSplitHand2' && resultMode == 'nobodyLostYet') {
-      resultMode = 'playerHand2LostEarly';
-      gameMode = 'dealerTurn';
+  // Step 7: Results
+  if(gameMode == "resultsTime"){
+    outputResults = "RESULTS: "
+    for (var i = 1; i <= numberOfPlayers; i++){
+      if (sumHand(individualHands[i]) == 21) {
+        playerResults[i] = "win 1.5x";
+      } else if (sumHand(individualHands[i]) > 21){
+        playerResults[i] = "bust";
+      } else if (sumHand(individualHands[0]) > 21){
+        playerResults[i] = "win 2x"
+      } else if (sumHand(individualHands[i]) > sumHand(individualHands[0])){
+        playerResults[i] = "win 2x"
+      } else if (sumHand(individualHands[i]) < sumHand(individualHands[0])){
+        playerResults[i] = "lose"
+      } else if (sumHand(individualHands[i]) = sumHand(individualHands[0])){
+        playerResults[i] = "tie; no money lost!"
+      }
+      outputResults += "<br>Player " + i + ": " + playerResults[i];
     }
+    myOutputValue = "The Game has ended. Congratulations to all lucky winners!"
+    myOutputValue += "<br><br>" + outputResults;
   }
 
-  if (resultMode == 'playerHand1ResultShown') {
-    resultMode = 'playerHand2ResultNext';
-  }
-  console.log('1: ' + outcome);
-  console.log('2: ' + outcome2);
-  console.log(gameMode);
-  console.log(resultMode);
+  
   return myOutputValue;
 };
