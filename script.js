@@ -200,11 +200,11 @@ var determineWinner = function () {
 // ************
 // ************
 
-var singleCard = {
-  name: '10',
-  suit: '♣️',
-  rank: 10,
-};
+// var singleCard = {
+//   name: '10',
+//   suit: '♣️',
+//   rank: 10,
+// };
 
 var main = function (input) {
 // gema starts with asking the player's name
@@ -225,15 +225,15 @@ var main = function (input) {
     dealerHandArray.push(dealCardToHand());
 
     // player gets 1 card
-    // playerHandArray.push(dealCardToHand());
-    playerHandArray.push(singleCard);
+    playerHandArray.push(dealCardToHand());
+    // playerHandArray.push(singleCard);
 
     // dealer gets 1 card
     dealerHandArray.push(dealCardToHand());
 
     // player gets 1 card
-    // playerHandArray.push(dealCardToHand());
-    playerHandArray.push(singleCard);
+    playerHandArray.push(dealCardToHand());
+    // playerHandArray.push(singleCard);
 
     // store in player and dealer card array
 
