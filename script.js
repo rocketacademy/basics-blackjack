@@ -127,9 +127,10 @@ var printPlayerHands = function(allPlayerHandsArray){
       }
       listOfHands += "Player " + i + ": <br> ";
     }
+    listOfHands += "(Total = " + sumHand(allPlayerHandsArray[i]) +") <br> ";
     listOfHands += " ";
     for (var j = 0; j < allPlayerHandsArray[i].length; j++){
-      listOfHands += "  ___  ";
+      listOfHands += "\xa0___\xa0";
     }
     listOfHands += "<br>";
     for (var j = 0; j < allPlayerHandsArray[i].length; j++){
@@ -141,7 +142,7 @@ var printPlayerHands = function(allPlayerHandsArray){
       // listOfHands += "----";
       listOfHands += "|___|";
     }
-    listOfHands += "<br> (Total = " + sumHand(allPlayerHandsArray[i]) +") ";
+    // listOfHands += "<br> (Total = " + sumHand(allPlayerHandsArray[i]) +") ";
   }
   return listOfHands;
 }
@@ -195,7 +196,7 @@ var testDeck = [
 // START OF GAME
 
 // Step 0: Declare variables, set default game mode
-// game modes: inputPlayerCount -> dealCards -> playerNTurn -> 
+// game modes: inputPlayerCount -> playerTakeTurns -> dealerTurn -> 
 var gameMode = 'inputPlayerCount';
 var numberOfPlayers = 0;
 var currentPlayer = 0;
