@@ -109,26 +109,9 @@ var inputValidation = function (playerInput, gameRoundCount) {
 // Function 5
 // For each player, print out cards. compute score.
 var printPlayerHands = function(allPlayerHandsArray){
-  var listOfHands = "====== THE TABLE ======";
+  var listOfHands = "====== THE TABLE ======<br>";
   for (var i = 0; i < allPlayerHandsArray.length; i++){
-    if (i == 0) {
-      listOfHands += "<br> 👨 Dealer: <br>";
-    } else{
-      if (playerResults[i] == "stand"){
-        listOfHands += "<br> 👍 ";
-      } else if (playerResults[i] == "pending"){
-        listOfHands += "<br> ⌛ "; 
-      } else if (playerResults[i].substring(0, 3) == "win"){
-        listOfHands += "<br> 💰 "; 
-      } else if (playerResults[i].substring(0, 3) == "tie"){
-        listOfHands += "<br> 😅 "; 
-      } else{
-        listOfHands += "<br> 💸 "; 
-      }
-      listOfHands += "Player " + i + ": <br> ";
-    }
-    listOfHands += "(Total = " + sumHand(allPlayerHandsArray[i]) +") <br> ";
-    listOfHands += " ";
+    
     for (var j = 0; j < allPlayerHandsArray[i].length; j++){
       listOfHands += "\xa0___\xa0";
     }
@@ -142,6 +125,24 @@ var printPlayerHands = function(allPlayerHandsArray){
       // listOfHands += "----";
       listOfHands += "|___|";
     }
+    // show user and score
+    if (i == 0) {
+      listOfHands += "<br> 👨 Dealer:";
+    } else{
+      if (playerResults[i] == "stand"){
+        listOfHands += "<br> 👍 ";
+      } else if (playerResults[i] == "pending"){
+        listOfHands += "<br> ⌛ "; 
+      } else if (playerResults[i].substring(0, 3) == "win"){
+        listOfHands += "<br> 💰 "; 
+      } else if (playerResults[i].substring(0, 3) == "tie"){
+        listOfHands += "<br> 😅 "; 
+      } else{
+        listOfHands += "<br> 💸 "; 
+      }
+      listOfHands += "Player " + i + ": ";
+    }
+    listOfHands += sumHand(allPlayerHandsArray[i]) +"<br> ";
     // listOfHands += "<br> (Total = " + sumHand(allPlayerHandsArray[i]) +") ";
   }
   return listOfHands;
