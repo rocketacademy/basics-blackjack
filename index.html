@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>SWE101 Blackjack</title>
+    <title>SWE101</title>
     <style>
       * {
         box-sizing: border-box;
@@ -18,7 +18,7 @@
       }
 
       #container {
-        background-color: #f9f6e7;
+        background-color: pink;
         margin: 40px auto;
         max-width: 800px;
         padding: 38px 31px;
@@ -40,16 +40,17 @@
         width: 25%;
       }
 
-      #output {
+      #output-div {
+        background-color: lightgrey;
         margin: 20px auto;
-        padding: 20px 0px;
+        padding: 20px;
         width: 100%;
       }
     </style>
   </head>
 
   <body>
-    <h1 id="header">SWE101! 🚀</h1>
+    <h1 id="header">SWE101: Blackjack 🚀</h1>
     <div id="container">
       <p>Input:</p>
       <input id="input-field" />
@@ -69,7 +70,7 @@
 
         // Display result in output element
         var output = document.querySelector("#output-div");
-        output.innerHTML = result;
+        output.innerText = result;
 
         // Reset input value
         input.value = "";
