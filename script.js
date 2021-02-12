@@ -7,10 +7,29 @@ var playingCards = [];
 
 var playerCards = [];
 var computerCards = [];
+var playerWon = function(playerCard, computerCard){
+  var index = 0;
+  var playerCardsAtHand = 0;
+  var computerCardAtHand = 0;
+  while (index < playerCard.length){
+    playerCardsAtHand = playerCardsAtHand +playerCard[index].cardSize;
+  }
+
+  while (index < computerCard.length){
+    computerCardAtHand = computerCardAtHand +playerCard[index].cardSize;
+  }
+  
+  if( computerCardAtHand>21 ) {
+    console.log("Computer Bust")
+  } else if (playerCardsAtHand> 21){
+    console.log("Player Bust")
+  } 
+
+}
 
 var makeDeck = function () {
   var cardDeck = [];
-  var suits = ['hearts', 'diamonds', 'clubs', 'spsdes'];
+  var suits = ['hearts', 'diamonds', 'clubs', 'spades'];
 
   var suitIndex = 0;
   while (suitIndex < suits.length) {
@@ -98,6 +117,11 @@ var main = function (input) {
   
 
    playerCards.push(randomCardPicked());
+   computerCards.push(randomCardPicked());
+
+
+  // check if player has won
+
 
 
 
