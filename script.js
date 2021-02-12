@@ -8,22 +8,46 @@ var playingCards = [];
 var playerCards = [];
 var computerCards = [];
 var playerWon = function(playerCard, computerCard){
+
   var index = 0;
   var playerCardsAtHand = 0;
   var computerCardAtHand = 0;
   while (index < playerCard.length){
-    playerCardsAtHand = playerCardsAtHand +playerCard[index].cardSize;
+    playerCardsAtHand = playerCardsAtHand +playerCard[index].rank;
+    index=index+1;
+  }
+  index = 0;
+  while (index < computerCard.length){
+    computerCardAtHand = computerCardAtHand +playerCard[index].rank;
+    index=index+1;
   }
 
-  while (index < computerCard.length){
-    computerCardAtHand = computerCardAtHand +playerCard[index].cardSize;
-  }
   
+  // console.log("Computer Cards at Hand : "+computerCards);
+
+  index = 0;
+  while (index < computerCard.length){
+    console.log("Computer Cards at Hand rank: "+computerCards[index].rank);
+    console.log("Computer Cards at Hand name: "+computerCards[index].name);
+    console.log("Computer Cards at Hand suit: "+computerCards[index].suit);
+    index=index+1;
+  }
+
+
+  console.log("Player Cards at Hand : "+playerCards);
   if( computerCardAtHand>21 ) {
     console.log("Computer Bust")
+    return "Computer Bust";
   } else if (playerCardsAtHand> 21){
     console.log("Player Bust")
-  } 
+    return "Player Bust";
+  } else if (playerCardsAtHand> computerCardAtHand){
+    console.log("Player Won")
+    return "Player Won";
+  } else if (playerCardsAtHand< computerCardAtHand){
+    console.log("Computer Won")
+    return "Computer Won";
+  }
 
 }
 
@@ -121,7 +145,7 @@ var main = function (input) {
 
 
   // check if player has won
-
+  playerWon(playerCards, computerCards);
 
 
 
