@@ -4,14 +4,18 @@
 
 
 var playingCards = [];
-
 var playerCards = [];
 var computerCards = [];
+
+var playerCardsAtHand = 0;
+var computerCardAtHand = 0;
+
+var gameState = 'Not Started';
 var playerWon = function(playerCard, computerCard){
 
   var index = 0;
-  var playerCardsAtHand = 0;
-  var computerCardAtHand = 0;
+  playerCardsAtHand = 0;
+  computerCardAtHand = 0;
   while (index < playerCard.length){
     playerCardsAtHand = playerCardsAtHand +playerCard[index].rank;
     index=index+1;
@@ -21,18 +25,6 @@ var playerWon = function(playerCard, computerCard){
     computerCardAtHand = computerCardAtHand +computerCard[index].rank;
     index=index+1;
   }
-
-  
-  // console.log("Computer Cards at Hand : "+computerCards);
-
-  // index = 0;
-  // while (index < computerCard.length){
-  //   console.log("Computer Cards at Hand rank: "+computerCards[index].rank);
-  //   console.log("Computer Cards at Hand name: "+computerCards[index].name);
-  //   console.log("Computer Cards at Hand suit: "+computerCards[index].suit);
-  //   index=index+1;
-  // }
-
 
   console.log ('Player Cards at Hand ->'+playerCardsAtHand+ ' Computer Cards at Hand ->'+computerCardAtHand);
   if( computerCardAtHand>21 ) {
@@ -48,8 +40,9 @@ var playerWon = function(playerCard, computerCard){
   } else if (playerCardsAtHand< computerCardAtHand){
     console.log("Computer Won")
     return "Computer Won";
+  } else {
+    return "Playing";
   }
-
 }
 
 var makeDeck = function () {
@@ -134,8 +127,13 @@ Test your code.
 
 */
 var main = function (input) {
-   playingCards=makeDeck();
-
+   
+  if (gameState=='Not Started'){
+  
+    playingCards=makeDeck();
+    playerCards.push(randomCardPicked());
+    computerCards.push(randomCardPicked());
+  } else if (gameState=='Started')
   //1. Player play
   //1.1. 
 
@@ -143,13 +141,17 @@ var main = function (input) {
 
    playerCards.push(randomCardPicked());
    computerCards.push(randomCardPicked());
-
-
+   if (playerCards.length>0){
+    gameState='Started'
+   }
+  
   // check if player has won
   playerWon(playerCards, computerCards);
 
+  var myOutputValue='Player Cards at Hand -> '+playerCardsAtHand
+  + ' Computer Cards at Hand -> '
+  +computerCardAtHand+'<br>'+playerWon(playerCards, computerCards);
 
-
-  var myOutputValue = 'hello world';
+   
   return myOutputValue;
 };
