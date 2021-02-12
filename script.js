@@ -12,6 +12,7 @@ var computerCardAtHand = 0;
 
 var gameState = 'Not Started';
 var playerWon = function(playerCard, computerCard){
+var outCome = "Playing";
 
   var index = 0;
   playerCardsAtHand = 0;
@@ -129,21 +130,24 @@ Test your code.
 var main = function (input) {
    
   if (gameState=='Not Started'){
+
+     playerCards = [];
+     computerCards = [];
   
     playingCards=makeDeck();
     playerCards.push(randomCardPicked());
     computerCards.push(randomCardPicked());
-  } else if (gameState=='Started')
-  //1. Player play
-  //1.1. 
 
-  
+    gameState='Started';
 
-   playerCards.push(randomCardPicked());
-   computerCards.push(randomCardPicked());
-   if (playerCards.length>0){
-    gameState='Started'
-   }
+  } else if (gameState=='Started'){
+    if (input='Hit'){
+      playerCards.push(randomCardPicked());
+    }
+    computerCards.push(randomCardPicked());
+   
+  }
+
   
   // check if player has won
   playerWon(playerCards, computerCards);
