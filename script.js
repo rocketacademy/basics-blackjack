@@ -12,7 +12,7 @@ var computerCardAtHand = 0;
 
 var gameState = 'Not Started';
 var playerWon = function(playerCard, computerCard){
-var outCome = "Playing";
+var outCome = false;
 
   var index = 0;
   playerCardsAtHand = 0;
@@ -31,18 +31,18 @@ var outCome = "Playing";
   if( computerCardAtHand>21 ) {
     
     console.log("Computer Bust")
-    return 'Computer Bust';
-  } else if (playerCardsAtHand> 21){
+    return false;
+  } else if (playerCardsAtHand > 21){
     console.log("Player Bust")
-    return 'Player Bust';
-  } else if (playerCardsAtHand> computerCardAtHand){
+    return false;
+  } else if (clayerCardsAtHand> computerCardAtHand ){
     console.log("Player Won")
-    return 'Player Won';
-  } else if (playerCardsAtHand< computerCardAtHand){
+    return false;
+  } else if ( playerCardsAtHand< computerCardAtHand){
     console.log("Computer Won")
-    return 'Computer Won';
+    return false;
   } else {
-    return 'Playing';
+    return true;
   }
 }
 
@@ -154,8 +154,9 @@ var main = function (input) {
   // check if player has won
   outCome = playerWon(playerCards, computerCards);
   console.log("Game state "+outCome)
-  if (outCome !='Playing'){
-    startGame();
+  if (!outCome ){
+    console.log("re start game")
+    
   }
 
   var myOutputValue='Player Cards at Hand -> '+playerCardsAtHand
