@@ -18,24 +18,25 @@ var playerWon = function(playerCard, computerCard){
   }
   index = 0;
   while (index < computerCard.length){
-    computerCardAtHand = computerCardAtHand +playerCard[index].rank;
+    computerCardAtHand = computerCardAtHand +computerCard[index].rank;
     index=index+1;
   }
 
   
   // console.log("Computer Cards at Hand : "+computerCards);
 
-  index = 0;
-  while (index < computerCard.length){
-    console.log("Computer Cards at Hand rank: "+computerCards[index].rank);
-    console.log("Computer Cards at Hand name: "+computerCards[index].name);
-    console.log("Computer Cards at Hand suit: "+computerCards[index].suit);
-    index=index+1;
-  }
+  // index = 0;
+  // while (index < computerCard.length){
+  //   console.log("Computer Cards at Hand rank: "+computerCards[index].rank);
+  //   console.log("Computer Cards at Hand name: "+computerCards[index].name);
+  //   console.log("Computer Cards at Hand suit: "+computerCards[index].suit);
+  //   index=index+1;
+  // }
 
 
-  console.log("Player Cards at Hand : "+playerCards);
+  console.log ('Player Cards at Hand ->'+playerCardsAtHand+ ' Computer Cards at Hand ->'+computerCardAtHand);
   if( computerCardAtHand>21 ) {
+    
     console.log("Computer Bust")
     return "Computer Bust";
   } else if (playerCardsAtHand> 21){
