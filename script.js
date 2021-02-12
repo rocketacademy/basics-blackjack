@@ -31,18 +31,18 @@ var outCome = "Playing";
   if( computerCardAtHand>21 ) {
     
     console.log("Computer Bust")
-    return "Computer Bust";
+    return 'Computer Bust';
   } else if (playerCardsAtHand> 21){
     console.log("Player Bust")
-    return "Player Bust";
+    return 'Player Bust';
   } else if (playerCardsAtHand> computerCardAtHand){
     console.log("Player Won")
-    return "Player Won";
+    return 'Player Won';
   } else if (playerCardsAtHand< computerCardAtHand){
     console.log("Computer Won")
-    return "Computer Won";
+    return 'Computer Won';
   } else {
-    return "Playing";
+    return 'Playing';
   }
 }
 
@@ -103,6 +103,15 @@ var randomCardPicked = function () {
   return cardPicked;
 };
 
+
+var startGame = function(){
+    playerCards = [];
+    computerCards = [];
+  
+    playingCards=makeDeck();
+    playerCards.push(randomCardPicked());
+    computerCards.push(randomCardPicked());
+}
 /*
 Introduction
 Implement a simplified version of Blackjack. If you're not familiar with Blackjack, refer to this video for game rules. Our simplified rules are the following.
@@ -131,14 +140,7 @@ var main = function (input) {
    
   if (gameState=='Not Started'){
 
-     playerCards = [];
-     computerCards = [];
-  
-    playingCards=makeDeck();
-    playerCards.push(randomCardPicked());
-    computerCards.push(randomCardPicked());
-
-    gameState='Started';
+     startGame();
 
   } else if (gameState=='Started'){
     if (input='Hit'){
@@ -150,7 +152,11 @@ var main = function (input) {
 
   
   // check if player has won
-  playerWon(playerCards, computerCards);
+  outCome = playerWon(playerCards, computerCards);
+  console.log("Game state "+outCome)
+  if (outCome !='Playing'){
+    startGame();
+  }
 
   var myOutputValue='Player Cards at Hand -> '+playerCardsAtHand
   + ' Computer Cards at Hand -> '
