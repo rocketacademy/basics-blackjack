@@ -1,8 +1,6 @@
 //https://github.com/chernhaw/swe101-blackjack.git
 //https://swe101.rocketacademy.co/projects/project-3-blackjack
 
-
-
 var playingCards = [];
 var playerCards = [];
 var computerCards = [];
@@ -12,7 +10,7 @@ var computerCardAtHand = 0;
 
 var gameState = 'Not Started';
 var playerWon = function(playerCard, computerCard){
-var outCome = false;
+var outCome = '';
 
   var index = 0;
   playerCardsAtHand = 0;
@@ -28,21 +26,28 @@ var outCome = false;
   }
 
   console.log ('Player Cards at Hand ->'+playerCardsAtHand+ ' Computer Cards at Hand ->'+computerCardAtHand);
+
+
   if( computerCardAtHand>21 ) {
     
     console.log("Computer Bust")
-    return false;
+    return "Computer Bust";
   } else if (playerCardsAtHand > 21){
     console.log("Player Bust")
-    return false;
-  } else if (clayerCardsAtHand> computerCardAtHand ){
-    console.log("Player Won")
-    return false;
-  } else if ( playerCardsAtHand< computerCardAtHand){
+
+    return "Player Bust";
+  } else if (computerCardAtHand> 17 && playerCardsAtHand> computerCardAtHand ){
+    console.log("Player Bust")
+    return "Player Lose";
+  } else if ( computerCardAtHand> 17 && playerCardsAtHand< computerCardAtHand){
     console.log("Computer Won")
-    return false;
+    return "Computer Won";
+  
+  } else if ((playerCardsAtHand<22) && (playerCardsAtHand== computerCardAtHand)){
+    console.log("Draw")
+    return "Draw";
   } else {
-    return true;
+    return "Continue";
   }
 }
 
@@ -105,12 +110,15 @@ var randomCardPicked = function () {
 
 
 var startGame = function(){
-    playerCards = [];
+    playerCards =[]
     computerCards = [];
-  
+
+    playerCardsAtHand = 0;
+    computerCardAtHand = 0;
     playingCards=makeDeck();
     playerCards.push(randomCardPicked());
     computerCards.push(randomCardPicked());
+    gameState="Started";
 }
 /*
 Introduction
@@ -141,6 +149,7 @@ var main = function (input) {
   if (gameState=='Not Started'){
 
      startGame();
+     console.log("start Game");
 
   } else if (gameState=='Started'){
     if (input='Hit'){
@@ -153,16 +162,30 @@ var main = function (input) {
   
   // check if player has won
   outCome = playerWon(playerCards, computerCards);
-  console.log("Game state "+outCome)
-  if (!outCome ){
-    console.log("re start game")
-    
-  }
+  playerScore = playerCardsAtHand;
+  computerScore = computerCardAtHand;
 
+  
+  
   var myOutputValue='Player Cards at Hand -> '+playerCardsAtHand
   + ' Computer Cards at Hand -> '
-  +computerCardAtHand+'<br>'+playerWon(playerCards, computerCards);
+  +computerCardAtHand+'<br>'+'Outcome : '+playerWon(playerCards, computerCards);
 
+  console.log("Game state : "+gameState)
+  if (outCome!="Continue" ){
+    console.log("re start game")
+    gameState=='Not Started';
+    
+    playerCards = [];
+    computerCards = [];
+
+  
+
+    console.log('After clearing Player Cards at Hand -> '+playerCardsAtHand);
+    console.log('After clearing Computer Cards at Hand -> '+computerCardAtHand);
+    
+  }
    
+
   return myOutputValue;
 };
