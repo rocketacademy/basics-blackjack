@@ -1,4 +1,6 @@
-// eslint-disable-next-line
+// initialize constants
+var INITIAL_NUMBER_OF_CARDS_DRAWN = 2;
+
 var makeDeck = function () {
   // Initialise an empty deck array
   var cardDeck = [];
@@ -81,17 +83,46 @@ var shuffleCards = function (cardDeck) {
 // prints card name and suit
 var showCard = function (card) {
   return card.name + ' of ' + card.suit;
-}
+};
 
+var getInitialCards = function (deck) {
+  var hand = [];
+  var counter = 0;
+  while (counter < INITIAL_NUMBER_OF_CARDS_DRAWN) {
+    var card = deck.pop();
+    hand.push(card);
+    counter += 1;
+  }
+
+  return hand;
+};
+
+// prints cards in hand of a player
+var showCards = function (cards, playerType) {
+  var output = 'You drew ';
+  if (playerType == 'computer') {
+    output = 'Computer drew ';
+  }
+  var counter = 0;
+  while (counter < cards.length) {
+    output = output + '<strong>' + showCard(cards[counter]) + '</strong>';
+    counter += 1;
+    if (counter != cards.length) {
+      output = output + ' and ';
+    }
+  }
+  output = output + '.';
+  return output;
+};
+
+// create initial deck
 var deck = makeDeck();
 var shuffledDeck = shuffleCards(deck);
 
 var main = function (input) {
-  var playerCard = shuffledDeck.pop();
-  var playerCard2 = shuffledDeck.pop();
-  var computerCard = shuffledDeck.pop();
-  var computerCard2 = shuffledDeck.pop();
+  var playerCards = getInitialCards(shuffledDeck);
+  var computerCards = getInitialCards(shuffledDeck);
 
-  var myOutputValue = 'You drew <strong>' + showCard(playerCard) + '</strong> and <strong>' + showCard(playerCard2) + '</strong>.<br />The computer drew <strong>' + showCard(computerCard) + '</strong> and <strong>' + showCard(computerCard2) + '</strong>.';
+  var myOutputValue = showCards(playerCards, 'player') + '<br />' + showCards(computerCards, 'computer');
   return myOutputValue;
 };
