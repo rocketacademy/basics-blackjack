@@ -115,14 +115,57 @@ var showCards = function (cards, playerType) {
   return output;
 };
 
+// calculates the score of current hand
+var getCurrentHandScore = function (cards) {
+  var minScore = 0;
+  var maxScore = 0;
+  var counter = 0;
+  while (counter < cards.length) {
+    if (cards[counter].name == 'ace') {
+      minScore += 1;
+      maxScore += 11;
+    } else if (cards[counter].name == 'jack' || cards[counter].name == 'queen' || cards[counter].name == 'king') {
+      minScore += 10;
+      maxScore += 10;
+    } else {
+      minScore += cards[counter].rank;
+      maxScore += cards[counter].rank;
+    }
+    counter += 1;
+  }
+
+  return [minScore, maxScore];
+};
+
+var showScores = function (cards, playerType) {
+  var output = 'Your current score is ';
+  if (playerType == 'computer') {
+    output = 'Computer\'s current score is ';
+  }
+  // no ace drawn
+  if (getCurrentHandScore(cards)[0] == getCurrentHandScore(cards)[1]) {
+    output = output + '<strong>' + getCurrentHandScore(cards)[0] + '</strong>';
+  }
+  // at least 1 ace in the hand
+  else {
+    output = output + 'a minimum of <strong>' + getCurrentHandScore(cards)[0] + '</strong>, and a maximum of <strong>' + getCurrentHandScore(cards)[1] + '</strong>, because at least 1 <strong>ace</strong> is drawn';
+  }
+
+  output = output + '.';
+
+  return output;
+};
+
 // create initial deck
 var deck = makeDeck();
 var shuffledDeck = shuffleCards(deck);
 
-var main = function (input) {
+var main = function () {
   var playerCards = getInitialCards(shuffledDeck);
   var computerCards = getInitialCards(shuffledDeck);
 
-  var myOutputValue = showCards(playerCards, 'player') + '<br />' + showCards(computerCards, 'computer');
+  // analyse for score
+
+  var myOutputValue = showCards(playerCards, 'player') + '<br />' + showScores(playerCards, 'player') + '<br /><br />' + showCards(computerCards, 'computer') + '<br />' + showScores(computerCards, 'computer');
   return myOutputValue;
 };
