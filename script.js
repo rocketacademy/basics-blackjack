@@ -88,8 +88,10 @@ var shuffledDeck = shuffleCards(deck);
 
 var main = function (input) {
   var playerCard = shuffledDeck.pop();
+  var playerCard2 = shuffledDeck.pop();
   var computerCard = shuffledDeck.pop();
+  var computerCard2 = shuffledDeck.pop();
 
-  var myOutputValue = 'You drew ' + showCard(playerCard) + ', and the computer drew ' + showCard(computerCard);
+  var myOutputValue = 'You drew <strong>' + showCard(playerCard) + '</strong> and <strong>' + showCard(playerCard2) + '</strong>.<br />The computer drew <strong>' + showCard(computerCard) + '</strong> and <strong>' + showCard(computerCard2) + '</strong>.';
   return myOutputValue;
 };
