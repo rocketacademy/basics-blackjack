@@ -392,7 +392,7 @@ var main = function (input) {
 
   // show computer score
   if (isBlackjack(computerCards)) {
-    myOutputValue = myOutputValue + BLACKJACK_FLAVOUR_TEXT;
+    myOutputValue = myOutputValue + BLACKJACK_FLAVOUR_TEXT + '<br /><br />';
   } else {
     myOutputValue = myOutputValue + 'Computer\'s best score is <strong>' + computerBestScore + '</strong>.<br /><br />';
   }
