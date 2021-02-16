@@ -4,15 +4,21 @@ var INITIAL_NUMBER_OF_CARDS_DRAWN = 2;
 var GAME_STARTED = 'game started';
 var CHOOSE_HIT_OR_STAND = 'choose hit or stand';
 var SHOW_HANDS = 'show hands';
+var ACE_SCORES = [1, 11];
+var JACK_QUEEN_KING_SCORES = 10;
 
 // initialize string instruction constants
 var HIT_OR_STAND_INSTRUCTIONS = 'Do you wish to hit or stand? To hit, type in <i>hit</i> in the input box above and click Submit. Otherwise, type in <i>stand</i> in the input box above and click Submit.';
 var SHOW_HAND_INSTRUCTIONS = 'Click Submit and we will display the results of this round.';
-var FORCED_STAND_INSTRUCTIONS = 'Your current minimum score is now <strong>' + MAX_SCORE + ' or above</strong>, and you can\'t hit anymore. ' + SHOW_HAND_INSTRUCTIONS;
-var BLACKJACK_FLAVOUR_TEXT = 'IT\'S A BLACKJACK!';
+var FORCED_STAND_INSTRUCTIONS = 'Your best possible score is now <strong>' + MAX_SCORE + ' or above</strong>, and you can\'t hit anymore. ' + SHOW_HAND_INSTRUCTIONS;
+var BLACKJACK_FLAVOUR_TEXT = 'IT\'S A <strong>BLACKJACK</strong>!';
 
 // initialize variables;
 var gameMode = GAME_STARTED;
+var deck = [];
+var shuffledDeck = [];
+var playerCards = [];
+var computerCards = [];
 
 var makeDeck = function () {
   // Initialise an empty deck array
@@ -72,11 +78,11 @@ var getRandomIndex = function (max) {
   return Math.floor(Math.random() * max);
 };
 
-var getInitialCards = function (deck) {
+var getInitialCards = function (cardDeck) {
   var hand = [];
   var counter = 0;
   while (counter < INITIAL_NUMBER_OF_CARDS_DRAWN) {
-    var card = deck.pop();
+    var card = cardDeck.pop();
     hand.push(card);
     counter += 1;
   }
@@ -84,35 +90,121 @@ var getInitialCards = function (deck) {
   return hand;
 };
 
+var addScores = function (scoresArr, card) {
+  // store duplicated (shallow) copy of scores array
+  var arr = [...scoresArr];
+  var counter = 0;
+  // ace
+  if (card.name == 'ace') {
+    // when it's an ace, the scoresArr's items will be duplicated using
+    // .concat() before being passed into addScores. an example will
+    // be [1, 2, 3, 1, 2, 3, 1, 2 ,3]. here, we know that it has been
+    // duplicated twice (or 3 copies), because ace has 3 different scores.
+    // we use the everyNthDigit variable to know which indexes a duplicate
+    // starts or end (in the example's case, every 3rd index)
+    var everyNthIndex = arr.length / ACE_SCORES.length;
+    // to store different groups of "duplicates". using the above example,
+    // we should get [[1, 2, 3], [1, 2, 3], [1, 2, 3]] at the end of the loop
+    var groupedScoresArr = [];
+    var aceScoreIndex = 0;
+
+    while (counter < arr.length) {
+      var scoresArrSlice = arr.slice(counter, counter + everyNthIndex);
+      var arrIndex = 0;
+      // add scores to each group of the array.
+      while (arrIndex < scoresArrSlice.length) {
+        scoresArrSlice[arrIndex] += ACE_SCORES[aceScoreIndex];
+        arrIndex += 1;
+      }
+      groupedScoresArr.push(scoresArrSlice);
+      aceScoreIndex += 1;
+      counter += everyNthIndex;
+    }
+    arr = groupedScoresArr.flat();
+  }
+  // every other card
+  else {
+    while (counter < arr.length) {
+      // jack, queen or king
+      if (card.name == 'jack' || card.name == 'queen' || card.name == 'king') {
+        arr[counter] += JACK_QUEEN_KING_SCORES;
+      }
+      else {
+        arr[counter] += card.rank;
+      }
+
+      counter += 1;
+    }
+  }
+
+  // filter out unique scores, or remove duplicates in the array
+  var uniqueScoresArr = arr.filter((item, index) => (arr.indexOf(item) == index));
+
+  return uniqueScoresArr;
+};
+
 // calculates the score of current hand
 // stored as a pair, minScore in index 0 and maxScore in index 1
 // minimum and maximum scores stored as feedback, because aces
 // are counted as 1 or 11.
-var getCurrentHandMinMaxScore = function (cards) {
-  var minScore = 0;
-  var maxScore = 0;
+var getCurrentScores = function (cards) {
+  var scores = [];
   var counter = 0;
   while (counter < cards.length) {
-    if (cards[counter].name == 'ace') {
-      minScore += 1;
-      maxScore += 11;
-    } else if (cards[counter].name == 'jack' || cards[counter].name == 'queen' || cards[counter].name == 'king') {
-      minScore += 10;
-      maxScore += 10;
-    } else {
-      minScore += cards[counter].rank;
-      maxScore += cards[counter].rank;
+    // first run of array, and card is ace
+    if (counter == 0 && cards[counter].name == 'ace') {
+      var aceScoresCounter = 0;
+      while (aceScoresCounter < ACE_SCORES.length) {
+        scores.push(ACE_SCORES[aceScoresCounter]);
+        aceScoresCounter += 1;
+      }
+    }
+    // first run of array, and card is jack, queen or king
+    else if (counter == 0 && (cards[counter].name == 'jack' || cards[counter].name == 'queen' || cards[counter].name == 'king')) {
+      scores.push(JACK_QUEEN_KING_SCORES);
+    }
+    // first run of array, and any other card
+    else if (counter == 0) {
+      scores.push(cards[counter].rank);
+    }
+    // subsequent run of array
+    else {
+      // card is ace
+      if (cards[counter].name == 'ace') {
+        var duplicatingCounter = 0;
+        var duplicatedScores = [...scores];
+        // duplicate elements in array (x - 1) times, depending on size of array
+        // if ace only has 2 scores: 1, 11. You duplicate the contents in the scores
+        // array. Then you add 1 for the first half, and add 11 to the second half
+        while (duplicatingCounter < ACE_SCORES.length - 1) {
+          scores = scores.concat(duplicatedScores);
+          duplicatingCounter += 1;
+        }
+      }
+
+      scores = addScores(scores, cards[counter]);
     }
     counter += 1;
   }
 
-  return [minScore, maxScore];
+  return scores;
+};
+
+// retrieves the best possible outcome of your score
+var getBestScore = function (scores) {
+  var scoresArr = [...scores];
+  var scoresWithoutExceedArr = scoresArr.filter((score) => score <= MAX_SCORE);
+  var bestScore = Math.max(...scoresWithoutExceedArr);
+  if (scoresWithoutExceedArr.length < 1) {
+    bestScore = Math.min(...scoresArr);
+  }
+  return bestScore;
 };
 
 // checks if a hand is a blackjack
 var isBlackjack = function (cards) {
   // blackjack: max score from 2 cards will be 21
-  if (cards.length == 2 && getCurrentHandMinMaxScore(cards)[1] == 21) {
+  if (cards.length == 2 && getCurrentScores(cards)[1] == 21) {
     return true;
   }
 
@@ -156,7 +248,7 @@ var showCards = function (cards, playerType) {
     output = output + '<strong>' + showCard(cards[counter]) + '</strong>';
     counter += 1;
     if (counter != cards.length) {
-      output = output + ' and ';
+      output = output + ', and ';
     }
   }
   output = output + '.';
@@ -170,17 +262,40 @@ var showScores = function (cards, playerType) {
 
   // not blackjack
   var output = 'Your current score is ';
+  var currentScoresArr = [...getCurrentScores(cards)];
+  var sortedCurrentScores = currentScoresArr.sort(
+    (currentItem, nextItem) => currentItem - nextItem,
+  );
 
   if (playerType == 'computer') {
     output = 'Computer\'s current score is ';
   }
-  // no ace drawn
-  if (getCurrentHandMinMaxScore(cards)[0] == getCurrentHandMinMaxScore(cards)[1]) {
-    output = output + '<strong>' + getCurrentHandMinMaxScore(cards)[0] + '</strong>';
+  // no ace drawn / only a single item in scores
+  if (sortedCurrentScores.length < 2) {
+    output = output + '<strong>' + sortedCurrentScores[0] + '</strong>';
   }
   // at least 1 ace in the hand
   else {
-    output = output + 'a minimum of <strong>' + getCurrentHandMinMaxScore(cards)[0] + '</strong>, and a maximum of <strong>' + getCurrentHandMinMaxScore(cards)[1] + '</strong>, because at least 1 <strong>ace</strong> is drawn';
+    var printScoresCounter = 0;
+    output = output + 'possibly ';
+
+    while (printScoresCounter < sortedCurrentScores.length) {
+      output = output + '<strong>' + sortedCurrentScores[printScoresCounter] + '</strong>';
+
+      if (printScoresCounter < sortedCurrentScores.length - 2) {
+        output = output + ', ';
+      } else if (printScoresCounter == sortedCurrentScores.length - 2) {
+        output = output + ', or ';
+      }
+
+      printScoresCounter += 1;
+    }
+
+    if (playerType == 'computer') {
+      output = output + '. This is because Computer have drawn at least 1 <strong>ace</strong> card. Your best score will be <strong>' + getBestScore(sortedCurrentScores) + '</strong>';
+    } else {
+      output = output + '. This is because you have drawn at least 1 <strong>ace</strong> card. Your best score will be <strong>' + getBestScore(sortedCurrentScores) + '</strong>';
+    }
   }
 
   output = output + '.';
@@ -188,13 +303,15 @@ var showScores = function (cards, playerType) {
   return output;
 };
 
-// create initial deck
-var deck = makeDeck();
-var shuffledDeck = shuffleCards(deck);
+var resetDeckAndHands = function () {
+  deck = makeDeck();
+  shuffledDeck = shuffleCards(deck);
+  playerCards = getInitialCards(shuffledDeck);
+  computerCards = getInitialCards(shuffledDeck);
+};
 
-// assign first 2 cards to player and computer
-var playerCards = getInitialCards(shuffledDeck);
-var computerCards = getInitialCards(shuffledDeck);
+// reset deck and hands
+resetDeckAndHands();
 
 var main = function (input) {
   var sanitisedInput = input.trim().toLowerCase();
@@ -226,7 +343,7 @@ var main = function (input) {
       playerCards.push(drawnCard);
       myOutputValue = 'You have decided to hit. You drew <strong>' + showCard(drawnCard) + '</strong>.<br /><br />' + showCards(playerCards, 'player') + '<br />' + showScores(playerCards, 'player') + '<br /><br />';
 
-      if (getCurrentHandMinMaxScore(playerCards)[0] >= MAX_SCORE) {
+      if (Math.min(...getCurrentScores(playerCards)) >= MAX_SCORE) {
         myOutputValue = myOutputValue + FORCED_STAND_INSTRUCTIONS;
         gameMode = SHOW_HANDS;
       } else {
@@ -244,11 +361,68 @@ var main = function (input) {
   // show hands
   // computer draws
   while (
-    getCurrentHandMinMaxScore(computerCards)[0] < 17
+    Math.min(...getCurrentScores(computerCards)) < 17
   ) {
     var computerCard = shuffledDeck.pop();
     computerCards.push(computerCard);
   }
-  myOutputValue = showCards(playerCards, 'player') + '<br />' + showScores(playerCards, 'player') + '<br /><br />' + showCards(computerCards, 'computer') + '<br />' + showScores(computerCards, 'computer');
+
+  // retrieve current scores
+  var computerScores = getCurrentScores(computerCards);
+  var playerScores = getCurrentScores(playerCards);
+  var playerBestScore = getBestScore(playerScores);
+  var computerBestScore = getBestScore(computerScores);
+
+  // show player cards
+  myOutputValue = showCards(playerCards, 'player') + '<br />';
+
+  // show player score
+  if (isBlackjack(playerCards)) {
+    myOutputValue = myOutputValue + BLACKJACK_FLAVOUR_TEXT;
+  } else {
+    myOutputValue = myOutputValue + 'Your best score is <strong>' + playerBestScore + '</strong>.';
+  }
+
+  // show computer cards
+  myOutputValue = myOutputValue + '<br /><br />' + showCards(computerCards, 'computer') + '<br />';
+
+  // show computer score
+  if (isBlackjack(computerCards)) {
+    myOutputValue = myOutputValue + BLACKJACK_FLAVOUR_TEXT;
+  } else {
+    myOutputValue = myOutputValue + 'Computer\'s best score is <strong>' + computerBestScore + '</strong>.<br /><br />';
+  }
+
+  // determine winners
+  // player winner
+  if (
+    playerBestScore <= 21 && (
+      (isBlackjack(playerCards) && !isBlackjack(computerCards))
+      || (computerBestScore <= 21 && playerBestScore > computerBestScore)
+      || (computerBestScore > 21)
+    )
+  ) {
+    myOutputValue = myOutputValue + '<strong>You win!</strong>';
+  }
+  // computer winner
+  else if (
+    computerBestScore <= 21 && (
+      (isBlackjack(computerCards) && !isBlackjack(playerCards))
+      || (playerBestScore <= 21 && computerBestScore > playerBestScore)
+      || (playerBestScore > 21)
+    )
+  ) {
+    myOutputValue = myOutputValue + '<strong>You lose!</strong>';
+  }
+  // tie
+  else {
+    myOutputValue = myOutputValue + '<strong>It\'s a tie!</strong>';
+  }
+
+  myOutputValue = myOutputValue + '<br /><br />Please click Submit to start a new round!';
+  // reset game state
+  resetDeckAndHands();
+  gameMode = GAME_STARTED;
+
   return myOutputValue;
 };
