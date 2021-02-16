@@ -204,7 +204,7 @@ var getBestScore = function (scores) {
 // checks if a hand is a blackjack
 var isBlackjack = function (cards) {
   // blackjack: max score from 2 cards will be 21
-  if (cards.length == 2 && getCurrentScores(cards)[1] == 21) {
+  if (cards.length == 2 && getCurrentScores(cards)[1] == MAX_SCORE) {
     return true;
   }
 
@@ -400,20 +400,20 @@ var main = function (input) {
   // determine winners
   // player winner
   if (
-    playerBestScore <= 21 && (
+    playerBestScore <= MAX_SCORE && (
       (isBlackjack(playerCards) && !isBlackjack(computerCards))
-      || (computerBestScore <= 21 && playerBestScore > computerBestScore)
-      || (computerBestScore > 21)
+      || (computerBestScore <= MAX_SCORE && playerBestScore > computerBestScore)
+      || (computerBestScore > MAX_SCORE)
     )
   ) {
     myOutputValue = myOutputValue + '<strong>You win!</strong>';
   }
   // computer winner
   else if (
-    computerBestScore <= 21 && (
+    computerBestScore <= MAX_SCORE && (
       (isBlackjack(computerCards) && !isBlackjack(playerCards))
-      || (playerBestScore <= 21 && computerBestScore > playerBestScore)
-      || (playerBestScore > 21)
+      || (playerBestScore <= MAX_SCORE && computerBestScore > playerBestScore)
+      || (playerBestScore > MAX_SCORE)
     )
   ) {
     myOutputValue = myOutputValue + '<strong>You lose!</strong>';
