@@ -359,12 +359,16 @@ var main = function (input) {
   }
 
   // show hands
-  // computer draws
-  while (
-    Math.min(...getCurrentScores(computerCards)) < 17
-  ) {
-    var computerCard = shuffledDeck.pop();
-    computerCards.push(computerCard);
+  // computer will decide to draw if not blackjack
+  if (!isBlackjack(computerCards)) {
+    // continue drawing while its minimum possible score
+    // is still less than 17
+    while (
+      Math.min(...getCurrentScores(computerCards)) < 17
+    ) {
+      var computerCard = shuffledDeck.pop();
+      computerCards.push(computerCard);
+    }
   }
 
   // retrieve current scores
