@@ -97,18 +97,6 @@ var playerHasChosenToStand = false;
 var gameMode = 'gameStart';
 var gameOver = false;
 
-var getInitialCards = function (cardDeck) {
-  var hand = [];
-  var counter = 0;
-  while (counter < 2) {
-    var card = cardDeck.pop();
-    hand.push(card);
-    counter += 1;
-  }
-
-  return hand;
-};
-
 var dealCardToHand = function (hand) {
   hand.push(deck.pop());
 };
