@@ -141,10 +141,12 @@ var isBlackjack = function (hand) {
 
 // Convert hand to a string where objects within the array are stringified(NH)
 var showCardInString = function (hand) {
-  return `[${hand.map((card) => card.name)}]`;
+  return `[${hand.map((card) => card.name + card.suit)}]`;
 };
 
 var getDefaultOutput = function () {
+  console.log(showCardInString(playerHand) + 'PlayerHand');
+  console.log(showCardInString(dealerHand) + 'DealerHand');
   return `Player has in their hand <strong>${showCardInString(playerHand)} </strong> with a total score of <strong>${getHandSum(playerHand)}</strong>. <br>
     Computer has in their hand  <strong>${showCardInString(dealerHand)}</strong> with a total score of <strong>${getHandSum(dealerHand)}</strong>.`;
 };
@@ -152,6 +154,8 @@ var getDefaultOutput = function () {
 var main = function (input) {
   // Start initial Game
   if (gameMode == 'gameStart') {
+    playerHand = [];
+    dealerHand = [];
     // Submit to deal the first hand to player and computer
     dealCardToHand(playerHand);
     dealCardToHand(dealerHand);
@@ -160,34 +164,35 @@ var main = function (input) {
     dealCardToHand(playerHand);
     dealCardToHand(dealerHand);
 
+    gameMode = 'nextMode';
     // Check first if Blackjack
     // Computer wins if Blackjack is true for computer.
-    if (isBlackjack(dealerHand)) {
+    if (isBlackjack(dealerHand) && gameMode == 'nextMode') {
       gameOver = true;
       gameMode = 'gameStart';
 
       // Computer wins, return
       return `${getDefaultOutput()} <br>
-        Blackjack! Computer wins! Please refresh/click submit to play again.`;
+        Blackjack! Computer wins! Press submit to play again.`;
     }
 
     // If player has blackjack and computer does not, player wins.
-    if (isBlackjack(playerHand)) {
+    if (isBlackjack(playerHand) && gameMode == 'nextMode') {
       gameOver = true;
       gameMode = 'gameStart';
 
       // Player wins, return
       return `${getDefaultOutput()} <br>
-        Blackjack! You win! Please refresh/click submit to play again.`;
+        Blackjack! You win! Press submit to play again.`;
     }
-    gameMode = 'hitOrStand';
+    gameMode = 'nextMode';
     // The cards are displayed to the user.
     return `${getDefaultOutput()} <br>
       Please enter <strong>"hit" or "stand" </strong>, then press Submit`;
   }
 
   // Player has to decide to hit or stand
-  if (gameMode = 'hitOrStand') {
+  if (gameMode = 'nextMode') {
     // If user inputs something else, tell user they can only input hit or stand
     if (input !== 'hit' && input !== 'stand') {
       return `Player has in their hand <strong>${showCardInString(playerHand)} </strong> with a total score of <strong>${getHandSum(playerHand)}</strong>. <br>
@@ -202,7 +207,7 @@ var main = function (input) {
         gameMode = 'gameStart';
 
         return `${getDefaultOutput()} <br>
-          You have busted! You lose!. Please refresh to play again.`;
+          You have busted! You lose!. Press Submit to play again.`;
       }
     }
 
@@ -222,8 +227,9 @@ var main = function (input) {
     // If computer busts, it loses
     if (dealerHandSum > blackJackLimit) {
       gameOver = true;
+      gameMode = 'gameStart';
       return `${getDefaultOutput()} <br>
-      Computer has busted! You win! Please refresh to play again.`;
+      Computer has busted! You win! Press Submit to play again.`;
     }
   }
 
@@ -231,14 +237,15 @@ var main = function (input) {
   if (playerHasChosenToStand && dealerHandSum > dealerHitTill) {
     // The game is always over after this point
     gameOver = true;
+    gameMode = 'gameStart';
     // If player hand sum is greater than computer hand sum, player wins!
     if (getHandSum(playerHand) > dealerHand) {
       return `${getDefaultOutput()} <br>
-        You win! Please refresh to play again.`;
+        You win! Press Submit to play again.`;
     }
     // Else, computer wins!
     return `${getDefaultOutput()} <br>
-      You lose! Please refresh to play again.`;
+      You lose! Press Submit to play again.`;
   }
 
   // If game is not yet over, show current game status
