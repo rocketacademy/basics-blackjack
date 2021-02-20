@@ -1,19 +1,7 @@
 /* Rules
 
-(3) Player can choose to hit or stand
-if player hit -> draw one more face down card --> submit "hit" or "stand"
-if player stand -> do nothing
-
-if dealer hand is below 17 --> dealer must hit
-
 (4) If round ends, compare player hand & dealer hand 
 player submit 'end round' 
-= The player who is closer to 21 wins the hand. Aces can be 1 or 11.
-= what are the conditions where ace should be 1 or 11?? 
-= queen, jack, king value of 10 
-
-(5) end round who wins
---> continue playing 
 
 */
 
@@ -106,6 +94,9 @@ var readCards = function (arrayOfCardObjects) {
   }
   return readCardMessage;
 }
+// bug: 
+// message 1 
+// message 1 + message 1 + message 2
 
 // calculate value of cards
 var countCards = function (faceUpObject, faceDownArrayOfObjects) {
@@ -130,11 +121,13 @@ var countCards = function (faceUpObject, faceDownArrayOfObjects) {
       }
     } 
 
-    else {
+    else if (totalHand[i].name <= 10 || totalHand[i].name >= 2) {
       // default is to add number into final number
-      finalCount += parseInt(totalHand[i].name);
+      finalCount += totalHand[i].name;
     }
+
   }
+
   return finalCount;
 
 }
@@ -143,57 +136,70 @@ var countCards = function (faceUpObject, faceDownArrayOfObjects) {
 var mainDeck = shuffleCards(makeDeck());
 
 // initialise variables 
-var playerFaceUpCard;
-var playerFaceDownCard = [];
+var playerFaceUpCard; // single object
+var playerFaceDownCard = []; // array of objects bc can have multiple 
 var playerCount = 0;
 
 var dealerFaceUpCard;
 var dealerFaceDownCard = [];
 var dealerCount = 0;
 
+var PLAYER_FACE_UP_CARDS;
+var PLAYER_FACE_DOWN_CARDS;
+var DEALER_FACE_UP_CARDS;
+var DEALER_FACE_DOWN_CARDS;
+
 // initialise modes
 var START_MODE = 'start mode';
 var GAME_MODE = 'game mode';
+var END_ROUND = 'finish round';
 var mode = START_MODE;
 
 // initialise messages
-var PLAYER_FACE_UP_TITLE = `<br><i>Face Up Card:</i> <br>` 
-var PLAYER_FACE_UP_CARDS = '';
+var PLAYER_FACE_UP_TITLE = `<br><br><strong>PLAYER</strong>
+<br><i>Face Up Card:</i> <br>` 
 var PLAYER_FACE_DOWN_TITLE = `<br><i>Face Down Card:</i> <br>` 
-var PLAYER_FACE_DOWN_CARDS = '';
 
-var DEALER_FACE_UP_TITLE = `<br><i>Face Up Card:</i> <br>` 
-var DEALER_FACE_UP_CARDS = '';
+var DEALER_FACE_UP_TITLE = `<strong>DEALER</strong>
+<br><i>Face Up Card:</i> <br>` 
 var DEALER_FACE_DOWN_TITLE = `<br><i>Face Up Card:</i> <br>` 
-var DEALER_FACE_DOWN_CARDS = '';
 
 var HIT_OR_STAND = 
   `<br><br>To draw another card, type <strong>hit</strong>.
-  <br>To hold your cards, type <strong>stand</strong>.`
+  <br>To hold your cards, type <strong>stand</strong>.
+  <br>When you are done, type <strong>end</strong>.`
+
+var PLAYER_WINNER = `Player wins!`
+var PLAYER_LOSER = `Players loses!`
 
 
 var main = function (input) {
-  
-  if (mode == START_MODE) {
 
-    // player gets dealt two cards
+
+
+  if (mode == START_MODE) {
+    console.log('mode is ' + mode);
+
+    // player gets dealt face up card
     playerFaceUpCard = mainDeck.pop();
     PLAYER_FACE_UP_CARDS = playerFaceUpCard.name + playerFaceUpCard.suit;
 
+    // player gets dealt face down card
     playerFaceDownCard.push(mainDeck.pop());
     PLAYER_FACE_DOWN_CARDS = readCards(playerFaceDownCard);
 
-    // dealer gets dealt two cards
+    // dealer gets dealt face up card 
     dealerFaceUpCard = mainDeck.pop();
     DEALER_FACE_UP_CARDS = dealerFaceUpCard.name + dealerFaceUpCard.suit;
 
+    // dealer gets dealt face down cards
     dealerFaceDownCard.push(mainDeck.pop());
-  
+
+    // dealer counts cards
+    dealerCount = countCards(dealerFaceUpCard, dealerFaceDownCard);
     
     var START_MODE_MESSAGE = 
-      `<strong>DEALER</strong>` + 
       DEALER_FACE_UP_TITLE + DEALER_FACE_UP_CARDS + 
-      `<br><br><strong>PLAYER</strong>` +
       PLAYER_FACE_UP_TITLE + PLAYER_FACE_UP_CARDS + `<br>` +
       PLAYER_FACE_DOWN_TITLE + PLAYER_FACE_DOWN_CARDS;
 
@@ -204,40 +210,85 @@ var main = function (input) {
   }
 
   if (mode == GAME_MODE) {
+    console.log('mode is ' + mode);
 
-    // dealer must hit cards if below 17
-    dealerCount = countCards(dealerFaceUpCard, dealerFaceDownCard);
+    // when next round comes, whether or not player hits or stands, dealer must hit cards if below 17
+    
+    // count dealer's cards
+    // dealerCount = countCards(dealerFaceUpCard, dealerFaceDownCard);
+
+    // if dealer's cards is below 17, cards get added to dealer's face down hand 
     while (dealerCount < 17) {
       dealerFaceDownCard.push(mainDeck.pop());
+      dealerCount = countCards(dealerFaceUpCard, dealerFaceDownCard);
     }
-    console.log ('dealer face down cards are ' + dealerFaceDownCard);
     console.log('dealer count is ' + dealerCount);
 
-
+    // if user types in 'hit'
     if (input == 'hit') {
       // add another card to face down deck
       playerFaceDownCard.push(mainDeck.pop());
-      PLAYER_FACE_DOWN_CARDS = readCards(playerFaceDownCard);
 
     } 
+
+    // if player types 'end', player ends the round
+    else if (input == 'end') {
+      mode = END_ROUND;
+      return `Click <strong>Submit</strong> to reveal cards.`;
+    }
+
     // if the input is anything other than 'stand'
     else if (input != 'stand') { 
       return HIT_OR_STAND;
     }
 
+
+
+    // print player and dealer face up cards
+    PLAYER_FACE_UP_CARDS = playerFaceUpCard.name + playerFaceUpCard.suit;
+    DEALER_FACE_UP_CARDS = dealerFaceUpCard.name + dealerFaceUpCard.suit;
+    PLAYER_FACE_DOWN_CARDS = readCards(playerFaceDownCard);
+
     var REVEAL_HAND_MESSAGE = 
-      `<strong>DEALER</strong>` + 
       DEALER_FACE_UP_TITLE + DEALER_FACE_UP_CARDS + 
-      `<br><br><strong>PLAYER</strong>` +
       PLAYER_FACE_UP_TITLE + PLAYER_FACE_UP_CARDS + `<br>` +
       PLAYER_FACE_DOWN_TITLE + PLAYER_FACE_DOWN_CARDS;
-    
+
     return REVEAL_HAND_MESSAGE + HIT_OR_STAND; 
   }
 
-  var myOutputValue = 'hello world';
-  return myOutputValue;
-};
+  // determine winner dealer vs player
+  if (mode = END_ROUND) {
+    var RESULT;
 
+    // count player's cards 
+    playerCount = countCards(playerFaceUpCard, playerFaceDownCard);
 
+    // player winning conditions
+    if (playerCount == 21 && dealerCount != 21 ||
+      playerCount > dealerCount && playerCount < 22 ||
+      dealerCount > 21) {
+      RESULT = PLAYER_WINNER; 
+    }
 
+    // dealer wins
+    else {
+      RESULT = PLAYER_LOSER;
+    }
+
+    // print player and dealer face up cards
+    PLAYER_FACE_UP_CARDS = playerFaceUpCard.name + playerFaceUpCard.suit;
+    DEALER_FACE_UP_CARDS = dealerFaceUpCard.name + dealerFaceUpCard.suit;
+    PLAYER_FACE_DOWN_CARDS = readCards(playerFaceDownCard);
+
+    var REVEAL_WINNER_MESSAGE = 
+      RESULT + `<br>` + 
+      DEALER_FACE_UP_TITLE + DEALER_FACE_UP_CARDS + 
+      PLAYER_FACE_UP_TITLE + PLAYER_FACE_UP_CARDS + `<br>` +
+      PLAYER_FACE_DOWN_TITLE + PLAYER_FACE_DOWN_CARDS;
+
+    return REVEAL_WINNER_MESSAGE;
+  }
+
+  mode = START_MODE;
+}; 
