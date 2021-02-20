@@ -116,6 +116,11 @@ var computerTotalValue = 0;
 // create a variable for new total Value of computer cards
 var newComputerTotalValue = 0;
 
+// create a variable to store for value when ACE appears
+var aceValueOption = 0;
+
+var blackJackLimit = 21;
+
 // both player and computer draws 2 cards
 var main = function (input) {
   // when player hits submit
@@ -147,6 +152,8 @@ var main = function (input) {
 
   // create a variable to show the total Value of player cards
   cardsTotalValue = playerHand[0].value + playerHand[1].value;
+  newCardsTotalValue = cardsTotalValue;
+
   var myOutputValue = cardsOnHand + ' <br> your total value is: ' + cardsTotalValue + '<br> type in "hit me" to receive one more card or "stay" if you believe you will win ';
   console.log(myOutputValue);
 
@@ -180,19 +187,20 @@ var main = function (input) {
   }
 
   if (gameMode == 'playerOption') {
-    if (input == totalHighestVale || input == totalLowestValue) {
-      newCardsTotalValue = input;
-      myOutputValue = 'You chose:' + newCardsTotalValue + ' as your value, type in "hit me" to receive one more card or "stay" if you believe you will win';
+    if (input == totalHighestVale) {
+      aceValueOption = 10;
+
+      myOutputValue = 'You chose:' + input + ' as your value, type in "hit me" to receive one more card or "stay" if you believe you will win';
+    }
+    else if (input == totalLowestValue) {
+      aceValueOption = 0;
+      myOutputValue = 'You chose:' + input + ' as your value, type in "hit me" to receive one more card or "stay" if you believe you will win';
     }
     gameMode = 'playerTurn';
     console.log(gameMode);
   }
 
   // this marks the end drawing phase
-
-  console.log('playerHand.length');
-  console.log(playerHand.length);
-  console.log(gameMode);
 
   // if the player types in 'hit me'
   // if player has 2 cards, playerhand.length = 2
@@ -209,13 +217,13 @@ var main = function (input) {
     newCardsOnHand = cardsOnHand + '<br>' + playerHand[(playerHand.length - 1)].name + ' of ' + playerHand[(playerHand.length - 1)].suit;
 
     // update the new card Value into newCardsTotalValue
-    newCardsTotalValue = newCardsTotalValue + playerHand[(playerHand.length - 1)].value;
+    newCardsTotalValue = Number(newCardsTotalValue) + Number(playerHand[(playerHand.length - 1)].value) + Number(aceValueOption);
 
     myOutputValue = newCardsOnHand + '<br> your total value is: ' + newCardsTotalValue + '<br> type in "hit me" to receive one more card or "stay" if you believe you will win ';
-
+    console.log('newCardsTotalValue2');
+    console.log(newCardsTotalValue);
     console.log(gameMode);
     console.log(cardsTotalValue);
-    console.log(newCardsTotalValue);
   }
 
   // if player has 3 cards, playerhand.length = 3
