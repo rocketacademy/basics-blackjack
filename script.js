@@ -87,8 +87,9 @@ var shuffleCards = function (cardDeck) {
 
 // reads array of multiple cards attributes in order 
 // input: array of card objects, output: '3 of ♤', 'king of ♡', etc.
-var readCardMessage = '';
 var readCards = function (arrayOfCardObjects) {
+  var readCardMessage = '';
+
   for (i = 0; i < arrayOfCardObjects.length; i += 1) {
     readCardMessage += arrayOfCardObjects[i].name + arrayOfCardObjects[i].suit + '<br>';
   }
@@ -157,25 +158,23 @@ var mode = START_MODE;
 
 // initialise messages
 var PLAYER_FACE_UP_TITLE = `<br><br><strong>PLAYER</strong>
-<br><i>Face Up Card:</i> <br>` 
-var PLAYER_FACE_DOWN_TITLE = `<br><i>Face Down Card:</i> <br>` 
-
+<br><i>Face Up Card:</i> <br>`;
+var PLAYER_FACE_DOWN_TITLE = `<br><i>Face Down Card:</i> <br>`;
 var DEALER_FACE_UP_TITLE = `<strong>DEALER</strong>
-<br><i>Face Up Card:</i> <br>` 
-var DEALER_FACE_DOWN_TITLE = `<br><i>Face Up Card:</i> <br>` 
+<br><i>Face Up Card:</i> <br>`;
+var DEALER_FACE_DOWN_TITLE = `<br><i>Face Up Card:</i> <br>`;
 
 var HIT_OR_STAND = 
   `<br><br>To draw another card, type <strong>hit</strong>.
   <br>To hold your cards, type <strong>stand</strong>.
-  <br>When you are done, type <strong>end</strong>.`
+  <br>When you are done, type <strong>end</strong>.`;
 
-var PLAYER_WINNER = `Player wins!`
-var PLAYER_LOSER = `Players loses!`
+var PLAYER_WINNER = `Player wins!<br>`;
+var PLAYER_LOSER = `Players loses!<br>`;
+var COUNT = `Count is `;
 
 
 var main = function (input) {
-
-
 
   if (mode == START_MODE) {
     console.log('mode is ' + mode);
@@ -242,8 +241,6 @@ var main = function (input) {
       return HIT_OR_STAND;
     }
 
-
-
     // print player and dealer face up cards
     PLAYER_FACE_UP_CARDS = playerFaceUpCard.name + playerFaceUpCard.suit;
     DEALER_FACE_UP_CARDS = dealerFaceUpCard.name + dealerFaceUpCard.suit;
@@ -280,12 +277,16 @@ var main = function (input) {
     PLAYER_FACE_UP_CARDS = playerFaceUpCard.name + playerFaceUpCard.suit;
     DEALER_FACE_UP_CARDS = dealerFaceUpCard.name + dealerFaceUpCard.suit;
     PLAYER_FACE_DOWN_CARDS = readCards(playerFaceDownCard);
+    DEALER_FACE_DOWN_CARDS = readCards(dealerFaceDownCard);
 
     var REVEAL_WINNER_MESSAGE = 
       RESULT + `<br>` + 
       DEALER_FACE_UP_TITLE + DEALER_FACE_UP_CARDS + 
+      DEALER_FACE_DOWN_TITLE + DEALER_FACE_DOWN_CARDS + `<br>` +
+      COUNT + dealerCount + `<br>` + 
       PLAYER_FACE_UP_TITLE + PLAYER_FACE_UP_CARDS + `<br>` +
-      PLAYER_FACE_DOWN_TITLE + PLAYER_FACE_DOWN_CARDS;
+      PLAYER_FACE_DOWN_TITLE + PLAYER_FACE_DOWN_CARDS + 
+      COUNT + playerCount;
 
     return REVEAL_WINNER_MESSAGE;
   }
