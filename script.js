@@ -5,6 +5,7 @@ var computerCards = [];
 var playerCardsAtHand = 0;
 var computerCardAtHand = 0;
 
+var myOutputValue='Press Submit to Start Playing';
 var gameState = 'Not Started';
 
 var isThereAce = function (cardsAtHard, cardTotal) {
@@ -61,22 +62,23 @@ var playerWon = function (playerCard, computerCard) { // player cards index rank
 
   if (computerCardAtHand > 21) {
     console.log('Computer Bust');
-    return 'Computer Bust';
+
+    return 'Computer Bust <br>Click Submit to Start a new Game<br>';
   } if (playerCardsAtHand > 21) {
     console.log('Player Bust');
 
-    return 'Player Bust';
+    return 'Player Bust<br>Click Submit to Start a new Game<br>';
   } if (computerCardAtHand > 17 && playerCardsAtHand > computerCardAtHand) {
     console.log('Player Bust');
-    return 'Player Lose';
+    return 'Player Lose<br>Click Submit to Start a new Game<br>';
   } if (computerCardAtHand > 17 && playerCardsAtHand < computerCardAtHand) {
     console.log('Computer Won');
-    return 'Computer Won';
+    return 'Computer Won<br>Click Submit to Start a new Game<br>';
   } if ((playerCardsAtHand < 22) && (playerCardsAtHand == computerCardAtHand)) {
     console.log('Draw');
-    return 'Draw';
+    return 'Draw<br>Click Submit to Start a new Game<br>';
   }
-  return 'Continue';
+  return 'Continue <br>Enter Hit or Stand<br>';
 };
 
 var makeDeck = function () {
@@ -150,6 +152,8 @@ var startGame = function () {
   computerCards.push(randomCardPicked());
   gameState = 'Started';
 };
+
+
 /*
 Introduction
 Implement a simplified version of Blackjack. If you're not familiar with Blackjack, refer to this video for game rules. Our simplified rules are the following.
@@ -195,19 +199,14 @@ var main = function (input) {
   // check if player has won
   outCome = playerWon(playerCards, computerCards);
   playerScore = playerCardsAtHand;
-  computerScore = computerCardAtHand;
+  computerScore = computerCardAtHand;  
 
-  var myOutputValue = 'Player Cards at Hand -> ' + playerCardsAtHand
+  myOutputValue = 'Player Cards at Hand -> ' + playerCardsAtHand 
   + ' Computer Cards at Hand -> '
   + computerCardAtHand + '<br>' + 'Outcome : ' + playerWon(playerCards, computerCards);
-  if (playerWon(playerCards, computerCards) == 'Continue') {
-    myOutputValue = 'Player Cards at Hand -> ' + playerCardsAtHand
-  + ' Computer Cards at Hand -> '
-  + computerCardAtHand + '<br>' + 'Outcome : ' + playerWon(playerCards, computerCards) + '<br> Enter Hit or Stand then Click Submit';
-  }
-
+  
   console.log('Game state : ' + gameState);
-  if (outCome != 'Continue') {
+  if (outCome != 'Continue <br>Enter Hit or Stand<br>') {
     console.log('re start game');
     gameState == 'Not Started';
 
