@@ -1,10 +1,3 @@
-/* Rules
-
-(4) If round ends, compare player hand & dealer hand 
-player submit 'end round' 
-
-*/
-
 // generates standard 52-card deck
 var makeDeck = function () {
   // Initialise an empty deck array
@@ -95,14 +88,13 @@ var readCards = function (arrayOfCardObjects) {
   }
   return readCardMessage;
 }
-// bug: 
-// message 1 
-// message 1 + message 1 + message 2
 
 // calculate value of cards
 var countCards = function (faceUpObject, faceDownArrayOfObjects) {
   // combine to single hand
-  var totalHand = faceDownArrayOfObjects;
+  var totalHand = [...faceDownArrayOfObjects]; // does not reference the previous value 
+
+  // var totalHand = faceDownArrayOfObjects; // referencing the value also manipulates the associated varialbe 
   totalHand.push(faceUpObject);
 
   // loop through each object get the number 
@@ -162,7 +154,7 @@ var PLAYER_FACE_UP_TITLE = `<br><br><strong>PLAYER</strong>
 var PLAYER_FACE_DOWN_TITLE = `<br><i>Face Down Card:</i> <br>`;
 var DEALER_FACE_UP_TITLE = `<strong>DEALER</strong>
 <br><i>Face Up Card:</i> <br>`;
-var DEALER_FACE_DOWN_TITLE = `<br><i>Face Up Card:</i> <br>`;
+var DEALER_FACE_DOWN_TITLE = `<br><i>Face Down Card:</i> <br>`;
 
 var HIT_OR_STAND = 
   `<br><br>To draw another card, type <strong>hit</strong>.
@@ -188,7 +180,7 @@ var main = function (input) {
     PLAYER_FACE_DOWN_CARDS = readCards(playerFaceDownCard);
 
     // dealer gets dealt face up card 
-    dealerFaceUpCard = mainDeck.pop();
+    dealerFaceUpCard = mainDeck.pop();    
     DEALER_FACE_UP_CARDS = dealerFaceUpCard.name + dealerFaceUpCard.suit;
 
     // dealer gets dealt face down cards
@@ -282,7 +274,7 @@ var main = function (input) {
     var REVEAL_WINNER_MESSAGE = 
       RESULT + `<br>` + 
       DEALER_FACE_UP_TITLE + DEALER_FACE_UP_CARDS + 
-      DEALER_FACE_DOWN_TITLE + DEALER_FACE_DOWN_CARDS + `<br>` +
+      DEALER_FACE_DOWN_TITLE + DEALER_FACE_DOWN_CARDS +
       COUNT + dealerCount + `<br>` + 
       PLAYER_FACE_UP_TITLE + PLAYER_FACE_UP_CARDS + `<br>` +
       PLAYER_FACE_DOWN_TITLE + PLAYER_FACE_DOWN_CARDS + 
