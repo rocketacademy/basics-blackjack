@@ -200,6 +200,11 @@ var main = function (input) {
   var myOutputValue = 'Player Cards at Hand -> ' + playerCardsAtHand
   + ' Computer Cards at Hand -> '
   + computerCardAtHand + '<br>' + 'Outcome : ' + playerWon(playerCards, computerCards);
+  if (playerWon(playerCards, computerCards) == 'Continue') {
+    myOutputValue = 'Player Cards at Hand -> ' + playerCardsAtHand
+  + ' Computer Cards at Hand -> '
+  + computerCardAtHand + '<br>' + 'Outcome : ' + playerWon(playerCards, computerCards) + '<br> Enter Hit or Stand then Click Submit';
+  }
 
   console.log('Game state : ' + gameState);
   if (outCome != 'Continue') {
