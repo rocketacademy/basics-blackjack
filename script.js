@@ -93,11 +93,20 @@ var dealerHitTill = 16;
 
 // tracking end of turn for player
 var playerHasChosenToStand = false;
-// Tracking gameover scenario
+// Tracking game scenario
+var gameMode = 'gameStart';
 var gameOver = false;
 
-var dealCardToHand = function (hand) {
-  hand.push(deck.pop());
+var getFirst2Cards = function (cardDeck) {
+  var hand = [];
+  var counter = 0;
+  while (counter < 2) {
+    var card = cardDeck.pop();
+    hand.push(card);
+    counter += 1;
+  }
+
+  return hand;
 };
 
 // total up card value of hand
@@ -118,7 +127,7 @@ var getHandSum = function (hand) {
       sum += 11;
     }
   }
-  // If sum is greater than sum limit and hand contains Aces, convert Aces from value of 11
+  // If sum is greater than sum limit and hand contains Aces, convert Aces from value of 11 (NeededHelp)
   // to value of 1, until sum is less than or equal to sum limit or there are no more Aces.
   if (sum > blackJackLimit && numAcesInHand > 0) {
     for (let i = 0; i < numAcesInHand; i += 1) {
@@ -139,30 +148,28 @@ var isBlackjack = function (hand) {
 };
 
 // Convert hand to a string where objects within the array are stringified(NH)
-var convertHandToString = function (hand) {
+var showCardInString = function (hand) {
   return `[${hand.map((card) => card.name)}]`;
 };
 
 var getDefaultOutput = function () {
-  return `Player has in their hand <strong>${convertHandToString(playerHand)} </strong> with a total score of <strong>${getHandSum(playerHand)}</strong>. <br>
-    Computer has in their hand  <strong>${convertHandToString(dealerHand)}</strong> with a total score of <strong>${getHandSum(dealerHand)}</strong>.`;
+  return `Player has in their hand <strong>${showCardInString(playerHand)} </strong> with a total score of <strong>${getHandSum(playerHand)}</strong>. <br>
+    Computer has in their hand  <strong>${showCardInString(dealerHand)}</strong> with a total score of <strong>${getHandSum(dealerHand)}</strong>.`;
 };
 
 var main = function (input) {
   // Start initial Game
-  if (playerHand.length === 0) {
+  if (gameMode == 'gameStart') {
     // Submit to deal the first hand to player and computer
-    dealCardToHand(playerHand);
-    dealCardToHand(dealerHand);
+    playerHand = getFirst2Cards(deck);
+    dealerHand = getFirst2Cards(deck);
 
-    // Dealing second hand to player and computer
-    dealCardToHand(playerHand);
-    dealCardToHand(dealerHand);
-
-    // The cards are analyzed for any game winning conditions. (Blackjack)
+    // Check first if Blackjack
     // Computer wins if Blackjack is true for computer.
     if (isBlackjack(dealerHand)) {
       gameOver = true;
+      gameMode = 'gameStart';
+
       // Computer wins, return
       return `${getDefaultOutput()} <br>
         Blackjack! Computer wins! Please refresh/click submit to play again.`;
@@ -171,29 +178,33 @@ var main = function (input) {
     // If player has blackjack and computer does not, player wins.
     if (isBlackjack(playerHand)) {
       gameOver = true;
+      gameMode = 'gameStart';
+
       // Player wins, return
       return `${getDefaultOutput()} <br>
         Blackjack! You win! Please refresh/click submit to play again.`;
     }
-
+    gameMode = 'hitOrStand';
     // The cards are displayed to the user.
     return `${getDefaultOutput()} <br>
       Please enter <strong>"hit" or "stand" </strong>, then press Submit`;
   }
 
   // Player has to decide to hit or stand
-  if (!playerHasChosenToStand) {
-    // If user input is neither "hit" nor "stand" prompt user
+  if (gameMode = 'hitOrStand') {
+    // If user inputs something else, tell user they can only input hit or stand
     if (input !== 'hit' && input !== 'stand') {
-      return `Player has in their hand <strong>${convertHandToString(playerHand)} </strong> with a total score of <strong>${getHandSum(playerHand)}</strong>. <br>
-    Computer has in their hand <strong>${convertHandToString(dealerHand)}</strong> with a total score of <strong>${getHandSum(dealerHand)}</strong>. <br> <strong>Please input either "hit" or "stand" as possible moves in Blackjack.</strong>`;
+      return `Player has in their hand <strong>${showCardInString(playerHand)} </strong> with a total score of <strong>${getHandSum(playerHand)}</strong>. <br>
+    Computer has in their hand <strong>${showCardInString(dealerHand)}</strong> with a total score of <strong>${getHandSum(dealerHand)}</strong>. <br> <strong>Please input either "hit" or "stand" as possible moves in Blackjack.</strong>`;
     }
 
     if (input == 'hit') {
       dealCardToHand(playerHand);
-      // If bust, show player that she busts
+      // if player busts during hit, player loses
       if (getHandSum(playerHand) > blackJackLimit) {
         gameOver = true;
+        gameMode = 'gameStart';
+
         return `${getDefaultOutput()} <br>
           You have busted! You lose!. Please refresh to play again.`;
       }
@@ -204,15 +215,15 @@ var main = function (input) {
     }
   }
 
-  // The computer also decides to hit or stand.
-  // Computer hits if sum less than or equal to dealer hit threshold
-  // Otherwise, computer stays
+  // Computer must have number greater than dealerHitsTill
+  // Computer hits till sum in hand is greater than dealerHitsTill
+
   var dealerHandSum = getHandSum(dealerHand);
   if (dealerHandSum <= dealerHitTill) {
     dealCardToHand(dealerHand);
-    // Update computer hand sum after dealing new card
+    // Sum computer's hand
     dealerHandSum = getHandSum(dealerHand);
-    // If bust, show computer that she busts
+    // If computer busts, it loses
     if (dealerHandSum > blackJackLimit) {
       gameOver = true;
       return `${getDefaultOutput()} <br>
