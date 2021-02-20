@@ -97,7 +97,7 @@ var playerHasChosenToStand = false;
 var gameMode = 'gameStart';
 var gameOver = false;
 
-var getFirst2Cards = function (cardDeck) {
+var getInitialCards = function (cardDeck) {
   var hand = [];
   var counter = 0;
   while (counter < 2) {
@@ -107,6 +107,10 @@ var getFirst2Cards = function (cardDeck) {
   }
 
   return hand;
+};
+
+var dealCardToHand = function (hand) {
+  hand.push(deck.pop());
 };
 
 // total up card value of hand
@@ -127,7 +131,7 @@ var getHandSum = function (hand) {
       sum += 11;
     }
   }
-  // If sum is greater than sum limit and hand contains Aces, convert Aces from value of 11 (NeededHelp)
+  // If sum is greater than sum limit and hand contains Aces, convert Aces from value of 11
   // to value of 1, until sum is less than or equal to sum limit or there are no more Aces.
   if (sum > blackJackLimit && numAcesInHand > 0) {
     for (let i = 0; i < numAcesInHand; i += 1) {
@@ -161,8 +165,12 @@ var main = function (input) {
   // Start initial Game
   if (gameMode == 'gameStart') {
     // Submit to deal the first hand to player and computer
-    playerHand = getFirst2Cards(deck);
-    dealerHand = getFirst2Cards(deck);
+    dealCardToHand(playerHand);
+    dealCardToHand(dealerHand);
+
+    // Dealing second hand to player and computer
+    dealCardToHand(playerHand);
+    dealCardToHand(dealerHand);
 
     // Check first if Blackjack
     // Computer wins if Blackjack is true for computer.
