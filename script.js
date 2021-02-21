@@ -2,11 +2,12 @@ var playingCards = [];
 var playerCards = [];
 var computerCards = [];
 
-var playerCardsAtHand = 0;
-var computerCardAtHand = 0;
-
 var myOutputValue='Press Submit to Start Playing';
 var gameState = 'Not Started';
+var outCome;
+
+var playerCardsAtHand = 0;
+var computerCardsAtHand = 0;
 
 var isThereAce = function (cardsAtHard, cardTotal) {
   // loop
@@ -34,51 +35,51 @@ var playerWon = function (playerCard, computerCard) { // player cards index rank
 // sET ACE TO 1 OR 11?
 
   var index = 0;
-  playerCardsAtHand = 0;
-  computerCardAtHand = 0;
-
+  
+  playerCardsAtHand=0;
   // initial calculate cards at hand
-  while (index < playerCard.length) {
-    playerCardsAtHand = playerCardsAtHand + playerCard[index].rank;
+  while (index < playerCards.length) {
+    playerCardsAtHand = playerCardsAtHand + playerCards[index].rank;
 
     index = index + 1;
-    // check if there is ace - create Ace Checking function
-
-    // sET ACE TO 1 OR 11? 1) <10 Ace= 21 2) >10 Ace= 1
-    // use if - else
+    
   }
   index = 0;
-  while (index < computerCard.length) {
-    computerCardAtHand = computerCardAtHand + computerCard[index].rank;
+  computerCardsAtHand=0;
+  while (index < computerCards.length) {
+    computerCardsAtHand = computerCardsAtHand + computerCards[index].rank;
     index = index + 1;
     // check if there is ace - create Ace Checking function
     // sET ACE TO 1 OR 11? 1) <10 Ace= 21 2) >10 Ace= 1
     // use if - else
   }
   // Do adjustment for aces
-  playerCards = isThereAce(playerCard, playerCardsAtHand);
-  computerCards = isThereAce(computerCards, computerCardAtHand);
-  console.log('Player Cards at Hand ->' + playerCardsAtHand + ' Computer Cards at Hand ->' + computerCardAtHand);
 
-  if (computerCardAtHand > 21) {
+  console.log( 'playerCardsAtHand :' +playerCardsAtHand );
+  console.log( 'computerCardsAtHand :' +computerCardsAtHand );
+  playerCards = isThereAce(playerCard, playerCardsAtHand);
+  computerCards = isThereAce(computerCards, computerCardsAtHand);
+  console.log('Player Cards at Hand ->' + playerCardsAtHand + ' Computer Cards at Hand ->' + computerCardsAtHand);
+
+  if (computerCardsAtHand > 21) {
     console.log('Computer Bust');
 
-    return 'Computer Bust <br>Click Submit to Start a new Game<br>';
+    return 'Computer Bust with '+ computerCardsAtHand+'<br><br>Click Submit to Start a new Game<br>';
   } if (playerCardsAtHand > 21) {
     console.log('Player Bust');
 
-    return 'Player Bust<br>Click Submit to Start a new Game<br>';
-  } if (computerCardAtHand > 17 && playerCardsAtHand > computerCardAtHand) {
-    console.log('Player Bust');
-    return 'Player Lose<br>Click Submit to Start a new Game<br>';
-  } if (computerCardAtHand > 17 && playerCardsAtHand < computerCardAtHand) {
-    console.log('Computer Won');
-    return 'Computer Won<br>Click Submit to Start a new Game<br>';
-  } if ((playerCardsAtHand < 22) && (playerCardsAtHand == computerCardAtHand)) {
+    return 'Player Bust with '+playerCardsAtHand+'<br><br>Click Submit to Start a new Game<br>';
+  } if (computerCardsAtHand > 17 && playerCardsAtHand > computerCardsAtHand) {
+    console.log('Player Lose');
+    return 'Player Lose with '+playerCardsAtHand+'<br><br>Click Submit to Start a new Game<br>';
+  } if (computerCardsAtHand > 17 && playerCardsAtHand < computerCardsAtHand) {
+    console.log('Computer Won with '+ computerCardsAtHand);
+    return 'Computer Won<br><br>Click Submit to Start a new Game<br>';
+  } if ((playerCardsAtHand < 22) && (playerCardsAtHand == computerCardsAtHand)) {
     console.log('Draw');
-    return 'Draw<br>Click Submit to Start a new Game<br>';
+    return 'Draw<br><br>Click Submit to Start a new Game<br>';
   }
-  return 'Continue <br>Enter Hit or Stand<br>';
+  return 'Continue<br> <br>Enter Hit or Stand<br>';
 };
 
 var makeDeck = function () {
@@ -136,7 +137,7 @@ var randomCardPicked = function () {
   var cardPicked = playingCards[randomIndex];
   playingCards.splice(randomIndex, 1);
 
-  console.log('Cards picked -> suit: ' + cardPicked.suit + ' rank: ' + cardPicked.rank + ' name: ' + cardPicked.name);
+  console.log('Cards picked ' + cardPicked );
 
   return cardPicked;
 };
@@ -146,7 +147,7 @@ var startGame = function () {
   computerCards = [];
 
   playerCardsAtHand = 0;
-  computerCardAtHand = 0;
+  computerCardsAtHand = 0;
   playingCards = makeDeck();
   playerCards.push(randomCardPicked());
   computerCards.push(randomCardPicked());
@@ -154,37 +155,7 @@ var startGame = function () {
 };
 
 
-/*
-Introduction
-Implement a simplified version of Blackjack. If you're not familiar with Blackjack, refer to this video for game rules. Our simplified rules are the following.
-There will be only two players. One human and one computer.
-The computer will always be the dealer. The dealer has to hit if their hand is below 17.
-The player who is closer to 21 wins the hand. Aces can be 1 or 11.
 
-The main function runs on each player's turn. The sequence of actions in the game might be the following.
-Deck is shuffled.
-User clicks Submit to deal cards.
-The cards are analysed for game winning conditions, e.g. Blackjack.
-The cards are displayed to the user.
-The user decides whether to hit or stand, using the submit button to submit their choice.
-The user's cards are analysed for winning or losing conditions.
-The computer decides to hit or stand automatically based on game rules.
-The game either ends or continues.
-
-First Version: Compare Initial Hands to Determine Winner
-Aim for a playable game. A minimal version of Blackjack could just compare the ranks of the player's and dealer's cards. For now, we can leave out features such as Aces being 1 or 11, and the player and dealer choosing to hit or stand. Write pseudocode to guide your logic.
-Compare the initially-drawn cards to determine a winner. Code with the understanding that your code will expand later to encompass other Blackjack functionality.
-Test your code.
-
-Third Version: Add Dealer Hit or Stand
-The rules state that the dealer hits after the player is done. After the player confirms they are done, add the logic for the dealer adding cards to their hand. This should happen before the winning  condition.
-Test your code.
-
-// Fourth Version: Add Variable Ace Values
-// Add logic to determine whether Aces should have value of 1 or 11 for a given hand.
-// Test your code.
-
-*/
 var main = function (input) {
   if (gameState == 'Not Started') {
     startGame();
@@ -192,29 +163,34 @@ var main = function (input) {
   } else if (gameState == 'Started') {
     if (input = 'Hit') {
       playerCards.push(randomCardPicked());
+      outCome = playerWon(playerCards, computerCards);
     }
     computerCards.push(randomCardPicked());
+    outCome = playerWon(playerCards, computerCards);
   }
 
   // check if player has won
-  outCome = playerWon(playerCards, computerCards);
-  playerScore = playerCardsAtHand;
-  computerScore = computerCardAtHand;  
+  
 
   myOutputValue = 'Player Cards at Hand -> ' + playerCardsAtHand 
   + ' Computer Cards at Hand -> '
-  + computerCardAtHand + '<br>' + 'Outcome : ' + playerWon(playerCards, computerCards);
+  + computerCardsAtHand + '<br>' + 'Outcome : ' + playerWon(playerCards, computerCards);
   
+
+
   console.log('Game state : ' + gameState);
-  if (outCome != 'Continue <br>Enter Hit or Stand<br>') {
+  if (outCome != 'Continue<br> <br>Enter Hit or Stand<br>') {
     console.log('re start game');
     gameState == 'Not Started';
 
     playerCards = [];
     computerCards = [];
+    
+    playerCardsAtHand=0;
+    computerCardsAtHand=0;
 
     console.log('After clearing Player Cards at Hand -> ' + playerCardsAtHand);
-    console.log('After clearing Computer Cards at Hand -> ' + computerCardAtHand);
+    console.log('After clearing Computer Cards at Hand -> ' + computerCardsAtHand);
   }
 
   return myOutputValue;
