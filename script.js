@@ -30,7 +30,7 @@ var deck = [];
 var shuffledDeck = [];
 var playerCards = [];
 var computerCards = [];
-var handIndex = 0;
+var playerHandIndex = 0;
 
 var makeDeck = function () {
   // Initialise an empty deck array
@@ -230,8 +230,8 @@ var isBlackjack = function (cards) {
   return false;
 };
 
-// checks if a hand is a split
-var isSplit = function (cards) {
+// checks if a hand is able to be split
+var isAbleToBeSplit = function (cards) {
   // hand size is 2, and there are cards of equal rank
   if (cards.length == 2 && cards[0].rank == cards[1].rank) {
     return true;
@@ -332,30 +332,51 @@ var showScores = function (cards, playerType) {
   return output;
 };
 
-var showAndHandleSplitBlackjack = function (cards, cardsIndex) {
-  if (isBlackjack(cards[cardsIndex])) {
-    // last hand of the player
-    if (cardsIndex == cards.length - 1) {
-      gameMode = SHOW_HANDS;
-      return SHOW_HAND_INSTRUCTIONS;
-    }
-    // not last hand
-    handIndex += 1;
-    return NEXT_SPLIT_HAND_INSTRUCTIONS;
+// shows instructions for initial 2 cards based on its status,
+// and changes game mode accordingly.
+// this function assumes there isn't already a hit or stand yet.
+var showInstructionsAndHandleGameMode = function (hand, isSplitHand) {
+  var cards = hand;
+
+  // convenient if statement to assign cards
+  // to current hand if there are split hands
+  if (isSplitHand) {
+    cards = cards[playerHandIndex];
   }
 
-  return '';
+  // default: not blackjack
+  var output = HIT_OR_STAND_INSTRUCTIONS;
+
+  if (isBlackjack(cards)) {
+    // is split hand, not last hand of player
+    // check for hand.length instead of cards.length
+    // because we want the number of hands, not the
+    // number of cards in any given hand
+    if (isSplitHand && playerHandIndex != hand.length - 1) {
+      output = NEXT_SPLIT_HAND_INSTRUCTIONS;
+      playerHandIndex += 1;
+    } else {
+      output = SHOW_HAND_INSTRUCTIONS;
+      gameMode = SHOW_HANDS;
+    }
+
+    return output;
+  }
+
+  // not blackjack
+  gameMode = CHOOSE_HIT_OR_STAND;
+  return output;
 };
 
 var resetDeckAndHands = function () {
   deck = makeDeck();
   shuffledDeck = shuffleCards(deck);
-  playerCards = [
-    { name: 'queen', suit: 'diamonds', rank: 12 },
-    { name: 'queen', suit: 'hearts', rank: 12 },
-  ];
+  // playerCards = [
+  //   { name: 'queen', suit: 'diamonds', rank: 12 },
+  //   { name: 'queen', suit: 'hearts', rank: 12 },
+  // ];
 
-  // playerCards = getInitialCards(shuffledDeck);
+  playerCards = getInitialCards(shuffledDeck);
   computerCards = getInitialCards(shuffledDeck);
 };
 
@@ -372,52 +393,46 @@ var main = function (input) {
   if (gameMode == SHOW_PLAYERS_INITIAL_HAND) {
     myOutputValue = showCards(playerCards, 'player');
 
-    if (isSplit(playerCards)) {
+    if (isAbleToBeSplit(playerCards)) {
       myOutputValue += ' ' + SPLIT_FLAVOUR_TEXT;
     }
 
     myOutputValue += '<br />' + showScores(playerCards, 'player') + '<br /><br />';
 
-    // if it's a blackjack, show hand right away - no need for hit or stand
-    if (isBlackjack(playerCards)) {
-      myOutputValue += SHOW_HAND_INSTRUCTIONS;
-      gameMode = SHOW_HANDS;
-    }
-    // not a blackjack, is split
-    else if (isSplit(playerCards)) {
+    // split hand
+    // offer option to split, hit or stand
+    if (isAbleToBeSplit(playerCards)) {
       myOutputValue += SPLIT_OR_HIT_OR_STAND_INSTRUCTIONS;
       gameMode = CHOOSE_SPLITS_OR_HIT_OR_STAND;
     }
-    // not a blackjack, offer option to hit or stand
+    // blackjack, or other kinds of hand
+    // game mode handling in showAndHandleHandStatus()
     else {
-      myOutputValue += HIT_OR_STAND_INSTRUCTIONS;
-      gameMode = CHOOSE_HIT_OR_STAND;
+      myOutputValue += showInstructionsAndHandleGameMode(playerCards, false);
     }
 
     return myOutputValue;
   }
 
   if (gameMode == CHOOSE_SPLITS_OR_HIT_OR_STAND) {
-    var SPLIT_HAND_NUMBER_TEXT = 'For split hand ' + (handIndex + 1) + ': ';
+    var SPLIT_HAND_NUMBER_TEXT = 'For split hand ' + (playerHandIndex + 1) + ': ';
 
-    if (sanitisedInput == 'split' && handIndex == 0) {
+    if (sanitisedInput == 'split' && playerHandIndex == 0) {
       // remove first item from playerCards, and remove last item from shuffled deck
       // combine them within an array to form the n-th hand
-      var firstHand = [playerCards.shift(), { name: 'ace', suit: 'spades', rank: 1 }];
-      // var firstHand = [playerCards.shift(), shuffledDeck.pop()];
-      // var secondHand = [playerCards.shift(), shuffledDeck.pop()];
-      var secondHand = [playerCards.shift(), { name: 'ace', suit: 'spades', rank: 1 }];
+      // var firstHand = [playerCards.shift(), { name: 'ace', suit: 'spades', rank: 1 }];
+      var firstHand = [playerCards.shift(), shuffledDeck.pop()];
+      var secondHand = [playerCards.shift(), shuffledDeck.pop()];
+      // var secondHand = [playerCards.shift(), { name: 'ace', suit: 'spades', rank: 1 }];
       playerCards.push(firstHand);
       playerCards.push(secondHand);
 
-      myOutputValue = 'You have decided to split. ' + SPLIT_HAND_NUMBER_TEXT + showCards(playerCards[handIndex], 'player') + '<br />' + showScores(playerCards[handIndex], 'player') + '<br /><br />';
-
-      myOutputValue += showAndHandleSplitBlackjack(playerCards, handIndex);
-    } else if (handIndex != 0) {
-      myOutputValue = SPLIT_HAND_NUMBER_TEXT + showCards(playerCards[handIndex], 'player') + '<br />' + showScores(playerCards[handIndex], 'player') + '<br /><br />';
-
-      myOutputValue += showAndHandleSplitBlackjack(playerCards, handIndex);
+      myOutputValue = 'You have decided to split. ';
     }
+
+    myOutputValue += SPLIT_HAND_NUMBER_TEXT + showCards(playerCards[playerHandIndex], 'player') + '<br />' + showScores(playerCards[playerHandIndex], 'player') + '<br /><br />';
+    myOutputValue += showInstructionsAndHandleGameMode(playerCards, true);
+
     return myOutputValue;
   }
 
