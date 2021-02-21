@@ -2,6 +2,7 @@
 var MAX_SCORE = 21;
 var INITIAL_NUMBER_OF_CARDS_DRAWN = 2;
 var GAME_STARTED = 'game started';
+var SHOW_PLAYERS_INITIAL_HAND = 'show players initial hand';
 var CHOOSE_HIT_OR_STAND = 'choose hit or stand';
 var SHOW_HANDS = 'show hands';
 var ACE_SCORES = [1, 11];
@@ -310,20 +311,26 @@ var resetDeckAndHands = function () {
   computerCards = getInitialCards(shuffledDeck);
 };
 
-// reset deck and hands
-resetDeckAndHands();
-
 var main = function (input) {
   var sanitisedInput = input.trim().toLowerCase();
   var myOutputValue = '';
 
   if (gameMode == GAME_STARTED) {
+    // reset deck and hands
+    resetDeckAndHands();
+    gameMode = SHOW_PLAYERS_INITIAL_HAND;
+  }
+
+  if (gameMode == SHOW_PLAYERS_INITIAL_HAND) {
     myOutputValue = showCards(playerCards, 'player') + '<br />' + showScores(playerCards, 'player') + '<br /><br />';
 
+    // if it's a blackjack, show hand right away - no need for hit or stand
     if (isBlackjack(playerCards)) {
       myOutputValue = myOutputValue + SHOW_HAND_INSTRUCTIONS;
       gameMode = SHOW_HANDS;
-    } else {
+    }
+    // not a blackjack, offer option to hit or stand
+    else {
       myOutputValue = myOutputValue + HIT_OR_STAND_INSTRUCTIONS;
       gameMode = CHOOSE_HIT_OR_STAND;
     }
