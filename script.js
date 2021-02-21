@@ -1,5 +1,6 @@
 // initialize constants
 var MAX_SCORE = 21;
+var COMPUTER_MUST_HIT_MAX_SCORE = 17;
 var INITIAL_NUMBER_OF_CARDS_DRAWN = 2;
 var GAME_STARTED = 'game started';
 var SHOW_PLAYERS_INITIAL_HAND = 'show players initial hand';
@@ -191,11 +192,18 @@ var getCurrentScores = function (cards) {
   return scores;
 };
 
-// retrieves the best possible outcome of your score
+// retrieves the best possible outcome of your score.
+// if at least 1 of the score(s) is less than 21, it
+// picks the one lower than but closest to 21. if all
+// scores are above 21, it picks the smallest one
+// closest to 21.
 var getBestScore = function (scores) {
   var scoresArr = [...scores];
+  // filters out (in an array) all scores 21 and below
   var scoresWithoutExceedArr = scoresArr.filter((score) => score <= MAX_SCORE);
   var bestScore = Math.max(...scoresWithoutExceedArr);
+  // if there are no scores 21 and below, it just picks
+  // the smallest out of all scores.
   if (scoresWithoutExceedArr.length < 1) {
     bestScore = Math.min(...scoresArr);
   }
@@ -350,44 +358,65 @@ var main = function (input) {
       playerCards.push(drawnCard);
       myOutputValue = 'You have decided to hit. You drew <strong>' + showCard(drawnCard) + '</strong>.<br /><br />' + showCards(playerCards, 'player') + '<br />' + showScores(playerCards, 'player') + '<br /><br />';
 
+      // if the minimum of an individual's score(s) is more than 21
+      // show hands right away, can't hit anymore
       if (Math.min(...getCurrentScores(playerCards)) >= MAX_SCORE) {
         myOutputValue = myOutputValue + FORCED_STAND_INSTRUCTIONS;
         gameMode = SHOW_HANDS;
-      } else {
+      }
+      // else, continue offering option to hit or stand
+      else {
         myOutputValue = myOutputValue + HIT_OR_STAND_INSTRUCTIONS;
       }
 
       return myOutputValue;
     }
 
+    // for stand
     myOutputValue = 'You have decided to stand. ' + showCards(playerCards, 'player') + '<br />' + showScores(playerCards, 'player') + '<br /><br />' + SHOW_HAND_INSTRUCTIONS;
     gameMode = SHOW_HANDS;
     return myOutputValue;
   }
 
-  // show hands
+  // get scores of computer initial hand
+  var computerScores = getCurrentScores(computerCards);
+  var computerBestScore = getBestScore(computerScores);
+
   // computer will decide to draw if not blackjack
   if (!isBlackjack(computerCards)) {
     // continue drawing while its best possible score
-    // is still less than 17
+    // is still less than COMPUTER_MUST_HIT_MAX_SCORE (17).
+    // this is the most conservative playstyle, getting
+    // the "best score" instead of "minimum of all scores".
     while (
-      getBestScore(getCurrentScores(computerCards)) < 17
+      computerBestScore < COMPUTER_MUST_HIT_MAX_SCORE
     ) {
       var computerCard = shuffledDeck.pop();
       computerCards.push(computerCard);
+      // to update computerScores after drawing
+      computerScores = getCurrentScores(computerCards);
+      // to update computerBestScore after drawing
+      computerBestScore = getBestScore(computerScores);
     }
   }
 
   // retrieve current scores
-  var computerScores = getCurrentScores(computerCards);
   var playerScores = getCurrentScores(playerCards);
+  // retrieve player "best" score. if at least 1
+  // of the score(s) is less than 21, it picks the
+  // one lower than but closest to 21. if all
+  // scores are above 21, it picks the smallest one
+  // closest to 21.
   var playerBestScore = getBestScore(playerScores);
-  var computerBestScore = getBestScore(computerScores);
 
   // show player cards
   myOutputValue = showCards(playerCards, 'player') + '<br />';
 
   // show player score
+  // if blackjack, we assume they already know it's an
+  // automatic 21. in fact, better than a 21 with more
+  // than 2 cards. blackjack > 21 with more than 2 cards >
+  // less than 21 > more than 21
   if (isBlackjack(playerCards)) {
     myOutputValue = myOutputValue + BLACKJACK_FLAVOUR_TEXT;
   } else {
