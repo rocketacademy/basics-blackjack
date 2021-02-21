@@ -332,15 +332,30 @@ var showScores = function (cards, playerType) {
   return output;
 };
 
+var showAndHandleSplitBlackjack = function (cards, cardsIndex) {
+  if (isBlackjack(cards[cardsIndex])) {
+    // last hand of the player
+    if (cardsIndex == cards.length - 1) {
+      gameMode = SHOW_HANDS;
+      return SHOW_HAND_INSTRUCTIONS;
+    }
+    // not last hand
+    handIndex += 1;
+    return NEXT_SPLIT_HAND_INSTRUCTIONS;
+  }
+
+  return '';
+};
+
 var resetDeckAndHands = function () {
   deck = makeDeck();
   shuffledDeck = shuffleCards(deck);
-  // playerCards = [
-  //   { name: 'queen', suit: 'diamonds', rank: 12 },
-  //   { name: 'queen', suit: 'hearts', rank: 12 },
-  // ];
+  playerCards = [
+    { name: 'queen', suit: 'diamonds', rank: 12 },
+    { name: 'queen', suit: 'hearts', rank: 12 },
+  ];
 
-  playerCards = getInitialCards(shuffledDeck);
+  // playerCards = getInitialCards(shuffledDeck);
   computerCards = getInitialCards(shuffledDeck);
 };
 
@@ -388,43 +403,20 @@ var main = function (input) {
     if (sanitisedInput == 'split' && handIndex == 0) {
       // remove first item from playerCards, and remove last item from shuffled deck
       // combine them within an array to form the n-th hand
-      // var firstHand = [playerCards.shift(), { name: 'ace', suit: 'spades', rank: 1 }];
-      var firstHand = [playerCards.shift(), shuffledDeck.pop()];
-      var secondHand = [playerCards.shift(), shuffledDeck.pop()];
-      // var secondHand = [playerCards.shift(), { name: 'ace', suit: 'spades', rank: 1 }];
+      var firstHand = [playerCards.shift(), { name: 'ace', suit: 'spades', rank: 1 }];
+      // var firstHand = [playerCards.shift(), shuffledDeck.pop()];
+      // var secondHand = [playerCards.shift(), shuffledDeck.pop()];
+      var secondHand = [playerCards.shift(), { name: 'ace', suit: 'spades', rank: 1 }];
       playerCards.push(firstHand);
       playerCards.push(secondHand);
 
       myOutputValue = 'You have decided to split. ' + SPLIT_HAND_NUMBER_TEXT + showCards(playerCards[handIndex], 'player') + '<br />' + showScores(playerCards[handIndex], 'player') + '<br /><br />';
 
-      // blackjack
-      if (isBlackjack(playerCards[handIndex])) {
-        // last hand of the player
-        if (handIndex == playerCards.length - 1) {
-          myOutputValue += SHOW_HAND_INSTRUCTIONS;
-          gameMode = SHOW_HANDS;
-        }
-        // not last hand
-        else {
-          myOutputValue += NEXT_SPLIT_HAND_INSTRUCTIONS;
-          handIndex += 1;
-        }
-      }
+      myOutputValue += showAndHandleSplitBlackjack(playerCards, handIndex);
     } else if (handIndex != 0) {
       myOutputValue = SPLIT_HAND_NUMBER_TEXT + showCards(playerCards[handIndex], 'player') + '<br />' + showScores(playerCards[handIndex], 'player') + '<br /><br />';
-      // blackjack
-      if (isBlackjack(playerCards[handIndex])) {
-        // last hand of the player
-        if (handIndex == playerCards.length - 1) {
-          myOutputValue += SHOW_HAND_INSTRUCTIONS;
-          gameMode = SHOW_HANDS;
-        }
-        // not last hand
-        else {
-          myOutputValue += NEXT_SPLIT_HAND_INSTRUCTIONS;
-          handIndex += 1;
-        }
-      }
+
+      myOutputValue += showAndHandleSplitBlackjack(playerCards, handIndex);
     }
     return myOutputValue;
   }
