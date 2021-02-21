@@ -4,16 +4,24 @@ var COMPUTER_MUST_HIT_MAX_SCORE = 17;
 var INITIAL_NUMBER_OF_CARDS_DRAWN = 2;
 var GAME_STARTED = 'game started';
 var SHOW_PLAYERS_INITIAL_HAND = 'show players initial hand';
+var CHOOSE_SPLITS_OR_HIT_OR_STAND = 'choose splits or hit or stand';
 var CHOOSE_HIT_OR_STAND = 'choose hit or stand';
 var SHOW_HANDS = 'show hands';
 var ACE_SCORES = [1, 11];
 var JACK_QUEEN_KING_SCORES = 10;
 
 // initialize string instruction constants
-var HIT_OR_STAND_INSTRUCTIONS = 'Do you wish to hit or stand? To hit, type in <i>hit</i> in the input box above and click Submit. Otherwise, type in <i>stand</i> in the input box above and click Submit.';
+var HIT_OR_STAND_INSTRUCTIONS_START = 'Do you wish to hit or stand? ';
+var HIT_OR_STAND_INSTRUCTIONS_END = 'To hit, type in <i>hit</i> in the input box above and click Submit. Otherwise, type in <i>stand</i> in the input box above and click Submit.';
+var HIT_OR_STAND_INSTRUCTIONS = HIT_OR_STAND_INSTRUCTIONS_START + HIT_OR_STAND_INSTRUCTIONS_END;
+var SPLIT_OR_HIT_OR_STAND_INSTRUCTIONS = 'Do you wish to split, hit or stand? To split, type in <i>split</i> in the input box above and click Submit. ' + HIT_OR_STAND_INSTRUCTIONS_END;
 var SHOW_HAND_INSTRUCTIONS = 'Click Submit and we will display the results of this round.';
 var FORCED_STAND_INSTRUCTIONS = 'Your best possible score is now <strong>' + MAX_SCORE + ' or above</strong>, and you can\'t hit anymore. ' + SHOW_HAND_INSTRUCTIONS;
-var BLACKJACK_FLAVOUR_TEXT = 'IT\'S A <strong>BLACKJACK</strong>!';
+var FLAVOUR_TEXT_START = 'IT\'S A ';
+var BLACKJACK_FLAVOUR_TEXT_END = '<strong>BLACKJACK</strong>!';
+var SPLIT_FLAVOUR_TEXT_END = '<strong>SPLIT</strong>!';
+var BLACKJACK_FLAVOUR_TEXT = FLAVOUR_TEXT_START + BLACKJACK_FLAVOUR_TEXT_END;
+var SPLIT_FLAVOUR_TEXT = FLAVOUR_TEXT_START + SPLIT_FLAVOUR_TEXT_END;
 
 // initialize variables;
 var gameMode = GAME_STARTED;
@@ -21,6 +29,7 @@ var deck = [];
 var shuffledDeck = [];
 var playerCards = [];
 var computerCards = [];
+var handIndex = 0;
 
 var makeDeck = function () {
   // Initialise an empty deck array
@@ -220,6 +229,16 @@ var isBlackjack = function (cards) {
   return false;
 };
 
+// checks if a hand is a split
+var isSplit = function (cards) {
+  // hand size is 2, and there are cards of equal rank
+  if (cards.length == 2 && cards[0].rank == cards[1].rank) {
+    return true;
+  }
+
+  return false;
+};
+
 // Shuffle the elements in the cardDeck array
 var shuffleCards = function (cardDeck) {
   // Loop over the card deck array once
@@ -330,20 +349,46 @@ var main = function (input) {
   }
 
   if (gameMode == SHOW_PLAYERS_INITIAL_HAND) {
-    myOutputValue = showCards(playerCards, 'player') + '<br />' + showScores(playerCards, 'player') + '<br /><br />';
+    myOutputValue = showCards(playerCards, 'player');
+
+    if (isSplit(playerCards)) {
+      myOutputValue += ' ' + SPLIT_FLAVOUR_TEXT;
+    }
+
+    myOutputValue += '<br />' + showScores(playerCards, 'player') + '<br /><br />';
 
     // if it's a blackjack, show hand right away - no need for hit or stand
     if (isBlackjack(playerCards)) {
-      myOutputValue = myOutputValue + SHOW_HAND_INSTRUCTIONS;
+      myOutputValue += SHOW_HAND_INSTRUCTIONS;
       gameMode = SHOW_HANDS;
+    }
+    // not a blackjack, is split
+    else if (isSplit(playerCards)) {
+      myOutputValue += SPLIT_OR_HIT_OR_STAND_INSTRUCTIONS;
+      gameMode = CHOOSE_SPLITS_OR_HIT_OR_STAND;
     }
     // not a blackjack, offer option to hit or stand
     else {
-      myOutputValue = myOutputValue + HIT_OR_STAND_INSTRUCTIONS;
+      myOutputValue += HIT_OR_STAND_INSTRUCTIONS;
       gameMode = CHOOSE_HIT_OR_STAND;
     }
 
     return myOutputValue;
+  }
+
+  if (gameMode == CHOOSE_SPLITS_OR_HIT_OR_STAND) {
+    if (sanitisedInput == 'split') {
+      // remove first item from playerCards, and remove last item from shuffled deck
+      // combine them within an array to form the n-th hand
+      var firstHand = [playerCards.shift(), shuffledDeck.pop()];
+      var secondHand = [playerCards.shift(), shuffledDeck.pop()];
+      playerCards.push(firstHand);
+      playerCards.push(secondHand);
+
+      myOutputValue = 'You have decided to split. For split hand ' + (handIndex + 1) + ': ' + showCards(playerCards[handIndex], 'player') + '<br />' + showScores(playerCards[handIndex], 'player') + '<br /><br />';
+
+      return myOutputValue;
+    }
   }
 
   if (gameMode == CHOOSE_HIT_OR_STAND) {
@@ -361,12 +406,12 @@ var main = function (input) {
       // if the minimum of an individual's score(s) is more than 21
       // show hands right away, can't hit anymore
       if (Math.min(...getCurrentScores(playerCards)) >= MAX_SCORE) {
-        myOutputValue = myOutputValue + FORCED_STAND_INSTRUCTIONS;
+        myOutputValue += FORCED_STAND_INSTRUCTIONS;
         gameMode = SHOW_HANDS;
       }
       // else, continue offering option to hit or stand
       else {
-        myOutputValue = myOutputValue + HIT_OR_STAND_INSTRUCTIONS;
+        myOutputValue += HIT_OR_STAND_INSTRUCTIONS;
       }
 
       return myOutputValue;
@@ -418,19 +463,19 @@ var main = function (input) {
   // than 2 cards. blackjack > 21 with more than 2 cards >
   // less than 21 > more than 21
   if (isBlackjack(playerCards)) {
-    myOutputValue = myOutputValue + BLACKJACK_FLAVOUR_TEXT;
+    myOutputValue += BLACKJACK_FLAVOUR_TEXT;
   } else {
-    myOutputValue = myOutputValue + 'Your best score is <strong>' + playerBestScore + '</strong>.';
+    myOutputValue += 'Your best score is <strong>' + playerBestScore + '</strong>.';
   }
 
   // show computer cards
-  myOutputValue = myOutputValue + '<br /><br />' + showCards(computerCards, 'computer') + '<br />';
+  myOutputValue += '<br /><br />' + showCards(computerCards, 'computer') + '<br />';
 
   // show computer score
   if (isBlackjack(computerCards)) {
-    myOutputValue = myOutputValue + BLACKJACK_FLAVOUR_TEXT + '<br /><br />';
+    myOutputValue += BLACKJACK_FLAVOUR_TEXT + '<br /><br />';
   } else {
-    myOutputValue = myOutputValue + 'Computer\'s best score is <strong>' + computerBestScore + '</strong>.<br /><br />';
+    myOutputValue += 'Computer\'s best score is <strong>' + computerBestScore + '</strong>.<br /><br />';
   }
 
   // determine winners
@@ -442,7 +487,7 @@ var main = function (input) {
       || (computerBestScore > MAX_SCORE)
     )
   ) {
-    myOutputValue = myOutputValue + '<strong>You win!</strong>';
+    myOutputValue += '<strong>You win!</strong>';
   }
   // computer winner
   else if (
@@ -452,14 +497,14 @@ var main = function (input) {
       || (playerBestScore > MAX_SCORE)
     )
   ) {
-    myOutputValue = myOutputValue + '<strong>You lose!</strong>';
+    myOutputValue += '<strong>You lose!</strong>';
   }
   // tie
   else {
-    myOutputValue = myOutputValue + '<strong>It\'s a tie!</strong>';
+    myOutputValue += '<strong>It\'s a tie!</strong>';
   }
 
-  myOutputValue = myOutputValue + '<br /><br />Please click Submit to start a new round!';
+  myOutputValue += '<br /><br />Please click Submit to start a new round!';
   // reset game state
   resetDeckAndHands();
   gameMode = GAME_STARTED;
