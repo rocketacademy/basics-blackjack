@@ -408,11 +408,17 @@ var handleHitStandAndShowInstructions = function (input, hand) {
     // if the minimum of an individual's score(s) is more than 21
     // show hands right away, can't hit anymore
     if (Math.min(...getCurrentScores(playerHand)) >= MAX_SCORE) {
+      // inform player that his best possible score has already exceeded 21
+      output += FORCED_STAND_INSTRUCTIONS;
+
+      // move on to the next split hand
       if (doesPlayerHaveSplitHand && playerHandIndex != hand.length - 1) {
-        output += FORCED_STAND_INSTRUCTIONS + NEXT_SPLIT_HAND_INSTRUCTIONS;
+        output += NEXT_SPLIT_HAND_INSTRUCTIONS;
         playerHandIndex += 1;
         gameMode = SHOW_PLAYERS_INITIAL_HAND;
-      } else {
+      }
+      // no split hands involved; game over - show all hands
+      else {
         output += SHOW_ALL_HANDS_INSTRUCTIONS;
         gameMode = SHOW_ALL_HANDS;
       }
@@ -593,6 +599,7 @@ var main = function (input) {
       }
     }
 
+    // we set 1 best score out of the best scores of every split
     playerBestScore = getBestScore(placeholderPlayerBestScoresArr);
 
     // show player score
