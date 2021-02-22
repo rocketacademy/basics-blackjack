@@ -107,8 +107,7 @@ var getInitialCards = function (cardDeck) {
 };
 
 var getArrayWithoutDuplicates = function (arr) {
-  var arrayWithoutDuplicates = arr.filter((item, index) => (arr.indexOf(item) == index));
-  return arrayWithoutDuplicates;
+  return arr.filter((item, index) => (arr.indexOf(item) == index));
 };
 
 var addScores = function (scoresArr, card) {
