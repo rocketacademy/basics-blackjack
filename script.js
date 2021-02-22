@@ -377,16 +377,18 @@ var showInstructionsAndHandleGameMode = function (hand) {
 // and game mode accordingly
 var handleHitStandAndShowInstructions = function (input, hand) {
   var playerHand = hand;
+  var showSplitHandNumberText = '';
   var SPLIT_HAND_NUMBER_TEXT = 'For split hand ' + (playerHandIndex + 1) + ': ';
 
   // convenient if statement to assign cards
   // to current hand if there are split hands
   if (doesPlayerHaveSplitHand) {
     playerHand = playerHand[playerHandIndex];
+    showSplitHandNumberText = SPLIT_HAND_NUMBER_TEXT;
   }
 
   // default: assume stand
-  var output = 'You have decided to stand. ' + showCards(playerHand, 'player') + '<br />' + showScores(playerHand, 'player') + '<br /><br />' + SHOW_HAND_INSTRUCTIONS;
+  var output = 'You have decided to stand. ' + showSplitHandNumberText + showCards(playerHand, 'player') + '<br />' + showScores(playerHand, 'player') + '<br /><br />';
 
   // for hit
   if (input == HIT_INPUT) {
@@ -409,7 +411,7 @@ var handleHitStandAndShowInstructions = function (input, hand) {
         playerHandIndex += 1;
         gameMode = SHOW_PLAYERS_INITIAL_HAND;
       } else {
-        output += FORCED_STAND_INSTRUCTIONS + SHOW_HAND_INSTRUCTIONS;
+        output += SHOW_HAND_INSTRUCTIONS;
         gameMode = SHOW_HANDS;
       }
     }
@@ -422,7 +424,15 @@ var handleHitStandAndShowInstructions = function (input, hand) {
   }
 
   // for stand
-  gameMode = SHOW_HANDS;
+  if (doesPlayerHaveSplitHand && playerHandIndex != hand.length - 1) {
+    output += NEXT_SPLIT_HAND_INSTRUCTIONS;
+    playerHandIndex += 1;
+    gameMode = SHOW_PLAYERS_INITIAL_HAND;
+  } else {
+    output += SHOW_HAND_INSTRUCTIONS;
+    gameMode = SHOW_HANDS;
+  }
+
   return output;
 };
 
@@ -436,6 +446,9 @@ var resetDeckAndHands = function () {
 
   // playerCards = getInitialCards(shuffledDeck);
   computerCards = getInitialCards(shuffledDeck);
+
+  playerHandIndex = 0;
+  doesPlayerHaveSplitHand = false;
 };
 
 var main = function (input) {
