@@ -156,7 +156,7 @@ var mainBlackJackMessage = function () {
   console.log(convertCardToText(playerHand) + 'PlayerHand');
   console.log(convertCardToText(dealerHand) + 'DealerHand');
   return `${playerName} has in their hand <strong>${convertCardToText(playerHand)} </strong> with a total score of <strong>${getValueOfHand(playerHand)}</strong>. <br>
-    Computer has in their hand  <strong>${convertCardToText(dealerHand)}</strong> with a total score of <strong>${getValueOfHand(dealerHand)}</strong>.<br>`;
+    Dealer has in their hand  <strong>${convertCardToText(dealerHand)}</strong> with a total score of <strong>${getValueOfHand(dealerHand)}</strong>.<br>`;
 };
 
 var main = function (input) {
@@ -194,14 +194,14 @@ var main = function (input) {
   if (gameMode == 'gameStart') {
     playerHand = [];
     dealerHand = [];
-    // Submit to deal the first hand to player and computer
+    // Submit to deal the first hand to player and dealer
     dealCardToHand(playerHand);
     dealCardToHand(dealerHand);
 
-    // Dealing second hand to player and computer
+    // Dealing second hand to player
     dealCardToHand(playerHand);
 
-    // If player has blackjack and computer does not, player wins.
+    // If player has blackjack and dealer does not have ace, player wins.
     if (isBlackjack(playerHand) && dealerHand != 11) {
       gameOver = true;
       gameMode = 'placeBets';
@@ -247,28 +247,28 @@ var main = function (input) {
     gameMode = 'dealerTurn';
   }
 
-  // Computer must have number greater than dealerHitsTill
-  // Computer hits till sum in hand is greater than dealerHitsTill
+  // Dealer must have number greater than dealerHitsTill
+  // Dealer hits till sum in hand is greater than dealerHitsTill
 
   var dealerHandSum = getValueOfHand(dealerHand);
   if (dealerHandSum <= dealerHitTill && gameMode == 'dealerTurn') {
     dealCardToHand(dealerHand);
-    // Sum computer's hand
+    // Sum dealer's hand
     dealerHandSum = getValueOfHand(dealerHand);
     return ` ${playerName} has in their hand <strong>${convertCardToText(playerHand)} </strong> with a total score of <strong>${getValueOfHand(playerHand)}</strong>. <br>
-    Computer has in their hand <strong>${convertCardToText(dealerHand)}</strong> with a total score of <strong>${getValueOfHand(dealerHand)}</strong>. <br> <strong> Click Submit to continue the game. `;
-    // If computer busts, it loses
+    Dealer has in their hand <strong>${convertCardToText(dealerHand)}</strong> with a total score of <strong>${getValueOfHand(dealerHand)}</strong>. <br> <strong> Click Submit to continue the game. `;
+    // If dealer busts, it loses
   }
 
   gameMode = 'dealerTurn';
   // Check first if Blackjack
-  // Computer wins if Blackjack is true for computer.
+  // Dealer wins if Blackjack is true for dealer.
   if (isBlackjack(dealerHand) && gameMode == 'dealerTurn') {
     gameOver = true;
     playerCredit = newPlayerCredit;
     gameMode = 'placeBets';
 
-    // Computer wins, return
+    // Dealer wins, return
     return `${mainBlackJackMessage()} <br>
         Blackjack! Dealer wins! You lose <strong> ${playerBet}</strong> Bitcoins. Please submit how many bitcoins you want to bet for the next game.`;
   }
@@ -282,12 +282,12 @@ var main = function (input) {
     return `${mainBlackJackMessage()} <br>
       Dealer has busted! You win! Your new balance is <strong>${playerCredit}</strong> Bitcoins. Please submit how many bitcoins you want to bet for the next game.`;
   }
-  // If player and computer have both not busted and chosen to stand, decide who wins
+  // If player and Dealer have both not busted and chosen to stand, decide who wins
   if (playerHasChosenToStand && dealerHandSum > dealerHitTill) {
     // The game is always over after this point
     gameOver = true;
     gameMode = 'placeBets';
-    // If player hand is greater than computer hand, player wins!
+    // If player hand is greater than Dealer hand, player wins!
     if (getValueOfHand(playerHand) > getValueOfHand(dealerHand)) {
       console.log(getValueOfHand(playerHand));
       console.log(getValueOfHand(dealerHand));
@@ -306,7 +306,7 @@ var main = function (input) {
       return `${mainBlackJackMessage()} <br>
     Its a draw! Dealer has same points as you. Your balance remains at <strong>${playerCredit}</strong> Bitcoins. Please submit how many bitcoins you want to bet for the next game. `;
     }
-    // If computer hand is greater than player hand, computer wins!
+    // If Dealer hand is greater than player hand, Dealer wins!
     if (getValueOfHand(playerHand) < getValueOfHand(dealerHand)) {
       console.log(getValueOfHand(playerHand));
       console.log(getValueOfHand(dealerHand));
@@ -321,5 +321,5 @@ var main = function (input) {
   // If game is not yet over, show current game status
   return `${mainBlackJackMessage()} <br>
     ${playerName}, please enter <strong>"hit" or "stand"</strong>. <br>
-    Else, press Submit to see Computer's next move.`;
+    Else, press Submit to see Dealer's next move.`;
 };
