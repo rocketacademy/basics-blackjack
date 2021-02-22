@@ -6,7 +6,7 @@ var GAME_STARTED = 'game started';
 var SHOW_PLAYERS_INITIAL_HAND = 'show players initial hand';
 var CHOOSE_SPLITS_OR_HIT_OR_STAND = 'choose splits or hit or stand';
 var CHOOSE_HIT_OR_STAND = 'choose hit or stand';
-var SHOW_HANDS = 'show hands';
+var SHOW_ALL_HANDS = 'show all hands';
 var HIT_INPUT = 'hit';
 var STAND_INPUT = 'stand';
 var SPLIT_INPUT = 'split';
@@ -18,7 +18,7 @@ var HIT_OR_STAND_INSTRUCTIONS_START = 'Do you wish to hit or stand? ';
 var HIT_OR_STAND_INSTRUCTIONS_END = 'To hit, type in <i>hit</i> in the input box above and click Submit. Otherwise, type in <i>stand</i> in the input box above and click Submit.';
 var HIT_OR_STAND_INSTRUCTIONS = HIT_OR_STAND_INSTRUCTIONS_START + HIT_OR_STAND_INSTRUCTIONS_END;
 var SPLIT_OR_HIT_OR_STAND_INSTRUCTIONS = 'Do you wish to split, hit or stand? To split, type in <i>split</i> in the input box above and click Submit. ' + HIT_OR_STAND_INSTRUCTIONS_END;
-var SHOW_HAND_INSTRUCTIONS = 'Click Submit and we will display the results of this round.';
+var SHOW_ALL_HANDS_INSTRUCTIONS = 'Click Submit and we will display the results of this round.';
 var NEXT_SPLIT_HAND_INSTRUCTIONS = 'Click Submit and we will display your next split hand.';
 var FORCED_STAND_INSTRUCTIONS = 'Your best possible score is now <strong>' + MAX_SCORE + ' or above</strong>, and you can\'t hit anymore. ';
 var FLAVOUR_TEXT_START = 'IT\'S A ';
@@ -106,6 +106,11 @@ var getInitialCards = function (cardDeck) {
   return hand;
 };
 
+var getArrayWithoutDuplicates = function (arr) {
+  var arrayWithoutDuplicates = arr.filter((item, index) => (arr.indexOf(item) == index));
+  return arrayWithoutDuplicates;
+};
+
 var addScores = function (scoresArr, card) {
   // store duplicated (shallow) copy of scores array
   var arr = [...scoresArr];
@@ -154,7 +159,7 @@ var addScores = function (scoresArr, card) {
   }
 
   // filter out unique scores, or remove duplicates in the array
-  var uniqueScoresArr = arr.filter((item, index) => (arr.indexOf(item) == index));
+  var uniqueScoresArr = getArrayWithoutDuplicates(arr);
 
   return uniqueScoresArr;
 };
@@ -359,9 +364,10 @@ var showInstructionsAndHandleGameMode = function (hand) {
     if (doesPlayerHaveSplitHand && playerHandIndex != hand.length - 1) {
       output = NEXT_SPLIT_HAND_INSTRUCTIONS;
       playerHandIndex += 1;
+      gameMode = SHOW_PLAYERS_INITIAL_HAND;
     } else {
-      output = SHOW_HAND_INSTRUCTIONS;
-      gameMode = SHOW_HANDS;
+      output = SHOW_ALL_HANDS_INSTRUCTIONS;
+      gameMode = SHOW_ALL_HANDS;
     }
 
     return output;
@@ -411,8 +417,8 @@ var handleHitStandAndShowInstructions = function (input, hand) {
         playerHandIndex += 1;
         gameMode = SHOW_PLAYERS_INITIAL_HAND;
       } else {
-        output += SHOW_HAND_INSTRUCTIONS;
-        gameMode = SHOW_HANDS;
+        output += SHOW_ALL_HANDS_INSTRUCTIONS;
+        gameMode = SHOW_ALL_HANDS;
       }
     }
     // else, continue offering option to hit or stand
@@ -429,8 +435,8 @@ var handleHitStandAndShowInstructions = function (input, hand) {
     playerHandIndex += 1;
     gameMode = SHOW_PLAYERS_INITIAL_HAND;
   } else {
-    output += SHOW_HAND_INSTRUCTIONS;
-    gameMode = SHOW_HANDS;
+    output += SHOW_ALL_HANDS_INSTRUCTIONS;
+    gameMode = SHOW_ALL_HANDS;
   }
 
   return output;
@@ -515,17 +521,14 @@ var main = function (input) {
     doesPlayerHaveSplitHand = true;
     // remove first item from playerCards, and remove last item from shuffled deck
     // combine them within an array to form the n-th hand
-    // var firstHand = [playerCards.shift(), { name: 'ace', suit: 'spades', rank: 1 }];
-    var firstHand = [playerCards.shift(), shuffledDeck.pop()];
+    var firstHand = [playerCards.shift(), { name: 'ace', suit: 'spades', rank: 1 }];
+    // var firstHand = [playerCards.shift(), shuffledDeck.pop()];
     var secondHand = [playerCards.shift(), shuffledDeck.pop()];
     // var secondHand = [playerCards.shift(), { name: 'ace', suit: 'spades', rank: 1 }];
     playerCards.push(firstHand);
     playerCards.push(secondHand);
 
     myOutputValue = 'You have decided to split. ' + SPLIT_HAND_NUMBER_TEXT + showCards(playerCards[playerHandIndex], 'player') + '<br />' + showScores(playerCards[playerHandIndex], 'player') + '<br /><br />' + showInstructionsAndHandleGameMode(playerCards, true);
-
-    // switch modes - now only hit or stand
-    gameMode = CHOOSE_HIT_OR_STAND;
 
     return myOutputValue;
   }
@@ -551,6 +554,7 @@ var main = function (input) {
     return myOutputValue;
   }
 
+  // SHOW_ALL_HANDS
   // get scores of computer initial hand
   var computerScores = getCurrentScores(computerCards);
   var computerBestScore = getBestScore(computerScores);
@@ -573,27 +577,53 @@ var main = function (input) {
     }
   }
 
-  // retrieve current scores
-  var playerScores = getCurrentScores(playerCards);
-  // retrieve player "best" score. if at least 1
-  // of the score(s) is less than 21, it picks the
-  // one lower than but closest to 21. if all
-  // scores are above 21, it picks the smallest one
-  // closest to 21.
-  var playerBestScore = getBestScore(playerScores);
+  // initialize player scores
+  var playerScores = 0;
+  var playerBestScore = 0;
 
-  // show player cards
-  myOutputValue = showCards(playerCards, 'player') + '<br />';
+  // retrieve current scores and best score
+  if (doesPlayerHaveSplitHand) {
+    var counter = 0;
+    var placeholderPlayerBestScoresArr = [];
+    while (counter < playerCards.length) {
+      var currentPlayerHandScores = getCurrentScores(playerCards[counter]);
+      var currentPlayerHandBestScore = getBestScore(currentPlayerHandScores);
+      placeholderPlayerBestScoresArr.push(currentPlayerHandBestScore);
+      // show player cards
+      myOutputValue += showCards(playerCards[counter], 'player') + '<br />';
+      counter += 1;
+      if (counter == playerCards.length) {
+        myOutputValue += '<br />';
+      }
+    }
 
-  // show player score
-  // if blackjack, we assume they already know it's an
-  // automatic 21. in fact, better than a 21 with more
-  // than 2 cards. blackjack > 21 with more than 2 cards >
-  // less than 21 > more than 21
-  if (isBlackjack(playerCards)) {
-    myOutputValue += BLACKJACK_FLAVOUR_TEXT;
+    playerBestScore = getBestScore(placeholderPlayerBestScoresArr);
+
+    // show player score
+    // if blackjack, we assume they already know it's an
+    // automatic 21. in fact, better than a 21 with more
+    // than 2 cards. blackjack > 21 with more than 2 cards >
+    // less than 21 > more than 21
+    if (isBlackjack(playerCards[0] || playerCards[1])) {
+      myOutputValue += 'YOU\'VE AT LEAST 1 BLACKJACK!';
+    } else {
+      myOutputValue += 'Your best score is <strong>' + playerBestScore + '</strong>.';
+    }
   } else {
-    myOutputValue += 'Your best score is <strong>' + playerBestScore + '</strong>.';
+    playerScores = getCurrentScores(playerCards);
+    playerBestScore = getBestScore(playerScores);
+    // show player cards
+    myOutputValue = showCards(playerCards, 'player') + '<br />';
+    // show player score
+    // if blackjack, we assume they already know it's an
+    // automatic 21. in fact, better than a 21 with more
+    // than 2 cards. blackjack > 21 with more than 2 cards >
+    // less than 21 > more than 21
+    if (isBlackjack(playerCards)) {
+      myOutputValue += 'BLACKJACK_FLAVOUR_TEXT';
+    } else {
+      myOutputValue += 'Your best score is <strong>' + playerBestScore + '</strong>.';
+    }
   }
 
   // show computer cards
@@ -610,7 +640,12 @@ var main = function (input) {
   // player winner
   if (
     playerBestScore <= MAX_SCORE && (
-      (isBlackjack(playerCards) && !isBlackjack(computerCards))
+      (
+        doesPlayerHaveSplitHand
+        && (isBlackjack(playerCards[0]) || isBlackjack(playerCards[1]))
+        && !isBlackjack(computerCards)
+      )
+      || (!doesPlayerHaveSplitHand && isBlackjack(playerCards) && !isBlackjack(computerCards))
       || (computerBestScore <= MAX_SCORE && playerBestScore > computerBestScore)
       || (computerBestScore > MAX_SCORE)
     )
@@ -620,7 +655,13 @@ var main = function (input) {
   // computer winner
   else if (
     computerBestScore <= MAX_SCORE && (
-      (isBlackjack(computerCards) && !isBlackjack(playerCards))
+      (
+        doesPlayerHaveSplitHand
+        && isBlackjack(computerCards)
+        && !isBlackjack(playerCards[0])
+        && !isBlackjack(playerCards[1])
+      )
+      || (!doesPlayerHaveSplitHand && isBlackjack(computerCards) && !isBlackjack(playerCards))
       || (playerBestScore <= MAX_SCORE && computerBestScore > playerBestScore)
       || (playerBestScore > MAX_SCORE)
     )
