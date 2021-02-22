@@ -164,7 +164,7 @@ var main = function (input) {
   if (gameMode == 'inputName') {
     playerName = (input);
     gameMode = 'placeBets';
-    return `Welcome <strong>${playerName}</strong>, press submit to start <strong>Blackjack ♤♡♧◇!</strong> You currently have <strong>${playerCredit}</strong> Bitcoins, please type in how many bitcoins you want to bet!`;
+    return `Welcome <strong>${playerName}</strong>, press submit to start <strong>Blackjack ♤♡♧◇!</strong> You currently have <strong>${playerCredit}</strong> Bitcoins, please type in how many bitcoins you want to bet!🚀`;
   }
   // Place Bets
 
