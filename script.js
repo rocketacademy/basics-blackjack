@@ -167,15 +167,21 @@ var main = function (input) {
     return `Welcome <strong>${playerName}</strong>, press submit to start <strong>Blackjack ♤♡♧◇!</strong> You currently have <strong>${playerCredit}</strong> Bitcoins, please type in how many bitcoins you want to bet!`;
   }
   // Place Bets
+
   if (gameMode == 'placeBets') {
     playerBet = input;
     if (isNaN(input)) {
       return 'Please enter a valid number bet. :(';
     }
+
     newPlayerCredit = Number(playerCredit - playerBet);
     if (newPlayerCredit < 0) {
       return `This is not a valid bet, you do not have enough coins to bet <strong>${input} Bitcoins </strong>. Please enter a valid bet. You currently have <strong>${playerCredit} Bitcoins </strong> in your wallet.<br>
     If you have run out of coins, please restart the game by refreshing.`;
+    }
+
+    if (input == '') {
+      return 'Please enter a valid number bet. :(';
     }
     gameMode = 'gameStart';
     console.log('playercredit' + playerCredit);
@@ -196,7 +202,7 @@ var main = function (input) {
     dealCardToHand(playerHand);
 
     // If player has blackjack and computer does not, player wins.
-    if (isBlackjack(playerHand) && gameMode == 'nextMode') {
+    if (isBlackjack(playerHand) && dealerHand != 11) {
       gameOver = true;
       gameMode = 'placeBets';
       playerCredit = newPlayerCredit + playerBet * 2.5;
@@ -220,22 +226,25 @@ var main = function (input) {
 
     if (input == 'hit') {
       dealCardToHand(playerHand);
-      // if player busts during hit, player loses
-      if (getValueOfHand(playerHand) > blackJackLimit) {
-        gameOver = true;
-        gameMode = 'placeBets';
-        playerCredit = newPlayerCredit;
-        console.log('endplayercredit' + playerCredit);
-        console.log('endnewplayercredit' + newPlayerCredit);
-        return `${mainBlackJackMessage()} <br>
+      return ` ${playerName} has in their hand <strong>${convertCardToText(playerHand)} </strong> with a total score of <strong>${getValueOfHand(playerHand)}</strong>. <br>
+    Dealer has in their hand <strong>${convertCardToText(dealerHand)}</strong> with a total score of <strong>${getValueOfHand(dealerHand)}</strong>. <br> <strong>Please input either "hit" or "stand" as possible moves in Blackjack.</strong>`;
+    }
+
+    // if player busts during hit, player loses
+    if (getValueOfHand(playerHand) > blackJackLimit) {
+      gameOver = true;
+      gameMode = 'placeBets';
+      playerCredit = newPlayerCredit;
+      console.log('endplayercredit' + playerCredit);
+      console.log('endnewplayercredit' + newPlayerCredit);
+      return `${mainBlackJackMessage()} <br>
           You have busted! You lose <strong>${playerBet}</strong> Bitcoins!. Your new balance is <strong>${playerCredit}</strong> Bitcoins. Please submit how many bitcoins you want to bet for the next game.`;
-      }
     }
-    // New mode to dealerTurn if player has chosen to stand.
-    if (input == 'stand') {
-      playerHasChosenToStand = true;
-      gameMode = 'dealerTurn';
-    }
+  }
+  // New mode to dealerTurn if player has chosen to stand.
+  if (input == 'stand') {
+    playerHasChosenToStand = true;
+    gameMode = 'dealerTurn';
   }
 
   // Computer must have number greater than dealerHitsTill
@@ -268,7 +277,7 @@ var main = function (input) {
     gameOver = true;
     playerCredit = newPlayerCredit + playerBet * 2;
     console.log('endplayercredit' + playerCredit);
-    console.log('endnewplayercredit' + newPlayerCredit);
+
     gameMode = 'placeBets';
     return `${mainBlackJackMessage()} <br>
       Dealer has busted! You win! Your new balance is <strong>${playerCredit}</strong> Bitcoins. Please submit how many bitcoins you want to bet for the next game.`;
@@ -284,7 +293,7 @@ var main = function (input) {
       console.log(getValueOfHand(dealerHand));
       playerCredit = newPlayerCredit + playerBet * 2;
       console.log('endplayercredit' + playerCredit);
-      console.log('endnewplayercredit' + newPlayerCredit);
+
       return `${mainBlackJackMessage()} <br>
         You win! You have more points than the dealer. Your new balance is <strong>${playerCredit}</strong> Bitcoins.  Please submit how many bitcoins you want to bet for the next game.`;
     }
@@ -293,7 +302,7 @@ var main = function (input) {
       console.log(getValueOfHand(dealerHand));
       playerCredit = Number(newPlayerCredit) + Number(playerBet);
       console.log('endplayercredit' + playerCredit);
-      console.log('endnewplayercredit' + newPlayerCredit);
+
       return `${mainBlackJackMessage()} <br>
     Its a draw! Dealer has same points as you. Your balance remains at <strong>${playerCredit}</strong> Bitcoins. Please submit how many bitcoins you want to bet for the next game. `;
     }
