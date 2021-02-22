@@ -7,6 +7,9 @@ var SHOW_PLAYERS_INITIAL_HAND = 'show players initial hand';
 var CHOOSE_SPLITS_OR_HIT_OR_STAND = 'choose splits or hit or stand';
 var CHOOSE_HIT_OR_STAND = 'choose hit or stand';
 var SHOW_HANDS = 'show hands';
+var HIT_INPUT = 'hit';
+var STAND_INPUT = 'stand';
+var SPLIT_INPUT = 'split';
 var ACE_SCORES = [1, 11];
 var JACK_QUEEN_KING_SCORES = 10;
 
@@ -31,6 +34,7 @@ var shuffledDeck = [];
 var playerCards = [];
 var computerCards = [];
 var playerHandIndex = 0;
+var doesPlayerHaveSplitHand = false;
 
 var makeDeck = function () {
   // Initialise an empty deck array
@@ -335,12 +339,12 @@ var showScores = function (cards, playerType) {
 // shows instructions for initial 2 cards based on its status,
 // and changes game mode accordingly.
 // this function assumes there isn't already a hit or stand yet.
-var showInstructionsAndHandleGameMode = function (hand, isSplitHand) {
+var showInstructionsAndHandleGameMode = function (hand) {
   var cards = hand;
 
   // convenient if statement to assign cards
   // to current hand if there are split hands
-  if (isSplitHand) {
+  if (doesPlayerHaveSplitHand) {
     cards = cards[playerHandIndex];
   }
 
@@ -352,7 +356,7 @@ var showInstructionsAndHandleGameMode = function (hand, isSplitHand) {
     // check for hand.length instead of cards.length
     // because we want the number of hands, not the
     // number of cards in any given hand
-    if (isSplitHand && playerHandIndex != hand.length - 1) {
+    if (doesPlayerHaveSplitHand && playerHandIndex != hand.length - 1) {
       output = NEXT_SPLIT_HAND_INSTRUCTIONS;
       playerHandIndex += 1;
     } else {
@@ -368,15 +372,47 @@ var showInstructionsAndHandleGameMode = function (hand, isSplitHand) {
   return output;
 };
 
+// function assumes input is one of 'hit' or 'stand'
+// handles input of 'hit' or 'stand' and changes instructions
+// and game mode accordingly
+var handleHitStandAndShowInstructions = function (input, hand) {
+  // default: assume stand
+  var output = 'You have decided to stand. ' + showCards(hand, 'player') + '<br />' + showScores(hand, 'player') + '<br /><br />' + SHOW_HAND_INSTRUCTIONS;
+
+  // for hit
+  if (input == HIT_INPUT) {
+    var drawnCard = shuffledDeck.pop();
+    hand.push(drawnCard);
+    output = 'You have decided to hit. You drew <strong>' + showCard(drawnCard) + '</strong>.<br /><br />' + showCards(hand, 'player') + '<br />' + showScores(hand, 'player') + '<br /><br />';
+
+    // if the minimum of an individual's score(s) is more than 21
+    // show hands right away, can't hit anymore
+    if (Math.min(...getCurrentScores(hand)) >= MAX_SCORE) {
+      output += FORCED_STAND_INSTRUCTIONS;
+      gameMode = SHOW_HANDS;
+    }
+    // else, continue offering option to hit or stand
+    else {
+      output += HIT_OR_STAND_INSTRUCTIONS;
+    }
+
+    return output;
+  }
+
+  // for stand
+  gameMode = SHOW_HANDS;
+  return output;
+};
+
 var resetDeckAndHands = function () {
   deck = makeDeck();
   shuffledDeck = shuffleCards(deck);
-  // playerCards = [
-  //   { name: 'queen', suit: 'diamonds', rank: 12 },
-  //   { name: 'queen', suit: 'hearts', rank: 12 },
-  // ];
+  playerCards = [
+    { name: 'queen', suit: 'diamonds', rank: 12 },
+    { name: 'queen', suit: 'hearts', rank: 12 },
+  ];
 
-  playerCards = getInitialCards(shuffledDeck);
+  // playerCards = getInitialCards(shuffledDeck);
   computerCards = getInitialCards(shuffledDeck);
 };
 
@@ -415,56 +451,47 @@ var main = function (input) {
   }
 
   if (gameMode == CHOOSE_SPLITS_OR_HIT_OR_STAND) {
-    var SPLIT_HAND_NUMBER_TEXT = 'For split hand ' + (playerHandIndex + 1) + ': ';
-
-    if (sanitisedInput == 'split' && playerHandIndex == 0) {
-      // remove first item from playerCards, and remove last item from shuffled deck
-      // combine them within an array to form the n-th hand
-      // var firstHand = [playerCards.shift(), { name: 'ace', suit: 'spades', rank: 1 }];
-      var firstHand = [playerCards.shift(), shuffledDeck.pop()];
-      var secondHand = [playerCards.shift(), shuffledDeck.pop()];
-      // var secondHand = [playerCards.shift(), { name: 'ace', suit: 'spades', rank: 1 }];
-      playerCards.push(firstHand);
-      playerCards.push(secondHand);
-
-      myOutputValue = 'You have decided to split. ';
+    // input validation
+    if (
+      sanitisedInput !== HIT_INPUT
+      && sanitisedInput !== STAND_INPUT
+      && sanitisedInput !== SPLIT_INPUT
+    ) {
+      myOutputValue = 'Please enter a valid input.<br /><br />' + showCards(playerCards, 'player') + ' ' + SPLIT_FLAVOUR_TEXT + '<br />' + showScores(playerCards, 'player') + '<br /><br />' + SPLIT_OR_HIT_OR_STAND_INSTRUCTIONS;
+      return myOutputValue;
     }
 
-    myOutputValue += SPLIT_HAND_NUMBER_TEXT + showCards(playerCards[playerHandIndex], 'player') + '<br />' + showScores(playerCards[playerHandIndex], 'player') + '<br /><br />';
-    myOutputValue += showInstructionsAndHandleGameMode(playerCards, true);
+    if (sanitisedInput == HIT_INPUT || sanitisedInput == STAND_INPUT) {
+      myOutputValue = handleHitStandAndShowInstructions(sanitisedInput, playerCards);
+      return myOutputValue;
+    }
+
+    // for split
+    doesPlayerHaveSplitHand = true;
+    var SPLIT_HAND_NUMBER_TEXT = 'For split hand ' + (playerHandIndex + 1) + ': ';
+    // remove first item from playerCards, and remove last item from shuffled deck
+    // combine them within an array to form the n-th hand
+    // var firstHand = [playerCards.shift(), { name: 'ace', suit: 'spades', rank: 1 }];
+    var firstHand = [playerCards.shift(), shuffledDeck.pop()];
+    var secondHand = [playerCards.shift(), shuffledDeck.pop()];
+    // var secondHand = [playerCards.shift(), { name: 'ace', suit: 'spades', rank: 1 }];
+    playerCards.push(firstHand);
+    playerCards.push(secondHand);
+
+    myOutputValue = 'You have decided to split. ' + SPLIT_HAND_NUMBER_TEXT + showCards(playerCards[playerHandIndex], 'player') + '<br />' + showScores(playerCards[playerHandIndex], 'player') + '<br /><br />' + showInstructionsAndHandleGameMode(playerCards, true);
 
     return myOutputValue;
   }
 
   if (gameMode == CHOOSE_HIT_OR_STAND) {
     // input validation
-    if (sanitisedInput !== 'hit' && sanitisedInput !== 'stand') {
+    if (sanitisedInput !== HIT_INPUT && sanitisedInput !== STAND_INPUT) {
       myOutputValue = 'Please enter a valid input.<br /><br />' + showCards(playerCards, 'player') + '<br />' + showScores(playerCards, 'player') + '<br /><br />' + HIT_OR_STAND_INSTRUCTIONS;
       return myOutputValue;
     }
 
-    if (sanitisedInput == 'hit') {
-      var drawnCard = shuffledDeck.pop();
-      playerCards.push(drawnCard);
-      myOutputValue = 'You have decided to hit. You drew <strong>' + showCard(drawnCard) + '</strong>.<br /><br />' + showCards(playerCards, 'player') + '<br />' + showScores(playerCards, 'player') + '<br /><br />';
-
-      // if the minimum of an individual's score(s) is more than 21
-      // show hands right away, can't hit anymore
-      if (Math.min(...getCurrentScores(playerCards)) >= MAX_SCORE) {
-        myOutputValue += FORCED_STAND_INSTRUCTIONS;
-        gameMode = SHOW_HANDS;
-      }
-      // else, continue offering option to hit or stand
-      else {
-        myOutputValue += HIT_OR_STAND_INSTRUCTIONS;
-      }
-
-      return myOutputValue;
-    }
-
-    // for stand
-    myOutputValue = 'You have decided to stand. ' + showCards(playerCards, 'player') + '<br />' + showScores(playerCards, 'player') + '<br /><br />' + SHOW_HAND_INSTRUCTIONS;
-    gameMode = SHOW_HANDS;
+    // for hit or stand
+    myOutputValue = handleHitStandAndShowInstructions(sanitisedInput, playerCards);
     return myOutputValue;
   }
 
