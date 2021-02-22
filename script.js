@@ -502,7 +502,7 @@ var main = function (input) {
     // blackjack, or other kinds of hand
     // game mode handling in showAndHandleHandStatus()
     else {
-      myOutputValue += showInstructionsAndHandleGameMode(currentHand, false);
+      myOutputValue += showInstructionsAndHandleGameMode(playerCards, false);
     }
 
     return myOutputValue;
@@ -607,7 +607,7 @@ var main = function (input) {
     // automatic 21. in fact, better than a 21 with more
     // than 2 cards. blackjack > 21 with more than 2 cards >
     // less than 21 > more than 21
-    if (isBlackjack(playerCards[0] || playerCards[1])) {
+    if (isBlackjack(playerCards[0]) || isBlackjack(playerCards[1])) {
       myOutputValue += 'YOU\'VE AT LEAST 1 BLACKJACK!';
     } else {
       myOutputValue += 'Your best score is <strong>' + playerBestScore + '</strong>.';
