@@ -674,8 +674,7 @@ var main = function (input) {
   }
 
   myOutputValue += '<br /><br />Please click Submit to start a new round!';
-  // reset game state
-  resetDeckAndHands();
+  // back to GAME_STARTED
   gameMode = GAME_STARTED;
 
   return myOutputValue;
