@@ -231,11 +231,7 @@ var getBestScore = function (scores) {
 // checks if a hand is a blackjack
 var isBlackjack = function (cards) {
   // blackjack: max score from 2 cards will be 21
-  if (cards.length == 2 && getCurrentScores(cards)[1] == MAX_SCORE) {
-    return true;
-  }
-
-  return false;
+  return (cards.length == 2 && getCurrentScores(cards)[1] == MAX_SCORE);
 };
 
 // checks if a hand is able to be split
