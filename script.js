@@ -619,7 +619,7 @@ var main = function (input) {
     myOutputValue = showCards(playerCards, 'player') + '<br />';
 
     if (isBlackjack(playerCards)) {
-      myOutputValue += 'BLACKJACK_FLAVOUR_TEXT';
+      myOutputValue += BLACKJACK_FLAVOUR_TEXT;
     } else {
       myOutputValue += 'Your best score is <strong>' + playerBestScore + '</strong>.';
     }
