@@ -237,11 +237,7 @@ var isBlackjack = function (cards) {
 // checks if a hand is able to be split
 var isAbleToBeSplit = function (cards) {
   // hand size is 2, and there are cards of equal rank
-  if (cards.length == 2 && cards[0].rank == cards[1].rank) {
-    return true;
-  }
-
-  return false;
+  return (cards.length == 2 && cards[0].rank == cards[1].rank);
 };
 
 // Shuffle the elements in the cardDeck array
