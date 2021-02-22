@@ -441,15 +441,12 @@ var handleHitStandAndShowInstructions = function (input, hand) {
 var resetDeckAndHands = function () {
   deck = makeDeck();
   shuffledDeck = shuffleCards(deck);
-  playerCards = [
-    { name: 'queen', suit: 'diamonds', rank: 12 },
-    { name: 'queen', suit: 'hearts', rank: 12 },
-  ];
-
-  // playerCards = getInitialCards(shuffledDeck);
+  playerCards = getInitialCards(shuffledDeck);
   computerCards = getInitialCards(shuffledDeck);
 
+  // restart hand index counter
   playerHandIndex = 0;
+  // restart check if player has split hand
   doesPlayerHaveSplitHand = false;
 };
 
@@ -525,10 +522,8 @@ var main = function (input) {
     doesPlayerHaveSplitHand = true;
     // remove first item from playerCards, and remove last item from shuffled deck
     // combine them within an array to form the n-th hand
-    var firstHand = [playerCards.shift(), { name: 'ace', suit: 'spades', rank: 1 }];
-    // var firstHand = [playerCards.shift(), shuffledDeck.pop()];
+    var firstHand = [playerCards.shift(), shuffledDeck.pop()];
     var secondHand = [playerCards.shift(), shuffledDeck.pop()];
-    // var secondHand = [playerCards.shift(), { name: 'ace', suit: 'spades', rank: 1 }];
     playerCards.push(firstHand);
     playerCards.push(secondHand);
 
@@ -615,11 +610,7 @@ var main = function (input) {
     playerBestScore = getBestScore(playerScores);
     // show player cards
     myOutputValue = showCards(playerCards, 'player') + '<br />';
-    // show player score
-    // if blackjack, we assume they already know it's an
-    // automatic 21. in fact, better than a 21 with more
-    // than 2 cards. blackjack > 21 with more than 2 cards >
-    // less than 21 > more than 21
+
     if (isBlackjack(playerCards)) {
       myOutputValue += 'BLACKJACK_FLAVOUR_TEXT';
     } else {
