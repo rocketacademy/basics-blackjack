@@ -20,7 +20,7 @@ var HIT_OR_STAND_INSTRUCTIONS = HIT_OR_STAND_INSTRUCTIONS_START + HIT_OR_STAND_I
 var SPLIT_OR_HIT_OR_STAND_INSTRUCTIONS = 'Do you wish to split, hit or stand? To split, type in <i>split</i> in the input box above and click Submit. ' + HIT_OR_STAND_INSTRUCTIONS_END;
 var SHOW_HAND_INSTRUCTIONS = 'Click Submit and we will display the results of this round.';
 var NEXT_SPLIT_HAND_INSTRUCTIONS = 'Click Submit and we will display your next split hand.';
-var FORCED_STAND_INSTRUCTIONS = 'Your best possible score is now <strong>' + MAX_SCORE + ' or above</strong>, and you can\'t hit anymore. ' + SHOW_HAND_INSTRUCTIONS;
+var FORCED_STAND_INSTRUCTIONS = 'Your best possible score is now <strong>' + MAX_SCORE + ' or above</strong>, and you can\'t hit anymore. ';
 var FLAVOUR_TEXT_START = 'IT\'S A ';
 var BLACKJACK_FLAVOUR_TEXT_END = '<strong>BLACKJACK</strong>!';
 var SPLIT_FLAVOUR_TEXT_END = '<strong>SPLIT</strong>!';
@@ -376,20 +376,42 @@ var showInstructionsAndHandleGameMode = function (hand) {
 // handles input of 'hit' or 'stand' and changes instructions
 // and game mode accordingly
 var handleHitStandAndShowInstructions = function (input, hand) {
+  var playerHand = hand;
+  var SPLIT_HAND_NUMBER_TEXT = 'For split hand ' + (playerHandIndex + 1) + ': ';
+
+  // convenient if statement to assign cards
+  // to current hand if there are split hands
+  if (doesPlayerHaveSplitHand) {
+    playerHand = playerHand[playerHandIndex];
+  }
+
   // default: assume stand
-  var output = 'You have decided to stand. ' + showCards(hand, 'player') + '<br />' + showScores(hand, 'player') + '<br /><br />' + SHOW_HAND_INSTRUCTIONS;
+  var output = 'You have decided to stand. ' + showCards(playerHand, 'player') + '<br />' + showScores(playerHand, 'player') + '<br /><br />' + SHOW_HAND_INSTRUCTIONS;
 
   // for hit
   if (input == HIT_INPUT) {
     var drawnCard = shuffledDeck.pop();
-    hand.push(drawnCard);
-    output = 'You have decided to hit. You drew <strong>' + showCard(drawnCard) + '</strong>.<br /><br />' + showCards(hand, 'player') + '<br />' + showScores(hand, 'player') + '<br /><br />';
+    playerHand.push(drawnCard);
+
+    output = 'You have decided to hit. You drew <strong>' + showCard(drawnCard) + '</strong>.<br /><br />';
+
+    if (doesPlayerHaveSplitHand) {
+      output += SPLIT_HAND_NUMBER_TEXT;
+    }
+
+    output += showCards(playerHand, 'player') + '<br />' + showScores(playerHand, 'player') + '<br /><br />';
 
     // if the minimum of an individual's score(s) is more than 21
     // show hands right away, can't hit anymore
-    if (Math.min(...getCurrentScores(hand)) >= MAX_SCORE) {
-      output += FORCED_STAND_INSTRUCTIONS;
-      gameMode = SHOW_HANDS;
+    if (Math.min(...getCurrentScores(playerHand)) >= MAX_SCORE) {
+      if (doesPlayerHaveSplitHand && playerHandIndex != hand.length - 1) {
+        output += FORCED_STAND_INSTRUCTIONS + NEXT_SPLIT_HAND_INSTRUCTIONS;
+        playerHandIndex += 1;
+        gameMode = SHOW_PLAYERS_INITIAL_HAND;
+      } else {
+        output += FORCED_STAND_INSTRUCTIONS + SHOW_HAND_INSTRUCTIONS;
+        gameMode = SHOW_HANDS;
+      }
     }
     // else, continue offering option to hit or stand
     else {
@@ -419,6 +441,7 @@ var resetDeckAndHands = function () {
 var main = function (input) {
   var sanitisedInput = input.trim().toLowerCase();
   var myOutputValue = '';
+  var SPLIT_HAND_NUMBER_TEXT = 'For split hand ' + (playerHandIndex + 1) + ': ';
 
   if (gameMode == GAME_STARTED) {
     // reset deck and hands
@@ -427,24 +450,33 @@ var main = function (input) {
   }
 
   if (gameMode == SHOW_PLAYERS_INITIAL_HAND) {
-    myOutputValue = showCards(playerCards, 'player');
+    var initialHandCards = playerCards;
 
-    if (isAbleToBeSplit(playerCards)) {
+    // convenient if statement to assign cards
+    // to current hand if there are split hands
+    if (doesPlayerHaveSplitHand) {
+      initialHandCards = initialHandCards[playerHandIndex];
+      myOutputValue += SPLIT_HAND_NUMBER_TEXT;
+    }
+
+    myOutputValue += showCards(initialHandCards, 'player');
+
+    if (isAbleToBeSplit(initialHandCards) && playerHandIndex == 0) {
       myOutputValue += ' ' + SPLIT_FLAVOUR_TEXT;
     }
 
-    myOutputValue += '<br />' + showScores(playerCards, 'player') + '<br /><br />';
+    myOutputValue += '<br />' + showScores(initialHandCards, 'player') + '<br /><br />';
 
     // split hand
     // offer option to split, hit or stand
-    if (isAbleToBeSplit(playerCards)) {
+    if (isAbleToBeSplit(initialHandCards) && playerHandIndex == 0) {
       myOutputValue += SPLIT_OR_HIT_OR_STAND_INSTRUCTIONS;
       gameMode = CHOOSE_SPLITS_OR_HIT_OR_STAND;
     }
     // blackjack, or other kinds of hand
     // game mode handling in showAndHandleHandStatus()
     else {
-      myOutputValue += showInstructionsAndHandleGameMode(playerCards, false);
+      myOutputValue += showInstructionsAndHandleGameMode(initialHandCards, false);
     }
 
     return myOutputValue;
@@ -468,7 +500,6 @@ var main = function (input) {
 
     // for split
     doesPlayerHaveSplitHand = true;
-    var SPLIT_HAND_NUMBER_TEXT = 'For split hand ' + (playerHandIndex + 1) + ': ';
     // remove first item from playerCards, and remove last item from shuffled deck
     // combine them within an array to form the n-th hand
     // var firstHand = [playerCards.shift(), { name: 'ace', suit: 'spades', rank: 1 }];
@@ -480,13 +511,25 @@ var main = function (input) {
 
     myOutputValue = 'You have decided to split. ' + SPLIT_HAND_NUMBER_TEXT + showCards(playerCards[playerHandIndex], 'player') + '<br />' + showScores(playerCards[playerHandIndex], 'player') + '<br /><br />' + showInstructionsAndHandleGameMode(playerCards, true);
 
+    // switch modes - now only hit or stand
+    gameMode = CHOOSE_HIT_OR_STAND;
+
     return myOutputValue;
   }
 
   if (gameMode == CHOOSE_HIT_OR_STAND) {
+    var currentPlayerHand = playerCards;
+    var splitHandInsertedText = '';
+    // convenient if statement to assign cards
+    // to current hand if there are split hands
+    if (doesPlayerHaveSplitHand) {
+      currentPlayerHand = currentPlayerHand[playerHandIndex];
+      splitHandInsertedText = SPLIT_HAND_NUMBER_TEXT;
+    }
+
     // input validation
     if (sanitisedInput !== HIT_INPUT && sanitisedInput !== STAND_INPUT) {
-      myOutputValue = 'Please enter a valid input.<br /><br />' + showCards(playerCards, 'player') + '<br />' + showScores(playerCards, 'player') + '<br /><br />' + HIT_OR_STAND_INSTRUCTIONS;
+      myOutputValue = 'Please enter a valid input.<br /><br />' + splitHandInsertedText + showCards(currentPlayerHand, 'player') + '<br />' + showScores(currentPlayerHand, 'player') + '<br /><br />' + HIT_OR_STAND_INSTRUCTIONS;
       return myOutputValue;
     }
 
