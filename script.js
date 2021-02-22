@@ -591,7 +591,7 @@ var main = function (input) {
       var currentPlayerHandBestScore = getBestScore(currentPlayerHandScores);
       placeholderPlayerBestScoresArr.push(currentPlayerHandBestScore);
       // show player cards
-      myOutputValue += showCards(playerCards[counter], 'player') + '<br />';
+      myOutputValue += 'For split hand ' + (counter + 1) + ': ' + showCards(playerCards[counter], 'player') + '<br />';
       counter += 1;
       if (counter == playerCards.length) {
         myOutputValue += '<br />';
