@@ -195,19 +195,6 @@ var main = function (input) {
     // Dealing second hand to player and computer
     dealCardToHand(playerHand);
 
-    gameMode = 'nextMode';
-    // Check first if Blackjack
-    // Computer wins if Blackjack is true for computer.
-    if (isBlackjack(dealerHand) && gameMode == 'nextMode') {
-      gameOver = true;
-      playerCredit = newPlayerCredit;
-      gameMode = 'placeBets';
-
-      // Computer wins, return
-      return `${mainBlackJackMessage()} <br>
-        Blackjack! Dealer wins! You lose <strong> ${playerBet}</strong> Bitcoins. Please submit how many bitcoins you want to bet for the next game.`;
-    }
-
     // If player has blackjack and computer does not, player wins.
     if (isBlackjack(playerHand) && gameMode == 'nextMode') {
       gameOver = true;
@@ -262,6 +249,19 @@ var main = function (input) {
     return ` ${playerName} has in their hand <strong>${convertCardToText(playerHand)} </strong> with a total score of <strong>${getValueOfHand(playerHand)}</strong>. <br>
     Computer has in their hand <strong>${convertCardToText(dealerHand)}</strong> with a total score of <strong>${getValueOfHand(dealerHand)}</strong>. <br> <strong> Click Submit to continue the game. `;
     // If computer busts, it loses
+  }
+
+  gameMode = 'dealerTurn';
+  // Check first if Blackjack
+  // Computer wins if Blackjack is true for computer.
+  if (isBlackjack(dealerHand) && gameMode == 'dealerTurn') {
+    gameOver = true;
+    playerCredit = newPlayerCredit;
+    gameMode = 'placeBets';
+
+    // Computer wins, return
+    return `${mainBlackJackMessage()} <br>
+        Blackjack! Dealer wins! You lose <strong> ${playerBet}</strong> Bitcoins. Please submit how many bitcoins you want to bet for the next game.`;
   }
 
   if (dealerHandSum > blackJackLimit) {
