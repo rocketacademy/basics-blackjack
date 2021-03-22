@@ -377,19 +377,25 @@ function splitHandsCards(dealtCard1, dealtCard2) {
 
 let currentMode = 'play'; let currentPlayer = 'user';
 let userTotal; let dealerTotal; let result;
+let userPoints = 100;
 
 function main(input) {
   let mode = setMode(input, currentMode);
   if (mode == 'play') {
-    // let card1 = shuffledDeck(deck).pop().rank;
-    // let card2 = shuffledDeck(deck).pop().rank;
-    let card1 = 10;
-    let card2 = 10;
+    // each time cards are dealt. user bets 10 points.
+    userPoints -= 10;
+    if (userPoints <= 0) {
+      return `you runout of points. your current point is ${userPoints}`;
+    }
+    let card1 = shuffledDeck(deck).pop().rank;
+    let card2 = shuffledDeck(deck).pop().rank;
+    // let card1 = 10;
+    // let card2 = 10;
     let sum = card1 + card2;
     let firstCard = setAceValue(card1, sum);
     let secondCard = setAceValue(card2, sum);
     let sumOfCards = firstCard + secondCard;
-    result = `${currentPlayer} 's First Card is ${firstCard} and Second Card is ${secondCard}. total so far is ${sumOfCards}. `;
+    result = `${currentPlayer} 's First Card is ${firstCard} and Second Card is ${secondCard}. total so far is ${sumOfCards}. you currently have ${userPoints} points.`;
     if (currentPlayer == 'user') {
       userTotal = sumOfCards;
       result += analyseForBlackjack(sumOfCards);
