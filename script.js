@@ -326,6 +326,9 @@ function setMode(userInput, presentMode) {
   else if (userInput == 'stand') {
     mode = 'stand';
   }
+  else if (userInput == 'hand1' || userInput == 'hand2') {
+    mode = 'split';
+  }
   return mode;
 }
 function findWinner(sumOfUserCards, sumOfDealerCards) {
@@ -348,14 +351,40 @@ function dealerPlayMessages(currentPlayer, playerResult, playerTotal) {
 function dealerHitMessages(currentPlayer, playResult, newCard, playerTotal) {
   return `${currentPlayer}'s new card is ${newCard} <br> ${currentPlayer} decided to ${playResult} again. ${currentPlayer}'s total so far is ${playerTotal}.`;
 }
+function splitHandsCards(dealtCard1, dealtCard2) {
+  let card1; let card2; let card3; let card4; let sumCard1Card2; let sumCard3Card4;
+  let handsArray = [];
+  if (dealtCard1 == dealtCard2) {
+    card1 = dealtCard1;
+    card2 = shuffledDeck(deck).pop().rank;
+    sumCard1Card2 = card1 + card2;
+    card3 = dealtCard2;
+    card4 = shuffledDeck(deck).pop().rank;
+    sumCard3Card4 = card3 + card4;
+  }
+  let firstCard = setAceValue(card1, sumCard1Card2);
+  console.log('first card: ' + firstCard);
+  let secondCard = setAceValue(card2, sumCard1Card2);
+  let thirdCard = setAceValue(card3, sumCard3Card4);
+  let fourthCard = setAceValue(card4, sumCard3Card4);
+
+  let sumOfFirstHand = firstCard + secondCard;
+  let sumOfSecondHand = thirdCard + fourthCard;
+  handsArray.push(sumOfFirstHand);
+  handsArray.push(sumOfSecondHand);
+  return handsArray;
+}
+
 let currentMode = 'play'; let currentPlayer = 'user';
 let userTotal; let dealerTotal; let result;
 
 function main(input) {
   let mode = setMode(input, currentMode);
   if (mode == 'play') {
-    let card1 = shuffledDeck(deck).pop().rank;
-    let card2 = shuffledDeck(deck).pop().rank;
+    // let card1 = shuffledDeck(deck).pop().rank;
+    // let card2 = shuffledDeck(deck).pop().rank;
+    let card1 = 10;
+    let card2 = 10;
     let sum = card1 + card2;
     let firstCard = setAceValue(card1, sum);
     let secondCard = setAceValue(card2, sum);
@@ -364,7 +393,19 @@ function main(input) {
     if (currentPlayer == 'user') {
       userTotal = sumOfCards;
       result += analyseForBlackjack(sumOfCards);
+      // split cards game inplementation block
+      if (card1 == card2) {
+        console.log('two equal cards loop is running');
+        userTotal1 = splitHandsCards(card1, card2)[0];
+        console.log(userTotal1 + ' :usertotal1');
+        userTotal2 = splitHandsCards(card1, card2)[1];
+        console.log(userTotal2 + ' :usertotal2');
+        result = `user's first card is ${card1} and second card is ${card2}.<br> After split user's first hand  is ${userTotal1} and second hand is ${userTotal2}. choose hand1/hand2 to continue playing. `;
+        return result;
+      }
+      //
     }
+
     else if (currentPlayer == 'dealer') {
       dealerTotal = sumOfCards;
       let playResult = autoAnalyseBlackjack(dealerTotal);
@@ -386,7 +427,7 @@ function main(input) {
     }
   }
 
-  if (mode == 'hit') {
+  else if (mode == 'hit') {
     let newCard = shuffledDeck(deck).pop().rank;
     let newCardValue = setAceValue(newCard, userTotal);
     if (currentPlayer == 'user') {
@@ -424,5 +465,19 @@ function main(input) {
     currentPlayer = 'user';
     result += 'Let\'s play another round';
   }
+  // split cards game inplementation block
+  else if (mode == 'split') {
+    console.log('split mode loop is running.')
+    if (input == 'hand1') {
+      console.log('split loop is running');
+      userTotal = userTotal1;
+      result = `user's total is ${userTotal1}. ` + analyseForBlackjack(userTotal1);
+    }
+    else if (input == 'hand2') {
+      result = analyseForBlackjack(userTotal2);
+      userTotal = userTotal2;
+    }
+  }
+  //
   return result;
 }
