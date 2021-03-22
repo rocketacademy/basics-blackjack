@@ -18,6 +18,14 @@
       text-align: center;
     }
 
+    #card {
+      padding-left: 40%;
+    }
+
+    #card2 {
+      padding-left: 50px;
+    }
+
     #container {
       background-color: pink;
       margin: 40px auto;
@@ -52,6 +60,11 @@
 
 <body>
   <h1 id="header">SWE101: Blackjack 🚀</h1>
+  <p id="greeting" style="text-align: center;">Let's play the game!</p>
+  <div id="card">
+    <img id="card1" src="images/1.png" style="height: 100px;">
+    <img id="card2" src="images/1.png" style="height: 100px;">
+  </div>
   <div id="container">
     <p>Press submit to start the game. (user is the default first player).</p>
     <p style="font-size: smaller;">For each round cards are dealt. user bets 10 points out of 100 in total.</p>
@@ -78,6 +91,15 @@
       // Reset input value
       input.value = "";
     });
+    // ask user their name:
+    let user = prompt(`Hi there! What's your name?`)
+    let greet;
+    if (user == null || user == "") {
+      greet = "Hi, there!";
+    } else {
+      greet = "Hello " + user + "! Let's play the game.";
+    }
+    document.getElementById('greeting').innerHTML = greet;
   </script>
 </body>
 

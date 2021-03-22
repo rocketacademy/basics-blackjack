@@ -393,9 +393,12 @@ function main(input) {
     // let card2 = 10;
     let sum = card1 + card2;
     let firstCard = setAceValue(card1, sum);
+    // display images of dealt card
+    document.getElementById('card1').src = 'images/' + firstCard + '.png';
     let secondCard = setAceValue(card2, sum);
+    document.getElementById('card2').src = 'images/' + secondCard + '.png';
     let sumOfCards = firstCard + secondCard;
-    result = `${currentPlayer} 's First Card is ${firstCard} and Second Card is ${secondCard}. total so far is ${sumOfCards}. you currently have ${userPoints} points.`;
+    result = `${currentPlayer} 's First Card is ${firstCard} <br> and Second Card is ${secondCard} . total so far is ${sumOfCards}. you currently have ${userPoints} points.`;
     if (currentPlayer == 'user') {
       userTotal = sumOfCards;
       result += analyseForBlackjack(sumOfCards);
