@@ -1,80 +1,83 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>SWE101</title>
-    <style>
-      * {
-        box-sizing: border-box;
-      }
 
-      body {
-        font-family: sans-serif;
-        margin-left: 30px;
-        margin-right: 30px;
-      }
+<head>
+  <title>SWE101</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
-      #header {
-        text-align: center;
-      }
+    body {
+      font-family: sans-serif;
+      margin-left: 30px;
+      margin-right: 30px;
+    }
 
-      #container {
-        background-color: pink;
-        margin: 40px auto;
-        max-width: 800px;
-        padding: 38px 31px;
-      }
+    #header {
+      text-align: center;
+    }
 
-      input {
-        font-size: 21px;
-        line-height: 33px;
-        margin: 0 0 23px 0;
-        padding: 0 9px;
-        width: 74%;
-      }
+    #container {
+      background-color: pink;
+      margin: 40px auto;
+      max-width: 800px;
+      padding: 38px 31px;
+    }
 
-      button {
-        font-size: 21px;
-        line-height: 33px;
-        margin: 0 0 23px 0;
-        padding: 0 6px;
-        width: 25%;
-      }
+    input {
+      font-size: 21px;
+      line-height: 33px;
+      margin: 0 0 23px 0;
+      padding: 0 9px;
+      width: 74%;
+    }
 
-      #output-div {
-        background-color: lightgrey;
-        margin: 20px auto;
-        padding: 20px;
-        width: 100%;
-      }
-    </style>
-  </head>
+    button {
+      font-size: 21px;
+      line-height: 33px;
+      margin: 0 0 23px 0;
+      padding: 0 6px;
+      width: 25%;
+    }
 
-  <body>
-    <h1 id="header">SWE101: Blackjack 🚀</h1>
-    <div id="container">
-      <p>Input:</p>
-      <input id="input-field" />
-      <button id="submit-button">Submit</button>
-      <p>Output:</p>
-      <div id="output-div"></div>
-    </div>
-    <!-- Import program logic -->
-    <script src="script.js"></script>
-    <!-- Define button click functionality -->
-    <script>
-      var button = document.querySelector("#submit-button");
-      button.addEventListener("click", function () {
-        // Set result to input value
-        var input = document.querySelector("#input-field");
-        var result = main(input.value);
+    #output-div {
+      background-color: lightgrey;
+      margin: 20px auto;
+      padding: 20px;
+      width: 100%;
+    }
+  </style>
+</head>
 
-        // Display result in output element
-        var output = document.querySelector("#output-div");
-        output.innerHTML = result;
+<body>
+  <h1 id="header">SWE101: Blackjack 🚀</h1>
+  <div id="container">
+    <p>Press submit to start the game. (user is the default first player).</p>
+    <p>Input:</p>
+    <input id="input-field" />
+    <button id="submit-button">Submit</button>
+    <p>Output:</p>
+    <div id="output-div"></div>
+  </div>
+  <!-- Import program logic -->
+  <script src="script.js"></script>
+  <!-- Define button click functionality -->
+  <script>
+    var button = document.querySelector("#submit-button");
+    button.addEventListener("click", function () {
+      // Set result to input value
+      var input = document.querySelector("#input-field");
+      var result = main(input.value);
 
-        // Reset input value
-        input.value = "";
-      });
-    </script>
-  </body>
+      // Display result in output element
+      var output = document.querySelector("#output-div");
+      output.innerHTML = result;
+
+      // Reset input value
+      input.value = "";
+    });
+  </script>
+</body>
+
 </html>
