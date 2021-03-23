@@ -382,11 +382,7 @@ let userPoints = 100;
 function main(input) {
   let mode = setMode(input, currentMode);
   if (mode == 'play') {
-    // each time cards are dealt. user bets 10 points.
-    userPoints -= 10;
-    if (userPoints <= 0) {
-      return `you runout of points. your current point is ${userPoints}`;
-    }
+
     let card1 = shuffledDeck(deck).pop().rank;
     let card2 = shuffledDeck(deck).pop().rank;
     // let card1 = 10;
@@ -398,10 +394,8 @@ function main(input) {
     let secondCard = setAceValue(card2, sum);
     document.getElementById('card2').src = 'images/' + secondCard + '.png';
     let sumOfCards = firstCard + secondCard;
-    result = `${currentPlayer} 's First Card is ${firstCard} <br> and Second Card is ${secondCard} . total so far is ${sumOfCards}. you currently have ${userPoints} points.`;
+    result = `${currentPlayer} 's First Card is ${firstCard} <br> and Second Card is ${secondCard} . total so far is ${sumOfCards}.`;
     if (currentPlayer == 'user') {
-      userTotal = sumOfCards;
-      result += analyseForBlackjack(sumOfCards);
       // split cards game inplementation block
       if (card1 == card2) {
         console.log('two equal cards loop is running');
@@ -412,7 +406,13 @@ function main(input) {
         result = `user's first card is ${card1} and second card is ${card2}.<br> After split user's first hand  is ${userTotal1} and second hand is ${userTotal2}. choose hand1/hand2 to continue playing. `;
         return result;
       }
-      //
+      // each time cards are dealt. user bets 10 points.
+      userPoints -= 10;
+      if (userPoints <= 0) {
+        return `you runout of points. your current point is ${userPoints}`;
+      }
+      userTotal = sumOfCards;
+      result += `you currently have ${userPoints} points. ` + analyseForBlackjack(sumOfCards);
     }
 
     else if (currentPlayer == 'dealer') {
@@ -441,8 +441,9 @@ function main(input) {
     let newCardValue = setAceValue(newCard, userTotal);
     if (currentPlayer == 'user') {
       userTotal += newCardValue;
+      console.log('new card value and user total is ' + newCardValue + ' ' + userTotal);
       result = analyseForBlackjack(userTotal);
-      result = `after the hit new total is ${userTotal}.` + result;
+      result = `new card is ${newCardValue}. after the hit new total is ${userTotal}.` + result;
     }
     else if (currentPlayer == 'dealer') {
       dealerTotal += newCardValue;
