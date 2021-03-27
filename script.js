@@ -51,40 +51,39 @@ var shuffleCards = function (cardDeck) {
   }
   return cardDeck;
 };
-// copied code ends above this line.
-let deck = makeDeck();
-let shuffledDeck = shuffleCards(deck);
 
-//points setup
-var pointsystem = function() {
-    var playerPoints = 0;
-    var computerPoints = 0;
-    if (rankCounter >1 && rankCounter <11) {
-      var points = rankCounter;
-    }
-    if (rankCounter = 1) {
-      var points = 11
-    }
-    
-    if (rankCounter <14 && rankCounter >10) {
-      var points = 10
-    }
+// points setup
+var pointsystem = function () {
+  var playerPoints = 0;
+  var computerPoints = 0;
+  if (rankCounter > 1 && rankCounter < 11) {
+    var points = rankCounter;
+  }
+  if (rankCounter = 1) {
+    var points = 11;
   }
 
-//game setup
-var main = function(input) {
+  if (rankCounter < 14 && rankCounter > 10) {
+    var points = 10;
+  }
+};
+
+// game setup
+/* var main = function(input) {
   if (input = 'startGame'){
-    
+    */
+const deck = makeDeck();
+const shuffledDeck = shuffleCards(deck);
 
-  }
-}
+var playerCards = [];
+var dealerCards = [];
 
 function main() {
-  let drawCard1 = shuffledDeck.pop();
-  let drawCard2 = shuffledDeck.pop();
-  console.log(drawCards.name + drawCards.suit + drawCards.rank);
-  return 'card1: ' + drawCard1.name + drawCard1.suit + drawCard1.rank +
-          'card2: ' + drawCard2.name + drawCard2.suit + drawCard2.rank
+  const playerdrawACard = shuffledDeck.pop().name;
+  playerCards.push(playerdrawACard);
+  if (dealerCards.length < 2) {
+    const dealerdrawACard = shuffledDeck.pop().name;
+    dealerCards.push(dealerdrawACard);
+  }
+  return 'playercards: ' + playerCards + ' , dealercards: ' + dealerCards;
 }
-
-
