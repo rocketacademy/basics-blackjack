@@ -234,12 +234,6 @@ var main = function (input) {
       console.log('computer win');
       myOutputValue = myOutputValue + '<br> Computer WIN!';
     }
-    // if computer more than 21 , computer lose
-
-    // compare computer total value to player total value
   }
   return myOutputValue;
 };
-// The player who is closer to 21 wins the hand. Aces can be 1 or 11.
-// The cards are analysed for game winning conditions, e.g. Blackjack.
-// The user's cards are analysed for winning or losing conditions.
