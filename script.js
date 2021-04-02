@@ -1,3 +1,20 @@
+/**
+ * Add all elements from fromArray to the start of toArray.
+ */
+var addArray = function (fromArray, toArray) {
+  var fromArrayIndex = 0;
+  while (fromArrayIndex < fromArray.length) {
+    // Add each element in fromArray to toArray individually
+    toArray.unshift(fromArray[fromArrayIndex]);
+    // Increment the index to operate on the next index of fromArray
+    fromArrayIndex += 1;
+  }
+  return toArray;
+};
+
+/**
+ * Create a standard 52-card deck
+ */
 var makeDeck = function () {
   // Initialise an empty deck array
   var cardDeck = [];
@@ -14,7 +31,7 @@ var makeDeck = function () {
     // Notice rankCounter starts at 1 and not 0, and ends at 13 and not 12.
     // This is an example of a loop without an array.
     var rankCounter = 1;
-    while (rankCounter <= 10) {
+    while (rankCounter <= 13) {
       // By default, the card name is the same as rankCounter
       var cardName = rankCounter;
 
@@ -81,101 +98,106 @@ var shuffleCards = function (cardDeck) {
   return cardDeck;
 };
 
-// Initialize the shuffled card deck before the game starts.
+// ! above code from class
+
+// initialize the shuffled card deck before the game starts.
 var deck = shuffleCards(makeDeck());
-console.log(deck);
 
-//! Code above from class materials...
-
-// an array to hold player and dealer card hands
 var playerHand = [];
 var dealerHand = [];
 
-// function to deal cards to player and dealer hand
-function dealCards() {
-  return this.deck.pop();
-}
+var mode = '';
 
-// function to track the sum of dealt hand
-/* var sumOfHand = function (){
-} */
+var myOutputValue = '';
 
-// if player goes over sum of 21, "player bust"
-// 17 points or higher dealer must stay
-
-// function to reveal cards of player and dealer
-function revealCards() {
-  var i = 0;
-  while (i <= 1) {
-    playerHand.push(dealCards());
-    dealerHand.push(dealCards());
-    i++;
-  }
-
-  var dealerHandCards = dealerHand[0].name + ' of ' + dealerHand[0].suit
-  + ' & ' + dealerHand[1].name + ' of ' + dealerHand[1].suit;
-
-  var playerHandCards = playerHand[0].name + ' of ' + playerHand[0].suit
-  + ' & ' + playerHand[1].name + ' of ' + playerHand[1].suit;
-
-  var myOutputValue = 'Player Hand: ' + playerHandCards + ' <br> '
-  + 'Dealer Hand : ' + dealerHandCards;
-
-  console.log(myOutputValue);
-  return myOutputValue;
-}
-
-// add up player hands and dealer hands
-function sumOfHands() {
-  // adding up the player and dealer hand by using Array.reduce -
-  // to sum a property in an array of objects
+// check for blackack and also check for what to do next
+// adding up the player and dealer hand by using Array.reduce -
+// to sum a property in an array of objects
+function sumOfHands(handsTotal) {
   var playerHandsTotal = playerHand.reduce((previous, current) => previous + current.rank, 0);
   console.log('player total card count: ', playerHandsTotal);
 
+  var playerScore = playerHandsTotal;
+  if (playerScore == 21) {
+    return 'player has blackjack! player wins!';
+  } if (playerScore > 21) {
+    return 'player went over 21, it"s a bust';
+  } if (playerScore < 21) {
+    mode = 'PLAYER_MODE';
+    return 'you can hit or stay, the choice is yours!';
+  }
+
   var dealerHandsTotal = dealerHand.reduce((previous, current) => previous + current.rank, 0);
   console.log('dealer total card count: ', dealerHandsTotal);
+  if (dealerScore > 21) {
+    // if dealer bust goto restart mode
+    return 'dealer bust!';
+  }
+  if (dealerScore < 17) {
+    // if dealer has less than 17 get new card from deck
+    dealerHand.push(deck.pop());
+    return 'dealer hits until 17 or higher is reached';
+  }
+  if (dealerScore >= 17) {
+    // if dealer gets 17 or higher goto score comparison mode
+    mode = 'COMPARE_SCORES';
+    return 'dealer stays let"s compare scores';
+  }
 }
 
-// hit user with a new card from the deck, dealer checks until min 17
-function hitCard() {
-  // if user types hit one more card is drawn from the deck
-  playerHand.push(dealCards());
-  var playerHitMessage = playerHand[2].name + ' of ' + playerHand[2].suit;
+// player mode where player can hit or stay
+function playerTurn(input) {
+  mode = 'PLAYER_MODE';
+  var playerChoice = input;
+  // player can either hit or stay depending on the input
+  if (playerChoice == 'hit') {
+    playerHand.push(deck.pop());
+    return sumOfHands(playerHand);
+  }
+  if (playerChoice == 'stay') {
+    mode = 'DEALER_MODE';
+    return 'you have decided to stay, now it is dealer turn';
+  }
 
-  dealerHand.push(dealCards());
-  var dealerHitMessage = dealerHand[2].name + ' of ' + dealerHand[2].suit;
-
-  var hitMessage = 'Player Hit: ' + playerHitMessage + '<br>'
-  + 'Dealer Hit: ' + dealerHitMessage;
-
-  return hitMessage;
+  return 'please type hit or stay to play the game';
 }
 
-// when player stay, dealer hits until min card value is 17
-function stayCard() {
+// dealer mode where the total number of dealer card is checked
+function dealerTurn() {
+  mode = 'DEALER_MODE';
+  var dealerScore = sumOfHands(dealerHandsTotal);
+  if (dealerScore < 17) {
+    var i = 1;
+    while (i < dealerscore) {
+      dealerHand.push(deck.pop());
+      i += 1;
+    }
+    return 'dealer has hit' + dealerScore;
+  }
 }
 
-// comparison of cards between player and dealer
+// player and dealer are dealt cards
+var dealCards = function () {
+  mode = 'START_GAME';
+  // cards are dealt to the player and dealer
+  playerHand = [deck.pop(), deck.pop()];
+  dealerHand = [deck.pop(), deck.pop()];
+
+  // check player cards for blackjack
+  return sumOfHands(playerHand);
+};
 
 var main = function (input) {
-// if user click input button, card is revealed from the hand
   if (input == '') {
-    revealCards();
-    sumOfHands();
+    mode = 'START_GAME';
+    dealCards();
   }
-  console.log('player cards: ', playerHand);
-  console.log('dealer cards: ', dealerHand);
-
-  // if user inputs 'hit' run hit function
-  if (input == 'hit') {
-    hitCard();
-    console.log(hitCard());
+  if (mode == 'PLAYER_MODE') {
+    playerTurn();
+    return playerTurn(input);
   }
-
-  // if user inputs 'stay run stay function
-  if (input == 'stay') {
-    stayCard();
-    console.log(stayCard());
+  if (mode == 'DEALER_MODE') {
+    dealerTurn();
   }
-  // return comparison for winner and loser
+  return myOutputValue;
 };
