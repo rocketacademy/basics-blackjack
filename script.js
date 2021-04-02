@@ -1,3 +1,4 @@
+// function to generate deck of 52 cards.
 function createDeck() {
   let suits = ['hearts', 'dimonds', 'clubs', 'spades'];
   let suitsLength = suits.length;
@@ -32,11 +33,15 @@ function createDeck() {
   }
   return cardDeck;
 }
+
 let deck = createDeck();
 
+// function generates random card number.
 function genrateRandomCards(max) {
   return Math.floor(Math.random(max));
 }
+
+// takes card deck as input and returns shuffled cards deck
 function shuffledDeck(cardDeck) {
   const length = cardDeck.length;
   for (let i = 0; i < length; i++) {
@@ -49,6 +54,9 @@ function shuffledDeck(cardDeck) {
   }
   return cardDeck;
 }
+
+// function takes a card and sum of all the cards as inputs.
+// if card is ace, returns new value of ace (1 or 11).
 function setAceValue(aCard, cardsSum) {
   let cardValue;
   if (aCard == 'ace' && cardsSum > 21) {
@@ -62,6 +70,8 @@ function setAceValue(aCard, cardsSum) {
   }
   return cardValue;
 }
+
+// takes total sum of cards as input and returns result as per backjack rules
 function analyseForBlackjack(cardsTotal) {
   let result;
   if (cardsTotal > 21) {
@@ -76,6 +86,8 @@ function analyseForBlackjack(cardsTotal) {
 
   return result;
 }
+
+// function to analyse blackjack when computer is playing.
 function autoAnalyseBlackjack(cardsTotal) {
   let result;
   if (cardsTotal > 21) {
@@ -89,6 +101,8 @@ function autoAnalyseBlackjack(cardsTotal) {
   }
   return result;
 }
+
+// takes user input, present game mode and returns the new/changed mode.
 function setMode(userInput, presentMode) {
   let mode;
   if (userInput == '') {
@@ -105,6 +119,8 @@ function setMode(userInput, presentMode) {
   }
   return mode;
 }
+
+// takes sums of user and dealer as input and returns winner.
 function findWinner(sumOfUserCards, sumOfDealerCards) {
   let result;
   if (sumOfUserCards > sumOfDealerCards) {
@@ -118,15 +134,25 @@ function findWinner(sumOfUserCards, sumOfDealerCards) {
   }
   return result;
 }
-// customize messages when dealer is playing.
+
+// customizes messages when dealer is playing.
 function dealerPlayMessages(currentPlayer, playerResult, playerTotal) {
   return ` ${currentPlayer}'s total is ${playerTotal}. <br>${currentPlayer} decided to ${playerResult}.`;
 }
+
+// customized message when dealer decides to hit.
 function dealerHitMessages(currentPlayer, playResult, newCard, playerTotal) {
   return `${currentPlayer}'s new card is ${newCard} <br> ${currentPlayer} decided to ${playResult} again. ${currentPlayer}'s total so far is ${playerTotal}.`;
 }
+
+// input is dealt cards. returns array of hands after the split.
 function splitHandsCards(dealtCard1, dealtCard2) {
-  let card1; let card2; let card3; let card4; let sumCard1Card2; let sumCard3Card4;
+  let card1;
+  let card2;
+  let card3;
+  let card4;
+  let sumCard1Card2;
+  let sumCard3Card4;
   let handsArray = [];
   if (dealtCard1 == dealtCard2) {
     card1 = dealtCard1;
@@ -149,14 +175,22 @@ function splitHandsCards(dealtCard1, dealtCard2) {
   return handsArray;
 }
 
-let currentMode = 'play'; let currentPlayer = 'user';
-let userTotal; let dealerTotal; let result;
+// default mode and player.
+let currentMode = 'play';
+let currentPlayer = 'user';
+
+// track totals of user and dealer's card
+let userTotal;
+let dealerTotal;
+
+// result of main function.
+let result;
+// assigned points to player when game starts.
 let userPoints = 100;
 
 function main(input) {
   let mode = setMode(input, currentMode);
   if (mode == 'play') {
-
     let card1 = shuffledDeck(deck).pop().rank;
     let card2 = shuffledDeck(deck).pop().rank;
     // let card1 = 10;
