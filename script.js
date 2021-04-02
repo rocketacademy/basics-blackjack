@@ -92,96 +92,135 @@ var deck = shuffleCards(makeDeck());
 console.log(deck);
 
 // player and computer deal 2 cards
-var playerCards = deck.splice(0, 2);
+var playerHand = deck.splice(0, 2);
 console.log('player cards');
-console.log(playerCards);
+console.log(playerHand);
 
-// 1 computer card face up  and 1 face down
 var computerCards = deck.splice(2, 2);
 console.log('computer cards');
 console.log(computerCards);
 var playerTotalValue = 0;
 
-var mode = 'player turn';
+var playerTotalBettingPoint = 100;
+var playerBettingPoint = 0;
 
-// player draw 2 cards and computer given 1 card face up and 1 card face down
-var playerAndComputerDrawTwoCards = function () {
-  var message = '';
+var mode = 'enter player name';
+
+var playerName = '';
+
+// store all card value
+var storePoint = function (totalValue, handCards) {
   var rankIndex = 0;
-  playerTotalValue = 0;
-  // store player score into 'playerTOtalValue
-  while (rankIndex < playerCards.length) {
+  totalValue = 0;
+  console.log(handCards);
+  while (rankIndex < handCards.length) {
     // store cards point
-    playerTotalValue = playerTotalValue + playerCards[rankIndex].rank;
+    console.log(totalValue);
+    totalValue = totalValue + handCards[rankIndex].rank;
     rankIndex = rankIndex + 1;
   }
-  message = 'Player first deal cards ' + playerCards[0].name + ' of ' + playerCards[0].suit + ' and ' + playerCards[1].name + ' of ' + playerCards[1].suit + '<br> Player total card value' + playerTotalValue + '<br>Computer deal ' + computerCards[0].name + ' of ' + computerCards[0].suit + ' and one face down card';
-  // if player score 21 on the draw (first 2 cards) player win else
-  if (playerTotalValue == 21) {
-    console.log('player win blackjack');
-    message = message + '<br> You win!';
-    return message;
-  }
-  return message;
+  return totalValue;
 };
 
-// store player total point and check for ace condition logic
-var storePlayerPoint = function () {
-  var message = '';
-  var temPlayerCards = deck.pop();
-  playerCards.push(temPlayerCards);
-  console.log('tem card');
-  console.log(temPlayerCards);
-  console.log('player cards');
-  console.log(playerCards);
-  var rankIndex = 0;
-  playerTotalValue = 0;
-  // store cards point
-  while (rankIndex < playerCards.length) {
-    playerTotalValue = playerTotalValue + playerCards[rankIndex].rank;
-    console.log('Before ace change value' + playerTotalValue);
-    message = message + ' Player deal ' + playerCards[rankIndex].name + ' of ' + playerCards[rankIndex].suit + '<br>';
-    rankIndex = rankIndex + 1;
-  }
-  // if value is mroe than 21 and there ace , ace set to 1
+// check for ace condition logic
+// if total value more than 21 , ace value change from 11  to 1
+var aceCondition = function (totalValue, handCards) {
   var aceIndex = 0;
-  while (aceIndex < playerCards.length) {
-    if (playerTotalValue > 21 && playerCards[aceIndex].name == 'ace') {
-      playerTotalValue = playerTotalValue - 10;
-      console.log('New Total value ' + playerTotalValue);
+  while (aceIndex < handCards.length) {
+    if (totalValue > 21 && handCards[aceIndex].name == 'ace') {
+      totalValue = totalValue - 10;
+      console.log('New Total value ' + totalValue);
       aceIndex = aceIndex + 1;
     } else {
       aceIndex = aceIndex + 1;
     }
   }
-  message = message + '<br> Player total cards value ' + playerTotalValue + '<br>Computer deal ' + computerCards[0].name + ' of ' + computerCards[0].suit + ' and one face down card <br>';
+  return totalValue;
+};
+
+// player draw 2 cards and computer given 1 card face up and 1 card face down
+var playerAndComputerDrawTwoCards = function () {
+  var message = '';
+  playerTotalValue = 0;
+
+  playerTotalValue = storePoint(playerTotalValue, playerHand);
+  playerTotalValue = aceCondition(playerTotalValue, playerHand);
+  console.log(playerTotalValue);
+
+  message = playerName + ' first deal cards ' + playerHand[0].name + ' of ' + playerHand[0].suit + ' and ' + playerHand[1].name + ' of ' + playerHand[1].suit + '<br> Player total card value' + playerTotalValue + '<br>Computer deal ' + computerCards[0].name + ' of ' + computerCards[0].suit + ' and one face down card<br><br> You bet ' + playerBettingPoint + '<br> type hit to deal 1 card or stand to end your turn';
+  // if player score 21 on the draw (first 2 cards) player win else
+  if (playerTotalValue == 21) {
+    console.log('player win blackjack');
+    playerTotalBettingPoint = playerTotalBettingPoint + Number(playerBettingPoint);
+    message = message + '<br> You win! You bet ' + playerBettingPoint + ' point. your total point ' + playerTotalBettingPoint;
+    return message;
+  }
+
+  return message;
+};
+
+// player deal 1 card to player hand
+var playerDeal1Cards = function () {
+  var message = '';
+  playerHand.push(deck.pop());
+  console.log(playerHand);
+  var rankIndex = 0;
+  playerTotalValue = storePoint(playerTotalValue, playerHand);
+  // display array card
+  while (rankIndex < playerHand.length) {
+    message = message + playerName + '  deal ' + playerHand[rankIndex].name + ' of ' + playerHand[rankIndex].suit + '<br>';
+    rankIndex = rankIndex + 1;
+  }
+  // if value is more than 21 and there ace , ace set to 1
+  playerTotalValue = aceCondition(playerTotalValue, playerHand);
+
+  message = message + '<br>' + playerName + ' total cards value ' + playerTotalValue + '<br>' + playerName + ' bet ' + playerBettingPoint + '<br>Computer deal ' + computerCards[0].name + ' of ' + computerCards[0].suit + ' and one face down card <br>';
   return message;
   // if player cards value 21 , player win
   // if player cards value more than 21, player burst
 };
 
 var main = function (input) {
+  var myOutputValue = 'bug';
+  if (mode == 'enter player name') {
+    myOutputValue = 'Enter username';
+    mode = 'player bet point';
+    return myOutputValue;
+  }
+  if (mode == 'player bet point') {
+    playerName = input;
+    console.log(playerName);
+    myOutputValue = 'Welcome ' + playerName + ', enter the amount of point you wish to bet , you have total of ' + playerTotalBettingPoint + ' point';
+    mode = 'player turn';
+    return myOutputValue;
+  }
+
   if (mode == 'player turn') {
-    var myOutputValue = playerAndComputerDrawTwoCards();
+    playerBettingPoint = input;
+    myOutputValue = playerAndComputerDrawTwoCards();
+
+    console.log(myOutputValue);
     if (playerTotalValue != 21) {
       mode = 'player choose';
     }
-    // if player type hit ,player deal 1 car
+    // if player type hit ,player deal 1 card
   }
   if (input == 'hit' && mode == 'player choose') {
-    myOutputValue = storePlayerPoint();
+    myOutputValue = playerDeal1Cards();
   }
   if (playerTotalValue == 21) {
     console.log('you win');
-    myOutputValue = myOutputValue + '<br> Player win';
+    playerTotalBettingPoint = playerTotalBettingPoint + Number(playerBettingPoint);
+    myOutputValue = myOutputValue + '<br>' + playerName + ' win! You bet ' + playerBettingPoint + ' point. your total point ' + playerTotalBettingPoint;
   }
   if (playerTotalValue > 21) {
     console.log('you lose');
-    myOutputValue = myOutputValue + '<br> Player lose!';
+    playerTotalBettingPoint = playerTotalBettingPoint - playerBettingPoint;
+    myOutputValue = myOutputValue + '<br>' + playerName + ' lose! You bet ' + playerBettingPoint + ' point. your total point ' + playerTotalBettingPoint;
     return myOutputValue;
   }
   if (input == 'stand') {
-    myOutputValue = 'Player total point ' + playerTotalValue + '<br> Computer Turn';
+    myOutputValue = playerName + ' total point cards value' + playerTotalValue + '<br> Computer Turn';
     console.log(myOutputValue);
 
     mode = 'computer turn';
@@ -192,48 +231,80 @@ var main = function (input) {
   if (mode == 'computer turn') {
     console.log(computerCards);
     var computerRankIndex = 0;
-    var computerTotalValue = 0;
+    var computerTotalValue = storePoint(computerTotalValue, computerCards);
+    console.log(computerTotalValue);
+    // display output of computer deal card
     while (computerRankIndex < computerCards.length) {
-      // store cards point
-      computerTotalValue = computerTotalValue + computerCards[computerRankIndex].rank;
-      console.log(computerTotalValue);
       myOutputValue = myOutputValue + '<br> computer deal ' + computerCards[computerRankIndex].name + ' of ' + computerCards[computerRankIndex].suit;
-      if (computerTotalValue == 21) {
-        console.log('computer win');
-      }
       computerRankIndex = computerRankIndex + 1;
     }
+    if (computerTotalValue == 21) {
+      console.log('computer win');
+      playerTotalBettingPoint = playerTotalBettingPoint - playerBettingPoint;
+      myOutputValue = myOutputValue + '<br>Computer win! You lose ' + playerBettingPoint + ' point. your total point ' + playerTotalBettingPoint;
+    }
+    // computer draw card if computer total value is lesser than 21 and player total
+    // or lesser than 17
     while (computerTotalValue < playerTotalValue && computerTotalValue < 21 || computerTotalValue < 17) {
       var temComputerCards = deck.pop();
+      console.log(temComputerCards);
       computerCards.push(temComputerCards);
       computerTotalValue = computerTotalValue + computerCards[computerRankIndex].rank;
       myOutputValue = myOutputValue + '<br>computer deal ' + temComputerCards.name + ' of ' + temComputerCards.suit;
-    }
-    var aceComputerIndex = 0;
-    while (aceComputerIndex < computerCards.length) {
-      if (computerTotalValue > 21 && computerCards[aceComputerIndex].name == 'ace') {
-        computerTotalValue = computerTotalValue - 10;
-        console.log('New Total value ' + computerTotalValue);
-        aceComputerIndex = aceComputerIndex + 1;
-      } else {
-        aceComputerIndex = aceComputerIndex + 1;
-      }
-    }
-    myOutputValue = myOutputValue + '<br> Computer total value ' + computerTotalValue;
-    if (computerTotalValue > 21) {
-      console.log('computer lose');
-      myOutputValue = myOutputValue + '<br>Computer Burst! Player WIN!';
-    } else if (playerTotalValue == computerTotalValue) {
-      console.log('tie');
-      myOutputValue = myOutputValue + '<br> TIE!';
-    }
-    else if (playerTotalValue > computerTotalValue) {
-      console.log('player win');
-      myOutputValue = myOutputValue + '<br> Player WIN!';
-    } else if (playerTotalValue < computerTotalValue) {
-      console.log('computer win');
-      myOutputValue = myOutputValue + '<br> Computer WIN!';
-    }
+    }console.log(computerTotalValue);
+
+    computerTotalValue = aceCondition(computerTotalValue, computerCards);
+    console.log(computerTotalValue);
+    myOutputValue = myOutputValue + '<br> Computer total value ' + computerTotalValue + winAndLoseCondition(computerTotalValue, playerTotalValue, playerTotalBettingPoint, playerBettingPoint);
   }
   return myOutputValue;
 };
+// if computer total value is more than 21 or less than player total value , computer lose
+// else computer win
+var winAndLoseCondition = function (computerTotalValue, playerTotalValue, playerTotalBettingPoint, playerBettingPoint) {
+  var message = '';
+  if (computerTotalValue > 21) {
+    console.log('computer lose 1');
+    playerTotalBettingPoint = playerTotalBettingPoint - playerBettingPoint;
+    console.log(playerTotalBettingPoint);
+    message = message + '<br>Computer Burst! ' + playerName + ' WIN! You gain ' + playerBettingPoint + ' point. your total point ' + playerTotalBettingPoint;
+    return message;
+  } if (playerTotalValue == computerTotalValue) {
+    console.log('tie');
+    message = message + '<br> TIE! Your total betting Point ' + playerTotalBettingPoint;
+    return message;
+  }
+  if (playerTotalValue > computerTotalValue) {
+    console.log('player win 1');
+    playerTotalBettingPoint = playerTotalBettingPoint + Number(playerBettingPoint);
+    console.log(playerTotalBettingPoint);
+    message = message + '<br>' + playerName + ' WIN! You gain ' + playerBettingPoint + ' point. your total point ' + playerTotalBettingPoint;
+    console.log(playerTotalBettingPoint);
+    return message;
+  } if (playerTotalValue < computerTotalValue) {
+    console.log('computer win 2');
+    playerTotalBettingPoint = playerTotalBettingPoint - playerBettingPoint;
+    message = message + '<br> Computer WIN! You lose ' + playerBettingPoint + ' point. your total point ' + playerTotalBettingPoint;
+    console.log(playerTotalBettingPoint);
+    return message;
+  }
+};
+// player betting Point
+// Each round the player wagers a number of points before their hand is dealt
+// if win blackjack , player win 1.5x the amount been wagers or else 1x
+
+// If the player has two of the same kind of card
+// SPLIT FOR THE FIRST 2 Cards
+// var playerHand2 = [];
+// if (playerHand[0].rank == playerHand[1].rank) {
+//   // they can choose to split into separate hands and get dealt 2 new cards
+//   // competition against the dealer
+//   // The two hands created by splitting are considered independent
+//   if (input == 'split') {
+//     // playercard split to pop to playerh
+//     // deal new card for each hands
+//     playerHand2 = playerHand2.push(playerHand);
+//     playerHand = deck.pop();
+//     playerHand2 = deck.pop();
+//   }
+// }// compare the of both hand against computer
