@@ -180,11 +180,12 @@ var playerTotalValue = 0;
 
 var main = function (input) {
   var myOutputValue = 'bug';
+  // prompt user to enter user name
   if (mode == 'ask for username') {
     myOutputValue = 'Enter username';
     mode = 'enter username';
     return myOutputValue;
-  }
+  }// ask user to enter betting amount
   if (mode == 'enter username') {
     playerName = input;
     myOutputValue = 'Welcome ' + playerName + ', enter the amount of point you wish to bet , you have total of ' + playerTotalBettingPoint + ' point';
@@ -196,13 +197,13 @@ var main = function (input) {
     playerBettingPoint = input;
     myOutputValue = playerName + ',  you have total of ' + playerTotalBettingPoint + ' point and you wish to bet ' + playerBettingPoint;
     mode = 'player turn';
+    // reset  player total cards value and reshuffle deck
+    // 2 card will be given to player and computer
     playerTotalValue = 0;
     console.log(playerTotalValue);
-    if (playerTotalValue == 0) {
-      playerHand = [];
-      computerCards = [];
-      deck = shuffleCards(makeDeck());
-    }
+    playerHand = [];
+    computerCards = [];
+    deck = shuffleCards(makeDeck());
     playerHand = deck.splice(0, 2);
     deck.pop(playerHand);
     console.log('player cards');
@@ -276,9 +277,11 @@ var main = function (input) {
       var temComputerCards = deck.pop();
       computerCards.push(temComputerCards);
       computerTotalValue = computerTotalValue + computerCards[computerRankIndex].rank;
+      // if total value is more than 21 and there ace , ace value set from 11 to 1
+      computerTotalValue = aceCondition(computerTotalValue, computerCards);
       myOutputValue = myOutputValue + '<br>computer deal ' + temComputerCards.name + ' of ' + temComputerCards.suit;
     }
-    computerTotalValue = aceCondition(computerTotalValue, computerCards);
+
     computerTotalValue = storePoint(computerTotalValue, computerCards);
     console.log(computerTotalValue);
     myOutputValue = myOutputValue + '<br> Computer total value ' + computerTotalValue;
