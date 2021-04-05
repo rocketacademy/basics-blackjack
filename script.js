@@ -111,7 +111,6 @@ var dealerScore = 0;
 
 var mode = 'DEAL_CARDS';
 
-// check for blackack and also check for what to do next
 // adding up the player and dealer hand by using Array.reduce -
 // to sum a property in an array of objects
 function sumOfHands(handsTotal) {
@@ -123,14 +122,15 @@ function dealNextCard() {
   return deck.pop();
 }
 
-// function to check game winning or losing condition
-function checkGameOver(totalScore) {
+// function to check initial game winning or losing condition
+function firstResultCheck(totalScore) {
   // condition for check blackjack and bust
   if (totalScore == 21) {
-    return 'blackjack!';
+    return "it's a Blackjack! 💰";
   } if (totalScore > 21) {
-    return 'bust...';
+    return "it's bust... 🤡 GameOver...";
   }
+  return '';
 }
 
 // player and dealer are dealt cards
@@ -147,15 +147,19 @@ var dealCards = function () {
   playerScore = sumOfHands(playerHand);
   dealerScore = sumOfHands(dealerHand);
   // check win or lose condition
-  checkGameOver(playerScore);
+  var checkGame = firstResultCheck(playerScore);
+  // update score
+  updateScores();
   // go to player turn mode before return
   mode = 'PLAYER_TURN';
-  // player hands and dealer hands are returned
+  // player hand message
   var playerMessage = 'Player: ' + playerCardOne.rank + ' of ' + playerCardOne.suit + ' & '
   + playerCardTwo.rank + ' of ' + playerCardTwo.suit
-  + '<br>' + 'Player card total is: ' + playerScore;
+  + '<br>' + 'Player card total is: ' + playerScore + ' ' + checkGame;
+  // dealer hand message
   var dealerMessage = 'Dealer: ' + dealerCardOne.rank + ' of ' + dealerCardOne.suit + '<br>'
   + 'Dealer card total is: ' + dealerScore;
+  // return output
   return playerMessage + '<br><br>' + dealerMessage;
 };
 
@@ -168,18 +172,20 @@ function playerTurn(input) {
   if (input == 'hit') {
     playerHand.push(dealNextCard());
     playerScore = sumOfHands(playerHand);
-    checkGameOver(playerScore);
+    updateScores();
+    var checkGame = firstResultCheck(playerScore);
     var playerNewCardHitRank = playerHand[playerHand.length - 1].rank;
     var playerNewCardHitSuit = playerHand[playerHand.length - 1].suit;
     var message = 'Your hit is ' + playerNewCardHitRank + ' of ' + playerNewCardHitSuit
     + '<br>' + 'Player total is now: ' + playerScore;
-    return message;
+    return message + ' ' + checkGame;
   }
   if (input == 'stay') {
     playerScore = sumOfHands(playerHand);
-    checkGameOver(playerScore);
+    updateScores();
+    var checkGame = firstResultCheck(playerScore);
     mode = 'DEALER_TURN';
-    return 'You will stand with a total score of ' + playerScore + '<br>'
+    return 'You will stand with a total score of ' + playerScore + checkGame + '<br>'
     + "Now it's dealer turn: Click on submit button for dealer card hits!";
     // check for game over
   }
@@ -189,14 +195,15 @@ function playerTurn(input) {
 function dealerTurn(input = '') {
   // no input is needed, just click submit to see dealer card hits
   if (input == '') {
-    checkGameOver(dealerScore);
     dealerHand.push(dealNextCard());
+    dealerScore = sumOfHands(dealerHand);
+    updateScores();
+    var checkGame = firstResultCheck(dealerScore);
     var dealerCardHitRank = dealerHand[dealerHand.length - 1].rank;
     var dealerCardHitSuit = dealerHand[dealerHand.length - 1].suit;
-    dealerScore = sumOfHands(dealerHand);
   }
   return 'Dealer has hit ' + dealerCardHitRank + ' of ' + dealerCardHitSuit + '<br>'
-  + 'Dealer total is now: ' + dealerScore;
+  + 'Dealer total is now: ' + dealerScore + ' ' + checkGame;
 }
 
 var main = function (input) {
@@ -213,3 +220,25 @@ var main = function (input) {
     return dealerTurn();
   }
 };
+
+function getScore(cardArray) {
+  var score = 0;
+  var hasAce = false;
+  for (var i = 0; i < cardArray.length; i++) {
+    var card = cardArray[i];
+    score += deck(card);
+    if (card.name == 'Ace') {
+      hasAce = true;
+    }
+
+    if (hasAce && score + 10 <= 21) {
+      return score + 10;
+    }
+  }
+  return score;
+}
+
+function updateScores() {
+  dealerScore = getScore(dealerHand);
+  playerScore = getScore(playerHand);
+}
