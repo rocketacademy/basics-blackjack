@@ -19,7 +19,7 @@ var makeDeck = function () {
   // Initialise an empty deck array
   var cardDeck = [];
   // Initialise an array of the 4 suits in our deck. We will loop over this array.
-  var suits = ['hearts', 'diamonds', 'clubs', 'spades'];
+  var suits = ['♥️', '♦️', '♣️', '♠️'];
 
   // Loop over the suits array
   var suitIndex = 0;
@@ -31,18 +31,18 @@ var makeDeck = function () {
     // Notice rankCounter starts at 1 and not 0, and ends at 13 and not 12.
     // This is an example of a loop without an array.
     var rankCounter = 1;
-    while (rankCounter <= 13) {
+    while (rankCounter <= 11) {
       // By default, the card name is the same as rankCounter
       var cardName = rankCounter;
 
       // If rank is 1, 11, 12, or 13, set cardName to the ace or face card's name
       if (cardName == 1) {
         cardName = 'ace';
-      } else if (cardName == 11) {
+      } else if (cardName == 10) {
         cardName = 'jack';
-      } else if (cardName == 12) {
+      } else if (cardName == 10) {
         cardName = 'queen';
-      } else if (cardName == 13) {
+      } else if (cardName == 10) {
         cardName = 'king';
       }
 
@@ -106,98 +106,110 @@ var deck = shuffleCards(makeDeck());
 var playerHand = [];
 var dealerHand = [];
 
-var mode = '';
+var playerScore = 0;
+var dealerScore = 0;
 
-var myOutputValue = '';
+var mode = 'DEAL_CARDS';
 
 // check for blackack and also check for what to do next
 // adding up the player and dealer hand by using Array.reduce -
 // to sum a property in an array of objects
 function sumOfHands(handsTotal) {
-  var playerHandsTotal = playerHand.reduce((previous, current) => previous + current.rank, 0);
-  console.log('player total card count: ', playerHandsTotal);
-
-  var playerScore = playerHandsTotal;
-  if (playerScore == 21) {
-    return 'player has blackjack! player wins!';
-  } if (playerScore > 21) {
-    return 'player went over 21, it"s a bust';
-  } if (playerScore < 21) {
-    mode = 'PLAYER_MODE';
-    return 'you can hit or stay, the choice is yours!';
-  }
-
-  var dealerHandsTotal = dealerHand.reduce((previous, current) => previous + current.rank, 0);
-  console.log('dealer total card count: ', dealerHandsTotal);
-  if (dealerScore > 21) {
-    // if dealer bust goto restart mode
-    return 'dealer bust!';
-  }
-  if (dealerScore < 17) {
-    // if dealer has less than 17 get new card from deck
-    dealerHand.push(deck.pop());
-    return 'dealer hits until 17 or higher is reached';
-  }
-  if (dealerScore >= 17) {
-    // if dealer gets 17 or higher goto score comparison mode
-    mode = 'COMPARE_SCORES';
-    return 'dealer stays let"s compare scores';
-  }
+  var playerHandsTotal = handsTotal.reduce((previous, current) => previous + current.rank, 0);
+  return playerHandsTotal;
+}
+// function to deal next card from the deck
+function dealNextCard() {
+  return deck.pop();
 }
 
-// player mode where player can hit or stay
-function playerTurn(input) {
-  mode = 'PLAYER_MODE';
-  var playerChoice = input;
-  // player can either hit or stay depending on the input
-  if (playerChoice == 'hit') {
-    playerHand.push(deck.pop());
-    return sumOfHands(playerHand);
-  }
-  if (playerChoice == 'stay') {
-    mode = 'DEALER_MODE';
-    return 'you have decided to stay, now it is dealer turn';
-  }
-
-  return 'please type hit or stay to play the game';
-}
-
-// dealer mode where the total number of dealer card is checked
-function dealerTurn() {
-  mode = 'DEALER_MODE';
-  var dealerScore = sumOfHands(dealerHandsTotal);
-  if (dealerScore < 17) {
-    var i = 1;
-    while (i < dealerscore) {
-      dealerHand.push(deck.pop());
-      i += 1;
-    }
-    return 'dealer has hit' + dealerScore;
+// function to check game winning or losing condition
+function checkGameOver(totalScore) {
+  // condition for check blackjack and bust
+  if (totalScore == 21) {
+    return 'blackjack!';
+  } if (totalScore > 21) {
+    return 'bust...';
   }
 }
 
 // player and dealer are dealt cards
 var dealCards = function () {
-  mode = 'START_GAME';
   // cards are dealt to the player and dealer
-  playerHand = [deck.pop(), deck.pop()];
-  dealerHand = [deck.pop(), deck.pop()];
-
-  // check player cards for blackjack
-  return sumOfHands(playerHand);
+  playerHand = [dealNextCard(), dealNextCard()];
+  dealerHand = [dealNextCard()];
+  // variable for player card one and two
+  var playerCardOne = playerHand[0];
+  var playerCardTwo = playerHand[1];
+  // variable for dealer card one and two
+  var dealerCardOne = dealerHand[0];
+  // initial hand of player and dealer is summed
+  playerScore = sumOfHands(playerHand);
+  dealerScore = sumOfHands(dealerHand);
+  // check win or lose condition
+  checkGameOver(playerScore);
+  // go to player turn mode before return
+  mode = 'PLAYER_TURN';
+  // player hands and dealer hands are returned
+  var playerMessage = 'Player: ' + playerCardOne.rank + ' of ' + playerCardOne.suit + ' & '
+  + playerCardTwo.rank + ' of ' + playerCardTwo.suit
+  + '<br>' + 'Player card total is: ' + playerScore;
+  var dealerMessage = 'Dealer: ' + dealerCardOne.rank + ' of ' + dealerCardOne.suit + '<br>'
+  + 'Dealer card total is: ' + dealerScore;
+  return playerMessage + '<br><br>' + dealerMessage;
 };
 
-var main = function (input) {
+// function when it is players turn
+function playerTurn(input) {
+  // default message for playerTurn function if there is no input
   if (input == '') {
-    mode = 'START_GAME';
-    dealCards();
+    return 'please input "hit" or "stay" to play';
   }
-  if (mode == 'PLAYER_MODE') {
+  if (input == 'hit') {
+    playerHand.push(dealNextCard());
+    playerScore = sumOfHands(playerHand);
+    checkGameOver(playerScore);
+    var playerNewCardHitRank = playerHand[playerHand.length - 1].rank;
+    var playerNewCardHitSuit = playerHand[playerHand.length - 1].suit;
+    var message = 'Your hit is ' + playerNewCardHitRank + ' of ' + playerNewCardHitSuit
+    + '<br>' + 'Player total is now: ' + playerScore;
+    return message;
+  }
+  if (input == 'stay') {
+    playerScore = sumOfHands(playerHand);
+    checkGameOver(playerScore);
+    mode = 'DEALER_TURN';
+    return 'You will stand with a total score of ' + playerScore + '<br>'
+    + "Now it's dealer turn: Click on submit button for dealer card hits!";
+    // check for game over
+  }
+}
+
+// function when it is dealers' turn
+function dealerTurn(input = '') {
+  // no input is needed, just click submit to see dealer card hits
+  if (input == '') {
+    checkGameOver(dealerScore);
+    dealerHand.push(dealNextCard());
+    var dealerCardHitRank = dealerHand[dealerHand.length - 1].rank;
+    var dealerCardHitSuit = dealerHand[dealerHand.length - 1].suit;
+    dealerScore = sumOfHands(dealerHand);
+  }
+  return 'Dealer has hit ' + dealerCardHitRank + ' of ' + dealerCardHitSuit + '<br>'
+  + 'Dealer total is now: ' + dealerScore;
+}
+
+var main = function (input) {
+  if (mode == 'DEAL_CARDS') {
+    dealCards();
+    return dealCards();
+  }
+  if (mode == 'PLAYER_TURN') {
     playerTurn();
     return playerTurn(input);
   }
-  if (mode == 'DEALER_MODE') {
+  if (mode == 'DEALER_TURN') {
     dealerTurn();
+    return dealerTurn();
   }
-  return myOutputValue;
 };
