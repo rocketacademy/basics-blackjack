@@ -149,7 +149,6 @@ var dealCards = function () {
   // check win or lose condition
   var checkGame = firstResultCheck(playerScore);
   // update score
-  updateScores();
   // go to player turn mode before return
   mode = 'PLAYER_TURN';
   // player hand message
@@ -172,7 +171,6 @@ function playerTurn(input) {
   if (input == 'hit') {
     playerHand.push(dealNextCard());
     playerScore = sumOfHands(playerHand);
-    updateScores();
     var checkGame = firstResultCheck(playerScore);
     var playerNewCardHitRank = playerHand[playerHand.length - 1].rank;
     var playerNewCardHitSuit = playerHand[playerHand.length - 1].suit;
@@ -182,7 +180,6 @@ function playerTurn(input) {
   }
   if (input == 'stay') {
     playerScore = sumOfHands(playerHand);
-    updateScores();
     var checkGame = firstResultCheck(playerScore);
     mode = 'DEALER_TURN';
     return 'You will stand with a total score of ' + playerScore + checkGame + '<br>'
@@ -197,7 +194,6 @@ function dealerTurn(input = '') {
   if (input == '') {
     dealerHand.push(dealNextCard());
     dealerScore = sumOfHands(dealerHand);
-    updateScores();
     var checkGame = firstResultCheck(dealerScore);
     var dealerCardHitRank = dealerHand[dealerHand.length - 1].rank;
     var dealerCardHitSuit = dealerHand[dealerHand.length - 1].suit;
@@ -221,6 +217,7 @@ var main = function (input) {
   }
 };
 
+/*
 function getScore(cardArray) {
   var score = 0;
   var hasAce = false;
@@ -242,3 +239,4 @@ function updateScores() {
   dealerScore = getScore(dealerHand);
   playerScore = getScore(playerHand);
 }
+*/
