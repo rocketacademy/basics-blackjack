@@ -31,18 +31,18 @@ var makeDeck = function () {
     // Notice rankCounter starts at 1 and not 0, and ends at 13 and not 12.
     // This is an example of a loop without an array.
     var rankCounter = 1;
-    while (rankCounter <= 11) {
+    while (rankCounter <= 13) {
       // By default, the card name is the same as rankCounter
       var cardName = rankCounter;
 
       // If rank is 1, 11, 12, or 13, set cardName to the ace or face card's name
       if (cardName == 1) {
         cardName = 'ace';
-      } else if (cardName == 10) {
+      } else if (cardName == 11) {
         cardName = 'jack';
-      } else if (cardName == 10) {
+      } else if (cardName == 12) {
         cardName = 'queen';
-      } else if (cardName == 10) {
+      } else if (cardName == 13) {
         cardName = 'king';
       }
 
@@ -121,7 +121,12 @@ function getTotal(cards) {
   while (counter < cards.length) {
     // add current card to current total
     console.log(total);
-    total = cards[counter].rank + total;
+    if (cards[counter].rank == 11 || cards[counter].rank == 12 || cards[counter].rank == 13) {
+      total += 10;
+    }
+    else {
+      total = cards[counter].rank + total;
+    }
     counter = counter + 1;
     if (cards[cards.length] == 1) ace = true;
   }
@@ -138,7 +143,7 @@ function dealNextCard() {
 }
 
 // function to check the results if it is not blackjack or bust
-function secondResultCheck() {
+function checkResult() {
   var playerResult = getTotal(playerHand);
   var dealerResult = getTotal(dealerHand);
 
@@ -228,27 +233,26 @@ function playerTurn(input) {
 }
 
 // function when it is dealers' turn
-function dealerTurn(input = '') {
+function dealerTurn() {
   // no input is needed, just click submit to see dealer card hits
-  if (input == '') {
-    dealerHand.push(dealNextCard());
-    dealerScore = getTotal(dealerHand);
-    if (dealerScore < 17) {
-      return 'Dealer must hit again!';
-    }
-    if (dealerScore == 21) {
-      mode = 'GAME_OVER';
-      return "it's a Blackjack! 💰";
-    } if (dealerScore > 21) {
-      mode = 'GAME_OVER';
-      return "it's a bust... 🤡 GameOver...";
-    }
-    var dealerCardHitRank = dealerHand[dealerHand.length - 1].rank;
-    var dealerCardHitSuit = dealerHand[dealerHand.length - 1].suit;
+  dealerHand.push(dealNextCard());
+  dealerScore = getTotal(dealerHand);
+  if (dealerScore < 17) {
+    return 'Dealer must hit again!';
   }
-  var checkGameAgain = secondResultCheck();
+  if (dealerScore == 21) {
+    mode = 'GAME_OVER';
+    return "it's a Blackjack! 💰";
+  }
+  if (dealerScore > 21) {
+    mode = 'GAME_OVER';
+    return "it's a bust... 🤡 GameOver...";
+  }
+  var dealerCardHitRank = dealerHand[dealerHand.length - 1].rank;
+  var dealerCardHitSuit = dealerHand[dealerHand.length - 1].suit;
+  var resultMessage = checkResult();
   return 'Dealer has hit ' + dealerCardHitRank + ' of ' + dealerCardHitSuit + '<br>'
-  + 'Dealer total is now: ' + dealerScore + ' ' + checkGameAgain;
+  + 'Dealer total is now: ' + dealerScore + ' ' + resultMessage;
 }
 
 var main = function (input) {
