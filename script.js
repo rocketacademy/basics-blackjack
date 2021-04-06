@@ -111,26 +111,70 @@ var dealerScore = 0;
 
 var mode = 'DEAL_CARDS';
 
-// adding up the player and dealer hand by using Array.reduce -
 // to sum a property in an array of objects
-function sumOfHands(handsTotal) {
-  var playerHandsTotal = handsTotal.reduce((previous, current) => previous + current.rank, 0);
-  return playerHandsTotal;
+function getTotal(cards) {
+  var total = 0;
+  var counter = 0;
+  var ace = false;
+  // loop to find the sum of an array
+  // sum the rank of cards inside an array object
+  while (counter < cards.length) {
+    // add current card to current total
+    console.log(total);
+    total = cards[counter].rank + total;
+    counter = counter + 1;
+    if (cards[cards.length] == 1) ace = true;
+  }
+  if (total + 10 <= 21 && ace) {
+    total += 10;
+  }
+
+  return total;
 }
+
 // function to deal next card from the deck
 function dealNextCard() {
   return deck.pop();
 }
-
+/*
 // function to check initial game winning or losing condition
 function firstResultCheck(totalScore) {
   // condition for check blackjack and bust
   if (totalScore == 21) {
+    mode = 'GAME_OVER';
     return "it's a Blackjack! 💰";
   } if (totalScore > 21) {
-    return "it's bust... 🤡 GameOver...";
+    mode = 'GAME_OVER';
+    return "it's a bust... 🤡 GameOver...";
+  }
+  return ' ';
+} */
+
+function secondResultCheck() {
+  var playerResult = getTotal(playerHand);
+  var dealerResult = getTotal(dealerHand);
+
+  if (playerResult > dealerResult) {
+    mode = 'GAME_OVER';
+    return '<br>' + 'Player wins! with a higher score 🤑🤑🤑';
+  }
+  if (playerResult < dealerResult) {
+    mode = 'GAME_OVER';
+    return '<br>' + 'Sorry dealer wins! with a higher score 💸 please visit your local Ah-Long 💵 🦈 for cash (just kidding 😝)';
+  }
+  if (playerResult == dealerResult) {
+    mode = 'GAME_OVER';
+    return '<br>' + 'Whoah it\'s a tie! Press submit to play again!!!';
   }
   return '';
+}
+
+// reset game after game over
+function resetGame() {
+  mode = 'DEAL_CARDS';
+  playerHand = [];
+  dealerHand = [];
+  return 'click submit to play again!';
 }
 
 // player and dealer are dealt cards
@@ -144,17 +188,16 @@ var dealCards = function () {
   // variable for dealer card one and two
   var dealerCardOne = dealerHand[0];
   // initial hand of player and dealer is summed
-  playerScore = sumOfHands(playerHand);
-  dealerScore = sumOfHands(dealerHand);
+  playerScore = getTotal(playerHand);
+  dealerScore = getTotal(dealerHand);
   // check win or lose condition
-  var checkGame = firstResultCheck(playerScore);
-  // update score
+  // var checkGame = firstResultCheck(playerScore);
   // go to player turn mode before return
   mode = 'PLAYER_TURN';
   // player hand message
   var playerMessage = 'Player: ' + playerCardOne.rank + ' of ' + playerCardOne.suit + ' & '
   + playerCardTwo.rank + ' of ' + playerCardTwo.suit
-  + '<br>' + 'Player card total is: ' + playerScore + ' ' + checkGame;
+  + '<br>' + 'Player card total is: ' + playerScore + ' ';
   // dealer hand message
   var dealerMessage = 'Dealer: ' + dealerCardOne.rank + ' of ' + dealerCardOne.suit + '<br>'
   + 'Dealer card total is: ' + dealerScore;
@@ -170,19 +213,24 @@ function playerTurn(input) {
   }
   if (input == 'hit') {
     playerHand.push(dealNextCard());
-    playerScore = sumOfHands(playerHand);
-    var checkGame = firstResultCheck(playerScore);
+    playerScore = getTotal(playerHand);
+    if (playerScore == 21) {
+      mode = 'GAME_OVER';
+      return "it's a Blackjack! 💰";
+    } if (playerScore > 21) {
+      mode = 'GAME_OVER';
+      return "it's a bust... 🤡 GameOver...";
+    }
     var playerNewCardHitRank = playerHand[playerHand.length - 1].rank;
     var playerNewCardHitSuit = playerHand[playerHand.length - 1].suit;
     var message = 'Your hit is ' + playerNewCardHitRank + ' of ' + playerNewCardHitSuit
     + '<br>' + 'Player total is now: ' + playerScore;
-    return message + ' ' + checkGame;
+    return message + ' ';
   }
   if (input == 'stay') {
-    playerScore = sumOfHands(playerHand);
-    var checkGame = firstResultCheck(playerScore);
+    playerScore = getTotal(playerHand);
     mode = 'DEALER_TURN';
-    return 'You will stand with a total score of ' + playerScore + checkGame + '<br>'
+    return 'You will stand with a total score of ' + playerScore + '<br>'
     + "Now it's dealer turn: Click on submit button for dealer card hits!";
     // check for game over
   }
@@ -193,13 +241,20 @@ function dealerTurn(input = '') {
   // no input is needed, just click submit to see dealer card hits
   if (input == '') {
     dealerHand.push(dealNextCard());
-    dealerScore = sumOfHands(dealerHand);
-    var checkGame = firstResultCheck(dealerScore);
+    dealerScore = getTotal(dealerHand);
+    if (dealerScore == 21) {
+      mode = 'GAME_OVER';
+      return "it's a Blackjack! 💰";
+    } if (dealerScore > 21) {
+      mode = 'GAME_OVER';
+      return "it's a bust... 🤡 GameOver...";
+    }
     var dealerCardHitRank = dealerHand[dealerHand.length - 1].rank;
     var dealerCardHitSuit = dealerHand[dealerHand.length - 1].suit;
   }
+  var checkGameAgain = secondResultCheck();
   return 'Dealer has hit ' + dealerCardHitRank + ' of ' + dealerCardHitSuit + '<br>'
-  + 'Dealer total is now: ' + dealerScore + ' ' + checkGame;
+  + 'Dealer total is now: ' + dealerScore + ' ' + checkGameAgain;
 }
 
 var main = function (input) {
@@ -215,28 +270,8 @@ var main = function (input) {
     dealerTurn();
     return dealerTurn();
   }
-};
-
-/*
-function getScore(cardArray) {
-  var score = 0;
-  var hasAce = false;
-  for (var i = 0; i < cardArray.length; i++) {
-    var card = cardArray[i];
-    score += deck(card);
-    if (card.name == 'Ace') {
-      hasAce = true;
-    }
-
-    if (hasAce && score + 10 <= 21) {
-      return score + 10;
-    }
+  if (mode == 'GAME_OVER') {
+    resetGame();
+    return resetGame();
   }
-  return score;
-}
-
-function updateScores() {
-  dealerScore = getScore(dealerHand);
-  playerScore = getScore(playerHand);
-}
-*/
+};
