@@ -136,20 +136,8 @@ function getTotal(cards) {
 function dealNextCard() {
   return deck.pop();
 }
-/*
-// function to check initial game winning or losing condition
-function firstResultCheck(totalScore) {
-  // condition for check blackjack and bust
-  if (totalScore == 21) {
-    mode = 'GAME_OVER';
-    return "it's a Blackjack! 💰";
-  } if (totalScore > 21) {
-    mode = 'GAME_OVER';
-    return "it's a bust... 🤡 GameOver...";
-  }
-  return ' ';
-} */
 
+// function to check the results if it is not blackjack or bust
 function secondResultCheck() {
   var playerResult = getTotal(playerHand);
   var dealerResult = getTotal(dealerHand);
@@ -190,8 +178,11 @@ var dealCards = function () {
   // initial hand of player and dealer is summed
   playerScore = getTotal(playerHand);
   dealerScore = getTotal(dealerHand);
-  // check win or lose condition
-  // var checkGame = firstResultCheck(playerScore);
+  // check win or lose conditioj
+  if (playerScore == 21) {
+    mode = 'GAME_OVER';
+    return playerMessage + playerScore + " it's a Blackjack! 💰";
+  }
   // go to player turn mode before return
   mode = 'PLAYER_TURN';
   // player hand message
@@ -242,6 +233,9 @@ function dealerTurn(input = '') {
   if (input == '') {
     dealerHand.push(dealNextCard());
     dealerScore = getTotal(dealerHand);
+    if (dealerScore < 17) {
+      return 'Dealer must hit again!';
+    }
     if (dealerScore == 21) {
       mode = 'GAME_OVER';
       return "it's a Blackjack! 💰";
@@ -259,19 +253,15 @@ function dealerTurn(input = '') {
 
 var main = function (input) {
   if (mode == 'DEAL_CARDS') {
-    dealCards();
     return dealCards();
   }
   if (mode == 'PLAYER_TURN') {
-    playerTurn();
     return playerTurn(input);
   }
   if (mode == 'DEALER_TURN') {
-    dealerTurn();
     return dealerTurn();
   }
   if (mode == 'GAME_OVER') {
-    resetGame();
     return resetGame();
   }
 };
