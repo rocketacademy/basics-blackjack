@@ -6,7 +6,7 @@ var buildDeck = function () {
   // 1: suit (4 types)
   // 2: rank (1-13)
   // 3: name (13 types)
-  var suits = ["diamonds", "clubs", "hearts", "spades"];
+  var suits = ["Diamonds", "Clubs", "Hearts", "Spades"];
   var cardDeck = [];
   var suitCounter = 0;
   var cardName = "";
@@ -17,16 +17,24 @@ var buildDeck = function () {
     // set rank and name
     var rankCounter = 1;
     var currentRank = 1;
+    var cardValue = 1;
     while (rankCounter <= 13) {
       currentRank = rankCounter;
       if (rankCounter == 11) {
-        cardName = "jack";
+        cardName = "Jack";
+        cardValue = 10;
       } else if (rankCounter == 12) {
-        cardName = "queen";
+        cardName = "Queen";
+        cardValue = 10;
       } else if (rankCounter == 13) {
-        cardName = "king";
+        cardName = "King";
+        cardValue = 10;
+      } else if (rankCounter == 1) {
+        cardName = "Ace";
+        cardValue = 1;
       } else {
         cardName = currentRank;
+        cardValue = currentRank;
       }
 
       //create a new card
@@ -34,6 +42,7 @@ var buildDeck = function () {
         suit: currentSuit,
         rank: currentRank,
         name: cardName,
+        pointValue: cardValue,
       };
       cardDeck.push(singleCard);
       rankCounter += 1;
@@ -43,9 +52,10 @@ var buildDeck = function () {
   return cardDeck;
 };
 
+// function to shuffle a new deck
 var shuffleDeck = function () {
   var cardDeck = buildDeck();
-  for (i = 1; i < cardDeck.length; i++) {
+  for (var i = 1; i < cardDeck.length; i++) {
     var j = Math.floor(Math.random() * 52);
     var currentCard = cardDeck[i];
     var randomCard = cardDeck[j];
@@ -55,11 +65,97 @@ var shuffleDeck = function () {
   return cardDeck;
 };
 
+// single player mode
+var playBlackJack = function () {
+  //get a shuffled deck
+  var freshShuffledDeck = shuffleDeck();
+  var humanPlayerCards = [];
+  var computerDealerCards = [];
+
+  //just to get the cards currently in hand
+  var printHandMessage = function (hand) {
+    var index = 0;
+    var cardsHeld = "These were the cards in your hand:<br>";
+    while (index < hand.length) {
+      cardsHeld += `${hand[index].name} of ${hand[index].suit}<br>`;
+      index += 1;
+    }
+    return cardsHeld;
+  };
+
+  // deal cards
+  // human gets card first
+  humanPlayerCards.push(freshShuffledDeck.pop());
+
+  //dealer gets next card
+  computerDealerCards.push(freshShuffledDeck.pop());
+
+  //human player gets second card, and so does computer
+  humanPlayerCards.push(freshShuffledDeck.pop());
+  computerDealerCards.push(freshShuffledDeck.pop());
+
+  //start evaluating winning conditions
+  var humanPlayerScore = evaluateHand(humanPlayerCards);
+  var computerDealerScore = evaluateHand(computerDealerCards);
+
+  if (humanPlayerScore == "blackjack") {
+    return (
+      `You win with Blackjack!<br><br>` + printHandMessage(humanPlayerCards)
+    );
+  } else {
+    // test if this works
+    console.log(humanPlayerScore);
+    return printHandMessage(humanPlayerCards);
+  }
+  //evaluate for blackjack for both players
+};
+
+//evaluates a player's hand to return their total number of points
+var evaluateHand = function (playerHand) {
+  var handIndex = 0;
+  var sumPoints = 0;
+
+  //blackjack can only be won with 2 cards
+  if (playerHand.length == 2) {
+    //check for blackjack
+    if (playerHand[0].name == "ace" || playerHand[1].name == "ace") {
+      // add 10 since in order to win by blackjack, the ace must be considered an "11"
+      sumPoints = playerHand[0].pointValue + playerHand[1].pointValue + 10;
+      console.log(sumPoints);
+      if (sumPoints == 21) {
+        return "blackjack";
+      } else {
+        // no blackjack, but counted the ace as an "11"
+        return sumPoints;
+      }
+    }
+    // no ace
+    sumPoints = playerHand[0].pointValue + playerHand[1].pointValue;
+    return sumPoints;
+  }
+
+  // to evaluate hands larger than 2 cards
+  while (handIndex < playerHand.length) {
+    //get cards
+    sumPoints += playerHand[handIndex].pointValue;
+    handIndex += 1;
+  }
+
+  //check if user busted because we chose to represent their ace as "11", if so, treat as "ace"
+  if (sumPoints > 21) {
+    for (var i = 0; i < playerHand.length; i++) {
+      if (playerHand[i].name == "ace") {
+        sumPoints = sumPoints - 10;
+      }
+    }
+  }
+
+  return sumPoints;
+};
+
 var main = function (input) {
-  var myOutputValue = "hello world";
-  var neatDeck = buildDeck();
-  console.log(neatDeck);
-  shuffledDeck = shuffleDeck();
-  console.log(shuffledDeck);
-  return "it's been shuffled";
+  var newDeck = buildDeck();
+  console.log(newDeck);
+  var outcome = playBlackJack();
+  return outcome;
 };
