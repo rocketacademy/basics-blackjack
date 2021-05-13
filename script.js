@@ -72,15 +72,21 @@ var playBlackJack = function () {
   var humanPlayerCards = [];
   var computerDealerCards = [];
 
-  //just to get the cards currently in hand
-  var printHandMessage = function (hand) {
-    var index = 0;
+  //just to get the cards currently in each player's hand
+  var printHandsMessage = function (playerHand, computerHand) {
+    var playerIndex = 0;
     var cardsHeld = "These were the cards in your hand:<br>";
-    while (index < hand.length) {
-      cardsHeld += `${hand[index].name} of ${hand[index].suit}<br>`;
-      index += 1;
+    while (playerIndex < playerHand.length) {
+      cardsHeld += `${playerHand[playerIndex].name} of ${playerHand[playerIndex].suit}<br>`;
+      playerIndex += 1;
     }
-    return cardsHeld;
+    var computerHeld = "These were the cards the Dealer had:<br>";
+    var dealerIndex = 0;
+    while (dealerIndex < computerHand.length) {
+      computerHeld += `${computerHand[dealerIndex].name} of ${computerHand[dealerIndex].suit}<br>`;
+      dealerIndex += 1;
+    }
+    return cardsHeld + "<br>" + computerHeld;
   };
 
   // deal cards
@@ -98,16 +104,49 @@ var playBlackJack = function () {
   var humanPlayerScore = evaluateHand(humanPlayerCards);
   var computerDealerScore = evaluateHand(computerDealerCards);
 
+  //Exception cases: either player got blackjack
   if (humanPlayerScore == "blackjack") {
     return (
-      `You win with Blackjack!<br><br>` + printHandMessage(humanPlayerCards)
+      `You win with Blackjack!<br><br>` +
+      printHandsMessage(humanPlayerCards, computerDealerCards)
     );
-  } else {
-    // test if this works
-    console.log(humanPlayerScore);
-    return printHandMessage(humanPlayerCards);
   }
-  //evaluate for blackjack for both players
+  if (computerDealerScore == "blackjack") {
+    return (
+      `You lose as the dealer won with a Blackjack!<br><br>` +
+      printHandsMessage(humanPlayerCards, computerDealerCards)
+    );
+  }
+
+  //if dealer has < 17 points, must draw another card (until above 17)
+  while (computerDealerScore < 17) {
+    computerDealerCards.push(freshShuffledDeck.pop());
+    computerDealerScore = evaluateHand(computerDealerCards);
+  }
+
+  //wrap up the game
+  var outcome = gameEvaluation(humanPlayerScore, computerDealerScore);
+  return outcome + printHandsMessage(humanPlayerCards, computerDealerCards);
+};
+
+//evaluate to see who actually won the game (if there was no blackjack win condition)
+var gameEvaluation = function (playerScore, computerScore) {
+  //if anyone goes above 21, they lose
+  var pointMessage = `Your total points: ${playerScore}<br>
+    Dealer's total points: ${computerScore}<br><br>`;
+  if (playerScore > 21 && computerScore < 21) {
+    return `You lose because you bust your hand.<br><br>` + pointMessage;
+  } else if (computerScore > 21 && playerScore < 21) {
+    return (
+      `You win! The dealer lost as they bust their hand.<br><br>` + pointMessage
+    );
+  } else if (playerScore > computerScore) {
+    return `You win!<br><br>` + pointMessage;
+  } else if (playerScore < computerScore) {
+    return `You lose :( <br><br>` + pointMessage;
+  } else {
+    return `It was a tie <br><br>` + pointMessage;
+  }
 };
 
 //evaluates a player's hand to return their total number of points
