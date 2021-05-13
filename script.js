@@ -118,10 +118,9 @@ var evaluateHand = function (playerHand) {
   //blackjack can only be won with 2 cards
   if (playerHand.length == 2) {
     //check for blackjack
-    if (playerHand[0].name == "ace" || playerHand[1].name == "ace") {
+    if (playerHand[0].name == "Ace" || playerHand[1].name == "Ace") {
       // add 10 since in order to win by blackjack, the ace must be considered an "11"
       sumPoints = playerHand[0].pointValue + playerHand[1].pointValue + 10;
-      console.log(sumPoints);
       if (sumPoints == 21) {
         return "blackjack";
       } else {
@@ -144,7 +143,7 @@ var evaluateHand = function (playerHand) {
   //check if user busted because we chose to represent their ace as "11", if so, treat as "ace"
   if (sumPoints > 21) {
     for (var i = 0; i < playerHand.length; i++) {
-      if (playerHand[i].name == "ace") {
+      if (playerHand[i].name == "Ace") {
         sumPoints = sumPoints - 10;
       }
     }
