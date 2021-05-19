@@ -1,1 +1,1 @@
-# SWE101 - Blackjack
+# Rocket Academy Coding Basics: Blackjack
