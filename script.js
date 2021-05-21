@@ -149,8 +149,23 @@ var evaluateHand = function (playerHand) {
   return sumPoints;
 };
 
-//just to get the cards currently in each player's hand
+// show all cards in human's hand, only one card in computer hand
 var printHandsMessage = function (playerHand, computerHand) {
+  var playerIndex = 0;
+  var cardsHeld = "<i>These were the cards in your hand</i>:<br>";
+  while (playerIndex < playerHand.length) {
+    cardsHeld += `${playerHand[playerIndex].name} of ${playerHand[playerIndex].suit}<br>`;
+    playerIndex += 1;
+  }
+  var computerHeld = "<i>These were the cards the Dealer had</i>:<br>";
+  computerHeld += `${computerHand[0].name} of ${computerHand[0].suit}<br>`;
+  computerHeld += `The other cards are hidden<br>`;
+
+  return cardsHeld + "<br>" + computerHeld;
+};
+
+//get the cards in each player's hand at the end -- show all cards
+var printFinalHandsMessage = function (playerHand, computerHand) {
   var playerIndex = 0;
   var cardsHeld = "<i>These were the cards in your hand</i>:<br>";
   while (playerIndex < playerHand.length) {
@@ -188,24 +203,6 @@ var initiateBlackJack = function () {
   dealPlayerCard();
   dealComputerCard();
 
-  //start evaluating current standing
-  humanPlayerScore = evaluateHand(humanPlayerCards);
-  computerDealerScore = evaluateHand(computerDealerCards);
-
-  //Exception cases: either player got blackjack, game ends immediately
-  if (humanPlayerScore == "blackjack") {
-    return (
-      `You win with Blackjack!<br><br>` +
-      printHandsMessage(humanPlayerCards, computerDealerCards)
-    );
-  }
-  if (computerDealerScore == "blackjack") {
-    return (
-      `You lose as the dealer won with a Blackjack!<br><br>` +
-      printHandsMessage(humanPlayerCards, computerDealerCards)
-    );
-  }
-
   // Unless someone got blackjack, return the current hands
   allPlayerHands.push(humanPlayerCards, computerDealerCards);
 
@@ -215,8 +212,26 @@ var initiateBlackJack = function () {
 var main = function (input) {
   //make sure we only deal the cards once
   if (gameStarted == false) {
-    initiateBlackJack();
     gameStarted = true;
+    initiateBlackJack();
+
+    // evaluate current standing
+    humanPlayerScore = evaluateHand(humanPlayerCards);
+    computerDealerScore = evaluateHand(computerDealerCards);
+
+    //Exception cases: either player got blackjack, game ends immediately
+    if (humanPlayerScore == "blackjack") {
+      return (
+        `You win with Blackjack!<br><br>` +
+        printFinalHandsMessage(humanPlayerCards, computerDealerCards)
+      );
+    }
+    if (computerDealerScore == "blackjack") {
+      return (
+        `You lose as the dealer won with a Blackjack!<br><br>` +
+        printFinalHandsMessage(humanPlayerCards, computerDealerCards)
+      );
+    }
   }
 
   //get state of current hands
@@ -226,6 +241,14 @@ var main = function (input) {
       printHandsMessage(humanPlayerCards, computerDealerCards)
     );
   };
+
+  // //get state of final hands
+  // var finalHands = function () {
+  //   return (
+  //     `The final hands are as follows:<br><br>` +
+  //     printFinalHandsMessage(humanPlayerCards, computerDealerCards)
+  //   );
+  // };
 
   // Ask user if they want to hit or stand?
   var hitStandMessage = `<br><i>Would you like another card?</i><br>Input "<b>hit</b>" if you would like to be dealt another card, or "<b>stand</b>" if you would like to keep your current hand.`;
@@ -247,7 +270,7 @@ var main = function (input) {
 
     finalReturn =
       gameEvaluation(humanPlayerScore, computerDealerScore) +
-      printHandsMessage(humanPlayerCards, computerDealerCards) +
+      printFinalHandsMessage(humanPlayerCards, computerDealerCards) +
       resetMessage;
   } else if (input == "hit") {
     // deal player one more card
@@ -260,7 +283,7 @@ var main = function (input) {
     if (humanPlayerScore > 21) {
       return (
         gameEvaluation(humanPlayerScore, computerDealerScore) +
-        printHandsMessage(humanPlayerCards, computerDealerCards) +
+        printFinalHandsMessage(humanPlayerCards, computerDealerCards) +
         resetMessage
       );
     }
