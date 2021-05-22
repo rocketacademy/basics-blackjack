@@ -113,7 +113,7 @@ const getRankCount = function (blackjackHand) {
 };
 
 const printHand = function (blackjackHand) {
-  var stringOfHand = "Your hand is currently: ";
+  var stringOfHand = "";
 
   for (const card of blackjackHand) {
     stringOfHand += `${card.name} of ${card.suit} `;
@@ -124,15 +124,23 @@ const printHand = function (blackjackHand) {
 
 const DisplaysResults = function (playerHand, computerHand) {
   if (getRankCount(playerHand) > 21) {
-    return `boom, you loser`
+    return `boom, you loser. your hand was ${printHand(
+      playerHand
+    )} . computer hand was ${printHand(computerHand)}`;
   } else if (getRankCount(playerHand) === getRankCount(computerHand)) {
-    return `you did not win, you drawer`
+    return `you did not win, you drawer.  your hand was ${printHand(
+      playerHand
+    )} . computer hand was ${printHand(computerHand)}`;
   } else if (getRankCount(playerHand) > getRankCount(computerHand)) {
-    return `awesome, you won!`
+    return `awesome, you won!  your hand was ${printHand(
+      playerHand
+    )} . computer hand was ${printHand(computerHand)}`;
   } else {
-    return `you lost, sucka`
+    return `you lost, sucka  your hand was ${printHand(
+      playerHand
+    )}  . computer hand was ${printHand(computerHand)}`;
   }
-}
+};
 
 var main = function (input) {
   var myOutputValue = "something is wrong";
@@ -152,38 +160,34 @@ var main = function (input) {
   }
 
   if (currentGameMode === HIT_OR_STAND_MODE) {
-    
     if (input.toLowerCase() === "hit") {
       playerHand.push(cardDeck.pop());
 
       if (getRankCount(playerHand) > 21) {
         for (card of playerHand) {
           if (card.blackjackRank === 11) {
-            card.blackjackRank = 1
+            card.blackjackRank = 1;
+            break;
           }
-          break
         }
       }
 
-      console.log(printHand(playerHand), 'hellooo');
-      console.log(getRankCount(playerHand), 'dfrdgdfr');
-
       if (getRankCount(playerHand) > 21) {
-        return DisplaysResults(playerHand, computerHand)
+        return DisplaysResults(playerHand, computerHand);
       }
-      return (printHand(playerHand) + "computer" + printHand(computerHand))
+      return printHand(playerHand) + "computer" + printHand(computerHand);
     } else if (input.toLowerCase() === "stand") {
       currentGameMode = COMPUTER_TURN_MODE;
-      return `it's the computer's turn now`
+      return `it's the computer's turn now`;
     } else {
-      return `enter hit or stand`
+      return `enter hit or stand`;
     }
   }
-  
+
   if (currentGameMode === COMPUTER_TURN_MODE) {
     computerHand.push(cardDeck.pop());
     if (isBlackjack(computerHand)) {
-      return `Computer wins with ${printHand(computerHand)}`
+      return `Computer wins with ${printHand(computerHand)}`;
     }
 
     while (getRankCount(computerHand) < 17) {
@@ -191,13 +195,13 @@ var main = function (input) {
       if (getRankCount(computerHand) > 21) {
         for (card of computerHand) {
           if (card.blackjackRank === 11) {
-            card.blackjackRank = 1
+            card.blackjackRank = 1;
+            break;
           }
-          break
         }
       }
     }
   }
 
-  return DisplaysResults(playerHand, computerHand)
-}
+  return DisplaysResults(playerHand, computerHand);
+};
