@@ -131,7 +131,10 @@ const DisplaysResults = function (playerHand, computerHand) {
     return `you did not win, you drawer.  your hand was ${printHand(
       playerHand
     )} . computer hand was ${printHand(computerHand)}`;
-  } else if (getRankCount(playerHand) > getRankCount(computerHand)) {
+  } else if (
+    getRankCount(playerHand) > getRankCount(computerHand) ||
+    getRankCount(computerHand) > 21
+  ) {
     return `awesome, you won!  your hand was ${printHand(
       playerHand
     )} . computer hand was ${printHand(computerHand)}`;
