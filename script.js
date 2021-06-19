@@ -270,7 +270,7 @@ var dealervalue = 0;
 var playerDeckforMessage = [];
 var dealerDeckforMessage = [];
 
-var main = function () {
+var main = function (input) {
   var myOutputValue = "";
   console.log(mode);
 
@@ -279,9 +279,9 @@ var main = function () {
     myOutputValue = shufflethedeck();
     return myOutputValue;
   } else if (mode == "deal") {
-    mode = "game";
+    mode = "actualgame";
     return DealtCards();
-  } else if (mode == "game") {
+  } else if (mode == "actualgame") {
     return actualgame(input);
   }
   return myOutputValue;
@@ -331,9 +331,6 @@ var DealtCards = function () {
   dealerDeck.push(dealerCard1);
   dealerDeck.push(dealerCard2);
 
-  playervalue = calculations(playerDeck);
-  dealervalue = calculations(dealerDeck);
-
   var counter = 0;
   while (counter < playerDeck.length) {
     playerDeckforMessage.push(
@@ -350,7 +347,13 @@ var DealtCards = function () {
     counter2 += 1;
   }
 
-  return `Your cards are the ${playerDeckforMessage}. <br>One of the dealer's cards is the ${dealerCard1.name} of ${dealerCard1.suit}<br><br>Do you want to 'stand' or 'hit'?`;
+  playervalue = calculations(playerDeck);
+  dealervalue = calculations(dealerDeck);
+
+  console.log("player: " + playervalue);
+  console.log("dealer: " + dealervalue);
+
+  return `Your cards are the ${playerDeckforMessage}. <br>One of the dealer's cards is the ${dealerDeckforMessage[0]}.<br><br>Do you want to 'stand' or 'hit'?`;
 };
 
 var calculations = function (ADeck) {
@@ -364,37 +367,45 @@ var calculations = function (ADeck) {
 };
 
 var actualgame = function (input) {
-  if (!input == "hit" || !input == "stand") {
-    message = `Please enter either 'hit' or 'stand'.`;
-  }
+  var message = "Please enter either 'stand' or 'hit'.";
+  playervalue = calculations(playerDeck);
+  dealervalue = calculations(dealerDeck);
 
-  var message = "";
-  if (dealervalue < 17) {
-    var dealerCard = shuffledDeck.pop();
-    dealerDeck.push(dealerCard);
-    dealervalue = calculations(dealerDeck);
-    dealerDeckforMessage.push(` ${dealerCard.name} of ${dealerCard.suit}`);
-  }
+  if (playervalue > 21) {
+    message =
+      "Player has lost as you have exceeded 21. <br><br>Your deck of cards are " +
+      playerDeckforMessage +
+      ".";
+  } else if (playervalue == 21) {
+    message = "Player has won!!!";
+  } else if (dealervalue > 21) {
+    message = "Player has won as dealer has exceeded 21.";
+  } else if (playervalue < 21) {
+    if (input == "stand") {
+      if (playervalue < dealervalue) {
+        message = `The dealer has won!`;
+      } else if (playervalue > dealervalue) {
+        message = `The player has won!`;
+      } else if (playervalue == dealervalue) {
+        message = `It's a tie.`;
+      }
+    } else if (input == "hit") {
+      if (dealervalue < 17) {
+        var dealerCard = shuffledDeck.pop();
+        dealerDeck.push(dealerCard);
+        dealervalue = calculations(dealerDeck);
+        dealerDeckforMessage.push(` ${dealerCard.name} of ${dealerCard.suit}`);
+      }
+      var playerCard = shuffledDeck.pop();
+      playerDeck.push(playerCard);
+      playerDeckforMessage.push(` ${playerCard.name} of ${playerCard.suit}`);
+      playervalue = calculations(playerDeck);
 
-  if (input == "stand") {
-    message = outcome(dealervalue, playervalue);
-  } else {
-    var playerCard = shuffledDeck.pop();
-    playerDeck.push(playerCard);
-    playerDeckforMessage.push(` ${playerCard.name} of ${playerCard.suit}`);
-
-    message = `Your cards are ${playerDeckforMessage} while the dealer's cards are ${dealderDeckforMessage}. <br>Do you wish to 'stand' or 'hit'?`;
+      message = `Your cards are the ${playerDeckforMessage} while the dealer's cards are the ${dealerDeckforMessage}. <br><br>Do you wish to 'stand' or 'hit'?`;
+    }
   }
+  console.log("player: " + playervalue);
+  console.log("dealer: " + dealervalue);
 
   return message;
-};
-
-var outcome = function (dealervalue, playervalue) {
-  diffDealer = 21 - dealervalue;
-  diffPlayer = 21 - playervalue;
-  if (diffDealer > diffPlayer) {
-    return `The dealer has won!`;
-  } else if (diffPlayer > diffDealer) {
-    return `The player has won!`;
-  }
 };
