@@ -3,8 +3,10 @@ var gameMode = "shuffle";
 var shuffledDeck = [];
 var playerCard = [];
 var computerCard = [];
+var winnerDetermined = false;
 
-// Function to generate deck of cards
+// Function to generate deck of cards.
+// Picture cards = 10
 var deckGeneration = function () {
   var cardDeck = [];
   var suits = ["diamonds", "clubs", "hearts", "spades"];
@@ -13,21 +15,24 @@ var deckGeneration = function () {
     var cardSuit = suits[i];
     var index = 1;
     while (index < 14) {
-      console.log(index);
       var cardName = index;
+      var rankIndex = index;
       if (index == 1) {
         cardName = "Ace";
       } else if (index == 11) {
         cardName = "Jack";
+        rankIndex = 10;
       } else if (index == 12) {
         cardName = "Queen";
+        rankIndex = 10;
       } else if (index == 13) {
         cardName = "King";
+        rankIndex = 10;
       }
       var card = {
         name: cardName,
         suit: cardSuit,
-        rank: index,
+        rank: rankIndex,
       };
       cardDeck.push(card);
       index += 1;
@@ -61,7 +66,6 @@ var dealCards = function (shuffledDeck, inputHand) {
   while (inputHand.length != 2) {
     inputHand.push(shuffledDeck[index]);
     shuffledDeck.splice(index, 1);
-    index += 1;
   }
   index = 0;
   return inputHand;
@@ -74,7 +78,6 @@ var calculateHand = function (playerHand) {
   while (index < playerHand.length) {
     totalScore += playerHand[index].rank;
     index += 1;
-    console.log("Computing total score" + totalScore);
   }
   index = 0;
   return totalScore;
@@ -95,15 +98,32 @@ var printHand = function (playerHand) {
 var compareInitialHands = function (playerCard, computerCard) {
   var playerCurrentTotal = calculateHand(playerCard);
   var computerCurrentTotal = calculateHand(computerCard);
-  console.log("player current: " + playerCurrentTotal);
-  console.log(typeof playerCurrentTotal);
-  console.log("computer current: " + computerCurrentTotal);
 
   if (playerCurrentTotal == 21 && computerCurrentTotal != 21) {
-    return `Player Blackjack! Player wins!`;
+    winnerDetermined = true;
+    return `Player Blackjack! Player wins! <br><br> Player cards: <br> ${printHand(
+      playerCard
+    )} <br> Computer cards: <br> ${printHand(computerCard)}`;
   } else if (computerCurrentTotal == 21) {
-    return `Computer Blackjack! Computer wins!`;
-  } else if (playerCurrentTotal > computerCurrentTotal) {
+    winnerDetermined = true;
+    return `Computer Blackjack! Computer wins! <br><br> Player cards: <br> ${printHand(
+      playerCard
+    )} <br> Computer cards: <br> ${printHand(computerCard)}`;
+  } else {
+    return `Player cards: <br> ${printHand(
+      playerCard
+    )} <br> Computer cards: <br> ${printHand(
+      computerCard
+    )} <br><br> Player to choose "stand" or "hit".`;
+  }
+};
+
+// Function to compare scores after initial comparison ie continuation of game after 2 cards have been dealt with no blackjack.
+var compareHands = function (playerCard, computerCard) {
+  var playerCurrentTotal = calculateHand(playerCard);
+  var computerCurrentTotal = calculateHand(computerCard);
+
+  if (playerCurrentTotal > computerCurrentTotal) {
     return `Player wins! Hand Total is ${playerCurrentTotal} points. <br><br> Player cards: <br> ${printHand(
       playerCard
     )} <br> Computer cards: <br> ${printHand(computerCard)}`;
@@ -114,7 +134,47 @@ var compareInitialHands = function (playerCard, computerCard) {
   }
 };
 
+// Function to reset all global variables for the next round.
+var resetGame = function () {
+  shuffledDeck = [];
+  playerCard = [];
+  computerCard = [];
+  gameMode = "shuffle";
+};
+
+// Function to draw additional card and add to hand. Function reads the specific playerCard array
+var drawAdditionalCard = function (inputPlayerHand) {
+  inputPlayerHand.push(shuffledDeck[0]);
+  shuffledDeck.splice(0, 1);
+};
+
+// Function to check player hand if it has gone bust
+var checkPlayerHand = function (playerHand) {
+  var playerBusted = false;
+  var playerCurrentTotal = calculateHand(playerHand);
+  if (playerCurrentTotal > 21) {
+    playerBusted = true;
+    return [
+      playerBusted,
+      `Player BUSTED!! <br><br> Player cards: <br> ${printHand(
+        playerCard
+      )} <br> Computer cards: <br> ${printHand(computerCard)}`,
+    ];
+  } else {
+    return [
+      playerBusted,
+      `Player cards: <br> ${printHand(
+        playerCard
+      )} <br> Computer cards: <br> ${printHand(
+        computerCard
+      )} <br><br> Player to choose "stand" or "hit".`,
+    ];
+  }
+};
+
 var main = function (input) {
+  var outputValue = "";
+  var playerState = [];
   if (gameMode == "shuffle") {
     shuffledDeck = shuffleCards(deckGeneration());
     gameMode = "deal";
@@ -122,10 +182,38 @@ var main = function (input) {
   } else if (gameMode == "deal") {
     playerCard = dealCards(shuffledDeck, playerCard);
     computerCard = dealCards(shuffledDeck, computerCard);
-    gameMode = "play";
-    return `Click "submit" to compare your current hands.`;
-  } else if (gameMode == "play") {
-    gameMode = "shuffle";
-    return compareInitialHands(playerCard, computerCard);
+    gameMode = "compare initial hands";
+    return `Click "submit" to compare your current hands and show your cards.`;
+  } else if (gameMode == "compare initial hands") {
+    outputValue = compareInitialHands(playerCard, computerCard);
+    if (winnerDetermined) {
+      resetGame();
+      return outputValue;
+    } else {
+      gameMode = "player choice";
+      return outputValue;
+    }
+  } else if (gameMode == "player choice") {
+    if (!(input == "hit" || input == "stand")) {
+      return `Please input only "hit" or "stand".`;
+    }
+
+    if (input == "hit") {
+      drawAdditionalCard(playerCard);
+      playerState = checkPlayerHand(playerCard);
+      if (playerState[0]) {
+        outputValue = playerState[1];
+        resetGame();
+        return outputValue;
+      } else {
+        return playerState[1];
+      }
+    }
+
+    if (input == "stand") {
+      outputValue = compareHands(playerCard, computerCard);
+      resetGame();
+      return outputValue;
+    }
   }
 };
