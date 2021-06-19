@@ -172,6 +172,35 @@ var checkPlayerHand = function (playerHand) {
   }
 };
 
+// Function for computer to hit or stand. Computer has to hit when total hand is below 17.
+// Takes in an array of computer current hand.
+var computerDecisions = function (inputComputerCard) {
+  var index = 0;
+  var outputValue = "";
+  var computerCurrentTotal = calculateHand(inputComputerCard);
+  if (computerCurrentTotal > 17) {
+    return `Computer has decided not to hit. <br><br> Click "submit" to compare hands.`;
+  }
+
+  while (computerCurrentTotal < 17) {
+    drawAdditionalCard(inputComputerCard);
+    computerCurrentTotal = calculateHand(inputComputerCard);
+    outputValue += `${
+      inputComputerCard[inputComputerCard.length - 1].name
+    } of ${inputComputerCard[inputComputerCard.length - 1].suit} <br>`;
+    index += 1;
+  }
+  computerCurrentTotal = calculateHand(inputComputerCard);
+  if (computerCurrentTotal > 21) {
+    var tempOutput = `Computer BUSTED! The computer has drawn ${index} card(s): <br> ${outputValue}<br><br> Computer has:<br> ${printHand(
+      inputComputerCard
+    )}`;
+    resetGame();
+    return tempOutput;
+  }
+  return `The computer has drawn ${index} card(s): <br> ${outputValue} <br> Click "submit" to compare your hands.`;
+};
+
 var main = function (input) {
   var outputValue = "";
   var playerState = [];
@@ -211,9 +240,12 @@ var main = function (input) {
     }
 
     if (input == "stand") {
-      outputValue = compareHands(playerCard, computerCard);
-      resetGame();
-      return outputValue;
+      gameMode = "computer choice";
+      return `${computerDecisions(computerCard)}`;
     }
+  } else if (gameMode == "computer choice") {
+    outputValue = compareHands(playerCard, computerCard);
+    resetGame();
+    return outputValue;
   }
 };
