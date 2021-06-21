@@ -200,7 +200,18 @@ var main = function (input) {
       playerDealtCards.push(playerCard.name + " of " + playerCard.suit);
       console.log(playerDealtCards);
 
-      //switches game mode to Dealer hit or stand game mode
+      if (playerScore == 21) {
+        //if player scores 21, she wins, and the game resets
+        currentGameMode == gameModeDeckShuffle;
+        return `You are the winner.`;
+      }
+      if (playerScore > 21) {
+        //if player scores >21, she goes bust and loses, and the game resets
+        currentGameMode == gameModeDeckShuffle;
+        return `You have gone bust. `;
+      }
+
+      //Otherwise, switches game mode to Dealer hit or stand game mode
       currentGameMode = gameModeDealerHitOrStand;
       return `You chose hit. <br>You have been dealt the ${playerCard.name} of ${playerCard.suit}. <br>Your new score is ${playerScore}.<br>Click submit to continue.`;
     }
@@ -208,8 +219,10 @@ var main = function (input) {
     if ((playerChoice == "stand") | (playerChoice == "Stand")) {
       playerScore += 0;
       console.log("player stand score round 2 - " + playerScore);
+
       //switches game mode to Dealer hit or stand game mode
       currentGameMode = gameModeDealerHitOrStand;
+
       return `You chose stand. <br>Your score remains ${playerScore}. Click submit to continue.`;
     }
     //any other inputs are not recognised - request for correct input
