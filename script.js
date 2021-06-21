@@ -137,7 +137,6 @@ var winner = function () {
 //player can choose to hit or stand except for the following scenarios:
 //if playerscore > 21, player goes bust
 //if playerscore = 21, player wins
-
 var playerStatus = function () {
   if (playerScore == 21) {
     return "You are the winner.";
@@ -174,16 +173,47 @@ var main = function (input) {
 
       //Add score of player's dealt card to player's score
       playerScore += Number(playerCard.rank);
-      console.log(playerScore);
+      console.log("player score round 1 - " + playerScore);
 
       //Add score of computer's dealt card to computer's score
       computerScore += Number(computerCard.rank);
-      console.log(computerScore);
+      console.log("dealer score round 1 - " + computerScore);
 
       //increase card counter by increment of 1 after each loop of card-dealing
       cardCounter += 1;
     }
     return `You have been dealt ${playerDealtCards}.<br>The dealer's hand is ${dealerCards}.<br>Your total score is ${playerScore} and the dealer's total score is ${computerScore}.<br>${playerStatus()} `;
+  }
+
+  if (currentGameMode == gameModePlayerHitOrStand) {
+    var playerChoice = input;
+
+    //player chooses to hit
+    if ((playerChoice == "hit") | (playerChoice == "Hit")) {
+      var playerCard = shuffledDeck.pop();
+
+      //Add score of player's dealt card to player's score
+      playerScore += Number(playerCard.rank);
+      console.log("player hit score round 2 - " + playerScore);
+
+      //display cards dealt to player
+      playerDealtCards.push(playerCard.name + " of " + playerCard.suit);
+      console.log(playerDealtCards);
+
+      //switches game mode to Dealer hit or stand game mode
+      currentGameMode = gameModeDealerHitOrStand;
+      return `You chose hit. <br>You have been dealt the ${playerCard.name} of ${playerCard.suit}. <br>Your new score is ${playerScore}.<br>Click submit to continue.`;
+    }
+    //player chooses to stand
+    if ((playerChoice == "stand") | (playerChoice == "Stand")) {
+      playerScore += 0;
+      console.log("player stand score round 2 - " + playerScore);
+      //switches game mode to Dealer hit or stand game mode
+      currentGameMode = gameModeDealerHitOrStand;
+      return `You chose stand. <br>Your score remains ${playerScore}. Click submit to continue.`;
+    }
+    //any other inputs are not recognised - request for correct input
+    return 'Your response is not recognised. Please enter "hit" or "stand" to continue with the game.';
   }
 
   return myOutputValue;
