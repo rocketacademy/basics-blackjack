@@ -4,6 +4,9 @@ var shuffledDeck = [];
 var playerCard = [];
 var computerCard = [];
 var playerName = [];
+var playerBets = [];
+var playerScore = [100, 100];
+var winner = "";
 var winnerDetermined = false;
 
 // Function to generate deck of cards.
@@ -74,15 +77,38 @@ var shuffleCards = function (cardDeck) {
 // Function to obtain names of players and store in an array.
 var getName = function (input) {
   if (input == "end") {
-    gameMode = "shuffle";
+    gameMode = "get player bets";
     return `Welcome to the game ${playerName.join(
       ", "
-    )}. <br> The game is starting. <br><br> Click "submit" to begin.`;
+    )}. <br> The game is starting. <br><br> You start off with 100 points. Please input your bet amount.`;
   }
   playerName.push(input);
   return `Welcome to the game ${playerName.join(
     ", "
   )}. <br> Type the next name to register more players. Otherwise, type "end".`;
+};
+
+// Function to get players' bets. Bets are stored in an array.
+var getBets = function (input) {
+  playerBets.push(input);
+  return `You are waging ${input} points.`;
+};
+
+// Function to update the players' current scores given the outcome of the game. The function takes in a single parameter which is the index of the winning player.
+// In the current 2 player game, index 0 = player, index 1 = computer.
+var updateScores = function (winningPlayer) {
+  if (winningPlayer == 0) {
+    playerScore[0] += Number(playerBets[0]);
+    playerScore[playerScore.length - 1] -= Number(playerBets[0]);
+  } else if (winningPlayer == 1) {
+    playerScore[0] -= Number(playerBets[0]);
+    playerScore[playerScore.length - 1] += Number(playerBets[0]);
+  }
+};
+
+// Function to print the current points on all players.
+var showLeaderboard = function () {
+  return `<br><br> ======LEADERBOARD====== <br> Player: ${playerScore[0]} <br> Computer: ${playerScore[1]}. <br><br> Please input your bet amount for the next round.`;
 };
 
 // Function to deal the initial 2 cards to players. Input is the shuffledDeck array, as well as the player or computer card array.
@@ -134,6 +160,7 @@ var compareInitialHands = function (playerCard, computerCard) {
 
   if (playerCurrentTotal == 21 && computerCurrentTotal != 21) {
     winnerDetermined = true;
+    updateScores(0);
     return `Player ${playerName[0]} Blackjack! Player wins! <br><br> Player ${
       playerName[0]
     } cards: <br> ${printHand(
@@ -141,6 +168,7 @@ var compareInitialHands = function (playerCard, computerCard) {
     )} <br> Computer cards: <br> ${printHand(computerCard)}`;
   } else if (computerCurrentTotal == 21) {
     winnerDetermined = true;
+    updateScores(1);
     return `Computer Blackjack! Computer wins! <br><br> Player cards: <br> ${printHand(
       playerCard
     )} <br> Computer cards: <br> ${printHand(computerCard)}`;
@@ -159,6 +187,7 @@ var compareHands = function (playerCard, computerCard) {
   var computerCurrentTotal = calculateHand(computerCard);
 
   if (playerCurrentTotal > computerCurrentTotal) {
+    updateScores(0);
     return `Player ${
       playerName[0]
     } wins! Hand Total is ${playerCurrentTotal} points. <br><br> Player ${
@@ -166,11 +195,14 @@ var compareHands = function (playerCard, computerCard) {
     } cards: <br> ${printHand(
       playerCard
     )} <br> Computer cards: <br> ${printHand(computerCard)}`;
-  } else if ((playerCurrentTotal = computerCurrentTotal)) {
-    `This is a draw! <br><br> Player ${playerName[0]} cards: <br> ${printHand(
+  } else if (playerCurrentTotal == computerCurrentTotal) {
+    return `This is a draw! <br><br> Player ${
+      playerName[0]
+    } cards: <br> ${printHand(
       playerCard
     )} <br> Computer cards: <br> ${printHand(computerCard)}`;
   } else {
+    updateScores(1);
     return `Computer wins! Hand Total is ${computerCurrentTotal} points. <br><br> Player ${
       playerName[0]
     } cards: <br> ${printHand(
@@ -184,9 +216,9 @@ var resetGame = function () {
   shuffledDeck = [];
   playerCard = [];
   computerCard = [];
-  playerName = [];
-  gameMode = "shuffle";
+  gameMode = "get player bets";
   winnerDetermined = false;
+  playerBets = [];
 };
 
 // Function to draw additional card and add to hand. Function reads the specific playerCard array
@@ -201,6 +233,7 @@ var checkPlayerHand = function (playerHand) {
   var playerCurrentTotal = calculateHand(playerHand);
   if (playerCurrentTotal > 21) {
     playerBusted = true;
+    updateScores(1);
     return [
       playerBusted,
       `Player ${playerName[0]} BUSTED!! <br><br> Player cards: <br> ${printHand(
@@ -241,6 +274,7 @@ var computerDecisions = function (inputComputerCard) {
   }
   computerCurrentTotal = calculateHand(inputComputerCard);
   if (computerCurrentTotal > 21) {
+    updateScores(0);
     var tempOutput = `Computer BUSTED! The computer has drawn ${index} card(s): <br> ${outputValue}<br><br> Computer has:<br> ${printHand(
       inputComputerCard
     )}`;
@@ -255,6 +289,9 @@ var main = function (input) {
   var playerState = [];
   if (gameMode == "get player name") {
     return getName(input);
+  } else if (gameMode == "get player bets") {
+    gameMode = "shuffle";
+    return getBets(input);
   } else if (gameMode == "shuffle") {
     shuffledDeck = shuffleCards(deckGeneration());
     gameMode = "deal";
@@ -268,7 +305,7 @@ var main = function (input) {
     outputValue = compareInitialHands(playerCard, computerCard);
     if (winnerDetermined) {
       resetGame();
-      return outputValue;
+      return outputValue + showLeaderboard();
     } else {
       gameMode = "player choice";
       return outputValue;
@@ -284,7 +321,7 @@ var main = function (input) {
       if (playerState[0]) {
         outputValue = playerState[1];
         resetGame();
-        return outputValue;
+        return outputValue + showLeaderboard();
       } else {
         return playerState[1];
       }
@@ -297,6 +334,6 @@ var main = function (input) {
   } else if (gameMode == "computer choice") {
     outputValue = compareHands(playerCard, computerCard);
     resetGame();
-    return outputValue;
+    return outputValue + showLeaderboard();
   }
 };
