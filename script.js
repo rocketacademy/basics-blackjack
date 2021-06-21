@@ -16,12 +16,13 @@
 //step 7a: if dealer goes bust, all players win twice their bet
 //step 7b: if dealer does not go bust, only players with a higher score win twice their bet, every one else loses their initial bet
 
-//game modes
+//game modes//
 var gameModeDeckShuffle = "game mode shuffle deck";
 var gameModeDealCard = "game mode deal card";
-var gameModePlayerChoice = "game mode player decides hit or stay";
-var gameModeDealerChoice = "game mode dealer decides hit or stay";
+var gameModePlayerHitOrStand = "game mode player decides hit or stand";
+var gameModeDealerHitOrStand = "game mode dealer decides hit or stand";
 
+//initiate current game mode with game mode shuffle deck//
 var currentGameMode = gameModeDeckShuffle;
 
 //Card deck generation//
@@ -133,6 +134,21 @@ var winner = function () {
   } else return "computer";
 };
 
+//player can choose to hit or stand except for the following scenarios:
+//if playerscore > 21, player goes bust
+//if playerscore = 21, player wins
+
+var playerStatus = function () {
+  if (playerScore == 21) {
+    return "You are the winner.";
+  }
+  if (playerScore > 21) {
+    return "You have gone bust. The dealer wins.";
+  }
+  currentGameMode = gameModePlayerHitOrStand;
+  return "Do you want to hit or stand?";
+};
+
 var main = function (input) {
   var myOutputValue = "";
   if (currentGameMode == gameModeDeckShuffle) {
@@ -167,7 +183,7 @@ var main = function (input) {
       //increase card counter by increment of 1 after each loop of card-dealing
       cardCounter += 1;
     }
-    return `You have been dealt ${playerDealtCards}.<br>The dealer's hand is ${dealerCards}.<br>Your total score is ${playerScore} and the dealer's total score is ${computerScore}.<br>The winner is the ${winner()}! `;
+    return `You have been dealt ${playerDealtCards}.<br>The dealer's hand is ${dealerCards}.<br>Your total score is ${playerScore} and the dealer's total score is ${computerScore}.<br>${playerStatus()} `;
   }
 
   return myOutputValue;
