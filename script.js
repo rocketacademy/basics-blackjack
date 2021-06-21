@@ -1,3 +1,10 @@
+var currentGameMode = "drawing of cards";
+var playerCard1 = "";
+var playerCard2 = "";
+var computerCard1 = "";
+var computerCard2 = "";
+var sumOfPlayerCardValue = 10;
+var sumOfComputerCardValue = "";
 var makeDeck = function () {
   var cardDeck = [];
   var suits = ["hearts", "diamonds", "clubs", "spades"];
@@ -22,7 +29,7 @@ var makeDeck = function () {
       // add the value of each card
       var cardValue = rankCounter;
       if (cardValue == 1) {
-        cardValue = 1;
+        cardValue = 1 || 11;
       } else if (cardValue == 11 || cardValue == 12 || cardValue == 13) {
         cardValue = 10;
       }
@@ -62,12 +69,26 @@ var shuffleCards = function (cardDeck) {
   }
   return cardDeck;
 };
+var aceCard = function (input) {
+  var message = "";
+  console.log("function");
+  console.log("player: " + sumOfPlayerCardValue);
+  if (input == "11") {
+    sumOfPlayerCardValue += 10;
+  } else if (input == "1") {
+    sumOfPlayerCardValue = sumOfPlayerCardValue;
+    console.log(sumOfPlayerCardValue);
+  }
+  currentGameMode = "player hit or stand";
+  message =
+    playerHand +
+    "<br><br> Your total value is " +
+    sumOfPlayerCardValue +
+    "<br><br>Enter HIT to draw another card or STAND to end your turn.";
+  return message;
+};
+
 var shuffledDeck = shuffleCards(cardDeck);
-var currentGameMode = "drawing of cards";
-var playerCard1 = "";
-var playerCard2 = "";
-var sumOfPlayerCardValue = "";
-var sumOfComputerCardValue = "";
 var main = function (input) {
   if (currentGameMode == "drawing of cards") {
     playerCard1 = shuffledDeck.pop();
@@ -85,22 +106,38 @@ var main = function (input) {
         " and " +
         computerCard2.name +
         " of " +
-        computerCard2.suit
+        computerCard2.suit +
+        " // " +
+        sumOfComputerCardValue
     );
-    currentGameMode = "hit or stand";
-    return (
+    playerHand =
       "Player had " +
       playerCard1.name +
       " of " +
       playerCard1.suit +
-      " and " +
+      " <br> " +
       playerCard2.name +
       " of " +
-      playerCard2.suit +
-      "<br><br>Please enter HIT to draw another card or STAND to end your turn."
-    );
+      playerCard2.suit;
+    if (playerCard1.name == "ace" || playerCard2.name == "ace") {
+      currentGameMode = "ace 1 or 11";
+      return (
+        playerHand +
+        "<br><br> Ace have value of 1 or 11. Please enter 1 or 11 to choose the value."
+      );
+    } else if (playerCard1.name != "ace" && playerCard2.name != "ace") {
+      currentGameMode = "player hit or stand";
+      return (
+        playerHand +
+        "<br><br>Please enter HIT to draw another card or STAND to end your turn."
+      );
+    }
   }
-  if (currentGameMode == "hit or stand") {
+  if (currentGameMode == "ace 1 or 11") {
+    myOutputValue = aceCard(input);
+    return myOutputValue;
+  }
+  if (currentGameMode == "player hit or stand") {
     if (input == "HIT") {
       var playerCard3 = shuffledDeck.pop();
       console.log("Player had " + playerCard3.name + " of " + playerCard3.suit);
@@ -128,17 +165,33 @@ var main = function (input) {
         playerCard1.suit +
         "<br>" +
         playerCard2.name +
-        "<br>" +
+        " of " +
         playerCard2.suit
       );
     }
-    currentGameMode = "outcome";
+    currentGameMode = "computer hit or stand";
   }
-  if (currentGameMode == "outcome") {
+  if (currentGameMode == "computer hit or stand") {
+    if (sumOfComputerCardValue < 17) {
+      var computerCard3 = shuffledDeck.pop();
+      sumOfComputerCardValue = sumOfComputerCardValue + computerCard3.value;
+      console.log(
+        "computer: " + computerCard3.name + " of " + computerCard3.suit
+      );
+      console.log("computer: " + sumOfComputerCardValue);
+    }
+    currentGameMode = "result";
+  }
+  if (currentGameMode == "result") {
+    console.log(currentGameMode);
     console.log("player: " + sumOfPlayerCardValue);
     console.log("computer: " + sumOfComputerCardValue);
     if (sumOfPlayerCardValue > 21) {
       myOutputValue = "Player Bust.";
+    } else if (sumOfComputerCardValue > 21) {
+      myOutputValue = "Computer Bust.";
+    } else if (sumOfPlayerCardValue > 21 && sumOfComputerCardValue > 21) {
+      myOutputValue = "Both Bust";
     } else if (sumOfPlayerCardValue > sumOfComputerCardValue) {
       myOutputValue = "Player Wins.";
     } else if (sumOfPlayerCardValue < sumOfComputerCardValue) {
@@ -146,6 +199,7 @@ var main = function (input) {
     } else {
       myOutputValue = "Its a tie.";
     }
+    currentGameMode = "drawing of cards";
   }
   return myOutputValue;
 };
