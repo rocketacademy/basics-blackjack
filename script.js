@@ -63,38 +63,87 @@ var shuffleCards = function (cardDeck) {
   return cardDeck;
 };
 var shuffledDeck = shuffleCards(cardDeck);
-var main = function (cardDeck) {
-  var playerCard1 = shuffledDeck.pop(cardDeck);
-  var computerCard1 = shuffledDeck.pop(cardDeck);
-  var playerCard2 = shuffledDeck.pop(cardDeck);
-  var computerCard2 = shuffledDeck.pop(cardDeck);
-  var sumOfPlayerCardValue = playerCard1.value + playerCard2.value;
-  console.log(playerCard1.value + playerCard2.value);
-  var sumOfComputerCardValue = computerCard1.value + computerCard2.value;
-  console.log(computerCard1.value + computerCard2.value);
-  var outcome =
-    "Player had " +
-    playerCard1.name +
-    " of " +
-    playerCard1.suit +
-    " and " +
-    playerCard2.name +
-    " of " +
-    playerCard2.suit +
-    "<br>Computer had " +
-    computerCard1.name +
-    " of " +
-    computerCard1.suit +
-    " and " +
-    computerCard2.name +
-    " of " +
-    computerCard2.suit;
-  if (sumOfPlayerCardValue > sumOfComputerCardValue) {
-    myOutputValue = "Player Wins.<br> " + outcome;
-  } else if (sumOfPlayerCardValue < sumOfComputerCardValue) {
-    myOutputValue = "Computer Wins.<br> " + outcome;
-  } else {
-    myOutputValue = "Its a tie.<br> " + outcome;
+var currentGameMode = "drawing of cards";
+var playerCard1 = "";
+var playerCard2 = "";
+var sumOfPlayerCardValue = "";
+var sumOfComputerCardValue = "";
+var main = function (input) {
+  if (currentGameMode == "drawing of cards") {
+    playerCard1 = shuffledDeck.pop();
+    var computerCard1 = shuffledDeck.pop();
+    playerCard2 = shuffledDeck.pop();
+    var computerCard2 = shuffledDeck.pop();
+    sumOfPlayerCardValue = playerCard1.value + playerCard2.value;
+    console.log("player: " + sumOfPlayerCardValue);
+    sumOfComputerCardValue = computerCard1.value + computerCard2.value;
+    console.log(
+      "Computer had " +
+        computerCard1.name +
+        " of " +
+        computerCard1.suit +
+        " and " +
+        computerCard2.name +
+        " of " +
+        computerCard2.suit
+    );
+    currentGameMode = "hit or stand";
+    return (
+      "Player had " +
+      playerCard1.name +
+      " of " +
+      playerCard1.suit +
+      " and " +
+      playerCard2.name +
+      " of " +
+      playerCard2.suit +
+      "<br><br>Please enter HIT to draw another card or STAND to end your turn."
+    );
+  }
+  if (currentGameMode == "hit or stand") {
+    if (input == "HIT") {
+      var playerCard3 = shuffledDeck.pop();
+      console.log("Player had " + playerCard3.name + " of " + playerCard3.suit);
+      sumOfPlayerCardValue = sumOfPlayerCardValue + playerCard3.value;
+      console.log("player: " + sumOfPlayerCardValue);
+      return (
+        "Your cards are:<br><br>" +
+        playerCard1.name +
+        " of " +
+        playerCard1.suit +
+        "<br>" +
+        playerCard2.name +
+        " of " +
+        playerCard2.suit +
+        "<br>" +
+        playerCard3.name +
+        " of " +
+        playerCard3.suit
+      );
+    } else if (input == "STAND") {
+      return (
+        "Your cards are:<br><br>" +
+        playerCard1.name +
+        " of " +
+        playerCard1.suit +
+        "<br>" +
+        playerCard2.name +
+        "<br>" +
+        playerCard2.suit
+      );
+    }
+    currentGameMode = "outcome";
+  }
+  if (currentGameMode == "outcome") {
+    console.log("player: " + sumOfPlayerCardValue);
+    console.log("computer: " + sumOfComputerCardValue);
+    if (sumOfPlayerCardValue > sumOfComputerCardValue) {
+      myOutputValue = "Player Wins.";
+    } else if (sumOfPlayerCardValue < sumOfComputerCardValue) {
+      myOutputValue = "Computer Wins.";
+    } else {
+      myOutputValue = "Its a tie.";
+    }
   }
   return myOutputValue;
 };
