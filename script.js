@@ -1,4 +1,174 @@
+//Blackjack (simplified rules)
+//how to win: have hand that is higher than the dealer's, but not exceeding 21
+//if your hand exceeds 21, it's a 'bust', meaning you are out
+//scoring: 2-10 at face value, Jack/ Queen/ King score 10, Ace score 1 or 11
+//simplified rules: only 1 player and 1 dealer (computer)
+//simplified rules: player who is closer to 21 wins the hand.
+//step 1: players each put down a bet
+//step 2: dealer deals one card, face up, to each player, then to himself
+//step 3: dealer deals a second card, face up to each player, and face down to himself
+//step 4a: if player scores 21, automatically wins 1.5x of bet from dealer, then done for that round
+//step4b: if want more card (draw from top of the deck), say 'hit'; no limit to how many cards you can hit, but when score exceeds 21, you go bust.
+//step4c: if don't want any more cards, say 'stay'.
+//step 5: once dealer has been round the table, dealer opens its face-down card
+//step 6a: if dealer scores 17 or below, he has to take another card (i.e. hit)
+//step 6b: if dealer scores 18 or higher, he has to stay with his hand
+//step 7a: if dealer goes bust, all players win twice their bet
+//step 7b: if dealer does not go bust, only players with a higher score win twice their bet, every one else loses their initial bet
+
+//game modes
+var gameModeDeckShuffle = "game mode shuffle deck";
+var gameModeDealCard = "game mode deal card";
+var gameModePlayerChoice = "game mode player decides hit or stay";
+var gameModeDealerChoice = "game mode dealer decides hit or stay";
+
+var currentGameMode = gameModeDeckShuffle;
+
+//Card deck generation//
+var makeDeck = function () {
+  //create an empty array for the deck of cards
+  var cardDeck = [];
+  console.log(cardDeck);
+  //to make a deck of cards, need to define suit, card name, and rank
+  var suits = ["clubs", "diamonds", "hearts", "spades"];
+
+  var suitIndex = 0;
+  //run this loop as long as the suitIndex is shorter than the length of the suit array
+  while (suitIndex < suits.length) {
+    var currentSuit = suits[suitIndex];
+    console.log("current suit: " + currentSuit);
+    //Loop from 1-13 to create all cards for a given suit
+    // Hence rank loop is contained within the suit loop
+    //start rank from 1 so rank is equal to cardname (except 1, 11, 12, 13)
+    var rankCounter = 1;
+    //since there are 13 ranks in each suit, loop should last till 13
+
+    while (rankCounter <= 13) {
+      //by default cardname = rank counter
+      console.log("rank:" + rankCounter);
+      var cardName = rankCounter;
+
+      // with exception of ace, jack, queen and king
+      if (cardName == 1) {
+        cardName = "ace";
+      } else if (cardName == 11) {
+        cardName = "jack";
+      } else if (cardName == 12) {
+        cardName = "queen";
+      } else if (cardName == 13) {
+        cardName = "king";
+      }
+
+      // Create a new card with the current name, suit, and rank
+      var card = {
+        name: cardName,
+        suit: currentSuit,
+        rank: rankCounter,
+      };
+
+      //Add new card to the deck
+      cardDeck.push(card);
+
+      //increment rankCounter by +1 after each loop
+      rankCounter += 1;
+    }
+    //increment suitIndex by +1 after each loop
+    suitIndex += 1;
+  }
+
+  //Return the complete card deck
+  return cardDeck;
+};
+
+//assign variable to deck of cards
+var deck = makeDeck();
+
+//Shuffle deck//
+// Get a random index ranging from 0 (inclusive) to max (exclusive).
+var getRandomIndex = function (max) {
+  return Math.floor(Math.random() * max);
+};
+
+// Shuffle the elements in the cardDeck array
+var shuffleCards = function (cardDeck) {
+  // Loop over the card deck array once
+  var currentIndex = 0;
+  while (currentIndex < cardDeck.length) {
+    // Select a random index in the deck
+    var randomIndex = getRandomIndex(cardDeck.length);
+    // Select the card that corresponds to randomIndex
+    var randomCard = cardDeck[randomIndex];
+    // Select the card that corresponds to currentIndex
+    var currentCard = cardDeck[currentIndex];
+    // Swap positions of randomCard and currentCard in the deck
+    cardDeck[currentIndex] = randomCard;
+    cardDeck[randomIndex] = currentCard;
+    // Increment currentIndex
+    currentIndex = currentIndex + 1;
+  }
+  // Return the shuffled deck
+  return cardDeck;
+};
+
+//Assign a variable to deck shuffle function
+var shuffledDeck = shuffleCards(deck);
+
+//card counter for card-dealing loop//
+var cardCounter = 0;
+
+//array to track dealt cards//
+var playerDealtCards = [];
+var dealerCards = [];
+
+//playerscore//
+var playerScore = 0;
+
+//computer score//
+var computerScore = 0;
+
+//Determine a winner//
+var winner = function () {
+  if (playerScore >= computerScore) {
+    return "player";
+  } else return "computer";
+};
+
 var main = function (input) {
-  var myOutputValue = 'hello world';
+  var myOutputValue = "";
+  if (currentGameMode == gameModeDeckShuffle) {
+    //shuffle deck of cards
+    shuffledDeck;
+    currentGameMode = gameModeDealCard;
+    return "Click Submit to deal card.";
+  }
+  if (currentGameMode == gameModeDealCard) {
+    //create loop for 2 rounds of card dealing
+    while (cardCounter < 2) {
+      //player gets dealt card
+      var playerCard = shuffledDeck.pop();
+      //display cards dealt to player
+      playerDealtCards.push(playerCard.name + " of " + playerCard.suit);
+      console.log(playerDealtCards);
+
+      //dealer (computer) gets dealt card
+      var computerCard = shuffledDeck.pop();
+      //display cards dealt to computer
+      dealerCards.push(computerCard.name + " of " + computerCard.suit);
+      console.log(dealerCards);
+
+      //Add score of player's dealt card to player's score
+      playerScore += Number(playerCard.rank);
+      console.log(playerScore);
+
+      //Add score of computer's dealt card to computer's score
+      computerScore += Number(computerCard.rank);
+      console.log(computerScore);
+
+      //increase card counter by increment of 1 after each loop of card-dealing
+      cardCounter += 1;
+    }
+    return `You have been dealt ${playerDealtCards}.<br>The dealer's hand is ${dealerCards}.<br>Your total score is ${playerScore} and the dealer's total score is ${computerScore}.<br>The winner is the ${winner()}! `;
+  }
+
   return myOutputValue;
 };
