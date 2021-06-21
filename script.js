@@ -19,6 +19,7 @@ var deckGeneration = function () {
       var rankIndex = index;
       if (index == 1) {
         cardName = "Ace";
+        rankIndex = 11; // Let all Aces be worth 11 points from the start.
       } else if (index == 11) {
         cardName = "Jack";
         rankIndex = 10;
@@ -71,7 +72,7 @@ var dealCards = function (shuffledDeck, inputHand) {
   return inputHand;
 };
 
-// Function to total points of the player's hand
+// Function to total points of the player's hand. Takes in array of cards on player's hand.
 var calculateHand = function (playerHand) {
   var index = 0;
   var totalScore = 0;
@@ -79,7 +80,15 @@ var calculateHand = function (playerHand) {
     totalScore += playerHand[index].rank;
     index += 1;
   }
-  index = 0;
+  if (totalScore > 21) {
+    totalScore = 0;
+    for (var i = 0; i < playerHand.length; i += 1) {
+      if (playerHand[i].name == "Ace") {
+        playerHand[i].rank = 1;
+      }
+      totalScore += playerHand[i].rank;
+    }
+  }
   return totalScore;
 };
 
@@ -140,6 +149,7 @@ var resetGame = function () {
   playerCard = [];
   computerCard = [];
   gameMode = "shuffle";
+  winnerDetermined = false;
 };
 
 // Function to draw additional card and add to hand. Function reads the specific playerCard array
@@ -158,7 +168,9 @@ var checkPlayerHand = function (playerHand) {
       playerBusted,
       `Player BUSTED!! <br><br> Player cards: <br> ${printHand(
         playerCard
-      )} <br> Computer cards: <br> ${printHand(computerCard)}`,
+      )} <br> Computer cards: <br> ${printHand(
+        computerCard
+      )} <br><br> Click "submit" to begin new round.`,
     ];
   } else {
     return [
