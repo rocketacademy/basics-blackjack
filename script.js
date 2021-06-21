@@ -137,7 +137,9 @@ var main = function (input) {
   if (currentGameMode == "outcome") {
     console.log("player: " + sumOfPlayerCardValue);
     console.log("computer: " + sumOfComputerCardValue);
-    if (sumOfPlayerCardValue > sumOfComputerCardValue) {
+    if (sumOfPlayerCardValue > 21) {
+      myOutputValue = "Player Bust.";
+    } else if (sumOfPlayerCardValue > sumOfComputerCardValue) {
       myOutputValue = "Player Wins.";
     } else if (sumOfPlayerCardValue < sumOfComputerCardValue) {
       myOutputValue = "Computer Wins.";
