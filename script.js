@@ -262,6 +262,7 @@ var deck = [
 ];
 invalid = `<b>You have enter an invalid input!<br>Please only type 1 or 11!`;
 gameMode = "p1";
+blackjack = 21;
 p1winCounter = 0;
 pcWinCounter = 0;
 p1StartHand = [];
@@ -279,6 +280,24 @@ var randomCard = function () {
   additionalDraw = shuffle();
   initialHand = [firstDraw.rank + secondDraw.rank];
   pciHand = [pDraw.rank + cDraw.rank];
+  if (firstDraw.name == "ace" && secondDraw.name == "ace") {
+    gameMode = "pc";
+    p1StartHand = initialHand;
+    p1StartHand = 21;
+    return `<b>BLACKJACK!!<br><br>Your final hand is 21!<br>Computer's turn now.`;
+  }
+  if (firstDraw.name == "ace" && secondDraw.rank == 10) {
+    gameMode = "pc";
+    p1StartHand = initialHand;
+    p1StartHand = 21;
+    return `<b>BLACKJACK!!<br><br>Your final hand is 21!<br>Computer's turn now.`;
+  }
+  if (secondDraw.name == "ace" && firstDraw.rank == 10) {
+    gameMode = "pc";
+    p1StartHand = initialHand;
+    p1StartHand = 21;
+    return `<b>BLACKJACK!!<br><br>Your final hand is 21!<br>Computer's turn now.`;
+  }
   if (firstDraw.name == "ace" && gameMode == "p1") {
     gameMode = "chooseAce";
     p1StartHand = initialHand;
@@ -347,6 +366,19 @@ var hitOrStand = function (input) {
 
 var board = function () {
   if (gameMode == "gameboard") {
+    ///p1 Blackjack
+    if (firstDraw.name == "ace" && secondDraw.name == "ace") {
+      p1winCounter = p1winCounter + 1;
+      return `<b>Player 1's final hand = ${blackjack}<br>Computer's final hand = ${pciHand}.<br><br>Since player 1's hand is bigger than computer's.<br>Therefore player 1 wins!<br><br>Player 1 has won ${p1winCounter} rounds<br>Computer has won ${pcWinCounter} rounds<br><br>Click the submit button to play again!`;
+    }
+    if (firstDraw.name == "ace" && secondDraw.rank == 10) {
+      p1winCounter = p1winCounter + 1;
+      return `<b>Player 1's final hand = ${blackjack}<br>Computer's final hand = ${pciHand}.<br><br>Since player 1's hand is bigger than computer's.<br>Therefore player 1 wins!<br><br>Player 1 has won ${p1winCounter} rounds<br>Computer has won ${pcWinCounter} rounds<br><br>Click the submit button to play again!`;
+    }
+    if (secondDraw.name == "ace" && firstDraw.rank == 10) {
+      p1winCounter = p1winCounter + 1;
+      return `<b>Player 1's final hand = ${blackjack}<br>Computer's final hand = ${pciHand}.<br><br>Since player 1's hand is bigger than computer's.<br>Therefore player 1 wins!<br><br>Player 1 has won ${p1winCounter} rounds<br>Computer has won ${pcWinCounter} rounds<br><br>Click the submit button to play again!`;
+    }
     /// computer hand bigger & com wins
     if (p1StartHand < pciHand && p1StartHand <= 21 && pciHand <= 21) {
       pcWinCounter = pcWinCounter + 1;
