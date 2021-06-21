@@ -1,8 +1,9 @@
 // Global variables
-var gameMode = "shuffle";
+var gameMode = "get player name";
 var shuffledDeck = [];
 var playerCard = [];
 var computerCard = [];
+var playerName = [];
 var winnerDetermined = false;
 
 // Function to generate deck of cards.
@@ -12,7 +13,16 @@ var deckGeneration = function () {
   var suits = ["diamonds", "clubs", "hearts", "spades"];
 
   for (var i = 0; i < suits.length; i += 1) {
-    var cardSuit = suits[i];
+    var cardSuit = "";
+    if (suits[i] == "diamonds") {
+      cardSuit = "♦️";
+    } else if (suits[i] == "clubs") {
+      cardSuit = "♣️";
+    } else if (suits[i] == "hearts") {
+      cardSuit = "❤️";
+    } else if (suits[i] == "spades") {
+      cardSuit = "♠️";
+    }
     var index = 1;
     while (index < 14) {
       var cardName = index;
@@ -59,6 +69,20 @@ var shuffleCards = function (cardDeck) {
     currentIndex = currentIndex + 1;
   }
   return cardDeck;
+};
+
+// Function to obtain names of players and store in an array.
+var getName = function (input) {
+  if (input == "end") {
+    gameMode = "shuffle";
+    return `Welcome to the game ${playerName.join(
+      ", "
+    )}. <br> The game is starting. <br><br> Click "submit" to begin.`;
+  }
+  playerName.push(input);
+  return `Welcome to the game ${playerName.join(
+    ", "
+  )}. <br> Type the next name to register more players. Otherwise, type "end".`;
 };
 
 // Function to deal the initial 2 cards to players. Input is the shuffledDeck array, as well as the player or computer card array.
@@ -110,7 +134,9 @@ var compareInitialHands = function (playerCard, computerCard) {
 
   if (playerCurrentTotal == 21 && computerCurrentTotal != 21) {
     winnerDetermined = true;
-    return `Player Blackjack! Player wins! <br><br> Player cards: <br> ${printHand(
+    return `Player ${playerName[0]} Blackjack! Player wins! <br><br> Player ${
+      playerName[0]
+    } cards: <br> ${printHand(
       playerCard
     )} <br> Computer cards: <br> ${printHand(computerCard)}`;
   } else if (computerCurrentTotal == 21) {
@@ -119,11 +145,11 @@ var compareInitialHands = function (playerCard, computerCard) {
       playerCard
     )} <br> Computer cards: <br> ${printHand(computerCard)}`;
   } else {
-    return `Player cards: <br> ${printHand(
+    return `Player ${playerName[0]} cards: <br> ${printHand(
       playerCard
-    )} <br> Computer cards: <br> ${printHand(
-      computerCard
-    )} <br><br> Player to choose "stand" or "hit".`;
+    )} <br> Computer cards: <br> ${printHand(computerCard)} <br><br> Player ${
+      playerName[0]
+    } to choose "stand" or "hit".`;
   }
 };
 
@@ -133,11 +159,21 @@ var compareHands = function (playerCard, computerCard) {
   var computerCurrentTotal = calculateHand(computerCard);
 
   if (playerCurrentTotal > computerCurrentTotal) {
-    return `Player wins! Hand Total is ${playerCurrentTotal} points. <br><br> Player cards: <br> ${printHand(
+    return `Player ${
+      playerName[0]
+    } wins! Hand Total is ${playerCurrentTotal} points. <br><br> Player ${
+      playerName[0]
+    } cards: <br> ${printHand(
+      playerCard
+    )} <br> Computer cards: <br> ${printHand(computerCard)}`;
+  } else if ((playerCurrentTotal = computerCurrentTotal)) {
+    `This is a draw! <br><br> Player ${playerName[0]} cards: <br> ${printHand(
       playerCard
     )} <br> Computer cards: <br> ${printHand(computerCard)}`;
   } else {
-    return `Computer wins! Hand Total is ${computerCurrentTotal} points. <br><br> Player cards: <br> ${printHand(
+    return `Computer wins! Hand Total is ${computerCurrentTotal} points. <br><br> Player ${
+      playerName[0]
+    } cards: <br> ${printHand(
       playerCard
     )} <br> Computer cards: <br> ${printHand(computerCard)}`;
   }
@@ -148,6 +184,7 @@ var resetGame = function () {
   shuffledDeck = [];
   playerCard = [];
   computerCard = [];
+  playerName = [];
   gameMode = "shuffle";
   winnerDetermined = false;
 };
@@ -166,7 +203,7 @@ var checkPlayerHand = function (playerHand) {
     playerBusted = true;
     return [
       playerBusted,
-      `Player BUSTED!! <br><br> Player cards: <br> ${printHand(
+      `Player ${playerName[0]} BUSTED!! <br><br> Player cards: <br> ${printHand(
         playerCard
       )} <br> Computer cards: <br> ${printHand(
         computerCard
@@ -175,7 +212,7 @@ var checkPlayerHand = function (playerHand) {
   } else {
     return [
       playerBusted,
-      `Player cards: <br> ${printHand(
+      `Player ${playerName[0]} cards: <br> ${printHand(
         playerCard
       )} <br> Computer cards: <br> ${printHand(
         computerCard
@@ -216,7 +253,9 @@ var computerDecisions = function (inputComputerCard) {
 var main = function (input) {
   var outputValue = "";
   var playerState = [];
-  if (gameMode == "shuffle") {
+  if (gameMode == "get player name") {
+    return getName(input);
+  } else if (gameMode == "shuffle") {
     shuffledDeck = shuffleCards(deckGeneration());
     gameMode = "deal";
     return `The deck has been shuffled. <br> Click "Submit" to deal cards.`;
