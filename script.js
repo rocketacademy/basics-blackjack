@@ -1,7 +1,5 @@
-// Make 52 cards
-// rank 1-13
-// 1-4 suits: hearts, diamonds, clubs, spades
-// 2-10 and jack, queen, king and ace
+// Function to make a deck of 52 cards
+// rank 1-13; 1-4 suits: hearts, diamonds, clubs, spades; 2-10 and jack, queen, king and ace
 var makeDeck = function () {
   // Initialise an empty deck array
   var cardDeck = [];
@@ -36,14 +34,16 @@ var makeDeck = function () {
 return cardDeck;
 }
 
-// Make deck
+// make deck
 var deck = makeDeck();
-// Winner message after the game ends
+// winner message after the game ends
 var winnerMessage = '';
-// game mode
-var gameMode = 'welcome';
-// For version 2: Add gamemode for player hit or stand
-
+// game modes
+var GAME_MODE_WELCOME = 'GAME_MODE_WELCOME';
+var GAME_MODE_PLAYER_HIT = 'GAME_MODE_PLAYER_HIT';
+var GAME_MODE_EVALUATE_WIN = 'GAME_MODE_EVALUATE_WIN';
+// initialise game mode
+var gameMode = GAME_MODE_WELCOME;
 
 // Function to get a random index ranging from 0 (inclusive) to max (exclusive)
 var getRandomIndex = function (max) {
