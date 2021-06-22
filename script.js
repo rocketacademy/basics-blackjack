@@ -68,10 +68,6 @@ var main = function (input) {
   var myOutputValue = "";
   console.log(mode);
 
-  if ((input = "1")) {
-    mode = "reward";
-  }
-
   if (mode == "name") {
     mode = "deal";
     myOutputValue = Name(input);
