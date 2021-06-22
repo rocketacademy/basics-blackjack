@@ -79,13 +79,35 @@ var shuffleCards = function (cardDeck) {
   return cardDeck;
 }
 
-// Function to sum up player card rankss
+// Function to sum up player card ranks
+var getPlayerRank = function(playerCardsArray) {
+  var index = 0;
+  var sumOfRanks = 0;
+  while (index < playerCardsArray.length) {
+    var card = playerCardsArray.[index];
+    var cardRank = card.rank;
+    sumOfRanks += cardRank;
+  }
+  return sumOfRanks;
+}
+
+// Function to determine is player is bust 
+var didPlayerBust = function () {
+  var sumOfPlayerCards = getPlayerRank();
+  if (sumOfPlayerCards > 21) {
+    return true;
+  }
+  return false;
+}
 
 // Function to determine winner
 var determineWinner = function (dealerCard, playerCard) {
+  // variable to store message announcing winner
   var message = "";
- // Create winning/losing conditions: Base on rank attribue
- if (dealerCard.rank > playerCard.rank) {
+  // variable to store player's total card rank
+  var playerRank = getPlayerRank(playerCardsArray);
+ // Create winning/losing conditions: Base on rank attribute
+ if (dealerCard.rank > playerRank) {
   message = message + 'Computer wins.';
   } else if (computerCard.rank < playerCard.rank) {
     message = message + 'Player wins.';
