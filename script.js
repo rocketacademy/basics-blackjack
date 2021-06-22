@@ -38,8 +38,6 @@ return cardDeck;
 
 // Make deck
 var deck = makeDeck();
-// Default output value
-var myOutputValue = 'Welcome to BlackJack! There are 2 players in this round - you vs the computer. Press submit to draw a random card from the deck for both you and the computer.'
 // Winner message after the game ends
 var winnerMessage = '';
 // game mode
@@ -88,9 +86,18 @@ var determineWinner = function (computerCard, playerCard) {
 }
 
 var main = function (input) {
+  // Default output value
+  var myOutputValue = 'Welcome to BlackJack! There are 2 players in this round - you vs the computer. Press submit to draw a random card from the deck for both you and the computer.';
+  console.log('Game mode:');
+  console.log(gameMode);
 
   if (gameMode == 'welcome') {
     gameMode = 'play';
+    console.log('Game mode:');
+    console.log(gameMode);
+    console.log('myOutputValue');
+    console.log(myOutputValue);
+    return myOutputValue;
   }
 
   if (gameMode == 'play') {
