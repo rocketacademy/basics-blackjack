@@ -102,17 +102,42 @@ var didPlayerBust = function () {
 
 // Function to determine winner
 var determineWinner = function (dealerCard, playerCard) {
-  // variable to store message announcing winner
-  var message = "";
+  // variable to store message 
+  var message = '';
   // variable to store player's total card rank
   var playerRank = getPlayerRank(playerCardsArray);
- // Create winning/losing conditions: Base on rank attribute
- if (dealerCard.rank > playerRank) {
-  message = message + 'Computer wins.';
-  } else if (computerCard.rank < playerCard.rank) {
-    message = message + 'Player wins.';
-  } else {
-    message = message + 'It is a tie.';
+  // variable to store dealer's card rank
+  var dealerRank = dealerCard.rank
+  // variable to store messages announcing each player's outcome
+  var playerOutcomes = `Your cards add up to ${playerRank}. <br> Dealer drew a ${dealerCard.name} of ${dealerCard.suit}.`;
+  // variable to store win and lose message
+  var playerWinMsg = 'You win, dealer loses!';
+  var dealerWinMsg = 'Dealer wins, you lose!';
+
+  // If either player got 21 and the other did not, then announce blackjack winner
+  if (playerRank == 21 && dealerRank !== 21) {
+    message = 'Black Jack! <br>' + playerOutcomes + playerWinMsg; 
+  } 
+  else if (playerRank !== 21 && dealerRank == 21) {
+    message = 'Black Jack! <br>' + playerOutcomes + dealerWinMsg;
+  } 
+  // If neither got 21 but either one goes bust, then announce winner
+  else if (didPlayerBust == true && dealerRank < 21) {
+    message = "You're bust! <br>" + playerOutcomes + dealerWinMsg;
+  } 
+  else if (didplayerBust == false && dealerRank > 21) {
+    message = 'Dealer is bust! <br>' + playerOutcomes + playerWinMsg;
+  }
+  // If both did not go bust, the one closer to 21 wins
+  else if (dealerRank > playerRank) {
+    message = playerOutcomes + dealerWinMsg
+  }
+  else if (dealerRank < playerRank) {
+    message = playerOutcomes + playerWinMsg;
+  }
+  // Otherwise, it is a tie
+  else {
+    message = 'It is a tie <br>' + playerOutcomes;
   }
   return message;
 }
