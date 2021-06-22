@@ -1,266 +1,57 @@
-var mode = "everydayimshuffling";
-var deck = [
-  {
-    name: "ace",
-    suit: "hearts",
-    rank: 1,
-  },
-  {
-    name: "2",
-    suit: "hearts",
-    rank: 2,
-  },
-  {
-    name: "3",
-    suit: "hearts",
-    rank: 3,
-  },
-  {
-    name: "4",
-    suit: "hearts",
-    rank: 4,
-  },
-  {
-    name: "5",
-    suit: "hearts",
-    rank: 5,
-  },
-  {
-    name: "6",
-    suit: "hearts",
-    rank: 6,
-  },
-  {
-    name: "7",
-    suit: "hearts",
-    rank: 7,
-  },
-  {
-    name: "8",
-    suit: "hearts",
-    rank: 8,
-  },
-  {
-    name: "9",
-    suit: "hearts",
-    rank: 9,
-  },
-  {
-    name: "10",
-    suit: "hearts",
-    rank: 10,
-  },
-  {
-    name: "jack",
-    suit: "hearts",
-    rank: 10,
-  },
-  {
-    name: "queen",
-    suit: "hearts",
-    rank: 10,
-  },
-  {
-    name: "king",
-    suit: "hearts",
-    rank: 10,
-  },
-  {
-    name: "ace",
-    suit: "diamonds",
-    rank: 1,
-  },
-  {
-    name: "2",
-    suit: "diamonds",
-    rank: 2,
-  },
-  {
-    name: "3",
-    suit: "diamonds",
-    rank: 3,
-  },
-  {
-    name: "4",
-    suit: "diamonds",
-    rank: 4,
-  },
-  {
-    name: "5",
-    suit: "diamonds",
-    rank: 5,
-  },
-  {
-    name: "6",
-    suit: "diamonds",
-    rank: 6,
-  },
-  {
-    name: "7",
-    suit: "diamonds",
-    rank: 7,
-  },
-  {
-    name: "8",
-    suit: "diamonds",
-    rank: 8,
-  },
-  {
-    name: "9",
-    suit: "diamonds",
-    rank: 9,
-  },
-  {
-    name: "10",
-    suit: "diamonds",
-    rank: 10,
-  },
-  {
-    name: "jack",
-    suit: "diamonds",
-    rank: 10,
-  },
-  {
-    name: "queen",
-    suit: "diamonds",
-    rank: 10,
-  },
-  {
-    name: "king",
-    suit: "diamonds",
-    rank: 10,
-  },
-  {
-    name: "ace",
-    suit: "clubs",
-    rank: 1,
-  },
-  {
-    name: "2",
-    suit: "clubs",
-    rank: 2,
-  },
-  {
-    name: "3",
-    suit: "clubs",
-    rank: 3,
-  },
-  {
-    name: "4",
-    suit: "clubs",
-    rank: 4,
-  },
-  {
-    name: "5",
-    suit: "clubs",
-    rank: 5,
-  },
-  {
-    name: "6",
-    suit: "clubs",
-    rank: 6,
-  },
-  {
-    name: "7",
-    suit: "clubs",
-    rank: 7,
-  },
-  {
-    name: "8",
-    suit: "clubs",
-    rank: 8,
-  },
-  {
-    name: "9",
-    suit: "clubs",
-    rank: 9,
-  },
-  {
-    name: "10",
-    suit: "clubs",
-    rank: 10,
-  },
-  {
-    name: "jack",
-    suit: "clubs",
-    rank: 10,
-  },
-  {
-    name: "queen",
-    suit: "clubs",
-    rank: 10,
-  },
-  {
-    name: "king",
-    suit: "clubs",
-    rank: 10,
-  },
-  {
-    name: "ace",
-    suit: "spades",
-    rank: 1,
-  },
-  {
-    name: "2",
-    suit: "spades",
-    rank: 2,
-  },
-  {
-    name: "3",
-    suit: "spades",
-    rank: 3,
-  },
-  {
-    name: "4",
-    suit: "spades",
-    rank: 4,
-  },
-  {
-    name: "5",
-    suit: "spades",
-    rank: 5,
-  },
-  {
-    name: "6",
-    suit: "spades",
-    rank: 6,
-  },
-  {
-    name: "7",
-    suit: "spades",
-    rank: 7,
-  },
-  {
-    name: "8",
-    suit: "spades",
-    rank: 8,
-  },
-  {
-    name: "9",
-    suit: "spades",
-    rank: 9,
-  },
-  {
-    name: "10",
-    suit: "spades",
-    rank: 10,
-  },
-  {
-    name: "jack",
-    suit: "spades",
-    rank: 10,
-  },
-  {
-    name: "queen",
-    suit: "spades",
-    rank: 10,
-  },
-  {
-    name: "king",
-    suit: "spades",
-    rank: 10,
-  },
-];
+var mode = "name";
+var makeDeck = function () {
+  // Initialise an empty deck array
+  var cardDeck = [];
+  // Initialise an array of the 4 suits in our deck. We will loop over this array.
+  var suits = ["♥", "♦", "♣", "♠"];
+
+  // Loop over the suits array
+  var suitIndex = 0;
+  while (suitIndex < suits.length) {
+    // Store the current suit in a variable
+    var currentSuit = suits[suitIndex];
+
+    // Loop from 1 to 13 to create all cards for a given suit
+    // Notice rankCounter starts at 1 and not 0, and ends at 13 and not 12.
+    // This is an example of a loop without an array.
+    var rankCounter = 1;
+    while (rankCounter <= 13) {
+      // By default, the card name is the same as rankCounter
+      var cardName = rankCounter;
+
+      // If rank is 1, 11, 12, or 13, set cardName to the ace or face card's name
+      if (cardName == 1) {
+        cardName = "ace";
+      } else if (cardName == 11) {
+        cardName = "jack";
+      } else if (cardName == 12) {
+        cardName = "queen";
+      } else if (cardName == 13) {
+        cardName = "king";
+      }
+
+      // Create a new card with the current name, suit, and rank
+      var card = {
+        name: cardName,
+        suit: currentSuit,
+        rank: rankCounter,
+      };
+
+      // Add the new card to the deck
+      cardDeck.push(card);
+
+      // Increment rankCounter to iterate over the next rank
+      rankCounter += 1;
+    }
+
+    // Increment the suit index to iterate over the next suit
+    suitIndex += 1;
+  }
+
+  // Return the completed card deck
+  return cardDeck;
+};
+var deck = makeDeck();
 
 var playerDeck = [];
 var dealerDeck = [];
@@ -269,22 +60,41 @@ var playervalue = 0;
 var dealervalue = 0;
 var playerDeckforMessage = [];
 var dealerDeckforMessage = [];
+var UserName = "";
+var win = 0;
+var animation = 0;
 
 var main = function (input) {
   var myOutputValue = "";
   console.log(mode);
 
-  if (mode == "everydayimshuffling") {
+  if ((input = "1")) {
+    mode = "reward";
+  }
+
+  if (mode == "name") {
     mode = "deal";
-    myOutputValue = shufflethedeck();
-    return myOutputValue;
+    myOutputValue = Name(input);
   } else if (mode == "deal") {
     mode = "actualgame";
     return DealtCards();
   } else if (mode == "actualgame") {
     return actualgame(input);
+  } else if (mode == "reward") {
+    return Graphics();
   }
   return myOutputValue;
+};
+
+var Name = function (input) {
+  if (!(typeof input == "string") || input == 0) {
+    mode = "name";
+    return `Please type in your name.`;
+  } else {
+    shuffledDeck = shuffleCards(deck);
+    UserName = input;
+    return `Hello, ${UserName}. <br><br>The cards have been shuffled. <br><br>Press Submit to deal cards.`;
+  }
 };
 
 // Get a random index ranging from 0 (inclusive) to max (exclusive).
@@ -313,11 +123,6 @@ var shuffleCards = function (cardDeck) {
   return cardDeck;
 };
 
-var shufflethedeck = function () {
-  shuffledDeck = shuffleCards(deck);
-  return "Card have been shuffled. <br><br>Press Submit to deal cards.";
-};
-
 var DealtCards = function () {
   var playerCard1 = shuffledDeck.pop();
   var playerCard2 = shuffledDeck.pop();
@@ -330,6 +135,17 @@ var DealtCards = function () {
 
   dealerDeck.push(dealerCard1);
   dealerDeck.push(dealerCard2);
+
+  playervalue = calculations(playerDeck);
+  dealervalue = calculations(dealerDeck);
+
+  while (dealervalue > 21) {
+    dealerCard2 = shuffledDeck.pop();
+    dealerDeck[1] = dealerCard2;
+    dealerDeckforMessage[1] = ` ${dealerCard2.name} of ${dealerCard2.suit}`;
+
+    dealervalue = calculations(dealerDeck);
+  }
 
   var counter = 0;
   while (counter < playerDeck.length) {
@@ -347,13 +163,10 @@ var DealtCards = function () {
     counter2 += 1;
   }
 
-  playervalue = calculations(playerDeck);
-  dealervalue = calculations(dealerDeck);
-
   console.log("player: " + playervalue);
   console.log("dealer: " + dealervalue);
 
-  return `Your cards are the ${playerDeckforMessage}. <br>One of the dealer's cards is the ${dealerDeckforMessage[0]}.<br><br>Do you want to 'stand' or 'hit'?`;
+  return `Your cards are the ${playerDeckforMessage}. <br>One of the dealer's cards is the ${dealerDeckforMessage[0]}.<br><br>Do you want to 'stand' or 'hit', ${UserName}?`;
 };
 
 var calculations = function (ADeck) {
@@ -367,45 +180,145 @@ var calculations = function (ADeck) {
 };
 
 var actualgame = function (input) {
-  var message = "Please enter either 'stand' or 'hit'.";
+  var message = `Please enter either 'stand' or 'hit', ${UserName}.`;
   playervalue = calculations(playerDeck);
   dealervalue = calculations(dealerDeck);
 
-  if (playervalue > 21) {
-    message =
-      "Player has lost as you have exceeded 21. <br><br>Your deck of cards are " +
-      playerDeckforMessage +
-      ".";
-  } else if (playervalue == 21) {
-    message = "Player has won!!!";
-  } else if (dealervalue > 21) {
-    message = "Player has won as dealer has exceeded 21.";
-  } else if (playervalue < 21) {
+  if (dealervalue < 17) {
+    var dealerCard = shuffledDeck.pop();
+    dealerDeck.push(dealerCard);
+    dealervalue = calculations(dealerDeck);
+    dealerDeckforMessage.push(` ${dealerCard.name} of ${dealerCard.suit}`);
+  }
+
+  if (dealervalue > 21) {
+    //if the computer itself exceeds 21, the player automatically loses
+    win = 2;
+    message = `${UserName} has won as the dealer busted!`;
+  } else {
+    //if user chooses to stand
     if (input == "stand") {
+      win = 2; //if player losses, win = 2
       if (playervalue < dealervalue) {
         message = `The dealer has won!`;
       } else if (playervalue > dealervalue) {
-        message = `The player has won!`;
+        win = 1; //if player wins, win = 1
+        message = `You have won!`;
       } else if (playervalue == dealervalue) {
         message = `It's a tie.`;
       }
-    } else if (input == "hit") {
-      if (dealervalue < 17) {
-        var dealerCard = shuffledDeck.pop();
-        dealerDeck.push(dealerCard);
-        dealervalue = calculations(dealerDeck);
-        dealerDeckforMessage.push(` ${dealerCard.name} of ${dealerCard.suit}`);
-      }
+      message += `<br><br> Your cards were ${playerDeckforMessage} while the dealer's cards were ${dealerDeckforMessage}.`;
+    }
+
+    //if user chooses to hit
+    else if (input == "hit") {
       var playerCard = shuffledDeck.pop();
       playerDeck.push(playerCard);
+
       playerDeckforMessage.push(` ${playerCard.name} of ${playerCard.suit}`);
+
       playervalue = calculations(playerDeck);
 
-      message = `Your cards are the ${playerDeckforMessage} while the dealer's cards are the ${dealerDeckforMessage}. <br><br>Do you wish to 'stand' or 'hit'?`;
+      if (playervalue > 21) {
+        win = 2;
+
+        message = `You has lost as you have exceeded 21. <br><br> Your cards were ${playerDeckforMessage} while the dealer's cards were ${dealerDeckforMessage}.`;
+      } else if (playervalue == 21) {
+        message = `You have won!!! <br><br> Your cards were ${playerDeckforMessage} while the dealer's cards were ${dealerDeckforMessage}.`;
+        win = 1;
+      } else {
+        message = `Your cards are ${playerDeckforMessage} while the dealer's cards are ${dealerDeckforMessage}. <br><br>Do you wish to 'stand' or 'hit'?`;
+      }
     }
   }
+
   console.log("player: " + playervalue);
   console.log("dealer: " + dealervalue);
+
+  if (!(win == 0)) {
+    mode = "reward";
+  }
+
+  return message + `<br><br>Click Submit for your Reward`;
+};
+
+var Graphics = function () {
+  var message = "";
+  if (win == true) {
+    message = `<br>
+
+┏┓╋╋┏┳━━━┳┓╋┏┓┏┓┏┓┏┳━━━┳━┓╋┏┳┳┳┓
+┃┗┓┏┛┃┏━┓┃┃╋┃┃┃┃┃┃┃┃┏━┓┃┃┗┓┃┃┃┃┃
+┗┓┗┛┏┫┃╋┃┃┃╋┃┃┃┃┃┃┃┃┃╋┃┃┏┓┗┛┃┃┃┃
+╋┗┓┏┛┃┃╋┃┃┃╋┃┃┃┗┛┗┛┃┃╋┃┃┃┗┓┃┣┻┻┛
+╋╋┃┃╋┃┗━┛┃┗━┛┃┗┓┏┓┏┫┗━┛┃┃╋┃┃┣┳┳┓
+╋╋┗┛╋┗━━━┻━━━┛╋┗┛┗┛┗━━━┻┛╋┗━┻┻┻┛`;
+    if (animation == 0) {
+      message += `
+<br><br>
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+░░░░░░░░░░▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄░░░░░░░░░
+░░░░░░░░▄▀░░░░░░░░░░░░▄░░░░░░░▀▄░░░░░░░
+░░░░░░░░█░░▄░░░░▄░░░░░░░░░░░░░░█░░░░░░░
+░░░░░░░░█░░░░░░░░░░░░▄█▄▄░░▄░░░█░▄▄▄░░░
+░▄▄▄▄▄░░█░░░░░░▀░░░░▀█░░▀▄░░░░░█▀▀░██░░
+░██▄▀██▄█░░░▄░░░░░░░██░░░░▀▀▀▀▀░░░░██░░
+░░▀██▄▀██░░░░░░░░▀░██▀░░░░░░░░░░░░░▀██░
+░░░░▀████░▀░░░░▄░░░██░░░▄█░░░░▄░▄█░░██░
+░░░░░░░▀█░░░░▄░░░░░██░░░░▄░░░▄░░▄░░░██░
+░░░░░░░▄█▄░░░░░░░░░░░▀▄░░▀▀▀▀▀▀▀▀░░▄▀░░
+░░░░░░█▀▀█████████▀▀▀▀████████████▀░░░░
+░░░░░░████▀░░███▀░░░░░░▀███░░▀██▀░░░░░░
+`;
+      animation = 1;
+    } else if (animation == 1) {
+      message += `
+<br><br>
+░░░░░░░░░░▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄░░░░░░░░░
+░░░░░░░░▄▀░░░░░░░░░░░░▄░░░░░░░▀▄░░░░░░░
+░░░░░░░░█░░▄░░░░▄░░░░░░░░░░░░░░█░░░░░░░
+░░░░░░░░█░░░░░░░░░░░░▄█▄▄░░▄░░░█░▄▄▄░░░
+░▄▄▄▄▄░░█░░░░░░▀░░░░▀█░░▀▄░░░░░█▀▀░██░░
+░██▄▀██▄█░░░▄░░░░░░░██░░░░▀▀▀▀▀░░░░██░░
+░░▀██▄▀██░░░░░░░░▀░██▀░░░░░░░░░░░░░▀██░
+░░░░▀████░▀░░░░▄░░░██░░░▄█░░░░▄░▄█░░██░
+░░░░░░░▀█░░░░▄░░░░░██░░░░▄░░░▄░░▄░░░██░
+░░░░░░░▄█▄░░░░░░░░░░░▀▄░░▀▀▀▀▀▀▀▀░░▄▀░░
+░░░░░░█▀▀█████████▀▀▀▀████████████▀░░░░
+░░░░░░████▀░░███▀░░░░░░▀███░░▀██▀░░░░░░
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+`;
+      animation = 0;
+    }
+    message += `<br><br>Click Submit again to continue.`;
+  } else {
+    message =
+      `🆂🅴🆁🅸🅾🆄🆂🅻🆈❓` +
+      `
+░░░░░░░░▄▄██▀▀▀▀▀▀▀████▄▄▄▄░░░░░░░░░░░░░
+░░░░░▄██▀░░░░░░░░░░░░░░░░░▀▀██▄▄░░░░░░░░
+░░░░██░░░░░░░░░░░░░░░░░░░░░░░░▀▀█▄▄░░░░░
+░░▄█▀░░░░░░░░░░░░░░░░░░░░░░░░░░░░▀▀█▄░░░
+░▄█▀░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░█▄░░
+░█▀░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▀█░
+▄█░░░░░░░░░░░░░░░░░░▄░░░░░░░░░░░░░░░░░██
+█▀░░░░░░██▄▄▄▄▄░░░░▄█░░░░░░░░░░░░░░░░░░█
+█░░░░░░░█▄░░▀██████▀░░░▄▄░░░░░░░░░░██░░█
+█░░░░░░░░▀█▄▄▄█▀░░░░░░░██▀▀██▄▄▄▄▄▄█░░▄█
+█░░░░░░░░░░░░░░░░░░░░░░░▀▄▄▄▀▀▀██▀░░░░█▀
+█▄░░░░░▄▄░░░░░░░░░░░░░░░░░░▀▀▀▀▀░░░░▄█▀░
+░█▄░░░░█░░░░▄▄▄▄░░░░░░░░░░░░░░░░░░░▄█░░░
+░░█▄░░▀█▄░░▀▀▀███████▄▄▄░░░▄░░░░░▄█▀░░░░
+░░░█▄░░░░░░░░░░░░░▀▀▀░░█░░░█░░░░██░░░░░░
+░░░░▀█▄▄░░░░░░░░░░░░░░░░░██░░░▄█▀░░░░░░░
+░░░░░░▀▀█▄▄▄░░░░░░░░░░░░░▄▄▄█▀▀░░░░░░░░░
+░░░░░░░░░░▀▀█▀▀███▄▄▄███▀▀▀░░░░░░░░░░░░░
+░░░░░░░░░░░█▀░░░░░░░░░░░░░░░░░░░░░░░░░░░
+
+      `;
+  }
 
   return message;
 };
