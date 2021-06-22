@@ -36,14 +36,22 @@ return cardDeck;
 
 // make deck
 var deck = makeDeck();
-// winner message after the game ends
-var winnerMessage = '';
+// global array to track the player's cards at every hit
+var playerCardsArray = [];
+// global array to track the dealer's cards at every hit (for version 3)
+var dealerCardsArray = [];
+// global variables to store the number of hits for player and dealer
+var numberOfHits_player = 0;
+var numberOfHits_dealer = 0;
 // game modes
 var GAME_MODE_WELCOME = 'GAME_MODE_WELCOME';
 var GAME_MODE_PLAYER_HIT = 'GAME_MODE_PLAYER_HIT';
+var GAME_MODE_PLAYER_STAND = 'GAME_MODE_PLAYER_STAND'
 var GAME_MODE_EVALUATE_WIN = 'GAME_MODE_EVALUATE_WIN';
 // initialise game mode
 var gameMode = GAME_MODE_WELCOME;
+// winner message after the game ends
+var winnerMessage = '';
 
 // Function to get a random index ranging from 0 (inclusive) to max (exclusive)
 var getRandomIndex = function (max) {
@@ -71,11 +79,13 @@ var shuffleCards = function (cardDeck) {
   return cardDeck;
 }
 
+// Function to sum up player card rankss
+
 // Function to determine winner
-var determineWinner = function (computerCard, playerCard) {
+var determineWinner = function (dealerCard, playerCard) {
   var message = "";
  // Create winning/losing conditions: Base on rank attribue
- if (computerCard.rank > playerCard.rank) {
+ if (dealerCard.rank > playerCard.rank) {
   message = message + 'Computer wins.';
   } else if (computerCard.rank < playerCard.rank) {
     message = message + 'Player wins.';
@@ -91,8 +101,9 @@ var main = function (input) {
   console.log('Game mode:');
   console.log(gameMode);
 
-  if (gameMode == 'welcome') {
-    gameMode = 'play';
+  // If gameMode is GAME_MODE_WELCOME, change gameMode to GAME_MODE_PLAYER_HIT and output default welcome message
+  if (gameMode == GAME_MODE_WELCOME) {
+    gameMode = GAME_MODE_PLAYER_HIT;
     console.log('Game mode:');
     console.log(gameMode);
     console.log('myOutputValue');
@@ -100,26 +111,67 @@ var main = function (input) {
     return myOutputValue;
   }
 
-  if (gameMode == 'play') {
+  // If gameMode is GAME_MODE_PLAYER_HIT, draw a card for the player first
+  if (gameMode == GAME_MODE_PLAYER_HIT) {
     // Shuffle the deck and store it in a new variable shuffledDeck
     var shuffledDeck = shuffleCards(deck);
+    console.log('shuffling deck..');
 
-    // Draw 2 cards from the top of the deck
-    var computerCard = shuffledDeck.pop();
+    // Draw a card from the top of the deck
     var playerCard = shuffledDeck.pop();
+    console.log('player draws a card..')
+    console.log(playerCard);
 
-    // Create message stating which cards were drawn for each player
-    var myOutputValue = 
-    'Computer had ' +
-    computerCard.name +
-    ' of ' +
-    computerCard.suit +
-    '. Player had ' +
+    // Store the new card in the playerCardsArray and increase the no. of hits
+    playerCardsArray.push(playerCard);
+    numberOfHits_player += 1; 
+
+    // Create message stating which cards were drawn for the player
+    var playerCardMessage = 
+    'Player draws ' +
     playerCard.name +
     ' of ' +
     playerCard.suit +
     '. ';
 
+    // Create message requesting player to choose either hit or stand
+    var hitOrStandMessage = "To hit again, press submit. To stand, enter 'stand' and submit."
+    myOutputValue = playerCardMessage + '<br>' + hitOrStandMessage;
+    return myOutputValue
+  }
+
+  // Input validation: If player enters anything other than '' or 'stand', request to renenter
+  if (input !== 'stand' || input !== '') {
+    myOutputValue = "Invalid input. Please either press submit to hit again, or enter 'stand' to stand";
+    return myOutputValue;
+  }
+  
+  // If player enters 'stand', change gamemode to GAME_MODE_PLAYER_STAND
+  if (input == 'stand') {
+    gameMode == GAME_MODE_PLAYER_STAND;
+    console.log('game mode:')
+    console.log(gameMode);
+  }
+
+  // If gameMode is GAME_MODE_PLAYER_STAND, draw a card for the computer and change gameMode to GAME_MODE_EVALUATE_WIN
+  if (gameMode == GAME_MODE_PLAYER_STAND) {
+    // Shuffle the deck and store it in a new variable shuffledDeck
+    var shuffledDeck = shuffleCards(deck);
+    console.log('shuffling deck..');
+
+    // Draw a card from the top of the deck
+    var dealerCard = shuffledDeck.pop();
+    console.log('dealer draws a card..')
+    console.log(dealerCard);
+
+    // Store the new card in the dealerCardsArray and increase the no. of hits
+    dealerCardsArray.push(dealerCard);
+
+    // Once dealer draws one card, change gameMode to GAME_MODE_EVALUATE_WIN
+    gameMode = GAME_MODE_EVALUATE_WIN;
+  }
+
+  if (gameMode == GAME_MODE_EVALUATE_WIN) {
     // Determine winner
     winnerMessage = determineWinner(computerCard, playerCard);
   }
