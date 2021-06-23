@@ -93,7 +93,7 @@ var dealCards = function () {
     computerCards[0].value + computerCards[1].value != 21
   ) {
     gameMode = DEAL_CARDS;
-    return `YOU HAVE GOTTEN BLACKJACK AND WIN! 🥳 <br><br> You have drawn a ${playerCards[0].name} of ${playerCards[0].emojiSuit} and a ${playerCards[1].name} of ${playerCards[1].emojiSuit}.`;
+    return `YOU HAVE GOTTEN BLACKJACK AND WIN! 🥳 <br><br> You have drawn a ${playerCards[0].name} of ${playerCards[0].emojiSuit} and a ${playerCards[1].name} of ${playerCards[1].emojiSuit}`;
   } else if (
     // If both get blackjack, declare draw and reset game
     playerCards[0].value + playerCards[1].value == 21 &&
@@ -102,6 +102,7 @@ var dealCards = function () {
     gameMode = DEAL_CARDS;
     return `You both drew blackjacks! Its a draw!`;
   } else {
+    gameMode = PLAYER_ACTION;
     // Otherwise inform player of current cards and ask if they want to hit or stand
     return `Player, you have drawn a ${playerCards[0].name} of ${playerCards[0].emojiSuit} and a ${playerCards[1].name} of ${playerCards[1].emojiSuit}. <br><br> Please enter 'hit' if you would like more cards <br><br> Please enter 'stand' if you do not want anymore cards `;
   }
@@ -120,31 +121,60 @@ var playerDrawsExtraCard = function () {
       playerCardMessage +
       `<br> ${playerCards[playerCounter].name} of ${playerCards[playerCounter].emojiSuit}`;
     if (playerPoints > 21) {
+      gameMode = DEAL_CARDS;
       return (
         `You've burst and lost! <br> Your score is ${playerPoints} <br> ` +
         playerCardMessage
       );
     }
+
     playerCounter += 1;
   }
+
   return `Your total points are: ${playerPoints} <br> ` + playerCardMessage;
 };
 
 var calculateComputerScore = function () {
-  computerCounter = 0;
-  while (computerCounter < computerCards.length) {
-    computerPoints = computerPoints + computerCards[computerCounter].value;
-    if (computerPoints >= 17 && computerPoints <= 21) {
-      return `Computer's points are ${computerPoints}`;
-    } else if (computerPoints > 21) {
-      gameMode = DEAL_CARDS;
-      return `The computer has burst, you win!`;
-    } else {
+  // Add computer score for first two cards
+  computerPoints = computerCards[0].value + computerCards[1].value;
+  // If two card score >= 17 and <= 21, change gameMode to compare with player score
+  if (computerPoints >= 17 && computerPoints <= 21) {
+    gameMode = FINAL_RESULT;
+    return `Computer's points are ${computerPoints}`;
+  }
+  // If computer gets blackjack, output results and reset game
+  if (computerPoints == 21) {
+    gameMode = DEAL_CARDS;
+    return `Computer has gotten Blackjack and won!`;
+  } else {
+    // Otherwise computer draws card until it reaches at least 17 or bursts
+    while (computerPoints < 17) {
       computerCards.push(shuffledDeck.pop());
+      computerPoints =
+        computerPoints + computerCards[computerCards.length - 1].value;
+      if (computerPoints >= 17 && computerPoints <= 21) {
+        gameMode = FINAL_RESULT;
+        return `Computer's points are ${computerPoints}`;
+      }
+      if (computerPoints > 21) {
+        gameMode = DEAL_CARDS;
+        return `The computer has burst, you win!`;
+      }
     }
-    computerCounter += 1;
   }
 };
+// Compare player results to computer results and output winner
+var determineFinalResult = function () {
+  gameMode = DEAL_CARDS;
+  if (playerPoints > computerPoints) {
+    return `Player, you have won!`;
+  } else if (playerPoints < computerPoints) {
+    return `Player, you have lost!`;
+  } else {
+    return `Player its a draw!`;
+  }
+};
+
 var main = function (input) {
   var myOutputValue = "";
 
@@ -156,19 +186,16 @@ var main = function (input) {
 
     // Deal two cards to player and computer
     myOutputValue = dealCards();
-    gameMode = PLAYER_ACTION;
   }
   if (gameMode == PLAYER_ACTION) {
-    if (input == INPUT_STAND) {
-      gameMode = COMPUTER_CALCULATES;
-    }
     if (input == INPUT_HIT) {
       myOutputValue = playerDrawsExtraCard();
+    } else if (input == INPUT_STAND) {
+      gameMode = COMPUTER_CALCULATES;
     }
   }
   if (gameMode == COMPUTER_CALCULATES) {
     myOutputValue = calculateComputerScore();
-    gameMode = FINAL_RESULT;
   }
   if (gameMode == FINAL_RESULT) {
     myOutputValue = determineFinalResult();
