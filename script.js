@@ -131,7 +131,7 @@ var computerScore = 0;
 //Determine a winner//
 var winner = function () {
   if (playerScore >= computerScore) {
-    return "player";
+    return "you";
   } else return "computer";
 };
 
@@ -272,6 +272,12 @@ var main = function (input) {
       currentGameMode = gameModeDecideWinner;
       return `The dealer stand. <br>Its score remains ${computerScore}. <br>Click Submit to see who wins!`;
     }
+  }
+
+  // game mode to decide winner
+  if (currentGameMode == gameModeDecideWinner) {
+    currentGameMode = gameModeDeckShuffle;
+    return `You scored ${playerScore}.<br>The dealer scored ${computerScore}.<br>The winner is ${winner()}.<br>Click Submit to play again.`;
   }
 
   return myOutputValue;
