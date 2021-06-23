@@ -195,8 +195,13 @@ var main = function (input) {
       //increase card counter by increment of 1 after each loop of card-dealing
       cardCounter += 1;
     }
-    //switch to game mode for player to hit or stand
-    currentGameMode = gameModePlayerHitOrStand;
+    //if dealer score >21, it goes bust, player wins
+    if (computerScore > 21) {
+      return `You have been dealt ${playerDealtCards}.<br>The dealer's hand is ${dealerCards}.<br>Your total score is ${playerScore} and the dealer's total score is ${computerScore}.<br>The dealer has gone bust.<br>You win! `;
+    }
+
+    //otherwise, switch to game mode for player to hit or stand
+    else currentGameMode = gameModePlayerHitOrStand;
 
     return `You have been dealt ${playerDealtCards}.<br>The dealer's hand is ${dealerCards}.<br>Your total score is ${playerScore} and the dealer's total score is ${computerScore}.<br>${playerStatus()} `;
   }
