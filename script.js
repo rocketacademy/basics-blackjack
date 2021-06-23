@@ -79,40 +79,58 @@ var shuffleCards = function (cardDeck) {
   return cardDeck;
 }
 
-// Function to sum up player card ranks
-var getPlayerRank = function(playerCardsArray) {
+// Function to sum up card ranks of any player
+var sumOfRanks = function(cardsArray) {
   var index = 0;
   var sumOfRanks = 0;
-  while (index < playerCardsArray.length) {
-    var card = playerCardsArray.[index];
+  while (index < cardsArray.length) {
+    var card = cardsArray[index];
     var cardRank = card.rank;
     sumOfRanks += cardRank;
   }
   return sumOfRanks;
 }
 
-// Function to determine is player is bust 
-var didPlayerBust = function () {
-  var sumOfPlayerCards = getPlayerRank();
-  if (sumOfPlayerCards > 21) {
-    return true;
+// Function to determine if any player is bust 
+var determineBust = function (string) {  
+  // Sum up this player's cards
+  var sumOfCards = 0;
+
+  // check if the human player bust - if sumOfCards is above 21, return true
+  if (string == 'player') {
+    sumOfCards = sumOfRanks(playerCardsArray)
+    if (sumOfCards > 21) {
+      return true;
+    }
+  }
+  
+  // check if the dealer bust - if sumOfCards is above 21, return true
+  if (string == 'dealer') {
+    sumOfCards = sumOfRanks(dealerCardsArray)
+    if (sumOfCards > 21) {
+      true
+    }
   }
   return false;
 }
 
 // Function to determine winner
-var determineWinner = function (dealerCard, playerCard) {
-  // variable to store message 
+var determineWinner = function () {
+  // variable to store message announcing winner
   var message = '';
-  // variable to store player's total card rank
-  var playerRank = getPlayerRank(playerCardsArray);
-  // variable to store dealer's card rank
-  var dealerRank = dealerCard.rank
+  // variable to store sum of player's cards
+  var playerRank = sumOfRanks(playerCardsArray);
+  // variable to store sum of dealer's cards 
+  var dealerRank = sumOfRanks(dealerCardsArray);
+
+
   // variable to store messages announcing each player's outcome
   var playerOutcomes = `Your cards add up to ${playerRank}. <br> Dealer drew a ${dealerCard.name} of ${dealerCard.suit}.`;
   // variable to store win and lose message
   var playerWinMsg = 'You win, dealer loses!';
   var dealerWinMsg = 'Dealer wins, you lose!';
+
+  //// Winning conditions ////
 
   // If either player got 21 and the other did not, then announce blackjack winner
   if (playerRank == 21 && dealerRank !== 21) {
@@ -122,10 +140,10 @@ var determineWinner = function (dealerCard, playerCard) {
     message = 'Black Jack! <br>' + playerOutcomes + dealerWinMsg;
   } 
   // If neither got 21 but either one goes bust, then announce winner
-  else if (didPlayerBust == true && dealerRank < 21) {
+  else if (determineBust('player') == true && determineBust(dealer) == false) {
     message = "You're bust! <br>" + playerOutcomes + dealerWinMsg;
   } 
-  else if (didplayerBust == false && dealerRank > 21) {
+  else if (determineBust('player') == false && determineBust(dealer) == true) {
     message = 'Dealer is bust! <br>' + playerOutcomes + playerWinMsg;
   }
   // If both did not go bust, the one closer to 21 wins
@@ -159,7 +177,7 @@ var main = function (input) {
   }
 
   // If gameMode is GAME_MODE_PLAYER_HIT, draw a card for the player first
-  if (gameMode == GAME_MODE_PLAYER_HIT) {
+  if (input == '' && gameMode == GAME_MODE_PLAYER_HIT) {
     // Shuffle the deck and store it in a new variable shuffledDeck
     var shuffledDeck = shuffleCards(deck);
     console.log('shuffling deck..');
@@ -179,25 +197,38 @@ var main = function (input) {
     playerCard.name +
     ' of ' +
     playerCard.suit +
-    '. ';
+    '.<br>';
 
-    // Create message requesting player to choose either hit or stand
-    var hitOrStandMessage = "To hit again, press submit. To stand, enter 'stand' and submit."
-    myOutputValue = playerCardMessage + '<br>' + hitOrStandMessage;
-    return myOutputValue
-  }
+    // Create message listing player's total cards
+    var listOfCards = '';
+    var cardCount = 0;
+    // Create loop through all cards in playerCardsArray
+    while (cardCount < playerCardsArray.length) {
+      listOfCards = listOfCards + 
+      playerCardsArray[cardCount].name + 
+      ' of ' + 
+      playerCardsArray[cardCount].suit + '.<br>';
+      cardCount += 1;
+    }
 
-  // Input validation: If player enters anything other than '' or 'stand', request to renenter
-  if (input !== 'stand' || input !== '') {
-    myOutputValue = "Invalid input. Please either press submit to hit again, or enter 'stand' to stand";
+    // Conditions to check if the player can still continue hitting (<21), got blackjack (=21) or got bust (>21)
+    var hitOrStandMessage = "You cards are still below 21. To hit again, press submit. To stand, enter 'stand' and submit.";
+    if (sumOfRanks(playerCardsArray) == 21) {
+      hitOrStandMessage = "Blackjack! Press submit to see what the dealer draws";
+    }
+    if (determineBust('player') == true) {
+      hitOrStandMessage = "Oops! You bust and should not continue hitting. Enter 'stand' for the dealer's turn."
+    }
+    myOutputValue = playerCardMessage + '<b> Your cards: </b><br>' + listOfCards + '<br>' + hitOrStandMessage;
     return myOutputValue;
   }
-  
+
   // If player enters 'stand', change gamemode to GAME_MODE_PLAYER_STAND
-  if (input == 'stand') {
+  if (input == 'stand' && gameMode == GAME_MODE_PLAYER_HIT) {
     gameMode == GAME_MODE_PLAYER_STAND;
     console.log('game mode:')
     console.log(gameMode);
+    return 'You chose to stand. The dealer is now drawing a card.. Press submit to see who won!.';
   }
 
   // If gameMode is GAME_MODE_PLAYER_STAND, draw a card for the computer and change gameMode to GAME_MODE_EVALUATE_WIN
@@ -218,9 +249,17 @@ var main = function (input) {
     gameMode = GAME_MODE_EVALUATE_WIN;
   }
 
+  
+  // Input validation: If player enters anything other than '' or 'stand', request to renenter
+  if (input !== 'stand' || input !== '') {
+    myOutputValue = "Invalid input. Please either press submit to hit again, or enter 'stand' to stand";
+    return myOutputValue;
+  }
+
+
   if (gameMode == GAME_MODE_EVALUATE_WIN) {
     // Determine winner
-    winnerMessage = determineWinner(computerCard, playerCard);
+    winnerMessage = determineWinner();
   }
 
   return myOutputValue + winnerMessage;
