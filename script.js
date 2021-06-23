@@ -140,23 +140,35 @@ var winner = function () {
 //if playerscore = 21, player wins
 var playerStatus = function () {
   if (playerScore == 21) {
-    return "You are the winner.";
+    currentGameMode = gameModeDeckShuffle;
+    return "You are the winner. <br>Click Submit to play again.";
   }
   if (playerScore > 21) {
-    return "You have gone bust. The dealer wins.";
+    currentGameMode = gameModeDeckShuffle;
+
+    return "You have gone bust. The dealer wins. <br>Click Submit to play again.";
   }
+
   currentGameMode = gameModePlayerHitOrStand;
-  return "Do you want to hit or stand?";
+  return "Do you want to hit or stand? <br>Enter 'hit' or 'stand'.";
 };
 
 var main = function (input) {
   var myOutputValue = "";
+
+  //Deck shuffle game mode
   if (currentGameMode == gameModeDeckShuffle) {
+    //reset scores to 0
+    playerScore = 0;
+    computerScore = 0;
+
     //shuffle deck of cards
     shuffledDeck;
     currentGameMode = gameModeDealCard;
     return "Click Submit to deal card.";
   }
+
+  //Deal card game mode
   if (currentGameMode == gameModeDealCard) {
     //create loop for 2 rounds of card dealing
     while (cardCounter < 2) {
@@ -189,6 +201,7 @@ var main = function (input) {
     return `You have been dealt ${playerDealtCards}.<br>The dealer's hand is ${dealerCards}.<br>Your total score is ${playerScore} and the dealer's total score is ${computerScore}.<br>${playerStatus()} `;
   }
 
+  //Player hit or stand game mode
   if (currentGameMode == gameModePlayerHitOrStand) {
     var playerChoice = input;
 
@@ -200,26 +213,13 @@ var main = function (input) {
       playerScore += Number(playerCard.rank);
       console.log("player hit score round 2 - " + playerScore);
 
-      //display cards dealt to player
-      playerDealtCards.push(playerCard.name + " of " + playerCard.suit);
-      console.log(playerDealtCards);
-
-      if (playerScore == 21) {
-        //if player scores 21, she wins, and the game resets
-        currentGameMode == gameModeDeckShuffle;
-        return `You are the winner.`;
-      }
-      if (playerScore > 21) {
-        //if player scores >21, she goes bust and loses, and the game resets
-        currentGameMode == gameModeDeckShuffle;
-        return `You have gone bust. You lose. `;
-      }
-
-      //Otherwise, switches game mode to Dealer hit or stand game mode
-      currentGameMode = gameModeDealerHitOrStand;
-
-      return `You chose hit. <br>You have been dealt the ${playerCard.name} of ${playerCard.suit}. <br>Your new score is ${playerScore}.<br>Click submit to continue.`;
+      return `You chose hit. <br>You have been dealt the ${
+        playerCard.name
+      } of ${
+        playerCard.suit
+      }. <br>Your new score is ${playerScore}.<br>${playerStatus()}`;
     }
+
     //player chooses to stand
     if ((playerChoice == "stand") | (playerChoice == "Stand")) {
       playerScore += 0;
@@ -250,11 +250,11 @@ var main = function (input) {
       console.log(dealerCards);
 
       //output message about computer card dealt
-      var cardDealtMessage = `It got dealt ${computerCard.name} of ${computerCard.suit}.<br>It scored ${computerScore}.`;
+      var cardDealtMessage = `The dealer hit. <br>The dealer got dealt ${computerCard.name} of ${computerCard.suit}.<br>It scored ${computerScore}.`;
 
       //if computer goes bust (score >21) the player wins
       if (computerScore > 21) {
-        return `The dealer hit. <br>${cardDealtMessage} <br>It has gone bust. You win!`;
+        return `${cardDealtMessage} <br>It has gone bust. You win!`;
       }
 
       //switches to game mode to decide winner
