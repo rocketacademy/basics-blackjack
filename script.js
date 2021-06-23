@@ -153,6 +153,36 @@ var playerStatus = function () {
   return "Do you want to hit or stand? <br>Enter 'hit' or 'stand'.";
 };
 
+//Should value of Ace be 1 or 11?
+var decideAceValue = function(){
+  if(currentGameMode==gameModeDealCard){
+    //at gameModeDealCard, if the other card value is 10 or less, then Ace should be 11
+    if (
+      (playerDealtCards[0].name == "ace" && playerDealtCards[1].rank<=10) | (playerDealtCards[1].name == "ace" && playerDealtCards[0].rank<=10)
+    ) {return 11
+    }
+    //at gameModeDealCard, if the other card value is more than 10, then Ace should be 1
+    if (
+      (playerDealtCards[0].name == "ace" && playerDealtCards[1].rank > 10) |
+      (playerDealtCards[1].name == "ace" && playerDealtCards[0].rank > 10)
+    ) {
+      return 1;
+    }
+  }
+  if(currentGameMode==gameModePlayerHitOrStand){
+    //at gameModePlayerHitOrStand, if the playerscore is 10 or less, then Ace should be 11
+    if(playerCard.name="ace"&&playerScore<=10){
+      return 11
+    }
+    //at gameModePlayerHitOrStand, if the playerscore is more than 10, then Ace should be 1
+     if ((playerCard.name = "ace" && playerScore > 10)) {
+       return 1;
+     }
+  }
+}
+
+
+
 var main = function (input) {
   var myOutputValue = "";
 
@@ -185,6 +215,7 @@ var main = function (input) {
       console.log(dealerCards);
 
       //Add score of player's dealt card to player's score
+      
       playerScore += Number(playerCard.rank);
       console.log("player score round 1 - " + playerScore);
 
