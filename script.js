@@ -11,7 +11,7 @@
 //step4b: if want more card (draw from top of the deck), say 'hit'; no limit to how many cards you can hit, but when score exceeds 21, you go bust.
 //step4c: if don't want any more cards, say 'stay'.
 //step 5: once dealer has been round the table, dealer opens its face-down card
-//step 6a: if dealer scores 17 or below, he has to take another card (i.e. hit)
+//step 6a: if dealer scores below 18, he has to take another card (i.e. hit)
 //step 6b: if dealer scores 18 or higher, he has to stay with his hand
 //step 7a: if dealer goes bust, all players win twice their bet
 //step 7b: if dealer does not go bust, only players with a higher score win twice their bet, every one else loses their initial bet
@@ -21,6 +21,7 @@ var gameModeDeckShuffle = "game mode shuffle deck";
 var gameModeDealCard = "game mode deal card";
 var gameModePlayerHitOrStand = "game mode player decides hit or stand";
 var gameModeDealerHitOrStand = "game mode dealer decides hit or stand";
+var gameModeDecideWinner = "game mode to decide winner";
 
 //initiate current game mode with game mode shuffle deck//
 var currentGameMode = gameModeDeckShuffle;
@@ -182,6 +183,9 @@ var main = function (input) {
       //increase card counter by increment of 1 after each loop of card-dealing
       cardCounter += 1;
     }
+    //switch to game mode for player to hit or stand
+    currentGameMode = gameModePlayerHitOrStand;
+
     return `You have been dealt ${playerDealtCards}.<br>The dealer's hand is ${dealerCards}.<br>Your total score is ${playerScore} and the dealer's total score is ${computerScore}.<br>${playerStatus()} `;
   }
 
@@ -208,11 +212,12 @@ var main = function (input) {
       if (playerScore > 21) {
         //if player scores >21, she goes bust and loses, and the game resets
         currentGameMode == gameModeDeckShuffle;
-        return `You have gone bust. `;
+        return `You have gone bust. You lose. `;
       }
 
       //Otherwise, switches game mode to Dealer hit or stand game mode
       currentGameMode = gameModeDealerHitOrStand;
+
       return `You chose hit. <br>You have been dealt the ${playerCard.name} of ${playerCard.suit}. <br>Your new score is ${playerScore}.<br>Click submit to continue.`;
     }
     //player chooses to stand
@@ -227,6 +232,46 @@ var main = function (input) {
     }
     //any other inputs are not recognised - request for correct input
     return 'Your response is not recognised. Please enter "hit" or "stand" to continue with the game.';
+  }
+
+  //Dealer hit or stand game mode
+  if (currentGameMode == gameModeDealerHitOrStand) {
+    //if dealer scores below 18, he has to take another card (i.e. hit)
+    if (computerScore < 18) {
+      //dealer (computer) gets dealt a card
+      var computerCard = shuffledDeck.pop();
+
+      //Add score of computer's dealt card to computer's score
+      computerScore += Number(computerCard.rank);
+      console.log("computer hit score round 2 - " + computerScore);
+
+      //display cards dealt to computer
+      dealerCards.push(computerCard.name + " of " + computerCard.suit);
+      console.log(dealerCards);
+
+      //output message about computer card dealt
+      var cardDealtMessage = `It got dealt ${computerCard.name} of ${computerCard.suit}.<br>It scored ${computerScore}.`;
+
+      //if computer goes bust (score >21) the player wins
+      if (computerScore > 21) {
+        return `The dealer hit. <br>${cardDealtMessage} <br>It has gone bust. You win!`;
+      }
+
+      //switches to game mode to decide winner
+      currentGameMode = gameModeDecideWinner;
+
+      return `${cardDealtMessage}<br>Click Submit to see who wins.`;
+    }
+
+    //if dealer scores 18 or higher, he has to stay with his hand
+    if (computerScore >= 18) {
+      //Computer score will remain the same
+      computerScore += 0;
+      console.log("computer hit score round 2 - " + computerScore);
+      //switches to game mode to decide winner
+      currentGameMode = gameModeDecideWinner;
+      return `The dealer stand. <br>Its score remains ${computerScore}. <br>Click Submit to see who wins!`;
+    }
   }
 
   return myOutputValue;
