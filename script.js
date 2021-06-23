@@ -127,6 +127,10 @@ var playerDrawsExtraCard = function () {
         playerCardMessage
       );
     }
+    if (playerPoints == 21) {
+      gameMode = DEAL_CARDS;
+      return `You've gotten blackjack and won!`;
+    }
 
     playerCounter += 1;
   }
@@ -179,6 +183,11 @@ var main = function (input) {
   var myOutputValue = "";
 
   if (gameMode == DEAL_CARDS) {
+    // Empty global arrays for subsequent rounds
+    playerCards = [];
+    computerCards = [];
+    playerPoints = 0;
+    computerPoints = 0;
     // Create a deck of cards
     createDeck = makeDeck();
     // Shuffle deck of cards
