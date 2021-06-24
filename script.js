@@ -197,6 +197,23 @@ var determineWinner = function () {
   return message;
 }
 
+// Function to check if a newly drawn card contains an ace (version 3)
+var containsAce = function (newCard) {
+  var name = newCard.name;
+  if (name == 'ace') {
+    return true;
+  }
+  return false;
+}
+
+// Function to determine the value of an Ace: 1 or 11 (version 3)
+var valueOfAce = function (aceCard, cardsArray) {
+  // if the sum of ranks in existing hand is less than or equal 10, change value of ace to 11. Otherwise, the value of the ace remains as 1
+  if (sumOfRanks(cardsArray) <= 10) {
+    aceCard.rank = 11;
+  }
+}
+
 // Function to reset game conditions for the next round
 var resetGame = function () {
   // reset the numberOfHits, playerCardsArray, dealerCardsArray & list of cards
