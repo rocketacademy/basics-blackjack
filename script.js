@@ -3,7 +3,7 @@
 var makeDeck = function () {
   // Initialise an empty deck array
   var cardDeck = []; // Initialise an array of the 4 suits in our deck. We will loop over this array.
-  var suits = ["hearts", "diamonds", "clubs", "spades"]; // Loop over the suits array
+  var suits = ["Hearts", "Diamonds", "Clubs", "Spades"]; // Loop over the suits array
 
   var suitIndex = 0;
   while (suitIndex < suits.length) {
@@ -16,13 +16,13 @@ var makeDeck = function () {
       var cardName = rankCounter; // If rank is 1, 11, 12, or 13, set cardName to the ace or face card's name
 
       if (cardName == 1) {
-        cardName = "ace";
+        cardName = "Ace";
       } else if (cardName == 11) {
-        cardName = "jack";
+        cardName = "Jack";
       } else if (cardName == 12) {
-        cardName = "queen";
+        cardName = "Queen";
       } else if (cardName == 13) {
-        cardName = "king";
+        cardName = "King";
       }
       // Create a new card with the current name, suit, and rank
       //P1: Cards are objects containing (name,suit,rank)
@@ -69,7 +69,6 @@ var currentPlayer = "playerTurn";
 //Player & Computer cards in an array
 playerCards = [];
 computerCards = [];
-//Default Game Result
 
 var main = function (input) {
   currentPlayer = "playerTurn";
@@ -91,19 +90,118 @@ var main = function (input) {
       computerCards.push(computerCard);
       computerCounter = computerCounter + 1;
     }
-    //var gameResult = "You lose, You draw 2 cards <br>" + playerCards[0].name;
+    //Change the rank of J,Q,K to be 10
+    if (
+      playerCards[0].name == "King" ||
+      playerCards[0].name == "Queen" ||
+      playerCards[0].name == "Jack"
+    ) {
+      playerCards[0].rank = 10;
+    }
+    if (
+      playerCards[1].name == "King" ||
+      playerCards[1].name == "Queen" ||
+      playerCards[1].name == "Jack"
+    ) {
+      playerCards[1].rank = 10;
+    }
+    if (
+      computerCards[0].name == "King" ||
+      computerCards[0].name == "Queen" ||
+      computerCards[0].name == "Jack"
+    ) {
+      computerCards[0].rank = 10;
+    }
+    if (
+      computerCards[1].name == "King" ||
+      computerCards[1].name == "Queen" ||
+      computerCards[1].name == "Jack"
+    ) {
+      computerCards[1].rank = 10;
+    }
+    //Ace is 11 when Only 2 cards are drawn
+    if (playerCards.length == 2) {
+      if (playerCards[0].name == "Ace") {
+        playerCards[0].rank = 11;
+      }
+      if (playerCards[1].name == "Ace") {
+        playerCards[1].rank = 11;
+      }
+      if (computerCards.length == 2) {
+        if (computerCards[0].name == "Ace") {
+          computerCards[0].rank = 11;
+        }
+        if (computerCards[1].name == "Ace") {
+          computerCards[1].rank = 11;
+        }
+      }
+      //Determine player/compuyer results by adding the two
+      var playerResult = playerCards[0].rank + playerCards[1].rank;
+      var computerResult = computerCards[0].rank + computerCards[1].rank;
+      console.log(playerResult);
+      console.log(computerResult);
+
+      //Display of cards to user & Default Game Result
+      var gameResult =
+        "You Lose!, You draw these 2 cards <br>" +
+        playerCards[0].name +
+        " of " +
+        playerCards[0].suit +
+        " and " +
+        playerCards[1].name +
+        " of " +
+        playerCards[1].suit +
+        "<br><br>Computer draw <br>" +
+        computerCards[0].name +
+        " of " +
+        computerCards[0].suit +
+        " and " +
+        computerCards[1].name +
+        " of " +
+        computerCards[1].suit;
+    }
+    //Winning Condition without BlackJack
+    if (playerResult > computerResult) {
+      gameResult =
+        "You Win!, You draw these 2 cards <br>" +
+        playerCards[0].name +
+        " of " +
+        playerCards[0].suit +
+        " and " +
+        playerCards[1].name +
+        " of " +
+        playerCards[1].suit +
+        "<br><br>Computer draw <br>" +
+        computerCards[0].name +
+        " of " +
+        computerCards[0].suit +
+        " and " +
+        computerCards[1].name +
+        " of " +
+        computerCards[1].suit;
+    }
+
+    //BlackJack Auto win 21
+    if (playerResult == 21) {
+      gameResult = "Player BlackJack!";
+    }
+    if (computerResult == 21) {
+      gameResult = "Computer BlackJack!";
+    }
+    if (playerResult == 21 && computerResult == 21) {
+      gameResult = "BlackJack Draw!";
+    }
+
+    console.log("playerCards: ");
+    console.log(playerCards);
+    console.log("computerCards: ");
+    console.log(computerCards);
+    return gameResult;
   }
-  console.log("playerCards: ");
-  console.log(playerCards);
-  console.log("computerCards: ");
-  console.log(computerCards);
-  //return gameResult;
-  // P1: Winning condition for user other wise lose (compare)
 };
 
 //Order:
 
-//Winning Condition Auto for 'BlackJack(Picture(10-13) + Ace(1))'
 //Display of cards to user
 //User decide on standing or hitting, Submit 'hit' or 'stand', if user stands, it's computer turn
 //Computer will hit if below 17, else will stand.
