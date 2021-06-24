@@ -206,18 +206,18 @@ var main = function (input) {
   // If gameMode is GAME_MODE_PLAYER_HIT, draw a card for the player first
   if (gameMode == GAME_MODE_PLAYER_HIT) {
     // If player enters 'stand', change gamemode to GAME_MODE_PLAYER_STAND
-    if (input == 'stand' && gameMode == GAME_MODE_PLAYER_HIT) {
+    if (input == 'stand' && numberOfHits_player > 0) {
       gameMode = GAME_MODE_PLAYER_STAND;
       console.log('game mode:');
       console.log(gameMode);
       return 'You chose to stand. The dealer is now drawing a card.. Press submit to see who won!.';
     }
 
-    // TO CORRECT: Input validation: If player enters anything other than '' or 'stand', request to renenter
-    //if ((input !== 'stand' || input !== '') && gameMode == GAME_MODE_PLAYER_HIT) {
-      //myOutputValue = "Invalid input. Please either press submit to hit again, or enter 'stand' to stand";
-      //return myOutputValue;
-    //}
+    //Input validation: If player enters anything other than '' or 'stand', request to renenter
+    if ((input !== 'stand' && input !== '') && numberOfHits_player > 0) {
+      myOutputValue = "Invalid input. Please either press submit to hit again, or enter 'stand' to stand";
+      return myOutputValue;
+    }
 
     // Shuffle the deck and store it in a new variable shuffledDeck
     var shuffledDeck = shuffleCards(deck);
@@ -303,7 +303,8 @@ var main = function (input) {
     winnerMessage = determineWinner();
     // Construct message of the list of cards for the player and dealer
     myOutputValue = listOfCards_player + '<br>' + listOfCards_dealer + '<br>';
-    // reset the playerCardsArray, dealerCardsArray & list of cards for the next round
+    // reset the numberOfHits, playerCardsArray, dealerCardsArray & list of cards for the next round
+    numberOfHits_player = 0;
     listOfCards_player = '';
     listOfCards_dealer = '';
     playerCardsArray = [];
