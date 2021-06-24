@@ -34,12 +34,13 @@ var makeDeck = function () {
 return cardDeck;
 }
 
-// make deck
-var deck = makeDeck();
+// global variable for the deck
+var deck;
+var shuffledDeck;
 // global array to track the player's cards at every hit
 var playerCardsArray = [];
-// global array to track the dealer's cards at every hit (for version 3)
-var dealerCardsArray = [];
+// global array to track the dealer's cards at every hit 
+var dealerCardsArray = []; // Version 3
 // global variable to store the message on list of player cards
 var listOfCards_player = '';
 // global variable to store the message on list of dealer cards
@@ -55,7 +56,7 @@ var numberOfRounds = 0;
 // game modes
 var GAME_MODE_WELCOME = 'GAME_MODE_WELCOME';
 var GAME_MODE_PLAYER_HIT = 'GAME_MODE_PLAYER_HIT';
-var GAME_MODE_PLAYER_STAND = 'GAME_MODE_PLAYER_STAND'
+var GAME_MODE_PLAYER_STAND = 'GAME_MODE_PLAYER_STAND';
 var GAME_MODE_EVALUATE_WIN = 'GAME_MODE_EVALUATE_WIN';
 // initialise game mode
 var gameMode = GAME_MODE_WELCOME;
@@ -126,6 +127,19 @@ var determineBust = function (string) {
   return false;
 }
 
+// Function for dealer to draw a card
+var dealerDrawCard = function () {
+  // Dealer draws the first card from the top of the deck
+  var dealerCard = shuffledDeck.pop();
+
+  // Store the new card in the dealerCardsArray and increase the no. of hits
+  dealerCardsArray.push(dealerCard);
+  numberOfHits_dealer += 1;
+
+  console.log(`dealer draws card number ${numberOfHits_dealer}..`)
+  console.log(dealerCard);
+}
+
 // Function to determine winner
 var determineWinner = function () {
   // variable to store message announcing winner
@@ -164,21 +178,37 @@ var determineWinner = function () {
     numberOfWins_player += 1;
   }
   // If both did not go bust, the one closer to 21 wins
-  else if (dealerRank > playerRank) {
-    message = dealerWinMsg;
-    // Increment dealer wins
-    numberOfWins_dealer += 1;
-  }
-  else if (dealerRank < playerRank) {
-    message = playerWinMsg;
-    // Increment player wins
-    numberOfWins_player += 1;
+  else if (determineBust('player') == false && determineBust('dealer') == false){
+    if (dealerRank > playerRank) {
+      message = dealerWinMsg;
+      // Increment dealer wins
+      numberOfWins_dealer += 1;
+    }
+    if (dealerRank < playerRank) {
+      message = playerWinMsg;
+      // Increment player wins
+      numberOfWins_player += 1;
+    }
   }
   // Otherwise, it is a tie
-  else {
-    message = 'It is a tie <br>' + playerOutcomes;
+  else if ((determineBust('player') == true && determineBust('dealer') == true) || (dealerRank == playerRank)) {
+    message = 'It is a tie <br>';
   }
   return message;
+}
+
+// Function to reset game conditions for the next round
+var resetGame = function () {
+  // reset the numberOfHits, playerCardsArray, dealerCardsArray & list of cards
+  numberOfHits_player = 0;
+  numberOfHits_dealer = 0;
+
+  listOfCards_player = '';
+  listOfCards_dealer = '';
+  
+  playerCardsArray = [];
+  dealerCardsArray = [];
+
 }
 
 var main = function (input) {
@@ -186,6 +216,9 @@ var main = function (input) {
   var myOutputValue = ''; 
   console.log('Game mode:');
   console.log(gameMode);
+
+  // Make the deck
+  deck = makeDeck();
 
   // If gameMode is GAME_MODE_WELCOME, change gameMode to GAME_MODE_PLAYER_HIT and output default welcome message
   if (gameMode == GAME_MODE_WELCOME) {
@@ -219,8 +252,8 @@ var main = function (input) {
       return myOutputValue;
     }
 
-    // Shuffle the deck and store it in a new variable shuffledDeck
-    var shuffledDeck = shuffleCards(deck);
+    // Shuffle the deck and store it in a variable shuffledDeck
+    shuffledDeck = shuffleCards(deck);
     console.log('shuffling deck..');
 
     // Draw a card from the top of the deck
@@ -253,33 +286,41 @@ var main = function (input) {
       playerCardsArray[cardCount].suit + '.<br>';
       cardCount += 1;
     }
+    // Calculate total rank of player's existing cards
+    var totalRank = sumOfRanks(playerCardsArray);
 
     // Conditions to check if the player can still continue hitting (<21), got blackjack (=21) or got bust (>21)
     hitOrStandMessage = "Your cards are still below 21. To hit again, press submit. To stand, enter 'stand' and submit.";
     if (sumOfRanks(playerCardsArray) == 21) {
-      hitOrStandMessage = "Blackjack! Press submit to see what the dealer draws";
+      hitOrStandMessage = "Blackjack! Enter 'stand' for the dealer's turn";
     }
     if (determineBust('player') == true) {
       hitOrStandMessage = "Oops! You bust and should not continue hitting. Enter 'stand' for the dealer's turn.";
     }
-    myOutputValue = playerCardMessage + listOfCards_player + '<br>' + hitOrStandMessage;
+    myOutputValue = playerCardMessage + listOfCards_player + '<br>' + `Total rank: ${totalRank} <br>` + hitOrStandMessage;
     return myOutputValue;
   }
 
-  // If gameMode is GAME_MODE_PLAYER_STAND, draw a card for the computer and change gameMode to GAME_MODE_EVALUATE_WIN
+  // If gameMode is GAME_MODE_PLAYER_STAND, draw a cards for the dealer and change gameMode to GAME_MODE_EVALUATE_WIN
   if (gameMode == GAME_MODE_PLAYER_STAND) {
-    // Shuffle the deck and store it in a new variable shuffledDeck
-    var shuffledDeck = shuffleCards(deck);
-    console.log('shuffling deck..');
+    // Dealer draws cards
+    dealerDrawCard();
+    console.log('sum of dealer cards ranks');
+    console.log(sumOfRanks(dealerCardsArray));
 
-    // Draw a card from the top of the deck
-    var dealerCard = shuffledDeck.pop();
-    console.log('dealer draws a card..')
-    console.log(dealerCard);
+    // If sumOfRanks of dealer's cards is less than 17, dealer draws another card
+    while (sumOfRanks(dealerCardsArray) < 17) {
+      dealerDrawCard();
+    }
 
-    // Store the new card in the dealerCardsArray and increase the no. of hits
-    dealerCardsArray.push(dealerCard);
-    numberOfHits_dealer += 1;
+    // If sumOfRanks of dealer's cards is between 17 and 20, dealer randomly decides whether he should draw another card 
+    while (sumOfRanks(dealerCardsArray) > 17 && sumOfRanks(dealerCardsArray) < 20) {
+      var array = [0,1];
+      var randomIndex = Math.floor(Math.random()*array.length);
+      if (randomIndex == 1) {
+        dealerDrawCard();
+      }
+    }
 
     // Create message listing all of the dealer's cards 
     listOfCards_dealer = "<b> Dealer's cards: </b><br>";
@@ -302,13 +343,9 @@ var main = function (input) {
     // Determine winner
     winnerMessage = determineWinner();
     // Construct message of the list of cards for the player and dealer
-    myOutputValue = listOfCards_player + '<br>' + listOfCards_dealer + '<br>';
-    // reset the numberOfHits, playerCardsArray, dealerCardsArray & list of cards for the next round
-    numberOfHits_player = 0;
-    listOfCards_player = '';
-    listOfCards_dealer = '';
-    playerCardsArray = [];
-    dealerCardsArray = [];
+    myOutputValue = listOfCards_player + `Total rank: ${sumOfRanks(playerCardsArray)} <br><br>` +  listOfCards_dealer + `Total rank: ${sumOfRanks(dealerCardsArray)} <br><br>`;
+    // reset game conditions for the next round
+    resetGame();
     // reset gameMode to GAME_MODE_WELCOME
     gameMode = GAME_MODE_WELCOME;
   }
