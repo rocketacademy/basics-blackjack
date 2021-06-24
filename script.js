@@ -140,6 +140,27 @@ var dealerDrawCard = function () {
   console.log(dealerCard);
 }
 
+// Function to create list of cards message
+var listCards = function(cardsArray, string) {
+  // Create heading for message
+  listOfCards = `<b> ${string}'s cards: </b><br>`;
+    
+  // Create loop through all cards in cardsArray
+  var cardCount = 0;
+  while (cardCount < cardsArray.length) {
+    var card = cardsArray[cardCount];
+    listOfCards = listOfCards + 
+    card.name + ' of ' + 
+    card.suit + '<br>';
+    if (cardsArray[cardCount].name == 'ace') {
+      listOfCards = listOfCards + `(rank: ${card.rank}) <br>`;
+    }
+    cardCount += 1;
+  }
+  return listOfCards;
+
+}
+
 // Function to determine winner
 var determineWinner = function () {
   // variable to store message announcing winner
@@ -197,6 +218,23 @@ var determineWinner = function () {
   return message;
 }
 
+// Function to check if a newly drawn card contains an ace (version 3)
+var containsAce = function (newCard) {
+  var name = newCard.name;
+  if (name == 'ace') {
+    return true;
+  }
+  return false;
+}
+
+// Function to determine the value of an Ace: 1 or 11 (version 3)
+var determineAceValue = function (aceCard, cardsArray) {
+  // If existing hand is empty OR the sum of ranks in existing hand is less than or equal 10, change value of ace to 11. Otherwise, the value of the ace remains as 1
+  if ((sumOfRanks(cardsArray) <= 10) || cardsArray.length == 0) {
+    aceCard.rank = 11;
+  }
+}
+
 // Function to reset game conditions for the next round
 var resetGame = function () {
   // reset the numberOfHits, playerCardsArray, dealerCardsArray & list of cards
@@ -247,10 +285,10 @@ var main = function (input) {
     }
 
     //Input validation: If player enters anything other than '' or 'stand', request to renenter
-    if ((input !== 'stand' && input !== '') && numberOfHits_player > 0) {
-      myOutputValue = "Invalid input. Please either press submit to hit again, or enter 'stand' to stand";
-      return myOutputValue;
-    }
+    //if ((input !== 'stand' && input !== '') && numberOfHits_player > 0) {
+      //myOutputValue = "Invalid input. Please either press submit to hit again, or enter 'stand' to stand";
+      //return myOutputValue;
+    //}
 
     // Shuffle the deck and store it in a variable shuffledDeck
     shuffledDeck = shuffleCards(deck);
@@ -260,6 +298,11 @@ var main = function (input) {
     var playerCard = shuffledDeck.pop();
     console.log('player draws a card..')
     console.log(playerCard);
+
+    // If the card is an ace, determine the value of its rank
+    if (containsAce(playerCard) == true) {
+      determineAceValue(playerCard, playerCardsArray);
+    }
 
     // Store the new card in the playerCardsArray and increase the no. of hits
     playerCardsArray.push(playerCard);
@@ -276,16 +319,8 @@ var main = function (input) {
     '.<br>';
 
     // Create message listing player's total cards
-    listOfCards_player = "<b> Player's cards: </b><br>";
-    var cardCount = 0;
-    // Create loop through all cards in playerCardsArray
-    while (cardCount < playerCardsArray.length) {
-      listOfCards_player = listOfCards_player + 
-      playerCardsArray[cardCount].name + 
-      ' of ' + 
-      playerCardsArray[cardCount].suit + '.<br>';
-      cardCount += 1;
-    }
+    listOfCards_player = listCards(playerCardsArray, 'Player');
+    
     // Calculate total rank of player's existing cards
     var totalRank = sumOfRanks(playerCardsArray);
 
@@ -323,16 +358,7 @@ var main = function (input) {
     }
 
     // Create message listing all of the dealer's cards 
-    listOfCards_dealer = "<b> Dealer's cards: </b><br>";
-    var cardCount = 0;
-    // Create loop through all cards in dealerCardsArray
-    while (cardCount < dealerCardsArray.length) {
-      listOfCards_dealer = listOfCards_dealer + 
-      dealerCardsArray[cardCount].name + 
-      ' of ' + 
-      dealerCardsArray[cardCount].suit + '.<br>';
-      cardCount += 1;
-    }
+    listOfCards_dealer = listCards(dealerCardsArray, 'Dealer');
 
     // Once dealer draws one card, change gameMode to GAME_MODE_EVALUATE_WIN
     gameMode = GAME_MODE_EVALUATE_WIN;
@@ -351,8 +377,7 @@ var main = function (input) {
   }
 
   return winnerMessage + 
-  '<br><br>' + 
-  `<b>Round ${numberOfRounds}</b><br>` + 
+  `<br><b>Round ${numberOfRounds}</b><br>` + 
   myOutputValue + 
   '<b> Winning streak </b><br>' +
   `Player: ${numberOfWins_player} / ${numberOfRounds} <br> 
