@@ -1,3 +1,4 @@
+//Base Features
 //P1: Create a set of cards into an array
 var makeDeck = function () {
   // Initialise an empty deck array
@@ -22,8 +23,9 @@ var makeDeck = function () {
         cardName = "queen";
       } else if (cardName == 13) {
         cardName = "king";
-      } // Create a new card with the current name, suit, and rank
-
+      }
+      // Create a new card with the current name, suit, and rank
+      //P1: Cards are objects containing (name,suit,rank)
       var card = {
         name: cardName,
         suit: currentSuit,
@@ -40,7 +42,7 @@ var makeDeck = function () {
 
   return cardDeck;
 };
-//P1: Cards are objects containing (name,suit,rank)
+
 //P1: Create a Function for shuffling the deck.
 var getRandomIndex = function (max) {
   return Math.floor(Math.random() * max);
@@ -61,20 +63,54 @@ var shuffleCards = function (cardDeck) {
 };
 var deck = shuffleCards(makeDeck());
 
+//Global Variables
+//Default Mode is player turn
+var currentPlayer = "playerTurn";
+//Player & Computer cards in an array
+playerCards = [];
+computerCards = [];
+//Default Game Result
+
 var main = function (input) {
-  //Order:
-  //Shuffle Deck
-  //Deal 2 Cards with shuffledDeck.pop
-  //Winning Condition Auto for 'BlackJack(Picture(10-13) + Ace(1))'
-  //Display of cards to user
-  //User decide on standing or hitting, Submit 'hit' or 'stand', if user stands, it's computer turn
-  //Computer will hit if below 17, else will stand.
-  //Game ends with results and instructions restarts
-  //Base Features-
+  currentPlayer = "playerTurn";
+  var deck = shuffleCards(makeDeck());
+  var playerCounter = 0;
+  var computerCounter = 0;
+
+  //Deal 2 Cards each with deck.pop
+  while (playerCounter < 2) {
+    playerCard = deck.pop();
+    playerCards.push(playerCard);
+    playerCounter = playerCounter + 1;
+  }
+  //If player has drawn two cards, it is computer's turn to draw two cards
+  if (playerCards.length == 2) {
+    currentPlayer = "computerTurn";
+    while (computerCounter < 2) {
+      computerCard = deck.pop();
+      computerCards.push(computerCard);
+      computerCounter = computerCounter + 1;
+    }
+    //var gameResult = "You lose, You draw 2 cards <br>" + playerCards[0].name;
+  }
+  console.log("playerCards: ");
+  console.log(playerCards);
+  console.log("computerCards: ");
+  console.log(computerCards);
+  //return gameResult;
+  // P1: Winning condition for user other wise lose (compare)
 };
 
+//Order:
+
+//Winning Condition Auto for 'BlackJack(Picture(10-13) + Ace(1))'
+//Display of cards to user
+//User decide on standing or hitting, Submit 'hit' or 'stand', if user stands, it's computer turn
+//Computer will hit if below 17, else will stand.
+//Game ends with results and instructions restarts
+
 //Extra trimmings
-// P1: Winning condition for user other wise lose (compare)
+
 // P2: Add feature of Ace being 1 or 11
 // P2: Add conditional for computer to hit
 //
