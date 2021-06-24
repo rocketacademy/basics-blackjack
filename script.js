@@ -233,7 +233,7 @@ var determineAceValue = function (aceCard, cardsArray) {
   if ((sumOfRanks(cardsArray) <= 10) || cardsArray.length == 0) {
     aceCard.rank = 11;
   }
-}
+} 
 
 // Function to reset game conditions for the next round
 var resetGame = function () {
