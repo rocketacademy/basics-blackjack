@@ -4,6 +4,8 @@ playerArray = [];
 
 // Main
 // Welcome message - enter the number of players (n)
+
+// if game mode is GAME_MODE_NUMBER_OF_PLAYERS
     // Loop 'n' times
         // Create an object with the attributes:
             > name
@@ -21,6 +23,8 @@ playerArray = [];
 
 // instructions for the game to start
     // Increment the number of rounds
+    // make deck
+    // shuffle deck
     // Change game mode to GAME_MODE_PLAYER_HIT
 
 // Loop through all 'n' players
