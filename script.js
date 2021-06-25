@@ -261,12 +261,18 @@ var deck = [
   },
 ];
 invalid = `<b>You have enter an invalid input!<br>Please only type 1 or 11!`;
-gameMode = "p1";
+gameMode = "welcome";
+playerName = "";
+playerBets = "";
 blackjack = 21;
+playingChips = 100;
 p1winCounter = 0;
 pcWinCounter = 0;
+drawCounter = 0;
 p1StartHand = [];
 pcHand = [];
+HOSinvalid = `<b>You have entered an invalid entry ❌!<br>Please only enter hit or stand!<br>Your current hand is ${p1StartHand}<br><br>Hit to have additional cards added to your current hand.<br>Stand if you've burst or<br>Stand to finalize your hand!`;
+blackjackMessage = `<b>BLACKJACK!!<br><br>Your final hand is 21!<br>Computer's turn now.`;
 var shuffle = function () {
   var shuffledeck = deck[Math.floor(Math.random() * 52)];
   return shuffledeck;
@@ -284,19 +290,19 @@ var randomCard = function () {
     gameMode = "pc";
     p1StartHand = initialHand;
     p1StartHand = 21;
-    return `<b>BLACKJACK!!<br><br>Your final hand is 21!<br>Computer's turn now.`;
+    return blackjackMessage;
   }
   if (firstDraw.name == "ace" && secondDraw.rank == 10) {
     gameMode = "pc";
     p1StartHand = initialHand;
     p1StartHand = 21;
-    return `<b>BLACKJACK!!<br><br>Your final hand is 21!<br>Computer's turn now.`;
+    return blackjackMessage;
   }
   if (secondDraw.name == "ace" && firstDraw.rank == 10) {
     gameMode = "pc";
     p1StartHand = initialHand;
     p1StartHand = 21;
-    return `<b>BLACKJACK!!<br><br>Your final hand is 21!<br>Computer's turn now.`;
+    return blackjackMessage;
   }
   if (firstDraw.name == "ace" && gameMode == "p1") {
     gameMode = "chooseAce";
@@ -349,7 +355,7 @@ var hitOrStand = function (input) {
     }
     if (input == "stand") {
       gameMode = "pc";
-      return `<b>Your final hand is ${p1StartHand}.<br><br>Computer's turn.`;
+      return `<b>${playerName}'s final hand is ${p1StartHand}.<br><br>Computer's turn.`;
     }
   }
   if (gameMode == "aceHOS") {
@@ -358,7 +364,7 @@ var hitOrStand = function (input) {
     }
     if (input == "stand") {
       gameMode = "pc";
-      return `<b>Your final hand is ${p1StartHand}.<br><br>Computer's turn`;
+      return `<b>${playerName}'s final hand is ${p1StartHand}.<br><br>Computer's turn`;
     }
   }
   return `<b>You draw an additional ${additionalDraw.name} of ${additionalDraw.suit}.<br>Your current hand is ${p1StartHand}.<br><br>Please type stand if you've burst or if you wish to finalize your hand!<br>Please type hit again to draw somemore additional cards`;
@@ -366,55 +372,88 @@ var hitOrStand = function (input) {
 
 var board = function () {
   if (gameMode == "gameboard") {
-    ///p1 Blackjack
-    if (firstDraw.name == "ace" && secondDraw.name == "ace") {
+    /// both draw ace and player wins
+    if (firstDraw.name == "ace" && secondDraw.name == "ace" && pciHand < 21) {
       p1winCounter = p1winCounter + 1;
-      return `<b>Player 1's final hand = ${blackjack}<br>Computer's final hand = ${pciHand}.<br><br>Since player 1's hand is bigger than computer's.<br>Therefore player 1 wins!<br><br>Player 1 has won ${p1winCounter} rounds<br>Computer has won ${pcWinCounter} rounds<br><br>Click the submit button to play again!`;
+      playingChips = playingChips + Number(String(playerBets));
+      return `<b>${playerName}'s final hand = ${blackjack}<br>Computer's final hand = ${pciHand}.<br><br>Since ${playerName}'s hand is bigger than computer's.<br>Therefore ${playerName} wins!✌️<br>Earlier you bet ${playerBets} chips<br>Therefore you won ${playerBets} chips<br><br>${playerName} currently has ${playingChips} chips<br><br>${playerName} has won ${p1winCounter} round<br>Computer has won ${pcWinCounter} round<br>Draw for ${drawCounter} round<br><br>Click the submit button to play ♠ again!`;
     }
-    if (firstDraw.name == "ace" && secondDraw.rank == 10) {
+    /// first draw ace and player wins
+    if (firstDraw.name == "ace" && secondDraw.rank == 10 && pciHand < 21) {
       p1winCounter = p1winCounter + 1;
-      return `<b>Player 1's final hand = ${blackjack}<br>Computer's final hand = ${pciHand}.<br><br>Since player 1's hand is bigger than computer's.<br>Therefore player 1 wins!<br><br>Player 1 has won ${p1winCounter} rounds<br>Computer has won ${pcWinCounter} rounds<br><br>Click the submit button to play again!`;
+      playingChips = playingChips + Number(String(playerBets));
+      return `<b>${playerName}'s final hand = ${blackjack}<br>Computer's final hand = ${pciHand}.<br><br>Since ${playerName}'s hand is bigger than computer's.<br>Therefore ${playerName} wins!✌️<br>Earlier you bet ${playerBets} chips<br>Therefore you won ${playerBets} chips<br><br>${playerName} currently has ${playingChips} chips<br><br>${playerName} has won ${p1winCounter} round<br>Computer has won ${pcWinCounter} round<br>Draw for ${drawCounter} round<br><br>Click the submit button to play ♠ again! chips left ${playingChips}`;
     }
-    if (secondDraw.name == "ace" && firstDraw.rank == 10) {
+    /// second draw ace and player wins
+    if (secondDraw.name == "ace" && firstDraw.rank == 10 && pciHand < 21) {
       p1winCounter = p1winCounter + 1;
-      return `<b>Player 1's final hand = ${blackjack}<br>Computer's final hand = ${pciHand}.<br><br>Since player 1's hand is bigger than computer's.<br>Therefore player 1 wins!<br><br>Player 1 has won ${p1winCounter} rounds<br>Computer has won ${pcWinCounter} rounds<br><br>Click the submit button to play again!`;
+      playingChips = playingChips + Number(String(playerBets));
+      return `<b>${playerName}'s final hand = ${blackjack}<br>Computer's final hand = ${pciHand}.<br><br>Since ${playerName}'s hand is bigger than computer's.<br>Therefore ${playerName} wins!✌️<br>Earlier you bet ${playerBets} chips<br>Therefore you won ${playerBets} chips<br><br>${playerName} currently has ${playingChips} chips<br><br>${playerName} has won ${p1winCounter} round<br>Computer has won ${pcWinCounter} round<br>Draw for ${drawCounter} round<br><br>Click the submit button to play ♠ again! chips left ${playingChips}`;
     }
     /// computer hand bigger & com wins
     if (p1StartHand < pciHand && p1StartHand <= 21 && pciHand <= 21) {
       pcWinCounter = pcWinCounter + 1;
-      return `<b>Player 1's final hand = ${p1StartHand}<br>Computer's final hand = ${pciHand}<br><br>Since computer's hand is bigger than player 1's.<br>Therefore computer wins!<br><br>Player 1 has won ${p1winCounter} rounds<br>Computer has won ${pcWinCounter} rounds<br><br>Click the submit button to play again!`;
+      playingChips = playingChips - Number(String(playerBets));
+      return `<b>${playerName}'s final hand = ${p1StartHand}<br>Computer's final hand = ${pciHand}<br><br>Since computer's hand is bigger than ${playerName}'s.<br>Therefore computer wins!✌️<br><br>Earlier you bet ${playerBets} chips, unfortunately you lost.<br>Therefore you lost ${playerBets} chips<br><br>${playerName} currently has ${playingChips} chips<br><br>${playerName} has won ${p1winCounter} round<br>Computer has won ${pcWinCounter} round<br>Draw for ${drawCounter} round<br><br>Click the submit button to play ♠ again!`;
     }
     /// player 1 hand bigger & player wins
     if (p1StartHand > pciHand && p1StartHand <= 21 && pciHand <= 21) {
       p1winCounter = p1winCounter + 1;
-      return `<b>Player 1's final hand = ${p1StartHand}<br>Computer's final hand = ${pciHand}.<br><br>Since player 1's hand is bigger than computer's.<br>Therefore player 1 wins!<br><br>Player 1 has won ${p1winCounter} rounds<br>Computer has won ${pcWinCounter} rounds<br><br>Click the submit button to play again!`;
+      playingChips = playingChips + Number(String(playerBets));
+      return `<b>${playerName}'s final hand = ${p1StartHand}<br>Computer's final hand = ${pciHand}.<br><br>Since ${playerName}'s hand is bigger than computer's.<br>Therefore ${playerName} wins!✌️<br>Earlier you bet ${playerBets} chips<br>Therefore you won ${playerBets} chips<br><br>${playerName} currently has ${playingChips} chips<br><br>${playerName} has won ${p1winCounter} round<br>Computer has won ${pcWinCounter} round<br>Draw for ${drawCounter} round<br><br>Click the submit button to play ♠ again! chips left ${playingChips}`;
     }
     /// computer hand burst & player wins
     if (pciHand > 21 && p1StartHand <= 21) {
       p1winCounter = p1winCounter + 1;
-      return `<b>Player 1's final hand = ${p1StartHand}<br>Computer's final hand = ${pciHand}, computer has burst.<br><br>Since computer has burst,therefore player 1 wins!<br><br>Player 1 has won ${p1winCounter} rounds<br>Computer has won ${pcWinCounter} rounds<br><br>Click the submit button to play again!`;
+      playingChips = playingChips + Number(String(playerBets));
+      return `<b>${playerName}'s final hand = ${p1StartHand}<br>Computer's final hand = ${pciHand}, computer has burst.<br><br>Since computer has burst, therefore player 1 wins!✌️<br>Earlier you bet ${playerBets} chips<br>Therefore you won ${playerBets} chips<br><br>${playerName} currently has ${playingChips} chips<br><br>${playerName} has won ${p1winCounter} round<br>Computer has won ${pcWinCounter} round<br>Draw for ${drawCounter} round<br><br>Click the submit button to play ♠ again! chips left ${playingChips}`;
     }
     /// player 1 hand burst & com wins
     if (p1StartHand > 21 && pciHand <= 21) {
       pcWinCounter = pcWinCounter + 1;
-      return `<b>Player 1's final hand = ${p1StartHand}<br>Computer's final hand = ${pciHand}, player 1 has burst.<br><br>Since player 1 has burst,therefore computer wins!<br><br>Player 1 has won ${p1winCounter} rounds<br>Computer has won ${pcWinCounter} rounds<br><br>Click the submit button to play again!`;
+      playingChips = playingChips - Number(String(playerBets));
+      return `<b>${playerName}'s final hand = ${p1StartHand}<br>Computer's final hand = ${pciHand}, ${playerName} has burst.<br><br>Since ${playerName} has burst, therefore computer wins!✌️<br><br>Earlier you bet ${playerBets} chips, unfortunately you lost.<br>Therefore you lost ${playerBets} chips<br><br>${playerName} currently has ${playingChips} chips<br><br>${playerName} has won ${p1winCounter} round<br>Computer has won ${pcWinCounter} round<br>Draw for ${drawCounter} round<br><br>Click the submit button to play ♠ again!`;
     }
     /// draw
     if (p1StartHand > 21 && pciHand > 21) {
-      return `<b>Player 1's final hand = ${p1StartHand}<br>Computer's final hand = ${pciHand}.<br><br>Since both player have burst,therefore its a draw!<br><br>Player 1 has won ${p1winCounter} rounds<br>Computer has won ${pcWinCounter} rounds<br><br>Click the submit button to play again!`;
+      drawCounter = drawCounter + 1;
+      return `<b>${playerName}'s final hand = ${p1StartHand}<br>Computer's final hand = ${pciHand}.<br><br>Since both player have burst, therefore its a draw!<br><br>${playerName} has won ${p1winCounter} round<br>Computer has won ${pcWinCounter} round<br>Draw for ${drawCounter} round<br><br>Click the submit button to play ♠ again!`;
     }
     /// draw
     if (p1StartHand == pciHand) {
-      return `<b>Player 1's final hand = ${p1StartHand}<br>Computer's final hand = ${pciHand}.<br><br>Since both player have the same hand,therefore its a draw!<br><br>Player 1 has won ${p1winCounter} rounds<br>Computer has won ${pcWinCounter} rounds<br><br>Click the submit button to play again!`;
+      drawCounter = drawCounter + 1;
+      return `<b>${playerName}'s final hand = ${p1StartHand}<br>Computer's final hand = ${pciHand}.<br><br>Since both player have the same hand, therefore its a draw!<br><br>${playerName} has won ${p1winCounter} round<br>Computer has won ${pcWinCounter} round<br>Draw for ${drawCounter} round<br><br>Click the submit button to play ♠ again!`;
     }
   }
 };
 
 var main = function (input) {
   myOutputValue = ``;
+  if (gameMode == "welcome") {
+    gameMode = "playerName";
+    return `<b>Welcome to blackjack! Please enter a username!`;
+  }
+  if (gameMode == "playerName") {
+    if (input == playerName) {
+      return `<b>Please enter an username!`;
+    }
+    playerName = input;
+    gameMode = "Bet";
+    return `<b>Hey ${playerName}, decide how many chips you would like to bet in this round,<br>by typing the number of chips in the long white space<br><br>DO NOT SPELL ELSE THE BETTING SYSTEM WILL CRASH!<br><br>You currently have ${playingChips} chips left<br><br>Example..if you have bet 20 chips and you win, you'll have 120 chips<br><br>Otherwise you'll have 80 chips left<br>In an event of a draw, nothing will happen<br><br>You have 100 chips initially<br><br>Click on the submit button to confirm your bet and receive your starting hand!`;
+  }
+  if (gameMode == "betAgain") {
+    gameMode = "Bet";
+    playerBets = input;
+    return `<b>Hey ${playerName}, decide how many chips you would like to bet in this round,<br>by typing the number of chips in the long white space<br><br>DO NOT SPELL ELSE GAME WILL CRASH!<br><br>You currently have ${playingChips} chips left<br><br>Example..if you have bet 20 chips and you win, you'll have 120 chips<br>Otherwise you'll have 80 chips left<br><br><br><br>Click on the submit button to confirm your bet and receive your starting hand!`;
+  }
+  if (gameMode == "Bet") {
+    playerBets = input;
+    gameMode = "p1";
+    return `<b>You have bet ${playerBets} chips !`;
+  }
   if (gameMode == "chooseAce") {
     if (!(input == 1 || input == 11)) {
-      return `<b>You have entered an invalid entry!<br><br>Please only enter 1 or 11!`;
+      return `<b>♤ You have entered an invalid entry ❌!<br>Your current hand is ${p1StartHand}<br><br>Please only enter 1 or 11!`;
     }
     myOutputValue = aceOnHand(input);
     gameMode = "aceHOS";
@@ -422,7 +461,7 @@ var main = function (input) {
   }
   if (gameMode == "aceHOS") {
     if (!(input == "hit" || input == "stand")) {
-      return `<b>♤ You have entered an invalid entry!<br>Please only enter hit or stand!<br><br>Hit to have additional cards added to your current hand.<br>Stand to finalize your hand!`;
+      return HOSinvalid;
     }
     myOutputValue = hitOrStand(input);
     return myOutputValue;
@@ -433,7 +472,7 @@ var main = function (input) {
   }
   if (gameMode == "p1HOS") {
     if (!(input == "hit" || input == "stand")) {
-      return `<b>You have entered an invalid entry!<br>Please only enter hit or stand!<br><br>Hit to have additional cards added to your current hand.<br>Stand to finalize your hand!`;
+      return HOSinvalid;
     }
     myOutputValue = hitOrStand(input);
     return myOutputValue;
@@ -444,7 +483,7 @@ var main = function (input) {
   }
   if (gameMode == "gameboard") {
     myOutputValue = board();
-    gameMode = "p1";
+    gameMode = "betAgain";
     return myOutputValue;
   }
 };
