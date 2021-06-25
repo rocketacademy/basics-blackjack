@@ -1,12 +1,16 @@
 // Game modes stored in variables
-var DEAL_CARDS = "deal cards";
-var PLAYER_ACTION = "player hits or stands";
-var COMPUTER_CALCULATES = "computer calculates";
-var FINAL_RESULT = "final result";
+const DEAL_CARDS = "deal cards";
+const PLAYER_ACTION = "player hits or stands";
+const COMPUTER_CALCULATES = "computer calculates";
+const FINAL_RESULT = "final result";
 
 // Declare user inputs as variables
-var INPUT_HIT = "hit";
-var INPUT_STAND = "stand";
+const INPUT_HIT = "hit";
+const INPUT_STAND = "stand";
+const INPUT_CHANGE_ACE = "change ace value";
+const POSITION = "position";
+const VALUE = "value";
+const MESSAGE = "message";
 
 // Global variables
 var playerCards = [];
@@ -16,9 +20,14 @@ var shuffledDeck;
 var createDeck;
 var playerPoints = 0;
 var computerPoints = 0;
+var aceIndex = 0;
+var aceValue = 0;
 
 // Current game mode
-gameMode = DEAL_CARDS;
+var gameMode = DEAL_CARDS;
+
+// Current mode for ace value selection
+var aceMode = MESSAGE;
 
 // Create a deck of cards
 var makeDeck = function () {
@@ -80,7 +89,7 @@ var shuffleDeck = function (cardDeck) {
 };
 
 // Deal card to player and computer, repeat twice
-var dealCards = function () {
+var dealCards = function (input) {
   dealCounter = 0;
   while (dealCounter < 2) {
     playerCards.push(shuffledDeck.pop());
@@ -108,8 +117,31 @@ var dealCards = function () {
   }
 };
 
+var changeAceValue = function (input, aceIndex, aceValue) {
+  if (aceMode == MESSAGE) {
+    console.log(input + "input");
+    aceMode = POSITION;
+    return `Please type in the position of the ace that you want to change`;
+  } else if (aceMode == POSITION) {
+    aceIndex = Number(input);
+    console.log(`aceindex` + input);
+    console.log(aceIndex + `ace index`);
+    if (playerCards[aceIndex].name != "Ace") {
+      aceMode = MESSAGE;
+    } else {
+      aceMode = VALUE;
+      return `You have chosen to change the ${aceIndex} cards value, please type either 1 or 11 to change the value`;
+    }
+  }
+  if (aceMode == VALUE) {
+    aceValue = Number(input);
+    playerCards[aceIndex].value = aceValue;
+    gameMode = PLAYER_ACTION;
+    return `You have changed the value of ${playerCards[aceIndex].name} of ${playerCards[aceIndex].emojiSuit} to ${aceValue}`;
+  }
+};
 // Draw extra card for player and output results
-// If player bursts, output results and reset game
+
 var playerDrawsExtraCard = function () {
   playerCards.push(shuffledDeck.pop());
 
@@ -120,6 +152,7 @@ var playerDrawsExtraCard = function () {
     playerCardMessage =
       playerCardMessage +
       `<br> ${playerCards[playerCounter].name} of ${playerCards[playerCounter].emojiSuit}`;
+    // If player bursts, output results and reset game
     if (playerPoints > 21) {
       gameMode = DEAL_CARDS;
       return (
@@ -127,6 +160,7 @@ var playerDrawsExtraCard = function () {
         playerCardMessage
       );
     }
+    // If player gets blackjack, output results and reset game
     if (playerPoints == 21) {
       gameMode = DEAL_CARDS;
       return `You've gotten blackjack and won!`;
@@ -142,24 +176,32 @@ var calculateComputerScore = function () {
   // Add computer score for first two cards
   computerPoints = computerCards[0].value + computerCards[1].value;
   // If two card score >= 17 and <= 21, change gameMode to compare with player score
-  if (computerPoints >= 17 && computerPoints <= 21) {
+  if (computerPoints >= 17 && computerPoints < 21) {
     gameMode = FINAL_RESULT;
     return `Computer's points are ${computerPoints}`;
   }
   // If computer gets blackjack, output results and reset game
-  if (computerPoints == 21) {
+  else if (computerPoints == 21) {
     gameMode = DEAL_CARDS;
     return `Computer has gotten Blackjack and won!`;
   } else {
-    // Otherwise computer draws card until it reaches at least 17 or bursts
+    // Otherwise computer draws card until it reaches at least 17, gets blackjack or bursts
     while (computerPoints < 17) {
       computerCards.push(shuffledDeck.pop());
       computerPoints =
         computerPoints + computerCards[computerCards.length - 1].value;
-      if (computerPoints >= 17 && computerPoints <= 21) {
+      // If computer gets at least 17, change game mode and compare with player
+      if (computerPoints >= 17 && computerPoints < 21) {
         gameMode = FINAL_RESULT;
         return `Computer's points are ${computerPoints}`;
       }
+      // If computer gets blackjack after drawing cards, return winning statement and reset game
+      if (computerPoints == 21) {
+        gameMode = DEAL_CARDS;
+
+        return `Computer has gotten Blackjack and won!`;
+      }
+      // If computer bursts, output results and reset game
       if (computerPoints > 21) {
         gameMode = DEAL_CARDS;
         return `The computer has burst, you win!`;
@@ -171,9 +213,9 @@ var calculateComputerScore = function () {
 var determineFinalResult = function () {
   gameMode = DEAL_CARDS;
   if (playerPoints > computerPoints) {
-    return `Player, you have won!`;
+    return `Player, you have won with a score of ${playerPoints} and the computer got ${computerPoints}!`;
   } else if (playerPoints < computerPoints) {
-    return `Player, you have lost!`;
+    return `Player, you have lost! Computer had a score of ${computerPoints}`;
   } else {
     return `Player its a draw!`;
   }
@@ -183,7 +225,7 @@ var main = function (input) {
   var myOutputValue = "";
 
   if (gameMode == DEAL_CARDS) {
-    // Empty global arrays for subsequent rounds
+    // Empty global variables for subsequent rounds
     playerCards = [];
     computerCards = [];
     playerPoints = 0;
@@ -194,21 +236,27 @@ var main = function (input) {
     shuffledDeck = shuffleDeck(cardDeck);
 
     // Deal two cards to player and computer
-    myOutputValue = dealCards();
+    myOutputValue = dealCards(input);
   }
+  // Allow player to hit or stand
   if (gameMode == PLAYER_ACTION) {
-    if (input == INPUT_HIT) {
+    if (input == INPUT_CHANGE_ACE) {
+      myOutputValue = changeAceValue(input, aceIndex, aceValue);
+    } else if (input == INPUT_HIT) {
       myOutputValue = playerDrawsExtraCard();
     } else if (input == INPUT_STAND) {
       gameMode = COMPUTER_CALCULATES;
     }
   }
+  // Check if computer has enough cards and add if necessary
   if (gameMode == COMPUTER_CALCULATES) {
     myOutputValue = calculateComputerScore();
   }
+  // Compaure player and computer cards
   if (gameMode == FINAL_RESULT) {
     myOutputValue = determineFinalResult();
     gameMode = DEAL_CARDS;
   }
+
   return myOutputValue;
 };
