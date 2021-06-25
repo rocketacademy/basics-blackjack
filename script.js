@@ -6,6 +6,7 @@ var COMPUTER;
 var currentPlayer = PLAYER;
 var playerHand = [];
 var playerTotal;
+var computerTotal;
 var computerHand = [];
 var blackjack = false;
 
@@ -19,7 +20,6 @@ var main = function (input) {
   if (gameMode == DEAL_CARDS_MODE) {
     myOutputValue = stdDealCards();
     checkForBlackjack();
-    console.log(blackjack);
     if (blackjack == false) {
       gameMode = HIT_STAND_MODE;
     } else return checkForBlackjack();
@@ -40,7 +40,6 @@ var stdDealCards = function () {
   drawCard(computerHand);
   drawCard(playerHand);
   drawCard(computerHand);
-  console.log(computerHand);
 
   // Prints out cards for computer and player
   var playerCards = displayCards(playerHand);
@@ -106,20 +105,26 @@ var checkForBlackjack = function () {
 
 // Determines winner based on winning conditions
 var generateOutcome = function () {
-  var playerTotal = totalCards(playerHand);
-  var computerTotal = totalCards(computerHand);
+  playerTotal = totalCards(playerHand);
+  computerTotal = totalCards(computerHand);
   var nearestBlackjack = nearestToBlackJack(playerTotal, computerTotal);
   checkForBlackjack();
+  console.log(blackjack);
   var total = `Player: ${playerTotal} <br> Computer: ${computerTotal} <br>`;
 
   if (blackjack == false) {
+    // Tie
     if (playerTotal == computerTotal) {
+      console.log("a");
       myOutputValue = `${total} You both have the same total. It's a push, no one wins!`;
     }
 
+    // Player closer to 21 wins
     if (nearestBlackjack == playerTotal) {
       myOutputValue = ` ${total} You win!`;
-    } else myOutputValue = `${total} You lose!`;
+    } else if (nearestBlackjack == computerTotal) {
+      myOutputValue = `${total} You lose!`;
+    }
 
     // Player busts
     if (playerTotal > 21) {
@@ -131,11 +136,16 @@ var generateOutcome = function () {
       myOutputValue = `${total} You won! The computer bust!`;
     }
 
-    // Resets game
-    playerHand = resetArray(playerHand);
-    computerHand = resetArray(computerHand);
-    gameMode = DEAL_CARDS_MODE;
+    // Both bust
+    if (computerTotal > 21 && playerTotal > 21) {
+      myOutputValue = `${total} Nobody wins! You both bust!`;
+    }
   } else return checkForBlackjack();
+
+  // Resets game
+  playerHand = resetArray(playerHand);
+  computerHand = resetArray(computerHand);
+  gameMode = DEAL_CARDS_MODE;
 
   return myOutputValue;
 };
@@ -157,45 +167,43 @@ var nearestToBlackJack = function (a, b) {
 var hitStandChoice = function (input) {
   var playerCards = displayCards(playerHand);
   // var playerTotal = totalCards(playerHand);
-  var hitMessage = `You should continue to hit as your total at ${playerTotal} is less than 16.`;
+  var hitMessage = `You should continue to hit as your total at ${playerTotal} is less than 17.`;
 
   if (input == `hit`) {
     drawCard(playerHand);
     playerCards = displayCards(playerHand);
     playerTotal = totalCards(playerHand);
-    myOutputValue = `You drew a card. Your hand is now ${playerCards} <br> Your total is now: ${playerTotal} <br> <br> Enter "hit" to draw another card or click submit to stand.`;
+    myOutputValue = `You drew a card. Your hand is now <br> ${playerCards} <br> Your total is now: ${playerTotal} <br> <br> Enter "hit" to draw another card or click submit to stand.`;
 
-    if (playerTotal < 16) {
+    if (playerTotal < 17) {
       myOutputValue += `<br><br> ${hitMessage}`;
     }
 
     if (playerTotal > 21) {
       // repeated stand logic
-      var computerTotal = totalCards(computerHand);
-      while (computerTotal < 16) {
-        //draws cards for computer until at least 16
-        drawCard(computerHand);
-        console.log(computerHand);
-        computerTotal = totalCards(computerHand);
-      }
+      computerHitOrStand();
       myOutputValue = generateOutcome();
-      gameMode == DEAL_CARDS_MODE;
+      // gameMode == DEAL_CARDS_MODE;
     }
-  } else if (playerTotal < 16) {
+  } else if (playerTotal < 17) {
     myOutputValue = hitMessage;
   } else {
-    // logic for "stand"
-    var computerTotal = totalCards(computerHand);
-    while (computerTotal < 16) {
-      //draws cards for computer until at least 16
-      drawCard(computerHand);
-      console.log(computerHand);
-      computerTotal = totalCards(computerHand);
-    }
+    computerHitOrStand();
+    console.log(computerHand);
     myOutputValue = generateOutcome();
-    gameMode == DEAL_CARDS_MODE;
+    // gameMode == DEAL_CARDS_MODE;
   }
   return myOutputValue;
+};
+
+var computerHitOrStand = function () {
+  var computerTotal = totalCards(computerHand);
+  // dealer hit or stand logic
+  while (computerTotal < 17) {
+    //draws cards for computer until at least 16
+    drawCard(computerHand);
+    computerTotal = totalCards(computerHand);
+  }
 };
 
 // Generate deck of 52 playing cards
@@ -278,14 +286,19 @@ var resetArray = function (array) {
 // player closer to 21 wins hand,
 // aces can be 1 or 11
 
-// second
-// new mode: hit or stand
-// hit: get another card
-// stand: do nothing and not receive any more cards
-// player busts when over 21
-// player decide whether to hit or stand
-// dealer hit or stand
-// wait until player is done to evaluate game-winning condition
-
-// third
 // fourth
+
+// [
+//   {
+//     name: "10",
+//     suit: "diamonds",
+//     rank: 10,
+//     value: 10,
+//   },
+//   {
+//     name: "jack",
+//     suit: "diamonds",
+//     rank: 11,
+//     value: 11,
+//   },
+// ];
