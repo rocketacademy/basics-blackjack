@@ -7,10 +7,11 @@ const FINAL_RESULT = "final result";
 // Declare user inputs as variables
 const INPUT_HIT = "hit";
 const INPUT_STAND = "stand";
-const INPUT_CHANGE_ACE = "change ace value";
+const INPUT_CHANGE_ACE = "change ace";
+const CHANGE_ACE_MODE = "change ace mode";
 const POSITION = "position";
-const VALUE = "value";
-const MESSAGE = "message";
+const ACE_ONE = "ace 1";
+const ACE_ELEVEN = "ace 11";
 
 // Global variables
 var playerCards = [];
@@ -25,9 +26,6 @@ var aceValue = 0;
 
 // Current game mode
 var gameMode = DEAL_CARDS;
-
-// Current mode for ace value selection
-var aceMode = MESSAGE;
 
 // Create a deck of cards
 var makeDeck = function () {
@@ -89,7 +87,7 @@ var shuffleDeck = function (cardDeck) {
 };
 
 // Deal card to player and computer, repeat twice
-var dealCards = function (input) {
+var dealCards = function () {
   dealCounter = 0;
   while (dealCounter < 2) {
     playerCards.push(shuffledDeck.pop());
@@ -117,30 +115,32 @@ var dealCards = function (input) {
   }
 };
 
-var changeAceValue = function (input, aceIndex, aceValue) {
-  if (aceMode == MESSAGE) {
-    console.log(input + "input");
-    aceMode = POSITION;
-    return `Please type in the position of the ace that you want to change`;
-  } else if (aceMode == POSITION) {
-    aceIndex = Number(input);
-    console.log(`aceindex` + input);
+var checkForAce = function (input) {
+  if (gameMode == CHANGE_ACE_MODE) {
+    aceIndex = Number(input) - 1;
     console.log(aceIndex + `ace index`);
     if (playerCards[aceIndex].name != "Ace") {
-      aceMode = MESSAGE;
-    } else {
-      aceMode = VALUE;
-      return `You have chosen to change the ${aceIndex} cards value, please type either 1 or 11 to change the value`;
+      gameMode = PLAYER_ACTION;
+      return `You can only change the value of aces`;
+    } else if (playerCards[aceIndex].name == "Ace") {
+      gameMode = PLAYER_ACTION;
+      return `You have chosen to change the value of the ace card in positon: ${aceIndex} <br>, please type either ace 1 or ace 11 to change the value`;
     }
   }
-  if (aceMode == VALUE) {
-    aceValue = Number(input);
-    playerCards[aceIndex].value = aceValue;
-    gameMode = PLAYER_ACTION;
-    return `You have changed the value of ${playerCards[aceIndex].name} of ${playerCards[aceIndex].emojiSuit} to ${aceValue}`;
-  }
 };
-// Draw extra card for player and output results
+
+var changeAceValue = function (input) {
+  if (input == ACE_ELEVEN) {
+    aceValue = Number(11);
+  } else if (input == ACE_ONE) {
+    aceValue = Number(1);
+  }
+  console.log(`acevalue` + aceValue);
+  playerCards[aceIndex].value = aceValue;
+  gameMode = PLAYER_ACTION;
+  return `You have changed the value of ${playerCards[aceIndex].name} of ${playerCards[aceIndex].emojiSuit} to ${aceValue}`;
+};
+// // Draw extra card for player and output results
 
 var playerDrawsExtraCard = function () {
   playerCards.push(shuffledDeck.pop());
@@ -175,6 +175,9 @@ var playerDrawsExtraCard = function () {
 var calculateComputerScore = function () {
   // Add computer score for first two cards
   computerPoints = computerCards[0].value + computerCards[1].value;
+  if (playerPoints > 21) {
+    return `Player burst, com auto wins!`;
+  }
   // If two card score >= 17 and <= 21, change gameMode to compare with player score
   if (computerPoints >= 17 && computerPoints < 21) {
     gameMode = FINAL_RESULT;
@@ -236,18 +239,28 @@ var main = function (input) {
     shuffledDeck = shuffleDeck(cardDeck);
 
     // Deal two cards to player and computer
-    myOutputValue = dealCards(input);
+    myOutputValue = dealCards();
   }
   // Allow player to hit or stand
   if (gameMode == PLAYER_ACTION) {
     if (input == INPUT_CHANGE_ACE) {
-      myOutputValue = changeAceValue(input, aceIndex, aceValue);
-    } else if (input == INPUT_HIT) {
+      gameMode = CHANGE_ACE_MODE;
+      return `Please type in the position of the ace that you want to change`;
+    }
+    if (input == ACE_ELEVEN || input == ACE_ONE) {
+      myOutputValue = changeAceValue(input);
+    }
+    if (input == INPUT_HIT) {
       myOutputValue = playerDrawsExtraCard();
-    } else if (input == INPUT_STAND) {
+    }
+    if (input == INPUT_STAND) {
       gameMode = COMPUTER_CALCULATES;
     }
   }
+  if (gameMode == CHANGE_ACE_MODE) {
+    myOutputValue = checkForAce(input);
+  }
+
   // Check if computer has enough cards and add if necessary
   if (gameMode == COMPUTER_CALCULATES) {
     myOutputValue = calculateComputerScore();
