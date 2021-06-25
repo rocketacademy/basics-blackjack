@@ -1,0 +1,63 @@
+// create global array of objects representing each player 
+playerArray = [];
+
+
+// Main
+// Welcome message - enter the number of players (n)
+    // Loop 'n' times
+        // Create an object with the attributes:
+            > name
+            > playerNumber
+            > cardsArray
+            > totalRank 
+            > wins
+        // Push object into playerArray 
+    // Change game mode to GAME_MODE_NAMES
+
+// enter the names of players separated by commas
+    // store the input into global variable numberOfPlayers
+    // If condition for input validation - must match the number of players (n) entered in the previous mode 
+    // Change game mode to GAME_MODE_INSTRUCTIONS
+
+// instructions for the game to start
+    // Increment the number of rounds
+    // Change game mode to GAME_MODE_PLAYER_HIT
+
+// Loop through all 'n' players
+var index = 0;
+while (index < numberOfPlayers)
+    // Increment currentPlayerNumber by 1
+    // if condition for GAME_MODE_PLAYER_HIT   
+        // if (input == "stand" && numberOfHits_player > 0) -> change game mode to GAME_MODE_PLAYER_STAND
+            // increment the index by 1 for the next player's turn
+            // return "You chose to stand. Next, it's player 2's turn. Press submit for player `${currentPlayerNumber + 1}'s turn.` 
+        // player 'n' draws a card, 
+            increment the number of hits, 
+            check if its an ace, 
+            determine the ace value, 
+            push card into global array of arrays for current player (index) 
+        -> refactor into a helper function
+
+        // Create playerCardMessage (local variable)
+        // Create listOfCards_player message (global variable)
+        // Calculate total rank of player's cards 
+        // Create hitOrStandMessage for player -> refactor into a helper function
+        // Create and return output 
+            myOutputValue =
+        playerCardMessage +
+        listOfCards_player +
+        "<br>" +
+        `Total rank: ${totalRank} <br>` +
+        hitOrStandMessage;
+        return myOutputValue;
+
+    // if condition for GAME_MODE_PLAYER_STAND
+        // Dealer draws cards (function)
+        // Conditions for dealer to hit or stand
+        // Create message listOfCards_dealer
+        // Change game mode to GAME_MODE_EVALUATE_WIN
+    
+    // increase index by 1
+    
+// if condition for GAME_MODE_EVALUATE_WIN
+
