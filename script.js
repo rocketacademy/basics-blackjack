@@ -1,11 +1,11 @@
-// Game modes stored in variables
+// Game modes stored in a constant
 const DEAL_CARDS = "deal cards";
 const PLAYER_ACTION = "player hits or stands";
 const CHANGE_ACE_MODE = "change ace mode";
 const COMPUTER_CALCULATES = "computer calculates";
 const FINAL_RESULT = "final result";
 
-// Declare user inputs as variables
+// Declare user inputs as a constant
 const INPUT_HIT = "hit";
 const INPUT_STAND = "stand";
 const INPUT_CHANGE_ACE = "change ace";
