@@ -12,12 +12,14 @@
 // new round: shuffle deck -> users enter bets -> deal cards
 
 // Constants
-const suits = ["diamonds", "clubs", "hearts", "spades"];
-const names = ["ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "jack", "queen", "king"];
-const ranks = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10];
+const SUITS = ["diamonds", "clubs", "hearts", "spades"];
+const NAMES = ["ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "jack", "queen", "king"];
+const RANKS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10];
 const CHOOSE_NUM_PLAYERS = "choose number of players";
 const CHOOSE_PLAYER_NAMES = "choose names of players";
 const PLACE_BETS = "place bets";
+const DEAL_CARDS = "deal cards";
+const STARTING_CHIPS = 100; // Initial tally of chips for each player
 
 // Global variables
 var gameMode = CHOOSE_NUM_PLAYERS;
@@ -27,9 +29,9 @@ var currentTurn = 0; // Game starts on the first player's turn: 0 to represent f
 
 var createDeck = function () {
   var deck = [];
-  for (var i = 0; i < names.length; i++) {
-    for (var x = 0; x < suits.length; x++) {
-      var card = { name: names[i], suit: suits[x], rank: ranks[i] };
+  for (var i = 0; i < NAMES.length; i++) {
+    for (var x = 0; x < SUITS.length; x++) {
+      var card = { name: NAMES[i], suit: SUITS[x], rank: RANKS[i] };
       deck.push(card);
     }
   }
@@ -49,7 +51,7 @@ var shuffleCards = function (cardDeck) {
 
 var updateNumPlayers = function (numPlayersInput) {
   var resultMessage;
-  // Input validation
+  // Input validation: Limit num of players to 4 for performance reasons
   if (!(Number(numPlayersInput) >= 1 && Number(numPlayersInput) <= 4)) {
     resultMessage = `You have entered an invalid input.<br>Please enter a number between 1 and 4! All decimals will be rounded up.`;
     return resultMessage;
@@ -57,7 +59,7 @@ var updateNumPlayers = function (numPlayersInput) {
   numPlayers = Math.ceil(Number(numPlayersInput));
   // Create array of player objects
   for (var i = 0; i < numPlayers; i++) {
-    var player = { playerNum: i + 1, points: 100 };
+    var player = { playerNum: i + 1, chips: STARTING_CHIPS };
     players.push(player);
   }
   gameMode = CHOOSE_PLAYER_NAMES;
@@ -73,16 +75,38 @@ var updatePlayerNames = function (playerNameInput) {
     return resultMessage;
   }
   // Valid input, so we update player names in the `players` array
+  players[currentTurn].playerName = playerNameInput;
   resultMessage = `Welcome to 🃏 Blackjack 🃏, ${playerNameInput}!`;
-  // Condition to check if we are adding the player name for the final player
-  if (currentTurn == players.length - 1) {
+  currentTurn += 1;
+  // Condition to check if we have added the names for all players
+  if (currentTurn == players.length) {
     currentTurn = 0; // Reset currentTurn so that bets can be placed in the right order
     gameMode = PLACE_BETS; // Update game mode to the next mode
-    resultMessage += `All players have successfully entered their names.<br><br>You currently have ${players[currentTurn].points} chips, ${players[currentTurn].playerName}. Please enter your bet for this round.`;
+    resultMessage += `<br><br>All players have successfully entered their names. We will now start taking bets for the first round.<br><br>You currently have ${players[currentTurn].chips} chips, ${players[currentTurn].playerName}. Please enter your bet for this round - input will be rounded down.`;
   } else {
-    players[currentTurn].playerName = playerNameInput;
-    currentTurn += 1;
     resultMessage += `<br><br>Please enter the name of the next player.`;
+  }
+  return resultMessage;
+};
+
+var updateBets = function (playerBetInput) {
+  var resultMessage;
+  // Input validation: if user tries to place a bet higher than their current chips tally
+  if (Math.floor(Number(playerBetInput)) > players[currentTurn].chips) {
+    resultMessage = `Sorry ${players[currentTurn].playerName}, you have an entered an invalid bet.<br><br>You currently only have ${players[currentTurn].chips} chips - please try again.`;
+    return resultMessage;
+  }
+  // Valid input, so we update player bets in the `players` array
+  players[currentTurn].playerBet = Math.floor(Number(playerBetInput));
+  resultMessage = `You have placed a bet of ${players[currentTurn].playerBet} chips for this round, ${players[currentTurn].playerName}.`;
+  currentTurn += 1;
+  // Condition to check if all players have placed their bets
+  if (currentTurn == players.length) {
+    currentTurn = 0; // Reset currentTurn so that the round can start in the right order
+    gameMode = DEAL_CARDS; // Update game mode to the next mode
+    resultMessage += `<br><br>All players have successfully placed their bets. The cards will now be dealt for the round.`;
+  } else {
+    resultMessage += `<br><br>It is now your turn to place your bet, ${players[currentTurn].playerName}. You currently have ${players[currentTurn].chips} chips.`;
   }
   return resultMessage;
 };
@@ -93,6 +117,8 @@ var main = function (input) {
     myOutputValue = updateNumPlayers(input);
   } else if (gameMode == CHOOSE_PLAYER_NAMES) {
     myOutputValue = updatePlayerNames(input);
+  } else if (gameMode == PLACE_BETS) {
+    myOutputValue = updateBets(input);
   }
   return myOutputValue;
 };
