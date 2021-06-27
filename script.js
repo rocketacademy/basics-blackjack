@@ -1,4 +1,6 @@
 // Game modes stored in a constant
+const WAITING_FOR_NAME = "waiting for username";
+const INSTRUCIONS = "tell player instructions";
 const DEAL_CARDS = "deal cards";
 const PLAYER_ACTION = "player hits or stands";
 const CHANGE_ACE_MODE = "change ace mode";
@@ -8,7 +10,7 @@ const FINAL_RESULT = "final result";
 // Declare user inputs as a constant
 const INPUT_HIT = "hit";
 const INPUT_STAND = "stand";
-const INPUT_CHANGE_ACE = "change ace";
+const INPUT_CHANGE_ACE = "ace";
 const POSITION = "position";
 const ACE_ONE = "ace 1";
 const ACE_ELEVEN = "ace 11";
@@ -24,9 +26,10 @@ var computerPoints = 0;
 var aceIndex = 0;
 var aceValue = 0;
 var aceCounter = 0;
+var userName = "";
 
 // Current game mode
-var gameMode = DEAL_CARDS;
+var gameMode = WAITING_FOR_NAME;
 
 // Create a deck of cards
 var makeDeck = function () {
@@ -106,21 +109,21 @@ var dealCards = function () {
     computerPoints != 21
   ) {
     gameMode = DEAL_CARDS;
-    return `YOU HAVE GOTTEN BLACKJACK AND WIN! 🥳 <br><br> Your cards: <br>${playerCards[0].name} of ${playerCards[0].emojiSuit} <br>${playerCards[1].name} of ${playerCards[1].emojiSuit} <br> Your points: ${playerPoints} <br><br> Computer's cards: <br> ${computerCards[0].name} of ${computerCards[0].emojiSuit} <br>${computerCards[1].name} of ${computerCards[1].emojiSuit}<br> Computer's points: ${computerPoints}`;
+    return `${userName}! <br>YOU HAVE GOTTEN BLACKJACK AND WIN! 🥳 <br><br> Your cards: <br>${playerCards[0].name} of ${playerCards[0].emojiSuit} <br>${playerCards[1].name} of ${playerCards[1].emojiSuit} <br> Your points: ${playerPoints} <br><br> Computer's cards: <br> ${computerCards[0].name} of ${computerCards[0].emojiSuit} <br>${computerCards[1].name} of ${computerCards[1].emojiSuit}<br> Computer's points: ${computerPoints}`;
   } else if (
     // If both get blackjack, declare draw and reset game
     playerPoints == 21 &&
     computerPoints == 21
   ) {
     gameMode = DEAL_CARDS;
-    return `You both drew blackjacks! Its a draw! Your cards: <br>${playerCards[0].name} of ${playerCards[0].emojiSuit} <br>${playerCards[1].name} of ${playerCards[1].emojiSuit}  <br> Your points: ${playerPoints}<br><br> Computer's cards: <br> ${computerCards[0].name} of ${computerCards[0].emojiSuit} <br>${computerCards[1].name} of ${computerCards[1].emojiSuit}<br> Computer's points: ${computerPoints}`;
+    return `${userName}, you both drew blackjacks! Its a draw! 😐 <br><br> Your cards: <br>${playerCards[0].name} of ${playerCards[0].emojiSuit} <br>${playerCards[1].name} of ${playerCards[1].emojiSuit}  <br> Your points: ${playerPoints}<br><br> Computer's cards: <br> ${computerCards[0].name} of ${computerCards[0].emojiSuit} <br>${computerCards[1].name} of ${computerCards[1].emojiSuit}<br> Computer's points: ${computerPoints}`;
   } else if (playerPoints > 21) {
     gameMode = PLAYER_ACTION;
-    return `You will burst and lose unless you change your ace card's value! <br><br> Type 'change ace' to change its value.<br><br> Your cards: <br>${playerCards[0].name} of ${playerCards[0].emojiSuit} <br>${playerCards[1].name} of ${playerCards[1].emojiSuit}  <br> Your points: ${playerPoints}`;
+    return `${userName}, you will burst and lose unless you change your ace card's value! <br><br> Type 'ace' to change its value.<br><br> Your cards: <br>${playerCards[0].name} of ${playerCards[0].emojiSuit} <br>${playerCards[1].name} of ${playerCards[1].emojiSuit}  <br> Your points: ${playerPoints}`;
   } else {
     gameMode = PLAYER_ACTION;
     // Otherwise inform player of current cards and ask if they want to hit, stand or change ace value
-    return `Your cards: <br>${playerCards[0].name} of ${playerCards[0].emojiSuit} <br>${playerCards[1].name} of ${playerCards[1].emojiSuit}  <br> Your points: ${playerPoints} <br><br> Please enter 'hit' if you would like more cards <br><br> Please enter 'stand' if you do not want anymore cards <br><br> Please enter 'change ace' if you would like to change the value of an ace card`;
+    return `${userName}, your cards are: <br>${playerCards[0].name} of ${playerCards[0].emojiSuit} <br>${playerCards[1].name} of ${playerCards[1].emojiSuit}  <br> Your points: ${playerPoints} <br><br> Please enter 'hit' if you would like more cards <br><br> Please enter 'stand' if you do not want anymore cards <br><br> Please enter 'ace' if you would like to change the value of an ace card`;
   }
 };
 
@@ -131,7 +134,7 @@ var checkForAce = function (input) {
     if (playerCards[aceIndex].name != "Ace") {
       gameMode = PLAYER_ACTION;
       // Run while loop to output all player card names and suits in output statement
-      var aceInvalidOutput = `You can only change the value of aces. <br><br> Your cards are: `;
+      var aceInvalidOutput = `${userName}, you can only change the value of aces. <br><br> Your cards are: `;
       aceCounter = 0;
       while (aceCounter < playerCards.length) {
         aceInvalidOutput =
@@ -141,12 +144,12 @@ var checkForAce = function (input) {
       }
       return (
         aceInvalidOutput +
-        `<br> Your points: ${playerPoints}<br><br> Please enter 'hit' if you would like more cards <br><br> Please enter 'stand' if you do not want anymore cards <br><br> Please enter 'change ace' if you would like to change the value of an ace card`
+        `<br> Your points: ${playerPoints}<br><br> Please enter 'hit' if you would like more cards <br><br> Please enter 'stand' if you do not want anymore cards <br><br> Please enter 'ace' if you would like to change the value of an ace card`
       );
       // If player selects ace card in their array, switch mode and allow them to change ace value
     } else if (playerCards[aceIndex].name == "Ace") {
       gameMode = PLAYER_ACTION;
-      return `You have chosen to change the value of the ace card in positon: ${input} <br> Please type either 'ace 1' or 'ace 11' to change the value`;
+      return `${userName}, you have chosen to change the value of the ace card in positon: ${input} <br> Please type either 'ace 1' or 'ace 11' to change the value`;
     }
   }
 };
@@ -163,7 +166,7 @@ var changeAceValue = function (input) {
   playerCards[aceIndex].value = aceValue;
   gameMode = PLAYER_ACTION;
   // Run while loop to output all player card names and suits in output statement
-  var aceChangeOutput = `You have changed the value of ${playerCards[aceIndex].name} of ${playerCards[aceIndex].emojiSuit} to ${aceValue}. <br><br> Your cards are: `;
+  var aceChangeOutput = `${userName}, you have changed the value of ${playerCards[aceIndex].name} of ${playerCards[aceIndex].emojiSuit} to ${aceValue}. <br><br> Your cards are: `;
   aceCounter = 0;
   while (aceCounter < playerCards.length) {
     aceChangeOutput =
@@ -173,7 +176,7 @@ var changeAceValue = function (input) {
   }
   return (
     aceChangeOutput +
-    `<br> Your points: ${playerPoints}<br><br> Please enter 'hit' if you would like more cards <br><br> Please enter 'stand' if you do not want anymore cards <br><br> Please enter 'change ace' if you would like to change the value of an ace card`
+    `<br> Your points: ${playerPoints}<br><br> Please enter 'hit' if you would like more cards <br><br> Please enter 'stand' if you do not want anymore cards <br><br> Please enter 'ace' if you would like to change the value of an ace card`
   );
 };
 
@@ -186,7 +189,7 @@ var playerDrawsExtraCard = function () {
   playerCounter = playerCards.length - 1;
   while (playerCounter < playerCards.length) {
     playerPoints = playerPoints + playerCards[playerCounter].value;
-    endMessage = `<br> Your points: ${playerPoints}<br><br> Please enter 'hit' if you would like more cards <br><br> Please enter 'stand' if you do not want anymore cards <br><br> Please enter 'change ace' if you would like to change the value of an ace card`;
+    endMessage = `<br> Your points: ${playerPoints}<br><br> Please enter 'hit' if you would like more cards <br><br> Please enter 'stand' if you do not want anymore cards <br><br> Please enter 'ace' if you would like to change the value of an ace card`;
     playerCounter += 1;
   }
   // Run while loop to output all player card names and suits in output statement
@@ -204,7 +207,7 @@ var playerDrawsExtraCard = function () {
     while (counter < playerCards.length) {
       if (playerCards[counter].name == "Ace") {
         gameMode = PLAYER_ACTION;
-        return `You will burst and lose unless you change your ace card's value! <br><br> Type 'change ace' to change its value.<br><br> ${playerCardMessage}`;
+        return `${userName}, you will burst and lose unless you change your ace card's value! <br><br> Type 'ace' to change its value.<br><br> ${playerCardMessage}`;
       }
       counter += 1;
     }
@@ -216,20 +219,20 @@ var playerDrawsExtraCard = function () {
         playerCards[secondCounter].value == 11
       ) {
         gameMode = PLAYER_ACTION;
-        return `You will burst and lose unless you change your ace card's value! <br><br> Type 'change ace' to change its value.<br><br> ${playerCardMessage}`;
+        return `${userName}, you will burst and lose unless you change your ace card's value! <br><br> Type 'ace' to change its value.<br><br> ${playerCardMessage}`;
       }
       secondCounter += 1;
     }
     gameMode = DEAL_CARDS;
-    return `You've burst and lost! <br><br>  ${playerCardMessage} <br> Your points: ${playerPoints}<br><br> Click submit to start a new game!`;
+    return `${userName}, you've burst and lost! 😭 <br><br>  ${playerCardMessage} <br> Your points: ${playerPoints}<br><br> Click submit to start a new game!`;
   }
   // If player gets blackjack, output results and reset game
   if (playerPoints == 21) {
     gameMode = DEAL_CARDS;
-    return `You've gotten blackjack and won! <br><br>${playerCardMessage}<br><br> Click submit to start a new game!`;
+    return `${userName}, you've gotten blackjack and won! 🥳 <br><br>${playerCardMessage}<br><br> Click submit to start a new game!`;
   }
 
-  return playerCardMessage + endMessage;
+  return `${userName}, ${playerCardMessage}  ${endMessage};`;
 };
 
 // Calculate computer's score and automatically draw more if necessary
@@ -241,7 +244,7 @@ var calculateComputerScore = function () {
   // If computer gets blackjack, output results and reset game
   else if (computerPoints == 21) {
     gameMode = DEAL_CARDS;
-    return `Computer has gotten Blackjack and won! <br><br>Computer's cards: <br> ${computerCards[0].name} of ${computerCards[0].emojiSuit} <br>${computerCards[1].name} of ${computerCards[1].emojiSuit}<br> Computer's points: ${computerPoints}`;
+    return `Sorry ${userName}! <br> The computer has gotten Blackjack and won! 😭 <br><br>Computer's cards: <br> ${computerCards[0].name} of ${computerCards[0].emojiSuit} <br>${computerCards[1].name} of ${computerCards[1].emojiSuit}<br> Computer's points: ${computerPoints}`;
   } else {
     // Otherwise computer draws card until it reaches at least 17, gets blackjack or bursts
     while (computerPoints < 17) {
@@ -264,14 +267,14 @@ var calculateComputerScore = function () {
       // If computer gets blackjack after drawing cards, return winning statement and reset game
       if (computerPoints == 21) {
         gameMode = DEAL_CARDS;
-        return `Computer has gotten Blackjack and won! <br><br>
+        return `Sorry ${userName}! <br> The computer has gotten Blackjack and won! 😭 <br><br>
           ${computerCardMessage} 
           <br> Computer's points: ${computerPoints}<br><br> Click submit to start a new game!`;
       }
       // If computer bursts, output results and reset game
       if (computerPoints > 21) {
         gameMode = DEAL_CARDS;
-        return `The computer has burst, you win!<br><br>
+        return `${userName}, the computer has burst, you win! 🥳 <br><br>
           ${computerCardMessage} 
           <br> Computer's points: ${computerPoints}<br><br> Click submit to start a new game!`;
       }
@@ -303,17 +306,24 @@ var determineFinalResult = function () {
   }
   // Determine game outcome
   if (playerPoints > computerPoints) {
-    return `Player, you have won! ${finalOutput}`;
+    return `${userName}, you have won! 🥳 ${finalOutput}`;
   } else if (playerPoints < computerPoints) {
-    return `Player, you have lost! ${finalOutput} `;
+    return `${userName}, you have lost! 😭 ${finalOutput} `;
   } else {
-    return `Player its a draw! ${finalOutput} `;
+    return `${userName}, its a draw! 😐 ${finalOutput} `;
   }
 };
 
 var main = function (input) {
   var myOutputValue = "";
-  if (gameMode == DEAL_CARDS) {
+  if (gameMode == WAITING_FOR_NAME) {
+    myOutputValue = `Hello player! <br><br> Please enter your name!`;
+    gameMode = INSTRUCIONS;
+  } else if (gameMode == INSTRUCIONS) {
+    userName = input;
+    gameMode = DEAL_CARDS;
+    myOutputValue = `Hello ${userName}! <br><br> Welcome to blackjack!!! 2️⃣1️⃣♠️❤️♣️♦️ <br><br> These are the rules:<br> You will be dealt two cards after clicking submit <br> The aim is to get 21 points without exceeding it <br> You need to hit a minimum of 17 points <br> Aces are worth either 1 or 11 and can be changed throughout the game <br> When you're ready click submit to play! `;
+  } else if (gameMode == DEAL_CARDS) {
     // Empty global variables for subsequent rounds
     playerCards = [];
     computerCards = [];
@@ -339,7 +349,7 @@ var main = function (input) {
   if (gameMode == PLAYER_ACTION) {
     if (input == INPUT_CHANGE_ACE) {
       gameMode = CHANGE_ACE_MODE;
-      return `Please type in the position of the ace that you want to change <br><br> ${playerCardMessage}`;
+      return `${userName}, please type in the position of the ace that you want to change <br><br> ${playerCardMessage}`;
     }
     // Change player's ace card based on input and update player's points
     if (input == ACE_ELEVEN || input == ACE_ONE) {
@@ -355,7 +365,7 @@ var main = function (input) {
       if (playerPoints < 17) {
         gameMode = PLAYER_ACTION;
 
-        return `Player, you need at least 17 points. Please type 'hit' to draw another card. <br><br> ${playerCardMessage}`;
+        return `${userName}, you need at least 17 points. Please type 'hit' to draw another card. <br><br> ${playerCardMessage}`;
       }
       gameMode = COMPUTER_CALCULATES;
     }
