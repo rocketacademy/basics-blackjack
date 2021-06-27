@@ -34,39 +34,27 @@ var makeDeck = function () {
   return cardDeck;
 };
 
-// global variables for the deck and shuffled deck
+// global variable for the deck
 var deck;
 var shuffledDeck;
-// global variable for number of players
-var numberOfPlayers = 0;
-// global array to store players' names (more comfortable)
-var namesArray = [];
-// global variable for current player number
-var currentPlayer = 0;
 // global array to track the player's cards at every hit
 var playerCardsArray = [];
 // global array to track the dealer's cards at every hit
-var dealerCardsArray = [];
-// global array of arrays to track all player's cards in each round
-var allPlayerCards = [];
+var dealerCardsArray = []; // Version 3
 // global variable to store the message on list of player cards
 var listOfCards_player = "";
 // global variable to store the message on list of dealer cards
 var listOfCards_dealer = "";
-// global variables to store the number of hits for players and dealer
+// global variables to store the number of hits for player and dealer
 var numberOfHits_player = 0;
 var numberOfHits_dealer = 0;
-var allPlayerHits = [];
 // global variable to store number of wins for player and dealer
 var numberOfWins_player = 0;
 var numberOfWins_dealer = 0;
-var allPlayerWins = [];
 // global variable to store number of rounds played
 var numberOfRounds = 0;
 // game modes
 var GAME_MODE_WELCOME = "GAME_MODE_WELCOME";
-var GAME_MODE_NUMBER_OF_PLAYERS = "GAME_MODE_NUMBER_OF_PLAYERS";
-var GAME_MODE_NAMES = "GAME_MODE_NAMES";
 var GAME_MODE_PLAYER_HIT = "GAME_MODE_PLAYER_HIT";
 var GAME_MODE_PLAYER_STAND = "GAME_MODE_PLAYER_STAND";
 var GAME_MODE_EVALUATE_WIN = "GAME_MODE_EVALUATE_WIN";
@@ -137,6 +125,19 @@ var determineBust = function (string) {
     }
   }
   return false;
+};
+
+// Function for dealer to draw a card
+var dealerDrawCard = function () {
+  // Dealer draws the first card from the top of the deck
+  var dealerCard = shuffledDeck.pop();
+
+  // Store the new card in the dealerCardsArray and increase the no. of hits
+  dealerCardsArray.push(dealerCard);
+  numberOfHits_dealer += 1;
+
+  console.log(`dealer draws card number ${numberOfHits_dealer}..`);
+  console.log(dealerCard);
 };
 
 // Function to create list of cards message
@@ -228,7 +229,6 @@ var determineWinner = function () {
 var containsAce = function (newCard) {
   var name = newCard.name;
   if (name == "ace") {
-    console.log("~New card is an ace~");
     return true;
   }
   return false;
@@ -238,27 +238,8 @@ var containsAce = function (newCard) {
 var determineAceValue = function (aceCard, cardsArray) {
   // If existing hand is empty OR the sum of ranks in existing hand is less than or equal 10, change value of ace to 11. Otherwise, the value of the ace remains as 1
   if (sumOfRanks(cardsArray) <= 10 || cardsArray.length == 0) {
-    console.log("~Changing ace rank to 11~");
     aceCard.rank = 11;
   }
-};
-
-// Function for dealer to draw a card
-var dealerDrawCard = function () {
-  // Dealer draws the first card from the top of the deck
-  var dealerCard = shuffledDeck.pop();
-
-  // If the card is an ace, determine the value of its rank
-  if (containsAce(dealerCard) == true) {
-    determineAceValue(dealerCard, dealerCardsArray);
-  }
-
-  // Store the new card in the dealerCardsArray and increase the no. of hits
-  dealerCardsArray.push(dealerCard);
-  numberOfHits_dealer += 1;
-
-  console.log(`dealer draws card number ${numberOfHits_dealer}..`);
-  console.log(dealerCard);
 };
 
 // Function to reset game conditions for the next round
@@ -283,47 +264,20 @@ var main = function (input) {
   // Make the deck
   deck = makeDeck();
 
-  // If gameMode is GAME_MODE_WELCOME, change gameMode to GAME_MODE_NUMBER_OF_PLAYERS and output welcome message
+  // If gameMode is GAME_MODE_WELCOME, change gameMode to GAME_MODE_PLAYER_HIT and output default welcome message
   if (gameMode == GAME_MODE_WELCOME) {
     // Increment the number of rounds
     numberOfRounds += 1;
     console.log("Round:");
     console.log(numberOfRounds);
-    // Change gameMode to GAME_MODE_NUMBER_OF_PLAYERS
-    gameMode = GAME_MODE_NUMBER_OF_PLAYERS;
+    // Change gameMode to GAME_MODE_PLAYER_HIT
+    gameMode = GAME_MODE_PLAYER_HIT;
     console.log("Game mode:");
     console.log(gameMode);
-    // Create welcome message
     myOutputValue = `Welcome to BlackJack <b> Round ${numberOfRounds}</b>! There are 2 players in this round - you vs the computer. Press submit to draw a random card from the deck for both you and the computer.`;
     console.log("myOutputValue");
     console.log(myOutputValue);
     return myOutputValue;
-  }
-
-  // If gameMode is GAME_MODE_NUMBER_OF_PLAYERS, ask user to enter the number of players
-  if (gameMode == GAME_MODE_NUMBER_OF_PLAYERS) {
-    if (
-      input == "" ||
-      input.charAt(input.length - 1) == " " ||
-      Number(input) == NaN
-    ) {
-      console.log(
-        "Invalid input. Prompt user to enter an integer between 1 and 5 (inclusive)"
-      );
-      myOutputValue -
-        "Oops! Please enter an integer value between 1 and 5 (inclusive).";
-      return myOutputValue;
-    }
-  }
-  // If gameMode is GAME_MODE_NAME, ask the user to input their name
-  if (gameMode == GAME_MODE_NAMES) {
-    if (input == "" || input.charAt(input.length - 1) == " ") {
-      console.log(
-        "Invalid input for name. Prompt user to enter at least 1 character"
-      );
-      myOutputValue = "Oops! Please enter at least 1 character for your name.";
-      return myOutputValue;
-    }
   }
 
   // If gameMode is GAME_MODE_PLAYER_HIT, draw a card for the player first
@@ -342,7 +296,7 @@ var main = function (input) {
     //return myOutputValue;
     //}
 
-    // Shuffle the deck and store it in the global variable shuffledDeck
+    // Shuffle the deck and store it in a variable shuffledDeck
     shuffledDeck = shuffleCards(deck);
     console.log("shuffling deck..");
 
@@ -391,7 +345,7 @@ var main = function (input) {
     return myOutputValue;
   }
 
-  // If gameMode is GAME_MODE_PLAYER_STAND, draw cards for the dealer and change gameMode to GAME_MODE_EVALUATE_WIN
+  // If gameMode is GAME_MODE_PLAYER_STAND, draw a cards for the dealer and change gameMode to GAME_MODE_EVALUATE_WIN
   if (gameMode == GAME_MODE_PLAYER_STAND) {
     // Dealer draws cards
     dealerDrawCard();
@@ -403,10 +357,10 @@ var main = function (input) {
       dealerDrawCard();
     }
 
-    // If sumOfRanks of dealer's cards is between 17 (inclusive) and 20 (inclusive), dealer randomly decides whether he should draw another card
+    // If sumOfRanks of dealer's cards is between 17 and 20, dealer randomly decides whether he should draw another card
     while (
-      sumOfRanks(dealerCardsArray) >= 17 &&
-      sumOfRanks(dealerCardsArray) <= 20
+      sumOfRanks(dealerCardsArray) > 17 &&
+      sumOfRanks(dealerCardsArray) < 20
     ) {
       var array = [0, 1];
       var randomIndex = Math.floor(Math.random() * array.length);
