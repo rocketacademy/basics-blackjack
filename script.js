@@ -14,7 +14,7 @@ var playerCard;
 var playerCardIndex = 0;
 var computerCard1;
 var computerCard2;
-var computerCard3;
+var computerCard;
 var computerCardIndex = 0;
 var playerCardsTotal = 0;
 var computerCardsTotal = 0;
@@ -147,11 +147,6 @@ var analyseCards = function () {
 
 // after choosing hit or stand, the analysis of cards will be done here
 var hitOrStand = function () {
-  // user input validation
-  // if (!(userInput == "hit") || !(userInput == "stand")) {
-  //   return `Please enter "hit" to deal another card from the deck, or enter "stand" to end your turn and stop without taking a card.`;
-  // }
-
   var outputText = "";
 
   // the computer decides to hit or stand automatically based on the game rules
