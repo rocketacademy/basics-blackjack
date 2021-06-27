@@ -83,7 +83,7 @@
     </h1>
     <h1 class="header">♣️ Basics - Blackjack ♠️</h1>
     <div id="container">
-      <p>Input:</p>
+      <p id="input-title">Input:</p>
       <input id="input-field" />
       <br />
       <button id="submit-button">Submit</button>
@@ -94,6 +94,8 @@
     <script src="script.js"></script>
     <!-- Define button click functionality -->
     <script>
+      var inputTitle = document.getElementById("input-title");
+      inputTitle.innerHTML = inputDisplay();
       var button = document.querySelector("#submit-button");
       button.addEventListener("click", function () {
         // Set result to input value
@@ -106,6 +108,9 @@
 
         // Reset input value
         input.value = "";
+
+        // Edit the title text to a new value
+        document.querySelector("#input-title").innerHTML = inputDisplay();
       });
     </script>
   </body>
