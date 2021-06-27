@@ -114,6 +114,9 @@ var dealCards = function () {
   ) {
     gameMode = DEAL_CARDS;
     return `You both drew blackjacks! Its a draw! Your cards: <br>${playerCards[0].name} of ${playerCards[0].emojiSuit} <br>${playerCards[1].name} of ${playerCards[1].emojiSuit}  <br> Your points: ${playerPoints}<br><br> Computer's cards: <br> ${computerCards[0].name} of ${computerCards[0].emojiSuit} <br>${computerCards[1].name} of ${computerCards[1].emojiSuit}<br> Computer's points: ${computerPoints}`;
+  } else if (playerPoints > 21) {
+    gameMode = PLAYER_ACTION;
+    return `You will burst and lose unless you change your ace card's value! <br><br> Type 'change ace' to change its value.<br><br> Your cards: <br>${playerCards[0].name} of ${playerCards[0].emojiSuit} <br>${playerCards[1].name} of ${playerCards[1].emojiSuit}  <br> Your points: ${playerPoints}`;
   } else {
     gameMode = PLAYER_ACTION;
     // Otherwise inform player of current cards and ask if they want to hit, stand or change ace value
@@ -143,7 +146,7 @@ var checkForAce = function (input) {
       // If player selects ace card in their array, switch mode and allow them to change ace value
     } else if (playerCards[aceIndex].name == "Ace") {
       gameMode = PLAYER_ACTION;
-      return `You have chosen to change the value of the ace card in positon: ${aceIndex} <br> Please type either 'ace 1' or 'ace 11' to change the value`;
+      return `You have chosen to change the value of the ace card in positon: ${input} <br> Please type either 'ace 1' or 'ace 11' to change the value`;
     }
   }
 };
@@ -184,26 +187,48 @@ var playerDrawsExtraCard = function () {
   while (playerCounter < playerCards.length) {
     playerPoints = playerPoints + playerCards[playerCounter].value;
     endMessage = `<br> Your points: ${playerPoints}<br><br> Please enter 'hit' if you would like more cards <br><br> Please enter 'stand' if you do not want anymore cards <br><br> Please enter 'change ace' if you would like to change the value of an ace card`;
-    // Run while loop to output all player card names and suits in output statement
-    aceCounter = 0;
-    while (aceCounter < playerCards.length) {
-      playerCardMessage =
-        playerCardMessage +
-        `<br> ${playerCards[aceCounter].name} of ${playerCards[aceCounter].emojiSuit}`;
-      aceCounter += 1;
-    }
-    // If player bursts, output results and reset game
-    if (playerPoints > 21) {
-      gameMode = DEAL_CARDS;
-      return `You've burst and lost! <br><br>  ${playerCardMessage} <br> Your points: ${playerPoints}<br><br> Click submit to start a new game!`;
-    }
-    // If player gets blackjack, output results and reset game
-    if (playerPoints == 21) {
-      gameMode = DEAL_CARDS;
-      return `You've gotten blackjack and won! <br><br>${playerCardMessage}<br><br> Click submit to start a new game!`;
-    }
     playerCounter += 1;
   }
+  // Run while loop to output all player card names and suits in output statement
+  aceCounter = 0;
+  while (aceCounter < playerCards.length) {
+    playerCardMessage =
+      playerCardMessage +
+      `<br> ${playerCards[aceCounter].name} of ${playerCards[aceCounter].emojiSuit}`;
+    aceCounter += 1;
+  }
+  // If player bursts, output results and reset game
+  if (playerPoints > 21) {
+    // However, if player draws ace, allow them to change value
+    counter = playerCards.length - 1;
+    while (counter < playerCards.length) {
+      if (playerCards[counter].name == "Ace") {
+        gameMode = PLAYER_ACTION;
+        return `You will burst and lose unless you change your ace card's value! <br><br> Type 'change ace' to change its value.<br><br> ${playerCardMessage}`;
+      }
+      counter += 1;
+    }
+    // Also, if player bursts and has an ace with value 11, allow them to change value
+    secondCounter = 0;
+    while (secondCounter < playerCards.length) {
+      if (
+        playerCards[secondCounter].name == "Ace" &&
+        playerCards[secondCounter].value == 11
+      ) {
+        gameMode = PLAYER_ACTION;
+        return `You will burst and lose unless you change your ace card's value! <br><br> Type 'change ace' to change its value.<br><br> ${playerCardMessage}`;
+      }
+      secondCounter += 1;
+    }
+    gameMode = DEAL_CARDS;
+    return `You've burst and lost! <br><br>  ${playerCardMessage} <br> Your points: ${playerPoints}<br><br> Click submit to start a new game!`;
+  }
+  // If player gets blackjack, output results and reset game
+  if (playerPoints == 21) {
+    gameMode = DEAL_CARDS;
+    return `You've gotten blackjack and won! <br><br>${playerCardMessage}<br><br> Click submit to start a new game!`;
+  }
+
   return playerCardMessage + endMessage;
 };
 
@@ -301,11 +326,20 @@ var main = function (input) {
     // Deal two cards to player and computer
     myOutputValue = dealCards();
   }
+  // Run while loop to generate all player card names and suits to be used below
+  aceCounter = 0;
+  var playerCardMessage = `Your cards are: `;
+  while (aceCounter < playerCards.length) {
+    playerCardMessage =
+      playerCardMessage +
+      `<br> ${playerCards[aceCounter].name} of ${playerCards[aceCounter].emojiSuit}`;
+    aceCounter += 1;
+  }
   // Allow player to hit, stand or change ace value
   if (gameMode == PLAYER_ACTION) {
     if (input == INPUT_CHANGE_ACE) {
       gameMode = CHANGE_ACE_MODE;
-      return `Please type in the position of the ace that you want to change`;
+      return `Please type in the position of the ace that you want to change <br><br> ${playerCardMessage}`;
     }
     // Change player's ace card based on input and update player's points
     if (input == ACE_ELEVEN || input == ACE_ONE) {
@@ -320,15 +354,7 @@ var main = function (input) {
       // Ensure that player meets minimum game score required, else change game mode back
       if (playerPoints < 17) {
         gameMode = PLAYER_ACTION;
-        var playerCardMessage = `Your cards are: `;
-        // Run while loop to generate all player card names and suits
-        aceCounter = 0;
-        while (aceCounter < playerCards.length) {
-          playerCardMessage =
-            playerCardMessage +
-            `<br> ${playerCards[aceCounter].name} of ${playerCards[aceCounter].emojiSuit}`;
-          aceCounter += 1;
-        }
+
         return `Player, you need at least 17 points. Please type 'hit' to draw another card. <br><br> ${playerCardMessage}`;
       }
       gameMode = COMPUTER_CALCULATES;
