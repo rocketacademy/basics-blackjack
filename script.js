@@ -1,6 +1,7 @@
 // Game modes stored in a constant
 const WAITING_FOR_NAME = "waiting for username";
 const INSTRUCIONS = "tell player instructions";
+const TAKE_BET = "take user's bet";
 const DEAL_CARDS = "deal cards";
 const PLAYER_ACTION = "player hits or stands";
 const CHANGE_ACE_MODE = "change ace mode";
@@ -27,6 +28,8 @@ var aceIndex = 0;
 var aceValue = 0;
 var aceCounter = 0;
 var userName = "";
+var bankRoll = 100;
+var userBet = 0;
 
 // Current game mode
 var gameMode = WAITING_FOR_NAME;
@@ -321,8 +324,13 @@ var main = function (input) {
     gameMode = INSTRUCIONS;
   } else if (gameMode == INSTRUCIONS) {
     userName = input;
+    gameMode = TAKE_BET;
+    myOutputValue = `Hello ${userName}! <br><br> Welcome to blackjack!!! 2️⃣1️⃣♠️❤️♣️♦️ <br><br> These are the rules:<br> You will be dealt two cards after clicking submit <br> The aim is to get 21 points without exceeding it <br> You need to hit a minimum of 17 points <br> Aces are worth either 1 or 11 and can be changed throughout the game <br><br>  Before we begin enter an amount that you would like to bet!`;
+  } else if (gameMode == TAKE_BET) {
     gameMode = DEAL_CARDS;
-    myOutputValue = `Hello ${userName}! <br><br> Welcome to blackjack!!! 2️⃣1️⃣♠️❤️♣️♦️ <br><br> These are the rules:<br> You will be dealt two cards after clicking submit <br> The aim is to get 21 points without exceeding it <br> You need to hit a minimum of 17 points <br> Aces are worth either 1 or 11 and can be changed throughout the game <br> When you're ready click submit to play! `;
+    userBet = input;
+    myOutputValue = `${userName}, you have chosen to bet ${userBet} points this round. <br><br> Your current points are ${bankRoll}.
+    <br><br> When you're ready click submit to play! `;
   } else if (gameMode == DEAL_CARDS) {
     // Empty global variables for subsequent rounds
     playerCards = [];
