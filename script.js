@@ -71,7 +71,7 @@ var makeDeck = function () {
 var shuffleCards = function (cardDeck) {
   var currentIndex = 0;
   while (currentIndex < cardDeck.length) {
-    var randomIndex = getRandomIndex(cardDeck.length);
+    var randomIndex = Math.floor(Math.random() * cardDeck.length);
     var randomCard = cardDeck[randomIndex];
     var currentCard = cardDeck[currentIndex];
     cardDeck[currentIndex] = randomCard;
@@ -108,7 +108,7 @@ var checkHandLimit = function (hand) {
 
 deck = shuffleCards(makeDeck());
 var playBlackJack = function (input) {
-  if (!userHand.length) {
+  if (userHand.length === 0) {
     userHand.push(drawOneCard());
     userHand.push(drawOneCard());
     botHand.push(drawOneCard());
@@ -122,7 +122,7 @@ var playBlackJack = function (input) {
     }
     return `Do you want to 'hit' or 'stand'?`;
   }
-  if (input == `stand`) userStand = true;
+  if (input == "stand") userStand = true;
   if (userStand && getCurrentSumHand(botHand) > 16) {
     gameState = true;
     var winner = getWinner();
@@ -144,8 +144,11 @@ var playBlackJack = function (input) {
       return `Busted! Your total hand is ${getCurrentSumHand(botHand)}`;
     }
   }
+
+  return `If you haven't chosen to stand, please input eithet 'hit' or 'stand'.<br>
+  Else, just press 'Submit' for the bot to continue.`;
 };
 
 var main = function (input) {
-  playBlackJack();
+  return playBlackJack();
 };
