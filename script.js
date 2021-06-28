@@ -62,7 +62,7 @@ var makeDeck = function () {
         rank: rankCounter,
       };
 
-      // amend the card rank for jack queen king to be 10
+      // amend the card rank for jack queen king to be 10 so that score of these cards will all be 10
       if (card.rank == 11) {
         card.rank = 10;
       } else if (card.rank == 12) {
@@ -86,15 +86,18 @@ var makeDeck = function () {
   return cardDeck;
 };
 // define gamemodes in blackjack
-var DEAL_CARDS = `deal cards`;
+var DEAL_CARDS = `deal`;
 var HIT = `hit`;
 var STAND = `stand`;
 var DEALER_TURN = `dealer's turn`;
-var RESET = `reset`;
 
+// gameMode at initial stage
 var gameMode = DEAL_CARDS;
+
+// shuffle deck of cards
 var deck = makeDeck();
 var shuffledDeck = shuffleCards(deck);
+
 var calPlayerCurrScore;
 var calDealerCurrScore;
 var playerHand = [];
@@ -119,15 +122,17 @@ var displayCardsInHand = function (handArray, displayCardsArray, cardName) {
   return displayCardsArray;
 };
 
-// var firstDealtHandMessage = function () {
-//   var message = `Your hand is <br>${playerCard1.cardName} of ${playerCard1.suit} <br> ${playerCard2.cardName} of ${playerCard2.suit}<br>Your score is ${calPlayerCurrScore}<br> <br><br> Dealer hand is <br>${dealerCard1.cardName} of ${dealerCard1.suit} <br> ${dealerCard2.cardName} of ${dealerCard2.suit}<br>Dealer score is ${calDealerCurrScore}<br><br>`;
-//   return message;
-// };
+// function to cal total score for 1st 2 cards
+var calTotalScore = function (card1, card2) {
+  // calculate total score in hand
+  totalScore = Number(card1.rank + card2.rank);
+  return totalScore;
+};
 
 // rules of blackjack
-// players will be dealt 2 cards
-var dealHands = function (input) {
-  // draw 2 cards for player and 1 card for dealer
+// player and dealer will be dealt 2 cards
+var dealHands = function () {
+  // draw 2 cards for player and 2 cards for dealer
   playerCard1 = shuffledDeck.pop();
   playerCard2 = shuffledDeck.pop();
   playerHand.push(playerCard1, playerCard2);
@@ -135,10 +140,10 @@ var dealHands = function (input) {
   dealerCard2 = shuffledDeck.pop();
   dealerHand.push(dealerCard1, dealerCard2);
 
-  // calculate players score for the 2 cards
+  // calculate player score for first 2 cards
   calPlayerCurrScore = calTotalScore(playerCard1, playerCard2);
 
-  // calculate Dealer score for the 2 cards
+  // calculate Dealer score for first 2 cards
   calDealerCurrScore = calTotalScore(dealerCard1, dealerCard2);
 
   // default message to display first 2 cards on hand and current score
@@ -172,12 +177,7 @@ var dealHands = function (input) {
   return myOutputValue;
 };
 
-var calTotalScore = function (card1, card2) {
-  // calculate total score in hand
-  totalScore = Number(card1.rank + card2.rank);
-  return totalScore;
-};
-
+// function for player to draw card when player hit
 var playerDrawCard = function () {
   var drawnCard = shuffledDeck.pop();
   playerHand.push(drawnCard);
@@ -204,7 +204,6 @@ var playerDrawCard = function () {
 // function for dealer to draw card
 // dealer will continue to draw card if the total score is below 17
 var dealerDrawCard = function () {
-  // calDealerCurrScore = calDealerCurrScore + Number(drawnCard.rank);
   var myOutputValue = "";
   if (calDealerCurrScore == dealerMinimalScore) {
     return ` Your hand is ${displayCardsInHand(
@@ -239,18 +238,7 @@ var dealerDrawCard = function () {
   return myOutputValue;
 };
 
-// var determineBlackjack = function () {
-//   // if (
-//   //   (dealerHand.length == 2 &&
-//   //     calDealerCurrScore == 11 &&
-//   //     (dealerCard1.rank == 1 || dealerCard2.rank == 1)) ===
-//   //   (playerHand.length == 2 &&
-//   //     calPlayerCurrScore == 11 &&
-//   //     (playerCard1.rank == 1 || playerCard2.rank == 1))
-//   // )
-//   //   return "Both player and dealer have Blackjack!! Its a tie!!";
-// };
-
+// function to compare score and determine winner
 var determineWinner = function () {
   if (
     calPlayerCurrScore > calDealerCurrScore ||
@@ -277,19 +265,14 @@ var main = function (input) {
     myOutputValue = playerDrawCard();
   }
 
-  if (input == RESET) {
-    gameMode = DEAL_CARDS;
-  }
-
   if (input == STAND) {
     gameMode = DEALER_TURN;
     myOutputValue = dealerDrawCard() + determineWinner();
   }
+
   if (gameMode == DEAL_CARDS) {
     myOutputValue = dealHands();
   }
-  if (input != HIT || input != STAND) {
-    return `Pls enter hit or stand to continue the game`;
-  }
+
   return myOutputValue;
 };
