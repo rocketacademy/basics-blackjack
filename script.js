@@ -14,7 +14,6 @@ var computerTotal;
 var blackjack = false;
 var totalWithoutAce = 0;
 var ace = [];
-//var aceIndex = [];
 var deck;
 
 // ---modes---
@@ -36,7 +35,7 @@ var main = function (input) {
     // Game only proceeds if no one gets a blackjack from dealt cards
     if (blackjack == false) {
       gameMode = HIT_STAND_MODE;
-      myOutputValue += `<br><br> Enter '<i>hit</i>' to draw another card or click submit to stand.`;
+      myOutputValue += `<br><br> Enter "hit" to draw another card or click submit to stand.`;
     } else if (blackjack == true) {
       // Someone gets a blackjack so game ends and restarts
       myOutputValue += `<br><br> ${blackjackWinner} <br><br> Click submit to play again!`;
@@ -46,11 +45,15 @@ var main = function (input) {
     myOutputValue = hitStandChoice(input);
   }
 
+  myOutputValue += `<br><br><small><i> Enter "help" for game instructions.</i></small>`;
+
   if (input == "help") {
+    //triggers instructions
     myOutputValue = instructions;
+    resetGame();
+    gameMode = DEAL_CARDS_MODE;
   }
 
-  myOutputValue += `<br><br><small><i> Enter 'help' for instructions.</i></small>`;
   return myOutputValue;
 };
 
@@ -73,14 +76,23 @@ var stdDealCards = function () {
 
   // Prints out cards for computer and player
   var playerCards = displayCards(playerHand);
-  var computerCards = displayOneCard(computerHand);
+  var computerCards = displayOneCard(computerHand, 1);
+  console.log(computerCards);
+
   // Check variableAce logic for both player and computer
   variableAce(playerHand, playerTotal);
   variableAce(computerHand, computerTotal);
   playerTotal = totalCards(playerHand);
   computerTotal = totalCards(computerHand);
 
-  myOutputValue = `You drew: <br> ${playerCards} <br> Your total: ${playerTotal}  <br><br> Computer drew: <br> ${computerCards} <i> 1 face-down card </i>`;
+  myOutputValue = `${username}, you drew: <br> ${playerCards} <br> Your total: <b>${playerTotal}</b>  <br><br> Computer drew: <br> ${computerCards} <i> 1 face-down card</i>`;
+
+  checkForBlackjack();
+  if (blackjack == true) {
+    // Reveals face down card if computer gets blackjack
+    var facedownCard = displayOneCard(computerHand, 2);
+    myOutputValue += `: ${facedownCard}`;
+  }
 
   return myOutputValue;
 };
@@ -100,14 +112,17 @@ var displayCards = function (userHand) {
 };
 
 // Prints out only first card of player
-var displayOneCard = function (userHand) {
+var displayOneCard = function (userHand, cardPositionInArray) {
   var counter = 0;
   var returnString = ``;
-  while (counter < userHand.length - 1) {
+  while (counter < userHand.length) {
     var currCard = userHand[counter];
-    returnString += `${currCard.name} of ${currCard.suit} <br>`;
+    if (currCard == userHand[cardPositionInArray - 1]) {
+      returnString += `${currCard.name} of ${currCard.suit} <br>`;
+    }
     counter += 1;
   }
+  console.log(returnString);
   return returnString;
 };
 
@@ -240,25 +255,22 @@ var generateOutcome = function () {
   if (blackjack == false) {
     // Tie
     if (playerTotal == computerTotal) {
-      myOutputValue = `${total} You both have the same total. It's a push, no one wins!`;
-    }
-    // Player busts
-    if (playerTotal > 21) {
-      myOutputValue = `${total} You bust and lost!`;
-    }
-    // Computer busts
-    if (computerTotal > 21) {
-      myOutputValue = `${total} You won! The computer bust!`;
-    }
-    // Both bust
-    if (computerTotal > 21 && playerTotal > 21) {
-      myOutputValue = `${total} Nobody wins! You both bust!`;
-    }
-    // Player closer to 21 wins
-    if (nearestBlackjack == playerTotal) {
-      myOutputValue = ` ${total} You WIN!`;
-    } else if (nearestBlackjack == computerTotal) {
-      myOutputValue = `${total} You lose!`;
+      myOutputValue = `${total} You both have the same total. It's a push, no one wins! 😭`;
+    } // Player busts
+    else if (playerTotal > 21) {
+      myOutputValue = `${total} You bust and lost! 🥲`;
+    } // Computer busts
+    else if (computerTotal > 21) {
+      myOutputValue = `${total} The computer bust! You WON!!!!  😆`;
+    } // Both bust
+    else if (computerTotal > 21 && playerTotal > 21) {
+      myOutputValue = `${total} Nobody wins! You both bust! ☹️`;
+    } // Player closer to 21 wins
+    else if (nearestBlackjack == playerTotal) {
+      myOutputValue = ` ${total} You WON!!!!! 🥳`;
+    } // Computer closer to 21 wins
+    else if (nearestBlackjack == computerTotal) {
+      myOutputValue = `${total} You lost! 😩`;
     }
   } else myOutputValue = `${total} <br> ${blackjackWinner}`;
 
@@ -283,14 +295,14 @@ var nearestToBlackJack = function (a, b) {
 var hitStandChoice = function (input) {
   var playerCards = displayCards(playerHand);
   var playerTotal = totalCards(playerHand);
-  var hitMessage = `You should continue to hit as your total at <b>${playerTotal}</b> is less than 17. Enter '<i>hit</i>' to draw another card.`;
+  var hitMessage = `You should continue to hit as your total at <b>${playerTotal}</b> is less than 17. <br> Enter "hit" to draw another card.`;
 
   if (input == `hit`) {
     drawCard(playerHand, 1);
     variableAce(playerHand, playerTotal);
     playerCards = displayCards(playerHand);
     playerTotal = totalCards(playerHand);
-    myOutputValue = `You drew a card. Your hand is now <br> ${playerCards} <br> Your total now: ${playerTotal} <br> <br> Enter '<i>hit</i>' to draw another card or click submit to stand.`;
+    myOutputValue = `You drew a card. Your hand is now <br> ${playerCards} <br> Your total now: <b>${playerTotal}</b> <br><br> Enter "hit" to draw another card or click submit to stand.`;
 
     // Player must hit if total still less than 17 after drawing once
     if (playerTotal < 17) {
@@ -412,7 +424,8 @@ var instructions = `
 3. Each player starts with two cards, one of the dealer's cards is hidden until the end. <br><br>
 4. Enter '<i>hit</i>' to draw another card or click submit to "stand" (hold your total and end your turn). <br><br>
 5. If you go over 21 you bust, and the dealer wins regardless of the dealer's hand. <br><br>
-6. If you are dealt 21 from the start (Ace & 10), you got a blackjack.
+6. If you are dealt 21 from the start (Ace & 10), you got a blackjack.<br><br>
+Click <b>Submit</b> to start a new game! 
 `;
 
 // simplified blackjack
