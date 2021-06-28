@@ -395,16 +395,4 @@ var main = function (input) {
     resetGame();
     return `${finalOutput} ${dealerOutput} <br><br> ${showLeaderboard()}`;
   }
-
-  // } else if (gameMode == "computer choice") {
-  //   outputValue = compareHands(playerCard, computerCard);
-  //   resetGame();
-  //   return outputValue + showLeaderboard();
-  // }
 };
-
-// Stopped at stage where player decides to hit or stand
-// All cards comparison will only be done after all players have decided to hit or stand.
-// If the player bust after drawing a card, he will only be presented the "stand" option.
-// Even if a player has bust, it will only be revealed in the final score comparison.
-// Points will only be updated at the end.
