@@ -7,9 +7,9 @@
 //step 1: players each put down a bet
 //step 2: dealer deals one card, face up, to each player, then to himself
 //step 3: dealer deals a second card, face up to each player, and face down to himself
-//step 4a: if player scores 21, automatically wins 1.5x of bet from dealer, then done for that round
+//step 4a: if player scores 21, automatically wins
 //step4b: if want more card (draw from top of the deck), say 'hit'; no limit to how many cards you can hit, but when score exceeds 21, you go bust.
-//step4c: if don't want any more cards, say 'stay'.
+//step4c: if don't want any more cards, say 'stand'.
 //step 5: once dealer has been round the table, dealer opens its face-down card
 //step 6a: if dealer scores below 18, he has to take another card (i.e. hit)
 //step 6b: if dealer scores 18 or higher, he has to stay with his hand
@@ -122,6 +122,9 @@ var cardCounter = 0;
 var playerDealtCards = [];
 var dealerCards = [];
 
+var playerDealtCardsRank = [];
+var dealerCardsRank = [];
+
 //playerscore//
 var playerScore = 0;
 
@@ -130,9 +133,13 @@ var computerScore = 0;
 
 //Determine a winner//
 var winner = function () {
-  if (playerScore >= computerScore) {
-    return "you";
-  } else return "computer";
+  if (playerScore > computerScore) {
+    return "You are the winner!";
+  }
+  if (playerScore < computerScore) {
+    return "The computer is the winner!";
+  }
+  return "It's a tie.";
 };
 
 //player can choose to hit or stand except for the following scenarios:
@@ -153,47 +160,50 @@ var playerStatus = function () {
   return "Do you want to hit or stand? <br>Enter 'hit' or 'stand'.";
 };
 
-//Should value of Ace be 1 or 11?
-var decideAceValue = function(){
-  if(currentGameMode==gameModeDealCard){
-    //at gameModeDealCard, if the other card value is 10 or less, then Ace should be 11
-    if (
-      (playerDealtCards[0].name == "ace" && playerDealtCards[1].rank<=10) | (playerDealtCards[1].name == "ace" && playerDealtCards[0].rank<=10)
-    ) {return 11
-    }
-    //at gameModeDealCard, if the other card value is more than 10, then Ace should be 1
-    if (
-      (playerDealtCards[0].name == "ace" && playerDealtCards[1].rank > 10) |
-      (playerDealtCards[1].name == "ace" && playerDealtCards[0].rank > 10)
-    ) {
-      return 1;
-    }
-  }
-  if(currentGameMode==gameModePlayerHitOrStand){
-    //at gameModePlayerHitOrStand, if the playerscore is 10 or less, then Ace should be 11
-    if(playerCard.name="ace"&&playerScore<=10){
-      return 11
-    }
-    //at gameModePlayerHitOrStand, if the playerscore is more than 10, then Ace should be 1
-     if ((playerCard.name = "ace" && playerScore > 10)) {
-       return 1;
-     }
-  }
-}
-
-
+//Fake deck for code-testing
+var fakeDeck = [
+  {
+    name: "ace",
+    suit: "diamond",
+    rank: 1,
+  },
+  {
+    name: "2",
+    suit: "diamond",
+    rank: 2,
+  },
+  {
+    name: "3",
+    suit: "heart",
+    rank: 3,
+  },
+  {
+    name: "ace",
+    suit: "heart",
+    rank: 1,
+  },
+];
 
 var main = function (input) {
   var myOutputValue = "";
 
   //Deck shuffle game mode
   if (currentGameMode == gameModeDeckShuffle) {
-    //reset scores to 0
-    playerScore = 0;
-    computerScore = 0;
-
     //shuffle deck of cards
     shuffledDeck;
+
+    //when a new round begins, reset scores to 0, reset cardCounter to 0, reset arrays
+    playerScore = 0;
+    computerScore = 0;
+    cardCounter = 0;
+    playerDealtCards = [];
+    dealerCards = [];
+    playerDealtCardsRank = [];
+    dealerCardsRank = [];
+
+    console.log("shuffle mode " + playerScore);
+    console.log("shuffle mode " + computerScore);
+
     currentGameMode = gameModeDealCard;
     return "Click Submit to deal card.";
   }
@@ -207,15 +217,18 @@ var main = function (input) {
       //display cards dealt to player
       playerDealtCards.push(playerCard.name + " of " + playerCard.suit);
       console.log(playerDealtCards);
+      // tracking playerCards rank
+      playerDealtCardsRank.push(playerCard.rank);
 
       //dealer (computer) gets dealt card
       var computerCard = shuffledDeck.pop();
       //display cards dealt to computer
       dealerCards.push(computerCard.name + " of " + computerCard.suit);
       console.log(dealerCards);
+      // tracking dealerCards rank
+      dealerCardsRank.push(computerCard.rank);
 
       //Add score of player's dealt card to player's score
-      
       playerScore += Number(playerCard.rank);
       console.log("player score round 1 - " + playerScore);
 
@@ -226,15 +239,38 @@ var main = function (input) {
       //increase card counter by increment of 1 after each loop of card-dealing
       cardCounter += 1;
     }
-    //if dealer score >21, it goes bust, player wins
-    if (computerScore > 21) {
-      return `You have been dealt ${playerDealtCards}.<br>The dealer's hand is ${dealerCards}.<br>Your total score is ${playerScore} and the dealer's total score is ${computerScore}.<br>The dealer has gone bust.<br>You win! `;
+
+    console.log(playerDealtCardsRank);
+
+    //at gameModeDealCard, if one of the dealt card is ace, and if the other card value is 10 or less, then Ace should be 11
+    // apply Ace card logic to player cards
+    if (
+      (playerDealtCardsRank[0] == 1 && playerDealtCardsRank[1] <= 10) |
+      (playerDealtCardsRank[1] == 1 && playerDealtCardsRank[0] <= 10)
+    ) {
+      //we reverse out score value of 1 and add score value 11 in this case
+      playerScore = playerScore - 1 + 11;
     }
 
-    //otherwise, switch to game mode for player to hit or stand
-    else currentGameMode = gameModePlayerHitOrStand;
+    // apply Ace card logic to computer (dealer) cards
+    if (
+      (dealerCardsRank[0] == 1 && dealerCardsRank[1] <= 10) |
+      (dealerCardsRank[1] == 1 && dealerCardsRank[0] <= 10)
+    ) {
+      //we reverse out score value of 1 and add score value 11 in this case
+      computerScore = computerScore - 1 + 11;
+    }
 
-    return `You have been dealt ${playerDealtCards}.<br>The dealer's hand is ${dealerCards}.<br>Your total score is ${playerScore} and the dealer's total score is ${computerScore}.<br>${playerStatus()} `;
+    //for all other scenarios (including scenario where one card is ace, the other card is valued more then 10), Ace should be valued 1, hence no change to playerScore
+    playerScore = playerScore;
+
+    //switch to game mode for player to hit or stand
+    currentGameMode = gameModePlayerHitOrStand;
+
+    //output message only tells player about the face-up card of the dealer
+    return `You have been dealt ${playerDealtCards}.<br>The dealer's card on show is ${
+      dealerCards[0]
+    }.<br>Your total score is ${playerScore}.<br>${playerStatus()} `;
   }
 
   //Player hit or stand game mode
@@ -244,9 +280,21 @@ var main = function (input) {
     //player chooses to hit
     if ((playerChoice == "hit") | (playerChoice == "Hit")) {
       var playerCard = shuffledDeck.pop();
+      console.log(
+        `playercardround 2 - ${playerCard.name} of ${playerCard.suit} rank ${playerCard.rank}`
+      );
 
       //Add score of player's dealt card to player's score
       playerScore += Number(playerCard.rank);
+
+      //if the dealt card is Ace, and if the accumulated playerscore (at start of gameModePlayerHitOrStand) is 10 or less, then Ace should be 11
+      //criteria is cumulative playerScore is 11 or less because at this point of the code playerScore would have included the default score of ace, i.e. 1
+      //hence calculate playerScore by backing out the default 1 point and adding back 11 point)
+      if ((playerCard.rank = 1 && playerScore <= 11)) {
+        playerScore = playerScore - 1 + 11;
+        console.log("player hit score round 2 ace- " + playerScore);
+      }
+
       console.log("player hit score round 2 - " + playerScore);
 
       return `You chose hit. <br>You have been dealt the ${
@@ -285,12 +333,21 @@ var main = function (input) {
       dealerCards.push(computerCard.name + " of " + computerCard.suit);
       console.log(dealerCards);
 
-      //output message about computer card dealt
-      var cardDealtMessage = `The dealer hit. <br>The dealer got dealt ${computerCard.name} of ${computerCard.suit}.<br>It scored ${computerScore}.`;
+      //if the dealt card is Ace, and if the accumulated computerScore (at start of gameModeDealerHitOrStand) is 10 or less, then Ace should be 11
+      //criteria is cumulative computerScore is 11 or less because at this point of the code computerScore would have included the default score of ace, i.e. 1
+      //hence calculate computerScore by backing out the default 1 point and adding back 11 point)
+      if ((computerCard.rank = 1 && computerScore <= 11)) {
+        computerScore = computerScore - 1 + 11;
+        console.log("dealer hit score round 2 ace- " + computerScore);
+      }
+
+      //output message about the cards the dealer has (including previously face-down card)
+      var cardDealtMessage = `The dealer hit. <br>The dealer's cards are ${dealerCards}.<br>It scored ${computerScore}.`;
 
       //if computer goes bust (score >21) the player wins
-      if (computerScore > 21) {
-        return `${cardDealtMessage} <br>It has gone bust. You win!`;
+      if (computerScore + Number(computerCard.rank) > 21) {
+        currentGameMode = gameModeDeckShuffle;
+        return `${cardDealtMessage} <br>It has gone bust. You win!<br>Click Submit to start again.`;
       }
 
       //switches to game mode to decide winner
@@ -304,16 +361,21 @@ var main = function (input) {
       //Computer score will remain the same
       computerScore += 0;
       console.log("computer hit score round 2 - " + computerScore);
+      //if computer goes bust (score >21) the player wins (computer would have gone bust after 2 cards dealt, but not known until now when the facedown card is revealed.)
+      if (computerScore > 21) {
+        currentGameMode = gameModeDeckShuffle;
+        return `${cardDealtMessage} <br>It has gone bust. You win!<br>Click Submit to start again.`;
+      }
       //switches to game mode to decide winner
       currentGameMode = gameModeDecideWinner;
-      return `The dealer stand. <br>Its score remains ${computerScore}. <br>Click Submit to see who wins!`;
+      return `The dealer stand. <br>The dealer's cards are ${dealerCards}.<br>Its score remains ${computerScore}. <br>Click Submit to see who wins!`;
     }
   }
 
   // game mode to decide winner
   if (currentGameMode == gameModeDecideWinner) {
     currentGameMode = gameModeDeckShuffle;
-    return `You scored ${playerScore}.<br>The dealer scored ${computerScore}.<br>The winner is ${winner()}.<br>Click Submit to play again.`;
+    return `You scored ${playerScore}.<br>The dealer scored ${computerScore}.<br>${winner()}<br>Click Submit to play again.`;
   }
 
   return myOutputValue;
