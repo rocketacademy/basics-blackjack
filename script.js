@@ -6,20 +6,7 @@ var COMPUTER;
 var username;
 var currentPlayer = PLAYER;
 var computerHand = [];
-var playerHand = [
-  {
-    name: "ace",
-    suit: "diamonds",
-    rank: 1,
-    value: 1,
-  },
-  {
-    name: "6",
-    suit: "diamonds",
-    rank: 6,
-    value: 6,
-  },
-];
+var playerHand = [];
 var playerTotal;
 var computerTotal;
 
@@ -27,6 +14,7 @@ var computerTotal;
 var blackjack = false;
 var totalWithoutAce = 0;
 var ace = [];
+//var aceIndex = [];
 var deck;
 
 // ---modes---
@@ -45,10 +33,10 @@ var main = function (input) {
     myOutputValue = stdDealCards();
     var blackjackWinner = checkForBlackjack();
 
-    // Game only continues if no one gets a blackjack from dealt cards
+    // Game only proceeds if no one gets a blackjack from dealt cards
     if (blackjack == false) {
       gameMode = HIT_STAND_MODE;
-      myOutputValue += `<br><br> Enter "hit" to draw another card or click submit to stand.`;
+      myOutputValue += `<br><br> Enter '<i>hit</i>' to draw another card or click submit to stand.`;
     } else if (blackjack == true) {
       // Someone gets a blackjack so game ends and restarts
       myOutputValue += `<br><br> ${blackjackWinner} <br><br> Click submit to play again!`;
@@ -57,6 +45,12 @@ var main = function (input) {
   } else if (gameMode == HIT_STAND_MODE) {
     myOutputValue = hitStandChoice(input);
   }
+
+  if (input == "help") {
+    myOutputValue = instructions;
+  }
+
+  myOutputValue += `<br><br><small><i> Enter 'help' for instructions.</i></small>`;
   return myOutputValue;
 };
 
@@ -74,7 +68,7 @@ var stdDealCards = function () {
   var myOutputValue;
   deck = shuffleCards(makeDeck());
   // Draws 2 player cards and 2 computer cards
-  //drawCard(playerHand, 2);
+  drawCard(playerHand, 2);
   drawCard(computerHand, 2);
 
   // Prints out cards for computer and player
@@ -100,7 +94,6 @@ var displayCards = function (userHand) {
     returnString += `${currCard.name} of ${currCard.suit} <br>`;
     counter += 1;
   }
-  console.log(userHand);
   var lastCard = userHand[userHand.length - 1];
   returnString += `${lastCard.name} of ${lastCard.suit}`;
   return returnString;
@@ -118,13 +111,13 @@ var displayOneCard = function (userHand) {
   return returnString;
 };
 
-// Verifies if there is card of any rank in hand
-var getIsCardRankInHand = function (userHand, cardRank) {
+// Verifies if there is card of a specified value in hand
+var getIsCardValueInHand = function (userHand, cardValue) {
   var counter = 0;
   var cardRankInHand = false;
   while (counter < userHand.length) {
     var currCard = userHand[counter];
-    if (currCard.rank == cardRank) {
+    if (currCard.value == cardValue) {
       cardRankInHand = true;
     }
     counter += 1;
@@ -143,10 +136,11 @@ var getIsAceInHand = function (userHand, userTotal) {
     if (currCard.rank == 1) {
       cardRankInHand = true;
       ace.push(currCard);
-      console.log(ace);
+      // ace card pushed into ace array
     }
     counter += 1;
   }
+  console.log(cardRankInHand);
   if (cardRankInHand == true) {
     totalWithoutAce = userTotal - ace[0].value;
     console.log(totalWithoutAce);
@@ -160,19 +154,12 @@ var variableAce = function (userHand, userTotal) {
   userTotal = totalCards(userHand);
   var counter = 0;
   var aceInHand = getIsAceInHand(userHand, userTotal);
-  var tenInHand = false;
-  if (
-    getIsCardRankInHand(userHand, 10) == true ||
-    getIsCardRankInHand(userHand, 11) == true ||
-    getIsCardRankInHand(userHand, 12) == true ||
-    getIsCardRankInHand(userHand, 13) == true
-  ) {
-    tenInHand = true;
-  }
+  // checks if there is 10/J/Q/K in hand
+  var tenInHand = getIsCardValueInHand(userHand, 10);
+
   // changes value of ace to 11 if there is ace in hand and if:
   // there is a card of value 10 in hand or;
   // total value of other cards in hand is less than or equal to 10
-  console.log(aceInHand, totalWithoutAce);
   if (
     (aceInHand == true && tenInHand == true && totalWithoutAce <= 10) ||
     (aceInHand == true && totalWithoutAce <= 10)
@@ -183,7 +170,6 @@ var variableAce = function (userHand, userTotal) {
       counter += 1;
     }
   }
-
   if (totalWithoutAce > 10) {
     counter = 0;
     while (counter < ace.length) {
@@ -192,6 +178,7 @@ var variableAce = function (userHand, userTotal) {
       counter += 1;
     }
   }
+  // more than one ace
   if (ace.length > 1) {
     counter = 1;
     while (counter < ace.length) {
@@ -244,21 +231,16 @@ var generateOutcome = function () {
   var computerCards = displayCards(computerHand);
   var nearestBlackjack = nearestToBlackJack(playerTotal, computerTotal);
   var blackjackWinner = checkForBlackjack();
-  console.log(blackjack);
-  var total = `Player: ${playerTotal} <br> Computer: ${computerTotal} <br>`;
-  var printCards = `You drew: <br> ${playerCards} <br><br> Computer drew: <br> ${computerCards}`;
+
+  //Output messages
+  var total = `${username}: ${playerTotal} <br> Computer: ${computerTotal} <br>`;
+  var printCards = `${username}, you drew: <br> ${playerCards} <br><br> Computer drew: <br> ${computerCards}`;
+  var endingMessage = `<br><br> ${printCards} <br> <br> Click submit to play another game of <b>♣️BLACKJACK♠️</b> again!`;
 
   if (blackjack == false) {
     // Tie
     if (playerTotal == computerTotal) {
-      console.log("a");
       myOutputValue = `${total} You both have the same total. It's a push, no one wins!`;
-    }
-    // Player closer to 21 wins
-    if (nearestBlackjack == playerTotal) {
-      myOutputValue = ` ${total} You win!`;
-    } else if (nearestBlackjack == computerTotal) {
-      myOutputValue = `${total} You lose!`;
     }
     // Player busts
     if (playerTotal > 21) {
@@ -272,9 +254,15 @@ var generateOutcome = function () {
     if (computerTotal > 21 && playerTotal > 21) {
       myOutputValue = `${total} Nobody wins! You both bust!`;
     }
+    // Player closer to 21 wins
+    if (nearestBlackjack == playerTotal) {
+      myOutputValue = ` ${total} You WIN!`;
+    } else if (nearestBlackjack == computerTotal) {
+      myOutputValue = `${total} You lose!`;
+    }
   } else myOutputValue = `${total} <br> ${blackjackWinner}`;
 
-  myOutputValue += `<br><br> ${printCards} <br> <br> Click submit to play again!`;
+  myOutputValue += endingMessage;
   resetGame();
 
   return myOutputValue;
@@ -295,35 +283,29 @@ var nearestToBlackJack = function (a, b) {
 var hitStandChoice = function (input) {
   var playerCards = displayCards(playerHand);
   var playerTotal = totalCards(playerHand);
-  var hitMessage = `You should continue to hit as your total at ${playerTotal} is less than 17.`;
+  var hitMessage = `You should continue to hit as your total at <b>${playerTotal}</b> is less than 17. Enter '<i>hit</i>' to draw another card.`;
 
   if (input == `hit`) {
-    //drawCard(playerHand, 1);
-    playerHand.push({
-      name: "ace",
-      suit: "spades",
-      rank: 1,
-      value: 1,
-    });
+    drawCard(playerHand, 1);
     variableAce(playerHand, playerTotal);
     playerCards = displayCards(playerHand);
     playerTotal = totalCards(playerHand);
-    console.log(playerTotal);
-    myOutputValue = `You drew a card. Your hand is now <br> ${playerCards} <br> Your total now: ${playerTotal} <br> <br> Enter "hit" to draw another card or click submit to stand.`;
+    myOutputValue = `You drew a card. Your hand is now <br> ${playerCards} <br> Your total now: ${playerTotal} <br> <br> Enter '<i>hit</i>' to draw another card or click submit to stand.`;
 
+    // Player must hit if total still less than 17 after drawing once
     if (playerTotal < 17) {
       myOutputValue += `<br><br> ${hitMessage}`;
     }
-
+    // Player bust leads to end of game
     if (playerTotal > 21) {
       computerHitOrStand();
       myOutputValue = generateOutcome();
     }
   } else if (playerTotal < 17) {
+    //Ensures player remembers to hit
     myOutputValue = hitMessage;
   } else {
     computerHitOrStand();
-    console.log(computerHand);
     myOutputValue = generateOutcome();
   }
   return myOutputValue;
@@ -420,6 +402,18 @@ var shuffleCards = function (cardDeck) {
   }
   return cardDeck;
 };
+
+// game instructions for user
+var instructions = `
+<center><strong>♣️BLACKJACK♠️ INSTRUCTIONS</strong></center><br>
+1. Objective: beat the dealer's hand without going over 21. <br><br>
+2. You will be dealt two cards at the start of the game. The total value of the cards will be calculated for you. <br>
+<i> Face cards are worth 10. Aces are worth 1 or 11, whichever makes a better hand. </i> <br><br>
+3. Each player starts with two cards, one of the dealer's cards is hidden until the end. <br><br>
+4. Enter '<i>hit</i>' to draw another card or click submit to "stand" (hold your total and end your turn). <br><br>
+5. If you go over 21 you bust, and the dealer wins regardless of the dealer's hand. <br><br>
+6. If you are dealt 21 from the start (Ace & 10), you got a blackjack.
+`;
 
 // simplified blackjack
 // two players
