@@ -2,14 +2,42 @@
 //draw one card for player and dealer
 //player can analyze it and chose to hit or stand
 //if the player get over 21 the player lose
-var GAMEMODE = 'draw card'
+var GAMEMODE = 'username'
 
 var playerTotal = 0
 var dealerTotal = 0
 var currentDeck
+var username
+var betNumber
+var playerPoint = 100
+var dealerPoint = 100
 
 var main = function (input) {
-  if(GAMEMODE == 'draw card'){
+  if(GAMEMODE == 'username'){
+    GAMEMODE = 'input username'
+    return `input your username`
+  }
+  else if(GAMEMODE == 'input username'){
+    GAMEMODE = 'bet'
+    username = input
+    return `hello ${username}<br>you got 100 point, enter number of point you want to bet`
+  }
+   else if(GAMEMODE == 'bet'){
+    betNumber = Number(input)
+    if(playerPoint <= 0){
+      return 'you run out of point dealer winnn'
+    }
+    if(dealerPoint <= 0){
+      return 'dealer run out of point you winnn'
+    }
+    if(betNumber <= playerPoint && betNumber > 0){
+    GAMEMODE = 'draw card'
+    return wager(input)
+    }else{
+      return `please enter an appropriate number to bet<br>you got ${playerPoint} point`
+    }
+  }
+  else if(GAMEMODE == 'draw card'){
     // reset the total
     playerTotal = 0
     dealerTotal = 0
@@ -30,6 +58,10 @@ var main = function (input) {
   }
 };
 
+var wager = function(){
+  return `you bet ${betNumber} point`
+}
+
 var drawCardMode = function(){
   var playerCard = deck.pop()
   var dealerCard = deck.pop()
@@ -38,9 +70,9 @@ var drawCardMode = function(){
   if(playerCard.rank == 1){
       GAMEMODE = 'ace'
       playerTotal -= playerCard.rank
-      return `player card : ${playerCard.name} of ${playerCard.suit}<br>dealer card : ${dealerCard.name} of ${dealerCard.suit}<br> your current total is ${playerTotal}, you got ace input '1' or '11'`
+      return `${username} card : ${playerCard.name} of ${playerCard.suit}<br>dealer card : ${dealerCard.name} of ${dealerCard.suit}<br> your current total is ${playerTotal}, you got ace input '1' or '11'`
   }
-  return `player card : ${playerCard.name} of ${playerCard.suit} <br>dealer card : ${dealerCard.name} of ${dealerCard.suit}<br>click submit to add the card or input "stand" if you are done`
+  return `${username} card : ${playerCard.name} of ${playerCard.suit} <br>dealer card : ${dealerCard.name} of ${dealerCard.suit}<br>click submit to add the card or input "stand" if you are done`
 }
 
 var hitOrStand = function(input){
@@ -53,8 +85,10 @@ var hitOrStand = function(input){
       return `you got ${playerCard.name} of ${playerCard.suit}<br> your current total is ${playerTotal}, input '1' or '11'`
     }
     if(playerTotal >21){
-    GAMEMODE = 'draw card'
-    return `you got ${playerCard.name} of ${playerCard.suit}<br>your total is ${playerTotal}<br>bustedd! click submit to play again`
+    GAMEMODE = 'bet'
+    playerPoint -= betNumber
+    dealerPoint += betNumber
+    return `you got ${playerCard.name} of ${playerCard.suit}<br>your total is ${playerTotal}<br>bustedd!<br><br>${username} point :${playerPoint}<br>dealer point :${dealerPoint}<br><br>enter number of point you want to bet`
     }
     else{
       return `you got ${playerCard.name} of ${playerCard.suit}<br>your total is ${playerTotal}<br>click submit to add the card or input "stand" if you are done`
@@ -68,8 +102,8 @@ var aceChose = function(input){
   if(input == '1'){
     playerTotal +=1
     if(playerTotal >21){
-    GAMEMODE = 'draw card'
-    return `you chose 1<br>your total is ${playerTotal}<br>bustedd! click submit to play again`
+    GAMEMODE = 'bet'
+    return `you chose 1<br>your total is ${playerTotal}<br>bustedd!<br><br>${username} point :${playerPoint}<br>dealer point :${dealerPoint}<br><br>enter number of point you want to bet`
     }
     GAMEMODE = 'hit or stand'
     return `you chose 1<br>your total is ${playerTotal}<br>click submit to add the card or input "stand" if you are done`
@@ -77,8 +111,8 @@ var aceChose = function(input){
   else if(input == '11'){
     playerTotal +=11
     if(playerTotal >21){
-    GAMEMODE = 'draw card'
-    return `you chose 11<br>your total is ${playerTotal}<br>bustedd! click submit to play again`
+    GAMEMODE = `bet`
+    return `you chose 11<br>your total is ${playerTotal}<br>bustedd!<br><br>${username} point :${playerPoint}<br>dealer point :${dealerPoint}<br><br>enter number of point you want to bet`
     }
     GAMEMODE = 'hit or stand'
     return `you chose 11<br>your total is ${playerTotal}<br>click submit to add the card or input "stand" if you are done`
@@ -94,25 +128,29 @@ var winOrLose = function(){
     dealerCard = deck.pop()
     dealerTotal += dealerCard.rank
   }
+  // player win dealer busted
   if(dealerTotal >21){
-    GAMEMODE = 'draw card'
-    return `Dealer got ${dealerTotal}<br>bustedd! YOU WINN click submit to play again`
+    GAMEMODE = 'bet'
+    playerPoint += betNumber
+    dealerPoint -= betNumber
+    return `Dealer got ${dealerTotal}<br>bustedd! YOU WINN<br><br>${username} point :${playerPoint}<br>dealer point :${dealerPoint}<br><br>enter number of point you want to bet`
     }
-   GAMEMODE = 'draw card'
+   GAMEMODE = 'bet'
+   // player total > dealer total
   if(dealerTotal > playerTotal){
-    return `player sum : ${playerTotal} <br>dealer sum : ${dealerTotal}<br> dealer winn`
+    playerPoint -= betNumber
+    dealerPoint += betNumber
+    return `${username} sum : ${playerTotal} <br>dealer sum : ${dealerTotal}<br><br>dealer winn<br><br>${username} point :${playerPoint}<br>dealer point :${dealerPoint}<br><br>enter number of point you want to bet`
   }
+  // player total < dealer total
   else if(dealerTotal < playerTotal){
-    return `player sum : ${playerTotal} <br>dealer sum : ${dealerTotal}<br> player winn`
+     playerPoint += betNumber
+     dealerPoint -= betNumber
+    return `${username} sum : ${playerTotal} <br>dealer sum : ${dealerTotal}<br><br>player winn<br><br>${username} point :${playerPoint}<br>dealer point :${dealerPoint}<br><br>enter number of point you want to bet`
   }
-  else if(dealerTotal == 21){
-    return `player sum : ${playerTotal} <br>dealer sum : ${dealerTotal}<br> dealer got blackjack, dealer winn`
-  }
-  else if(playerTotal == 211){
-    return `player sum : ${playerTotal} <br>dealer sum : ${dealerTotal}<br> player got blackjack, player winn`
-  }
+  // player total = dealer total
   else{
-    return `player sum : ${playerTotal} <br>dealer sum : ${dealerTotal}<br> tie`
+    return `${username} sum : ${playerTotal} <br>dealer sum : ${dealerTotal}<br><br>tie<br><br>${username} point :${playerPoint}<br>dealer point :${dealerPoint}<br><br>enter number of point you want to bet`
   }
 }
 
