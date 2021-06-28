@@ -6,7 +6,7 @@ var deck;
 var shuffledDeck;
 // number of players
 var numberOfPlayers = 0;
-// object array to store player attributes: name, playerNumber, cardsArray, totalRank, wins
+// array to store player objects with these attributes: name, playerNumber, cardsArray, totalRank, wins
 var playerArray = [];
 // current player number
 var currentPlayer = 0;
@@ -259,12 +259,15 @@ var main = function (input) {
       input.charAt(input.length - 1) == " " ||
       Number(input) == NaN
     ) {
+      console.log("Prompt user to enter number of players");
       myOutputValue =
         "Please enter the number of players playing this game. A maximum of 4 players is allowed.";
       return myOutputValue;
     }
 
     // store input as the global variable numberOfPlayers
+    console.log("number of players entered");
+    console.log(input);
     numberOfPlayers = input;
     // Create n objects of players, each with the attributes: name, playerNumber, cardsArray, totalRank, wins
     var index = 0;
@@ -276,11 +279,20 @@ var main = function (input) {
         totalRank: 0,
         wins: 0,
       };
+      console.log("New player object added");
+      console.log("player" + player.playerNumber);
       //Push object into playerArray
       playerArray.push(player);
+      index += 1;
     }
+    console.log("Number of players in array");
+    console.log(playerArray.length);
     // Change game mode to GAME_MODE_NAMES
     gameMode = GAME_MODE_NAMES;
+
+    // create message to enter names of players
+    myOutputValue = `You have chosen a ${numberOfPlayers}-player game. Please enter ${numberOfPlayers} names separated by a comma.`;
+    return myOutputValue;
   }
 
   // If gameMode is GAME_MODE_NAME, ask the user to input their name
@@ -319,7 +331,7 @@ var main = function (input) {
     currentPlayer += 1;
 
     // Create message of game instructions
-    myOutputValue = `Hello ${namesList}! Let's start the game! <br> Each player can hit or stand. When you rcards add up to 21, you win blackjack. When your cards exceed 21, you bust. Player ${currentPlayer}, ${
+    myOutputValue = `Hello ${namesList}! Let's start the game! <br> Each player can hit or stand. When your cards add up to 21, you win blackjack. When your cards exceed 21, you bust. Player ${currentPlayer}, ${
       playerArray[currentPlayer - 1].name
     } goes first. <br> Press submit to draw your first card.`;
     return myOutputValue;
