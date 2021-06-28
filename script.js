@@ -93,6 +93,13 @@ var isBlackJack = function (hand) {
   }
 };
 
+var getWinner = function () {
+  var userHandTotal = getCurrentSumHand(userHand);
+  var botHandTotal = getCurrentSumHand(botHand);
+  if (userHandTotal > botHandTotal) return "user";
+  else return "bot";
+};
+
 deck = shuffleCards(makeDeck());
 var playBlackJack = function (input) {
   if (!userHand.length) {
@@ -107,8 +114,14 @@ var playBlackJack = function (input) {
     if (isBlackJack(botHand)) {
       return `Bot won!`;
     }
-
     return `Do you want to 'hit' or 'stand'?`;
+  }
+  if (input == `stand`) userStand = true;
+  if (userStand && getCurrentSumHand(botHand) > 16) {
+    gameState = true;
+    var winner = getWinner();
+    if (winner == "user") return `You won!`;
+    else return `You lose, the bot had ${getCurrentSumHand(botHand)}.`;
   }
 };
 
