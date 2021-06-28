@@ -57,7 +57,7 @@ var makeDeck = function () {
 
       // Create a new card with the current name, suit, and rank
       var card = {
-        name: cardName,
+        cardName: cardName,
         suit: currentSuit,
         rank: rankCounter,
       };
@@ -90,51 +90,206 @@ var DEAL_CARDS = `deal cards`;
 var HIT = `hit`;
 var STAND = `stand`;
 var DEALER_TURN = `dealer's turn`;
+var RESET = `reset`;
 
 var gameMode = DEAL_CARDS;
 var deck = makeDeck();
 var shuffledDeck = shuffleCards(deck);
 var calPlayerCurrScore;
-var calComputerCurrScore;
+var calDealerCurrScore;
+var playerHand = [];
+var displayPlayerCardArray = [];
+var dealerHand = [];
+var displayDealerCardArray = [];
+var maxScore = 21;
+var dealerMinimalScore = 17;
+var cardName;
 
 // standard messages
-var hitOrStandMessage = `Enter hit to take another card or stand to end your turn.`;
+var hitOrStandMessage =
+  "Enter hit to take another card or stand to end your turn.";
+var refreshGameMessage = " Refresh to start new game";
+
+// display cards in hand to show player the cards drawn so far
+// reference https://stackoverflow.com/questions/19590865/from-an-array-of-objects-extract-value-of-a-property-as-array
+var displayCardsInHand = function (handArray, displayCardsArray, cardName) {
+  displayCardsArray = [];
+  for (var counter = 0; counter < handArray.length; ++counter)
+    displayCardsArray.push(handArray[counter].cardName);
+  return displayCardsArray;
+};
+
+// var firstDealtHandMessage = function () {
+//   var message = `Your hand is <br>${playerCard1.cardName} of ${playerCard1.suit} <br> ${playerCard2.cardName} of ${playerCard2.suit}<br>Your score is ${calPlayerCurrScore}<br> <br><br> Dealer hand is <br>${dealerCard1.cardName} of ${dealerCard1.suit} <br> ${dealerCard2.cardName} of ${dealerCard2.suit}<br>Dealer score is ${calDealerCurrScore}<br><br>`;
+//   return message;
+// };
 
 // rules of blackjack
 // players will be dealt 2 cards
-var dealHands = function () {
+var dealHands = function (input) {
   // draw 2 cards for player and 1 card for dealer
   playerCard1 = shuffledDeck.pop();
   playerCard2 = shuffledDeck.pop();
-  computerCard1 = shuffledDeck.pop();
-  computerCard2 = shuffledDeck.pop();
+  playerHand.push(playerCard1, playerCard2);
+  dealerCard1 = shuffledDeck.pop();
+  dealerCard2 = shuffledDeck.pop();
+  dealerHand.push(dealerCard1, dealerCard2);
 
   // calculate players score for the 2 cards
-  calPlayerCurrScore = Number(playerCard1.rank + playerCard2.rank);
-  // calculate computer score for the 2 cards
-  calComputerCurrScore = Number(computerCard1.rank + computerCard2.rank);
+  calPlayerCurrScore = calTotalScore(playerCard1, playerCard2);
 
-  var myOutputValue = `Your hand is <br>${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}
-  <br>Your score is ${calPlayerCurrScore}<br> <br><br> Computer hand is <br>${computerCard1.name} of ${computerCard1.suit} <br> ${computerCard2.name} of ${computerCard2.suit}<br>Com score is ${calComputerCurrScore}<br>`;
+  // calculate Dealer score for the 2 cards
+  calDealerCurrScore = calTotalScore(dealerCard1, dealerCard2);
+
+  // default message to display first 2 cards on hand and current score
+  var message = `Your hand is <br>${playerCard1.cardName} of ${playerCard1.suit} <br> ${playerCard2.cardName} of ${playerCard2.suit}<br>Your score is ${calPlayerCurrScore}<br> <br><br> Dealer hand is <br>${dealerCard1.cardName} of ${dealerCard1.suit} <br> ${dealerCard2.cardName} of ${dealerCard2.suit}<br>Dealer score is ${calDealerCurrScore}<br><br>`;
+  var myOutputValue = `${message} ${hitOrStandMessage} <br> `;
+
+  // check for blackjack win conditions
+  if (
+    playerHand.length == 2 &&
+    calPlayerCurrScore == 11 &&
+    (playerCard1.rank == 1 || playerCard2.rank == 1)
+  ) {
+    myOutputValue = `${message}Player has Blackjack, Player won! <br><br>${refreshGameMessage}`;
+  } else if (
+    dealerHand.length == 2 &&
+    calDealerCurrScore == 11 &&
+    (dealerCard1.rank == 1 || dealerCard2.rank == 1)
+  ) {
+    myOutputValue = `${message}Dealer has Blackjack, dealer won!<br><br> ${refreshGameMessage}`;
+  } else if (
+    dealerHand.length == 2 &&
+    calDealerCurrScore == 11 &&
+    (dealerCard1.rank == 1 || dealerCard2.rank == 1) &&
+    playerHand.length == 2 &&
+    calPlayerCurrScore == 11 &&
+    (playerCard1.rank == 1 || playerCard2.rank == 1)
+  ) {
+    myOutputValue = `Both players have Blackjack! Its a tie!!<br><br>${refreshGameMessage}`;
+  }
 
   return myOutputValue;
 };
 
-var determineWinner = function () {
-  if (calPlayerCurrScore > calComputerCurrScore) {
-    myOutputValue = "<br>Player Wins";
+var calTotalScore = function (card1, card2) {
+  // calculate total score in hand
+  totalScore = Number(card1.rank + card2.rank);
+  return totalScore;
+};
+
+var playerDrawCard = function () {
+  var drawnCard = shuffledDeck.pop();
+  playerHand.push(drawnCard);
+  calPlayerCurrScore = calPlayerCurrScore + Number(drawnCard.rank);
+  var playerHandMessage = `You draw ${drawnCard.cardName} of ${
+    drawnCard.suit
+  }. <br> <br>Your hand is ${displayCardsInHand(
+    playerHand,
+    displayPlayerCardArray,
+    cardName
+  )}<br> <br>Your score is ${calPlayerCurrScore}. `;
+
+  if (calPlayerCurrScore > maxScore) {
+    return `${playerHandMessage}
+       You busted! YOU LOST!<br><br><br>${refreshGameMessage}`;
+  }
+  if (calPlayerCurrScore <= maxScore) {
+    return `${playerHandMessage}<br><br>
+    Dealer score is ${calDealerCurrScore}<br><br>
+    ${hitOrStandMessage}`;
+  }
+};
+
+// function for dealer to draw card
+// dealer will continue to draw card if the total score is below 17
+var dealerDrawCard = function () {
+  // calDealerCurrScore = calDealerCurrScore + Number(drawnCard.rank);
+  var myOutputValue = "";
+  if (calDealerCurrScore == dealerMinimalScore) {
+    return ` Your hand is ${displayCardsInHand(
+      playerHand,
+      displayPlayerCardArray,
+      cardName
+    )} <br> <br> Dealer hand is ${displayCardsInHand(
+      dealerHand,
+      displayDealerCardArray,
+      cardName
+    )} <br>Both dealer and player have same score of ${calDealerCurrScore}!`;
+  } else {
+    var counter = 0;
+    while (calDealerCurrScore < dealerMinimalScore) {
+      var drawnCard = shuffledDeck.pop();
+      console.log(`drawn card: ` + drawnCard.cardName);
+      dealerHand.push(drawnCard);
+      calDealerCurrScore = calDealerCurrScore + Number(drawnCard.rank);
+      myOutputValue = `Your hand is ${displayCardsInHand(
+        playerHand,
+        displayPlayerCardArray,
+        cardName
+      )}<br>Your score is ${calPlayerCurrScore} <br> <br> Dealer hand is ${displayCardsInHand(
+        dealerHand,
+        displayDealerCardArray,
+        cardName
+      )} <br>Dealer score is ${calDealerCurrScore}. <br>`;
+      counter += 1;
+    }
   }
 
-  if (calPlayerCurrScore < calComputerCurrScore) {
-    myOutputValue = "<br>Computer Wins";
+  return myOutputValue;
+};
+
+// var determineBlackjack = function () {
+//   // if (
+//   //   (dealerHand.length == 2 &&
+//   //     calDealerCurrScore == 11 &&
+//   //     (dealerCard1.rank == 1 || dealerCard2.rank == 1)) ===
+//   //   (playerHand.length == 2 &&
+//   //     calPlayerCurrScore == 11 &&
+//   //     (playerCard1.rank == 1 || playerCard2.rank == 1))
+//   // )
+//   //   return "Both player and dealer have Blackjack!! Its a tie!!";
+// };
+
+var determineWinner = function () {
+  if (
+    calPlayerCurrScore > calDealerCurrScore ||
+    calDealerCurrScore > maxScore
+  ) {
+    myOutputValue = `<br>Player Wins <br><br>${refreshGameMessage}`;
+  }
+  if (
+    calPlayerCurrScore < calDealerCurrScore &&
+    calDealerCurrScore <= maxScore
+  ) {
+    myOutputValue = `<br> Dealer Wins <br><br>${refreshGameMessage}`;
+  }
+
+  if (calPlayerCurrScore == calDealerCurrScore) {
+    myOutputValue = `<br> Its a tie<br><br>${refreshGameMessage}`;
   }
   return myOutputValue;
 };
 
 var main = function (input) {
-  if (gameMode == DEAL_CARDS) {
-    myOutputValue = dealHands() + determineWinner();
+  if (input == HIT) {
+    gameMode = HIT;
+    myOutputValue = playerDrawCard();
   }
 
+  if (input == RESET) {
+    gameMode = DEAL_CARDS;
+  }
+
+  if (input == STAND) {
+    gameMode = DEALER_TURN;
+    myOutputValue = dealerDrawCard() + determineWinner();
+  }
+  if (gameMode == DEAL_CARDS) {
+    myOutputValue = dealHands();
+  }
+  if (input != HIT || input != STAND) {
+    return `Pls enter hit or stand to continue the game`;
+  }
   return myOutputValue;
 };
