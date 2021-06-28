@@ -6,6 +6,9 @@ var playerHand = [];
 var computerHand = [];
 var initialMessage = ""; // the initial output after player and computer are each dealt two cards
 var messageAfterPlayerHits = ""; // the output message after play enters 'hit' and is given a new card
+var playerCardsMessage = "";
+var computerCardsMessage = "";
+var message = "";
 var myOutputValue = "";
 var playerTotalScore = 0; // the player's current total score which is to determine if player busts or wins
 var computerTotalScore = 0;
@@ -116,8 +119,10 @@ var initialDealRound = function () {
   console.log(`Computer's current total score: ${computerTotalScore}`);
   console.log(`Player's current total score: ${playerTotalScore}`);
 
-  // output message to display four cards dealt so far
-  message = `Computer's hand: <br>${computerHand[0].name} of ${computerHand[0].suit} <br>${computerHand[1].name} of ${computerHand[1].suit} <br><br> Player's hand: <br>${playerHand[0].name} of ${playerHand[0].suit} <br>${playerHand[1].name} of ${playerHand[1].suit}`;
+  // output a message to display four cards dealt so far
+  computerCardsMessage = `Computer's hand: <br>${computerHand[0].name} of ${computerHand[0].suit} <br>${computerHand[1].name} of ${computerHand[1].suit}`;
+  playerCardsMessage = `Player's hand: <br>${playerHand[0].name} of ${playerHand[0].suit} <br>${playerHand[1].name} of ${playerHand[1].suit}`;
+  message = `${computerCardsMessage} <br><br> ${playerCardsMessage}`;
 
   // stores message from determineInitialWinner function
   initialMessage = determineInitialWinner();
@@ -152,34 +157,37 @@ var hitOrStand = function (input) {
   var messageAfterPlayerHits = "You typed something wrong.";
   // if player enters 'hit', takes a card from the deck and decide if it's a bust (rank is > 21) or not. either way, displays a message
   if (input == "hit") {
-    // add a third card to player's hand
+    // add a card from the deck to player's hand
     playerHand.push(shuffledDeck.pop());
-    // displays the latest card that's been added to player's hand.
+
+    // console log the latest card that's been added to player's hand.
     console.log(
       `Player's card no. ${playerHand.length} is: ${
         playerHand[playerHand.length - 1].name
       } of ${playerHand[playerHand.length - 1].suit}`
     );
-    // update the main output message (of all the cards on table) by adding the new hard that player drew to his/her hand.
-    message =
-      message +
+
+    // update the main output message (of all the cards on table) by adding the new card that player drew to his/her hand.
+    playerCardsMessage =
+      playerCardsMessage +
       `<br>${playerHand[playerHand.length - 1].name} of ${
         playerHand[playerHand.length - 1].suit
       }`;
+    message = `${computerCardsMessage} <br><br> ${playerCardsMessage}`;
+    // console.log(`message: ${message}`);
+    // console.log(`Player's Cards message: ${playerCardsMessage}`);
+
     // update player's total score
     playerTotalScore =
       playerTotalScore + playerHand[playerHand.length - 1].rank;
     console.log(`Player's Total Score: ${playerTotalScore}`);
-    // determine if player busts
-    if (playerTotalScore > 21) {
-      messageAfterPlayerHits = `You bust. Your score is over 21. <br><br>${message}`;
-      console.log(`Message after player hits: ${messageAfterPlayerHits}`);
-      return messageAfterPlayerHits;
-    } else {
-      messageAfterPlayerHits = `${message}`;
-      console.log(`Message after player hits: ${messageAfterPlayerHits}`);
-      return messageAfterPlayerHits;
-    }
+
+    // calls on the Bust function and returns Bust message or no message
+    var bustMessage = determineIfBust(playerTotalScore);
+    console.log(`Bust message is: ${bustMessage}`);
+    messageAfterPlayerHits = bustMessage + message;
+
+    return messageAfterPlayerHits;
   } else if (input == "stand") {
     mode = "evaluateComputerHand";
   }
@@ -188,7 +196,66 @@ var hitOrStand = function (input) {
 
 // a function that evaluates the computer's hand after player enters 'stand'
 var evaluateComputerHand = function () {
-  return "evaluate computer's hand";
+  var computerBustMessage = "";
+  // logic for computer(dealer) adding cards to their hand.
+
+  // while loop that first checks if computer's score is <17, and if so, draws a card for computer till its score is >= 17
+  while (computerTotalScore < 17) {
+    // add card from the deck to computer's hand
+    computerHand.push(shuffledDeck.pop());
+
+    // console the latest card that's been added to computer's hand.
+    console.log(
+      `Computer's card no. ${computerHand.length} is: ${
+        computerHand[computerHand.length - 1].name
+      } of ${computerHand[computerHand.length - 1].suit}`
+    );
+
+    // update the main output message (of all the cards on table) by adding the new card that player drew to his/her hand.
+    computerCardsMessage =
+      computerCardsMessage +
+      `<br>${computerHand[computerHand.length - 1].name} of ${
+        computerHand[computerHand.length - 1].suit
+      }`;
+    message = `${computerCardsMessage} <br><br> ${playerCardsMessage}`;
+    // console.log(`message: ${message}`);
+    // console.log(`Computer's Cards message: ${computerCardsMessage}`);
+
+    // update computer's total score
+    computerTotalScore =
+      computerTotalScore + computerHand[computerHand.length - 1].rank;
+    console.log(`Computer's Total Score: ${computerTotalScore}`);
+
+    if (computerTotalScore > 21) {
+      computerBustMessage = `Computer bust. You win twice your bet.`;
+      message = `${computerBustMessage} <br><br>${computerCardsMessage} <br><br> ${playerCardsMessage}`;
+      return message;
+    }
+  }
+  // compare computer's score and player's score and output a message saying who is the winner (here computer's total score is > 17).
+  if (playerTotalScore == computerTotalScore) {
+    var tieMessage = `It's a tie. Your money stays the same.`;
+    return `${tieMessage} <br><br>${message}`;
+  } else if (playerTotalScore > computerTotalScore) {
+    var playerWinMessage = `You win. You scored higher than the dealer. You win twice your bet.`;
+    return `${playerWinMessage} <br><br>${message}`;
+  } else if (playerTotalScore < computerTotalScore) {
+    var playerWinMessage = `You lose. You scored lower than the dealer. You lose your initial bet.`;
+    return `${playerWinMessage} <br><br>${message}`;
+  }
+
+  return message;
+};
+
+// a function that determines if the score is a bust or not and outputs one of two relevant messages
+var determineIfBust = function (totalScore) {
+  if (totalScore > 21) {
+    bustMessage = `You bust. Your score is over 21. You lose your initial bet. <br><br>`;
+    return bustMessage;
+  } else {
+    bustMessage = ``;
+    return bustMessage;
+  }
 };
 
 var main = function (input) {
