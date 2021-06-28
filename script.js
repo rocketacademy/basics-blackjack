@@ -1,4 +1,4 @@
-// Global variables
+// global variables
 var mode = "start";
 var cardDeck = [];
 var shuffledDeck = [];
@@ -6,19 +6,19 @@ var playerHand = [];
 var computerHand = [];
 var initialMessage = ""; // the initial output after player and computer are each dealt two cards
 var messageAfterPlayerHits = ""; // the output message after play enters 'hit' and is given a new card
-var playerCardsMessage = "";
-var computerCardsMessage = "";
-var message = "";
+var playerCardsMessage = ""; // all the cards in the player's current hand.
+var computerCardsMessage = ""; // all the cards in the computer's current hand.
+var message = ""; // the message that outputs ALL cards of both players. later below, it'll be made up of 'computerCardsMessage' and 'playerCardsMessage'
 var myOutputValue = "";
-var playerTotalScore = 0; // the player's current total score which is to determine if player busts or wins
-var computerTotalScore = 0;
+var playerTotalScore = 0; // the player's current total score which is to determine if player wins or busts
+var computerTotalScore = 0; // the computer's current total score which is to determine if computer wins or busts
 
 // a function that gets a random index ranging from 0 (inclusive) to max (exclusive). it's used in the shuffleCards function.
 var getRandomIndex = function (max) {
   return Math.floor(Math.random() * max);
 };
 
-// a function that makes a normal card deck
+// a function that makes a regular 52-card deck, arranged in order of rank and suit.
 var makeDeck = function () {
   // Initialise an empty deck array
 
@@ -98,12 +98,12 @@ var shuffleCards = function (cardDeck) {
   return cardDeck;
 };
 
-// a function that deals initial two cards each to both computer and player
+// a function that deals two initial cards each to computer and player
 var initialDealRound = function () {
   cardDeck = makeDeck();
   shuffledDeck = shuffleCards(cardDeck);
 
-  // program deals one card each to computer and player, then repeats this. in total, two cards are dealt to both computer and player
+  // one card dealt each to computer and player, then this repeats. in total, two cards each dealt to computer and player
   // push 1st card to computer's hand
   computerHand.push(shuffledDeck.pop());
   // push 1st card to player's hand
@@ -119,19 +119,19 @@ var initialDealRound = function () {
   console.log(`Computer's current total score: ${computerTotalScore}`);
   console.log(`Player's current total score: ${playerTotalScore}`);
 
-  // output a message to display four cards dealt so far
+  // output a message to display the four cards dealt so far
   computerCardsMessage = `Computer's hand: <br>${computerHand[0].name} of ${computerHand[0].suit} <br>${computerHand[1].name} of ${computerHand[1].suit}`;
   playerCardsMessage = `Player's hand: <br>${playerHand[0].name} of ${playerHand[0].suit} <br>${playerHand[1].name} of ${playerHand[1].suit}`;
   message = `${computerCardsMessage} <br><br> ${playerCardsMessage}`;
 
   // stores message from determineInitialWinner function
   initialMessage = determineInitialWinner();
-  // concentenate messages after second round. final message will either be (1) player wins Black Jack, or (2) an output message that tells user to enter 'hit' or 'stand'
+  // concentenates the messages. 'initialDealRoundMessage' message will either: (1) say player wins Black Jack, or (2) message that tells user to enter 'hit' or 'stand'
   initialDealRoundMessage = initialMessage + message;
   return initialDealRoundMessage;
 };
 
-// a function that determines if player wins Black Jack after being dealt two cards. if player didn't win, program outputs message asking player to enter 'hit' or 'stand'.
+// a function that determines if player wins Black Jack after being dealt the first two cards. if player didn't win, program outputs message asking player to enter 'hit' or 'stand'.
 var determineInitialWinner = function () {
   // player wins Black Jack
   if (
@@ -141,7 +141,7 @@ var determineInitialWinner = function () {
   ) {
     initialMessage = "Player wins Black Jack! You got 21.<br><br>";
   }
-  // game continues
+  // game continues: player doesn't win Black Jack
   else {
     initialMessage =
       "You can choose to hit (type 'hit') or stand (type 'stand'). <br><br>";
@@ -155,19 +155,19 @@ var determineInitialWinner = function () {
 var hitOrStand = function (input) {
   // default output message if player doesn't enter 'hit' or 'stand'
   var messageAfterPlayerHits = "You typed something wrong.";
-  // if player enters 'hit', takes a card from the deck and decide if it's a bust (rank is > 21) or not. either way, displays a message
+  // if player enters 'hit', takes a card from the deck and decide if it's a bust (rank is > 21), or not. either way, displays a message
   if (input == "hit") {
     // add a card from the deck to player's hand
     playerHand.push(shuffledDeck.pop());
 
-    // console log the latest card that's been added to player's hand.
+    // console log the latest card that's been added to player's hand
     console.log(
       `Player's card no. ${playerHand.length} is: ${
         playerHand[playerHand.length - 1].name
       } of ${playerHand[playerHand.length - 1].suit}`
     );
 
-    // update the main output message (of all the cards on table) by adding the new card that player drew to his/her hand.
+    // update the main output message (of all the cards on table) by adding the new card that player drew to his/her hand
     playerCardsMessage =
       playerCardsMessage +
       `<br>${playerHand[playerHand.length - 1].name} of ${
@@ -182,7 +182,7 @@ var hitOrStand = function (input) {
       playerTotalScore + playerHand[playerHand.length - 1].rank;
     console.log(`Player's Total Score: ${playerTotalScore}`);
 
-    // calls on the Bust function and returns Bust message or no message
+    // calls on the Bust function and returns either Bust message containing
     var bustMessage = determineIfBust(playerTotalScore);
     console.log(`Bust message is: ${bustMessage}`);
     messageAfterPlayerHits = bustMessage + message;
@@ -199,7 +199,7 @@ var evaluateComputerHand = function () {
   var computerBustMessage = "";
   // logic for computer(dealer) adding cards to their hand.
 
-  // while loop that first checks if computer's score is <17, and if so, draws a card for computer till its score is >= 17
+  // a While Loop that first checks if computer's score is <17, and if so, draws a card for computer till its score is >= 17
   while (computerTotalScore < 17) {
     // add card from the deck to computer's hand
     computerHand.push(shuffledDeck.pop());
@@ -211,7 +211,7 @@ var evaluateComputerHand = function () {
       } of ${computerHand[computerHand.length - 1].suit}`
     );
 
-    // update the main output message (of all the cards on table) by adding the new card that player drew to his/her hand.
+    // update the main output message (of all the cards on table) by adding the new card that player drew to his hand.
     computerCardsMessage =
       computerCardsMessage +
       `<br>${computerHand[computerHand.length - 1].name} of ${
@@ -226,21 +226,22 @@ var evaluateComputerHand = function () {
       computerTotalScore + computerHand[computerHand.length - 1].rank;
     console.log(`Computer's Total Score: ${computerTotalScore}`);
 
+    // bust condition for computer, outputs 'player win'
     if (computerTotalScore > 21) {
-      computerBustMessage = `Computer bust. You win twice your bet.`;
+      computerBustMessage = `Computer bust. You win twice your bet. Refresh the page to play again.`;
       message = `${computerBustMessage} <br><br>${computerCardsMessage} <br><br> ${playerCardsMessage}`;
       return message;
     }
   }
   // compare computer's score and player's score and output a message saying who is the winner (here computer's total score is > 17).
   if (playerTotalScore == computerTotalScore) {
-    var tieMessage = `It's a tie. Your money stays the same.`;
+    var tieMessage = `It's a tie. Your money stays the same. Refresh the page to play again.`;
     return `${tieMessage} <br><br>${message}`;
   } else if (playerTotalScore > computerTotalScore) {
-    var playerWinMessage = `You win. You scored higher than the dealer. You win twice your bet.`;
+    var playerWinMessage = `You win. You scored higher than the dealer. You win twice your bet. Refresh the page to play again.`;
     return `${playerWinMessage} <br><br>${message}`;
   } else if (playerTotalScore < computerTotalScore) {
-    var playerWinMessage = `You lose. You scored lower than the dealer. You lose your initial bet.`;
+    var playerWinMessage = `You lose. You scored lower than the dealer. You lose your initial bet. Refresh the page to play again.`;
     return `${playerWinMessage} <br><br>${message}`;
   }
 
@@ -259,6 +260,7 @@ var determineIfBust = function (totalScore) {
 };
 
 var main = function (input) {
+  // outputs a different message based on which mode program is in
   if (mode == "start") {
     myOutputValue = initialDealRound();
   }
@@ -269,7 +271,7 @@ var main = function (input) {
     myOutputValue = evaluateComputerHand();
   }
 
-  // change mode
+  // changes mode. note: the "playerHitOrStand" mode is changed to "evaluateComputerHand" mode inside the hitOrStand function.
   if (mode == "start") {
     mode = "playerHitOrStand";
   }
