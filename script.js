@@ -1,48 +1,94 @@
-//TO ADD
-// SHOULD COMBINE COMP TURN WITH THE OUTPUT STATING THE VALUE INSTEAD OF RETURNING IT (LINE 222) (OPTIONAL)
-// refactor at the end
-// hit function?
-// COMP DECISION TO KEEP DRAWING CARDS SHOULD BE AUTOMATIC (line 238, combine with above as a hit function
-// DO MULTIPLAYER AND THEN BETTING! USE OBJECT TO STORE PLAYER DATA LIKE NAME, BANK/BET AND PLAYERHAND?
-
-var mode = "inputname";
+var mode = "playersetup";
 var playerBlackjack = false;
 var compBlackjack = false;
+var compHandText = "";
+var playerHandText = "";
 var playerHand = [];
 var compHand = [];
 var playerCard1 = {};
 var playerCard2 = {};
 var computerCard1 = {};
 var computerCard2 = {};
+var noOfPlayers = 0;
+var allPlayers = [];
 var playerTotalValue = 0;
 var compTotalValue = 0;
 var playerStandText = "";
 var username = "";
+var playerNameIndex = 0;
+var dealIndex = 0;
+var cardDisplayCounter = 0;
 
 var main = function (input) {
-  if (mode == "inputname") {
-    username = input;
-    mode = "dealmode";
-    return `Hi ${username}, welcome to Blackjack. Now, the computer will deal the cards.`;
-  }
-  if (mode == "dealmode") {
-    playerHand = [];
+  if (mode == "playersetup" || mode == "inputname") {
     compHand = [];
+    return playerArraySetup(input);
+  }
+  if (mode == "dealmode" || mode == "compdeal") {
     shuffledDeck = shuffleCards(deck);
     var myOutputValue = dealCards(shuffledDeck);
-    mode = "playerturn";
     return myOutputValue;
   }
-  if (mode == "playerturn") {
+  if (
+    mode == "playerturn" ||
+    mode == "playerDecisionTurn" ||
+    mode == "playerEndTurn"
+  ) {
     var playerTurnText = playerTurnFunc(input);
     return playerTurnText;
   }
   if (mode == "compturn") {
-    var myOutputValue = compTurnFunc(playerHand, compHand, playerTotalValue);
+    var myOutputValue = compTurnFunc(compHand);
   }
   // need to return cards to the deck at the end of the game. Reshuffle happens in the dealcards function.
-  // Reset playerHand and compHand arrays
+  shuffledDeck = shuffleCards(deck);
+  // implement betting mode
   return myOutputValue;
+};
+
+var playerArraySetup = function (input) {
+  if (mode == "playersetup") {
+    dealIndex = 0;
+    compBlackjack = false;
+    cardDisplayCounter = 0;
+    noOfPlayers = input;
+    allPlayers = [];
+    var playerCountIndex = 0;
+    var playerObject = {};
+    while (playerCountIndex < noOfPlayers) {
+      playerObject = {
+        player: {
+          username: "",
+          playerHand: [],
+          bankroll: 100,
+          blackjackCheck: false,
+          handTotal: 0,
+          handText: "",
+        },
+      };
+      allPlayers.push(playerObject);
+      playerCountIndex += 1;
+    }
+    mode = "inputname";
+    playerNameIndex = 0;
+    return `There are ${noOfPlayers} players. Please input your names in order.`;
+  }
+  if (mode == "inputname") {
+    if (playerNameIndex < noOfPlayers) {
+      allPlayers[playerNameIndex].player.username = input;
+      playerNameIndex += 1;
+      if (playerNameIndex < noOfPlayers) {
+        return `Hi ${
+          allPlayers[playerNameIndex - 1].player.username
+        }, you are Player ${playerNameIndex}. Next player, please input your name.`;
+      } else {
+        mode = "compdeal";
+        return `Hi ${
+          allPlayers[playerNameIndex - 1].player.username
+        }, you are Player ${playerNameIndex}. Now, the computer will deal the cards.`;
+      }
+    }
+  }
 };
 
 var getRandomIndex = function (max) {
@@ -109,151 +155,237 @@ var shuffleCards = function (cardDeck) {
 var shuffledDeck = shuffleCards(deck);
 
 var dealCards = function (shuffledDeck) {
-  computerCard1 = shuffledDeck.pop();
-  playerCard1 = shuffledDeck.pop();
-  computerCard2 = shuffledDeck.pop();
-  playerCard2 = shuffledDeck.pop();
-  compHandText = `The computer drew:<br>${computerCard1.name} of ${computerCard1.emojiSuit} <br> ${computerCard2.name} of ${computerCard2.emojiSuit}`;
-  playerHandText = `You drew: <br>${playerCard1.name} of ${playerCard1.emojiSuit} <br> ${playerCard2.name} of ${playerCard2.emojiSuit}`;
-  console.log(
-    "comp card 1 is " + computerCard1.rank + " of " + computerCard1.emojiSuit
-  );
-  console.log(
-    "comp card 2 is " + computerCard2.rank + " of " + computerCard2.emojiSuit
-  );
-  console.log(
-    "player card 1 is " + playerCard1.rank + " of " + playerCard1.emojiSuit
-  );
-  console.log(
-    "player card 2 is " + playerCard2.rank + " of " + playerCard2.emojiSuit
-  );
-  // create a blackjack for computer as well. Function it.
-  if (computerCard1.rank == 1 || computerCard2.rank == 1) {
-    mode = "compBlackjackCheck";
-    var compBlackjackText = blackjackCheck(computerCard1, computerCard2);
+  if (mode == "compdeal") {
+    var computerCard1 = shuffledDeck.pop();
+    var computerCard2 = shuffledDeck.pop();
+    compHand.push(computerCard1);
+    compHand.push(computerCard2);
+    if (computerCard1.rank == 1 || computerCard2.rank == 1) {
+      mode = "compBlackjackCheck";
+      var compBlackjackText = blackjackCheckFunc(
+        allPlayers,
+        computerCard1,
+        computerCard2,
+        compHand
+      );
+    }
+    mode = "dealmode";
   }
-  // if any of the two cards are aces FOR PLAYER
-  if (playerCard1.rank == 1 || playerCard2.rank == 1) {
+  if (dealIndex < noOfPlayers) {
+    var playerCard1 = shuffledDeck.pop();
+    var playerCard2 = shuffledDeck.pop();
+    allPlayers[dealIndex].player.playerHand.push(playerCard1);
+    allPlayers[dealIndex].player.playerHand.push(playerCard2);
+    // if any of the two cards are aces FOR PLAYER
+    playerBlackjack = false;
     mode = "playerBlackjackCheck";
-    var playerBlackjackText = blackjackCheck(playerCard1, playerCard2);
+    var playerBlackjackText = blackjackCheckFunc(
+      allPlayers,
+      playerCard1,
+      playerCard2,
+      compHand
+    );
   }
-  if (compBlackjack == true && playerBlackjack && true) {
-    compBlackjack = false;
+  dealIndex += 1;
+  if (dealIndex < noOfPlayers) {
+    mode = "dealmode";
+    return `${playerBlackjackText} <br><br> Player ${allPlayers[dealIndex].player.username}, it is your turn.`;
+  } else {
+    mode = "playerDecisionTurn";
+    if (compBlackjack == true) {
+      mode = "compturn";
+      return `${playerBlackjackText}. Since the computer has a blackjack, all players cards will be revealed automatically.`;
+    } else {
+      return `${playerBlackjackText}. Now, Players will choose to hit/stand in order.`;
+    }
+  }
+};
+
+var blackjackCheckFunc = function (allPlayers, card1, card2, compHand) {
+  // if any of the two cards are picture cards or 10 on top of having an ace in hand, it is a blackjack
+  computerCard1 = compHand[0];
+  computerCard2 = compHand[1];
+  var compHandText = `The computer drew:<br>${computerCard1.name} of ${computerCard1.emojiSuit} <br> ${computerCard2.name} of ${computerCard2.emojiSuit}`;
+  // reset player blackjack for future games
+  allPlayers[dealIndex].player.blackjackCheck = false;
+  if (mode == "playerBlackjackCheck") {
+    playerHandText = `You drew: <br>${allPlayers[dealIndex].player.playerHand[0].name} of ${allPlayers[dealIndex].player.playerHand[0].emojiSuit} <br> ${allPlayers[dealIndex].player.playerHand[1].name} of ${allPlayers[dealIndex].player.playerHand[1].emojiSuit}`;
+  }
+  if (mode == "compBlackjackCheck") {
+    computerCard1 = card1;
+    computerCard2 = card2;
+  }
+  if (card1.rank == 1 || card2.rank == 1) {
+    if (
+      card1.rank == 10 ||
+      card1.rank == 11 ||
+      card1.rank == 12 ||
+      card1.rank == 13 ||
+      card2.rank == 10 ||
+      card2.rank == 11 ||
+      card2.rank == 12 ||
+      card2.rank == 13
+    ) {
+      if (mode == "playerBlackjackCheck") {
+        playerBlackjack = true;
+        allPlayers[dealIndex].player.blackjackCheck = true;
+      } else if (mode == "compBlackjackCheck") {
+        compBlackjack = true;
+      }
+    }
+  }
+  if (compBlackjack == true && playerBlackjack == true) {
     playerBlackjack = false;
     return `Both of you have gotten a blackjack! Its a draw! ${playerHandText} <br><br> ${compHandText}`;
   } else if (compBlackjack == true && playerBlackjack != true) {
-    compBlackjack = false;
     return `The computer got a blackjack and you lost!<br><br>${playerHandText} <br><br> ${compHandText}`;
   } else if (compBlackjack != true && playerBlackjack == true) {
     playerBlackjack = false;
-    return `You have gotten a blackjack and won!<br><br>${playerHandText} <br><br> ${compHandText}`;
+    return `You have gotten a blackjack and won!<br><br>${playerHandText} <br><br> The computer did not get a blackjack.`;
   } else {
-    playerHand.push(playerCard1);
-    playerHand.push(playerCard2);
-    compHand.push(computerCard1);
-    compHand.push(computerCard2);
-    mode = "playerturn";
     return `${playerHandText}`;
   }
 };
 
-var blackjackCheck = function (card1, card2) {
-  // if any of the two cards are picture cards or 10 on top of having an ace in hand, it is a blackjack
-  if (
-    card1.rank == 10 ||
-    card1.rank == 11 ||
-    card1.rank == 12 ||
-    card1.rank == 13 ||
-    card2.rank == 10 ||
-    card2.rank == 11 ||
-    card2.rank == 12 ||
-    card2.rank == 13
-  ) {
-    if (mode == "playerBlackjackCheck") {
-      playerBlackjack = true;
-      return `You got a BlackJack! Your cards are: <br><br> ${card1.name} of ${card1.emojiSuit} <br> ${card2.name} of ${card2.emojiSuit}`;
-    } else if (mode == "compBlackjackCheck") {
-      compBlackjack = true;
-      return `The computer got a BlackJack! Your cards are: <br><br> ${card1.name} of ${card1.emojiSuit} <br> ${card2.name} of ${card2.emojiSuit}`;
-    }
-  } else {
-    mode = "playerturn";
-  }
-  return `Your cards are: <br><br> ${card1.name} of ${card1.emojiSuit} <br> ${card2.name} of ${card2.emojiSuit}`;
-};
-
 var playerTurnFunc = function (input) {
-  //player chooses to hit or stand
-  if (input == "hit") {
-    var cardDrawn = shuffledDeck.pop();
-    playerHand.push(cardDrawn);
-    //value calculating should be a diff function maybe?
-    valueIndex = 0;
-    playerTotalValue = 0;
-    while (valueIndex < playerHand.length) {
-      playerTotalValue = playerTotalValue + playerHand[valueIndex].value;
-      valueIndex += 1;
-    }
-    console.log(playerTotalValue);
-    //what happens if there are two aces? unlikely since 2 x 11 = 22? but how to make it such that 1 is 11 and the other is 1? Do this next time
-    if (playerTotalValue > 21) {
-      var aceCheckIndex = 0;
-      while (aceCheckIndex < playerHand.length) {
-        if (playerHand[aceCheckIndex].value == 11) {
-          // if ace is in hand AND the value is set to 11, convert its value to 1. the moment this happens, the value is sure to be less than 21 so it is alright to just stop it there.
-          playerHand[aceCheckIndex].value = 1;
-          playerTotalValue = playerTotalValue - 10;
-          return `You have drawn ${cardDrawn.name} of ${cardDrawn.emojiSuit} but will bust if you take ace as 11! Therefore, it has been converted to 1. Your hand total is ${playerTotalValue}.`;
-        }
-        aceCheckIndex = aceCheckIndex + 1;
-      }
-      mode = "compturn";
-      return `You have busted! You drew ${cardDrawn.name} of ${cardDrawn.emojiSuit} and you have gone past 21 with a value of ${playerTotalValue}! The computer will now go.`;
-    } else if (playerTotalValue < 16) {
-      mode = "playerturn";
-      return `You have drawn ${cardDrawn.name} of ${cardDrawn.emojiSuit} but your hand is still under 16!`;
-    } else if (playerTotalValue == 21) {
-      mode = "compturn";
-      return `You have drawn ${cardDrawn.name} of ${cardDrawn.emojiSuit} and you have gotten 21! The computer will now go.`;
+  var myOutputValue = "";
+  if (mode == "playerDecisionTurn") {
+    if (allPlayers[cardDisplayCounter].player.blackjackCheck == true) {
+      mode = "playerEndTurn";
+      return `Since you have gotten a blackjack, please pass it on to the next player.`;
     } else {
       mode = "playerturn";
-      return `You have drawn ${cardDrawn.name} of ${cardDrawn.emojiSuit}! You can either choose to stand with a total hand of ${playerTotalValue} or hit if you're feeling lucky!`;
+      return `Your hand: <br>${allPlayers[cardDisplayCounter].player.playerHand[0].name} of ${allPlayers[cardDisplayCounter].player.playerHand[0].emojiSuit} <br> ${allPlayers[cardDisplayCounter].player.playerHand[1].name} of ${allPlayers[cardDisplayCounter].player.playerHand[1].emojiSuit}`;
     }
   }
-  if (input == "stand") {
-    valueIndex = 0;
-    playerTotalValue = 0;
-    while (valueIndex < playerHand.length) {
-      playerTotalValue = playerTotalValue + playerHand[valueIndex].value;
-      valueIndex += 1;
+  if (mode == "playerturn") {
+    //player chooses to hit or stand
+    if (input == "hit") {
+      var cardDrawn = shuffledDeck.pop();
+      allPlayers[cardDisplayCounter].player.playerHand.push(cardDrawn);
+      //value calculating should be a diff function maybe?
+      valueIndex = 0;
+      playerTotalValue = 0;
+      while (
+        valueIndex < allPlayers[cardDisplayCounter].player.playerHand.length
+      ) {
+        playerTotalValue =
+          playerTotalValue +
+          allPlayers[cardDisplayCounter].player.playerHand[valueIndex].value;
+        valueIndex += 1;
+      }
+      if (playerTotalValue > 21) {
+        var aceCheckIndex = 0;
+        while (
+          aceCheckIndex <
+          allPlayers[cardDisplayCounter].player.playerHand.length
+        ) {
+          if (
+            allPlayers[cardDisplayCounter].player.playerHand[aceCheckIndex]
+              .value == 11
+          ) {
+            // if ace is in hand AND the value is set to 11, convert its value to 1. the moment this happens, the value is sure to be less than 21 so it is alright to just stop it there.
+            allPlayers[cardDisplayCounter].player.playerHand[
+              aceCheckIndex
+            ].value = 1;
+            playerTotalValue = playerTotalValue - 10;
+            myOutputValue = `You have drawn ${cardDrawn.name} of ${cardDrawn.emojiSuit} but will bust if you take ace as 11! Therefore, it has been converted to 1. Your hand total is ${playerTotalValue}.`;
+            return myOutputValue;
+          }
+          aceCheckIndex = aceCheckIndex + 1;
+        }
+        valueIndex = 0;
+        while (
+          valueIndex < allPlayers[cardDisplayCounter].player.playerHand.length
+        ) {
+          allPlayers[cardDisplayCounter].player.handTotal =
+            allPlayers[cardDisplayCounter].player.handTotal +
+            allPlayers[cardDisplayCounter].player.playerHand[valueIndex].value;
+
+          allPlayers[cardDisplayCounter].player.handText =
+            allPlayers[cardDisplayCounter].player.handText +
+            `<br> Card ${valueIndex + 1}: ${
+              allPlayers[cardDisplayCounter].player.playerHand[valueIndex].name
+            } of ${
+              allPlayers[cardDisplayCounter].player.playerHand[valueIndex]
+                .emojiSuit
+            }`;
+
+          valueIndex += 1;
+        }
+        myOutputValue = `You have busted! You drew ${cardDrawn.name} of ${cardDrawn.emojiSuit} and you have gone past 21 with a value of ${playerTotalValue}!`;
+      } else if (playerTotalValue < 16) {
+        myOutputValue = `You have drawn ${cardDrawn.name} of ${cardDrawn.emojiSuit} but your hand is still under 16 with a value of ${playerTotalValue}!`;
+        return myOutputValue;
+      } else if (playerTotalValue == 21) {
+        allPlayers[cardDisplayCounter].player.handTotal = 21;
+        valueIndex = 0;
+        while (
+          valueIndex < allPlayers[cardDisplayCounter].player.playerHand.length
+        ) {
+          allPlayers[cardDisplayCounter].player.handText =
+            allPlayers[cardDisplayCounter].player.handText +
+            `<br> Card ${valueIndex + 1}: ${
+              allPlayers[cardDisplayCounter].player.playerHand[valueIndex].name
+            } of ${
+              allPlayers[cardDisplayCounter].player.playerHand[valueIndex]
+                .emojiSuit
+            }`;
+          valueIndex += 1;
+        }
+        myOutputValue = `You have drawn ${cardDrawn.name} of ${cardDrawn.emojiSuit} and you have gotten 21!`;
+      } else {
+        myOutputValue = `You have drawn ${cardDrawn.name} of ${cardDrawn.emojiSuit}! You can either choose to stand with a total hand of ${playerTotalValue} or hit if you're feeling lucky!`;
+        return myOutputValue;
+      }
     }
-    mode = "compturn";
-    playerStandText = `You have stood with a total value of ${playerTotalValue}. Now the computer will go.`;
-    return playerStandText;
+    if (input == "stand") {
+      valueIndex = 0;
+      while (
+        valueIndex < allPlayers[cardDisplayCounter].player.playerHand.length
+      ) {
+        allPlayers[cardDisplayCounter].player.handTotal =
+          allPlayers[cardDisplayCounter].player.handTotal +
+          allPlayers[cardDisplayCounter].player.playerHand[valueIndex].value;
+
+        allPlayers[cardDisplayCounter].player.handText =
+          allPlayers[cardDisplayCounter].player.handText +
+          `<br> Card ${valueIndex + 1}: ${
+            allPlayers[cardDisplayCounter].player.playerHand[valueIndex].name
+          } of ${
+            allPlayers[cardDisplayCounter].player.playerHand[valueIndex]
+              .emojiSuit
+          }`;
+
+        valueIndex += 1;
+      }
+      playerStandText = `You have stood with a total value of ${allPlayers[cardDisplayCounter].player.handTotal}.`;
+      myOutputValue = playerStandText;
+    }
   }
+  cardDisplayCounter += 1;
+  mode = "playerEndTurn";
+  if (mode == "playerEndTurn") {
+    if (cardDisplayCounter < noOfPlayers) {
+      mode = "playerDecisionTurn";
+      myOutputValue =
+        myOutputValue + ` Next, Player ${cardDisplayCounter + 1}'s turn.`;
+    } else {
+      mode = "compturn";
+      myOutputValue = myOutputValue + ` Now, the computer will go.`;
+    }
+  }
+  return myOutputValue;
 };
 
-var playerHitFunction = function (playerHand) {
-  var cardDrawn = shuffledDeck.pop();
-  playerHand.push(cardDrawn);
-  //value calculating should be a diff function maybe?
-  valueIndex = 0;
-  playerTotalValue = 0;
-  while (valueIndex < playerHand.length) {
-    playerTotalValue = playerTotalValue + playerHand[valueIndex].value;
-    valueIndex += 1;
-  }
-  return `You have drawn ${cardDrawn.name} of ${cardDrawn}`;
-};
-
-var compTurnFunc = function (playerHand, compHand, playerTotalValue) {
+var compTurnFunc = function (compHand) {
+  cardDisplayCounter = 0;
   valueIndex = 0;
   compTotalValue = 0;
   while (valueIndex < compHand.length) {
     compTotalValue = compTotalValue + compHand[valueIndex].value;
     valueIndex += 1;
   }
-  playerHand;
   //comp hits automatically if below 16
   if (compTotalValue < 16) {
     var cardDrawn = shuffledDeck.pop();
@@ -267,57 +399,28 @@ var compTurnFunc = function (playerHand, compHand, playerTotalValue) {
     if (compTotalValue < 16) {
       return "The computer has drawn a card and has decided to draw again.";
     } else {
-      var handText = handTextGenerate(compHand, playerHand);
       //comp stands between 16 and 21
       if (compTotalValue <= 21) {
-        var myOutputValue = faceOffFunc(
-          compHand,
-          playerHand,
-          playerTotalValue,
-          compTotalValue
-        );
+        var myOutputValue = standOffFunc(compHand, compTotalValue, noOfPlayers);
       }
       //comp busts after 21
-      else if (compTotalValue > 21) {
-        var aceCheckIndex = 0;
-        while (aceCheckIndex < compHand.length) {
-          if (compHand[aceCheckIndex].value == 11 && compTotalValue > 21) {
-            // if ace is in hand, convert its value to 1. the moment this happens, the value is sure to be less than 21 so it is alright to just stop it there.
-            compHand[aceCheckIndex].value = 1;
-            compTotalValue = compTotalValue - 10;
-          }
-          aceCheckIndex = aceCheckIndex + 1;
-        }
-        if (compTotalValue > 21) {
-          //if player has <= 21, comp loses
-          if (playerTotalValue <= 21) {
-            mode = "dealmode";
-            var myOutputValue = `${playerStandText}<br><br>The computer has bust with a hand of ${compTotalValue}! You win!<br> ${handText}`;
-          }
-          //if player has bust, push (Draw)
-          else if (playerTotalValue >= 21) {
-            mode = "dealmode";
-            var myOutputValue = `${playerStandText}<br><br>The computer has bust with a hand of ${compTotalValue}! You have therefore drawn!<br> ${handText}`;
-          }
-        }
+      else {
+        var myOutputValue = computerBust(compHand, noOfPlayers);
       }
     }
   }
   if (compTotalValue <= 21 && compTotalValue >= 16) {
-    var myOutputValue = faceOffFunc(
-      compHand,
-      playerHand,
-      playerTotalValue,
-      compTotalValue
-    );
+    var myOutputValue = standOffFunc(compHand, compTotalValue, noOfPlayers);
   } else if (compTotalValue < 16) {
     return "The computer has drawn a card and has decided to draw again.";
   }
+  mode = "playersetup";
+  deck = makeDeck();
   return myOutputValue;
 };
 
-var handTextGenerate = function (compHand, playerHand) {
-  var compHandText = "";
+var standOffFunc = function (compHand, compTotalValue, noOfPlayers) {
+  compHandText = "";
   var compIndex = 0;
   while (compIndex < compHand.length) {
     compHandText =
@@ -327,105 +430,97 @@ var handTextGenerate = function (compHand, playerHand) {
       }`;
     compIndex = compIndex + 1;
   }
-  var playerHandText = "";
-  var playerIndex = 0;
-  while (playerIndex < playerHand.length) {
-    playerHandText =
-      playerHandText +
-      `<br> Card ${playerIndex + 1}: ${playerHand[playerIndex].name} of ${
-        playerHand[playerIndex].emojiSuit
-      }`;
-    playerIndex = playerIndex + 1;
+  playerIndex = 0;
+  var myOutputValue = `The computer has a hand total of ${compTotalValue}.<br> ${compHandText}`;
+  while (playerIndex < noOfPlayers) {
+    allPlayers[playerIndex].player.handTotal;
+    if (allPlayers[playerIndex].player.blackjackCheck == true) {
+      myOutputValue = `${myOutputValue}<br><br> ${allPlayers[playerIndex].player.username}, You have already won with a blackjack. ${allPlayers[playerIndex].player.handText}`;
+    } else {
+      if (
+        allPlayers[playerIndex].player.handTotal > compTotalValue &&
+        allPlayers[playerIndex].player.handTotal <= 21 &&
+        compTotalValue <= 21
+      ) {
+        myOutputValue = `${myOutputValue}<br><br> ${allPlayers[playerIndex].player.username}, You have won with a total hand of ${allPlayers[playerIndex].player.handTotal} over the computer's hand of ${compTotalValue}. ${allPlayers[playerIndex].player.handText}`;
+      } else if (
+        allPlayers[playerIndex].player.handTotal < compTotalValue &&
+        allPlayers[playerIndex].player.handTotal <= 21 &&
+        compTotalValue <= 21
+      ) {
+        myOutputValue = `${myOutputValue}<br><br> ${allPlayers[playerIndex].player.username},You have lost with a total hand of ${allPlayers[playerIndex].player.handTotal} compared to the computer's hand of ${compTotalValue}. ${allPlayers[playerIndex].player.handText}`;
+      } else if (
+        allPlayers[playerIndex].player.handTotal > 21 &&
+        compTotalValue <= 21
+      ) {
+        myOutputValue = `${myOutputValue}<br><br> ${allPlayers[playerIndex].player.username},You have lost with a busted value of ${allPlayers[playerIndex].player.handTotal} compared to the computer's hand of ${compTotalValue}. ${allPlayers[playerIndex].player.handText}.`;
+      } else if (allPlayers[playerIndex].player.handTotal == compTotalValue) {
+        myOutputValue = `${myOutputValue}<br><br> ${allPlayers[playerIndex].player.username},You have pushed (draw) with both total hands of ${allPlayers[playerIndex].player.handTotal}. ${allPlayers[playerIndex].player.handText}`;
+      }
+    }
+    playerIndex += 1;
   }
-  return `Computer hand:<br> ${compHandText} <br><br> Player hand:<br> ${playerHandText}`;
+  return myOutputValue;
 };
 
-var compVsPlayer = function (playerHand, compHand, playerTotalValue) {
-  var compHandText = "";
+var computerBust = function (compHand, noOfPlayers) {
+  compHandText = "The computer's cards are:";
   var compIndex = 0;
   while (compIndex < compHand.length) {
     compHandText =
       compHandText +
-      `<br> Card ${compIndex + 1}: ${compHand[compIndex].rank} of ${
+      `<br> Card ${compIndex + 1}: ${compHand[compIndex].name} of ${
         compHand[compIndex].emojiSuit
       }`;
     compIndex = compIndex + 1;
   }
-  var playerHandText = "";
-  var playerIndex = 0;
-  while (playerIndex < compHand.length) {
-    playerHandText =
-      playerHandText +
-      `<br> Card ${playerIndex + 1}: ${playerHand[playerIndex].rank} of ${
-        playerHand[playerIndex].emojiSuit
-      }`;
-    playerIndex = playerIndex + 1;
-  }
-  //comp stands between 16 and 21
-  if (compTotalValue <= 21) {
-    var myOutputValue = faceOffFunc(
-      compHand,
-      playerHand,
-      playerTotalValue,
-      compTotalValue
-    );
-  }
-  //comp busts after 21
-  else if (compTotalValue > 21) {
-    //if player has <= 21, comp loses
-    if (playerTotalValue <= 21) {
-      mode = "dealmode";
-      var myOutputValue = `${playerStandText}<br><br>The computer has bust with a hand of ${compTotalValue}! You win! Comp hand: ${compHandText} <br><br> Your hand: ${playerHandText}`;
+  if (compTotalValue > 21) {
+    var aceCheckIndex = 0;
+    while (aceCheckIndex < compHand.length) {
+      if (compHand[aceCheckIndex].value == 11 && compTotalValue > 21) {
+        // if ace is in hand, convert its value to 1. the moment this happens, the value is sure to be less than 21 so it is alright to just stop it there.
+        compHand[aceCheckIndex].value = 1;
+        compTotalValue = compTotalValue - 10;
+      }
+      aceCheckIndex += 1;
     }
-    //if player has bust, push (Draw)
-    else if (playerTotalValue >= 21) {
-      mode = "dealmode";
-      var myOutputValue = `${playerStandText}<br><br>The computer has bust with a hand of ${compTotalValue}! You have therefore drawn! Comp hand: ${compHandText} <br><br> Your hand: ${playerHandText}`;
+    if (compTotalValue < 16) {
+      return `The computer has drawn a card and has decided to draw again. The computer currently has ${compHand.length} cards in hand`;
+    } else if (compTotalValue > 21) {
+      //if player has <= 21, comp loses
+      var comparisonIndex = 0;
+      var myOutputValue = `The computer bust with a hand of ${compTotalValue}<br><br>${compHandText}`;
+      while (comparisonIndex < noOfPlayers) {
+        if (allPlayers[comparisonIndex].player.handTotal <= 21) {
+          myOutputValue = `${myOutputValue}<br><br> ${allPlayers[comparisonIndex].player.username}, your total hand is ${allPlayers[comparisonIndex].player.handTotal}. The computer has bust with a hand of ${compTotalValue}! You win!<br> ${allPlayers[comparisonIndex].player.handText}`;
+        }
+        //if player has bust, push (Draw)
+        else if (allPlayers[comparisonIndex].player.handTotal >= 21) {
+          myOutputValue = `${myOutputValue}<br><br> ${allPlayers[comparisonIndex].player.username}, your total hand is ${allPlayers[comparisonIndex].player.handTotal}. The computer has bust with a hand of ${compTotalValue}! You have therefore drawn!<br> ${allPlayers[comparisonIndex].player.handText}`;
+        }
+        comparisonIndex += 1;
+      }
     }
-    return myOutputValue;
-  }
-};
-
-var faceOffFunc = function (
-  compHand,
-  playerHand,
-  playerTotalValue,
-  compTotalValue
-) {
-  var handText = handTextGenerate(compHand, playerHand);
-  var myOutputValue = "";
-  if (
-    playerTotalValue > compTotalValue &&
-    playerTotalValue <= 21 &&
-    compTotalValue <= 21
-  ) {
-    mode = "dealmode";
-    myOutputValue = `You have won with a total hand of ${playerTotalValue} over the computer's hand of ${compTotalValue}. ${handText}`;
-  } else if (
-    playerTotalValue < compTotalValue &&
-    playerTotalValue <= 21 &&
-    compTotalValue <= 21
-  ) {
-    mode = "dealmode";
-    myOutputValue = `You have lost with a total hand of ${playerTotalValue} compared to the computer's hand of ${compTotalValue}. ${handText}`;
-  } else if (playerTotalValue > 21 && compTotalValue <= 21) {
-    mode = "dealmode";
-    myOutputValue = `You have lost with a busted value of ${playerTotalValue} compared to the computer's hand of ${compTotalValue}. ${handText}.`;
-  } else if (playerTotalValue == compTotalValue) {
-    mode = "dealmode";
-    myOutputValue = `You have pushed (draw) with both total hands of ${playerTotalValue}. ${handText}`;
   }
   return myOutputValue;
 };
 
 var inputDisplay = function () {
   // change to new lowest and normal modes
-  if (mode == "inputname") {
+  if (mode == "playersetup") {
+    return "Please input the number of players for this round.";
+  } else if (mode == "inputname") {
     return "Please input your name.";
+  } else if (mode == "compdeal") {
+    return `Please click submit for the computer to deal the cards!`;
   } else if (mode == "dealmode") {
-    return `${username}, please click submit!`;
+    return `Please click submit!`;
   } else if (mode == "playerturn") {
-    return `${username}, please choose to either hit or stand.`;
+    return `${allPlayers[cardDisplayCounter].player.username}, please choose to either hit or stand.`;
+  } else if (mode == "playerDecisionTurn") {
+    return `Next player, please click submit to see your hand.`;
+  } else if (mode == "playerEndTurn") {
+    return `This is the end of your turn.`;
   } else if (mode == "compturn") {
     return "It is now the computer's turn. Please click submit.";
   } else if (mode == "playerBlackjackCheck" || mode == "compBlackjackCheck") {
