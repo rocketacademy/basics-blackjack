@@ -184,7 +184,7 @@ var hitOrStand = function () {
     outputText = `You chose to end your turn. <br>`;
   }
 
-  outputText += `<br>Your cards are: <br>`;
+  outputText += `Your cards are: <br>`;
 
   var counter = 0;
   while (counter < numOfPlayerCards) {
@@ -192,44 +192,64 @@ var hitOrStand = function () {
     counter += 1;
   }
 
-  outputText += `<br>The dealer's cards are: <br>`;
+  outputText += `<br>The dealer's face-up cards are: <br>`;
 
   var counter = 0;
-  while (counter < numOfComputerCards) {
+  while (counter < numOfComputerCards - 1) {
     outputText += `${computerCards[counter].name} of ${computerCards[counter].suit} <br>`;
     counter += 1;
   }
 
-  outputText += `<br><br> Your cards total ${playerCardsTotal}. <br> The dealer's cards total ${computerCardsTotal}.<br><br>`;
+  var computerFaceupCardsTotal =
+    computerCardsTotal - computerCards[numOfComputerCards - 1].rank;
+
+  outputText += `<br> Your cards total ${playerCardsTotal}. <br> The dealer's face-up cards total ${computerFaceupCardsTotal}.<br>`;
 
   // the user's cards are analysed for winning or losing conditions
-  if (playerCardsTotal < 21 && userInput != "stand") {
+  if (
+    playerCardsTotal < 21 &&
+    userInput != "stand" &&
+    computerCardsTotal <= 21
+  ) {
     outputText += `Please enter "hit" to deal another card from the deck, or enter "stand" to end your turn and stop without taking a card.`;
   } else if (playerCardsTotal == 21) {
-    outputText += `You win! <br><br> Refresh the page to restart the game.`;
+    outputText += `<br> The dealer
+    s face-down card is ${computerCards[numOfComputerCards - 1].name} of ${
+      computerCards[numOfComputerCards - 1].suit
+    }. <br> The dealer's cards total ${computerCardsTotal}. <br><br> You win! <br><br> Refresh the page to restart the game.`;
     gameMode == GAME_MODE_DEAL_CARDS;
   } else if (playerCardsTotal > 21) {
-    outputText += `You bust! <br><br> Refresh the page to restart the game.`;
+    outputText += `<br> The dealer
+    s face-down card is ${computerCards[numOfComputerCards - 1].name} of ${
+      computerCards[numOfComputerCards - 1].suit
+    }. <br> The dealer's cards total ${computerCardsTotal}. <br><br> You bust! <br><br> Refresh the page to restart the game.`;
     gameMode == GAME_MODE_DEAL_CARDS;
   } else if (
-    playerCardsTotal < 21 &&
     playerCardsTotal < computerCardsTotal &&
     computerCardsTotal <= 21
   ) {
-    outputText += `You lose! <br><br> Refresh the page to restart the game.`;
+    outputText += `<br> The dealer
+    s face-down card is ${computerCards[numOfComputerCards - 1].name} of ${
+      computerCards[numOfComputerCards - 1].suit
+    }. <br> The dealer's cards total ${computerCardsTotal}. <br><br> You lose! <br><br> Refresh the page to restart the game.`;
     gameMode == GAME_MODE_DEAL_CARDS;
-  } else if (
-    playerCardsTotal <= 21 &&
-    playerCardsTotal > computerCardsTotal &&
-    computerCardsTotal > 16
-  ) {
-    outputText += `You win! <br><br> Refresh to restart the game.`;
+  } else if (playerCardsTotal <= 21 && playerCardsTotal > computerCardsTotal) {
+    outputText += `<br> The dealer
+    s face-down card is ${computerCards[numOfComputerCards - 1].name} of ${
+      computerCards[numOfComputerCards - 1].suit
+    }. <br> The dealer's cards total ${computerCardsTotal}. <br><br> You win! <br><br> Refresh to restart the game.`;
     gameMode == GAME_MODE_DEAL_CARDS;
   } else if (computerCardsTotal > 21) {
-    outputText += `The dealer bust! You win! <br><br> Refresh the page to restart the game.`;
+    outputText += `<br> The dealer
+    s face-down card is ${computerCards[numOfComputerCards - 1].name} of ${
+      computerCards[numOfComputerCards - 1].suit
+    }. <br> The dealer's cards total ${computerCardsTotal}. <br><br> The dealer bust! You win! <br><br> Refresh the page to restart the game.`;
     gameMode == GAME_MODE_DEAL_CARDS;
   } else if (computerCardsTotal == playerCardsTotal) {
-    outputText += `It's a tie! Refresh the page to restart the game.`;
+    outputText += `<br> The dealer
+    s face-down card is ${computerCards[numOfComputerCards - 1].name} of ${
+      computerCards[numOfComputerCards - 1].suit
+    }. <br> The dealer's cards total ${computerCardsTotal}. <br><br> It's a tie! Refresh the page to restart the game.`;
     gameMode == GAME_MODE_DEAL_CARDS;
   } else {
     outputText += `ERROR!`;
