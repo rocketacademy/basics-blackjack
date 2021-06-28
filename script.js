@@ -1,9 +1,11 @@
 // Game modes stored in a constant
+const WAITING_FOR_NUM_PLAYERS = "waiting for num of players";
 const WAITING_FOR_NAME = "waiting for username";
 const INSTRUCTIONS = "tell player instructions";
 const ASK_FOR_BET = "ask player for betting amount";
 const TAKE_BET = "take user's bet";
 const DEAL_CARDS = "deal cards";
+const SELECT_PLAYER = "select player and check for blackjack";
 const PLAYER_ACTION = "player hits or stands";
 const CHANGE_ACE_MODE = "change ace mode";
 const COMPUTER_CALCULATES = "computer calculates";
@@ -18,6 +20,7 @@ const ACE_ONE = "ace 1";
 const ACE_ELEVEN = "ace 11";
 
 // Global variables
+var allPlayerCards = [];
 var playerCards = [];
 var computerCards = [];
 var cardDeck = [];
@@ -28,12 +31,15 @@ var computerPoints = 0;
 var aceIndex = 0;
 var aceValue = 0;
 var aceCounter = 0;
-var userName = "";
-var bankRoll = 100;
-var userBet = 0;
+var userName = [];
+var bankRoll = [];
+var userBet = [];
+var numPlayers = 0;
+var stringNames = "";
+var stringBet = "";
 
 // Current game mode
-var gameMode = WAITING_FOR_NAME;
+var gameMode = WAITING_FOR_NUM_PLAYERS;
 
 // Create a deck of cards
 var makeDeck = function () {
@@ -98,12 +104,19 @@ var shuffleDeck = function (cardDeck) {
 
 // Deal a card to player and computer, repeat twice
 var dealCards = function () {
-  dealCounter = 0;
-  while (dealCounter < 2) {
+  for (var playerCounter = 0; playerCounter < numPlayers; playerCounter += 1) {
     playerCards.push(shuffledDeck.pop());
-    computerCards.push(shuffledDeck.pop());
-    dealCounter += 1;
+    playerCards.push(shuffledDeck.pop());
+    allPlayerCards.push(playerCards);
+    playerCards = [];
   }
+  computerCards.push(shuffledDeck.pop());
+  computerCards.push(shuffledDeck.pop());
+  console.log(allPlayerCards + "all player cards");
+  console.log(computerCards + "com acards");
+};
+
+var checkForPlayerBlackjack = function () {
   // Add player and computer scores for first two cards
   playerPoints = playerCards[0].value + playerCards[1].value;
   computerPoints = computerCards[0].value + computerCards[1].value;
@@ -331,25 +344,37 @@ var determineFinalResult = function () {
 
 var main = function (input) {
   var myOutputValue = "";
-  if (gameMode == WAITING_FOR_NAME) {
-    myOutputValue = `Hello player! <br><br> Please enter your name!`;
+  if (gameMode == WAITING_FOR_NUM_PLAYERS) {
+    gameMode = WAITING_FOR_NAME;
+    myOutputValue = `Hello player(s)! <br><br> Please enter the number of people playing`;
+  } else if (gameMode == WAITING_FOR_NAME) {
+    numPlayers = Number(input);
+    myOutputValue = `You have chosen to player with  ${numPlayers} players <br><br> Please enter all your names with a spacing and without a comma!!`;
     gameMode = INSTRUCTIONS;
   } else if (gameMode == INSTRUCTIONS) {
-    userName = input;
+    stringNames = input;
+    userName = stringNames.split(" ");
     gameMode = ASK_FOR_BET;
     myOutputValue = `Hello ${userName}! <br><br> Welcome to blackjack!!! 2️⃣1️⃣♠️❤️♣️♦️ <br><br> These are the rules:<br> You will be dealt two cards after clicking submit <br> The aim is to get 21 points without exceeding it <br> You need to hit a minimum of 17 points <br> Aces are worth either 1 or 11 and can be changed throughout the game <br><br> Press submit to continue`;
   } else if (gameMode == ASK_FOR_BET) {
     gameMode = TAKE_BET;
-    myOutputValue = `${userName}, before we begin enter an amount that you would like to bet!`;
+    myOutputValue = `${userName}, before we begin enter an amount that each of you would like to bet! <br> Please enter the amount with a space and without a comma`;
   } else if (gameMode == TAKE_BET) {
     gameMode = DEAL_CARDS;
-    userBet = Number(input);
-    myOutputValue = `${userName}, you have chosen to bet $${userBet} this round. <br><br> Your current bank total is $${bankRoll}.
+    stringBet = input;
+    userBet = stringBet.split(" ").map(Number);
+    for (var bankCounter = 0; bankCounter < numPlayers; bankCounter += 1) {
+      bankRoll.push(100);
+    }
+    myOutputValue = `${userName}, you have chosen to bet $${userBet} this round respectively. <br><br> Your current bank total is $${bankRoll}.
     <br><br> When you're ready click submit to play! `;
   } else if (gameMode == DEAL_CARDS) {
+    gameMode = SELECT_PLAYER;
     // Empty global variables for subsequent rounds
     playerCards = [];
     computerCards = [];
+    allPlayerCards = [];
+    userBet = [];
     playerPoints = 0;
     computerPoints = 0;
     // Create a deck of cards
@@ -358,6 +383,9 @@ var main = function (input) {
     shuffledDeck = shuffleDeck(cardDeck);
     // Deal two cards to player and computer
     myOutputValue = dealCards();
+  } else if (gameMode == SELECT_PLAYER) {
+    gameMode = PLAYER_ACTION;
+    myOutputValue = checkForPlayerBlackjack();
   }
   // Run while loop to generate all player card names and suits to be used below
   aceCounter = 0;
