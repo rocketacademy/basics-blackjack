@@ -90,7 +90,7 @@ var isBlackJack = function (hand) {
   var sum = getCurrentSumHand(hand);
   if (sum === blackjackLimit) {
     return true;
-  }
+  } else return false;
 };
 
 var getWinner = function () {
@@ -98,6 +98,12 @@ var getWinner = function () {
   var botHandTotal = getCurrentSumHand(botHand);
   if (userHandTotal > botHandTotal) return "user";
   else return "bot";
+};
+
+var checkHandLimit = function (hand) {
+  if (getCurrentSumHand(hand) > blackjackLimit) {
+    return true;
+  } else return false;
 };
 
 deck = shuffleCards(makeDeck());
@@ -122,6 +128,13 @@ var playBlackJack = function (input) {
     var winner = getWinner();
     if (winner == "user") return `You won!`;
     else return `You lose, the bot had ${getCurrentSumHand(botHand)}.`;
+  }
+  if (!userStand && input == "hit") {
+    userHand.push(drawOneCard());
+    if (checkHandLimit(userHand)) {
+      gameState = true;
+      return `Busted! Your total hand is ${getCurrentSumHand(userHand)}`;
+    }
   }
 };
 
