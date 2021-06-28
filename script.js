@@ -136,6 +136,14 @@ var playBlackJack = function (input) {
       return `Busted! Your total hand is ${getCurrentSumHand(userHand)}`;
     }
   }
+
+  if (getCurrentSumHand(botHand) <= 16) {
+    botHand.push(drawOneCard());
+    if (checkHandLimit(botHand)) {
+      gameState = true;
+      return `Busted! Your total hand is ${getCurrentSumHand(botHand)}`;
+    }
+  }
 };
 
 var main = function (input) {
