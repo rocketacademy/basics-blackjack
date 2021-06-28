@@ -45,7 +45,7 @@ var makeDeck = function () {
     // This is an example of a loop without an array.
     var rankCounter = 1;
     while (rankCounter <= 13) {
-      // new variable 'blackJackScore' is created to change the rank of jacks, queens, and kings to 10 WITHOUT messing up the other cards in the deck
+      // created new variable 'blackJackScore' to change the rank of jacks, queens, and kings to 10 WITHOUT changing the ranks of other cards in the deck.
       var blackJackScore = rankCounter;
       // By default, the card name is the same as rankCounter
       var cardName = rankCounter;
@@ -86,12 +86,6 @@ var makeDeck = function () {
   return cardDeck;
 };
 
-// // a function that takes a normal card deck and assigns the rank of 10 to all Jacks, Queens, and Kings
-// var blackJackDeck = function (cardDeck) {
-//   if
-//   return cardDeck;
-// };
-
 var main = function (input) {
   var cardDeck = makeDeck();
   var shuffledDeck = shuffleCards(cardDeck);
@@ -111,11 +105,10 @@ var main = function (input) {
   console.log(`Computer's score: ${computerInitialScore}`);
   console.log(`Player's score: ${playerInitialScore}`);
 
+  // output message to display outcome
   message = `Computer's hand: <br>${computerCard1.name} of ${computerCard1.suit} <br>${computerCard2.name} of ${computerCard2.suit} <br><br> Player's hand: <br>${playerCard1.name} of ${playerCard1.suit} <br>${playerCard2.name} of ${playerCard2.suit}`;
 
   // determine who is initial winner
-
-  // first, have to set the ranks of Jack, Queen, and King as 10
 
   // it's a tie: player and computer has same score
   if (playerInitialScore == computerInitialScore) {
