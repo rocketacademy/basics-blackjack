@@ -10,6 +10,7 @@ const PLAYER_ACTION = "player hits or stands";
 const CHANGE_ACE_MODE = "change ace mode";
 const COMPUTER_CALCULATES = "computer calculates";
 const FINAL_RESULT = "final result";
+const GAME_SUMMARY = "output all results";
 
 // Declare user inputs as a constant
 const INPUT_HIT = "hit";
@@ -18,6 +19,7 @@ const INPUT_CHANGE_ACE = "ace";
 const POSITION = "position";
 const ACE_ONE = "ace 1";
 const ACE_ELEVEN = "ace 11";
+const INPUT_RESET = "reset";
 
 // Global variables
 var allPlayerOutcomes = [];
@@ -120,6 +122,9 @@ var dealCards = function () {
 };
 
 var selectPlayer = function () {
+  if (currentPlayer == numPlayers) {
+    gameMode = GAME_SUMMARY;
+  }
   // Add player scores for first two cards
   // Use global value 'currentPlayer' to change index and hence player's cards that are being accessed in main array when it's subsequent player's turn
   playerPoints =
@@ -178,7 +183,7 @@ var selectPlayer = function () {
   } else {
     gameMode = PLAYER_ACTION;
     // Otherwise inform player of current cards and ask if they want to hit, stand or change ace value
-    return `${userName[currentPlayer]}, your cards are: <br>${allPlayerCards[currentPlayer][0].name} of ${allPlayerCards[currentPlayer][0].emojiSuit} <br>${allPlayerCards[currentPlayer][1].name} of ${allPlayerCards[currentPlayer][1].emojiSuit}  <br> Your points: ${playerPoints} <br><br> Please enter 'hit' if you would like more cards <br><br> Please enter 'stand' if you do not want anymore cards <br><br> Please enter 'ace' if you would like to change the value of an ace card`;
+    return `${userName[currentPlayer]}, your cards are: <br>${allPlayerCards[currentPlayer][0].name} of ${allPlayerCards[currentPlayer][0].emojiSuit} <br>${allPlayerCards[currentPlayer][1].name} of ${allPlayerCards[currentPlayer][1].emojiSuit}  <br> Your points: ${playerPoints} <br><br> Please enter 'hit' if you would like more cards <br><br> Please enter 'stand' if you do not want anymore cards <br><br> Please enter 'ace' if you would like to change the value of an ace card<br><br> Please enter 'reset' if you would like to restart the game`;
   }
 };
 
@@ -231,7 +236,7 @@ var changeAceValue = function (input) {
   }
   return (
     aceChangeOutput +
-    `<br> Your points: ${playerPoints}<br><br> Please enter 'hit' if you would like more cards <br><br> Please enter 'stand' if you do not want anymore cards <br><br> Please enter 'ace' if you would like to change the value of an ace card`
+    `<br> Your points: ${playerPoints}<br><br> Please enter 'hit' if you would like more cards <br><br> Please enter 'stand' if you do not want anymore cards <br><br> Please enter 'ace' if you would like to change the value of an ace card<br><br> Please enter 'reset' if you would like to restart the game`
   );
 };
 
@@ -245,7 +250,7 @@ var playerDrawsExtraCard = function () {
   while (playerCounter < allPlayerCards[currentPlayer].length) {
     playerPoints =
       playerPoints + allPlayerCards[currentPlayer][playerCounter].value;
-    endMessage = `<br> Your points: ${playerPoints}<br><br> Please enter 'hit' if you would like more cards <br><br> Please enter 'stand' if you do not want anymore cards <br><br> Please enter 'ace' if you would like to change the value of an ace card`;
+    endMessage = `<br> Your points: ${playerPoints}<br><br> Please enter 'hit' if you would like more cards <br><br> Please enter 'stand' if you do not want anymore cards <br><br> Please enter 'ace' if you would like to change the value of an ace card<br><br> Please enter 'reset' if you would like to restart the game`;
     playerCounter += 1;
   }
   // Run while loop to output all player card names and suits in output statement
@@ -418,6 +423,7 @@ var determineFinalResult = function () {
   playerPoints = 0;
   // Determine game outcome
   if (playerPoints > computerPoints) {
+    allPlayerOutcomes.push("win");
     bankRoll[currentPlayer - 1] =
       bankRoll[currentPlayer - 1] + userBet[currentPlayer - 1];
     return `${
@@ -426,6 +432,7 @@ var determineFinalResult = function () {
       bankRoll[currentPlayer - 1]
     }`;
   } else if (playerPoints < computerPoints) {
+    allPlayerOutcomes.push("lose");
     bankRoll[currentPlayer - 1] =
       bankRoll[currentPlayer - 1] - userBet[currentPlayer - 1];
     return `${
@@ -434,6 +441,7 @@ var determineFinalResult = function () {
       bankRoll[currentPlayer - 1]
     } `;
   } else {
+    allPlayerOutcomes.push("draw");
     bankRoll[currentPlayer - 1] =
       bankRoll[currentPlayer - 1] - userBet[currentPlayer - 1];
     return `${
@@ -444,8 +452,24 @@ var determineFinalResult = function () {
   }
 };
 
+// Need two loops to fix
+var displayGameSummary = function () {
+  gameMode = ASK_FOR_BET;
+  var summaryCounter = 0;
+  var summaryOutput = `Player ${summaryCounter + 1}, you have ${
+    allPlayerOutcomes[summaryCounter]
+  }! <br> Your cards were: `;
+  while (summaryCounter < numPlayers) {
+    summaryOutput =
+      summaryOutput +
+      `<br> ${allPlayerCards[currentPlayer][summaryCounter].name} of ${allPlayerCards[currentPlayer][summaryCounter].emojiSuit} <br>`;
+    summaryCounter += 1;
+  }
+  return summaryOutput;
+};
+
 var generatePlayerCardList = function (allPlayerCards) {
-  var aceCounter = 0;
+  aceCounter = 0;
   var playerCardMessage = `Your cards are: `;
   while (aceCounter < allPlayerCards[currentPlayer].length) {
     playerCardMessage =
@@ -460,6 +484,10 @@ var main = function (input) {
   var myOutputValue = "";
   if (gameMode == WAITING_FOR_NUM_PLAYERS) {
     // Empty global variables if players want to change no of players
+
+    gameMode = WAITING_FOR_NAME;
+    myOutputValue = `Hello player(s)! <br><br> Please enter the number of people playing`;
+  } else if (gameMode == WAITING_FOR_NAME) {
     playerPoints = 0;
     computerPoints = 0;
     allPlayerOutcomes = [];
@@ -468,9 +496,6 @@ var main = function (input) {
     userName = [];
     userBet = [];
     bankRoll = [];
-    gameMode = WAITING_FOR_NAME;
-    myOutputValue = `Hello player(s)! <br><br> Please enter the number of people playing`;
-  } else if (gameMode == WAITING_FOR_NAME) {
     numPlayers = Number(input);
     myOutputValue = `You have chosen to player with ${numPlayers} players <br><br> Please enter all your names with a spacing and without a comma!!`;
     gameMode = INSTRUCTIONS;
@@ -508,13 +533,21 @@ var main = function (input) {
     shuffledDeck = shuffleDeck(cardDeck);
     // Deal two cards to player and computer
     myOutputValue = dealCards();
+  } else if (currentPlayer == numPlayers) {
+    gameMode = GAME_SUMMARY;
   } else if (gameMode == SELECT_PLAYER) {
+    if (currentPlayer == numPlayers) {
+      gameMode = GAME_SUMMARY;
+    }
     // Reset global variable before switching player
     gameMode = PLAYER_ACTION;
     myOutputValue = selectPlayer();
+  } else if (gameMode == GAME_SUMMARY) {
+    myOutputValue = displayGameSummary();
+    gameMode = ASK_FOR_BET;
   }
   // // Run while loop to generate all player card names and suits to be used below
-  // var aceCounter = 0;
+  //  aceCounter = 0;
   // var playerCardMessage = `Your cards are: `;
   // while (aceCounter < allPlayerCards[currentPlayer].length) {
   //   playerCardMessage =
@@ -562,6 +595,10 @@ var main = function (input) {
     myOutputValue = determineFinalResult();
     gameMode = SELECT_PLAYER;
   }
-
+  if (input == INPUT_RESET) {
+    gameMode = WAITING_FOR_NAME;
+    myOutputValue =
+      myOutputValue = `Hello player(s)! <br><br> Please enter the number of people playing`;
+  }
   return myOutputValue;
 };
