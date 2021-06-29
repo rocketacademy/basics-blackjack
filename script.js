@@ -8,6 +8,7 @@ var finalResult = "";
 var gameStatus = "playing";
 var userDecision = "";
 var firstRound = 1;
+var computerDecisionOutput = "";
 // Hard coded deck of cards
 var deck = [
   {
@@ -350,6 +351,7 @@ var makeDeck = function () {
       // If rank is 1, 11, 12, or 13, set cardName to the ace or face card's name
       if (cardName == 1) {
         cardName = "ace";
+        cardValue = 11;
       } else if (cardName == 11) {
         cardName = "jack";
         cardValue = 10;
@@ -428,10 +430,9 @@ var main = function (input) {
 
     // After first two cards are drawn cards are analysed to see if either user or computer hits 21
     // For two cards, the only possibility of a win is if one card is an ace and they other card has a value of 10
-
     for (i = 0; i < 2; i += 1) {
       if (userCardsArray[i].name == "ace") {
-        if (userCardsArray[0].value + userCardsArray[1].value == 11) {
+        if (userCardsArray[0].value + userCardsArray[1].value == 21) {
           // User wins blackjack
           userResult = "You win blackjack!";
           gameStatus = "over";
@@ -441,14 +442,13 @@ var main = function (input) {
 
     for (i = 0; i < 2; i += 1) {
       if (computerCardsArray[i].name == "ace") {
-        if (computerCardsArray[0].value + computerCardsArray[1].value == 11) {
+        if (computerCardsArray[0].value + computerCardsArray[1].value == 21) {
           // User wins blackjack
           computerResult = "The computer wins blackjack!";
           gameStatus = "over";
         }
       }
     }
-    firstRound = 0;
   }
 
   if (!firstRound) {
@@ -461,25 +461,38 @@ var main = function (input) {
 
     // Computer hits or stands automatically based on game rules (if computer's hands is below 17, the computer hits)
     computerScore = 0;
+    computerNumberOfAces = 0;
     for (i = 0; i < computerCardsArray.length; i += 1) {
       var computerScore = computerScore + computerCardsArray[i].value;
+      if (computerCardsArray[i].name == "ace") {
+        computerNumberOfAces = computerNumberOfAces + 1;
+      }
+    }
+    if (computerScore > 21) {
+      for (i = 0; i < computerNumberOfAces; i += 1) {
+        if (computerScore <= 21) {
+          break;
+        }
+        computerScore = computerScore - 10;
+      }
     }
     if (computerScore < 17) {
       var computerDecision = "hit";
+      computerDecisionOutput = "The computer has decided to hit";
     } else {
       computerDecision = "stand";
+      computerDecisionOutput = "The computer has decided to stand";
     }
 
     if (computerDecision == "hit") {
       var randomCard = shuffledDeck.pop();
       computerCardsArray.push(randomCard);
     }
-
     if (userDecision == "stand" && computerDecision == "stand") {
       gameStatus = "over";
     }
   }
-
+  console.log(computerCardsArray);
   // User's cards are converted to an output
   var userCards = "";
   for (i = 0; i < userCardsArray.length; i += 1) {
@@ -496,15 +509,41 @@ var main = function (input) {
 
   // User's and computer's cards are compared to determine win/lose/draw result
   // Once game is over, display the user's and computer's cards, their scores, and who won
+  // Ace is counted as 11 first. If it causes a bust, minus total score by 10
   if (gameStatus == "over") {
     var userScore = 0;
+    var userNumberOfAces = 0;
     for (i = 0; i < userCardsArray.length; i += 1) {
       userScore = userScore + userCardsArray[i].value;
+      if (userCardsArray[i].name == "ace") {
+        userNumberOfAces = userNumberOfAces + 1;
+      }
+    }
+
+    if (userScore > 21) {
+      for (i = 0; i < userNumberOfAces; i += 1) {
+        if (userScore <= 21) {
+          break;
+        }
+        userScore = userScore - 10;
+      }
     }
 
     var computerScore = 0;
+    var computerNumberOfAces = 0;
     for (i = 0; i < computerCardsArray.length; i += 1) {
       computerScore = computerScore + computerCardsArray[i].value;
+      if (computerCardsArray[i].name == "ace") {
+        computerNumberOfAces = computerNumberOfAces + 1;
+      }
+    }
+    if (computerScore > 21) {
+      for (i = 0; i < computerNumberOfAces; i += 1) {
+        if (computerScore <= 21) {
+          break;
+        }
+        computerScore = computerScore - 10;
+      }
     }
 
     // Scanarios
@@ -515,6 +554,9 @@ var main = function (input) {
       }
       if (computerScore > userScore) {
         finalResult = "Computer wins";
+      }
+      if (computerScore == userScore) {
+        finalResult = "It is a draw";
       }
     }
     // User gets blackjack and computer does not
@@ -551,25 +593,43 @@ var main = function (input) {
     }
     var finalOutput =
       userResult +
-      "<br>" +
+      "<br><br>" +
       computerResult +
-      "<br>" +
+      "<br><br>" +
+      "Your cards are " +
       userCards +
       "<br>" +
+      "Your score is " +
       userScore +
-      "<br>" +
+      "<br><br>" +
+      "The computer's cards are " +
       computerCards +
       "<br>" +
+      "The computer's score is " +
       computerScore +
-      "<br>" +
+      "<br><br>" +
       finalResult;
+
+    //Restart game variables
+    // Array of user's cards
+    userCardsArray = [];
+    // Array of computer's cards
+    computerCardsArray = [];
+    userResult = "";
+    computerResult = "";
+    finalResult = "";
+    gameStatus = "playing";
+    userDecision = "";
+    firstRound = 1;
+    computerDecisionOutput = "";
     return finalOutput;
   }
-
+  firstRound = 0;
   // If game is still going on, return output of the user's cards
   return (
     "Your cards are " +
     userCards +
-    "<br><br>Please choose whether to hit or stand"
+    "<br><br>Please choose whether to hit or stand<br><br>" +
+    computerDecisionOutput
   );
 };
