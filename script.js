@@ -226,57 +226,15 @@ var checkForBlackjack = function () {
 
   if (playerTotal == 21 && computerTotal == 21) {
     blackjack = true;
-    myOutputValue = `You both got <center><b>♣️BLACKJACK♠️</b></center> It's a push, no one wins! 🙃`;
+    myOutputValue = `You both got <center><b>♣️BLACKJACK♠️</b> <br>It's a push, no one wins! 🙃</center>`;
   } else if (playerTotal == 21) {
     blackjack = true;
-    myOutputValue = `You got <center><b>♣️BLACKJACK♠️</b></center> You win! 🙂`;
+    myOutputValue = `You got <center><b>♣️BLACKJACK♠️</b><br> 🥳<b>YOU WON!!!!!</b> 🥳 </center>`;
   } else if (computerTotal == 21) {
     blackjack = true;
-    myOutputValue = `The computer got <center><b>♣️BLACKJACK♠️</b></center> You lose! 😔`;
-  }
-  return myOutputValue;
-};
-
-// Determines winner based on winning conditions
-var generateOutcome = function () {
-  playerTotal = totalCards(playerHand);
-  computerTotal = totalCards(computerHand);
-
-  var playerCards = displayCards(playerHand);
-  var computerCards = displayCards(computerHand);
-  var nearestBlackjack = nearestToBlackJack(playerTotal, computerTotal);
-  var blackjackWinner = checkForBlackjack();
-
-  //Output messages
-  var total = `${username}: ${playerTotal} <br> Computer: ${computerTotal} <br>`;
-  var printCards = `${username}, you drew: <br> ${playerCards} <br><br> Computer drew: <br> ${computerCards}`;
-  var endingMessage = `<br><br> ${printCards} <br> <br> Click submit to play another game of <b>♣️BLACKJACK♠️</b> again!`;
-
-  if (blackjack == false) {
-    // Tie
-    if (playerTotal == computerTotal) {
-      myOutputValue = `${total} You both have the same total. It's a push, no one wins! 😭`;
-    } // Player busts
-    else if (playerTotal > 21) {
-      myOutputValue = `${total} You bust and lost! 🥲`;
-    } // Computer busts
-    else if (computerTotal > 21) {
-      myOutputValue = `${total} The computer bust! You WON!!!!  😆`;
-    } // Both bust
-    else if (computerTotal > 21 && playerTotal > 21) {
-      myOutputValue = `${total} Nobody wins! You both bust! ☹️`;
-    } // Player closer to 21 wins
-    else if (nearestBlackjack == playerTotal) {
-      myOutputValue = ` ${total} You WON!!!!! 🥳`;
-    } // Computer closer to 21 wins
-    else if (nearestBlackjack == computerTotal) {
-      myOutputValue = `${total} You lost! 😩`;
-    }
-  } else myOutputValue = `${total} <br> ${blackjackWinner}`;
-
-  myOutputValue += endingMessage;
-  resetGame();
-
+    myOutputValue = `The computer got <center><b>♣️BLACKJACK♠️</b><br> You lose! 😔 </center>`;
+  } else blackjack = false;
+  console.log(blackjack);
   return myOutputValue;
 };
 
@@ -292,6 +250,49 @@ var nearestToBlackJack = function (a, b) {
   }
 };
 
+// Determines winner based on winning conditions
+var generateOutcome = function () {
+  playerTotal = totalCards(playerHand);
+  computerTotal = totalCards(computerHand);
+
+  var playerCards = displayCards(playerHand);
+  var computerCards = displayCards(computerHand);
+  var nearestBlackjack = nearestToBlackJack(playerTotal, computerTotal);
+  var blackjackWinner = checkForBlackjack();
+
+  //Output messages
+  var total = `${username}: ${playerTotal} <br> Computer: ${computerTotal} <br>`;
+  var printCards = `${username}, you drew: <br> ${playerCards} <br><br> Computer drew: <br> ${computerCards}`;
+  var endingMessage = `<br>${printCards} <br> <br> Click submit to play another game of <b>♣️BLACKJACK♠️</b> again!`;
+
+  if (blackjack == false) {
+    // Tie
+    if (playerTotal == computerTotal) {
+      myOutputValue = `${total} <br><center> You both have the same total. <br> It's a push, no one wins! 😭 </center>`;
+    } // Both bust
+    else if (computerTotal > 21 && playerTotal > 21) {
+      myOutputValue = `${total} <br><center> Nobody wins! <br> You both bust!😭 </center>`;
+    } // Player busts
+    else if (playerTotal > 21) {
+      myOutputValue = `${total} <br><center> You bust and lost! 🥲 </center>`;
+    } // Computer busts
+    else if (computerTotal > 21) {
+      myOutputValue = `${total} <br><center> The computer bust! <br> 🥳<b>YOU WON!!!!!</b> 🥳 </center>`;
+    } // Player closer to 21 wins
+    else if (nearestBlackjack == playerTotal) {
+      myOutputValue = ` ${total} <br><center> 🥳<b>YOU WON!!!!!</b> 🥳 </center> `;
+    } // Computer closer to 21 wins
+    else if (nearestBlackjack == computerTotal) {
+      myOutputValue = `${total} <br><center> You lost! 😩 </center>`;
+    }
+  } else myOutputValue = `${total} <br> ${blackjackWinner}`;
+
+  myOutputValue += endingMessage;
+  resetGame();
+
+  return myOutputValue;
+};
+
 var hitStandChoice = function (input) {
   var playerCards = displayCards(playerHand);
   var playerTotal = totalCards(playerHand);
@@ -302,7 +303,7 @@ var hitStandChoice = function (input) {
     variableAce(playerHand, playerTotal);
     playerCards = displayCards(playerHand);
     playerTotal = totalCards(playerHand);
-    myOutputValue = `You drew a card. Your hand is now <br> ${playerCards} <br> Your total now: <b>${playerTotal}</b> <br><br> Enter "hit" to draw another card or click submit to stand.`;
+    myOutputValue = `You drew a card. Your hand is now: <br> ${playerCards} <br> Your total now: <b>${playerTotal}</b> <br><br> Enter "hit" to draw another card or click submit to stand.`;
 
     // Player must hit if total still less than 17 after drawing once
     if (playerTotal < 17) {
@@ -418,7 +419,7 @@ var shuffleCards = function (cardDeck) {
 // game instructions for user
 var instructions = `
 <center><strong>♣️BLACKJACK♠️ INSTRUCTIONS</strong></center><br>
-1. Objective: beat the dealer's hand without going over 21. <br><br>
+1. Objective: beat the dealer's hand without going over <b>21</b>. <br><br>
 2. You will be dealt two cards at the start of the game. The total value of the cards will be calculated for you. <br>
 <i> Face cards are worth 10. Aces are worth 1 or 11, whichever makes a better hand. </i> <br><br>
 3. Each player starts with two cards, one of the dealer's cards is hidden until the end. <br><br>
