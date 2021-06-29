@@ -89,7 +89,7 @@ var updatePlayerNames = function (playerNameInput) {
     return resultMessage;
   }
   // Valid input, so we update player names in the `players` array
-  players[turn].playerName = playerNameInput.italics();
+  players[turn].playerName = playerNameInput.italics(); // As best practice, we should not store strings with formatting included, but we do it here for convenience
   resultMessage = `Welcome to 🃏 Blackjack 🃏, ${players[turn].playerName}!`;
   turn += 1;
   // Condition to check if we have added the names for all players
