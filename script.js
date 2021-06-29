@@ -124,12 +124,31 @@ var displayCardsInHand = function (handArray, displayCardsArray, cardName) {
   return displayCardsArray;
 };
 
+// if (currCard.rank == 1 && totalScore < maxScore) {
+//   currCard.rank = 11;
+
+//   if (currCard.rank == 1 && totalScore > maxScore) {
+//     currCard.rank = 1;
+//   }
+// }
 // cal total score in hand
 // https://stackoverflow.com/questions/1230233/how-to-find-the-sum-of-an-array-of-numbers
 var calTotalScore = function (array, rank) {
   var totalScore = 0;
   for (var counter = 0; counter < array.length; counter += 1) {
+    var currCard = array[counter];
+    // set default ace value to 11
+    if (currCard.rank == 1) {
+      currCard.rank = 11;
+    }
     totalScore += array[counter].rank;
+
+    while (totalScore > maxScore) {
+      if (currCard.rank == `ace`) {
+        currCard.rank = 1;
+      }
+      totalScore += array[counter].rank;
+    }
   }
   return totalScore;
 };
@@ -157,26 +176,17 @@ var dealHands = function () {
 
   // check for blackjack win conditions
   if (
-    playerHand.length == 2 &&
-    playerCurrScore == 11 &&
-    (playerCard1.rank == 1 || playerCard2.rank == 1)
-  ) {
-    myOutputValue = `${message}Player has Blackjack, Player won! <br><br>${refreshGameMessage}`;
-  } else if (
     dealerHand.length == 2 &&
-    dealerCurrScore == 11 &&
-    (dealerCard1.rank == 1 || dealerCard2.rank == 1)
-  ) {
-    myOutputValue = `${message}Dealer has Blackjack, dealer won!<br><br> ${refreshGameMessage}`;
-  } else if (
-    dealerHand.length == 2 &&
-    dealerCurrScore == 11 &&
-    (dealerCard1.rank == 1 || dealerCard2.rank == 1) &&
+    dealerCurrScore == 21 &&
     playerHand.length == 2 &&
-    playerCurrScore == 11 &&
-    (playerCard1.rank == 1 || playerCard2.rank == 1)
+    playerCurrScore == 21
   ) {
     myOutputValue = `Both players have Blackjack! Its a tie!!<br><br>${refreshGameMessage}`;
+  }
+  if (playerHand.length == 2 && playerCurrScore == 21) {
+    myOutputValue = `${message}Player has Blackjack, Player won! <br><br>${refreshGameMessage}`;
+  } else if (dealerHand.length == 2 && dealerCurrScore == 21) {
+    myOutputValue = `${message}Dealer has Blackjack, dealer won!<br><br> ${refreshGameMessage}`;
   }
 
   return myOutputValue;
@@ -210,16 +220,16 @@ var playerDrawCard = function () {
 // dealer will continue to draw card if the total score is below 17
 var dealerDrawCard = function () {
   var myOutputValue = "";
-  if (dealerCurrScore == dealerMinimalScore) {
+  if (dealerCurrScore >= dealerMinimalScore) {
     return ` Your hand is ${displayCardsInHand(
       playerHand,
       displayPlayerCardArray,
       cardName
-    )} <br> <br> Dealer hand is ${displayCardsInHand(
+    )} <br>Your score is ${playerCurrScore} <br><br> Dealer hand is ${displayCardsInHand(
       dealerHand,
       displayDealerCardArray,
       cardName
-    )} <br>Both dealer and player have same score of ${dealerCurrScore}!`;
+    )} <br>Dealer score is ${dealerCurrScore}. <br> `;
   } else {
     var counter = 0;
     while (dealerCurrScore < dealerMinimalScore) {
