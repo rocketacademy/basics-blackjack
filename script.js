@@ -196,105 +196,25 @@ var playBlackJackPlayer = function (hand, input) {
   )}<br><br>Bot Hand<br>${displayHand(botHand)}<br>${displayPoints()}`;
 };
 
-var playBlackJack = function (input) {
-  // if (playerHands[playerCounter].length === 0) {
-  //   var counter = 0;
-  //   while (counter < numberOfPlayers) {
-  //     playerHands[counter].push(drawOneCard());
-  //     playerHands[counter].push(drawOneCard());
-  //     counter++;
-  //   }
-  //   botHand.push(drawOneCard());
-  //   botHand.push(drawOneCard());
-  //   //Check if any hand wins.
-  //   if (isBlackJack(botHand)) {
-  //     gameState = true;
-  //     points -= Number(wager);
-  //     return `Oh nooo, you lose! The bot had won with a Blackjack <br><br> Player Hand<br>${displayHand(
-  //       userHand
-  //     )}<br><br>Bot Hand<br>${displayHand(botHand)}<br>${displayPoints()}`;
-  //   }
-  //   return `Player Hand<br>${displayHand(
-  //     userHand
-  //   )}<br><br>Bot Hand<br>${displayHand(
-  //     botHand
-  //   )}<br><br>Do you want to 'hit' or 'stand'?`;
-  // }
-
-  // if (userStand && getCurrentSumHand(botHand) > 16) {
-  //   gameState = true;
-  //   var winner = getWinner();
-  //   if (winner == "user") {
-  //     points += Number(wager);
-  //     return `Congratulations, you win! <br><br> Player Hand<br>${displayHand(
-  //       userHand
-  //     )}<br><br>Bot Hand<br>${displayHand(botHand)}<br>${displayPoints()}`;
-  //   } else {
-  //     points -= Number(wager);
-  //     return `Oh nooo, you lose! The bot had ${getCurrentSumHand(
-  //       botHand
-  //     )}.<br><br> Player Hand<br>${displayHand(
-  //       userHand
-  //     )}<br><br>Bot Hand<br>${displayHand(botHand)}<br>${displayPoints()}`;
-  //   }
-  // }
-
-  // if (userStand == false && input == "hit") {
-  //   userHand.push(drawOneCard());
-  //   if (checkHandLimit(userHand)) {
-  //     gameState = true;
-  //     points -= Number(wager);
-  //     return `Oops busted! You lose, your total hand is ${getCurrentSumHand(
-  //       userHand
-  //     )}<br><br>Player Hand<br>${displayHand(
-  //       userHand
-  //     )}<br><br>Bot Hand<br>${displayHand(botHand)}<br>${displayPoints()}`;
-  //   }
-  //   if (isBlackJack(userHand)) {
-  //     gameState = true;
-  //     points += Number(wager);
-  //     return `Congratulations, you win! <br><br> Player Hand<br>${displayHand(
-  //       userHand
-  //     )}<br><br>Bot Hand<br>${displayHand(botHand)}<br>${displayPoints()}`;
-  //   }
-  //   return `Player Hand<br>${displayHand(
-  //     userHand
-  //   )}<br><br>Bot Hand<br>${displayHand(botHand)}<br>${displayPoints()}`;
-  // }
-
-  //if (input == "stand") userStand = true;
-
-  // if (getCurrentSumHand(botHand) <= 16) {
-  //   botHand.push(drawOneCard());
-  //   if (checkHandLimit(botHand)) {
-  //     gameState = true;
-  //     points += Number(wager);
-  //     return `Bot Busted! The bot total hand is ${getCurrentSumHand(botHand)}
-  //     <br><br>Congratulations, you win! <br><br> Player Hand<br>${displayHand(
-  //       userHand
-  //     )}<br><br>Bot Hand<br>${displayHand(botHand)}<br>${displayPoints()}`;
-  //   }
-  //   if (isBlackJack(botHand)) {
-  //     gameState = true;
-  //     points -= Number(wager);
-  //     return `Oh noooo, you lose! <br><br> Player Hand<br>${displayHand(
-  //       userHand
-  //     )}<br><br>Bot Hand<br>${displayHand(botHand)}<br>${displayPoints()}`;
-  //   }
-  //   return `Player Hand<br>${displayHand(
-  //     userHand
-  //   )}<br><br>Bot Hand<br>${displayHand(botHand)}<br>${displayPoints()}`;
-  // }
-
-  return `If you haven't chosen to stand, please input eithet 'hit' or 'stand'.<br>
-  Else, just press 'Submit' for the bot to continue.`;
-};
-
 var checkIfAllStand = function () {
   var counter = 0;
   var check = false;
   while (counter < numberOfPlayers) {
     if (playersObj[counter].stand == true) {
+      check = true;
+    } else {
+      check = false;
+      break;
+    }
+  }
+  return check;
+};
+
+var checkIfAllDone = function () {
+  var counter = 0;
+  var check = false;
+  while (counter < numberOfPlayers) {
+    if (playersObj[counter].state == true) {
       check = true;
     } else {
       check = false;
@@ -361,11 +281,16 @@ var main = function (input) {
   }
   if (gameState == true) {
     deck = shuffleCards(makeDeck());
-    userHand = [];
-    botHand = [];
+    var outputMessage = "";
+    var counter = 0;
+    while (counter < numberOfPlayers) {
+      outputMessage += `${playersObj[counter].name} now has ${playersObj[counter].points}<br>`;
+      playersObj[counter].hand = [];
+      counter++;
+    }
     gameState = false;
     gameMode = "wager";
-    return `How much do you want to wage? You can continue playing by clicking the 'Submit' button.`;
+    return `${outputMessage}<br><br> You can continue playing by inputting the wager of the first player.`;
   }
   if (gameMode == "input") {
     if (playerCounter < numberOfPlayers) {
@@ -407,6 +332,11 @@ var main = function (input) {
     if (playerCounter == Number(numberOfPlayers)) {
       playerCounter = 0;
       return drawBotHand();
+    }
+
+    if (checkIfAllDone()) {
+      gameState = true;
+      return "Click 'Submit' to continue.";
     }
 
     var outputMessage = `This is ${playersObj[playerCounter].name}'s turn.<br><br>`;
