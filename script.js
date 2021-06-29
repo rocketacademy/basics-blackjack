@@ -73,7 +73,7 @@ var dealCardToHand = function (hand) {
 
 // Get sum of all cards in a hand
 var getSumOfHand = function (hand) {
-  // var acesInHand = 0;
+  var acesInHand = 0;
   var SumOfCards = 0;
   var index = 0;
   while (index < hand.length) {
@@ -85,6 +85,9 @@ var getSumOfHand = function (hand) {
     } else if (currentCard.rank >= 11 && currentCard.rank <= 13) {
       // value of J,Q,K is 10.
       SumOfCards = SumOfCards + 10;
+    } else if (currentCard.rank == 1) {
+      acesInHand = acesInHand + 1;
+      SumOfCards = SumOfCards + 11;
     }
     index = index + 1;
   }
@@ -138,6 +141,7 @@ var main = function (input) {
       playerHand = dealCardToHand();
       if (getSumOfHand(playerHand) > maxSumOfCards) {
         return "<br>Player has a sum of more than 21 and loses. Please try again.";
+        // return "Player has hand "+ convertHandToString(playerHand) + "with sum" + getHandSum(playerHand) + ". <br>Computer has hand " + convertHandToString(computerHand) + " with sum " + getHandSum(computerHand)+"<br>Player has a sum of more than 21 and loses. Please try again.";
       }
     }
   }
