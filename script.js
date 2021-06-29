@@ -106,14 +106,15 @@ var shuffleDeck = function (cardDeck) {
   return cardDeck;
 };
 
-// Deal a card to player and computer, repeat twice
 var dealCards = function () {
+  // Deal two cards to each player as determined by user
   for (var playerCounter = 0; playerCounter < numPlayers; playerCounter += 1) {
     playerCards.push(shuffledDeck.pop());
     playerCards.push(shuffledDeck.pop());
     allPlayerCards.push(playerCards);
     playerCards = [];
   }
+  // Deal two cards to computer
   computerCards.push(shuffledDeck.pop());
   computerCards.push(shuffledDeck.pop());
   // Add computer scores for first two cards
@@ -122,22 +123,24 @@ var dealCards = function () {
 };
 
 var selectPlayer = function () {
-  if (currentPlayer == numPlayers) {
-    gameMode = GAME_SUMMARY;
-  }
-  // Add player scores for first two cards
-  // Use global value 'currentPlayer' to change index and hence player's cards that are being accessed in main array when it's subsequent player's turn
+  // Add relevant player's scores for first two cards
+  // Use global value 'currentPlayer' to change index and hence select relevant player's cards that are being accessed in array
   playerPoints =
     allPlayerCards[currentPlayer][0].value +
     allPlayerCards[currentPlayer][1].value;
   if (
-    // If player gets blackjack, declare winner and reset game
+    // If player gets blackjack, declare winner
     playerPoints == 21 &&
     computerPoints != 21
   ) {
-    gameMode = SELECT_PLAYER;
     playerPoints = 0;
     currentPlayer += 1;
+    // Change to next player / summarize results if all players have played
+    if (currentPlayer == numPlayers) {
+      gameMode = GAME_SUMMARY;
+    } else {
+      gameMode = SELECT_PLAYER;
+    }
     // Update points
     bankRoll[currentPlayer - 1] =
       bankRoll[currentPlayer - 1] + userBet[currentPlayer - 1] * 1.5;
@@ -155,13 +158,18 @@ var selectPlayer = function () {
       bankRoll[currentPlayer - 1]
     } <br><br> Time for the next player! `;
   } else if (
-    // If both get blackjack, declare draw and reset game
+    // If both get blackjack, declare draw
     playerPoints == 21 &&
     computerPoints == 21
   ) {
-    gameMode = SELECT_PLAYER;
     playerPoints = 0;
     currentPlayer += 1;
+    // Change to next player / summarize results if all players have played
+    if (currentPlayer == numPlayers) {
+      gameMode = GAME_SUMMARY;
+    } else {
+      gameMode = SELECT_PLAYER;
+    }
     bankRoll[currentPlayer - 1] =
       bankRoll[currentPlayer - 1] - userBet[currentPlayer - 1];
     allPlayerOutcomes.push("draw");
@@ -178,6 +186,7 @@ var selectPlayer = function () {
       bankRoll[currentPlayer - 1]
     } <br><br> Time for the next player!`;
   } else if (playerPoints > 21) {
+    // If player gets two aces, inform them to change value
     gameMode = PLAYER_ACTION;
     return `${userName[currentPlayer]}, you will bust and lose unless you change your ace card's value! <br><br> Type 'ace' to change its value.<br><br> Your cards: <br>${allPlayerCards[currentPlayer][0].name} of ${allPlayerCards[currentPlayer][0].emojiSuit} <br>${allPlayerCards[currentPlayer][1].name} of ${allPlayerCards[currentPlayer][1].emojiSuit}  <br> Your points: ${playerPoints}`;
   } else {
@@ -214,7 +223,7 @@ var checkForAce = function (input) {
   }
 };
 
-// If ace card is correctly selected, allow user to enter string to change ace value
+// If ace card is correctly selected, allow player to enter string to change ace value
 var changeAceValue = function (input) {
   if (input == ACE_ELEVEN) {
     aceValue = Number(11);
@@ -261,7 +270,7 @@ var playerDrawsExtraCard = function () {
       `<br> ${allPlayerCards[currentPlayer][aceCounter].name} of ${allPlayerCards[currentPlayer][aceCounter].emojiSuit}`;
     aceCounter += 1;
   }
-  // If player busts, output results and reset game
+  // If player busts, output results
   if (playerPoints > 21) {
     // However, if player draws ace, allow them to change value
     counter = allPlayerCards[currentPlayer].length - 1;
@@ -272,7 +281,7 @@ var playerDrawsExtraCard = function () {
       }
       counter += 1;
     }
-    // Also, if player busts and has an ace with value 11, allow them to change value
+    // Also, if player busts and has a previous ace card with value 11, allow them to change value
     secondCounter = 0;
     while (secondCounter < allPlayerCards[currentPlayer].length) {
       if (
@@ -289,30 +298,37 @@ var playerDrawsExtraCard = function () {
     allPlayerOutcomes.push("lose");
     bankRoll[currentPlayer - 1] =
       bankRoll[currentPlayer - 1] - userBet[currentPlayer - 1];
-
-    gameMode = SELECT_PLAYER;
+    // Change to next player / summarize results if all players have played
+    if (currentPlayer == numPlayers) {
+      gameMode = GAME_SUMMARY;
+    } else {
+      gameMode = SELECT_PLAYER;
+    }
     return `${
       userName[currentPlayer - 1]
     }, you've bust and lost! 😭 <br><br>  ${playerCardMessage} <br> Your points: ${playerPoints}<br><br> Click submit to start a new game!<br><br> Your bank $${
       bankRoll[currentPlayer - 1]
     } `;
   }
-  // If player gets blackjack, output results and reset game
+  // If player gets blackjack, output results
   if (playerPoints == 21) {
     playerPoints = 0;
     currentPlayer += 1;
     bankRoll[currentPlayer - 1] =
       bankRoll[currentPlayer - 1] + userBet[currentPlayer - 1];
     allPlayerOutcomes.push("win");
-
-    gameMode = SELECT_PLAYER;
+    // Change to next player / summarize results if all players have played
+    if (currentPlayer == numPlayers) {
+      gameMode = GAME_SUMMARY;
+    } else {
+      gameMode = SELECT_PLAYER;
+    }
     return `${
       userName[currentPlayer - 1]
     }, you've gotten blackjack and won! 🥳 <br><br>${playerCardMessage}<br><br> Your bank $${
       bankRoll[currentPlayer - 1]
     } <br><br> Click submit to start a new game!`;
   }
-
   return `${userName[currentPlayer]}, ${playerCardMessage}  ${endMessage};`;
 };
 
@@ -322,15 +338,19 @@ var calculateComputerScore = function () {
   if (computerPoints >= 17 && computerPoints < 21) {
     gameMode = FINAL_RESULT;
   }
-  // If computer gets blackjack, output results and reset game
+  // If computer gets blackjack, output results
   else if (computerPoints == 21) {
     allPlayerOutcomes.push("lose");
     playerPoints = 0;
     currentPlayer += 1;
     bankRoll[currentPlayer - 1] =
       bankRoll[currentPlayer - 1] - userBet[currentPlayer - 1];
-
-    gameMode = SELECT_PLAYER;
+    // Change to next player / summarize results if all players have played
+    if (currentPlayer == numPlayers) {
+      gameMode = GAME_SUMMARY;
+    } else {
+      gameMode = SELECT_PLAYER;
+    }
     return `Sorry ${
       userName[currentPlayer - 1]
     }! <br> The computer has gotten Blackjack and won! 😭 <br><br>Computer's cards: <br> ${
@@ -366,8 +386,12 @@ var calculateComputerScore = function () {
         currentPlayer += 1;
         bankRoll[currentPlayer - 1] =
           bankRoll[currentPlayer - 1] - userBet[currentPlayer - 1];
-
-        gameMode = SELECT_PLAYER;
+        // Change to next player / summarize results if all players have played
+        if (currentPlayer == numPlayers) {
+          gameMode = GAME_SUMMARY;
+        } else {
+          gameMode = SELECT_PLAYER;
+        }
         return `Sorry ${
           userName[currentPlayer - 1]
         }! <br> The computer has gotten Blackjack and won! 😭 <br><br>
@@ -376,15 +400,19 @@ var calculateComputerScore = function () {
           bankRoll[currentPlayer - 1]
         } <br><br> Click submit to start a new game!`;
       }
-      // If computer busts, output results and reset game
+      // If computer busts, output results
       if (computerPoints > 21) {
         allPlayerOutcomes.push("win");
         playerPoints = 0;
         currentPlayer += 1;
         bankRoll[currentPlayer - 1] =
           bankRoll[currentPlayer - 1] + userBet[currentPlayer - 1];
-
-        gameMode = SELECT_PLAYER;
+        // Change to next player / summarize results if all players have played
+        if (currentPlayer == numPlayers) {
+          gameMode = GAME_SUMMARY;
+        } else {
+          gameMode = SELECT_PLAYER;
+        }
         return `${
           userName[currentPlayer - 1]
         }, the computer has bust, you win! 🥳 <br><br>
@@ -396,7 +424,7 @@ var calculateComputerScore = function () {
     }
   }
 };
-// If above conditions are all not met, compare player results to computer results and output winner
+// If above conditions are all not met, compare player results to computer results
 var determineFinalResult = function () {
   // Run while loop to generate all computer card names and suits
   var computerCardMessage = `Computer's cards are: `;
@@ -418,10 +446,15 @@ var determineFinalResult = function () {
     // Combine player and computer output statements
     var finalOutput = `<br><br> ${playerCardMessage} <br><br> ${computerCardMessage}  <br><br> Click submit to start a new game!`;
   }
-  gameMode = SELECT_PLAYER;
   currentPlayer += 1;
   playerPoints = 0;
-  // Determine game outcome
+  // Change to next player / summarize results if all players have played
+  if (currentPlayer == numPlayers) {
+    gameMode = GAME_SUMMARY;
+  } else {
+    gameMode = SELECT_PLAYER;
+  }
+  // Determine player's outcome
   if (playerPoints > computerPoints) {
     allPlayerOutcomes.push("win");
     bankRoll[currentPlayer - 1] =
@@ -440,7 +473,7 @@ var determineFinalResult = function () {
     }, you have lost! 😭 ${finalOutput}<br><br> Your bank: $${
       bankRoll[currentPlayer - 1]
     } `;
-  } else {
+  } else if (playerPoints == computerPoints) {
     allPlayerOutcomes.push("draw");
     bankRoll[currentPlayer - 1] =
       bankRoll[currentPlayer - 1] - userBet[currentPlayer - 1];
@@ -452,22 +485,46 @@ var determineFinalResult = function () {
   }
 };
 
-// Need two loops to fix
+// After all player's turns, display final results before starting new round and asking for new bets
 var displayGameSummary = function () {
   gameMode = ASK_FOR_BET;
-  var summaryCounter = 0;
-  var summaryOutput = `Player ${summaryCounter + 1}, you have ${
-    allPlayerOutcomes[summaryCounter]
-  }! <br> Your cards were: `;
-  while (summaryCounter < numPlayers) {
+  var outerSummaryCounter = 0;
+  var summaryOutput = "";
+  // Outer loop to access index in main array
+  while (outerSummaryCounter < allPlayerCards.length) {
+    var summaryCounter = 0;
     summaryOutput =
       summaryOutput +
-      `<br> ${allPlayerCards[currentPlayer][summaryCounter].name} of ${allPlayerCards[currentPlayer][summaryCounter].emojiSuit} <br>`;
-    summaryCounter += 1;
+      `<br><br>Player ${outerSummaryCounter + 1}: ${
+        userName[outerSummaryCounter]
+      }, you: ${
+        allPlayerOutcomes[outerSummaryCounter]
+      }! <br> Your cards were: `;
+    // Inner loop to access index in sub arrays
+    while (summaryCounter < allPlayerCards[outerSummaryCounter].length) {
+      summaryOutput =
+        summaryOutput +
+        `<br> ${allPlayerCards[outerSummaryCounter][summaryCounter].name} of ${allPlayerCards[outerSummaryCounter][summaryCounter].emojiSuit} `;
+      summaryCounter += 1;
+    }
+    outerSummaryCounter += 1;
   }
-  return summaryOutput;
+  var computerCardMessage = `Computer's cards are: `;
+  computerCounter = 0;
+  while (computerCounter < computerCards.length) {
+    computerCardMessage =
+      computerCardMessage +
+      `<br> ${computerCards[computerCounter].name} of ${computerCards[computerCounter].emojiSuit}`;
+    computerCounter += 1;
+  }
+  return (
+    summaryOutput +
+    `<br><br>` +
+    computerCardMessage +
+    `<br><br> Please click submit to start another game. <br> Please enter 'reset' if you would like to reset the game and choose a different number of players`
+  );
 };
-
+// Generate list of player cards to be used for various output statements
 var generatePlayerCardList = function (allPlayerCards) {
   aceCounter = 0;
   var playerCardMessage = `Your cards are: `;
@@ -482,12 +539,12 @@ var playerCardList = "";
 
 var main = function (input) {
   var myOutputValue = "";
+  // Ask for number of players
   if (gameMode == WAITING_FOR_NUM_PLAYERS) {
-    // Empty global variables if players want to change no of players
-
     gameMode = WAITING_FOR_NAME;
     myOutputValue = `Hello player(s)! <br><br> Please enter the number of people playing`;
   } else if (gameMode == WAITING_FOR_NAME) {
+    // Empty global variables if players want to change no of players and reset game
     playerPoints = 0;
     computerPoints = 0;
     allPlayerOutcomes = [];
@@ -496,17 +553,24 @@ var main = function (input) {
     userName = [];
     userBet = [];
     bankRoll = [];
+    currentPlayer = 0;
+    // Take in number of players and convert to integer
     numPlayers = Number(input);
+    // Use loop to store bank roll for each player in an array
+    for (var bankCounter = 0; bankCounter < numPlayers; bankCounter += 1) {
+      bankRoll.push(100);
+    }
     myOutputValue = `You have chosen to player with ${numPlayers} players <br><br> Please enter all your names with a spacing and without a comma!!`;
     gameMode = INSTRUCTIONS;
   } else if (gameMode == INSTRUCTIONS) {
+    // Take in all player's names and convert into individual strings in an array
     stringNames = input;
     userName = stringNames.split(" ");
     gameMode = ASK_FOR_BET;
-
     myOutputValue = `Hello ${userName}! <br><br> Welcome to blackjack!!! 2️⃣1️⃣♠️❤️♣️♦️ <br><br> These are the rules:<br> You will be dealt two cards after clicking submit <br> The aim is to get 21 points without exceeding it <br> You need to hit a minimum of 17 points <br> Aces are worth either 1 or 11 and can be changed throughout the game <br><br> Press submit to continue`;
   } else if (gameMode == ASK_FOR_BET) {
     // Empty global variables for subsequent rounds
+    currentPlayer = 0;
     playerPoints = 0;
     computerPoints = 0;
     allPlayerOutcomes = [];
@@ -514,55 +578,36 @@ var main = function (input) {
     computerCards = [];
     userBet = [];
     gameMode = TAKE_BET;
+    // Ask player for individual bet amount
     myOutputValue = `${userName}, before we begin enter an amount that each of you would like to bet! <br> Please enter the amount with a space and without a comma`;
   } else if (gameMode == TAKE_BET) {
     gameMode = DEAL_CARDS;
+    // Take in user bets and convert into individual integer in an array
     stringBet = input;
     userBet = stringBet.split(" ").map(Number);
-    for (var bankCounter = 0; bankCounter < numPlayers; bankCounter += 1) {
-      bankRoll.push(100);
-    }
     myOutputValue = `${userName}, you have chosen to bet $${userBet} this round respectively. <br><br> Your current bank totals are $${bankRoll}.
     <br><br> When you're ready click submit to play! `;
   } else if (gameMode == DEAL_CARDS) {
     gameMode = SELECT_PLAYER;
-
     // Create a deck of cards
     createDeck = makeDeck();
     // Shuffle deck of cards
     shuffledDeck = shuffleDeck(cardDeck);
-    // Deal two cards to player and computer
+    // Deal two cards to each player and computer
     myOutputValue = dealCards();
-  } else if (currentPlayer == numPlayers) {
-    gameMode = GAME_SUMMARY;
-  } else if (gameMode == SELECT_PLAYER) {
-    if (currentPlayer == numPlayers) {
-      gameMode = GAME_SUMMARY;
-    }
-    // Reset global variable before switching player
-    gameMode = PLAYER_ACTION;
-    myOutputValue = selectPlayer();
-  } else if (gameMode == GAME_SUMMARY) {
-    myOutputValue = displayGameSummary();
-    gameMode = ASK_FOR_BET;
   }
-  // // Run while loop to generate all player card names and suits to be used below
-  //  aceCounter = 0;
-  // var playerCardMessage = `Your cards are: `;
-  // while (aceCounter < allPlayerCards[currentPlayer].length) {
-  //   playerCardMessage =
-  //     playerCardMessage +
-  //     `<br> ${allPlayerCards[currentPlayer][aceCounter].name} of ${allPlayerCards[currentPlayer][aceCounter].emojiSuit}`;
-  //   aceCounter += 1;
-  // }
-  // playerCardList = generatePlayerCardList(allPlayerCards);
-  // Allow player to hit, stand or change ace value
+  if (gameMode == SELECT_PLAYER) {
+    gameMode = PLAYER_ACTION;
+    // Selec appropriate patient's cards and check for blackjack, otherwise change allow player to choose their next action
+    myOutputValue = selectPlayer();
+  }
   if (gameMode == PLAYER_ACTION) {
     if (input == INPUT_CHANGE_ACE) {
+      // Ask player to type in position that the ace card is in so that it can be checked if it is really an ace
       gameMode = CHANGE_ACE_MODE;
       return `${userName[currentPlayer]}, please type in the position of the ace that you want to change <br><br> {playerCardMessage}`;
     }
-    // Change player's ace card based on input and update player's points
+    // Once, correct (ace) card is selected, change player's ace card based on input and update player's points
     if (input == ACE_ELEVEN || input == ACE_ONE) {
       myOutputValue = changeAceValue(input);
     }
@@ -581,24 +626,44 @@ var main = function (input) {
       gameMode = COMPUTER_CALCULATES;
     }
   }
-  // Ensure player has selected an ace card
   if (gameMode == CHANGE_ACE_MODE) {
+    // Ensure player has selected an ace card
     myOutputValue = checkForAce(input);
   }
-
-  // Check if computer has enough cards and add if necessary
   if (gameMode == COMPUTER_CALCULATES) {
+    // Check if computer has enough cards and add if necessary
     myOutputValue = calculateComputerScore();
   }
-  // Compare player and computer cards and determine winner
   if (gameMode == FINAL_RESULT) {
+    // Compare player and computer cards and determine winner
     myOutputValue = determineFinalResult();
-    gameMode = SELECT_PLAYER;
+    if (currentPlayer == numPlayers) {
+      gameMode = GAME_SUMMARY;
+    } else {
+      gameMode = SELECT_PLAYER;
+    }
   }
+  // Allow player to reset entire game and reselect number of players and usernames
   if (input == INPUT_RESET) {
     gameMode = WAITING_FOR_NAME;
     myOutputValue =
       myOutputValue = `Hello player(s)! <br><br> Please enter the number of people playing`;
   }
+  // Output final results of all players
+  if (gameMode == GAME_SUMMARY) {
+    myOutputValue = displayGameSummary();
+    gameMode = ASK_FOR_BET;
+  }
   return myOutputValue;
 };
+
+// // // Run while loop to generate all player card names and suits to be used below
+//  aceCounter = 0;
+// var playerCardMessage = `Your cards are: `;
+// while (aceCounter < allPlayerCards[currentPlayer].length) {
+//   playerCardMessage =
+//     playerCardMessage +
+//     `<br> ${allPlayerCards[currentPlayer][aceCounter].name} of ${allPlayerCards[currentPlayer][aceCounter].emojiSuit}`;
+//   aceCounter += 1;
+// }
+// playerCardList = generatePlayerCardList(allPlayerCards);
