@@ -2,13 +2,20 @@
 var blackjackLimit = 21;
 var userStand = false;
 var gameState = false;
-var gameMode = "input";
+var gameMode = "players";
 var playerName = "";
+var numberOfPlayers = 1;
 
 var deck;
+var playerCounter = 0;
+
+var playerHands = [];
+var playerNames = [];
 var userHand = [];
 var botHand = [];
 var points = 100;
+var pointsPlayer = [];
+var wagerPlayer = [];
 var wager = 0;
 
 var displayHand = function (hand) {
@@ -223,6 +230,20 @@ var playBlackJack = function (input) {
 };
 
 var main = function (input) {
+  if (gameMode == "players") {
+    numberOfPlayers = Number(input);
+    if (numberOfPlayers > 3 || numberOfPlayers < 1) {
+      return "There should be at least 1 player and not over 3 players.";
+    } else {
+      var counter = 0;
+      while (counter < numberOfPlayers) {
+        pointsPlayer.push(100);
+        counter++;
+      }
+      gameMode = "input";
+      return `There will be ${numberOfPlayers} players.`;
+    }
+  }
   if (gameState == true) {
     deck = shuffleCards(makeDeck());
     userHand = [];
@@ -232,14 +253,23 @@ var main = function (input) {
     return `How much do you want to wage? You can continue playing by clicking the 'Submit' button.`;
   }
   if (gameMode == "input") {
-    playerName = input;
+    playerNames[playerCounter] = input;
     gameMode = "wager";
-    return `Hi ${playerName}! Let's play Blackjack, you start off with ${points} points.<br>How much do you want to wager?`;
+    return `Hi ${playerNames[playerCounter]}! Let's play Blackjack, you start off with ${pointsPlayer[playerCounter]} points.<br>How much do you want to wager?`;
   }
   if (gameMode == "wager") {
-    wager = input;
+    wagerPlayer[playerCounter] = input;
+    if (playerCounter < numberOfPlayers - 1) {
+      gameMode = "input";
+      playerCounter += 1;
+      return `Phew! you waged ${
+        wagerPlayer[playerCounter - 1]
+      } points, let's see if you will win or lose that points.<br><br>
+      Proceed to entering the next player name.`;
+    }
     gameMode = "start";
-    return `Phew! you waged ${wager} points, let's see if you will win or lose that points.`;
+    playerCounter = 0;
+    return `Phew! you waged ${wagerPlayer[playerCounter]} points, let's see if you will win or lose that points.`;
   }
   if (gameMode == "start") {
     return playBlackJack(input);
