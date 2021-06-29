@@ -9,18 +9,8 @@ var turn = 0;
 
 var deck;
 var playerCounter = 0;
-
-var playersObj = [];
-var playerHands = [];
-var playerNames = [];
-var playerStand = [];
-var playerState = [];
-var userHand = [];
 var botHand = [];
-
-var points = 100;
-var pointsPlayer = [];
-var wagerPlayer = [];
+var playersObj = [];
 var wager = 0;
 
 var displayHand = function (hand) {
@@ -34,9 +24,10 @@ var displayHand = function (hand) {
 };
 
 var displayPoints = function () {
-  var outputMessage = `You now have ${pointsPlayer[playerCounter]}, remember to play moderately!`;
+  var outputMessage = `You now have ${playersObj[playerCounter].points}, remember to play moderately!`;
   return outputMessage;
 };
+
 var getCurrentSumHand = function (hand) {
   var total = 0;
   var counter = 0;
@@ -299,6 +290,20 @@ var playBlackJack = function (input) {
   Else, just press 'Submit' for the bot to continue.`;
 };
 
+var checkIfAllStand = function () {
+  var counter = 0;
+  var check = false;
+  while (counter < numberOfPlayers) {
+    if (playersObj[counter].stand == true) {
+      check = true;
+    } else {
+      check = false;
+      break;
+    }
+  }
+  return check;
+};
+
 var drawBotHand = function () {
   if (getCurrentSumHand(botHand) <= 16) {
     botHand.push(drawOneCard());
@@ -306,7 +311,7 @@ var drawBotHand = function () {
       gameState = true;
       var counter = 0;
       while (counter < numberOfPlayers) {
-        pointsPlayer[counter] += wagerPlayer[counter];
+        playersObj[counter].points += playersObj[counter].wager;
         counter++;
       }
       return `Bot Busted! The bot total hand is ${getCurrentSumHand(botHand)}
@@ -319,15 +324,17 @@ var drawBotHand = function () {
       gameState = true;
       var counter = 0;
       while (counter < numberOfPlayers) {
-        pointsPlayer[counter] -= wagerPlayer[counter];
+        playersObj[counter].points -= playersObj[counter].wager;
         counter++;
       }
       return `Oh noooo, the bot won! <br><br> Bot Hand<br>${displayHand(
         botHand
       )}<br>Please press continue to check the updated points.`;
     }
-    return `<br><br>Bot Hand<br>${displayHand(botHand)}<br>${displayPoints()}`;
   }
+  return `<br><br>Bot Hand<br>${displayHand(
+    botHand
+  )}<br> Please click 'Submit' to continue.`;
 };
 
 var main = function (input) {
@@ -403,7 +410,7 @@ var main = function (input) {
     }
 
     var outputMessage = `This is ${playersObj[playerCounter].name}'s turn.<br><br>`;
-    if (!turn) {
+    if (!turn && !playersObj[playerCounter].stand) {
       outputMessage += `Player Hand<br>${displayHand(
         playersObj[playerCounter].hand
       )}<br><br>Bot Hand<br>${displayHand(
@@ -425,6 +432,14 @@ var main = function (input) {
       }
       if (input == "hit") {
         outputMessage += playBlackJackPlayer(playersObj[playerCounter], input);
+        playerCounter += 1;
+        return outputMessage;
+      }
+      if (playersObj[playerCounter].stand) {
+        outputMessage += playBlackJackPlayer(
+          playersObj[playerCounter],
+          "stand"
+        );
         playerCounter += 1;
         return outputMessage;
       }
