@@ -83,7 +83,7 @@
     </h1>
     <h1 class="header">♣️ Basics - Blackjack ♠️</h1>
     <div id="container">
-      <p>Input:</p>
+      <p id="title-text">Input Number of Players:</p>
       <input id="input-field" />
       <br />
       <button id="submit-button">Submit</button>
@@ -106,6 +106,9 @@
 
         // Reset input value
         input.value = "";
+
+        // Reset input value
+        document.querySelector("#title-text").innerHTML = textUpdate();
       });
     </script>
   </body>
