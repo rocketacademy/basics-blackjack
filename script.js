@@ -1,4 +1,4 @@
-// Game modes stored in a constant
+// Game modes stored in constants
 const WAITING_FOR_NUM_PLAYERS = "waiting for num of players";
 const WAITING_FOR_NAME = "waiting for username";
 const INSTRUCTIONS = "tell player instructions";
@@ -12,7 +12,7 @@ const COMPUTER_CALCULATES = "computer calculates";
 const FINAL_RESULT = "final result";
 const GAME_SUMMARY = "output all results";
 
-// Declare user inputs as a constant
+// Declare user inputs as constants
 const INPUT_HIT = "hit";
 const INPUT_STAND = "stand";
 const INPUT_CHANGE_ACE = "ace";
@@ -123,6 +123,7 @@ var dealCards = function () {
 };
 
 var selectPlayer = function () {
+  playerCardList = generatePlayerCardList();
   // Add relevant player's scores for first two cards
   // Use global value 'currentPlayer' to change index and hence select relevant player's cards that are being accessed in array
   playerPoints =
@@ -251,6 +252,7 @@ var changeAceValue = function (input) {
 
 // Allow player to draw extra card
 var playerDrawsExtraCard = function () {
+  playerCardList = generatePlayerCardList();
   allPlayerCards[currentPlayer].push(shuffledDeck.pop());
   var playerCardMessage = `Your cards are: `;
   var endMessage = "";
@@ -262,7 +264,6 @@ var playerDrawsExtraCard = function () {
     endMessage = `<br> Your points: ${playerPoints}<br><br> Please enter 'hit' if you would like more cards <br><br> Please enter 'stand' if you do not want anymore cards <br><br> Please enter 'ace' if you would like to change the value of an ace card<br><br> Please enter 'reset' if you would like to restart the game`;
     playerCounter += 1;
   }
-  // Run while loop to output all player card names and suits in output statement
   aceCounter = 0;
   while (aceCounter < allPlayerCards[currentPlayer].length) {
     playerCardMessage =
@@ -272,6 +273,7 @@ var playerDrawsExtraCard = function () {
   }
   // If player busts, output results
   if (playerPoints > 21) {
+    var bustOutput = "";
     // However, if player draws ace, allow them to change value
     counter = allPlayerCards[currentPlayer].length - 1;
     while (counter < allPlayerCards[currentPlayer].length) {
@@ -293,34 +295,39 @@ var playerDrawsExtraCard = function () {
       }
       secondCounter += 1;
     }
-    playerPoints = 0;
+
     currentPlayer += 1;
     allPlayerOutcomes.push("lose");
     bankRoll[currentPlayer - 1] =
       bankRoll[currentPlayer - 1] - userBet[currentPlayer - 1];
     // Change to next player / summarize results if all players have played
-    if (currentPlayer == numPlayers) {
-      gameMode = GAME_SUMMARY;
-    } else {
-      gameMode = SELECT_PLAYER;
-    }
-    return `${
+
+    bustOutput = `${
       userName[currentPlayer - 1]
     }, you've bust and lost! 😭 <br><br>  ${playerCardMessage} <br> Your points: ${playerPoints}<br><br> Click submit to start a new game!<br><br> Your bank $${
       bankRoll[currentPlayer - 1]
     } `;
+    if (currentPlayer == numPlayers) {
+      playerPoints = 0;
+      gameMode = GAME_SUMMARY;
+    } else {
+      playerPoints = 0;
+      gameMode = SELECT_PLAYER;
+    }
+    return bustOutput;
   }
   // If player gets blackjack, output results
   if (playerPoints == 21) {
-    playerPoints = 0;
     currentPlayer += 1;
     bankRoll[currentPlayer - 1] =
       bankRoll[currentPlayer - 1] + userBet[currentPlayer - 1];
     allPlayerOutcomes.push("win");
     // Change to next player / summarize results if all players have played
     if (currentPlayer == numPlayers) {
+      playerPoints = 0;
       gameMode = GAME_SUMMARY;
     } else {
+      playerPoints = 0;
       gameMode = SELECT_PLAYER;
     }
     return `${
@@ -341,14 +348,15 @@ var calculateComputerScore = function () {
   // If computer gets blackjack, output results
   else if (computerPoints == 21) {
     allPlayerOutcomes.push("lose");
-    playerPoints = 0;
     currentPlayer += 1;
     bankRoll[currentPlayer - 1] =
       bankRoll[currentPlayer - 1] - userBet[currentPlayer - 1];
     // Change to next player / summarize results if all players have played
     if (currentPlayer == numPlayers) {
+      playerPoints = 0;
       gameMode = GAME_SUMMARY;
     } else {
+      playerPoints = 0;
       gameMode = SELECT_PLAYER;
     }
     return `Sorry ${
@@ -367,7 +375,7 @@ var calculateComputerScore = function () {
       computerPoints =
         computerPoints + computerCards[computerCards.length - 1].value;
       // Run while loop to generate all computer card names and suits
-      var computerCardMessage = `Computer's cards are: `;
+      var computerCardMessage = `Computer's cards were: `;
       computerCounter = 0;
       while (computerCounter < computerCards.length) {
         computerCardMessage =
@@ -426,6 +434,8 @@ var calculateComputerScore = function () {
 };
 // If above conditions are all not met, compare player results to computer results
 var determineFinalResult = function () {
+  // Run while loop to generate all player card names and suits
+  playerCardList = generatePlayerCardList();
   // Run while loop to generate all computer card names and suits
   var computerCardMessage = `Computer's cards are: `;
   computerCounter = 0;
@@ -435,25 +445,11 @@ var determineFinalResult = function () {
       `<br> ${computerCards[computerCounter].name} of ${computerCards[computerCounter].emojiSuit}`;
     computerCounter += 1;
   }
-  // Run while loop to generate all player card names and suits
-  var playerCardMessage = `Your cards are: `;
-  aceCounter = 0;
-  while (aceCounter < allPlayerCards[currentPlayer].length) {
-    playerCardMessage =
-      playerCardMessage +
-      `<br> ${allPlayerCards[currentPlayer][aceCounter].name} of ${allPlayerCards[currentPlayer][aceCounter].emojiSuit}`;
-    aceCounter += 1;
-    // Combine player and computer output statements
-    var finalOutput = `<br><br> ${playerCardMessage} <br><br> ${computerCardMessage}  <br><br> Click submit to start a new game!`;
-  }
+  var finalOutput = `<br><br> ${playerCardList} <br><br> ${computerCardMessage}  <br><br> Click submit to start a new game!`;
+  // }
   currentPlayer += 1;
-  playerPoints = 0;
   // Change to next player / summarize results if all players have played
-  if (currentPlayer == numPlayers) {
-    gameMode = GAME_SUMMARY;
-  } else {
-    gameMode = SELECT_PLAYER;
-  }
+
   // Determine player's outcome
   if (playerPoints > computerPoints) {
     allPlayerOutcomes.push("win");
@@ -482,6 +478,14 @@ var determineFinalResult = function () {
     }, its a draw! 😐 ${finalOutput}<br><br> Your bank: $${
       bankRoll[currentPlayer - 1]
     } `;
+  }
+  if (currentPlayer == numPlayers) {
+    playerPoints = 0;
+    gameMode = GAME_SUMMARY;
+  } else {
+    playerPoints = 0;
+
+    gameMode = SELECT_PLAYER;
   }
 };
 
@@ -524,8 +528,8 @@ var displayGameSummary = function () {
     `<br><br> Please click submit to start another game. <br> Please enter 'reset' if you would like to reset the game and choose a different number of players`
   );
 };
-// Generate list of player cards to be used for various output statements
-var generatePlayerCardList = function (allPlayerCards) {
+// // Generate list of player cards to be used for various output statements
+var generatePlayerCardList = function () {
   aceCounter = 0;
   var playerCardMessage = `Your cards are: `;
   while (aceCounter < allPlayerCards[currentPlayer].length) {
@@ -534,6 +538,7 @@ var generatePlayerCardList = function (allPlayerCards) {
       `<br> ${allPlayerCards[currentPlayer][aceCounter].name} of ${allPlayerCards[currentPlayer][aceCounter].emojiSuit}`;
     aceCounter += 1;
   }
+  return playerCardMessage;
 };
 var playerCardList = "";
 
@@ -605,7 +610,9 @@ var main = function (input) {
     if (input == INPUT_CHANGE_ACE) {
       // Ask player to type in position that the ace card is in so that it can be checked if it is really an ace
       gameMode = CHANGE_ACE_MODE;
-      return `${userName[currentPlayer]}, please type in the position of the ace that you want to change <br><br> {playerCardMessage}`;
+      return `${
+        userName[currentPlayer]
+      }, please type in the position of the ace that you want to change <br><br> ${generatePlayerCardList()}`;
     }
     // Once, correct (ace) card is selected, change player's ace card based on input and update player's points
     if (input == ACE_ELEVEN || input == ACE_ONE) {
@@ -621,7 +628,9 @@ var main = function (input) {
       if (playerPoints < 17) {
         gameMode = PLAYER_ACTION;
 
-        return `${userName[currentPlayer]}, you need at least 17 points. Please type 'hit' to draw another card. <br><br> {playerCardMessage}`;
+        return `${
+          userName[currentPlayer]
+        }, you need at least 17 points. Please type 'hit' to draw another card. <br><br> ${generatePlayerCardList()}`;
       }
       gameMode = COMPUTER_CALCULATES;
     }
@@ -656,14 +665,3 @@ var main = function (input) {
   }
   return myOutputValue;
 };
-
-// // // Run while loop to generate all player card names and suits to be used below
-//  aceCounter = 0;
-// var playerCardMessage = `Your cards are: `;
-// while (aceCounter < allPlayerCards[currentPlayer].length) {
-//   playerCardMessage =
-//     playerCardMessage +
-//     `<br> ${allPlayerCards[currentPlayer][aceCounter].name} of ${allPlayerCards[currentPlayer][aceCounter].emojiSuit}`;
-//   aceCounter += 1;
-// }
-// playerCardList = generatePlayerCardList(allPlayerCards);
