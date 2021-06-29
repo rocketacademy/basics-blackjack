@@ -111,13 +111,18 @@ var shuffleCards = function (deckToShuffle) {
 
 var shuffledDeck = shuffleCards(makeDeck());
 
-// //Function: deal 1 card to player, 1 card to computer. Repeat one more time.
+// Function: deal 1 card to player, 1 card to computer. Repeat one more time.
 var dealStartingCards = function () {
   var dealIndex = 0;
+  //start loop to deal cards twice to each player
   while (dealIndex < 2) {
+    //deal 1 card to user
     userHand.push(shuffledDeck.pop());
+    //update global variable for user's total points
     updateUserTotal();
+    //deal 1 card to computer
     computerHand.push(shuffledDeck.pop());
+    //update global variable for computer's total points
     updateComputerTotal();
     dealIndex += 1;
   }
@@ -127,13 +132,15 @@ var dealStartingCards = function () {
   console.log(userHand);
 };
 
-// //Function: check if user's starting hand is Blackjack
+// Function: check if user's starting hand is Blackjack
 var isBlackjack = function () {
+  //evaluate to TRUE statement which can be used in main function as a conditional
   return userHand[0].value + userHand[1].value == 21;
 };
 
-// function outputUserCards message
+// function to output message for a player's cards
 var outputCards = function (aHand) {
+  //set a loop to run through a player's entire hand and output all the cards' names and suits
   var cardsIndex = 0;
   var outputCardsMessage = "";
   while (cardsIndex < aHand.length) {
@@ -150,13 +157,16 @@ var outputCards = function (aHand) {
   return outputCardsMessage;
 };
 
-// function calculate total value of cards in a hand
+// function calculate total value of cards in a hand, also to convert Ace value from 11 to 1 when total is more than 21
 var calcHandTotal = function (hand) {
+  //set a loop to go through the hand's cards and add the value of the cards to get total points
   var handTotal = 0;
   for (var i = 0; i < hand.length; i += 1) {
     handTotal = handTotal + hand[i].value;
   }
+  //execute function to check for aces in hand to find out number of aces in hand to be subtracted if total points more than 21
   var numOfAces = checkForAce(hand);
+  //if hand total is more than 21 and there is 1 or more aces in hand, then convert 1 ace at a time from 11 to 1 points and recount hand total and repeat
   while (handTotal > 21 && numOfAces > 0) {
     handTotal = handTotal - 10;
     numOfAces = numOfAces - 1;
@@ -174,14 +184,14 @@ var updateComputerTotal = function () {
   computerTotal += computerHand[computerHand.length - 1].value;
 };
 
-// function to output Computer's 1st card
+// function to output a message to show Computer's 1st card
 var outputComputerCard1 = function () {
   computerCard1Message =
     computerHand[0].name + " of " + computerHand[0].suit + " <br>";
   return computerCard1Message;
 };
 
-//function to check for Ace in hand
+//function to check for Ace in hand and find out the number of aces in hand
 var checkForAce = function (aHand) {
   var numOfAces = 0;
   for (var i = 0; i < aHand.length; i += 1) {
@@ -200,6 +210,7 @@ var checkForBust = function (aHand) {
 // function computerTurn
 var startComputerTurn = function () {
   computerTotal = calcHandTotal(computerHand);
+  //computer draws a card if less than 17 points
   while (computerTotal < 17) {
     computerHand.push(shuffledDeck.pop());
     updateComputerTotal();
