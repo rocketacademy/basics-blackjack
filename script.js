@@ -1,10 +1,3 @@
-var currentGameMode = "drawing of cards";
-var playerCard1 = "";
-var playerCard2 = "";
-var computerCard1 = "";
-var computerCard2 = "";
-var sumOfPlayerCardValue = 10;
-var sumOfComputerCardValue = "";
 var makeDeck = function () {
   var cardDeck = [];
   var suits = ["hearts", "diamonds", "clubs", "spades"];
@@ -71,8 +64,6 @@ var shuffleCards = function (cardDeck) {
 };
 var aceCard = function (input) {
   var message = "";
-  console.log("function");
-  console.log("player: " + sumOfPlayerCardValue);
   if (input == "11") {
     sumOfPlayerCardValue += 10;
   } else if (input == "1") {
@@ -81,36 +72,63 @@ var aceCard = function (input) {
   }
   currentGameMode = "player hit or stand";
   message =
-    playerHand +
+    playerHandList +
     "<br><br> Your total value is " +
     sumOfPlayerCardValue +
     "<br><br>Enter HIT to draw another card or STAND to end your turn.";
   return message;
 };
-
 var shuffledDeck = shuffleCards(cardDeck);
+var playerHand = [];
+var comHand = [];
+var currentGameMode = "place bet";
+var playerCard1 = "";
+var playerCard2 = "";
+var playerHandList = "";
+var computerCard1 = "";
+var computerCard2 = "";
+var comHandList = "";
+var sumOfPlayerCardValue = "";
+var sumOfComputerCardValue = "";
+var points = 100;
+var betAmt;
 var main = function (input) {
+  if (currentGameMode == "place bet") {
+    if (input == "" || input == NaN || input > points) {
+      return "Please enter a number below " + points;
+    } else {
+      betAmt = input;
+      currentGameMode = "drawing of cards";
+      return "You have bet: " + betAmt + " points.";
+    }
+  }
   if (currentGameMode == "drawing of cards") {
     playerCard1 = shuffledDeck.pop();
-    var computerCard1 = shuffledDeck.pop();
+    playerHand.push(playerCard1);
+    computerCard1 = shuffledDeck.pop();
+    comHand.push(computerCard1);
     playerCard2 = shuffledDeck.pop();
-    var computerCard2 = shuffledDeck.pop();
+    playerHand.push(playerCard2);
+    computerCard2 = shuffledDeck.pop();
+    comHand.push(computerCard2);
+    computerCard1.name = "ace";
+    computerCard1.value = 1;
     sumOfPlayerCardValue = playerCard1.value + playerCard2.value;
     console.log("player: " + sumOfPlayerCardValue);
     sumOfComputerCardValue = computerCard1.value + computerCard2.value;
-    console.log(
+    comHandList =
       "Computer had " +
-        computerCard1.name +
-        " of " +
-        computerCard1.suit +
-        " and " +
-        computerCard2.name +
-        " of " +
-        computerCard2.suit +
-        " // " +
-        sumOfComputerCardValue
-    );
-    playerHand =
+      computerCard1.name +
+      " of " +
+      computerCard1.suit +
+      " and " +
+      computerCard2.name +
+      " of " +
+      computerCard2.suit +
+      " // " +
+      sumOfComputerCardValue;
+    console.log(comHandList);
+    playerHandList =
       "Player had " +
       playerCard1.name +
       " of " +
@@ -122,13 +140,13 @@ var main = function (input) {
     if (playerCard1.name == "ace" || playerCard2.name == "ace") {
       currentGameMode = "ace 1 or 11";
       return (
-        playerHand +
+        playerHandList +
         "<br><br> Ace have value of 1 or 11. Please enter 1 or 11 to choose the value."
       );
     } else if (playerCard1.name != "ace" && playerCard2.name != "ace") {
       currentGameMode = "player hit or stand";
       return (
-        playerHand +
+        playerHandList +
         "<br><br>Please enter HIT to draw another card or STAND to end your turn."
       );
     }
@@ -139,67 +157,92 @@ var main = function (input) {
   }
   if (currentGameMode == "player hit or stand") {
     if (input == "HIT") {
-      var playerCard3 = shuffledDeck.pop();
-      console.log("Player had " + playerCard3.name + " of " + playerCard3.suit);
-      sumOfPlayerCardValue = sumOfPlayerCardValue + playerCard3.value;
+      var playerCard = shuffledDeck.pop();
+      playerHand.push(playerCard);
+      playerHandList += "<br>" + playerCard.name + " of " + playerCard.suit;
+      console.log("Player had " + playerCard.name + " of " + playerCard.suit);
+      sumOfPlayerCardValue = sumOfPlayerCardValue + playerCard.value;
+      if (playerCard.name == "ace") {
+        currentGameMode = "ace 1 or 11";
+        return (
+          playerHandList +
+          "<br><br>Ace have value of 1 or 11. Please enter 1 or 11 to choose the value."
+        );
+      }
+      if (sumOfPlayerCardValue > 21) {
+        currentGameMode = "result";
+        return "You have bust!";
+      }
       console.log("player: " + sumOfPlayerCardValue);
       return (
         "Your cards are:<br><br>" +
-        playerCard1.name +
-        " of " +
-        playerCard1.suit +
-        "<br>" +
-        playerCard2.name +
-        " of " +
-        playerCard2.suit +
-        "<br>" +
-        playerCard3.name +
-        " of " +
-        playerCard3.suit
+        playerHandList +
+        "<br><br>Please enter HIT to draw another card or STAND to end your turn."
       );
     } else if (input == "STAND") {
+      currentGameMode = "computer hit or stand";
       return (
         "Your cards are:<br><br>" +
-        playerCard1.name +
-        " of " +
-        playerCard1.suit +
-        "<br>" +
-        playerCard2.name +
-        " of " +
-        playerCard2.suit
+        playerHandList +
+        "<br><br> Please click submit to view results"
       );
     }
-    currentGameMode = "computer hit or stand";
   }
+  // if computer has an ace, the ace should be 11 if sum of the cards are greater than 17
   if (currentGameMode == "computer hit or stand") {
-    if (sumOfComputerCardValue < 17) {
-      var computerCard3 = shuffledDeck.pop();
-      sumOfComputerCardValue = sumOfComputerCardValue + computerCard3.value;
-      console.log(
-        "computer: " + computerCard3.name + " of " + computerCard3.suit
-      );
-      console.log("computer: " + sumOfComputerCardValue);
+    if (computerCard1.name == "ace" || computerCard2.name == "ace") {
+      if (sumOfComputerCardValue > 7) {
+        sumOfComputerCardValue += 10;
+      }
     }
+    while (sumOfComputerCardValue < 17) {
+      var computerCard = shuffledDeck.pop();
+      computerCard.name = "ace";
+      computerCard.value = 1;
+      comHand.push(computerCard);
+      if (computerCard.name == "ace") {
+        sumOfComputerCardValue += computerCard.value;
+        if (sumOfComputerCardValue > 7) {
+          sumOfComputerCardValue += 10;
+        }
+      }
+      comHandList += computerCard.name + " of " + computerCard.suit;
+      sumOfComputerCardValue += computerCard.value;
+      console.log(
+        "computer: " + computerCard.name + " of " + computerCard.suit
+      );
+    }
+    console.log("computer: " + sumOfComputerCardValue);
     currentGameMode = "result";
   }
   if (currentGameMode == "result") {
     console.log(currentGameMode);
     console.log("player: " + sumOfPlayerCardValue);
     console.log("computer: " + sumOfComputerCardValue);
-    if (sumOfPlayerCardValue > 21) {
-      myOutputValue = "Player Bust.";
+    if (sumOfPlayerCardValue > 21 && sumOfComputerCardValue > 21) {
+      winner = "Tie";
     } else if (sumOfComputerCardValue > 21) {
-      myOutputValue = "Computer Bust.";
-    } else if (sumOfPlayerCardValue > 21 && sumOfComputerCardValue > 21) {
-      myOutputValue = "Both Bust";
+      winner = "Player";
+    } else if (sumOfPlayerCardValue > 21) {
+      winner = "Com";
     } else if (sumOfPlayerCardValue > sumOfComputerCardValue) {
-      myOutputValue = "Player Wins.";
+      winner = "Player";
     } else if (sumOfPlayerCardValue < sumOfComputerCardValue) {
-      myOutputValue = "Computer Wins.";
+      winner = "Com";
     } else {
-      myOutputValue = "Its a tie.";
+      winner = "Tie";
     }
-    currentGameMode = "drawing of cards";
+    if (winner == "Player") {
+      points = Number(points) + Number(betAmt);
+      console.log(points);
+      myOutputValue = "Player Wins.<br>You have " + points + " points";
+    } else if (winner == "Com") {
+      points = Number(points) - Number(betAmt);
+      myOutputValue = "Computer Wins.<br>You have " + points + " points";
+    } else if (winner == "Tie") {
+      myOutputValue = "It's a draw.<br>You have " + points + " points";
+    }
+    currentGameMode = "place bet";
   }
   return myOutputValue;
 };
