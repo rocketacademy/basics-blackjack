@@ -117,6 +117,8 @@ var initialDealRound = function () {
   playerHand.push(shuffledDeck.pop());
 
   // add up card scores to give computerTotalScore and playerTotalScore
+  // computerTotalScore = countHandScore(computerHand);
+  // playerTotalScore = countHandScore(playerHand);
   computerTotalScore = computerHand[0].rank + computerHand[1].rank;
   playerTotalScore = playerHand[0].rank + playerHand[1].rank;
   console.log(`Computer's current total score: ${computerTotalScore}`);
@@ -196,9 +198,9 @@ var hitOrStand = function (input) {
     return messageAfterPlayerHits;
   }
   // changes game mode when player enters "stand"
-  else if (input == "stand") {
-    mode = "evaluateComputerHand";
-  }
+  // else if (input == "stand") {
+  //   mode = "evaluateComputerHand";
+  // }
   return messageAfterPlayerHits;
 };
 
@@ -272,10 +274,12 @@ var determineIfBust = function (totalScore) {
 var hasAceInHand = function (playerOrComputerHand) {
   var aceInHandCounter = 0;
   var word = "";
-  // While Loop runs through entire hand to see if there's any aces in it
+  // While Loop runs through entire hand to see if there's any aces in it and returns either true or false
   while (aceInHandCounter < playerOrComputerHand.length) {
     word = playerOrComputerHand[aceInHandCounter].name;
+    // checks if there are aces
     if (word == "ace") {
+      // returns true if there is at least one ace
       return true;
     }
     aceInHandCounter = aceInHandCounter + 1;
@@ -288,14 +292,16 @@ var hasAceInHand = function (playerOrComputerHand) {
 var countHandScore = function (playerOrComputerHand) {
   var countHandScoreCounter = 0;
   var score = 0;
-  // While Loop runs through entire hand that has no aces
+  // While Loop runs through entire hand that has no aces to return total score of whole hand
   if (hasAceInHand(playerOrComputerHand) == false) {
     while (countHandScoreCounter < playerOrComputerHand.length) {
       score = score + playerOrComputerHand[countHandScoreCounter].rank;
       countHandScoreCounter = countHandScoreCounter + 1;
     }
     return score;
-  } else if (hasAceInHand(playerOrComputerHand) == true) {
+  }
+  // While Loop runs through an entire hand that has at least one ace to return total score of whole hand
+  else if (hasAceInHand(playerOrComputerHand) == true) {
     while (countHandScoreCounter < playerOrComputerHand.length) {
       score = score + playerOrComputerHand[countHandScoreCounter].rank;
       countHandScoreCounter = countHandScoreCounter + 1;
@@ -310,56 +316,26 @@ var countHandScore = function (playerOrComputerHand) {
 };
 
 var main = function (input) {
-  // outputs a different message based on which mode the program is in
+  // begins in mode "start"
   if (mode == "start") {
+    // changes mode to "playerHitOrStand" when in mode "start"
+    mode = "playerHitOrStand";
+    // calls initialDealRound function to output 4 dealt cards message to myOutputValue
     myOutputValue = initialDealRound();
   }
-  if (mode == "playerHitOrStand") {
+  // enters mode "playerHitOrStand"
+  else if (mode == "playerHitOrStand") {
+    // if player hits "stand"
+    if (input == "stand") {
+      // change mode to "evaluateComputerHand"
+      mode = "evaluateComputerHand";
+      // calls evaluateComputerhand function to output game outcome message
+      myOutputValue = evaluateComputerHand();
+      return myOutputValue;
+    }
+    // otherwise calls hitOrStand function which returns output message when player enters "hit"
     myOutputValue = hitOrStand(input);
-  }
-  if (mode == "evaluateComputerHand") {
-    myOutputValue = evaluateComputerHand();
-  }
-
-  // this changes the mode. note: the "playerHitOrStand" mode is changed to "evaluateComputerHand" mode inside the hitOrStand function and NOT inside the main function.
-  if (mode == "start") {
-    mode = "playerHitOrStand";
   }
 
   return myOutputValue;
 };
-
-// == not using the code below for now but putting it here because it will go into a future version == //
-
-// call blackJackWinningFunction
-// blackJackWinningFunction(computerHand);
-
-// // a function that determines if player or computer wins Black Jack based on the first two cards. outputs different winning messages for player and computer
-// var blackJackWinningFunction = function (playerOrComputerHand) {
-//   // if function is used on playerHand, outputs either (1) that player has black jack (score of 21); or (2) a prompt that tells player to 'hit' or 'stand'
-//   if (playerOrComputerHand == "playerHand") {
-//     if (
-//       (playerHand[0].name == "ace" && playerHand[1].name == "ace") ||
-//       (playerHand[0].name == "ace" && playerHand[1].rank == 10) ||
-//       (playerHand[0].rank == 10 && playerHand[1].name == "ace")
-//     ) {
-//       return "Player has Black Jack! You got 21. Enter 'stand' to see if you won. <br><br>";
-//     } else {
-//       return "You can choose to hit (type 'hit') or stand (type 'stand'). <br><br>";
-//     }
-//   }
-//   // if function is used on computerHand, which happens later in the game after player hits 'stand', assigns value of 21 to computerTotalScore. the purpose of this is to determine the outcome of the game when computer gets a black jack (score of 21)
-//   else if (playerOrComputerHand == "computerHand") {
-//     if (
-//       (computerHand[0].name == "ace" && computerHand[1].name == "ace") ||
-//       (computerHand[0].name == "ace" && computerHand[1].rank == 10) ||
-//       (computerHand[0].rank == 10 && computerHand[1].name == "ace")
-//     ) {
-//       return (computerTotalScore = 21);
-//     } else {
-//       return;
-//     }
-//   } else {
-//     return "did not win black jack";
-//   }
-// };
