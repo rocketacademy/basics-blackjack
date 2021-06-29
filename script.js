@@ -1,32 +1,3 @@
-var main = function (input) {
-  // var card = deck.pop();
-  var playerCard = playerHand.pop();
-  var dealerCard = dealerHand.pop();
-
-  // Initialise an output value with the cards drawn by each player.
-  var myOutputValue =
-    "PLAYER: " +
-    playerCard.name +
-    " of " +
-    playerCard.suit +
-    "<br>DEALER: " +
-    dealerCard.name +
-    " of " +
-    dealerCard.suit +
-    "<br>";
-  // If the player's card beats the dealer's card, the player wins.
-  if (playerCard.rank > dealerCard.rank) {
-    myOutputValue = myOutputValue + "PLAYER WINS!<br>";
-  }
-  // If the dealer's card beats the player's card, the dealer wins.
-  else if (dealerCard.rank > playerCard.rank) {
-    myOutputValue = myOutputValue + "DEALER WINS!<br>";
-  }
-  // If the player's and dealer's cards match, it's War.
-
-  return myOutputValue;
-};
-
 var makeDeck = function () {
   // create an empty deck at the beginning
   var deck = [];
@@ -84,18 +55,118 @@ var shuffleCards = function (cards) {
 };
 
 var deck = shuffleCards(makeDeck());
-var playerHand = deck.splice(0, 26);
-var dealerHand = deck;
 
-// First Version: Compare Initial Hands to Determine Winner
-// Aim for a playable game. A minimal version of Blackjack could just compare the ranks of the player's and dealer's cards. For now, we can leave out features such as Aces being 1 or 11, and the player and dealer choosing to hit or stand. Write pseudocode to guide your logic.
-// Compare the initially-drawn cards to determine a winner. Code with the understanding that your code will expand later to encompass other Blackjack functionality.
-// Test your code.
-//
-//
-//
-//
-//
+// when game ends
+var endGame = false;
+// To denote that the player should get a max sum of 21.
+var maxSumOfCards = 21;
+// If player chose to stand, then player can no longer hit until game is over.
+var playerChoseStand = false;
+// to keep track of the players' cards
+var playerHand = [];
+var dealerHand = [];
+
+// Deals card to a hand - player or computer
+var dealCardToHand = function (hand) {
+  hand.push(deck.pop());
+};
+
+// Get sum of all cards in a hand
+var getSumOfHand = function (hand) {
+  // var acesInHand = 0;
+  var SumOfCards = 0;
+  var index = 0;
+  while (index < hand.length) {
+    var currentCard = hand[index];
+
+    if (currentCard.rank >= 2 && currentCard.rank <= 10) {
+      // value and rank of card is the same for cards 2 to 10.
+      SumOfCards = SumOfCards + currentCard.rank;
+    } else if (currentCard.rank >= 11 && currentCard.rank <= 13) {
+      // value of J,Q,K is 10.
+      SumOfCards = SumOfCards + 10;
+    }
+    index = index + 1;
+  }
+
+  if (SumOfCards > maxSumOfCards && acesInHand > 0) {
+    var index = 0;
+    while (index < acesInHand) {
+      SumOfCards = SumOfCards - 10;
+      if (SumOfCards <= maxSumOfCards) {
+        break;
+      }
+      index = index + 1;
+    }
+  }
+
+  return SumOfCards;
+};
+
+var main = function (input) {
+  if (endGame == true) {
+    endGame = true;
+    console.log(endGame);
+    return "Please refresh to play the game.";
+  }
+
+  // if players have no cards, deal a card
+  if (playerHand.length == 0) {
+    playerHand = dealCardToHand();
+    dealerHand = dealCardToHand();
+    return " <br>Please input 'hit' or 'stand' as your choice.";
+  } else {
+    playerHand = dealCardToHand();
+    dealerHand = dealCardToHand();
+    // return " <br>Please input 'hit' or 'stand' as your choice.";
+  }
+
+  if (playerHand.length == 2 && getSumOfHand(pHand) == maxSumOfCards) {
+    endGame = true;
+    return "Player wins game.";
+  } else if (computerHand.length == 2 && getSumOfHand(dHand) == maxSumOfCards) {
+    endGame = true;
+    return "Computer wins game.";
+  }
+
+  if (mode == "choose stand") {
+    playerChoseStand = true;
+    if (input != "hit" && input != "stand") {
+      return "Please input either 'hit' or 'stand' to continue.";
+    }
+    if (input == "hit") {
+      playerHand = dealCardToHand();
+      if (getSumOfHand(playerHand) > maxSumOfCards) {
+        return "<br>Player has a sum of more than 21 and loses. Please try again.";
+      }
+    }
+  }
+
+  if (input == "stand") {
+    playerChoseStand = false;
+  }
+
+  var dealerSumOfHand = getSumOfHand(dealerHand);
+  if (dealerSumOfHand < 17) {
+    dealerHand = dealCardToHand();
+    dealerSumOfHand = getSumOfHand(dealerHand);
+    if (dealerSumOfHand > maxSumOfCards) {
+      endGame = true;
+      return "<br>Computer has a sum of more than 21 and loses. Please try again.";
+    }
+  }
+
+  if (playerChoseStand && dealerSumOfHand >= 17) {
+    endGame = true;
+    if (getSumOfHand(playerHand) > dealerSumOfHand) {
+      return " <br>Player wins game!!!";
+    }
+    return " <br>Computer wins game!!!";
+  }
+
+  return " <br>If Player has not yet chosen to stand, please enter 'hit' or 'stand'. <br> Otherwise, press Submit to see Computer's next move. ";
+};
+
 // rules of game;-
 // Objective: Win highest card
 // deck is shuffled and split evenly among players
