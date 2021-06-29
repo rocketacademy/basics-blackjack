@@ -2,6 +2,8 @@
 var blackjackLimit = 21;
 var userStand = false;
 var gameState = false;
+var gameMode = "input";
+var playerName = "";
 
 var deck;
 var userHand = [];
@@ -149,6 +151,14 @@ var playBlackJack = function (input) {
   Else, just press 'Submit' for the bot to continue.`;
 };
 
+
 var main = function (input) {
-  return playBlackJack();
+  if(gameMode=="input"){
+    playerName = input;
+    gameMode == "start";
+    return `Hi ${playerName}! Let's play Blackjack`;
+  }
+  if(gameMode=="start"){
+    return playBlackJack();
+  }
 };
