@@ -8,6 +8,8 @@ var playerName = "";
 var deck;
 var userHand = [];
 var botHand = [];
+var points = 100;
+var wager = 0;
 
 var displayHand = function (hand) {
   var counter = 0;
@@ -19,6 +21,10 @@ var displayHand = function (hand) {
   return outputMessage;
 };
 
+var displayPoints = function () {
+  var outputMessage = `You now have ${points}, remember to play moderately!`;
+  return outputMessage;
+};
 var getCurrentSumHand = function (hand) {
   var total = 0;
   var counter = 0;
@@ -127,14 +133,16 @@ var playBlackJack = function (input) {
     botHand.push(drawOneCard());
     //Check if any hand wins.
     if (isBlackJack(userHand)) {
+      points += wager;
       return `Congratulations, you win! <br><br> Player Hand<br>${displayHand(
         userHand
-      )}<br><br>Bot Hand<br>${displayHand(botHand)}`;
+      )}<br><br>Bot Hand<br>${displayHand(botHand)}<br>${displayPoints()}`;
     }
     if (isBlackJack(botHand)) {
+      points -= wager;
       return `Oh nooo, you lose! The bot had won with a Blackjack <br><br> Player Hand<br>${displayHand(
         userHand
-      )}<br><br>Bot Hand<br>${displayHand(botHand)}`;
+      )}<br><br>Bot Hand<br>${displayHand(botHand)}<br>${displayPoints()}`;
     }
     return `Player Hand<br>${displayHand(
       userHand
@@ -146,31 +154,35 @@ var playBlackJack = function (input) {
   if (userStand && getCurrentSumHand(botHand) > 16) {
     gameState = true;
     var winner = getWinner();
-    if (winner == "user")
+    if (winner == "user") {
+      points += wager;
       return `Congratulations, you win! <br><br> Player Hand<br>${displayHand(
         userHand
-      )}<br><br>Bot Hand<br>${displayHand(botHand)}`;
-    else
+      )}<br><br>Bot Hand<br>${displayHand(botHand)}<br>${displayPoints()}`;
+    } else {
+      points -= wager;
       return `Oh nooo, you lose! The bot had ${getCurrentSumHand(
         botHand
       )}.<br><br> Player Hand<br>${displayHand(
         userHand
-      )}<br><br>Bot Hand<br>${displayHand(botHand)}`;
+      )}<br><br>Bot Hand<br>${displayHand(botHand)}<br>${displayPoints()}`;
+    }
   }
 
   if (userStand == false && input == "hit") {
     userHand.push(drawOneCard());
     if (checkHandLimit(userHand)) {
       gameState = true;
+      points -= wager;
       return `Oops busted! You lose, your total hand is ${getCurrentSumHand(
         userHand
       )}<br><br>Player Hand<br>${displayHand(
         userHand
-      )}<br><br>Bot Hand<br>${displayHand(botHand)}`;
+      )}<br><br>Bot Hand<br>${displayHand(botHand)}<br>${displayPoints()}`;
     }
     return `Player Hand<br>${displayHand(
       userHand
-    )}<br><br>Bot Hand<br>${displayHand(botHand)}`;
+    )}<br><br>Bot Hand<br>${displayHand(botHand)}<br>${displayPoints()}`;
   }
 
   if (input == "stand") userStand = true;
@@ -179,10 +191,11 @@ var playBlackJack = function (input) {
     botHand.push(drawOneCard());
     if (checkHandLimit(botHand)) {
       gameState = true;
+      points += wager;
       return `Bot Busted! The bot total hand is ${getCurrentSumHand(botHand)}
       <br><br>Congratulations, you win! <br><br> Player Hand<br>${displayHand(
         userHand
-      )}<br><br>Bot Hand<br>${displayHand(botHand)}`;
+      )}<br><br>Bot Hand<br>${displayHand(botHand)}<br>${displayPoints()}`;
     }
   }
 
@@ -193,8 +206,13 @@ var playBlackJack = function (input) {
 var main = function (input) {
   if (gameMode == "input") {
     playerName = input;
+    gameMode = "wager";
+    return `Hi ${playerName}! Let's play Blackjack, you start off with ${points} points.<br>How much do you want to wager?`;
+  }
+  if (gameMode == "wager") {
+    wager = input;
     gameMode = "start";
-    return `Hi ${playerName}! Let's play Blackjack ^_^`;
+    return `Phew! you waged ${wager} points, let's see if you will win or lose that points.`;
   }
   if (gameMode == "start") {
     return playBlackJack(input);
