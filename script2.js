@@ -9,7 +9,7 @@ var numberOfPlayers = 0;
 // array to store player objects with these attributes: name, playerNumber, cardsArray, totalRank, wins
 var playerArray = [];
 // current player number
-var currentPlayer = 0;
+var currentPlayer = 1;
 // array to track the dealer's cards
 var dealerCardsArray = [];
 // string message on list of currentplayer's cards
@@ -27,7 +27,8 @@ var numberOfRounds = 0;
 var GAME_MODE_WELCOME = "GAME_MODE_WELCOME";
 var GAME_MODE_NUMBER_OF_PLAYERS = "GAME_MODE_NUMBER_OF_PLAYERS";
 var GAME_MODE_NAMES = "GAME_MODE_NAMES";
-var GAME_MODE_INSTRUCTIONS = "GAME_MODE_INSTRUCTIONS";
+var GAME_MODE_START_GAME = "GAME_MODE_START_GAME";
+var GAME_MODE_PLAYER_TURN = "GAME_MODE_PLAYER_TURN";
 var GAME_MODE_PLAYER_HIT = "GAME_MODE_PLAYER_HIT";
 var GAME_MODE_PLAYER_STAND = "GAME_MODE_PLAYER_STAND";
 var GAME_MODE_EVALUATE_WIN = "GAME_MODE_EVALUATE_WIN";
@@ -101,37 +102,53 @@ var shuffleCards = function (cardDeck) {
 };
 
 // Function to draw card for current player
-var playerDrawCard = function (playerNumber) {
+var playerDrawCard = function (currentPlayer) {
+  console.log("drawing player card..");
   // player draws the first card from the top of the deck
   var playerCard = shuffledDeck.pop();
   // increase the number of hits for current player
   numberOfHits_player += 1;
 
   // Create local variable storing currentplayer's cards
-  var playerCardsArray = [];
-  // If the card is an ace, determine the value of its rank
-  if (containsAce(playerCard) == true) {
-    determineAceValue(playerCard, playerCardsArray);
-  }
-  // Store the new card in the playerCardsArray
+  var playerIndex = currentPlayer - 1;
+  var playerCardsArray = playerArray[playerIndex].cardsArray;
+  // Push the new card in the playerCardsArray
   playerCardsArray.push(playerCard);
-  // Push this array to the respective object index in the global objects array
-  playerArray[playerNumber].cardsArray = playerCardsArray;
+  // Replace this array in the respective object index in the global objects array
+  playerArray[playerIndex].cardsArray = playerCardsArray;
 
   console.log(
-    `player ${playerNumber} draws card number ${numberOfHits_player}..`
+    `player ${currentPlayer} draws card number ${numberOfHits_player}..`
   );
   console.log(playerCard);
   console.log("playerCardsArray");
   console.log(playerCardsArray);
+
+  // return the newly drawn card
+  return playerCard;
+};
+
+// Function to create display message of current card drawn by player
+var cardMessage = function (playerName, playerCard) {
+  return (
+    playerName +
+    " draws " +
+    playerCard.name +
+    " of " +
+    playerCard.suit +
+    ".<br>"
+  );
 };
 
 // Function to sum up card ranks of any player
 var sumOfRanks = function (cardsArray) {
   var index = 0;
   var sumOfRanks = 0;
+  console.log("cardsArray.length");
+  console.log(cardsArray.length);
   while (index < cardsArray.length) {
     var card = cardsArray[index];
+    console.log(card);
     var cardRank = card.rank;
     sumOfRanks = sumOfRanks + cardRank;
     index += 1;
@@ -144,7 +161,7 @@ var determineBust = function (playerNumber) {
   // Sum up player's cards
   var sumOfCards = 0;
   // check if the player bust - if sumOfCards is above 21, return true
-  sumOfCards = sumOfRanks(playerArray[playerNumber - 1].cardsArray);
+  sumOfCards = sumOfRanks(playerArray[playerNumber].cardsArray);
   if (sumOfCards > 21) {
     return true;
   }
@@ -177,8 +194,6 @@ var listCards = function (cardsArray, string) {
   }
   return listOfCards;
 };
-
-// Function to determine winner
 
 // Function to check if a newly drawn card contains an ace (version 3)
 var containsAce = function (newCard) {
@@ -217,6 +232,41 @@ var dealerDrawCard = function () {
   console.log(dealerCard);
 };
 
+// Function to check who got blackjack
+var checkBlackJack = function () {
+  var message = "<b>BlackJack winners: </b>";
+  // create array to store names of blackjack winners
+  var blackJackWinners = [];
+  // create loop to check which players won blackjack
+  var index = 0;
+  while (index < numberOfPlayers) {
+    if (playerArray[index].totalRank == 21) {
+      blackJackWinners.push(playerArray[index].name);
+    }
+    index += 1;
+  }
+  // check if dealer won blackjack
+  if (sumOfRanks(dealerCardsArray) == 21) {
+    blackJackWinners.push("dealer");
+  }
+  // If one or more won blackjack, output message that they won
+  if (blackJackWinners.length > 0) {
+    var winnerIndex = 0;
+    while (winnerIndex < blackJackWinners.length) {
+      message = message + blackJackWinners[winnerIndex] + "<br>";
+      winnerIndex += 1;
+    }
+    return message;
+  }
+};
+
+// Function to check who got the highest rank among those less than 21
+var checkHighestRank = function () {};
+
+// Function to check who got bust
+
+// Check who got the same totalRankxw
+
 // Function to reset game conditions for the next round
 var resetGame = function () {
   // reset the numberOfHits, playerCardsArray, dealerCardsArray & list of cards
@@ -253,13 +303,15 @@ var main = function (input) {
     console.log(myOutputValue);
     return myOutputValue;
   }
+
+  // If gameMode is GAME_MODE_NUMBER_OF_PLAYERS, create player object variables and change gameMode to GAME_MODE_NAMES to prompt user to enter player names
   if (gameMode == GAME_MODE_NUMBER_OF_PLAYERS) {
     if (
       input == "" ||
       input.charAt(input.length - 1) == " " ||
-      Number(input) == NaN
+      isNaN(input) == true
     ) {
-      console.log("Prompt user to enter number of players");
+      console.log("Invalid input. Prompt user to enter number of players");
       myOutputValue =
         "Please enter the number of players playing this game. A maximum of 4 players is allowed.";
       return myOutputValue;
@@ -295,45 +347,151 @@ var main = function (input) {
     return myOutputValue;
   }
 
-  // If gameMode is GAME_MODE_NAME, ask the user to input their name
+  // If gameMode is GAME_MODE_NAME, ask the user to input their name and change gameMode to GAME_MODE_PLAYER_HIT
   if (gameMode == GAME_MODE_NAMES) {
     // create array to store all names
     var names = input.split(",");
+    console.log("names:");
+    console.log(names);
+    console.log("array length");
+    console.log(names.length);
     //input validation - user must enter correct number of names
-    if (input == "" || input == " " || names.length !== numberOfPlayers) {
-      console.log(
-        `Invalid input for name. Prompt user to enter ${numberOfPlayers} names`
-      );
-      myOutputValue = `Oops! Please enter exactly ${numberOfPlayers} names separated by commas.`;
+    if (names.length == numberOfPlayers) {
+      // loop to push each name to respective player object in global array
+      var index = 0;
+      while (index < names.length) {
+        playerArray[index].name = names[index];
+        index += 1;
+      }
+
+      // create a list of names
+      var nameList = "";
+      var index = 0;
+      while (index < names.length) {
+        nameList = nameList + `${names[index]},`;
+        index += 1;
+      }
+      // remove the comma at the end of the string
+      nameList = nameList.slice(0, -1);
+      console.log(nameList);
+
+      // change game mode to GAME_MODE_START_GAME
+      gameMode = GAME_MODE_START_GAME;
+
+      // Create message of game instructions
+      myOutputValue = `Hello ${nameList}! Let's start the game! <br><br><b> GAME INSTRUCTIONS </b><br> Each player can hit or stand. When your cards add up to 21, you win blackjack. When your cards exceed 21, you bust.<br><br> Press submit to start the game.`;
       return myOutputValue;
     }
+    // If player wishes to modify the number of players, prompt user to enter 'back' to return to previous game mode
+    if (input == "back") {
+      gameMode = GAME_MODE_NUMBER_OF_PLAYERS;
+      console.log("return to previous game mode:");
+      console.log(gameMode);
+      myOutputValue =
+        "Please enter the number of players playing this game. A maximum of 4 players is allowed.";
+      return myOutputValue;
+    }
+    // Otherwise, user has not entered the correct number of names. Prompt user to enter the correct number of names.
+    console.log(
+      `Invalid input for name. Prompt user to enter ${numberOfPlayers} names`
+    );
+    myOutputValue = `Oops! Please enter exactly ${numberOfPlayers} names separated by commas.`;
+    return myOutputValue;
+  }
 
-    // loop to push each name to respective player object in global array
-    var index = 0;
-    while (index < names.length) {
-      playerArray[index].name = names[index];
+  // If gameMode is GAME_MODE_START_GAME, increment the no. of rounds, make and shuffle deck, and change gameMode to GAME_MODE_START_GAME
+  if (gameMode == GAME_MODE_START_GAME) {
+    // increment no. of rounds
+    numberOfRounds += 1;
+    console.log("current round:");
+    console.log(numberOfRounds);
+    // make and shuffle deck
+    shuffledDeck = shuffleCards(makeDeck());
+    console.log("shuffling deck..");
+    // change game mode to GAME_MODE_PLAYER_HIT
+    gameMode = GAME_MODE_PLAYER_HIT;
+    myOutputValue = `Round ${numberOfRounds} begins now <br><br> ${
+      playerArray[currentPlayer - 1].name
+    } starts first. Press submit to start hitting.`;
+    return myOutputValue;
+  }
+  // Change gameMode to GAME_MODE_PLAYER_HIT
+  if (gameMode == GAME_MODE_PLAYER_HIT) {
+    // If player enters 'stand'
+    if (input == "stand" && numberOfHits_player > 0) {
+      // change gameMode to GAME_MODE_PLAYER_STAND
+      gameMode = GAME_MODE_PLAYER_STAND;
+      console.log("game mode:");
+      console.log(gameMode);
+      return `You chose to stand. Press submit for the next player's turn.`;
     }
 
-    // Create a list of names
-    var nameList = "";
-    var index = 0;
-    while (index < names.length) {
-      nameList = nameList + `${names[index]},`;
-      index += 1;
-    }
-    if (namesList.charAt(names.length - 1) == ",") {
-      namesList = namesList.slice(0, -1);
-    }
-    // Change game mode to GAME_MODE_INSTRUCTIONS
-    gameMode = GAME_MODE_INSTRUCTIONS;
+    // Draw card for player and store it in a new variable
+    var newCard = playerDrawCard(currentPlayer);
 
+    // Create message stating the card drawn
+    var playerObject = playerArray[currentPlayer - 1];
+    var playerCardMessage = cardMessage(playerObject.name, newCard);
+
+    // Create message listing player's total cards
+    var playerCardsArray = playerObject.cardsArray;
+    listOfCards_player = listCards(playerCardsArray, `${playerObject.name}`);
+    console.log("playerCardsArray.length");
+    console.log(playerCardsArray.length);
+
+    // Calculate total rank of player's existing cards
+    var totalRank = sumOfRanks(playerCardsArray);
+    console.log(`player ${currentPlayer}'s total rank: `);
+    console.log(totalRank);
+    // push it into the player object
+    playerObject.totalRank = totalRank;
+
+    // Conditions to check if the player can still continue hitting (<21), got blackjack (=21) or got bust (>21)
+    hitOrStandMessage =
+      "Your cards are still below 21. To hit again, press submit. To stand, enter 'stand' and submit.";
+    if (totalRank == 21) {
+      hitOrStandMessage = "Blackjack! Enter 'stand' for the next player's turn";
+    }
+    if (determineBust(currentPlayer - 1) == true) {
+      hitOrStandMessage =
+        "Oops! You bust and should not continue hitting. Enter 'stand' for the next player's turn.";
+    }
+    myOutputValue =
+      playerCardMessage +
+      listOfCards_player +
+      "<br>" +
+      `Total rank: ${totalRank} <br>` +
+      hitOrStandMessage;
+    return myOutputValue;
+  }
+
+  // If gameMode is GAME_MODE_PLAYER_STAND
+  if (gameMode == GAME_MODE_PLAYER_STAND) {
+    console.log("current player number");
+    console.log(currentPlayer);
+    // If it is the last player, draw cards for dealer
+    if (currentPlayer == numberOfPlayers) {
+      dealerDrawCard();
+      console.log("sum of dealer cards ranks");
+      console.log(sumOfRanks(dealerCardsArray));
+
+      // change gameMode to GAME_MODE_EVALUATE_WIN
+      gameMode = GAME_MODE_EVALUATE_WIN;
+      myOutputValue =
+        "All players have finished. Next, the dealer will draw its cards. Press submit to see who won!";
+      return myOutputValue;
+    }
+    // Otherwise, it is the next player's turn.
     // increment current player number by 1
     currentPlayer += 1;
-
-    // Create message of game instructions
-    myOutputValue = `Hello ${namesList}! Let's start the game! <br> Each player can hit or stand. When your cards add up to 21, you win blackjack. When your cards exceed 21, you bust. Player ${currentPlayer}, ${
+    console.log("next player number:");
+    console.log(currentPlayer);
+    // change gameMode to GAME_MODE_PLAYER_HIT
+    gameMode = GAME_MODE_PLAYER_HIT;
+    // create welcome message for next player
+    myOutputValue = `Welcome ${
       playerArray[currentPlayer - 1].name
-    } goes first. <br> Press submit to draw your first card.`;
+    }! You're player number ${currentPlayer}. Press submit to start hitting.`;
     return myOutputValue;
   }
 };
