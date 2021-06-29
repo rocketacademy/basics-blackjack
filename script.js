@@ -1,10 +1,17 @@
+// set the different game turns
+var GAME_MODE_USERNAME = "USERNAME";
+var GAME_MODE_BETTING = "BETTING";
+var GAME_MODE_MULTI_PLAYER = "MULTI_PLAYER";
+var GAME_MODE_SPLITS = "SPLITS";
 var GAME_MODE_DEAL_CARDS = "DEAL_CARDS";
 var GAME_MODE_CHOOSE_ACE_VALUE = "CHOOSE_ACE_VALUE";
 var GAME_MODE_ANALYSE_CARDS = "ANALYSE_CARDS";
 var GAME_MODE_HIT_OR_STAND = "HIT_OR_STAND";
 
-var gameMode = GAME_MODE_DEAL_CARDS;
+// set the first game mode to input username
+var gameMode = GAME_MODE_USERNAME;
 
+// set different variables and arrays to hold values
 var userInput = "";
 var playerCards = [];
 var computerCards = [];
@@ -20,11 +27,21 @@ var playerCardsTotal = 0;
 var computerCardsTotal = 0;
 var numOfPlayerCards = 0;
 var numOfComputerCards = 0;
+var playerBankroll = 100;
+var computerBankroll = 100;
+var betForRound = 0;
+var computerHasAce = false;
 
 var main = function (input) {
   var myOutputValue = "";
   userInput = input;
-  if (gameMode == GAME_MODE_DEAL_CARDS) {
+  if (gameMode == GAME_MODE_USERNAME) {
+    myOutputValue = inputUsername();
+    return myOutputValue;
+  } else if (gameMode == GAME_MODE_BETTING) {
+    myOutputValue = inputBet();
+    return myOutputValue;
+  } else if (gameMode == GAME_MODE_DEAL_CARDS) {
     myOutputValue = dealCards();
   } else if (gameMode == GAME_MODE_CHOOSE_ACE_VALUE) {
     myOutputValue = chooseAceValue();
@@ -35,6 +52,55 @@ var main = function (input) {
     return myOutputValue;
   }
   return myOutputValue;
+};
+
+var inputUsername = function () {
+  // user input validation
+  if (userInput == "") {
+    return `Welcome to ♣️ Blackjack ♠️! Please enter your name.`;
+  }
+
+  var outputText = `Welcome to ♣️ Blackjack ♠️, ${userInput}! <br> You have 100 points. <br> Please enter number of points to bet against other players for this round.`;
+  gameMode = GAME_MODE_BETTING;
+  return outputText;
+};
+
+var inputBet = function () {
+  // end the game if either the player or the computer has no more points.
+  if (playerBankroll == 0) {
+    return `You have no points left. Refresh the page to restart the game.`;
+  }
+
+  if (computerBankroll == 0) {
+    return `The dealer has no points left. Refresh the page to restart the game.`;
+  }
+
+  // user input validation
+  if (!Number(userInput) || userInput > playerBankroll) {
+    return `You have ${playerBankroll} points while the dealer has ${computerBankroll} points. Please enter a valid number of points to bet against other players.`;
+  }
+
+  // restart variables & arrays, except for bankrolls because new round is being played.
+  playerCards = [];
+  computerCards = [];
+  playerCard1 = null;
+  playerCard2 = null;
+  playerCard = null;
+  playerCardIndex = 0;
+  computerCard1 = null;
+  computerCard2 = null;
+  computerCard = null;
+  computerCardIndex = 0;
+  playerCardsTotal = 0;
+  computerCardsTotal = 0;
+  numOfPlayerCards = 0;
+  numOfComputerCards = 0;
+  computerHasAce = false;
+
+  betForRound = Number(userInput);
+  var outputText = `You have chosen to bet ${betForRound} points against other players for this round. <br> Press submit to deal cards.`;
+  gameMode = GAME_MODE_DEAL_CARDS;
+  return outputText;
 };
 
 var dealCards = function () {
@@ -51,6 +117,18 @@ var dealCards = function () {
   // the cards are displayed to the user
   var outputText = `Your cards are ${playerCard1.name} of ${playerCard1.suit} and ${playerCard2.name} of ${playerCard2.suit}. <br> The dealer's face-up card is ${computerCard1.name} of ${computerCard1.suit}. <br><br> `;
 
+  // dealer's first ace counts as 11 unless it busts the hand. Subsequent aces count as ones.
+  // 1. both dealer's cards are aces.
+  if (computerCard1.name == "ace" && computerCard2.name == "ace") {
+    computerCard1.rank = 11;
+    computerCard2.rank = 1;
+  } // 2. one of the dealer's cards is ace.
+  else if (computerCard1.name == "ace" && computerCard2.name != "ace") {
+    computerCard1.rank = 11;
+  } else if (computerCard2.name == "ace" && computerCard1.name != "ace") {
+    computerCard2.rank = 11;
+  }
+
   // aces can be 1 or 11 (player choose value throughout the round if there is one)
   if (playerCard1.name == "ace") {
     outputText += `Please enter "1" to play your first card ace with face value of 1, <br> OR enter "11" to play ace with face value of 11.`;
@@ -64,7 +142,7 @@ var dealCards = function () {
     return outputText;
   }
 
-  outputText += `Press submit to continue the game and see your face-up cards total.`;
+  outputText += `Press submit to continue the game and see your cards total.`;
 
   // Move the game forward
   gameMode = GAME_MODE_ANALYSE_CARDS;
@@ -92,7 +170,7 @@ var chooseAceValue = function () {
     playerCard2.rank = 11;
     outputText += `You chose your second card's ace's face value to be 11.`;
     gameMode = GAME_MODE_ANALYSE_CARDS;
-  } // if player's third card is ace
+  } // if player's other card is ace
   else if (playerCard.name == "ace" && userInput == "1") {
     playerCard.rank = 1;
     playerCardsTotal += playerCard.rank;
@@ -117,24 +195,27 @@ var analyseCards = function () {
     playerCardsTotal = playerCard1.rank + playerCard2.rank;
     computerCardsTotal = computerCard1.rank + computerCard2.rank;
 
+    // Push player cards and dealer cards into arrays.
     playerCards.push(playerCard1);
     playerCards.push(playerCard2);
     computerCards.push(computerCard1);
     computerCards.push(computerCard2);
-    console.log(playerCards);
-    console.log(computerCards);
   }
 
-  var outputText = `Your face-up cards total ${playerCardsTotal}. <br><br>`;
+  var outputText = `Your cards total ${playerCardsTotal}. <br><br>`;
 
-  // The cards are analysed for game winning conditions, i.e. Blackjack
+  // The cards are analysed for game winning conditions
   if (playerCardsTotal == 21) {
-    outputText += `You win! <br><br> Refresh the page to restart the game.`;
-    gameMode = GAME_MODE_DEAL_CARDS;
+    playerBankroll += betForRound;
+    computerBankroll -= betForRound;
+    outputText += `You win! <br> Your points: ${playerBankroll} <br> The dealer's points: ${computerBankroll} <br><br> Press submit.`;
+    gameMode = GAME_MODE_BETTING;
     return outputText;
   } else if (playerCardsTotal > 21) {
-    outputText += `You bust! <br><br> Refresh the page to restart the game.`;
-    gameMode = GAME_MODE_DEAL_CARDS;
+    playerBankroll -= betForRound;
+    computerBankroll += betForRound;
+    outputText += `You bust! <br> Your points: ${playerBankroll} <br> The dealer's points: ${computerBankroll} <br><br> Press submit.`;
+    gameMode = GAME_MODE_BETTING;
     return outputText;
   } else {
     // the user decides whether to hit or stand using the submit button to submit their choice
@@ -149,26 +230,40 @@ var analyseCards = function () {
 var hitOrStand = function () {
   var outputText = "";
 
-  // the computer decides to hit or stand automatically based on the game rules
-  // dealer always plays ace with face value of 1.
-  // the computer has to hit if their hand is below 17
-  if (computerCardsTotal <= 16) {
+  // the computer decides to hit or stand automatically based on the game rules:
+  // 1. the computer has to stand if their hand is 17 or higher
+  // 2. the computer has to hit if their hand is below 17
+  while (computerCardsTotal < 17) {
     computerCard = deck.pop();
     numOfComputerCards += 1;
+
+    // if dealer gets ace, need to analyse whether it's dealer's first ace or not.
+    if (computerCard.name == "ace") {
+      var counter = 0;
+      while (counter < numOfComputerCards - 1) {
+        if (computerCards[counter].name == "ace") {
+          computerHasAce = true;
+          computerCard.rank = 1; // dealer's subsequent ace counts as one
+        } else {
+          computerCard.rank = 11; // dealer's first ace counts as 11
+        }
+        counter += 1;
+      }
+    }
+
+    // push dealer's card into computerCards array.
     computerCards.push(computerCard);
     computerCardsTotal += computerCard.rank;
-  } else {
-    // the computer has to stand if their hand is 17 or higher
   }
 
+  // if user chooses to hit
   if (userInput == "hit") {
     playerCard = deck.pop();
     numOfPlayerCards += 1;
     playerCards.push(playerCard);
     playerCardIndex = numOfPlayerCards - 1;
-    console.log("num of player's cards: " + numOfPlayerCards);
-    console.log("player card index: " + playerCardIndex);
-    console.log("playerCards array: " + playerCards);
+
+    // if user gets ace
     if (playerCards[playerCardIndex].name == "ace") {
       gameMode = GAME_MODE_CHOOSE_ACE_VALUE;
       console.log(
@@ -177,11 +272,16 @@ var hitOrStand = function () {
       outputText += `Your card is ${playerCards[playerCardIndex].name} of ${playerCards[playerCardIndex].suit}. Please enter "1" to play ace with face value of 1, <br> OR enter "11" to play ace with face value of 11.`;
       return outputText;
     }
+
     playerCardsTotal += playerCard.rank;
-    outputText += `You chose to take another card, which is ${playerCards[playerCardIndex].name} of ${playerCards[playerCardIndex].suit}.`;
-  } else if (userInput == "stand") {
+    outputText += `You chose to take another card, which is ${playerCards[playerCardIndex].name} of ${playerCards[playerCardIndex].suit}.<br>`;
+  } // if user chooses to stand
+  else if (userInput == "stand") {
     playerCardIndex = numOfPlayerCards - 1;
     outputText = `You chose to end your turn. <br>`;
+  } // user input validation
+  else {
+    outputText = `Please enter "hit" to deal another card from the deck, or enter "stand" to end your turn and stop without taking a card.<br>`;
   }
 
   outputText += `Your cards are: <br>`;
@@ -207,50 +307,62 @@ var hitOrStand = function () {
 
   // the user's cards are analysed for winning or losing conditions
   if (
+    // the game either ends or continues
     playerCardsTotal < 21 &&
     userInput != "stand" &&
     computerCardsTotal <= 21
   ) {
     outputText += `Please enter "hit" to deal another card from the deck, or enter "stand" to end your turn and stop without taking a card.`;
-  } else if (playerCardsTotal == 21) {
+  }
+  // the dealer exceeds 21 and bust
+  else if (computerCardsTotal > 21 && playerCardsTotal <= 21) {
+    playerBankroll += betForRound;
+    computerBankroll -= betForRound;
+    outputText += `<br> The dealer's face-down card is ${
+      computerCards[numOfComputerCards - 1].name
+    } of ${
+      computerCards[numOfComputerCards - 1].suit
+    }. <br> The dealer's cards total ${computerCardsTotal}. <br><br> The dealer bust! You win! <br>Your points: ${playerBankroll} <br> The dealer's points: ${computerBankroll} <br><br> Press submit.`;
+    gameMode = GAME_MODE_BETTING;
+  }
+  // the player exceeds 21 and bust. If both the player and the dealer both bust, the dealer still wins.
+  else if (playerCardsTotal > 21) {
+    playerBankroll -= betForRound;
+    computerBankroll += betForRound;
+    outputText += `<br> The dealer's face-down card is ${
+      computerCards[numOfComputerCards - 1].name
+    } of ${
+      computerCards[numOfComputerCards - 1].suit
+    }. <br> The dealer's cards total ${computerCardsTotal}. <br><br> You bust! <br> Your points: ${playerBankroll} <br> The dealer's points: ${computerBankroll} <br><br> Press submit.`;
+    gameMode = GAME_MODE_BETTING;
+  }
+  // the dealer who is closer to 21 wins the hand
+  else if (computerCardsTotal <= 21 && computerCardsTotal > playerCardsTotal) {
+    playerBankroll -= betForRound;
+    computerBankroll += betForRound;
     outputText += `<br> The dealer
     s face-down card is ${computerCards[numOfComputerCards - 1].name} of ${
       computerCards[numOfComputerCards - 1].suit
-    }. <br> The dealer's cards total ${computerCardsTotal}. <br><br> You win! <br><br> Refresh the page to restart the game.`;
-    gameMode == GAME_MODE_DEAL_CARDS;
-  } else if (playerCardsTotal > 21) {
+    }. <br> The dealer's cards total ${computerCardsTotal}. <br><br> You lose! <br> Your points: ${playerBankroll} <br> The dealer's points: ${computerBankroll} <br><br> Press submit.`;
+    gameMode = GAME_MODE_BETTING;
+  }
+  // the player who is closer to 21 wins the hand
+  else if (playerCardsTotal <= 21 && playerCardsTotal > computerCardsTotal) {
+    playerBankroll += betForRound;
+    computerBankroll -= betForRound;
     outputText += `<br> The dealer
     s face-down card is ${computerCards[numOfComputerCards - 1].name} of ${
       computerCards[numOfComputerCards - 1].suit
-    }. <br> The dealer's cards total ${computerCardsTotal}. <br><br> You bust! <br><br> Refresh the page to restart the game.`;
-    gameMode == GAME_MODE_DEAL_CARDS;
-  } else if (
-    playerCardsTotal < computerCardsTotal &&
-    computerCardsTotal <= 21
-  ) {
+    }. <br> The dealer's cards total ${computerCardsTotal}. <br><br> You win! <br> Your points: ${playerBankroll} <br> The dealer's points: ${computerBankroll}. <br><br> Press submit.`;
+    gameMode = GAME_MODE_BETTING;
+  }
+  // when the player's cards and computer's cards totals are the same, it is a tie
+  else if (computerCardsTotal == playerCardsTotal && computerCardsTotal <= 21) {
     outputText += `<br> The dealer
     s face-down card is ${computerCards[numOfComputerCards - 1].name} of ${
       computerCards[numOfComputerCards - 1].suit
-    }. <br> The dealer's cards total ${computerCardsTotal}. <br><br> You lose! <br><br> Refresh the page to restart the game.`;
-    gameMode == GAME_MODE_DEAL_CARDS;
-  } else if (playerCardsTotal <= 21 && playerCardsTotal > computerCardsTotal) {
-    outputText += `<br> The dealer
-    s face-down card is ${computerCards[numOfComputerCards - 1].name} of ${
-      computerCards[numOfComputerCards - 1].suit
-    }. <br> The dealer's cards total ${computerCardsTotal}. <br><br> You win! <br><br> Refresh to restart the game.`;
-    gameMode == GAME_MODE_DEAL_CARDS;
-  } else if (computerCardsTotal > 21) {
-    outputText += `<br> The dealer
-    s face-down card is ${computerCards[numOfComputerCards - 1].name} of ${
-      computerCards[numOfComputerCards - 1].suit
-    }. <br> The dealer's cards total ${computerCardsTotal}. <br><br> The dealer bust! You win! <br><br> Refresh the page to restart the game.`;
-    gameMode == GAME_MODE_DEAL_CARDS;
-  } else if (computerCardsTotal == playerCardsTotal) {
-    outputText += `<br> The dealer
-    s face-down card is ${computerCards[numOfComputerCards - 1].name} of ${
-      computerCards[numOfComputerCards - 1].suit
-    }. <br> The dealer's cards total ${computerCardsTotal}. <br><br> It's a tie! Refresh the page to restart the game.`;
-    gameMode == GAME_MODE_DEAL_CARDS;
+    }. <br> The dealer's cards total ${computerCardsTotal}. <br><br> It's a tie! <br><br> Your points: ${playerBankroll} <br> The dealer's points: ${computerBankroll}.<br><br> Press submit.`;
+    gameMode = GAME_MODE_BETTING;
   } else {
     outputText += `ERROR!`;
   }
@@ -364,7 +476,4 @@ var deck = shuffleCards(makeDeck());
 // Rules of the game:
 // 1. there will be only two players, one human one computer
 // 2. the computer will always be the dealer.
-
-// the player who is closer to 21 wins the hand
-
 // the game either ends or continues
