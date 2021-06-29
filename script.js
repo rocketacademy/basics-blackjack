@@ -138,18 +138,14 @@ var calTotalScore = function (array, rank) {
   for (var counter = 0; counter < array.length; counter += 1) {
     var currCard = array[counter];
     // set default ace value to 11
-    if (currCard.rank == 1) {
+    if (currCard.rank == 1 && totalScore > maxScore) {
+      currCard.rank = 1;
+    } else if (currCard.rank == 1 && totalScore < maxScore) {
       currCard.rank = 11;
     }
     totalScore += array[counter].rank;
-
-    while (totalScore > maxScore) {
-      if (currCard.rank == `ace`) {
-        currCard.rank = 1;
-      }
-      totalScore += array[counter].rank;
-    }
   }
+
   return totalScore;
 };
 
