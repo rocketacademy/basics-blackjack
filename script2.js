@@ -38,6 +38,8 @@ var gameMode = GAME_MODE_WELCOME;
 var hitOrStandMessage = "";
 // winner message after the game ends
 var winnerMessage = "";
+// global array to store names of blackjack winners
+var blackJackWinners = [];
 
 //// HELPER FUNCTIONS ////
 // make deck of 52 cards
@@ -157,23 +159,18 @@ var sumOfRanks = function (cardsArray) {
 };
 
 // Function to determine if player 'n' is bust
-var determineBust = function (playerNumber) {
+var determineBust = function (playerIndex) {
+  // Get player object
+  playerObject = playerArray[playerIndex];
+  // Get  array of player's cards from global array
+  playerCards = playerObject.cardsArray;
   // Sum up player's cards
   var sumOfCards = 0;
   // check if the player bust - if sumOfCards is above 21, return true
-  sumOfCards = sumOfRanks(playerArray[playerNumber].cardsArray);
+  sumOfCards = sumOfRanks(playerCards);
   if (sumOfCards > 21) {
     return true;
   }
-
-  // check if the dealer bust - if sumOfCards is above 21, return true
-  // if (string == "dealer") {
-  //sumOfCards = sumOfRanks(dealerCardsArray);
-  //if (sumOfCards > 21) {
-  //return true;
-  //}
-  // }
-
   return false;
 };
 
@@ -234,13 +231,13 @@ var dealerDrawCard = function () {
 
 // Function to check who got blackjack
 var checkBlackJack = function () {
-  var message = "<b>BlackJack winners: </b>";
-  // create array to store names of blackjack winners
-  var blackJackWinners = [];
-  // create loop to check which players won blackjack
+  var message = "";
+  // create loop to check which players won blackjack and push them into global array blackJackWinners
   var index = 0;
   while (index < numberOfPlayers) {
     if (playerArray[index].totalRank == 21) {
+      console.log("player that got blackjack..");
+      console.log(playerArray[index].name);
       blackJackWinners.push(playerArray[index].name);
     }
     index += 1;
@@ -261,11 +258,42 @@ var checkBlackJack = function () {
 };
 
 // Function to check who got the highest rank among those less than 21
-var checkHighestRank = function () {};
+var checkHighestRank = function () {
+  // Separate those who got 21 from those who didn't - create array of those who didn't get blackjack
+  var remainingPlayers = [];
+  var index = 0;
+  while (index < playerArray.length) {
+    var playerObject = playerArray[index];
+    var playerRank = playerObject.totalRank;
+    if (playerRank !== 21) {
+      remainingPlayers.push(playerObject);
+    }
+    index += 1;
+  }
+
+  // Among remaining players who didn't get blackJack, find the player with the highest rank
+  var index = 0;
+  // Variable to store the highest rank layer
+  var highestRank = 0;
+  // Variable to store the winner object later
+  var winner;
+  while (index < remainingPlayers.length) {
+    var playerObject = remainingPlayers[index];
+    var playerRank = playerObject.totalRank;
+    if (playerRank > highestRank) {
+      highestRank = playerRank;
+      winner = playerObject;
+    }
+    index += 1;
+  }
+  // Output the winner
+  var nameOfWinner = winner.name;
+  return nameOfWinner;
+};
 
 // Function to check who got bust
 
-// Check who got the same totalRankxw
+// Check who got the same totalRank
 
 // Function to reset game conditions for the next round
 var resetGame = function () {
@@ -492,6 +520,60 @@ var main = function (input) {
     myOutputValue = `Welcome ${
       playerArray[currentPlayer - 1].name
     }! You're player number ${currentPlayer}. Press submit to start hitting.`;
+    return myOutputValue;
+  }
+
+  // If gameMode is GAME_MODE_EVALUATE_WIN
+  if (gameMode == GAME_MODE_EVALUATE_WIN) {
+    // Create the main scoreboard
+    var scoreBoard = "<b>Total Ranks: </b><br>";
+    var index = 0;
+    while (index < playerArray.length) {
+      scoreBoard =
+        scoreBoard +
+        `Player ${index + 1}, ${playerArray[index].name}: ${
+          playerArray[index].totalRank
+        } <br>`;
+      index += 1;
+    }
+
+    // Create the message declaring blackjack winners (if any)
+    var blackJackMessage = "";
+    // Create the message who got the highest rank
+    var playerWithHighestRank = checkHighestRank();
+
+    // Check who got bust
+    var arrayOfBustPlayers = [];
+    // Loop to create message to bust players
+    var messageForBustPlayers = "";
+    var playerIndex = 0;
+    while (playerIndex < playerArray.length) {
+      if (determineBust(playerIndex) == true) {
+        // If this player is bust, push it into the arrayOfBustPlayers
+        arrayOfBustPlayers.push(playerArray[playerIndex]);
+        var name = playerArray[playerIndex].name;
+        messageForBustPlayers =
+          messageForBustPlayers + name + ", you're bust!<br>";
+      }
+      playerIndex += 1;
+    }
+
+    // If the blackjack message is empty ie no winner,
+    if (checkBlackJack() === "") {
+      // declare no winner
+      blackJackMessage = "";
+      // check who got the highest rank
+      playerWithHighestRank = checkHighestRank();
+    } else {
+      // If there is a blackjack winner, declare them
+      blackJackMessage = "BlackJack winners: <br>" + checkBlackJack();
+    }
+
+    // check who tied
+
+    // Output final messages and scoreboard
+    myOutputValue =
+      blackJackMessage + messageForBustPlayers + "<br><br>" + scoreBoard;
     return myOutputValue;
   }
 };
