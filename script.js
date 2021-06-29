@@ -1,308 +1,145 @@
-var deck = [
-  {
-    name: "ace",
-    suit: "hearts",
-    rank: 1,
-  },
-  {
-    name: "2",
-    suit: "hearts",
-    rank: 2,
-  },
-  {
-    name: "3",
-    suit: "hearts",
-    rank: 3,
-  },
-  {
-    name: "4",
-    suit: "hearts",
-    rank: 4,
-  },
-  {
-    name: "5",
-    suit: "hearts",
-    rank: 5,
-  },
-  {
-    name: "6",
-    suit: "hearts",
-    rank: 6,
-  },
-  {
-    name: "7",
-    suit: "hearts",
-    rank: 7,
-  },
-  {
-    name: "8",
-    suit: "hearts",
-    rank: 8,
-  },
-  {
-    name: "9",
-    suit: "hearts",
-    rank: 9,
-  },
-  {
-    name: "10",
-    suit: "hearts",
-    rank: 10,
-  },
-  {
-    name: "jack",
-    suit: "hearts",
-    rank: 11,
-  },
-  {
-    name: "queen",
-    suit: "hearts",
-    rank: 12,
-  },
-  {
-    name: "king",
-    suit: "hearts",
-    rank: 13,
-  },
-  {
-    name: "ace",
-    suit: "diamonds",
-    rank: 1,
-  },
-  {
-    name: "2",
-    suit: "diamonds",
-    rank: 2,
-  },
-  {
-    name: "3",
-    suit: "diamonds",
-    rank: 3,
-  },
-  {
-    name: "4",
-    suit: "diamonds",
-    rank: 4,
-  },
-  {
-    name: "5",
-    suit: "diamonds",
-    rank: 5,
-  },
-  {
-    name: "6",
-    suit: "diamonds",
-    rank: 6,
-  },
-  {
-    name: "7",
-    suit: "diamonds",
-    rank: 7,
-  },
-  {
-    name: "8",
-    suit: "diamonds",
-    rank: 8,
-  },
-  {
-    name: "9",
-    suit: "diamonds",
-    rank: 9,
-  },
-  {
-    name: "10",
-    suit: "diamonds",
-    rank: 10,
-  },
-  {
-    name: "jack",
-    suit: "diamonds",
-    rank: 11,
-  },
-  {
-    name: "queen",
-    suit: "diamonds",
-    rank: 12,
-  },
-  {
-    name: "king",
-    suit: "diamonds",
-    rank: 13,
-  },
-  {
-    name: "ace",
-    suit: "clubs",
-    rank: 1,
-  },
-  {
-    name: "2",
-    suit: "clubs",
-    rank: 2,
-  },
-  {
-    name: "3",
-    suit: "clubs",
-    rank: 3,
-  },
-  {
-    name: "4",
-    suit: "clubs",
-    rank: 4,
-  },
-  {
-    name: "5",
-    suit: "clubs",
-    rank: 5,
-  },
-  {
-    name: "6",
-    suit: "clubs",
-    rank: 6,
-  },
-  {
-    name: "7",
-    suit: "clubs",
-    rank: 7,
-  },
-  {
-    name: "8",
-    suit: "clubs",
-    rank: 8,
-  },
-  {
-    name: "9",
-    suit: "clubs",
-    rank: 9,
-  },
-  {
-    name: "10",
-    suit: "clubs",
-    rank: 10,
-  },
-  {
-    name: "jack",
-    suit: "clubs",
-    rank: 11,
-  },
-  {
-    name: "queen",
-    suit: "clubs",
-    rank: 12,
-  },
-  {
-    name: "king",
-    suit: "clubs",
-    rank: 13,
-  },
-  {
-    name: "ace",
-    suit: "spades",
-    rank: 1,
-  },
-  {
-    name: "2",
-    suit: "spades",
-    rank: 2,
-  },
-  {
-    name: "3",
-    suit: "spades",
-    rank: 3,
-  },
-  {
-    name: "4",
-    suit: "spades",
-    rank: 4,
-  },
-  {
-    name: "5",
-    suit: "spades",
-    rank: 5,
-  },
-  {
-    name: "6",
-    suit: "spades",
-    rank: 6,
-  },
-  {
-    name: "7",
-    suit: "spades",
-    rank: 7,
-  },
-  {
-    name: "8",
-    suit: "spades",
-    rank: 8,
-  },
-  {
-    name: "9",
-    suit: "spades",
-    rank: 9,
-  },
-  {
-    name: "10",
-    suit: "spades",
-    rank: 10,
-  },
-  {
-    name: "jack",
-    suit: "spades",
-    rank: 11,
-  },
-  {
-    name: "queen",
-    suit: "spades",
-    rank: 12,
-  },
-  {
-    name: "king",
-    suit: "spades",
-    rank: 13,
-  },
-];
-
+var mode = "deal cards";
+var deck = makeDeck();
 var shuffledDeck = shuffleCards(deck);
-var doYouWantTo = "draw third card";
+var allPlayerCards = [];
+var allComputerCards = [];
+var cardsPerPlayer = 2;
+var playerCards;
+var computerCards;
 
 var main = function (input) {
-  var computerCard1 = shuffledDeck.pop();
-  var computerCard2 = shuffledDeck.pop();
-  var playerCard1 = shuffledDeck.pop();
-  var playerCard2 = shuffledDeck.pop();
+  // Deal 2 cards to player and computer
+  if (mode == "deal cards") {
+    for (var i = 0; i < cardsPerPlayer; i++) {
+      playerCards = drawCard(allPlayerCards);
+      computerCards = drawCard(allComputerCards);
+    }
+    // Prompt player if they want another card
+    mode = "draw another card?";
+    return `Your current hand: ${playerCards} <br>Would you like to draw another card? <br>(yes/no)`;
+  }
+  // Player decides if they want to draw another card
+  if (mode == "draw another card?" && input == "yes") {
+    mode = "player draws";
+  } else if (mode == "draw another card?" && input == "no") {
+    mode = "computer draws";
+    return `It is now the computer's turn.`;
+  }
 
-  var output = `Your cards are: <br>${playerCard1} <br>${playerCard2} <br>Would you like to draw another card? <br>Please type "yes" or "no" and click submit.`;
-
-  if ((doYouWantTo = "draw third card")) {
+  // Player can keep drawing another card until they indicate no
+  if (mode == "player draws") {
+    playerCards = drawCard(allPlayerCards);
+    mode = "draw another card?";
+    return `Your current hand:${playerCards} <br>Would you like to draw another card? <br>(yes/no)`;
+  }
+  // Dealer hits after player is done
+  if (mode == "computer draws") {
+    var sumAllComputerCards = sumAllCards(allComputerCards);
+    while (sumAllComputerCards < 17) {
+      computerCards = drawCard(allComputerCards);
+      sumAllComputerCards = sumAllCards(allComputerCards);
+    }
+    mode = "compute results";
+    return `ready to show your hand?`;
+  }
+  if (mode == "compute results") {
+    console.log("test 1 compute results");
+    var playerPoints = sumAllCards(allPlayerCards);
+    var computerPoints = sumAllCards(allComputerCards);
+    console.log(allPlayerCards);
+    console.log(allComputerCards);
+    mode = "play again?";
+    if (
+      (playerPoints > computerPoints && playerPoints <= 21) ||
+      (playerPoints < computerPoints && computerPoints > 21)
+    ) {
+      return `Player wins with ${playerPoints} points. <br>Player's hand: ${playerCards} <br> Computer has ${computerPoints} points. <br>Computer's hand: ${computerCards} <br> Play again? (yes/no)`;
+    } else if (
+      (playerPoints < computerPoints && computerPoints <= 21) ||
+      (playerPoints > computerPoints && playerPoints > 21)
+    ) {
+      return `Computer wins with ${computerPoints} points. <br>Computer's hand: ${computerCards} <br> Player has ${playerPoints} points. <br>Player's hand: ${playerCards} <br> Play again? (yes/no)`;
+    } else if (playerPoints == computerPoints && playerPoints <= 21) {
+      return `It's a draw.<br>Player's hand: ${playerCards}<br>Computer's hand: ${computerCards}<br> Play again? (yes/no)`;
+    } else if (playerPoints > 21 && computerPoints > 21) {
+      return `It's a draw, you've both gotten more than 21 points.<br>Player's hand: ${playerCards}<br>Computer's hand: ${computerCards}<br> Play again? (yes/no)`;
+    }
+  }
+  if (mode == "play again?") {
     if (input == "yes") {
-      var playerCard3 = shuffledDeck.pop();
-      doYouWantTo = "draw fourth card";
-      output = `You've drawn ${playerCard3}. <br>Your previous two cards are <br>${playerCard1} <br>${playerCard2} <br>Would you like to draw another card?<br>Please type "yes" or "no" and click submit`;
+      mode = "deal cards";
+      allPlayerCards = [];
+      allComputerCards = [];
+      playerCards = 0;
+      computerCards = 0;
+      deck = makeDeck();
+      shuffledDeck = shuffleCards(deck);
+      return `Let's play!`;
     } else if (input == "no") {
-      doYouWantTo = "end player's draw";
+      return `Good bye, see you next time!`;
     }
   }
-
-  if (doYouWantTo == "end player's draw") {
-    var playerPoints = Number(playerCard1.rank) + Number(playerCard2.rank);
-    var computerPoints = Number(computerCard1) + Number(computerCard2);
-    if ((playerCard1.rank == 1 || playerCard2.rank == 1) && playerPoints < 11) {
-      playerPoints = Number(playerPoints) + 10;
-    }
-    if (playerPoints < computerPoints && computerPoints < 22) {
-      output == "computer wins";
-    }
-  }
-
-  return output;
 };
 
-// Deal cards
-function dealCards() {
-  var computerCard1 = shuffledDeck.pop();
-  var computerCard2 = shuffledDeck.pop();
-  var playerCard1 = shuffledDeck.pop();
-  var playerCard2 = shuffledDeck.pop();
+// Sum all cards in array
+function sumAllCards(cardarray) {
+  var ace = false;
+  var currentCard;
+  for (var i = 0; i < cardarray.length; i++) {
+    currentCard = cardarray[i];
+    var currentCardName = currentCard.name;
+    if (currentCardName == "ace") {
+      ace = true;
+    }
+  }
+  var sumOfAllCardsInArray = 0;
+  for (var i = 0; i < cardarray.length; i++) {
+    currentCard = cardarray[i];
+    var currentCardPoints = currentCard.points;
+    sumOfAllCardsInArray = sumOfAllCardsInArray + currentCardPoints;
+  }
+  if (sumOfAllCardsInArray < 12 && ace == true) {
+    for (var i = 0; i < cardarray.length; i++) {
+      currentCard = cardarray[i];
+      var currentCardName = currentCard.name;
+      if (currentCardName == "ace") {
+        currentCard.points = 11;
+      }
+    }
+    sumOfAllCardsInArray = 0;
+    for (var i = 0; i < cardarray.length; i++) {
+      currentCard = cardarray[i];
+      var currentCardPoints = currentCard.points;
+      sumOfAllCardsInArray = sumOfAllCardsInArray + currentCardPoints;
+    }
+  }
+  return sumOfAllCardsInArray;
 }
+
+// Draw card after deal function
+function drawCard(array) {
+  var newPlayerCard = shuffledDeck.pop();
+  array.push(newPlayerCard);
+  var allCardsCounter = 0;
+  var currentCard;
+  var displayCurrentCard;
+  var displayAllCards = "";
+  while (allCardsCounter < array.length) {
+    currentCard = array[allCardsCounter];
+    displayCurrentCard = `<br>${currentCard.name} of ${currentCard.suit}`;
+    displayAllCards = displayAllCards + displayCurrentCard;
+    allCardsCounter = allCardsCounter + 1;
+  }
+  return displayAllCards;
+}
+
+// // Deal cards
+// function dealCards() {
+//   var computerCard1 = shuffledDeck.pop();
+//   var computerCard2 = shuffledDeck.pop();
+//   var playerCard1 = shuffledDeck.pop();
+//   var playerCard2 = shuffledDeck.pop();
+// }
 // Get a random index ranging from 0 (inclusive) to max (exclusive).
 function getRandomIndex(max) {
   return Math.floor(Math.random() * max);
@@ -326,5 +163,64 @@ function shuffleCards(cardDeck) {
     currentIndex = currentIndex + 1;
   }
   // Return the shuffled deck
+  return cardDeck;
+}
+
+// Make Deck Function
+function makeDeck() {
+  // Initialise an empty deck array
+  var cardDeck = [];
+  // Initialise an array of the 4 suits in our deck. We will loop over this array.
+  var suits = ["hearts ♥️", "diamonds ♦️", "clubs ♣️", "spades ♠️"];
+
+  // Loop over the suits array
+  var suitIndex = 0;
+  while (suitIndex < suits.length) {
+    // Store the current suit in a variable
+    var currentSuit = suits[suitIndex];
+
+    // Loop from 1 to 13 to create all cards for a given suit
+    // Notice rankCounter starts at 1 and not 0, and ends at 13 and not 12.
+    // This is an example of a loop without an array.
+    var rankCounter = 1;
+    while (rankCounter <= 13) {
+      // By default, the card name is the same as rankCounter
+      var cardName = rankCounter;
+
+      // If rank is 1, 11, 12, or 13, set cardName to the ace or face card's name
+      if (cardName == 1) {
+        cardName = "ace";
+      } else if (cardName == 11) {
+        cardName = "jack";
+      } else if (cardName == 12) {
+        cardName = "queen";
+      } else if (cardName == 13) {
+        cardName = "king";
+      }
+      var cardPoints = rankCounter;
+      if (cardPoints == 11 || cardPoints == 12 || cardPoints == 13) {
+        cardPoints = 10;
+      }
+
+      // Create a new card with the current name, suit, and rank
+      var card = {
+        name: cardName,
+        suit: currentSuit,
+        rank: rankCounter,
+        points: cardPoints,
+      };
+
+      // Add the new card to the deck
+      cardDeck.push(card);
+
+      // Increment rankCounter to iterate over the next rank
+      rankCounter += 1;
+    }
+
+    // Increment the suit index to iterate over the next suit
+    suitIndex += 1;
+  }
+
+  // Return the completed card deck
   return cardDeck;
 }
