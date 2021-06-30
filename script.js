@@ -215,7 +215,7 @@ var interpretHandState = function (hand, playerDecision) {
       // Check whether next turn should be player's second hand, or the next player
       resultMessage += `${checkNextTurnLogic(turn)}`;
     }
-    // If we have reached this point, then current player needs to make a decision as their hand is UNDER and they have not chosen to end their turn
+    // If we have reached this point, then current player needs to make a decision as their hand is UNDER and they have not chosen to end their turn yet
     else {
       resultMessage = `Your ${displayHandCards(players[turn][`hand${currentHandNum}`])}<br><br>
       Please enter "${HIT}" to receive another card,
@@ -329,6 +329,7 @@ var genRoundResult = function () {
   interpretHandState(dealerHand);
   // Find the winners and losers of the round
   for (var i = 0; i < players.length; i++) {
+    // Afterthought: I should have designed the two hand objects to be inside a `hands` array, then I could have set the condition for the following for loop as `handCounter < hands.length` so that the loop wil not run for the players who do not have a second hand
     for (var handCounter = 1; handCounter < 3; handCounter++) {
       // Player wins automatically if they have Blackjack, even if dealer also has Blackjack
       if (players[i][`hand${handCounter}`]?.value == 21 || players[i][`hand${handCounter}`]?.altValue == 21) {
@@ -486,7 +487,7 @@ var main = function (input) {
   } else if (gameMode == DEAL_CARDS) {
     myOutputValue = dealCards();
   } else if (gameMode == SHOW_HAND) {
-    myOutputValue = showPlayerHand(turn);
+    myOutputValue = showPlayerHand();
   } else if (gameMode == CHOOSE_SPLIT) {
     myOutputValue = interpretSplitChoice(input);
   } else if (gameMode == PENDING_PLAYER_DECISION) {
