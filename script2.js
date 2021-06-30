@@ -36,10 +36,6 @@ var GAME_MODE_EVALUATE_WIN = "GAME_MODE_EVALUATE_WIN";
 var gameMode = GAME_MODE_WELCOME;
 // hit or stand message to player after every hit
 var hitOrStandMessage = "";
-// winner message after the game ends
-var winnerMessage = "";
-// global array to store names of blackjack winners
-var blackJackWinners = [];
 
 //// HELPER FUNCTIONS ////
 // make deck of 52 cards
@@ -224,14 +220,21 @@ var dealerDrawCard = function () {
   // Store the new card in the dealerCardsArray and increase the no. of hits
   dealerCardsArray.push(dealerCard);
   numberOfHits_dealer += 1;
-
   console.log(`dealer draws card number ${numberOfHits_dealer}..`);
   console.log(dealerCard);
+
+  // assign dealerCardsArray to the attribute in the dealerObj
+  var dealerObj = playerArray[playerArray.length - 1];
+  dealerObj.cardsArray = dealerCardsArray;
+
+  // Store the sum of total ranks in the attribute totalRank
+  dealerObj.totalRank = sumOfRanks(dealerObj.cardsArray);
 };
 
-// Function to check who got blackjack
+// Function to check who got blackjack and returns array of winners
 var checkBlackJack = function () {
-  var message = "";
+  // local array to store names of blackjack winners
+  var blackJackWinners = [];
   // create loop to check which players won blackjack and push them into global array blackJackWinners
   var index = 0;
   while (index < numberOfPlayers) {
@@ -242,74 +245,60 @@ var checkBlackJack = function () {
     }
     index += 1;
   }
-  // check if dealer won blackjack
+  // if dealer won blackjack, push it to the array
   if (sumOfRanks(dealerCardsArray) == 21) {
     blackJackWinners.push("dealer");
   }
-  // If one or more won blackjack, output message that they won
+  // If one or more won blackjack, output console message
   if (blackJackWinners.length > 0) {
-    var winnerIndex = 0;
-    while (winnerIndex < blackJackWinners.length) {
-      message = message + blackJackWinners[winnerIndex] + "<br>";
-      winnerIndex += 1;
-    }
-    return message;
+    console.log("blackjack winners:");
+    console.log(blackJackWinners);
+  } else {
+    console.log("Nobody got blackjack");
   }
+  return blackJackWinners;
 };
 
-// Function to check who got the highest rank among those less than 21
-var checkHighestRank = function () {
-  // Separate those who got 21 from those who didn't - create array of those who didn't get blackjack
-  var remainingPlayers = [];
+// Function to check who got the highest rank among the remaining players who didn't get blackjack
+var checkHighestRank = function (remainingPlayers) {
   var index = 0;
-  while (index < playerArray.length) {
-    var playerObject = playerArray[index];
-    var playerRank = playerObject.totalRank;
-    if (playerRank !== 21) {
-      remainingPlayers.push(playerObject);
-    }
-    index += 1;
-  }
-
-  // Among remaining players who didn't get blackJack, find the player with the highest rank
-  var index = 0;
-  // Variable to store the highest rank layer
+  // Variable to store the highest rank player
   var highestRank = 0;
-  // Variable to store the winner object later
-  var winner;
+  // Array to store the winner object later
+  var winner = [];
   while (index < remainingPlayers.length) {
     var playerObject = remainingPlayers[index];
     var playerRank = playerObject.totalRank;
     if (playerRank > highestRank) {
       highestRank = playerRank;
-      winner = playerObject;
+      winner.push(playerObject);
     }
     index += 1;
   }
-  // Output the winner
-  var nameOfWinner = winner.name;
-  return nameOfWinner;
+  // Output the winner if there is one
+  if (winner.length > 0) {
+    var nameOfWinner = winner[0].name;
+    return nameOfWinner;
+  }
+  // otherwise, return empty string
+  return "";
 };
 
-// Function to check who got bust
-
-// Check who got the same totalRank
+// Check who tied
 
 // Function to reset game conditions for the next round
 var resetGame = function () {
-  // reset the numberOfHits, playerCardsArray, dealerCardsArray & list of cards
+  // reset the numberOfHits, numberOfRounds, currentPlayer, playerCardsArray, dealerCardsArray & list of cards, playerArray
   numberOfHits_player = 0;
   numberOfHits_dealer = 0;
+  numberOfRounds = 0;
+  currentPlayer = 1;
 
   listOfCards_player = "";
   listOfCards_dealer = "";
 
-  var index = 0;
-  while (index < numberOfPlayers) {
-    playerArray.cardsArray = [];
-    index += 1;
-  }
   dealerCardsArray = [];
+  playerArray = [];
 };
 
 //// MAIN FUNCTION ////
@@ -349,6 +338,16 @@ var main = function (input) {
     console.log("number of players entered");
     console.log(input);
     numberOfPlayers = input;
+
+    // if this is not the first round, make sure to empty previous round's cards from players' hands and the totalRank
+    if (numberOfRounds > 0) {
+      var index = 0;
+      while (index < numberOfPlayers) {
+        playerArray[index].cardsArray = [];
+        playerArray[index].totalRank = 0;
+        index += 1;
+      }
+    }
     // Create n objects of players, each with the attributes: name, playerNumber, cardsArray, totalRank, wins
     var index = 0;
     while (index < numberOfPlayers) {
@@ -367,6 +366,18 @@ var main = function (input) {
     }
     console.log("Number of players in array");
     console.log(playerArray.length);
+
+    // Create an object for the dealer
+    var dealerObj = {
+      name: "dealer",
+      playerNumber: 0,
+      cardsArray: dealerCardsArray,
+      totalRank: sumOfRanks(dealerCardsArray),
+      wins: 0,
+    };
+    // Push dealerObj to the playerarray
+    playerArray.push(dealerObj);
+
     // Change game mode to GAME_MODE_NAMES
     gameMode = GAME_MODE_NAMES;
 
@@ -433,6 +444,19 @@ var main = function (input) {
     numberOfRounds += 1;
     console.log("current round:");
     console.log(numberOfRounds);
+    // if this is not the first round
+    if (numberOfRounds > 1) {
+      var index = 0;
+      while (index < playerArray.length) {
+        // make sure to empty previous round's cards from players' hands and the totalRank
+        playerArray[index].cardsArray = [];
+        playerArray[index].totalRank = 0;
+        index += 1;
+        // reset number of hits  and cardsarray for dealer
+        numberOfHits_dealer = 0;
+        dealerCardsArray = [];
+      }
+    }
     // make and shuffle deck
     shuffledDeck = shuffleCards(makeDeck());
     console.log("shuffling deck..");
@@ -443,6 +467,7 @@ var main = function (input) {
     } starts first. Press submit to start hitting.`;
     return myOutputValue;
   }
+
   // Change gameMode to GAME_MODE_PLAYER_HIT
   if (gameMode == GAME_MODE_PLAYER_HIT) {
     // If player enters 'stand'
@@ -500,8 +525,27 @@ var main = function (input) {
     // If it is the last player, draw cards for dealer
     if (currentPlayer == numberOfPlayers) {
       dealerDrawCard();
+
+      // get the dealer object variable
+      var dealerObj = playerArray[playerArray.length - 1];
+
+      // Get the dealer's total rank from dealerObj in playerArray
+      var dealerRank = dealerObj.totalRank;
       console.log("sum of dealer cards ranks");
-      console.log(sumOfRanks(dealerCardsArray));
+      console.log(dealerRank);
+
+      // Logic for dealer to hit or stand: If dealer's cards are less than 17, it must hit. If sumOfRanks is between 17 and 20 inclusive, it randomly decides whether it hits.
+      while (dealerObj.totalRank < 17) {
+        dealerDrawCard();
+      }
+      while (dealerObj.totalRank >= 17 && dealerObj.totalRank <= 20) {
+        var randomInteger = getRandomIndex(2);
+        console.log("drawing random integer 0 or 1..");
+        console.log(randomInteger);
+        if (randomInteger == 1) {
+          dealerDrawCard();
+        }
+      }
 
       // change gameMode to GAME_MODE_EVALUATE_WIN
       gameMode = GAME_MODE_EVALUATE_WIN;
@@ -529,51 +573,120 @@ var main = function (input) {
     var scoreBoard = "<b>Total Ranks: </b><br>";
     var index = 0;
     while (index < playerArray.length) {
+      var playerObj = playerArray[index];
       scoreBoard =
         scoreBoard +
-        `Player ${index + 1}, ${playerArray[index].name}: ${
-          playerArray[index].totalRank
-        } <br>`;
+        `Player ${index + 1}, ${playerObj.name}: ${playerObj.totalRank} <br>`;
       index += 1;
     }
 
-    // Create the message declaring blackjack winners (if any)
-    var blackJackMessage = "";
-    // Create the message who got the highest rank
-    var playerWithHighestRank = checkHighestRank();
-
-    // Check who got bust
+    // Check who got bust and who didn't
     var arrayOfBustPlayers = [];
+    var arrayOfRemainingPlayers = [];
     // Loop to create message to bust players
     var messageForBustPlayers = "";
     var playerIndex = 0;
     while (playerIndex < playerArray.length) {
+      var playerObj = playerArray[playerIndex];
       if (determineBust(playerIndex) == true) {
         // If this player is bust, push it into the arrayOfBustPlayers
-        arrayOfBustPlayers.push(playerArray[playerIndex]);
+        arrayOfBustPlayers.push(playerObj);
         var name = playerArray[playerIndex].name;
         messageForBustPlayers =
           messageForBustPlayers + name + ", you're bust!<br>";
+      } else {
+        // If this player is not bust, push it into the arrayOfRemainingPlayers
+        arrayOfRemainingPlayers.push(playerObj);
       }
       playerIndex += 1;
     }
 
-    // If the blackjack message is empty ie no winner,
-    if (checkBlackJack() === "") {
-      // declare no winner
-      blackJackMessage = "";
-      // check who got the highest rank
-      playerWithHighestRank = checkHighestRank();
-    } else {
-      // If there is a blackjack winner, declare them
-      blackJackMessage = "BlackJack winners: <br>" + checkBlackJack();
+    // Check for blackjack winners among those who didn't bust and store them in array
+    var blackJackWinners = checkBlackJack(arrayOfRemainingPlayers);
+    // Create the message declaring blackjack winners (if any)
+    var blackJackMessage = "<b> BlackJack winners: </b><br>";
+    // Create the message who got the highest rank
+    var playerWithHighestRank = "";
+
+    // If there are blackjack winners, declare them
+    if (blackJackWinners.length > 0) {
+      // Create a loop to: (i) create message list of winners (ii) track each one's win in the playerArray attribute
+      var index = 0;
+      while (index < blackJackWinners.length) {
+        blackJackMessage = blackJackMessage + blackJackWinners[index] + "<br>";
+        var playerIndex = 0;
+        while (playerIndex < playerArray.length) {
+          var playerObj = playerArray[playerIndex];
+          if (playerObj.name == blackJackWinners[index]) {
+            playerObj.wins += 1;
+            console.log(`${playerObj.name}: no. of wins`);
+            console.log(playerObj.wins);
+          }
+          playerIndex += 1;
+        }
+        index += 1;
+      }
+    }
+    // Otherwise, if nobody got blackjack, declare it and check who got the highest rank among remaining players
+    else {
+      blackJackMessage = "<b>NOBODY GOT BLACKJACK hur hur</b>";
+      playerWithHighestRank = checkHighestRank(arrayOfRemainingPlayers);
+    }
+
+    // create message for player with highest rank
+    var messageForHighestPlayer = "";
+    // If there is someone with the highest rank, increment the number of wins in playerarray object attribute "wins"
+    if (playerWithHighestRank !== "") {
+      messageForHighestPlayer = `${playerWithHighestRank}, you won!`;
+      var index = 0;
+      while (index < playerArray.length) {
+        if (playerArray[index].name == playerWithHighestRank) {
+          playerArray[index].wins += 1;
+        }
+        index += 1;
+      }
+    }
+
+    // Create a loop to create message tracking the number of wins
+    var cumulativeWins = "<b> Number of wins: </b><br>";
+    var index = 0;
+    while (index < playerArray.length) {
+      var playerObj = playerArray[index];
+      cumulativeWins =
+        cumulativeWins +
+        `${playerObj.name}: ${playerObj.wins} / ${numberOfRounds}<br>`;
+      index += 1;
     }
 
     // check who tied
 
+    // to restart game with same group of players,
+    // (i) change gameMode to GAME_MODE_START_GAME
+    gameMode = GAME_MODE_START_GAME;
+
+    // (ii) reset currentPlayer to 1
+    currentPlayer = 1;
+
     // Output final messages and scoreboard
     myOutputValue =
-      blackJackMessage + messageForBustPlayers + "<br><br>" + scoreBoard;
+      `<b> ~ROUND ${numberOfRounds} RESULTS~ </b><br>` +
+      blackJackMessage +
+      "<br>" +
+      messageForBustPlayers +
+      "<br>" +
+      messageForHighestPlayer +
+      "<br><br>" +
+      scoreBoard +
+      "<br>" +
+      cumulativeWins +
+      "Press submit to play another round! To restart the game with a new set of players, hit the refresh button!";
     return myOutputValue;
   }
+
+  // // if user enters 'restart', reset gameMode to GAME_MODE_WELCOME
+  // if (input == "restart" && gameMode == GAME_MODE_START_GAME) {
+  //   gameMode = GAME_MODE_WELCOME;
+  //   resetGame();
+  //   return "You have chosen to restart the game. Press submit for the next step";
+  // }
 };
