@@ -111,8 +111,6 @@ var main = function (input) {
     playerHand.push(playerCard2);
     computerCard2 = shuffledDeck.pop();
     comHand.push(computerCard2);
-    computerCard1.name = "ace";
-    computerCard1.value = 1;
     sumOfPlayerCardValue = playerCard1.value + playerCard2.value;
     console.log("player: " + sumOfPlayerCardValue);
     sumOfComputerCardValue = computerCard1.value + computerCard2.value;
@@ -137,6 +135,27 @@ var main = function (input) {
       playerCard2.name +
       " of " +
       playerCard2.suit;
+    if (playerCard1.name == "ace" && playerCard2.name == "ace") {
+      currentGameMode = "place bet";
+      points = Number(points) + Number(betAmt);
+      return (
+        "You won<br><br>" +
+        playerHandList +
+        "<br><br>You have " +
+        points +
+        " points.<br><br>Click submit to place new bet amount."
+      );
+    } else if (computerCard1.name == "ace" && computerCard2.name == "ace") {
+      currentGameMode = "place bet";
+      points = Number(points) - Number(betAmt);
+      return (
+        "Computer won<br><br>" +
+        playerHandList +
+        "<br><br>You have " +
+        points +
+        " points.<br><br>Click submit to place new bet amount."
+      );
+    }
     if (playerCard1.name == "ace" || playerCard2.name == "ace") {
       currentGameMode = "ace 1 or 11";
       return (
@@ -171,7 +190,11 @@ var main = function (input) {
       }
       if (sumOfPlayerCardValue > 21) {
         currentGameMode = "result";
-        return "You have bust!";
+        return (
+          "You have bust!<br><br>" +
+          playerHandList +
+          "<br><br> Please click submit to view results"
+        );
       }
       console.log("player: " + sumOfPlayerCardValue);
       return (
@@ -197,12 +220,10 @@ var main = function (input) {
     }
     while (sumOfComputerCardValue < 17) {
       var computerCard = shuffledDeck.pop();
-      computerCard.name = "ace";
-      computerCard.value = 1;
       comHand.push(computerCard);
       if (computerCard.name == "ace") {
         sumOfComputerCardValue += computerCard.value;
-        if (sumOfComputerCardValue > 7) {
+        if (sumOfComputerCardValue >= 7) {
           sumOfComputerCardValue += 10;
         }
       }
