@@ -72,7 +72,7 @@ var updateNumPlayers = function (numPlayersInput) {
   numPlayers = Math.ceil(Number(numPlayersInput));
   // Create array of player objects
   for (var i = 0; i < numPlayers; i++) {
-    var player = { chips: STARTING_CHIPS };
+    var player = { playerName: "", handOne: {}, chips: STARTING_CHIPS };
     players.push(player);
   }
   gameMode = CHOOSE_PLAYER_NAMES; // Update game to the next mode
@@ -116,9 +116,9 @@ var updateBets = function (playerBetInput) {
     return resultMessage;
   }
   // Valid input, so we update player bets in the `players` array and decrease their chips tally accordingly
-  players[turn].playerBet = Math.floor(Number(playerBetInput));
-  players[turn].chips -= players[turn].playerBet;
-  resultMessage = `You have placed a bet of ${players[turn].playerBet} chips for this round, ${players[turn].playerName}.`;
+  players[turn].handOne.playerBet = Math.floor(Number(playerBetInput));
+  players[turn].chips -= players[turn].handOne.playerBet;
+  resultMessage = `You have placed a bet of ${players[turn].handOne.playerBet} chips for this round, ${players[turn].playerName}.`;
   turn += 1;
   // Condition to check if all players have placed their bets
   if (turn == players.length) {
@@ -137,7 +137,6 @@ var dealCards = function () {
   deck = shuffleCards(createDeck());
   // Deal the cards to each player and the dealer
   for (var i = 0; i < players.length; i++) {
-    players[i].handOne = {};
     players[i].handOne.cards = [deck.pop(), deck.pop()]; // Call it `handOne` as a player might have `handTwo` if they split
   }
   dealerHand.cards = [deck.pop(), deck.pop()];
@@ -290,23 +289,13 @@ var genRoundResult = function () {
     }
     // Payout the winning bets
     if (players[i].handOne.roundResult == WIN) {
-      players[i].chips += 2 * players[i].playerBet; // Winning player gets back their original bet + the winnings
+      players[i].chips += 2 * players[i].handOne.playerBet; // Winning player gets back their original bet + the winnings
     }
   }
   // Display the results of the round
   var roundResults = displayRoundResults(players);
   // Remove the players who have 0 chips remaining at the end of the round
-  var eliminatedPlayers = [];
-  // When removing elements from an array, we need to loop backwards as we are modifying the length of the array, so as to not skip any elements
-  for (var i = players.length - 1; i >= 0; i--) {
-    if (players[i].chips == 0) {
-      // Remove players with 0 chips and add them into the eliminatedPlayers array
-      eliminatedPlayers = [...eliminatedPlayers, ...players.splice(i, 1)];
-    }
-  }
-  var eliminatedPlayersNames = eliminatedPlayers.map((player) => player.playerName);
-  roundResults += `<br><br>
-  The following players have been eliminated: (${eliminatedPlayersNames.join(" | ")}).`;
+  roundResults += eliminatePlayers(players);
   // If there are still players remaining that can play the next round
   if (players.length > 0) {
     turn = 0; // Reset the turn counter for the next round
@@ -327,6 +316,27 @@ var genRoundResult = function () {
   return roundResults;
 };
 
+// Helper function to remove players with 0 chips remaining, as they will not be able to play the next round
+var eliminatePlayers = function (players) {
+  var resultMessage = "";
+  // Check if there are any players to be removed
+  if (players.find(({ chips }) => chips == 0)) {
+    var eliminatedPlayers = [];
+    // When removing elements from an array, we need to loop backwards as we are modifying the length of the array, so as to not skip any elements
+    for (var i = players.length - 1; i >= 0; i--) {
+      if (players[i].chips == 0) {
+        // Remove players with 0 chips and add them into the eliminatedPlayers array
+        eliminatedPlayers = [...eliminatedPlayers, ...players.splice(i, 1)];
+      }
+    }
+    // Output the names of the removed players
+    var eliminatedPlayersNames = eliminatedPlayers.map((player) => player.playerName);
+    resultMessage += `<br><br>
+    The following players have been eliminated: (${eliminatedPlayersNames.join(" | ")}).`;
+  }
+  return resultMessage;
+};
+
 // Helper function to generate the results of the round
 var displayRoundResults = function (players) {
   // Display dealer's cards
@@ -336,7 +346,7 @@ var displayRoundResults = function (players) {
   for (var i = 0; i < players.length; i++) {
     roundResults += `Player Name: ${players[i].playerName}<br>
     Hand: Your ${displayHandCards(players[i].handOne)}<br>
-    Bet: ${players[i].playerBet} chips<br>Result: ${players[i].handOne.roundResult}<br><br>`;
+    Bet: ${players[i].handOne.playerBet} chips<br>Result: ${players[i].handOne.roundResult}<br><br>`;
   }
   // Display the current chips tally of all players
   var playerNamesArray = players.map((player) => player.playerName);
