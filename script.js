@@ -2,7 +2,12 @@
 // user enters name for each player
 // start round: each player enters bet one by one. winner gets twice their bet back.
 // user clicks submit to deal cards. dealer's first card is shown to all players.
-// cards are displayed to the players (turn by turn)
+/* Splitting logic
+cards are displayed to the players (turn by turn)
+if eligible for split, ask player if they want to split
+if yes, show the two new hands, duplicate the current bet onto the second hand, then let the player play the first hand first
+once first hand has been played, let the player play the second hand, then go to the next player
+*/
 // players take turns to decide whether to hit or stand (by using submit button)
 // check for blackjack/bust before asking for their decision
 // after each player decision, check for blackjack/bust again
@@ -19,14 +24,14 @@ const CHOOSE_PLAYER_NAMES = "choose names of players"; // Type of game mode
 const PLACE_BETS = "place bets"; // Type of game mode
 const DEAL_CARDS = "deal cards"; // Type of game mode
 const SHOW_HAND = "show hand"; // Type of game mode
+const CHOOSE_SPLIT = "choose split"; // Type of game mode
 const PENDING_PLAYER_DECISION = "pending player decision"; // Type of game mode
 const CALC_ROUND_RESULT = "calculate round result"; // Type of game mode
 const STARTING_CHIPS = 100; // Initial tally of chips for each player
 const HIT = "hit"; // Type of player decision
 const STAY = "stay"; // Type of player decision
-const BLACKJACK = "blackjack"; // Type of hand state
-const UNDER = "under"; // Type of hand state
-const BUST = "bust"; // Type of hand state
+const YES = "yes"; // Type of split choice
+const NO = "no"; // Type of split choice
 const WIN = "win"; // Type of round result
 const LOSE = "lose"; // Type of round result
 
@@ -34,9 +39,10 @@ const LOSE = "lose"; // Type of round result
 var gameMode = CHOOSE_NUM_PLAYERS; // Initialise the game in this mode
 var numPlayers; // Number of players that will be determined by the user
 var players = []; // Array of player objects that will be updated as the game progresses
-var dealerHand = {}; // Dealer Hand object that will be populated with the hand cards (array) and hand value
+var dealerHand = { handNum: 1 }; // Dealer Hand object that will be populated with the hand cards (array) and hand value
 var turn = 0; // Game starts on the first player's turn: 0 to represent first element in `players` array
 var deck = []; // Deck that will be created at the beginning of each round
+var currentHandNum = 1; // Players always start with viewing their first hand (relevant when splitting)
 
 // Create the deck of cards
 var createDeck = function () {
@@ -72,7 +78,11 @@ var updateNumPlayers = function (numPlayersInput) {
   numPlayers = Math.ceil(Number(numPlayersInput));
   // Create array of player objects
   for (var i = 0; i < numPlayers; i++) {
-    var player = { playerName: "", handOne: {}, chips: STARTING_CHIPS };
+    var player = {
+      playerName: "",
+      hand1: { cards: [], handNum: 1, value: 0, playerBet: 0 },
+      chips: STARTING_CHIPS,
+    };
     players.push(player);
   }
   gameMode = CHOOSE_PLAYER_NAMES; // Update game to the next mode
@@ -116,9 +126,10 @@ var updateBets = function (playerBetInput) {
     return resultMessage;
   }
   // Valid input, so we update player bets in the `players` array and decrease their chips tally accordingly
-  players[turn].handOne.playerBet = Math.floor(Number(playerBetInput));
-  players[turn].chips -= players[turn].handOne.playerBet;
-  resultMessage = `You have placed a bet of ${players[turn].handOne.playerBet} chips for this round, ${players[turn].playerName}.`;
+  players[turn][`hand${currentHandNum}`].playerBet = Math.floor(Number(playerBetInput));
+  players[turn].chips -= players[turn][`hand${currentHandNum}`].playerBet;
+  resultMessage = `You have placed a bet of ${players[turn][`hand${currentHandNum}`].playerBet}
+  chips for this round, ${players[turn].playerName}.`;
   turn += 1;
   // Condition to check if all players have placed their bets
   if (turn == players.length) {
@@ -137,7 +148,7 @@ var dealCards = function () {
   deck = shuffleCards(createDeck());
   // Deal the cards to each player and the dealer
   for (var i = 0; i < players.length; i++) {
-    players[i].handOne.cards = [deck.pop(), deck.pop()]; // Call it `handOne` as a player might have `handTwo` if they split
+    players[i].hand1.cards = [deck.pop(), deck.pop()]; // Call it `hand1` as a player might have `hand2` if they split
   }
   dealerHand.cards = [deck.pop(), deck.pop()];
   var resultMessage = `All players have now received their hands.<br><br>The dealer's first card is ${dealerHand.cards[0].name} of ${dealerHand.cards[0].suit}.<br><br> Click on "Submit" to start playing the round.`;
@@ -148,19 +159,17 @@ var dealCards = function () {
 // Game mode where we show the current player their hand
 var showPlayerHand = function () {
   // Calculate value of player hand
-  calcHandValue(players[turn].handOne);
+  calcHandValue(players[turn][`hand${currentHandNum}`]);
   var resultMessage = `It is your turn, ${players[turn].playerName}.`;
-  // Check the state of the player's hand to see its BLACKJACK, UNDER or BUST
-  var handState = checkHandState(players[turn].handOne);
   // Determine and show the next steps based on the state of the player's hand
-  resultMessage += `<br><br>${interpretHandState(handState)}`;
+  resultMessage += `<br><br>${interpretHandState(players[turn][`hand${currentHandNum}`])}`;
   return resultMessage;
 };
 
 // Helper function to display the cards in a hand, and the value of the hand
 var displayHandCards = function (hand) {
   var handCards = hand.cards.map((card) => `${card.name} of ${card.suit}`).join(" | ");
-  var resultMessage = `hand is (${handCards}), which represents a value of ${hand.value}.`;
+  var resultMessage = `Hand ${hand.handNum} is (${handCards}), which represents a value of ${hand.value}.`;
   // If the hand has an alternate value (i.e. has at least one ace), display that as well
   if (hand.altValue) {
     resultMessage += ` Or an alternate value of ${hand.altValue}.`;
@@ -168,75 +177,126 @@ var displayHandCards = function (hand) {
   return resultMessage;
 };
 
-// Helper function to check the state of the hand
-var checkHandState = function (hand) {
-  var handState;
-  if (hand.value == 21 || hand.altValue == 21) {
-    handState = BLACKJACK;
-    // Don't need to check `altValue` for the BUST case, as `altValue` has to be > `value`
-  } else if (hand.value > 21) {
-    handState = BUST;
-  } else {
-    handState = UNDER;
-  }
-  return handState;
-};
-
 // Helper function to determine next steps for the current player based on the state of the hand
-var interpretHandState = function (handState, playerDecision) {
+var interpretHandState = function (hand, playerDecision) {
   // If we are interpreting a player's hand
   if (turn < players.length) {
     var resultMessage = "";
-    // Progress to next player's turn if current player hit Blackjack since there is no more action left for the player to take
-    if (handState == BLACKJACK) {
-      resultMessage = `Your ${displayHandCards(players[turn].handOne)}<br><br>
+    // Check splitting eligibility:
+    // Players has only two cards (both same rank), player has not split before, it's not the dealer's turn, player has sufficient chips to split
+    if (
+      hand.cards[0].rank == hand.cards[1].rank &&
+      hand.cards.length == 2 &&
+      !hand.splitStatus &&
+      turn < players.length &&
+      players[turn].chips >= hand.playerBet
+    ) {
+      gameMode = CHOOSE_SPLIT;
+      resultMessage = `Your ${displayHandCards(players[turn][`hand${currentHandNum}`])}<br><br>
+      You are eligible for splitting. If you would like to do so, please type "${YES}", otherwise type "${NO}".`;
+    }
+    // Progress to next turn if current player hit Blackjack since there is no more action left for the player to take
+    else if (hand.value == 21 || hand.altValue == 21) {
+      resultMessage = `Your ${displayHandCards(players[turn][`hand${currentHandNum}`])}<br><br>
       You have hit Blackjack, ${players[turn].playerName}! 🎉🎉`;
-      turn += 1;
-      // If the next turn is still a player and not the dealer
-      resultMessage += `<br><br>${isNextTurnPlayer(turn)}`;
-      // Progress to next player's turn if current player BUST since there is no more action left for the player to take
-    } else if (handState == BUST) {
-      resultMessage = `Your ${displayHandCards(players[turn].handOne)}<br><br>
+      // Check whether next turn should be player's second hand, or the next player
+      resultMessage += `<br><br>${checkNextTurnLogic(turn)}`;
+    }
+    // Progress to next turn if current player BUST since there is no more action left for the player to take
+    // Don't need to check altValue as it must be greater than value
+    else if (hand.value > 21) {
+      resultMessage = `Your ${displayHandCards(players[turn][`hand${currentHandNum}`])}<br><br>
       Unfortunately that is a bust, ${players[turn].playerName}. 🤦‍♂️🤦‍♀️`;
-      turn += 1;
-      // If the next turn is still a player and not the dealer
-      resultMessage += `<br><br>${isNextTurnPlayer(turn)}`;
-      // Progress to next player's turn if current player decided to STAY since there is no more action left for the player to take
-    } else if (playerDecision == STAY && handState == UNDER) {
-      turn += 1;
-      // If the next turn is still a player and not the dealer
-      resultMessage = isNextTurnPlayer(turn);
-      // If we have reached this point, then current player needs to make a decision as handState is UNDER and they have not chosen to end their turn
-    } else {
-      resultMessage = `Your ${displayHandCards(players[turn].handOne)}<br><br>
+      // Check whether next turn should be player's second hand, or the next player
+      resultMessage += `<br><br>${checkNextTurnLogic(turn)}`;
+    }
+    // Progress to next turn if current player decided to STAY since there is no more action left for the player to take
+    else if (playerDecision == STAY) {
+      // Check whether next turn should be player's second hand, or the next player
+      resultMessage += `${checkNextTurnLogic(turn)}`;
+    }
+    // If we have reached this point, then current player needs to make a decision as their hand is UNDER and they have not chosen to end their turn
+    else {
+      resultMessage = `Your ${displayHandCards(players[turn][`hand${currentHandNum}`])}<br><br>
       Please enter "${HIT}" to receive another card,
       or "${STAY}" to end your turn, ${players[turn].playerName}.`;
       gameMode = PENDING_PLAYER_DECISION; // Update game to the next mode
-    }
-    // If this is the last player's turn (i.e. `turn` == `players.length` AFTER incrementing `turn` by 1 above), progress the game to the next stage
-    if (turn == players.length) {
-      resultMessage += `All players have now finished their turns. Click on "Submit" to reveal the dealer's full hand and therefore the result of the round.`;
-      gameMode = CALC_ROUND_RESULT; // Update game to the next mode
     }
     // End the function here if we were interpreting a player's hand
     return resultMessage;
   }
   // If we are interpreting the dealer's hand, i.e. if (turn == players.length) when calling interpretHandState function
-  while (dealerHand.value < 17) {
+  while (hand.value < 17) {
     // If the dealer's hand's alternate value already meets the criteria, then we break (stop) the loop
-    if (dealerHand.altValue >= 17) {
+    if (hand.altValue >= 17) {
       break;
     }
     // Otherwise we keep hitting for the dealer's hand until its normal value meets the criteria
-    hitHand(dealerHand);
+    hitHand(hand);
   }
 };
 
-// Helper function to check if the next turn is a player (and not the dealer)
-var isNextTurnPlayer = function (turn) {
+// Game mode where we interpret the player's choice on whether to split their hand
+var interpretSplitChoice = function (splitChoice) {
+  var resultMessage;
+  // Input validation
+  if (splitChoice != YES && splitChoice != NO) {
+    resultMessage = `You have entered an invalid choice. Please enter "${YES}" to split your hand, or "${NO}" to decline the split.<br><br>
+    In case you have forgotten: Your ${displayHandCards(players[turn][`hand${currentHandNum}`])}`;
+    return resultMessage;
+  }
+  // Valid input, so we proceed with processing the player's choice
+  if (splitChoice == YES) {
+    players[turn].hand1.splitStatus = splitChoice;
+    players[turn].hand2 = { cards: [], handNum: 2, value: 0, playerBet: 0, splitStatus: splitChoice };
+    // Take the second card in hand1 and put that into hand2
+    players[turn].hand2.cards.push(players[turn].hand1.cards.pop());
+    // Add a card to hand1 and hand2
+    players[turn].hand1.cards.push(deck.pop());
+    players[turn].hand2.cards.push(deck.pop());
+    // Update hand value of both hands
+    calcHandValue(players[turn].hand1);
+    calcHandValue(players[turn].hand2);
+    // Duplicate the bet onto hand2
+    players[turn].hand2.playerBet = players[turn].hand1.playerBet;
+    players[turn].chips -= players[turn].hand2.playerBet;
+    // Show both hands to the player
+    resultMessage = `You have chosen to split your hand - your initial bet has been duplicated onto your second hand.<br><br>
+    Your ${displayHandCards(players[turn].hand1)}<br><br>
+    Your ${displayHandCards(players[turn].hand2)}<br><br>
+    You will now be playing your first hand, and then followed by your second hand. Please click on "Submit" to proceed.`;
+    gameMode = SHOW_HAND; // Update game mode for player to play their first hand
+  }
+  // If player does not want to split, let them resume playing their hand
+  else {
+    players[turn].hand1.splitStatus = splitChoice;
+    resultMessage = `You have declined the split. Click on "Submit" to continue playing your hand.`;
+    gameMode = SHOW_HAND; // Update game mode for player to continue playing their hand
+  }
+  return resultMessage;
+};
+
+// Helper function to check whether we should go to the second hand or to the next player
+var checkNextTurnLogic = function () {
   var resultMessage = "";
-  if (turn < players.length) {
-    gameMode = SHOW_HAND;
+  // If the current player has a second hand, then let them play the second hand next
+  if (currentHandNum == 1 && window.players[turn].hand2) {
+    currentHandNum += 1;
+  } else if (currentHandNum == 2) {
+    // Current player has already played second hand, so naturally we go to the next player and reset currentHandNum
+    currentHandNum -= 1;
+    turn += 1;
+  } else {
+    // Current player does not have a second hand, so we increment the turn counter to go to the next player's turn
+    turn += 1;
+  }
+  // If the last player has played their turn, then progress game to the next mode (show round results)
+  if (turn == players.length) {
+    resultMessage = `All players have now finished their turns. Click on "Submit" to reveal the dealer's full hand and therefore the result of the round.`;
+    gameMode = CALC_ROUND_RESULT; // Update game to the next mode
+  } else {
+    // There are still players who haven't played yet, so we show a player's hand next
+    gameMode = SHOW_HAND; //
     resultMessage = showPlayerHand();
   }
   return resultMessage;
@@ -249,47 +309,53 @@ var pendingPlayerDecision = function (decisionInput) {
   if (decisionInput != HIT && decisionInput != STAY) {
     resultMessage = `You have entered an invalid input.<br><br>
     Please enter "${HIT}" to receive another card, or "${STAY}" to end your turn, ${players[turn].playerName}
-    <br><br>In case you have forgotten: Your ${displayHandCards(players[turn].handOne)}`;
+    <br><br>In case you have forgotten: Your ${displayHandCards(players[turn][`hand${currentHandNum}`])}`;
     return resultMessage;
   }
   // Hit the player's hand if they decided to HIT
   if (decisionInput == HIT) {
-    hitHand(players[turn].handOne);
-    resultMessage += `You drew ${players[turn].handOne.cards[players[turn].handOne.cards.length - 1].name}
-    of ${players[turn].handOne.cards[players[turn].handOne.cards.length - 1].suit}.<br><br>`;
+    var newCard = hitHand(players[turn][`hand${currentHandNum}`]);
+    resultMessage += `You drew ${newCard.name} of ${newCard.suit}.<br><br>`;
   }
-  // Check the state of the player's hand to see its BLACKJACK, UNDER or BUST
-  var handState = checkHandState(players[turn].handOne);
   // Determine and show the next steps based on the state of the player's hand
-  resultMessage += interpretHandState(handState, decisionInput);
+  resultMessage += interpretHandState(players[turn][`hand${currentHandNum}`], decisionInput);
   return resultMessage;
 };
 
 // Game mode where we display the results of the round
 var genRoundResult = function () {
   // Finish the dealer's hand first
-  interpretHandState(calcHandValue(dealerHand));
+  calcHandValue(dealerHand);
+  interpretHandState(dealerHand);
   // Find the winners and losers of the round
   for (var i = 0; i < players.length; i++) {
-    // Player wins automatically if they have Blackjack, even if dealer also has Blackjack
-    if (players[i].handOne.value == 21 || players[i].handOne.altValue == 21) {
-      players[i].handOne.roundResult = WIN;
-      // Player loses automatically if they bust, even if dealer also busts
-    } else if (players[i].handOne.value > 21) {
-      players[i].handOne.roundResult = LOSE;
-      // Player wins if they do not bust AND dealer busts
-    } else if (dealerHand.value > 21) {
-      players[i].handOne.roundResult = WIN;
-      // Player loses if their hand value is lower than or equal to dealer's
-    } else if (findOptimalValue(players[i].handOne) <= findOptimalValue(dealerHand)) {
-      players[i].handOne.roundResult = LOSE;
-      // Player wins if their hand value is higher than dealer's
-    } else if (findOptimalValue(players[i].handOne) > findOptimalValue(dealerHand)) {
-      players[i].handOne.roundResult = WIN;
-    }
-    // Payout the winning bets
-    if (players[i].handOne.roundResult == WIN) {
-      players[i].chips += 2 * players[i].handOne.playerBet; // Winning player gets back their original bet + the winnings
+    for (var handCounter = 1; handCounter < 3; handCounter++) {
+      // Player wins automatically if they have Blackjack, even if dealer also has Blackjack
+      if (players[i][`hand${handCounter}`]?.value == 21 || players[i][`hand${handCounter}`]?.altValue == 21) {
+        players[i][`hand${handCounter}`].roundResult = WIN;
+        // Player loses automatically if they bust, even if dealer also busts
+      } else if (players[i][`hand${handCounter}`]?.value > 21) {
+        players[i][`hand${handCounter}`].roundResult = LOSE;
+        // Player wins if they do not bust AND dealer busts
+      } else if (players[i][`hand${handCounter}`] && dealerHand.value > 21) {
+        players[i][`hand${handCounter}`].roundResult = WIN;
+        // Player loses if their hand value is lower than or equal to dealer's
+      } else if (
+        players[i][`hand${handCounter}`] &&
+        findOptimalValue(players[i][`hand${handCounter}`]) <= findOptimalValue(dealerHand)
+      ) {
+        players[i][`hand${handCounter}`].roundResult = LOSE;
+        // Player wins if their hand value is higher than dealer's
+      } else if (
+        players[i][`hand${handCounter}`] &&
+        findOptimalValue(players[i][`hand${handCounter}`]) > findOptimalValue(dealerHand)
+      ) {
+        players[i][`hand${handCounter}`].roundResult = WIN;
+      }
+      // Payout the winning bets
+      if (players[i][`hand${handCounter}`]?.roundResult == WIN) {
+        players[i].chips += 2 * players[i][`hand${handCounter}`].playerBet; // Winning player gets back their original bet + the winnings
+      }
     }
   }
   // Display the results of the round
@@ -301,7 +367,11 @@ var genRoundResult = function () {
     turn = 0; // Reset the turn counter for the next round
     // Reset the hand.altValue for all players and the dealer for the next round
     for (var i = 0; i < players.length; i++) {
-      delete players[i].handOne.altValue;
+      console.log(`i ${i}`);
+      delete players[i].hand1.altValue;
+      if (players[i].hand2?.altValue) {
+        delete players[i].hand2.altValue;
+      }
     }
     delete dealerHand.altValue;
     // Reset the deck for the next round
@@ -311,9 +381,16 @@ var genRoundResult = function () {
     roundResults += `<br><br>Please enter your bet for the next round, ${players[turn].playerName}.`;
   } else {
     // There are no more eligible players, so the game ends
-    roundResult = `All players have been eliminated 😭`;
+    roundResults += `<br><br>${noPlayersLeft()}`;
+    gameMode = NO_PLAYERS_LEFT;
   }
   return roundResults;
+};
+
+// Game mode where we tell the user that there are no eligible players remaining
+var noPlayersLeft = function () {
+  var resultMessage = `All players have been eliminated 😭<br><br>Refresh the page to play again.`;
+  return resultMessage;
 };
 
 // Helper function to remove players with 0 chips remaining, as they will not be able to play the next round
@@ -345,8 +422,15 @@ var displayRoundResults = function (players) {
   // Show each player's hand and whether they won or lost
   for (var i = 0; i < players.length; i++) {
     roundResults += `Player Name: ${players[i].playerName}<br>
-    Hand: Your ${displayHandCards(players[i].handOne)}<br>
-    Bet: ${players[i].handOne.playerBet} chips<br>Result: ${players[i].handOne.roundResult}<br><br>`;
+    Hand 1: Your ${displayHandCards(players[i].hand1)}<br>
+    Bet: ${players[i].hand1.playerBet} chips<br>Result: ${players[i].hand1.roundResult}`;
+    // If the player has a Hand 2, show its results as well
+    if (window.players[i].hand2) {
+      roundResults += `<br>Hand 2: Your ${displayHandCards(players[i].hand2)}<br>
+      Bet: ${players[i].hand2.playerBet} chips<br>Result: ${players[i].hand2.roundResult}<br><br>`;
+    } else {
+      roundResults += `<br><br>`;
+    }
   }
   // Display the current chips tally of all players
   var playerNamesArray = players.map((player) => player.playerName);
@@ -402,11 +486,15 @@ var main = function (input) {
   } else if (gameMode == DEAL_CARDS) {
     myOutputValue = dealCards();
   } else if (gameMode == SHOW_HAND) {
-    myOutputValue = showPlayerHand();
+    myOutputValue = showPlayerHand(turn);
+  } else if (gameMode == CHOOSE_SPLIT) {
+    myOutputValue = interpretSplitChoice(input);
   } else if (gameMode == PENDING_PLAYER_DECISION) {
     myOutputValue = pendingPlayerDecision(input);
   } else if (gameMode == CALC_ROUND_RESULT) {
     myOutputValue = genRoundResult();
+  } else if (gameMode == NO_PLAYERS_LEFT) {
+    myOutputValue = noPlayersLeft();
   }
   return myOutputValue;
 };
