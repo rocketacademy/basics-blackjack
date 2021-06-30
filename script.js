@@ -1,5 +1,16 @@
 // Project 3: Blackjack
 
+// ask for number of players
+// enter player names
+// enter player bets
+// deal cards
+// stand or hit
+// results
+
+// categorise by players instead of objects
+// should not allow player to hit if alr get 21
+// type stand to stand
+
 // ---players---
 var PLAYER;
 var COMPUTER;
@@ -13,37 +24,46 @@ var computerTotal;
 // ---game variables---
 var blackjack = false;
 var totalWithoutAce = 0;
+var numPlayers;
+var players = []; //array of player objects
+var blackjackWord = `<b>♣️BLACKJACK♠️</b>`;
 var ace = [];
+var index = 0;
 var deck;
 
 // ---modes---
-var ASK_USERNAME_MODE = "ask name";
+var ASK_NUM_PLAYERS_MODE = "ask number of players";
+var ASK_PLAYERS_NAMES_MODE = "ask names";
 var DEAL_CARDS_MODE = "deal cards";
 var HIT_STAND_MODE = "hit or stand";
-var gameMode = ASK_USERNAME_MODE;
+var gameMode = ASK_NUM_PLAYERS_MODE;
 
+// main function can be cleaner
 var main = function (input) {
   var myOutputValue;
-  if (gameMode == ASK_USERNAME_MODE) {
-    username = input;
-    gameMode = DEAL_CARDS_MODE;
-    myOutputValue = `Hey ${username}, ready for a game of <b>♣️BLACKJACK♠️</b>? <br> Click submit to begin!`;
-  } else if (gameMode == DEAL_CARDS_MODE) {
-    myOutputValue = stdDealCards();
-    var blackjackWinner = checkForBlackjack();
-
-    // Game only proceeds if no one gets a blackjack from dealt cards
-    if (blackjack == false) {
-      gameMode = HIT_STAND_MODE;
-      myOutputValue += `<br><br> Enter "hit" to draw another card or click submit to stand.`;
-    } else if (blackjack == true) {
-      // Someone gets a blackjack so game ends and restarts
-      myOutputValue += `<br><br> ${blackjackWinner} <br><br> Click submit to play again!`;
-      resetGame();
-    }
-  } else if (gameMode == HIT_STAND_MODE) {
-    myOutputValue = hitStandChoice(input);
+  if (gameMode == ASK_NUM_PLAYERS_MODE) {
+    myOutputValue = updateNumPlayers(input);
+  } else if (gameMode == ASK_PLAYERS_NAMES_MODE) {
+    myOutputValue = updatePlayerNames(input);
   }
+  //   gameMode = DEAL_CARDS_MODE;
+  //   myOutputValue = `Hey ${username}, ready for a game of <b>♣️BLACKJACK♠️</b>? <br> Click submit to begin!`;
+  // } else if (gameMode == DEAL_CARDS_MODE) {
+  //   myOutputValue = stdDealCards();
+  //   var blackjackWinner = checkForBlackjack();
+
+  //   // Game only proceeds if no one gets a blackjack from dealt cards
+  //   if (blackjack == false) {
+  //     gameMode = HIT_STAND_MODE;
+  //     myOutputValue += `<br><br> Enter "hit" to draw another card or click submit to stand.`;
+  //   } else if (blackjack == true) {
+  //     // Someone gets a blackjack so game ends and restarts
+  //     myOutputValue += `<br><br> ${blackjackWinner} <br><br> Click submit to play again!`;
+  //     resetGame();
+  //   }
+  // } else if (gameMode == HIT_STAND_MODE) {
+  //   myOutputValue = hitStandChoice(input);
+  // }
 
   myOutputValue += `<br><br><small><i> Enter "help" for game instructions.</i></small>`;
 
@@ -53,7 +73,47 @@ var main = function (input) {
     resetGame();
     gameMode = DEAL_CARDS_MODE;
   }
+  return myOutputValue;
+};
 
+var updateNumPlayers = function (input) {
+  var myOutputValue;
+  if (
+    //Input validation for number of players that are not between 1 and 4, not numbers, and not words
+    !(Number(input) >= 1 && Number(input) <= 4) ||
+    Number.isNaN(Number(input)) == true ||
+    Number.isInteger(Number(input)) == false
+  ) {
+    return `You have entered an invalid number of players. Please enter a whole number between 1 and 4.`;
+  }
+  numPlayers = Number(input);
+  var counter = 0;
+  while (counter < numPlayers) {
+    var playerName = { name: "" };
+    players.push(playerName);
+    //Creates an object with name as the only key for each player
+    counter += 1;
+  }
+  console.log(players);
+  myOutputValue = `There will be ${numPlayers} players for this game of ${blackjackWord}.<br> Please enter their names by one by one.`;
+  gameMode = ASK_PLAYERS_NAMES_MODE;
+  return myOutputValue;
+};
+
+var updatePlayerNames = function (input) {
+  var myOutputValue;
+  if (input == "") {
+    return `Please enter a valid username for the player.`;
+  }
+  var currPlayer = players[index];
+  currPlayer.name = input;
+  myOutputValue = `Hello ${currPlayer.name}. Nice to meet you! <br> The next player can enter his name.`;
+  index += 1;
+  console.log(index);
+  if (index == players.length) {
+    var lastPlayer = players[players.length - 1];
+    myOutputValue = `Hello ${lastPlayer.name}. Nice to meet you! <br><br> All players' names have been recorded. Click submit to place bets for each player now.`;
+  }
   return myOutputValue;
 };
 
@@ -164,6 +224,7 @@ var getIsAceInHand = function (userHand, userTotal) {
 };
 
 // logic here a bit faulty pls check!!!!!!
+// option to take either value maybe create an alternate value
 // Changes value of Ace in hand from 1 to 11
 var variableAce = function (userHand, userTotal) {
   userTotal = totalCards(userHand);
@@ -193,7 +254,7 @@ var variableAce = function (userHand, userTotal) {
       counter += 1;
     }
   }
-  // more than one ace
+  // more than one ace elseif??
   if (ace.length > 1) {
     counter = 1;
     while (counter < ace.length) {
@@ -293,6 +354,7 @@ var generateOutcome = function () {
   return myOutputValue;
 };
 
+//player total does not update properly
 var hitStandChoice = function (input) {
   var playerCards = displayCards(playerHand);
   var playerTotal = totalCards(playerHand);
@@ -416,7 +478,7 @@ var shuffleCards = function (cardDeck) {
   return cardDeck;
 };
 
-// game instructions for user
+// game instructions for user //go back to where they were during the game
 var instructions = `
 <center><strong>♣️BLACKJACK♠️ INSTRUCTIONS</strong></center><br>
 1. Objective: beat the dealer's hand without going over <b>21</b>. <br><br>
@@ -452,3 +514,16 @@ Click <b>Submit</b> to start a new game!
 //     value: 11,
 //   },
 // ];
+
+// var playerobject = {
+//   name: username,
+//   hand: {
+//     //array of card objects []
+//     //hand value (number)
+//     // alternate value (number)
+//   }
+//   bet: // what they are betting for the current round
+//   points: 100
+// }
+
+//playerobject.name creates name attribute
