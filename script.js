@@ -7,24 +7,26 @@
 //step 1: players each put down a bet
 //step 2: dealer deals one card, face up, to each player, then to himself
 //step 3: dealer deals a second card, face up to each player, and face down to himself
-//step 4a: if player scores 21, automatically wins
+//step 4a: if player scores 21, automatically wins, wins 1.5x her bet from the dealer
 //step4b: if want more card (draw from top of the deck), say 'hit'; no limit to how many cards you can hit, but when score exceeds 21, you go bust.
 //step4c: if don't want any more cards, say 'stand'.
 //step 5: once dealer has been round the table, dealer opens its face-down card
 //step 6a: if dealer scores below 18, he has to take another card (i.e. hit)
 //step 6b: if dealer scores 18 or higher, he has to stay with his hand
-//step 7a: if dealer goes bust, all players win twice their bet
+//step 7a: if dealer goes bust, all players win twice their bet (get his bet back + get an extra amount same as his bet)
 //step 7b: if dealer does not go bust, only players with a higher score win twice their bet, every one else loses their initial bet
 
 //game modes//
-var gameModeDeckShuffle = "game mode shuffle deck";
-var gameModeDealCard = "game mode deal card";
-var gameModePlayerHitOrStand = "game mode player decides hit or stand";
-var gameModeDealerHitOrStand = "game mode dealer decides hit or stand";
-var gameModeDecideWinner = "game mode to decide winner";
+var deckShuffle = "game mode shuffle deck";
+var dealCard = "game mode deal card";
+var playerHitOrStand = "game mode player decides hit or stand";
+var dealerHitOrStand = "game mode dealer decides hit or stand";
+var decideWinner = "game mode to decide winner";
+var askUserName = "game mode ask for username";
+var placeBet = "game mode player place bet";
 
 //initiate current game mode with game mode shuffle deck//
-var currentGameMode = gameModeDeckShuffle;
+var currentGameMode = deckShuffle;
 
 //Card deck generation//
 var makeDeck = function () {
@@ -120,10 +122,10 @@ var cardCounter = 0;
 
 //array to track dealt cards//
 var playerDealtCards = [];
-var dealerCards = [];
+var dealerDealtCards = [];
 
 var playerDealtCardsRank = [];
-var dealerCardsRank = [];
+var dealerDealtCardsRank = [];
 
 //playerscore//
 var playerScore = 0;
@@ -131,13 +133,21 @@ var playerScore = 0;
 //computer score//
 var computerScore = 0;
 
+//player points - start with 100
+var playerPoints = 100;
+var playerWager = 0;
+
 //Determine a winner//
 var winner = function () {
   if (playerScore > computerScore) {
-    return "You are the winner!";
+    //player wins 2x the wager i.e. get intial bet back + win amount equivalent to original bet
+    playerPoints = playerPoints + playerWager * 2;
+    return `You are the winner! <br> You now have ${playerPoints} points.`;
   }
   if (playerScore < computerScore) {
-    return "The computer is the winner!";
+    //player loses initial wager (accounted for in playerPoint during placeBet gamemode)
+    playerPoints = playerPoints;
+    return `The computer is the winner!<br> You lost your bet and now have ${playerPoints} points.`;
   }
   return "It's a tie.";
 };
@@ -147,16 +157,19 @@ var winner = function () {
 //if playerscore = 21, player wins
 var playerStatus = function () {
   if (playerScore == 21) {
-    currentGameMode = gameModeDeckShuffle;
-    return "You are the winner. <br>Click Submit to play again.";
+    currentGameMode = deckShuffle;
+    //if player's two face-up cards total 21, she wins 1.5x her wager
+    playerPoints = playerPoints + playerWager + playerWager * 1.5;
+    return `You are the winner. <br>You now have ${playerPoints} points.<br>Click Submit to play again.`;
   }
   if (playerScore > 21) {
-    currentGameMode = gameModeDeckShuffle;
-
-    return "You have gone bust. The dealer wins. <br>Click Submit to play again.";
+    currentGameMode = deckShuffle;
+    //if player goes bust, she loses initial wager (accounted for in playerPoint during placeBet gamemode)
+    playerPoints = playerPoints;
+    return `You have gone bust. The dealer wins. <br>You have lost your bet and now have ${playerPoints} points.<br>Click Submit to play again.`;
   }
 
-  currentGameMode = gameModePlayerHitOrStand;
+  currentGameMode = playerHitOrStand;
   return "Do you want to hit or stand? <br>Enter 'hit' or 'stand'.";
 };
 
@@ -184,32 +197,53 @@ var fakeDeck = [
   },
 ];
 
+//logic for ace
+var aceCounter = 0;
+
 var main = function (input) {
   var myOutputValue = "";
 
   //Deck shuffle game mode
-  if (currentGameMode == gameModeDeckShuffle) {
+  if (currentGameMode == deckShuffle) {
     //shuffle deck of cards
-    shuffledDeck;
+    shuffledDeck = shuffleCards(deck);
 
     //when a new round begins, reset scores to 0, reset cardCounter to 0, reset arrays
     playerScore = 0;
     computerScore = 0;
     cardCounter = 0;
     playerDealtCards = [];
-    dealerCards = [];
+    dealerDealtCards = [];
     playerDealtCardsRank = [];
-    dealerCardsRank = [];
+    dealerDealtCardsRank = [];
 
     console.log("shuffle mode " + playerScore);
     console.log("shuffle mode " + computerScore);
 
-    currentGameMode = gameModeDealCard;
-    return "Click Submit to deal card.";
+    currentGameMode = askUserName;
+    return `Welcome to the game of Blackjack🔶♠🧡♣.<br>What's your name?`;
+  }
+
+  //ask for username
+  if (currentGameMode == askUserName) {
+    var userName = input;
+    currentGameMode = placeBet;
+    return `Hi ${userName}! <br>You have ${playerPoints} points to start.<br>💵How much would you like to bet (enter a number that is greater than 0 and smaller than 100)?💵 `;
+  }
+
+  //place your bet
+  if (currentGameMode == placeBet) {
+    playerWager = Number(input);
+    if (playerWager > 0 && playerWager < 100) {
+      currentGameMode = dealCard;
+      playerPoints = playerPoints - playerWager;
+      return `💵You placed a bet of ${playerWager} points.💵<br> Your remaining points are ${playerPoints}.<br>Click Submit to deal 2 face-up cards.`;
+    } else
+      return `That is not a recognised input.<br>Please enter a number that is greater than 0 and smaller than 100.`;
   }
 
   //Deal card game mode
-  if (currentGameMode == gameModeDealCard) {
+  if (currentGameMode == dealCard) {
     //create loop for 2 rounds of card dealing
     while (cardCounter < 2) {
       //player gets dealt card
@@ -223,10 +257,10 @@ var main = function (input) {
       //dealer (computer) gets dealt card
       var computerCard = shuffledDeck.pop();
       //display cards dealt to computer
-      dealerCards.push(computerCard.name + " of " + computerCard.suit);
-      console.log(dealerCards);
+      dealerDealtCards.push(computerCard.name + " of " + computerCard.suit);
+      console.log(dealerDealtCards);
       // tracking dealerCards rank
-      dealerCardsRank.push(computerCard.rank);
+      dealerDealtCardsRank.push(computerCard.rank);
 
       //Add score of player's dealt card to player's score
       playerScore += Number(playerCard.rank);
@@ -254,8 +288,8 @@ var main = function (input) {
 
     // apply Ace card logic to computer (dealer) cards
     if (
-      (dealerCardsRank[0] == 1 && dealerCardsRank[1] <= 10) |
-      (dealerCardsRank[1] == 1 && dealerCardsRank[0] <= 10)
+      (dealerDealtCardsRank[0] == 1 && dealerDealtCardsRank[1] <= 10) |
+      (dealerDealtCardsRank[1] == 1 && dealerDealtCardsRank[0] <= 10)
     ) {
       //we reverse out score value of 1 and add score value 11 in this case
       computerScore = computerScore - 1 + 11;
@@ -265,20 +299,20 @@ var main = function (input) {
     playerScore = playerScore;
 
     //switch to game mode for player to hit or stand
-    currentGameMode = gameModePlayerHitOrStand;
+    currentGameMode = playerHitOrStand;
 
     //output message only tells player about the face-up card of the dealer
-    return `You have been dealt ${playerDealtCards}.<br>The dealer's card on show is ${
-      dealerCards[0]
+    return `You have been dealt ${playerDealtCards}.<br>The dealer's face-up card is ${
+      dealerDealtCards[0]
     }.<br>Your total score is ${playerScore}.<br>${playerStatus()} `;
   }
 
   //Player hit or stand game mode
-  if (currentGameMode == gameModePlayerHitOrStand) {
+  if (currentGameMode == playerHitOrStand) {
     var playerChoice = input;
 
     //player chooses to hit
-    if ((playerChoice == "hit") | (playerChoice == "Hit")) {
+    if (playerChoice == "hit") {
       var playerCard = shuffledDeck.pop();
       console.log(
         `playercardround 2 - ${playerCard.name} of ${playerCard.suit} rank ${playerCard.rank}`
@@ -305,12 +339,12 @@ var main = function (input) {
     }
 
     //player chooses to stand
-    if ((playerChoice == "stand") | (playerChoice == "Stand")) {
+    if (playerChoice == "stand") {
       playerScore += 0;
       console.log("player stand score round 2 - " + playerScore);
 
       //switches game mode to Dealer hit or stand game mode
-      currentGameMode = gameModeDealerHitOrStand;
+      currentGameMode = dealerHitOrStand;
 
       return `You chose stand. <br>Your score remains ${playerScore}. Click submit to continue.`;
     }
@@ -319,7 +353,7 @@ var main = function (input) {
   }
 
   //Dealer hit or stand game mode
-  if (currentGameMode == gameModeDealerHitOrStand) {
+  if (currentGameMode == dealerHitOrStand) {
     //if dealer scores below 18, he has to take another card (i.e. hit)
     if (computerScore < 18) {
       //dealer (computer) gets dealt a card
@@ -330,8 +364,8 @@ var main = function (input) {
       console.log("computer hit score round 2 - " + computerScore);
 
       //display cards dealt to computer
-      dealerCards.push(computerCard.name + " of " + computerCard.suit);
-      console.log(dealerCards);
+      dealerDealtCards.push(computerCard.name + " of " + computerCard.suit);
+      console.log(dealerDealtCards);
 
       //if the dealt card is Ace, and if the accumulated computerScore (at start of gameModeDealerHitOrStand) is 10 or less, then Ace should be 11
       //criteria is cumulative computerScore is 11 or less because at this point of the code computerScore would have included the default score of ace, i.e. 1
@@ -342,16 +376,18 @@ var main = function (input) {
       }
 
       //output message about the cards the dealer has (including previously face-down card)
-      var cardDealtMessage = `The dealer hit. <br>The dealer's cards are ${dealerCards}.<br>It scored ${computerScore}.`;
+      var cardDealtMessage = `The dealer hit. <br>The dealer's cards are ${dealerDealtCards}.<br>It scored ${computerScore}.`;
 
       //if computer goes bust (score >21) the player wins
       if (computerScore + Number(computerCard.rank) > 21) {
-        currentGameMode = gameModeDeckShuffle;
-        return `${cardDealtMessage} <br>It has gone bust. You win!<br>Click Submit to start again.`;
+        //player wins 2x his wager i.e. gets his initial wager + wins an amount equivalent to his wager
+        playerPoints = playerPoints + playerWager * 2;
+        currentGameMode = deckShuffle;
+        return `${cardDealtMessage} <br>It has gone bust. You win!<br>You now have ${playerPoints} points.<br>Click Submit to start again.`;
       }
 
       //switches to game mode to decide winner
-      currentGameMode = gameModeDecideWinner;
+      currentGameMode = decideWinner;
 
       return `${cardDealtMessage}<br>Click Submit to see who wins.`;
     }
@@ -363,18 +399,20 @@ var main = function (input) {
       console.log("computer hit score round 2 - " + computerScore);
       //if computer goes bust (score >21) the player wins (computer would have gone bust after 2 cards dealt, but not known until now when the facedown card is revealed.)
       if (computerScore > 21) {
-        currentGameMode = gameModeDeckShuffle;
-        return `${cardDealtMessage} <br>It has gone bust. You win!<br>Click Submit to start again.`;
+        currentGameMode = deckShuffle;
+        //player wins 2x his wager i.e. gets his initial wager + wins an amount equivalent to his wager
+        playerPoints = playerPoints + playerWager * 2;
+        return `${cardDealtMessage} <br>It has gone bust. You win!<br>You now have ${playerPoints} points.<br>Click Submit to start again.`;
       }
-      //switches to game mode to decide winner
-      currentGameMode = gameModeDecideWinner;
-      return `The dealer stand. <br>The dealer's cards are ${dealerCards}.<br>Its score remains ${computerScore}. <br>Click Submit to see who wins!`;
+      //switches to decideWinner game mode
+      currentGameMode = decideWinner;
+      return `The dealer stand. <br>The dealer's cards are ${dealerDealtCards}.<br>Its score remains ${computerScore}. <br>Click Submit to see who wins!`;
     }
   }
 
   // game mode to decide winner
-  if (currentGameMode == gameModeDecideWinner) {
-    currentGameMode = gameModeDeckShuffle;
+  if (currentGameMode == decideWinner) {
+    currentGameMode = deckShuffle;
     return `You scored ${playerScore}.<br>The dealer scored ${computerScore}.<br>${winner()}<br>Click Submit to play again.`;
   }
 
