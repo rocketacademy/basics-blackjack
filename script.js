@@ -389,6 +389,10 @@ var makeDeck = function () {
 // Create a deck of cards variable using the makeDeck function
 var deckOfCards = makeDeck();
 
+for (var i = 0; i < 52; i += 1) {
+  deckOfCards[i].emoji = deck[i].emoji;
+}
+
 // Get a random index ranging from 0 (inclusive) to max (exclusive).
 var getRandomIndex = function (max) {
   return Math.floor(Math.random() * max);
@@ -485,6 +489,15 @@ var convertCardsArrayToString = function (cardsArray) {
   return output;
 };
 
+var cardOutputGraphics = function (cardsArray) {
+  var output = '<br><span style="font-size:200px;">';
+  for (var i = 0; i < cardsArray.length; i += 1) {
+    output = output + `${cardsArray[i].emoji}`;
+  }
+  output = output + `</span><span style="font-size:14px;">`;
+  return output;
+};
+
 var main = function (input) {
   // Add player names
   if (gameStatus == 'addPlayers') {
@@ -546,7 +559,7 @@ var main = function (input) {
     }
     // All players' cards are converted to a string output
     for (i = 0; i < playersArray.length; i += 1) {
-      playersArray[i].output = convertCardsArrayToString(playersArray[i].cards);
+      playersArray[i].output = cardOutputGraphics(playersArray[i].cards);
     }
 
     if (!firstRound && gameStatus == 'playing') {
@@ -563,33 +576,27 @@ var main = function (input) {
         if (playersArray[i].decision == 'hit') {
           var randomCard = shuffledDeck.pop();
           playersArray[i].cards.push(randomCard);
-          playersArray[i].output = convertCardsArrayToString(
-            playersArray[i].cards
-          );
+          playersArray[i].output = cardOutputGraphics(playersArray[i].cards);
           playersArray[i].seen = true;
           if (i + 1 == playersArray.length) {
-            return `${playersArray[i].name}, your cards are ${playersArray[i].output}.<br><br> All players are done drawing cards`;
+            return `${playersArray[i].name}, your cards are ${playersArray[i].output}<br>All players are done drawing cards`;
           } else {
             return `${playersArray[i].name}, your cards are ${
               playersArray[i].output
-            }.<br><br>${
-              playersArray[i + 1].name
-            }, click submit to view your cards.`;
+            }<br>${playersArray[i + 1].name}, click submit to view your cards.`;
           }
         }
         if (playersArray[i].decision == 'stand') {
           playersArray[i].seen = true;
           if (i + 1 == playersArray.length) {
-            return `${playersArray[i].name}, your cards are ${playersArray[i].output}.<br><br> All players are done drawing cards. Click submit to see the dealer's move.`;
+            return `${playersArray[i].name}, your cards are ${playersArray[i].output}<br>All players are done drawing cards. Click submit to see the dealer's move.`;
           } else {
             return `${playersArray[i].name}, your cards are ${
               playersArray[i].output
-            }.<br><br>${
-              playersArray[i + 1].name
-            }, click submit to view your cards.`;
+            }<br>${playersArray[i + 1].name}, click submit to view your cards.`;
           }
         }
-        return `${playersArray[i].name}, your cards are ${playersArray[i].output}. <br><br>Choose if you would like to "hit" or "stand".`;
+        return `${playersArray[i].name}, your cards are ${playersArray[i].output}<br>Choose if you would like to "hit" or "stand".`;
       }
 
       // After all players are done picking up cards for that round. The computer then decides to hit or stand
@@ -691,7 +698,7 @@ var main = function (input) {
           playersArray[i].totalPoints - playersArray[i].currentRoundWager;
       }
       // Computer goes over and user does not
-      if (computerScore > 21 && playersArray[i].score <= 21) {
+      if (computerScore > 21 && playersArray[i].score < 21) {
         playersArray[i].result = 'You win';
         playersArray[i].totalPoints =
           playersArray[i].totalPoints + playersArray[i].currentRoundWager;
