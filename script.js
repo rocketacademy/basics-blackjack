@@ -304,7 +304,7 @@ var playerDrawsExtraCard = function () {
 
     bustOutput = `${
       userName[currentPlayer - 1]
-    }, you've bust and lost! 😭 <br><br>  ${playerCardMessage} <br> Your points: ${playerPoints}<br><br> Click submit to start a new game!<br><br> Your bank $${
+    }, you've bust and lost! 😭 <br><br>  ${playerCardMessage} <br> Your points: ${playerPoints}<br><br> Click submit for the next player's turn!<br><br> Your bank $${
       bankRoll[currentPlayer - 1]
     } `;
     if (currentPlayer == numPlayers) {
@@ -334,7 +334,7 @@ var playerDrawsExtraCard = function () {
       userName[currentPlayer - 1]
     }, you've gotten blackjack and won! 🥳 <br><br>${playerCardMessage}<br><br> Your bank $${
       bankRoll[currentPlayer - 1]
-    } <br><br> Click submit to start a new game!`;
+    } <br><br> Click submit for the next player's turn!`;
   }
   return `${userName[currentPlayer]}, ${playerCardMessage}  ${endMessage};`;
 };
@@ -424,43 +424,22 @@ var calculateComputerScore = function () {
 var determineFinalResult = function () {
   // Run while loop to generate all player card names and suits
   playerCardList = generatePlayerCardList();
-  // Run while loop to generate all computer card names and suits
-  var computerCardMessage = `Computer's cards are: `;
-  computerCounter = 0;
-  while (computerCounter < computerCards.length) {
-    computerCardMessage =
-      computerCardMessage +
-      `<br> ${computerCards[computerCounter].name} of ${computerCards[computerCounter].emojiSuit}`;
-    computerCounter += 1;
-  }
-  var finalOutput = `<br><br> ${playerCardList} <br><br> ${computerCardMessage}  <br><br> Click submit to start a new game!`;
-  // }
   currentPlayer += 1;
-  // Change to next player / summarize results if all players have played
-
   // Determine player's outcome
   if (playerPoints > computerPoints) {
     allPlayerOutcomes.push("win");
     bankRoll[currentPlayer - 1] =
       bankRoll[currentPlayer - 1] + userBet[currentPlayer - 1];
-    return ` ${
-      userName[currentPlayer - 1]
-    }! <br> ${playerCardList} <br><br> Find out if you've won at the end of the game! <br><br> Click submit for the next player's turn`;
   } else if (playerPoints < computerPoints) {
     allPlayerOutcomes.push("lose");
     bankRoll[currentPlayer - 1] =
       bankRoll[currentPlayer - 1] - userBet[currentPlayer - 1];
-    return ` ${
-      userName[currentPlayer - 1]
-    }! <br> ${playerCardList} <br><br> Find out if you've won at the end of the game! <br><br> Click submit for the next player's turn`;
   } else if (playerPoints == computerPoints) {
     allPlayerOutcomes.push("draw");
     bankRoll[currentPlayer - 1] =
       bankRoll[currentPlayer - 1] - userBet[currentPlayer - 1];
-    return ` ${
-      userName[currentPlayer - 1]
-    }! <br> ${playerCardList} <br><br> Find out if you've won at the end of the game! <br><br> Click submit for the next player's turn`;
   }
+  // Change to next player / summarize results if all players have played
   if (currentPlayer == numPlayers) {
     playerPoints = 0;
     gameMode = GAME_SUMMARY;
@@ -469,6 +448,9 @@ var determineFinalResult = function () {
 
     gameMode = SELECT_PLAYER;
   }
+  return ` ${
+    userName[currentPlayer - 1]
+  }! <br> ${playerCardList} <br><br> Find out if you've won at the end of the game! <br><br> Click submit for the next player's turn`;
 };
 
 // After all player's turns, display final results before starting new round and asking for new bets
