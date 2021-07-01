@@ -1,71 +1,39 @@
 // Project 3: Blackjack
-
-// ask for number of players
-// enter player names
-// enter player bets
-// deal cards
-// stand or hit
-// results
-
-// categorise by players instead of objects
-// should not allow player to hit if alr get 21
-// type stand to stand
+// completed up to more comfortable: better output formatting
 
 // ---players---
 var PLAYER;
 var COMPUTER;
 var username;
 var currentPlayer = PLAYER;
-var computerHand = [];
 var playerHand = [];
+var computerHand = [];
 var playerTotal;
 var computerTotal;
 
 // ---game variables---
 var blackjack = false;
 var totalWithoutAce = 0;
-var numPlayers;
-var players = []; //array of player objects
-var blackjackWord = `<b>♣️BLACKJACK♠️</b>`;
 var ace = [];
-var index = 0;
 var deck;
+var helpMessage = `<br><br><small><i> Enter "help" for game instructions.</i></small>`;
 
 // ---modes---
-var ASK_NUM_PLAYERS_MODE = "ask number of players";
-var ASK_PLAYERS_NAMES_MODE = "ask names";
+var ASK_USERNAME_MODE = "ask name";
 var DEAL_CARDS_MODE = "deal cards";
 var HIT_STAND_MODE = "hit or stand";
-var gameMode = ASK_NUM_PLAYERS_MODE;
+var gameMode = ASK_USERNAME_MODE;
 
-// main function can be cleaner
 var main = function (input) {
   var myOutputValue;
-  if (gameMode == ASK_NUM_PLAYERS_MODE) {
-    myOutputValue = updateNumPlayers(input);
-  } else if (gameMode == ASK_PLAYERS_NAMES_MODE) {
-    myOutputValue = updatePlayerNames(input);
+  if (gameMode == ASK_USERNAME_MODE) {
+    myOutputValue = inputUsername(input);
+  } else if (gameMode == DEAL_CARDS_MODE) {
+    myOutputValue = stdDealCards();
+  } else if (gameMode == HIT_STAND_MODE) {
+    myOutputValue = hitStandChoice(input);
   }
-  //   gameMode = DEAL_CARDS_MODE;
-  //   myOutputValue = `Hey ${username}, ready for a game of <b>♣️BLACKJACK♠️</b>? <br> Click submit to begin!`;
-  // } else if (gameMode == DEAL_CARDS_MODE) {
-  //   myOutputValue = stdDealCards();
-  //   var blackjackWinner = checkForBlackjack();
-
-  //   // Game only proceeds if no one gets a blackjack from dealt cards
-  //   if (blackjack == false) {
-  //     gameMode = HIT_STAND_MODE;
-  //     myOutputValue += `<br><br> Enter "hit" to draw another card or click submit to stand.`;
-  //   } else if (blackjack == true) {
-  //     // Someone gets a blackjack so game ends and restarts
-  //     myOutputValue += `<br><br> ${blackjackWinner} <br><br> Click submit to play again!`;
-  //     resetGame();
-  //   }
-  // } else if (gameMode == HIT_STAND_MODE) {
-  //   myOutputValue = hitStandChoice(input);
-  // }
-
-  myOutputValue += `<br><br><small><i> Enter "help" for game instructions.</i></small>`;
+  myOutputValue += helpMessage;
 
   if (input == "help") {
     //triggers instructions
@@ -73,48 +41,14 @@ var main = function (input) {
     resetGame();
     gameMode = DEAL_CARDS_MODE;
   }
+
   return myOutputValue;
 };
 
-var updateNumPlayers = function (input) {
-  var myOutputValue;
-  if (
-    //Input validation for number of players that are not between 1 and 4, not numbers, and not words
-    !(Number(input) >= 1 && Number(input) <= 4) ||
-    Number.isNaN(Number(input)) == true ||
-    Number.isInteger(Number(input)) == false
-  ) {
-    return `You have entered an invalid number of players. Please enter a whole number between 1 and 4.`;
-  }
-  numPlayers = Number(input);
-  var counter = 0;
-  while (counter < numPlayers) {
-    var playerName = { name: "" };
-    players.push(playerName);
-    //Creates an object with name as the only key for each player
-    counter += 1;
-  }
-  console.log(players);
-  myOutputValue = `There will be ${numPlayers} players for this game of ${blackjackWord}.<br> Please enter their names by one by one.`;
-  gameMode = ASK_PLAYERS_NAMES_MODE;
-  return myOutputValue;
-};
-
-var updatePlayerNames = function (input) {
-  var myOutputValue;
-  if (input == "") {
-    return `Please enter a valid username for the player.`;
-  }
-  var currPlayer = players[index];
-  currPlayer.name = input;
-  myOutputValue = `Hello ${currPlayer.name}. Nice to meet you! <br> The next player can enter his name.`;
-  index += 1;
-  console.log(index);
-  if (index == players.length) {
-    var lastPlayer = players[players.length - 1];
-    myOutputValue = `Hello ${lastPlayer.name}. Nice to meet you! <br><br> All players' names have been recorded. Click submit to place bets for each player now.`;
-  }
-  return myOutputValue;
+var inputUsername = function (input) {
+  username = input;
+  gameMode = DEAL_CARDS_MODE;
+  return `Hey ${username}, ready for a game of <b>♣️BLACKJACK♠️</b>? <br> Click submit to begin!`;
 };
 
 // Draws a specified number of cards for any user and pushes it into their hand
@@ -147,11 +81,17 @@ var stdDealCards = function () {
 
   myOutputValue = `${username}, you drew: <br> ${playerCards} <br> Your total: <b>${playerTotal}</b>  <br><br> Computer drew: <br> ${computerCards} <i> 1 face-down card</i>`;
 
-  checkForBlackjack();
-  if (blackjack == true) {
+  var blackjackWinner = checkForBlackjack();
+  // Game only proceeds if no one gets a blackjack from dealt cards
+  if (blackjack == false) {
+    gameMode = HIT_STAND_MODE;
+    myOutputValue += `<br><br> Enter "hit" to draw another card or click submit to stand.`;
+  } else if (blackjack == true) {
+    // Someone gets a blackjack so game ends and restarts
     // Reveals face down card if computer gets blackjack
     var facedownCard = displayOneCard(computerHand, 2);
-    myOutputValue += `: ${facedownCard}`;
+    myOutputValue += `: ${facedownCard} <br><br> ${blackjackWinner} <br><br> Click submit to play again!`;
+    resetGame();
   }
 
   return myOutputValue;
@@ -223,8 +163,6 @@ var getIsAceInHand = function (userHand, userTotal) {
   return cardRankInHand;
 };
 
-// logic here a bit faulty pls check!!!!!!
-// option to take either value maybe create an alternate value
 // Changes value of Ace in hand from 1 to 11
 var variableAce = function (userHand, userTotal) {
   userTotal = totalCards(userHand);
@@ -254,7 +192,7 @@ var variableAce = function (userHand, userTotal) {
       counter += 1;
     }
   }
-  // more than one ace elseif??
+  // more than one ace
   if (ace.length > 1) {
     counter = 1;
     while (counter < ace.length) {
@@ -278,7 +216,6 @@ var totalCards = function (userHand) {
   return total;
 };
 
-// sth wrong here i think
 // Checks if total in hand is 21 (blackjack!)
 var checkForBlackjack = function () {
   var myOutputValue;
@@ -354,22 +291,20 @@ var generateOutcome = function () {
   return myOutputValue;
 };
 
-//player total does not update properly
 var hitStandChoice = function (input) {
   var playerCards = displayCards(playerHand);
   var playerTotal = totalCards(playerHand);
-  var hitMessage = `You should continue to hit as your total at <b>${playerTotal}</b> is less than 17. <br> Enter "hit" to draw another card.`;
 
   if (input == `hit`) {
     drawCard(playerHand, 1);
     variableAce(playerHand, playerTotal);
     playerCards = displayCards(playerHand);
     playerTotal = totalCards(playerHand);
-    myOutputValue = `You drew a card. Your hand is now: <br> ${playerCards} <br> Your total now: <b>${playerTotal}</b> <br><br> Enter "hit" to draw another card or click submit to stand.`;
+    myOutputValue = `You drew a card. Your hand is now: <br> ${playerCards} <br> Your total now: <b>${playerTotal}</b> <br><br> Enter "hit" to draw another card or click submit to stand.<br><br>`;
 
     // Player must hit if total still less than 17 after drawing once
     if (playerTotal < 17) {
-      myOutputValue += `<br><br> ${hitMessage}`;
+      myOutputValue += `You should continue to hit as your total at <b>${playerTotal}</b> is less than 17.`;
     }
     // Player bust leads to end of game
     if (playerTotal > 21) {
@@ -378,7 +313,7 @@ var hitStandChoice = function (input) {
     }
   } else if (playerTotal < 17) {
     //Ensures player remembers to hit
-    myOutputValue = hitMessage;
+    myOutputValue = `You should continue to hit as your total at <b>${playerTotal}</b> is less than 17.`;
   } else {
     computerHitOrStand();
     myOutputValue = generateOutcome();
@@ -478,7 +413,7 @@ var shuffleCards = function (cardDeck) {
   return cardDeck;
 };
 
-// game instructions for user //go back to where they were during the game
+// game instructions for user
 var instructions = `
 <center><strong>♣️BLACKJACK♠️ INSTRUCTIONS</strong></center><br>
 1. Objective: beat the dealer's hand without going over <b>21</b>. <br><br>
@@ -490,40 +425,3 @@ var instructions = `
 6. If you are dealt 21 from the start (Ace & 10), you got a blackjack.<br><br>
 Click <b>Submit</b> to start a new game! 
 `;
-
-// simplified blackjack
-// two players
-// computer is dealer
-// dealer hits if hand is below 17
-// player closer to 21 wins hand,
-// aces can be 1 or 11
-
-// fourth
-
-// [
-//   {
-//     name: "10",
-//     suit: "diamonds",
-//     rank: 10,
-//     value: 10,
-//   },
-//   {
-//     name: "jack",
-//     suit: "diamonds",
-//     rank: 11,
-//     value: 11,
-//   },
-// ];
-
-// var playerobject = {
-//   name: username,
-//   hand: {
-//     //array of card objects []
-//     //hand value (number)
-//     // alternate value (number)
-//   }
-//   bet: // what they are betting for the current round
-//   points: 100
-// }
-
-//playerobject.name creates name attribute
