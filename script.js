@@ -341,6 +341,7 @@ var playerDrawsExtraCard = function () {
 
 // Calculate computer's score and automatically draw more if necessary
 var calculateComputerScore = function () {
+  playerCardList = generatePlayerCardList();
   // If two card score >= 17 and < 21, change game mode to compare with player's score
   if (computerPoints >= 17 && computerPoints < 21) {
     gameMode = FINAL_RESULT;
@@ -359,15 +360,10 @@ var calculateComputerScore = function () {
       playerPoints = 0;
       gameMode = SELECT_PLAYER;
     }
-    return `Sorry ${
+    return ` ${
       userName[currentPlayer - 1]
-    }! <br> The computer has gotten Blackjack and won! 😭 <br><br>Computer's cards: <br> ${
-      computerCards[0].name
-    } of ${computerCards[0].emojiSuit} <br>${computerCards[1].name} of ${
-      computerCards[1].emojiSuit
-    }<br> Computer's points: ${computerPoints}<br><br> Your bank $${
-      bankRoll[currentPlayer - 1]
-    } `;
+    }! <br> ${playerCardList} <br><br> Find out if you've won at the end of the game! <br><br> Click submit for the next player's turn
+     `;
   } else {
     // Otherwise computer draws card until it reaches at least 17, gets blackjack or busts
     while (computerPoints < 17) {
@@ -400,13 +396,9 @@ var calculateComputerScore = function () {
         } else {
           gameMode = SELECT_PLAYER;
         }
-        return `Sorry ${
+        return ` ${
           userName[currentPlayer - 1]
-        }! <br> The computer has gotten Blackjack and won! 😭 <br><br>
-          ${computerCardMessage} 
-          <br> Computer's points: ${computerPoints}<br><br> Your bank $${
-          bankRoll[currentPlayer - 1]
-        } <br><br> Click submit to start a new game!`;
+        }! <br> ${playerCardList} <br><br> Find out if you've won at the end of the game! <br><br> Click submit for the next player's turn`;
       }
       // If computer busts, output results
       if (computerPoints > 21) {
@@ -421,13 +413,9 @@ var calculateComputerScore = function () {
         } else {
           gameMode = SELECT_PLAYER;
         }
-        return `${
+        return ` ${
           userName[currentPlayer - 1]
-        }, the computer has bust, you win! 🥳 <br><br>
-          ${computerCardMessage} 
-          <br> Computer's points: ${computerPoints}<br><br> Your bank $${
-          bankRoll[currentPlayer - 1]
-        } <br><br> Click submit to start a new game!`;
+        }! <br> ${playerCardList} <br><br> Find out if you've won at the end of the game! <br><br> Click submit for the next player's turn`;
       }
     }
   }
@@ -455,29 +443,23 @@ var determineFinalResult = function () {
     allPlayerOutcomes.push("win");
     bankRoll[currentPlayer - 1] =
       bankRoll[currentPlayer - 1] + userBet[currentPlayer - 1];
-    return `${
+    return ` ${
       userName[currentPlayer - 1]
-    }, you have won! 🥳 ${finalOutput}<br><br> Your bank: $${
-      bankRoll[currentPlayer - 1]
-    }`;
+    }! <br> ${playerCardList} <br><br> Find out if you've won at the end of the game! <br><br> Click submit for the next player's turn`;
   } else if (playerPoints < computerPoints) {
     allPlayerOutcomes.push("lose");
     bankRoll[currentPlayer - 1] =
       bankRoll[currentPlayer - 1] - userBet[currentPlayer - 1];
-    return `${
+    return ` ${
       userName[currentPlayer - 1]
-    }, you have lost! 😭 ${finalOutput}<br><br> Your bank: $${
-      bankRoll[currentPlayer - 1]
-    } `;
+    }! <br> ${playerCardList} <br><br> Find out if you've won at the end of the game! <br><br> Click submit for the next player's turn`;
   } else if (playerPoints == computerPoints) {
     allPlayerOutcomes.push("draw");
     bankRoll[currentPlayer - 1] =
       bankRoll[currentPlayer - 1] - userBet[currentPlayer - 1];
-    return `${
+    return ` ${
       userName[currentPlayer - 1]
-    }, its a draw! 😐 ${finalOutput}<br><br> Your bank: $${
-      bankRoll[currentPlayer - 1]
-    } `;
+    }! <br> ${playerCardList} <br><br> Find out if you've won at the end of the game! <br><br> Click submit for the next player's turn`;
   }
   if (currentPlayer == numPlayers) {
     playerPoints = 0;
@@ -583,7 +565,7 @@ var main = function (input) {
     userName = stringNames.split(" ");
     var userNameList = generateUserNameList();
     gameMode = ASK_FOR_BET;
-    myOutputValue = `Hello Players! <br> ${userNameList}! <br><br> Welcome to Blackjack!!! 2️⃣1️⃣♠️❤️♣️♦️ <br><br> These are the rules:<br> You will be dealt two cards after clicking submit <br> The aim is to get 21 points without exceeding it <br> You need to hit a minimum of 17 points <br> Aces are worth either 1 or 11 and can be changed throughout the game <br><br> Press submit to continue`;
+    myOutputValue = `Hello Players! <br> ${userNameList} <br><br> Welcome to Blackjack!!! 2️⃣1️⃣♠️❤️♣️♦️ <br><br> These are the rules:<br> You will be dealt two cards after clicking submit <br> The aim is to get 21 points without exceeding it & to score more points than the computer <br> You need to hit a minimum of 17 points <br> Aces are worth either 1 or 11 and can be changed throughout the game <br><br> Press submit to continue`;
   } else if (gameMode == ASK_FOR_BET) {
     // Empty global variables for subsequent rounds
     currentPlayer = 0;
