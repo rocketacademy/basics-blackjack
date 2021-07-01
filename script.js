@@ -14,6 +14,9 @@ var computerModeInitial = false;
 var playerOneModeDrawingMode = false;
 var computerDrawingMode = false;
 var declarationMode = false;
+var comFinalScore = 0;
+var playerTrialScore = 0;
+
 // Function that compares drawn card to discardPile array
 var compareToDiscardPile = function (drawnCard) {
   var discardCounter = 0;
@@ -86,7 +89,7 @@ var makeDeck = function () {
   return cardDeck;
 };
 
-// Draws a card from the deck and pushes it up to playerHand's array.
+// Draws a card from the deck and pushes it up to playerOneHand's array.
 var drawingPlayerOneCard = function () {
   var checkResult = false;
   // If checkResult is false, draw a card, and run compareToDiscardPile(). If true, discardPile.pop, and function is looped. If false, push card to playerOneHand's array.
@@ -112,7 +115,8 @@ var drawingComputerCard = function () {
   // If checkResult is false, draw a card, and run compareToDiscardPile(). If true, discardPile.pop, and function is looped. If false, push card to computerHand's array.
   while (checkResult == false) {
     var comDigit = MakeARandomNumber();
-    var comDraw = createdDeck[comDigit];
+    var comDraw = createdDeck[comDigit]; //continually draws a card until it has eliminated all matches to discard pile;
+
     discardPile.push(comDigit);
     if (compareToDiscardPile(comDigit) == true) {
       discardPile.pop;
@@ -165,15 +169,16 @@ var createdDeck = makeDeck();
 var CalculatePlayerOneSum = function () {
   var p1SumCounter = 0;
   while (p1SumCounter < playerOneHand.length) {
-    var score = score + playerOneHand[p1SumCounter];
+    var playerScore = playerScore + playerOneHand[p1SumCounter];
     p1SumCounter++;
   }
-  return score;
+  return playerScore;
 };
 
 // Generates a new card to the player's hand, compares it to discard pile. Will return/announce all cards in player's hand
 var generateCardForPlayerOne = function () {
   var newCard = drawingPlayerOneCard();
+
   newCardPlayerArray.push(newCard.true);
   var showPlayerHand =
     "Your cards are: <br><br>" +
@@ -186,30 +191,51 @@ var generateCardForPlayerOne = function () {
   return showPlayerHand;
 };
 
-// Generates a new card to the Computer's hand, compares it to discard pile. Will return/announce all cards in Computer's hand
+// This is the last turn. It Generates a new card to the Computer's hand, compares it to discard pile. Will return/announce all cards in Computer's hand
 var generateCardForComputer = function () {
   var scoreCounter = 0;
+  var outerCounter = 0;
   var comScoreArray = [];
-  var comFinalScore = 0;
-  while (scoreCounter < computerHand.length) {
-    if (computerHand[scoreCounter].value == "jack" || "queen" || "king") {
-      computerHand[scoreCounter].value = 10;
+  while (outerCounter < computerHand[outerCounter].length) {
+    // If trueScore is lesser than 15, run drawingComputerCard function
+    if (comFinalScore >= 21) {
+      // stopper
+      outerCounter = computerHand.length;
     }
-    comScoreArray.push(computerHand[scoreCounter].value);
+    drawingComputerCard();
+    while (scoreCounter < computerHand.length) {
+      // This is to continually push the key-value into the comScoreArray
+      if (computerHand[scoreCounter].rank > 10) {
+        computerHand[scoreCounter].value = 10;
+      }
+      scoreCounter++;
+      comScoreArray.push(computerHand[scoreCounter].value);
+    }
     comFinalScore = comFinalScore + comScoreArray[scoreCounter];
-    scoreCounter++;
-  }
-  if (comFinalScore <= 21) {
-    var newCardCom = drawingComputerCard();
-    newCardComputerArray.push(newCardCom.true);
   }
   var showComHand = "Computer has a score of: " + comFinalScore;
   return showComHand;
 };
 
+// sets up a declare mode that runs once the computer's totalScore is shown. If below 22, and above player's totalScore. computer wins. Else, player wins.
+var declareTheWinner = function () {
+  var p1Score = CalculatePlayerOneSum();
+  console.log("p1Score: " + p1Score);
+  if (comFinalScore < 22 && comFinalScore > p1Score) {
+    var declareResult =
+      "The winner is the Computer with a score of: " + comFinalScore;
+  } else {
+    declareResult = "The winner is the player with a score of: " + p1Score;
+  }
+  return declareResult;
+};
+
 //_______MAIN FUNCTION___________
 var main = function (input) {
   var myOutputValue = "Default Answer";
+  if (declarationMode == true) {
+    myOutputValue = declareTheWinner();
+  }
   if (computerDrawingMode == true) {
     myOutputValue = generateCardForComputer();
     computerDrawingMode = false;
