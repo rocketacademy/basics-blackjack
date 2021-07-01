@@ -1,327 +1,327 @@
-// Array of user's cards
-var userCardsArray = [];
+// Array of players -- each element in this array is an object with the keys "name", "cards", "output", "decision", "seen", "score", "currentRoundWager", "result", and "totalPoints"
+playersArray = [];
 // Array of computer's cards
 var computerCardsArray = [];
-var userResult = "";
-var computerResult = "";
-var finalResult = "";
-var gameStatus = "playing";
-var userDecision = "";
+var computerResult = '';
+var gameStatus = 'addPlayers';
 var firstRound = 1;
-var computerDecisionOutput = "";
+var computerDecisionOutput = '';
+var scoreboard = '';
+var computerCards = '';
+var computerScore = 0;
 // Hard coded deck of cards
 var deck = [
   {
-    name: "ace",
-    suit: "hearts",
+    name: 'ace',
+    suit: 'hearts',
     rank: 1,
-    emoji: "🂱",
+    emoji: '🂱',
   },
   {
-    name: "2",
-    suit: "hearts",
+    name: '2',
+    suit: 'hearts',
     rank: 2,
-    emoji: "🂲",
+    emoji: '🂲',
   },
   {
-    name: "3",
-    suit: "hearts",
+    name: '3',
+    suit: 'hearts',
     rank: 3,
-    emoji: "🂳",
+    emoji: '🂳',
   },
   {
-    name: "4",
-    suit: "hearts",
+    name: '4',
+    suit: 'hearts',
     rank: 4,
-    emoji: "🂴",
+    emoji: '🂴',
   },
   {
-    name: "5",
-    suit: "hearts",
+    name: '5',
+    suit: 'hearts',
     rank: 5,
-    emoji: "🂵",
+    emoji: '🂵',
   },
   {
-    name: "6",
-    suit: "hearts",
+    name: '6',
+    suit: 'hearts',
     rank: 6,
-    emoji: "🂶",
+    emoji: '🂶',
   },
   {
-    name: "7",
-    suit: "hearts",
+    name: '7',
+    suit: 'hearts',
     rank: 7,
-    emoji: "🂷",
+    emoji: '🂷',
   },
   {
-    name: "8",
-    suit: "hearts",
+    name: '8',
+    suit: 'hearts',
     rank: 8,
-    emoji: "🂸",
+    emoji: '🂸',
   },
   {
-    name: "9",
-    suit: "hearts",
+    name: '9',
+    suit: 'hearts',
     rank: 9,
-    emoji: "🂹 ",
+    emoji: '🂹 ',
   },
   {
-    name: "10",
-    suit: "hearts",
+    name: '10',
+    suit: 'hearts',
     rank: 10,
-    emoji: "🂺",
+    emoji: '🂺',
   },
   {
-    name: "jack",
-    suit: "hearts",
+    name: 'jack',
+    suit: 'hearts',
     rank: 11,
-    emoji: "🂻",
+    emoji: '🂻',
   },
   {
-    name: "queen",
-    suit: "hearts",
+    name: 'queen',
+    suit: 'hearts',
     rank: 12,
-    emoji: "🂽",
+    emoji: '🂽',
   },
   {
-    name: "king",
-    suit: "hearts",
+    name: 'king',
+    suit: 'hearts',
     rank: 13,
-    emoji: "🂾",
+    emoji: '🂾',
   },
   {
-    name: "ace",
-    suit: "diamonds",
+    name: 'ace',
+    suit: 'diamonds',
     rank: 1,
-    emoji: "🃁",
+    emoji: '🃁',
   },
   {
-    name: "2",
-    suit: "diamonds",
+    name: '2',
+    suit: 'diamonds',
     rank: 2,
-    emoji: "🃂",
+    emoji: '🃂',
   },
   {
-    name: "3",
-    suit: "diamonds",
+    name: '3',
+    suit: 'diamonds',
     rank: 3,
-    emoji: "🃃",
+    emoji: '🃃',
   },
   {
-    name: "4",
-    suit: "diamonds",
+    name: '4',
+    suit: 'diamonds',
     rank: 4,
-    emoji: "🃄",
+    emoji: '🃄',
   },
   {
-    name: "5",
-    suit: "diamonds",
+    name: '5',
+    suit: 'diamonds',
     rank: 5,
-    emoji: "🃅",
+    emoji: '🃅',
   },
   {
-    name: "6",
-    suit: "diamonds",
+    name: '6',
+    suit: 'diamonds',
     rank: 6,
-    emoji: "🃆",
+    emoji: '🃆',
   },
   {
-    name: "7",
-    suit: "diamonds",
+    name: '7',
+    suit: 'diamonds',
     rank: 7,
-    emoji: "🃇",
+    emoji: '🃇',
   },
   {
-    name: "8",
-    suit: "diamonds",
+    name: '8',
+    suit: 'diamonds',
     rank: 8,
-    emoji: "🃈",
+    emoji: '🃈',
   },
   {
-    name: "9",
-    suit: "diamonds",
+    name: '9',
+    suit: 'diamonds',
     rank: 9,
-    emoji: "🃉",
+    emoji: '🃉',
   },
   {
-    name: "10",
-    suit: "diamonds",
+    name: '10',
+    suit: 'diamonds',
     rank: 10,
-    emoji: "🃊",
+    emoji: '🃊',
   },
   {
-    name: "jack",
-    suit: "diamonds",
+    name: 'jack',
+    suit: 'diamonds',
     rank: 11,
-    emoji: "🃋",
+    emoji: '🃋',
   },
   {
-    name: "queen",
-    suit: "diamonds",
+    name: 'queen',
+    suit: 'diamonds',
     rank: 12,
-    emoji: "🃍",
+    emoji: '🃍',
   },
   {
-    name: "king",
-    suit: "diamonds",
+    name: 'king',
+    suit: 'diamonds',
     rank: 13,
-    emoji: "🃎",
+    emoji: '🃎',
   },
   {
-    name: "ace",
-    suit: "clubs",
+    name: 'ace',
+    suit: 'clubs',
     rank: 1,
-    emoji: "🃑",
+    emoji: '🃑',
   },
   {
-    name: "2",
-    suit: "clubs",
+    name: '2',
+    suit: 'clubs',
     rank: 2,
-    emoji: "🃒",
+    emoji: '🃒',
   },
   {
-    name: "3",
-    suit: "clubs",
+    name: '3',
+    suit: 'clubs',
     rank: 3,
-    emoji: "🃓",
+    emoji: '🃓',
   },
   {
-    name: "4",
-    suit: "clubs",
+    name: '4',
+    suit: 'clubs',
     rank: 4,
-    emoji: "🃔",
+    emoji: '🃔',
   },
   {
-    name: "5",
-    suit: "clubs",
+    name: '5',
+    suit: 'clubs',
     rank: 5,
-    emoji: "🃕",
+    emoji: '🃕',
   },
   {
-    name: "6",
-    suit: "clubs",
+    name: '6',
+    suit: 'clubs',
     rank: 6,
-    emoji: "🃖",
+    emoji: '🃖',
   },
   {
-    name: "7",
-    suit: "clubs",
+    name: '7',
+    suit: 'clubs',
     rank: 7,
-    emoji: "🃗",
+    emoji: '🃗',
   },
   {
-    name: "8",
-    suit: "clubs",
+    name: '8',
+    suit: 'clubs',
     rank: 8,
-    emoji: "🃘",
+    emoji: '🃘',
   },
   {
-    name: "9",
-    suit: "clubs",
+    name: '9',
+    suit: 'clubs',
     rank: 9,
-    emoji: "🃙",
+    emoji: '🃙',
   },
   {
-    name: "10",
-    suit: "clubs",
+    name: '10',
+    suit: 'clubs',
     rank: 10,
-    emoji: "🃚",
+    emoji: '🃚',
   },
   {
-    name: "jack",
-    suit: "clubs",
+    name: 'jack',
+    suit: 'clubs',
     rank: 11,
-    emoji: "🃛",
+    emoji: '🃛',
   },
   {
-    name: "queen",
-    suit: "clubs",
+    name: 'queen',
+    suit: 'clubs',
     rank: 12,
-    emoji: "🃝",
+    emoji: '🃝',
   },
   {
-    name: "king",
-    suit: "clubs",
+    name: 'king',
+    suit: 'clubs',
     rank: 13,
-    emoji: "🃞",
+    emoji: '🃞',
   },
   {
-    name: "ace",
-    suit: "spades",
+    name: 'ace',
+    suit: 'spades',
     rank: 1,
-    emoji: "🂡",
+    emoji: '🂡',
   },
   {
-    name: "2",
-    suit: "spades",
+    name: '2',
+    suit: 'spades',
     rank: 2,
-    emoji: "🂢",
+    emoji: '🂢',
   },
   {
-    name: "3",
-    suit: "spades",
+    name: '3',
+    suit: 'spades',
     rank: 3,
-    emoji: "🂣",
+    emoji: '🂣',
   },
   {
-    name: "4",
-    suit: "spades",
+    name: '4',
+    suit: 'spades',
     rank: 4,
-    emoji: "🂤",
+    emoji: '🂤',
   },
   {
-    name: "5",
-    suit: "spades",
+    name: '5',
+    suit: 'spades',
     rank: 5,
-    emoji: "🂥",
+    emoji: '🂥',
   },
   {
-    name: "6",
-    suit: "spades",
+    name: '6',
+    suit: 'spades',
     rank: 6,
-    emoji: "🂦",
+    emoji: '🂦',
   },
   {
-    name: "7",
-    suit: "spades",
+    name: '7',
+    suit: 'spades',
     rank: 7,
-    emoji: "🂧",
+    emoji: '🂧',
   },
   {
-    name: "8",
-    suit: "spades",
+    name: '8',
+    suit: 'spades',
     rank: 8,
-    emoji: "🂨",
+    emoji: '🂨',
   },
   {
-    name: "9",
-    suit: "spades",
+    name: '9',
+    suit: 'spades',
     rank: 9,
-    emoji: "🂩",
+    emoji: '🂩',
   },
   {
-    name: "10",
-    suit: "spades",
+    name: '10',
+    suit: 'spades',
     rank: 10,
-    emoji: "🂪",
+    emoji: '🂪',
   },
   {
-    name: "jack",
-    suit: "spades",
+    name: 'jack',
+    suit: 'spades',
     rank: 11,
-    emoji: "🂫",
+    emoji: '🂫',
   },
   {
-    name: "queen",
-    suit: "spades",
+    name: 'queen',
+    suit: 'spades',
     rank: 12,
-    emoji: "🂭",
+    emoji: '🂭',
   },
   {
-    name: "king",
-    suit: "spades",
+    name: 'king',
+    suit: 'spades',
     rank: 13,
-    emoji: "🂮",
+    emoji: '🂮',
   },
 ];
 
@@ -331,7 +331,7 @@ var makeDeck = function () {
   // Initialise an empty deck array
   var cardDeck = [];
   // Initialise an array of the 4 suits in our deck. We will loop over this array.
-  var suits = ["♥", "♦", "♣", "♠"];
+  var suits = ['♥', '♦', '♣', '♠'];
 
   // Loop over the suits array
   var suitIndex = 0;
@@ -350,16 +350,16 @@ var makeDeck = function () {
 
       // If rank is 1, 11, 12, or 13, set cardName to the ace or face card's name
       if (cardName == 1) {
-        cardName = "ace";
+        cardName = 'ace';
         cardValue = 11;
       } else if (cardName == 11) {
-        cardName = "jack";
+        cardName = 'jack';
         cardValue = 10;
       } else if (cardName == 12) {
-        cardName = "queen";
+        cardName = 'queen';
         cardValue = 10;
       } else if (cardName == 13) {
-        cardName = "king";
+        cardName = 'king';
         cardValue = 10;
       }
 
@@ -418,218 +418,315 @@ var shuffleCards = function (cardDeck) {
 // Array of deck of shuffled cards
 var shuffledDeck = shuffleCards(deckOfCards);
 
-var main = function (input) {
-  if (firstRound) {
-    // Press submit to deal the first two cards each to user and computer
-    for (i = 0; i < 2; i += 1) {
-      var randomCard = shuffledDeck.pop();
-      userCardsArray.push(randomCard);
-      var randomCard = shuffledDeck.pop();
-      computerCardsArray.push(randomCard);
-    }
-
-    // After first two cards are drawn cards are analysed to see if either user or computer hits 21
-    // For two cards, the only possibility of a win is if one card is an ace and they other card has a value of 10
-    for (i = 0; i < 2; i += 1) {
-      if (userCardsArray[i].name == "ace") {
-        if (userCardsArray[0].value + userCardsArray[1].value == 21) {
-          // User wins blackjack
-          userResult = "You win blackjack!";
-          gameStatus = "over";
-        }
-      }
-    }
-
-    for (i = 0; i < 2; i += 1) {
-      if (computerCardsArray[i].name == "ace") {
-        if (computerCardsArray[0].value + computerCardsArray[1].value == 21) {
-          // User wins blackjack
-          computerResult = "The computer wins blackjack!";
-          gameStatus = "over";
-        }
-      }
-    }
-  }
-
-  if (!firstRound) {
-    // User decides whether to "hit" or "stand", using the text input and submit button
-    userDecision = input;
-    if (userDecision == "hit") {
-      var randomCard = shuffledDeck.pop();
-      userCardsArray.push(randomCard);
-    }
-
-    // Computer hits or stands automatically based on game rules (if computer's hands is below 17, the computer hits)
-    computerScore = 0;
-    computerNumberOfAces = 0;
-    for (i = 0; i < computerCardsArray.length; i += 1) {
-      var computerScore = computerScore + computerCardsArray[i].value;
-      if (computerCardsArray[i].name == "ace") {
-        computerNumberOfAces = computerNumberOfAces + 1;
-      }
-    }
-    if (computerScore > 21) {
-      for (i = 0; i < computerNumberOfAces; i += 1) {
-        if (computerScore <= 21) {
-          break;
-        }
-        computerScore = computerScore - 10;
-      }
-    }
-    if (computerScore < 17) {
-      var computerDecision = "hit";
-      computerDecisionOutput = "The computer has decided to hit";
+// Function for adding players
+var addPlayers = function (playerName) {
+  var listOfPlayers = '';
+  if (playerName == 'end') {
+    if (playersArray.length < 1) {
+      return 'Please enter at least one player';
     } else {
-      computerDecision = "stand";
-      computerDecisionOutput = "The computer has decided to stand";
-    }
-
-    if (computerDecision == "hit") {
-      var randomCard = shuffledDeck.pop();
-      computerCardsArray.push(randomCard);
-    }
-    if (userDecision == "stand" && computerDecision == "stand") {
-      gameStatus = "over";
+      gameStatus = 'wager';
+      for (i = 0; i < playersArray.length; i += 1) {
+        listOfPlayers = listOfPlayers + playersArray[i].name + ', ';
+      }
+      listOfPlayers = listOfPlayers.slice(0, -2);
+      return `The players are ${listOfPlayers}. <br><br>${playersArray[0].name}, please input how much you would like to wager for this round and click submit`;
     }
   }
-  console.log(computerCardsArray);
-  // User's cards are converted to an output
-  var userCards = "";
-  for (i = 0; i < userCardsArray.length; i += 1) {
-    userCards = userCards + userCardsArray[i].name + ", ";
+  if (playerName.length < 1) {
+    return 'Please input a valid name';
+  } else {
+    playersArray.push({
+      name: playerName,
+      cards: [],
+      score: 0,
+      totalPoints: 100,
+      currentRoundWager: 0,
+      decision: '',
+      seen: false,
+    });
+    for (i = 0; i < playersArray.length; i += 1) {
+      listOfPlayers = listOfPlayers + playersArray[i].name + ', ';
+    }
+    listOfPlayers = listOfPlayers.slice(0, -2);
+    return `Welcome to the game ${playerName}. <br><br> The current players are ${listOfPlayers}. <br><br>Enter "end" and click submit to confirm the players.`;
   }
-  userCards = userCards.slice(0, -2);
+};
 
-  // computer's cards are converted to an output
-  var computerCards = "";
-  for (i = 0; i < computerCardsArray.length; i += 1) {
-    computerCards = computerCards + computerCardsArray[i].name + ", ";
+// Function to calculate score for the round
+var calculateScore = function (playerCardsArray) {
+  var playerScore = 0;
+  var userNumberOfAces = 0;
+  for (j = 0; j < playerCardsArray.length; j += 1) {
+    playerScore = playerScore + playerCardsArray[j].value;
+    if (playerCardsArray[j].name == 'ace') {
+      userNumberOfAces = userNumberOfAces + 1;
+    }
   }
-  computerCards = computerCards.slice(0, -2);
 
+  if (playerScore > 21) {
+    for (k = 0; k < userNumberOfAces; k += 1) {
+      if (playerScore <= 21) {
+        break;
+      }
+      playerScore = playerScore - 10;
+    }
+  }
+  return playerScore;
+};
+
+// Function to convert a player's cards to a string output (i.e. "ace, 2, 4")
+var convertCardsArrayToString = function (cardsArray) {
+  var output = '';
+  for (j = 0; j < cardsArray.length; j += 1) {
+    output = output + cardsArray[j].name + ', ';
+  }
+  output = output.slice(0, -2);
+  return output;
+};
+
+var main = function (input) {
+  // Add player names
+  if (gameStatus == 'addPlayers') {
+    return addPlayers(input);
+  }
+  // Players take turns to input wager before the start of each round
+  if (gameStatus == 'wager') {
+    scoreboard = '';
+    for (i = 0; i < playersArray.length; i += 1) {
+      if (playersArray[i].currentRoundWager != 0) {
+        continue;
+      }
+      if (Number.isNaN(Number(input)) || Number(input) <= 0 || input == '') {
+        return 'sorry please enter a valid number.';
+      } else {
+        playersArray[i].currentRoundWager = Number(input);
+      }
+      if (i + 1 == playersArray.length) {
+        gameStatus = 'playing';
+        return `${playersArray[i].name}, you have wagered ${input} points for this round.<br><br>All players have waged their bets. Click submit to deal the first two cards to all players.`;
+      } else {
+        return `${
+          playersArray[i].name
+        }, you have wagered ${input} points for this round.<br><br> ${
+          playersArray[i + 1].name
+        }, key in how many points you would like to wager and click submit.`;
+      }
+    }
+  }
+
+  if (gameStatus == 'playing') {
+    if (firstRound) {
+      // Press submit to deal the first two cards each to all players and computer
+      for (i = 0; i < 2; i += 1) {
+        for (j = 0; j < playersArray.length; j += 1) {
+          var randomCard = shuffledDeck.pop();
+          playersArray[j].cards.push(randomCard);
+        }
+        var randomCard = shuffledDeck.pop();
+        computerCardsArray.push(randomCard);
+      }
+
+      // After first two cards are drawn cards are analysed to see if either user or computer hits 21
+      // For two cards, the only possibility of a win is if one card is an ace and they other card has a value of 10
+      // In the first round if dealer/computer gets blackjack, game ends. Players lose if they are under. Players draw if they also get blackjack.
+
+      for (i = 0; i < 2; i += 1) {
+        if (computerCardsArray[i].name == 'ace') {
+          if (computerCardsArray[0].value + computerCardsArray[1].value == 21) {
+            // User wins blackjack
+            computerResult = 'The computer gets blackjack!';
+            gameStatus = 'over';
+          }
+        }
+      }
+      // End of first round
+      firstRound = 0;
+      return `${playersArray[0].name}, click submit to view your cards. Then decide whether to "hit" or "stand".`;
+    }
+    // All players' cards are converted to a string output
+    for (i = 0; i < playersArray.length; i += 1) {
+      playersArray[i].output = convertCardsArrayToString(playersArray[i].cards);
+    }
+
+    if (!firstRound && gameStatus == 'playing') {
+      // All players are cycled through to take turns to view only their own cards and decide whether to "hit" or "stand", using the text input and submit button
+      // 1. Player sees his/her cards, types "hit" or "stand" then clicks submit
+      // 3. If players hits, show them their cards with the newly drawn card, then the player clicks submit. If the player stands, skip this step
+      // 4. Next player sees his/her cards
+
+      for (i = 0; i < playersArray.length; i += 1) {
+        if (playersArray[i].decision != '' && playersArray[i].seen == true) {
+          continue;
+        }
+        playersArray[i].decision = input;
+        if (playersArray[i].decision == 'hit') {
+          var randomCard = shuffledDeck.pop();
+          playersArray[i].cards.push(randomCard);
+          playersArray[i].output = convertCardsArrayToString(
+            playersArray[i].cards
+          );
+          playersArray[i].seen = true;
+          if (i + 1 == playersArray.length) {
+            return `${playersArray[i].name}, your cards are ${playersArray[i].output}.<br><br> All players are done drawing cards`;
+          } else {
+            return `${playersArray[i].name}, your cards are ${
+              playersArray[i].output
+            }.<br><br>${
+              playersArray[i + 1].name
+            }, click submit to view your cards.`;
+          }
+        }
+        if (playersArray[i].decision == 'stand') {
+          playersArray[i].seen = true;
+          if (i + 1 == playersArray.length) {
+            return `${playersArray[i].name}, your cards are ${playersArray[i].output}.<br><br> All players are done drawing cards. Click submit to see the dealer's move.`;
+          } else {
+            return `${playersArray[i].name}, your cards are ${
+              playersArray[i].output
+            }.<br><br>${
+              playersArray[i + 1].name
+            }, click submit to view your cards.`;
+          }
+        }
+        return `${playersArray[i].name}, your cards are ${playersArray[i].output}. <br><br>Choose if you would like to "hit" or "stand".`;
+      }
+
+      // After all players are done picking up cards for that round. The computer then decides to hit or stand
+      // Computer hits or stands automatically based on game rules (if computer's hands is below 17, the computer hits)
+      computerScore = calculateScore(computerCardsArray);
+      if (computerScore < 17) {
+        computerDecision = 'hit';
+        computerDecisionOutput = 'The computer has decided to hit.';
+      } else {
+        computerDecision = 'stand';
+        computerDecisionOutput = 'The computer has decided to stand.';
+      }
+
+      if (computerDecision == 'hit') {
+        var randomCard = shuffledDeck.pop();
+        computerCardsArray.push(randomCard);
+      }
+
+      // Game status changes to over when all players and computer chooses to "stand" for that round
+      var allPlayersStand = true;
+      for (i = 0; i < playersArray.length; i += 1) {
+        if (playersArray[i].decision == 'hit') {
+          allPlayersStand = false;
+        }
+      }
+      for (i = 0; i < playersArray.length; i += 1) {
+        // Restart round variables
+        playersArray[i].decision = '';
+        playersArray[i].seen = false;
+      }
+      if (computerDecision == 'stand' && allPlayersStand) {
+        gameStatus = 'over';
+        return (
+          computerDecisionOutput +
+          `<br><br>All players have decided to stand. Click submit to view the results for this game`
+        );
+      }
+      return (
+        computerDecisionOutput +
+        `<br><br>${playersArray[0].name}, click submit to see your cards again and decide whether to hit or stand for the next round.`
+      );
+    }
+  }
   // User's and computer's cards are compared to determine win/lose/draw result
-  // Once game is over, display the user's and computer's cards, their scores, and who won
+  // Once game is over, display the all players cards and computer's cards, their scores for that round, their points after the round and who won
   // Ace is counted as 11 first. If it causes a bust, minus total score by 10
-  if (gameStatus == "over") {
-    var userScore = 0;
-    var userNumberOfAces = 0;
-    for (i = 0; i < userCardsArray.length; i += 1) {
-      userScore = userScore + userCardsArray[i].value;
-      if (userCardsArray[i].name == "ace") {
-        userNumberOfAces = userNumberOfAces + 1;
-      }
-    }
-
-    if (userScore > 21) {
-      for (i = 0; i < userNumberOfAces; i += 1) {
-        if (userScore <= 21) {
-          break;
-        }
-        userScore = userScore - 10;
-      }
-    }
-
-    var computerScore = 0;
-    var computerNumberOfAces = 0;
-    for (i = 0; i < computerCardsArray.length; i += 1) {
-      computerScore = computerScore + computerCardsArray[i].value;
-      if (computerCardsArray[i].name == "ace") {
-        computerNumberOfAces = computerNumberOfAces + 1;
-      }
-    }
-    if (computerScore > 21) {
-      for (i = 0; i < computerNumberOfAces; i += 1) {
-        if (computerScore <= 21) {
-          break;
-        }
-        computerScore = computerScore - 10;
-      }
+  if (gameStatus == 'over') {
+    computerScore = calculateScore(computerCardsArray);
+    // computer's cards are converted to an output
+    computerCards = convertCardsArrayToString(computerCardsArray);
+    for (i = 0; i < playersArray.length; i += 1) {
+      playersArray[i].output = convertCardsArrayToString(playersArray[i].cards);
+      playersArray[i].score = calculateScore(playersArray[i].cards);
+      console.log(playersArray[i].cards);
+      console.log(playersArray[i].output);
+      console.log(playersArray[i].score);
     }
 
     // Scanarios
-    // Computer and user goes below 21
-    if (userScore < 21 && computerScore < 21) {
-      if (userScore > computerScore) {
-        finalResult = "You win";
+    // Cycle through each player to compare each player with dealer/computer
+
+    for (i = 0; i < playersArray.length; i += 1) {
+      // Computer and user goes below 21
+      if (playersArray[i].score < 21 && computerScore < 21) {
+        if (playersArray[i].score > computerScore) {
+          playersArray[i].result = 'You win';
+          playersArray[i].totalPoints =
+            playersArray[i].totalPoints + playersArray[i].currentRoundWager;
+        }
+        if (computerScore > playersArray[i].score) {
+          playersArray[i].result = 'Computer wins';
+          playersArray[i].totalPoints =
+            playersArray[i].totalPoints - playersArray[i].currentRoundWager;
+        }
+        if (computerScore == playersArray[i].score) {
+          playersArray[i].result = 'It is a draw';
+        }
       }
-      if (computerScore > userScore) {
-        finalResult = "Computer wins";
+      // User gets blackjack and computer does not
+      if (playersArray[i].score == 21 && computerScore != 21) {
+        playersArray[i].result = 'You get blackjack.<br>You win';
+        playersArray[i].totalPoints =
+          playersArray[i].totalPoints + playersArray[i].currentRoundWager;
       }
-      if (computerScore == userScore) {
-        finalResult = "It is a draw";
+      // Computer gets blackjack and user does not
+      if (computerScore == 21 && playersArray[i].score != 21) {
+        playersArray[i].result = 'Computer gets blackjack.<br>Computer wins';
+        playersArray[i].totalPoints =
+          playersArray[i].totalPoints - playersArray[i].currentRoundWager;
+      }
+      // Both user and computer gets blackjack
+      if (computerScore == 21 && playersArray[i].score == 21) {
+        playersArray[i].result = 'You get blackjack.<br>It is a draw';
+      }
+      // User goes over and computer does not
+      if (playersArray[i].score > 21 && computerScore <= 21) {
+        playersArray[i].result = 'You have gone over.<br>Computer wins';
+        playersArray[i].totalPoints =
+          playersArray[i].totalPoints - playersArray[i].currentRoundWager;
+      }
+      // Computer goes over and user does not
+      if (computerScore > 21 && playersArray[i].score <= 21) {
+        playersArray[i].result = 'You win';
+        playersArray[i].totalPoints =
+          playersArray[i].totalPoints + playersArray[i].currentRoundWager;
+      }
+      // Both user and computer goes over
+      if (playersArray[i].score > 21 && computerScore > 21) {
+        playersArray[i].result = 'You have gone over.<br>It is a draw';
       }
     }
-    // User gets blackjack and computer does not
-    if (userScore == 21 && computerScore != 21) {
-      userResult = "You win blackjack";
-      finalResult = "You win";
+    // Create the scoreboard and return the scoreboard
+    scoreboard = `Dealer's cards: ${computerCards}<br>Dealer's score: ${computerScore}<br><br>`;
+    for (i = 0; i < playersArray.length; i += 1) {
+      console.log(playersArray[i].score);
+      console.log(playersArray[i].result);
+      scoreboard =
+        scoreboard +
+        `${playersArray[i].name}'s cards: ${playersArray[i].output}<br>${playersArray[i].name}'s score: ${playersArray[i].score}<br>${playersArray[i].result}<br>${playersArray[i].name}'s total points: ${playersArray[i].totalPoints}<br><br>`;
     }
-    // Computer gets blackjack and user does not
-    if (computerScore == 21 && userScore != 21) {
-      computerResult = "Computer wins blackjack";
-      finalResult = "Computer wins";
-    }
-    // Both user and computer gets blackjack
-    if (computerScore == 21 && userScore == 21) {
-      userResult = "You win blackjack";
-      computerResult = "Computer wins blackjack";
-      finalResult = "It is a draw";
-    }
-    // User goes over and computer does not
-    if (userScore > 21 && computerScore <= 21) {
-      userResult = "You have gone over";
-      finalResult = "Computer wins";
-    }
-    // Computer goes over and user does not
-    if (computerScore > 21 && userScore <= 21) {
-      computerResult = "Computer has gone over";
-      finalResult = "You win";
-    }
-    // Both user and computer goes over
-    if (userScore > 21 && computerScore > 21) {
-      userResult = "You have gone over";
-      computerResult = "Computer has gone over";
-      finalResult = "It is a draw";
-    }
-    var finalOutput =
-      userResult +
-      "<br><br>" +
-      computerResult +
-      "<br><br>" +
-      "Your cards are " +
-      userCards +
-      "<br>" +
-      "Your score is " +
-      userScore +
-      "<br><br>" +
-      "The computer's cards are " +
-      computerCards +
-      "<br>" +
-      "The computer's score is " +
-      computerScore +
-      "<br><br>" +
-      finalResult;
 
     //Restart game variables
-    // Array of user's cards
-    userCardsArray = [];
-    // Array of computer's cards
+    for (i = 0; i < playersArray.length; i += 1) {
+      playersArray[i].score = 0;
+      playersArray[i].currentRoundWager = 0;
+      playersArray[i].cards = [];
+      playersArray[i].decision = '';
+      playersArray[i].seen = false;
+    }
     computerCardsArray = [];
-    userResult = "";
-    computerResult = "";
-    finalResult = "";
-    gameStatus = "playing";
-    userDecision = "";
+    computerResult = '';
+    gameStatus = 'wager';
     firstRound = 1;
-    computerDecisionOutput = "";
-    return finalOutput;
+    computerDecisionOutput = '';
+    return (
+      scoreboard +
+      `<br><br>${playersArray[0].name}, key in your wager for the next round and click submit`
+    );
   }
-  firstRound = 0;
-  // If game is still going on, return output of the user's cards
-  return (
-    "Your cards are " +
-    userCards +
-    "<br><br>Please choose whether to hit or stand<br><br>" +
-    computerDecisionOutput
-  );
 };
