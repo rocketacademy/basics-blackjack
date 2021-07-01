@@ -14,7 +14,6 @@ var computerModeInitial = false;
 var playerOneModeDrawingMode = false;
 var computerDrawingMode = false;
 var declarationMode = false;
-
 // Function that compares drawn card to discardPile array
 var compareToDiscardPile = function (drawnCard) {
   var discardCounter = 0;
@@ -29,7 +28,8 @@ var compareToDiscardPile = function (drawnCard) {
   return compareDiscardResult;
 };
 
-// Generate a random Number
+
+​// Generate a random Number
 var MakeARandomNumber = function () {
   randomDigit = Math.floor(Math.random() * 51);
   return randomDigit;
@@ -54,17 +54,17 @@ var makeDeck = function () {
       var cardName = rankCounter;
       // If rank is 1, 11, 12, or 13, set cardName to the ace or face card's name
       if (cardName == 1) {
-        cardName = "ace";
         value = 1;
+        cardName = "ace";
       } else if (cardName == 11) {
+        value = 10;
         cardName = "jack";
-        value = 10;
       } else if (cardName == 12) {
+        value = 10;
         cardName = "queen";
-        value = 10;
       } else if (cardName == 13) {
-        cardName = "king";
         value = 10;
+        cardName = "king";
       }
       // Create a new card with the current name, suit, and rank
       var card = {
@@ -85,7 +85,7 @@ var makeDeck = function () {
   // Return the completed card deck
   return cardDeck;
 };
-
+​
 // Draws a card from the deck and pushes it up to playerOneHand's array.
 var drawingPlayerOneCard = function () {
   var checkResult = false;
@@ -102,10 +102,10 @@ var drawingPlayerOneCard = function () {
   }
   playerOneHand.push(p1Draw);
   console.log("drawingPlayerOneCard Check");
-
+​
   return p1Draw;
 };
-
+​
 // Draws a card from the deck and pushes it up to computerHand's array.
 var drawingComputerCard = function () {
   var checkResult = false;
@@ -122,50 +122,52 @@ var drawingComputerCard = function () {
   }
   computerHand.push(comDraw);
   console.log("drawingComputerCard Check");
-
+  console.log("computerHand");
+  console.log(computerHand);
+​
   return comDraw;
 };
-
+​
 // drawStartCardsPlayer1 - Runs when playerOneModeInitial = true. When playerOneHand.length = 2, function ends. When function ends, playerOneModeInitial = false
 var drawStartCardsPlayer1 = function () {
   while (playerOneHand.length < 2) {
     drawingPlayerOneCard();
   }
-
+​
   var playerStatement =
     "Your cards are : <br>" +
     playerOneHand[0].true +
     "<br>" +
     playerOneHand[1].true;
-
+​
   playerOneModeInitial = false;
   computerModeInitial = true;
-
+​
   return playerStatement;
 };
-
+​
 // drawStartCardsCom - Runs when computerModeInitial = true. When computerHand.length = 2, function ends. When function ends, computerModeInitial = false
 var drawStartCardsCom = function () {
   while (computerHand.length < 2) {
     drawingComputerCard();
   }
-
+​
   var computerStatement =
     "The Dealer has drawn his hand. <br><br> Your cards are: <br> " +
     playerOneHand[0].true +
     "<br>" +
     playerOneHand[1].true +
     "<br><br> Draw again?<br><br> If not, type NO";
-
+​
   computerModeInitial = false;
   playerOneModeDrawingMode = true;
-
+​
   return computerStatement;
 };
-
+​
 // Calls the function into a generated deck
 var createdDeck = makeDeck();
-
+​
 // Sums up the total score of the player's Hand
 var CalculatePlayerOneSum = function () {
   var p1SumCounter = 0;
@@ -179,7 +181,7 @@ var CalculatePlayerOneSum = function () {
 var generateCardForPlayerOne = function () {
   var newCard = drawingPlayerOneCard();
   newCardPlayerArray.push(newCard.true);
-
+​
   var showPlayerHand =
     "Your cards are: <br><br>" +
     playerOneHand[0].true +
@@ -195,30 +197,33 @@ var generateCardForComputer = function () {
   var comScoreArray = [];
   var comFinalScore = 0;
   while (scoreCounter < computerHand.length) {
+    if (computerHand[scoreCounter].value == "jack" || "queen" || "king") {
+      computerHand[scoreCounter].value = 10;
+    }
     comScoreArray.push(computerHand[scoreCounter].value);
     comFinalScore = comFinalScore + comScoreArray[scoreCounter];
     scoreCounter++;
   }
-
-  if (comFinalScore <= 21) {
+​
+  if (comFinalScore <= 17) {
     var newCardCom = drawingComputerCard();
     newCardComputerArray.push(newCardCom.true);
   }
-
+​
   var showComHand = "Computer has a score of: " + comFinalScore;
   return showComHand;
 };
-
+​
 //_______MAIN FUNCTION___________
 var main = function (input) {
   var myOutputValue = "Default Answer";
   if (computerDrawingMode == true) {
     myOutputValue = generateCardForComputer();
-
+​
     computerDrawingMode = false;
     declarationMode = true;
   }
-
+​
   if (playerOneModeDrawingMode == true) {
     if (input == "NO") {
       playerOneModeDrawingMode = false;
@@ -233,8 +238,9 @@ var main = function (input) {
   }
   if (playerOneModeInitial == true) {
     myOutputValue = drawStartCardsPlayer1();
+    console.log('playerOneModeInitial')
   }
-
+​
   return myOutputValue;
 };
 //_____MAIN FUNCTION END_________
