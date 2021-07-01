@@ -219,7 +219,7 @@ var checkForAce = function (input) {
       // If player selects ace card in their array, switch mode and allow them to change ace value
     } else if (allPlayerCards[currentPlayer][aceIndex].name == "Ace") {
       gameMode = PLAYER_ACTION;
-      return `${userName[currentPlayer]}, you have chosen to change the value of the ace card in positon: ${input} <br> Please type either 'ace 1' or 'ace 11' to change the value`;
+      return `${userName[currentPlayer]}, you have chosen to change the value of the ace card in positon: ${input} <br><br> Please type either: <br><br> 'ace 1' to change the value of ace to 1 <br> 'ace 11' to change the value of ace to 11`;
     }
   }
 };
@@ -501,9 +501,9 @@ var displayGameSummary = function () {
       summaryOutput +
       `<br><br>Player ${outerSummaryCounter + 1}: ${
         userName[outerSummaryCounter]
-      }, you: ${
-        allPlayerOutcomes[outerSummaryCounter]
-      }! <br> Your cards were: `;
+      }, you: ${allPlayerOutcomes[outerSummaryCounter]}! <br> Your bank: ${
+        bankRoll[outerSummaryCounter]
+      } <br> Your cards were: `;
     // Inner loop to access index in sub arrays
     while (summaryCounter < allPlayerCards[outerSummaryCounter].length) {
       summaryOutput =
@@ -528,7 +528,7 @@ var displayGameSummary = function () {
     `<br><br> Please click submit to start another game. <br> Please enter 'reset' if you would like to reset the game and choose a different number of players`
   );
 };
-// // Generate list of player cards to be used for various output statements
+// // Generate list of player cards to be used for various output statements for output formatting
 var generatePlayerCardList = function () {
   aceCounter = 0;
   var playerCardMessage = `Your cards are: `;
@@ -541,6 +541,16 @@ var generatePlayerCardList = function () {
   return playerCardMessage;
 };
 var playerCardList = "";
+
+// Generate list of usernames to be used in main for output formatting
+var generateUserNameList = function () {
+  var nameOutput = ``;
+  for (var nameCounter = 0; nameCounter < userName.length; nameCounter += 1) {
+    nameOutput =
+      nameOutput + `<br> Player ${nameCounter + 1}: ${userName[nameCounter]}`;
+  }
+  return nameOutput;
+};
 
 var main = function (input) {
   var myOutputValue = "";
@@ -571,8 +581,9 @@ var main = function (input) {
     // Take in all player's names and convert into individual strings in an array
     stringNames = input;
     userName = stringNames.split(" ");
+    var userNameList = generateUserNameList();
     gameMode = ASK_FOR_BET;
-    myOutputValue = `Hello ${userName}! <br><br> Welcome to blackjack!!! 2️⃣1️⃣♠️❤️♣️♦️ <br><br> These are the rules:<br> You will be dealt two cards after clicking submit <br> The aim is to get 21 points without exceeding it <br> You need to hit a minimum of 17 points <br> Aces are worth either 1 or 11 and can be changed throughout the game <br><br> Press submit to continue`;
+    myOutputValue = `Hello Players! <br> ${userNameList}! <br><br> Welcome to Blackjack!!! 2️⃣1️⃣♠️❤️♣️♦️ <br><br> These are the rules:<br> You will be dealt two cards after clicking submit <br> The aim is to get 21 points without exceeding it <br> You need to hit a minimum of 17 points <br> Aces are worth either 1 or 11 and can be changed throughout the game <br><br> Press submit to continue`;
   } else if (gameMode == ASK_FOR_BET) {
     // Empty global variables for subsequent rounds
     currentPlayer = 0;
@@ -630,7 +641,7 @@ var main = function (input) {
 
         return `${
           userName[currentPlayer]
-        }, you need at least 17 points. Please type 'hit' to draw another card. <br><br> ${generatePlayerCardList()}`;
+        }, you need at least 17 points. <br><br>Please type 'hit' to draw another card. <br><br> ${generatePlayerCardList()}`;
       }
       gameMode = COMPUTER_CALCULATES;
     }
