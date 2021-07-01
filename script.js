@@ -295,18 +295,17 @@ var playerDrawsExtraCard = function () {
       }
       secondCounter += 1;
     }
-
     currentPlayer += 1;
     allPlayerOutcomes.push("lose");
     bankRoll[currentPlayer - 1] =
       bankRoll[currentPlayer - 1] - userBet[currentPlayer - 1];
-    // Change to next player / summarize results if all players have played
 
     bustOutput = `${
       userName[currentPlayer - 1]
     }, you've bust and lost! 😭 <br><br>  ${playerCardMessage} <br> Your points: ${playerPoints}<br><br> Click submit for the next player's turn!<br><br> Your bank $${
       bankRoll[currentPlayer - 1]
     } `;
+    // Change to next player / summarize results if all players have played
     if (currentPlayer == numPlayers) {
       playerPoints = 0;
       gameMode = GAME_SUMMARY;
@@ -639,4 +638,31 @@ var main = function (input) {
     gameMode = ASK_FOR_BET;
   }
   return myOutputValue;
+};
+
+var inputDisplay = function () {
+  //  Change input message based on mode
+  if (gameMode == WAITING_FOR_NUM_PLAYERS) {
+    return "WELCOME TO SHANNON'S CASINO! <br> <br>Click submit to start playing!:";
+  } else if (gameMode == WAITING_FOR_NAME) {
+    return "How many of you are playing today?:";
+  } else if (gameMode == INSTRUCTIONS) {
+    return `Wow! ${numPlayers} players! <br><br> Please enter all your names with a spacing and without a comma!:`;
+  } else if (gameMode == ASK_FOR_BET) {
+    return "The game is about to begin!: ";
+  } else if (gameMode == TAKE_BET) {
+    return "Place your bets!:";
+  } else if (gameMode == DEAL_CARDS) {
+    return "Feeling rich huh?:";
+  } else if (gameMode == SELECT_PLAYER) {
+    return "What would you like to do?:";
+  } else if (gameMode == PLAYER_ACTION) {
+    return "What would you like to do?:";
+  } else if (gameMode == CHANGE_ACE_MODE) {
+    return "Hmmm... Let me check if you have an ace:";
+  } else if (gameMode == FINAL_RESULT) {
+    return "Tabulating results!:";
+  } else if (gameMode == GAME_SUMMARY) {
+    return "The final results are!:";
+  }
 };
