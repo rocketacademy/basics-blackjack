@@ -580,7 +580,7 @@ var main = function (input) {
     var prevPlayerIndex = currPlayerIndex;
     // Increase currentPlayerIndex so that it points at the next player in playerProfiles
     currPlayerIndex += 1;
-    return ` ${playerProfiles[currPlayerIndex].name}, you've chosen to bet ${playerProfiles[prevPlayerIndex].bet} points. ${playerProfiles[currPlayerIndex].name}, please enter your bet.`;
+    return ` ${playerProfiles[prevPlayerIndex].name}, you've chosen to bet ${playerProfiles[prevPlayerIndex].bet} points. ${playerProfiles[currPlayerIndex].name}, please enter your bet.`;
   }
 
   // Mode to deal cards out to players and computer
