@@ -647,7 +647,7 @@ var inputDisplay = function () {
   } else if (gameMode == WAITING_FOR_NAME) {
     return "How many of you are playing today?:";
   } else if (gameMode == INSTRUCTIONS) {
-    return `Wow! ${numPlayers} players! <br><br> Please enter all your names with a spacing and without a comma!:`;
+    return `Wow! ${numPlayers} players! <br><br> What are your names?:`;
   } else if (gameMode == ASK_FOR_BET) {
     return "The game is about to begin!: ";
   } else if (gameMode == TAKE_BET) {
