@@ -132,8 +132,10 @@ deck = shuffleCards(makeDeck());
 var drawCards = function () {
   var counter = 0;
   while (counter < numberOfPlayers) {
-    playersObj[counter].hand.push(drawOneCard());
-    playersObj[counter].hand.push(drawOneCard());
+    var firstCard = drawOneCard();
+    var secondCard = drawOneCard();
+    var hand = [firstCard, secondCard];
+    playersObj[counter].hand.push(hand);
     counter++;
   }
   botHand.push(drawOneCard());
@@ -186,29 +188,15 @@ var checkIfAllStand = function () {
   return check;
 };
 
-var checkIfAllDone = function () {
-  var counter = 0;
-  var check = false;
-  while (counter < numberOfPlayers) {
-    if (playersObj[counter].stand === true) {
-      check = true;
-    } else {
-      check = false;
-      break;
-    }
-  }
-  return check;
-};
-
 var drawBotHand = function () {
-  if (getCurrentSumHand(botHand) <= 16) {
+  if (getCurrentSumHand(botHand) < 16) {
     botHand.push(drawOneCard());
     if (checkHandLimit(botHand)) {
       gameState = true;
       var counter = 0;
       while (counter < numberOfPlayers) {
         playersObj[counter].points += playersObj[counter].wager;
-        counter++;
+        counter += 1;
       }
       return `Bot Busted! The bot total hand is ${getCurrentSumHand(botHand)}
       <br><br>Congratulations, all of the players win! <br><br>Bot Hand<br>${displayHand(
@@ -221,7 +209,7 @@ var drawBotHand = function () {
       var counter = 0;
       while (counter < numberOfPlayers) {
         playersObj[counter].points -= playersObj[counter].wager;
-        counter++;
+        counter += 1;
       }
       return `Oh noooo, the bot won! <br><br> Bot Hand<br>${displayHand(
         botHand
@@ -229,34 +217,40 @@ var drawBotHand = function () {
     }
   }
 
-  if (checkIfAllDone() && getCurrentSumHand(botHand) > 16) {
+  if (checkIfAllStand() && getCurrentSumHand(botHand) > 16) {
     gameState = true;
     var counter = 0;
     var outputMessage = `The bot current hand is: <br> ${displayHand(
       botHand
     )}<br><br>`;
     while (counter < numberOfPlayers) {
-      if (
-        getCurrentSumHand(botHand) < getCurrentSumHand(playersObj[counter].hand)
-      ) {
-        playersObj[counter].points += playersObj[counter].wager;
-        outputMessage += `${
-          playersObj[counter].name
-        } won against the bot. You had a total value of ${getCurrentSumHand(
-          playersObj[counter].hand
-        )}.<br><br>
+      var handCounter = 0;
+      while (handCounter < playersObj[counter].hand.length) {
+        if (
+          getCurrentSumHand(botHand) <
+          getCurrentSumHand(playersObj[counter].hand[handCounter])
+        ) {
+          playersObj[counter].points += playersObj[counter].wager;
+          outputMessage += `${
+            playersObj[counter].name
+          } won against the bot. You had a total value of ${getCurrentSumHand(
+            playersObj[counter].hand[handCounter]
+          )}.<br><br>
         You now have a total of ${playersObj[counter].points}.;
         <br><br>`;
-      } else {
-        playersObj[counter].points -= playersObj[counter].wager;
-        outputMessage += `${
-          playersObj[counter].name
-        } lose against the bot. You only had a total value of ${getCurrentSumHand(
-          playersObj[counter].hand
-        )}.<br><br>
+        } else {
+          playersObj[counter].points -= playersObj[counter].wager;
+          outputMessage += `${
+            playersObj[counter].name
+          } lose against the bot. You only had a total value of ${getCurrentSumHand(
+            playersObj[counter].hand[handCounter]
+          )}.<br><br>
         You now have a total of ${playersObj[counter].points}.;
         <br><br>`;
+        }
+        handCounter += 1;
       }
+      counter += 1;
     }
     return outputMessage;
   }
@@ -297,8 +291,10 @@ var main = function (input) {
     while (counter < numberOfPlayers) {
       outputMessage += `${playersObj[counter].name} now has ${playersObj[counter].points}<br>`;
       playersObj[counter].hand = [];
+      playersObj[counter].stand = false;
       counter++;
     }
+    botHand = [];
     gameState = false;
     gameMode = "wager";
     return `${outputMessage}<br><br> You can continue playing by inputting the wager of the first player.`;
@@ -348,10 +344,18 @@ var main = function (input) {
     var outputMessage = `This is ${playersObj[playerCounter].name}'s turn.<br><br>`;
     if (!turn && playersObj[playerCounter].stand == false) {
       outputMessage += `Player Hand<br>${displayHand(
-        playersObj[playerCounter].hand
+        playersObj[playerCounter].hand[0]
       )}<br><br>Bot Hand<br>${displayHand(
         botHand
-      )}<br><br>Do you want to 'hit' or 'stand'?`;
+      )}<br><br>Do you want to 'hit' or 'stand'`;
+      if (
+        playersObj[playerCounter].hand[0][0].rank ==
+        playersObj[playerCounter].hand[0][1].rank
+      )
+        outputMessage += `or 'split'?`;
+      else {
+        outputMessage += `?<br>`;
+      }
       turn = 1;
       return outputMessage;
     } else {
@@ -364,10 +368,31 @@ var main = function (input) {
       }
       if (input == "hit") {
         outputMessage += playBlackJackPlayer(
-          playersObj[playerCounter].hand,
+          playersObj[playerCounter].hand[0],
           input
         );
         turn = 0;
+        return outputMessage;
+      }
+      if (input == "split") {
+        playersObj[playerCounter].stand = true;
+        var firstCard = drawOneCard();
+        var secondCard = drawOneCard();
+        console.log(firstCard);
+        console.log(secondCard);
+        playersObj[playerCounter].hand.push([
+          playersObj[playerCounter].hand[0][1],
+          secondCard,
+        ]);
+        playersObj[playerCounter].hand[0].splice(1);
+        playersObj[playerCounter].hand[0].push(firstCard);
+        var outputMessage = `First Hand: <br>${displayHand(
+          playersObj[playerCounter].hand[0]
+        )}<br><br>Second Hand: <br>${displayHand(
+          playersObj[playerCounter].hand[1]
+        )} `;
+        turn = 0;
+        playerCounter += 1;
         return outputMessage;
       }
     }
