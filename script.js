@@ -1,42 +1,14 @@
-// Create a function for drawing cards to compare the drawn card to whats in the discardPile array
-// return true or false
-// if true, run draw card function again
-// Only if result is false, then proceed with removing card from deck.
-// When a card is picked out, the card is removed from the deck. (.splice)
-// This card is also pushed into a discardPile array
-var playerOneHand = [];
-var computerHand = [];
-var discardPile = [];
-var newCardPlayerArray = [];
-var newCardComputerArray = [];
-var playerOneModeInitial = true;
-var computerModeInitial = false;
-var playerOneModeDrawingMode = false;
-var computerDrawingMode = false;
-var declarationMode = false;
-var comFinalScore = 0;
-var playerTrialScore = 0;
-
-// Function that compares drawn card to discardPile array
-var compareToDiscardPile = function (drawnCard) {
-  var discardCounter = 0;
-  var compareDiscardResult = false;
-  while (discardCounter > discardPile.length) {
-    if (drawnCard == discardPile[discardCounter]) {
-      compareDiscardResult = true;
-    }
-    discardCounter++;
-  }
-  console.log("comparetoDiscardPile Check");
-  return compareDiscardResult;
-};
-
-// Makes a random number
-var MakeARandomNumber = function () {
-  randomDigit = Math.floor(Math.random() * 51);
-  return randomDigit;
-};
-
+// 1. Produce the Deck with a click.
+// 2. Deal 2 cards to each player. This runs the function to draw a card <drawOneCard> 4 times. Each time it runs, the card's 'value' should be pushed into their hand. Show cards to Player.
+//________________
+// 3. Allow player to 'Hit' or 'Pass'
+// 4. If 'Hit', run <drawOneCard> and add its 'rank' to the player's hand array. Do this as many times as the player wants until player types 'Pass' or 'Fold'.
+// 5. -----
+// 6. If 'Pass', move to Computer's Turn.
+//________________
+// 7. Sum up 'values' in Computer's array. If below 17, run <drawOneCard> again. Sum up 'values' again. This time if above 17, switch a mode to stop running of WHILE loop.
+// 8. Run comparison mode. Compare <sumOfComputer> against <sumOfPlayer>. Higher is the winner.
+//_____________________________________________________________________________________
 // Generates a full 52 card Deck
 var makeDeck = function () {
   // Initialise an empty deck array
@@ -57,17 +29,17 @@ var makeDeck = function () {
       var cardName = rankCounter;
       // If rank is 1, 11, 12, or 13, set cardName to the ace or face card's name
       if (cardName == 1) {
-        value = 1;
         cardName = "ace";
+        rank = 1;
       } else if (cardName == 11) {
-        value = 10;
         cardName = "jack";
+        rank = 10;
       } else if (cardName == 12) {
-        value = 10;
         cardName = "queen";
+        rank = 10;
       } else if (cardName == 13) {
-        value = 10;
         cardName = "king";
+        rank = 10;
       }
       // Create a new card with the current name, suit, and rank
       var card = {
@@ -88,174 +60,172 @@ var makeDeck = function () {
   // Return the completed card deck
   return cardDeck;
 };
-
-// Draws a card from the deck and pushes it up to playerOneHand's array.
-var drawingPlayerOneCard = function () {
-  var checkResult = false;
-  // If checkResult is false, draw a card, and run compareToDiscardPile(). If true, discardPile.pop, and function is looped. If false, push card to playerOneHand's array.
-  while (checkResult == false) {
-    var p1Digit = MakeARandomNumber();
-    var p1Draw = createdDeck[p1Digit];
-    discardPile.push(p1Draw);
-    if (compareToDiscardPile(p1Draw) == true) {
-      discardPile.pop;
-    } else {
-      checkResult = true;
-    }
-  }
-  playerOneHand.push(p1Draw);
-  console.log("drawingPlayerOneCard Check");
-
-  return p1Draw;
-};
-
-// Draws a card from the deck and pushes it up to computerHand's array.
-var drawingComputerCard = function () {
-  var checkResult = false;
-  // If checkResult is false, draw a card, and run compareToDiscardPile(). If true, discardPile.pop, and function is looped. If false, push card to computerHand's array.
-  while (checkResult == false) {
-    var comDigit = MakeARandomNumber();
-    var comDraw = createdDeck[comDigit]; //continually draws a card until it has eliminated all matches to discard pile;
-
-    discardPile.push(comDigit);
-    if (compareToDiscardPile(comDigit) == true) {
-      discardPile.pop;
-    } else {
-      checkResult = true;
-    }
-  }
-  computerHand.push(comDraw);
-  console.log("drawingComputerCard Check");
-  console.log("computerHand");
-  console.log(computerHand);
-  return comDraw;
-};
-
-// drawStartCardsPlayer1 - Runs when playerOneModeInitial = true. When playerOneHand.length = 2, function ends. When function ends, playerOneModeInitial = false
-var drawStartCardsPlayer1 = function () {
-  while (playerOneHand.length < 2) {
-    drawingPlayerOneCard();
-  }
-  var playerStatement =
-    "Your cards are : <br>" +
-    playerOneHand[0].true +
-    "<br>" +
-    playerOneHand[1].true;
-  playerOneModeInitial = false;
-  computerModeInitial = true;
-  return playerStatement;
-};
-
-// drawStartCardsCom - Runs when computerModeInitial = true. When computerHand.length = 2, function ends. When function ends, computerModeInitial = false
-var drawStartCardsCom = function () {
-  while (computerHand.length < 2) {
-    drawingComputerCard();
-  }
-  var computerStatement =
-    "The Dealer has drawn his hand. <br><br> Your cards are: <br> " +
-    playerOneHand[0].true +
-    "<br>" +
-    playerOneHand[1].true +
-    "<br><br> Draw again?<br><br> If not, type NO";
-  computerModeInitial = false;
-  playerOneModeDrawingMode = true;
-  return computerStatement;
-};
-
-// Calls the function into a generated deck
+// Global Variables
+var computerHand = []; // collection of 'value' keys collected from drawn cards.
+var computerSum = [];
+var playerHand = []; // collection of 'value' keys collected from drawn cards.
+var playerSum = [];
 var createdDeck = makeDeck();
+var initialMode = true;
+var hitMode = false;
+var computerMode = false;
+var declareMode = false;
+var discardNumberPile = [];
+var deckDealNumber = 0;
+var playerTotalSum = 0;
+var computerTotalSum = 0;
 
-// Sums up the total score of the player's Hand
-var CalculatePlayerOneSum = function () {
-  var p1SumCounter = 0;
-  while (p1SumCounter < playerOneHand.length) {
-    var playerScore = playerScore + playerOneHand[p1SumCounter];
-    p1SumCounter++;
+// Makes a random number. Returns random number
+var getRandomIndex = function (max) {
+  return Math.floor(Math.random() * max);
+};
+
+//Shuffle elements in the cardDeck array. Return the shuffled deck.
+var shuffleCards = function (cardDeck) {
+  // Loop over the card deck array once
+  var currentIndex = 0;
+  while (currentIndex < cardDeck.length) {
+    // Select a random index in the deck
+    var randomIndex = getRandomIndex(cardDeck.length);
+    // Select the card that corresponds to randomIndex
+    var randomCard = cardDeck[randomIndex];
+    // Select the card that corresponds to currentIndex
+    var currentCard = cardDeck[currentIndex];
+    // Swap positions of randomCard and currentCard in the deck
+    cardDeck[currentIndex] = randomCard;
+    cardDeck[randomIndex] = currentCard;
+    // Increment currentIndex to shuffle the next pair of cards
+    currentIndex += 1;
   }
-  return playerScore;
+  // Return the shuffled deck
+  return cardDeck;
 };
 
-// Generates a new card to the player's hand, compares it to discard pile. Will return/announce all cards in player's hand
-var generateCardForPlayerOne = function () {
-  var newCard = drawingPlayerOneCard();
+var deck = shuffleCards(makeDeck());
 
-  newCardPlayerArray.push(newCard.true);
-  var showPlayerHand =
-    "Your cards are: <br><br>" +
-    playerOneHand[0].true +
-    "<br>" +
-    playerOneHand[1].true +
-    "<br><br> Drawn cards are: <br>" +
-    newCardPlayerArray +
-    "<br><br>Click to Draw again, enter NO to end your turn";
-  return showPlayerHand;
-};
-
-// This is the last turn. It Generates a new card to the Computer's hand, compares it to discard pile. Will return/announce all cards in Computer's hand
-var generateCardForComputer = function () {
-  var scoreCounter = 0;
-  var outerCounter = 0;
-  var comScoreArray = [];
-  while (outerCounter < computerHand[outerCounter].length) {
-    // If trueScore is lesser than 15, run drawingComputerCard function
-    if (comFinalScore >= 21) {
-      // stopper
-      outerCounter = computerHand.length;
-    }
-    drawingComputerCard();
-    while (scoreCounter < computerHand.length) {
-      // This is to continually push the key-value into the comScoreArray
-      if (computerHand[scoreCounter].rank > 10) {
-        computerHand[scoreCounter].value = 10;
-      }
-      scoreCounter++;
-      comScoreArray.push(computerHand[scoreCounter].value);
-    }
-    comFinalScore = comFinalScore + comScoreArray[scoreCounter];
+// Deals a single card to an array. These two functions must run in this sequence(Rank>True)
+var dealACardRank = function (selectedArray) {
+  var rankPush = deck[deckDealNumber].rank;
+  if (rankPush > 10) {
+    rankPush = 10;
   }
-  var showComHand = "Computer has a score of: " + comFinalScore;
-  return showComHand;
+  selectedArray.push(rankPush);
+  return selectedArray;
 };
+var dealACardTrue = function (selectedArray) {
+  selectedArray.push(deck[deckDealNumber].true);
+  deckDealNumber++;
+  return selectedArray;
+}; //_______________________________________________
 
-// sets up a declare mode that runs once the computer's totalScore is shown. If below 22, and above player's totalScore. computer wins. Else, player wins.
-var declareTheWinner = function () {
-  var p1Score = CalculatePlayerOneSum();
-  console.log("p1Score: " + p1Score);
-  if (comFinalScore < 22 && comFinalScore > p1Score) {
-    var declareResult =
-      "The winner is the Computer with a score of: " + comFinalScore;
-  } else {
-    declareResult = "The winner is the player with a score of: " + p1Score;
+// Adds up total sum of player's ranks
+var sumOfPlayer = function () {
+  var counter = 0;
+  while (counter < playerSum.length) {
+    playerTotalSum = playerTotalSum + playerSum[counter];
+    counter++;
   }
-  return declareResult;
+  return playerTotalSum;
 };
 
-//_______MAIN FUNCTION___________
+// Adds up total sum of computer's ranks
+var sumOfComputer = function () {
+  var counter = 0;
+  while (counter < computerSum.length) {
+    computerTotalSum = computerTotalSum + computerSum[counter];
+    counter++;
+  }
+  return computerTotalSum;
+};
+
+// Main function that will run through modes. Each Mode will progress through either a click, or a word.
 var main = function (input) {
-  var myOutputValue = "Default Answer";
-  if (declarationMode == true) {
-    myOutputValue = declareTheWinner();
-  }
-  if (computerDrawingMode == true) {
-    myOutputValue = generateCardForComputer();
-    computerDrawingMode = false;
-    declarationMode = true;
-  }
-  if (playerOneModeDrawingMode == true) {
-    if (input == "NO") {
-      playerOneModeDrawingMode = false;
-      computerDrawingMode = true;
-      myOutputValue = "Understood. Your turn will end";
-    } else {
-      myOutputValue = generateCardForPlayerOne();
+  var myOutputValue = "Instructions not followed. Error";
+  if (declareMode == true) {
+    var playerFinalSum = sumOfPlayer();
+    var computerFinalSum = sumOfComputer();
+    if (computerFinalSum > 21) {
+      myOutputValue = "Computer has gone bust! Win!";
+      declareMode = false;
+    }
+    if (playerFinalSum > 21 || computerFinalSum > 21) {
+      myOutputValue = "Draw! Both players have gone bust";
+      declareMode = false;
+    }
+    if (playerFinalSum > 21) {
+      myOutputValue = "Player has gone bust! Loss!";
+      declareMode = false;
     }
   }
-  if (computerModeInitial == true) {
-    myOutputValue = drawStartCardsCom();
+
+  if (hitMode == true) {
+    if (input == "Hit") {
+      dealACardRank(playerSum);
+      dealACardTrue(playerHand);
+      var hitCounter = 1;
+      hitCounter++;
+      myOutputValue =
+        "You draw a card.. <br><br>Your cards are: " +
+        playerHand +
+        "<br><br>Enter Hit or Pass";
+    }
+
+    if (input == "Pass") {
+      var comSum = sumOfComputer();
+      console.log("comSum1: " + comSum);
+      if (comSum < 15) {
+        dealACardRank(computerSum);
+        dealACardTrue(computerHand);
+        comSum = sumOfComputer();
+        console.log("comSum2: " + comSum);
+        if (comSum < 15) {
+          dealACardRank(computerSum);
+          dealACardTrue(computerHand);
+          comSum = sumOfComputer();
+          console.log("comSum3: " + comSum);
+          if (comSum < 15) {
+            dealACardRank(computerSum);
+            dealACardTrue(computerHand);
+            comSum = sumOfComputer();
+            console.log("comSum4: " + comSum);
+          }
+        }
+      }
+
+      myOutputValue =
+        "Computer has made his card decisions. Click submit to see the winner!";
+      hitMode = false;
+      declareMode = true;
+    }
   }
-  if (playerOneModeInitial == true) {
-    myOutputValue = drawStartCardsPlayer1();
+  if (initialMode == true) {
+    var pFirst = dealACardRank(playerSum);
+    dealACardTrue(playerHand);
+    var pSecond = dealACardRank(playerSum);
+    dealACardTrue(playerHand);
+    var comFirst = dealACardRank(computerSum);
+    dealACardTrue(computerHand);
+    var comSecond = dealACardRank(computerSum);
+    dealACardTrue(computerHand);
+    console.log(computerHand);
+    myOutputValue =
+      "Both players have drawn cards. <br><br>Your cards are: " +
+      playerHand +
+      "<br><br>Now enter Hit or Pass";
+    if (pFirst == 1 && pSecond == 10) {
+      myOutputValue = "BlackJack!";
+    }
+    if (pFirst == 10 && pSecond == 1) {
+      myOutputValue = "BlackJack!";
+    }
+    if (comFirst == 1 && comSecond == 10) {
+      myOutputValue = "Computer BlackJack!";
+    }
+    if (comFirst == 10 && comSecond == 1) {
+      myOutputValue = "Computer BlackJack!";
+    }
+    initialMode = false;
+    hitMode = true;
   }
   return myOutputValue;
 };
-//_____MAIN FUNCTION END_________
