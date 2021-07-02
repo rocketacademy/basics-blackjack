@@ -170,8 +170,8 @@ var showPlayerHand = function () {
 var displayHandCards = function (hand) {
   var handCards = hand.cards.map((card) => `${card.name} of ${card.suit}`).join(" | ");
   var resultMessage = `Hand ${hand.handNum} is (${handCards}), which represents a value of ${hand.value}.`;
-  // If the hand has an alternate value (i.e. has at least one ace), display that as well
-  if (hand.altValue) {
+  // If the hand has an alternate value (i.e. has at least one ace) and the altValue is not a bust, display that as well
+  if (hand.altValue <= 21) {
     resultMessage += ` Or an alternate value of ${hand.altValue}.`;
   }
   return resultMessage;
