@@ -71,7 +71,7 @@ others = "";
 var acesInHand = 0;
 var aceValue = 0;
 
-// Deals card to a hand - player or computer
+// Deals card to a hand - player or dealer
 var dealCardToHand = function (hand) {
   hand.push(deck.pop());
   return hand;
@@ -132,23 +132,24 @@ var main = function (input) {
 
   if (getSumOfHand(playerHand) == maxSumOfCards) {
     endGame = true;
-    return "Player wins game.";
+    return "Player wins game by having a total of 21.";
   }
   if (getSumOfHand(dealerHand) == maxSumOfCards) {
     endGame = true;
-    return "Dealer wins game.";
+    return "Dealer wins game by having a total of 21.";
   }
 
   // if (playerChoseStand == true) {
   //   playerChoseStand = true;
   //   if (input != "hit" && input != "stand") {
-  //     return "Please input either 'hit' or 'stand' to continue.";}
+  //     return "Please input either 'hit' or 'stand' to continue.";
+  //   }
 
   if (input == "hit") {
     playerHand = dealCardToHand(playerHand);
     index2 += 1;
     if (getSumOfHand(playerHand) > maxSumOfCards) {
-      return "<br>Player has a sum of more than 21 and loses. Please try again.";
+      return `You got the ${playerHand[0].name} of ${playerHand[0].suit} and the ${playerHand[1].name} of ${playerHand[1].suit} ${others}. The dealer got the ${dealerHand[0].name} of ${dealerHand[0].suit} and another card.<br> Dealer wins! You have a sum of more than 21 and lost. Please try again.`;
     } else {
       others += `and the ${playerHand[index2].name} of ${playerHand[index2].suit}`;
       return `You got the ${playerHand[0].name} of ${playerHand[0].suit} and the ${playerHand[1].name} of ${playerHand[1].suit} ${others}. The dealer got the ${dealerHand[0].name} of ${dealerHand[0].suit} and another card<br>Please input 'hit' or 'stand' as your choice.`;
@@ -158,6 +159,7 @@ var main = function (input) {
   if (input == "stand") {
     playerChoseStand = true;
   }
+  // }
 
   if (playerHand[0].rank == "1" || playerHand[1].rank == "1") {
     // `Please input '1' or '11' for your ace card.`;
@@ -168,6 +170,7 @@ var main = function (input) {
       aceValue = 11;
       return `The value of ace card is now set to '11'.`;
     }
+    //ASK THIS ONE
     //return `Please input '1' or '11' into the box.`
   }
 
@@ -208,21 +211,37 @@ var main = function (input) {
       console.log(getSumOfHand(dealerHand));
       if (getSumOfHand(dealerHand) > maxSumOfCards) {
         endGame = true;
-        return `Dealer has a sum of more than 21 and loses. Please try again.`;
+        return `You got a total of ${getSumOfHand(
+          playerHand
+        )} while the dealer got a total of ${getSumOfHand(
+          dealerHand
+        )}. <br>You win! Dealer has a sum of more than 21 and loses. Please try again.`;
       } else if (
         getSumOfHand(playerHand) + aceValue >
         getSumOfHand(dealerHand)
       ) {
         endGame = true;
-        return `Players wins game!`;
+        return `You got a total of ${getSumOfHand(
+          playerHand
+        )} while the dealer got a total of ${getSumOfHand(
+          dealerHand
+        )}. <br>You win game!`;
       } else if (
         getSumOfHand(playerHand) + aceValue ==
         getSumOfHand(dealerHand)
       ) {
-        return `It's a tie`;
+        return `You got a total of ${getSumOfHand(
+          playerHand
+        )} while the dealer got a total of ${getSumOfHand(
+          dealerHand
+        )}. <br>It's a tie!`;
       }
     } else {
-      return ` Computer wins game!`;
+      return `You got a total of ${getSumOfHand(
+        playerHand
+      )} while the dealer got a total of  ${getSumOfHand(
+        dealerHand
+      )}. <br>Dealer wins game!`;
     }
   }
 };
