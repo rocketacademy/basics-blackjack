@@ -1,5 +1,3 @@
-//FIRST VERSION
-
 // Global variables
 var player = [];
 var computer = [];
@@ -7,7 +5,7 @@ var computer = [];
 //make an empty deck with a current suit
 var makeDeck = function () {
   var cardDeck = [];
-  var suits = ["hearts", "diamonds", "clubs", "spades"];
+  var suits = ["Hearts", "Diamonds", "Clubs", "Spades"];
   //create index for suits and ranks
   var suitIndex = 0;
   while (suitIndex < suits.length) {
@@ -16,13 +14,13 @@ var makeDeck = function () {
     while (rankIndex <= 13) {
       var cardName = rankIndex;
       if (rankIndex == 1) {
-        cardName = "ACE";
+        cardName = "Ace";
       } else if (rankIndex == 11) {
-        cardName = "JACK";
+        cardName = "Jack";
       } else if (rankIndex == 12) {
-        cardName = "QUEEN";
+        cardName = "Queen";
       } else if (rankIndex == 13) {
-        cardName = "KING";
+        cardName = "King";
       }
 
       //add values for cards
@@ -70,38 +68,91 @@ var shuffleCards = function (cardDeck) {
   return cardDeck;
 };
 var shuffledDeck = shuffleCards(cardDeck);
-var main = function (cardDeck) {
-  var myOutputValue = "";
-  // make a deck and update global deck
 
-  // deck = shuffleCards(makeDeck());
-  console.log(cardDeck);
-  // draw 2 cards for player & computer
-  var playerCard1 = shuffledDeck.pop(cardDeck);
-  var computerCard1 = shuffledDeck.pop(cardDeck);
-  var playerCard2 = shuffledDeck.pop(cardDeck);
-  var computerCard2 = shuffledDeck.pop(cardDeck);
-  var sumOfPlayer = playerCard1.value + playerCard2.value;
-  console.log(playerCard1.value + playerCard2.value);
-  var sumOfComputer = computerCard1.value + computerCard2.value;
-  console.log(computerCard1.value + computerCard2.value);
+var gameMode = "deal cards";
+var sumOfComputer = "";
+var sumOfPlayer = "";
+var playerCard1 = "";
+var playerCard1 = "";
 
-  // compare cards of player and computer
+var main = function (input) {
+  if (gameMode == "deal cards") {
+    playerCard1 = shuffledDeck.pop();
+    var computerCard1 = shuffledDeck.pop();
+    playerCard2 = shuffledDeck.pop();
+    var computerCard2 = shuffledDeck.pop();
+    sumOfPlayer = playerCard1.value + playerCard2.value;
+    console.log("player: " + playerCard1.value + playerCard2.value);
+    sumOfComputer = computerCard1.value + computerCard2.value;
+    console.log("computer:" + computerCard1.value + computerCard2.value);
 
-  // declare winner
-  var myOutcome =
-    "Player got: " + sumOfPlayer + "<br> Computer got: " + sumOfComputer;
+    var myOutputValue = "";
+    // make a deck and update global deck
 
-  if (sumOfComputer > sumOfPlayer) {
-    myOutputValue = myOutcome + "<br> Computer Wins!";
-  } else if (sumOfComputer < sumOfPlayer) {
-    myOutputValue = myOutcome + "<br> Player Wins!";
-  } else myOutputValue = myOutcome + "<br> It's a tie!";
+    // deck = shuffleCards(makeDeck());
+    console.log(cardDeck);
+
+    gameMode = "hit or stand";
+    return (
+      "Players Cards: " +
+      playerCard1.name +
+      " of " +
+      playerCard1.suit +
+      " & " +
+      playerCard2.name +
+      " of " +
+      playerCard2.suit +
+      " <br> Player got: " +
+      sumOfPlayer +
+      "<br><br> Enter HIT to deal another card or STAND to keep the hand."
+    );
+  }
+  if (gameMode == "hit or stand") {
+    if (input == "HIT") {
+      var playerCard3 = shuffledDeck.pop();
+      sumOfPlayer = sumOfPlayer + playerCard3.value;
+      return (
+        "Your hand is: <br>" +
+        playerCard1.name +
+        " of " +
+        playerCard1.suit +
+        " & " +
+        playerCard2.name +
+        " of " +
+        playerCard2.suit +
+        " & " +
+        playerCard3.name +
+        " of " +
+        playerCard3.suit
+      );
+    } else if (input == "STAND") {
+      return (
+        "Your hand is: <br>" +
+        playerCard1.name +
+        " of " +
+        playerCard1.suit +
+        " & " +
+        playerCard2.name +
+        " of " +
+        playerCard2.suit
+      );
+    }
+    gameMode = "win or lose";
+  }
+
+  if (gameMode == "win or lose") {
+    console.log("player: " + sumOfPlayer);
+    console.log("computer: " + sumOfComputer);
+
+    if (sumOfComputer > sumOfPlayer) {
+      myOutputValue = "<br> Computer Wins!";
+    } else if (sumOfComputer < sumOfPlayer) {
+      myOutputValue = "<br> Player Wins!";
+    } else myOutputValue = "<br> It's a tie!";
+  }
 
   return myOutputValue;
 };
-
-//under main it will show the gameModes and use the functions to return compared initial hands
 
 // Deck is shuffled.
 // User clicks Submit to deal cards.
@@ -111,3 +162,24 @@ var main = function (cardDeck) {
 // The user's cards are analysed for winning or losing conditions.
 // The computer decides to hit or stand automatically based on game rules.
 // The game either ends or continues.
+
+// "Players Cards: " +
+//   playerCard1.name +
+//   " of " +
+//   playerCard1.suit +
+//   " & " +
+//   playerCard2.name +
+//   " of " +
+//   playerCard2.suit +
+//   " <br> Player got: " +
+//   sumOfPlayer +
+//   "<br> Computers Cards:" +
+//   computerCard1.name +
+//   " of " +
+//   computerCard1.suit +
+//   " & " +
+//   computerCard2.name +
+//   " of " +
+//   computerCard2.suit +
+//   " <br> Computer got: " +
+//   sumOfComputer;
