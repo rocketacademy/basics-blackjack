@@ -184,6 +184,10 @@ var setBet = function (input) {
       playerStatus[currentPlayer - 1].credits
     } in remaining credits. <br>Good Luck!`;
     updatePlayer();
+    if (gameState == 3) {
+      currentPlayerName = playerStatus[currentPlayer - 1].name;
+      outputValue += `<br><br>It is now ${currentPlayerName}'s turn. Click "Submit" to see your cards.`;
+    }
     return outputValue;
   } else {
     var outputValue = `Sorry ${currentPlayerName}, this is an invalid input. Please input an integer and ensure that you have sufficient credit to place this bet. <br><br>You currently have $${
@@ -214,6 +218,7 @@ var checkHandValue = function (hand) {
       }
     }
   }
+
   return currentValue;
 };
 
@@ -354,6 +359,9 @@ var standPlayer = function () {
   for (handIndex = 0; handIndex < hands.length; handIndex += 1) {
     console.log(handIndex);
     var currentScore = checkHandValue(hands[handIndex]);
+    if (currentScore > 21) {
+      currentScore = 0;
+    }
     console.log(`Current Score: ${currentScore}`);
     console.log(handIndex);
     playerStatus[currentPlayer - 1].score[handIndex] = currentScore;
@@ -390,7 +398,7 @@ var displayPlayer = function () {
   // Check for potential blackjack condition and/or display available actions to player
   if (hands.length == 1) {
     if (checkBlackJack(hands[0]) == true) {
-      outputValue += `Congratulations, you have hit blackjack! 🤑🤑🤑<br><br>`;
+      outputValue += `<br><br>Congratulations, you have hit blackjack! 🤑🤑🤑<br><br>`;
       playerStatus[currentPlayer - 1].blackjack = true;
       playerStatus[currentPlayer - 1].score[0] = 21;
 
@@ -411,7 +419,7 @@ var displayPlayer = function () {
   "Stand" - End your turn once you are satisfied with your card.`;
 
   if (splitEligibility() == true) {
-    outputValue += `"Split" - Split your current identical cards into two seperate hands. This will draw one card for each hand and apply your original bet to each hand.`;
+    outputValue += `<br>"Split" - Split your current identical cards into two seperate hands. This will draw one card for each hand and apply your original bet to each hand.`;
   }
 
   return outputValue;
@@ -451,7 +459,7 @@ var playerState = function (input = "") {
   "Stand" - End your turn once you are satisfied with your card.`;
 
   if (splitEligibility() == true) {
-    outputValue += `"Split" - Split your current identical cards into two seperate hands. This will draw one card for each hand and apply your original bet to each hand.`;
+    outputValue += `<br>"Split" - Split your current identical cards into two seperate hands. This will draw one card for each hand and apply your original bet to each hand.`;
   }
 
   return outputValue;
@@ -495,7 +503,7 @@ var dealerState = function (input) {
     var playerName = playerStatus[playerIndex].name;
     var playerBet = playerStatus[playerIndex].bet;
     var playerScore = playerStatus[playerIndex].score;
-    var playerBlackjack = playerStatus.blackjack;
+    var playerBlackjack = playerStatus[playerIndex].blackjack;
 
     outputValue += `<b>${playerName}:</b> <br> `;
     for (handIndex = 0; handIndex < playerHand.length; handIndex += 1) {
@@ -504,7 +512,7 @@ var dealerState = function (input) {
 
       if (playerBlackjack == true) {
         playerStatus[playerIndex].credits += playerBet * 3;
-        outputValue += `With a bet of $${playerBet}, you have won $${
+        outputValue += `Blackjack! With a bet of $${playerBet}, you have won $${
           playerBet * 2
         }. You have a remaining credit of $${
           playerStatus[playerIndex].credits
@@ -554,16 +562,16 @@ var main = function (input) {
 // Create a helper function to update state
 var textUpdate = function () {
   if (gameState == 0) {
-    return `Input Number of Players:`;
+    return `<b>Input Number of Players:</b>`;
   } else if (gameState == 1) {
-    return `Input the Name of Player ${currentPlayer}:`;
+    return `<b>Input the Name of Player ${currentPlayer}:</b>`;
   } else if (gameState == 2) {
-    return `Input the Bet for ${playerStatus[currentPlayer - 1].name}:`;
+    return `<b>Input the Bet for ${playerStatus[currentPlayer - 1].name}:</b>`;
   } else if (gameState == 3) {
-    return `Input Blackjack Action for ${
+    return `<b>Input Blackjack Action for ${
       playerStatus[currentPlayer - 1].name
-    }:`;
+    }:</b><br>For a refresher of available options, click "Submit" without filling in any text in the "Input" field.`;
   } else if (gameState == 4) {
-    return `Results of Game Displayed:`;
+    return `<b>Results of Game Displayed:</b>`;
   }
 };
