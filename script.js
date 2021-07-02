@@ -1,145 +1,241 @@
-var mode = "deal cards";
+var mode = "welcome";
 var deck = makeDeck();
 var shuffledDeck = shuffleCards(deck);
-var allPlayerCards = [];
-var allComputerCards = [];
+var playerHand = [];
+var dealerHand = [];
 var cardsPerPlayer = 2;
-var playerCards;
-var computerCards;
+var playerName = "";
 
-var main = function (input) {
-  // Deal 2 cards to player and computer
-  if (mode == "deal cards") {
-    for (var i = 0; i < cardsPerPlayer; i++) {
-      playerCards = drawCard(allPlayerCards);
-      computerCards = drawCard(allComputerCards);
-    }
-    // Prompt player if they want another card
-    mode = "draw another card?";
-    return `Your current hand: ${playerCards} <br>Would you like to draw another card? <br>(yes/no)`;
+// modes present in game
+// mode: welcome
+function askForName() {
+  return `♦️ ♣️ Welcome to Black Jack! ♠️ ♥️ <br>Please enter your name.`;
+}
+// mode: greet with rules
+function greetWithRules(input) {
+  playerName = input;
+  return `Hi ${playerName}✨! Let's play a round of Black Jack! ♠️ ♥️ ♣️ ♦️ <br> Here are the rules:<br>𐄙 The goal is to beat the dealer's hand without going over 21. <br>𐄚 Each player starts with two cards, one of the dealer's cards is hidden until the end. <br>𐄛 To 'Hit' is to ask for another card. To 'Stand' is to hold your total and end your turn. <br>𐄜 If you go over 21 you bust, and the dealer wins regardless of the dealer's hand. <br>𐄝 If you are dealt 21 from the start (Ace & 10), you got a blackjack.<br>𐄞 Dealer will hit until his/her cards total 17 or higher.<br>💃🏻 Ready to play? Click submit to begin.`;
+}
+// mode: deal cards
+function dealCards() {
+  for (var i = 0; i < cardsPerPlayer; i++) {
+    drawCardInto(playerHand);
+    drawCardInto(dealerHand);
   }
-  // Player decides if they want to draw another card
-  if (mode == "draw another card?" && input == "yes") {
-    mode = "player draws";
-  } else if (mode == "draw another card?" && input == "no") {
-    mode = "computer draws";
-    return `It is now the computer's turn.`;
-  }
+  var ace = findAceIn(playerHand);
+  var facesOr10 = findFacesOr10In(playerHand);
 
-  // Player can keep drawing another card until they indicate no
-  if (mode == "player draws") {
-    playerCards = drawCard(allPlayerCards);
-    mode = "draw another card?";
-    return `Your current hand:${playerCards} <br>Would you like to draw another card? <br>(yes/no)`;
-  }
-  // Dealer hits after player is done
-  if (mode == "computer draws") {
-    var sumAllComputerCards = sumAllCards(allComputerCards);
-    while (sumAllComputerCards < 17) {
-      computerCards = drawCard(allComputerCards);
-      sumAllComputerCards = sumAllCards(allComputerCards);
-    }
-    mode = "compute results";
-    return `ready to show your hand?`;
-  }
-  if (mode == "compute results") {
-    console.log("test 1 compute results");
-    var playerPoints = sumAllCards(allPlayerCards);
-    var computerPoints = sumAllCards(allComputerCards);
-    console.log(allPlayerCards);
-    console.log(allComputerCards);
+  if (ace == true && facesOr10 == true) {
     mode = "play again?";
-    if (
-      (playerPoints > computerPoints && playerPoints <= 21) ||
-      (playerPoints < computerPoints && computerPoints > 21)
-    ) {
-      return `Player wins with ${playerPoints} points. <br>Player's hand: ${playerCards} <br> Computer has ${computerPoints} points. <br>Computer's hand: ${computerCards} <br> Play again? (yes/no)`;
-    } else if (
-      (playerPoints < computerPoints && computerPoints <= 21) ||
-      (playerPoints > computerPoints && playerPoints > 21)
-    ) {
-      return `Computer wins with ${computerPoints} points. <br>Computer's hand: ${computerCards} <br> Player has ${playerPoints} points. <br>Player's hand: ${playerCards} <br> Play again? (yes/no)`;
-    } else if (playerPoints == computerPoints && playerPoints <= 21) {
-      return `It's a draw.<br>Player's hand: ${playerCards}<br>Computer's hand: ${computerCards}<br> Play again? (yes/no)`;
-    } else if (playerPoints > 21 && computerPoints > 21) {
-      return `It's a draw, you've both gotten more than 21 points.<br>Player's hand: ${playerCards}<br>Computer's hand: ${computerCards}<br> Play again? (yes/no)`;
-    }
+    return `You've got 👯‍♂️ B L A C K  J A C K 👯‍♀️ <br> 🎰 Would you like to play again? (yes/no) 🎰`;
+  } else {
+    return `Your current hand: ${printCardsIn(
+      playerHand
+    )} <br>The dealer's first card is ${dealerHand[0].name} of ${
+      dealerHand[0].suit
+    }<br><br>Would you like to hit or stand? <br>(hit/stand)`;
   }
-  if (mode == "play again?") {
-    if (input == "yes") {
-      mode = "deal cards";
-      allPlayerCards = [];
-      allComputerCards = [];
-      playerCards = 0;
-      computerCards = 0;
-      deck = makeDeck();
-      shuffledDeck = shuffleCards(deck);
-      return `Let's play!`;
-    } else if (input == "no") {
-      return `Good bye, see you next time!`;
-    }
-  }
-};
+}
 
-// Sum all cards in array
-function sumAllCards(cardarray) {
-  var ace = false;
-  var currentCard;
-  for (var i = 0; i < cardarray.length; i++) {
-    currentCard = cardarray[i];
-    var currentCardName = currentCard.name;
-    if (currentCardName == "ace") {
-      ace = true;
-    }
+// mode: hit
+function hit() {
+  drawCardInto(playerHand);
+  if (sumCardPointsIn(playerHand) > 21) {
+    mode = "play again?";
+    return `You're  🧨 B U S T 💣 <br>Better luck next time 🃏 <br>Would you like to play again? (yes/no)`;
+  } else {
+    return `Your current hand:${printCardsIn(
+      playerHand
+    )} <br>The dealer's first card is ${dealerHand[0].name} of ${
+      dealerHand[0].suit
+    }<br><br>Would you like to hit or stand? <br>(hit/stand)`;
   }
-  var sumOfAllCardsInArray = 0;
-  for (var i = 0; i < cardarray.length; i++) {
-    currentCard = cardarray[i];
-    var currentCardPoints = currentCard.points;
-    sumOfAllCardsInArray = sumOfAllCardsInArray + currentCardPoints;
-  }
-  if (sumOfAllCardsInArray < 12 && ace == true) {
-    for (var i = 0; i < cardarray.length; i++) {
-      currentCard = cardarray[i];
+}
+// mode: dealer hits
+function hitDealer() {
+  var doubleAces = findDoubleAces(dealerHand);
+  var dealerTotalPoints = sumCardPointsIn(dealerHand);
+  var ace = findAceIn(dealerHand);
+  if (doubleAces == true) {
+    dealerTotalPoints = 21;
+  } else if (dealerTotalPoints < 11 && ace == true) {
+    for (var i = 0; i < dealerHand.length; i++) {
+      currentCard = dealerHand[i];
       var currentCardName = currentCard.name;
       if (currentCardName == "ace") {
         currentCard.points = 11;
       }
     }
-    sumOfAllCardsInArray = 0;
-    for (var i = 0; i < cardarray.length; i++) {
-      currentCard = cardarray[i];
-      var currentCardPoints = currentCard.points;
-      sumOfAllCardsInArray = sumOfAllCardsInArray + currentCardPoints;
+    dealerTotalPoints = sumCardPointsIn(dealerHand);
+  }
+  while (dealerTotalPoints < 17) {
+    drawCardInto(dealerHand);
+    dealerTotalPoints = sumCardPointsIn(dealerHand);
+  }
+  return `Ready to show your hand? Ready or not, click submit.`;
+}
+// mode: compute results
+function computeResults() {
+  var ace = findAceIn(playerHand);
+  console.log(ace);
+
+  var playerPoints = sumCardPointsIn(playerHand);
+  console.log(sumCardPointsIn(playerHand));
+  if (playerPoints < 11 && ace == true) {
+    for (var i = 0; i < playerHand.length; i++) {
+      currentCard = playerHand[i];
+      var currentCardName = currentCard.name;
+      if (currentCardName == "ace") {
+        currentCard.points = 11;
+      }
+    }
+    playerPoints = sumCardPointsIn(playerHand);
+  }
+  var computerPoints = sumCardPointsIn(dealerHand);
+  console.log("computer points " + computerPoints);
+  console.log("player points " + playerPoints);
+  if (
+    (playerPoints > computerPoints && playerPoints <= 21) ||
+    (playerPoints < computerPoints && computerPoints > 21)
+  ) {
+    return `You 🌸 🌼 W I N 🌼 🌸 <br>${playerName}, you've got ${playerPoints} points. <br>Player's hand: ${printCardsIn(
+      playerHand
+    )} <br> Computer has ${computerPoints} points. <br>Computer's hand: ${printCardsIn(
+      dealerHand
+    )} <br> Play again? (yes/no)`;
+  } else if (
+    (playerPoints < computerPoints && computerPoints <= 21) ||
+    (playerPoints > computerPoints && playerPoints > 21)
+  ) {
+    return `You  😭 L O S T 😭 <br>Computer wins with ${computerPoints} points. <br>Computer's hand: ${printCardsIn(
+      dealerHand
+    )} <br> ${playerName}, you have ${playerPoints} points. <br>Player's hand: ${printCardsIn(
+      playerHand
+    )} <br> Play again? (yes/no)`;
+  } else if (playerPoints == computerPoints && playerPoints <= 21) {
+    return `It's a draw.<br>Player's hand: ${printCardsIn(
+      playerHand
+    )}<br>Computer's hand: ${printCardsIn(
+      dealerHand
+    )}<br> Play again? (yes/no)`;
+  }
+}
+// mode: play again
+function refreshRound() {
+  playerHand = [];
+  dealerHand = [];
+  deck = makeDeck();
+  shuffledDeck = shuffleCards(deck);
+  mode = "deal cards";
+  return `Let's play!`;
+}
+
+var main = function (input) {
+  if (mode == "welcome") {
+    var output = askForName();
+    mode = "greet with rules";
+    return output;
+  } else if (mode == "greet with rules") {
+    output = greetWithRules(input);
+    mode = "deal cards";
+    return output;
+  } else if (mode == "deal cards") {
+    var output = dealCards();
+    mode = "hit or stand";
+    return output;
+  } else if (mode == "hit or stand") {
+    if (input == "hit") {
+      output = hit();
+      return output;
+    } else if (input == "stand") {
+      output = hitDealer();
+      mode = "compute results";
+      return output;
+    }
+  } else if (mode == "compute results") {
+    output = computeResults();
+    mode = "play again?";
+    return output;
+  } else if (mode == "play again?") {
+    if (input == "yes") {
+      output = refreshRound();
+      mode = "deal cards";
+    } else if (input == "no") {
+      output = `Bye bye! Let's play again soon ~`;
+    }
+    return output;
+  }
+};
+
+// sum card points in card array
+function sumCardPointsIn(cardArray) {
+  var currentCard;
+  var sumOfCardPoints = 0;
+  for (var i = 0; i < cardArray.length; i++) {
+    currentCard = cardArray[i];
+    var currentCardPoints = currentCard.points;
+    sumOfCardPoints = sumOfCardPoints + currentCardPoints;
+  }
+  return sumOfCardPoints;
+}
+// find double ace
+function findDoubleAces(cardArray) {
+  var doubleAces = false;
+  if (cardArray[0].name == "ace" && cardArray[1].name == "ace") {
+    doubleAces = true;
+  }
+  return doubleAces;
+}
+// find ace
+function findAceIn(cardArray) {
+  var ace = false;
+  var currentCard;
+  for (var i = 0; i < cardArray.length; i++) {
+    currentCard = cardArray[i];
+    var currentCardName = currentCard.name;
+    if (currentCardName == "ace") {
+      ace = true;
     }
   }
-  return sumOfAllCardsInArray;
+  return ace;
+}
+
+function findFacesOr10In(cardArray) {
+  var facesOr10 = false;
+  var currentCard;
+  for (var i = 0; i < cardArray.length; i++) {
+    currentCard = cardArray[i];
+    var currentCardName = currentCard.name;
+    if (
+      currentCardName == 10 ||
+      currentCardName == "jack" ||
+      currentCardName == "queen" ||
+      currentCardName == "king"
+    ) {
+      facesOr10 = true;
+    }
+  }
+  return facesOr10;
 }
 
 // Draw card after deal function
-function drawCard(array) {
+function drawCardInto(cardArray) {
   var newPlayerCard = shuffledDeck.pop();
-  array.push(newPlayerCard);
-  var allCardsCounter = 0;
-  var currentCard;
-  var displayCurrentCard;
-  var displayAllCards = "";
-  while (allCardsCounter < array.length) {
-    currentCard = array[allCardsCounter];
-    displayCurrentCard = `<br>${currentCard.name} of ${currentCard.suit}`;
-    displayAllCards = displayAllCards + displayCurrentCard;
-    allCardsCounter = allCardsCounter + 1;
-  }
-  return displayAllCards;
+  cardArray.push(newPlayerCard);
 }
 
-// // Deal cards
-// function dealCards() {
-//   var computerCard1 = shuffledDeck.pop();
-//   var computerCard2 = shuffledDeck.pop();
-//   var playerCard1 = shuffledDeck.pop();
-//   var playerCard2 = shuffledDeck.pop();
-// }
+function printCardsIn(cardArray) {
+  var currentCard;
+  var printCurrentCard;
+  var printAllCards = "";
+  for (i = 0; i < cardArray.length; i++) {
+    currentCard = cardArray[i];
+    printCurrentCard = ` ${currentCard.name} of ${currentCard.suit} | `;
+    printAllCards = printAllCards + printCurrentCard;
+  }
+  return printAllCards;
+}
+
 // Get a random index ranging from 0 (inclusive) to max (exclusive).
 function getRandomIndex(max) {
   return Math.floor(Math.random() * max);
