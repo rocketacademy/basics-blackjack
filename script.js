@@ -1,13 +1,3 @@
-// GAME PLAY
-// Deck is shuffled.
-// User clicks Submit to deal cards.
-// The cards are analysed for game winning conditions, e.g. Blackjack.
-// The cards are displayed to the user.
-// The user decides whether to hit or stand, using the submit button to submit their choice.
-// The user's cards are analysed for winning or losing conditions.
-// The computer decides to hit or stand automatically based on game rules.
-// The game either ends or continues.
-
 // RULES
 // There will be only two players. One human and one computer.
 // The computer will always be the dealer. The dealer has to hit if their hand is below 17.
@@ -25,7 +15,6 @@
 // if user more than dealer -> win
 // if user less than dealer -> lose
 // user hand higher than 21 -> bust
-
 // The player who is closer to 21 wins the hand. Aces can be 1 or 11.
 
 var makeDeck = function () {
@@ -184,58 +173,6 @@ var giveThirdIteminOutputValue = function () {
     ".");
 };
 
-// var hitOrStandMode = function (userChoice, hand) {
-//   if (userChoice == "hit") {
-//     gameMode = "hit mode";
-//     console.log("game mode" + gameMode);
-
-//     dealCard(hand);
-//     var CardsSum = SumUpCards(hand);
-//     var CardsNewSum = CardsSum + SumUpCardsSecondRound(hand);
-//     // playerCardsNewSum = 22;
-//     console.log("NEW player card sum: " + CardsNewSum);
-
-//     message =
-//       "PLAYER: " +
-//       hand[0].name +
-//       " of " +
-//       hand[0].suit +
-//       " and " +
-//       hand[1].name +
-//       " of " +
-//       hand[1].suit +
-//       ". Your total value is " +
-//       playerCardsSum +
-//       "<br>COMPUTER: " +
-//       computerHand[0].name +
-//       " of " +
-//       computerHand[0].suit +
-//       "<br>";
-//     +"<br><br> You hit! Your 3rd card is " +
-//       hand[2].name +
-//       " of " +
-//       hand[2].suit +
-//       ". Your new total value is " +
-//       CardsNewSum;
-
-//     if (userChoice == "done" && CardsNewSum > 21) {
-//       console.log("DONE player card sum: " + CardsNewSum);
-
-//       myOutputValue =
-//         "You bust! Your total of " + CardsNewSum + " is above 21.";
-//     }
-//   } else if (userChoice == "stand") {
-//     gameMode = "stand mode";
-//     myOutputValue = myOutputValue + "You chose to stand!";
-//   }
-
-//   // if (input == "done" && playerCardsNewSum > 21) {
-//   //   myOutputValue =
-//   //     "You bust! Your total of " + playerCardsNewSum + " is above 21.";
-//   // }
-//   return myOutputValue;
-// };
-
 var main = function (input) {
   if (playerHand.length == 0) {
     // drawing first and second card for player and computer
@@ -257,12 +194,6 @@ var main = function (input) {
       ". Submit 'hit' or 'stand'."
     );
   }
-  // summing up cards in first round
-  // var playerCardsSum = SumUpCards(playerHand);
-  // console.log("player card sum: " + playerCardsSum);
-  // var computerCardsSum = SumUpCards(computerHand);
-  // console.log("comp card sum: " + computerCardsSum);
-  // playerHandTotal = 21;
 
   // checking for blackjack
   if (playerHand.length == 2 && playerHandTotal == 21) {
@@ -284,32 +215,6 @@ var main = function (input) {
       ". Computer wins blackjack! Refresh the page to play again."
     );
   }
-  // Initialise an output value with first cards drawn by each player.
-  // var myOutputValue =
-  //   "PLAYER: " +
-  //   playerHand[0].name +
-  //   " of " +
-  //   playerHand[0].suit +
-  //   " and " +
-  //   playerHand[1].name +
-  //   " of " +
-  //   playerHand[1].suit +
-  //   ". Your total value is " +
-  //   playerCardsSum +
-  //   "<br><br>COMPUTER: " +
-  //   computerHand[0].name +
-  //   " of " +
-  //   computerHand[0].suit +
-  //   "<br>";
-
-  // if (input == "hit") {
-  //   console.log("game mode" + gameMode);
-  //   myOutputValue = hitOrStandMode(input, playerHand);
-  // } else if (input == "stand") {
-  //   myOutputValue = hitOrStandMode(input, playerHand);
-  // }
-
-  // working code without refactoring
   // player chooses to hit or stand
   if (input == "hit") {
     dealCard(playerHand);
@@ -402,12 +307,8 @@ var main = function (input) {
     );
   }
 
-  if (
-    playerHandTotal > computerHandTotal
-    // &&
-    // playerHandTotal < 21 &&
-    // computerHandTotal < 21
-  ) {
+  // evaluating winning condition
+  if (playerHandTotal > computerHandTotal) {
     // If the player's card beats the computer's card, the player wins.
     return (
       "Your current total value is " +
@@ -418,13 +319,7 @@ var main = function (input) {
     );
   }
   // If the computer's card beats the player's card, the computer wins.
-  else if (
-    computerHandTotal > playerHandTotal
-    // &&
-    // playerHandTotal < 21 &&
-    // computerHandTotal < 21
-  ) {
-    // Update output value to communicate computer wins.
+  else if (computerHandTotal > playerHandTotal) {
     return (
       "Your current total value is " +
       playerHandTotal +
@@ -433,14 +328,5 @@ var main = function (input) {
       ".<br><br>You lose!"
     );
   }
-  // If the player's and computer's cards match, it's War.
-  // else {
-  //   // Update output to communicate War.
-  //   myOutputValue = myOutputValue + "It's WAR!<br>";
-  //   // Create array to store cards used for War. The winner will receive all these cards.
-  //   // add the 2 matching cards to the set of war cards.
-  //   var warCards = [playerCard, computerCard];
-  //   // Create boolean for while loop condition. When this boolean becomes false, end loop.
-  //   var cardsEqual = true;
   return myOutputValue;
 };
