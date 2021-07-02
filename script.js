@@ -176,14 +176,12 @@ var playBlackJackPlayer = function (hand, input) {
 
 var checkIfAllStand = function () {
   var counter = 0;
-  var check = false;
+  var check = true;
   while (counter < numberOfPlayers) {
-    if (playersObj[counter].stand == true) {
-      check = true;
-    } else {
+    if (playersObj[counter].stand == false) {
       check = false;
-      break;
     }
+    counter += 1;
   }
   return check;
 };
@@ -295,6 +293,7 @@ var main = function (input) {
     deck = shuffleCards(makeDeck());
     var outputMessage = "";
     var counter = 0;
+    playerCounter = 0;
     while (counter < numberOfPlayers) {
       outputMessage += `${playersObj[counter].name} now has ${playersObj[counter].points}<br>`;
       playersObj[counter].hand = [];
@@ -340,14 +339,14 @@ var main = function (input) {
   }
 
   if (gameMode == "player") {
-    if (checkIfAllDone()) {
+    if (checkIfAllStand()) {
       var outputMessage = drawBotHand();
       gameState = true;
       return `${outputMessage} <br><br>Click 'Submit' to continue.`;
     }
 
     var outputMessage = `This is ${playersObj[playerCounter].name}'s turn.<br><br>`;
-    if (!turn) {
+    if (!turn && playersObj[playerCounter].stand == false) {
       outputMessage += `Player Hand<br>${displayHand(
         playersObj[playerCounter].hand
       )}<br><br>Bot Hand<br>${displayHand(
@@ -358,11 +357,7 @@ var main = function (input) {
     } else {
       if (input == "stand") {
         playersObj[playerCounter].stand = true;
-        outputMessage = `You have chosen to stand. <br><br>Player Hand<br>${displayHand(
-          playersObj[playerCounter].hand
-        )}<br><br>Bot Hand<br>${displayHand(
-          botHand
-        )}<br><br>Click 'Submit' to continue.`;
+        outputMessage = `You chose to stand, please click "Submit" to continue.`;
         playerCounter += 1;
         turn = 0;
         return outputMessage;
