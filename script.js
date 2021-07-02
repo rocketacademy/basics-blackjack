@@ -13,6 +13,7 @@ var botHand = [];
 var playersObj = [];
 var wager = 0;
 
+//A function to display the current hand passed.
 var displayHand = function (hand) {
   var counter = 0;
   var outputMessage = "Current Hand:<br>";
@@ -23,11 +24,13 @@ var displayHand = function (hand) {
   return outputMessage;
 };
 
+//A function to display the points of the current player.
 var displayPoints = function () {
   var outputMessage = `You now have ${playersObj[playerCounter].points}, remember to play moderately!`;
   return outputMessage;
 };
 
+//A function to get the sum of the hand being passed.
 var getCurrentSumHand = function (hand) {
   var total = 0;
   var counter = 0;
@@ -55,6 +58,7 @@ var getCurrentSumHand = function (hand) {
   return total;
 };
 
+//A function to create a deck of 52 cards.
 var makeDeck = function () {
   var cardDeck = [];
   var suits = ["hearts", "diamonds", "clubs", "spades"];
@@ -89,6 +93,7 @@ var makeDeck = function () {
   return cardDeck;
 };
 
+//A function to shuffle a deck.
 var shuffleCards = function (cardDeck) {
   var currentIndex = 0;
   while (currentIndex < cardDeck.length) {
@@ -102,23 +107,18 @@ var shuffleCards = function (cardDeck) {
   return cardDeck;
 };
 
+//A function to draw a card from the deck.
 var drawOneCard = function () {
   var cardDrawn = deck.pop();
   return cardDrawn;
 };
 
+//A function to check if a hand is a blackjack.
 var isBlackJack = function (hand) {
   var sum = getCurrentSumHand(hand);
   if (sum === blackjackLimit) {
     return true;
   } else return false;
-};
-
-var getWinner = function (hand) {
-  var userHandTotal = getCurrentSumHand(hand);
-  var botHandTotal = getCurrentSumHand(botHand);
-  if (userHandTotal > botHandTotal) return "user";
-  else return "bot";
 };
 
 var checkHandLimit = function (hand) {
@@ -167,33 +167,11 @@ var playBlackJackPlayer = function (hand, input) {
     }
   }
 
-  if (playersObj[playerCounter].stand && getCurrentSumHand(botHand) > 16) {
-    playersObj[playerCounter].state = true;
-    var winner = getWinner(hand);
-    if (winner == "user") {
-      playersObj[playerCounter].points += Number(
-        playersObj[playerCounter].wager
-      );
-      return `Congratulations, you win! <br><br> ${
-        playersObj[playerCounter].name
-      } Hand<br>${displayHand(hand)}<br><br>Bot Hand<br>${displayHand(
-        botHand
-      )}<br>${displayPoints()}`;
-    } else {
-      playersObj[playerCounter].points -= Number(
-        playersObj[playerCounter].wager
-      );
-      return `Oh nooo, you lose! The bot had ${getCurrentSumHand(
-        botHand
-      )}.<br><br> ${playersObj[playerCounter].name} Hand<br>${displayHand(
-        hand
-      )}<br><br>Bot Hand<br>${displayHand(botHand)}<br>${displayPoints()}`;
-    }
-  }
-
   return `${playersObj[playerCounter].name} Hand<br>${displayHand(
     hand
-  )}<br><br>Bot Hand<br>${displayHand(botHand)}<br>${displayPoints()}`;
+  )}<br><br>Bot Hand<br>${displayHand(
+    botHand
+  )}<br><br> Click "Submit" to continue.`;
 };
 
 var checkIfAllStand = function () {
@@ -214,7 +192,7 @@ var checkIfAllDone = function () {
   var counter = 0;
   var check = false;
   while (counter < numberOfPlayers) {
-    if (playersObj[counter].state == true) {
+    if (playersObj[counter].stand === true) {
       check = true;
     } else {
       check = false;
@@ -252,6 +230,39 @@ var drawBotHand = function () {
       )}<br>Please press continue to check the updated points.`;
     }
   }
+
+  if (checkIfAllDone() && getCurrentSumHand(botHand) > 16) {
+    gameState = true;
+    var counter = 0;
+    var outputMessage = `The bot current hand is: <br> ${displayHand(
+      botHand
+    )}<br><br>`;
+    while (counter < numberOfPlayers) {
+      if (
+        getCurrentSumHand(botHand) < getCurrentSumHand(playersObj[counter].hand)
+      ) {
+        playersObj[counter].points += playersObj[counter].wager;
+        outputMessage += `${
+          playersObj[counter].name
+        } won against the bot. You had a total value of ${getCurrentSumHand(
+          playersObj[counter].hand
+        )}.<br><br>
+        You now have a total of ${playersObj[counter].points}.;
+        <br><br>`;
+      } else {
+        playersObj[counter].points -= playersObj[counter].wager;
+        outputMessage += `${
+          playersObj[counter].name
+        } lose against the bot. You only had a total value of ${getCurrentSumHand(
+          playersObj[counter].hand
+        )}.<br><br>
+        You now have a total of ${playersObj[counter].points}.;
+        <br><br>`;
+      }
+    }
+    return outputMessage;
+  }
+
   return `<br><br>Bot Hand<br>${displayHand(
     botHand
   )}<br> Please click 'Submit' to continue.`;
@@ -268,6 +279,7 @@ var main = function (input) {
         var player = {
           points: 100,
           stand: false,
+          state: false,
           hand: [],
           wager: 0,
           name: "",
@@ -300,7 +312,7 @@ var main = function (input) {
         playersObj[playerCounter - 1].name
       }! Welcome to Blackjack, you start off with ${
         playersObj[playerCounter - 1].points
-      } points.<br> Proceed to inputting the name of the next player.`;
+      } points.`;
     }
     gameMode = "wager";
     playerCounter = 0;
@@ -313,8 +325,7 @@ var main = function (input) {
       playerCounter += 1;
       return `Phew! you waged ${
         playersObj[playerCounter - 1].wager
-      } points, let's see if you will win or lose that points.<br><br>
-      Proceed to entering the next player wager.`;
+      } points, let's see if you will win or lose that points.`;
     }
     gameMode = "start";
     playerCounter = 0;
@@ -329,18 +340,14 @@ var main = function (input) {
   }
 
   if (gameMode == "player") {
-    if (playerCounter == Number(numberOfPlayers)) {
-      playerCounter = 0;
-      return drawBotHand();
-    }
-
     if (checkIfAllDone()) {
+      var outputMessage = drawBotHand();
       gameState = true;
-      return "Click 'Submit' to continue.";
+      return `${outputMessage} <br><br>Click 'Submit' to continue.`;
     }
 
     var outputMessage = `This is ${playersObj[playerCounter].name}'s turn.<br><br>`;
-    if (!turn && !playersObj[playerCounter].stand) {
+    if (!turn) {
       outputMessage += `Player Hand<br>${displayHand(
         playersObj[playerCounter].hand
       )}<br><br>Bot Hand<br>${displayHand(
@@ -361,16 +368,11 @@ var main = function (input) {
         return outputMessage;
       }
       if (input == "hit") {
-        outputMessage += playBlackJackPlayer(playersObj[playerCounter], input);
-        playerCounter += 1;
-        return outputMessage;
-      }
-      if (playersObj[playerCounter].stand) {
         outputMessage += playBlackJackPlayer(
-          playersObj[playerCounter],
-          "stand"
+          playersObj[playerCounter].hand,
+          input
         );
-        playerCounter += 1;
+        turn = 0;
         return outputMessage;
       }
     }
