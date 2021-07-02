@@ -42,11 +42,13 @@ var STAGE_DEAL_CARDS = "STAGE_DEAL_CARDS";
 var STAGE_HIT_STAND = "STAGE_HIT_STAND";
 var STAGE_COMPUTER_TURN = "STAGE_COMPUTER_TURN";
 var STAGE_GAME_OVER = "STAGE_GAME_OVER";
+var STAGE_USERNAME = "STAGE_USERNAME";
+var userName = "";
 var userHand = [];
 var computerHand = [];
 var userTotal = 0;
 var computerTotal = 0;
-var programStage = STAGE_DEAL_CARDS;
+var programStage = STAGE_USERNAME;
 
 //////////////////////////////////////////////////////////HELPER FUNCTIONS////////////////////////////////////////////////////
 
@@ -239,6 +241,16 @@ var main = function (input) {
     return "The game is over, hit refresh to play again";
   }
 
+  if (programStage == STAGE_USERNAME) {
+    userName = input;
+    programStage = STAGE_DEAL_CARDS;
+    return (
+      "Hello " +
+      userName +
+      "! Welcome to Blackjack! Click Submit to draw the cards."
+    );
+  }
+
   if (programStage == STAGE_DEAL_CARDS) {
     //Initial turn - cards are shuffled and dealt. Check for user's Blackjack - if yes, game ends.
     dealStartingCards(shuffledDeck);
@@ -254,13 +266,18 @@ var main = function (input) {
     programStage = STAGE_HIT_STAND;
     // //if not Blackjack, display user's hand and computer's 1st card. Then continue to user's turn to hit or stand.
     var myOutputValue =
-      "User's hand is: <br>" +
+      userName +
+      "'s hand is: <br>" +
       outputCards(userHand) +
-      "<br>User's total points is " +
+      "<br>" +
+      userName +
+      "'s total points is " +
       calcHandTotal(userHand) +
-      "<br>Computer's open card is: <br>" +
+      "<br><br>Computer's open card is: <br>" +
       outputComputerCard1() +
-      "<br>User's turn. Select one of the following options: <br> 1 - hit <br> 2 - stand";
+      "<br>" +
+      userName +
+      "'s turn. Select one of the following options: <br> 1 - hit <br> 2 - stand";
     return myOutputValue;
   }
 
@@ -301,7 +318,7 @@ var main = function (input) {
         calcHandTotal(userHand) +
         "<br><br> Computer's hand is<br>" +
         outputCards(computerHand) +
-        "<br><br>Click Submit to see Computer's final hand."
+        "<br>Click Submit to see Computer's final hand."
       );
     }
   }
