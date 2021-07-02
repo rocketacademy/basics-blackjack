@@ -86,13 +86,17 @@ var makeDeck = function () {
   return cardDeck;
 };
 // define gamemodes in blackjack
-var DEAL_CARDS = `deal`;
-var HIT = `hit`;
-var STAND = `stand`;
-var DEALER_TURN = `dealer's turn`;
+var INSERT_USERNAME = "insert username";
+var PLACE_WAGER = "bet";
+var CFM_WAGER = "cfm wager";
+var DEAL_CARDS = "deal";
+var HIT = "hit";
+var STAND = "stand";
+var DEALER_TURN = "dealer's turn";
+var WELCOME = "welcome";
 
 // gameMode at initial stage
-var gameMode = DEAL_CARDS;
+var gameMode = WELCOME;
 
 // shuffle deck of cards
 var deck = makeDeck();
@@ -101,25 +105,27 @@ var shuffledDeck = shuffleCards(deck);
 var playerCurrScore;
 var dealerCurrScore;
 var playerHand = [];
-var displayPlayerCardArray = [];
+var displayPlayerCards = [];
 var dealerHand = [];
-var displayDealerCardArray = [];
+var displayDealerCards = [];
 var maxScore = 21;
 var dealerMinimalScore = 17;
-var cardName;
-var rank;
+var userName = ``;
+var pointBalance = 100;
+var wagerPlaced = 0;
 
 // standard messages
 var hitOrStandMessage =
   "Enter hit to take another card or stand to end your turn.";
-var refreshGameMessage = " Refresh to start new game";
+var refreshGameMessage = " Enter your wager to start new round of Blackjack";
+var pointsBalanceMessage = ` you currently have ${pointBalance} points. Place your points and Submit to start new round of Blackjack.`;
 
 // display cards in hand to show player the cards drawn so far
 // reference https://stackoverflow.com/questions/19590865/from-an-array-of-objects-extract-value-of-a-property-as-array
-var displayCardsInHand = function (handArray, displayCardsArray, cardName) {
+var displayCardsInHand = function (handArray, displayCardsArray) {
   displayCardsArray = [];
-  for (var counter = 0; counter < handArray.length; counter += 1) {
-    displayCardsArray.push(handArray[counter].cardName);
+  for (var j = 0; j < handArray.length; j += 1) {
+    displayCardsArray.push(handArray[j].cardName);
   }
   return displayCardsArray;
 };
@@ -127,29 +133,30 @@ var displayCardsInHand = function (handArray, displayCardsArray, cardName) {
 // https://stackoverflow.com/questions/1230233/how-to-find-the-sum-of-an-array-of-numbers
 
 // +++cal total score first then filter out ace value+++
-var calTotalScore = function (array, rank) {
+var calTotalScore = function (cards) {
   var totalScore = 0;
-  var aceInHand = 0;
-  for (var counter = 0; counter < array.length; counter += 1) {
-    var currCard = array[counter];
+  var numOfAceInHand = 0;
+  for (var i = 0; i < cards.length; i += 1) {
+    var currCard = cards[i];
     // set default ace value to 11
     if (currCard.rank == 1) {
       currCard.rank = 11;
-      aceInHand += 1;
+      numOfAceInHand += 1;
     }
+    totalScore += cards[i].rank;
 
-    if (totalScore > 21) {
-      totalScore = totalScore - aceInHand * 10;
+    if (totalScore > 21 && numOfAceInHand > 0) {
+      for (var j = 0; j < numOfAceInHand; j += 1) {
+        totalScore = totalScore - numOfAceInHand * 10;
+      }
     }
-    totalScore += array[counter].rank;
   }
-
   return totalScore;
 };
 
 // rules of blackjack
 // player and dealer will be dealt cards
-var dealHands = function () {
+var dealHands = function (userName) {
   // draw 2 cards for player and 1 cardsfor dealer
   playerCard1 = shuffledDeck.pop();
   playerCard2 = shuffledDeck.pop();
@@ -158,40 +165,41 @@ var dealHands = function () {
   dealerHand.push(dealerCard1);
 
   // calculate player score for first 2 cards
-  playerCurrScore = calTotalScore(playerHand, rank);
+  playerCurrScore = calTotalScore(playerHand);
 
   // calculate Dealer score for first card
-  dealerCurrScore = calTotalScore(dealerHand, rank);
+  dealerCurrScore = calTotalScore(dealerHand);
 
   // default message to display first 2 cards on hand and current score
-  var message = `Your hand is <br>${playerCard1.cardName} of ${playerCard1.suit} <br> ${playerCard2.cardName} of ${playerCard2.suit}<br>Your score is ${playerCurrScore}<br> <br><br> Dealer hand is <br>${dealerCard1.cardName} of ${dealerCard1.suit} <br><br>`;
+  var message = `Current Wager: ${wagerPlaced}<br><br>${userName}, your hand is <br>${playerCard1.cardName} of ${playerCard1.suit} <br> ${playerCard2.cardName} of ${playerCard2.suit}<br>Your score is ${playerCurrScore}<br> <br><br> Dealer hand is <br>${dealerCard1.cardName} of ${dealerCard1.suit} <br><br>`;
   var myOutputValue = `${message} ${hitOrStandMessage} <br> `;
 
   // check for blackjack win conditions
 
   if (playerHand.length == 2 && playerCurrScore == 21) {
-    myOutputValue = `${message}Player has Blackjack, Player won! <br><br>${refreshGameMessage}`;
+    myOutputValue = `${message} You got Blackjack, you won! <br><br>${refreshGameMessage}`;
   }
 
   return myOutputValue;
 };
 
 // function for player to draw card when player hit
-var playerDrawCard = function () {
+var playerDrawCard = function (userName) {
   var drawnCard = shuffledDeck.pop();
   playerHand.push(drawnCard);
-  playerCurrScore = calTotalScore(playerHand, rank);
-  var playerHandMessage = `You draw ${drawnCard.cardName} of ${
+  playerCurrScore = calTotalScore(playerHand);
+  var playerHandMessage = `${userName}, you draw ${drawnCard.cardName} of ${
     drawnCard.suit
   }. <br> <br>Your hand is ${displayCardsInHand(
     playerHand,
-    displayPlayerCardArray,
-    cardName
+    displayPlayerCards
   )}<br> <br>Your score is ${playerCurrScore}. `;
 
   if (playerCurrScore > maxScore) {
-    return `${playerHandMessage}
-       You busted! YOU LOST!<br><br><br>${refreshGameMessage}`;
+    pointBalance = Number(pointBalance) + Number(wagerPlaced);
+    return `${playerHandMessage} You BUSTED!! <br><br>
+    Dealer score is ${dealerCurrScore}<br><br>
+    ${hitOrStandMessage}`;
   }
   if (playerCurrScore <= maxScore) {
     return `${playerHandMessage}<br><br>
@@ -202,48 +210,40 @@ var playerDrawCard = function () {
 
 // function for dealer to draw card
 // dealer will continue to draw card if the total score is below 17
-var dealerDrawCard = function () {
+var dealerDrawCard = function (userName) {
   var myOutputValue = "";
 
   if (dealerCurrScore >= dealerMinimalScore) {
-    return ` Your hand is ${displayCardsInHand(
+    return ` ${userName}, your hand is ${displayCardsInHand(
       playerHand,
-      displayPlayerCardArray,
-      cardName
+      displayPlayerCards
     )} <br>Your score is ${playerCurrScore} <br><br> Dealer hand is ${displayCardsInHand(
       dealerHand,
-      displayDealerCardArray,
-      cardName
+      displayDealerCards
     )} <br>Dealer score is ${dealerCurrScore}. <br> `;
   } else {
-    var counter = 0;
     while (dealerCurrScore < dealerMinimalScore) {
       var drawnCard = shuffledDeck.pop();
       console.log(`drawn card: ` + drawnCard.cardName);
       dealerHand.push(drawnCard);
-      dealerCurrScore = calTotalScore(dealerHand, rank);
+      dealerCurrScore = calTotalScore(dealerHand);
       if (dealerHand.length == 2 && dealerCurrScore == 21) {
-        myOutputValue = `Your hand is ${displayCardsInHand(
+        myOutputValue = `${userName}, your hand is ${displayCardsInHand(
           playerHand,
-          displayPlayerCardArray,
-          cardName
+          displayPlayerCards
         )}<br>Your score is ${playerCurrScore} <br> <br> Dealer hand is ${displayCardsInHand(
           dealerHand,
-          displayDealerCardArray,
-          cardName
-        )}<br>Dealer has Blackjack, dealer won!<br><br> ${refreshGameMessage}`;
+          displayDealerCards
+        )}<br>Dealer has Blackjack!`;
       } else {
-        myOutputValue = `Your hand is ${displayCardsInHand(
+        myOutputValue = `${userName}, your hand is ${displayCardsInHand(
           playerHand,
-          displayPlayerCardArray,
-          cardName
+          displayPlayerCards
         )}<br>Your score is ${playerCurrScore} <br> <br> Dealer hand is ${displayCardsInHand(
           dealerHand,
-          displayDealerCardArray,
-          cardName
+          displayDealerCards
         )} <br>Dealer score is ${dealerCurrScore}. <br>`;
       }
-      counter += 1;
     }
   }
 
@@ -251,34 +251,73 @@ var dealerDrawCard = function () {
 };
 
 // function to compare score and determine winner
-var determineWinner = function () {
-  if (playerCurrScore > dealerCurrScore || dealerCurrScore > maxScore) {
-    myOutputValue = `<br>Player Wins <br><br>${refreshGameMessage}`;
+var determineWinner = function (userName) {
+  if (
+    (playerCurrScore > dealerCurrScore && playerCurrScore <= maxScore) ||
+    dealerCurrScore > maxScore
+  ) {
+    pointBalance = Number(pointBalance) + Number(wagerPlaced);
+    myOutputValue = `<br>${userName} Wins <br><br>${refreshGameMessage}<br><br> You have ${pointBalance}points left!`;
   }
-  if (playerCurrScore < dealerCurrScore && dealerCurrScore <= maxScore) {
-    myOutputValue = `<br> Dealer Wins <br><br>${refreshGameMessage}`;
+  if (
+    (playerCurrScore < dealerCurrScore && dealerCurrScore <= maxScore) ||
+    (dealerHand.length == 2 && dealerCurrScore == 21)
+  ) {
+    pointBalance = Number(pointBalance) + Number(wagerPlaced);
+    myOutputValue = `<br> Dealer Wins <br><br>${refreshGameMessage}<br><br> You have ${pointBalance}points left!`;
   }
 
-  if (playerCurrScore == dealerCurrScore) {
-    myOutputValue = `<br> Its a tie<br><br>${refreshGameMessage}`;
+  if (
+    playerCurrScore == dealerCurrScore ||
+    (playerCurrScore > maxScore && dealerCurrScore > maxScore)
+  ) {
+    myOutputValue = `<br> Its a tie<br><br>${refreshGameMessage}<br><br> You have ${pointBalance}points left!`;
   }
   return myOutputValue;
 };
 
 var main = function (input) {
+  if (gameMode == WELCOME) {
+    if (input == "") {
+      return "Hi. Pls enter your username!";
+    }
+
+    gameMode = INSERT_USERNAME;
+  }
+
+  if (gameMode == INSERT_USERNAME) {
+    userName = input;
+    gameMode = PLACE_WAGER;
+    return `${userName}, ${pointsBalanceMessage} `;
+  }
+  if (gameMode == PLACE_WAGER) {
+    wagerPlaced = input;
+    gameMode = DEAL_CARDS;
+    return `${userName}, You placed ${wagerPlaced} points. Submit to start blackjack `;
+  }
+
   if (gameMode == DEAL_CARDS) {
-    myOutputValue = dealHands();
+    // reshuffled deck for new round
+    playerHand = [];
+    dealerHand = [];
+    deck = makeDeck();
+    shuffledDeck = shuffleCards(deck);
+    myOutputValue = dealHands(userName);
     gameMode = HIT;
   }
 
   if (input == HIT) {
     gameMode = HIT;
-    myOutputValue = playerDrawCard();
+    myOutputValue = playerDrawCard(userName);
   }
 
   if (input == STAND) {
     gameMode = DEALER_TURN;
-    myOutputValue = dealerDrawCard() + determineWinner();
+  }
+
+  if (gameMode == DEALER_TURN) {
+    gameMode = PLACE_WAGER;
+    myOutputValue = dealerDrawCard(userName) + determineWinner(userName);
   }
 
   return myOutputValue;
