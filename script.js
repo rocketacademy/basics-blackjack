@@ -101,7 +101,8 @@ var deck = shuffleCards(makeDeck());
 
 var playerHand = [];
 var computerHand = [];
-var gameMode = "waiting to draw";
+var playerHandTotal = "";
+var computerHandTotal = "";
 
 // helper function to draw card and push into array
 var dealCard = function (hand) {
@@ -145,6 +146,42 @@ var SumUpCardsSecondRound = function (hand) {
   }
   var newValue = cardInHand3.rank;
   return newValue;
+};
+
+var givePlayerOutputValue = function () {
+  return (DefaultOutputValue =
+    "PLAYER: " +
+    playerHand[0].name +
+    " of " +
+    playerHand[0].suit +
+    " and " +
+    playerHand[1].name +
+    " of " +
+    playerHand[1].suit +
+    ".");
+  // "<br><br>COMPUTER: " +
+  // computerHand[0].name +
+  // " of " +
+  // computerHand[0].suit +
+  // "<br>"
+};
+
+var giveComputerOutputValue = function () {
+  return (DefaultOutputValue =
+    "<br><br>COMPUTER: " +
+    computerHand[0].name +
+    " of " +
+    computerHand[0].suit +
+    ".");
+};
+
+var giveThirdIteminOutputValue = function () {
+  return (ThirdItemOutputValue =
+    "<br><br> Your 3rd card is " +
+    playerHand[2].name +
+    " of " +
+    playerHand[2].suit +
+    ".");
 };
 
 // var hitOrStandMode = function (userChoice, hand) {
@@ -200,39 +237,70 @@ var SumUpCardsSecondRound = function (hand) {
 // };
 
 var main = function (input) {
-  if ((gameMode = "waiting to draw" && playerHand.length == 0)) {
-    gameMode = "hit mode";
-    console.log("game mode" + gameMode);
+  if (playerHand.length == 0) {
     // drawing first and second card for player and computer
     dealCard(playerHand);
     dealCard(computerHand);
     dealCard(playerHand);
     dealCard(computerHand);
+
+    playerHandTotal = SumUpCards(playerHand);
+    computerHandTotal = SumUpCards(computerHand);
+
+    console.log("player card sum: " + playerHandTotal);
+
+    return (
+      givePlayerOutputValue() +
+      giveComputerOutputValue() +
+      "<br><br> Your total value is " +
+      playerHandTotal +
+      ". Submit 'hit' or 'stand'."
+    );
   }
-
   // summing up cards in first round
-  var playerCardsSum = SumUpCards(playerHand);
-  console.log("player card sum: " + playerCardsSum);
-  var computerCardsSum = SumUpCards(computerHand);
-  console.log("comp card sum: " + computerCardsSum);
+  // var playerCardsSum = SumUpCards(playerHand);
+  // console.log("player card sum: " + playerCardsSum);
+  // var computerCardsSum = SumUpCards(computerHand);
+  // console.log("comp card sum: " + computerCardsSum);
+  // playerHandTotal = 21;
 
+  // checking for blackjack
+  if (playerHand.length == 2 && playerHandTotal == 21) {
+    console.log("player card sum: " + playerHandTotal);
+    return (
+      givePlayerOutputValue() +
+      giveComputerOutputValue() +
+      "Your total value is " +
+      playerHandTotal +
+      ". Player wins blackjack! Refresh the page to play again."
+    );
+  } else if (playerHand.length == 2 && computerHandTotal == 21) {
+    console.log("computer card sum: " + computerHandTotal);
+    return (
+      givePlayerOutputValue() +
+      giveComputerOutputValue() +
+      "Your total value is " +
+      computerHandTotal +
+      ". Computer wins blackjack! Refresh the page to play again."
+    );
+  }
   // Initialise an output value with first cards drawn by each player.
-  var myOutputValue =
-    "PLAYER: " +
-    playerHand[0].name +
-    " of " +
-    playerHand[0].suit +
-    " and " +
-    playerHand[1].name +
-    " of " +
-    playerHand[1].suit +
-    ". Your total value is " +
-    playerCardsSum +
-    "<br>COMPUTER: " +
-    computerHand[0].name +
-    " of " +
-    computerHand[0].suit +
-    "<br>";
+  // var myOutputValue =
+  //   "PLAYER: " +
+  //   playerHand[0].name +
+  //   " of " +
+  //   playerHand[0].suit +
+  //   " and " +
+  //   playerHand[1].name +
+  //   " of " +
+  //   playerHand[1].suit +
+  //   ". Your total value is " +
+  //   playerCardsSum +
+  //   "<br><br>COMPUTER: " +
+  //   computerHand[0].name +
+  //   " of " +
+  //   computerHand[0].suit +
+  //   "<br>";
 
   // if (input == "hit") {
   //   console.log("game mode" + gameMode);
@@ -242,49 +310,128 @@ var main = function (input) {
   // }
 
   // working code without refactoring
-  // if player hits
+  // player chooses to hit or stand
   if (input == "hit") {
     dealCard(playerHand);
-    var playerCardsSum = SumUpCards(playerHand);
-    var playerCardsNewSum = playerCardsSum + SumUpCardsSecondRound(playerHand);
-    // playerCardsNewSum = 22;
-    console.log("NEW player card sum: " + playerCardsNewSum);
+    // var playerCardsSum = SumUpCards(playerHand);
+    // playerHandTotal = 22;
+    playerHandTotal = playerHandTotal + SumUpCardsSecondRound(playerHand);
+    console.log("NEW player card sum: " + playerHandTotal);
 
-    myOutputValue =
-      myOutputValue +
-      "<br><br>You hit! Your 3rd card is " +
-      playerHand[2].name +
-      " of " +
-      playerHand[2].suit +
-      ". Your new total value is " +
-      playerCardsNewSum;
+    return (
+      givePlayerOutputValue() +
+      "<br><br>You hit!" +
+      giveThirdIteminOutputValue() +
+      // playerHand[2].name +
+      // " of " +
+      // playerHand[2].suit +
+      " Your new total value is " +
+      playerHandTotal +
+      giveComputerOutputValue() +
+      "<br><br>Submit 'done' to end your turn."
+    );
   } else if (input == "stand") {
-    gameMode = "stand mode";
-    myOutputValue = myOutputValue + "You chose to stand!";
+    return (
+      givePlayerOutputValue() +
+      "<br><br>You chose to stand! Submit 'done' to end your turn"
+    );
   }
 
-  // if player busts
-  if (playerCardsNewSum > 21) {
-    console.log("DONE player card sum: " + playerCardsNewSum);
-    myOutputValue =
-      myOutputValue +
+  // when player enters 'done' to see if they bust or not
+  if (playerHandTotal > 21 && input == "done") {
+    console.log("DONE player card sum: " + playerHandTotal);
+    return (
       // "<br><br> You hit! Your 3rd card is " +
       // playerHand[2].name +
       // " of " +
       // playerHand[2].suit +
-      "<br><br>You bust! Your total is above 21.";
-    return myOutputValue;
+      "<br>You bust! Your total is above 21."
+    );
+  } else if (playerHandTotal < 21 && input == "done") {
+    return (
+      "Your current total value is " +
+      playerHandTotal +
+      "<br><br>You're done! Click 'submit' to continue with the dealer's turn."
+    );
   }
 
-  if (playerCardsSum > computerCardsSum) {
+  // dealer flips open face down card -> if below 17 -> must hit
+  // dealer flips open face down card -> if above 17 -> must stand
+  if (computerHand.length == 2 && computerHandTotal < 17) {
+    dealCard(computerHand);
+    computerHandTotal = computerHandTotal + SumUpCardsSecondRound(computerHand);
+    console.log("NEW computer card sum: " + computerHandTotal);
+    return (
+      "Your current total value is " +
+      playerHandTotal +
+      ".<br>" +
+      giveComputerOutputValue() +
+      " Computer's second card is " +
+      computerHand[1].name +
+      " of " +
+      computerHand[1].suit +
+      ".<br><br>Computer hit! Their 3rd card is " +
+      computerHand[2].name +
+      " of " +
+      computerHand[2].suit +
+      ".<br><br>Computer's current total value is " +
+      computerHandTotal
+    );
+  } else if (computerHand.length == 2 && computerHandTotal > 17) {
+    return (
+      "Your current total value is " +
+      playerHandTotal +
+      ".<br><br>" +
+      giveComputerOutputValue() +
+      " " +
+      computerHand[1].name +
+      " of " +
+      computerHand[1].suit +
+      ".<br><br> Computer chose to stand!"
+    );
+  }
+
+  // if computer busts
+  if (computerHandTotal > 21) {
+    return (
+      "Your current total value is " +
+      playerHandTotal +
+      ".<br><br> Computer's current total value is " +
+      computerHandTotal +
+      ".<br><br> Computer bust. You win!"
+    );
+  }
+
+  if (
+    playerHandTotal > computerHandTotal
+    // &&
+    // playerHandTotal < 21 &&
+    // computerHandTotal < 21
+  ) {
     // If the player's card beats the computer's card, the player wins.
-    // Update output value to communicate player wins.
-    myOutputValue = myOutputValue + "<br><br>PLAYER WINS!<br>";
+    return (
+      "Your current total value is " +
+      playerHandTotal +
+      ".<br><br>Computer's current total value is " +
+      computerHandTotal +
+      ". <br><br>You win!"
+    );
   }
   // If the computer's card beats the player's card, the computer wins.
-  else if (computerCardsSum > playerCardsSum) {
+  else if (
+    computerHandTotal > playerHandTotal
+    // &&
+    // playerHandTotal < 21 &&
+    // computerHandTotal < 21
+  ) {
     // Update output value to communicate computer wins.
-    myOutputValue = myOutputValue + "<br><br>COMPUTER WINS!<br>";
+    return (
+      "Your current total value is " +
+      playerHandTotal +
+      ".<br><br> Computer's current total value is " +
+      computerHandTotal +
+      ".<br><br>You lose!"
+    );
   }
   // If the player's and computer's cards match, it's War.
   // else {
