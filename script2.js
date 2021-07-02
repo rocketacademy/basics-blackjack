@@ -534,11 +534,11 @@ var main = function (input) {
       console.log("sum of dealer cards ranks");
       console.log(dealerRank);
 
-      // Logic for dealer to hit or stand: If dealer's cards are less than 17, it must hit. If sumOfRanks is between 17 and 20 inclusive, it randomly decides whether it hits.
+      // Logic for dealer to hit or stand: If dealer's cards are less than 17, it must hit. If sumOfRanks is between 17 and 19 inclusive, it randomly decides whether it hits.
       while (dealerObj.totalRank < 17) {
         dealerDrawCard();
       }
-      while (dealerObj.totalRank >= 17 && dealerObj.totalRank <= 20) {
+      while (dealerObj.totalRank >= 17 && dealerObj.totalRank <= 19) {
         var randomInteger = getRandomIndex(2);
         console.log("drawing random integer 0 or 1..");
         console.log(randomInteger);
@@ -547,10 +547,22 @@ var main = function (input) {
         }
       }
 
+      // create string to display dealer cards
+      var dealerCardsDisplay = "";
+      var cardIndex = 0;
+      while (cardIndex < dealerObj.cardsArray.length) {
+        var dealerCard = dealerObj.cardsArray[cardIndex];
+        dealerCardsDisplay =
+          dealerCardsDisplay + `${dealerCard.name} of ${dealerCard.suit} <br>`;
+        cardIndex += 1;
+      }
+
       // change gameMode to GAME_MODE_EVALUATE_WIN
       gameMode = GAME_MODE_EVALUATE_WIN;
       myOutputValue =
-        "All players have finished. Next, the dealer will draw its cards. Press submit to see who won!";
+        "All players have finished. The dealer has drawn the following cards: <br>" +
+        dealerCardsDisplay +
+        "<br> Press submit to see who won!";
       return myOutputValue;
     }
     // Otherwise, it is the next player's turn.
