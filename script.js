@@ -74,14 +74,17 @@ var shuffleCards = function (cardDeck) {
   return cardDeck;
 };
 
-// gameMode for player to hit or stand
-var gameMode = 'deal cards to user';
+// Global variables
+var gameMode = 'name';
 var playerHand = [];
 var computerHand = [];
 var playerPoints = '';
 var computerPoints = '';
+var userName = '';
+var playerCoins = 100;
+var playerWage = 0;
 
-// function to sum hand
+// Function to sum hand
 var sumHand = function (hand) {
   var sum = 0;
   var noOfAces = 0;
@@ -111,9 +114,50 @@ var sumHand = function (hand) {
 var main = function (input) {
   var myOutputValue = '';
   var shuffledDeck = shuffleCards(makeDeck());
+  // Player inputs his name
+  if (gameMode == 'name') {
+    // error message
+    myOutputValue = "Hey! I'm the computer. What's your name?";
 
+    // Message once player has inputted his name
+    if (input != '') {
+      userName = input;
+      myOutputValue =
+        'Welcome ' +
+        userName +
+        ' to the game. Please decide how much you would like to wager.';
+      gameMode = 'bet';
+    }
+  }
+
+  // Players input their bets
+  if (gameMode == 'bet') {
+    if (playerCoins <= 0) {
+      myOutputValue =
+        'Hi ' + userName + '. You are bankrupt. Please come back another time.';
+      gameMode = 'name';
+    } else if (input <= playerCoins && input != '') {
+      // wager message
+      playerWage = Number(input);
+      wagerMessage =
+        'Hi ' +
+        userName +
+        '. You have chosen to wager ' +
+        playerWage +
+        ' coins. ';
+      gameMode = 'deal cards to user';
+    } else {
+      // error message
+      myOutputValue =
+        'Hi ' +
+        userName +
+        '. Please decide how much you would like to wager. You can only bet a maximum of ' +
+        playerCoins +
+        ' coins. ';
+    }
+  }
+  // Dealing first 2 cards to players and computer
   if (gameMode == 'deal cards to user') {
-    // Selecting player's and computer's initial 2 cards
     var computerCard1 = shuffledDeck.pop();
     var computerCard2 = shuffledDeck.pop();
     computerHand.push(computerCard1, computerCard2);
@@ -129,14 +173,20 @@ var main = function (input) {
 
     // Output cards to user
     if (playerPoints == 21) {
-      myOutputValue = 'You scored a blackjack. You win.';
       playerPoints = '';
       computerPoints = '';
       playerHand = [];
       computerHand = [];
+      playerCoins = playerCoins + playerWage;
+      myOutputValue =
+        wagerMessage +
+        '<br>You scored a blackjack. You win. You have ' +
+        playerCoins +
+        ' coins.';
     } else {
       myOutputValue =
-        'The computer had ' +
+        wagerMessage +
+        '<br>The computer had ' +
         computerCard1.name +
         ' of ' +
         computerCard1.suit +
@@ -146,7 +196,7 @@ var main = function (input) {
         computerCard2.suit +
         ', giving a total of ' +
         computerPoints +
-        ' points. The player had ' +
+        ' points. <br>The player had ' +
         playerCard1.name +
         ' of ' +
         playerCard1.suit +
@@ -156,9 +206,9 @@ var main = function (input) {
         playerCard2.suit +
         ', giving a total of ' +
         playerPoints +
-        ' points. Please decide if you want to hit or stand.';
+        ' points. <br>Please decide if you want to hit or stand.';
+      gameMode = 'user hits or stands';
     }
-    gameMode = 'user hits or stands';
     return myOutputValue;
   }
 
@@ -172,6 +222,7 @@ var main = function (input) {
       playerPoints = sumHand(playerHand);
       console.log('Player points of 3rd card ' + playerPoints);
       if (playerPoints > 21) {
+        playerCoins = playerCoins - playerWage;
         myOutputValue =
           'The player chose to hit. The player drew ' +
           playerCard3.name +
@@ -179,12 +230,14 @@ var main = function (input) {
           playerCard3.suit +
           ', giving a total of ' +
           playerPoints +
-          ' points. You busted. You lose.';
+          ' points. <br>You busted. You lose. You have ' +
+          playerCoins +
+          ' coins.';
         playerPoints = '';
         computerPoints = '';
         playerHand = [];
         computerHand = [];
-        gameMode = 'deal cards to user';
+        gameMode = 'bet';
       } else {
         myOutputValue =
           'The player chose to hit. The player drew ' +
@@ -193,7 +246,7 @@ var main = function (input) {
           playerCard3.suit +
           ', giving a total of ' +
           playerPoints +
-          ' points. Please choose to hit 4th card or stand.';
+          ' points. <br>Please choose to hit 4th card or stand.';
       }
     }
     if (input == 'hit 4th card') {
@@ -203,6 +256,7 @@ var main = function (input) {
       playerPoints = sumHand(playerHand);
       console.log('Player points of 4th card ' + playerPoints);
       if (playerPoints > 21) {
+        playerCoins = playerCoins - playerWage;
         myOutputValue =
           'The player chose to hit. The player drew ' +
           playerCard4.name +
@@ -210,12 +264,14 @@ var main = function (input) {
           playerCard4.suit +
           ', giving a total of ' +
           playerPoints +
-          ' points. You busted. You lose.';
+          ' points. <br>You busted. You lose. You have ' +
+          playerCoins +
+          ' coins.';
         playerPoints = '';
         computerPoints = '';
         playerHand = [];
         computerHand = [];
-        gameMode = 'deal cards to user';
+        gameMode = 'bet';
       } else {
         myOutputValue =
           'The player chose to hit. The player drew ' +
@@ -224,7 +280,7 @@ var main = function (input) {
           playerCard4.suit +
           ', giving a total of ' +
           playerPoints +
-          ' points. Please choose to hit 5th card or stand.';
+          ' points. <br>Please choose to hit 5th card or stand.';
       }
     }
     if (input == 'hit 5th card') {
@@ -234,6 +290,7 @@ var main = function (input) {
       playerPoints = sumHand(playerHand);
       console.log('Player points of 5th card ' + playerPoints);
       if (playerPoints > 21) {
+        playerCoins = playerCoins - playerWage;
         myOutputValue =
           'The player chose to hit. The player drew ' +
           playerCard5.name +
@@ -241,12 +298,15 @@ var main = function (input) {
           playerCard5.suit +
           ', giving a total of ' +
           playerPoints +
-          ' points. You busted. You lose.';
+          ' points. <br>You busted. You lose. You have ' +
+          playerCoins +
+          ' coins.';
         playerPoints = '';
         computerPoints = '';
         playerHand = [];
         computerHand = [];
-        gameMode = 'deal cards to user';
+        gameMode = 'bet';
+        console.log(gameMode);
       } else {
         myOutputValue =
           'The player chose to hit. The player drew ' +
@@ -271,7 +331,7 @@ var main = function (input) {
 
   // Computer hits or stands automatically
   else if (gameMode == 'computer hits or stands') {
-    myOutputValue = "It is the computer's turn to hit or stand.";
+    var message = '';
     if (computerPoints < 17) {
       var computerCard3 = shuffledDeck.pop();
       computerHand.push(computerCard3);
@@ -279,18 +339,30 @@ var main = function (input) {
       console.log('Computer 3rd card ' + computerCard3);
       computerPoints = sumHand(computerHand);
       console.log('Computer points ' + computerPoints);
+      message =
+        'The computer drew ' + computerCard3.name + ' of ' + computerCard3.suit;
+      console.log(message);
       if (computerPoints < 17) {
         var computerCard4 = shuffledDeck.pop();
         computerHand.push(computerCard4);
         console.log('Computer 4th card ' + computerCard4);
         computerPoints = sumHand(computerHand);
         console.log('Computer points ' + computerPoints);
+        message =
+          message + ' and ' + computerCard4.name + ' of ' + computerCard4.suit;
         if (computerPoints < 17) {
           var computerCard5 = shuffledDeck.pop();
           computerHand.push(computerCard5);
           console.log('Computer 5th card ' + computerCard5);
           computerPoints = sumHand(computerHand);
           console.log('Computer points ' + computerPoints);
+          message =
+            message +
+            ' and ' +
+            computerCard5.name +
+            ' of ' +
+            computerCard5.suit;
+
           gameMode = 'compare hand';
         }
       }
@@ -298,6 +370,9 @@ var main = function (input) {
     if (computerPoints >= 17) {
       gameMode = 'compare hand';
     }
+    console.log(message);
+    myOutputValue =
+      "It is the computer's turn to hit or stand. " + message + '. ';
   }
 
   // Compare player and computer's points
@@ -306,44 +381,58 @@ var main = function (input) {
     var comPointsTo21 = 21 - computerPoints;
     if (playerPoints <= 21 && computerPoints <= 21) {
       if (comPointsTo21 < playerPointsTo21) {
+        playerCoins = playerCoins - playerWage;
         myOutputValue =
           'The computer has ' +
           computerPoints +
           ' points and the player has ' +
           playerPoints +
-          ' points. The computer wins.';
+          ' points. <br>The computer wins. You have ' +
+          playerCoins +
+          ' coins.';
       } else if (comPointsTo21 > playerPointsTo21) {
+        playerCoins = playerCoins + playerWage;
         myOutputValue =
           myOutputValue +
           'The computer has ' +
           computerPoints +
           ' points and the player has ' +
           playerPoints +
-          ' points. The player wins.';
+          ' points. <br>The player wins. You have ' +
+          playerCoins +
+          ' coins.';
       } else {
         myOutputValue =
           'The computer has ' +
           computerPoints +
           ' points and the player has ' +
           playerPoints +
-          ' points. It is a tie.';
+          ' points. <br>It is a tie. You have ' +
+          playerCoins +
+          ' coins.';
       }
     }
     if (playerPoints > 21 && computerPoints <= 21) {
+      playerCoins = playerCoins - playerWage;
       myOutputValue =
         'The computer has ' +
         computerPoints +
         ' points and the player has ' +
         playerPoints +
-        ' points. The player busted. The computer wins.';
+        ' points. <br>The player busted. The computer wins. You have ' +
+        playerCoins +
+        ' coins.';
     }
     if (playerPoints <= 21 && computerPoints > 21) {
+      playerCoins = playerCoins + playerWage;
       myOutputValue =
         'The computer has ' +
         computerPoints +
         ' points and the player has ' +
         playerPoints +
-        ' points. The computer busted. The player wins.';
+        ' points. <br>The computer busted. The player wins. You have ' +
+        playerCoins +
+        ' coins.';
     }
     if (playerPoints > 21 && computerPoints > 21) {
       myOutputValue =
@@ -351,13 +440,15 @@ var main = function (input) {
         computerPoints +
         ' points and the player has ' +
         playerPoints +
-        ' points. Both players busted. It is a tie.';
+        ' points. <br>Both players busted. It is a tie. You have ' +
+        playerCoins +
+        ' coins.';
     }
     playerPoints = '';
     computerPoints = '';
     playerHand = [];
     computerHand = [];
-    gameMode = 'deal cards to user';
+    gameMode = 'bet';
   }
   return myOutputValue;
 };
