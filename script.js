@@ -34,7 +34,7 @@ var makeDeck = function () {
   var cardDeck = [];
   console.log(cardDeck);
   //to make a deck of cards, need to define suit, card name, and rank
-  var suits = ["clubs", "diamonds", "hearts", "spades"];
+  var suits = ["clubs ♣", "diamonds 🔶", "hearts 🧡", "spades ♠"];
 
   var suitIndex = 0;
   //run this loop as long as the suitIndex is shorter than the length of the suit array
@@ -54,13 +54,13 @@ var makeDeck = function () {
 
       // with exception of ace, jack, queen and king
       if (cardName == 1) {
-        cardName = "ace";
+        cardName = "Ace 🅰";
       } else if (cardName == 11) {
-        cardName = "jack";
+        cardName = "Jack 👱‍♂️";
       } else if (cardName == 12) {
-        cardName = "queen";
+        cardName = "Queen 👸";
       } else if (cardName == 13) {
-        cardName = "king";
+        cardName = "King 🤴";
       }
 
       // Create a new card with the current name, suit, and rank
@@ -127,6 +127,9 @@ var dealerDealtCards = [];
 var playerDealtCardsRank = [];
 var dealerDealtCardsRank = [];
 
+var playerCardsArray = [];
+var dealerCardsArray = [];
+
 //playerscore//
 var playerScore = 0;
 
@@ -136,6 +139,19 @@ var computerScore = 0;
 //player points - start with 100
 var playerPoints = 100;
 var playerWager = 0;
+
+//function to count number of Aces in each hand
+var countAces = function (cardsHeld) {
+  var cardCounter = 0;
+  var aceCount = 0;
+  while (cardCounter < cardsHeld.length) {
+    if (cardsHeld[cardCounter].rank == 1) {
+      aceCount += 1;
+    }
+    cardCounter += 1;
+  }
+  return aceCount;
+};
 
 //Determine a winner//
 var winner = function () {
@@ -198,7 +214,9 @@ var fakeDeck = [
 ];
 
 //logic for ace
-var aceCounter = 0;
+//if cumulative score minus 1 (initial value of ace) is less than 11, ace should be 11
+//if cumulative score minus 1 is more than 10 , ace should be 1
+var playerAceCounter = 0;
 
 var main = function (input) {
   var myOutputValue = "";
@@ -216,6 +234,8 @@ var main = function (input) {
     dealerDealtCards = [];
     playerDealtCardsRank = [];
     dealerDealtCardsRank = [];
+    playerCardsArray = [];
+    dealerCardsArray = [];
 
     console.log("shuffle mode " + playerScore);
     console.log("shuffle mode " + computerScore);
@@ -228,7 +248,7 @@ var main = function (input) {
   if (currentGameMode == askUserName) {
     var userName = input;
     currentGameMode = placeBet;
-    return `Hi ${userName}! <br>You have ${playerPoints} points to start.<br>💵How much would you like to bet (enter a number that is greater than 0 and smaller than 100)?💵 `;
+    return `Hi ${userName}! <br>You have ${playerPoints} points to start.<br>How much would you like to bet 💵?<br>(Enter a number that is greater than 0 and smaller than 100)? `;
   }
 
   //place your bet
@@ -253,6 +273,8 @@ var main = function (input) {
       console.log(playerDealtCards);
       // tracking playerCards rank
       playerDealtCardsRank.push(playerCard.rank);
+      playerCardsArray.push(playerCard);
+      console.log(playerCardsArray.length);
 
       //dealer (computer) gets dealt card
       var computerCard = shuffledDeck.pop();
@@ -261,6 +283,8 @@ var main = function (input) {
       console.log(dealerDealtCards);
       // tracking dealerCards rank
       dealerDealtCardsRank.push(computerCard.rank);
+      dealerCardsArray.push(computerCard);
+      console.log(dealerCardsArray.length);
 
       //Add score of player's dealt card to player's score
       playerScore += Number(playerCard.rank);
@@ -276,35 +300,31 @@ var main = function (input) {
 
     console.log(playerDealtCardsRank);
 
-    //at gameModeDealCard, if one of the dealt card is ace, and if the other card value is 10 or less, then Ace should be 11
     // apply Ace card logic to player cards
-    if (
-      (playerDealtCardsRank[0] == 1 && playerDealtCardsRank[1] <= 10) |
-      (playerDealtCardsRank[1] == 1 && playerDealtCardsRank[0] <= 10)
-    ) {
-      //we reverse out score value of 1 and add score value 11 in this case
+    var playerAceCount = countAces(playerCardsArray);
+    console.log(playerAceCount);
+    var dealerAceCount = countAces(dealerCardsArray);
+
+    //logic for ace
+    //if cumulative score minus 1 (initial value of ace) is less than 11, ace should be 11
+    //if cumulative score minus 1 is more than 10 , ace should be 1
+    if (playerScore < 12 && playerAceCount > 0) {
       playerScore = playerScore - 1 + 11;
-    }
+    } else if (playerScore > 11 && playerAceCount > 0) {
+      playerScore = playerScore;
+    } else playerScore = playerScore;
 
-    // apply Ace card logic to computer (dealer) cards
-    if (
-      (dealerDealtCardsRank[0] == 1 && dealerDealtCardsRank[1] <= 10) |
-      (dealerDealtCardsRank[1] == 1 && dealerDealtCardsRank[0] <= 10)
-    ) {
-      //we reverse out score value of 1 and add score value 11 in this case
+    if (computerScore < 12 && dealerAceCount > 0) {
       computerScore = computerScore - 1 + 11;
-    }
-
-    //for all other scenarios (including scenario where one card is ace, the other card is valued more then 10), Ace should be valued 1, hence no change to playerScore
-    playerScore = playerScore;
+    } else if (computerScore > 11 && dealerAceCount > 0) {
+      computerScore = computerScore;
+    } else computerScore = computerScore;
 
     //switch to game mode for player to hit or stand
     currentGameMode = playerHitOrStand;
 
     //output message only tells player about the face-up card of the dealer
-    return `You have been dealt ${playerDealtCards}.<br>The dealer's face-up card is ${
-      dealerDealtCards[0]
-    }.<br>Your total score is ${playerScore}.<br>${playerStatus()} `;
+    return `You have been dealt ${playerDealtCards}}.<br>The dealer's face-up card is ${dealerDealtCards}.<br>Your total score is ${playerScore}.<br>${playerStatus()} `;
   }
 
   //Player hit or stand game mode
@@ -314,6 +334,7 @@ var main = function (input) {
     //player chooses to hit
     if (playerChoice == "hit") {
       var playerCard = shuffledDeck.pop();
+      playerCardsArray.push(playerCard);
       console.log(
         `playercardround 2 - ${playerCard.name} of ${playerCard.suit} rank ${playerCard.rank}`
       );
@@ -321,13 +342,16 @@ var main = function (input) {
       //Add score of player's dealt card to player's score
       playerScore += Number(playerCard.rank);
 
-      //if the dealt card is Ace, and if the accumulated playerscore (at start of gameModePlayerHitOrStand) is 10 or less, then Ace should be 11
-      //criteria is cumulative playerScore is 11 or less because at this point of the code playerScore would have included the default score of ace, i.e. 1
-      //hence calculate playerScore by backing out the default 1 point and adding back 11 point)
-      if ((playerCard.rank = 1 && playerScore <= 11)) {
+      // apply Ace card logic to player cards
+      var playerAceCount = countAces(playerCardsArray);
+      console.log(playerAceCount);
+      var dealerAceCount = countAces(dealerCardsArray);
+
+      if (playerScore < 12 && playerAceCount > 0) {
         playerScore = playerScore - 1 + 11;
-        console.log("player hit score round 2 ace- " + playerScore);
-      }
+      } else if (playerScore > 11 && playerAceCount > 0) {
+        playerScore = playerScore;
+      } else playerScore = playerScore;
 
       console.log("player hit score round 2 - " + playerScore);
 
@@ -358,6 +382,7 @@ var main = function (input) {
     if (computerScore < 18) {
       //dealer (computer) gets dealt a card
       var computerCard = shuffledDeck.pop();
+      dealerCardsArray.push(computerCard);
 
       //Add score of computer's dealt card to computer's score
       computerScore += Number(computerCard.rank);
@@ -367,13 +392,16 @@ var main = function (input) {
       dealerDealtCards.push(computerCard.name + " of " + computerCard.suit);
       console.log(dealerDealtCards);
 
-      //if the dealt card is Ace, and if the accumulated computerScore (at start of gameModeDealerHitOrStand) is 10 or less, then Ace should be 11
-      //criteria is cumulative computerScore is 11 or less because at this point of the code computerScore would have included the default score of ace, i.e. 1
-      //hence calculate computerScore by backing out the default 1 point and adding back 11 point)
-      if ((computerCard.rank = 1 && computerScore <= 11)) {
+      // apply Ace card logic to player cards
+      var playerAceCount = countAces(playerCardsArray);
+      var dealerAceCount = countAces(dealerCardsArray);
+      console.log(dealerAceCount);
+
+      if (computerScore < 12 && dealerAceCount > 0) {
         computerScore = computerScore - 1 + 11;
-        console.log("dealer hit score round 2 ace- " + computerScore);
-      }
+      } else if (computerScore > 11 && dealerAceCount > 0) {
+        computerScore = computerScore;
+      } else computerScore = computerScore;
 
       //output message about the cards the dealer has (including previously face-down card)
       var cardDealtMessage = `The dealer hit. <br>The dealer's cards are ${dealerDealtCards}.<br>It scored ${computerScore}.`;
