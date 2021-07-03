@@ -160,25 +160,23 @@ var compareSum = function (playerHand, computerHand, playerPoints, playerBet) {
   var computerSum = sumOfCards(computerHand);
   if (playerSum == 21) {
     var playerWinnings = 1.5 * Number(playerBet);
-    playerPoints = Number(playerWinnings) + Number(playerPoints);
     return `Your final cards: ${showCards(
       playerHand
-    )}<br>Total cards: ${playerSum}<br> You won!<br> You got ${playerWinnings}<br> Your Total Points: ${playerPoints}`;
+    )}<br>Total cards: ${playerSum}<br> You won!<br> You got ${playerWinnings}<br> Your Total Points: ${playerPoints}<br><br>Place your again!`;
   } else if (computerSum > 21 || computerSum < playerSum) {
-    var playerWinnings = playerBet;
-    playerPoints = Number(playerWinnings) + Number(playerPoints);
     return `Your final cards: ${showCards(
       playerHand
     )}<br>Total cards: ${playerSum}<br><br>Computer Final Cards: ${showCards(
       computerHand
-    )}<br>Comp Total${computerSum} You won!<br> You got ${playerWinnings}<br> Your Total Points: ${playerPoints}`;
+    )}<br>Computer Total ${computerSum} You won!<br> You got ${playerBet}<br> Your Total Points: ${playerPoints}<br><br>Place your bet again`;
   } else if (computerSum > playerSum) {
-    playerPoints = Number(playerPoints) - Number(playerBet);
     return `Your final cards: ${showCards(
       playerHand
     )}<br>Total cards: ${playerSum}<br><br>Computer Final Cards: ${showCards(
       computerHand
-    )}<br>Comp Total: ${computerSum} You lost!<br> Dealer will take ${playerBet} bet <br> Your Total Points: ${playerPoints}`;
+    )}<br>Comp Total: ${computerSum} You lost!<br> Dealer will take ${playerBet} bet <br> Your Total Points: ${playerPoints}<br><br>Place Your Bet Again!`;
+  } else if (playerPoints < 100) {
+    return "You dont have enough money left. Go Home!";
   }
 };
 var outputMessage = function (
@@ -220,7 +218,7 @@ var initialGameStage = function (currentGameState, input) {
   if (currentGameState == "game start") {
     if (isNaN(input) == false) {
       if (input <= playerPoints) {
-        playerBet = input;
+        playerBet = Number(input);
       } else if (input > playerPoints) {
         return `Your current point: ${playerPoints} Your bet exceeds your points. Please try again.<br><br> Place your bet!`;
       }
@@ -327,6 +325,7 @@ var main = function (input) {
       }
       playerTotal = sumOfCards(playerHand);
       if (playerTotal > 21) {
+        resetGame();
         return `BUST! Your total is ${playerTotal} You Lost`;
       }
       return outputMessage(
@@ -338,6 +337,18 @@ var main = function (input) {
       );
     } else if (input == "stand") {
       checkComputerHand(computerHand);
+      var sumOfCardsPlayer = sumOfCards(playerHand);
+      var sumOfCardsComputer = sumOfCards(computerHand);
+      if (sumOfCardsPlayer == 21) {
+        playerPoints = playerPoints + 1.5 * playerBet;
+      } else if (
+        sumOfCardsPlayer > sumOfCardsComputer ||
+        sumOfCardsComputer > 21
+      ) {
+        playerPoints = playerPoints + playerBet;
+      } else if (sumOfCardsComputer > sumOfCardsPlayer) {
+        playerPoints = playerPoints - playerBet;
+      }
       outputGameMessage = compareSum(
         playerHand,
         computerHand,
@@ -350,5 +361,5 @@ var main = function (input) {
       return outputGameMessage;
     }
   }
-  return `Ooppsss Something Went Wrong, Try Again`;
+  return `Something Went Wrong, Try Again`;
 };
