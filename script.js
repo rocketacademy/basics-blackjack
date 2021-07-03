@@ -185,7 +185,7 @@ var interpretHandState = function (hand, playerDecision) {
     // Check splitting eligibility:
     // Players has only two cards (both same rank), player has not split before, it's not the dealer's turn, player has sufficient chips to split
     if (
-      hand.cards[0].rank == hand.cards[1].rank &&
+      hand.cards[0].name == hand.cards[1].name &&
       hand.cards.length == 2 &&
       !hand.splitStatus &&
       turn < players.length &&
