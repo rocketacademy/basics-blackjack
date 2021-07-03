@@ -54,10 +54,8 @@ var deck = makeDeck();
 var playerDeck = [];
 var dealerDeck = [];
 var shuffledDeck = [];
-var playervalue = 0;
 var dealervalue = 0;
 var dealerDeckforMessage = [];
-var win = 0;
 var animation = 0;
 var NumberofPlayers = 0;
 var CurrentPlayer = 1;
@@ -68,12 +66,16 @@ var main = function (input) {
   console.log(mode);
   var NumberOfPlayers;
 
+  if (NumofStands == NumberOfPlayers) {
+    mode = "compareNcontrast";
+  }
+
   if (mode == "NumofPlayers") {
     mode = "shuffle";
     myOutputValue = start(input);
   } else if (mode == "shuffle") {
     mode = "deal";
-    myOutputValue = shuffle(NumberOfPlayers);
+    myOutputValue = shuffle();
   } else if (mode == "deal") {
     mode = "actualgame";
     myOutputValue = DealtCards(NumberOfPlayers);
@@ -90,6 +92,7 @@ var main = function (input) {
 //define number of players in game
 var start = function (input) {
   var message = "";
+
   if (isNaN(input) == true || input <= 1) {
     mode = "NumofPlayers";
     message = `Please type the number of players.`;
@@ -103,17 +106,16 @@ var start = function (input) {
 
 //shuffle the cards
 var shuffle = function (NumberOfPlayers) {
-  console.log(NumberofPlayers);
-
   shuffledDeck = shuffleCards(deck);
 
-  counter = 0;
+  var counter = 0;
   while (counter < NumberOfPlayers) {
-    playerDeck.push([`Player ${counter + 1}`, 0]);
+    playerDeck.upshift([`player${counter}`, 0]);
+    console.log("a");
     counter += 1;
   }
-
   console.log(playerDeck);
+
   return `The cards have been shuffled. <br><br>Press Submit to deal the cards.`;
 };
 
@@ -188,9 +190,7 @@ var dealing = function (CurrentPlayer) {
   playerDeck[CurrentPlayer - 1].push(playerCard1);
   playerDeck[CurrentPlayer - 1].push(playerCard2);
 
-  playervalue = calculations(playerDeck[CurrentPlayer - 1]);
-
-  var counter = 0;
+  var playervalue = calculations(playerDeck[CurrentPlayer - 1]);
 
   console.log(`player${CurrentPlayer}:  + ${playervalue}`);
 
@@ -252,7 +252,7 @@ var individualchoices = function (input) {
   if (playerDeck[CurrentPlayer - 1][0] == "stand" || "lose") {
     message`As Player ${currentplayer} has already stood, they cannot play this round.`;
   } else {
-    playervalue = calculations(playerDeck[CurrentPlayer - 1]);
+    var playervalue = calculations(playerDeck[CurrentPlayer - 1]);
     dealervalue = calculations(dealerDeck);
 
     //if user chooses to stand
@@ -286,8 +286,8 @@ var individualchoices = function (input) {
     }
   }
 
-  console.log(`player ${currentplayer}:  + playervalue)`);
-  console.log(playerDeck[currentplayer - 1]);
+  console.log(`player ${Currentplayer}:  + playervalue)`);
+  console.log(playerDeck[Currentplayer - 1]);
 
   if (!(win == 0)) {
     mode = "reward";
@@ -308,9 +308,35 @@ var outcome = function (NumberofPlayers) {
     } else if (playerDeck[counter][0] == "win") {
       winners.push(counter);
     } else {
-      valueofplayers.push(counter);
+      playerDeck[counter][0].pop();
+      playervalue = calculations(playerDeck[counter]);
+
+      var eachplayer = {
+        Player: counter + 1,
+        Value: playervalue,
+      };
+
+      cardDeck.push(card);
+      ranking.push(eachplayer);
     }
   }
+
+  message = `The winners are Players ${winners} while the losers are Players ${loser}. <br>As for the fodder, the following is the leaderboard.`;
+
+  message += leaderboard(ranking);
+
+  return message;
+};
+
+var leaderboard = function (ranking) {
+  var message = "";
+  var counter = 0;
+  while (counter < ranking.length) {
+    message += `Player ${ranking[counter].Player} has a score of ${ranking[counter].value}. <br>`;
+    counter += 1;
+  }
+
+  return message;
 };
 
 var Graphics = function () {
