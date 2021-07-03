@@ -128,19 +128,23 @@ var displayTable = function (message, showBetAndBalanceOnly) {
     if (showBetAndBalanceOnly == false) {
       table =
         table +
-        `${player.name}: Hand: ${displayHand(
+        `<b>${player.name}</b>: Hand: ${displayHand(
           player.hand
         )}, Score: ${calculateScore(player.hand)}, Balance: $${
           player.balance
         }, Bet: $${player.bet} <br>`;
     } else if (showBetAndBalanceOnly == true) {
-      table = table + `Balance: $${player.balance}, Bet: $${player.bet} <br>`;
+      table =
+        table +
+        `<b>${player.name}</b>: Balance: $${player.balance}, Bet: $${player.bet} <br>`;
     }
   }
   if (showBetAndBalanceOnly == false) {
     table =
       table +
-      `Dealer: ${displayHand(dealerHand)}, Score: ${calculateScore(dealerHand)}
+      `<b>Dealer</b>: ${displayHand(dealerHand)}, Score: ${calculateScore(
+        dealerHand
+      )}
      <br><br>`;
   } else if (showBetAndBalanceOnly == true) {
   }
@@ -174,10 +178,10 @@ var compare = function (playerScore, dealerScore) {
 var main = function (input) {
   if (gameState == SELECT_PLAYERS) {
     gameState = ENTER_NAME;
-    return `🃏Welcome to BlackJack🃏 <br><br> Rules of the game<br> 1️⃣ Each participant attempts to beat the dealer by getting a count as close to 21 as possible, without going over 21 <br> 2️⃣ If a player's first two cards are an ace and a a picture card or 10, giving a count of 21 in two cards, this is a BlackJack. Player's turn ends immediately and win.
+    return `<b>🃏Welcome to BlackJack🃏</b><br><br> <u>Rules of the game</u><br> 1️⃣ Each participant attempts to beat the dealer by getting a count as close to 21 as possible, without going over 21 <br> 2️⃣ If a player's first two cards are an ace and a a picture card or 10, giving a count of 21 in two cards, this is a BlackJack. Player's turn ends immediately and win.
     
     
-    <br> 3️⃣ 2 ace is worth 1 or 11 depending on the sum of your total cards <br>4️⃣ Before the deal begins, each player places a bet, in chips, in front of them in the designated area. Each player starts with $100 credits. <br> 5️⃣ When all the players have placed their bets, the dealer gives two card face up to each player in rotation clockwise. <br> 6️⃣ Each player decides whether to hit or stand, using the deal button to submit their choice.<br> 7️⃣ Player turns ends immediately if player their hand burst. <br>GOODLUCK! <br><br> 👉 Please enter number of players`;
+    <br> 3️⃣ 2 ace is worth 1 or 11 depending on the sum of your total cards <br>4️⃣ Before the deal begins, each player places a bet, in chips, in front of them in the designated area. Each player starts with $100 credits. <br> 5️⃣ When all the players have placed their bets, the dealer gives two card face up to each player in rotation clockwise. <br> 6️⃣ Each player decides whether to hit or stand, using the deal button to submit their choice.<br> 7️⃣ Player turns ends immediately if player their hand burst. <br><br> 💰Win= win bet amount; 💰Lose = lose bet amount. <br><br> 👉 Please enter number of players above`;
   } else if (gameState == ENTER_NAME) {
     if (numberOfPlayers == 0) {
       if (isNaN(Number(input)) || Number(input) < 1) {
@@ -198,7 +202,7 @@ var main = function (input) {
         gameState = SET_BET;
         currentPlayer = 0;
         return displayTable(
-          `🙌Game has started🙌 <br><br> ${players[currentPlayer].name}, you have ${players[currentPlayer].balance} credits. <br> 👉Please make your bet`,
+          `<br> <b>${players[currentPlayer].name}</b>, you have ${players[currentPlayer].balance} credits. <br> 👉Please make your bet`,
           true
         );
       }
@@ -207,28 +211,28 @@ var main = function (input) {
     var player = players[currentPlayer];
     var bet = Number(input);
     if (isNaN(bet)) {
-      return `Nice Try 🤨. <br>👉Please input a valid bet. ${player.name}, <br> You have ${players[currentPlayer].balance} credits. <br> 👉Please make your bet`;
+      return `Nice Try 🤨. <br>👉Please input a valid bet. <b>${player.name}</b>, <br> You have ${players[currentPlayer].balance} credits. <br> 👉Please make your bet`;
     }
     if (bet > player.balance) {
-      return `Nice Try 🤨. <br>Please do not bet more than you have. ${player.name}, <br> You have ${players[currentPlayer].balance} credits. <br> 👉Please make your bet`;
+      return `Nice Try 🤨. <br>Please do not bet more than you have. <b>${player.name}</b>, <br> You have ${players[currentPlayer].balance} credits. <br> 👉Please make your bet`;
     }
     if (bet == 0) {
-      return `Nice Try 🤨. <br>Please bet something. ${player.name}, <br> You have ${players[currentPlayer].balance} credits. <br> 👉Please make your bet`;
+      return `Nice Try 🤨. <br>Please bet something. <b>${player.name}</b>, <br> You have ${players[currentPlayer].balance} credits. <br> 👉Please make your bet`;
     }
     player.bet = bet;
     player.balance = player.balance - bet;
     currentPlayer = currentPlayer + 1;
     if (currentPlayer < numberOfPlayers) {
       return displayTable(
-        `<br>${players[currentPlayer].name},you have ${players[currentPlayer].balance} credits. <br> 👉Please make your bet`,
+        `<br><b>${players[currentPlayer].name}</b>,you have ${players[currentPlayer].balance} credits. <br> 👉Please make your bet`,
         true
       );
     } else {
       currentPlayer = 0;
       gameState = PLAYER_DRAW_CARD;
       return displayTable(
-        `<br>All bets have been placed. <br> ${players[currentPlayer].name}, 👉Please draw cards by clicking "submit"`,
-        false
+        `<br>All bets have been placed. <br> <b>${players[currentPlayer].name}</b>, 👉Please draw cards by clicking "submit"`,
+        true
       );
     }
   } else if (gameState == PLAYER_DRAW_CARD) {
@@ -239,14 +243,14 @@ var main = function (input) {
     currentPlayer = currentPlayer + 1;
     if (currentPlayer < numberOfPlayers) {
       return displayTable(
-        `${players[currentPlayer].name}, 👉Please draw cards by clicking "submit"`,
+        `<b>${players[currentPlayer].name}</b>, 👉Please draw cards by clicking "submit"`,
         false
       );
     } else {
       currentPlayer = 0;
       gameState = DEALER_DRAW_CARD;
       return displayTable(
-        `All players have drawn cards, dealer will now draw 2 cards.<br> 👉Click "submit" to continue.`,
+        `All players have drawn cards, dealer will now draw 2 cards.<br> 👉Click "submit" to view dealer's cards`,
         false
       );
     }
@@ -256,7 +260,7 @@ var main = function (input) {
     currentPlayer = 0;
     gameState = PLAYER_HIT_OR_STAND;
     return displayTable(
-      `Dealer has drawn 2 cards <br> ${players[currentPlayer].name}, 👉Please choose to enter either "hit" or "stand"`,
+      `${players[currentPlayer].name}</b>, 👉Type "hit" to draw an additional card. 👉Type "stand" to end your turn`,
       false
     );
   } else if (gameState == PLAYER_HIT_OR_STAND) {
@@ -264,7 +268,7 @@ var main = function (input) {
     var player = players[currentPlayer];
     var playerDone = "done";
     if (playerInput != "hit" && playerInput != "stand") {
-      return `Invalid choice. ${player.name}  👉Please choose to enter either "hit" or "stand"`;
+      return `Invalid choice. <b>${player.name}</b> 👉Type "hit" to draw an additional card. 👉Type "stand" to end your turn`;
     }
     if (playerInput == "hit") {
       player.hand.push(deck.pop());
@@ -273,7 +277,7 @@ var main = function (input) {
         playerInput = "stand";
       } else {
         return displayTable(
-          `${player.name} please choose to enter either "hit" or "stand"`,
+          `<b>${player.name}</b> 👉Type "hit" to draw an additional card. 👉Type "stand" to end your turn`,
           false
         );
       }
@@ -282,14 +286,14 @@ var main = function (input) {
       currentPlayer = currentPlayer + 1;
       if (currentPlayer < numberOfPlayers) {
         return displayTable(
-          `${player.name}'s hands ${playerDone}. ${players[currentPlayer].name} please choose to enter either "hit" or "stand"`,
+          `<b>${player.name}</b> is ${playerDone}. ${players[currentPlayer].name} <br>👉Type "hit" to draw an additional card. 👉Type "stand" to end your turn`,
           false
         );
       } else {
         gameState = DEALER_HIT_OR_STAND;
         currentPlayer = 0;
         return displayTable(
-          `All players are done, dealer will now draw. <br>👉Please click "submit" to continue the game`,
+          `All players are done, dealer will now draw. <br>👉Please click "submit" to view dealer's card`,
           false
         );
       }
@@ -302,11 +306,12 @@ var main = function (input) {
     var player = players[currentPlayer];
     gameState = GAME_OUTCOME;
     return displayTable(
-      `All cards are drawn! <br> ${player.name}, 👉please click "submit" to see your outcome`,
+      `All cards are drawn! <br> <b>${player.name}</b>, 👉please click "submit" to see your outcome`,
       false
     );
   } else if (gameState == GAME_OUTCOME) {
     var player = players[currentPlayer];
+    currentPlayer = currentPlayer + 1;
     var gameOutcome = "";
     if (
       compare(calculateScore(player.hand), calculateScore(dealerHand)) ==
@@ -315,6 +320,11 @@ var main = function (input) {
       gameOutcome = "lose😭";
       player.bet = 0;
       player.hand = [];
+      if (player.balance == 0) {
+        players.splice(currentPlayer - 1, 1);
+        currentPlayer = currentPlayer - 1;
+        numberOfPlayers = numberOfPlayers - 1;
+      }
     } else if (
       compare(calculateScore(player.hand), calculateScore(dealerHand)) ==
       "win🎉"
@@ -329,21 +339,24 @@ var main = function (input) {
       player.bet = 0;
       player.hand = [];
     }
-    currentPlayer = currentPlayer + 1;
+
     if (currentPlayer < numberOfPlayers) {
       return displayTable(
-        `${player.name} ${gameOutcome}!<br> ${players[currentPlayer].name} please click "submit" to see your outcome`,
+        `<b>${player.name} ${gameOutcome}!</b><br> <b>${players[currentPlayer].name}</b> please click "submit" to see your outcome`,
         false
       );
       //once a new round starts
     } else {
       gameState = SET_BET;
       currentPlayer = 0;
+      if (numberOfPlayers == 0) {
+        return `all players are bust, game over`;
+      }
       deck = makeDeck();
       shuffleDeck(deck);
       dealerHand = [];
       return displayTable(
-        `${player.name} ${gameOutcome}! <br> Next round is starting.<br> ${players[currentPlayer].name},👉Please make your bet`,
+        `<b>${player.name} ${gameOutcome}!</b> <br> Next round is starting.<br> ${players[currentPlayer].name},👉Please make your bet`,
         false
       );
     }
