@@ -324,7 +324,9 @@ var main = function (input) {
     currentGameMode = playerHitOrStand;
 
     //output message only tells player about the face-up card of the dealer
-    return `You have been dealt ${playerDealtCards}}.<br>The dealer's face-up card is ${dealerDealtCards}.<br>Your total score is ${playerScore}.<br>${playerStatus()} `;
+    return `You have been dealt ${playerDealtCards}.<br>The dealer's face-up card is ${
+      dealerDealtCards[0]
+    }.<br>Your total score is ${playerScore}.<br>${playerStatus()} `;
   }
 
   //Player hit or stand game mode
