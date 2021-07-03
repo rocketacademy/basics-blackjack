@@ -43,15 +43,64 @@ var STAGE_HIT_STAND = "STAGE_HIT_STAND";
 var STAGE_COMPUTER_TURN = "STAGE_COMPUTER_TURN";
 var STAGE_GAME_OVER = "STAGE_GAME_OVER";
 var STAGE_USERNAME = "STAGE_USERNAME";
-var userName = "";
-var userHand = [];
+var STAGE_USER_BET = "STAGE_USER_BET";
 var computerHand = [];
+var userData = [
+  {
+    name: "",
+    hand: [],
+    score: 100,
+    bet: 0,
+  },
+];
 var userTotal = 0;
 var computerTotal = 0;
 var programStage = STAGE_USERNAME;
 
 //////////////////////////////////////////////////////////HELPER FUNCTIONS////////////////////////////////////////////////////
 
+//function: array containing userData with
+
+//function: make card deck
+var makeDeck = function () {
+  var cardDeck = [];
+  var suits = ["hearts", "diamonds", "clubs", "spades"];
+
+  var suitIndex = 0;
+  while (suitIndex < suits.length) {
+    var cardSuit = suits[suitIndex];
+    var cardIndex = 1;
+    while (cardIndex <= 13) {
+      var cardName = cardIndex;
+      var cardValue = cardIndex;
+      if (cardName == 1) {
+        cardName = "Ace";
+        cardValue = 11;
+      } else if (cardName == 11) {
+        cardName = "Jack";
+        cardValue = 10;
+      } else if (cardName == 12) {
+        cardName = "Queen";
+        cardValue = 10;
+      } else if (cardName == 13) {
+        cardName = "King";
+        cardValue = 10;
+      }
+
+      var card = {
+        name: cardName,
+        suit: cardSuit,
+        cardIndex: cardIndex,
+        value: cardValue,
+      };
+
+      cardDeck.push(card);
+      cardIndex += 1;
+    }
+    suitIndex += 1;
+  }
+  return cardDeck;
+};
 //function: make card deck
 var makeDeck = function () {
   var cardDeck = [];
@@ -119,7 +168,7 @@ var dealStartingCards = function () {
   //start loop to deal cards twice to each player
   while (dealIndex < 2) {
     //deal 1 card to user
-    userHand.push(shuffledDeck.pop());
+    userData[0].hand.push(shuffledDeck.pop());
     //update global variable for user's total points
     updateUserTotal();
     //deal 1 card to computer
@@ -128,16 +177,12 @@ var dealStartingCards = function () {
     updateComputerTotal();
     dealIndex += 1;
   }
-  console.log("computerHand is:");
-  console.log(computerHand);
-  console.log("userHand is:");
-  console.log(userHand);
 };
 
 // Function: check if user's starting hand is Blackjack
 var isBlackjack = function () {
   //evaluate to TRUE statement which can be used in main function as a conditional
-  return userHand[0].value + userHand[1].value == 21;
+  return userData[0].hand[0].value + userData[0].hand[1].value == 21;
 };
 
 // function to output message for a player's cards
@@ -176,12 +221,12 @@ var calcHandTotal = function (hand) {
   return handTotal;
 };
 
-// function update user total
+// function update user total for deal cards stage
 var updateUserTotal = function () {
-  userTotal += userHand[userHand.length - 1].value;
+  userTotal += userData[0].hand[userData[0].hand.length - 1].value;
 };
 
-// function update computer total
+// function update computer total for deal cards stage
 var updateComputerTotal = function () {
   computerTotal += computerHand[computerHand.length - 1].value;
 };
@@ -215,6 +260,7 @@ var startComputerTurn = function () {
   //computer draws a card if less than 17 points
   while (computerTotal < 17) {
     computerHand.push(shuffledDeck.pop());
+    //MIGHT NOT NEED UPDATECOMPUTERTOTAL
     updateComputerTotal();
     computerTotal = calcHandTotal(computerHand);
   }
@@ -225,8 +271,10 @@ var startComputerTurn = function () {
 //function to compare user's and computer's cards to determine winner
 var determineWinner = function () {
   if (userTotal > computerTotal && userTotal < 22) {
+    userData[0].score = userData[0].score + userData[0].bet;
     winnerMessage = "User wins!";
   } else if (userTotal < computerTotal && computerTotal < 22) {
+    userData[0].score = userData[0].score - userData[0].bet;
     winnerMessage = "Computer wins!";
   } else if (userTotal == computerTotal) {
     winnerMessage = "It is a tie.";
@@ -234,20 +282,46 @@ var determineWinner = function () {
   return winnerMessage;
 };
 
+//function to adjust score if user blackjack
+var scoreBlackjack = function () {
+  if (isBlackjack()) {
+    userData[0].score = userData[0].score + 1.5 * userData[0].bet;
+    var scoreBlackjackMessage = 1.5 * userData[0].bet;
+  }
+  return scoreBlackjackMessage;
+};
+
 ////////////////////////////////////////////////MAIN////////////////////////////////////////////////////////////////////
 
 var main = function (input) {
   if (programStage == STAGE_GAME_OVER) {
-    return "The game is over, hit refresh to play again";
+    return "The game is over, refresh the page to play again";
   }
 
   if (programStage == STAGE_USERNAME) {
-    userName = input;
-    programStage = STAGE_DEAL_CARDS;
+    userData[0].name = input;
+    programStage = STAGE_USER_BET;
     return (
       "Hello " +
-      userName +
-      "! Welcome to Blackjack! Click Submit to draw the cards."
+      userData[0].name +
+      "! Welcome to Blackjack! Your starting score is 100. Place your bet by keying in 1 to 100 to start the round.<br><br>Odds:<br>Blackjack 3:2<br>Regular win 1:1"
+    );
+  }
+
+  if (programStage == STAGE_USER_BET) {
+    if (input == NaN) {
+      return "Key in a number between 1 to 100 only.";
+    }
+    computerHand = [];
+    userData[0].hand = [];
+    userData[0].bet = Number(input);
+    console.log("userdata[0].bet");
+    console.log(userData[0].bet);
+    programStage = STAGE_DEAL_CARDS;
+    return (
+      "Your have placed a bet of " +
+      userData[0].bet +
+      "<br>Click submit to deal cards."
     );
   }
 
@@ -256,27 +330,33 @@ var main = function (input) {
     dealStartingCards(shuffledDeck);
 
     if (isBlackjack()) {
+      scoreBlackjackMessage = scoreBlackjack();
       programStage = STAGE_GAME_OVER;
       return (
         "Blackjack! User wins. User's hand is:" +
-        outputCards(userHand) +
-        "<br><br>Press Submit to play again."
+        outputCards(userData.hand) +
+        " You added " +
+        scoreBlackjackMessage +
+        " to your score. Your new score is " +
+        userData[0].score +
+        "<br><br>Key in your new bet and click submit to play again."
       );
     }
     programStage = STAGE_HIT_STAND;
     // //if not Blackjack, display user's hand and computer's 1st card. Then continue to user's turn to hit or stand.
+    userTotal = calcHandTotal(userData[0].hand);
     var myOutputValue =
-      userName +
+      userData[0].name +
       "'s hand is: <br>" +
-      outputCards(userHand) +
+      outputCards(userData[0].hand) +
       "<br>" +
-      userName +
+      userData[0].name +
       "'s total points is " +
-      calcHandTotal(userHand) +
+      userTotal +
       "<br><br>Computer's open card is: <br>" +
       outputComputerCard1() +
       "<br>" +
-      userName +
+      userData[0].name +
       "'s turn. Select one of the following options: <br> 1 - hit <br> 2 - stand";
     return myOutputValue;
   }
@@ -284,25 +364,33 @@ var main = function (input) {
   if (programStage == STAGE_HIT_STAND) {
     if (input == "1") {
       console.log("input is 1");
-      userHand.push(shuffledDeck.pop());
+      userData[0].hand.push(shuffledDeck.pop());
+      //MIGHT NOT NEED THIS FUNCTION IF THERE IS CALCHANDTOTAL TO UPDATE USERTOTAL BELOW
       updateUserTotal();
-      if (checkForBust(userHand)) {
-        programStage = STAGE_GAME_OVER;
+      if (checkForBust(userData[0].hand)) {
+        userTotal = calcHandTotal(userData[0].hand);
+        userData[0].score = userData[0].score - userData[0].bet;
+        programStage = STAGE_USER_BET;
         return (
           "User chose to hit, user has bust. Computer wins.<br><br> User's hand is: <br>" +
-          outputCards(userHand) +
+          outputCards(userData[0].hand) +
           "<br>User's total points is " +
-          calcHandTotal(userHand) +
+          userTotal +
           "<br><br> Computer's hand is <br>" +
           outputCards(computerHand) +
-          "<br><br>Hit refresh to play again."
+          "You lost your bet of " +
+          userData[0].bet +
+          "<br>Your new score is " +
+          userData[0].score +
+          "<br><br>Key in your new bet and click submit to play again."
         );
       }
+      userTotal = calcHandTotal(userData[0].hand);
       return (
         "User chose to hit. User's hand is: <br>" +
-        outputCards(userHand) +
+        outputCards(userData[0].hand) +
         "<br>User's total points is " +
-        calcHandTotal(userHand) +
+        userTotal +
         "<br><br>Computer's open card is: <br>" +
         outputComputerCard1() +
         "<br>User's turn. Select one of the following options: <br> 1 - hit <br> 2 - stand"
@@ -313,9 +401,9 @@ var main = function (input) {
 
       return (
         "User chose to stand. User's hand is: <br>" +
-        outputCards(userHand) +
+        outputCards(userData[0].hand) +
         "<br>User's total points is " +
-        calcHandTotal(userHand) +
+        userTotal +
         "<br><br> Computer's hand is<br>" +
         outputCards(computerHand) +
         "<br>Click Submit to see Computer's final hand."
@@ -328,26 +416,34 @@ var main = function (input) {
     startComputerTurn();
 
     if (checkForBust(computerHand)) {
-      programStage = STAGE_GAME_OVER;
+      programStage = STAGE_USER_BET;
+      userData[0].score = userData[0].score + userData[0].bet;
       console.log("computer busted");
       return (
-        "Computer has bust. User wins!<br>" +
+        "Computer has bust. User wins!<br><br>Computer's cards are: <br>" +
         outputCards(computerHand) +
-        "<br>Hit refresh to play again"
+        "<br>You added " +
+        userData[0].bet +
+        " to your score. Your new score is " +
+        userData[0].score +
+        "<br>Key in your new bet and click submit to play again"
       );
     }
     var winnerMessage = determineWinner();
-    programStage = STAGE_GAME_OVER;
+    programStage = STAGE_USER_BET;
     return (
       winnerMessage +
       "<Br><br>User's cards: <br>" +
-      outputCards(userHand) +
+      outputCards(userData[0].hand) +
       "<br>User's total:" +
-      calcHandTotal(userHand) +
+      userTotal +
       "<br><br>Computer's cards:<br>" +
       outputCards(computerHand) +
       "<br>Computer's total:<br>" +
-      computerTotal
+      computerTotal +
+      "<br><br> Your new score is " +
+      userData[0].score +
+      "<br><br> Key in your new bet and click submit to play again"
     );
   }
 };
