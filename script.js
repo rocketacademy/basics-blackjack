@@ -1,40 +1,62 @@
 // set the different game turns
+var GAME_MODE_PLAYER_COUNT = "PLAYER_COUNT";
 var GAME_MODE_USERNAME = "USERNAME";
 var GAME_MODE_BETTING = "BETTING";
 var GAME_MODE_MULTI_PLAYER = "MULTI_PLAYER";
 var GAME_MODE_SPLITS = "SPLITS";
 var GAME_MODE_DEAL_CARDS = "DEAL_CARDS";
+var GAME_MODE_DEAL_COMP_CARDS = "DEAL_COMP_CARDS";
 var GAME_MODE_CHOOSE_ACE_VALUE = "CHOOSE_ACE_VALUE";
 var GAME_MODE_ANALYSE_CARDS = "ANALYSE_CARDS";
 var GAME_MODE_HIT_OR_STAND = "HIT_OR_STAND";
+var GAME_MODE_ANALYSE_CARDS_FURTHER = "ANALYSE_CARDS_FURTHER";
 
 // set the first game mode to input username
-var gameMode = GAME_MODE_USERNAME;
+var gameMode = GAME_MODE_PLAYER_COUNT;
 
 // set different variables and arrays to hold values
 var userInput = "";
+var currentPlayerIndex = 0;
+var playerCount = null;
+var playerNames = [];
 var playerCards = [];
+var allPlayerCards = [];
 var computerCards = [];
 var playerCard1;
 var playerCard2;
 var playerCard;
-var playerCardIndex = 0;
 var computerCard1;
 var computerCard2;
 var computerCard;
-var computerCardIndex = 0;
 var playerCardsTotal = 0;
+var allPlayerCardsTotal = [];
 var computerCardsTotal = 0;
 var numOfPlayerCards = 0;
+var allNumOfPlayerCards = [];
 var numOfComputerCards = 0;
 var playerBankroll = 100;
+var playerBankrolls = [];
 var computerBankroll = 100;
-var betForRound = 0;
+var playerBets = [];
 var computerHasAce = false;
+var hasChosenAce1Value = false;
+var hasChosenAce2Value = false;
+var hasChosenAceValue = false;
+var hasPlayerExited = false;
+var hasPlayerExitedArray = [];
+var hasComputerBust = false;
+var hasRoundEnded = false;
 
 var main = function (input) {
   var myOutputValue = "";
   userInput = input;
+  console.log(`MAIN - userInput is ${userInput}`);
+  console.log(`MAIN - gameMode is ${gameMode}`);
+
+  if (gameMode == GAME_MODE_PLAYER_COUNT) {
+    myOutputValue = inputPlayerCount();
+    return myOutputValue;
+  }
   if (gameMode == GAME_MODE_USERNAME) {
     myOutputValue = inputUsername();
     return myOutputValue;
@@ -43,6 +65,8 @@ var main = function (input) {
     return myOutputValue;
   } else if (gameMode == GAME_MODE_DEAL_CARDS) {
     myOutputValue = dealCards();
+  } else if (gameMode == GAME_MODE_DEAL_COMP_CARDS) {
+    myOutputValue = dealCompCards();
   } else if (gameMode == GAME_MODE_CHOOSE_ACE_VALUE) {
     myOutputValue = chooseAceValue();
   } else if (gameMode == GAME_MODE_ANALYSE_CARDS) {
@@ -50,72 +74,175 @@ var main = function (input) {
   } else if (gameMode == GAME_MODE_HIT_OR_STAND) {
     myOutputValue = hitOrStand();
     return myOutputValue;
+  } else if (gameMode == GAME_MODE_ANALYSE_CARDS_FURTHER) {
+    myOutputValue = analyseCardsFurther();
   }
+
   return myOutputValue;
 };
 
-var inputUsername = function () {
+var inputPlayerCount = function () {
   // user input validation
   if (userInput == "") {
-    return `Welcome to ♣️ Blackjack ♠️! Please enter your name.`;
+    return `Welcome to ♣️ Blackjack ♠️! Please enter number of players.`;
   }
 
-  var outputText = `Welcome to ♣️ Blackjack ♠️, ${userInput}! <br> You have 100 points. <br> Please enter number of points to bet against other players for this round.`;
-  gameMode = GAME_MODE_BETTING;
+  // Set player count
+  playerCount = userInput;
+
+  // push player bank rolls & game status into arrays
+  while (currentPlayerIndex < playerCount) {
+    playerBankrolls.push(playerBankroll);
+    hasPlayerExitedArray.push(hasPlayerExited);
+    currentPlayerIndex += 1;
+  }
+
+  // Back to currentPlayerIndex 0
+  currentPlayerIndex = 0;
+
+  // Moving on to next stage
+  gameMode = GAME_MODE_USERNAME;
+  var outputText = `Alright! There will be ${playerCount} players today. Press submit to continue.`;
   return outputText;
+};
+
+var inputUsername = function () {
+  // First press
+  if (userInput == "") {
+    return `Input the name of player 1`;
+  }
+
+  // Set player names
+  while (currentPlayerIndex < playerCount) {
+    playerNames[currentPlayerIndex] = userInput;
+    currentPlayerIndex += 1;
+
+    if (currentPlayerIndex == playerCount) {
+      var outputText = `Moving on to the next stage - Betting. Press to continue.`;
+
+      // Back to currentPlayerIndex 0
+      currentPlayerIndex = 0;
+
+      // Moving on to next round
+      gameMode = GAME_MODE_BETTING;
+      return outputText;
+    } else {
+      var outputText = `Input the name of player ${currentPlayerIndex + 1}`;
+      return outputText;
+    }
+  }
 };
 
 var inputBet = function () {
+  console.log(`Player ${currentPlayerIndex + 1} entering inputBet`);
+  // First Press
+  if (userInput == "") {
+    return "Player 1, input your bet";
+  }
+
   // end the game if either the player or the computer has no more points.
-  if (playerBankroll == 0) {
+  if (playerBankrolls[currentPlayerIndex] == 0) {
     return `You have no points left. Refresh the page to restart the game.`;
   }
 
-  if (computerBankroll == 0) {
+  if (computerBankroll <= 0) {
     return `The dealer has no points left. Refresh the page to restart the game.`;
   }
 
-  // user input validation
-  if (!Number(userInput) || userInput > playerBankroll) {
-    return `You have ${playerBankroll} points while the dealer has ${computerBankroll} points. Please enter a valid number of points to bet against other players.`;
+  // Set player bets
+  while (currentPlayerIndex < playerCount) {
+    playerBets[currentPlayerIndex] = Number(userInput);
+    var outputText = `Player ${currentPlayerIndex + 1}, You have ${
+      playerBankrolls[currentPlayerIndex]
+    } points. <br> You have chosen to bet ${
+      playerBets[currentPlayerIndex]
+    } points. <br>`;
+    currentPlayerIndex += 1;
+
+    // When all players have set bets
+    if (currentPlayerIndex == playerCount) {
+      outputText += `Moving on to the next stage - Deal Cards. <br> Player 1, Press submit to continue.`;
+
+      // Back to currentPlayerIndex 0
+      currentPlayerIndex = 0;
+
+      // Moving on to next round
+      gameMode = GAME_MODE_DEAL_CARDS;
+      return outputText;
+    } else {
+      outputText += `Next player, input your bet.`;
+      return outputText;
+    }
   }
-
-  // restart variables & arrays, except for bankrolls because new round is being played.
-  playerCards = [];
-  computerCards = [];
-  playerCard1 = null;
-  playerCard2 = null;
-  playerCard = null;
-  playerCardIndex = 0;
-  computerCard1 = null;
-  computerCard2 = null;
-  computerCard = null;
-  computerCardIndex = 0;
-  playerCardsTotal = 0;
-  computerCardsTotal = 0;
-  numOfPlayerCards = 0;
-  numOfComputerCards = 0;
-  computerHasAce = false;
-
-  betForRound = Number(userInput);
-  var outputText = `You have chosen to bet ${betForRound} points against other players for this round. <br> Press submit to deal cards.`;
-  gameMode = GAME_MODE_DEAL_CARDS;
-  return outputText;
 };
 
 var dealCards = function () {
-  // user clicks submit to deal cards (face up)
-  playerCard1 = deck.pop(); // face up
-  numOfPlayerCards += 1;
+  // players take turn to deal cards
+  while (currentPlayerIndex < playerCount) {
+    // Empty the playerCards array & restart the
+    playerCards = [];
+    numOfPlayerCards = 0;
+
+    playerCard1 = deck.pop(); // face up
+    numOfPlayerCards += 1;
+    playerCard2 = deck.pop(); // face up
+    numOfPlayerCards += 1;
+
+    // the cards are displayed to the player
+    var outputText = `Player ${currentPlayerIndex + 1}, your cards are: <br> ${
+      playerCard1.name
+    } of ${playerCard1.suitEmoji} <br> ${playerCard2.name} of ${
+      playerCard2.suitEmoji
+    }. <br><br> `;
+
+    // push player's cards to player cards array
+    playerCards.push(playerCard1);
+    playerCards.push(playerCard2);
+    allPlayerCards.push(playerCards);
+    playerCardsTotal = Number(playerCard1.rank) + Number(playerCard2.rank);
+    allPlayerCardsTotal.push(playerCardsTotal);
+    allNumOfPlayerCards.push(numOfPlayerCards);
+
+    // If player gets ace cards, player chooses ace's value, i.e. either 1 or 11.
+    if (playerCard1.name == "ace" && playerCard2.name == "ace") {
+      outputText += `Please choose the values of both of your ace cards, either "1" or "11", starting from the first ace card.`;
+      gameMode = GAME_MODE_CHOOSE_ACE_VALUE;
+      return outputText;
+    }
+
+    if (playerCard1.name == "ace" || playerCard2.name == "ace") {
+      outputText += `Please choose the value of your ace card, i.e. either "1" or "11".`;
+      gameMode = GAME_MODE_CHOOSE_ACE_VALUE;
+      return outputText;
+    }
+
+    currentPlayerIndex += 1;
+
+    if (currentPlayerIndex == playerCount) {
+      outputText += `Press submit to see dealer's face-up cards.`;
+
+      // Back to currentPlayerIndex 0
+      currentPlayerIndex = 0;
+
+      // Empty the playerCards array
+      playerCards = [];
+
+      // Moving on to next round
+      gameMode = GAME_MODE_DEAL_COMP_CARDS;
+      return outputText;
+    } else {
+      outputText += `Next player, press submit to deal your cards.`;
+    }
+    return outputText;
+  }
+};
+
+var dealCompCards = function () {
+  // the dealer deals his cards
   computerCard1 = deck.pop(); // face up
   numOfComputerCards += 1;
-  playerCard2 = deck.pop(); // face up
-  numOfPlayerCards += 1;
   computerCard2 = deck.pop(); // face down
   numOfComputerCards += 1;
-
-  // the cards are displayed to the user
-  var outputText = `Your cards are ${playerCard1.name} of ${playerCard1.suit} and ${playerCard2.name} of ${playerCard2.suit}. <br> The dealer's face-up card is ${computerCard1.name} of ${computerCard1.suit}. <br><br> `;
 
   // dealer's first ace counts as 11 unless it busts the hand. Subsequent aces count as ones.
   // 1. both dealer's cards are aces.
@@ -123,124 +250,37 @@ var dealCards = function () {
     computerCard1.rank = 11;
     computerCard2.rank = 1;
   } // 2. one of the dealer's cards is ace.
-  else if (computerCard1.name == "ace" && computerCard2.name != "ace") {
+  else if (computerCard1.name == "ace") {
     computerCard1.rank = 11;
-  } else if (computerCard2.name == "ace" && computerCard1.name != "ace") {
+  } else if (computerCard2.name == "ace") {
     computerCard2.rank = 11;
   }
 
-  // aces can be 1 or 11 (player choose value throughout the round if there is one)
-  if (playerCard1.name == "ace") {
-    outputText += `Please enter "1" to play your first card ace with face value of 1, <br> OR enter "11" to play ace with face value of 11.`;
-    gameMode = GAME_MODE_CHOOSE_ACE_VALUE;
-    return outputText;
-  }
+  // push dealer's cards to dealer cards array
+  computerCards.push(computerCard1);
+  computerCards.push(computerCard2);
+  computerCardsTotal = computerCard1.rank + computerCard2.rank;
 
-  if (playerCard2.name == "ace") {
-    outputText += `Please enter "1" to play second card ace with face value of 1, <br> OR enter "11" to play ace with face value of 11.`;
-    gameMode = GAME_MODE_CHOOSE_ACE_VALUE;
-    return outputText;
-  }
-
-  outputText += `Press submit to continue the game and see your cards total.`;
-
-  // Move the game forward
-  gameMode = GAME_MODE_ANALYSE_CARDS;
-  return outputText;
-};
-
-var chooseAceValue = function () {
-  var outputText = "";
-
-  // if player's first card is ace
-  if (playerCard1.name == "ace" && userInput == "1") {
-    playerCard1.rank = 1;
-    outputText += `You chose your first card's ace's face value to be 1.`;
-    gameMode = GAME_MODE_ANALYSE_CARDS;
-  } else if (playerCard1.name == "ace" && userInput == "11") {
-    playerCard1.rank = 11;
-    outputText += `You chose your first card's ace's face value to be 11.`;
-    gameMode = GAME_MODE_ANALYSE_CARDS;
-  } // if player's second card is ace
-  else if (playerCard2.name == "ace" && userInput == "1") {
-    playerCard2.rank = 1;
-    outputText += `You chose your second card's ace's face value to be 1.`;
-    gameMode = GAME_MODE_ANALYSE_CARDS;
-  } else if (playerCard2.name == "ace" && userInput == "11") {
-    playerCard2.rank = 11;
-    outputText += `You chose your second card's ace's face value to be 11.`;
-    gameMode = GAME_MODE_ANALYSE_CARDS;
-  } // if player's other card is ace
-  else if (playerCard.name == "ace" && userInput == "1") {
-    playerCard.rank = 1;
-    playerCardsTotal += playerCard.rank;
-    outputText += `You chose your ace's face value to be 1.`;
-    gameMode = GAME_MODE_HIT_OR_STAND;
-  } else if (playerCard.name == "ace" && userInput == "11") {
-    playerCard.rank = 11;
-    playerCardsTotal += playerCard.rank;
-    outputText += `You chose your ace's face value to be 11.`;
-    gameMode = GAME_MODE_HIT_OR_STAND;
-  }
-
-  outputText += `<br> Press submit to continue the game.`;
-
-  return outputText;
-};
-
-// anaylse cards for first two cards
-var analyseCards = function () {
-  // Total up the player's cards and computer's cards
-  if (numOfPlayerCards == 2) {
-    playerCardsTotal = playerCard1.rank + playerCard2.rank;
-    computerCardsTotal = computerCard1.rank + computerCard2.rank;
-
-    // Push player cards and dealer cards into arrays.
-    playerCards.push(playerCard1);
-    playerCards.push(playerCard2);
-    computerCards.push(computerCard1);
-    computerCards.push(computerCard2);
-  }
-
-  var outputText = `Your cards total ${playerCardsTotal}. <br><br>`;
-
-  // The cards are analysed for game winning conditions
-  if (playerCardsTotal == 21) {
-    playerBankroll += betForRound;
-    computerBankroll -= betForRound;
-    outputText += `You win! <br> Your points: ${playerBankroll} <br> The dealer's points: ${computerBankroll} <br><br> Press submit.`;
-    gameMode = GAME_MODE_BETTING;
-    return outputText;
-  } else if (playerCardsTotal > 21) {
-    playerBankroll -= betForRound;
-    computerBankroll += betForRound;
-    outputText += `You bust! <br> Your points: ${playerBankroll} <br> The dealer's points: ${computerBankroll} <br><br> Press submit.`;
-    gameMode = GAME_MODE_BETTING;
-    return outputText;
-  } else {
-    // the user decides whether to hit or stand using the submit button to submit their choice
-    outputText += `Do you want another card from the deck? <br> If yes, please enter "hit". <br> If no, please enter "stand".`;
-  }
-
-  gameMode = GAME_MODE_HIT_OR_STAND;
-  return outputText;
-};
-
-// after choosing hit or stand, the analysis of cards will be done here
-var hitOrStand = function () {
-  var outputText = "";
-
-  // the computer decides to hit or stand automatically based on the game rules:
-  // 1. the computer has to stand if their hand is 17 or higher
-  // 2. the computer has to hit if their hand is below 17
+  // the dealer decides to hit or stand automatically based on the game rules.
+  // 1. the dealer has to stand if their hand is 17 or higher
+  // 2. the dealer has to hit if their hand is below 17
+  // TODO(CHANGE BACK TO 17)
   while (computerCardsTotal < 17) {
+    console.log(
+      `DEALCOMPCARDS - Still at ${computerCardsTotal} points, less than 17 points, getting more cards.`
+    );
     computerCard = deck.pop();
     numOfComputerCards += 1;
+
+    console.log(`DEALCOMPCARDS - Got ${computerCard.name}.`);
+
+    // push dealer's card into computerCards array.
+    computerCards.push(computerCard);
 
     // if dealer gets ace, need to analyse whether it's dealer's first ace or not.
     if (computerCard.name == "ace") {
       var counter = 0;
-      while (counter < numOfComputerCards - 1) {
+      while (counter < numOfComputerCards) {
         if (computerCards[counter].name == "ace") {
           computerHasAce = true;
           computerCard.rank = 1; // dealer's subsequent ace counts as one
@@ -251,120 +291,585 @@ var hitOrStand = function () {
       }
     }
 
-    // push dealer's card into computerCards array.
-    computerCards.push(computerCard);
+    // Calculate
     computerCardsTotal += computerCard.rank;
+
+    console.log(`DEALCOMPCARDS - New value is ${computerCardsTotal}`);
+
+    // Decide if computer bust or not
+    if (computerCardsTotal > 21) {
+      console.log(`DEALCOMPCARDS - COMPUTER BUST. BUT DOING NOTHING.`);
+    }
   }
 
-  // if user chooses to hit
-  if (userInput == "hit") {
-    playerCard = deck.pop();
-    numOfPlayerCards += 1;
-    playerCards.push(playerCard);
-    playerCardIndex = numOfPlayerCards - 1;
+  var outputText = `The dealer's face-up card is: <br> ${computerCard1.name} of ${computerCard1.suitEmoji}. <br><br> Moving on to the next stage - Analysing Cards. <br> Player 1, Press submit to continue.`;
 
-    // if user gets ace
-    if (playerCards[playerCardIndex].name == "ace") {
-      gameMode = GAME_MODE_CHOOSE_ACE_VALUE;
-      console.log(
-        "playerCards[playerCardIndex]: " + playerCards[playerCardIndex].name
-      );
-      outputText += `Your card is ${playerCards[playerCardIndex].name} of ${playerCards[playerCardIndex].suit}. Please enter "1" to play ace with face value of 1, <br> OR enter "11" to play ace with face value of 11.`;
+  // Back to currentPlayerIndex 0
+  currentPlayerIndex = 0;
+
+  // Moving on to next round
+  gameMode = GAME_MODE_ANALYSE_CARDS;
+
+  return outputText;
+};
+
+var chooseAceValue = function () {
+  console.log(
+    `CHOOSEACEVALUE - Player ${currentPlayerIndex + 1} entered the function`
+  );
+
+  // if both of player's cards are aces, need to choose value for both
+  if (allNumOfPlayerCards[currentPlayerIndex] == 2) {
+    console.log(
+      `HITORSTAND - Player ${
+        currentPlayerIndex + 1
+      } has only 2 cards (Came here from dealCards())`
+    );
+    if (
+      playerCard1.name == "ace" &&
+      playerCard2.name == "ace" &&
+      hasChosenAce1Value == false &&
+      hasChosenAce2Value == false
+    ) {
+      if (Number(userInput) == 1) {
+        playerCard1.rank = 1;
+        hasChosenAce1Value = true;
+        playerCardsTotal = Number(playerCard1.rank) + Number(playerCard2.rank);
+        allPlayerCardsTotal[currentPlayerIndex] = playerCardsTotal;
+        return `You chose your first ace's value to be 1. <br> Please enter the value of your second ace: either "1" or "11".`;
+      } else if (Number(userInput) == 11) {
+        playerCard1.rank = 11;
+        hasChosenAce1Value = true;
+        playerCardsTotal = Number(playerCard1.rank) + Number(playerCard2.rank);
+        allPlayerCardsTotal[currentPlayerIndex] = playerCardsTotal;
+        return `You chose your first ace's value to be 11. <br> Please enter the value of your second ace: either "1" or "11".`;
+      } else {
+        return 'Please enter a valid ace value, either "1" or "11".';
+      }
+    } else if (
+      playerCard1.name == "ace" &&
+      playerCard2.name == "ace" &&
+      hasChosenAce1Value == true &&
+      hasChosenAce2Value == false
+    ) {
+      if (Number(userInput) == 1) {
+        playerCard2.rank = 1;
+        hasChosenAce2Value = true;
+        playerCardsTotal = Number(playerCard1.rank) + Number(playerCard2.rank);
+        allPlayerCardsTotal[currentPlayerIndex] = playerCardsTotal;
+        if (currentPlayerIndex < playerCount - 1) {
+          gameMode = GAME_MODE_DEAL_CARDS;
+        } else if (currentPlayerIndex == playerCount - 1) {
+          gameMode = GAME_MODE_DEAL_COMP_CARDS;
+        }
+        currentPlayerIndex += 1;
+        return `You chose your second ace's value to be 1. <br> Please submit to continue the game.`;
+      } else if (Number(userInput) == 11) {
+        playerCard2.rank = 11;
+        hasChosenAce2Value = true;
+        playerCardsTotal = Number(playerCard1.rank) + Number(playerCard2.rank);
+        allPlayerCardsTotal[currentPlayerIndex] = playerCardsTotal;
+        if (currentPlayerIndex < playerCount - 1) {
+          gameMode = GAME_MODE_DEAL_CARDS;
+        } else if (currentPlayerIndex == playerCount - 1) {
+          gameMode = GAME_MODE_DEAL_COMP_CARDS;
+        }
+        currentPlayerIndex += 1;
+        return `You chose your second ace's value to be 11. <br> Press submit to continue the game.`;
+      } else {
+        return 'Please enter a valid ace value, either "1" or "11".';
+      }
+    }
+
+    // if player's first card is ace
+    if (
+      playerCard1.name == "ace" &&
+      playerCard2.name != "ace" &&
+      hasChosenAce1Value == false
+    ) {
+      if (Number(userInput) == 1) {
+        playerCard1.rank = 1;
+        hasChosenAce1Value = true;
+        playerCardsTotal = Number(playerCard1.rank) + Number(playerCard2.rank);
+        allPlayerCardsTotal[currentPlayerIndex] = playerCardsTotal;
+        if (currentPlayerIndex < playerCount - 1) {
+          gameMode = GAME_MODE_DEAL_CARDS;
+        } else if (currentPlayerIndex == playerCount - 1) {
+          gameMode = GAME_MODE_DEAL_COMP_CARDS;
+        }
+        currentPlayerIndex += 1;
+        return `You chose your ace's value to be 1. <br> Please submit to continue the game.`;
+      } else if (Number(userInput) == 11) {
+        playerCard1.rank = 11;
+        hasChosenAce1Value = true;
+        playerCardsTotal = Number(playerCard1.rank) + Number(playerCard2.rank);
+        allPlayerCardsTotal[currentPlayerIndex] = playerCardsTotal;
+        if (currentPlayerIndex < playerCount - 1) {
+          gameMode = GAME_MODE_DEAL_CARDS;
+        } else if (currentPlayerIndex == playerCount - 1) {
+          gameMode = GAME_MODE_DEAL_COMP_CARDS;
+        }
+        currentPlayerIndex += 1;
+        return `You chose your ace's value to be 11. <br> Press submit to continue the game.`;
+      } else {
+        return 'Please enter a valid ace value, either "1" or "11".';
+      }
+    }
+
+    // if player's second card is ace
+    if (
+      playerCard2.name == "ace" &&
+      playerCard1.name != "ace" &&
+      hasChosenAce2Value == false
+    ) {
+      if (Number(userInput) == 1) {
+        playerCard2.rank = 1;
+        hasChosenAce2Value = true;
+        playerCardsTotal = Number(playerCard1.rank) + Number(playerCard2.rank);
+        allPlayerCardsTotal[currentPlayerIndex] = playerCardsTotal;
+        if (currentPlayerIndex < playerCount - 1) {
+          gameMode = GAME_MODE_DEAL_CARDS;
+        } else if (currentPlayerIndex == playerCount - 1) {
+          gameMode = GAME_MODE_DEAL_COMP_CARDS;
+        }
+        currentPlayerIndex += 1;
+        return `You chose your ace's value to be 1. <br> Please submit to continue the game.`;
+      } else if (Number(userInput) == 11) {
+        playerCard2.rank = 11;
+        hasChosenAce2Value = true;
+        playerCardsTotal = Number(playerCard1.rank) + Number(playerCard2.rank);
+        allPlayerCardsTotal[currentPlayerIndex] = playerCardsTotal;
+        if (currentPlayerIndex < playerCount - 1) {
+          gameMode = GAME_MODE_DEAL_CARDS;
+        } else if (currentPlayerIndex == playerCount - 1) {
+          gameMode = GAME_MODE_DEAL_COMP_CARDS;
+        }
+        currentPlayerIndex += 1;
+        return `You chose your ace's value to be 11. <br> Press submit to continue the game.`;
+      } else {
+        return 'Please enter a valid ace value, either "1" or "11".';
+      }
+    }
+  }
+
+  if (allNumOfPlayerCards[currentPlayerIndex] > 2) {
+    console.log(
+      `HITORSTAND - Player ${
+        currentPlayerIndex + 1
+      } has MORE than 2 cards (came here from hitOrStand())`
+    );
+    // if player's other card is ace
+    if (
+      playerCard.name == "ace" &&
+      userInput == "1" &&
+      hasChosenAceValue == false
+    ) {
+      playerCard.rank = 1;
+      hasChosenAceValue = true;
+      gameMode = GAME_MODE_ANALYSE_CARDS_FURTHER;
+      // TODO (Might not need to increase currentPlayerIndex)
+      // currentPlayerIndex += 1;
+      return `Player ${currentPlayerIndex}, you have chosen your ace's face value to be 1. <br> Press submit to continue.`;
+    } else if (
+      playerCard.name == "ace" &&
+      userInput == "11" &&
+      hasChosenAceValue == false
+    ) {
+      playerCard.rank = 11;
+      allPlayerCardsTotal[currentPlayerIndex] += 10;
+      hasChosenAceValue = true;
+      gameMode = GAME_MODE_ANALYSE_CARDS_FURTHER;
+      // TODO (Might not need to increase currentPlayerIndex)
+      // currentPlayerIndex += 1;
+      return `Player ${currentPlayerIndex}, you have chosen your ace's value to be 11. <br> Press submit to continue.`;
+    }
+  }
+};
+
+var analyseCards = function () {
+  var outputText = `Player ${currentPlayerIndex + 1}, `;
+  // The cards are analysed for game winning conditions
+  console.log(`Player ${currentPlayerIndex + 1} ARRIVED AT ANALYZECARDS`);
+  while (currentPlayerIndex < playerCount) {
+    // if the player gets blackjack, the player wins
+    if (
+      allPlayerCardsTotal[currentPlayerIndex] == 21 &&
+      hasPlayerExitedArray[currentPlayerIndex] == false
+    ) {
+      console.log(`Player ${currentPlayerIndex + 1} won blackjack`);
+      playerBankrolls[currentPlayerIndex] += playerBets[currentPlayerIndex];
+      computerBankroll -= playerBets[currentPlayerIndex];
+      hasPlayerExitedArray[currentPlayerIndex] = true;
+      outputText += `you win! <br> Your points: ${playerBankrolls[currentPlayerIndex]} <br> The dealer's points: ${computerBankroll} <br><br> Next player, press submit to continue.`;
+      currentPlayerIndex += 1;
+      // Decide whether or not to JUMP forward to a possible reset via analyseCardsFurther()
+      if (currentPlayerIndex == playerCount) {
+        gameMode = GAME_MODE_ANALYSE_CARDS_FURTHER;
+      }
       return outputText;
     }
 
-    playerCardsTotal += playerCard.rank;
-    outputText += `You chose to take another card, which is ${playerCards[playerCardIndex].name} of ${playerCards[playerCardIndex].suit}.<br>`;
-  } // if user chooses to stand
-  else if (userInput == "stand") {
-    playerCardIndex = numOfPlayerCards - 1;
-    outputText = `You chose to end your turn. <br>`;
-  } // user input validation
-  else {
-    outputText = `Please enter "hit" to deal another card from the deck, or enter "stand" to end your turn and stop without taking a card.<br>`;
+    //if the player busts, the player loses. even if the dealer also bust, the dealer still wins.
+    // This condition will never be true
+    if (
+      allPlayerCardsTotal[currentPlayerIndex] > 21 &&
+      hasPlayerExitedArray[currentPlayerIndex] == false
+    ) {
+      console.log(
+        `Player ${
+          currentPlayerIndex + 1
+        } goes into a condition that should never be true.`
+      );
+      playerBankrolls[currentPlayerIndex] -= playerBets[currentPlayerIndex];
+      computerBankroll += playerBets[currentPlayerIndex];
+      hasPlayerExitedArray[currentPlayerIndex] = true;
+      outputText += `you bust! <br> Your cards total: ${
+        allPlayerCardsTotal[currentPlayerIndex]
+      } <br>Your points: ${
+        playerBankrolls[currentPlayerIndex]
+      } <br><br> The dealer's face-down card: ${
+        computerCards[numOfComputerCards - 1].name
+      } of ${
+        computerCards[numOfComputerCards - 1].suitEmoji
+      }. <br> The dealer's cards total: ${computerCardsTotal}.<br> The dealer's points: ${computerBankroll} <br><br> Next player, press submit to continue.`;
+      currentPlayerIndex += 1;
+      // Decide whether or not to JUMP forward to a possible reset via analyseCardsFurther()
+      if (currentPlayerIndex == playerCount) {
+        gameMode = GAME_MODE_ANALYSE_CARDS_FURTHER;
+      }
+      return outputText;
+    }
+
+    // Continues the game
+    // else, the player decides whether to hit or stand
+    if (
+      allPlayerCardsTotal[currentPlayerIndex] < 21 &&
+      hasPlayerExitedArray[currentPlayerIndex] == false
+    ) {
+      console.log(
+        `Player ${
+          currentPlayerIndex + 1
+        } entering hit or stand mode with total value of ${
+          allPlayerCardsTotal[currentPlayerIndex]
+        }`
+      );
+      gameMode = GAME_MODE_HIT_OR_STAND;
+      outputText += `do you want another card from the deck? <br> If yes, please enter "hit". <br> If no, please enter "stand".`;
+      return outputText;
+    }
+
+    return "UNEXPECTED STATE!";
   }
 
-  outputText += `Your cards are: <br>`;
+  currentPlayerIndex = 0;
+};
+
+// after choosing hit or stand, the analysis of cards will be done here
+var hitOrStand = function () {
+  // user input validation
+  // if (userInput != "hit" || userInput != "stand") {
+  //   return `Please enter "hit" to deal another card, <br> OR enter "stand" to hold your total and end your turn.<br>`;
+  // }
+
+  console.log(`Player ${currentPlayerIndex + 1} enters hit or stand function`);
+  var outputText = `Player ${currentPlayerIndex + 1}, `;
+
+  // if user chooses to hit
+  if (userInput == "hit") {
+    console.log(`HITORSTAND - Player ${currentPlayerIndex + 1} input hit`);
+    playerCard = deck.pop();
+    allPlayerCards[currentPlayerIndex].push(playerCard);
+    allNumOfPlayerCards[currentPlayerIndex] += 1;
+    allPlayerCardsTotal[currentPlayerIndex] += playerCard.rank;
+    console.log(
+      `HITORSTAND - Player ${currentPlayerIndex + 1} got ${
+        playerCard.name
+      } and now has ${allNumOfPlayerCards[currentPlayerIndex]} cards`
+    );
+    outputText += `you have chosen to hit. <br> Your card is: ${playerCard.name} of ${playerCard.suitEmoji}.<br>`;
+
+    // if user gets ace
+    if (playerCard.name == "ace" && hasChosenAceValue == false) {
+      console.log(`Player ${currentPlayerIndex + 1} got ace`);
+      gameMode = GAME_MODE_CHOOSE_ACE_VALUE;
+      playerCard1 = null;
+      playerCard2 = null;
+      outputText += `Please choose your ace's value by entering either "1" or "11".`;
+      return outputText;
+    }
+
+    outputText += `Press submit to continue.`;
+    gameMode = GAME_MODE_ANALYSE_CARDS_FURTHER;
+    if (currentPlayerIndex == playerCount) {
+      console.log(
+        `Inside hit or stand - currentplayerindex equals player count. resetting currentPlayerIndex to 0`
+      );
+      currentPlayerIndex = 0;
+    }
+    return outputText;
+  }
+
+  // if user chooses to stand
+  if (userInput == "stand") {
+    console.log(`Player ${currentPlayerIndex + 1} chose stand`);
+    gameMode = GAME_MODE_ANALYSE_CARDS_FURTHER;
+    hasPlayerExitedArray[currentPlayerIndex] = true;
+    outputText += `you have chosen to stand. <br> Press submit to continue.`;
+    return outputText;
+  }
+
+  return outputText;
+};
+
+var analyseCardsFurther = function () {
+  console.log(
+    `Player ${currentPlayerIndex + 1} ARRIVED AT ANALYZECARDSFURTHER`
+  );
+  var outputText = `Player ${currentPlayerIndex + 1}, `;
+  // The cards are analysed for game winning conditions
+  while (currentPlayerIndex < playerCount) {
+    console.log(
+      `ANALYZECARDSFURTHER - Still at currentPlayerIndex ${currentPlayerIndex}. Entering while loop`
+    );
+
+    // if the player gets blackjack, the player wins
+    if (
+      allPlayerCardsTotal[currentPlayerIndex] == 21 &&
+      hasPlayerExitedArray[currentPlayerIndex] == false
+    ) {
+      console.log(
+        `ANALYZECARDSFURTHER - Player ${currentPlayerIndex + 1} won blackjack`
+      );
+      playerBankrolls[currentPlayerIndex] += playerBets[currentPlayerIndex];
+      computerBankroll -= playerBets[currentPlayerIndex];
+      hasPlayerExitedArray[currentPlayerIndex] = true;
+      outputText += `you win! <br> Your points: ${playerBankrolls[currentPlayerIndex]} <br> The dealer's points: ${computerBankroll} <br><br> Next player, press submit to continue.`;
+      currentPlayerIndex += 1;
+      // Decide whether or not to go back to analyseCards (After incrementing currentPlayerIndex)
+      if (currentPlayerIndex < playerCount) {
+        gameMode = GAME_MODE_ANALYSE_CARDS;
+      }
+      return outputText;
+    }
+
+    //if the player busts, the player loses. even if the dealer also bust, the dealer still wins.
+    if (
+      allPlayerCardsTotal[currentPlayerIndex] > 21 &&
+      hasPlayerExitedArray[currentPlayerIndex] == false
+    ) {
+      console.log(
+        `ANALYZECARDSFURTHER - Player ${
+          currentPlayerIndex + 1
+        } in AnalyzeCardsFurther - Player bust`
+      );
+      playerBankrolls[currentPlayerIndex] -= playerBets[currentPlayerIndex];
+      computerBankroll += playerBets[currentPlayerIndex];
+      hasPlayerExitedArray[currentPlayerIndex] = true;
+      outputText += `you bust! <br> Your cards total: ${
+        allPlayerCardsTotal[currentPlayerIndex]
+      } <br>Your points: ${
+        playerBankrolls[currentPlayerIndex]
+      } <br><br> The dealer's face-down card: ${
+        computerCards[numOfComputerCards - 1].name
+      } of ${
+        computerCards[numOfComputerCards - 1].suitEmoji
+      }. <br> The dealer's cards total: ${computerCardsTotal}.<br> The dealer's points: ${computerBankroll} <br><br> Next player, press submit to continue.`;
+      currentPlayerIndex += 1;
+      // Decide whether or not to go back to analyseCards (After incrementing currentPlayerIndex)
+      if (currentPlayerIndex < playerCount) {
+        gameMode = GAME_MODE_ANALYSE_CARDS;
+      }
+
+      return outputText;
+    }
+
+    // Continues game
+    // else, the player decides whether to hit or stand
+    if (
+      allPlayerCardsTotal[currentPlayerIndex] < 21 &&
+      hasPlayerExitedArray[currentPlayerIndex] == false
+    ) {
+      console.log(
+        `ANALYZECARDSFURTHER - Player ${
+          currentPlayerIndex + 1
+        } - Ask player to hit or stand again with total value of ${
+          allPlayerCardsTotal[currentPlayerIndex]
+        }`
+      );
+      gameMode = GAME_MODE_HIT_OR_STAND;
+      outputText += `do you want another card from the deck? <br> If yes, please enter "hit". <br> If no, please enter "stand".`;
+      return outputText;
+    }
+
+    // if the dealer exceeds 21 and bust, the player wins
+    if (
+      computerCardsTotal > 21 &&
+      allPlayerCardsTotal[currentPlayerIndex] <= 21 &&
+      hasPlayerExitedArray[currentPlayerIndex] == true
+    ) {
+      console.log(
+        `ANALYZECARDSFURTHER - Player ${
+          currentPlayerIndex + 1
+        } - Dealer exceeds 21 and bust`
+      );
+      playerBankrolls[currentPlayerIndex] += playerBets[currentPlayerIndex];
+      computerBankroll -= playerBets[currentPlayerIndex];
+      hasComputerBust = true;
+      outputText += `<br> The dealer's face-down card is ${
+        computerCards[numOfComputerCards - 1].name
+      } of ${
+        computerCards[numOfComputerCards - 1].suitEmoji
+      }. <br> The dealer's cards total ${computerCardsTotal}. <br><br> The dealer bust! You win! <br>Your points: ${
+        playerBankrolls[currentPlayerIndex]
+      } <br> The dealer's points: ${computerBankroll} <br><br> Press submit.`;
+      currentPlayerIndex += 1;
+      // Decide whether or not to go back to analyseCards (After incrementing currentPlayerIndex)
+      if (currentPlayerIndex < playerCount) {
+        gameMode = GAME_MODE_ANALYSE_CARDS;
+      }
+      // This block of code seems inconsistent. It goes to betting when the rest does not
+      // if (currentPlayerIndex == playerCount) {
+      //   gameMode = GAME_MODE_BETTING;
+      // }
+      return outputText;
+    }
+
+    // the dealer who is closer to 21 wins the hand
+    if (
+      computerCardsTotal <= 21 &&
+      computerCardsTotal > allPlayerCardsTotal[currentPlayerIndex] &&
+      hasPlayerExitedArray[currentPlayerIndex] == true
+    ) {
+      console.log(
+        `ANALYZECARDSFURTHER - Player ${
+          currentPlayerIndex + 1
+        } - the dealer who is closer to 21 wins the hand`
+      );
+      playerBankrolls[currentPlayerIndex] -= playerBets[currentPlayerIndex];
+      computerBankroll += playerBets[currentPlayerIndex];
+      outputText += `<br> The dealer
+    s face-down card is ${computerCards[numOfComputerCards - 1].name} of ${
+        computerCards[numOfComputerCards - 1].suit
+      }. <br> The dealer's cards total ${computerCardsTotal}. <br><br> You lose! <br> Your points: ${
+        playerBankrolls[currentPlayerIndex]
+      } <br> The dealer's points: ${computerBankroll} <br><br> Press submit.`;
+      currentPlayerIndex += 1;
+      // Decide whether or not to go back to analyseCards (After incrementing currentPlayerIndex)
+      if (currentPlayerIndex < playerCount) {
+        gameMode = GAME_MODE_ANALYSE_CARDS;
+      }
+      return outputText;
+    }
+
+    // the player who is closer to 21 wins the hand
+    if (
+      allPlayerCardsTotal[currentPlayerIndex] <= 21 &&
+      allPlayerCardsTotal[currentPlayerIndex] > computerCardsTotal &&
+      hasPlayerExitedArray[currentPlayerIndex] == true
+    ) {
+      console.log(
+        `ANALYZECARDSFURTHER - Player ${
+          currentPlayerIndex + 1
+        } - the player who is closer to 21 wins the hand`
+      );
+      playerBankrolls[currentPlayerIndex] += playerBets[currentPlayerIndex];
+      computerBankroll -= playerBets[currentPlayerIndex];
+      outputText += `<br> The dealer
+    s face-down card is ${computerCards[numOfComputerCards - 1].name} of ${
+        computerCards[numOfComputerCards - 1].suit
+      }. <br> The dealer's cards total ${computerCardsTotal}. <br><br> You win! <br> Your points: ${
+        playerBankrolls[currentPlayerIndex]
+      } <br> The dealer's points: ${computerBankroll}. <br><br> Press submit.`;
+      currentPlayerIndex += 1;
+      // Decide whether or not to go back to analyseCards (After incrementing currentPlayerIndex)
+      if (currentPlayerIndex < playerCount) {
+        gameMode = GAME_MODE_ANALYSE_CARDS;
+      }
+      return outputText;
+    }
+
+    // when the player's cards and computer's cards totals are the same, it is a tie
+    if (
+      computerCardsTotal == allPlayerCardsTotal[currentPlayerIndex] &&
+      computerCardsTotal <= 21 &&
+      hasPlayerExitedArray[currentPlayerIndex] == true
+    ) {
+      console.log(
+        `ANALYZECARDSFURTHER - Player ${
+          currentPlayerIndex + 1
+        } - when the player's cards and computer's cards totals are the same, it is a tie`
+      );
+      outputText += `<br> The dealer
+    s face-down card is ${computerCards[numOfComputerCards - 1].name} of ${
+        computerCards[numOfComputerCards - 1].suit
+      }. <br> The dealer's cards total ${computerCardsTotal}. <br><br> It's a tie! <br><br> Your points: ${
+        playerBankrolls[currentPlayerIndex]
+      } <br> The dealer's points: ${computerBankroll}.<br><br> Press submit.`;
+      currentPlayerIndex += 1;
+      // Decide whether or not to go back to analyseCards (After incrementing currentPlayerIndex)
+      if (currentPlayerIndex < playerCount) {
+        gameMode = GAME_MODE_ANALYSE_CARDS;
+      }
+      return outputText;
+    } else {
+      return `analyzeCardsFurther ERROR!`;
+    }
+  }
+
+  // Reset
+  console.log(
+    `ANALYZECARDSFURTHER - Already at currentPlayerIndex ${currentPlayerIndex}. Not doing while loop. Doing reset.`
+  );
 
   var counter = 0;
-  while (counter < numOfPlayerCards) {
-    outputText += `${playerCards[counter].name} of ${playerCards[counter].suit} <br>`;
+  while (counter < playerCount) {
+    if (hasPlayerExitedArray[counter] == true) {
+      hasRoundEnded = true;
+    } else if (hasPlayerExitedArray[counter] == false) {
+      hasRoundEnded = false;
+      counter = playerCount;
+    }
     counter += 1;
   }
 
-  outputText += `<br>The dealer's face-up cards are: <br>`;
+  if (hasRoundEnded == true) {
+    gameMode = GAME_MODE_BETTING;
+    currentPlayerIndex = 0;
+    userInput = "";
+    playerCards = [];
+    allPlayerCards = [];
+    computerCards = [];
+    playerCard1 = null;
+    playerCard2 = null;
+    playerCard = null;
+    computerCard1 = null;
+    computerCard2 = null;
+    computerCard = null;
+    playerCardsTotal = 0;
+    allPlayerCardsTotal = [];
+    computerCardsTotal = 0;
+    numOfPlayerCards = 0;
+    allNumOfPlayerCards = [];
+    numOfComputerCards = 0;
+    playerBets = [];
+    computerHasAce = false;
+    hasChosenAce1Value = false;
+    hasChosenAce2Value = false;
+    hasChosenAceValue = false;
+    hasPlayerExited = false;
+    // Reset hasPlayerExitedArray
+    hasPlayerExitedArray = [];
+    currentPlayerIndex = 0;
+    while (currentPlayerIndex < playerCount) {
+      hasPlayerExitedArray.push(false);
+      currentPlayerIndex += 1;
+    }
+    currentPlayerIndex = 0;
+    hasComputerBust = false;
+    hasRoundEnded = false;
+    deck = shuffleCards(makeDeck());
 
-  var counter = 0;
-  while (counter < numOfComputerCards - 1) {
-    outputText += `${computerCards[counter].name} of ${computerCards[counter].suit} <br>`;
-    counter += 1;
-  }
-
-  var computerFaceupCardsTotal =
-    computerCardsTotal - computerCards[numOfComputerCards - 1].rank;
-
-  outputText += `<br> Your cards total ${playerCardsTotal}. <br> The dealer's face-up cards total ${computerFaceupCardsTotal}.<br>`;
-
-  // the user's cards are analysed for winning or losing conditions
-  if (
-    // the game either ends or continues
-    playerCardsTotal < 21 &&
-    userInput != "stand" &&
-    computerCardsTotal <= 21
-  ) {
-    outputText += `Please enter "hit" to deal another card from the deck, or enter "stand" to end your turn and stop without taking a card.`;
-  }
-  // the dealer exceeds 21 and bust
-  else if (computerCardsTotal > 21 && playerCardsTotal <= 21) {
-    playerBankroll += betForRound;
-    computerBankroll -= betForRound;
-    outputText += `<br> The dealer's face-down card is ${
-      computerCards[numOfComputerCards - 1].name
-    } of ${
-      computerCards[numOfComputerCards - 1].suit
-    }. <br> The dealer's cards total ${computerCardsTotal}. <br><br> The dealer bust! You win! <br>Your points: ${playerBankroll} <br> The dealer's points: ${computerBankroll} <br><br> Press submit.`;
-    gameMode = GAME_MODE_BETTING;
-  }
-  // the player exceeds 21 and bust. If both the player and the dealer both bust, the dealer still wins.
-  else if (playerCardsTotal > 21) {
-    playerBankroll -= betForRound;
-    computerBankroll += betForRound;
-    outputText += `<br> The dealer's face-down card is ${
-      computerCards[numOfComputerCards - 1].name
-    } of ${
-      computerCards[numOfComputerCards - 1].suit
-    }. <br> The dealer's cards total ${computerCardsTotal}. <br><br> You bust! <br> Your points: ${playerBankroll} <br> The dealer's points: ${computerBankroll} <br><br> Press submit.`;
-    gameMode = GAME_MODE_BETTING;
-  }
-  // the dealer who is closer to 21 wins the hand
-  else if (computerCardsTotal <= 21 && computerCardsTotal > playerCardsTotal) {
-    playerBankroll -= betForRound;
-    computerBankroll += betForRound;
-    outputText += `<br> The dealer
-    s face-down card is ${computerCards[numOfComputerCards - 1].name} of ${
-      computerCards[numOfComputerCards - 1].suit
-    }. <br> The dealer's cards total ${computerCardsTotal}. <br><br> You lose! <br> Your points: ${playerBankroll} <br> The dealer's points: ${computerBankroll} <br><br> Press submit.`;
-    gameMode = GAME_MODE_BETTING;
-  }
-  // the player who is closer to 21 wins the hand
-  else if (playerCardsTotal <= 21 && playerCardsTotal > computerCardsTotal) {
-    playerBankroll += betForRound;
-    computerBankroll -= betForRound;
-    outputText += `<br> The dealer
-    s face-down card is ${computerCards[numOfComputerCards - 1].name} of ${
-      computerCards[numOfComputerCards - 1].suit
-    }. <br> The dealer's cards total ${computerCardsTotal}. <br><br> You win! <br> Your points: ${playerBankroll} <br> The dealer's points: ${computerBankroll}. <br><br> Press submit.`;
-    gameMode = GAME_MODE_BETTING;
-  }
-  // when the player's cards and computer's cards totals are the same, it is a tie
-  else if (computerCardsTotal == playerCardsTotal && computerCardsTotal <= 21) {
-    outputText += `<br> The dealer
-    s face-down card is ${computerCards[numOfComputerCards - 1].name} of ${
-      computerCards[numOfComputerCards - 1].suit
-    }. <br> The dealer's cards total ${computerCardsTotal}. <br><br> It's a tie! <br><br> Your points: ${playerBankroll} <br> The dealer's points: ${computerBankroll}.<br><br> Press submit.`;
-    gameMode = GAME_MODE_BETTING;
-  } else {
-    outputText += `ERROR!`;
+    return `This round of blackjack has ended. <br> Player 1, please input your new bet.`;
   }
 
   return outputText;
@@ -378,12 +883,14 @@ var makeDeck = function () {
   var cardDeck = [];
   // Initialise an array of the 4 suits in our deck. We will loop over this array.
   var suits = ["hearts", "diamonds", "clubs", "spades"];
+  var suitEmoji = ["♥️", "♦️", "♣️", "♠️"];
 
   // Loop over the suits array
   var suitIndex = 0;
   while (suitIndex < suits.length) {
     // Store the current suit in a variable
     var currentSuit = suits[suitIndex];
+    var currentSuitEmoji = suitEmoji[suitIndex];
 
     // Loop from 1 to 13 to create all cards for a given suit
     // Notice rankCounter starts at 1 and not 0, and ends at 13 and not 12.
@@ -408,6 +915,7 @@ var makeDeck = function () {
       var card = {
         name: cardName,
         suit: currentSuit,
+        suitEmoji: currentSuitEmoji,
         rank: rankCounter,
       };
 
