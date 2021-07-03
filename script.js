@@ -14,25 +14,26 @@ var makeDeck = function () {
     var rankCounter = 1;
     while (rankCounter <= 13) {
       var cardName = rankCounter;
+      var CardRank = rankCounter;
 
       if (cardName == 1) {
         cardName = "ace";
-        rankCounter = 11;
+        CardRank = 11;
       } else if (cardName == 11) {
         cardName = "jack 🎃";
-        rankCounter = 10;
+        CardRank = 10;
       } else if (cardName == 12) {
         cardName = "queen 👑";
-        rankCounter = 10;
+        CardRank = 10;
       } else if (cardName == 13) {
         cardName = "king 👑";
-        rankCounter = 10;
+        CardRank = 10;
       }
 
       var card = {
         name: cardName,
         suit: currentSuit,
-        rank: rankCounter,
+        rank: CardRank,
       };
 
       // Add the new card to the deck
@@ -50,62 +51,70 @@ var makeDeck = function () {
   return cardDeck;
 };
 var deck = makeDeck();
-
 var playerDeck = [];
 var dealerDeck = [];
 var shuffledDeck = [];
 var playervalue = 0;
 var dealervalue = 0;
-var playerDeckforMessage = [];
 var dealerDeckforMessage = [];
-var UserName = "";
 var win = 0;
 var animation = 0;
-var NumberOfPlayers = 0;
+var NumberofPlayers = 0;
 var CurrentPlayer = 1;
+var NumofStands = 0;
 
 var main = function (input) {
   var myOutputValue = "";
   console.log(mode);
+  var NumberOfPlayers;
 
   if (mode == "NumofPlayers") {
     mode = "shuffle";
-    myOutputValue = start();
+    myOutputValue = start(input);
   } else if (mode == "shuffle") {
     mode = "deal";
-    myOutputValue = shuffle();
+    myOutputValue = shuffle(NumberOfPlayers);
   } else if (mode == "deal") {
     mode = "actualgame";
-    return DealtCards();
+    myOutputValue = DealtCards(NumberOfPlayers);
   } else if (mode == "actualgame") {
-    return actualgame(input);
+    myOutputValue = actualgame(input, NumberOfPlayers);
+  } else if (mode == "compareNcontrast") {
+    myOutputValue = outcome(NumberofPlayers);
   } else if (mode == "reward") {
-    return Graphics();
+    myOutputValue = Graphics();
   }
   return myOutputValue;
 };
 
 //define number of players in game
 var start = function (input) {
-  if (isNaN(input) == false || input == 0) {
+  var message = "";
+  if (isNaN(input) == true || input <= 1) {
     mode = "NumofPlayers";
-    return `Please type the number of players.`;
+    message = `Please type the number of players.`;
   } else {
-    NumberofPlayers = input;
-    return `You have chosen ${NumberOfPlayers} players for this game. <br><br>Click 'Submit' to shuffle the Cards.`;
+    NumberofPlayers = Number(input);
+    console.log(NumberofPlayers);
+    message = `You have chosen ${input} players for this game. <br><br>Click 'Submit' to shuffle the Cards.`;
   }
+  return message;
 };
 
 //shuffle the cards
-var shuffle = function () {
+var shuffle = function (NumberOfPlayers) {
+  console.log(NumberofPlayers);
+
   shuffledDeck = shuffleCards(deck);
 
   counter = 0;
   while (counter < NumberOfPlayers) {
-    playerDeck[counter] = [`Player ${counter + 1}`];
+    playerDeck.push([`Player ${counter + 1}`, 0]);
     counter += 1;
   }
-  return `Hello. <br><br>The cards have been shuffled. <br><br>Press Submit to deal the cards.`;
+
+  console.log(playerDeck);
+  return `The cards have been shuffled. <br><br>Press Submit to deal the cards.`;
 };
 
 // Get a random index ranging from 0 (inclusive) to max (exclusive).
@@ -135,16 +144,18 @@ var shuffleCards = function (cardDeck) {
 };
 
 //deal the cards to the players
-var DealtCards = function () {
+var DealtCards = function (NumberOfPlayers) {
   var message = "";
   var counter = 0;
   if (counter < NumberOfPlayers) {
-    dealing(CurrentPlayer);
     counter += 1;
-    message = dealing(CurrentPlayer);
+    message += dealing(CurrentPlayer);
     CurrentPlayer += 1;
-    mode = "actualgame";
+    console.log("d");
+    mode = "deal";
   }
+
+  message += `<br>Please click 'Submit' for the next player to be dealt their cards.`;
 
   var dealerCard1 = shuffledDeck.pop();
   var dealerCard2 = shuffledDeck.pop();
@@ -155,7 +166,7 @@ var DealtCards = function () {
   var counter2 = 0;
   while (counter2 < dealerDeck.length) {
     dealerDeckforMessage.push(
-      ` ${playerDeck[counter2].name} of ${playerDeck[counter2].suit}`
+      ` ${dealerDeck[counter2].name} of ${dealerDeck[counter2].suit}`
     );
     counter2 += 1;
   }
@@ -164,6 +175,7 @@ var DealtCards = function () {
   if (counter == NumberOfPlayers - 1) {
     message += `<br>One of the dealer's cards is the ${dealerDeckforMessage[0]}.<br><br>Do you want to 'stand' or 'hit', Player ${CurrentPlayer}?`;
     CurrentPlayer = 1;
+    mode = "actualgame";
   }
   return message;
 };
@@ -176,23 +188,13 @@ var dealing = function (CurrentPlayer) {
   playerDeck[CurrentPlayer - 1].push(playerCard1);
   playerDeck[CurrentPlayer - 1].push(playerCard2);
 
-  playervalue = calculations(playerDeck);
+  playervalue = calculations(playerDeck[CurrentPlayer - 1]);
 
   var counter = 0;
-  while (counter < playerDeck[CurrentPlayer - 1].length) {
-    playerDeckforMessage[CurrentPlayer - 1].push(
-      ` ${playerDeck[CurrentPlayer - 1][counter].name} of ${
-        playerDeck[CurrentPlayer - 1][counter].suit
-      }`
-    );
-    counter += 1;
-  }
 
   console.log(`player${CurrentPlayer}:  + ${playervalue}`);
 
-  return `Player ${CurrentPlayer}, your cards are the ${
-    playerDeckforMessage[CurrentPlayer - 1]
-  }. `;
+  return `Player ${CurrentPlayer}, your cards are the ${playerCard1.name} of ${playerCard1.suit} and the ${playerCard2.name} of ${playerCard2.suit}. `;
 };
 
 var calculations = function (ADeck) {
@@ -216,70 +218,99 @@ var calculations = function (ADeck) {
   return value;
 };
 
-var actualgame = function (input) {
-  var message = `Please enter either 'stand' or 'hit', ${UserName}.`;
-  playervalue = calculations(playerDeck);
-  dealervalue = calculations(dealerDeck);
-
-  if (dealervalue < 17) {
-    //no matter what the player chooses, the dealer will draw one card if its value is less than 17.
-    var dealerCard = shuffledDeck.pop();
-    dealerDeck.push(dealerCard);
-    dealervalue = calculations(dealerDeck);
-    dealerDeckforMessage.push(` ${dealerCard.name} of ${dealerCard.suit}`);
+var actualgame = function (input, NumberOfPlayers) {
+  var message = "";
+  var counter = 0;
+  if (counter < NumberOfPlayers) {
+    individualchoices(CurrentPlayer);
+    counter += 1;
+    message = individualchoices(input);
+    CurrentPlayer += 1;
+    mode = "actualgame";
   }
 
-  if (dealervalue > 21) {
-    //if the computer itself exceeds 21, the computer automatically loses
-    win = 2;
-    message = `${UserName} has won as the dealer busted!`;
+  if (counter == NumberOfPlayers - 1) {
+    if (dealervalue < 17) {
+      //no matter what the player chooses, the dealer will draw one card if its value is less than 17.
+      var dealerCard = shuffledDeck.pop();
+      dealerDeck.push(dealerCard);
+      dealervalue = calculations(dealerDeck);
+      dealerDeckforMessage.push(` ${dealerCard.name} of ${dealerCard.suit}`);
+      console.log("dealer: " + dealervalue);
+      console.log(dealerDeck);
+    }
+
+    message += `<br>One of the dealer's cards is the ${dealerDeckforMessage[0]}.<br><br>Do you want to 'stand' or 'hit', Player ${CurrentPlayer}?`;
+    mode = "compareNcontrast";
+  }
+
+  return message;
+};
+
+var individualchoices = function (input) {
+  var message = ``;
+  if (playerDeck[CurrentPlayer - 1][0] == "stand" || "lose") {
+    message`As Player ${currentplayer} has already stood, they cannot play this round.`;
   } else {
+    playervalue = calculations(playerDeck[CurrentPlayer - 1]);
+    dealervalue = calculations(dealerDeck);
+
     //if user chooses to stand
     if (input == "stand" || "s") {
-      win = 2; //if player losses, win = 2
-      if (playervalue < dealervalue) {
-        message = `The dealer has won!`;
-      } else if (playervalue > dealervalue) {
-        win = 1; //if player wins, win = 1
-        message = `You have won!`;
-      } else if (playervalue == dealervalue) {
-        message = `It's a tie.`;
-      }
-      message += `<br><br> Your cards were ${playerDeckforMessage} while the dealer's cards were ${dealerDeckforMessage}.`;
+      NumofStands += 1;
+      playerDeck[CurrentPlayer - 1].upshift("stand");
+
+      message += `<br><br> Player ${CurrentPlayer} has chosen to stand.`;
     }
 
     //if user chooses to hit
     else if (input == "hit" || "h") {
       var playerCard = shuffledDeck.pop();
-      playerDeck.push(playerCard);
+      playerDeck[CurrentPlayer - 1].push(playerCard);
 
-      playerDeckforMessage.push(` ${playerCard.name} of ${playerCard.suit}`);
-
-      playervalue = calculations(playerDeck);
+      playervalue = calculations(playerDeck[CurrentPlayer - 1]);
 
       if (playervalue > 21) {
-        win = 2;
+        NumofStands += 1;
+        playerDeck[CurrentPlayer - 1].upshift("lose");
 
-        message = `You has lost as you have exceeded 21. <br><br> Your cards were ${playerDeckforMessage} while the dealer's cards were ${dealerDeckforMessage}.`;
+        message = `You has lost as you have exceeded 21.`;
       } else if (playervalue == 21) {
-        message = `You have won!!! <br><br> Your cards were ${playerDeckforMessage} while the dealer's cards were ${dealerDeckforMessage}.`;
+        playerDeck[CurrentPlayer - 1].upshift("stand");
+
+        message = `You have won BlackJack!!!.`;
         win = 1;
       } else {
-        message = `Your cards are ${playerDeckforMessage} while the dealer's cards are ${dealerDeckforMessage}. <br><br>Do you wish to 'stand' or 'hit'?`;
+        message = `You have gained the ${playerCard.name} of ${playerCard.suit}.`;
       }
     }
   }
 
-  console.log("player: " + playervalue);
-  console.log(playerDeck);
-  console.log("dealer: " + dealervalue);
-  console.log(dealerDeck);
+  console.log(`player ${currentplayer}:  + playervalue)`);
+  console.log(playerDeck[currentplayer - 1]);
 
   if (!(win == 0)) {
     mode = "reward";
   }
 
   return message + `<br><br>Click Submit for your Reward`;
+};
+
+var outcome = function (NumberofPlayers) {
+  var winners = [];
+  var losers = [];
+  var valueofplayers = [];
+
+  var counter = 0;
+  while (counter < NumberofPlayers) {
+    if (playerDeck[counter][0] == "lose") {
+      losers.push(counter);
+    } else if (playerDeck[counter][0] == "win") {
+      winners.push(counter);
+    } else {
+      valueofplayers.push(counter);
+    }
+  }
 };
 
 var Graphics = function () {
