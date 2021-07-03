@@ -97,6 +97,7 @@ var playerArraySetup = function (input) {
   } else if (mode == "betmode") {
     if (allPlayers[playerIndex].player.bankroll <= 0) {
       allPlayers.splice(playerIndex, 1);
+      noOfPlayers -= 1;
       if (playerIndex < noOfPlayers) {
         noOfPlayers -= 1;
         return `Sorry, you have gone bankrupt. You will not be able to play unless the game is restarted. Next player will now input their bet.`;
@@ -251,16 +252,7 @@ var blackjackCheckFunc = function (allPlayers, card1, card2, compHand) {
     computerCard2 = card2;
   }
   if (card1.rank == 1 || card2.rank == 1) {
-    if (
-      card1.rank == 10 ||
-      card1.rank == 11 ||
-      card1.rank == 12 ||
-      card1.rank == 13 ||
-      card2.rank == 10 ||
-      card2.rank == 11 ||
-      card2.rank == 12 ||
-      card2.rank == 13
-    ) {
+    if (card1.rank >= 10 || card2.rank >= 10) {
       if (mode == "playerBlackjackCheck") {
         playerBlackjack = true;
         allPlayers[dealIndex].player.blackjackCheck = true;
@@ -659,7 +651,14 @@ var computerBust = function (compHand, noOfPlayers) {
         }
         //if player has bust, push (Draw)
         else if (allPlayers[playerIndex].player.handTotal >= 21) {
-          myOutputValue = `${myOutputValue}<br><br> ${allPlayers[playerIndex].player.username}, your total hand is ${allPlayers[playerIndex].player.handTotal}. The computer has bust with a hand of ${compTotalValue}! You have therefore drawn!<br> ${allPlayers[playerIndex].player.handText} ${bankrollText}`;
+          if (allPlayers[playerIndex].player.wasSplit == true) {
+            bankrollText = `Your current bankroll is ${
+              allPlayers[playerIndex - 1].player.bankroll
+            }.`;
+          } else {
+            bankrollText = `Your current bankroll is ${allPlayers[playerIndex].player.bankroll}.`;
+            myOutputValue = `${myOutputValue}<br><br> ${allPlayers[playerIndex].player.username}, your total hand is ${allPlayers[playerIndex].player.handTotal}. The computer has bust with a hand of ${compTotalValue}! You have therefore drawn!<br> ${allPlayers[playerIndex].player.handText} ${bankrollText}`;
+          }
         }
         playerIndex += 1;
       }
