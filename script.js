@@ -1,175 +1,351 @@
-//need help to see how to display the object more nicely
-
-//creating a card deck
+//create a deck of cards
 var makeDeck = function () {
   var deck = [];
-  var cardCounter = 1;
-  while (cardCounter <= 52) {
-    console.log("cardCounter:" + cardCounter);
-    cardCounter = cardCounter + 1;
-  }
-  var suitIndex = 0;
-  var suits = ["diamond", "spade", "heart", "club"];
-  while (suitIndex < suits.length) {
-    var currentSuit = suits[suitIndex];
-    var rankCounter = 0;
-    while (rankCounter < 13) {
-      var cardName = rankCounter;
-      if ((cardName = 1)) {
-        cardName = "ace";
-      } else if (cardName == 11) {
-        cardName = "jack";
-      } else if (cardName == 12) {
-        cardName = "queen";
-      } else if (cardName == 13) {
-        cardName = "king";
-      }
-
+  var suits = ["Clubs", "Diamonds", "Hearts", "Spades"];
+  var emojiSuits = ["♣️", "♦️", "♥️", "♠️"];
+  for (var i = 0; i < suits.length; i += 1) {
+    var suit = suits[i];
+    var emojiSuit = emojiSuits[i];
+    for (var rank = 1; rank <= 13; rank += 1) {
       var card = {
-        name: cardName,
-        suit: currentSuit,
-        rank: rankCounter,
+        suit: suit,
+        emojiSuit: emojiSuit,
+        rank: rank,
+        value: rank,
+        name: rank.toString(),
       };
-      rankCounter = rankCounter + 1;
+      if (rank == 1) {
+        card.name = "A";
+      } else if (rank == 11) {
+        card.name = "J";
+        card.value = 10;
+      } else if (rank == 12) {
+        card.name = "Q";
+        card.value = 10;
+      } else if (rank == 13) {
+        card.name = "K";
+        card.value = 10;
+      }
       deck.push(card);
-      console.log("rank counter:" + rankCounter);
     }
-    suitIndex = suitIndex + 1;
-    console.log("suits:" + currentSuit);
+  }
+  return deck;
+};
+//get random index ranging from 0 to max
+var getRandomIndex = function (max) {
+  return Math.floor(Math.random() * max);
+};
+//get a shuffled deck
+var shuffleDeck = function (deck) {
+  var currentIndex = 0;
+  while (currentIndex < deck.length) {
+    var randomIndex = getRandomIndex(deck.length);
+    var randomCard = deck[randomIndex];
+    var currentCard = deck[currentIndex];
+    deck[currentIndex] = randomCard;
+    deck[randomIndex] = currentCard;
+    currentIndex = currentIndex + 1;
   }
   return deck;
 };
 
-var deck = makeDeck();
-
-//draws a random card from the deck
-var drawCard = function () {
-  var randomIndex = Math.floor(Math.random() * deck.length);
-  var cut = deck.splice(randomIndex, 1);
-  var randomCard = cut[0];
-  return randomCard;
+var createPlayer = function (name, balance) {
+  return {
+    name: name,
+    balance: balance,
+    bet: 0,
+    hand: [],
+  };
 };
-
-//tells you the total score of the cards in the array
-var calculateSum = function (cards) {
-  var totalSum = 0;
-  var index = 0;
-  var aceValue = 11;
-  if (cards.length == 2) {
-    var firstCard = cards[0];
-    var secondCard = cards[1];
-    //if 2 ace cards only, return 21
-    if (firstCard.rank == 1 && secondCard.rank == 1) {
-      return 21;
-    }
-  } else {
-    aceValue = 1;
-  }
-  while (index < cards.length) {
-    var card = cards[index];
-    var cardRank = card.rank;
-    //if card = ace, use the ace value defined above
-    if (cardRank == 1) {
-      totalSum = totalSum + aceValue;
-      //else, just compare total scores of card based on ranking
-    } else {
-      totalSum = totalSum + Math.min(cardRank, 10);
-    }
-    index = index + 1;
-  }
-  return totalSum;
-};
-
-//defining the different game phases
-var gamePhase_starting_game = "starting game";
-var gamePhase = gamePhase_starting_game;
-var gamePhase_draw_first_card = "draw first card";
-var gamePhase_draw_second_card = " draw second card";
-var gamePhase_hit_or_stand = "hit or stand";
-var gamePhase_draw_card = "draw card";
-var gamePhase_stop_drawing = " stop drawing";
 
 //defining global variables
-var playerCards = [];
-var computerCards = [];
+var deck = makeDeck();
+shuffleDeck(deck);
+var numberOfPlayers = 0;
+var currentPlayer = -1;
+var players = [];
+var dealerHand = [];
+
+//defining game modes
+var SELECT_PLAYERS = "select players";
+var ENTER_NAME = "enter name";
+var SET_BET = "set bet";
+var PLAYER_DRAW_CARD = "player draw card";
+var DEALER_DRAW_CARD = "dealer draw card";
+var PLAYER_HIT_OR_STAND = "player hit or stand";
+var DEALER_HIT_OR_STAND = "dealer hit or stand";
+var GAME_OUTCOME = "game outcome";
+var gameState = SELECT_PLAYERS;
+
+var calculateScore = function (cards) {
+  //if there are 2 cards and both cards are ace, return blackjack
+  if (cards.length == 2) {
+    if (cards[0].rank == 1 && cards[1].rank == 1) {
+      return 21;
+    }
+  }
+  var score = 0;
+  var hasAce = false;
+  for (var i = 0; i < cards.length; i += 1) {
+    var card = cards[i];
+    if (card.rank == 1) {
+      hasAce = true;
+    }
+    score = score + card.value;
+  }
+  //total sum of cards <=10, ace automaticalyy converts to 11
+  if (score < 21 && hasAce) {
+    if (score + 10 <= 21) {
+      score = score + 10;
+    }
+  }
+  return score;
+};
+
+//beautifying the display of hands
+var displayHand = function (cards) {
+  var hand = "";
+  if (cards.length == 0) {
+    return "No cards";
+  }
+  //if its the last card, will not add a comma. if not will add a comma
+  for (var i = 0; i < cards.length; i += 1) {
+    var card = cards[i];
+    if (i == cards.length - 1) {
+      hand = hand + `${card.name}${card.emojiSuit}`;
+    } else {
+      hand = hand + `${card.name}${card.emojiSuit}, `;
+    }
+  }
+  return hand;
+};
+
+//loops through each player, generates info about each player and creates a string and appends this string to this display table
+var displayTable = function (message, showBetAndBalanceOnly) {
+  var table = "";
+  for (var i = 0; i < players.length; i += 1) {
+    var player = players[i];
+    if (showBetAndBalanceOnly == false) {
+      table =
+        table +
+        `${player.name}: Hand: ${displayHand(
+          player.hand
+        )}, Score: ${calculateScore(player.hand)}, Balance: $${
+          player.balance
+        }, Bet: $${player.bet} <br>`;
+    } else if (showBetAndBalanceOnly == true) {
+      table = table + `Balance: $${player.balance}, Bet: $${player.bet} <br>`;
+    }
+  }
+  if (showBetAndBalanceOnly == false) {
+    table =
+      table +
+      `Dealer: ${displayHand(dealerHand)}, Score: ${calculateScore(dealerHand)}
+     <br><br>`;
+  } else if (showBetAndBalanceOnly == true) {
+  }
+  //add table in front of the message
+  table = table + message;
+  return table;
+};
+
+//compare the winning outcome
+var compare = function (playerScore, dealerScore) {
+  if (playerScore > 21 && dealerScore > 21) {
+    return "draw🤝";
+  }
+  if (playerScore > 21 && dealerScore <= 21) {
+    return "lose😭";
+  }
+  if (playerScore <= 21 && dealerScore > 21) {
+    return "win🎉";
+  }
+  if (playerScore > dealerScore) {
+    return "win🎉";
+  }
+  if (playerScore < dealerScore) {
+    return "lose😭";
+  }
+  if (playerScore == dealerScore) {
+    return "draw🤝";
+  }
+};
 
 var main = function (input) {
-  //prompt player 1 to draw a card
-  if (gamePhase == gamePhase_starting_game) {
-    gamePhase = gamePhase_draw_first_card;
-    return ` player, please draw a card by clicking "submit"`;
-    //player 1 has drawn 1st card
-  } else if (gamePhase == gamePhase_draw_first_card) {
-    gamePhase = gamePhase_draw_second_card;
-    var playerCard1 = drawCard();
-    playerCards.push(playerCard1);
-    //computer automatically draws 1st card
-    var computerCard1 = drawCard();
-    computerCards.push(computerCard1);
-    return `Player you drew ${JSON.stringify(
-      playerCards
-    )}, please draw another card by clicking "submit"`;
-    //player 1 to draw 2nd card
-  } else if (gamePhase == gamePhase_draw_second_card) {
-    gamePhase = gamePhase_hit_or_stand;
-    var playerCard2 = drawCard();
-    playerCards.push(playerCard2);
-    //computer to automatically draw 2nd card
-    var computerCard2 = drawCard();
-    computerCards.push(computerCard2);
-    return `Player you now have ${JSON.stringify(
-      playerCards
-    )}, with a total sum of ${calculateSum(
-      playerCards
-    )}, would you like to hit or stand?`;
-    //outcome when player decides to hit or stand
-  } else if (gamePhase == gamePhase_hit_or_stand) {
-    //if player wants to hit, draw 1 additional card
-    if (input == "hit") {
-      gamePhase = gamePhase_draw_card;
-      return `Please click to draw a card`;
-      // if player wants to stand, stop drawing
-    } else if (input == "stand") {
-      gamePhase = gamePhase_stop_drawing;
-      return `You stand, please click to continue`;
+  if (gameState == SELECT_PLAYERS) {
+    gameState = ENTER_NAME;
+    return `🃏Welcome to BlackJack🃏 <br><br> Rules of the game<br> 1️⃣ Each participant attempts to beat the dealer by getting a count as close to 21 as possible, without going over 21 <br> 2️⃣ If a player's first two cards are an ace and a a picture card or 10, giving a count of 21 in two cards, this is a BlackJack. Player's turn ends immediately and win.
+    
+    
+    <br> 3️⃣ 2 ace is worth 1 or 11 depending on the sum of your total cards <br>4️⃣ Before the deal begins, each player places a bet, in chips, in front of them in the designated area. Each player starts with $100 credits. <br> 5️⃣ When all the players have placed their bets, the dealer gives two card face up to each player in rotation clockwise. <br> 6️⃣ Each player decides whether to hit or stand, using the deal button to submit their choice.<br> 7️⃣ Player turns ends immediately if player their hand burst. <br>GOODLUCK! <br><br> 👉 Please enter number of players`;
+  } else if (gameState == ENTER_NAME) {
+    if (numberOfPlayers == 0) {
+      if (isNaN(Number(input)) || Number(input) < 1) {
+        return `Nice Try 🤨 <br>👉 Please enter valid number of players`;
+      }
     }
-    //If player keeps inputting "hit", keep drawing card and adding the total sum
-  } else if (gamePhase == gamePhase_draw_card) {
-    gamePhase = gamePhase_hit_or_stand;
-    var playerNewCard = drawCard();
-    playerCards.push(playerNewCard);
-    console.log(gamePhase, "gamephase");
-    return `Player you now have ${JSON.stringify(
-      playerCards
-    )}, with a total sum of ${calculateSum(
-      playerCards
-    )}, would you like to hit or stand?`;
-  } else if (gamePhase == gamePhase_stop_drawing) {
-    //If sum of computer hands<17, keep drawing a card and add to card array
-    while (calculateSum(computerCards) < 17) {
-      computerCards.push(drawCard());
-    }
-    //compute player hand
-    var playerSum = calculateSum(playerCards);
-    //computer computer hands
-    var computerSum = calculateSum(computerCards);
-    //compare the winning outcome
-    var gameOutcome = "";
-    if (playerSum > 21 && computerSum > 21) {
-      gameOutcome = "draw";
-    } else if (playerSum <= 21 && computerSum > 21) {
-      gameOutcome = "win";
-    } else if (playerSum > 21 && computerSum <= 21) {
-      gameOutcome = "lose";
-    } else if (playerSum < computerSum) {
-      gameOutcome = "lose";
-    } else if (computerSum < playerSum) {
-      gameOutcome = "win";
+    if (currentPlayer == -1) {
+      numberOfPlayers = input;
+      currentPlayer = 0;
+      return `Player 1, 👉please enter your name`;
     } else {
-      gameOutcome = "draw";
+      var balance = 100;
+      players.push(createPlayer(input, balance));
+      currentPlayer = currentPlayer + 1;
+      if (currentPlayer < numberOfPlayers) {
+        return `Player ${currentPlayer + 1}, 👉please enter your name `;
+      } else {
+        gameState = SET_BET;
+        currentPlayer = 0;
+        return displayTable(
+          `🙌Game has started🙌 <br><br> ${players[currentPlayer].name}, you have ${players[currentPlayer].balance} credits. <br> 👉Please make your bet`,
+          true
+        );
+      }
     }
-    return `Player has ${calculateSum(playerCards)}, dealer has ${calculateSum(
-      computerCards
-    )}, it's a ${gameOutcome}!`;
+  } else if (gameState == SET_BET) {
+    var player = players[currentPlayer];
+    var bet = Number(input);
+    if (isNaN(bet)) {
+      return `Nice Try 🤨. <br>👉Please input a valid bet. ${player.name}, <br> You have ${players[currentPlayer].balance} credits. <br> 👉Please make your bet`;
+    }
+    if (bet > player.balance) {
+      return `Nice Try 🤨. <br>Please do not bet more than you have. ${player.name}, <br> You have ${players[currentPlayer].balance} credits. <br> 👉Please make your bet`;
+    }
+    if (bet == 0) {
+      return `Nice Try 🤨. <br>Please bet something. ${player.name}, <br> You have ${players[currentPlayer].balance} credits. <br> 👉Please make your bet`;
+    }
+    player.bet = bet;
+    player.balance = player.balance - bet;
+    currentPlayer = currentPlayer + 1;
+    if (currentPlayer < numberOfPlayers) {
+      return displayTable(
+        `<br>${players[currentPlayer].name},you have ${players[currentPlayer].balance} credits. <br> 👉Please make your bet`,
+        true
+      );
+    } else {
+      currentPlayer = 0;
+      gameState = PLAYER_DRAW_CARD;
+      return displayTable(
+        `<br>All bets have been placed. <br> ${players[currentPlayer].name}, 👉Please draw cards by clicking "submit"`,
+        false
+      );
+    }
+  } else if (gameState == PLAYER_DRAW_CARD) {
+    var player = players[currentPlayer];
+    //draw 2 cards at once for each player
+    player.hand.push(deck.pop());
+    player.hand.push(deck.pop());
+    currentPlayer = currentPlayer + 1;
+    if (currentPlayer < numberOfPlayers) {
+      return displayTable(
+        `${players[currentPlayer].name}, 👉Please draw cards by clicking "submit"`,
+        false
+      );
+    } else {
+      currentPlayer = 0;
+      gameState = DEALER_DRAW_CARD;
+      return displayTable(
+        `All players have drawn cards, dealer will now draw 2 cards.<br> 👉Click "submit" to continue.`,
+        false
+      );
+    }
+  } else if (gameState == DEALER_DRAW_CARD) {
+    dealerHand.push(deck.pop());
+    dealerHand.push(deck.pop());
+    currentPlayer = 0;
+    gameState = PLAYER_HIT_OR_STAND;
+    return displayTable(
+      `Dealer has drawn 2 cards <br> ${players[currentPlayer].name}, 👉Please choose to enter either "hit" or "stand"`,
+      false
+    );
+  } else if (gameState == PLAYER_HIT_OR_STAND) {
+    var playerInput = input;
+    var player = players[currentPlayer];
+    var playerDone = "done";
+    if (playerInput != "hit" && playerInput != "stand") {
+      return `Invalid choice. ${player.name}  👉Please choose to enter either "hit" or "stand"`;
+    }
+    if (playerInput == "hit") {
+      player.hand.push(deck.pop());
+      if (calculateScore(player.hand) > 21) {
+        playerDone = "bust";
+        playerInput = "stand";
+      } else {
+        return displayTable(
+          `${player.name} please choose to enter either "hit" or "stand"`,
+          false
+        );
+      }
+    }
+    if (playerInput == "stand") {
+      currentPlayer = currentPlayer + 1;
+      if (currentPlayer < numberOfPlayers) {
+        return displayTable(
+          `${player.name}'s hands ${playerDone}. ${players[currentPlayer].name} please choose to enter either "hit" or "stand"`,
+          false
+        );
+      } else {
+        gameState = DEALER_HIT_OR_STAND;
+        currentPlayer = 0;
+        return displayTable(
+          `All players are done, dealer will now draw. <br>👉Please click "submit" to continue the game`,
+          false
+        );
+      }
+    }
+  } else if (gameState == DEALER_HIT_OR_STAND) {
+    while (calculateScore(dealerHand) < 17) {
+      dealerHand.push(deck.pop());
+    }
+    currentPlayer = 0;
+    var player = players[currentPlayer];
+    gameState = GAME_OUTCOME;
+    return displayTable(
+      `All cards are drawn! <br> ${player.name}, 👉please click "submit" to see your outcome`,
+      false
+    );
+  } else if (gameState == GAME_OUTCOME) {
+    var player = players[currentPlayer];
+    var gameOutcome = "";
+    if (
+      compare(calculateScore(player.hand), calculateScore(dealerHand)) ==
+      "lose😭"
+    ) {
+      gameOutcome = "lose😭";
+      player.bet = 0;
+      player.hand = [];
+    } else if (
+      compare(calculateScore(player.hand), calculateScore(dealerHand)) ==
+      "win🎉"
+    ) {
+      gameOutcome = "win🎉";
+      player.balance = player.balance + player.bet * 2;
+      player.bet = 0;
+      player.hand = [];
+    } else {
+      gameOutcome = "draw🤝";
+      player.balance = player.balance + player.bet;
+      player.bet = 0;
+      player.hand = [];
+    }
+    currentPlayer = currentPlayer + 1;
+    if (currentPlayer < numberOfPlayers) {
+      return displayTable(
+        `${player.name} ${gameOutcome}!<br> ${players[currentPlayer].name} please click "submit" to see your outcome`,
+        false
+      );
+      //once a new round starts
+    } else {
+      gameState = SET_BET;
+      currentPlayer = 0;
+      deck = makeDeck();
+      shuffleDeck(deck);
+      dealerHand = [];
+      return displayTable(
+        `${player.name} ${gameOutcome}! <br> Next round is starting.<br> ${players[currentPlayer].name},👉Please make your bet`,
+        false
+      );
+    }
   }
 };
