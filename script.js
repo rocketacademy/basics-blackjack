@@ -177,7 +177,8 @@ var dealHands = function (userName) {
   // check for blackjack win conditions
 
   if (playerHand.length == 2 && playerCurrScore == 21) {
-    myOutputValue = `${message} You got Blackjack, you won! <br><br>${refreshGameMessage}`;
+    pointBalance = pointBalance + wagerPlaced;
+    myOutputValue = `${message} You got Blackjack, you won! <br><br>${refreshGameMessage}<br><br> You have ${pointBalance}points left!`;
   }
 
   return myOutputValue;
@@ -194,18 +195,19 @@ var playerDrawCard = function (userName) {
     playerHand,
     displayPlayerCards
   )}<br> <br>Your score is ${playerCurrScore}. `;
+  return `${playerHandMessage}<br><br>
+   Dealer score is ${dealerCurrScore}<br><br> `;
 
-  if (playerCurrScore > maxScore) {
-    pointBalance = Number(pointBalance) + Number(wagerPlaced);
-    return `${playerHandMessage} You BUSTED!! <br><br>
-    Dealer score is ${dealerCurrScore}<br><br>
-    ${hitOrStandMessage}`;
-  }
-  if (playerCurrScore <= maxScore) {
-    return `${playerHandMessage}<br><br>
-    Dealer score is ${dealerCurrScore}<br><br>
-    ${hitOrStandMessage}`;
-  }
+  // if (playerCurrScore > maxScore) {
+  //   return `${playerHandMessage} You BUSTED!! <br><br>
+  //   Dealer score is ${dealerCurrScore}<br><br>
+  //   ${hitOrStandMessage}`;
+  // }
+  // if (playerCurrScore <= maxScore) {
+  //   return `${playerHandMessage}<br><br>
+  //   Dealer score is ${dealerCurrScore}<br><br>
+  //   ${hitOrStandMessage}`;
+  // }
 };
 
 // function for dealer to draw card
@@ -234,7 +236,7 @@ var dealerDrawCard = function (userName) {
         )}<br>Your score is ${playerCurrScore} <br> <br> Dealer hand is ${displayCardsInHand(
           dealerHand,
           displayDealerCards
-        )}<br>Dealer has Blackjack!`;
+        )}<br>Dealer has Blackjack!<br>`;
       } else {
         myOutputValue = `${userName}, your hand is ${displayCardsInHand(
           playerHand,
@@ -263,7 +265,7 @@ var determineWinner = function (userName) {
     (playerCurrScore < dealerCurrScore && dealerCurrScore <= maxScore) ||
     (dealerHand.length == 2 && dealerCurrScore == 21)
   ) {
-    pointBalance = Number(pointBalance) + Number(wagerPlaced);
+    pointBalance = Number(pointBalance) - Number(wagerPlaced);
     myOutputValue = `<br> Dealer Wins <br><br>${refreshGameMessage}<br><br> You have ${pointBalance}points left!`;
   }
 
@@ -271,6 +273,7 @@ var determineWinner = function (userName) {
     playerCurrScore == dealerCurrScore ||
     (playerCurrScore > maxScore && dealerCurrScore > maxScore)
   ) {
+    pointBalance = pointBalance;
     myOutputValue = `<br> Its a tie<br><br>${refreshGameMessage}<br><br> You have ${pointBalance}points left!`;
   }
   return myOutputValue;
