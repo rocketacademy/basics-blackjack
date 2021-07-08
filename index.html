@@ -72,7 +72,7 @@
       }
     </style>
 
-    <title>Blackjack - Basics - Rocket Academy</title>
+    <title>Blackjack</title>
   </head>
 
   <body>
@@ -83,30 +83,27 @@
     </h1>
     <h1 class="header">♣️ Basics - Blackjack ♠️</h1>
     <div id="container">
-      <p>Input:</p>
-      <input id="input-field" />
       <br />
-      <button id="submit-button">Submit</button>
-      <p>Output:</p>
+      <button id="start-button">Start</button>
+      <button id="hit-button">Hit</button>
+      <button id="stand-button">Stand</button>
+      <p>Field:</p>
       <div id="output-div"></div>
     </div>
     <!-- Import program logic -->
     <script src="script.js"></script>
     <!-- Define button click functionality -->
     <script>
-      var button = document.querySelector("#submit-button");
-      button.addEventListener("click", function () {
-        // Set result to input value
-        var input = document.querySelector("#input-field");
-        var result = main(input.value);
+      var start = document.querySelector("#start-button");
+      var hitme = document.querySelector("#hit-button");
+      var standme = document.querySelector("#stand-button");
+      var output = document.querySelector("#output-div");
 
-        // Display result in output element
-        var output = document.querySelector("#output-div");
-        output.innerHTML = result;
-
-        // Reset input value
-        input.value = "";
-      });
+      var message = 'Welcome! Press Start to continue.'
+      output.innerHTML = message;
+      start.addEventListener("click", startGame);
+      hitme.addEventListener("click", hit);
+      standme.addEventListener("click",stand);
     </script>
   </body>
 </html>
