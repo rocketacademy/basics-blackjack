@@ -45,12 +45,15 @@ var STAGE_DEAL_CARDS = "STAGE_DEAL_CARDS";
 var STAGE_HIT_STAND = "STAGE_HIT_STAND";
 var STAGE_COMPUTER_TURN = "STAGE_COMPUTER_TURN";
 var STAGE_GAME_OVER = "STAGE_GAME_OVER";
+var STAGE_USERBET = "STAGE_USERBET";
 var userCards = [];
 var computerCards = [];
 var userTotal = 0;
 var computerTotal = 0;
 var programStage = "STAGE_USERNAME";
 var userName = "";
+var userPoints = 100;
+var userBet = Number();
 
 //////////HELPER FUNCTIONS////////////
 
@@ -140,9 +143,6 @@ var dealStartingCards = function () {
 
 // Function: check if user's starting hand is Blackjack
 
-var blackJack = function () {
-  return userCards[0].value + userCards[1].value == 21;
-};
 var blackJack = function () {
   return userCards[0].value + userCards[1].value == 21;
 };
@@ -243,16 +243,40 @@ var determineWinner = function () {
 ////////////MAIN///////////
 
 var main = function (input) {
+  //Ending scenario Win/lose/Draw/0 points left
   if (programStage == STAGE_GAME_OVER) {
     return "The game is over, hit refresh to play again";
+  }
+  // If the user loses all of his points
+  if (programStage == STAGE_USERBET && userPoints == 0) {
+    return "You Have no more points!, hit refresh to play again";
   }
   if (programStage == STAGE_USERNAME && input == "") {
     console.log("NO NAME");
     return "Please enter your name! and hit submit!";
   } else if (programStage == STAGE_USERNAME) {
     userName = input;
-    programStage = STAGE_DEAL_CARDS;
+    programStage = STAGE_USERBET;
     console.log(userName);
+    return (
+      "Hello " +
+      userName +
+      "<br>Please enter your Betting amount, It will be deducted from your current Points:" +
+      userPoints
+    );
+  }
+  if (programStage == STAGE_USERBET && input == "") {
+    console.log("NO BET");
+    return "Please enter your bet! and hit submit!";
+  } else if (programStage == STAGE_USERBET) {
+    userCards.length = 0;
+    computerCards.length = 0;
+    console.log(userCards);
+    userBet = input;
+    userPoints = userPoints - userBet;
+    programStage = STAGE_DEAL_CARDS;
+    console.log("User Bet:");
+    console.log(userBet);
   }
 
   if (programStage == STAGE_DEAL_CARDS) {
@@ -260,7 +284,8 @@ var main = function (input) {
     dealStartingCards(shuffledDeck);
 
     if (blackJack()) {
-      programStage = STAGE_GAME_OVER;
+      userPoints = userBet * 2 + userPoints;
+      programStage = STAGE_USERBET;
       return (
         "Blackjack! " +
         userName +
@@ -289,19 +314,23 @@ var main = function (input) {
       userCards.push(shuffledDeck.pop());
       updateUserTotal();
       if (checkForBust(userCards)) {
-        programStage = STAGE_GAME_OVER;
+        programStage = STAGE_USERBET;
         return (
-          "User chose to hit, user has bust. Computer wins.<br><br> User's hand is: <br>" +
+          userName +
+          " chose to hit, user has bust. Computer wins.<br><br> User's hand is: <br>" +
           outputCards(userCards) +
-          "<br>User's total points is " +
+          "<br>" +
+          userName +
+          "'s total points is " +
           calcHandTotal(userCards) +
           "<br><br> Computer's hand is <br>" +
           outputCards(computerCards) +
-          "<br><br>Hit refresh to play again."
+          "<br><br>Enter Your bet to play again."
         );
       }
       return (
-        "User chose to hit. User's hand is: <br>" +
+        userName +
+        " chose to hit. User's hand is: <br>" +
         outputCards(userCards) +
         "<br>User's total points is " +
         calcHandTotal(userCards) +
@@ -314,7 +343,8 @@ var main = function (input) {
       programStage = STAGE_COMPUTER_TURN;
 
       return (
-        "User chose to stand. User's hand is: <br>" +
+        userName +
+        " chose to stand. User's hand is: <br>" +
         outputCards(userCards) +
         "<br>User's total points is " +
         calcHandTotal(userCards) +
@@ -330,26 +360,32 @@ var main = function (input) {
     startComputerTurn();
 
     if (checkForBust(computerCards)) {
-      programStage = STAGE_GAME_OVER;
+      programStage = STAGE_USERBET;
+      userPoints = userBet * 2 + userPoints;
       console.log("computer busted");
       return (
-        "Computer has bust. User wins!<br>" +
+        "Computer has bust." +
+        userName +
+        " wins!<br>" +
         outputCards(computerCards) +
-        "<br>Hit refresh to play again"
+        "<br>Enter Bet to play again"
       );
     }
     var winnerMessage = determineWinner();
-    programStage = STAGE_GAME_OVER;
+    programStage = STAGE_USERBET;
     return (
       winnerMessage +
-      "<Br><br>User's cards: <br>" +
+      "<Br><br>" +
+      userName +
+      "'s cards: <br>" +
       outputCards(userCards) +
       "<br>User's total:" +
       calcHandTotal(userCards) +
       "<br><br>Computer's cards:<br>" +
       outputCards(computerCards) +
       "<br>Computer's total:<br>" +
-      computerTotal
+      computerTotal +
+      "<br>Enter Bet to play again"
     );
   }
 };
