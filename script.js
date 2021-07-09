@@ -75,14 +75,13 @@ var shuffleCards = function (cardDeck) {
 };
 
 // Global variables
-var gameMode = 'name';
-var playerHand = [];
+var gameMode = 'no of players';
 var computerHand = [];
-var playerPoints = '';
 var computerPoints = '';
 var userName = '';
-var playerCoins = 100;
-var playerWage = 0;
+var playerProfile = [];
+var noOfPlayers = 0;
+var currPlayer = 0;
 
 // Function to sum hand
 var sumHand = function (hand) {
@@ -111,258 +110,442 @@ var sumHand = function (hand) {
   return sum;
 };
 
+// Function to deal cards
+var dealCard = function (hand) {
+  var shuffledDeck = shuffleCards(makeDeck());
+  hand.push(shuffledDeck.pop());
+};
+
 var main = function (input) {
   var myOutputValue = '';
   var shuffledDeck = shuffleCards(makeDeck());
-  // Player inputs his name
+  // Decide no of players
+  if (gameMode == 'no of players') {
+    if (isNaN(Number(input)) == true || Number(input) <= 0) {
+      console.log(isNaN(Number(input)));
+      myOutputValue = 'Please input the no of players playing the game.';
+    } else {
+      noOfPlayers = Number(input);
+      myOutputValue =
+        'There are ' +
+        noOfPlayers +
+        ' players playing the game. Player 1, please input your name.';
+      gameMode = 'name';
+    }
+    return myOutputValue;
+  }
+  // Players input their names
   if (gameMode == 'name') {
     // error message
     myOutputValue = "Hey! I'm the computer. What's your name?";
-
-    // Message once player has inputted his name
     if (input != '') {
       userName = input;
-      myOutputValue =
-        'Welcome ' +
-        userName +
-        ' to the game. Please decide how much you would like to wager.';
-      gameMode = 'bet';
+      playerProfile.push({
+        playerNo: currPlayer + 1,
+        name: userName,
+        playerHand: [],
+        playerWage: 0,
+        playerCoins: 100,
+        playerPoints: 0,
+        blackJack: 'false',
+      });
+      console.log(playerProfile);
+      // Message once last player has inputted their name
+      if (playerProfile[currPlayer].playerNo == noOfPlayers) {
+        myOutputValue =
+          userName +
+          ', welcome to the game. <br><br>' +
+          playerProfile[0].name +
+          ', you have ' +
+          playerProfile[0].playerCoins +
+          ' coins. Please decide how many coins you would like to wager.';
+        currPlayer = 0;
+        gameMode = 'bet';
+      } else {
+        // Message for next player to input his/her name
+        myOutputValue =
+          userName +
+          ', welcome to the game.<br><br>Player ' +
+          (playerProfile[currPlayer].playerNo + 1) +
+          ', please input your name.';
+        currPlayer = currPlayer + 1;
+      }
     }
+    return myOutputValue;
   }
-
   // Players input their bets
   if (gameMode == 'bet') {
-    if (playerCoins <= 0) {
+    // bankrupt message
+    if (playerProfile[currPlayer].playerCoins <= 0) {
       myOutputValue =
-        'Hi ' + userName + '. You are bankrupt. Please come back another time.';
-      gameMode = 'name';
-    } else if (input <= playerCoins && input != '') {
-      // wager message
-      playerWage = Number(input);
-      wagerMessage =
         'Hi ' +
-        userName +
-        '. You have chosen to wager ' +
-        playerWage +
-        ' coins. ';
-      gameMode = 'deal cards to user';
+        playerProfile[currPlayer].name +
+        '. You are bankrupt. Please come back another time.';
+      playerProfile.splice(currPlayer, 1);
+    } else if (input <= playerProfile[currPlayer].playerCoins && input != '') {
+      // wager message
+      playerProfile[currPlayer].playerWage = Number(input);
+      // message once last player has inputted his bet
+      if (playerProfile[currPlayer].playerNo == noOfPlayers) {
+        myOutputValue =
+          playerProfile[currPlayer].name +
+          ', you have chosen to wager ' +
+          playerProfile[currPlayer].playerWage +
+          ' coins.<br><br>' +
+          playerProfile[0].name +
+          ', please click submit to deal the cards.';
+        currPlayer = 0;
+        gameMode = 'deal cards to user';
+      } else {
+        myOutputValue =
+          'Hi ' +
+          playerProfile[currPlayer].name +
+          '. You have chosen to wager ' +
+          playerProfile[currPlayer].playerWage +
+          ' coins.<br><br>' +
+          playerProfile[currPlayer + 1].name +
+          ', please choose how many coins you would like to wager.';
+        currPlayer = currPlayer + 1;
+      }
     } else {
       // error message
       myOutputValue =
         'Hi ' +
-        userName +
+        playerProfile[currPlayer].name +
         '. Please decide how much you would like to wager. You can only bet a maximum of ' +
-        playerCoins +
+        playerProfile[currPlayer].playerCoins +
         ' coins. ';
     }
+    return myOutputValue;
   }
   // Dealing first 2 cards to players and computer
   if (gameMode == 'deal cards to user') {
-    var computerCard1 = shuffledDeck.pop();
-    var computerCard2 = shuffledDeck.pop();
-    computerHand.push(computerCard1, computerCard2);
-    console.log('Computer first 2 cards ' + computerHand);
+    // Deal cards to all players and computer
+    var counter = 0;
+    while (counter < 2) {
+      computerHand.push(shuffledDeck.pop());
+      var subCounter = 0;
+      while (subCounter < noOfPlayers) {
+        playerProfile[subCounter].playerHand.push(shuffledDeck.pop());
+        subCounter = subCounter + 1;
+      }
+      counter = counter + 1;
+    }
+    console.log(playerProfile);
+    // Sum hand of computer
     computerPoints = sumHand(computerHand);
-    console.log('Computer points from first 2 cards ' + computerPoints);
-    var playerCard1 = shuffledDeck.pop();
-    var playerCard2 = shuffledDeck.pop();
-    playerHand.push(playerCard1, playerCard2);
-    playerPoints = sumHand(playerHand);
-    console.log('Player first 2 cards ' + playerHand);
-    console.log('Player points from first 2 cards ' + playerPoints);
-
-    // Output cards to user
-    if (playerPoints == 21) {
-      playerPoints = '';
-      computerPoints = '';
-      playerHand = [];
-      computerHand = [];
-      playerCoins = playerCoins + playerWage;
+    console.log(
+      'Computer first 2 cards ' +
+        computerHand +
+        '. Computer points from first 2 cards ' +
+        computerPoints
+    );
+    gameMode = 'player turn';
+    console.log(currPlayer);
+  }
+  // Sum hand of player
+  if (gameMode == 'player turn') {
+    playerProfile[currPlayer].playerPoints = sumHand(
+      playerProfile[currPlayer].playerHand
+    );
+    console.log(
+      'First 2 cards of ' +
+        playerProfile[currPlayer].playerNo +
+        ' are ' +
+        playerProfile[currPlayer].playerHand +
+        '. Points are ' +
+        playerProfile[currPlayer].playerPoints
+    );
+    if (playerProfile[currPlayer].playerPoints == 21) {
+      playerProfile[currPlayer].blackJack = 'true';
       myOutputValue =
-        wagerMessage +
-        '<br>You scored a blackjack. You win. You have ' +
-        playerCoins +
-        ' coins.';
+        playerProfile[currPlayer].name +
+        ', you scored a blackjack.<br><br>It is now ' +
+        playerProfile[currPlayer + 1].name +
+        "'s turn.";
+      currPlayer = currPlayer + 1;
     } else {
       myOutputValue =
-        wagerMessage +
-        '<br>The computer had ' +
-        computerCard1.name +
+        playerProfile[currPlayer].name +
+        ', you had ' +
+        playerProfile[currPlayer].playerHand[0].name +
         ' of ' +
-        computerCard1.suit +
+        playerProfile[currPlayer].playerHand[0].suit +
         ' and ' +
-        computerCard2.name +
+        playerProfile[currPlayer].playerHand[1].name +
         ' of ' +
-        computerCard2.suit +
+        playerProfile[currPlayer].playerHand[1].suit +
+        ', giving a total of ' +
+        playerProfile[currPlayer].playerPoints +
+        ' points.<br>The computer had ' +
+        computerHand[0].name +
+        ' of ' +
+        computerHand[0].suit +
+        ' and ' +
+        computerHand[1].name +
+        ' of ' +
+        computerHand[1].suit +
         ', giving a total of ' +
         computerPoints +
-        ' points. <br>The player had ' +
-        playerCard1.name +
-        ' of ' +
-        playerCard1.suit +
-        ' and ' +
-        playerCard2.name +
-        ' of ' +
-        playerCard2.suit +
-        ', giving a total of ' +
-        playerPoints +
-        ' points. <br>Please decide if you want to hit or stand.';
+        ' points.<br>Please decide if you want to hit or stand.';
       gameMode = 'user hits or stands';
     }
     return myOutputValue;
   }
 
   // User chooses to hit or stand
-  else if (gameMode == 'user hits or stands') {
+  if (gameMode == 'user hits or stands') {
     myOutputValue = 'Please choose hit or stand.';
     if (input == 'hit') {
-      var playerCard3 = shuffledDeck.pop();
-      playerHand.push(playerCard3);
-      console.log('Player 3rd card ' + playerCard3);
-      playerPoints = sumHand(playerHand);
-      console.log('Player points of 3rd card ' + playerPoints);
-      if (playerPoints > 21) {
-        playerCoins = playerCoins - playerWage;
-        myOutputValue =
-          'The player chose to hit. The player drew ' +
-          playerCard3.name +
-          ' of ' +
-          playerCard3.suit +
-          ', giving a total of ' +
-          playerPoints +
-          ' points. <br>You busted. You lose. You have ' +
-          playerCoins +
-          ' coins.';
-        playerPoints = '';
-        computerPoints = '';
-        playerHand = [];
-        computerHand = [];
-        gameMode = 'bet';
+      playerProfile[currPlayer].playerHand.push(shuffledDeck.pop());
+      playerProfile[currPlayer].playerPoints = sumHand(
+        playerProfile[currPlayer].playerHand
+      );
+      console.log(
+        'First 3 cards of ' +
+          playerProfile[currPlayer].playerNo +
+          ' are ' +
+          playerProfile[currPlayer].playerHand +
+          '. Points are ' +
+          playerProfile[currPlayer].playerPoints
+      );
+      if (playerProfile[currPlayer].playerPoints > 21) {
+        if (playerProfile[currPlayer].playerNo == noOfPlayers) {
+          myOutputValue =
+            playerProfile[currPlayer].name +
+            ', you chose to hit. You drew ' +
+            playerProfile[currPlayer].playerHand[2].name +
+            ' of ' +
+            playerProfile[currPlayer].playerHand[2].suit +
+            ', giving a total of ' +
+            playerProfile[currPlayer].playerPoints +
+            " points. <br>You busted.<br><br>All players have taken their turn. It is now the computer's turn.";
+          currPlayer = 0;
+          gameMode = 'computer hits or stands';
+        } else {
+          myOutputValue =
+            playerProfile[currPlayer].name +
+            ', you chose to hit. You drew ' +
+            playerProfile[currPlayer].playerHand[2].name +
+            ' of ' +
+            playerProfile[currPlayer].playerHand[2].suit +
+            ', giving a total of ' +
+            playerProfile[currPlayer].playerPoints +
+            ' points. <br>You busted.<br><br>It is now ' +
+            playerProfile[currPlayer + 1].name +
+            "'s turn.";
+          currPlayer = currPlayer + 1;
+          gameMode = 'player turn';
+        }
       } else {
         myOutputValue =
-          'The player chose to hit. The player drew ' +
-          playerCard3.name +
+          playerProfile[currPlayer].name +
+          ', you chose to hit. You drew ' +
+          playerProfile[currPlayer].playerHand[2].name +
           ' of ' +
-          playerCard3.suit +
+          playerProfile[currPlayer].playerHand[2].suit +
           ', giving a total of ' +
-          playerPoints +
+          playerProfile[currPlayer].playerPoints +
           ' points. <br>Please choose to hit 4th card or stand.';
       }
     }
     if (input == 'hit 4th card') {
-      var playerCard4 = shuffledDeck.pop();
-      playerHand.push(playerCard4);
-      console.log('Player 4th card ' + playerCard4);
-      playerPoints = sumHand(playerHand);
-      console.log('Player points of 4th card ' + playerPoints);
-      if (playerPoints > 21) {
-        playerCoins = playerCoins - playerWage;
-        myOutputValue =
-          'The player chose to hit. The player drew ' +
-          playerCard4.name +
-          ' of ' +
-          playerCard4.suit +
-          ', giving a total of ' +
-          playerPoints +
-          ' points. <br>You busted. You lose. You have ' +
-          playerCoins +
-          ' coins.';
-        playerPoints = '';
-        computerPoints = '';
-        playerHand = [];
-        computerHand = [];
-        gameMode = 'bet';
+      playerProfile[currPlayer].playerHand.push(shuffledDeck.pop());
+      playerProfile[currPlayer].playerPoints = sumHand(
+        playerProfile[currPlayer].playerHand
+      );
+      console.log(
+        'First 4 cards of ' +
+          playerProfile[currPlayer].playerNo +
+          ' are ' +
+          playerProfile[currPlayer].playerHand +
+          '. Points are ' +
+          playerProfile[currPlayer].playerPoints
+      );
+      if (playerProfile[currPlayer].playerPoints > 21) {
+        if (playerProfile[currPlayer].playerNo == noOfPlayers) {
+          myOutputValue =
+            playerProfile[currPlayer].name +
+            ', you chose to hit. You drew ' +
+            playerProfile[currPlayer].playerHand[3].name +
+            ' of ' +
+            playerProfile[currPlayer].playerHand[3].suit +
+            ', giving a total of ' +
+            playerProfile[currPlayer].playerPoints +
+            " points. <br>You busted.<br><br>All players have taken their turn. It is now the computer's turn.";
+          currPlayer = 0;
+          gameMode = 'computer hits or stands';
+        } else {
+          myOutputValue =
+            playerProfile[currPlayer].name +
+            ', you chose to hit. You drew ' +
+            playerProfile[currPlayer].playerHand[3].name +
+            ' of ' +
+            playerProfile[currPlayer].playerHand[3].suit +
+            ', giving a total of ' +
+            playerProfile[currPlayer].playerPoints +
+            ' points. <br>You busted.<br><br>It is now ' +
+            playerProfile[currPlayer + 1].name +
+            "'s turn.";
+          currPlayer = currPlayer + 1;
+          gameMode = 'player turn';
+        }
       } else {
         myOutputValue =
-          'The player chose to hit. The player drew ' +
-          playerCard4.name +
+          playerProfile[currPlayer].name +
+          ', you chose to hit. You drew ' +
+          playerProfile[currPlayer].playerHand[3].name +
           ' of ' +
-          playerCard4.suit +
+          playerProfile[currPlayer].playerHand[3].suit +
           ', giving a total of ' +
-          playerPoints +
+          playerProfile[currPlayer].playerPoints +
           ' points. <br>Please choose to hit 5th card or stand.';
       }
     }
     if (input == 'hit 5th card') {
-      var playerCard5 = shuffledDeck.pop();
-      playerHand.push(playerCard5);
-      console.log('Player 5th card ' + playerCard5);
-      playerPoints = sumHand(playerHand);
-      console.log('Player points of 5th card ' + playerPoints);
-      if (playerPoints > 21) {
-        playerCoins = playerCoins - playerWage;
-        myOutputValue =
-          'The player chose to hit. The player drew ' +
-          playerCard5.name +
-          ' of ' +
-          playerCard5.suit +
-          ', giving a total of ' +
-          playerPoints +
-          ' points. <br>You busted. You lose. You have ' +
-          playerCoins +
-          ' coins.';
-        playerPoints = '';
-        computerPoints = '';
-        playerHand = [];
-        computerHand = [];
-        gameMode = 'bet';
-        console.log(gameMode);
+      playerProfile[currPlayer].playerHand.push(shuffledDeck.pop());
+      playerProfile[currPlayer].playerPoints = sumHand(
+        playerProfile[currPlayer].playerHand
+      );
+      console.log(
+        'The 5 cards of ' +
+          playerProfile[currPlayer].playerNo +
+          ' are ' +
+          playerProfile[currPlayer].playerHand +
+          '. Points are ' +
+          playerProfile[currPlayer].playerPoints
+      );
+      if (playerProfile[currPlayer].playerPoints > 21) {
+        if (playerProfile[currPlayer].playerNo == noOfPlayers) {
+          myOutputValue =
+            playerProfile[currPlayer].name +
+            ', you chose to hit. You drew ' +
+            playerProfile[currPlayer].playerHand[4].name +
+            ' of ' +
+            playerProfile[currPlayer].playerHand[4].suit +
+            ', giving a total of ' +
+            playerProfile[currPlayer].playerPoints +
+            " points.<br>You busted.<br><br>All players have taken their turn. It is now the computer's turn.";
+          currPlayer = 0;
+          gameMode = 'computer hits or stands';
+        } else {
+          myOutputValue =
+            playerProfile[currPlayer].name +
+            ', you chose to hit. You drew ' +
+            playerProfile[currPlayer].playerHand[4].name +
+            ' of ' +
+            playerProfile[currPlayer].playerHand[4].suit +
+            ', giving a total of ' +
+            playerProfile[currPlayer].playerPoints +
+            ' points. <br>You busted.<br><br>It is now ' +
+            playerProfile[currPlayer + 1].name +
+            "'s turn.";
+          currPlayer = currPlayer + 1;
+          gameMode = 'player turn';
+        }
       } else {
-        myOutputValue =
-          'The player chose to hit. The player drew ' +
-          playerCard5.name +
-          ' of ' +
-          playerCard5.suit +
-          ', giving a total of ' +
-          playerPoints +
-          ' points.';
+        if (playerProfile[currPlayer].playerNo == noOfPlayers) {
+          myOutputValue =
+            playerProfile[currPlayer].name +
+            ', you chose to hit. You drew ' +
+            playerProfile[currPlayer].playerHand[4].name +
+            ' of ' +
+            playerProfile[currPlayer].playerHand[4].suit +
+            ', giving a total of ' +
+            playerProfile[currPlayer].playerPoints +
+            " points.<br><br>All players have taken their turn. It is now the computer's turn.";
+          currPlayer = 0;
+          gameMode = 'computer hits or stands';
+        } else {
+          myOutputValue =
+            playerProfile[currPlayer].name +
+            ', you chose to hit. You drew ' +
+            playerProfile[currPlayer].playerHand[4].name +
+            ' of ' +
+            playerProfile[currPlayer].playerHand[4].suit +
+            ', giving a total of ' +
+            playerProfile[currPlayer].playerPoints +
+            ' points.<br><br>It is now ' +
+            playerProfile[currPlayer + 1].name +
+            "'s turn.";
+          currPlayer = currPlayer + 1;
+          gameMode = 'player turn';
+        }
       }
-      gameMode = 'computer hits or stands';
     }
 
     if (input == 'stand') {
-      myOutputValue =
-        'The player chose to stand. The player has a total of ' +
-        playerPoints +
-        ' points.';
-      gameMode = 'computer hits or stands';
+      if (playerProfile[currPlayer].playerNo == noOfPlayers) {
+        myOutputValue =
+          playerProfile[currPlayer].name +
+          ', you chose to stand. You have a total of ' +
+          playerProfile[currPlayer].playerPoints +
+          " points.<br><br>All players have taken their turn. It is now the computer's turn.";
+        currPlayer = 0;
+        gameMode = 'computer hits or stands';
+      } else {
+        myOutputValue =
+          playerProfile[currPlayer].name +
+          ', you chose to stand. You have a total of ' +
+          playerProfile[currPlayer].playerPoints +
+          ' points.<br><br>It is now ' +
+          playerProfile[currPlayer + 1].name +
+          "'s turn.";
+        currPlayer = currPlayer + 1;
+        gameMode = 'player turn';
+      }
     }
+    return myOutputValue;
   }
 
   // Computer hits or stands automatically
-  else if (gameMode == 'computer hits or stands') {
+  if (gameMode == 'computer hits or stands') {
     var message = '';
     if (computerPoints < 17) {
-      var computerCard3 = shuffledDeck.pop();
-      computerHand.push(computerCard3);
-      console.log('Computer points ' + computerPoints);
-      console.log('Computer 3rd card ' + computerCard3);
+      computerHand.push(shuffledDeck.pop());
       computerPoints = sumHand(computerHand);
-      console.log('Computer points ' + computerPoints);
+      console.log(
+        'Computer first 3 cards ' +
+          computerHand +
+          '. Computer points from first 3 cards ' +
+          computerPoints
+      );
       message =
-        'The computer drew ' + computerCard3.name + ' of ' + computerCard3.suit;
+        'The computer drew ' +
+        computerHand[2].name +
+        ' of ' +
+        computerHand[2].suit;
       console.log(message);
       if (computerPoints < 17) {
-        var computerCard4 = shuffledDeck.pop();
-        computerHand.push(computerCard4);
-        console.log('Computer 4th card ' + computerCard4);
+        computerHand.push(shuffledDeck.pop());
         computerPoints = sumHand(computerHand);
-        console.log('Computer points ' + computerPoints);
+        console.log(
+          'Computer first 4 cards ' +
+            computerHand +
+            '. Computer points from first 4 cards ' +
+            computerPoints
+        );
         message =
-          message + ' and ' + computerCard4.name + ' of ' + computerCard4.suit;
+          message +
+          ' and ' +
+          computerHand[3].name +
+          ' of ' +
+          computerHand[3].suit;
         if (computerPoints < 17) {
-          var computerCard5 = shuffledDeck.pop();
-          computerHand.push(computerCard5);
-          console.log('Computer 5th card ' + computerCard5);
+          computerHand.push(shuffledDeck.pop());
           computerPoints = sumHand(computerHand);
-          console.log('Computer points ' + computerPoints);
+          console.log(
+            'Computer first 5 cards ' +
+              computerHand +
+              '. Computer points from first 5 cards ' +
+              computerPoints
+          );
           message =
             message +
             ' and ' +
-            computerCard5.name +
+            computerHand[4].name +
             ' of ' +
-            computerCard5.suit;
-
+            computerHand[4].suit;
           gameMode = 'compare hand';
         }
       }
@@ -373,82 +556,289 @@ var main = function (input) {
     console.log(message);
     myOutputValue =
       "It is the computer's turn to hit or stand. " + message + '. ';
+    return myOutputValue;
   }
 
   // Compare player and computer's points
-  else if (gameMode == 'compare hand') {
-    var playerPointsTo21 = 21 - playerPoints;
-    var comPointsTo21 = 21 - computerPoints;
-    if (playerPoints <= 21 && computerPoints <= 21) {
-      if (comPointsTo21 < playerPointsTo21) {
-        playerCoins = playerCoins - playerWage;
+  if (gameMode == 'compare hand') {
+    if (playerProfile[currPlayer].blackJack == 'true') {
+      playerProfile[currPlayer].playerCoins =
+        playerProfile[currPlayer].playerCoins +
+        playerProfile[currPlayer].playerWage;
+      if (playerProfile[currPlayer].playerNo == noOfPlayers) {
         myOutputValue =
-          'The computer has ' +
+          playerProfile[currPlayer].name +
+          ', the computer has ' +
           computerPoints +
-          ' points and the player has ' +
-          playerPoints +
-          ' points. <br>The computer wins. You have ' +
-          playerCoins +
-          ' coins.';
-      } else if (comPointsTo21 > playerPointsTo21) {
-        playerCoins = playerCoins + playerWage;
-        myOutputValue =
-          myOutputValue +
-          'The computer has ' +
-          computerPoints +
-          ' points and the player has ' +
-          playerPoints +
+          ' points and you have ' +
+          playerProfile[currPlayer].playerPoints +
           ' points. <br>The player wins. You have ' +
-          playerCoins +
-          ' coins.';
+          playerProfile[currPlayer].playerCoins +
+          ' coins.<br><br>The game round has ended. Please enter your bets for the next round.';
+        computerHand = [];
+        var counter = 0;
+        while (counter < playerProfile.length) {
+          playerProfile[counter].playerHand = [];
+          playerProfile[counter].playerWage = 0;
+          playerProfile[counter].playerPoints = 0;
+          playerProfile[counter].blackJack = 'false';
+          counter = counter + 1;
+        }
+        computerPoints = 0;
+        currPlayer = 0;
+        gameMode = 'bet';
       } else {
         myOutputValue =
-          'The computer has ' +
+          playerProfile[currPlayer].name +
+          ', the computer has ' +
+          computerPoints +
+          ' points and you have ' +
+          playerProfile[currPlayer].playerPoints +
+          ' points. <br>The player wins. You have ' +
+          playerProfile[currPlayer].playerCoins +
+          ' coins.';
+        currPlayer = currPlayer + 1;
+      }
+    } else if (
+      playerProfile[currPlayer].playerPoints <= 21 &&
+      computerPoints <= 21
+    ) {
+      if (21 - computerPoints < 21 - playerProfile[currPlayer].playerPoints) {
+        playerProfile[currPlayer].playerCoins =
+          playerProfile[currPlayer].playerCoins -
+          playerProfile[currPlayer].playerWage;
+        if (playerProfile[currPlayer].playerNo == noOfPlayers) {
+          myOutputValue =
+            playerProfile[currPlayer].name +
+            ', the computer has ' +
+            computerPoints +
+            ' points and you have ' +
+            playerProfile[currPlayer].playerPoints +
+            ' points. <br>The computer wins. You have ' +
+            playerProfile[currPlayer].playerCoins +
+            ' coins.<br><br>The game round has ended. Please enter your bets for the next round.';
+          computerHand = [];
+          var counter = 0;
+          while (counter < playerProfile.length) {
+            playerProfile[counter].playerHand = [];
+            playerProfile[counter].playerWage = 0;
+            playerProfile[counter].playerPoints = 0;
+            playerProfile[counter].blackJack = 'false';
+            counter = counter + 1;
+          }
+          computerPoints = 0;
+          currPlayer = 0;
+          gameMode = 'bet';
+        } else {
+          myOutputValue =
+            playerProfile[currPlayer].name +
+            ', the computer has ' +
+            computerPoints +
+            ' points and you have ' +
+            playerProfile[currPlayer].playerPoints +
+            ' points. <br>The computer wins. You have ' +
+            playerProfile[currPlayer].playerCoins +
+            ' coins.';
+          currPlayer = currPlayer + 1;
+        }
+      } else if (
+        21 - computerPoints >
+        21 - playerProfile[currPlayer].playerPoints
+      ) {
+        playerProfile[currPlayer].playerCoins =
+          playerProfile[currPlayer].playerCoins +
+          playerProfile[currPlayer].playerWage;
+        if (playerProfile[currPlayer].playerNo == noOfPlayers) {
+          myOutputValue =
+            playerProfile[currPlayer].name +
+            ', the computer has ' +
+            computerPoints +
+            ' points and you have ' +
+            playerProfile[currPlayer].playerPoints +
+            ' points. <br>The player wins. You have ' +
+            playerProfile[currPlayer].playerCoins +
+            ' coins.<br><br>The game round has ended. Please enter your bets for the next round.';
+          computerHand = [];
+          var counter = 0;
+          while (counter < playerProfile.length) {
+            playerProfile[counter].playerHand = [];
+            playerProfile[counter].playerWage = 0;
+            playerProfile[counter].playerPoints = 0;
+            playerProfile[counter].blackJack = 'false';
+            counter = counter + 1;
+          }
+          computerPoints = 0;
+          currPlayer = 0;
+          gameMode = 'bet';
+        } else {
+          myOutputValue =
+            playerProfile[currPlayer].name +
+            ', the computer has ' +
+            computerPoints +
+            ' points and you have ' +
+            playerProfile[currPlayer].playerPoints +
+            ' points. <br>The player wins. You have ' +
+            playerProfile[currPlayer].playerCoins +
+            ' coins.';
+          currPlayer = currPlayer + 1;
+        }
+      } else {
+        if (playerProfile[currPlayer].playerNo == noOfPlayers) {
+          myOutputValue =
+            playerProfile[currPlayer].name +
+            ', the computer has ' +
+            computerPoints +
+            ' points and you have ' +
+            playerProfile[currPlayer].playerPoints +
+            ' points. <br>It is a tie. You have ' +
+            playerProfile[currPlayer].playerCoins +
+            ' coins.<br><br>The game round has ended. Please enter your bets for the next round.';
+          computerHand = [];
+          var counter = 0;
+          while (counter < playerProfile.length) {
+            playerProfile[counter].playerHand = [];
+            playerProfile[counter].playerWage = 0;
+            playerProfile[counter].playerPoints = 0;
+            playerProfile[counter].blackJack = 'false';
+            counter = counter + 1;
+          }
+          computerPoints = 0;
+          currPlayer = 0;
+          gameMode = 'bet';
+        } else {
+          myOutputValue =
+            playerProfile[currPlayer].name +
+            ', the computer has ' +
+            computerPoints +
+            ' points and you have ' +
+            playerProfile[currPlayer].playerPoints +
+            +' points. <br>It is a tie. You have ' +
+            playerProfile[currPlayer].playerCoins +
+            +' coins.';
+          currPlayer = currPlayer + 1;
+        }
+      }
+    } else if (
+      playerProfile[currPlayer].playerPoints > 21 &&
+      computerPoints <= 21
+    ) {
+      playerProfile[currPlayer].playerCoins =
+        playerProfile[currPlayer].playerCoins -
+        playerProfile[currPlayer].playerWage;
+      if (playerProfile[currPlayer].playerNo == noOfPlayers) {
+        myOutputValue =
+          playerProfile[currPlayer].name +
+          ', the computer has ' +
+          computerPoints +
+          ' points and you have ' +
+          playerProfile[currPlayer].playerPoints +
+          ' points. <br>The player busted. The computer wins. You have ' +
+          playerProfile[currPlayer].playerCoins +
+          ' coins.<br><br>The game round has ended. Please enter your bets for the next round.';
+        computerHand = [];
+        var counter = 0;
+        while (counter < playerProfile.length) {
+          playerProfile[counter].playerHand = [];
+          playerProfile[counter].playerWage = 0;
+          playerProfile[counter].playerPoints = 0;
+          playerProfile[counter].blackJack = 'false';
+          counter = counter + 1;
+        }
+        computerPoints = 0;
+        currPlayer = 0;
+        gameMode = 'bet';
+      } else {
+        myOutputValue =
+          playerProfile[currPlayer].name +
+          ', the computer has ' +
           computerPoints +
           ' points and the player has ' +
-          playerPoints +
-          ' points. <br>It is a tie. You have ' +
-          playerCoins +
+          playerProfile[currPlayer].playerPoints +
+          ' points. <br>The player busted. The computer wins. You have ' +
+          playerProfile[currPlayer].playerCoins +
           ' coins.';
+        currPlayer = currPlayer + 1;
+      }
+    } else if (
+      playerProfile[currPlayer].playerPoints <= 21 &&
+      computerPoints > 21
+    ) {
+      playerProfile[currPlayer].playerCoins =
+        playerProfile[currPlayer].playerCoins +
+        playerProfile[currPlayer].playerWage;
+      if (playerProfile[currPlayer].playerNo == noOfPlayers) {
+        myOutputValue =
+          playerProfile[currPlayer].name +
+          ', the computer has ' +
+          computerPoints +
+          ' points and you have ' +
+          playerProfile[currPlayer].playerPoints +
+          ' points. <br>The computer busted. The player wins. You have ' +
+          playerProfile[currPlayer].playerCoins +
+          ' coins.<br><br>The game round has ended. Please enter your bets for the next round.';
+        computerHand = [];
+        var counter = 0;
+        while (counter < playerProfile.length) {
+          playerProfile[counter].playerHand = [];
+          playerProfile[counter].playerWage = 0;
+          playerProfile[counter].playerPoints = 0;
+          playerProfile[counter].blackJack = 'false';
+          counter = counter + 1;
+        }
+        computerPoints = 0;
+        currPlayer = 0;
+        gameMode = 'bet';
+      } else {
+        myOutputValue =
+          playerProfile[currPlayer].name +
+          ', the computer has ' +
+          computerPoints +
+          ' points and the player has ' +
+          playerProfile[currPlayer].playerPoints +
+          ' points. <br>The computer busted. The player wins. You have ' +
+          playerProfile[currPlayer].playerCoins +
+          ' coins.';
+        currPlayer = currPlayer + 1;
+      }
+    } else if (
+      playerProfile[currPlayer].playerPoints > 21 &&
+      computerPoints > 21
+    ) {
+      if (playerProfile[currPlayer].playerNo == noOfPlayers) {
+        myOutputValue =
+          playerProfile[currPlayer].name +
+          ', the computer has ' +
+          computerPoints +
+          ' points and you have ' +
+          playerProfile[currPlayer].playerPoints +
+          ' points. <br>Both players busted. It is a tie. You have ' +
+          playerProfile[currPlayer].playerCoins +
+          ' coins.<br><br>The game round has ended. Please enter your bets for the next round.';
+        computerHand = [];
+        var counter = 0;
+        while (counter < playerProfile.length) {
+          playerProfile[counter].playerHand = [];
+          playerProfile[counter].playerWage = 0;
+          playerProfile[counter].playerPoints = 0;
+          playerProfile[counter].blackJack = 'false';
+          counter = counter + 1;
+        }
+        computerPoints = 0;
+        currPlayer = 0;
+        gameMode = 'bet';
+      } else {
+        myOutputValue =
+          playerProfile[currPlayer].name +
+          ', the computer has ' +
+          computerPoints +
+          ' points and the player has ' +
+          playerProfile[currPlayer].playerPoints +
+          ' points. <br>Both players busted. It is a tie. You have ' +
+          playerProfile[currPlayer].playerCoins +
+          ' coins.';
+        currPlayer = currPlayer + 1;
       }
     }
-    if (playerPoints > 21 && computerPoints <= 21) {
-      playerCoins = playerCoins - playerWage;
-      myOutputValue =
-        'The computer has ' +
-        computerPoints +
-        ' points and the player has ' +
-        playerPoints +
-        ' points. <br>The player busted. The computer wins. You have ' +
-        playerCoins +
-        ' coins.';
-    }
-    if (playerPoints <= 21 && computerPoints > 21) {
-      playerCoins = playerCoins + playerWage;
-      myOutputValue =
-        'The computer has ' +
-        computerPoints +
-        ' points and the player has ' +
-        playerPoints +
-        ' points. <br>The computer busted. The player wins. You have ' +
-        playerCoins +
-        ' coins.';
-    }
-    if (playerPoints > 21 && computerPoints > 21) {
-      myOutputValue =
-        'The computer has ' +
-        computerPoints +
-        ' points and the player has ' +
-        playerPoints +
-        ' points. <br>Both players busted. It is a tie. You have ' +
-        playerCoins +
-        ' coins.';
-    }
-    playerPoints = '';
-    computerPoints = '';
-    playerHand = [];
-    computerHand = [];
-    gameMode = 'bet';
+    return myOutputValue;
   }
-  return myOutputValue;
 };
