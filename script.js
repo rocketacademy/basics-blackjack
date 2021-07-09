@@ -148,6 +148,13 @@ var dealStartingCards = function () {
 var blackJack = function () {
   return userCards[0].value + userCards[1].value == 21;
 };
+
+// Function: check if computer's starting hand is Blackjack
+
+var computerBlackJack = function () {
+  return computerCards[0].value + computerCards[1].value == 21;
+};
+
 // function to output message for a player's cards
 var outputCards = function (aHand) {
   //set a loop to run through a player's entire hand and output all the cards' names and suits
@@ -238,7 +245,7 @@ var determineWinner = function () {
   } else if (userTotal < computerTotal && computerTotal < 22) {
     winnerMessage = "Computer wins!";
   } else if (userTotal == computerTotal) {
-    userPoints = userPoints + userBet;
+    userPoints = userPoints + Number(userBet);
     winnerMessage = "It is a tie.";
   }
   return winnerMessage;
@@ -286,14 +293,34 @@ var main = function (input) {
   if (programStage == STAGE_DEAL_CARDS) {
     //Initial turn - cards are shuffled and dealt. Check for user's Blackjack - if yes, game ends.
     dealStartingCards(shuffledDeck);
-
-    if (blackJack()) {
+    if (blackJack() && computerBlackJack()) {
+      userPoints = userBet + userPoints;
+      programStage = STAGE_USERBET;
+      console.log("User Points:");
+      console.log(userPoints);
+      return (
+        "Two Blackjack! What are the chances!! Both wins. User's hand is:" +
+        outputCards(userCards) +
+        "<br><br>Press Submit to play again."
+      );
+    } else if (blackJack()) {
       userPoints = userBet * 2 + userPoints;
       programStage = STAGE_USERBET;
+      console.log("User Points:");
+      console.log(userPoints);
       return (
         "Blackjack! " +
         userName +
         " wins. User's hand is:" +
+        outputCards(userCards) +
+        "<br><br>Press Submit to play again."
+      );
+    } else if (computerBlackJack()) {
+      programStage = STAGE_USERBET;
+      console.log("User Points:");
+      console.log(userPoints);
+      return (
+        "Blackjack! Computer wins. User's hand is:" +
         outputCards(userCards) +
         "<br><br>Press Submit to play again."
       );
@@ -377,6 +404,8 @@ var main = function (input) {
     }
     var winnerMessage = determineWinner();
     programStage = STAGE_USERBET;
+    console.log("User Points:");
+    console.log(userPoints);
     return (
       winnerMessage +
       "<Br><br>" +
