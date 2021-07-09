@@ -103,6 +103,7 @@ var deal = function () {
 };
 
 var hit = function () {
+  standme.disabled = false;
   newCard = deal();
   playerHand.push(newCard);
   console.log(newCard);
@@ -116,9 +117,9 @@ var hit = function () {
     ".";
   output.innerHTML += playerDraw;
   if (score(playerHand) > 21) {
-    hitme.removeEventListener("click", hit);
-    standme.removeEventListener("click", stand);
-    start.addEventListener("click", startGame);
+    hitme.disabled = true;
+    standme.disabled = true;
+    start.disabled = false;
     output.innerHTML += "<br>" + "<br>" + "Bust! You lose!";
   }
 };
@@ -127,8 +128,9 @@ var stand = function () {
   if (score(playerHand) < 17) {
     var error = "<br>" + "<br>" + "Insufficient value. Please draw a card.";
     output.innerHTML += error;
+    standme.disabled = true;
   } else {
-    hitme.removeEventListener("click", hit);
+    hitme.disabled = true;
     var endTurn =
       "<br>" +
       "<br>" +
@@ -153,13 +155,16 @@ var stand = function () {
       output.innerHTML += houseDraw;
     }
     if (score(houseHand) > 21 || score(playerHand) > score(houseHand)) {
-      start.addEventListener("click", startGame);
+      start.disabled = false;
+      standme.disabled = true;
       output.innerHTML += "<br>" + "<br>" + "You win!";
     } else if (score(playerHand) < score(houseHand)) {
-      start.addEventListener("click", startGame);
+      start.disabled = false;
+      standme.disabled = true;
       output.innerHTML += "<br>" + "<br>" + "You lose!";
     } else {
-      start.addEventListener("click", startGame);
+      start.disabled = false;
+      standme.disabled = true;
       output.innerHTML += "<br>" + "<br>" + "Draw!";
     }
   }
@@ -167,9 +172,7 @@ var stand = function () {
 
 //main game
 var startGame = function () {
-  start.removeEventListener("click", startGame);
-  hitme.addEventListener("click", hit);
-  standme.addEventListener("click", stand);
+  start.disabled = true;
   generateDeck();
   shuffleCards(deck);
   playerHand = [deal(), deal()];
@@ -186,6 +189,9 @@ var startGame = function () {
     ".";
   output.innerHTML = firstround;
 
+  hitme.disabled = false;
+  standme.disabled = false;
+
   if (blackjack(playerHand)) {
     var bj = "<br>" + "Blackjack!";
     output.html += bj;
@@ -196,10 +202,10 @@ var startGame = function () {
         "<br>" +
         "Too bad, the house deals a BlackJack too! It's a draw!";
       output.innerHTML += draw;
-      start.addEventListener("click", startGame);
+      start.disabled = false;
     } else {
       output.innerHTML += "<br>" + "You're a winner!";
-      start.addEventListener("click", startGame);
+      start.disabled = false;
     }
   }
 };
