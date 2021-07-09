@@ -62,6 +62,7 @@ var shuffleCards = function (deck) {
 
 // HELPER FUNCTIONS
 // populate values
+// score function does not capture all edge cases
 var score = function (card) {
   var sum = 0;
   var count = 0;
@@ -78,9 +79,13 @@ var score = function (card) {
     }
   }
 
-  if (count == 2 && sum == 11 && aces == 1) {
-    sum = 21;
+  while (aces > 0) {
+    if (sum + 10 < 21 || sum == 11) {
+      sum += 10;
+      aces--;
+    }
   }
+
   return sum;
 };
 
@@ -89,7 +94,7 @@ var score = function (card) {
 var blackjack = function (hand) {
   //takes an object and check if two cards are 'Ace' & 10 card
   if (
-    score(hand) == 11 &&
+    score(hand) == 21 &&
     (hand[0].property == "Ace" || hand[1].property == "Ace")
   ) {
     return true;
@@ -154,7 +159,9 @@ var stand = function () {
         ".";
       output.innerHTML += houseDraw;
     }
-    if (score(houseHand) > 21 || score(playerHand) > score(houseHand)) {
+    if (blackjack(houseHand)) {
+      output.innerHTML += "It's a Blackjack! You lose!";
+    } else if (score(houseHand) > 21 || score(playerHand) > score(houseHand)) {
       start.disabled = false;
       standme.disabled = true;
       output.innerHTML += "<br>" + "<br>" + "You win!";
@@ -186,6 +193,9 @@ var startGame = function () {
     playerHand[1].name +
     ", for a total score of " +
     score(playerHand) +
+    "." +
+    "<br><br> The dealer has " +
+    houseHand[0].name +
     ".";
   output.innerHTML = firstround;
 
@@ -195,7 +205,7 @@ var startGame = function () {
   if (blackjack(playerHand)) {
     var bj = "<br>" + "Blackjack!";
     output.html += bj;
-    start.addEventListener("click", startGame);
+    start.disabled = false;
     if (blackjack(houseHand)) {
       var draw =
         "<br>" +
