@@ -54,6 +54,7 @@ var programStage = "STAGE_USERNAME";
 var userName = "";
 var userPoints = 100;
 var userBet = Number();
+var numberOfPlayers = 0;
 
 //////////HELPER FUNCTIONS////////////
 
@@ -123,6 +124,7 @@ var shuffledDeck = shuffleCards(makeDeck());
 
 var dealStartingCards = function () {
   var dealIndex = 0;
+  userTotal = 0;
   //start loop to deal cards twice to each player
   while (dealIndex < 2) {
     //deal 1 card to user
@@ -231,10 +233,12 @@ var startComputerTurn = function () {
 //function to compare user's and computer's cards to determine winner
 var determineWinner = function () {
   if (userTotal > computerTotal && userTotal < 22) {
+    userPoints = userPoints + userBet * 2;
     winnerMessage = "User wins!";
   } else if (userTotal < computerTotal && computerTotal < 22) {
     winnerMessage = "Computer wins!";
   } else if (userTotal == computerTotal) {
+    userPoints = userPoints + userBet;
     winnerMessage = "It is a tie.";
   }
   return winnerMessage;
