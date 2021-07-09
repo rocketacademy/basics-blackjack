@@ -160,6 +160,8 @@ var stand = function () {
       output.innerHTML += houseDraw;
     }
     if (blackjack(houseHand)) {
+      start.disabled = false;
+      standme.disabled = true;
       output.innerHTML += "It's a Blackjack! You lose!";
     } else if (score(houseHand) > 21 || score(playerHand) > score(houseHand)) {
       start.disabled = false;
