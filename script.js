@@ -83,6 +83,8 @@ var score = function (card) {
     if (sum + 10 < 21 || sum == 11) {
       sum += 10;
       aces--;
+    } else {
+      aces--;
     }
   }
 
