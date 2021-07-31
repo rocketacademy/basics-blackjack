@@ -1,11 +1,10 @@
 module.exports = {
   env: {
     browser: true,
-    es2020: true,
   },
-  parserOptions: {
-    ecmaVersion: 11,
-  },
+  extends: [
+    "airbnb-base",
+  ],
   rules: {
     // Don't enforce block scope on "var" variable declarations, let JS behave as intended.
     'block-scoped-var': 'off',
@@ -37,5 +36,15 @@ module.exports = {
     radix: 'off',
     // Don't require vars to be declared at the top
     'vars-on-top': 'off',
+    // allow any kind of quotes
+    'quotes': 'off',
+    // allow any kind of comment formatting
+    'spaced-comment': 'off',
+    // dont care about oder of bool operators & linebreaks
+    'operator-linebreak': 'off',
+    // allow training spaces
+    'no-trailing-spaces': 'off',
+    // allow multi lines without dangling commas
+    'comma-dangle': 'off',
   },
 };

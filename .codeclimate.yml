@@ -1,0 +1,6 @@
+plugins:
+  eslint:
+    enabled: true
+    channel: "eslint-7"
+    issue_override:
+      severity: critical
