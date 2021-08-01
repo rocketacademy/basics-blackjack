@@ -8,19 +8,24 @@ var makeDeck = function () {
     var rankCounter = 1;
     while (rankCounter <= 13) {
       var cardName = rankCounter;
+      var cardValue = rankCounter;
       if (cardName == 1) {
         cardName = 'ace';
       } else if (cardName == 11) {
         cardName = 'jack';
+        cardValue = 10;
       } else if (cardName == 12) {
         cardName = 'queen';
+        cardValue = 10;
       } else if (cardName == 13) {
         cardName = 'king';
-      }
+        cardValue = 10;
+      };
       var card = {
         name: cardName + ` of ` + currentSuit,
         suit: currentSuit,
         rank: rankCounter,
+        value: cardValue
       };
       cardDeck.push(card);
       rankCounter += 1;
@@ -69,9 +74,13 @@ var main = function (input) {
   var myOutputValue = `Dealer has ${dealerCard1.name} and ${dealerCard2.name}.<br>
   Player has ${playerCard1.name} and ${playerCard2.name}.<br>`;
 
+  //calculate scores of dealer and player 
+  var dealerScore = dealerCard1.value + dealerCard2.value
+  var playerScore = playerCard1.value + playerCard2.value
+  console.log(`dealer score`, dealerScore);
+  console.log(`player score`, playerScore);
+
   //compare scores of dealer and player to determine winner
-  var dealerScore = dealerCard1.rank + dealerCard2.rank
-  var playerScore = playerCard1.rank + playerCard2.rank
   if(dealerScore >= playerScore){
     myOutputValue = myOutputValue + `Dealer wins!`
   }else if(dealerScore < playerScore){
