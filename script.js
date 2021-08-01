@@ -60,34 +60,48 @@ var shuffleCards = function (cardDeck) {
 //shuffled card deck
 var shuffledDeck = shuffleCards(cardDeck);
 
-var main = function (input) {
+//keeps track of dealer and player hands
+var dealerHand = [];
+var playerHand = [];
 
+//deals initial hand
+var dealInitialHand = function(){
   //dealer draws 2 cards from shuffled deck
   var dealerCard1 = shuffledDeck.pop();
   var dealerCard2 = shuffledDeck.pop();
+  dealerHand.push(dealerCard1,dealerCard2);
 
   //player draws 2 cards from shuffled deck
   var playerCard1 = shuffledDeck.pop();
   var playerCard2 = shuffledDeck.pop();
+  playerHand.push(playerCard1,playerCard2);
 
-  //output cards drawn by dealer and player
-  var myOutputValue = `Dealer has ${dealerCard1.name} and ${dealerCard2.name}.<br>
-  Player has ${playerCard1.name} and ${playerCard2.name}.<br>`;
+  return `Dealer has ${dealerCard1.name} and ${dealerCard2.name}.<br>
+  Player has ${playerCard1.name} and ${playerCard2.name}.<br>`
+};
 
-  //calculate scores of dealer and player 
-  var dealerScore = dealerCard1.value + dealerCard2.value
-  var playerScore = playerCard1.value + playerCard2.value
-  console.log(`dealer score`, dealerScore);
-  console.log(`player score`, playerScore);
-
-  //compare scores of dealer and player to determine winner
-  if(dealerScore >= playerScore){
-    myOutputValue = myOutputValue + `Dealer wins!`
-  }else if(dealerScore < playerScore){
-    myOutputValue = myOutputValue + `Player wins!`
-  } else {
-    myOutputValue = myOutputValue + `It's a tie.`
-  };
+//generates game result from dealer and player scores
+var generateGameResult = function(){
   
+  //calculate scores of dealer and player 
+  var dealerScore = dealerHand[0].value + dealerHand[1].value
+  var playerScore = playerHand[0].value + playerHand[1].value
+
+  //compares scores of dealer and player to determine winner
+  if(dealerScore >= playerScore){
+    return `Dealer wins!`
+  }else if(dealerScore < playerScore){
+    return `Player wins!`
+  } else {
+    return `It's a tie.`
+  };
+};
+
+var main = function (input) {
+
+  var initialHand = dealInitialHand();
+  var gameResult = generateGameResult();
+  var myOutputValue = initialHand + gameResult
+
   return myOutputValue;
 };
