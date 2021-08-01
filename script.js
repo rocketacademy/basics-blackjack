@@ -11,64 +11,142 @@
 var gameState ='start'
 
 //Global array for computer and player
-var computerHand = []
+
+var comHand = []
 var playerHand = []
+var playerScore = 0
+var comScore = 0
+
 
 //Global variable for winner
-var winner = ''
+var winner = []
 
+var shuffledDeck = shuffleCards(makeDeck())
 var main = function (input) {
+  
   var myOutputValue = '';
-  var newDeck = makeDeck()
-  var shuffledDeck = shuffleCards(newDeck)
+  
+  
+  
   //Start of game
   if(gameState == 'start'){
+    
+    //Initialize both computer and player hand
     initializeHand(shuffledDeck)
-
-    if(blackJack(computerHand)||blackJack(playerHand)){
-      if(blackJack(computerHand)){
-      myOutputValue += `Computer BlackJack!`
-    } if(blackJack(playerHand)){
-      myOutputValue += `Player BlackJack!`
+    //Check if blackjack is obtained
+    if(addScore(playerHand)==21||addScore(comHand)==21){
+    return `${blackJack(playerScore,comScore)}<br>Player drew<br>${cardPrinter(playerHand)}<br>Computer drew<br>${cardPrinter(comHand)}`
     }
     else{
-      myOutputValue += `Both BlackJack! WOW!`
+      gameState ='draw'
+      return `Player drew <br>${cardPrinter(playerHand)}<br>Please choose to hit or stand`
     }
   }
-    console.log('its running')
-    return myOutputValue;
+  if(gameState== 'draw'){
+    playerChoice = input.toLowerCase()
+    if(playerChoice == 'hit'){
+      playerHand[2] = shuffledDeck.pop()
+    }
+    if(addScore(comHand)<=16){
+      comHand[2]= shuffledDeck.pop()
+    }
+    if(addScore(playerHand)>21||addScore(comHand)>21){
+      if(addScore(playerHand)>21&&addScore(comHand)>21){
+        return `Both exceed limit of 21 points! Try Again!`
+      }
+      else if(addScore(comHand)>21){
+        return `Computer exceeded 21 points! Player Wins!`
+      }
+      else{
+        return `Player exceeded 21 points! Computer wins!`
+      }
+    }
+    gameState = 'results'
+    
+    return `Player currently has<br>${cardPrinter(playerHand)}`    
   }
-  
+  if(gameState == 'results'){
+    return `${compareScore(addScore(playerHand),addScore(comHand))}`
+  }
   return myOutputValue;
 };
 
-//Checker for BlackJack 
-function blackJack(hand){
-  for(i=0;i<2;i++){
+
+//Function to print cards drawn
+function cardPrinter(list){
+  message = ''
+  for(i=0;i<list.length;i++){
+    message += `${list[i].name} of ${list[i].suit}<br>`
+  }
+  return message 
+}
+
+
+//function to add score from value of cards
+function addScore(hand){
+  score = 0
+
+  var length = hand.length
+  
+  for(i=0;i<hand.length;i++){
     var score = score + hand[i].value
   }
-  if(score == 21){
-    return true
+  return score
+}
+
+
+
+
+//Function to compare score
+function compareScore(player,com){
+  if(player>com){
+    return `Player Wins!🎊<br>`
+  }
+  else if(com>player){
+    return `Computer Wins!🎊<br>`
   }
   else{
-    return false
+    return `Draw!🃏`
   }
+}
+
+
+
+
+//Checker for BlackJack 
+function blackJack(player,com){
+  var blackJackMessage = ''
+  if(player == 21 || com==21){
+    if(player == 21 && com==21){
+    blackJackMessage += `Both BlackJack!🤩🤩 WOW!`
+    } 
+    else if(com ==21){
+    blackJackMessage += `Computer BlackJack!🤩`
+    }
+    else{
+    blackJackMessage += `Player BlackJack!🤩`
+    }
+  }
+  return blackJackMessage 
 }
 
 
 //Initialize hands
 function initializeHand(deck){
+  comHand = []
+  playerHand = []
 for(i=0;i<2;i++){
-  computerHand[i] = [{name:'',suit:'',rankCounter:0,value:0}]
+  comHand[i] = [{name:'',suit:'',rankCounter:0,value:0}]
   playerHand[i] = [{name:'',suit:'',rankCounter:0,value:0}]
-  computerHand[i] = deck.pop()
+  comHand[i] = deck.pop()
   playerHand[i]=deck.pop()
 }
-return computerHand, playerHand
+
+return comHand, playerHand, playerScore, comScore
 }
 
 //Get random number from range of max
-var getRandomIndex = function (max) {
+function getRandomIndex(max) {
   return Math.floor(Math.random() * max);
 };
 
@@ -98,7 +176,7 @@ function makeDeck(){
   // Initialise an empty deck array
   var cardDeck = [];
   // Initialise an array of the 4 suits in our deck. We will loop over this array.
-  var suits = ['hearts', 'diamonds', 'clubs', 'spades'];
+  var suits = [`heart ❤️`, 'diamonds ♦', 'clubs ♣', 'spades ♤'];
   // Loop over the suits array
   var suitIndex = 0;
   while (suitIndex < suits.length) {
@@ -116,6 +194,7 @@ function makeDeck(){
       // If rank is 1, 11, 12, or 13, set cardName to the ace or face card's name
       if (cardName == 1) {
         cardName = 'ace';
+        cardValue =11;
       } else if (cardName == 11) {
         cardName = 'jack';
         cardValue = 10;
