@@ -8,7 +8,7 @@
 // The game either ends or continues.
 
 //Game State, default at start
-var gameState ='drawState'
+var gameState ='betState'
 
 //Global array for computer and player
 
@@ -16,6 +16,8 @@ var comHand = []
 var playerHand = []
 var playerScore = 0
 var comScore = 0
+var playerBet = 0
+var playerChips = 100
 
 var BLACKJACK_LIMIT = 21
 
@@ -27,6 +29,17 @@ var main = function (input) {
   
   
   //Start of game
+
+
+  if(gameState== 'betState'){
+    playerBet = Number(input)
+    if(isNaN(playerBet)||playerBet>playerChips){
+      return `Error! Please enter a number!`
+    }
+    gameState ='drawState'
+    return `You chose to bet ${playerBet} amount of chips.`
+  }
+
   if(gameState == 'drawState'){
     
     //Initialize both computer and player hand
@@ -45,11 +58,12 @@ var main = function (input) {
     }
   }
   
+  
   if(gameState== 'playState'){
     var playerChoice = input.toLowerCase()
     //Return error if player does not enter one of the two choices 
     if(playerChoice!='hit'&&playerChoice!='stand'){
-      return `Error! Please choose to hit (draw another card) or stand (keep playing wit current hand)`
+      return `Error! Please choose to hit (draw another card) or stand (keep playing with current hand)`
     }
     //If player choose to hit, draw another card for player
     if(playerChoice == 'hit'){
@@ -58,7 +72,8 @@ var main = function (input) {
     console.log(`Player Score: ${addScore(playerHand)}`)
     //If player has more than 21, lose immediately
     if(addScore(playerHand)>BLACKJACK_LIMIT){
-      var results = `Player Burst! Player drew<br>${cardPrinter(playerHand)}<br> Press Submit to play again`
+      playerChips-=playerBet
+      var results = `Player Burst! Player drew<br>${cardPrinter(playerHand)}<br>You now have ${playerChips} amount of chips. Press Submit to play again!`
       resetState()
       return results
     }
@@ -71,7 +86,7 @@ var main = function (input) {
     return `Player currently has ${addScore(playerHand)}<br>${cardPrinter(playerHand)}`    
   }
   if(gameState == 'resultState'){
-    var results = `${compareScore(addScore(playerHand),addScore(comHand))}<br> Press Submit to play again!`
+    var results = `${compareScore(addScore(playerHand),addScore(comHand))}<br>You now have ${playerChips} chips. Press submit to play again!`
     resetState()
     return results
   }
@@ -85,7 +100,7 @@ function resetState(){
   comHand = []
   playerScore =0
   comScore = 0
-  gameState = 'drawState'
+  gameState = 'bet'
   return `Press Submit to play again!`
 }
 
@@ -130,9 +145,11 @@ function addScore(hand){
 //Function to compare score
 function compareScore(player,com){
   if(player>com){
+    playerChips += playerBet
     return `Player Wins!🎊<br>`
   }
   else if(com>player){
+    playerChips -= playerBet
     return `Computer Wins!🎊<br>`
   }
   else{
