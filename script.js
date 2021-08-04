@@ -8,15 +8,13 @@
 // The game either ends or continues.
 
 //Game State, default at start
-var gameState = "betState";
+var gameState = "playerState";
 
-//Global array for computer and player
+//Global array for computer and players
 var comHand = [];
 var playerHand = [];
-
-//Global variable for player chips and bet amount
-var playerBet = 0;
-var playerChips = 100;
+var playerList = []
+var numOfPlayer = 0
 
 //Blackjack limit
 var BLACKJACK_LIMIT = 21;
@@ -24,25 +22,40 @@ var BLACKJACK_LIMIT = 21;
 //Initialize deck
 var shuffledDeck = shuffleCards(makeDeck());
 var main = function (input) {
-  //Take first input at bet amount
+
+  if(gameState == 'playerState'){
+    numOfPlayer = Number(input)
+    if(isNaN(numOfPlayer)||numOfPlayer==''){
+      return `Error! Please enter a valid number!`
+    }
+    for(i=0;i<numOfPlayer;i++){
+      playerList = [{id:0,score:0,bet:0,chips:100}]
+    }
+    gameState = 'betState'
+    return `There will be ${numOfPlayer} players.`
+  }
+  
   if (gameState == "betState") {
-    playerBet = Number(input);
-    if (isNaN(playerBet)) {
+    counter = 0
+    while(counter<numOfPlayer){
+    playerList[counter].bet = Number(input);
+    if (isNaN(playerList[counter].bet)) {
       return `Error! Please enter a number!`;
     }
-    if (playerBet > playerChips) {
-      return `You do not have that much chips! Current chips: ${playerChips}`;
+    if (playerList[counter].bet > playerChips) {
+      return `You do not have that much chips! Current chips: ${playerList[counter].chips}`;
     }
-    //Move on to next state
-    gameState = "drawState";
-    return `You chose to bet ${playerBet} amount of chips.`;
+    
+    return `Hi Player ${counter+1}! You chose to bet ${playerList[counter].bet} amount of chips. Current chips left: ${playerList[counter].chips}`;
   }
+  gameState = "drawState";
+  return `All players bet in! Let's play!`
+}
 
   //State to draw initial hand
   if (gameState == "drawState") {
     //Initialize both computer and player hand
     initializeHand(shuffledDeck);
-    console.log(`Player Initial Score: ${addScore(playerHand)}`);
     console.log(`Com Initial Score: ${addScore(comHand)}`);
     //Check if blackjack is obtained
     if (
@@ -184,7 +197,7 @@ function initializeHand(deck) {
   playerHand = [];
   for (i = 0; i < 2; i++) {
     comHand[i] = [{ name: "", suit: "", rankCounter: 0, value: 0 }];
-    playerHand[i] = [{ name: "", suit: "", rankCounter: 0, value: 0 }];
+    playerHand[i] = [{name: "", suit: "", rankCounter: 0, value: 0 }];
     comHand[i] = deck.pop();
     playerHand[i] = deck.pop();
   }
