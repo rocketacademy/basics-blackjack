@@ -117,25 +117,29 @@ var main = function (input) {
     dealerPoints = handPoints(dealerHand);
     console.log("dealer starting points:", dealerPoints);
 
-    // dealer draws if points less than 17
-    for (j = 0; j < 5; j++) {
-      if (dealerPoints < 17) {
-        dealerHand.push(shuffledDeck.pop());
-        dealerPoints = handPoints(dealerHand);
-        console.log("dealer hand:", dealerHand);
-        console.log("dealer points:", dealerPoints);
-      }
-    }
     myOutputValue = `You have drawn<br><br>${playerHand[0].name} of ${playerHand[0].suit}<br>${playerHand[1].name} of ${playerHand[1].suit}<br><br>Your current points is ${playerPoints}<br>Hit or stand?`;
     return myOutputValue;
   }
   if (mode == "draw") {
     myOutputValue = `Your current points is ${playerPoints}<br>Hit or stand?`;
+
+    // -------------------- STAND --------------------
     if (input.toLowerCase() == "stand") {
+      // dealer draws AFTER player stands if points less than 17
+      for (j = 0; j < 5; j++) {
+        if (dealerPoints < 17) {
+          dealerHand.push(shuffledDeck.pop());
+          dealerPoints = handPoints(dealerHand);
+          console.log("dealer hand:", dealerHand);
+          console.log("dealer points:", dealerPoints);
+        }
+      }
+      // compare scores
       var playerScoreDiff = 0;
       var dealerScoreDiff = 0;
       myOutputValue = `You had ${playerPoints}. Dealer had ${dealerPoints}.`;
 
+      // check score diff
       if (playerPoints != 21) {
         playerScoreDiff = Math.abs(playerPoints - 21);
       }
@@ -143,6 +147,7 @@ var main = function (input) {
         dealerScoreDiff = Math.abs(dealerPoints - 21);
       }
 
+      // announce winner
       if (playerPoints == 21 || playerScoreDiff < dealerScoreDiff) {
         playerWins += 1;
         myOutputValue += `<br>You win! <br><br>Player wins: ${playerWins}<br>Dealer wins: ${dealerWins}`;
@@ -151,6 +156,8 @@ var main = function (input) {
         myOutputValue += `<br>Dealer wins! <br><br>Player wins: ${playerWins}<br>Dealer wins: ${dealerWins}`;
       }
     }
+
+    // -------------------- HIT --------------------
     if (input.toLowerCase() == "hit") {
       var playerCards = "You have drawn<br><br>";
       playerHand.push(shuffledDeck.pop());
