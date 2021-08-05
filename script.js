@@ -1,6 +1,5 @@
 var HIT = "hit";
 var STAND = "stand";
-var input = HIT;
 
 var deck = [];
 
@@ -22,25 +21,26 @@ var createDeck = function () {
     var rankCounter = 1;
     while (rankCounter <= 13) {
       var cardName = rankCounter;
+      var rank = rankCounter;
 
       if (rankCounter == 1) {
         cardName = "ace";
-        rankCounter = 1 || 11;
+        rank = 1 || 11;
       } else if (rankCounter == 11) {
         cardName = "jack";
-        rankCounter = 10;
+        rank = 10;
       } else if (rankCounter == 12) {
         cardName = "queen";
-        rankCounter = 10;
+        rank = 10;
       } else if (cardName == 13) {
         cardName = "king";
-        rankCounter = 10;
+        rank = 10;
       }
 
       var card = {
         name: cardName,
         suit: currSuit,
-        rank: rankCounter,
+        rank: rank,
       };
 
       deck.push(card);
@@ -91,11 +91,9 @@ var dealCards = function (deck) {
   console.log(dealerChosenCard);
 };
 
-var getWinningMsg = function (outputOfPlayersCards) {
+var getWinningMsg = function (playerCardSum, dealerCardSum) {
   if (playerCardSum == 21) {
-    return (
-      outputOfPlayersCards + "<br> Congrats, you got a blackjack! You win!"
-    );
+    return "Congrats, you got a blackjack! You win!";
   }
   if (playerCardSum > dealerCardSum) {
     return (
@@ -104,6 +102,26 @@ var getWinningMsg = function (outputOfPlayersCards) {
       " to " +
       dealerCardSum
     );
+  }
+  if (dealerCardSum > 21) {
+    return "Dealer busted! Congrats, you won!";
+  }
+};
+
+var getLosingMsg = function (playerCardSum, dealerCardSum) {
+  if (dealerCardSum == 21) {
+    return "Dealer got a blackjack! Unfortunately, you lose :(";
+  }
+  if (dealerCardSum > playerCardSum) {
+    return (
+      "Player, you lost against computer with the scores of " +
+      playerCardSum +
+      " to " +
+      dealerCardSum +
+      ". <br> Such a shame."
+    );
+  }
+  if (playerCardSum > 21) {
   }
 };
 
@@ -139,103 +157,52 @@ var main = function (input) {
     " of " +
     dealerCard[0].suit;
 
-  // create var to hold winning output message
-  var winningMsg = getWinningMsg(playerCardSum, dealerCardSum);
-  console.log(winningMsg);
-
-  // update value of player card sum and dealer card sum to the current sum
+  // update value of player card sum and dealer card sum
   playerCardSum = playerCard[0].rank + playerCard[1].rank;
+  console.log("player card sum is " + playerCardSum);
   dealerCardSum = dealerCard[0].rank + dealerCard[1].rank;
+  console.log("dealer card sum is " + dealerCardSum);
 
-  console.log(playerCardSum);
-  console.log(dealerCardSum);
+  // store the winning and losing message
+  var winningMsg = getWinningMsg(playerCardSum, dealerCardSum);
+  var losingMsg = getLosingMsg(playerCardSum, dealerCardSum);
 
-  //  check if player cards total up to 21
-  // if it totals up to 21, player wins. else, ask the player to choose 'hit' or 'stay'
+  // check if player card totals to 21
+  // if playerCardSum == 21, player wins. Else, player choose 'hit' or 'stand'
   if (playerCardSum == 21) {
-    myOutputValue = winningMsg;
+    myOutputValue = outputOfPlayersCards + " <br> " + winningMsg;
   } else {
-    myOutputValue = myOutputValue + ". <br> Please choose between hit or stay.";
-  }
-
-  // if player choose 'hit', deal another card.
-  // if it totals up to 21, player wins.
-  // if it totals up to > 21, player 'bust'.
-  if (input == HIT) {
-    dealCards(shuffledDeck);
-
     myOutputValue =
-      "You just draw a " +
-      playerCard[2].name +
-      " of " +
-      playerCard[2].suit +
-      ". <br> " +
-      outputOfPlayersCards +
-      ", " +
-      playerCard[2].name +
-      " of " +
-      playerCard[2].suit +
-      ". ";
-
-    // update plater curr card sum
-    playerCardSum = playerCardSum + playerCard[2].rank;
-    console.log(playerCardSum);
-
-    if (playerCardSum == 21) {
-      return winningMsg;
-    } else if (playerCardSum > 21) {
-      return myOutputValue + " <br> Oh no, your cards exceed 21. Busted!";
-    } else if (playerCardSum < 21) {
-      if (playerCardSum > dealerCardSum) {
-        return winningMsg;
-      }
-      return (
-        "Player, you lost against computer with the scores of " +
-        dealerCardSum +
-        " to " +
-        playerCardSum
-      );
-    }
+      myOutputValue + ". <br> Please choose between hit or stand.";
   }
 
-  // if the player choose stand, open dealer's closed card.
+  // if player choose 'stand', open dealer's closed card.
   if (input == STAND) {
-    // if dealer card sum >= 17, compare player and dealer cards.
-    if (dealerCardSum >= 17) {
-      // compare player's cards sum with dealer's cards sum
-      if (playerCardSum > dealerCardSum) {
-        return winningMsg;
-      } else {
-        return (
-          "Player, you lost against computer with the scores of " +
-          dealerCardSum +
-          " to " +
-          playerCardSum
-        );
-      }
+    var outputOfDealersCards =
+      "Dealer's second card is " +
+      dealerCard[1].name +
+      " of " +
+      dealerCard[1].suit +
+      ".";
+
+    // if dealerCardSum == 21, player looses.
+    if (dealerCardSum == 21) {
+      return outputOfDealersCards + " <br> " + losingMsg;
     }
-    // if dealer card sum <= 16, deal another card for dealer.
-    if (dealerCardSum <= 16) {
-      myOutputValue =
-        "Computer's second card is " +
-        dealerCard[1].name +
-        " of " +
-        dealerCard[1].suit;
-
-      dealCards(shuffledDeck);
-
-      // update dealer card sum
-      dealerCardSum = dealerCardSum + dealerCard[3].rank;
-
-      // if dealer card sum == 21, player loses.
-      if (dealerCardSum == 21) {
-        myOutputValue = myOutputValue + "Dealer card equals to 21. You lost!";
+    // else if dealerCardSum > 21, player wins.
+    else if (dealerCardSum > 21) {
+      return outputOfDealersCards + " <br> " + winningMsg;
+    }
+    // else compare playerCardSum and dealerCardSum
+    else {
+      if (playerCardSum > dealerCardSum) {
+        return outputOfDealersCards + " <br> " + winningMsg;
       }
-      // if dealer 'bust', player wins.
-      if (dealerCardSum > 21) {
-        myOutputValue = myOutputValue + "Dealer busted! Congrats, you win.";
+      if (dealerCardSum > playerCardSum) {
+        return outputOfDealersCards + " <br> " + losingMsg;
       }
     }
   }
+
   return myOutputValue;
 };
