@@ -53,11 +53,7 @@ function randomiser(max) {
   return Math.floor(Math.random() * max);
 }
 
-// ================ created deck ===============
-var deck = makeDeck();
-
 // ################ SHUFFLE DECK ################
-// Shuffle the elements in the cardDeck array
 function shuffleCards(cardDeck) {
   // Loop over the card deck array once
   for (index in cardDeck) {
@@ -76,14 +72,94 @@ function shuffleCards(cardDeck) {
   return cardDeck;
 }
 
+// ################ HAND POINTS ################
+function handPoints(hand) {
+  var totalPoints = 0;
+  for (const card of hand) {
+    totalPoints += card.value;
+  }
+  return totalPoints;
+}
+
+// ################ GLOBAL VAR ################
+var deck = makeDeck();
+var playerHand = [];
+var dealerHand = [];
+var mode = "start";
+var playerPoints = 0;
+var dealerPoints = 0;
+var playerWins = 0;
+var dealerWins = 0;
+
 // ################ MAIN FUNCTION ################
 var main = function (input) {
-  var deck = makeDeck();
-  var shuffledDeck = shuffleCards(deck);
   var myOutputValue = "";
-  for (card in shuffledDeck) {
-    myOutputValue +=
-      shuffledDeck[card].name + " of " + shuffledDeck[card].suit + "<br>";
+  var shuffledDeck = shuffleCards(deck);
+
+  if (mode == "start") {
+    console.log("deck:", deck);
+    // reset hand and points
+    playerHand = [];
+    dealerHand = [];
+    playerPoints = 0;
+    dealerPoints = 0;
+
+    for (i = 0; i < 2; i++) {
+      playerHand.push(shuffledDeck.pop());
+      dealerHand.push(shuffledDeck.pop());
+    }
+    // change mode
+    mode = "draw";
+    console.log("dealer:", dealerHand);
+    console.log("player:", playerHand);
+    // count points
+    playerPoints = handPoints(playerHand);
+    dealerPoints = handPoints(dealerHand);
+    console.log("dealer starting points:", dealerPoints);
+
+    // dealer draws if points less than 17
+    for (j = 0; j < 5; j++) {
+      if (dealerPoints < 17) {
+        dealerHand.push(shuffledDeck.pop());
+        dealerPoints = handPoints(dealerHand);
+        console.log("dealer hand:", dealerHand);
+        console.log("dealer points:", dealerPoints);
+      }
+    }
+    myOutputValue = `You have drawn<br><br>${playerHand[0].name} of ${playerHand[0].suit}<br>${playerHand[1].name} of ${playerHand[1].suit}<br><br>Your current points is ${playerPoints}<br>Hit or stand?`;
+    return myOutputValue;
   }
-  return myOutputValue;
+  if (mode == "draw") {
+    myOutputValue = `Your current points is ${playerPoints}<br>Hit or stand?`;
+    if (input.toLowerCase() == "stand") {
+      var playerScoreDiff = 0;
+      var dealerScoreDiff = 0;
+      myOutputValue = `You had ${playerPoints}. Dealer had ${dealerPoints}.`;
+
+      if (playerPoints != 21) {
+        playerScoreDiff = Math.abs(playerPoints - 21);
+      }
+      if (dealerPoints != 21) {
+        dealerScoreDiff = Math.abs(dealerPoints - 21);
+      }
+
+      if (playerPoints == 21 || playerScoreDiff < dealerScoreDiff) {
+        playerWins += 1;
+        myOutputValue += `<br>You win! <br><br>Player wins: ${playerWins}<br>Dealer wins: ${dealerWins}`;
+      } else {
+        dealerWins += 1;
+        myOutputValue += `<br>Dealer wins! <br><br>Player wins: ${playerWins}<br>Dealer wins: ${dealerWins}`;
+      }
+    }
+    if (input.toLowerCase() == "hit") {
+      var playerCards = "You have drawn<br><br>";
+      playerHand.push(shuffledDeck.pop());
+      for (k = 0; k < playerHand.length; k++) {
+        playerCards += `${playerHand[k].name} of ${playerHand[k].suit}<br>`;
+      }
+      myOutputValue = `${playerCards}<br><br>Your current points is ${playerPoints}<br>Hit or stand?`;
+    }
+    mode = "start";
+    return myOutputValue;
+  }
 };
