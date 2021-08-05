@@ -122,6 +122,7 @@ var getLosingMsg = function (playerCardSum, dealerCardSum) {
     );
   }
   if (playerCardSum > 21) {
+    return "Whoops, you busted!";
   }
 };
 
@@ -187,22 +188,69 @@ var main = function (input) {
 
     // if dealerCardSum == 21, player looses.
     if (dealerCardSum == 21) {
-      return outputOfDealersCards + " <br> " + losingMsg;
+      return outputOfDealersCards + " <br> " + losingMsg + ".";
     }
     // else if dealerCardSum > 21, player wins.
     else if (dealerCardSum > 21) {
-      return outputOfDealersCards + " <br> " + winningMsg;
+      return outputOfDealersCards + " <br> " + winningMsg + ".";
     }
     // else compare playerCardSum and dealerCardSum
     else {
       if (playerCardSum > dealerCardSum) {
-        return outputOfDealersCards + " <br> " + winningMsg;
+        return outputOfDealersCards + " <br> " + winningMsg + ".";
       }
       if (dealerCardSum > playerCardSum) {
-        return outputOfDealersCards + " <br> " + losingMsg;
+        return outputOfDealersCards + " <br> " + losingMsg + ".";
       }
     }
   }
 
+  // if player choose 'hit', deal another card.
+  if (input == HIT) {
+    dealCards(shuffledDeck);
+
+    // update player card sum
+    playerCardSum = playerCardSum + playerCard[2].rank;
+    console.log(playerCardSum);
+
+    // update winning message and losing message
+    winningMsg = getWinningMsg(playerCardSum, dealerCardSum);
+    losingMsg = getLosingMsg(playerCardSum, dealerCardSum);
+
+    myOutputValue =
+      "Player, you just draw a " +
+      playerCard[2].name +
+      " of " +
+      playerCard[2].suit +
+      ". <br> " +
+      outputOfPlayersCards;
+
+    outputOfPlayersCards =
+      myOutputValue +
+      ", and " +
+      playerCard[2].name +
+      " of " +
+      playerCard[2].suit +
+      ".";
+
+    // check winning condition
+    if (playerCardSum == 21) {
+      myOutputValue = outputOfPlayersCards + " <br> " + winningMsg;
+      console.log(winningMsg);
+    }
+    if (playerCardSum > 21) {
+      myOutputValue = outputOfPlayersCards + "<br> " + losingMsg;
+      console.log(losingMsg);
+    }
+    if (playerCardSum < 21) {
+      if (playerCardSum > dealerCardSum) {
+        myOutputValue = outputOfPlayersCards + "<br>" + winningMsg + ".";
+        console.log(winningMsg);
+      }
+      if (playerCardSum < dealerCardSum) {
+        myOutputValue = outputOfPlayersCards + " <br> " + losingMsg + ".";
+      }
+    }
+  }
   return myOutputValue;
 };
