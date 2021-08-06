@@ -79,17 +79,6 @@ function handPoints(hand) {
   for (const card of hand) {
     // -------------------- TOTAL POINTS --------------------
     totalPoints += card.value;
-    // -------------------- ACE VALUE --------------------
-    if (card.name == "ace") {
-      console.log("ace check", card);
-      if (totalPoints < 21) {
-        card.value = 11;
-        console.log("ace value", card.value);
-      } else if (totalPoints > 21) {
-        card.value = 1;
-        console.log("ace value", card.value);
-      }
-    }
   }
 
   return totalPoints;
@@ -123,10 +112,43 @@ var main = function (input) {
     }
     console.log("dealer:", dealerHand);
     console.log("player:", playerHand);
+
     // count points
     playerPoints = handPoints(playerHand);
     dealerPoints = handPoints(dealerHand);
     console.log("dealer starting points:", dealerPoints);
+
+    // check ace value - player
+    for (const pCard of playerHand) {
+      if (pCard.name == "ace") {
+        console.log("ace check", pCard);
+        if (playerPoints < 21) {
+          pCard.value = 11;
+          console.log("ace value", pCard.value);
+        } else if (playerPoints > 21) {
+          pCard.value = 1;
+          console.log("ace value", pCard.value);
+        }
+        playerPoints = handPoints(playerHand);
+      }
+    }
+    console.log("final player points:", playerPoints);
+
+    // check ace value - dealer
+    for (const dCard of dealerHand) {
+      if (dCard.name == "ace") {
+        console.log("ace check", dCard);
+        if (dealerPoints < 21) {
+          dCard.value = 11;
+          console.log("ace value", dCard.value);
+        } else if (dealerPoints > 21) {
+          dCard.value = 1;
+          console.log("ace value", dCard.value);
+        }
+        playerPoints = handPoints(dealerHand);
+      }
+    }
+    console.log("final player points:", dealerPoints);
 
     // BANLUCK
     if (
@@ -194,6 +216,22 @@ var main = function (input) {
       // ---------- PLAYER POINTS ----------
       playerPoints = handPoints(playerHand);
       console.log("player points:", playerPoints);
+
+      // check ace value
+      for (const card of playerHand) {
+        if (card.name == "ace") {
+          console.log("ace check", card);
+          if (playerPoints < 21) {
+            card.value = 11;
+            console.log("ace value", card.value);
+          } else if (playerPoints > 21) {
+            card.value = 1;
+            console.log("ace value", card.value);
+          }
+          playerPoints = handPoints(playerHand);
+        }
+      }
+      console.log("final player points:", playerPoints);
 
       for (k = 0; k < playerHand.length; k++) {
         playerCards += `${playerHand[k].name} of ${playerHand[k].suit}<br>`;
