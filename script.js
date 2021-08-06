@@ -1,10 +1,12 @@
-// blackjack - base second version
+// blackjack - base third version
 // 2 players: user and computer/dealer
 
 // second version: Add Player Hit or Stand
+// third version: Add Dealer Hit or Stand
 
-// game mode: 'deal cards'
+// game mode: 'deal two cards'
 // game mode: 'player hit or stand'
+// game mode: 'dealer Hit or Stand' --- The computer decides to hit or stand automatically
 
 var currentGameMode = "deal two cards";
 var shuffledDeck;
@@ -167,7 +169,7 @@ var hitOrStand = function (input) {
 
   if (currentGameMode == "player hit or stand") {
     if (userInput == "hit") {
-      // take 1 card
+      // player take 1 card
       playerCard = shuffledDeck.pop();
       //push drawn cards info to array
       playerHand.push(playerCard);
@@ -184,6 +186,25 @@ var hitOrStand = function (input) {
       myOutputValue += `You chose to end your turn. <br>`;
     }
   }
+  // computer decides to hit or stand automatically
+  // computer has to hit if their hand is below 17
+  if (computerTotalHand <= 16) {
+    // computer take 1 card
+    computerCard = shuffledDeck.pop();
+    //push drawn cards info to array
+    computerHand.push(computerCard);
+    console.log("computer's hand array: ");
+    console.log(computerHand);
+
+    numberOfComputerCards += 1;
+    console.log("number of computer's cards in hand: " + numberOfPlayerCards);
+
+    computerTotalHand += computerCard.rank;
+    console.log("computer total hand: " + computerTotalHand);
+  } else {
+    // computer has to stand if their hand is 17 or higher
+  }
+
   return myOutputValue;
 };
 
@@ -209,7 +230,7 @@ var totalHand = function (input) {
   if (userInput == "hit") {
     myOutputValue += `<br> Player's total hand is  ${playerTotalHand}. <br> Computer's total hand is ${computerTotalHand}.<br><br>Player do you want to 'hit' or 'stand'? <br> Please type out your choice, and click the 'Submit' button.`;
   } else if (userInput == "stand") {
-    myOutputValue += `<br> Player's total hand is  ${playerTotalHand}. <br> Computer's total hand is ${computerTotalHand}.`;
+    myOutputValue += `<br> Player's total hand is  ${playerTotalHand}. <br> Computer's total hand is ${computerTotalHand}. <br> <br> Please refresh the page to play another round.`;
   }
 
   return myOutputValue;
