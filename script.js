@@ -1,5 +1,8 @@
 var deck = [];
 var shuffledDeck = [];
+var playerCards = [];
+var computerCards = [];
+var playerHandSize = playerCards.length;
 
 var main = function (input) {
   var myOutputValue = " ";
@@ -8,12 +11,13 @@ var main = function (input) {
   //shuffle the deck
   var shuffle = shuffleCards(deck);
   //find player hand and output in box
-  //calPlayerCard gives strnig representing the card name and suit
+  //calPlayerCard gives string representing the card name and suit
   var playerHand = calPlayerCard(shuffledDeck);
   console.log(playerHand);
   var computerHand = calComputerCard(shuffledDeck);
   console.log(computerHand);
-  var myOutputValue = "You got " + showCard(playerHand);
+  var winningHand = calWinningHand(playerCards, computerCards);
+  var myOutputValue = winningHand;
   return myOutputValue;
 };
 
@@ -89,13 +93,63 @@ var shuffleCards = function (deck) {
 // finding a player card from shuffled deck
 var calPlayerCard = function (shuffledDeck) {
   var playerCard = shuffledDeck.pop();
+  playerCards.push(playerCard);
   var myOutputValue = "You got " + playerCard.name + " of " + playerCard.suit;
   return myOutputValue;
 };
 // finding computer card from shuffled deck
 var calComputerCard = function (shuffledDeck) {
   var computerCard = shuffledDeck.pop();
+  computerCards.push(computerCard);
   var myOutputValue =
     "You got " + computerCard.name + " of " + computerCard.suit;
+  return myOutputValue;
+};
+//calculating winning hand through rank
+//will need to input sum of strong method soon
+//also conditons for ace being 1 or 11
+
+var calWinningHand = function (playerCards, computerCards) {
+  var counter = 0;
+  if (playerCards[counter].rank < computerCards[counter].rank) {
+    var myOutputValue =
+      "You got " +
+      playerCards[counter].rank +
+      " of " +
+      playerCards[counter].suit +
+      "<br>" +
+      "Computer got " +
+      computerCards[counter].rank +
+      " of " +
+      computerCards[counter].suit +
+      "<br>" +
+      "You Lost!";
+  } else if (playerCards[counter].rank == computerCards[counter].rank) {
+    var myOutputValue =
+      "You got " +
+      playerCards[counter].rank +
+      " of " +
+      playerCards[counter].suit +
+      "<br>" +
+      "Computer got " +
+      computerCards[counter].rank +
+      " of " +
+      computerCards[counter].suit +
+      "<br>" +
+      "Draw!";
+  } else if (playerCards[counter].rank > computerCards[counter].rank) {
+    myOutputValue =
+      "You got " +
+      playerCards[counter].rank +
+      " of " +
+      playerCards[counter].suit +
+      "<br>" +
+      "Computer got " +
+      computerCards[counter].rank +
+      " of " +
+      computerCards[counter].suit +
+      "<br>" +
+      "You Won!";
+  }
   return myOutputValue;
 };
