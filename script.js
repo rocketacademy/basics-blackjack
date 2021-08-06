@@ -150,6 +150,14 @@ var main = function (input) {
     " of " +
     playerCard[1].suit;
 
+  // show dealer second card
+  var outputOfDealersCards =
+    "Dealer's second card is " +
+    dealerCard[1].name +
+    " of " +
+    dealerCard[1].suit +
+    ".";
+
   // create default output value.
   var myOutputValue =
     outputOfPlayersCards +
@@ -179,28 +187,57 @@ var main = function (input) {
 
   // if player choose 'stand', open dealer's closed card.
   if (input == STAND) {
-    var outputOfDealersCards =
-      "Dealer's second card is " +
-      dealerCard[1].name +
-      " of " +
-      dealerCard[1].suit +
-      ".";
-
-    // if dealerCardSum == 21, player looses.
-    if (dealerCardSum == 21) {
-      return outputOfDealersCards + " <br> " + losingMsg + ".";
-    }
-    // else if dealerCardSum > 21, player wins.
-    else if (dealerCardSum > 21) {
-      return outputOfDealersCards + " <br> " + winningMsg + ".";
-    }
-    // else compare playerCardSum and dealerCardSum
-    else {
-      if (playerCardSum > dealerCardSum) {
-        return outputOfDealersCards + " <br> " + winningMsg + ".";
-      }
-      if (dealerCardSum > playerCardSum) {
+    if (dealerCardSum >= 17) {
+      // if dealerCardSum == 21, player looses.
+      if (dealerCardSum == 21) {
         return outputOfDealersCards + " <br> " + losingMsg + ".";
+      }
+      // else if dealerCardSum > 21, player wins.
+      else if (dealerCardSum > 21) {
+        return outputOfDealersCards + " <br> " + winningMsg;
+      }
+      // else compare playerCardSum and dealerCardSum
+      else {
+        if (playerCardSum > dealerCardSum) {
+          return outputOfDealersCards + " <br> " + winningMsg + ".";
+        }
+        if (dealerCardSum > playerCardSum) {
+          return outputOfDealersCards + " <br> " + losingMsg + ".";
+        }
+      }
+    }
+    if (dealerCardSum <= 16) {
+      dealCards(shuffledDeck);
+
+      dealerCardSum = dealerCardSum + dealerCard[2].rank;
+
+      winningMsg = getWinningMsg(playerCardSum, dealerCardSum);
+      losingMsg = getLosingMsg(playerCardSum, dealerCardSum);
+
+      outputOfDealersCards =
+        outputOfDealersCards +
+        " <br> Dealer just draw a " +
+        dealerCard[2].name +
+        " of " +
+        dealerCard[2].suit;
+
+      if (dealerCardSum == 21) {
+        return outputOfDealersCards + ". <br> " + losingMsg + "";
+      }
+      // else if dealerCardSum > 21, player wins.
+      else if (dealerCardSum > 21) {
+        return outputOfDealersCards + ". <br> " + winningMsg + ".";
+      }
+      // else compare playerCardSum and dealerCardSum
+      else {
+        if (playerCardSum > dealerCardSum) {
+          console.log("this runs when dealer card is < 16 and player wins");
+          return outputOfDealersCards + ". <br> " + winningMsg + ".";
+        }
+        if (dealerCardSum > playerCardSum) {
+          console.log("this runs when dealer card is < 16 and player loses");
+          return outputOfDealersCards + ". <br> " + losingMsg + ".";
+        }
       }
     }
   }
@@ -249,6 +286,66 @@ var main = function (input) {
       }
       if (playerCardSum < dealerCardSum) {
         myOutputValue = outputOfPlayersCards + " <br> " + losingMsg + ".";
+      }
+    }
+    if (dealerCardSum <= 16) {
+      dealCards(shuffledDeck);
+
+      dealerCardSum = dealerCardSum + dealerCard[2].rank;
+
+      winningMsg = getWinningMsg(playerCardSum, dealerCardSum);
+      losingMsg = getLosingMsg(playerCardSum, dealerCardSum);
+
+      outputOfDealersCards =
+        outputOfDealersCards +
+        " <br> Dealer just draw a " +
+        dealerCard[2].name +
+        " of " +
+        dealerCard[2].suit;
+
+      if (dealerCardSum == 21) {
+        return (
+          outputOfPlayersCards +
+          " <br> " +
+          outputOfDealersCards +
+          ". <br> " +
+          losingMsg +
+          "."
+        );
+      }
+      // else if dealerCardSum > 21, player wins.
+      else if (dealerCardSum > 21) {
+        return (
+          outputOfPlayersCards +
+          " <br> " +
+          outputOfDealersCards +
+          ". <br> " +
+          winningMsg +
+          "."
+        );
+      }
+      // else compare playerCardSum and dealerCardSum
+      else {
+        if (playerCardSum > dealerCardSum) {
+          return (
+            outputOfPlayersCards +
+            " <br> " +
+            outputOfDealersCards +
+            ". <br> " +
+            winningMsg +
+            "."
+          );
+        }
+        if (dealerCardSum > playerCardSum) {
+          return (
+            outputOfPlayersCards +
+            " <br> " +
+            outputOfDealersCards +
+            ". <br> " +
+            losingMsg +
+            "."
+          );
+        }
       }
     }
   }
