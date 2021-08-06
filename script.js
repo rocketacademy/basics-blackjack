@@ -17,7 +17,7 @@ function makeDeck() {
       var cardName = rankCounter;
       var cardValue = rankCounter;
 
-      // If rank is 1, 11, 12, or 13, set cardName to the ace or face card's name
+      // If rank is 1, 11, 12, or 13, set cardName to the ace or face card's name and set cardValue accordingly
       if (cardName == 1) {
         cardName = "ace";
       } else if (cardName == 11) {
@@ -75,9 +75,23 @@ function shuffleCards(cardDeck) {
 // ################ HAND POINTS ################
 function handPoints(hand) {
   var totalPoints = 0;
+
   for (const card of hand) {
+    // -------------------- TOTAL POINTS --------------------
     totalPoints += card.value;
+    // -------------------- ACE VALUE --------------------
+    if (card.name == "ace") {
+      console.log("ace check", card);
+      if (totalPoints < 21) {
+        card.value = 11;
+        console.log("ace value", card.value);
+      } else if (totalPoints > 21) {
+        card.value = 1;
+        console.log("ace value", card.value);
+      }
+    }
   }
+
   return totalPoints;
 }
 
@@ -97,7 +111,6 @@ var main = function (input) {
   var shuffledDeck = shuffleCards(deck);
 
   if (mode == "start") {
-    console.log("deck:", deck);
     // reset hand and points
     playerHand = [];
     dealerHand = [];
@@ -108,14 +121,26 @@ var main = function (input) {
       playerHand.push(shuffledDeck.pop());
       dealerHand.push(shuffledDeck.pop());
     }
-    // change mode
-    mode = "draw";
     console.log("dealer:", dealerHand);
     console.log("player:", playerHand);
     // count points
     playerPoints = handPoints(playerHand);
     dealerPoints = handPoints(dealerHand);
     console.log("dealer starting points:", dealerPoints);
+
+    // BANLUCK
+    if (
+      playerPoints == 21 &&
+      dealerPoints != 21
+      // || (playerHand[0].name == "ace" && playerHand[1].name == "ace")
+    ) {
+      // player instant win
+      myOutputValue = `You have drawn<br><br>${playerHand[0].name} of ${playerHand[0].suit}<br>${playerHand[1].name} of ${playerHand[1].suit}<br><br>Your current points is ${playerPoints}<br>You won! Press 'Submit' to play again.`;
+      return myOutputValue;
+    }
+
+    // change mode
+    mode = "draw";
 
     myOutputValue = `You have drawn<br><br>${playerHand[0].name} of ${playerHand[0].suit}<br>${playerHand[1].name} of ${playerHand[1].suit}<br><br>Your current points is ${playerPoints}<br>Hit or stand?`;
     return myOutputValue;
@@ -155,18 +180,26 @@ var main = function (input) {
         dealerWins += 1;
         myOutputValue += `<br>Dealer wins! <br><br>Player wins: ${playerWins}<br>Dealer wins: ${dealerWins}`;
       }
+      mode = "start";
+      return myOutputValue;
     }
 
     // -------------------- HIT --------------------
     if (input.toLowerCase() == "hit") {
       var playerCards = "You have drawn<br><br>";
+
       playerHand.push(shuffledDeck.pop());
+      console.log("player hits:", playerHand);
+
+      // ---------- PLAYER POINTS ----------
+      playerPoints = handPoints(playerHand);
+      console.log("player points:", playerPoints);
+
       for (k = 0; k < playerHand.length; k++) {
         playerCards += `${playerHand[k].name} of ${playerHand[k].suit}<br>`;
       }
-      myOutputValue = `${playerCards}<br><br>Your current points is ${playerPoints}<br>Hit or stand?`;
+      myOutputValue = `${playerCards}<br>Your current points is ${playerPoints}<br>Hit or stand?`;
     }
-    mode = "start";
     return myOutputValue;
   }
 };
