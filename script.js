@@ -58,7 +58,8 @@ var makeDeck = function () {
     suitIndex += 1;
   }
 
-  return cardDeck;
+  console.log("deck", deck);
+  return deck;
 };
 
 var cardDeck = makeDeck();
@@ -93,14 +94,17 @@ var shuffleCards = function (cardDeck) {
 };
 
 var shuffledDeck = shuffleCards(cardDeck);
+console.log("shuffled deck", shuffledDeck);
 
 var main = function (input) {
   //pop takes out at the end of the array
   var computerCard1 = shuffledDeck.pop();
+  console.log("computer card 1", computerCard1);
   var computerCard2 = shuffledDeck.pop();
   var playerCard1 = shuffledDeck.pop();
+  console.log("player card 1", playerCard1);
   var playerCard2 = shuffledDeck.pop();
-
+  var output = "";
   var computerScore = function () {
     totalComputerCardsScore = computerCard1.value + computerCard2.value;
     return totalComputerCardsScore;
@@ -111,7 +115,7 @@ var main = function (input) {
   };
 
   if (gameMode == "dealing cards") {
-    var output = `The computer drew ${computerCard1.name} of ${
+    output = `The computer drew ${computerCard1.name} of ${
       computerCard1.suit
     } and ${computerCard2.name} of ${computerCard2.suit} .<br>You drew ${
       playerCard1.name
@@ -119,16 +123,21 @@ var main = function (input) {
       playerCard2.suit
     }.<br><br>The computer scored ${computerScore()}, while you scored ${playerScore()}. Click to see who wins!`;
 
-    var gameMode = "compare results";
+    gameMode = "compare results";
+    return output;
   }
   // highest card
 
   if (gameMode == "compare results") {
     if (computerScore() > playerScore()) {
       output = `The computer won!`;
-    } else if (computerScore() < playerScore()) {
+      gameMode = "dealing cards";
+      return output;
+    } else if (playerScore() > computerScore()) {
       output = `You win!`;
+      gameMode = "dealing cards";
+      return output;
     }
   }
-  return output;
+  // return output;
 };
