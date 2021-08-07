@@ -1,10 +1,16 @@
 var main = function (input) {
   var myOutputValue = "";
-  if (gameMode == "default") {
+  // ask for player name
+  if (gameMode == "get player names") {
+    //// store player name in an array in the same index as the player hand
+    playerName.push(input);
+    myOutputValue = `Hello ${playerName}. Click "Play" to begin the game.`;
+    gameMode = "default";
+  } else if (gameMode == "default") {
     startGame();
     myOutputValue = firstCheck();
   } else if (gameMode == "player turn") {
-    myOutputValue = playerTurn(input);
+    myOutputValue = `Please enter "hit" to draw another card, or "stay" to keep your hand as it is.`;
   } else if (gameMode == "comp turn") {
     myOutputValue = `${dealerTurn()}<br>${checkOutcome()}`;
   }
@@ -13,43 +19,53 @@ var main = function (input) {
 };
 
 var hit = function (input) {
-  var newCard = gameDeck.pop();
-  playerHand.push(newCard);
-  playerValue = sumArray(playerHand);
-  var playerTurnMessage = `You chose HIT.<br><br>You drew ${newCard.name} of ${
-    newCard.suit
-  }.<br><br>So far, you've been dealt with:<br>${getHandMessage(
-    playerHand
-  )}<br>Your hand is now valued at ${playerValue}`;
-  if (playerValue > 21) {
-    resetRound();
-    playerTurnMessage += `<br><br>Game Over! You bust!`;
-  } else if (playerValue <= 21) {
-    playerTurnMessage += `<br><br>Do you want to hit or stay?`;
+  if (gameMode == "player turn") {
+    var newCard = gameDeck.pop();
+    playerHand.push(newCard);
+    playerValue = sumArray(playerHand);
+    var playerTurnMessage = `You chose HIT.<br><br>You drew ${
+      newCard.name
+    } of ${
+      newCard.suit
+    }.<br><br>So far, you've been dealt with:<br>${getHandMessage(
+      playerHand
+    )}<br>Your hand is now valued at ${playerValue}`;
+    if (playerValue > 21) {
+      resetRound();
+      playerTurnMessage += `<br><br>Game Over! You bust!`;
+    } else if (playerValue <= 21) {
+      playerTurnMessage += `<br><br>Do you want to hit or stay?`;
+    }
+  } else {
+    playerTurnMessage = `Please click Play to continue.`;
   }
   return playerTurnMessage;
 };
 
 var stay = function (input) {
-  playerValue = sumArray(playerHand);
-  if (playerValue <= 21) {
-    if (checkForAce(playerHand) > -1) {
-      if (playerValue + 10 > 21) {
-        playerValue += 0;
+  if (gameMode == "player turn") {
+    playerValue = sumArray(playerHand);
+    if (playerValue <= 21) {
+      if (checkForAce(playerHand) > -1) {
+        if (playerValue + 10 > 21) {
+          playerValue += 0;
+        } else {
+          playerValue += 10;
+        }
       } else {
-        playerValue += 10;
+        playerValue += 0;
       }
-    } else {
-      playerValue += 0;
+      gameMode = "comp turn";
+      playerTurnMessage = `You chose STAY.<br><br>So far, you've been dealt with:<br>${getHandMessage(
+        playerHand
+      )}<br>Your hand is now valued at ${playerValue}. It is now dealer's turn.`;
     }
-    gameMode = "comp turn";
-    playerTurnMessage = `You chose STAY.<br><br>So far, you've been dealt with:<br>${getHandMessage(
-      playerHand
-    )}<br>Your hand is now valued at ${playerValue}. It is now dealer's turn.`;
-  }
-  if (playerValue > 21) {
-    resetRound();
-    playerTurnMessage += `Game Over! You bust!`;
+    if (playerValue > 21) {
+      resetRound();
+      playerTurnMessage += `Game Over! You bust!`;
+    }
+  } else {
+    playerTurnMessage = `Please click Play to continue.`;
   }
   return playerTurnMessage;
 };
@@ -155,9 +171,11 @@ var sumArray = function (a) {
 };
 
 // global variables to store values
-var gameMode = "default";
+var gameMode = "get player names";
 var playerValue = 0;
 var compValue = 0;
+var playerName = [];
+var playerPoints = 100;
 
 // check if there is Ace in hand
 var checkForAce = function (a) {
@@ -239,7 +257,7 @@ var firstCheck = function () {
 //     playerTurnMessage += `Game Over! You bust!`;
 //   }
 // }
-console.log(playerValue);
+// console.log(playerValue);
 // if player submit stay, check if player bust
 
 //   return playerTurnMessage;
@@ -291,7 +309,7 @@ var dealerTurn = function () {
   if (compValue > 17) {
     dealerTurnMessage = `Dealer has been dealt with:<br>${getHandMessage(
       compHand
-    )}<br>.Dealer's value is now at ${compValue}`;
+    )}<br>Dealer's value is now at ${compValue}`;
   }
   return dealerTurnMessage;
 };
@@ -330,6 +348,8 @@ var getHandMessage = function (a) {
   return handMessage;
 };
 
+// debug the new buttons and add input validation
+
 // variable ace values
 
 // one more game mode initialised
@@ -342,8 +362,6 @@ var getHandMessage = function (a) {
 /// in order to have player turn repeat until all players have gone, use if condition based on global player array length. add count to player turn as the limit. once max player turn count is reached, game mode switches to dealer turn
 //// to retrieve player hand, call the corresponding player array index of the global player array
 
-// ask for player name
-//// store player name in an array in the same index as the player hand
 //// apply the multiplayer concept to pull player name
 
 // give full instructions
