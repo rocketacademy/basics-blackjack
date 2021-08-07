@@ -86,7 +86,10 @@
       <p>Input:</p>
       <input id="input-field" />
       <br />
-      <button id="submit-button">Submit</button>
+      <button id="submit-button">Play</button>
+      <button id="hit-button">Hit</button>
+      <button id="stay-button">Stay</button>
+
       <p>Output:</p>
       <div id="output-div"></div>
     </div>
@@ -99,6 +102,36 @@
         // Set result to input value
         var input = document.querySelector("#input-field");
         var result = main(input.value);
+
+        // Display result in output element
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
+
+        // Reset input value
+        input.value = "";
+      });
+    </script>
+    <script>
+      var button = document.querySelector("#hit-button");
+      button.addEventListener("click", function () {
+        // Set result to input value
+        var input = document.querySelector("#input-field");
+        var result = hit(input.value);
+
+        // Display result in output element
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
+
+        // Reset input value
+        input.value = "";
+      });
+    </script>
+    <script>
+      var button = document.querySelector("#stay-button");
+      button.addEventListener("click", function () {
+        // Set result to input value
+        var input = document.querySelector("#input-field");
+        var result = stay(input.value);
 
         // Display result in output element
         var output = document.querySelector("#output-div");

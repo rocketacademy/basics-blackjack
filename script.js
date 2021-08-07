@@ -12,6 +12,48 @@ var main = function (input) {
   return myOutputValue;
 };
 
+var hit = function (input) {
+  var newCard = gameDeck.pop();
+  playerHand.push(newCard);
+  playerValue = sumArray(playerHand);
+  var playerTurnMessage = `You chose HIT.<br><br>You drew ${newCard.name} of ${
+    newCard.suit
+  }.<br><br>So far, you've been dealt with:<br>${getHandMessage(
+    playerHand
+  )}<br>Your hand is now valued at ${playerValue}`;
+  if (playerValue > 21) {
+    resetRound();
+    playerTurnMessage += `<br><br>Game Over! You bust!`;
+  } else if (playerValue <= 21) {
+    playerTurnMessage += `<br><br>Do you want to hit or stay?`;
+  }
+  return playerTurnMessage;
+};
+
+var stay = function (input) {
+  playerValue = sumArray(playerHand);
+  if (playerValue <= 21) {
+    if (checkForAce(playerHand) > -1) {
+      if (playerValue + 10 > 21) {
+        playerValue += 0;
+      } else {
+        playerValue += 10;
+      }
+    } else {
+      playerValue += 0;
+    }
+    gameMode = "comp turn";
+    playerTurnMessage = `You chose STAY.<br><br>So far, you've been dealt with:<br>${getHandMessage(
+      playerHand
+    )}<br>Your hand is now valued at ${playerValue}. It is now dealer's turn.`;
+  }
+  if (playerValue > 21) {
+    resetRound();
+    playerTurnMessage += `Game Over! You bust!`;
+  }
+  return playerTurnMessage;
+};
+
 // create deck
 var cardDeck = [];
 var makeDeck = function () {
@@ -55,6 +97,7 @@ var makeDeck = function () {
   return cardDeck;
 };
 
+// get random number to use in shuffle deck function
 var getRandomIndex = function (max) {
   return Math.floor(Math.random() * max);
 };
@@ -90,6 +133,7 @@ var gameDeck = shuffleCards(sortedDeck);
 var playerHand = [];
 var compHand = [];
 
+// deal cards
 var startGame = function () {
   playerHand.push(gameDeck.pop());
   compHand.push(gameDeck.pop());
@@ -110,6 +154,7 @@ var sumArray = function (a) {
   return sum;
 };
 
+// global variables to store values
 var gameMode = "default";
 var playerValue = 0;
 var compValue = 0;
@@ -154,52 +199,51 @@ var firstCheck = function () {
 
 // else
 // if player submit hit, deal card from deck, and add to array
+// var playerTurn = function (input) {
+//   if (input == "hit") {
+//     // var newCard = gameDeck.pop();
+//     // playerHand.push(newCard);
+//     // playerValue = sumArray(playerHand);
+//     // var playerTurnMessage = `You chose HIT.<br><br>You drew ${
+//     //   newCard.name
+//     // } of ${
+//     //   newCard.suit
+//     // }.<br><br>So far, you've been dealt with:<br>${getHandMessage(
+//     //   playerHand
+//     // )}<br>Your hand is now valued at ${playerValue}`;
+//     // if (playerValue > 21) {
+//     //   resetRound();
+//     //   playerTurnMessage += `<br><br>Game Over! You bust!`;
+//     // } else if (playerValue <= 21) {
+//     //   playerTurnMessage += `<br><br>Do you want to hit or stay?`;
+//     // }
+//   } else if (input == "stay") {
+//   playerValue = sumArray(playerHand);
+//   if (playerValue <= 21) {
+//     if (checkForAce(playerHand) > -1) {
+//       if (playerValue + 10 > 21) {
+//         playerValue += 0;
+//       } else {
+//         playerValue += 10;
+//       }
+//     } else {
+//       playerValue += 0;
+//     }
+//     gameMode = "comp turn";
+//     playerTurnMessage = `You chose STAY.<br><br>So far, you've been dealt with:<br>${getHandMessage(
+//       playerHand
+//     )}<br>Your hand is now valued at ${playerValue}. It is now dealer's turn.`;
+//   }
+//   if (playerValue > 21) {
+//     resetRound();
+//     playerTurnMessage += `Game Over! You bust!`;
+//   }
+// }
+console.log(playerValue);
+// if player submit stay, check if player bust
 
-var playerTurn = function (input) {
-  if (input == "hit") {
-    var newCard = gameDeck.pop();
-    playerHand.push(newCard);
-    playerValue = sumArray(playerHand);
-    var playerTurnMessage = `You chose HIT.<br><br>You drew ${
-      newCard.name
-    } of ${
-      newCard.suit
-    }.<br><br>So far, you've been dealt with:<br>${getHandMessage(
-      playerHand
-    )}<br>Your hand is now valued at ${playerValue}`;
-    if (playerValue > 21) {
-      resetRound();
-      playerTurnMessage += `<br><br>Game Over! You bust!`;
-    } else if (playerValue <= 21) {
-      playerTurnMessage += `<br><br>Do you want to hit or stay?`;
-    }
-  } else if (input == "stay") {
-    playerValue = sumArray(playerHand);
-    if (playerValue <= 21) {
-      if (checkForAce(playerHand) > -1) {
-        if (playerValue + 10 > 21) {
-          playerValue += 0;
-        } else {
-          playerValue += 10;
-        }
-      } else {
-        playerValue += 0;
-      }
-      gameMode = "comp turn";
-      playerTurnMessage = `You chose STAY.<br><br>So far, you've been dealt with:<br>${getHandMessage(
-        playerHand
-      )}<br>Your hand is now valued at ${playerValue}. It is now dealer's turn.`;
-    }
-    if (playerValue > 21) {
-      resetRound();
-      playerTurnMessage += `Game Over! You bust!`;
-    }
-  }
-  console.log(playerValue);
-  // if player submit stay, check if player bust
-
-  return playerTurnMessage;
-};
+//   return playerTurnMessage;
+// };
 
 // function to reset round
 var resetRound = function () {
@@ -289,3 +333,21 @@ var getHandMessage = function (a) {
 // variable ace values
 
 // one more game mode initialised
+
+// for split deck, maybe can use splice function which removes and returns a subset of an array as a new array
+
+// for multiple players, consider
+/// global variable to store num of players
+/// deal cards loop based on num of players, and store each player as an array within a global player array
+/// in order to have player turn repeat until all players have gone, use if condition based on global player array length. add count to player turn as the limit. once max player turn count is reached, game mode switches to dealer turn
+//// to retrieve player hand, call the corresponding player array index of the global player array
+
+// ask for player name
+//// store player name in an array in the same index as the player hand
+//// apply the multiplayer concept to pull player name
+
+// give full instructions
+
+// betting
+/// global variable to store initial points
+/// insert code to plus/deduct based on winning conditions
