@@ -3,10 +3,12 @@
 
 // second version: Add Player Hit or Stand
 // third version: Add Dealer Hit or Stand
+// fourth version: Add Variable Ace Values --- Aces can be 1 or 11
 
 // game mode: 'deal two cards'
 // game mode: 'player hit or stand'
 // game mode: 'dealer Hit or Stand' --- The computer decides to hit or stand automatically
+// game mode: 'pick aces value'
 
 var currentGameMode = "deal two cards";
 var shuffledDeck;
@@ -197,7 +199,7 @@ var hitOrStand = function (input) {
     console.log(computerHand);
 
     numberOfComputerCards += 1;
-    console.log("number of computer's cards in hand: " + numberOfPlayerCards);
+    console.log("number of computer's cards in hand: " + numberOfComputerCards);
 
     computerTotalHand += computerCard.rank;
     console.log("computer total hand: " + computerTotalHand);
@@ -220,17 +222,50 @@ var totalHand = function (input) {
   }
 
   // to see the computer's hand
-  myOutputValue += `<br>The dealer's cards are: <br>`;
+  myOutputValue += `<br>Computer's cards are: <br>`;
   var counter = 0;
   while (counter < numberOfComputerCards) {
     myOutputValue += `${computerHand[counter].name} of ${computerHand[counter].suit} <br>`;
     counter += 1;
   }
 
-  if (userInput == "hit") {
-    myOutputValue += `<br> Player's total hand is  ${playerTotalHand}. <br> Computer's total hand is ${computerTotalHand}.<br><br>Player do you want to 'hit' or 'stand'? <br> Please type out your choice, and click the 'Submit' button.`;
-  } else if (userInput == "stand") {
-    myOutputValue += `<br> Player's total hand is  ${playerTotalHand}. <br> Computer's total hand is ${computerTotalHand}. <br> <br> Please refresh the page to play another round.`;
+  myOutputValue += `<br> Player's total hand is  ${playerTotalHand}. <br> Computer's total hand is ${computerTotalHand}.<br><br>`;
+
+  return myOutputValue;
+};
+
+var currentWinner = function () {
+  var myOutputValue = "";
+
+  // player hand = 21, or player hand < 21 and > comp hand >16
+  if (
+    playerTotalHand == 21 ||
+    (playerTotalHand <= 21 &&
+      playerTotalHand > computerTotalHand &&
+      computerTotalHand > 16)
+  ) {
+    myOutputValue +=
+      "Player wins! Computer loses. <br> Please refresh the page to play another round.";
+  } else if (playerTotalHand > 21) {
+    myOutputValue +=
+      "Player BUSTS! Computer wins by default. <br> Please refresh the page to play another round.";
+  } // player hand < 21 and player hand < comp hand , and comp =21,
+  else if (
+    playerTotalHand < 21 &&
+    playerTotalHand < computerTotalHand &&
+    computerTotalHand <= 21 &&
+    computerTotalHand > 16
+  ) {
+    myOutputValue +=
+      "Computer wins! Player loses. <br> Please refresh the page to play another round.";
+  } else if (computerTotalHand > 21) {
+    myOutputValue +=
+      "Computer BUSTS! Player wins by default. <br> Please refresh the page to play another round.";
+  } else if (playerTotalHand == computerTotalHand) {
+    myOutputValue +=
+      "It is a tie! <br> Please refresh the page to play another round.";
+  } else if (playerTotalHand < 21 && computerTotalHand < 21) {
+    myOutputValue += `Player do you want to 'hit' or 'stand'? <br> Please type out your choice, and click the 'Submit' button.`;
   }
 
   return myOutputValue;
@@ -242,7 +277,7 @@ var main = function (input) {
   if (currentGameMode == "deal two cards") {
     myOutputValue = dealTwoCards();
   } else if (currentGameMode == "player hit or stand") {
-    myOutputValue = hitOrStand() + totalHand();
+    myOutputValue = hitOrStand() + totalHand() + currentWinner();
   }
 
   return myOutputValue;
