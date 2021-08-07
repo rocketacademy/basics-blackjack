@@ -1,30 +1,92 @@
-var main = function (input) {
-  var myOutputValue = "hello world";
-  //at the beginning, draw cards
-  console.log("P: ", playerHand, " C: ", computerHand);
-  //compare sum
-  var sumOfPlayerHand = totalSumOfHand(playerHand);
-  console.log("sumOfPlayerHand", sumOfPlayerHand);
-  var sumOfComputerHand = totalSumOfHand(computerHand);
-  console.log("sumOfComputerHand", sumOfComputerHand);
+var hitOrStand = "Ask player to hit or stand.";
+var startDealing = "shuffle cards and start dealing";
+var gameMode = startDealing;
 
-  if (sumOfPlayerHand == 21 && sumOfComputerHand == 21) {
-    myOutputValue = "Everyone Ban Luck!";
-    if (sumOfPlayerHand == 21 && sumOfComputerHand != 21) {
-      myOutputValue = "Player Ban Luck!";
-    } else if (sumOfPlayerHand != 21 && sumOfComputerHand == 21) {
-      myOutputValue = "Computer Ban Luck!";
+var main = function (input) {
+  var myOutputValue = "hello world, this msg should not appear";
+
+  //start a fresh game and deal cards
+  if (gameMode == startDealing) {
+    //generate player and computer hands
+    playerHand = generateHand(playingDeck);
+    computerHand = generateHand(playingDeck);
+    console.log("P: ", playerHand, " C: ", computerHand);
+    //generate new sum
+    sumOfPlayerHand = totalSumOfHand(playerHand);
+    sumOfComputerHand = totalSumOfHand(computerHand);
+    //START GAME
+
+    //anyone gets a blackjack
+    if (sumOfPlayerHand == 21 || sumOfComputerHand == 21) {
+      blackjack(sumOfPlayerHand, sumOfComputerHand);
+      //if no one gets a blackjack; ask to hit or stand
+    } else {
+      gameMode = hitOrStand;
+      myOutputValue = `Player drew: ${displayHand(
+        playerHand
+      )} Total is: ${sumOfPlayerHand}.<br><br> Do you want to hit or stand? (Please enter hit/stand)`;
+      return myOutputValue;
     }
-  } else if (sumOfPlayerHand < 21 && sumOfPlayerHand > sumOfComputerHand) {
-    myOutputValue = "Player Wins!";
-  } else if (sumOfComputerHand < 21 && sumOfComputerHand > sumOfPlayerHand) {
-    myOutputValue = "Computer Wins!";
-  } else if (
-    sumOfComputerHand < 21 &&
-    sumOfPlayerHand < 21 &&
-    sumOfComputerHand == sumOfPlayerHand
-  ) {
-    myOutputValue = "ZAO (i.e. it's a tie)";
+  } else if (gameMode == hitOrStand) {
+    //if player decides to hit
+    if (input == "hit") {
+      //deal one card
+      playerHand.push(playingDeck.pop());
+      sumOfPlayerHand = totalSumOfHand(playerHand); //is this necessary?
+      //player's hand doesnt hit 21
+      if (sumOfPlayerHand < 21) {
+        myOutputValue = `Player drew: ${displayHand(
+          playerHand
+        )} Total is: ${sumOfPlayerHand}. <br><br>Do you want to hit again? (Please input hit/stand)`;
+        //player's hand hits 21
+      } else if (sumOfPlayerHand == 21) {
+        myOutputValue = `Player drew: ${displayHand(
+          playerHand
+        )} Total is: ${sumOfPlayerHand}. Player wins! <br><br>Hit Submit to start dealing again.`;
+        gameMode = startDealing;
+      } else if (sumOfPlayerHand > 21) {
+        myOutputValue = `Player drew: ${displayHand(
+          playerHand
+        )} Total is: ${sumOfPlayerHand}. Bao! (i.e. it's a bust!) <br> Computer drew: ${displayHand(
+          computerHand
+        )}.<br>Total is: ${sumOfComputerHand}.<br> Computer Wins! <br><br>Hit Submit to start dealing again.`;
+        gameMode = startDealing;
+      }
+      console.log(gameMode);
+
+      return myOutputValue;
+      //if player decides to stand
+    } else if (input == "stand") {
+      //compare with computer hand
+      if (sumOfComputerHand < 21) {
+        if (sumOfComputerHand > sumOfPlayerHand) {
+          myOutputValue = `Player drew: ${displayHand(
+            playerHand
+          )}. Total is: ${sumOfPlayerHand}. <br> Computer drew: ${displayHand(
+            computerHand
+          )}. Total is: ${sumOfComputerHand}.<br> Computer Wins! <br><br>Hit Submit to start dealing again.`;
+        } else if (sumOfComputerHand < sumOfPlayerHand) {
+          myOutputValue = `Player drew: ${displayHand(
+            playerHand
+          )}. Total is: ${sumOfPlayerHand}. <br> Computer drew: ${displayHand(
+            computerHand
+          )}. Total is: ${sumOfComputerHand}.<br> Player Wins!<br><br>Hit Submit to start dealing again.`;
+        }
+      } else if (sumOfComputerHand == sumOfPlayerHand) {
+        myOutputValue = `Player drew: ${displayHand(
+          playerHand
+        )} <br> Computer drew: ${displayHand(
+          computerHand
+        )} <br> ZAO (i.e. it's a tie)`;
+      } else if (sumOfComputerHand > 21) {
+        myOutputValue = `Player drew: ${displayHand(
+          playerHand
+        )} <br> Computer drew: ${displayHand(
+          computerHand
+        )} Bao! Computer exploded. <br> Player Wins!<br><br>Hit Submit to start dealing again.`;
+      }
+      gameMode = startDealing;
+    }
   }
   return myOutputValue;
 };
@@ -121,6 +183,18 @@ var shuffleCards = function (cardDeck) {
 //create playing deck
 var playingDeck = shuffleCards(makeDeck());
 
+// display hands
+var displayHand = function (hand) {
+  var message = ``;
+  for (var i = 0; i < hand.length; i += 1) {
+    // Construct a string using attributes of each card object
+    var cardTitle = `${hand[i].name} of ${hand[i].suit}, `;
+    message = message + cardTitle;
+    console.log(cardTitle);
+  }
+  return message;
+};
+//generate player and computer hands
 var generateHand = function () {
   var hand = [];
   for (var i = 0; i < 2; i += 1) {
@@ -128,8 +202,8 @@ var generateHand = function () {
   }
   return hand;
 };
-var playerHand = generateHand(playingDeck);
-var computerHand = generateHand(playingDeck);
+var playerHand = [];
+var computerHand = [];
 
 var totalSumOfHand = function (hand) {
   var sum = 0;
@@ -137,4 +211,33 @@ var totalSumOfHand = function (hand) {
     var sum = sum + hand[i].value;
   }
   return sum;
+};
+var sumOfPlayerHand = 0;
+var sumOfComputerHand = 0;
+console.log("sumOfComputerHand", sumOfComputerHand);
+
+//function to evaluate blackjack
+var blackjack = function (sumOfPlayerHand, sumOfComputerHand) {
+  var myOutputValue = "";
+  //if someone gets a blackjack
+  if (sumOfPlayerHand == 21 && sumOfComputerHand == 21) {
+    myOutputValue = `Player drew: ${displayHand(
+      playerHand
+    )} <br> Computer drew: ${displayHand(
+      computerHand
+    )} <br> Everyone won! All Ban Luck!`;
+  } else if (sumOfPlayerHand == 21 && sumOfComputerHand != 21) {
+    myOutputValue = `Player drew: ${displayHand(
+      playerHand
+    )} <br> Computer drew: ${displayHand(
+      computerHand
+    )} <br> Player won! Ban Luck!`;
+  } else if (sumOfPlayerHand != 21 && sumOfComputerHand == 21) {
+    myOutputValue = `Player drew: ${displayHand(
+      playerHand
+    )} <br> Computer drew: ${displayHand(
+      computerHand
+    )} <br> Computer won! Ban Luck!`;
+  }
+  return myOutputValue;
 };
