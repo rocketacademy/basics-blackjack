@@ -73,35 +73,20 @@ var gameMode = GAME_MODE_INITIAL;
 //deals initial hand
 var dealInitialHand = function(){
   //dealer draws 2 cards from shuffled deck
-  var dealerCard1 = shuffledDeck.pop();
-  var dealerCard2 = shuffledDeck.pop();
-  dealerHand.push(dealerCard1,dealerCard2);
+  var dealerFaceUpCard = shuffledDeck.pop();
+  var dealerFaceDownCard = shuffledDeck.pop();
+  dealerHand.push(dealerFaceUpCard,dealerFaceDownCard);
+  console.log(`dealer hand`,dealerHand);
 
   //player draws 2 cards from shuffled deck
   var playerCard1 = shuffledDeck.pop();
   var playerCard2 = shuffledDeck.pop();
   playerHand.push(playerCard1,playerCard2);
+  console.log(`player hand`,playerHand);
 
-  return `Dealer has ${dealerCard1.name} and ${dealerCard2.name}.<br>
+  return `Dealer has ${dealerFaceUpCard.name}.<br>
   Player has ${playerCard1.name} and ${playerCard2.name}.<br>`
 };
-
-// //generates game result from dealer and player scores
-// var generateGameResult = function(){
-  
-//   //calculate scores of dealer and player 
-//   var dealerScore = dealerHand[0].value + dealerHand[1].value
-//   var playerScore = playerHand[0].value + playerHand[1].value
-
-//   //compares scores of dealer and player to determine winner
-//   if(dealerScore >= playerScore){
-//     return `Dealer wins!`
-//   }else if(dealerScore < playerScore){
-//     return `Player wins!`
-//   } else {
-//     return `It's a tie.`
-//   };
-// };
 
 //keeps track of dealer and player scores
 var dealerScore = 0;
@@ -119,7 +104,7 @@ return dealerScore;
 };
 
 //calculates player score
-var calculatePlayerScore = function(){
+var calculatePlayerScore = function(playerHand){
   playerScore = 0;
   var playerIndex = 0;
   while (playerIndex < playerHand.length){
@@ -129,16 +114,39 @@ var calculatePlayerScore = function(){
 return playerScore;
 };
 
-////compares scores of dealer and player to determine winner
+//displays player hand
+var displayPlayerHand = function(playerHand){
+  var playerHandMessage = `Player hand:<br>`
+  var playerIndex = 0;
+  while (playerIndex < playerHand.length){
+    playerHandMessage += playerHand[playerIndex].name + `<br>`;
+    playerIndex += 1;
+  };
+return playerHandMessage;
+};
+
+//displays dealer hand
+var displayDealerHand = function(dealerHand){
+  var dealerHandMessage = `Dealer hand:<br>`
+  var dealerIndex = 0;
+  while (dealerIndex < dealerHand.length){
+    dealerHandMessage += dealerHand[dealerIndex].name + `<br>`;
+    dealerIndex += 1;
+  };
+return dealerHandMessage;
+};
+
+
+//compares scores of dealer and player to determine winner
 var generateGameResult = function(playerScore,dealerScore){
   if(dealerScore >= playerScore ||
-    (playerScore >= 21 && dealerScore < 21)){
+    (playerScore > 21 && dealerScore <= 21)){
         return `Dealer wins!`
       }else if(dealerScore < playerScore ||
-        (dealerScore >=21 && playerScore < 21)){
+        (dealerScore > 21 && playerScore <= 21)){
         return `Player wins!`
       } else if (dealerScore == playerScore ||
-        (dealerScore >= 21 && playerScore >= 21)){
+        (dealerScore > 21 && playerScore > 21)){
         return `It's a tie.`
       };
 }; 
@@ -161,30 +169,39 @@ var playerHitOrStand = function(playerChoice){
 //---MAIN FUNCTION----
 var main = function (input) {
   var myOutputValue = ``;
+  var playerHandMessage = ``;
   
   if(gameMode == GAME_MODE_INITIAL){
     var initialHand = dealInitialHand();
-    dealerScore = calculateDealerScore();
-    playerScore = calculatePlayerScore();
+    playerScore = calculatePlayerScore(playerHand);
+    playerHandMessage = displayPlayerHand(playerHand);
     gameMode = GAME_MODE_HIT_OR_STAND;
-    myOutputValue = `${initialHand}<br>
-    Dealer score: ${dealerScore}<br>
+    myOutputValue = `${initialHand}<br><br>
+    Dealer face up card: ${dealerHand[0].name}<br><br>
+    ${playerHandMessage}<br>
     Player score: ${playerScore}`;
   }else if (gameMode == GAME_MODE_HIT_OR_STAND){
     var hitOrStand = playerHitOrStand(input);
-    dealerScore = calculateDealerScore();
-    playerScore = calculatePlayerScore();
-    myOutputValue = `${hitOrStand}<br>
-    Dealer score: ${dealerScore}<br>
+    playerScore = calculatePlayerScore(playerHand);
+    playerHandMessage = displayPlayerHand(playerHand);
+    myOutputValue = `${hitOrStand}<br><br>
+    Dealer face up card: ${dealerHand[0].name}<br><br>
+    ${playerHandMessage}<br>
     Player score: ${playerScore}`;
-    if(playerScore >= 21){
+    if(playerScore > 21){
       gameMode = GAME_MODE_END;
       myOutputValue = `Player busted!`;
-    }
+    };
   }else if (gameMode == GAME_MODE_END){
+    playerScore = calculatePlayerScore(playerHand);
+    playerHandMessage = displayPlayerHand(playerHand);
+    dealerScore = calculateDealerScore(dealerHand);
+    var dealerHandMessage = displayDealerHand(dealerHand);
     var gameResult = generateGameResult(playerScore,dealerScore)
-    myOutputValue = `${gameResult}<br>
-    Dealer score: ${dealerScore}<br>
+    myOutputValue = `${gameResult}<br><br>
+    ${dealerHandMessage}<br>
+    Dealer score: ${dealerScore}<br><br>
+    ${playerHandMessage}<br>
     Player score: ${playerScore}`
     gameMode = GAME_MODE_INITIAL;
     shuffledDeck = playerHand.concat(dealerHand,shuffledDeck);
