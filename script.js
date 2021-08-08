@@ -76,13 +76,13 @@ var dealInitialHand = function(){
   var dealerFaceUpCard = shuffledDeck.pop();
   var dealerFaceDownCard = shuffledDeck.pop();
   dealerHand.push(dealerFaceUpCard,dealerFaceDownCard);
-  console.log(`dealer hand`,dealerHand);
+  console.log(`dealer initial hand`,dealerHand);
 
   //player draws 2 cards from shuffled deck
   var playerCard1 = shuffledDeck.pop();
   var playerCard2 = shuffledDeck.pop();
   playerHand.push(playerCard1,playerCard2);
-  console.log(`player hand`,playerHand);
+  console.log(`player initial hand`,playerHand);
 
   return `Dealer has ${dealerFaceUpCard.name}.<br>
   Player has ${playerCard1.name} and ${playerCard2.name}.<br>`
@@ -136,7 +136,6 @@ var displayDealerHand = function(dealerHand){
 return dealerHandMessage;
 };
 
-
 //compares scores of dealer and player to determine winner
 var generateGameResult = function(playerScore,dealerScore){
   if(dealerScore >= playerScore ||
@@ -157,6 +156,7 @@ var playerHitOrStand = function(playerChoice){
   if(playerChoice == `hit`){
     var playerHitCard = shuffledDeck.pop();
     playerHand.push(playerHitCard);
+    console.log(`player hand after hit`,playerHand);
     return `Player chose to ${playerChoice}. Player drew ${playerHitCard.name}.`
   }else if (playerChoice == `stand`){
     gameMode = GAME_MODE_END;
@@ -164,6 +164,23 @@ var playerHitOrStand = function(playerChoice){
   }else {
     return `You can only choose to hit or stand.`;
   };
+};
+
+//if dealer score is less than 17, dealer has to hit (deal another card to dealer)
+//if dealer score is 17 or more dealer stands (ends turn)
+var dealerHitOrStand = function(dealerScore){
+  var dealerHitCardMessage = `Dealer hit cards: `
+  if(dealerScore >= 17){
+    dealerHitCardMessage += `NIL`;
+  };
+  while(dealerScore < 17){
+    var dealerHitCard = shuffledDeck.pop();
+    dealerHand.push(dealerHitCard);
+    dealerScore = calculateDealerScore(dealerHand);
+    dealerHitCardMessage += dealerHitCard.name +` `;
+  };
+gameMode = GAME_MODE_END;
+return dealerHitCardMessage;
 };
 
 //---MAIN FUNCTION----
@@ -196,9 +213,11 @@ var main = function (input) {
     playerScore = calculatePlayerScore(playerHand);
     playerHandMessage = displayPlayerHand(playerHand);
     dealerScore = calculateDealerScore(dealerHand);
+    var dealerTurn = dealerHitOrStand(dealerScore);
     var dealerHandMessage = displayDealerHand(dealerHand);
     var gameResult = generateGameResult(playerScore,dealerScore)
-    myOutputValue = `${gameResult}<br><br>
+    myOutputValue = `${dealerTurn}<br><br>
+    ${gameResult}<br><br>
     ${dealerHandMessage}<br>
     Dealer score: ${dealerScore}<br><br>
     ${playerHandMessage}<br>
