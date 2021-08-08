@@ -80,16 +80,24 @@ var dealCard = function (hand){
 //calculate score in hand, assume ace = 11
 var getHandScore = function(hand){
     var sum = 0;
-    for (let i = 0; i <hand.length; i+=1){
+    var i = 0;
+    while(i <hand.length){
       var currentCard = hand[i];
+      //if player has an Ace
       if (currentCard.rank == 1){
         sum += 11;
+        i +=1;
       }
+
+      //if player has 2-10
       else if (currentCard.rank >=2 && currentCard.rank <=10){
         sum += currentCard.rank;
+        i +=1;
       }
+      //if player has Jack or Queen or King
       else if (currentCard.rank >=11 && currentCard.rank <=13){
         sum += 10; 
+        i +=1;
       }
     }
     return sum;
@@ -102,7 +110,6 @@ var getHandScore = function(hand){
 //user clicks submit to deal cards
 
 var main = function (input) {
-
 
   if (gameMode == 'dealFirstCard' && playerHand.length == 0){
     dealCard(playerHand);
@@ -157,8 +164,11 @@ var main = function (input) {
     if (gameMode == 'playerCalculate'){
           if (input == 'hit'){
             dealCard(playerHand);
-            gameMode = 'computerTurn';
-            return `Player drew <b>${playerHand[2].name} ${playerHand[2].suit}</b> and <b>${playerHand[1].name} ${playerHand[1].suit}</b> and <b>${playerHand[0].name} ${playerHand[0].suit} </b>. Player score is ${getHandScore(playerHand)}. <br><br>Computer drew  <b>${computerHand[1].name} ${computerHand[1].suit} </b>and <b>${computerHand[0].name} ${computerHand[0].suit}</b>. Computer score is ${getHandScore(computerHand)}. Press hit or stand to continue the game`;
+                if (getHandScore(playerHand) > 21){
+                    gameMode = 'restart';
+                    return `Player total score is ${getHandScore(playerHand)}. Player loses, computer wins!`;
+                }
+            return `Player total score is ${getHandScore(playerHand)}. <br><br>Computer drew  <b>${computerHand[1].name} ${computerHand[1].suit} </b>and <b>${computerHand[0].name} ${computerHand[0].suit}</b>. Computer score is ${getHandScore(computerHand)}. Press hit or stand to continue the game`;
           } 
           else if (input == 'stand'){
             gameMode = 'computerTurn';
