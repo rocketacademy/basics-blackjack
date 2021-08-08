@@ -1,4 +1,4 @@
-// blackjack - base third version
+// blackjack - base fourth version
 // 2 players: user and computer/dealer
 
 // second version: Add Player Hit or Stand
@@ -8,7 +8,6 @@
 // game mode: 'deal two cards'
 // game mode: 'player hit or stand'
 // game mode: 'dealer Hit or Stand' --- The computer decides to hit or stand automatically
-// game mode: 'pick aces value'
 
 var currentGameMode = "deal two cards";
 var shuffledDeck;
@@ -59,11 +58,26 @@ var makeDeck = function () {
         cardName = "King";
       }
 
+      // By default, the value of the card is the same as rankCounter
+      var valueCard = rankCounter;
+
+      // If card rank is 2-10, value is same as rank
+      // If card rank is 11-13, i.e. Jack, Queen, or King, value is 10
+      // If card is Ace, value is 11 by default
+      if (valueCard == 1) {
+        valueCard = 11;
+      } else if (valueCard >= 2 && valueCard <= 10) {
+        valueCard = rankCounter;
+      } else if (valueCard >= 11 && valueCard <= 13) {
+        valueCard = 10;
+      }
+
       // Create a new card with the current name, suit, and rank
       var card = {
         name: cardName,
         suit: currentSuit,
         rank: rankCounter,
+        value: valueCard,
       };
 
       // Add the new card to the deck
@@ -132,42 +146,77 @@ var dealTwoCards = function () {
   console.log("computer's hand array: ");
   console.log(computerHand);
 
-  // push drawn cards value/rank to array
-  playerHandValue.push(playerCard1.rank);
-  playerHandValue.push(playerCard2.rank);
-  computerHandValue.push(computerCard1.rank);
-  computerHandValue.push(computerCard2.rank);
+  // push drawn cards value to array
+  playerHandValue.push(playerCard1.value);
+  playerHandValue.push(playerCard2.value);
+  computerHandValue.push(computerCard1.value);
+  computerHandValue.push(computerCard2.value);
 
   console.log("player's hand value: " + playerHandValue);
   console.log("computer's hand value: " + computerHandValue);
 
-  //to get the total initial hand of the player
-  playerTotalHand = 0;
-  var counter = 0;
-  while (counter < playerHandValue.length) {
-    playerTotalHand += playerHandValue[counter];
-    counter += 1;
-    console.log("player total hand: " + playerTotalHand);
-  }
-
-  //to get the total initial hand of the computer
-  computerTotalHand = 0;
-  var counter = 0;
-  while (counter < computerHandValue.length) {
-    computerTotalHand += computerHandValue[counter];
-    counter += 1;
-    console.log("computer total hand: " + computerTotalHand);
-  }
-
-  var myOutputValue = `Player drawn ${playerCard1.name} of ${playerCard1.suit} and ${playerCard2.name} of ${playerCard2.suit}.<br> Computer drawn ${computerCard1.name} of ${computerCard1.suit} and ${computerCard2.name} of ${computerCard2.suit}. <br> <br> Player's total hand is ${playerTotalHand}. <br> Computer's total hand is ${computerTotalHand}. <br><br> Player do you want to 'hit' or 'stand'? <br> Please type out your choice, and click the 'Submit' button.`;
+  var myOutputValue = `Player drawn ${playerCard1.name} of ${playerCard1.suit} and ${playerCard2.name} of ${playerCard2.suit}.<br> Computer drawn ${computerCard1.name} of ${computerCard1.suit} and ${computerCard2.name} of ${computerCard2.suit}. <br> <br> `;
 
   //moving to the next game
   currentGameMode = "player hit or stand";
   return myOutputValue;
 };
 
+var initialTotalHand = function () {
+  var myOutputValue = "";
+
+  //to get the total initial hand of the player
+  playerTotalHand = 0;
+  var numberAcesInHand = 0;
+  var counter = 0;
+  while (counter < playerHandValue.length) {
+    playerTotalHand += playerHandValue[counter];
+    counter += 1;
+    // if total hand > 21 and hand contains 2 ace, convert ace from value of 11 to 1
+    if (playerTotalHand > 21 && numberAcesInHand > 0) {
+      var counter = 0;
+      while (counter < numberAcesInHand) {
+        playerTotalHand -= 10;
+        counter += 1;
+      }
+      return playerTotalHand;
+    }
+
+    console.log("player total hand: " + playerTotalHand);
+  }
+  myOutputValue += `Player's total hand is ${playerTotalHand}. <br>`;
+
+  //to get the total initial hand of the computer
+  computerTotalHand = 0;
+  var numberAcesInHand = 0;
+  var counter = 0;
+  while (counter < computerHandValue.length) {
+    computerTotalHand += computerHandValue[counter];
+    counter += 1;
+    // if total hand > 21 and hand contains 2 ace, convert ace from value of 11 to 1
+    if (computerTotalHand > 21 && numberAcesInHand > 0) {
+      var counter = 0;
+      while (counter < numberAcesInHand) {
+        computerTotalHand -= 10;
+        counter += 1;
+      }
+      return computerTotalHand;
+    }
+    console.log("computer total hand: " + computerTotalHand);
+  }
+  myOutputValue += `Computer's total hand is ${computerTotalHand}. <br><br> `;
+
+  myOutputValue += `Player do you want to 'hit' or 'stand'? <br> Please type out your choice, and click the 'Submit' button.`;
+
+  return myOutputValue;
+};
+
 var hitOrStand = function (input) {
   var myOutputValue = "";
+  var numberAcesInHand = 0;
+
+  // //to change the card value
+  // changingCardValue();
 
   if (currentGameMode == "player hit or stand") {
     if (userInput == "hit") {
@@ -181,13 +230,26 @@ var hitOrStand = function (input) {
       numberOfPlayerCards += 1;
       console.log("number of player's cards in hand: " + numberOfPlayerCards);
 
-      playerTotalHand += playerCard.rank;
+      // playerTotalHand += playerCard.rank;
+      playerTotalHand += playerCard.value;
+
+      // if total hand > 21 and hand contains ace, convert ace from value of 11 to 1
+      if (playerTotalHand > 21 && numberAcesInHand > 0) {
+        var counter = 0;
+        while (counter < numberAcesInHand) {
+          playerTotalHand -= 10;
+          counter += 1;
+        }
+        return playerTotalHand;
+      }
+
       console.log("player total hand: " + playerTotalHand);
       myOutputValue += `Player chose to take another card, which is ${playerCard.name} of ${playerCard.suit}. <br>`;
     } else if (userInput == "stand") {
       myOutputValue += `You chose to end your turn. <br>`;
     }
   }
+
   // computer decides to hit or stand automatically
   // computer has to hit if their hand is below 17
   if (computerTotalHand <= 16) {
@@ -201,7 +263,19 @@ var hitOrStand = function (input) {
     numberOfComputerCards += 1;
     console.log("number of computer's cards in hand: " + numberOfComputerCards);
 
-    computerTotalHand += computerCard.rank;
+    // computerTotalHand += computerCard.rank;
+    computerTotalHand += computerCard.value;
+
+    // if total hand > 21 and hand contains ace, convert ace from value of 11 to 1
+    if (computerTotalHand > 21 && numberAcesInHand > 0) {
+      var counter = 0;
+      while (counter < numberAcesInHand) {
+        computerTotalHand -= 10;
+        counter += 1;
+      }
+      return computerTotalHand;
+    }
+
     console.log("computer total hand: " + computerTotalHand);
   } else {
     // computer has to stand if their hand is 17 or higher
@@ -210,6 +284,7 @@ var hitOrStand = function (input) {
   return myOutputValue;
 };
 
+// new total hand
 var totalHand = function (input) {
   var myOutputValue = "";
 
@@ -234,33 +309,42 @@ var totalHand = function (input) {
   return myOutputValue;
 };
 
-var currentWinner = function () {
+var currentWinner = function (userInput) {
   var myOutputValue = "";
 
   // player hand = 21, or player hand < 21 and > comp hand >16
-  if (
-    playerTotalHand == 21 ||
-    (playerTotalHand <= 21 &&
-      playerTotalHand > computerTotalHand &&
-      computerTotalHand > 16)
+  if (playerTotalHand == 21) {
+    myOutputValue +=
+      "BLACK JACK! <br> Player wins by default! Computer loses. <br> Please refresh the page to play another round.";
+    return myOutputValue;
+  }
+  if (computerTotalHand == 21) {
+    myOutputValue +=
+      "BLACK JACK! <br> Computer wins by default! Player loses. <br> Please refresh the page to play another round.";
+    return myOutputValue;
+  }
+
+  if (playerTotalHand > 21) {
+    myOutputValue +=
+      "Player BUSTS! Computer wins by default. <br> Please refresh the page to play another round.";
+  } else if (computerTotalHand > 21) {
+    myOutputValue +=
+      "Computer BUSTS! Player wins by default. <br> Please refresh the page to play another round.";
+  } else if (
+    playerTotalHand < 21 &&
+    playerTotalHand > computerTotalHand &&
+    computerTotalHand > 16
   ) {
     myOutputValue +=
       "Player wins! Computer loses. <br> Please refresh the page to play another round.";
-  } else if (playerTotalHand > 21) {
-    myOutputValue +=
-      "Player BUSTS! Computer wins by default. <br> Please refresh the page to play another round.";
   } // player hand < 21 and player hand < comp hand , and comp =21,
   else if (
     playerTotalHand < 21 &&
     playerTotalHand < computerTotalHand &&
-    computerTotalHand <= 21 &&
     computerTotalHand > 16
   ) {
     myOutputValue +=
       "Computer wins! Player loses. <br> Please refresh the page to play another round.";
-  } else if (computerTotalHand > 21) {
-    myOutputValue +=
-      "Computer BUSTS! Player wins by default. <br> Please refresh the page to play another round.";
   } else if (playerTotalHand == computerTotalHand) {
     myOutputValue +=
       "It is a tie! <br> Please refresh the page to play another round.";
@@ -274,9 +358,12 @@ var currentWinner = function () {
 var main = function (input) {
   var myOutputValue = "";
   userInput = input;
+
   if (currentGameMode == "deal two cards") {
-    myOutputValue = dealTwoCards();
+    // changingCardValue();
+    myOutputValue = dealTwoCards() + initialTotalHand();
   } else if (currentGameMode == "player hit or stand") {
+    // changingCardValue();
     myOutputValue = hitOrStand() + totalHand() + currentWinner();
   }
 
