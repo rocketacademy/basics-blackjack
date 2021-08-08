@@ -11,10 +11,12 @@
 var gameState = "playerState";
 
 //Global array for computer and players
-var comHand = [];
-var playerHand = [];
+var comHand = []
 var playerList = []
 var numOfPlayer = 0
+var playerNumber = 0
+var comScore = 0
+var turnNumber = 0
 
 //Blackjack limit
 var BLACKJACK_LIMIT = 21;
@@ -29,104 +31,150 @@ var main = function (input) {
       return `Error! Please enter a valid number!`
     }
     for(i=0;i<numOfPlayer;i++){
-      playerList = [{id:0,score:0,bet:0,chips:100}]
+     playerList[i] = {id:i+1, profile:{score:0,bet:0,chips:100,bjState:0,burstState:0,turnDone:0,playerChoice:'stand'},hand:[]}
     }
     gameState = 'betState'
-    return `There will be ${numOfPlayer} players.`
+    return `There will be ${numOfPlayer} players.<br><br>Hi Player 1, please enter amount of chips to bet.`
   }
   
   if (gameState == "betState") {
-    counter = 0
-    while(counter<numOfPlayer){
-    playerList[counter].bet = Number(input);
-    if (isNaN(playerList[counter].bet)) {
-      return `Error! Please enter a number!`;
-    }
-    if (playerList[counter].bet > playerChips) {
-      return `You do not have that much chips! Current chips: ${playerList[counter].chips}`;
-    }
     
-    return `Hi Player ${counter+1}! You chose to bet ${playerList[counter].bet} amount of chips. Current chips left: ${playerList[counter].chips}`;
+    while(playerNumber<numOfPlayer){
+    playerList[playerNumber].profile.bet = Number(input);
+    
+    if (isNaN(playerList[playerNumber].profile.bet)||input =='') {
+      return `Error! Player ${playerNumber+1}, please enter a number!`;
+    }
+    if (playerList[playerNumber].profile.bet > playerList[playerNumber].profile.chips) {
+      return `You do not have that much chips! Current chips: ${playerList[playerNumber].profile.chips}`;
+    }
+    var betMessage = `Hi Player ${playerNumber+1}! You chose to bet ${playerList[playerNumber].profile.bet} chips. Current chips left: ${playerList[playerNumber].profile.chips}`
+    playerNumber+=1
+    return betMessage;
   }
   gameState = "drawState";
-  return `All players bet in! Let's play!`
+  return `All players bet in! Press submit to start!`
 }
 
   //State to draw initial hand
   if (gameState == "drawState") {
+    
     //Initialize both computer and player hand
-    initializeHand(shuffledDeck);
-    console.log(`Com Initial Score: ${addScore(comHand)}`);
-    //Check if blackjack is obtained
-    if (
-      addScore(playerHand) == BLACKJACK_LIMIT ||
-      addScore(comHand) == BLACKJACK_LIMIT
-    ) {
-      resetState();
-      return `${blackJack(
-        addScore(playerHand),
-        addScore(comHand)
-      )}<br>Player drew<br>${cardPrinter(
-        playerHand
-      )}<br>Computer drew<br>${cardPrinter(comHand)}`;
-    } else {
-      //Move on to next stage of game
-      gameState = "playState";
-      //Display player current hand
-      return `Player drew <br>${cardPrinter(
-        playerHand
-      )}<br>Please choose to hit or stand`;
+    initializeHand()
+
+    //Compute score of computer and players
+    comScore = addScore(comHand)    
+    counter = 0
+    while(counter<numOfPlayer){
+      playerList[counter].profile.score = addScore(playerList[counter].hand)
+      counter+=1
     }
+
+    //Check if blackjack is obtained
+    var blackJackMessage = blackJack() 
+    gameState = 'playState' 
+    return `Hands Initialized!<br><br>${blackJackMessage}<br>Press submit to continue.`
   }
 
   if (gameState == "playState") {
-    var playerChoice = input.toLowerCase();
-    //Return error if player does not enter one of the two choices
-    if (playerChoice != "hit" && playerChoice != "stand") {
-      return `Error! Please choose to hit (draw another card) or stand (keep playing with current hand)`;
-    }
-    //If player choose to hit, draw another card for player
-    if (playerChoice == "hit") {
-      playerHand[2] = shuffledDeck.pop();
-    }
-    console.log(`Player Score: ${addScore(playerHand)}`);
-    //If player has more than 21, lose immediately
-    if (addScore(playerHand) > BLACKJACK_LIMIT) {
-      playerChips -= playerBet;
-      var results = `Player Burst! Player drew<br>${cardPrinter(
-        playerHand
-      )}<br>You now have ${playerChips} amount of chips. Press Submit to play again!`;
-      resetState();
-      return results;
+    while(turnNumber<numOfPlayer){
+      if(playerList[turnNumber].profile.turnDone == 0){
+        gameState = 'playState2'
+        
+        return `Hi Player ${turnNumber+1}, you drew:<br>${cardPrinter(playerList[turnNumber].hand)}Please choose to hit or stand<br>Current Score: ${playerList[turnNumber].profile.score}`
+      }
+      turnNumber +=1
+      return `Player ${turnNumber+1}'s turn done, press submit for next player.`
     }
     //If computer score is lower than 16, draw another card
-    if (addScore(comHand) <= 16) {
-      comHand[2] = shuffledDeck.pop();
+    while(comScore<16){
+      comHand.push(shuffledDeck.pop())
+      comScore = addScore(comHand)
     }
-    gameState = "resultState";
-    console.log(comHand);
-    return `Player currently has ${addScore(playerHand)}<br>${cardPrinter(
-      playerHand
-    )}`;
+    if(comScore>BLACKJACK_LIMIT){
+      for(i=0;i<numOfPlayer;i++){
+        if(playerList[i].profile.burstState==0&&playerList[i].profile.bjState ==0){
+          playerList[i].profile.chips += playerList[i].profile.bet
+        }
+      }
+      resetState()
+      return `Computer Burst! Players that survived wins their bet! Player 1, please enter bet to start new game`
+    }
+    gameState ='resultState'
   }
-  if (gameState == "resultState") {
-    var results = `${compareScore(
-      addScore(playerHand),
-      addScore(comHand)
-    )}<br>You now have ${playerChips} chips. Press submit to play again!`;
-    resetState();
-    return results;
+
+  if(gameState == 'playState2'){
+    while(turnNumber<numOfPlayer){
+    playerList[turnNumber].playerChoice = input.toString()
+    if(playerList[turnNumber].playerChoice == 'hit'){
+      playerList[turnNumber].hand.push(shuffledDeck.pop())
+      playerList[turnNumber].profile.score = addScore(playerList[turnNumber].hand)
+      if(playerList[turnNumber].profile.score>BLACKJACK_LIMIT){
+        playerList[turnNumber].profile.turnDone = 1
+        playerList[turnNumber].profile.burstState =1
+        playerList[turnNumber].profile.chips -= playerList[turnNumber].profile.bet
+        var burstMessage = `Player ${turnNumber+1} burst! Sorry! Press submit for the next player!`
+        turnNumber +=1
+        gameState = 'playState'
+        return burstMessage
+      }else{
+        var hitMessage = `Hi Player ${turnNumber+1}, you drew:<br>${cardPrinter(playerList[turnNumber].hand)}Please choose to hit or stand<br>Current Score: ${playerList[turnNumber].profile.score}`
+        return hitMessage
+      }}
+      else if(playerList[turnNumber].playerChoice == 'stand'){
+        playerList[turnNumber].profile.turnDone = 1
+        gameState = 'playState'
+        var standMessage = `Player ${turnNumber+1}'s turn done, press submit for next player.`
+        turnNumber +=1
+        return standMessage
+      }
+      else{
+        return `Please choose to hit or stand to continue. Current Score: ${playerList[turnNumber].profile.score}`
+      }
+    }
+    
+    
   }
-};
+  if(gameState == 'resultState'){
+    var resultMessage = ''
+    i = 0
+    while(i <numOfPlayer){
+      if(playerList[i].profile.burstState==0 && playerList[i].profile.bjState == 0){
+        winner = compareScore(playerList[i].profile.score,comScore)
+        if(winner == 'player'){
+        playerList[i].profile.chips += playerList[i].profile.bet
+        resultMessage += `Player ${i+1} wins Computer with score of ${playerList[i].profile.score} versus ${comScore}<br>Current Chips: ${playerList[i].profile.chips}<br><br>`
+        }
+        if(winner == 'com'){
+          playerList[i].profile.chips -= playerList[i].profile.bet
+          resultMessage += `Player ${i+1} lost to Computer with score of ${playerList[i].profile.score} versus ${comScore}<br>Current Chips: ${playerList[i].profile.chips}<br><br>`
+        }
+        else{
+          resultMessage += `Player ${i+1} draws with Computer with score of ${playerList[i].profile.score} versus ${comScore}<br>Current Chips: ${playerList[i].profile.chips}<br><br>`
+        }
+      }
+      i+=1
+    }
+    resetState()
+    return `${resultMessage}<br>Player 1 please enter bet to continue.`
+  }
+}
+
+
 
 //Function to reset game
 function resetState() {
-  playerHand = [];
+  for(i=0;i<numOfPlayer;i++){
+    playerList[i].hand= []
+    playerList[i].profile.score = 0
+    playerList[i].profile.turnDone = 0
+    playerList[i].profile.burstState = 0
+    playerList[i].profile.playerChoice = 'stand'
+  }
+  turnNumber =0
+  playerNumber = 0
   comHand = [];
-  playerScore = 0;
-  comScore = 0;
   gameState = "betState";
-  return `Press Submit to play again!`;
 }
 
 //Function to print cards drawn
@@ -164,45 +212,57 @@ function addScore(hand) {
 //Function to compare score
 function compareScore(player, com) {
   if (player > com) {
-    playerChips += playerBet;
-    return `Player Wins!🎊<br>`;
+    return `player`
   } else if (com > player) {
-    playerChips -= playerBet;
-    return `Computer Wins!🎊<br>`;
+    return `com`
   } else {
-    return `Draw!🃏`;
+    return `draw`;
   }
 }
 
 //Checker for BlackJack
-function blackJack(player, com) {
-  var blackJackMessage = "";
-  if (player == 21 || com == 21) {
-    if (player == 21 && com == 21) {
-      blackJackMessage += `Both BlackJack!🤩🤩 WOW!`;
-    } else if (com == 21) {
-      playerChips -= 2 * playerBet;
-      blackJackMessage += `Computer BlackJack!🤩`;
-    } else {
-      playerChips += 2 * playerBet;
-      blackJackMessage += `Player BlackJack!🤩`;
+function blackJack() {
+  var message = ''
+
+  //If computer has blackjack, game is reset and players that do not have blackjack minus their chips*2
+  if(comScore == BLACKJACK_LIMIT){
+    message += `Computer BlackJack!<br><br>`
+    for(i=0;i<numOfPlayer;i++){
+      if(playerList[i].profile.score !=BLACKJACK_LIMIT){
+        playerList[i].profile.chips -= (playerList[i].profile.bet*2)
+      }
+      if(playerList[i].profile.score == BLACKJACK_LIMIT){
+        
+        message += `Player ${i+1} BlackJack!<br><br>`
+      }
     }
+    resetState()
+    return `${message} Press submit to play again!`
   }
-  return `${blackJackMessage} You now have ${playerChips} left.`;
+  //Else game continues while players with blackjack gets chips and stop playing 
+  else{
+    gameState = 'playState'
+    for(i=0;i<numOfPlayer;i++){
+      if(playerList[i].profile.score==BLACKJACK_LIMIT){
+        message += `Player ${i+1} BlackJack!<br><br>`
+        playerList[i].profile.bjState = 1
+        playerList[i].profile.turnDone = 1 
+        playerList[i].profile.chips += (playerList[i].profile.bet*2)
+      }
+    }
+  } 
+  return message
 }
 
 //Initialize hands
-function initializeHand(deck) {
-  comHand = [];
-  playerHand = [];
-  for (i = 0; i < 2; i++) {
-    comHand[i] = [{ name: "", suit: "", rankCounter: 0, value: 0 }];
-    playerHand[i] = [{name: "", suit: "", rankCounter: 0, value: 0 }];
-    comHand[i] = deck.pop();
-    playerHand[i] = deck.pop();
+function initializeHand() {
+  for(i=0;i<numOfPlayer;i++){
+    playerList[i].hand.push(shuffledDeck.pop())
+    playerList[i].hand.push(shuffledDeck.pop())
   }
-
-  return comHand, playerHand;
+  for (i = 0; i < 2; i++) {
+    comHand[i] = shuffledDeck.pop();
+  }
 }
 
 //Get random number from range of max
