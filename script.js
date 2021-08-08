@@ -48,7 +48,7 @@ var main = function (input) {
     if (playerList[playerNumber].profile.bet > playerList[playerNumber].profile.chips) {
       return `You do not have that much chips! Current chips: ${playerList[playerNumber].profile.chips}`;
     }
-    var betMessage = `Hi Player ${playerNumber+1}! You chose to bet ${playerList[playerNumber].profile.bet} chips. Current chips left: ${playerList[playerNumber].profile.chips}`
+    var betMessage = `Hi Player ${playerNumber+1}! You chose to bet ${playerList[playerNumber].profile.bet} chips. Current chips left: ${playerList[playerNumber].profile.chips}<br>Next Player please enter bet`
     playerNumber+=1
     return betMessage;
   }
@@ -149,7 +149,7 @@ var main = function (input) {
           playerList[i].profile.chips -= playerList[i].profile.bet
           resultMessage += `Player ${i+1} lost to Computer with score of ${playerList[i].profile.score} versus ${comScore}<br>Current Chips: ${playerList[i].profile.chips}<br><br>`
         }
-        else{
+        if(winner == 'draw'){
           resultMessage += `Player ${i+1} draws with Computer with score of ${playerList[i].profile.score} versus ${comScore}<br>Current Chips: ${playerList[i].profile.chips}<br><br>`
         }
       }
