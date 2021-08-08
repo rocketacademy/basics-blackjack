@@ -1,8 +1,6 @@
-/**
- * ------------------------------------------------------------------------
- * Constants
- * ------------------------------------------------------------------------
- */
+///////////////
+// Constants //
+///////////////
 
 const HEARTS = "hearts";
 const DIAMONDS = "diamonds";
@@ -10,23 +8,22 @@ const CLUBS = "clubs";
 const SPADES = "spades";
 const INPUT_PLAYERS = "input players";
 const INPUT_NAMES = "input names";
+const INPUT_BETS = "input bets";
 const BLACKJACK = "blackjack";
+const COLOUR_1 = "#3700B3";
+const COLOUR_2 = "#018786";
+const COLOUR_3 = "#B00020";
 
-/**
- * ------------------------------------------------------------------------
- * Global Variables
- * ------------------------------------------------------------------------
- */
-
+//////////////////////
+// Global Variables //
+//////////////////////
 let gameMode = INPUT_PLAYERS;
 let numOfPlayers = 0;
 const playerBoard = [];
 
-/**
- * ------------------------------------------------------------------------
- * Helper Functions
- * ------------------------------------------------------------------------
- */
+//////////////////////
+// Helper Functions //
+//////////////////////
 
 /**
  * ------------------------------------------------------------------------
@@ -39,7 +36,6 @@ const playerBoard = [];
  * @return  {Array}       A deck grouped by suits and ordered from 2 to Ace.
  * ------------------------------------------------------------------------
  */
-
 function createDeck() {
   var cardDeck = [];
   var suits = [HEARTS, DIAMONDS, CLUBS, SPADES];
@@ -106,7 +102,6 @@ function createDeck() {
  * @return  {Number}            A random index.
  * ------------------------------------------------------------------------
  */
-
 function getRandomIndex(max) {
   return Math.floor(Math.random() * max);
 }
@@ -118,7 +113,6 @@ function getRandomIndex(max) {
  * @return  {Array}                 A shuffled deck.
  * ------------------------------------------------------------------------
  */
-
 function shuffleCards(cardDeck) {
   for (
     var currentIndex = 0;
@@ -140,14 +134,18 @@ function shuffleCards(cardDeck) {
  * @argument {String} id   The player's id.
  * ------------------------------------------------------------------------
  */
-
 class Player {
   constructor(id) {
     this.id = id;
     this._name = "";
     this.hand = [];
+    this.canSplit = false;
+    this.hasBlackjack = false;
+    this.hasBust = false;
+    this.hasWon = false;
+    this.hasDrew = false;
     this.points = 100;
-    this.bet = 0;
+    this._bet = 0;
   }
 
   /**
@@ -162,6 +160,28 @@ class Player {
 
   get name() {
     return this._name;
+  }
+
+  /**
+   * ------------------------------------------------------------------------
+   * Set the player's bet.
+   * @param {Number} bet
+   * ------------------------------------------------------------------------
+   */
+  set bet(bet) {
+    this._bet = bet;
+  }
+
+  calcPoints() {
+    if (this.hasBlackjack && this.hasWon) {
+      this.points += this._bet * 1.5;
+    } else if (this.hasDrew) {
+      this.points += 0;
+    } else if (this.hasWon) {
+      this.points += this._bet;
+    } else if (!this.hasWon) {
+      this.points -= this._bet;
+    }
   }
 
   /**
@@ -190,20 +210,61 @@ class Player {
 
   /**
    * ------------------------------------------------------------------------
+   * Check the player's initial hand for blackjack or splits.
+   * ------------------------------------------------------------------------
+   */
+  checkHand() {
+    if (this.handValue == 21 && this.hand.length == 2) {
+      this.hasBlackjack = true;
+    } else if (
+      this.hand[0].name == this.hand[1].name &&
+      this.hand.length == 2
+    ) {
+      this.canSplit = true;
+    }
+  }
+
+  /**
+   * ------------------------------------------------------------------------
+   * Check if the player has bust.
+   * ------------------------------------------------------------------------
+   */
+  checkBust() {
+    if (this.handValue > 21) {
+      this.hasBust = true;
+    }
+  }
+
+  /**
+   * ------------------------------------------------------------------------
    * Displays all cards in the player's hand.
    * @return {String} output
    * ------------------------------------------------------------------------
    */
-
   get showHand() {
-    let output = `${this.name} has the following cards:<br>`;
-    for (let card of this.hand) {
-      output += `${card.display}<br>`;
-    }
-    output += `Hand value: ${this.handValue}.`;
-    return output;
+    return `${this.name}<br>
+    Hand: ${this.hand.map((e) => e.display).join(" | ")}<br>
+    Value: ${this.handValue}.<br>`;
+  }
+
+  /**
+   * ------------------------------------------------------------------------
+   * Reset player's hand, bet and booleans for the next round.
+   * ------------------------------------------------------------------------
+   */
+  reset() {
+    this.hand = [];
+    this.canSplit = false;
+    this.hasBlackjack = false;
+    this.hasBust = false;
+    this.hasWon = false;
+    this.hasDrew = false;
+    this._bet = 0;
   }
 }
+/////////////////////////
+// End of Player Class //
+/////////////////////////
 
 function createPlayers(numOfPlayers) {
   for (let i = 1; i <= numOfPlayers; i += 1) {
@@ -220,21 +281,89 @@ function dealCards(deck) {
   }
 }
 
-function initialEvalHands() {
-  let output = `${dealer.showHand}<br><br>`;
+function initialChecks() {
   for (let player of playerBoard) {
-    if (player.handValue == 21 && dealer.handValue == 21) {
-      output += `${player.showHand}<br><br>Both ${player.name} and the Dealer got Blackjacks, it's a draw!`;
-    } else if (player.handValue == 21) {
-      output += `${player.showHand}<br><br>${player.name} got a Blackjack!`;
-    } else if (player.handValue > dealer.handValue) {
-      output += `${player.showHand}<br><br>${player.name} won the Dealer!`;
-    } else {
-      output += `${player.showHand}<br><br>${player.name} lost to the Dealer.`;
+    player.checkHand();
+  }
+  dealer.checkHand();
+}
+
+function hitStandSplit() {}
+
+function dealerHitStand(dealer) {
+  while (dealer.handValue < 17) {
+    dealer.hit(cardDeck.pop());
+    dealer.checkBust();
+  }
+}
+
+function evalDealerHand() {
+  if (dealer.hasBlackjack) {
+    return "Dealer got a Blackjack. All players lose except players with a Blackjack.";
+  } else if (dealer.hasBust) {
+    return "Dealer has bust. All players still in play wins.";
+  } else {
+    return "All players with a hand better than the Dealer wins.";
+  }
+}
+
+function evalHands() {
+  let output = `${dealer.showHand}<br>${evalDealerHand()}<br><br>`;
+  for (let player of playerBoard) {
+    output += `${player.showHand}<br>`;
+
+    // Player and dealer have Blackjacks
+    if (player.hasBlackjack && dealer.hasBlackjack) {
+      player.hasDrew = true;
+      output += `Both ${player.name} and the Dealer got Blackjacks, it's a draw!`;
+    }
+    // Player has Blackjacks but not dealer
+    else if (player.hasBlackjack) {
+      player.hasWon = true;
+      output += `${player.name} got a Blackjack!`;
+    }
+    // Player wins the dealer
+    else if (
+      (player.handValue > dealer.handValue && !player.hasBust) ||
+      (!player.hasBust && dealer.hasBust)
+    ) {
+      player.hasWon = true;
+      output += `${player.name} won the Dealer!`;
+    }
+    // Player loses to the dealer
+    else if (
+      (dealer.hasBlackjack && !player.hasBlackjack) ||
+      (!dealer.hasBust && dealer.handValue > player.handValue) ||
+      (!dealer.hasBust && player.hasBust)
+    ) {
+      output += `${player.name} lost to the Dealer.`;
+    }
+    // Player draw with the the dealer
+    else {
+      player.hasDrew = true;
+      output += `${player.name} drew with the Dealer.`;
     }
     output += `<br><br>`;
   }
   return output;
+}
+
+function computeBets() {}
+
+function resetGame() {
+  // Reset all players' hands, bets and booleans
+  for (let player of playerBoard) {
+    player.reset();
+  }
+
+  // Reset dealer's hand and booleans
+  dealer.reset();
+
+  // Generate new deck
+  cardDeck = shuffleCards(createDeck());
+
+  // Set game mode to input bets
+  gameMode = INPUT_BETS;
 }
 
 /**
@@ -245,7 +374,7 @@ function initialEvalHands() {
 
 const dealer = new Player("dealer");
 dealer.name = "Dealer";
-const cardDeck = shuffleCards(createDeck());
+let cardDeck = shuffleCards(createDeck());
 
 /**
  * ------------------------------------------------------------------------
@@ -270,8 +399,7 @@ function main(input) {
   }
 
   if (gameMode == INPUT_NAMES) {
-    // For testing
-    let defaultNames = [
+    const defaultNames = [
       "Alice",
       "Bob",
       "Chen Xi",
@@ -291,8 +419,12 @@ function main(input) {
   }
 
   dealCards(cardDeck);
+  initialChecks();
+  dealerHitStand(dealer);
 
-  return initialEvalHands();
+  let evaluation = evalHands();
+  resetGame();
+  return evaluation;
 }
 
 /* Pseudocode
