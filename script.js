@@ -26,7 +26,7 @@ const main = (input) => {
       )}
       \<br\>\ Dealer:\<br\>\ ${display(dealerHand)}`;
     }
-    if (totalValue(playerHand) === 21) {
+    if (totalValue(playerHand) === 21 && totalValue(dealerHand) !== 21) {
       return `BlackJack! You won.\<br\>\Current total value: ${totalValue(
         playerHand
       )} vs ${totalValue(dealerHand)}\<br\>\Player:\<br\>\ ${display(
@@ -34,7 +34,7 @@ const main = (input) => {
       )}
       \<br\>\ Dealer:\<br\>\ ${display(dealerHand)}`;
     }
-    if (totalValue(dealerHand) === 21) {
+    if (totalValue(dealerHand) === 21 && totalValue(playerHand) !== 21) {
       return `BlackJack! Dealer won.\<br\>\Current total value: ${totalValue(
         playerHand
       )} vs ${totalValue(dealerHand)}\<br\>\Player:\<br\>\ ${display(
