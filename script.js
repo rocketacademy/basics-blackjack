@@ -64,6 +64,11 @@ var shuffledDeck = shuffleCards(cardDeck);
 var dealerHand = [];
 var playerHand = [];
 
+//keeps track of game mode - starts with initial
+var GAME_MODE_INITIAL = `initial`;
+var GAME_MODE_HIT_OR_STAND = `hit or stand`;
+var gameMode = GAME_MODE_INITIAL;
+
 //deals initial hand
 var dealInitialHand = function(){
   //dealer draws 2 cards from shuffled deck
@@ -80,28 +85,58 @@ var dealInitialHand = function(){
   Player has ${playerCard1.name} and ${playerCard2.name}.<br>`
 };
 
-//generates game result from dealer and player scores
-var generateGameResult = function(){
+// //generates game result from dealer and player scores
+// var generateGameResult = function(){
   
-  //calculate scores of dealer and player 
-  var dealerScore = dealerHand[0].value + dealerHand[1].value
-  var playerScore = playerHand[0].value + playerHand[1].value
+//   //calculate scores of dealer and player 
+//   var dealerScore = dealerHand[0].value + dealerHand[1].value
+//   var playerScore = playerHand[0].value + playerHand[1].value
 
-  //compares scores of dealer and player to determine winner
-  if(dealerScore >= playerScore){
-    return `Dealer wins!`
-  }else if(dealerScore < playerScore){
-    return `Player wins!`
-  } else {
-    return `It's a tie.`
+//   //compares scores of dealer and player to determine winner
+//   if(dealerScore >= playerScore){
+//     return `Dealer wins!`
+//   }else if(dealerScore < playerScore){
+//     return `Player wins!`
+//   } else {
+//     return `It's a tie.`
+//   };
+// };
+
+//calculates dealer score
+var calculateDealerScore = function(){
+  var dealerScore = 0;
+  var dealerIndex = 0;
+  while (dealerIndex < dealerHand.length){
+    dealerScore += dealerHand[dealerIndex].value;
+    dealerIndex += 1;
   };
+return `Dealer score: ${dealerScore}`;
+};
+
+//calculates player score
+var calculatePlayerScore = function(){
+  var playerScore = 0;
+  var playerIndex = 0;
+  while (playerIndex < playerHand.length){
+    playerScore += playerHand[playerIndex].value;
+    playerIndex += 1;
+  };
+return `Player score: ${playerScore}`;
 };
 
 var main = function (input) {
+  var myOutputValue = ``
 
-  var initialHand = dealInitialHand();
-  var gameResult = generateGameResult();
-  var myOutputValue = initialHand + gameResult
+  if(gameMode == GAME_MODE_INITIAL){
+    var initialHand = dealInitialHand();
+    var dealerScore = calculateDealerScore();
+    var playerScore = calculatePlayerScore();
+    myOutputValue = `${initialHand}<br>
+    ${dealerScore}<br>
+    ${playerScore}`
+  };
+  
+  
 
   return myOutputValue;
 };
