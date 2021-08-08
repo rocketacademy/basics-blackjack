@@ -1,9 +1,16 @@
+
+  var playerName = '';
+  var playerPoints = 100;
+  var currentBet = '';
+
 var makeDeck = function () {
   // create the empty deck at the beginning
   var deck = [];
   var suits = ['hearts', 'diamonds', 'clubs', 'spades'];
   var suitIndex = 0;
   var playerName = '';
+  var playerPoints = 100;
+  var currentBet = '';
 
   while (suitIndex < suits.length) {
     // make a variable of the current suit
@@ -118,17 +125,29 @@ var getHandScore = function(hand){
 //user clicks submit to deal cards
 
 var main = function (input) {
+
   if (gameMode == 'start'){
     gameMode = 'getPlayerName';
     return `Input your name.`;
   }
 
-
   if (gameMode == 'getPlayerName'){
     playerName = input;
-    gameMode = 'dealFirstCard';
-    return `Hello ${playerName}, welcome to the game! Press submit to deal your first card.`;
+    gameMode = 'bet';
+    return `Hello ${playerName}, welcome to the game! You have ${playerPoints} now. Please input how much you want to bet`;
   }
+
+  if (gameMode == 'bet'){
+
+    if (input < playerPoints && input >= 1){
+      currentBet = input; 
+      gameMode = 'dealFirstCard';
+      return `${playerName}, you bet ${currentBet}. Press submit to deal your cards.`
+    }  
+    
+    return `You only have ${playerPoints}. Please bet a smaller amount.` 
+  }
+
 
   if (gameMode == 'dealFirstCard' && playerHand.length == 0){
     dealCard(playerHand);
@@ -161,18 +180,22 @@ var main = function (input) {
   if (gameMode == 'checkBlackJack'){
     if (computerHand[1].name == 'ace' && (computerHand[0].name == '10'||computerHand[0].name == 'jack'||computerHand[0].name == 'queen'||computerHand[0].name == 'king')){
       gameMode = 'end';
+      playerScore = Number(playerScore) - Number(currentBet);
       return `Computer Wins!`
     }
     else if (computerHand[0].name == 'ace' && (computerHand[1].name == '10'||computerHand[1].name == 'jack'||computerHand[1].name == 'queen'||computerHand[1].name == 'king')){
       gameMode = 'end';
+      playerScore = Number(playerScore) - Number(currentBet);
       return `Computer Wins!`
     }
     else if (playerHand[1].name == 'ace' && (playerHand[0].name == '10'||playerHand[0].name == 'jack'||playerHand[0].name == 'queen'||playerHand[0].name == 'king')){
       gameMode = 'end';
+      playerScore = Number(playerScore) + Number((2*currentBet));
       return `Player Wins!`
     }
     else if (playerHand[0].name == 'ace' && (playerHand[1].name == '10'||playerHand[1].name == 'jack'||playerHand[1].name == 'queen'||playerHand[1].name == 'king')){
       gameMode = 'end';
+      playerScore = Number(playerScore) + Number((2*currentBet));
       return `Player Wins!`
     }
     else if (gameMode = 'playerCalculate' && getHandScore(playerHand) < 16){
@@ -218,6 +241,7 @@ var main = function (input) {
         }
         else if (getHandScore(computerHand) > 21) {
           gameMode = 'restart'; 
+          playerPoints = Number(playerPoints)- Number(currentBet);
           return `${playerName} wins! Computer got more than 21.`
         }
         else if (getHandScore(computerHand) < 22 && getHandScore(computerHand) >= 16){
@@ -229,21 +253,27 @@ var main = function (input) {
     if (gameMode == 'determineWinner'){
       if (getHandScore(playerHand) > getHandScore(computerHand) && (getHandScore(playerHand) <21 && getHandScore(computerHand)) <21 ){
         gameMode = 'restart';
-        return `${playerName} wins! Press submit to restart.`
+        playerPoints = Number(playerPoints) + Number(currentBet);
+        console.log(currentBet);
+        return `${playerName} wins! Press submit to restart. You have ${playerPoints} points left.`
       }
       else if (getHandScore(playerHand) == getHandScore(computerHand)){
         gameMode = 'restart';
-        return `${playerName} and computer draw! Press submit to restart.`
+        return `${playerName} and computer draw! Press submit to restart. You have ${playerPoints} points left.`
       }
       
       gameMode = 'restart';
-      return `Computer wins!. Press submit to restart.`
+      console.log(currentBet);
+      console.log(playerPoints);
+      playerPoints = Number(playerPoints)- Number(currentBet);
+      return `Computer wins!. Press submit to restart. You have ${playerPoints} points left.`
     }
     
     if (gameMode == 'restart'){
       playerHand = []; 
       computerHand = []; 
-      gameMode = 'dealFirstCard';
+      gameMode = 'bet';
+      currentBet =  '';
       return `Game will restart now`;
     }
 
