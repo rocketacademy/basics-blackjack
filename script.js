@@ -3,6 +3,8 @@ var makeDeck = function () {
   var deck = [];
   var suits = ['hearts', 'diamonds', 'clubs', 'spades'];
   var suitIndex = 0;
+  var playerName = '';
+
   while (suitIndex < suits.length) {
     // make a variable of the current suit
     var currentSuit = suits[suitIndex];
@@ -70,25 +72,27 @@ var deck = shuffleCards(makeDeck());
 var playerHand = []; 
 var computerHand = []; 
 
-var gameMode = 'dealFirstCard';
+var gameMode = 'start';
 
 //dealcard
 var dealCard = function (hand){
   hand.push(deck.pop());
 }
 
-//calculate score in hand, assume ace = 11
+//calculate score
 var getHandScore = function(hand){
     var sum = 0;
     var i = 0;
+    var numberOfAces = 0;
     while(i <hand.length){
       var currentCard = hand[i];
-      //if player has an Ace
-      if (currentCard.rank == 1){
-        sum += 11;
-        i +=1;
-      }
 
+      //if player has an Ace 
+      if (currentCard.rank == 1){
+              sum += 11;
+              i +=1;
+              numberOfAces += 1; 
+      }
       //if player has 2-10
       else if (currentCard.rank >=2 && currentCard.rank <=10){
         sum += currentCard.rank;
@@ -99,7 +103,11 @@ var getHandScore = function(hand){
         sum += 10; 
         i +=1;
       }
+      if (numberOfAces >= 1 && sum >21){
+        sum -= 10; 
+      }
     }
+
     return sum;
 };
 
@@ -110,6 +118,17 @@ var getHandScore = function(hand){
 //user clicks submit to deal cards
 
 var main = function (input) {
+  if (gameMode == 'start'){
+    gameMode = 'getPlayerName';
+    return `Input your name.`;
+  }
+
+
+  if (gameMode == 'getPlayerName'){
+    playerName = input;
+    gameMode = 'dealFirstCard';
+    return `Hello ${playerName}, welcome to the game! Press submit to deal your first card.`;
+  }
 
   if (gameMode == 'dealFirstCard' && playerHand.length == 0){
     dealCard(playerHand);
@@ -119,7 +138,7 @@ var main = function (input) {
     console.log(computerHand);
   
     gameMode = 'dealSecondCard';
-    return `Player drew  ${playerHand[0].name} ${playerHand[0].suit} <br><br>Computer drew  ${computerHand[0].name} ${computerHand[0].suit} <br><br> Press Submit to draw the 2nd card.` ;
+    return `${playerName} drew  ${playerHand[0].name} ${playerHand[0].suit} <br><br>Computer drew  ${computerHand[0].name} ${computerHand[0].suit} <br><br> Press Submit to draw the 2nd card.` ;
   }
 
   if (gameMode == 'dealSecondCard' && playerHand.length == 1){
@@ -131,7 +150,7 @@ var main = function (input) {
     console.log(computerHand);
     console.log(getHandScore(playerHand));
     
-    return `Player drew <b>${playerHand[1].name} ${playerHand[1].suit}</b> and <b>${playerHand[0].name} ${playerHand[0].suit} </b> Player score is ${getHandScore(playerHand)}. <br><br>Computer drew  <b>${computerHand[1].name} ${computerHand[1].suit} </b>and <b>${computerHand[0].name} ${computerHand[0].suit}</b> Computer score is ${getHandScore(computerHand)}.` ;
+    return `${playerName} drew <b>${playerHand[1].name} ${playerHand[1].suit}</b> and <b>${playerHand[0].name} ${playerHand[0].suit} </b> ${playerName} score is ${getHandScore(playerHand)}. <br><br>Computer drew  <b>${computerHand[1].name} ${computerHand[1].suit} </b>and <b>${computerHand[0].name} ${computerHand[0].suit}</b> Computer score is ${getHandScore(computerHand)}.` ;
     
   }
 
@@ -156,9 +175,13 @@ var main = function (input) {
       gameMode = 'end';
       return `Player Wins!`
     }
-    gameMode = 'playerCalculate';
-    return `No one got blackjack. Game continue. Press 'hit' to draw 1 more card, or 'stand' to stop your turn. <br><br>Player drew <b>${playerHand[1].name} ${playerHand[1].suit}</b> and <b>${playerHand[0].name} ${playerHand[0].suit} </b><br><br>Computer drew  <b>${computerHand[1].name} ${computerHand[1].suit} </b>and <b>${computerHand[0].name} ${computerHand[0].suit}</b><br><br>.`
+    else if (gameMode = 'playerCalculate' && getHandScore(playerHand) < 16){
+      gameMode = 'playerCalculate';
+    return `No one got blackjack. Game continue. ${playerName} has less than 16, you have to hit it. <br><br>${playerName} drew <b>${playerHand[1].name} ${playerHand[1].suit}</b> and <b>${playerHand[0].name} ${playerHand[0].suit} </b><br><br>Computer drew  <b>${computerHand[1].name} ${computerHand[1].suit} </b>and <b>${computerHand[0].name} ${computerHand[0].suit}</b><br><br>.`
   }
+  gameMode = 'playerCalculate';
+  return `No one got blackjack. Game continue.  <br><br>${playerName} drew <b>${playerHand[1].name} ${playerHand[1].suit}</b> and <b>${playerHand[0].name} ${playerHand[0].suit} </b><br><br>Computer drew  <b>${computerHand[1].name} ${computerHand[1].suit} </b>and <b>${computerHand[0].name} ${computerHand[0].suit}</b><br><br>.`
+}
 
   //user decides to hit or stand (using submit)
     if (gameMode == 'playerCalculate'){
@@ -166,9 +189,9 @@ var main = function (input) {
             dealCard(playerHand);
                 if (getHandScore(playerHand) > 21){
                     gameMode = 'restart';
-                    return `Player total score is ${getHandScore(playerHand)}. Player loses, computer wins!`;
+                    return `${playerName} total score is ${getHandScore(playerHand)}. Player loses, computer wins!`;
                 }
-            return `Player total score is ${getHandScore(playerHand)}. <br><br>Computer drew  <b>${computerHand[1].name} ${computerHand[1].suit} </b>and <b>${computerHand[0].name} ${computerHand[0].suit}</b>. Computer score is ${getHandScore(computerHand)}. Press hit or stand to continue the game`;
+            return `${playerName} total score is ${getHandScore(playerHand)}. <br><br>Computer drew  <b>${computerHand[1].name} ${computerHand[1].suit} </b>and <b>${computerHand[0].name} ${computerHand[0].suit}</b>. Computer score is ${getHandScore(computerHand)}. Press hit or stand to continue the game`;
           } 
           else if (input == 'stand'){
             gameMode = 'computerTurn';
@@ -181,33 +204,38 @@ var main = function (input) {
     if (gameMode == 'computerTurn'){
         if (getHandScore(playerHand) > 21){
           gameMode = 'restart';
-          return `Player has more than 21! Computer Wins!`;
+          return `${playerName} has more than 21! Computer Wins!`;
         }
         gameMode = 'computerCalculateAutomatically';
-        return `Player score is ${getHandScore(playerHand)} and computer score is ${getHandScore(computerHand)} Computer will decide action now.`
+        return `${playerName} score is ${getHandScore(playerHand)} and computer score is ${getHandScore(computerHand)} Computer will decide action now.`
     }
 
   //computer decide to hit or stand automatically
     if (gameMode == 'computerCalculateAutomatically'){
         if (getHandScore(computerHand) < 16){
           dealCard(computerHand);
-          return `Computer drew another card. Player score is ${getHandScore(playerHand)} and computerScore is ${getHandScore(computerHand)}`;
+          return `Computer drew another card. ${playerName} score is ${getHandScore(playerHand)} and computerScore is ${getHandScore(computerHand)}`;
         }
         else if (getHandScore(computerHand) > 21) {
           gameMode = 'restart'; 
-          return 'Player wins! Computer got more than 21.'
+          return `${playerName} wins! Computer got more than 21.`
         }
-        else if (getHandScore(computerHand) < 21 && getHandScore(computerHand) > 16){
+        else if (getHandScore(computerHand) < 22 && getHandScore(computerHand) >= 16){
           gameMode = 'determineWinner'; 
-          return `Player score is ${getHandScore(playerHand)} and computer score is ${getHandScore(computerHand)}`;
+          return `${playerName} score is ${getHandScore(playerHand)} and computer score is ${getHandScore(computerHand)}`;
         }
     }
     
     if (gameMode == 'determineWinner'){
       if (getHandScore(playerHand) > getHandScore(computerHand) && (getHandScore(playerHand) <21 && getHandScore(computerHand)) <21 ){
         gameMode = 'restart';
-        return `Player wins! Press submit to restart.`
+        return `${playerName} wins! Press submit to restart.`
       }
+      else if (getHandScore(playerHand) == getHandScore(computerHand)){
+        gameMode = 'restart';
+        return `${playerName} and computer draw! Press submit to restart.`
+      }
+      
       gameMode = 'restart';
       return `Computer wins!. Press submit to restart.`
     }
