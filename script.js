@@ -1,3 +1,17 @@
+var GM_DEAL = "deal";
+var GM_PLAY = "play";
+var GM_REVEAL = "reveal";
+var NEW_GAME_MSG = "Click 'Submit' to start a new game!";
+var HIT_STAND = "Would you like to hit or stand? (hit/stand)";
+
+var gameMode = GM_DEAL;
+var currentDeck = [];
+var playerHand = [];
+var comHand = [];
+var showCards = false;
+var comDone = false;
+var sumPlayer = 0;
+
 var createNewDeck = function () {
   var cardDeck = [];
   var suits = ["hearts", "diamonds", "clubs", "spades"];
@@ -30,7 +44,9 @@ var createNewDeck = function () {
       }
 
       if (rankCounter == 11 || rankCounter == 12 || rankCounter == 13) {
-        cardRank = 10;
+        var cardRank = 10;
+      } else if (rankCounter == 1) {
+        cardRank = 11;
       } else {
         cardRank = rankCounter;
       }
@@ -114,18 +130,17 @@ var getSum = function (array) {
 };
 
 var playComTurn = function () {
-  var msg = "Computer stands.";
-  if (getSum(comHand) <= 17) {
-    comHand.push(currentDeck.shift());
-    msg = "Computer has drawn a card.";
-    if (getSum(comHand) > 21) {
-      showCards = true;
-      msg += `<br><br> ${printHands()} <br><br> Computer busted! Click 'Submit' to start a new game!`;
-      gameMode = GM_DEAL;
-      return msg;
+  showCards = true;
+  var msg = `Computer stands.`;
+  if (getSum(comHand) < 17) {
+    var i = 0;
+    while (getSum(comHand) < 17) {
+      comHand.push(currentDeck.shift());
+      i += 1;
     }
+    msg = `Computer drew ${i} card(s).`;
   }
-  console.log(`Computer sum: ${getSum(comHand)}`);
+  msg += `<br><br> ${printHands()} <br><br>`;
   return msg;
 };
 
@@ -140,57 +155,89 @@ var createNewGame = function () {
   comHand = currentDeck.splice(0, 2);
 };
 
-var GM_DEAL = "deal";
-var GM_PLAY = "play";
-var GM_REVEAL = "reveal";
+var checkAces = function (array) {
+  var i = 0;
+  var count = 0;
+  while (i < array.length) {
+    var currentCard = array[i];
+    if (currentCard.name == "A") {
+      count += 1;
+    }
+    i += 1;
+  }
+  return count;
+};
 
-var gameMode = GM_DEAL;
-var currentDeck = [];
-var playerHand = [];
-var comHand = [];
-var showCards = false;
+var changeAces = function (sum, numAces) {
+  var newSum = sum;
+  var newAces = numAces;
+  while (newSum > 21 && newAces > 0) {
+    newSum -= 10;
+    newAces -= 1;
+  }
+  return newSum;
+};
 
 var main = function (input) {
   if (gameMode == GM_DEAL) {
     createNewGame();
-    myOutputValue = `Cards dealt. <br><br> ${printHands()} <br><br> Would you like to hit or stand? (hit/stand)`;
-    gameMode = GM_PLAY;
+    myOutputValue = "Cards dealt.";
+    console.log(`Computer sum: ${getSum(comHand)}`);
+    // check for blackjacks
+    if (getSum(playerHand) == 21 || getSum(comHand) == 21) {
+      showCards = true;
+      myOutputValue += `<br><br> ${printHands()} <br><br> `;
+      if (getSum(playerHand) == getSum(comHand)) {
+        myOutputValue += "Both you and computer blackjack! It's a tie! ";
+      } else if (getSum(playerHand) == 21) {
+        myOutputValue += "Blackjack! ";
+      } else if (getSum(comHand) == 21) {
+        myOutputValue += "Computer blackjack! ";
+      }
+      myOutputValue += NEW_GAME_MSG;
+      return myOutputValue;
+    } else {
+      myOutputValue += `<br><br> ${printHands()} <br><br> ${HIT_STAND}`;
+      gameMode = GM_PLAY;
+    }
   } else if (gameMode == GM_PLAY) {
     if (input != "hit" && input != "stand") {
-      myOutputValue = `⚠️ Invalid input! Please input 'hit' or 'stand' only. ⚠️`;
+      myOutputValue = `⚠️ Invalid input! Please input 'hit' or 'stand' only. ⚠️ <br><br> ${printHands()} <br><br> ${HIT_STAND}`;
     } else if (input == "hit") {
       playerHand.push(currentDeck.shift());
-      myOutputValue = "You have drawn a card. ";
-      if (getSum(playerHand) > 21) {
+      myOutputValue = `You drew a card. `;
+      // variable ace value
+      sumPlayer = changeAces(getSum(playerHand), checkAces(playerHand));
+      // check for player bust
+      if (sumPlayer > 21) {
         showCards = true;
-        myOutputValue += `<br><br> ${printHands()} <br><br> You busted! Click 'Submit' to start a new game!`;
+        myOutputValue += `<br><br> ${printHands()} <br><br> You busted! ${NEW_GAME_MSG}`;
         gameMode = GM_DEAL;
-        return myOutputValue;
-      }
-      myOutputValue += playComTurn();
-      if (showCards == true) {
-        return myOutputValue;
+      } else {
+        myOutputValue += `<br><br> ${printHands()} <br><br> ${HIT_STAND}`;
       }
     } else if (input == "stand") {
       myOutputValue = "You stand. ";
-      // make auto stand
-      var comTurn = playComTurn();
-      myOutputValue += comTurn;
-      if (showCards == true) {
-        resetGame();
-        return myOutputValue;
-      } else if (comTurn == "Computer stands.") {
-        myOutputValue += `<br><br> ${printHands()} <br><br> Click 'Submit' to reveal the cards!`;
-        gameMode = GM_REVEAL;
+      myOutputValue += playComTurn();
+      // variable ace value
+      var sumCom = changeAces(getSum(comHand), checkAces(comHand));
+      // check for computer bust
+      if (sumCom > 21) {
+        myOutputValue += `Computer busted! ${NEW_GAME_MSG}`;
+        gameMode = GM_DEAL;
         return myOutputValue;
       }
+      // check who wins
+      if (sumPlayer == sumCom) {
+        myOutputValue += "It's a draw! ";
+      } else if (sumPlayer > sumCom) {
+        myOutputValue += "Congratulations you win! ";
+      } else {
+        myOutputValue += "Meh you lose! ";
+      }
+      myOutputValue += NEW_GAME_MSG;
+      gameMode = GM_DEAL;
     }
-    myOutputValue += `<br><br> ${printHands()} <br><br> Would you like to hit or stand? (hit/stand)`;
-  } else if (gameMode == GM_REVEAL) {
-    // calculate points
-    showCards = true;
-    myOutputValue = `${printHands()} <br><br> The end! <br> Click 'Submit' to start a new game!`;
-    gameMode = GM_DEAL;
   }
   return myOutputValue;
 };
