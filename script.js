@@ -67,6 +67,7 @@ var playerHand = [];
 //keeps track of game mode - starts with initial
 var GAME_MODE_INITIAL = `initial`;
 var GAME_MODE_HIT_OR_STAND = `hit or stand`;
+var GAME_MODE_END = `end turn`;
 var gameMode = GAME_MODE_INITIAL;
 
 //deals initial hand
@@ -102,41 +103,94 @@ var dealInitialHand = function(){
 //   };
 // };
 
+//keeps track of dealer and player scores
+var dealerScore = 0;
+var playerScore = 0;
+
 //calculates dealer score
 var calculateDealerScore = function(){
-  var dealerScore = 0;
+  dealerScore = 0;
   var dealerIndex = 0;
   while (dealerIndex < dealerHand.length){
     dealerScore += dealerHand[dealerIndex].value;
     dealerIndex += 1;
   };
-return `Dealer score: ${dealerScore}`;
+return dealerScore;
 };
 
 //calculates player score
 var calculatePlayerScore = function(){
-  var playerScore = 0;
+  playerScore = 0;
   var playerIndex = 0;
   while (playerIndex < playerHand.length){
     playerScore += playerHand[playerIndex].value;
     playerIndex += 1;
   };
-return `Player score: ${playerScore}`;
+return playerScore;
 };
 
-var main = function (input) {
-  var myOutputValue = ``
+////compares scores of dealer and player to determine winner
+var generateGameResult = function(playerScore,dealerScore){
+  if(dealerScore >= playerScore ||
+    (playerScore >= 21 && dealerScore < 21)){
+        return `Dealer wins!`
+      }else if(dealerScore < playerScore ||
+        (dealerScore >=21 && playerScore < 21)){
+        return `Player wins!`
+      } else if (dealerScore == playerScore ||
+        (dealerScore >= 21 && playerScore >= 21)){
+        return `It's a tie.`
+      };
+}; 
 
+//if player chooses to hit, deals another card to player
+//if player chooses to stand, ends turn
+var playerHitOrStand = function(playerChoice){
+  if(playerChoice == `hit`){
+    var playerHitCard = shuffledDeck.pop();
+    playerHand.push(playerHitCard);
+    return `Player chose to ${playerChoice}. Player drew ${playerHitCard.name}.`
+  }else if (playerChoice == `stand`){
+    gameMode = GAME_MODE_END;
+    return `Player chose to ${playerChoice}. End turn.`;
+  }else {
+    return `You can only choose to hit or stand.`;
+  };
+};
+
+//---MAIN FUNCTION----
+var main = function (input) {
+  var myOutputValue = ``;
+  
   if(gameMode == GAME_MODE_INITIAL){
     var initialHand = dealInitialHand();
-    var dealerScore = calculateDealerScore();
-    var playerScore = calculatePlayerScore();
+    dealerScore = calculateDealerScore();
+    playerScore = calculatePlayerScore();
+    gameMode = GAME_MODE_HIT_OR_STAND;
     myOutputValue = `${initialHand}<br>
-    ${dealerScore}<br>
-    ${playerScore}`
+    Dealer score: ${dealerScore}<br>
+    Player score: ${playerScore}`;
+  }else if (gameMode == GAME_MODE_HIT_OR_STAND){
+    var hitOrStand = playerHitOrStand(input);
+    dealerScore = calculateDealerScore();
+    playerScore = calculatePlayerScore();
+    myOutputValue = `${hitOrStand}<br>
+    Dealer score: ${dealerScore}<br>
+    Player score: ${playerScore}`;
+    if(playerScore >= 21){
+      gameMode = GAME_MODE_END;
+      myOutputValue = `Player busted!`;
+    }
+  }else if (gameMode == GAME_MODE_END){
+    var gameResult = generateGameResult(playerScore,dealerScore)
+    myOutputValue = `${gameResult}<br>
+    Dealer score: ${dealerScore}<br>
+    Player score: ${playerScore}`
+    gameMode = GAME_MODE_INITIAL;
+    shuffledDeck = playerHand.concat(dealerHand,shuffledDeck);
+    playerHand = [];
+    dealerHand = [];
   };
-  
-  
 
   return myOutputValue;
 };
