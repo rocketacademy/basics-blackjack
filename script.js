@@ -19,9 +19,8 @@ let dealerValueArray;
 let playerHandText = ``;
 let dealerHandText = ``;
 
-
 /**
- * 
+ *
  * @param {*} userInput user input in the field
  * @returns output result which differs at different gameStates
  */
@@ -100,7 +99,7 @@ const blackJack = function (userInput) {
   // Player's turn to play
   if (gameState == `playerhitOrStand`) {
     // Check if player's lowest possible value has already exceeded 21. if so, return as player loss and score a point for dealer
-    if(playerValueArray[0] > 21) {
+    if (playerValueArray[0] > 21) {
       // player loses
       dealerScore += 1;
       resetGame();
@@ -125,7 +124,7 @@ const blackJack = function (userInput) {
         playerHand.push(deck.pop());
         playerHandText = revealedHandText(playerHand);
         playerValueArray = handValues(playerHand);
-  
+
         return `<i>You have drawn a card</i><br><br>
         It is now ${playerName}'s turn.<br>
         Hit or Stand? [type 'hit' or 'stand' and submit]<br><br>
@@ -148,7 +147,7 @@ const blackJack = function (userInput) {
   // Dealer's turn to play
   if (gameState == `dealerHitOrStand`) {
     // Check if dealer's lowest possible value has already exceeded 21. if so, return as player win and score a point for player
-    if(dealerValueArray[0] > 21) {
+    if (dealerValueArray[0] > 21) {
       // player wins
       playerScore += 1;
       resetGame();
@@ -232,7 +231,7 @@ const blackJack = function (userInput) {
       ${dealerName}'s total score: ${dealerScore}<br>
       `;
     }
-    if (bestValue(playerValueArray) = bestValue(dealerValueArray)) {
+    if (bestValue(playerValueArray) == bestValue(dealerValueArray)) {
       // if player's best value = dealer's best value, game is tied
       resetGame();
       gameState = `shuffle`;
@@ -243,7 +242,6 @@ const blackJack = function (userInput) {
       `;
     }
   }
-
 };
 
 /**
