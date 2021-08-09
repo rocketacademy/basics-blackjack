@@ -13,9 +13,10 @@ const BLACKJACK = "blackjack";
 const HIT = "hit";
 const STAND = "stand";
 const SPLIT = "split";
-const COLOUR_1 = "#3700B3";
-const COLOUR_2 = "#018786";
-const COLOUR_3 = "#B00020";
+const COLOUR_BLUE = "#013D87";
+const COLOUR_GREEN = "#018786";
+const COLOUR_RED = "#B00020";
+const COLOUR_YELLOW = "#F9D342";
 const defaultNames = [
   "Alice",
   "Bob",
@@ -32,6 +33,7 @@ const defaultNames = [
 let gameMode = INPUT_PLAYERS;
 let numOfPlayers = 0;
 const playerBoard = [];
+let dealerFaceUpCard;
 
 //////////////////////////////////////////////////////////////
 ////////////////////// Helper Functions //////////////////////
@@ -159,7 +161,6 @@ class Player {
     this._name = "";
     this.hand = [];
     this.canSplit = false;
-    this._stand = false;
     this.hasBlackjack = false;
     this.hasBust = false;
     this.hasWon = false;
@@ -191,18 +192,18 @@ class Player {
    */
 
   set bet(bet) {
-    this._bet = bet;
+    this._bet = Number(bet);
   }
 
   calcPoints() {
     if (this.hasBlackjack && this.hasWon) {
-      this.points += this._bet * 1.5;
+      this.points += Number(this._bet) * 1.5;
     } else if (this.hasDrew) {
       this.points += 0;
     } else if (this.hasWon) {
-      this.points += this._bet;
+      this.points += Number(this._bet);
     } else if (!this.hasWon) {
-      this.points -= this._bet;
+      this.points -= Number(this._bet);
     }
   }
 
@@ -215,16 +216,6 @@ class Player {
 
   hit(card) {
     this.hand.push(card);
-  }
-
-  /**
-   * ------------------------------------------------------------------------
-   * Set the player's stand status to true.
-   * ------------------------------------------------------------------------
-   */
-
-  set stand() {
-    this._stand = true;
   }
 
   /**
@@ -269,6 +260,7 @@ class Player {
   checkBust() {
     if (this.handValue > 21 && this.hand.some(({ name }) => name === "A")) {
       this.hand.find(({ name }) => name === "A").value = 1;
+      // TODO: sort cards by descending order so that if there is more than 1 Ace, the second ace will also be converted to one if needed.
     }
     if (this.handValue > 21) {
       this.hasBust = true;
@@ -285,7 +277,7 @@ class Player {
   get showHand() {
     return `${this.name}<br>
     <span style="border:1px; border-style:solid; border-color:#FFFFFF; padding: 0.25em 0.5em;">${this.hand
-      .map((e) => e.display)
+      .map((element) => element.display)
       .join(" | ")}</span><br>
     Value: ${this.handValue}.<br>`;
   }
@@ -299,12 +291,12 @@ class Player {
   reset() {
     this.hand = [];
     this.canSplit = false;
-    this._stand = false;
     this.hasBlackjack = false;
     this.hasBust = false;
     this.hasWon = false;
     this.hasDrew = false;
     this._bet = 0;
+    playerTurn = 0;
   }
 }
 /////////////////////////////////////////////////////////////////
@@ -336,11 +328,12 @@ function dealCards(deck) {
     }
     dealer.hit(deck.pop());
   }
+  dealerFaceUpCard = dealer.hand[0];
 }
 
 /**
  * ------------------------------------------------------------------------
- * Check the initial hands of every player and dealer.
+ * Check the initial hands of every player and dealer for blackjacks and splits.
  * ------------------------------------------------------------------------
  */
 
@@ -351,11 +344,28 @@ function initialChecks() {
   dealer.checkHand();
 }
 
-function hitStandSplit() {}
+/**
+ * ------------------------------------------------------------------------
+ * Message for each player's turn.
+ * @param   {Object}  player
+ * @return  {String}
+ * ------------------------------------------------------------------------
+ */
+
+function playerDecide(player) {
+  // Show Dealer's Face up card
+  // Show player's hand.
+  // Decision for player to make
+  return `Now it's ${player.name}'s turn.<br><br>
+  Dealer's Face Up Card<br>
+  <span style="border:1px; border-style:solid; border-color:#FFFFFF; padding: 0.25em 0.5em;">${dealerFaceUpCard.display}</span><br><br>
+  ${player.showHand}<br>
+  Please enter "hit/stand/split".`;
+}
 
 /**
  * ------------------------------------------------------------------------
- * Dealer hits if the hand value is belowe 17.
+ * Dealer hits if the hand value is below 17.
  * ------------------------------------------------------------------------
  */
 
@@ -365,6 +375,13 @@ function dealerHitStand(dealer) {
     dealer.checkBust();
   }
 }
+
+/**
+ * ------------------------------------------------------------------------
+ * Evaluate Dealer's hand.
+ * @return {String}
+ * ------------------------------------------------------------------------
+ */
 
 function evalDealerHand() {
   if (dealer.hasBlackjack) {
@@ -376,20 +393,27 @@ function evalDealerHand() {
   }
 }
 
+/**
+ * ------------------------------------------------------------------------
+ * Evaluate every player's hand and sets outcome for each player for that round.
+ * @return {String}
+ * ------------------------------------------------------------------------
+ */
+
 function evalHands() {
-  let output = `${dealer.showHand}<br>${evalDealerHand()}<br><br>`;
+  let output = `${dealer.showHand}${evalDealerHand()}<br><br>`;
   for (let player of playerBoard) {
-    output += `${player.showHand}<br>`;
+    output += `${player.showHand}`;
 
     // Player and dealer have Blackjacks
     if (player.hasBlackjack && dealer.hasBlackjack) {
       player.hasDrew = true;
-      output += `Both ${player.name} and the Dealer got Blackjacks, it's a draw!`;
+      output += `<div class="fw-bold" style="display: inline-block; border-radius:5px; background-color:${COLOUR_BLUE}; padding: 0.25em 2em;">Both ${player.name} and the Dealer got Blackjacks, it's a draw!</div>`;
     }
     // Player has Blackjacks but not dealer
     else if (player.hasBlackjack) {
       player.hasWon = true;
-      output += `${player.name} got a Blackjack!`;
+      output += `<div class="fw-bold" style="display: inline-block; border-radius:5px; background-color:${COLOUR_YELLOW}; padding: 0.25em 2em;"><span style="color: #292826">${player.name} got a Blackjack!</span></div>`;
     }
     // Player wins the dealer
     else if (
@@ -397,7 +421,7 @@ function evalHands() {
       (!player.hasBust && dealer.hasBust)
     ) {
       player.hasWon = true;
-      output += `${player.name} won the Dealer!`;
+      output += `<div class="fw-bold" style="display: inline-block; border-radius:5px; background-color:${COLOUR_GREEN}; padding: 0.25em 2em;">${player.name} won the Dealer!</div>`;
     }
     // Player loses to the dealer
     else if (
@@ -405,17 +429,31 @@ function evalHands() {
       (!dealer.hasBust && dealer.handValue > player.handValue) ||
       (!dealer.hasBust && player.hasBust)
     ) {
-      output += `${player.name} lost to the Dealer.`;
+      output += `<div class="fw-bold" style="display: inline-block; border-radius:5px; background-color:${COLOUR_RED}; padding: 0.25em 2em;">${player.name} lost to the Dealer.</div>`;
     }
     // Player draw with the the dealer
     else {
       player.hasDrew = true;
-      output += `${player.name} drew with the Dealer.`;
+      output += `<div class="fw-bold" style="display: inline-block; border-radius:5px; background-color:${COLOUR_BLUE}; padding: 0.25em 2em;">${player.name} drew with the Dealer.</div>`;
     }
-    output += `<br><br>`;
+    player.calcPoints();
+    player.reset();
+    output += `<br>Current Points: ${player.points}<br><br>`;
   }
+  output += "Place your bets again for the next round!";
   return output;
 }
+
+/**
+ * ------------------------------------------------------------------------
+ * Dealer automated hit or stand.
+ * Evaluate every player's hand and sets outcome for each player for that round.
+ * Compute bets of every player.
+ * Reset everyone's hands, bets and booleans.
+ * Generate new deck for next round.
+ * @return {String}
+ * ------------------------------------------------------------------------
+ */
 
 function endGame() {
   dealerHitStand(dealer);
@@ -423,8 +461,6 @@ function endGame() {
 
   // Compute bets then reset everyone's hands, bets and booleans
   for (let player of playerBoard) {
-    player.calcPoints();
-    player.reset();
   }
   dealer.reset();
 
@@ -443,6 +479,7 @@ function endGame() {
 const dealer = new Player("dealer");
 dealer.name = "Dealer";
 let cardDeck = shuffleCards(createDeck());
+let playerTurn = 0;
 
 const gameplay = {
   inputPlayers: {
@@ -458,7 +495,9 @@ const gameplay = {
       numOfPlayers = input;
       createPlayers(numOfPlayers);
       gameMode = INPUT_NAMES;
-      return `There are now ${input} player(s). Please enter the name(s) of the player(s) separated by slashes "/".`;
+      return `There are now ${input} player(s).<br>
+      Please enter the name(s) of the player(s) separated by slashes "/".<br>
+      Example: "Alice/Bob/Chen Xi/Dorothy"`;
     },
   },
   inputNames: {
@@ -495,11 +534,45 @@ const gameplay = {
       if (dealer.hasBlackjack) {
         return `${defaultMessage}<br><br>${endGame()}`;
       }
-      return `${defaultMessage} Best of luck to everyone!`;
+      return `${defaultMessage} Best of luck to everyone!<br><br>
+      ${playerDecide(playerBoard[playerTurn])}`;
     },
   },
   blackjack: {
-    execute(input) {},
+    execute(input) {
+      while (playerTurn < playerBoard.length) {
+        let player = playerBoard[playerTurn];
+        switch (input) {
+          case "hit":
+            if (player.hasBlackjack || player.hasBust) {
+              playerTurn += 1;
+              player = playerBoard[playerTurn];
+              return `The previous player has a blackjack or has bust and can't hit.<br><br>
+              ${playerDecide(player)}`;
+            }
+            player.hit(cardDeck.pop());
+            player.checkBust();
+            break;
+          case "stand":
+            playerTurn += 1;
+            break;
+          case "split":
+            if (!player.canSplit) {
+              return `Your hand does not allow for a split. Please choose "hit/stand".<br><br>
+              ${playerDecide(player)}`;
+            }
+            player.canSplit = false;
+            // split function here.
+            break;
+        }
+        if (playerTurn >= playerBoard.length) {
+          break;
+        }
+        player = playerBoard[playerTurn];
+        return playerDecide(player);
+      }
+      return endGame();
+    },
   },
 };
 
