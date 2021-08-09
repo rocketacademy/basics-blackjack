@@ -11,6 +11,7 @@ var makeDeck = function () {
       var cardValue = rankCounter;
       if (cardName == 1) {
         cardName = 'ace';
+        cardValue = 11;
       } else if (cardName == 11) {
         cardName = 'jack';
         cardValue = 10;
@@ -92,26 +93,50 @@ var dealInitialHand = function(){
 var dealerScore = 0;
 var playerScore = 0;
 
-//calculates dealer score
-var calculateDealerScore = function(){
-  dealerScore = 0;
-  var dealerIndex = 0;
-  while (dealerIndex < dealerHand.length){
-    dealerScore += dealerHand[dealerIndex].value;
-    dealerIndex += 1;
-  };
-return dealerScore;
-};
-
 //calculates player score
 var calculatePlayerScore = function(playerHand){
   playerScore = 0;
+  var playerAces = 0;
   var playerIndex = 0;
   while (playerIndex < playerHand.length){
     playerScore += playerHand[playerIndex].value;
+    if(playerHand[playerIndex].value == 11){
+      playerAces += 1;
+    };
     playerIndex += 1;
   };
+  //if player has more than 1 ace, 2nd ace onwards are counted as 1s to prevent bust
+  if(playerAces > 0){
+    playerScore -= 10*(playerAces-1);
+    //if player score still busts, count 1st ace as 1 too.
+    if(playerScore > 21){
+      playerScore -= 10;
+    }; 
+  };
 return playerScore;
+};
+
+//calculates dealer score
+var calculateDealerScore = function(dealerHand){
+  dealerScore = 0;
+  var dealerAces = 0;
+  var dealerIndex = 0;
+  while (dealerIndex < dealerHand.length){
+    dealerScore += dealerHand[dealerIndex].value;
+    if(dealerHand[dealerIndex].value == 11){
+      dealerAces += 1;
+    };
+    dealerIndex += 1;
+  };
+  //if dealer has more than 1 ace, 2nd ace onwards are counted as 1s to prevent bust
+  if(dealerAces > 0){
+    dealerScore -= 10*(dealerAces-1);
+    //if dealer score still busts, count 1st ace as 1 too.
+    if(dealerScore > 21){
+      dealerScore -= 10;
+    }; 
+  };
+return dealerScore;
 };
 
 //displays player hand
@@ -138,10 +163,10 @@ return dealerHandMessage;
 
 //compares scores of dealer and player to determine winner
 var generateGameResult = function(playerScore,dealerScore){
-  if(dealerScore >= playerScore ||
+  if((dealerScore >= playerScore && dealerScore <= 21 && playerScore <= 21) ||
     (playerScore > 21 && dealerScore <= 21)){
         return `Dealer wins!`
-      }else if(dealerScore < playerScore ||
+      }else if((dealerScore < playerScore && dealerScore <= 21 && playerScore <= 21) ||
         (dealerScore > 21 && playerScore <= 21)){
         return `Player wins!`
       } else if (dealerScore == playerScore ||
