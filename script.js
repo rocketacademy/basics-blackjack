@@ -116,18 +116,36 @@ var dealCardtoHand = function(hand){
 var generateHandSum = function(hand){
   var sum = 0;
   var counter = 0;
+  var numAcesInHand = 0;
 
   while (counter < hand.length){
     var currentCard = hand[counter];
-    //for now, ignore aces being 1 or 11
-    if(currentCard.rank <= 10){
-      sum += currentCard.rank;  
+    //if card rank is between 2 to 10, value = rank
+    if(currentCard.rank >= 2 && currentCard.rank <= 10){
+      sum += currentCard.rank;
+      //if card rank is jack, queen, king => value = 10  
     } else if (currentCard.rank >=11 && currentCard.rank <= 13){
       sum +=  10;
+      //if card is ace, value = 11 by default
+    } else if (currentCard.rank =1){
+      numAcesInHand += 1
+      sum += 11
+    }
+
+    //convert the value of ace to 1 if sum>21
+    if(sum > sumMax && numAcesInHand >0){
+      var aceCounter = 0;
+      while(aceCounter < numAcesInHand){
+        sum -= 10;
+        if(sum <= sumMax){
+          break;
+        }
+      }
+      aceCounter += 1;
     }
     counter += 1;
   }
-  return sum
+  return sum;
 };
 
 // 1.8. create function to determine if a hand contains blackjack
@@ -146,11 +164,11 @@ var generateOutputMessage = function(){
     return 'Player has hand '+playerHand[0].name + ' of ' + playerHand[0].suit+' and '+playerHand[1].name + ' of ' + playerHand[1].suit+' with sum '+generateHandSum(playerHand)
     +'<br>Computer has hand '+computerHand[0].name + ' of ' + computerHand[0].suit+' and '+computerHand[1].name + ' of ' + computerHand[1].suit+' with sum '+generateHandSum(computerHand)
   }
-  else if(playerHand.length == 3){
+  else if(playerHand.length == 3 && computerHand.length == 2){
     return 'Player has hand '+playerHand[0].name + ' of ' + playerHand[0].suit+' and '+playerHand[1].name + ' of ' + playerHand[1].suit+' and '+ playerHand[2].name + ' of ' + playerHand[2].suit+' with sum '+generateHandSum(playerHand)
     +'<br>Computer has hand '+computerHand[0].name + ' of ' + computerHand[0].suit+' and '+computerHand[1].name + ' of ' + computerHand[1].suit+' with sum '+generateHandSum(computerHand)
     }
-  else if(computerHand.length == 3){
+  else if(playerHand.length == 2 && computerHand.length == 3){
     return 'Player has hand '+playerHand[0].name + ' of ' + playerHand[0].suit+' and '+playerHand[1].name + ' of ' + playerHand[1].suit+' with sum '+generateHandSum(playerHand)
     +'<br>Computer has hand '+computerHand[0].name + ' of ' + computerHand[0].suit+' and '+computerHand[1].name + ' of ' + computerHand[1].suit+' and '+computerHand[2].name + ' of ' + computerHand[2].suit+' with sum '+generateHandSum(computerHand)
     }
