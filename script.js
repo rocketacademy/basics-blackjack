@@ -101,8 +101,10 @@ var deck = shuffleCards(makeDeck())
 // 1.5. global varaibles to store player's and computer's cards & rules
 var playerHand = [];
 var computerHand = [];
-var sumMax = 21; 
-var gameOver = false; 
+var sumMax = 21; //max valid sum for blackjack is 21
+var gameOver = false; //once game is over, no further moves can be made
+var playerChosetoStand = false; // if player has decided to stand, he/she cannot choose to hit anymore
+
 
 // 1.6. create function to deal a card to a hand
 var dealCardtoHand = function(hand){
@@ -172,16 +174,40 @@ var main = function (input) {
       return generateOutputMessage()+'<br>'+'Computer won! Computer has Blackjack! Please refresh to play again.';
     }
 
-    //for now, ignore the hit and stand option 
+    // 4. The cards are displayed to the user.
+    // 5. The user decides whether to hit or stand, using the submit button to submit their choice.
+    return generateOutputMessage()+'<br> Please enter "hit" or "stand" to proceed.';
+  }
 
-    if(generateHandSum(playerHand)>generateHandSum(computerHand) && generateHandSum(playerHand) <= sumMax){
-      gameOver = true; 
-      return generateOutputMessage()+'<br>'+'Player won! Please refresh to play again.';
-    }
-
-    if(generateHandSum(playerHand)<generateHandSum(computerHand) && generateHandSum(computerHand)<= sumMax){
-      gameOver = true;
-      return generateOutputMessage()+'<br>'+'Computer won! Please refresh to play again.';
+  if(!playerChosetoStand){
+    if(input !== 'hit' && input !== 'stand'){
+      'Invalid input. Please enter "hit" or "stand" to proceed.'
     }
   }
+
+  if(input == 'hit'){
+    dealCardtoHand(playerHand)
+    console.log('Player hit '+playerHand[2].name+' of '+playerHand[2].suit)
+      //if burst, show it to players
+      if(generateHandSum(playerHand) > sumMax){
+        gameOver = true;
+        return generateOutputMessage()+'<br>'+'Player has busted and losses! Please refresh to play again.';
+      }
+  }
+  
+  if(input == 'stand'){
+    playerChosetoStand = true;
+  }
+
+  //for now, ignore the hit and stand option for computer 
+
+  if(generateHandSum(playerHand)>generateHandSum(computerHand) && generateHandSum(playerHand) <= sumMax){
+    gameOver = true; 
+    return generateOutputMessage()+'<br>'+'Player won! Please refresh to play again.';
+    }
+
+  if(generateHandSum(playerHand)<generateHandSum(computerHand) && generateHandSum(computerHand)<= sumMax){
+    gameOver = true;
+    return generateOutputMessage()+'<br>'+'Computer won! Please refresh to play again.';
+    }
 };
