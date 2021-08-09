@@ -25,7 +25,7 @@ var createDeck = function () {
 
       if (rankCounter == 1) {
         cardName = "ace";
-        rank = 1 || 11;
+        rank = 11;
       } else if (rankCounter == 11) {
         cardName = "jack";
         rank = 10;
@@ -169,6 +169,7 @@ var main = function (input) {
   // update value of player card sum and dealer card sum
   playerCardSum = playerCard[0].rank + playerCard[1].rank;
   console.log("player card sum is " + playerCardSum);
+
   dealerCardSum = dealerCard[0].rank + dealerCard[1].rank;
   console.log("dealer card sum is " + dealerCardSum);
 
@@ -227,6 +228,8 @@ var main = function (input) {
       // else if dealerCardSum > 21, player wins.
       else if (dealerCardSum > 21) {
         return outputOfDealersCards + ". <br> " + winningMsg + ".";
+      } else if (playerCardSum == dealerCardSum) {
+        return "It's a tie!";
       }
       // else compare playerCardSum and dealerCardSum
       else {
@@ -247,8 +250,18 @@ var main = function (input) {
     dealCards(shuffledDeck);
 
     // update player card sum
+
     playerCardSum = playerCardSum + playerCard[2].rank;
     console.log(playerCardSum);
+
+    // if player card sum > 21 and player card 2 rank is 11, change the rank to 1
+    if (playerCardSum > 21 && playerCard[2].rank == 11) {
+      playerCard[2].rank = 1;
+      playerCardSum =
+        playerCard[0].rank + playerCard[1].rank + playerCard[2].rank;
+      console.log("player card rank is: " + playerCard[2].rank);
+      console.log("player card sum if ace == 1:" + playerCardSum);
+    }
 
     // update winning message and losing message
     winningMsg = getWinningMsg(playerCardSum, dealerCardSum);
@@ -259,11 +272,12 @@ var main = function (input) {
       playerCard[2].name +
       " of " +
       playerCard[2].suit +
-      ". <br> " +
-      outputOfPlayersCards;
+      ".";
 
     outputOfPlayersCards =
       myOutputValue +
+      " <br> " +
+      outputOfPlayersCards +
       ", and " +
       playerCard[2].name +
       " of " +
@@ -272,26 +286,28 @@ var main = function (input) {
 
     // check winning condition
     if (playerCardSum == 21) {
-      myOutputValue = outputOfPlayersCards + " <br> " + winningMsg;
-      console.log(winningMsg);
+      return myOutputValue + " <br> " + winningMsg;
     }
     if (playerCardSum > 21) {
-      myOutputValue = outputOfPlayersCards + "<br> " + losingMsg;
-      console.log(losingMsg);
+      return outputOfPlayersCards + "<br> " + losingMsg;
+    }
+    if (playerCardSum == dealerCardSum) {
+      return "It's a tie!";
     }
     if (playerCardSum < 21) {
+      console.log(playerCardSum);
       if (playerCardSum > dealerCardSum) {
-        myOutputValue = outputOfPlayersCards + "<br>" + winningMsg + ".";
-        console.log(winningMsg);
+        return outputOfPlayersCards + "<br>" + winningMsg + ".";
       }
       if (playerCardSum < dealerCardSum) {
-        myOutputValue = outputOfPlayersCards + " <br> " + losingMsg + ".";
+        return outputOfPlayersCards + " <br> " + losingMsg + ".";
       }
     }
     if (dealerCardSum <= 16) {
       dealCards(shuffledDeck);
 
       dealerCardSum = dealerCardSum + dealerCard[2].rank;
+      console.log(dealerCardSum);
 
       winningMsg = getWinningMsg(playerCardSum, dealerCardSum);
       losingMsg = getLosingMsg(playerCardSum, dealerCardSum);
@@ -304,19 +320,14 @@ var main = function (input) {
         dealerCard[2].suit;
 
       if (dealerCardSum == 21) {
-        return (
-          outputOfPlayersCards +
-          " <br> " +
-          outputOfDealersCards +
-          ". <br> " +
-          losingMsg +
-          "."
-        );
+        return outputOfDealersCards + ". <br> " + losingMsg;
+      } else if (playerCardSum == dealerCardSum) {
+        return "It's a tie!";
       }
       // else if dealerCardSum > 21, player wins.
       else if (dealerCardSum > 21) {
         return (
-          outputOfPlayersCards +
+          myOutputValue +
           " <br> " +
           outputOfDealersCards +
           ". <br> " +
