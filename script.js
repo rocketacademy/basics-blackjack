@@ -59,22 +59,18 @@ var getRandomIndex = function (max) {
 
 // shuffle the deck
 var shuffleDeck = function () {
-  // Loop over the card deck array once
   var currentIndex = 0;
   while (currentIndex < deck.length) {
-    // Select a random index in the deck
     var randomIndex = getRandomIndex(deck.length);
-    // Select the card that corresponds to randomIndex
+
     var randomCard = deck[randomIndex];
-    // Select the card that corresponds to currentIndex
+
     var currentCard = deck[currentIndex];
-    // Swap positions of randomCard and currentCard in the deck
     deck[currentIndex] = randomCard;
     deck[randomIndex] = currentCard;
-    // Increment currentIndex
+
     currentIndex = currentIndex + 1;
   }
-  // Return the shuffled deck
   return deck;
 };
 
@@ -129,7 +125,6 @@ var getLosingMsg = function (playerCardSum, dealerCardSum) {
 var main = function (input) {
   var cardDeck = createDeck();
 
-  // shuffle card
   var shuffledDeck = shuffleDeck(cardDeck);
 
   // deal the cards two times
@@ -189,16 +184,12 @@ var main = function (input) {
   // if player choose 'stand', open dealer's closed card.
   if (input == STAND) {
     if (dealerCardSum >= 17) {
-      // if dealerCardSum == 21, player looses.
+      // check winning condition
       if (dealerCardSum == 21) {
         return outputOfDealersCards + " <br> " + losingMsg + ".";
-      }
-      // else if dealerCardSum > 21, player wins.
-      else if (dealerCardSum > 21) {
+      } else if (dealerCardSum > 21) {
         return outputOfDealersCards + " <br> " + winningMsg;
-      }
-      // else compare playerCardSum and dealerCardSum
-      else {
+      } else {
         if (playerCardSum > dealerCardSum) {
           return outputOfDealersCards + " <br> " + winningMsg + ".";
         }
@@ -207,6 +198,7 @@ var main = function (input) {
         }
       }
     }
+    // if dealer card sum is <= 16, dealer draw
     if (dealerCardSum <= 16) {
       dealCards(shuffledDeck);
 
@@ -222,23 +214,18 @@ var main = function (input) {
         " of " +
         dealerCard[2].suit;
 
+      // check winning condition
       if (dealerCardSum == 21) {
         return outputOfDealersCards + ". <br> " + losingMsg + "";
-      }
-      // else if dealerCardSum > 21, player wins.
-      else if (dealerCardSum > 21) {
+      } else if (dealerCardSum > 21) {
         return outputOfDealersCards + ". <br> " + winningMsg + ".";
       } else if (playerCardSum == dealerCardSum) {
         return "It's a tie!";
-      }
-      // else compare playerCardSum and dealerCardSum
-      else {
+      } else {
         if (playerCardSum > dealerCardSum) {
-          console.log("this runs when dealer card is < 16 and player wins");
           return outputOfDealersCards + ". <br> " + winningMsg + ".";
         }
         if (dealerCardSum > playerCardSum) {
-          console.log("this runs when dealer card is < 16 and player loses");
           return outputOfDealersCards + ". <br> " + losingMsg + ".";
         }
       }
@@ -249,8 +236,7 @@ var main = function (input) {
   if (input == HIT) {
     dealCards(shuffledDeck);
 
-    // update player card sum
-
+    // update player card sums
     playerCardSum = playerCardSum + playerCard[2].rank;
     console.log(playerCardSum);
 
@@ -259,8 +245,6 @@ var main = function (input) {
       playerCard[2].rank = 1;
       playerCardSum =
         playerCard[0].rank + playerCard[1].rank + playerCard[2].rank;
-      console.log("player card rank is: " + playerCard[2].rank);
-      console.log("player card sum if ace == 1:" + playerCardSum);
     }
 
     // update winning message and losing message
@@ -285,24 +269,6 @@ var main = function (input) {
       ".";
 
     // check winning condition
-    if (playerCardSum == 21) {
-      return myOutputValue + " <br> " + winningMsg;
-    }
-    if (playerCardSum > 21) {
-      return outputOfPlayersCards + "<br> " + losingMsg;
-    }
-    if (playerCardSum == dealerCardSum) {
-      return "It's a tie!";
-    }
-    if (playerCardSum < 21) {
-      console.log(playerCardSum);
-      if (playerCardSum > dealerCardSum) {
-        return outputOfPlayersCards + "<br>" + winningMsg + ".";
-      }
-      if (playerCardSum < dealerCardSum) {
-        return outputOfPlayersCards + " <br> " + losingMsg + ".";
-      }
-    }
     if (dealerCardSum <= 16) {
       dealCards(shuffledDeck);
 
@@ -319,13 +285,21 @@ var main = function (input) {
         " of " +
         dealerCard[2].suit;
 
+      if (playerCardSum == 21) {
+        return myOutputValue + " <br> " + winningMsg;
+      }
+      if (playerCardSum > 21) {
+        return outputOfPlayersCards + "<br> " + losingMsg;
+      }
+      if (playerCardSum == dealerCardSum) {
+        return "It's a tie!";
+      }
       if (dealerCardSum == 21) {
         return outputOfDealersCards + ". <br> " + losingMsg;
       } else if (playerCardSum == dealerCardSum) {
         return "It's a tie!";
       }
-      // else if dealerCardSum > 21, player wins.
-      else if (dealerCardSum > 21) {
+      if (dealerCardSum > 21) {
         return (
           myOutputValue +
           " <br> " +
@@ -334,9 +308,7 @@ var main = function (input) {
           winningMsg +
           "."
         );
-      }
-      // else compare playerCardSum and dealerCardSum
-      else {
+      } else {
         if (playerCardSum > dealerCardSum) {
           return (
             outputOfPlayersCards +
@@ -356,6 +328,26 @@ var main = function (input) {
             losingMsg +
             "."
           );
+        }
+      }
+    }
+    if (dealerCardSum >= 17) {
+      if (playerCardSum == 21) {
+        return myOutputValue + " <br> " + winningMsg;
+      }
+      if (playerCardSum > 21) {
+        return outputOfPlayersCards + "<br> " + losingMsg;
+      }
+      if (playerCardSum == dealerCardSum) {
+        return "It's a tie!";
+      }
+      if (playerCardSum < 21) {
+        console.log(playerCardSum);
+        if (playerCardSum > dealerCardSum) {
+          return outputOfPlayersCards + "<br>" + winningMsg + ".";
+        }
+        if (playerCardSum < dealerCardSum) {
+          return outputOfPlayersCards + " <br> " + losingMsg + ".";
         }
       }
     }
