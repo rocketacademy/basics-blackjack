@@ -152,7 +152,7 @@ const blackJack = function (userInput) {
       playerScore += 1;
       resetGame();
       gameState = `shuffle`;
-      return `<i>${playerName} loses!</i><br><br>
+      return `<i>${playerName} wins!</i><br><br>
       ${playerName}'s total score: ${playerScore}<br>
       ${dealerName}'s total score: ${dealerScore}<br>
       `;
@@ -164,7 +164,7 @@ const blackJack = function (userInput) {
         dealerHandText = unrevealedHandText(dealerHand);
         dealerValueArray = handValues(dealerHand);
         return `<i>Dealer hits, and drawn a card</i><br><br>
-        It is now ${dealerName}'s turn.<br><br>
+        It is now ${dealerName}'s turn. [click submit to proceed]<br><br>
         <b>You drawn:</b><br>${revealedHandText(playerHand)}
         <b>Dealer's hand:</b><br>${revealedHandText(dealerHand)}
         `;
