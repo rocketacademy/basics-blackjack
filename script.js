@@ -70,17 +70,25 @@ var shuffleCards = function (cardDeck) {
   return cardDeck;
 };
 
-// // ===== Computer Hit or Stand ====== //
-var COM_HIT_OR_STAND = function (computer_cards) {
-  if (computer_cards.value < 20 && computer_cards.length != 5) {
-    computer_cards.push(shuffledDeck.pop());
-  } else if (
-    (computer_cards.value == 21 && computer_cards.length <= 5) ||
-    computer_cards.value > 21
-  ) {
-    return computer_cards;
-  }
-};
+// // // ===== Computer Hit or Stand ====== //
+// var COM_HIT_OR_STAND = function (computer_cards) {
+//   if (computer_cards.value < 17 && computer_cards.length != 5) {
+//     computer_cards.push(shuffledDeck.pop());
+//   } else if (
+//     (computer_cards.value == 21 && computer_cards.length <= 5) ||
+//     computer_cards.value > 21
+//   ) {
+//     return computer_cards;
+//   }
+// };
+
+// // // ===== Ace Value Check: 1 or 11 ====== //
+// var ace_Value = function (cardDeck) {
+//   if (cardDeck == "ace") {
+//     if (cardDeck.length < 3) {
+//     }
+//   }
+// };
 
 // ===== Checking winning conditions ====== //
 var winning_check = function (final_playerScore, computer_finalScore) {
@@ -164,6 +172,10 @@ var main = function (input) {
       myOutputValue =
         " You have drawn " + new_card.name + " of " + new_card.suit;
     } else if (input.toLowerCase() == "stand" || player_cards.length == 5) {
+      if (computer_cards.value < 17 && computer_cards.length != 5) {
+        computer_cards.push(new_card);
+        console.log(computer_cards);
+      }
       var counter = 0;
       // Loop over the player cards array to check the total score of the cards
       while (counter < player_cards.length) {
