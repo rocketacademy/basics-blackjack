@@ -1,6 +1,10 @@
 // gamemodes
 var gameMode = "dealing cards";
 
+// global state for some booleans
+
+var cardsFinished = false;
+
 // creating deck automatically using loop
 
 var makeDeck = function () {
@@ -62,6 +66,8 @@ var makeDeck = function () {
   return deck;
 };
 
+// function to make the deck
+
 var cardDeck = makeDeck();
 
 // shuffling the deck
@@ -93,18 +99,33 @@ var shuffleCards = function (cardDeck) {
   return cardDeck;
 };
 
+// function to shuffle cards based on the card deck we made
+
 var shuffledDeck = shuffleCards(cardDeck);
 console.log("shuffled deck", shuffledDeck);
 
+// start main function
+
 var main = function (input) {
-  //pop takes out at the end of the array
+  // initialize output
+
+  var output = "";
+
+  //pop takes the card at the end of the array and removes
+
   var computerCard1 = shuffledDeck.pop();
   console.log("computer card 1", computerCard1);
   var computerCard2 = shuffledDeck.pop();
+  console.log("computer card 2", computerCard2);
   var playerCard1 = shuffledDeck.pop();
   console.log("player card 1", playerCard1);
   var playerCard2 = shuffledDeck.pop();
-  var output = "";
+  console.log("player card 2", playerCard2);
+  var playerCard3 = shuffledDeck.pop();
+  console.log("player card 3", playerCard3);
+
+  // function to collect computer score
+
   var computerScore = function () {
     totalComputerCardsScore = computerCard1.value + computerCard2.value;
     return totalComputerCardsScore;
@@ -114,30 +135,122 @@ var main = function (input) {
     return totalPlayerCardsScore;
   };
 
+  var playerScore2 = function () {
+    totalPlayerCardsScore = playerScore() + playerCard3.value;
+    return totalPlayerCardsScore;
+  };
+
+  // DEALING CARDS
+
   if (gameMode == "dealing cards") {
-    output = `The computer drew ${computerCard1.name} of ${
+    messageCompareResults = `Click submit to see who wins!`;
+    messageHitStand = `<br><br>Would you like to hit or stand? Type your choice in and press submit!`;
+    messageLess17 = `<br><br>You need to draw again as your score is less than 17. Type 'Hit' to add a card!`;
+    messageShuffledDeck = `The computer drew ${computerCard1.name} of ${
       computerCard1.suit
     } and ${computerCard2.name} of ${computerCard2.suit} .<br>You drew ${
       playerCard1.name
     } of ${playerCard1.suit} and ${playerCard2.name} of ${
       playerCard2.suit
-    }.<br><br>The computer scored ${computerScore()}, while you scored ${playerScore()}. Click to see who wins!`;
+    }.<br><br>The computer scored ${computerScore()}, while you scored ${playerScore()}. `;
 
-    gameMode = "compare results";
+    output = messageShuffledDeck + messageHitStand;
+    gameMode = "hit or stand";
+
+    if (playerScore() < 17) {
+      output = messageShuffledDeck + messageLess17;
+      gameMode = "hit or stand";
+      return output;
+    }
+
     return output;
   }
-  // highest card
 
-  if (gameMode == "compare results") {
-    if (computerScore() > playerScore()) {
-      output = `The computer won!`;
+  if (gameMode == "hit or stand") {
+    if (input == "hit" || input == "Hit") {
+      messageHitScore = `You drew ${playerCard3.name} of ${
+        playerCard3.suit
+      }.<br><br>This brings your score to ${playerScore2()}, while the computer scored ${computerScore()}. `;
+
+      if (playerScore2() < 17) {
+        output = messageHitScore + messageLess17;
+        gameMode == "hit or stand";
+        return output;
+      } else if (playerScore2() >= 17 && playerScore2() <= 21) {
+        output = `${messageHitScore} ${messageCompareResults}`;
+        gameMode = "compare results";
+        return output;
+      } else if (playerScore2() > 21) {
+        output = `Bummer, you busted! You drew ${playerCard3.name} of ${
+          playerCard3.suit
+        }.<br><br>Your final score is ${playerScore2()} while the computer scored ${computerScore()}. Press submit or refresh the page to play again!`;
+        gameMode = "dealing cards";
+        return output;
+      }
+    } else if (input == "stand" || input == "Stand") {
+      output = messageCompareResults;
+      gameMode = "compare results";
+      return output;
+    }
+  }
+
+  // compare results - highest card wins
+  else if (gameMode == "compare results") {
+    console.log(`your compare results is working`);
+    if (computerScore() > playerScore() || computerScore() > playerScore2()) {
+      output = `The computer won! Press submit or refresh the page to play again!`;
+      gameMode = "dealing cards";
+
+      return output;
+    } else if (
+      playerScore() > computerScore() ||
+      playerScore2() > computerScore()
+    ) {
+      output = `You win! Press submit or refresh the page to play again!`;
       gameMode = "dealing cards";
       return output;
-    } else if (playerScore() > computerScore()) {
-      output = `You win!`;
+    } else if (
+      playerScore() == computerScore() ||
+      playerScore2() == computerScore()
+    ) {
+      output = `It's a tie! Press submit or refresh the page to play again!`;
       gameMode = "dealing cards";
       return output;
     }
   }
-  // return output;
+
+  //////// ASK MICHELLE -- error validation. not sure how to do.
+  // if all the cards are gone
+  // if the players hands are empty
+
+  if (shuffledDeck.length == 0 || shuffledDeck.length == 1) {
+    cardsFinished = true;
+    console.log("cards are finished");
+    output = "The deck is finished, refresh to start again";
+  }
 };
+
+// // compare results - highest card wins
+// else if (gameMode == "compare results") {
+//   console.log(`your compare results is working`);
+//   if (computerScore() > playerScore() || computerScore() > playerScore2()) {
+//     output = `The computer won! The computer scored ${computerScore()}, while you scored ${playerScore2()}. Press submit or refresh the page to play again!`;
+//     gameMode = "dealing cards";
+
+//     return output;
+//   } else if (
+//     playerScore() > computerScore() ||
+//     playerScore2() > computerScore()
+//   ) {
+//     output = `You win! The computer scored ${computerScore()}, while you scored ${playerScore2()}. Press submit or refresh the page to play again!`;
+//     gameMode = "dealing cards";
+//     return output;
+//   } else if (
+//     playerScore() == computerScore() ||
+//     playerScore2() == computerScore()
+//   ) {
+//     output = `It's a tie! The computer scored ${computerScore()}, while you scored ${playerScore2()}. Press submit or refresh the page to play again!`;
+//     gameMode = "dealing cards";
+//     return output;
+//   }
+// }
