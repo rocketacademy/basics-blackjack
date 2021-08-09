@@ -1,8 +1,10 @@
 // ===== Global Variables =======//
-var gameMode = "init";
+var gameMode = "enter username";
 var player_cards = [];
 var computer_cards = [];
 var myOutputValue = "";
+var computer_finalScore = 0;
+var final_playerScore = 0;
 
 // ===== Making a deck of cards =======//
 var makeDeck = function () {
@@ -68,20 +70,17 @@ var shuffleCards = function (cardDeck) {
   return cardDeck;
 };
 
-// // // ===== Computer Hit or Stand ====== //
-// var COM_HIT_OR_STAND = function (computer_cards) {
-//   if (computer_cards.value < 21 && computer_cards.length != 5) {
-//     computer_cards.push(shuffledDeck.pop());
-//   } else if (computer_cards.value == 21 && computer_cards.length <= 5) {
-//     var finalScore = 0;
-//     var index = 0;
-//     while (index < computer_cards.length) {
-//       finalScore = finalScore + computer_cards[index].value;
-//       index = index + 1;
-//     }
-//     return finalScore;
-//   }
-// };
+// // ===== Computer Hit or Stand ====== //
+var COM_HIT_OR_STAND = function (computer_cards) {
+  if (computer_cards.value < 20 && computer_cards.length != 5) {
+    computer_cards.push(shuffledDeck.pop());
+  } else if (
+    (computer_cards.value == 21 && computer_cards.length <= 5) ||
+    computer_cards.value > 21
+  ) {
+    return computer_cards;
+  }
+};
 
 // ===== Checking winning conditions ====== //
 var winning_check = function (final_playerScore, computer_finalScore) {
@@ -92,7 +91,7 @@ var winning_check = function (final_playerScore, computer_finalScore) {
     myOutputValue =
       "Your score is " +
       final_playerScore +
-      " Computer's score is " +
+      "<br><br> Computer's score is " +
       computer_finalScore +
       " <br><br> You have won!";
   } else if (
@@ -102,7 +101,7 @@ var winning_check = function (final_playerScore, computer_finalScore) {
     myOutputValue =
       "Your score is " +
       final_playerScore +
-      " Computer's score is " +
+      " <br><br>Computer's score is " +
       computer_finalScore +
       " <br><br> You have lost..";
   } else if (
@@ -112,7 +111,7 @@ var winning_check = function (final_playerScore, computer_finalScore) {
     myOutputValue =
       "Your score is " +
       final_playerScore +
-      " Computer's score is " +
+      " <br><br>Computer's score is " +
       computer_finalScore +
       " <br><br> It's a draw! ";
   }
@@ -120,9 +119,20 @@ var winning_check = function (final_playerScore, computer_finalScore) {
 };
 
 var main = function (input) {
+  // Getting the username from the player
+  if (gameMode == "enter username") {
+    var player_username = input;
+    gameMode = "init";
+  }
   // Initialize the start of the game
   var shuffledDeck = shuffleCards(makeDeck());
   if (gameMode == "init") {
+    //Resets the card array and results when it starts again
+    player_cards = [];
+    computer_cards = [];
+    final_playerScore = 0;
+    computer_finalScore = 0;
+
     computer_cards = [shuffledDeck.pop(), shuffledDeck.pop()];
     console.log(computer_cards);
     player_cards = [shuffledDeck.pop(), shuffledDeck.pop()];
@@ -138,22 +148,13 @@ var main = function (input) {
       player_cards[1].suit;
 
     myOutputValue =
-      " Hello Player. These are your cards: " +
+      " Hello " +
+      player_username +
+      ". These are your cards: " +
       drawn_playerCard +
       " <br><br> Would you like to hit or stand?";
-    gameMode = "player_hit and stand";
-  }
 
-  if (computer_cards.value < 21 && computer_cards.length != 5) {
-    computer_cards.push(shuffledDeck.pop());
-  } else if (computer_cards.value == 21 && computer_cards.length <= 5) {
-    var computer_finalScore = 0;
-    var index = 0;
-    while (index < computer_cards.length) {
-      computer_finalScore = computer_finalScore + computer_cards[index].value;
-      index = index + 1;
-      console.log(computer_finalScore);
-    }
+    gameMode = "player_hit and stand";
   }
 
   if (gameMode == "player_hit and stand") {
@@ -165,24 +166,25 @@ var main = function (input) {
     } else if (input.toLowerCase() == "stand" || player_cards.length == 5) {
       var counter = 0;
       // Loop over the player cards array to check the total score of the cards
-      var final_playerScore = 0;
       while (counter < player_cards.length) {
         final_playerScore = final_playerScore + player_cards[counter].value;
         counter = counter + 1;
         console.log(final_playerScore);
-        gameMode = "score check";
       }
+      // Gets the total computer score
+      var index = 0;
+      while (index < computer_cards.length) {
+        computer_finalScore = computer_finalScore + computer_cards[index].value;
+        index = index + 1;
+        console.log(computer_finalScore);
+      }
+      gameMode = "score check";
     }
   }
+
   if (gameMode == "score check") {
     myOutputValue = winning_check(final_playerScore, computer_finalScore);
+    gameMode = "init"; //
   }
   return myOutputValue;
 };
-
-// } // For the computer to get the closest number to 21
-//       if (gameMode == "computer_hit and stand") {
-//         var computer_finalScore = COM_HIT_OR_STAND(computer_cards);
-//         console.log(computer_finalScore);
-//         gameMode = "score check";
-//       }
