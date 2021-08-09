@@ -140,7 +140,7 @@
         <!--Output-->        
         <div class="row justify-content-center align-items-center mx-4">
           <div class="col-lg-6 col-md-8 bg-dark rounded-3 text-center p-3">
-            <code class="text-light" id="output">The output appears here. (hopefully...)</code>
+            <code class="text-light" id="output">Please enter the number of players to start.</code>
           </div>
         </div>
       
@@ -156,7 +156,40 @@
         <div class="offcanvas-body">
         <!--CHANGE DESCRIPTION-->
           <div>
-            Some text as placeholder. In real life you can have the elements you have chosen. Like, text, images, lists, etc.
+            <p class="lead fw-bold my-2">Game</p>
+            <p>The goal of the game is to win points by creating card totals higher than the dealer's hand but not exceeding 21. The player can also stop at a total in the hope that dealer will exceed 21.</p>
+            <p>The game starts with everyone besides the dealer placing a bet.</p>
+            <p>Then, the dealer deals 1 card face up to each plater and 1 card face up to themselves.</p>
+            <p>Everyone is dealt one more face-up card besides the dealer, whose second card is dealt face down.</p>
+
+            <p class="lead fw-bold my-2">Cards</p>
+            <p>Number cards are scored through their face value. Jacks, Queens, and Kings are all equal to 10. Aces count as either 1 or 11. A total that exceeds 21 is a bust and the player or dealer is out of the game.</p>
+
+            <p class="lead fw-bold my-2">Player Decisions</p>
+            <p>After the initial two cards, each player has up to three options: "hit", "stand", or "split".</p>
+            <ul>
+              <li><b>Hit</b>: Take another card.</li>
+              <li><b>Stand</b>: Take no more cards, and it is the next player or dealer's turn.</li>
+              <li><b>Split</b>: Create two hands from a starting hand where both cards are the same value. Each new hand gets another card so that the player has two starting hands. The second hand needs an additional bet. The two hands are played out independently, and the wager on each hand is won or lost independently. In the case of cards worth 10 points, only cards which are the same rank can be split. For example, 10-10 can be split, but K-10 cannot.</li>
+            </ul>
+
+            <p class="lead fw-bold my-2">Dealer</p>
+            <p>After the players have finished playing, the dealer's hand is resolved by drawing cards until the hand achieves a total of 17 or higher. The dealer never splits.</p>
+            <p>If the dealer busts, all remaining player hands win. If the dealer does not bust, each remaining bet wins if its hand is higher than the dealer's and loses if it is lower.</p>
+              
+            <p class="lead fw-bold my-2">Blackjack</p>
+            <p>A card total of 21 on the first two cards is a "blackjack," and the player wins immediately unless the dealer also has one, in which case the hand ties. A blackjack beats any hand that is not a blackjack, even one with a value of 21.</p>
+              
+            <p class="lead fw-bold my-2">Points</p>
+            <p>Wins are paid out at even money, except for player blackjacks, which are paid out at 1.5 times the bet amount.</p>
+            <p>In the case of a tie ("push" or "standoff"), bets are returned without adjustment.</p> 
+            <p>The rules of the game are adapted from <a
+              href="https://en.wikipedia.org/wiki/Blackjack"
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Wikipedia Page on Blackjack"
+            >Wikipedia</a></p>
+            
           </div>
         </div>
       </div>
