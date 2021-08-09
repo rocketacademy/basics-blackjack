@@ -18,6 +18,7 @@ var computerInitialTotalHand = 0;
 var playerTotalHand = 0;
 var computerTotalHand = 0;
 var playerCardIndex = 0;
+var numberAcesInHand = 0;
 var userInput;
 
 // array to track player's and computer's hand
@@ -44,32 +45,28 @@ var makeDeck = function () {
     // This is an example of a loop without an array.
     var rankCounter = 1;
     while (rankCounter <= 13) {
-      // By default, the card name is the same as rankCounter
+      // By default, the card name is the same as rankCounter,and the value of the card is the same as rankCounter
       var cardName = rankCounter;
-
-      // If rank is 1, 11, 12, or 13, set cardName to the ace or face card's name
-      if (cardName == 1) {
-        cardName = "Ace";
-      } else if (cardName == 11) {
-        cardName = "Jack";
-      } else if (cardName == 12) {
-        cardName = "Queen";
-      } else if (cardName == 13) {
-        cardName = "King";
-      }
-
-      // By default, the value of the card is the same as rankCounter
       var valueCard = rankCounter;
 
+      // If rank is 1, 11, 12, or 13, set cardName to the ace or face card's name
       // If card rank is 2-10, value is same as rank
       // If card rank is 11-13, i.e. Jack, Queen, or King, value is 10
       // If card is Ace, value is 11 by default
-      if (valueCard == 1) {
+      if (cardName == 1) {
+        cardName = "Ace";
         valueCard = 11;
+      } else if (cardName == 11) {
+        cardName = "Jack";
+        valueCard = 10;
+      } else if (cardName == 12) {
+        cardName = "Queen";
+        valueCard = 10;
+      } else if (cardName == 13) {
+        cardName = "King";
+        valueCard = 10;
       } else if (valueCard >= 2 && valueCard <= 10) {
         valueCard = rankCounter;
-      } else if (valueCard >= 11 && valueCard <= 13) {
-        valueCard = 10;
       }
 
       // Create a new card with the current name, suit, and rank
@@ -167,41 +164,34 @@ var initialTotalHand = function () {
 
   //to get the total initial hand of the player
   playerTotalHand = 0;
-  var numberAcesInHand = 0;
+  numberAcesInHand = 0;
   var counter = 0;
   while (counter < playerHandValue.length) {
     playerTotalHand += playerHandValue[counter];
     counter += 1;
-    // if total hand > 21 and hand contains 2 ace, convert ace from value of 11 to 1
-    if (playerTotalHand > 21 && numberAcesInHand > 0) {
-      var counter = 0;
-      while (counter < numberAcesInHand) {
-        playerTotalHand -= 10;
-        counter += 1;
-      }
-      return playerTotalHand;
-    }
-
+  }
+  console.log("player total hand: " + playerTotalHand);
+  // if total hand > 21 and hand contains 2 ace, convert ace from value of 11 to 1
+  if (playerTotalHand == 22) {
+    numberAcesInHand += 2;
+    playerTotalHand -= 10;
     console.log("player total hand: " + playerTotalHand);
   }
   myOutputValue += `Player's total hand is ${playerTotalHand}. <br>`;
 
   //to get the total initial hand of the computer
   computerTotalHand = 0;
-  var numberAcesInHand = 0;
+  numberAcesInHand = 0;
   var counter = 0;
   while (counter < computerHandValue.length) {
     computerTotalHand += computerHandValue[counter];
     counter += 1;
-    // if total hand > 21 and hand contains 2 ace, convert ace from value of 11 to 1
-    if (computerTotalHand > 21 && numberAcesInHand > 0) {
-      var counter = 0;
-      while (counter < numberAcesInHand) {
-        computerTotalHand -= 10;
-        counter += 1;
-      }
-      return computerTotalHand;
-    }
+  }
+  console.log("computer total hand: " + computerTotalHand);
+  // if total hand > 21 and hand contains 2 ace, convert ace from value of 11 to 1
+  if (computerTotalHand == 22) {
+    numberAcesInHand += 2;
+    computerTotalHand -= 10;
     console.log("computer total hand: " + computerTotalHand);
   }
   myOutputValue += `Computer's total hand is ${computerTotalHand}. <br><br> `;
@@ -213,10 +203,6 @@ var initialTotalHand = function () {
 
 var hitOrStand = function (input) {
   var myOutputValue = "";
-  var numberAcesInHand = 0;
-
-  // //to change the card value
-  // changingCardValue();
 
   if (currentGameMode == "player hit or stand") {
     if (userInput == "hit") {
@@ -233,14 +219,14 @@ var hitOrStand = function (input) {
       // playerTotalHand += playerCard.rank;
       playerTotalHand += playerCard.value;
 
-      // if total hand > 21 and hand contains ace, convert ace from value of 11 to 1
-      if (playerTotalHand > 21 && numberAcesInHand > 0) {
+      // if total hand =20, but get 1 ace. convert ace value to 1,
+      if (playerTotalHand >= 20 && numberAcesInHand >= 0) {
         var counter = 0;
         while (counter < numberAcesInHand) {
+          numberAcesInHand = numberAcesInHand - 1;
           playerTotalHand -= 10;
           counter += 1;
         }
-        return playerTotalHand;
       }
 
       console.log("player total hand: " + playerTotalHand);
@@ -266,14 +252,14 @@ var hitOrStand = function (input) {
     // computerTotalHand += computerCard.rank;
     computerTotalHand += computerCard.value;
 
-    // if total hand > 21 and hand contains ace, convert ace from value of 11 to 1
-    if (computerTotalHand > 21 && numberAcesInHand > 0) {
+    // if total hand =20, but get 1 ace. convert ace value to 1,
+    if (computerTotalHand >= 20 && numberAcesInHand >= 0) {
       var counter = 0;
       while (counter < numberAcesInHand) {
+        numberAcesInHand = numberAcesInHand - 1;
         computerTotalHand -= 10;
         counter += 1;
       }
-      return computerTotalHand;
     }
 
     console.log("computer total hand: " + computerTotalHand);
