@@ -1,16 +1,21 @@
+var GM_NAME = "name";
 var GM_DEAL = "deal";
 var GM_PLAY = "play";
 var GM_REVEAL = "reveal";
-var NEW_GAME_MSG = "Click 'Submit' to start a new game!";
+var NEW_GAME_MSG =
+  "<br> Please input a new wager and click 'Submit' to start a new round!";
 var HIT_STAND = "Would you like to hit or stand? (hit/stand)";
 
-var gameMode = GM_DEAL;
+var userName = "";
+var gameMode = GM_NAME;
 var currentDeck = [];
 var playerHand = [];
 var comHand = [];
 var showCards = false;
 var comDone = false;
 var sumPlayer = 0;
+var playerPoints = 100;
+var currentBet = 0;
 
 var createNewDeck = function () {
   var cardDeck = [];
@@ -106,14 +111,12 @@ var printCardsHidden = function (array) {
 };
 
 var printHands = function () {
+  var msg = `${userName}'s hand: ${printCards(playerHand)} <br>`;
   if (showCards == false) {
-    var msg = `Your hand: ${printCards(
-      playerHand
-    )} <br> Dealer's hand: ${printCardsHidden(comHand)}`;
+    msg += `
+ Computer's hand: ${printCardsHidden(comHand)}`;
   } else {
-    var msg = `Your hand: ${printCards(
-      playerHand
-    )} <br> Dealer's hand: ${printCards(comHand)}`;
+    msg += `Computer's hand: ${printCards(comHand)}`;
   }
   return msg;
 };
@@ -130,7 +133,6 @@ var getSum = function (array) {
 };
 
 var playComTurn = function () {
-  showCards = true;
   var msg = `Computer stands.`;
   if (getSum(comHand) < 17) {
     var i = 0;
@@ -140,7 +142,6 @@ var playComTurn = function () {
     }
     msg = `Computer drew ${i} card(s).`;
   }
-  msg += `<br><br> ${printHands()} <br><br>`;
   return msg;
 };
 
@@ -178,24 +179,80 @@ var changeAces = function (sum, numAces) {
   return newSum;
 };
 
+var checkBusted = function (someone) {
+  showCards = true;
+  var msg = `<br><br> ${printHands()} <br><br> ${someone} busted! `;
+  gameMode = GM_DEAL;
+  return msg;
+};
+
+var countPointsTie = function () {
+  playerPoints += Number(currentBet);
+  myOutputValue += `You now have ${playerPoints} points.`;
+  currentBet = 0;
+  myOutputValue += NEW_GAME_MSG;
+  gameMode = GM_DEAL;
+};
+
+var countPointsWin = function (multiplier) {
+  playerPoints += Number(currentBet);
+  playerPoints += Number(currentBet) * multiplier;
+  myOutputValue += `You now have ${playerPoints} points.`;
+  currentBet = 0;
+  myOutputValue += NEW_GAME_MSG;
+  gameMode = GM_DEAL;
+};
+
+var countPointsLose = function (multiplier) {
+  playerPoints -= Number(currentBet) * (multiplier - 1);
+  currentBet = 0;
+  if (playerPoints > 0) {
+    myOutputValue += `You now have ${playerPoints} points.`;
+    myOutputValue += NEW_GAME_MSG;
+    gameMode = GM_DEAL;
+  } else {
+    myOutputValue +=
+      "You have no points remaining. <br> Please click 'Submit' to start a new game!";
+    playerPoints = 100;
+    gameMode = GM_NAME;
+  }
+};
+
 var main = function (input) {
-  if (gameMode == GM_DEAL) {
+  if (gameMode == GM_NAME) {
+    if (userName == "" && input == "") {
+      myOutputValue = "⚠️ Please enter your name before starting! ⚠️";
+    } else {
+      if (userName == "") {
+        userName = input;
+      }
+      myOutputValue = `Welcome ${userName}! <br> Please input your wager 💰 <br> You currently have ${playerPoints} points.`;
+      gameMode = GM_DEAL;
+    }
+  } else if (gameMode == GM_DEAL) {
+    if (input == "" || isNaN(input) || input == 0 || input > playerPoints) {
+      myOutputValue = `⚠️ Please enter a valid number for your wager! ⚠️ <br> <br> You currently have ${playerPoints} points.`;
+      return myOutputValue;
+    }
+    currentBet = input;
+    playerPoints -= currentBet;
+    myOutputValue = `[ Wager: ${currentBet} // Points remaining: ${playerPoints} ] <br><br>`;
     createNewGame();
-    myOutputValue = "Cards dealt.";
-    console.log(`Computer sum: ${getSum(comHand)}`);
+    myOutputValue += "Cards dealt.";
     // check for blackjacks
     if (getSum(playerHand) == 21 || getSum(comHand) == 21) {
       showCards = true;
       myOutputValue += `<br><br> ${printHands()} <br><br> `;
       if (getSum(playerHand) == getSum(comHand)) {
         myOutputValue += "Both you and computer blackjack! It's a tie! ";
+        countPointsTie();
       } else if (getSum(playerHand) == 21) {
         myOutputValue += "Blackjack! ";
+        countPointsWin(2);
       } else if (getSum(comHand) == 21) {
         myOutputValue += "Computer blackjack! ";
+        countPointsLose(2);
       }
-      myOutputValue += NEW_GAME_MSG;
-      return myOutputValue;
     } else {
       myOutputValue += `<br><br> ${printHands()} <br><br> ${HIT_STAND}`;
       gameMode = GM_PLAY;
@@ -205,39 +262,50 @@ var main = function (input) {
       myOutputValue = `⚠️ Invalid input! Please input 'hit' or 'stand' only. ⚠️ <br><br> ${printHands()} <br><br> ${HIT_STAND}`;
     } else if (input == "hit") {
       playerHand.push(currentDeck.shift());
-      myOutputValue = `You drew a card. `;
+      myOutputValue = `[ Wager: ${currentBet} // Points remaining: ${playerPoints} ] <br><br>`;
+      myOutputValue += `You drew a card. `;
       // variable ace value
       sumPlayer = changeAces(getSum(playerHand), checkAces(playerHand));
       // check for player bust
       if (sumPlayer > 21) {
-        showCards = true;
-        myOutputValue += `<br><br> ${printHands()} <br><br> You busted! ${NEW_GAME_MSG}`;
-        gameMode = GM_DEAL;
+        myOutputValue += checkBusted("You");
+        countPointsLose(1);
       } else {
         myOutputValue += `<br><br> ${printHands()} <br><br> ${HIT_STAND}`;
       }
     } else if (input == "stand") {
-      myOutputValue = "You stand. ";
+      myOutputValue = `[ Wager: ${currentBet} // Points remaining: ${playerPoints} ] <br><br>`;
+      myOutputValue += `You stand. `;
       myOutputValue += playComTurn();
       // variable ace value
+      sumPlayer = changeAces(getSum(playerHand), checkAces(playerHand));
       var sumCom = changeAces(getSum(comHand), checkAces(comHand));
       // check for computer bust
       if (sumCom > 21) {
-        myOutputValue += `Computer busted! ${NEW_GAME_MSG}`;
-        gameMode = GM_DEAL;
+        myOutputValue += checkBusted("Computer");
+        countPointsWin(1);
         return myOutputValue;
       }
       // check who wins
+      showCards = true;
+      myOutputValue += `<br><br> ${printHands()} <br><br>`;
       if (sumPlayer == sumCom) {
         myOutputValue += "It's a draw! ";
+        countPointsTie();
       } else if (sumPlayer > sumCom) {
         myOutputValue += "Congratulations you win! ";
+        countPointsWin(1);
       } else {
         myOutputValue += "Meh you lose! ";
+        countPointsLose(1);
       }
-      myOutputValue += NEW_GAME_MSG;
-      gameMode = GM_DEAL;
     }
   }
   return myOutputValue;
 };
+
+// instructions
+// multiplayer
+// split
+
+// refactor myoutput value
