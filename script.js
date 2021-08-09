@@ -17,7 +17,7 @@ var makeDeck = function () {
   // Initialise an empty deck array
   var cardDeck = [];
   // Initialise an array of the 4 suits in our deck. We will loop over this array.
-  var suits = ["Hearts", "Diamonds", "Clubs", "Spades"];
+  var suits = ["♥", "♦", "♣", "♠"];
 
   // Loop over the suits array
   var suitIndex = 0;
@@ -116,6 +116,9 @@ var dealCards = "deal";
 var hitOrStand = "yes or no";
 // default game mode
 var gameMode = gameStart;
+
+// store player name
+var playerName;
 
 // get total value of cards on hand
 // ace can be 1 or 11
@@ -228,11 +231,12 @@ var main = function (input) {
     }
   }
   // game start and game reset point
-  if (gameMode == gameStart && input == "") {
+  if (gameMode == gameStart && input != "") {
+    playerName = input;
     playerHand = [];
     dealerHand = [];
     gameMode = dealCards;
-    return `Welcome to Basic BlackJack! <br><br> Press submit to deal cards`;
+    return `Hi ${playerName}! Welcome to Basic BlackJack! <br><br> There will be only two players. <br> One human and one computer. <br> The computer will always be the dealer. <br> The player plays against the Dealer. <br> The dealer has to hit if their hand is below 17. <br> Closer to 21 wins the hand. Over 21 is bust. <br> When the player has the same total as the Dealer it is a stand off. <br> Aces can be 1 or 11. <br> Court cards count as 10 and all other cards have their face value. <br> Player may take as many cards as they wish up to a total of 21. <br><br> Press submit to deal cards`;
   }
   // deal cards
   if (gameMode == dealCards && input == "") {
