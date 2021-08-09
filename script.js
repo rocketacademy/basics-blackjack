@@ -1,5 +1,6 @@
 var hitOrStand = "Ask player to hit or stand.";
 var startDealing = "shuffle cards and start dealing";
+var aceDecision = "decide ace value";
 var gameMode = startDealing;
 
 var main = function (input) {
@@ -13,79 +14,92 @@ var main = function (input) {
     console.log("P: ", playerHand, " C: ", computerHand);
     //generate new sum
     sumOfPlayerHand = totalSumOfHand(playerHand);
-    sumOfComputerHand = totalSumOfHand(computerHand);
+
     //START GAME
 
-    //anyone gets a blackjack
-    if (sumOfPlayerHand == 21 || sumOfComputerHand == 21) {
-      blackjack(sumOfPlayerHand, sumOfComputerHand);
-      //if no one gets a blackjack; ask to hit or stand
-    } else {
+    if (
+      sumOfPlayerHand == 21 ||
+      sumOfComputerHand == 21 ||
+      (playerHand[0].name == "ace" && playerHand[1].name == "ace") ||
+      (computerHand[0].name == "ace" && computerHand[1].name == "ace")
+    ) {
+      return blackjack(sumOfPlayerHand, sumOfComputerHand);
+
+      //if no one gets a blackjack; check for ace in the dealt hand
+      // ask to hit or stand
+
+      //there is an ace
+    } else if (doesHandHaveAce(playerHand) > 0) {
+      gameMode = aceDecision;
+      myOutputValue = `Player drew: ${displayHand(
+        playerHand
+      )} Total is: ${sumOfPlayerHand}.<br><br> Do you want your ace to be 1 or 11? (Input 1 or 11 please)`;
+      return myOutputValue;
+
+      //there is no ace
+    } else if (doesHandHaveAce(playerHand) == 0) {
       gameMode = hitOrStand;
       myOutputValue = `Player drew: ${displayHand(
         playerHand
-      )} Total is: ${sumOfPlayerHand}.<br><br> Do you want to hit or stand? (Please enter hit/stand)`;
+      )} Total is: ${sumOfPlayerHand}.<br><br>Do you want to hit or stand? (Please enter hit/stand)`;
       return myOutputValue;
     }
+  } else if (gameMode == aceDecision) {
+    if (input == 1) {
+      sumOfPlayerHand = sumOfPlayerHand - 10;
+    } else if (input != 1 || input != 11) {
+      myOutputValue = `Please input 1 if you want the ace value to be 1.`;
+    }
+    gameMode = hitOrStand;
+    myOutputValue = `Player drew: ${displayHand(
+      playerHand
+    )} New total is: ${sumOfPlayerHand}.<br><br>Do you want to hit or stand? (Please enter hit/stand)`;
   } else if (gameMode == hitOrStand) {
     //if player decides to hit
     if (input == "hit") {
       //deal one card
       playerHand.push(playingDeck.pop());
-      sumOfPlayerHand = totalSumOfHand(playerHand); //is this necessary?
-      //player's hand doesnt hit 21
-      if (sumOfPlayerHand < 21) {
-        myOutputValue = `Player drew: ${displayHand(
-          playerHand
-        )} Total is: ${sumOfPlayerHand}. <br><br>Do you want to hit again? (Please input hit/stand)`;
-        //player's hand hits 21
-      } else if (sumOfPlayerHand == 21) {
-        myOutputValue = `Player drew: ${displayHand(
-          playerHand
-        )} Total is: ${sumOfPlayerHand}. Player wins! <br><br>Hit Submit to start dealing again.`;
-        gameMode = startDealing;
-      } else if (sumOfPlayerHand > 21) {
-        myOutputValue = `Player drew: ${displayHand(
-          playerHand
-        )} Total is: ${sumOfPlayerHand}. Bao! (i.e. it's a bust!) <br> Computer drew: ${displayHand(
-          computerHand
-        )}.<br>Total is: ${sumOfComputerHand}.<br> Computer Wins! <br><br>Hit Submit to start dealing again.`;
-        gameMode = startDealing;
-      }
-      console.log(gameMode);
+      console.log(playerHand);
 
-      return myOutputValue;
-      //if player decides to stand
-    } else if (input == "stand") {
-      //compare with computer hand
-      if (sumOfComputerHand < 21) {
-        if (sumOfComputerHand > sumOfPlayerHand) {
+      //check if new card is an ace
+      if (playerHand[playerHand.length - 1].name == "ace") {
+        sumOfPlayerHand = sumOfPlayerHand + 11;
+        gameMode = aceDecision;
+        myOutputValue = `Player drew: ${displayHand(
+          playerHand
+        )} New total sum is: ${sumOfPlayerHand}.<br><br> Do you want your ace to be 1 or 11? (Input 1 or 11 please)`;
+        return myOutputValue;
+      } else if (playerHand[playerHand.length - 1].name != "ace") {
+        sumOfPlayerHand =
+          sumOfPlayerHand + playerHand[playerHand.length - 1].value;
+        //player's hand doesnt hit 21
+        if (sumOfPlayerHand <= 21) {
           myOutputValue = `Player drew: ${displayHand(
             playerHand
-          )}. Total is: ${sumOfPlayerHand}. <br> Computer drew: ${displayHand(
+          )} Total is: ${sumOfPlayerHand}. <br><br>Do you want to hit again? (Please input hit/stand)`;
+          gameMode = hitOrStand;
+
+          //player burst
+        } else if (sumOfPlayerHand > 21) {
+          gameMode = startDealing;
+          return generateCompResult(
+            sumOfComputerHand,
+            computerHand,
+            sumOfPlayerHand,
             computerHand
-          )}. Total is: ${sumOfComputerHand}.<br> Computer Wins! <br><br>Hit Submit to start dealing again.`;
-        } else if (sumOfComputerHand < sumOfPlayerHand) {
-          myOutputValue = `Player drew: ${displayHand(
-            playerHand
-          )}. Total is: ${sumOfPlayerHand}. <br> Computer drew: ${displayHand(
-            computerHand
-          )}. Total is: ${sumOfComputerHand}.<br> Player Wins!<br><br>Hit Submit to start dealing again.`;
+          );
         }
-      } else if (sumOfComputerHand == sumOfPlayerHand) {
-        myOutputValue = `Player drew: ${displayHand(
-          playerHand
-        )} <br> Computer drew: ${displayHand(
-          computerHand
-        )} <br> ZAO (i.e. it's a tie)`;
-      } else if (sumOfComputerHand > 21) {
-        myOutputValue = `Player drew: ${displayHand(
-          playerHand
-        )} <br> Computer drew: ${displayHand(
-          computerHand
-        )} Bao! Computer exploded. <br> Player Wins!<br><br>Hit Submit to start dealing again.`;
+        console.log(gameMode);
       }
+      //if player decides to stand - player completes
+    } else if (input == "stand") {
       gameMode = startDealing;
+      return generateCompResult(
+        sumOfComputerHand,
+        computerHand,
+        sumOfPlayerHand,
+        computerHand
+      );
     }
   }
   return myOutputValue;
@@ -95,7 +109,7 @@ var makeDeck = function () {
   // Initialise an empty deck array
   var cardDeck = [];
   // Initialise an array of the 4 suits in our deck. We will loop over this array.
-  var suits = ["hearts", "diamonds", "clubs", "spades"];
+  var suits = ["he♥︎rts", "d♦︎amonds", "cl♣︎bs", "sp♠︎des"];
 
   // Loop over the suits array
   var suitIndex = 0;
@@ -123,7 +137,7 @@ var makeDeck = function () {
       }
       var value = rankCounter;
       if (rankCounter == 1) {
-        value = 1;
+        value = 11;
       } else if (rankCounter == 11) {
         value = 10;
       } else if (rankCounter == 12) {
@@ -188,9 +202,8 @@ var displayHand = function (hand) {
   var message = ``;
   for (var i = 0; i < hand.length; i += 1) {
     // Construct a string using attributes of each card object
-    var cardTitle = `${hand[i].name} of ${hand[i].suit}, `;
-    message = message + cardTitle;
-    console.log(cardTitle);
+    var cardTitle = `${hand[i].name} of ${hand[i].suit}`;
+    message = message + ', ' + cardTitle;
   }
   return message;
 };
@@ -202,6 +215,7 @@ var generateHand = function () {
   }
   return hand;
 };
+// var playerHand = [];
 var playerHand = [];
 var computerHand = [];
 
@@ -219,25 +233,195 @@ console.log("sumOfComputerHand", sumOfComputerHand);
 //function to evaluate blackjack
 var blackjack = function (sumOfPlayerHand, sumOfComputerHand) {
   var myOutputValue = "";
-  //if someone gets a blackjack
-  if (sumOfPlayerHand == 21 && sumOfComputerHand == 21) {
+  //if there is an ace
+
+  //if someone gets a Ban-ban
+
+  if (
+    (playerHand[0].name == "ace" && playerHand[1].name == "ace") ||
+    (computerHand[0].name == "ace" && computerHand[1].name == "ace")
+  ) {
+    if (
+      playerHand[0].name == "ace" &&
+      playerHand[1].name == "ace" &&
+      computerHand[0].name == "ace" &&
+      computerHand[1].name == "ace"
+    ) {
+      myOutputValue =
+        "Everyone BAN BAN. WOW! (Double Ace)<br><br>Hit Submit to start dealing again.";
+    } else if (playerHand[0].name == "ace" && playerHand[1].name == "ace") {
+      myOutputValue =
+        "Player BAN BAN! WOW! (Double Ace) <br><br>Hit Submit to start dealing again.";
+    } else if (computerHand[0].name == "ace" && computerHand[1].name == "ace") {
+      myOutputValue =
+        "Computer BAN BAN! (Double Ace)<br><br>Hit Submit to start dealing again.";
+    }
+
+    //if someone gets a blackjack
+  } else if (sumOfPlayerHand == 21 && sumOfComputerHand == 21) {
     myOutputValue = `Player drew: ${displayHand(
       playerHand
     )} <br> Computer drew: ${displayHand(
       computerHand
-    )} <br> Everyone won! All Ban Luck!`;
+    )} <br> Everyone won! All Ban Luck!<br><br>Hit Submit to start dealing again.`;
   } else if (sumOfPlayerHand == 21 && sumOfComputerHand != 21) {
     myOutputValue = `Player drew: ${displayHand(
       playerHand
     )} <br> Computer drew: ${displayHand(
       computerHand
-    )} <br> Player won! Ban Luck!`;
+    )} <br> Player won! Ban Luck!<br><br>Hit Submit to start dealing again.`;
   } else if (sumOfPlayerHand != 21 && sumOfComputerHand == 21) {
     myOutputValue = `Player drew: ${displayHand(
       playerHand
     )} <br> Computer drew: ${displayHand(
       computerHand
-    )} <br> Computer won! Ban Luck!`;
+    )} <br> Computer won! Ban Luck!<br><br>Hit Submit to start dealing again.`;
   }
   return myOutputValue;
+};
+
+//check if the hand has a ace card
+var doesHandHaveAce = function (hand) {
+  var aceFlag = 0;
+  for (var i = 0; i < hand.length; i += 1) {
+    if (hand[i].value == 11) {
+      aceFlag += 1;
+    }
+  }
+  return aceFlag;
+};
+
+var generateCompResult = function (
+  sumOfComputerHand,
+  computerHand,
+  sumOfPlayerHand,
+  computerHand
+) {
+  var myOutputValue =
+    "if this shows, there is a bug for generateCompResultFunction";
+  console.log(myOutputValue);
+  // check if comp hand has ace
+  //if sum (with ace) is more than 21 (burst), change ace to value of 1.
+
+  var compHitAgain = `mode to check if comp should hit again`;
+  var compMovesOn = "mode after com hand is >16";
+  var decisionMode = compHitAgain;
+
+  //decides if computer should hit again:
+  if (decisionMode == compHitAgain) {
+    console.log(decisionMode);
+    if (sumOfComputerHand < 16) {
+      while (sumOfComputerHand < 16) {
+        computerHand.push(playingDeck.pop());
+        sumOfComputerHand = totalSumOfHand(computerHand);
+      }
+      decisionMode = compMovesOn;
+    } else {
+      decisionMode = compMovesOn;
+    }
+  }
+  if (decisionMode == compMovesOn) {
+    //compare player hand with computer hand
+    console.log("decisionMode (comp mode): " + decisionMode);
+    //if computer sum is between 16 - 21
+    if (sumOfComputerHand >= 16 && sumOfComputerHand <= 21) {
+      //computer winning conditions
+      //player burst
+      if (sumOfPlayerHand > 21) {
+        myOutputValue = `Player drew: ${displayHand(
+          playerHand
+        )}. Total is: ${sumOfPlayerHand}. Player bao! <br> Computer drew: ${displayHand(
+          computerHand
+        )}. Total is: ${sumOfComputerHand}.<br> Computer Wins! <br><br>Hit Submit to start dealing again.`;
+        return myOutputValue;
+
+        //player doesnt burst and computer wins
+      } else if (sumOfPlayerHand <= 21 && sumOfComputerHand > sumOfPlayerHand) {
+        myOutputValue = `Player drew: ${displayHand(
+          playerHand
+        )}. Total is: ${sumOfPlayerHand}. <br> Computer drew: ${displayHand(
+          computerHand
+        )}. Total is: ${sumOfComputerHand}.<br> Computer Wins! <br><br>Hit Submit to start dealing again.`;
+        return myOutputValue;
+        //player wins
+      } else if (sumOfPlayerHand <= 21 && sumOfComputerHand < sumOfPlayerHand) {
+        myOutputValue = `Player drew: ${displayHand(
+          playerHand
+        )}. Total is: ${sumOfPlayerHand}. <br> Computer drew: ${displayHand(
+          computerHand
+        )}. Total is: ${sumOfComputerHand}.<br> Player Wins!<br><br>Hit Submit to start dealing again.`;
+        return myOutputValue;
+        //ties
+      } else if (sumOfComputerHand == sumOfPlayerHand) {
+        myOutputValue = `Player drew: ${displayHand(
+          playerHand
+        )} <br> Computer drew: ${displayHand(
+          computerHand
+        )} <br> ZAO (i.e. it's a tie)`;
+        return myOutputValue;
+      } else if (computerHand.length >=5 && sumOfComputerHand <= 21 &&
+         playerHand.length >= 5 && sumOfPlayerHand <= 21){
+          myOutputValue = 'Everyone Wu Long. Time to buy 4D!'
+          //tired to do the scenario where only 1 gets wulong
+        }
+      }
+      // ======================================= works till here =======================================
+      //computer burst
+    } else if (sumOfComputerHand > 21) {
+      //check if computer has an ace (which value remains at 11)
+      if (doesHandHaveAce(computerHand) > 0) {
+        console.log("computer hand has ace");
+        //if 1st card = ace, change value to 1
+        if (computerHand[0].value == 11) {
+          computerHand[0].value == 1;
+          sumOfComputerHand = totalSumOfHand(computerHand);
+          decisionMode = compHitAgain;
+          //if 2nd card = ace, change value to 1
+        } else if (computerHand[1].value == 11) {
+          computerHand[1].value == 1;
+          sumOfComputerHand = totalSumOfHand(computerHand);
+          decisionMode = compHitAgain;
+          //if 3rd card = ace, change value to 1
+        } else if (computerHand[2].value == 11) {
+          computerHand[2].value == 1;
+          sumOfComputerHand = totalSumOfHand(computerHand);
+          decisionMode = compHitAgain;
+          //if 4th card = ace, change value to 1
+        } else if (computerHand[3].value == 11) {
+          computerHand[3].value == 1;
+          sumOfComputerHand = totalSumOfHand(computerHand);
+          decisionMode = compHitAgain;
+          //if 5th card = ace, change value to 1
+        } else if (computerHand[4].value == 11) {
+          computerHand[4].value == 1;
+          sumOfComputerHand = totalSumOfHand(computerHand);
+          decisionMode = compHitAgain;
+        }
+      }
+      //computer burst
+      else if (sumOfComputerHand > 21 && sumOfPlayerHand <= 21) {
+        console.log(
+          "comp hand had no more aces & comp bao && player never bao"
+        );
+        myOutputValue = `Player drew: ${displayHand(
+          playerHand
+        )} <br> Computer drew: ${displayHand(
+          computerHand
+        )} Bao! Computer exploded. <br> Player Wins!<br><br>Hit Submit to start dealing again.`;
+        return myOutputValue;
+
+        //player and computer burst
+      } else if (sumOfComputerHand > 21 && sumOfPlayerHand > 21) {
+        console.log("comp hand had no more aces & comp bao && player also bao");
+
+        myOutputValue = `Player drew: ${displayHand(
+          playerHand
+        )} <br> Computer drew: ${displayHand(
+          computerHand
+        )} Bao! Everyone exploded. <br> Player Wins!<br><br>Hit Submit to start dealing again.`;
+        return myOutputValue;
+      }
+    }
+    return myOutputValue;
+  }
 };
