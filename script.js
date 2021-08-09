@@ -1,120 +1,116 @@
 let cardDeck = [];
-let playerHand = [];
-let dealerHand = [];
-let gameMode = "generate deck";
+let gameMode = "start game";
+let playersProfile = new Array();
+let dealersProfile = new Array();
+let allProfiles = new Array();
+let currentPlayer = 0;
 
-// indicating whether player is in or out (bust)
-let playerBust = false;
+const resetGame = () => {
+  cardDeck = [];
+  gameMode = "start game";
+  playersProfile = new Array();
+  dealersProfile = new Array();
+  allProfiles = new Array();
+  currentPlayer = 0;
+};
 
 const main = (input) => {
-  if (gameMode === "generate deck") {
-    mainDeck();
-    return "Deck is ready";
+  if (gameMode === "start game") {
+    startGame();
+    createPlayersProfile(input);
+    createDealerProfile();
+    dealHands();
+    getPoints(playersProfile);
+    getPoints(dealersProfile);
+    allProfiles = playersProfile.concat(dealersProfile);
+    instantWinner(allProfiles);
+    return `${instantWinner(
+      allProfiles
+    )} \<br\><br\>\You have ${input} players. The profiles are: \<br\>\ ${displayProfile(
+      allProfiles
+    )}\<br\>\
+    `;
   }
 
-  if (gameMode === "the deal") {
-    //Player clicks Submit to deal 2 cards for player and dealer.
-    playerHand = [cardDeck.pop(), cardDeck.pop()];
-    dealerHand = [cardDeck.pop(), cardDeck.pop()];
-    //The cards are analysed for game winning conditions, e.g. Blackjack.
-    if (totalValue(playerHand) < 21 && totalValue(dealerHand) !== 21) {
-      gameMode = "the play";
-      return `Choose hit/stand.\<br\>\Current total value: ${totalValue(
-        playerHand
-      )} vs ${totalValue(dealerHand)}\<br\>\Player:\<br\>\ ${display(
-        playerHand
-      )}
-      \<br\>\ Dealer:\<br\>\ ${display(dealerHand)}`;
-    }
-    if (totalValue(playerHand) === 21 && totalValue(dealerHand) !== 21) {
-      return `BlackJack! You won.\<br\>\Current total value: ${totalValue(
-        playerHand
-      )} vs ${totalValue(dealerHand)}\<br\>\Player:\<br\>\ ${display(
-        playerHand
-      )}
-      \<br\>\ Dealer:\<br\>\ ${display(dealerHand)}`;
-    }
-    if (totalValue(dealerHand) === 21 && totalValue(playerHand) !== 21) {
-      return `BlackJack! Dealer won.\<br\>\Current total value: ${totalValue(
-        playerHand
-      )} vs ${totalValue(dealerHand)}\<br\>\Player:\<br\>\ ${display(
-        playerHand
-      )}
-      \<br\>\ Dealer:\<br\>\ ${display(dealerHand)}`;
-    }
-    if (totalValue(dealerHand) === 21 && totalValue(playerHand) === 21) {
-      return `It's a draw.\<br\>\Current total value: ${totalValue(
-        playerHand
-      )} vs ${totalValue(dealerHand)}\<br\>\Player:\<br\>\ ${display(
-        playerHand
-      )}
-      \<br\>\ Dealer:\<br\>\ ${display(dealerHand)}`;
-    }
+  if (gameMode === "the game") {
+    if (currentPlayer < playersProfile.length) {
+      if (input === "hit") {
+        hitPlayer();
+        let bustcheck = checkBust();
+        let instantend = instantWinner(allProfiles);
+        currentPlayer += 1;
+        return `Player ${currentPlayer} chose hit.\<br\>\ ${bustcheck} \<br\>\ ${instantend} \<br\>\ ${displayProfile(
+          allProfiles
+        )}`;
+      }
+      if (input === "stand") {
+        currentPlayer += 1;
+        return `Player ${currentPlayer} chose stand. \<br\>\ ${displayProfile(
+          allProfiles
+        )}`;
+      }
+    } else hitDealer();
+    allProfiles = playersProfile.concat(dealersProfile);
+    removeLoser(allProfiles);
+    return winnerFound(allProfiles);
   }
 
-  if (gameMode === "the play") {
-    // as long as player is not bust (total value is <= 21), player can always chose hit or stand
-    if (input === "hit") {
-      let drawnCardPlayer = cardDeck.pop();
-      playerHand.push(drawnCardPlayer);
-      if (totalValue(playerHand) <= 21) {
-        return `Choose hit/stand.\<br\>\ Current total value: ${totalValue(
-          playerHand
-        )} vs ${totalValue(dealerHand)}\<br\>\Player:\<br\>\ ${display(
-          playerHand
-        )}
-      \<br\>\ Dealer:\<br\>\ ${display(dealerHand)}`;
-      }
-      return `Busted. You lose.\<br\>\ Current total value: ${totalValue(
-        playerHand
-      )} vs ${totalValue(dealerHand)}\<br\>\Player:\<br\>\ ${display(
-        playerHand
-      )}
-      \<br\>\ Dealer:\<br\>\ ${display(dealerHand)}`;
-    }
+  if (gameMode === "final") {
+    resetGame();
+    return `Please enter number of players`;
+  }
+};
 
-    if (input === "stand") {
-      totalValue(dealerHand);
-      //dealer will keep drawing cards as long as total value is less than 17
-      while (totalValue(dealerHand) <= 17) {
-        let drawnCardDealer = cardDeck.pop();
-        console.log(drawnCardDealer);
-        dealerHand.push(drawnCardDealer);
-      }
-      //evaluate winner, whoever is closest under 21 won. Dealer could be busted too.
-      if (totalValue(dealerHand) <= 21) {
-        if (totalValue(playerHand) > totalValue(dealerHand)) {
-          return `You won. \<br\>\ Current total value: ${totalValue(
-            playerHand
-          )} vs ${totalValue(dealerHand)}\<br\>\Player:\<br\>\ ${display(
-            playerHand
-          )}
-      \<br\>\ Dealer:\<br\>\ ${display(dealerHand)}`;
-        }
-        if (totalValue(playerHand) < totalValue(dealerHand)) {
-          return `You lose. \<br\>\ Current total value: ${totalValue(
-            playerHand
-          )} vs ${totalValue(dealerHand)}\<br\>\Player:\<br\>\ ${display(
-            playerHand
-          )}
-      \<br\>\ Dealer:\<br\>\ ${display(dealerHand)}`;
-        }
-        if (totalValue(playerHand) === totalValue(dealerHand)) {
-          return `It's a draw\<br\>\ Current total value: ${totalValue(
-            playerHand
-          )} vs ${totalValue(dealerHand)}\<br\>\Player:\<br\>\ ${display(
-            playerHand
-          )}
-      \<br\>\ Dealer:\<br\>\ ${display(dealerHand)}`;
-        }
-      }
-      return `You won. Dealer is busted.\<br\>\Current total value: ${totalValue(
-        playerHand
-      )} vs ${totalValue(dealerHand)}\<br\>\Player:\<br\>\ ${display(
-        playerHand
-      )}
-      \<br\>\ Dealer:\<br\>\ ${display(dealerHand)}`;
+const startGame = () => {
+  //generate 3 decks of cards
+  makeDeck();
+  makeDeck();
+  makeDeck();
+  //shuffle the 3 decks
+  shuffleCards(cardDeck);
+
+  return cardDeck;
+};
+
+const createPlayersProfile = (num) => {
+  for (let i = 1; i <= num; i++) {
+    let playerHand = new Array();
+    let players = { Name: "Player " + i, ID: i, Points: 0, Hand: playerHand };
+    playersProfile.push(players);
+  }
+};
+
+const createDealerProfile = () => {
+  let dealerHand = [cardDeck.pop(), cardDeck.pop()];
+  let dealers = { Name: "Dealer", ID: "dealer", Points: 0, Hand: dealerHand };
+  dealersProfile.push(dealers);
+};
+
+const hitDealer = () => {
+  while (dealersProfile[0].Points <= 17) {
+    let drawnCardDealer = cardDeck.pop();
+    dealersProfile[0].Hand.push(drawnCardDealer);
+    getPoints(dealersProfile);
+  }
+};
+
+const dealHands = () => {
+  // deal 2 cards per player
+  for (let i = 0; i < 2; i++) {
+    for (let x = 0; x < playersProfile.length; x++) {
+      let card = cardDeck.pop();
+      playersProfile[x].Hand.push(card);
     }
+  }
+};
+
+// total value for each player
+const getPoints = (anArray) => {
+  let points = 0;
+  for (let i = 0; i < anArray.length; i++) {
+    points += totalValue(anArray[i].Hand);
+    anArray[i].Points = points;
+    points = 0;
   }
 };
 
@@ -147,30 +143,81 @@ const sumValue = (anArray) => {
     .reduce((acc, curVal) => acc + curVal);
 };
 
-const mainDeck = () => {
-  //generate 3 decks of cards
-  makeDeck();
-  makeDeck();
-  makeDeck();
-  //shuffle the 3 decks
-  shuffleCards(cardDeck);
-  gameMode = "the deal";
-  return cardDeck;
+//winning conditions for 'BLACKJACK'
+const instantWinner = (anArray) => {
+  let instantwinner = 0;
+  for (let i = 0; i < anArray.length; i++) {
+    if (anArray[i].Points === 21) {
+      instantwinner = anArray[i].ID;
+    }
+  }
+  if (instantwinner === 0) {
+    gameMode = "the game";
+    return `Nobody has BLACKJACK. `;
+  }
+  if (instantwinner !== 0) {
+    gameMode = "final";
+    return `BLACKJACK STATUS. Player: ${instantwinner} WON. Please restart the game by clicking submit`;
+  }
 };
 
-//prep display of playerCard
-const display = (anArray) =>
+//removing losers from array
+const removeLoser = (anArray) => {
+  for (var i = 0; i < anArray.length; i++) {
+    if (anArray[i].Points > 21) {
+      anArray.splice(i, 1);
+    }
+  }
+};
+
+//winning conditions
+const winnerFound = (anArray) => {
+  let maxPoints = 0;
+  let winner = 0;
+  for (let i = 0; i < anArray.length; i++) {
+    if (anArray[i].Points > maxPoints) {
+      maxPoints = anArray[i].Points;
+      winner = anArray[i].ID;
+    }
+  }
+  gameMode = "final";
+  return `Player: ${winner} WON. Points: ${maxPoints} \<br\>\ ${displayProfile(
+    allProfiles
+  )}`;
+};
+
+//check if anybody is busted, then end the game
+const checkBust = () => {
+  if (playersProfile[currentPlayer].Points > 21) {
+    return `Player: ${playersProfile[currentPlayer].ID} is BUSTED.`;
+  }
+  return "";
+};
+
+//if current player choose hit
+const hitPlayer = () => {
+  let drawnCardPlayer = cardDeck.pop();
+  playersProfile[currentPlayer].Hand.push(drawnCardPlayer);
+  getPoints(playersProfile);
+};
+
+//prep display of players Profile
+const displayProfile = (anArray) =>
   anArray.reduce(
     (acc, curVal) =>
-      `${acc} Name: ${curVal.name}. Suit: ${curVal.suit}\<br\>\ `,
+      `${acc}\<br\>\ ${curVal.Name}
+      Points: ${curVal.Points} Hand: ${displayHands(curVal.Hand)}\<br\>\ `,
     ""
   );
 
-// sorting function for playerHand
-const sortCard = (anArray) =>
-  anArray.sort((a, b) => {
-    return b.rank - a.rank;
-  });
+//prep display of playerHands
+const displayHands = (anArray) => {
+  return anArray.reduce(
+    (acc, curVal) => `${acc}\<br\>\ card name: ${curVal.name}
+    card suit: ${curVal.suit}`,
+    ""
+  );
+};
 
 //auto generate 52 cards deck
 const makeDeck = () => {
