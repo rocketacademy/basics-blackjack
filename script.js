@@ -93,6 +93,7 @@ var playerPoints = 0;
 var dealerPoints = 0;
 var playerWins = 0;
 var dealerWins = 0;
+var stand;
 
 // ################ MAIN FUNCTION ################
 var main = function (input) {
@@ -171,9 +172,9 @@ var main = function (input) {
     myOutputValue = `Your current points is ${playerPoints}<br>Hit or stand?`;
 
     // -------------------- STAND --------------------
-    if (input.toLowerCase() == "stand") {
+    if (input.toLowerCase() == "stand" || stand == "forced") {
       // dealer draws AFTER player stands if points less than 17
-      for (j = 0; j < 5; j++) {
+      for (j = 0; j < 3; j++) {
         if (dealerPoints < 17) {
           dealerHand.push(shuffledDeck.pop());
           dealerPoints = handPoints(dealerHand);
@@ -197,10 +198,10 @@ var main = function (input) {
       // announce winner
       if (playerPoints == 21 || playerScoreDiff < dealerScoreDiff) {
         playerWins += 1;
-        myOutputValue += `<br>You win! <br><br>Player wins: ${playerWins}<br>Dealer wins: ${dealerWins}`;
+        myOutputValue += `<br>You win! <br>Press 'Submit' to play again. <br><br>Player wins: ${playerWins}<br>Dealer wins: ${dealerWins}`;
       } else {
         dealerWins += 1;
-        myOutputValue += `<br>Dealer wins! <br><br>Player wins: ${playerWins}<br>Dealer wins: ${dealerWins}`;
+        myOutputValue += `<br>Dealer wins! <br>Press 'Submit' to play again. <br><br>Player wins: ${playerWins}<br>Dealer wins: ${dealerWins}`;
       }
       mode = "start";
       return myOutputValue;
@@ -210,7 +211,17 @@ var main = function (input) {
     if (input.toLowerCase() == "hit") {
       var playerCards = "You have drawn<br><br>";
 
-      playerHand.push(shuffledDeck.pop());
+      // cannot draw more than 5 cards
+      if (playerHand.length != 5) {
+        playerHand.push(shuffledDeck.pop());
+      } else {
+        console.log("force stand");
+        stand = "forced";
+        myOutputValue =
+          "You cannot draw more than 5 cards.<br>Please enter 'stand' to see if you've won.";
+        return myOutputValue;
+      }
+
       console.log("player hits:", playerHand);
 
       // ---------- PLAYER POINTS ----------
