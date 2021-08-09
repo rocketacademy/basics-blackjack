@@ -6,20 +6,21 @@
 5) >21 = bust
 */
 
-//Creating the deck
-
 gameDeck = [];
-playerHand = [];
-compHand = [];
+playerHand = []; //Cards player has
+pTotal = []; //Sum of cards
+compHand = []; //Cards COMPUTER has
+cTotal = []; //Sum of cards
 
 /*Modes
 0 - initial draw phase
-1 - player draws
-2 - COMP draws
-3 - Compare
+1 - player action
+2 - COMP action
+3 - Determine winner
 */
-currentMode = 3;
+currentMode = 0;
 
+//Creating deck
 var mainDeck = function () {
   cardDeck = [];
   var cardSuits = ["♦️", "♣️", "♥️", "♠️"];
@@ -67,7 +68,7 @@ var mainDeck = function () {
   return cardDeck;
 };
 
-//Shuffle the deck
+//Shuffle function
 var shuffle = function (cardDeck) {
   // Loop over the card deck array once
   var currentIndex = 0;
@@ -115,26 +116,70 @@ var initialDraw = function () {
   console.log(compHand);
 };
 
-// //Summation of card ranks
-// var totalHandRank = function (playerHand, compHand) {
-//   //Player card power
-//   var pTotal = 0;
-//   for (iTot = 0; iTot < playerHand.length; iTot += 1) {
-//     pTotal += Number(playerHand[iTot].rank);
-//   }
-//   console.log(`The sum of the player's cards is ` + pTotal);
-//   //COMP card power
-//   var cTotal = 0;
-//   for (iTot = 0; iTot < compHand.length; iTot += 1) {
-//     cTotal += Number(compHand[iTot].rank);
-//   }
-//   console.log(`The sum of the COMPS's cards is ` + cTotal);
-// };
+//Counting rank, or score, function
+var playerScore = function () {
+  //Player score
+  var pSum = 0;
+  for (iTot = 0; iTot < playerHand.length; iTot += 1) {
+    pSum += Number(playerHand[iTot].rank);
+  }
+  console.log(`Player card score: ` + pSum);
+  pTotal.push(pSum);
+  console.log(`Player hand: `);
+  console.log(playerHand);
+};
+
+//COMP score
+var compScore = function () {
+  var cSum = 0;
+  for (iTot = 0; iTot < compHand.length; iTot += 1) {
+    cSum += Number(compHand[iTot].rank);
+  }
+  console.log(`COMP card score: ` + cSum);
+  cTotal.push(cSum);
+  console.log(`COMP hand: `);
+  console.log(compHand);
+};
 
 //Player adds cards - 1
-var playerAddsCards = function (input) {};
+var playerAction = function (input) {
+  console.log(`-Current mode: ` + currentMode);
+  playerScore();
+  if (currentMode == 1 && input == "stay") {
+    currentMode = 2;
+    console.log(`Mode changed to: ` + currentMode);
+    myOutputValue = `You have decided to keep your hand. Please click SUBMIT for the dealer to have their turn.`;
+  } else if (currentMode == 1 && input == "") {
+    var playerCard = gameDeck.pop();
+    playerHand.push(playerCard);
+    var myOutputValue = greyBoxCardOutput(playerHand, compHand);
+    console.log(`CHECK MODE: ` + currentMode);
+    console.log(`>>Player added card.`);
+    myOutputValue =
+      myOutputValue +
+      `Would you like to stay as you are or add an additional card? Click SUBMIT to add a card, or enter 'stay' to finish your turn.`;
+    playerScore();
+  }
+  return myOutputValue;
+};
 
 //COMP adds cards - 2
+var compAction = function () {
+  console.log(`CHECK MODE: ` + currentMode);
+  compScore();
+
+  if (compHand.length == 5 || cTotal > 17) {
+    currentMode = 3;
+    console.log(`Mode changed to: ` + currentMode);
+    var myOutputValue = `The dealer has decided to stand!`;
+  } else if (cTotal < 18) var compCard = gameDeck.pop();
+  compHand.push(compCard);
+  console.log(`>>COMPUTER added card.`);
+  compScore();
+  var myOutputValue = `The dealer added a card to their hand. Please click SUBMIT.`;
+
+  return myOutputValue;
+};
 
 //Display card properly in output to player
 var greyBoxCardOutput = function (playerHand, compHand) {
@@ -152,18 +197,19 @@ var greyBoxCardOutput = function (playerHand, compHand) {
 
 //Determination
 var determineWinner = function () {
-  var pTotal = 18;
-  var cTotal = 20;
-  //Calculating player card power
-  for (iTot = 0; iTot < playerHand.length; iTot += 1) {
-    pTotal += Number(playerHand[iTot].rank);
-  }
-  console.log(`The sum of the player's cards is ` + pTotal);
-  //Calculating COMP card power
-  for (iTot = 0; iTot < compHand.length; iTot += 1) {
-    cTotal += Number(compHand[iTot].rank);
-  }
-  console.log(`The sum of the COMPS's cards is ` + cTotal);
+  // var pTotal = 0;
+  // var cTotal = 0;
+  // //Calculating player card power
+  // for (iTot = 0; iTot < playerHand.length; iTot += 1) {
+  //   pTotal += Number(playerHand[iTot].rank);
+  // }
+  // console.log(`The sum of the player's cards is ` + pTotal);
+  // //Calculating COMP card power
+  // for (iTot = 0; iTot < compHand.length; iTot += 1) {
+  //   cTotal += Number(compHand[iTot].rank);
+  // }
+  // console.log(`The sum of the COMPS's cards is ` + cTotal);
+
   //Output statements
   if (pTotal == cTotal) {
     return `You draw with the dealer's hand of ${cTotal}!`;
@@ -180,17 +226,27 @@ var determineWinner = function () {
 
 //Main function
 var main = function (input) {
+  console.log(`>>>>Program start`);
+  console.log(`Current Mode: ` + currentMode);
+  if (currentMode == 3) {
+    myOutputValue = determineWinner();
+  }
+  if (currentMode == 2 && input == "") {
+    myOutputValue = compAction();
+  }
+  if (currentMode == 1) {
+    myOutputValue = playerAction(input);
+  }
   if (currentMode == 0) {
     shuffleTheDeck();
     initialDraw();
-    // totalHandRank(playerHand, compHand);
     var myOutputValue = greyBoxCardOutput(playerHand, compHand);
     myOutputValue =
       myOutputValue +
-      `Would you like to stay as you are or add an additional card? Type 'stay' or 'hit'.`;
+      `Would you like to stay as you are or add an additional card? Click SUBMIT to add a card, or enter 'stay' to finish your turn.`;
+    currentMode = 1;
+    console.log(`Mode changed to: ` + currentMode);
   }
-  if (currentMode == 3) {
-    var myOutputValue = determineWinner();
-  }
+  console.log("<<<<Program end");
   return myOutputValue;
 };
