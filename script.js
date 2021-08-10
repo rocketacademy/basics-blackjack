@@ -4,8 +4,8 @@ var GM_NAME = "name";
 var GM_DEAL = "deal";
 var GM_PLAY = "play";
 var GM_REVEAL = "reveal";
-var NEW_GAME_MSG =
-  "<br> Please input a new wager and click 'Submit' to start a new round!";
+var NEW_ROUND_MSG =
+  "<br> <br> Please input the wagers for each player (separated by a space) and click 'Submit' to start a new round!";
 var HIT_STAND = "would you like to hit or stand? (hit/stand)";
 var STATUS_BUST = "*BUST*";
 var STATUS_STAND = "*STAND*";
@@ -164,41 +164,6 @@ var addPlayers = function (array) {
   return playersArray;
 };
 
-var getSum = function (array) {
-  var sum = 0;
-  var i = 0;
-  while (i < array.length) {
-    var currentRank = array[i].rank;
-    sum += currentRank;
-    i += 1;
-  }
-  return sum;
-};
-
-var getNextPlayer = function () {
-  var index = 0;
-  while (players[index].inRound == false) {
-    index += 1;
-    if (index >= players.length) {
-      break;
-    }
-  }
-  return index;
-};
-
-var playComTurn = function () {
-  var msg = `Computer stands.`;
-  if (changeAces(getSum(comHand), checkAces(comHand)) < 17) {
-    var i = 0;
-    while (changeAces(getSum(comHand), checkAces(comHand)) < 17) {
-      comHand.push(currentDeck.shift());
-      i += 1;
-    }
-    msg = `Computer drew ${i} card(s).`;
-  }
-  return msg;
-};
-
 var createNewGame = function () {
   currentPlayer = -1;
   currentDeck = [];
@@ -214,6 +179,55 @@ var createNewGame = function () {
     i += 1;
   }
   comHand = currentDeck.splice(0, 2);
+};
+
+var checkPlayerBJ = function () {
+  var bjIndex = 0;
+  while (bjIndex < players.length) {
+    if (getSum(players[bjIndex].hand) == 21) {
+      players[bjIndex].status = STATUS_BJ;
+      players[bjIndex].inRound = false;
+    }
+    bjIndex += 1;
+  }
+};
+
+var getSum = function (array) {
+  var sum = 0;
+  var i = 0;
+  while (i < array.length) {
+    var currentRank = array[i].rank;
+    sum += currentRank;
+    i += 1;
+  }
+  return sum;
+};
+
+var payoutBJ = function () {
+  var PlayerBJIndex = 0;
+  while (PlayerBJIndex < players.length) {
+    if (players[PlayerBJIndex].status == STATUS_BJ) {
+      countPointsWinBJ(PlayerBJIndex);
+    }
+    PlayerBJIndex += 1;
+  }
+};
+
+var getNextPlayer = function () {
+  var index = 0;
+  while (players[index].inRound == false) {
+    index += 1;
+    if (index >= players.length) {
+      break;
+    }
+  }
+  return index;
+};
+
+var endPlayersTurn = function () {
+  gameMode = GM_REVEAL;
+  myOutputValue += `<br><br> ${printHands()} <br><br> Click 'Submit' to reveal Computer's hand!`;
+  myOutputValue += `<br><br> 📊 Tally: <br> ${printPlayers("wagers")}`;
 };
 
 var checkAces = function (array) {
@@ -239,10 +253,45 @@ var changeAces = function (sum, numAces) {
   return newSum;
 };
 
-var endPlayersTurn = function () {
-  gameMode = GM_REVEAL;
-  myOutputValue += `<br><br> ${printHands()} <br><br> Click 'Submit' to reveal Computer's hand!`;
-  myOutputValue += `<br><br> Players: <br> ${printPlayers("wagers")}`;
+var playComTurn = function () {
+  var msg = `Computer stands.`;
+  if (changeAces(getSum(comHand), checkAces(comHand)) < 17) {
+    var i = 0;
+    while (changeAces(getSum(comHand), checkAces(comHand)) < 17) {
+      comHand.push(currentDeck.shift());
+      i += 1;
+    }
+    msg = `Computer drew ${i} card(s).`;
+  }
+  return msg;
+};
+
+var payoutEnd = function () {
+  var sum = changeAces(getSum(comHand), checkAces(comHand));
+  var payoutIndex = 0;
+  while (payoutIndex < players.length) {
+    if (sum > 21) {
+      if (players[payoutIndex].status == STATUS_BUST) {
+        countPointsTie(payoutIndex);
+      } else if (players[payoutIndex].status == STATUS_STAND) {
+        countPointsWin(payoutIndex);
+      }
+    } else {
+      if (players[payoutIndex].status == STATUS_BUST) {
+        countPointsLose(payoutIndex);
+      } else if (players[payoutIndex].status == STATUS_STAND) {
+        if (players[payoutIndex].sum > sum) {
+          console.log("win");
+          countPointsWin(payoutIndex);
+        } else if (players[payoutIndex].sum == sum) {
+          countPointsTie(payoutIndex);
+        } else {
+          countPointsLose(payoutIndex);
+        }
+      }
+    }
+    payoutIndex += 1;
+  }
 };
 
 // ======== POINTS RELATED ==========//
@@ -261,7 +310,7 @@ var countPointsWin = function (i) {
 var countPointsLose = function (i) {
   players[i].wager = 0;
   if (players[i].points <= 0) {
-    players[i].inRound = false;
+    // remove player
   }
 };
 
@@ -275,7 +324,7 @@ var countPointsLoseBJ = function (i) {
   players[i].points -= Number(players[i].wager);
   players[i].wager = 0;
   if (players[i].points <= 0) {
-    players[i].inRound = false;
+    // remove player
   }
 };
 
@@ -289,9 +338,10 @@ var main = function (input) {
       myOutputValue = "⚠️ Please enter at least 1 name before starting! ⚠️";
     } else {
       players = addPlayers(namesArray);
-      myOutputValue = `Welcome! <br><br> Players: <br> ${printPlayers(
+      myOutputValue = `Welcome! <br><br> 📊 Tally: <br> ${printPlayers(
         "points"
-      )} <br> Please input the wagers for each player separated by a space. 💰 <br>`;
+      )}`;
+      myOutputValue += NEW_ROUND_MSG;
       gameMode = GM_DEAL;
     }
   } else if (gameMode == GM_DEAL) {
@@ -300,7 +350,7 @@ var main = function (input) {
     var wagersArray = input.split(" ");
     console.log(wagersArray);
     if (input == "" || wagersArray.length < players.length) {
-      myOutputValue = `⚠️ Please input the wagers for each player separated by a space! ⚠️ <br><br> Players: <br> ${printPlayers(
+      myOutputValue = `⚠️ Please input the wagers for each player separated by a space! ⚠️ <br><br> 📊 Tally: <br> ${printPlayers(
         "points"
       )}`;
       return myOutputValue;
@@ -312,7 +362,7 @@ var main = function (input) {
         wagersArray[wagerIndex] == 0 ||
         wagersArray[wagerIndex] > players[wagerIndex].points
       ) {
-        myOutputValue = `⚠️ Please enter a valid wager for each player! ⚠️ <br><br> Players: <br> ${printPlayers(
+        myOutputValue = `⚠️ Please enter a valid wager for each player! ⚠️ <br><br> 📊 Tally: <br> ${printPlayers(
           "points"
         )}`;
         return myOutputValue;
@@ -324,24 +374,8 @@ var main = function (input) {
     }
     // ========== deal cards ==========
     createNewGame();
-    players[0].hand = [
-      { name: "K", suit: "spades", rank: 10, emoji: "♠️" },
-      { name: "A", suit: "spades", rank: 11, emoji: "♠️" },
-    ];
-    // comHand = [
-    //   { name: "K", suit: "spades", rank: 10, emoji: "♠️" },
-    //   { name: "A", suit: "spades", rank: 11, emoji: "♠️" },
-    // ];
     myOutputValue = "Cards dealt.";
-    // ========== check for PLAYER blackjacks ==========
-    var bjIndex = 0;
-    while (bjIndex < players.length) {
-      if (getSum(players[bjIndex].hand) == 21) {
-        players[bjIndex].status = STATUS_BJ;
-        players[bjIndex].inRound = false;
-      }
-      bjIndex += 1;
-    }
+    checkPlayerBJ();
     // ========== check for COMPUTER blackjacks ==========
     if (getSum(comHand) == 21) {
       showCards = true;
@@ -355,19 +389,11 @@ var main = function (input) {
         }
         ComBJIndex += 1;
       }
-      myOutputValue +=
-        "<br> Please input the wagers for each player (separated by a space) for the next round. 💰 ";
-      myOutputValue += `<br><br> Players: <br> ${printPlayers("points")}`;
-      return myOutputValue;
+      myOutputValue += NEW_ROUND_MSG;
+      myOutputValue += `<br><br> 📊 Tally: <br> ${printPlayers("points")}`;
     } else {
       // ========== payout for player blackjack ==========
-      var PlayerBJIndex = 0;
-      while (PlayerBJIndex < players.length) {
-        if (players[PlayerBJIndex].status == STATUS_BJ) {
-          countPointsWinBJ(PlayerBJIndex);
-        }
-        PlayerBJIndex += 1;
-      }
+      payoutBJ();
       // ========== start hit/stand cycle ==========
       currentPlayer = getNextPlayer();
       if (currentPlayer >= players.length) {
@@ -378,15 +404,15 @@ var main = function (input) {
         players[currentPlayer].name
       }, ${HIT_STAND}`;
       gameMode = GM_PLAY;
+      myOutputValue += `<br><br> 📊 Tally: <br> ${printPlayers("wagers")}`;
     }
-    myOutputValue += `<br><br> Players: <br> ${printPlayers("wagers")}`;
   } else if (gameMode == GM_PLAY) {
     // ###################### GAME MODE NAME (HIT OR STAND) ###########################
     if (input != "hit" && input != "stand") {
       myOutputValue = `⚠️ Invalid input! Please input 'hit' or 'stand' only. ⚠️ <br><br> ${printHands()} <br><br> ${
         players[currentPlayer].name
       }, ${HIT_STAND}`;
-      myOutputValue += `<br><br> Players: <br> ${printPlayers("wagers")}`;
+      myOutputValue += `<br><br> 📊 Tally: <br> ${printPlayers("wagers")}`;
     } else {
       if (input == "hit") {
         // =========================== hit ==========================
@@ -411,7 +437,7 @@ var main = function (input) {
         myOutputValue += `<br><br> ${printHands()} <br><br> ${
           players[currentPlayer].name
         }, ${HIT_STAND}`;
-        myOutputValue += `<br><br> Players: <br> ${printPlayers("wagers")}`;
+        myOutputValue += `<br><br> 📊 Tally: <br> ${printPlayers("wagers")}`;
       } else if (input == "stand") {
         // =========================== stand ============================
         myOutputValue = `${players[currentPlayer].name} chose to stand. `;
@@ -430,7 +456,7 @@ var main = function (input) {
         myOutputValue += `<br><br> ${printHands()} <br><br> ${
           players[currentPlayer].name
         }, ${HIT_STAND}`;
-        myOutputValue += `<br><br> Players: <br> ${printPlayers("wagers")}`;
+        myOutputValue += `<br><br> 📊 Tally: <br> ${printPlayers("wagers")}`;
       }
     }
   } else if (gameMode == GM_REVEAL) {
@@ -438,33 +464,8 @@ var main = function (input) {
     myOutputValue = playComTurn();
     showCards = true;
     myOutputValue += `<br><br> ${printHands()} <br><br>`;
-    // ========== variable ace value ==========
     var sumCom = changeAces(getSum(comHand), checkAces(comHand));
-    // ========== check for COMPUTER bust ==========
-    var payoutIndex = 0;
-    while (payoutIndex < players.length) {
-      if (sumCom > 21) {
-        if (players[payoutIndex].status == STATUS_BUST) {
-          countPointsTie(payoutIndex);
-        } else if (players[payoutIndex].status == STATUS_STAND) {
-          countPointsWin(payoutIndex);
-        }
-      } else {
-        if (players[payoutIndex].status == STATUS_BUST) {
-          countPointsLose(payoutIndex);
-        } else if (players[payoutIndex].status == STATUS_STAND) {
-          if (players[payoutIndex].sum > sumCom) {
-            console.log("win");
-            countPointsWin(payoutIndex);
-          } else if (players[payoutIndex].sum == sumCom) {
-            countPointsTie(payoutIndex);
-          } else {
-            countPointsLose(payoutIndex);
-          }
-        }
-      }
-      payoutIndex += 1;
-    }
+    payoutEnd();
     if (sumCom > 21) {
       myOutputValue += "Computer busted! All surviving players wins!";
     } else if (sumCom == 21) {
@@ -472,9 +473,8 @@ var main = function (input) {
     } else {
       myOutputValue += `All players larger than ${sumCom} wins!`;
     }
-    myOutputValue += `<br><br> Players: <br> ${printPlayers("points")}`;
-    myOutputValue +=
-      "<br> Please input the wagers for each player (separated by a space) for the next round. 💰 ";
+    myOutputValue += `<br><br> 📊 Tally: <br> ${printPlayers("points")}`;
+    myOutputValue += NEW_ROUND_MSG;
     gameMode = GM_DEAL;
   }
   return myOutputValue;
