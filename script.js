@@ -3,6 +3,8 @@ var suits = ["hearts", "diamonds", "clubs", "spades"];
 var cardCounter = 1;
 var suitCounter = 0;
 var scoreCounter = 1;
+var playerPoints = 100;
+var playerWager = 0;
 
 var createDeck = function () {
   while (suitCounter <= suits.length - 1) {
@@ -66,14 +68,42 @@ var dealCard = function (cards, deck) {
 var sumOfHand = function (hand) {
   handCounter = 0;
   handSum = 0;
+  aceInHand = 0;
   while (handCounter < hand.length) {
     handSum += hand[handCounter].score;
+    if (aceInHand == 0 && hand[handCounter].name == "Ace") {
+      aceInHand = 1;
+      handSum += 10;
+    }
     handCounter += 1;
+    // to deal with the Ace problem - just assume Ace is 11 first, provided this is the first Ace
+  }
+  // if handSum exceeds 21 cos of Ace being 11, deduct 10 to make Ace 1
+  if (aceInHand == 1 && handSum > 21) {
+    handSum -= 10;
+    aceInHand = 0;
   }
   return handSum;
 };
 
 var main = function (input) {
+  if (playerPoints == 0) {
+    return "you've lost everything...refresh to get another 100 points!";
+  }
+  if (input == "" && playerWager == 0) {
+    return (
+      "How many points would you like to wager? Choose a number greater than 0. <br><br> Points available: " +
+      playerPoints
+    );
+  }
+  if (playerWager == 0) {
+    playerWager = input;
+    playerPoints -= playerWager;
+    return (
+      `You wagered ${playerWager} points.` + " Submit again to start the game!"
+    );
+  }
+
   if (playersCards.length == 0) {
     shuffleDeck(createDeck());
     console.log(deckOfCards);
@@ -82,10 +112,19 @@ var main = function (input) {
     dealCard(playersCards, deckOfCards);
     dealCard(computersCards, deckOfCards);
     if (sumOfHand(playersCards) == 21 && sumOfHand(computersCards) == 21) {
+      playersCards = [];
+      computersCards = [];
+      playerWager = 0;
       return "Blackjack! Computer won (dealer)";
     } else if (sumOfHand(playersCards) == 21) {
+      playerPoints += playerWager * 2;
+      playersCards = [];
+      computersCards = [];
+      playerWager = 0;
       return "Blackjack! Player won";
     } else if (sumOfHand(computersCards) == 21) {
+      playersCards = [];
+      computersCards = [];
       return "Blackjack! Computer won";
     } else {
       return (
@@ -99,31 +138,38 @@ var main = function (input) {
         playersCards[1].suit +
         "<br><br> Your score is " +
         sumOfHand(playersCards) +
-        " Please choose to hit or stand"
+        ". Please choose to hit or stand"
       );
     }
   }
   if (input == "hit") {
     dealCard(playersCards, deckOfCards);
     if (sumOfHand(playersCards) == 21) {
+      playerPoints += playerWager * 2;
+      playerWager = 0;
+      playersCards = [];
+      computersCards = [];
       return "Blackjack! Player won";
     } else if (sumOfHand(playersCards) > 21) {
-      return (
+      playerWager = 0;
+      gameOutcome =
         "bust, you drew " +
         playersCards[playersCards.length - 1].name +
         " of " +
-        playersCards[playersCards.length - 1].suit
-      );
+        playersCards[playersCards.length - 1].suit;
+      playersCards = [];
+      computersCards = [];
+      return gameOutcome;
     } else {
-      return (
+      gameOutcome =
         "You just drew " +
         playersCards[playersCards.length - 1].name +
         " of " +
         playersCards[playersCards.length - 1].suit +
         "<br><br> Your score is " +
         sumOfHand(playersCards) +
-        " Please choose to hit or stand"
-      );
+        " Please choose to hit or stand";
+      return gameOutcome;
     }
   }
   // if (input == "stand") {
@@ -136,20 +182,43 @@ var main = function (input) {
   //   }
   // }
   if (input == "done" || input == "stand") {
-    console.log(sumOfHand(computersCards));
-    console.log(computersCards);
+    // console.log(sumOfHand(computersCards))
+    // console.log(computersCards)
     while (sumOfHand(computersCards) < 17) {
       dealCard(computersCards, deckOfCards);
     }
     if (sumOfHand(computersCards) > 21) {
-      return "computer lose";
+      gameOutcome = "computer lose";
+      playerPoints += playerWager * 2;
+      playerWager = 0;
+      gameOutcome +=
+        "<br><br>" +
+        `Computer score: ${sumOfHand(computersCards)}` +
+        "<br><br>" +
+        `Your score: ${sumOfHand(playersCards)}`;
+      playersCards = [];
+      computersCards = [];
+      return gameOutcome;
     }
     if (sumOfHand(playersCards) > sumOfHand(computersCards)) {
-      return "the computer lost; you won";
+      playerPoints += playerWager * 2;
+      playerWager = 0;
+      gameOutcome = "the computer lost; you won";
     } else if (sumOfHand(playersCards) < sumOfHand(computersCards)) {
-      return "the computer won; you lost";
+      playerWager = 0;
+      gameOutcome = "the computer won; you lost";
     } else {
-      return "the computer won cos it was a draw";
+      playerWager = 0;
+      gameOutcome = "the computer won cos it was a draw";
     }
+
+    gameOutcome +=
+      "<br><br>" +
+      `Computer score: ${sumOfHand(computersCards)}` +
+      "<br><br>" +
+      `Your score: ${sumOfHand(playersCards)}`;
+    playersCards = [];
+    computersCards = [];
+    return gameOutcome;
   }
 };
