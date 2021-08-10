@@ -63,8 +63,8 @@ var dealCard = function (cards, deck) {
 var sumOfHand = function (hand) {
   handCounter = 0;
   handSum = 0;
-  while (handCounter <= hand.length) {
-    handSum += hand[handCounter].scoreCounter;
+  while (handCounter < hand.length) {
+    handSum += hand[handCounter].score;
     handCounter += 1;
   }
   return handSum;
@@ -72,7 +72,7 @@ var sumOfHand = function (hand) {
 
 var main = function (input) {
   if (playersCards.length == 0) {
-    deckOfCards = shuffleDeck(createDeck());
+    shuffleDeck(createDeck());
     console.log(deckOfCards);
     dealCard(playersCards, deckOfCards);
     dealCard(computersCards, deckOfCards);
@@ -101,7 +101,7 @@ var main = function (input) {
     }
   }
   if (input == "hit") {
-    dealCard(playersCards);
+    dealCard(playersCards, deckOfCards);
     if (sumOfHand(playersCards) == 21) {
       return "Blackjack! Player won";
     } else if (sumOfHand(playersCards) > 21) {
