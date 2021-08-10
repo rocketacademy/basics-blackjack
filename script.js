@@ -1,3 +1,4 @@
+console.log('testing git hub')
 var makeDeck = function () {
   // Initialise an empty deck array
   var cardDeck = [];
