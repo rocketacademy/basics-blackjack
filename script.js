@@ -13,18 +13,17 @@ const BLACKJACK = "blackjack";
 const HIT = "hit";
 const STAND = "stand";
 const SPLIT = "split";
+const defaultNames = ["Alice", "Bob", "Condi", "Dev", "Ed", "Foobar"];
+const defaultBets = ["10", "10", "10", "10", "10", "10"];
 const COLOUR_BLUE = "#013D87";
 const COLOUR_GREEN = "#018786";
 const COLOUR_RED = "#B00020";
 const COLOUR_YELLOW = "#F9D342";
-const defaultNames = [
-  "Alice",
-  "Bob",
-  "Chen Xi",
-  "Dennis",
-  "Ee Ching",
-  "Ferris",
-];
+const BORDER_SPAN = `<span style="border:1px; border-style:solid; border-color:#FFFFFF; padding: 0.25em 0.5em;">`;
+const createBackground = function (colour) {
+  return `<div class="fw-bold" style="display: inline-block; border-radius:5px; background-color:${colour}; padding: 0.25em 2em;">`;
+};
+const BLACK_TEXT = `<span style="color: #292826">`;
 
 //////////////////////////////////////////////////////////////
 ////////////////////// Global Variables //////////////////////
@@ -151,22 +150,27 @@ function shuffleCards(cardDeck) {
 /**
  * ------------------------------------------------------------------------
  * Template for player objects.
- * @argument {String} id   The player's id.
+ * @argument  {String}  id        The player's id.
+ * @argument  {String}  name      The player's name.
+ * @argument  {Boolean} isSplit   Whether a player object is a split of a player.
+ * @argument  {Number}  points    Player starting points.
+ * @argument  {Number}  bet       Player's bet for the round.
  * ------------------------------------------------------------------------
  */
 
 class Player {
-  constructor(id) {
+  constructor(id, name = "", isSplit = false, points = 100, bet = 0) {
     this.id = id;
-    this._name = "";
+    this._name = name;
     this.hand = [];
+    this.isSplit = isSplit;
     this.canSplit = false;
     this.hasBlackjack = false;
     this.hasBust = false;
     this.hasWon = false;
     this.hasDrew = false;
-    this.points = 100;
-    this._bet = 0;
+    this.points = points;
+    this._bet = bet;
   }
 
   /**
@@ -193,6 +197,10 @@ class Player {
 
   set bet(bet) {
     this._bet = Number(bet);
+  }
+
+  get bet() {
+    return this._bet;
   }
 
   calcPoints() {
@@ -276,10 +284,10 @@ class Player {
 
   get showHand() {
     return `${this.name}<br>
-    <span style="border:1px; border-style:solid; border-color:#FFFFFF; padding: 0.25em 0.5em;">${this.hand
+    ${BORDER_SPAN}${this.hand
       .map((element) => element.display)
       .join(" | ")}</span><br>
-    Value: ${this.handValue}.<br>`;
+    Value: ${this.handValue}<br>`;
   }
 
   /**
@@ -358,7 +366,7 @@ function playerDecide(player) {
   // Decision for player to make
   return `Now it's ${player.name}'s turn.<br><br>
   Dealer's Face Up Card<br>
-  <span style="border:1px; border-style:solid; border-color:#FFFFFF; padding: 0.25em 0.5em;">${dealerFaceUpCard.display}</span><br><br>
+  ${BORDER_SPAN}${dealerFaceUpCard.display}</span><br><br>
   ${player.showHand}<br>
   Please enter "hit/stand/split".`;
 }
@@ -385,11 +393,20 @@ function dealerHitStand(dealer) {
 
 function evalDealerHand() {
   if (dealer.hasBlackjack) {
-    return "Dealer got a Blackjack. All players lose except players with a Blackjack.";
+    return `${createBackground(COLOUR_YELLOW)}
+    ${BLACK_TEXT}
+    Dealer got a Blackjack.</span></div><br>
+    All players lose except players with a Blackjack.`;
   } else if (dealer.hasBust) {
-    return "Dealer has bust. All players still in play wins.";
+    return `${createBackground(COLOUR_RED)}
+    Dealer has bust.</div><br>
+    ${createBackground(COLOUR_GREEN)}
+    All players still in play wins.</div>`;
   } else {
-    return "All players with a hand better than the Dealer wins.";
+    return `${createBackground(COLOUR_BLUE)}
+    Dealer got ${dealer.handValue}.</div><br>
+    ${createBackground(COLOUR_GREEN)}
+    Players with a better hand wins.</div>`;
   }
 }
 
@@ -408,12 +425,17 @@ function evalHands() {
     // Player and dealer have Blackjacks
     if (player.hasBlackjack && dealer.hasBlackjack) {
       player.hasDrew = true;
-      output += `<div class="fw-bold" style="display: inline-block; border-radius:5px; background-color:${COLOUR_BLUE}; padding: 0.25em 2em;">Both ${player.name} and the Dealer got Blackjacks, it's a draw!</div>`;
+      output += `${createBackground(COLOUR_BLUE)}
+      Both ${player.name} and the Dealer got Blackjacks, it's a draw!
+      </div>`;
     }
     // Player has Blackjacks but not dealer
     else if (player.hasBlackjack) {
       player.hasWon = true;
-      output += `<div class="fw-bold" style="display: inline-block; border-radius:5px; background-color:${COLOUR_YELLOW}; padding: 0.25em 2em;"><span style="color: #292826">${player.name} got a Blackjack!</span></div>`;
+      output += `${createBackground(COLOUR_YELLOW)}
+      ${BLACK_TEXT}
+      ${player.name} got a Blackjack!
+      </span></div>`;
     }
     // Player wins the dealer
     else if (
@@ -421,7 +443,9 @@ function evalHands() {
       (!player.hasBust && dealer.hasBust)
     ) {
       player.hasWon = true;
-      output += `<div class="fw-bold" style="display: inline-block; border-radius:5px; background-color:${COLOUR_GREEN}; padding: 0.25em 2em;">${player.name} won the Dealer!</div>`;
+      output += `${createBackground(COLOUR_GREEN)}
+      ${player.name} won!
+      </div>`;
     }
     // Player loses to the dealer
     else if (
@@ -429,16 +453,24 @@ function evalHands() {
       (!dealer.hasBust && dealer.handValue > player.handValue) ||
       (!dealer.hasBust && player.hasBust)
     ) {
-      output += `<div class="fw-bold" style="display: inline-block; border-radius:5px; background-color:${COLOUR_RED}; padding: 0.25em 2em;">${player.name} lost to the Dealer.</div>`;
+      output += `${createBackground(COLOUR_RED)}
+      ${player.name} lost to the Dealer.
+      </div>`;
     }
     // Player draw with the the dealer
     else {
       player.hasDrew = true;
-      output += `<div class="fw-bold" style="display: inline-block; border-radius:5px; background-color:${COLOUR_BLUE}; padding: 0.25em 2em;">${player.name} drew with the Dealer.</div>`;
+      output += `${createBackground(COLOUR_BLUE)}
+      ${player.name} drew with the Dealer.
+      </div>`;
     }
     player.calcPoints();
     player.reset();
     output += `<br>Current Points: ${player.points}<br><br>`;
+    if (player.points <= 0) {
+      output += `${player.name} ran out of points and is eliminated!`;
+      playerBoard.splice(playerBoard.indexOf(player), 1);
+    }
   }
   output += "Place your bets again for the next round!";
   return output;
@@ -457,12 +489,26 @@ function evalHands() {
 
 function endGame() {
   dealerHitStand(dealer);
-  let evaluation = evalHands();
-
   // Compute bets then reset everyone's hands, bets and booleans
-  for (let player of playerBoard) {
-  }
+  let evaluation = evalHands();
   dealer.reset();
+
+  // Handle splits
+  for (
+    let playerCounter = 0;
+    playerCounter < playerBoard.length;
+    playerCounter += 1
+  ) {
+    if (playerBoard[playerCounter].isSplit) {
+      // Add split hand's points back to main player's points
+      playerBoard[playerCounter - 1].points += Number(
+        playerBoard[playerCounter].points
+      );
+
+      // Remove split hands player objects from player board
+      playerBoard.splice(playerCounter, 1);
+    }
+  }
 
   // Generate new deck
   cardDeck = shuffleCards(createDeck());
@@ -504,24 +550,28 @@ const gameplay = {
     execute(input) {
       let names = input.split("/");
       if (input == "") {
-        names = defaultNames.splice(0, numOfPlayers);
-      } else if (names.length != numOfPlayers) {
-        return `There are ${numOfPlayers} players but only ${names.length} names entered, please check and try again.`;
+        names = defaultNames.slice(0, playerBoard.length);
+      } else if (names.length != playerBoard.length) {
+        return `There are ${playerBoard.length} players but only ${names.length} names entered, please check and try again.`;
       }
       for (let i = 0; i < names.length; i += 1) {
         playerBoard[i].name = names[i];
       }
       gameMode = INPUT_BETS;
-      return `Now that everything is set, let's start playing Blackjack!<br><br>
-    Bet your points in the same order as the names separated by slashes "/".<br>
-    Every player starts with 100 points.`;
+      return `Now, let's place your bets for Blackjack!<br>
+      Every player starts with 100 points.<br><br>
+      Bet your points in the same order as the names separated by slashes "/".<br>
+      Example: "10/25/30/15"`;
     },
   },
   inputBets: {
     execute(input) {
       let bets = input.split("/");
-      if (bets.length != numOfPlayers) {
-        return `There are ${numOfPlayers} players but only ${bets.length} bets were entered, please check and try again.<br>
+      if (input == "") {
+        bets = defaultBets.slice(0, playerBoard.length);
+      }
+      if (bets.length != playerBoard.length) {
+        return `There are ${playerBoard.length} players but only ${bets.length} bets were entered, please check and try again.<br>
         If a player does not wish to bet, please enter "0" for that player.`;
       }
       for (let i = 0; i < bets.length; i += 1) {
@@ -544,10 +594,13 @@ const gameplay = {
         let player = playerBoard[playerTurn];
         switch (input) {
           case "hit":
-            if (player.hasBlackjack || player.hasBust) {
+            if (player.handValue >= 21) {
               playerTurn += 1;
               player = playerBoard[playerTurn];
-              return `The previous player has a blackjack or has bust and can't hit.<br><br>
+              if (playerTurn >= playerBoard.length) {
+                break;
+              }
+              return `The previous player has a Blackjack, a hand total of 21 or has bust and can't hit.<br><br>
               ${playerDecide(player)}`;
             }
             player.hit(cardDeck.pop());
@@ -562,7 +615,17 @@ const gameplay = {
               ${playerDecide(player)}`;
             }
             player.canSplit = false;
-            // split function here.
+            let splitHand = new Player(
+              player.id,
+              player.name + " Hand B",
+              true,
+              0,
+              player.bet
+            );
+            splitHand.hit(player.hand.pop());
+            player.hit(cardDeck.pop());
+            splitHand.hit(cardDeck.pop());
+            playerBoard.splice(playerTurn + 1, 0, splitHand);
             break;
         }
         if (playerTurn >= playerBoard.length) {
