@@ -95,14 +95,14 @@ var dealCardToHand = function (hand) {
 };
 
 // Return a string of ranks and suits of cards in the input cards array
-var printCards = function (cards) {
+var printCards = function (hand) {
   var returnString = '';
-  // Iterate until cards.length - 1 so we can avoid the extra comma at the end of return string
-  for (var i = 0; i < cards.length - 1; i += 1) {
-    var currCard = cards[i];
-    returnString += `${currCard.name} of ${currCard.suit}, `;
+  // Iterate until hand.length - 1 so we can avoid the extra comma at the end of return string
+  for (var i = 0; i < hand.length - 1; i += 1) {
+    var newCard = hand[i];
+    returnString += `${newCard.name} of ${newCard.suit}, `;
   }
-  var lastCard = cards[cards.length - 1];
+  var lastCard = hand[hand.length - 1];
   returnString += `${lastCard.name} of ${lastCard.suit}`;
   return returnString;
 };
