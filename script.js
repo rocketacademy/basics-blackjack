@@ -87,78 +87,111 @@ var shuffleCards = function (cardDeck) {
 var newDeck = shuffleCards(makeDeck());
 
 //Game Rules
-var gameOver = false;
+var compGameOver = false;
+var playerGameOver = false;
 var scoreLimit = 21;
-var gameMode = `startHand`;
+var START_HAND = `startHand`;
+var HIT_OR_STAND = "hitOrStand";
+var COMPTURN = "compTurn"; //Hit until 17
+var ENDGAME = "endGame";
+var gameMode = START_HAND;
 
-//Bust at over 21 points
-if (scoreLimit > 21) {
-  gameOver = true;
-}
-// var gameCheck = function(){
-//   (if hand>scoreLimit){
-//     return gameOver = true;
-//   }
-// }
-//BlackJack
-
-//Convert to output (Copied from reference)
-var convertHandToString = function (hand) {
-  return `[${hand.map((card) => card.name)}]`;
-};
-
-//String value (Copied from reference)
-var getDefaultOutput = function () {
-  return `Player has hand ${convertHandToString(
-    playerHand
-  )} with sum ${getHandSum(playerHand)}. <br>
-    Computer has hand ${convertHandToString(
-      computerHand
-    )} with sum ${getHandSum(computerHand)}.`;
-};
-
-//Combine hand score (Copied from reference)
-var getHandSum = function (hand) {
-  var numAcesInHand = 0;
-  var score = 0;
-  for (let i = 0; i < hand.length; i += 1) {
-    var currCard = hand[i];
-    // If card rank is 2-10, value is same as rank
-    if (currCard.rank === 1) {
-      numAcesInHand += 1;
-      score += 11;
-    } else currCard.rank >= 2 && currCard.rank >= 13;
-    score += hand[i].points;
-  }
-  // If sum is greater than sum limit and hand contains Aces, convert Aces from value of 11
-  // to value of 1, until sum is less than or equal to sum limit or there are no more Aces.
-  if (score > scoreLimit && numAcesInHand > 0) {
-    for (let i = 0; i < numAcesInHand; i += 1) {
-      sum -= 10;
-      // If the sum is less than sumLimit before converting all Ace values from
-      // 11 to 1, break out of the loop and return the current sum.
-      if (score <= scoreLimit) {
-        break; //Ends the loop immediately
-      }
-    }
-  }
-  return score;
-};
+var compHand = [];
+var playerHand = [];
 
 var main = function (input) {
-  //Start game
-  if (gameMode == `startHand`) {
-    var compHand = [newDeck.pop(), newDeck.pop()];
-    var playerHand = [newDeck.pop(), newDeck.pop()];
-    //Combine Player hands
-    var playerScore = getHandSum(playerHand);
-    console.log(`Player Score: ${playerScore}`);
-    //Combine Computer hands
-    var compScore = getHandSum(compHand);
-    console.log(`Comp Score: ${compScore}`);
+  var playerScore = 0;
+  var compScore = 0;
+  for (i = 0; i < playerHand.length; i++) {
+    playerScore += playerHand[i].points;
   }
-  //Hit until 21
+  for (i = 0; i < compHand.length; i++) {
+    compScore += compHand[i].points;
+  }
+  //Start game
+  if (gameMode == START_HAND) {
+    compHand = [newDeck.pop(), newDeck.pop()];
+    playerHand = [newDeck.pop(), newDeck.pop()];
+    for (i = 0; i < playerHand.length; i++) {
+      playerScore += playerHand[i].points;
+    }
+    for (i = 0; i < compHand.length; i++) {
+      compScore += compHand[i].points;
+    }
+    console.log(`Comp:${compScore}`);
+    gameMode = HIT_OR_STAND;
+    var myOutputValue = `Player has ${playerScore}. Choose to hit or stand.`;
+    return myOutputValue;
+  }
+
+  if (gameMode == HIT_OR_STAND && input == `hit`) {
+    playerHand.push(newDeck.pop());
+    for (i = 0; i < playerHand.length; i++) {
+      playerScore += playerHand[i].points;
+    }
+    if (playerScore > scoreLimit) {
+      gameMode = COMPTURN;
+      var myOutputValue = `Player bust. Dealer turn now. <br> Player has ${playerScore}.`;
+      return myOutputValue;
+    } else {
+      gameMode = HIT_OR_STAND;
+      var myOutputValue = `Player has ${playerScore}. Choose to hit or stand.`;
+      return myOutputValue;
+    }
+  }
+
+  if (gameMode == HIT_OR_STAND && input == `stand`) {
+    gameMode = COMPTURN;
+    var myOutputValue = `It is the dealer turn to play`;
+    return myOutputValue;
+  }
+
+  if (gameMode == HIT_OR_STAND && input != `stand || hit`) {
+    var myOutputValue = `Player has ${playerScore}. Choose to hit or stand`;
+    return myOutputValue;
+  }
+
+  //Dealer hit until 17. Then check score
+  if (gameMode == COMPTURN) {
+    for (i = 0; i < compHand.length; i++) {
+      compScore += compHand[i].points;
+    }
+    while (compScore < 17) {
+      compHand.push(newDeck.pop());
+      compScore = 0;
+      for (i = 0; i < compHand.length; i++) {
+        compScore += compHand[i].points;
+      }
+    }
+    console.log(`Comp:${compScore}`);
+    gameMode = ENDGAME;
+    var myOutputValue = `Dealer has ${compScore}.`;
+    return myOutputValue;
+  }
+
   //Compare hands and announce winner
+  if (gameMode == ENDGAME) {
+    for (i = 0; i < playerHand.length; i++) {
+      playerScore += playerHand[i].points;
+    }
+    for (i = 0; i < compHand.length; i++) {
+      compScore += compHand[i].points;
+    }
+    if (compScore > scoreLimit) {
+      compGameOver = true;
+    }
+    if (compGameOver) {
+      var myOutputValue = `Player wins. Dealer has ${compScore}. Player has ${playerScore}.`;
+      return myOutputValue;
+    }
+    if (playerScore > scoreLimit) {
+      playerGameOver = true;
+    }
+    if (playerGameOver) {
+      var myOutputValue = `Dealer wins. Dealer has ${compScore}. Player has ${playerScore}.`;
+      return myOutputValue;
+    }
+  }
   if (compScore > playerScore) {
     myOutputValue = `Computer had ${compScore} points. Player had ${playerScore} points.<br> Player loses.`;
     return myOutputValue;
@@ -169,7 +202,7 @@ var main = function (input) {
     myOutputValue = `Computer had ${compScore} points. Player had ${playerScore} points.<br> It's a tie.`;
     return myOutputValue;
   }
-  // Construct an output string to communicate which cards were drawn
-  var myOutputValue = `Game Error. Restart game`;
-  return myOutputValue;
 };
+// // Construct an output string to communicate which cards were drawn
+// var myOutputValue = `Game Error. Restart game`;
+// return myOutputValue;
