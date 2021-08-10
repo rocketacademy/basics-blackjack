@@ -129,11 +129,11 @@ var makeDeck = function () {
       if (cardName == 1) {
         cardName = "ace";
       } else if (cardName == 11) {
-        cardName = "jack";
+        cardName = "Jack";
       } else if (cardName == 12) {
-        cardName = "queen";
+        cardName = "Queen";
       } else if (cardName == 13) {
-        cardName = "king";
+        cardName = "King";
       }
       var value = rankCounter;
       if (rankCounter == 1) {
