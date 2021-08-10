@@ -184,8 +184,6 @@ var makeDeck = function () {
     }
   
     return `${myOutput()} <br>
-      player stands is ${moveStand} <br>
-      , please enter "hit" or "stand". <br>
-      or you can press submit to see computer's next move.`;
+      please enter "hit" or "stand". <br>`;
   };
   
