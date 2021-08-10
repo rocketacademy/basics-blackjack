@@ -87,13 +87,13 @@ var shuffleCards = function (cardDeck) {
 var newDeck = shuffleCards(makeDeck());
 
 //Game Rules
-var compGameOver = false;
-var playerGameOver = false;
 var scoreLimit = 21;
 var START_HAND = `startHand`;
 var HIT_OR_STAND = "hitOrStand";
 var COMPTURN = "compTurn"; //Hit until 17
 var ENDGAME = "endGame";
+var RESTART = "restart";
+var blackJack = false;
 var gameMode = START_HAND;
 
 //Store hands
@@ -114,21 +114,59 @@ var getScore = function (hand) {
   return score;
 };
 
-//Print hand
+//Print hand (.map is interesting)
 var printHand = function (hand) {
   return `${hand.map((card) => ` ${card.name} of ${card.suit}`)}`;
 };
 
+//BlackJack Check
+var blackJackCheck = function (hand) {
+  return hand.length == 2 && getScore(hand) == scoreLimit;
+};
+
 var main = function (input) {
-  //Start game
+  //Start game & check blackjack
   if (gameMode == START_HAND) {
     compHand = [newDeck.pop(), newDeck.pop()];
     playerHand = [newDeck.pop(), newDeck.pop()];
-    gameMode = HIT_OR_STAND;
     playerScore = getScore(playerHand);
     compScore = getScore(compHand);
+    if (blackJackCheck(playerHand)) {
+      if (compScore == scoreLimit) {
+        var myOutputValue = `All Natural! Both tie! <br> Player has ${printHand(
+          playerHand
+        )} <br>`;
+        console.log(playerHand);
+        console.log(compHand);
+        return myOutputValue;
+      } else if (compScore != scoreLimit) {
+        var myOutputValue = `Natural! Player wins! <br> Player has ${printHand(
+          playerHand
+        )} <br>`;
+        console.log(playerHand);
+        console.log(compHand);
+        return myOutputValue;
+      }
+    } else if (blackJackCheck(compHand)) {
+      if (playerScore == scoreLimit) {
+        var myOutputValue = `All Natural! Both tie! <br> Player has ${printHand(
+          playerHand
+        )} <br>`;
+        console.log(playerHand);
+        console.log(compHand);
+        return myOutputValue;
+      } else if (playerScore != scoreLimit) {
+        var myOutputValue = `Natural! Dealer wins! <br> Player has ${printHand(
+          playerHand
+        )} <br>`;
+        console.log(playerHand);
+        console.log(compHand);
+        return myOutputValue;
+      }
+    }
     playerGameScore = playerScore;
     compGameScore = compScore;
+    gameMode = HIT_OR_STAND;
     console.log(`Comp score:${compGameScore}`);
     var myOutputValue = `Player has ${playerScore}. <br> Player has ${printHand(
       playerHand
@@ -180,7 +218,11 @@ var main = function (input) {
       compHand.push(newDeck.pop());
     }
     gameMode = ENDGAME;
-    var myOutputValue = `Dealer has ${compScore}.`;
+    if (compScore > scoreLimit) {
+      var myOutputValue = `Dealer bust. Dealer has ${compScore}.`;
+    } else {
+      var myOutputValue = `Dealer has ${compScore}.`;
+    }
     compGameScore = compScore;
     if (compScore > scoreLimit) {
       compGameScore = 0;
@@ -191,21 +233,32 @@ var main = function (input) {
 
   //Compare hands and announce winner
   if (gameMode == ENDGAME) {
+    gameMode = RESTART;
     if (compGameScore > playerGameScore) {
       myOutputValue = `Dealer had ${compScore} points. Player had ${playerScore} points.<br> Player loses.`;
-      console.log(`win`);
+      console.log(`Player lose`);
       return myOutputValue;
     }
     if (compGameScore < playerGameScore) {
       myOutputValue = `Dealer had ${compScore} points. Player had ${playerScore} points.<br> Player wins.`;
-      console.log(`lose`);
+      console.log(`Player Win`);
       return myOutputValue;
     }
     if (compGameScore == playerGameScore) {
       myOutputValue = `Dealer had ${compScore} points. Player had ${playerScore} points.<br> It's a tie.`;
-      console.log(`tie`);
+      console.log(`Game tie`);
       return myOutputValue;
     }
+  }
+
+  if ((gameMode = RESTART)) {
+    newDeck = shuffleCards(makeDeck());
+    blackJack = false;
+    compHand = [];
+    playerHand = [];
+    gameMode = START_HAND;
+    var myOutputValue = `A new game awaits`;
+    return myOutputValue;
   }
   var myOutputValue = `Invalid Move. Restart game.`;
   return myOutputValue;
