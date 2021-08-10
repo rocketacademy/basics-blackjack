@@ -147,9 +147,22 @@ var initialDraw = function () {
   console.log(compHand);
 };
 
+//Ace points changer
+var aceChange = function (pasteInHandType) {
+  if (pasteInHandType.length > 2) {
+    for (var i in pasteInHandType) {
+      if (pasteInHandType.cardAttributes[i].name == "Ace") {
+        pasteInHandType.cardAttributes[i].rank = 1;
+        break; //Stops loops once found
+      } else return false;
+    }
+  }
+};
+
 //Calculating player score
 var playerScore = function () {
   //Player score
+  aceChange(playerHand);
   var pSum = 0;
   for (iTot = 0; iTot < playerHand.length; iTot += 1) {
     pSum += Number(playerHand[iTot].rank);
@@ -162,6 +175,7 @@ var playerScore = function () {
 
 //Calculating COMP score
 var compScore = function () {
+  aceChange(compHand);
   var cSum = 0;
   for (iTot = 0; iTot < compHand.length; iTot += 1) {
     cSum += Number(compHand[iTot].rank);
@@ -196,18 +210,13 @@ var playerAction = function (input) {
 };
 
 //COMP adds cards - mode 2
-var compAction = function (cScore) {
+var compAction = function () {
   console.log(`CHECK MODE: ` + currentMode);
-  var cScore = Number(cTotal);
-  if (cScore > 17) {
+  if (cTotal > 17) {
     currentMode = 3;
     console.log(`Mode changed to: ` + currentMode);
     return `The dealer has decided to stand! Click SUBMIT to determine the winner!`;
-  } /*This part doesn't work. Problems:
-  1) It adds ONCE, then when submit clicked again, it returns undefined
-  2) It adds over and over even though cScore goes past 17 when the _if (currentMode == 2 && cScore <= 17)_ condition is removed
-  3) It returns undefined
-  */ else if (cScore <= 17) {
+  } else if (cTotal <= 17) {
     var compCard = gameDeck.pop();
     compHand.push(compCard);
     console.log(`>>COMPUTER added card.`);
@@ -243,8 +252,7 @@ var main = function (input) {
     myOutputValue = determineWinner();
   }
   if (currentMode == 2) {
-    var cScore = cTotal; //Confirm with Porter if a global variable needs to be defined in a function. Shouldn't need to but MODE 2 ISN'T WORKING EITHER WAY
-    myOutputValue = compAction(cScore);
+    myOutputValue = compAction();
   }
   if (currentMode == 1) {
     myOutputValue = playerAction(input);
