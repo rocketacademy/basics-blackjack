@@ -1,3 +1,6 @@
+var playerCards = [];
+var computerCards = [];
+
 var main = function (input) {
   //create a deck
   var deck = makeDeck();
@@ -5,14 +8,17 @@ var main = function (input) {
   var shuffledDeck = shuffleCards(deck);
   // //pick out one card from the deck
   // var cardDrawn = shuffledDeck.pop();
-  // pick out 1 card for player
+
+  // pick out 2 cards for player 1
   var playerCard = shuffledDeck.pop();
-  //player input number of cards he/she wants
-  if ((input = "")) {
-    return "Please enter a number of cards to draw.";
-  }
-  var numCardsToDraw = Number(input);
-  var playerCards = [];
+
+  //pick out 2 cards for computer
+  var computerCard = shuffledDeck.pop();
+
+  //add the 2 cards from each player tgt
+
+  playerCards[0].rank + playerCards[1].rank;
+  computerCards[0].rank + computerCards[1].rank;
   // cards are drawn
 
   var counter = 0;
@@ -34,22 +40,21 @@ var main = function (input) {
   // pick out 1 card for computer
   var computerCard = shuffledDeck.pop();
   //compare the 2 cards drawn, the lower rank is the winner
-  console.log(playerCard, computerCard);
-  // if any card is queen(12), will win
-  // return the winner
-  if (playerCard.rank == 12) {
-    return "Player wins!";
-  }
-  if (computerCard.rank == 12) {
-    return "Computer wins!";
-  }
-  if (playerCard.rank < computerCard.rank) {
-    return "Player wins!";
-  } else if (playerCard.rank > computerCard.rank) {
-    return "Computer wins!";
-  }
-  return "Its a tie!";
-  //low card hands
+  console.log(playerCards, computerCards);
+
+  // // return the winner
+  // if (playerCard.rank == 12) {
+  //   return "Player wins!";
+  // }
+  // if (computerCard.rank == 12) {
+  //   return "Computer wins!";
+  // }
+  // if (playerCard.rank < computerCard.rank) {
+  //   return "Player wins!";
+  // } else if (playerCard.rank > computerCard.rank) {
+  //   return "Computer wins!";
+  // }
+  // return "Its a tie!";
 };
 
 var makeDeck = function () {
@@ -75,12 +80,16 @@ var makeDeck = function () {
       // If rank is 1, 11, 12, or 13, set cardName to the ace or face card's name
       if (cardName == 1) {
         cardName = "ace";
+        rank = 1 || 11;
       } else if (cardName == 11) {
         cardName = "jack";
+        rank = 10;
       } else if (cardName == 12) {
         cardName = "queen";
+        rank = 10;
       } else if (cardName == 13) {
         cardName = "king";
+        rank = 10;
       }
 
       // Create a new card with the current name, suit, and rank
@@ -145,28 +154,27 @@ var deck = [
 // to communicate that we have shuffled the deck.
 var shuffledDeck = shuffleCards(deck);
 
-var lowCard = function () {
-  // Draw 2 cards from the top of the deck
-  var computerCard = shuffledDeck.pop();
-  console.log(computerCard);
-  var playerCard = shuffledDeck.pop();
+// var lowCard = function () {
+//   // Draw 2 cards from the top of the deck
+//   var computerCard = shuffledDeck.pop();
+//   console.log(computerCard);
+//   var playerCard = shuffledDeck.pop();
 
-  // Construct an output string to communicate which cards were drawn
-  var myOutputValue = `Computer had ${computerCard.name} of ${computerCard.suit}. Player had ${playerCard.name} of ${playerCard.suit}. `;
+//   // Construct an output string to communicate which cards were drawn
+//   var myOutputValue = `Computer had ${computerCard.name} of ${computerCard.suit}. Player had ${playerCard.name} of ${playerCard.suit}. `;
 
-  // Compare computer and player cards by rank attribute
-  // If computer card rank is greater than player card rank, computer wins
-  if (computerCard.rank < playerCard.rank) {
-    // Add conditional-dependent text to the output string
-    myOutputValue = myOutputValue + "Computer wins.";
-    // Else if computer card rank is less than player card rank, player wins
-  } else if (computerCard.rank > playerCard.rank) {
-    myOutputValue = myOutputValue + "Player wins!";
-    // Otherwise (i.e. ranks are equal), it's a tie
-  } else {
-    myOutputValue = myOutputValue + "It's a tie.";
-  }
+//   // Compare computer and player cards by rank attribute
+//   // If computer card rank is greater than player card rank, computer wins
+//   if (computerCard.rank < playerCard.rank) {
+//     // Add conditional-dependent text to the output string
+//     myOutputValue = myOutputValue + "Computer wins.";
+//     // Else if computer card rank is less than player card rank, player wins
+//   } else if (computerCard.rank > playerCard.rank) {
+//     myOutputValue = myOutputValue + "Player wins!";
+//     // Otherwise (i.e. ranks are equal), it's a tie
+//   } else {
+//     myOutputValue = myOutputValue + "It's a tie.";
+//   }
 
-  // Return the fully-constructed output string
-  return myOutputValue;
-};
+//   // Return the fully-constructed output string
+//   return myOutputValue;}
