@@ -289,6 +289,11 @@ var playerTurn = function (input) {
     return `You have decided to stand.<br> ${playersHands[currentPlayer].playerNum}, please press submit to see your hand`;
   }
   if (playersHands[currentPlayer].turnDoneFlag == 0 && input == "hit") {
+    hand = printHand(currentPlayer);
+    if (playersHands[currentPlayer].score > 21) {
+      return `You have gone bust with a score of ${playersHands[currentPlayer].score}.<br> Your hand is ${hand}. <br><br> 
+┬─┬﻿︵/(.□.)╯.<br><br> Please submit stand to continue`;
+    }
     playersHands[currentPlayer].hand.push(shuffledDeck.pop());
     hand = printHand(currentPlayer);
     calcScore(currentPlayer);
@@ -329,7 +334,7 @@ let immediateWinCheck = 0;
 let dealFlag = 0;
 
 var main = function (input) {
-  if (totalPlayers == 0 && isNaN(Number(input))) {
+  if (totalPlayers == 0 && (isNaN(input) || input == "")) {
     return `Invalid input.Please enter the number of players to start`;
   }
   if (totalPlayers == 0) {
