@@ -1,35 +1,94 @@
 var cardDeck = []; // Initialise an empty deck array
 var suits = ["♥", "♦", "♣", "♠"]; // Initialise an array of the 4 suits in our deck. We will loop over this array
 
-var gameStage = `shuffleNdeal`; // or hitOrStay // determine which stage of game
-var playerTurn = `player`; // or comp or result // determine whos turn, player, comp or result
+var gameStage = `playerName`; // or shuffleNdeal or hitOrStay // determine which stage of game
+var playerTurn = `player`; // or comp // determine whos turn, player, comp
+
+var playerName = ``;
+var bankRoll = 100;
+var bet = ``;
 var cardDealt = ``; // card drawn by cardDeck.pop
+
 var playerHand = []; // card dealt with only name + suit (excludes value)
 var compHand = [];
+
 var playerSum = 0; // total sum of cards in hand (from cardDealt.values)
 var compSum = 0;
+
 var playerCardNameOnly = []; // card dealt with only name
 var compCardNameOnly = [];
-var noOfAces = 0; // no of aces in comp hand https://stackoverflow.com/questions/5667888/counting-the-occurrences-frequency-of-array-elements
-var compLoseOrDraw = false; // if comp lose/draw -> true
-var aceIndex = 0; // index for loop to determine how many aces to change from 11 to 1
+
+var playerNoOfAces = ``; // no of aces in player hand https://stackoverflow.com/questions/5667888/counting-the-occurrences-frequency-of-array-elements
+var noOfAces = 0;
+
+var playerAceIndex = 0; // index for loop to determine how many aces to change from 11 to 1
+var aceIndex = 0;
+
+var compLoseOrDraw = ``; // if comp lose or draw -> true
 
 var main = function (input) {
   var myOutputValue = ``;
-  if (gameStage == `shuffleNdeal`) {
-    // execute all the function to make deck, shuffle, and deal
+
+  if (gameStage == `playerName`) {
+    // execute all the function to make deck, shuffle
     makeDeck();
     shuffleCards();
-    dealCards();
 
-    // determine if any blackjack during first deal
+    if (input !== ``) {
+      playerName = input;
+      gameStage = `shuffleNdeal`;
+      myOutputValue = `Hello ${playerName}, submit your bet for the round! Minimum of 1, maximum of 100`;
+    } else {
+      myOutputValue = `Please key in your name!`;
+    }
+  } else if (gameStage == `shuffleNdeal`) {
+    if (bankRoll > 0) {
+      if (input > 0 && input <= bankRoll) {
+        bet = parseInt(input);
+        myOutputValue = `You bet ${bet}! Click submit to deal cards!`;
+        gameStage = `blackjack`;
+      } else {
+        myOutputValue =
+          `Please enter a bet, minimum of 1, maximum of ` + bankRoll + `.`;
+      }
+    } else {
+      myOutputValue = `You are bankrupt! Refresh page to play again!`;
+    }
+  } else if (gameStage == `blackjack`) {
+    // deal firt two cards and determine if any blackjack during first deal
+    dealCards();
     myOutputValue = blackjack();
-    gameStage = `hitOrStay`;
   } else if (gameStage == `hitOrStay`) {
-    // execute if player/comp to hit/stay
+    // determine if player/comp to hit/stay
     myOutputValue = hitCards(input);
   }
-  return myOutputValue;
+
+  // determine what kind of return message
+  if (bankRoll <= 0) {
+    return (
+      `You are bankrupt! Refresh page to play again!` +
+      `<br>` +
+      `<br>` +
+      myOutputValue +
+      `<br>` +
+      `<br>` +
+      `Cards left: ` +
+      cardDeck.length
+    );
+  } else if (cardDeck.length == 0) {
+    return (
+      `Not enough cards in the deck! Refresh page to play again!` +
+      `<br>` +
+      `<br>` +
+      myOutputValue +
+      `<br>` +
+      `<br>` +
+      `Cards left: ` +
+      cardDeck.length
+    );
+  } else {
+    return myOutputValue + `<br>` + `<br>` + `Cards left: ` + cardDeck.length;
+  }
 };
 
 // copied from 10.2
@@ -88,6 +147,20 @@ var shuffleCards = function () {
 
 // deal cards at the start
 var dealCards = function () {
+  // refresh all the global variable here
+  playerTurn = `player`;
+  playerHand = [];
+  playerSum = 0;
+  playerCardNameOnly = [];
+  compHand = [];
+  compSum = 0;
+  compCardNameOnly = [];
+  playerNoOfAces = 0;
+  playerAceIndex = 0;
+  noOfAces = 0;
+  aceIndex = 0;
+  compLoseOrDraw = ``;
+
   var deal = 1;
 
   // deal <= 2 because need deal two cards
@@ -114,48 +187,67 @@ var dealCards = function () {
 // function to hit or stay
 var hitCards = function (input) {
   var message = ``;
-
-  // conditional for player to change ace to 1 or 11
-  // playerCardNameOnly.includes(`Ace`) -> check if array has a Ace
-  if (input == `ace one` && playerCardNameOnly.includes(`Ace`) == true) {
-    playerSum = playerSum - 10;
-    playerTurn = `player`;
-    message =
-      `<br>` +
-      `You chose Ace to be 1. Your new total sum above!` +
-      `<br>` +
-      `Player, enter "hit" or "stay"`;
-  } else if (
-    input == `ace eleven` &&
-    playerCardNameOnly.includes(`Ace`) == true
-  ) {
-    playerSum = playerSum + 10;
-    playerTurn = `player`;
-    message =
-      `<br>` +
-      `You chose Ace to be 11. Your new total sum above!` +
-      `<br>` +
-      `Player, enter "hit" or "stay"`;
-  }
-
   if (playerTurn == `player`) {
-    if (input == `hit`) {
+    playerNoOfAces = playerCardNameOnly.filter((x) => x === `Ace`).length;
+    // conditional for player to change ace to 1 or 11
+    // playerCardNameOnly.includes(`Ace`) -> check if array has a Ace
+    // playerAceIndex less than playerNoOfAces -> he still have aces not changed to 1
+    if (
+      input == `ace one` &&
+      playerCardNameOnly.includes(`Ace`) == true &&
+      playerAceIndex < playerNoOfAces
+    ) {
+      playerSum = playerSum - 10;
+      playerAceIndex = playerAceIndex + 1;
+      message =
+        `Computer : ${compHand[0]}, ??? (Total: ??)` +
+        `<br>` +
+        `<br>` +
+        `You chose ${playerAceIndex} of your Aces to be 1. Your new total sum above!` +
+        `<br>` +
+        `Player, enter "hit" or "stay"`;
+    } else if (
+      input == `ace eleven` &&
+      playerCardNameOnly.includes(`Ace`) == true &&
+      playerAceIndex <= playerNoOfAces &&
+      playerAceIndex > 0
+    ) {
+      playerSum = playerSum + 10;
+      playerAceIndex = playerAceIndex - 1;
+      message =
+        `Computer : ${compHand[0]}, ??? (Total: ??)` +
+        `<br>` +
+        `<br>` +
+        `You chose ${playerAceIndex} of your Aces to be 1. Your new total sum above!` +
+        `<br>` +
+        `Player, enter "hit" or "stay"`;
+    } else if (input == `hit`) {
       cardDealt = cardDeck.pop();
       playerHand.push(cardDealt.name + ` ` + cardDealt.suit);
       playerCardNameOnly.push(cardDealt.name);
       playerSum = playerSum + cardDealt.value;
+      playerNoOfAces = playerCardNameOnly.filter((x) => x === `Ace`).length;
 
-      gameStage = `hitOrStay`;
-
-      // if player total hand after hitting is >21, immediately comp turn
+      // if player total hand after hitting is >21, either immediately comp turn OR change for any remaining Aces not changed to 1 and continue to hit or stay
       if (playerSum > 21) {
-        playerTurn = `comp`;
-        message =
-          `Computer : ${compHand[0]}, ??? (Total: ??)` +
-          `<br>` +
-          `<br>` +
-          `Player, you bust! Click submit again and computer will make his move!`;
-
+        if (playerAceIndex < playerNoOfAces) {
+          playerSum = playerSum - 10;
+          playerAceIndex = playerAceIndex + 1;
+          message =
+            `Computer : ${compHand[0]}, ??? (Total: ??)` +
+            `<br>` +
+            `<br>` +
+            `You chose ${playerAceIndex} of your Aces to be 1. Your new total sum above!` +
+            `<br>` +
+            `Player, enter "hit" or "stay"`;
+        } else {
+          playerTurn = `comp`;
+          message =
+            `Computer : ${compHand[0]}, ??? (Total: ??)` +
+            `<br>` +
+            `<br>` +
+            `Player, you bust! Click submit again and computer will make his move!`;
+        }
         // if player total hand after hitting is <21, check if want to hit again
       } else if (playerSum <= 21) {
         message =
@@ -171,10 +263,24 @@ var hitCards = function (input) {
         `<br>` +
         `<br>` +
         `Computer's turn, click submit and computer will make his move!`;
+    } else {
+      message =
+        `Computer : ${compHand[0]}, ??? (Total: ??)` +
+        `<br>` +
+        `<br>` +
+        `Player, enter "hit" or "stay"`;
     }
-  } else if (playerTurn == `comp`) {
-    playerTurn = `result`;
+  }
+  // standard message for displaying player hand status
+  var playerMessage =
+    `${playerName} : ` +
+    playerHand +
+    ` (Total: ` +
+    playerSum +
+    `) ` +
+    playerBust();
 
+  if (playerTurn == `comp`) {
     // if comp hand less than 17 in hand -> hit until equal or more than 17
     while (compSum < 17) {
       cardDealt = cardDeck.pop();
@@ -182,8 +288,12 @@ var hitCards = function (input) {
       compCardNameOnly.push(cardDealt.name);
       compSum = compSum + cardDealt.value;
     }
+    noOfAces = compCardNameOnly.filter((x) => x === `Ace`).length;
+    console.log(compHand);
     if (compSum <= 21 && playerSum <= 21 && compSum == playerSum) {
       compLoseOrDraw = true;
+      playerTurn = `player`;
+      gameStage = `shuffleNdeal`; // start betting for next round
       message =
         `Computer : ` +
         compHand +
@@ -193,9 +303,14 @@ var hitCards = function (input) {
         compBust() +
         `<br>` +
         `<br>` +
-        `It's a draw!`;
+        `It's a draw!` +
+        `<br>` +
+        `<br>` +
+        `Submit your bet for next round!`;
     } else if (compSum > 21 && playerSum > 21) {
       compLoseOrDraw = true;
+      playerTurn = `player`;
+      gameStage = `shuffleNdeal`;
       message =
         `Computer : ` +
         compHand +
@@ -205,9 +320,16 @@ var hitCards = function (input) {
         compBust() +
         `<br>` +
         `<br>` +
-        `Both bust! Draw!`;
+        `Both bust! Draw!` +
+        `<br>` +
+        `<br>` +
+        `Submit your bet for next round!`;
     } else if (compSum > playerSum) {
       if (compSum <= 21) {
+        compLoseOrDraw = false;
+        bankRoll = bankRoll - bet;
+        playerTurn = `player`;
+        gameStage = `shuffleNdeal`;
         message =
           `Computer : ` +
           compHand +
@@ -217,9 +339,21 @@ var hitCards = function (input) {
           compBust() +
           `<br>` +
           `<br>` +
-          `Computer wins! `;
-      } else {
+          `Computer wins!` +
+          `<br>` +
+          `<br>` +
+          `Submit your bet for next round!`;
+      }
+      // if comp loses or draw, if there are any Aces not changed to 1, bankroll wil not adjust yet because need to execute line 415 to reduce Ace to 1 and draw again to try to win player
+      else {
         compLoseOrDraw = true;
+        if (aceIndex == noOfAces) {
+          bankRoll = bankRoll + bet;
+        } else {
+          bankRoll = bankRoll;
+        }
+        playerTurn = `player`;
+        gameStage = `shuffleNdeal`;
         message =
           `Computer : ` +
           compHand +
@@ -229,11 +363,21 @@ var hitCards = function (input) {
           compBust() +
           `<br>` +
           `<br>` +
-          `Player wins! `;
+          `Player wins!` +
+          `<br>` +
+          `<br>` +
+          `Submit your bet for next round!`;
       }
     } else if (compSum < playerSum) {
       if (playerSum <= 21) {
         compLoseOrDraw = true;
+        if (aceIndex == noOfAces) {
+          bankRoll = bankRoll + bet;
+        } else {
+          bankRoll = bankRoll;
+        }
+        playerTurn = `player`;
+        gameStage = `shuffleNdeal`;
         message =
           `Computer : ` +
           compHand +
@@ -245,6 +389,10 @@ var hitCards = function (input) {
           `<br>` +
           `Player wins! `;
       } else {
+        compLoseOrDraw = false;
+        bankRoll = bankRoll - bet;
+        playerTurn = `player`;
+        gameStage = `shuffleNdeal`;
         message =
           `Computer : ` +
           compHand +
@@ -254,45 +402,52 @@ var hitCards = function (input) {
           compBust() +
           `<br>` +
           `<br>` +
-          `Computer wins! `;
+          `Computer wins!` +
+          `<br>` +
+          `<br>` +
+          `Submit your bet for next round!`;
       }
     }
-  }
-  // comp considered to have lost when bust, less than payer, or draw
-  // if compLoseOrDraw == true -> if theres a Ace inside comp hand -> then comp can try to win by reducing the Ace value to 1 (default 11)
-  // after reduction, will hit again by changing playerTurn = `comp`
-  if (playerTurn == `result`) {
-    noOfAces = compCardNameOnly.filter((x) => x === `Ace`).length;
-    if (compLoseOrDraw == true && noOfAces > 0) {
-      // aceIndex is global because it will record latest number of Ace, since can keep drawing Aces
-      while (aceIndex < noOfAces) {
+
+    // comp considered to have lost when bust, less than player, or draw
+    // if compLoseOrDraw == true -> if theres a Ace inside comp hand -> then comp can try to win by reducing the Ace value to 1 (default 11)
+    // after reduction, will hit again by changing playerTurn = `comp
+
+    if (compLoseOrDraw == true) {
+      if (noOfAces > 0 && aceIndex < noOfAces) {
         compSum = compSum - 10;
-        aceIndex += 1;
+        aceIndex += 1; // changes one ace at a time
+        compLoseOrDraw = false;
+        playerTurn = `comp`;
+        gameStage = `hitOrStay`;
+        message =
+          `Computer : ` +
+          compHand +
+          ` (Total: ` +
+          compSum +
+          `) ` +
+          compBust() +
+          `<br>` +
+          `<br>` +
+          `Computer chosen ` +
+          aceIndex +
+          ` his Ace(s) to be 1. Click submit for computer to draw card again!`;
       }
-      compLoseOrDraw = false;
-      playerTurn = `comp`;
-      message =
-        `Computer : ` +
-        compHand +
-        ` (Total: ` +
-        compSum +
-        `) ` +
-        compBust() +
-        `<br>` +
-        `<br>` +
-        `Computer chosen ` +
-        aceIndex +
-        ` his Ace(s) to be 1. Click submit for computer to draw card again!`;
     }
   }
 
   return (
-    `Player : ` +
-    playerHand +
-    ` (Total: ` +
-    playerSum +
-    `) ` +
-    playerBust() +
+    `Points: ` +
+    bankRoll +
+    `<br>` +
+    `Bet: ` +
+    bet +
+    `<br>` +
+    `<br>` +
+    `Remember you can change your Ace(s) to 1 or 11 by entering "ace one" or "ace eleven" !` +
+    `<br>` +
+    `<br>` +
+    playerMessage +
     `<br>` +
     message
   );
@@ -301,10 +456,15 @@ var hitCards = function (input) {
 // determine if any blackjack after starting deal
 var blackjack = function () {
   var message = ``;
+  var playerMessageTwo = ``;
+
+  //check for double Aces
   if (
-    compCardNameOnly.filter((x) => x === `Ace`) == 2 &&
-    playerCardNameOnly.filter((x) => x === `Ace`) !== 2
+    compCardNameOnly.filter((x) => x === `Ace`).length == 2 &&
+    playerCardNameOnly.filter((x) => x === `Ace`).length !== 2
   ) {
+    bankRoll = bankRoll - bet;
+
     message =
       `Computer : ` +
       compHand +
@@ -316,11 +476,18 @@ var blackjack = function () {
       `Computer got a Double Aces! Computer wins!` +
       `<br>` +
       `<br>` +
-      `Refresh to restart!`;
+      `Submit your bet for next round!`;
+
+    gameStage = `shuffleNdeal`; // return to betting
+
+    playerMessageTwo =
+      `${playerName} : ` + playerHand + ` (Total: ` + playerSum + `) `;
   } else if (
-    compCardNameOnly.filter((x) => x === `Ace`) !== 2 &&
-    playerCardNameOnly.filter((x) => x === `Ace`) == 2
+    compCardNameOnly.filter((x) => x === `Ace`).length !== 2 &&
+    playerCardNameOnly.filter((x) => x === `Ace`).length == 2
   ) {
+    bankRoll = bankRoll + bet;
+
     message =
       `Computer : ` +
       compHand +
@@ -329,11 +496,18 @@ var blackjack = function () {
       `)` +
       `<br>` +
       `<br>` +
-      `Player got a Double Aces! Computer wins!` +
+      `Player got a Double Aces! Player wins!` +
       `<br>` +
       `<br>` +
-      `Refresh to restart!`;
+      `Submit your bet for next round!`;
+
+    gameStage = `shuffleNdeal`;
+
+    playerMessageTwo =
+      `${playerName} : ` + playerHand + ` (Total: ` + playerSum + `) `;
   } else if (playerSum == 21 && compSum !== 21) {
+    bankRoll = bankRoll + bet;
+
     message =
       `Computer : ` +
       compHand +
@@ -345,8 +519,15 @@ var blackjack = function () {
       `Player got a Blackjack! Player wins!` +
       `<br>` +
       `<br>` +
-      `Refresh to restart!`;
+      `Submit your bet for next round!`;
+
+    gameStage = `shuffleNdeal`;
+
+    playerMessageTwo =
+      `${playerName} : ` + playerHand + ` (Total: ` + playerSum + `) `;
   } else if (playerSum !== 21 && compSum == 21) {
+    bankRoll = bankRoll - bet;
+
     message =
       `Computer : ` +
       compHand +
@@ -358,7 +539,12 @@ var blackjack = function () {
       `Computer got a Blackjack! Computer wins!` +
       `<br>` +
       `<br>` +
-      `Refresh to restart!`;
+      `Submit your bet for next round!`;
+
+    gameStage = `shuffleNdeal`;
+
+    playerMessageTwo =
+      `${playerName} : ` + playerHand + ` (Total: ` + playerSum + `) `;
   } else if (
     (playerSum == 21 && compSum == 21) ||
     (playerSum == 22 && compSum == 22)
@@ -374,8 +560,18 @@ var blackjack = function () {
       `Both Blackjack! Draw!` +
       `<br>` +
       `<br>` +
-      `Refresh to restart!`;
+      `Submit your bet for next round!`;
+
+    gameStage = `shuffleNdeal`;
+
+    playerMessageTwo =
+      `${playerName} : ` + playerHand + ` (Total: ` + playerSum + `) `;
   } else {
+    playerMessageTwo =
+      `${playerName} : ` + playerHand + ` (Total: ` + playerSum + `) `;
+    gameStage = `hitOrStay`;
+
+    // ??? for one of comp's card because one card of dealer is face down
     message =
       `Computer : ` +
       compHand[0] +
@@ -386,7 +582,19 @@ var blackjack = function () {
       `No Blackjack! Player, enter "hit" or "stay"`;
   }
   return (
-    `Player : ` + playerHand + ` (Total: ` + playerSum + `)` + `<br>` + message
+    `Points: ` +
+    bankRoll +
+    `<br>` +
+    `Bet: ` +
+    bet +
+    `<br>` +
+    `<br>` +
+    `Remember you can change your Ace(s) to 1 or 11 by entering "ace one" or "ace eleven" !` +
+    `<br>` +
+    `<br>` +
+    playerMessageTwo +
+    `<br>` +
+    message
   );
 };
 
