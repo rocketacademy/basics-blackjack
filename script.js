@@ -418,6 +418,7 @@ function evalDealerHand() {
  */
 
 function evalHands() {
+  let toEliminate = [];
   let output = `${dealer.showHand}${evalDealerHand()}<br><br>`;
   for (let player of playerBoard) {
     output += `${player.showHand}`;
@@ -466,12 +467,14 @@ function evalHands() {
     }
     player.calcPoints();
     player.reset();
-    output += `<br>Current Points: ${player.points}<br><br>`;
     if (player.points <= 0) {
-      output += `${player.name} ran out of points and is eliminated!`;
-      playerBoard.splice(playerBoard.indexOf(player), 1);
+      output += `<br>${createBackground(COLOUR_RED)}
+      ${player.name} ran out of points and is eliminated!</div>`;
+      toEliminate.unshift(playerBoard.indexOf(player));
     }
+    output += `<br>Current Points: ${player.points}<br><br>`;
   }
+  toEliminate.forEach((element) => playerBoard.splice(element, 1));
   output += "Place your bets again for the next round!";
   return output;
 }
@@ -482,6 +485,7 @@ function evalHands() {
  * Evaluate every player's hand and sets outcome for each player for that round.
  * Compute bets of every player.
  * Reset everyone's hands, bets and booleans.
+ * Handle splits
  * Generate new deck for next round.
  * @return {String}
  * ------------------------------------------------------------------------
