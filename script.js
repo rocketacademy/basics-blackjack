@@ -7,9 +7,7 @@ var playerScore = 100;
 // player hit or stand
 // compare winner
 
-/**
- * Create a standard 52-card deck
- */
+// create card deck
 var makeDeck = function () {
   // Initialise an empty deck array
   var cardDeck = [];
@@ -67,17 +65,12 @@ var makeDeck = function () {
   return cardDeck;
 };
 
-/**
- * Get a random index ranging from 0 (inclusive) to max (exclusive).
- */
+// get random index
 var getRandomIndex = function (max) {
   return Math.floor(Math.random() * max);
 };
 
-/**
- * Shuffle elements in the cardDeck array. Return the shuffled deck.
- */
-
+// shuffle deck
 var shuffleCards = function (cardDeck) {
   // Loop over the card deck array once
   var currentIndex = 0;
@@ -98,8 +91,6 @@ var shuffleCards = function (cardDeck) {
   return cardDeck;
 };
 
-// Initialise the shuffled card deck before the game starts.
-// var deck = shuffleCards(makeDeck());
 var shuffledDeck = shuffleCards(makeDeck());
 
 // each player gets 2 shuffled cards
@@ -112,6 +103,7 @@ var comTotal = comCard[0].rank + comCard[1].rank;
 var playerTotal = playerCard[0].rank + playerCard[1].rank;
 var nameStore = [];
 
+// player adds
 var addCard = function () {
   var newCard = shuffledDeck.pop();
   newPcard = newCard;
@@ -122,6 +114,7 @@ var addCard = function () {
   return playerTotal;
 };
 
+// com adds
 var comAdd = function () {
   comCard.push(shuffledDeck.pop()); // com adds one deck to card
   var getIndex = comCard.length - 1;
@@ -130,6 +123,7 @@ var comAdd = function () {
   return comTotal;
 };
 
+// accounting for ace
 var aceChange = function (input) {
   if (input.length > 2) {
     for (var i in input) {
@@ -183,7 +177,6 @@ var main = function (input) {
     Your cards: <br>
     ${playerCard[0].name} of ${playerCard[0].suit} <br>
     ${playerCard[1].name} of ${playerCard[1].suit} <br> <br>
-
     Your total score is ${playerTotal}. Enter y to draw another card, otherwise click submit.`;
   }
 
@@ -210,7 +203,7 @@ var main = function (input) {
     }
   }
 
-  // player does not choose to draw, com evaluates if need to draw another card
+  // dealer adds card if needed
   if (gameMode == "computer move") {
     while (comTotal < 17) {
       comAdd();
@@ -218,8 +211,8 @@ var main = function (input) {
     gameMode = `compare winner`;
   }
 
+  // compare winner
   if (gameMode == "compare winner") {
-    // compare winner
     console.log(comCard);
     console.log(playerCard);
     var announceWinner = declareWinner(playerTotal, comTotal);
