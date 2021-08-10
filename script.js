@@ -24,9 +24,9 @@ for (var i in (playerHand||compHand)) {
 
 gameDeck = [];
 playerHand = []; //Cards player has
-pTotal = []; //Sum of cards
+pTotal = 0; //Sum of cards
 compHand = []; //Cards COMPUTER has
-cTotal = []; //Sum of cards
+cTotal = 0; //Sum of cards
 
 /*Modes
 0 - initial draw phase
@@ -155,7 +155,7 @@ var playerScore = function () {
     pSum += Number(playerHand[iTot].rank);
   }
   console.log(`Player card score: ` + pSum);
-  pTotal.push(pSum);
+  pTotal = pSum;
   console.log(`Player hand: `);
   console.log(playerHand);
 };
@@ -167,7 +167,7 @@ var compScore = function () {
     cSum += Number(compHand[iTot].rank);
   }
   console.log(`COMP card score: ` + cSum);
-  cTotal.push(cSum);
+  cTotal = cSum;
   console.log(`COMP hand: `);
   console.log(compHand);
 };
@@ -205,13 +205,13 @@ var compAction = function (cScore) {
     return `The dealer has decided to stand! Click SUBMIT to determine the winner!`;
   } /*This part doesn't work. Problems:
   1) It adds ONCE, then when submit clicked again, it returns undefined
-  2) It adds over and over even though cScore is <=17 when the _if (currentMode == 2 && cScore <= 17)_ condition is removed
+  2) It adds over and over even though cScore goes past 17 when the _if (currentMode == 2 && cScore <= 17)_ condition is removed
   3) It returns undefined
   */ else if (cScore <= 17) {
     var compCard = gameDeck.pop();
     compHand.push(compCard);
     console.log(`>>COMPUTER added card.`);
-    compScore();
+    compScore(); //Necessary for pushing new score to cTotal[] global variable
     return `The dealer added a card to their hand. Please click SUBMIT.`;
   }
 };
@@ -221,11 +221,15 @@ var determineWinner = function () {
   if (pTotal == cTotal) {
     return `You draw with the dealer's hand of ${cTotal}!`;
   } else if (pTotal == 21 && cTotal !== 21) {
-    return `BLACKJACK! Your hand of ${pTotal} won! The dealer had a hand of ${cTotal}.`;
+    return `Your hand of ${pTotal} won! The dealer had a hand of ${cTotal}.`;
   } else if (cTotal == 21 && pTotal !== 21) {
     return `Your hand of ${pTotal} lost to the dealer's ${cTotal}!`;
   } else if (pTotal > cTotal && pTotal <= 21) {
     return `Congratulations! Your hand of ${pTotal} beat the dealer's hand of ${cTotal}!`;
+  } else if (pTotal > 21 && cTotal > 21) {
+    return `Both parties are bust! Your hand: ${pTotal}. Dealer's hand: ${cTotal}`;
+  } else if (pTotal < cTotal && cTotal > 21) {
+    return `The dealer went bust! Your hand of ${pTotal} beat the dealer's hand of ${cTotal}!`;
   } else if (pTotal < cTotal && cTotal <= 21) {
     return `Your hand of ${pTotal} lost to the dealer's hand of ${cTotal}!`;
   }
