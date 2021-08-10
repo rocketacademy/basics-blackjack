@@ -1,7 +1,7 @@
-var main = function (input) {
-  var myOutputValue = 'hello world';
-  return myOutputValue;
-};
+// var main = function (input) {
+//   var myOutputValue = 'hello world';
+//   return myOutputValue;
+// };
 var makeDeck = function () {
   // Initialise an empty deck array
   var cardDeck = [];
@@ -95,9 +95,11 @@ console.log(shuffleDeck);
 // 2 players, computer and player
 // Keep track Computer variables
 var compCards = [];
+var compCardSum = 0;
 
 // Keep track Player variables
 var playerCards = [];
+var playerCardSum = 0;
 
 // Keep track of other variables
 var gameMode = 'start game';
@@ -106,63 +108,142 @@ var twoCardsVal = [];
 var players = ['player1', 'computer'];
 
 // On submit deal the cards
-var dealCard = function (){
-var card = shuffleDeck.pop ()
-  console.log(card);
-  return card.name +" "+ card.suit
-};
+var dealCard = function (cards) {
+ cards.push(shuffleDeck.pop());
+}
+ // Checking for cards value 
 
-// Deal 2 cards to 2 players
-var playerIndex = 0
-var deal2Cards = function() {
-  while (playerIndex < players.length) {
-    // Store players in variable
-    var playersName = players[playerIndex];
-    
-        var cardIndex = 0;
-        while (cardIndex < 2){
-          var cards = dealCard(deck)
-
-          
-          cardIndex += 1;
-
-          // Create players card
-          var dealtCards = {
-            name: playersName,
-            cardsVal: cards,
-          }
-
-        twoCardsVal.push(dealtCards);
-        }
-
-    playerIndex += 1;
-    console.log(twoCardsVal);
-
+ // Checking for Ace
+var isAce = false
+checkForAce = function(cards) {
+  for (var i = 0; i < cards.length; i++) {
+    var currentCards = cards[i];
+  if (currentCards.rank == 1) {
+    return isAce = true;
   }
+}
 
-  return twoCardsVal;
-};
-
-// Cards analyzed for game winning ex: Blackjack
-// Cards displayed to user
-// User decide to hit or stand using the submit button
-
-
-var main = function (input) {
-  var myOutputValue = 'hello world';
-  // Deal 2 cards for player and computer
-  if (gameMode = 'start game') {
-    var playerDeal = deal2Cards(input);
-    playerCards = playerDeal;
-    console.log(playerCards); 
-
-    var compDeal = deal2Cards(input);
-    compCards = compDeal;
-    console.log ('compcard' + compCards);
-
-  }
 };
   
+ getCardSum = function (cards) {
+   var cardSum = 0;
+   var aceCard = 0;
+   for (var i = 0; i < cards.length; i++) {
+     
+    var currentCards = cards[i];
+   
+     if (currentCards.rank <= 10) {
+
+      cardSum = cardSum  + currentCards.rank;
+
+     } if (currentCards.rank > 10 && currentCards.rank <= 13) {
+       cardSum = cardSum + 10;
+     } if (currentCards.rank == 1) {
+       aceCard = aceCard + 1;
+     } if (aceCard > 0) {
+        if ( cardSum <= 10){
+          cardSum = cardSum + 10
+        }
+     }
+    
+    } return cardSum;
+    
+  };
+      
+    // Value of Ace 1 or 11
+
+    
+    
+
+var main = function() {
+  deal cards, in the beginning 2 cards each
+  if (gameMode == 'start game') {
+    // first card
+    dealCard(playerCards);
+    dealCard(compCards);
+    // second card
+    dealCard (playerCards);
+    dealCard (compCards);
+    console.log (playerCards);
+    console.log (compCards);
+  };
+
+// To test condition for ace
+// playerCards = [{name: "ace", suit: "hearts", rank: 1}, {name: "ace" , suit: "hearts", rank: 1}];
+
+// compCards = [{name: 10, suit: "spades", rank: 10}, {name: 2, suit: "hearts", rank: 2}];
+
+  // Cards analyzed for game winning ex: Blackjack
+playerCardSum = getCardSum (playerCards);
+console.log(playerCardSum);
+
+compCardSum = getCardSum (compCards);
+console.log (compCardSum);
+};
+
+
+
+
+
+
+
+
+  // var playerIndex = 0
+
+// var deal2Cards = function() {
+//   while (playerIndex < players.length) {
+//     // Store players in variable
+//     var playersName = players[playerIndex];
+    
+//         var cardIndex = 0;
+//         while (cardIndex < 2){
+//           var cards = dealCard(deck)
+
+          
+//           cardIndex += 1;
+
+//           // Create players card
+//           var dealtCards = {
+//             name: playersName,
+//             cardsVal: cards,
+//           }
+
+//         twoCardsVal.push(dealtCards);
+//         }
+
+//     playerIndex += 1;
+//     console.log(twoCardsVal);
+
+//   }
+
+//   return twoCardsVal;
+// };
+
+
+// Cards displayed to user
+// User decide to hit or stand using the submit button
+// User's card are analysed for winning or losing condition
+//Computer decide to hit or stand automatically
+  // Dealer has to hit if hand below 17
+// Winning rules : closest to 21 will win
+//The game either ends or continue
+// Ace can be 1 or 11
+
+
+// var main = function (input) {
+//   var myOutputValue = 'hello world';
+//   // Deal 2 cards for player and computer
+//   if (gameMode = 'start game') {
+//     var playerDeal = deal2Cards(input);
+//     playerCards = playerDeal;
+//     console.log(playerCards); 
+
+//     var compDeal = deal2Cards(input);
+//     compCards = compDeal;
+//     console.log ('compcard' + compCards);
+
+//   }
+
   
   
   
