@@ -16,6 +16,7 @@ var currentDeck = [];
 var comHand = [];
 var showCards = false;
 var players = [];
+var namesArray = [];
 var currentPlayer = -1;
 
 // ---------------- HELPER FUNCTIONS ----------------//
@@ -281,7 +282,6 @@ var payoutEnd = function () {
         countPointsLose(payoutIndex);
       } else if (players[payoutIndex].status == STATUS_STAND) {
         if (players[payoutIndex].sum > sum) {
-          console.log("win");
           countPointsWin(payoutIndex);
         } else if (players[payoutIndex].sum == sum) {
           countPointsTie(payoutIndex);
@@ -292,6 +292,20 @@ var payoutEnd = function () {
     }
     payoutIndex += 1;
   }
+};
+
+var removePlayers = function () {
+  var i = 0;
+  var msg = "";
+  while (i < players.length) {
+    if (players[i].points <= 0) {
+      var removedPlayer = players.splice(i, 1);
+      msg += `<br> ${removedPlayer[0].name} will be disqualified.`;
+      i -= 1;
+    }
+    i += 1;
+  }
+  return msg;
 };
 
 // ======== POINTS RELATED ==========//
@@ -309,9 +323,6 @@ var countPointsWin = function (i) {
 
 var countPointsLose = function (i) {
   players[i].wager = 0;
-  if (players[i].points <= 0) {
-    // remove player
-  }
 };
 
 var countPointsWinBJ = function (i) {
@@ -323,9 +334,6 @@ var countPointsWinBJ = function (i) {
 var countPointsLoseBJ = function (i) {
   players[i].points -= Number(players[i].wager);
   players[i].wager = 0;
-  if (players[i].points <= 0) {
-    // remove player
-  }
 };
 
 // ---------------- MAIN ----------------//
@@ -333,10 +341,12 @@ var countPointsLoseBJ = function (i) {
 var main = function (input) {
   if (gameMode == GM_NAME) {
     // ###################### GAME MODE NAME (INPUT NAME) ###########################
-    var namesArray = input.split(" ");
-    if (namesArray.length < 1 || input == "") {
+    if (namesArray.length < 1 && input == "") {
       myOutputValue = "⚠️ Please enter at least 1 name before starting! ⚠️";
     } else {
+      if (input != "") {
+        namesArray = input.split(" ");
+      }
       players = addPlayers(namesArray);
       myOutputValue = `Welcome! <br><br> 📊 Tally: <br> ${printPlayers(
         "points"
@@ -348,8 +358,7 @@ var main = function (input) {
     // ############## GAME MODE DEAL (INPUT WAGER, DEAL CARDS, CHECK BJ) ###################
     // ========== wagers ==========
     var wagersArray = input.split(" ");
-    console.log(wagersArray);
-    if (input == "" || wagersArray.length < players.length) {
+    if (input == "" || wagersArray.length != players.length) {
       myOutputValue = `⚠️ Please input the wagers for each player separated by a space! ⚠️ <br><br> 📊 Tally: <br> ${printPlayers(
         "points"
       )}`;
@@ -460,6 +469,7 @@ var main = function (input) {
       }
     }
   } else if (gameMode == GM_REVEAL) {
+    // ###################### GAME MODE REVEAL ###########################
     // ========== COMPUTER'S TURN ==========
     myOutputValue = playComTurn();
     showCards = true;
@@ -474,8 +484,15 @@ var main = function (input) {
       myOutputValue += `All players larger than ${sumCom} wins!`;
     }
     myOutputValue += `<br><br> 📊 Tally: <br> ${printPlayers("points")}`;
-    myOutputValue += NEW_ROUND_MSG;
-    gameMode = GM_DEAL;
+    myOutputValue += removePlayers();
+    if (players.length < 1) {
+      myOutputValue +=
+        "<br><br> All players have been disqualified! Please click 'Submit' for a new game!";
+      gameMode = GM_NAME;
+    } else {
+      myOutputValue += NEW_ROUND_MSG;
+      gameMode = GM_DEAL;
+    }
   }
   return myOutputValue;
 };
