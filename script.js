@@ -87,24 +87,77 @@ var shuffleCards = function (cardDeck) {
 var newDeck = shuffleCards(makeDeck());
 
 //Game Rules
+var gameOver = false;
 var scoreLimit = 21;
+var gameMode = `startHand`;
+
+//Bust at over 21 points
+if (scoreLimit > 21) {
+  gameOver = true;
+}
+// var gameCheck = function(){
+//   (if hand>scoreLimit){
+//     return gameOver = true;
+//   }
+// }
+//BlackJack
+
+//Convert to output (Copied from reference)
+var convertHandToString = function (hand) {
+  return `[${hand.map((card) => card.name)}]`;
+};
+
+//String value (Copied from reference)
+var getDefaultOutput = function () {
+  return `Player has hand ${convertHandToString(
+    playerHand
+  )} with sum ${getHandSum(playerHand)}. <br>
+    Computer has hand ${convertHandToString(
+      computerHand
+    )} with sum ${getHandSum(computerHand)}.`;
+};
+
+//Combine hand score (Copied from reference)
+var getHandSum = function (hand) {
+  var numAcesInHand = 0;
+  var score = 0;
+  for (let i = 0; i < hand.length; i += 1) {
+    var currCard = hand[i];
+    // If card rank is 2-10, value is same as rank
+    if (currCard.rank === 1) {
+      numAcesInHand += 1;
+      score += 11;
+    } else currCard.rank >= 2 && currCard.rank >= 13;
+    score += hand[i].points;
+  }
+  // If sum is greater than sum limit and hand contains Aces, convert Aces from value of 11
+  // to value of 1, until sum is less than or equal to sum limit or there are no more Aces.
+  if (score > scoreLimit && numAcesInHand > 0) {
+    for (let i = 0; i < numAcesInHand; i += 1) {
+      sum -= 10;
+      // If the sum is less than sumLimit before converting all Ace values from
+      // 11 to 1, break out of the loop and return the current sum.
+      if (score <= scoreLimit) {
+        break; //Ends the loop immediately
+      }
+    }
+  }
+  return score;
+};
 
 var main = function (input) {
-  //Make shuffled deck and draw hand (Comp and Player)
-
-  var compHand = [newDeck.pop(), newDeck.pop()];
-  var playerHand = [newDeck.pop(), newDeck.pop()];
-
-  //Combine Player hands
-  var playerScore = playerHand[0].points + playerHand[1].points;
-  console.log(`Player Score: ${playerScore}`);
-
-  //Black Jack
-
-  //Combine Computer hands
-  var compScore = compHand[0].points + compHand[1].points;
-  console.log(`Comp Score: ${compScore}`);
-
+  //Start game
+  if (gameMode == `startHand`) {
+    var compHand = [newDeck.pop(), newDeck.pop()];
+    var playerHand = [newDeck.pop(), newDeck.pop()];
+    //Combine Player hands
+    var playerScore = getHandSum(playerHand);
+    console.log(`Player Score: ${playerScore}`);
+    //Combine Computer hands
+    var compScore = getHandSum(compHand);
+    console.log(`Comp Score: ${compScore}`);
+  }
+  //Hit until 21
   //Compare hands and announce winner
   if (compScore > playerScore) {
     myOutputValue = `Computer had ${compScore} points. Player had ${playerScore} points.<br> Player loses.`;
