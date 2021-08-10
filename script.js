@@ -2,35 +2,45 @@
 ////////////////////// Constants //////////////////////
 ///////////////////////////////////////////////////////
 
-const HEARTS = "hearts";
-const DIAMONDS = "diamonds";
-const CLUBS = "clubs";
-const SPADES = "spades";
+const HIT = "hit";
+const STAND = "stand";
+const SPLIT = "split";
 const INPUT_PLAYERS = "inputPlayers";
 const INPUT_NAMES = "inputNames";
 const INPUT_BETS = "inputBets";
 const BLACKJACK = "blackjack";
-const HIT = "hit";
-const STAND = "stand";
-const SPLIT = "split";
-const defaultNames = ["Alice", "Bob", "Condi", "Dev", "Ed", "Foobar"];
-const defaultBets = ["10", "10", "10", "10", "10", "10"];
 const COLOUR_BLUE = "#013D87";
 const COLOUR_GREEN = "#018786";
 const COLOUR_RED = "#B00020";
 const COLOUR_YELLOW = "#F9D342";
 const BORDER_SPAN = `<span style="border:1px; border-style:solid; border-color:#FFFFFF; padding: 0.25em 0.5em;">`;
-const createBackground = function (colour) {
-  return `<div class="fw-bold" style="display: inline-block; border-radius:5px; background-color:${colour}; padding: 0.25em 2em;">`;
-};
 const BLACK_TEXT = `<span style="color: #292826">`;
 
 //////////////////////////////////////////////////////////////
 ////////////////////// Global Variables //////////////////////
 //////////////////////////////////////////////////////////////
 
+const suits = ["♥", "♦", "♣", "♠"];
+const ranks = [
+  "2",
+  "3",
+  "4",
+  "5",
+  "6",
+  "7",
+  "8",
+  "9",
+  "10",
+  "J",
+  "Q",
+  "K",
+  "A",
+];
+var deck = [];
+const sumLimit = 21;
 let gameMode = INPUT_PLAYERS;
-let numOfPlayers = 0;
+const defaultNames = ["Alice", "Bob", "Condi", "Dev", "Ed", "Foobar"];
+const defaultBets = ["10", "10", "10", "10", "10", "10"];
 const playerBoard = [];
 let dealerFaceUpCard;
 
@@ -40,57 +50,42 @@ let dealerFaceUpCard;
 
 /**
  * ------------------------------------------------------------------------
+ * Creates background for output text.
+ * @param   {String}    colour    Background colour.
+ * @return  {String}              HTML \<div\> for background
+ * ------------------------------------------------------------------------
+ */
+
+function createTextBackground(colour) {
+  return `<div class="fw-bold" style="display: inline-block; border-radius:5px; background-color:${colour}; padding: 0.25em 2em;">`;
+}
+
+/**
+ * ------------------------------------------------------------------------
  * Creates a 52 card deck.
  * Each card has the following properties.
- * [name]   2, 3, ... , J, Q, K, A
- * [suit]   Hearts, Diamonds, Clubs, Spades
- * [emoji]  Emoji of the suit.
- * [value]  Value of each card in Blackjack.
- * @return  {Array}       A deck grouped by suits and ordered from 2 to Ace.
+ * [name]     2, 3, ... , J, Q, K, A
+ * [suit]     Emoji of the suit.
+ * [display]  [name] [emoji]
+ * [value]    Value of each card in Blackjack.
  * ------------------------------------------------------------------------
  */
 
 function createDeck() {
-  var cardDeck = [];
-  var suits = [HEARTS, DIAMONDS, CLUBS, SPADES];
-
   for (var suitIndex = 0; suitIndex < suits.length; suitIndex += 1) {
     var currentSuit = suits[suitIndex];
-    var suitEmoji;
-    switch (currentSuit) {
-      case HEARTS:
-        suitEmoji = "♥";
-        break;
-      case DIAMONDS:
-        suitEmoji = "♦";
-        break;
-      case CLUBS:
-        suitEmoji = "♣";
-        break;
-      case SPADES:
-        suitEmoji = "♠";
-        break;
-    }
 
-    for (var rankCounter = 2; rankCounter <= 14; rankCounter += 1) {
-      var cardName = rankCounter;
-      var cardValue = rankCounter;
+    for (var rankIndex = 0; rankIndex < ranks.length; rankIndex += 1) {
+      var cardName = ranks[rankIndex];
+      var cardValue = parseInt(ranks[rankIndex]);
 
       switch (cardName) {
-        case 11:
-          cardName = "J";
+        case "J":
+        case "Q":
+        case "K":
           cardValue = 10;
           break;
-        case 12:
-          cardName = "Q";
-          cardValue = 10;
-          break;
-        case 13:
-          cardName = "K";
-          cardValue = 10;
-          break;
-        case 14:
-          cardName = "A";
+        case "A":
           cardValue = 11;
           break;
       }
@@ -98,21 +93,20 @@ function createDeck() {
       var card = {
         name: cardName,
         suit: currentSuit,
-        display: `${cardName} ${suitEmoji}`,
+        display: `${cardName} ${currentSuit}`,
         value: cardValue,
       };
 
-      cardDeck.push(card);
+      deck.push(card);
     }
   }
-  return cardDeck;
 }
 
 /**
  * ------------------------------------------------------------------------
  * A random index ranging from 0 (inclusive) to max (exclusive).
  * @param   {Number}    max     The maximum of the random number to be generated.
- * @return  {Number}            A random index.
+ * @return  {Number}            A random index integer.
  * ------------------------------------------------------------------------
  */
 
@@ -122,25 +116,19 @@ function getRandomIndex(max) {
 
 /**
  * ------------------------------------------------------------------------
- * Shuffle the cards in the cardDeck array
- * @param   {Array}    cardDeck     The deck of cards to be shuffled.
- * @return  {Array}                 A shuffled deck.
+ * Shuffle the cards in the deck array.
  * ------------------------------------------------------------------------
  */
 
-function shuffleCards(cardDeck) {
-  for (
-    var currentIndex = 0;
-    currentIndex < cardDeck.length;
-    currentIndex += 1
-  ) {
-    var randomIndex = getRandomIndex(cardDeck.length);
-    var cardHolder = cardDeck[randomIndex];
+function shuffle() {
+  for (let i = 0; i < 1000; i += 1) {
+    let location1 = getRandomIndex(deck.length);
+    let location2 = getRandomIndex(deck.length);
+    let tmp = deck[location1];
     // Swap positions of randomCard and currentCard in the deck
-    cardDeck[randomIndex] = cardDeck[currentIndex];
-    cardDeck[currentIndex] = cardHolder;
+    deck[location1] = deck[location2];
+    deck[location2] = tmp;
   }
-  return cardDeck;
 }
 
 ///////////////////////////////////////////////////////////////////
@@ -329,7 +317,7 @@ function createPlayers(numOfPlayers) {
  * ------------------------------------------------------------------------
  */
 
-function dealCards(deck) {
+function dealCards() {
   for (let i = 0; i < 2; i += 1) {
     for (let player of playerBoard) {
       player.hit(deck.pop());
@@ -379,7 +367,7 @@ function playerDecide(player) {
 
 function dealerHitStand(dealer) {
   while (dealer.handValue < 17) {
-    dealer.hit(cardDeck.pop());
+    dealer.hit(deck.pop());
     dealer.checkBust();
   }
 }
@@ -393,19 +381,19 @@ function dealerHitStand(dealer) {
 
 function evalDealerHand() {
   if (dealer.hasBlackjack) {
-    return `${createBackground(COLOUR_YELLOW)}
+    return `${createTextBackground(COLOUR_YELLOW)}
     ${BLACK_TEXT}
     Dealer got a Blackjack.</span></div><br>
     All players lose except players with a Blackjack.`;
   } else if (dealer.hasBust) {
-    return `${createBackground(COLOUR_RED)}
+    return `${createTextBackground(COLOUR_RED)}
     Dealer has bust.</div><br>
-    ${createBackground(COLOUR_GREEN)}
+    ${createTextBackground(COLOUR_GREEN)}
     All players still in play wins.</div>`;
   } else {
-    return `${createBackground(COLOUR_BLUE)}
+    return `${createTextBackground(COLOUR_BLUE)}
     Dealer got ${dealer.handValue}.</div><br>
-    ${createBackground(COLOUR_GREEN)}
+    ${createTextBackground(COLOUR_GREEN)}
     Players with a better hand wins.</div>`;
   }
 }
@@ -426,14 +414,14 @@ function evalHands() {
     // Player and dealer have Blackjacks
     if (player.hasBlackjack && dealer.hasBlackjack) {
       player.hasDrew = true;
-      output += `${createBackground(COLOUR_BLUE)}
+      output += `${createTextBackground(COLOUR_BLUE)}
       Both ${player.name} and the Dealer got Blackjacks, it's a draw!
       </div>`;
     }
     // Player has Blackjacks but not dealer
     else if (player.hasBlackjack) {
       player.hasWon = true;
-      output += `${createBackground(COLOUR_YELLOW)}
+      output += `${createTextBackground(COLOUR_YELLOW)}
       ${BLACK_TEXT}
       ${player.name} got a Blackjack!
       </span></div>`;
@@ -444,7 +432,7 @@ function evalHands() {
       (!player.hasBust && dealer.hasBust)
     ) {
       player.hasWon = true;
-      output += `${createBackground(COLOUR_GREEN)}
+      output += `${createTextBackground(COLOUR_GREEN)}
       ${player.name} won!
       </div>`;
     }
@@ -454,21 +442,21 @@ function evalHands() {
       (!dealer.hasBust && dealer.handValue > player.handValue) ||
       (!dealer.hasBust && player.hasBust)
     ) {
-      output += `${createBackground(COLOUR_RED)}
+      output += `${createTextBackground(COLOUR_RED)}
       ${player.name} lost to the Dealer.
       </div>`;
     }
     // Player draw with the the dealer
     else {
       player.hasDrew = true;
-      output += `${createBackground(COLOUR_BLUE)}
+      output += `${createTextBackground(COLOUR_BLUE)}
       ${player.name} drew with the Dealer.
       </div>`;
     }
     player.calcPoints();
     player.reset();
     if (player.points <= 0) {
-      output += `<br>${createBackground(COLOUR_RED)}
+      output += `<br>${createTextBackground(COLOUR_RED)}
       ${player.name} ran out of points and is eliminated!</div>`;
       toEliminate.unshift(playerBoard.indexOf(player));
     }
@@ -515,7 +503,8 @@ function endGame() {
   }
 
   // Generate new deck
-  cardDeck = shuffleCards(createDeck());
+  createDeck();
+  shuffle();
 
   gameMode = INPUT_BETS;
 
@@ -528,7 +517,6 @@ function endGame() {
 
 const dealer = new Player("dealer");
 dealer.name = "Dealer";
-let cardDeck = shuffleCards(createDeck());
 let playerTurn = 0;
 
 const gameplay = {
@@ -542,8 +530,7 @@ const gameplay = {
       ) {
         return "Please enter the number of players from 1 to 6.";
       }
-      numOfPlayers = input;
-      createPlayers(numOfPlayers);
+      createPlayers(input);
       gameMode = INPUT_NAMES;
       return `There are now ${input} player(s).<br>
       Please enter the name(s) of the player(s) separated by slashes "/".<br>
@@ -582,7 +569,9 @@ const gameplay = {
         playerBoard[i].bet = bets[i];
       }
       gameMode = BLACKJACK;
-      dealCards(cardDeck);
+      createDeck();
+      shuffle();
+      dealCards();
       initialChecks();
       let defaultMessage = "Bets are placed, cards are dealt.";
       if (dealer.hasBlackjack) {
@@ -596,7 +585,7 @@ const gameplay = {
     execute(input) {
       while (playerTurn < playerBoard.length) {
         let player = playerBoard[playerTurn];
-        switch (input) {
+        switch (String(input).toLowerCase()) {
           case "hit":
             if (player.handValue >= 21) {
               playerTurn += 1;
@@ -607,7 +596,7 @@ const gameplay = {
               return `The previous player has a Blackjack, a hand total of 21 or has bust and can't hit.<br><br>
               ${playerDecide(player)}`;
             }
-            player.hit(cardDeck.pop());
+            player.hit(deck.pop());
             player.checkBust();
             break;
           case "stand":
@@ -627,8 +616,8 @@ const gameplay = {
               player.bet
             );
             splitHand.hit(player.hand.pop());
-            player.hit(cardDeck.pop());
-            splitHand.hit(cardDeck.pop());
+            player.hit(deck.pop());
+            splitHand.hit(deck.pop());
             playerBoard.splice(playerTurn + 1, 0, splitHand);
             break;
         }
