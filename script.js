@@ -3,6 +3,8 @@ var shuffledDeck = [];
 var playerCards = [];
 var computerCards = [];
 var gameMode = "drawCards";
+var playerSum = [];
+var computerSum = [];
 
 var main = function (input) {
   var myOutputValue = " ";
@@ -10,6 +12,7 @@ var main = function (input) {
   //calPlayerCard gives string representing the card name and suit
   var calCards = startOfGame();
   myOutputValue = calCards;
+
   if (gameMode == "hit" && input == "hit") {
     var playerHand = calPlayerCard(shuffledDeck);
     console.log(playerHand);
@@ -47,7 +50,6 @@ var makeDeck = function () {
   //making suits
   while (suitIndex < suits.length) {
     var currentSuits = suits[suitIndex];
-    console.log("current Suit: " + currentSuits);
     var rankCounter = 1;
     while (rankCounter <= 13) {
       var cardName = rankCounter;
@@ -73,7 +75,6 @@ var makeDeck = function () {
         rank: rankCounter,
         Emoji: cardEmoji,
       };
-      console.log("rank: " + rankCounter + cardEmoji);
       deck.push(card);
       shuffledDeck.push(card);
       rankCounter += 1;
@@ -95,7 +96,6 @@ var shuffleCards = function (deck) {
     var randomIndex = getRandomIndex(shuffledDeck.length);
     // Select the card that corresponds to randomIndex
     var randomCard = shuffledDeck[randomIndex];
-    console.log(randomCard);
     // Select the card that corresponds to currentIndex
     var currentCard = shuffledDeck[currentIndex];
     // Swap positions of randomCard and currentCard in the deck
@@ -110,17 +110,34 @@ var shuffleCards = function (deck) {
 var startOfGame = function () {
   if (gameMode == "drawCards") {
     //put making and shuffling of deck inside to avoid many decks everytime you press submit
-    //inititate making of deck
     var makingDeck = makeDeck();
-    //shuffle the deck
     var shufflingDeck = shuffleCards(deck);
     var playerHand1 = calPlayerCard(shuffledDeck);
     var playerHand2 = calPlayerCard(shuffledDeck);
-    console.log(playerHand1);
-    console.log(playerHand2);
+    // logic for if player is > 21 or =21
+    if (calPlayerSum(playerCards) == 21) {
+      return showPlayerCards(playerCards) + "<br>" + "BlackJack !You won!";
+    } else if (calPlayerSum(playerCards) > 21) {
+      return (
+        showPlayerCards(playerCards) + "<br>" + playerSum + "<br>" + "You Bust!"
+      );
+    } else if (calPlayerSum(playerCards) == calComputerSum(computerCards)) {
+      return showPlayerCards(playerCards) + "Draw";
+    }
     // while runs as long as computerSum is less then 17
     var computerHand1 = calComputerCard(shuffledDeck);
     var computerHand2 = calComputerCard(shuffledDeck);
+    if (calComputerSum(computerCards) == 21) {
+      return (
+        showComputerCards(computerCards) +
+        "<br>" +
+        "Computer got BlackJack !You Lost!"
+      );
+    } else if (calComputerSum(computerCards) > 21) {
+      return showComputerCards(computerCards) + "<br>" + "You Bust!";
+    } else if (calComputerSum(computerCards) == calComputerSum(computerCards)) {
+      return showPlayerCards(playerCards) + "Draw";
+    }
     console.log(computerHand1);
     console.log(computerHand2);
     while (calComputerSum(computerCards) < 17) {
@@ -158,6 +175,7 @@ var calPlayerSum = function (playerCards) {
     counter = counter + 1;
     sum += rankOfCurrentCard;
   }
+  playerSum.push(sum);
   return sum;
 };
 var calComputerCard = function (shuffledDeck) {
@@ -176,6 +194,7 @@ var calComputerSum = function (computerCards) {
     counter = counter + 1;
     sum += rankOfCurrentCard;
   }
+  computerSum.push(sum);
   return sum;
 };
 
@@ -248,10 +267,18 @@ var showComputerCards = function (computerCards) {
   return myOutputValue;
 };
 
-//////logic to win game at 21 or bust over 21;
+//////logic to win game at 21 or bust over 21.
+/////// add lgi
 
 var gameLogic = function (computerCards, playerCards) {
   if (calPlayerSum(playerCards) == 21 && calComputerSum(computerCards) == 21) {
     myOutputValue = "You both drew 21! what are the chances?! DRAW";
   }
 };
+///// if player cards 21 and comp cards 21, draw
+///// if player cards 21 and comp cards not 21, player wins immediately
+///// if player cards not 21 and comp is 21 , comp wins
+///// if player or comp more than 21, retart the game
+
+//// if players have an Ace and playerCards.length =2 , ace.rank == 11
+/// if players have an Ace and playerCards.length >3 Ace.rank == 1
