@@ -1,3 +1,19 @@
+/*ACE card variation
+Found on https://stackoverflow.com/questions/4689856/how-to-change-value-of-object-which-is-inside-an-array-using-javascript-or-jquer
+
+var aceChange = function(){
+if((playerHand.length||compHand.length)>2){
+for (var i in (playerHand||compHand)) {
+     if ((playerHand.cardAttributes[i].name||compHand.cardAttributes[i].name) == "Ace") {
+        playerHand.cardAttributes[i].rank = 1;
+        compHand.cardAttributes[i].rank = 1;
+        break; //Stops loops once found
+     }
+   }
+  }
+}
+*/
+
 /*Rules:
 1) Player hits 21 = instant win
 2) Dealer/Player +1 card if hand <17
@@ -30,9 +46,9 @@ var mainDeck = function () {
     var currentSuit = cardSuits[suitsIndex];
 
     //Inner Loop 1: Creating the number cards
-    for (counter = 1; counter <= 10; counter += 1) {
+    for (counter = 2; counter <= 11; counter += 1) {
       var cardNumber = counter;
-      if (cardNumber == 1) {
+      if (cardNumber == 11) {
         cardNumber = "Ace";
       }
       var cardAttributes = {
@@ -45,15 +61,15 @@ var mainDeck = function () {
       cardDeck.push(cardAttributes);
     }
     //Inner Loop 2: Ensuring JQK have rank of 10
-    for (i = 11; i <= 13; i += 1) {
+    for (i = 0; i < 3; i += 1) {
       var pictureCard = i;
-      if (pictureCard == 11) {
+      if (pictureCard == 0) {
         pictureCard = "Jack";
       }
-      if (pictureCard == 12) {
+      if (pictureCard == 1) {
         pictureCard = "Queen";
       }
-      if (pictureCard == 13) {
+      if (pictureCard == 2) {
         pictureCard = "King";
       }
       var cardAttributes = {
@@ -101,7 +117,22 @@ var shuffleTheDeck = function () {
   console.log(gameDeck);
 };
 
-//Initial function - 0
+//Display card properly in output to player
+var greyBoxCardOutput = function (playerHand, compHand) {
+  var playerOutputValue = "Your cards are:";
+  for (i = 0; i < playerHand.length; i += 1) {
+    playerOutputValue += `<br/>` + playerHand[i].name + playerHand[i].suit;
+  }
+  var compOutputValue = "The dealer's cards are:";
+  for (i = 0; i < compHand.length; i += 1) {
+    compOutputValue += `<br/>` + compHand[i].name + compHand[i].suit;
+  }
+  console.log(`Showing player their hand`);
+  return playerOutputValue + `<br/><br/>`;
+  // + compOutputValue + `<br/><br/>`;
+};
+
+//Initial function - mode 0
 var initialDraw = function () {
   for (i = 0; i < 2; i += 1) {
     var compCard = gameDeck.pop();
@@ -116,7 +147,7 @@ var initialDraw = function () {
   console.log(compHand);
 };
 
-//Counting rank, or score, function
+//Calculating player score
 var playerScore = function () {
   //Player score
   var pSum = 0;
@@ -129,7 +160,7 @@ var playerScore = function () {
   console.log(playerHand);
 };
 
-//COMP score
+//Calculating COMP score
 var compScore = function () {
   var cSum = 0;
   for (iTot = 0; iTot < compHand.length; iTot += 1) {
@@ -141,15 +172,15 @@ var compScore = function () {
   console.log(compHand);
 };
 
-//Player adds cards - 1
+//Player adds cards - mode 1
 var playerAction = function (input) {
   console.log(`-Current mode: ` + currentMode);
   playerScore();
-  if (currentMode == 1 && input == "stay") {
+  if (input == "stay") {
     currentMode = 2;
     console.log(`Mode changed to: ` + currentMode);
     myOutputValue = `You have decided to keep your hand. Please click SUBMIT for the dealer to have their turn.`;
-  } else if (currentMode == 1 && input == "") {
+  } else if (input == "") {
     var playerCard = gameDeck.pop();
     playerHand.push(playerCard);
     var myOutputValue = greyBoxCardOutput(playerHand, compHand);
@@ -160,57 +191,33 @@ var playerAction = function (input) {
       `Would you like to stay as you are or add an additional card? Click SUBMIT to add a card, or enter 'stay' to finish your turn.`;
     playerScore();
   }
+  compScore();
   return myOutputValue;
 };
 
-//COMP adds cards - 2
-var compAction = function () {
+//COMP adds cards - mode 2
+var compAction = function (cScore) {
   console.log(`CHECK MODE: ` + currentMode);
-  compScore();
-
-  if (compHand.length == 5 || cTotal > 17) {
+  var cScore = Number(cTotal);
+  if (cScore > 17) {
     currentMode = 3;
     console.log(`Mode changed to: ` + currentMode);
-    var myOutputValue = `The dealer has decided to stand!`;
-  } else if (cTotal < 18) var compCard = gameDeck.pop();
-  compHand.push(compCard);
-  console.log(`>>COMPUTER added card.`);
-  compScore();
-  var myOutputValue = `The dealer added a card to their hand. Please click SUBMIT.`;
-
-  return myOutputValue;
+    return `The dealer has decided to stand! Click SUBMIT to determine the winner!`;
+  } /*This part doesn't work. Problems:
+  1) It adds ONCE, then when submit clicked again, it returns undefined
+  2) It adds over and over even though cScore is <=17 when the _if (currentMode == 2 && cScore <= 17)_ condition is removed
+  3) It returns undefined
+  */ else if (cScore <= 17) {
+    var compCard = gameDeck.pop();
+    compHand.push(compCard);
+    console.log(`>>COMPUTER added card.`);
+    compScore();
+    return `The dealer added a card to their hand. Please click SUBMIT.`;
+  }
 };
 
-//Display card properly in output to player
-var greyBoxCardOutput = function (playerHand, compHand) {
-  var playerOutputValue = "Your cards are:";
-  for (i = 0; i < playerHand.length; i += 1) {
-    playerOutputValue += `<br/>` + playerHand[i].name + playerHand[i].suit;
-  }
-  var compOutputValue = "The dealer's cards are:";
-  for (i = 0; i < compHand.length; i += 1) {
-    compOutputValue += `<br/>` + compHand[i].name + compHand[i].suit;
-  }
-  console.log(`Showing player their hand`);
-  return playerOutputValue + `<br/><br/>` + compOutputValue + `<br/><br/>`;
-};
-
-//Determination
+//Determination - mode 3
 var determineWinner = function () {
-  // var pTotal = 0;
-  // var cTotal = 0;
-  // //Calculating player card power
-  // for (iTot = 0; iTot < playerHand.length; iTot += 1) {
-  //   pTotal += Number(playerHand[iTot].rank);
-  // }
-  // console.log(`The sum of the player's cards is ` + pTotal);
-  // //Calculating COMP card power
-  // for (iTot = 0; iTot < compHand.length; iTot += 1) {
-  //   cTotal += Number(compHand[iTot].rank);
-  // }
-  // console.log(`The sum of the COMPS's cards is ` + cTotal);
-
-  //Output statements
   if (pTotal == cTotal) {
     return `You draw with the dealer's hand of ${cTotal}!`;
   } else if (pTotal == 21 && cTotal !== 21) {
@@ -231,8 +238,9 @@ var main = function (input) {
   if (currentMode == 3) {
     myOutputValue = determineWinner();
   }
-  if (currentMode == 2 && input == "") {
-    myOutputValue = compAction();
+  if (currentMode == 2) {
+    var cScore = cTotal; //Confirm with Porter if a global variable needs to be defined in a function. Shouldn't need to but MODE 2 ISN'T WORKING EITHER WAY
+    myOutputValue = compAction(cScore);
   }
   if (currentMode == 1) {
     myOutputValue = playerAction(input);
