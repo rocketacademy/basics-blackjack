@@ -89,8 +89,8 @@ var main = function (input) {
     initializeHand(shuffledDeck);
 
     //Compute score of computer and players
-    // comScore = addScore(comHand);
-    comScore = 21;
+    comScore = addScore(comHand);
+    // comScore = 21;
     counter = 0;
     while (counter < numOfPlayer) {
       //Add score of current hand to profile
@@ -122,9 +122,12 @@ var main = function (input) {
         }`;
       }
       //If player is done, move to next player
+      var playMessage = `Player ${
+        turnNumber + 1
+      }'s turn done, press submit to continue.`;
       turnNumber += 1;
 
-      return `Player ${turnNumber + 1}'s turn done, press submit to continue.`;
+      return playMessage;
     }
     //If computer score is lower than 16, draw another card
     while (comScore < 16) {
