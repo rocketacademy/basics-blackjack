@@ -10,22 +10,16 @@
 // game mode: 'dealer Hit or Stand' --- The computer decides to hit or stand automatically
 
 var currentGameMode = "deal two cards";
-var shuffledDeck;
 var numberOfPlayerCards = 0;
 var numberOfComputerCards = 0;
-var playerInitialTotalHand = 0;
-var computerInitialTotalHand = 0;
 var playerTotalHand = 0;
 var computerTotalHand = 0;
-var playerCardIndex = 0;
 var numberAcesInHand = 0;
 var userInput;
 
 // array to track player's and computer's hand
 var playerHand = [];
 var computerHand = [];
-var playerHandValue = [];
-var computerHandValue = [];
 
 // making a deck of cards: 52 cards with 4 suits (13 cards each suit)
 var makeDeck = function () {
@@ -47,26 +41,16 @@ var makeDeck = function () {
     while (rankCounter <= 13) {
       // By default, the card name is the same as rankCounter,and the value of the card is the same as rankCounter
       var cardName = rankCounter;
-      var valueCard = rankCounter;
 
       // If rank is 1, 11, 12, or 13, set cardName to the ace or face card's name
-      // If card rank is 2-10, value is same as rank
-      // If card rank is 11-13, i.e. Jack, Queen, or King, value is 10
-      // If card is Ace, value is 11 by default
       if (cardName == 1) {
         cardName = "Ace";
-        valueCard = 11;
       } else if (cardName == 11) {
         cardName = "Jack";
-        valueCard = 10;
       } else if (cardName == 12) {
         cardName = "Queen";
-        valueCard = 10;
       } else if (cardName == 13) {
         cardName = "King";
-        valueCard = 10;
-      } else if (valueCard >= 2 && valueCard <= 10) {
-        valueCard = rankCounter;
       }
 
       // Create a new card with the current name, suit, and rank
@@ -74,7 +58,6 @@ var makeDeck = function () {
         name: cardName,
         suit: currentSuit,
         rank: rankCounter,
-        value: valueCard,
       };
 
       // Add the new card to the deck
@@ -119,196 +102,148 @@ var shuffleCards = function (cardDeck) {
   return cardDeck;
 };
 
+//shuffled the new deck
 var shuffledDeck = shuffleCards(makeDeck());
 
-// getting 2 random cards for each player
+var dealOneCardToHand = function (hand) {
+  //push drawn cards info to array
+  hand.push(shuffledDeck.pop());
+};
+
 var dealTwoCards = function () {
-  // Draw 4 cards from the top of the deck
-  var playerCard1 = shuffledDeck.pop();
+  var myOutputValue = "";
+  //deal first two cards to player and computer
+  dealOneCardToHand(playerHand);
   numberOfPlayerCards += 1;
-  var computerCard1 = shuffledDeck.pop();
-  numberOfComputerCards += 1;
-  var playerCard2 = shuffledDeck.pop();
-  numberOfPlayerCards += 1;
-  var computerCard2 = shuffledDeck.pop();
+  dealOneCardToHand(computerHand);
   numberOfComputerCards += 1;
 
-  //push drawn cards info to array
-  playerHand.push(playerCard1);
-  playerHand.push(playerCard2);
-  computerHand.push(computerCard1);
-  computerHand.push(computerCard2);
+  // deal two more cards to player and computer
+  dealOneCardToHand(playerHand);
+  numberOfPlayerCards += 1;
+  dealOneCardToHand(computerHand);
+  numberOfComputerCards += 1;
+
   console.log("player's hand array: ");
   console.log(playerHand);
   console.log("computer's hand array: ");
   console.log(computerHand);
 
-  // push drawn cards value to array
-  playerHandValue.push(playerCard1.value);
-  playerHandValue.push(playerCard2.value);
-  computerHandValue.push(computerCard1.value);
-  computerHandValue.push(computerCard2.value);
+  myOutputValue += `Player drawn: <br>`;
 
-  console.log("player's hand value: " + playerHandValue);
-  console.log("computer's hand value: " + computerHandValue);
+  for (let i = 0; i < playerHand.length; i += 1) {
+    myOutputValue += `${playerHand[i].name} of ${playerHand[i].suit}. <br>`;
+  }
 
-  var myOutputValue = `Player drawn ${playerCard1.name} of ${playerCard1.suit} and ${playerCard2.name} of ${playerCard2.suit}.<br> Computer drawn ${computerCard1.name} of ${computerCard1.suit} and ${computerCard2.name} of ${computerCard2.suit}. <br> <br> `;
+  myOutputValue += `<br> Computer drawn: <br>`;
+
+  for (let i = 0; i < computerHand.length; i += 1) {
+    myOutputValue += `${computerHand[i].name} of ${computerHand[i].suit}. <br>`;
+  }
 
   //moving to the next game
   currentGameMode = "player hit or stand";
   return myOutputValue;
 };
 
-var initialTotalHand = function () {
-  var myOutputValue = "";
-
-  //to get the total initial hand of the player
-  playerTotalHand = 0;
-  numberAcesInHand = 0;
-  var counter = 0;
-  while (counter < playerHandValue.length) {
-    playerTotalHand += playerHandValue[counter];
-    counter += 1;
+// to get the total value cards in hand
+var totalValueInHand = function (hand) {
+  var numberAcesInHand = 0;
+  var totalHand = 0;
+  for (let i = 0; i < hand.length; i += 1) {
+    var currentCard = hand[i];
+    // If card rank is 2-10, value is same as rank
+    if (currentCard.rank >= 2 && currentCard.rank <= 10) {
+      totalHand += currentCard.rank;
+      // If card rank is 11-13, i.e. Jack, Queen, or King, value is 10
+    } else if (currentCard.rank >= 11 && currentCard.rank <= 13) {
+      totalHand += 10;
+      // If card is Ace, value is 11 by default
+    } else if (currentCard.rank === 1) {
+      numberAcesInHand += 1;
+      totalHand += 11;
+    }
   }
-  console.log("player total hand: " + playerTotalHand);
-  // if total hand > 21 and hand contains 2 ace, convert ace from value of 11 to 1
-  if (playerTotalHand == 22) {
-    numberAcesInHand += 2;
-    playerTotalHand -= 10;
-    console.log("player total hand: " + playerTotalHand);
+  // if total hand > 21 and has ace, ace value change to 1, until total hand is less than or equal to 21 or there are no more Aces.
+  if (totalHand > 21 && numberAcesInHand > 0) {
+    for (let i = 0; i < numberAcesInHand; i += 1) {
+      totalHand -= 10;
+      // If the sum is less than 21 before converting all Ace values from
+      // 11 to 1, break out of the loop and return the current sum.
+      if (totalHand <= 21) {
+        break;
+      }
+    }
   }
-  myOutputValue += `Player's total hand is ${playerTotalHand}. <br>`;
-
-  //to get the total initial hand of the computer
-  computerTotalHand = 0;
-  numberAcesInHand = 0;
-  var counter = 0;
-  while (counter < computerHandValue.length) {
-    computerTotalHand += computerHandValue[counter];
-    counter += 1;
-  }
-  console.log("computer total hand: " + computerTotalHand);
-  // if total hand > 21 and hand contains 2 ace, convert ace from value of 11 to 1
-  if (computerTotalHand == 22) {
-    numberAcesInHand += 2;
-    computerTotalHand -= 10;
-    console.log("computer total hand: " + computerTotalHand);
-  }
-  myOutputValue += `Computer's total hand is ${computerTotalHand}. <br><br> `;
-
-  myOutputValue += `Player do you want to 'hit' or 'stand'? <br> Please type out your choice, and click the 'Submit' button.`;
-
-  return myOutputValue;
+  return totalHand;
 };
 
-var hitOrStand = function (input) {
+var hitOrStand = function () {
   var myOutputValue = "";
 
   if (currentGameMode == "player hit or stand") {
+    //player hits/stand
     if (userInput == "hit") {
-      // player take 1 card
-      playerCard = shuffledDeck.pop();
-      //push drawn cards info to array
-      playerHand.push(playerCard);
+      myOutputValue += `Player chose to take another card. <br> Player's cards are: <br>`;
+      // player take one card
+      dealOneCardToHand(playerHand);
+
       console.log("player's hand array: ");
       console.log(playerHand);
 
       numberOfPlayerCards += 1;
       console.log("number of player's cards in hand: " + numberOfPlayerCards);
-
-      // playerTotalHand += playerCard.rank;
-      playerTotalHand += playerCard.value;
-
-      // if total hand =20, but get 1 ace. convert ace value to 1,
-      if (playerTotalHand >= 20 && numberAcesInHand >= 0) {
-        var counter = 0;
-        while (counter < numberAcesInHand) {
-          numberAcesInHand = numberAcesInHand - 1;
-          playerTotalHand -= 10;
-          counter += 1;
-        }
-      }
-
-      console.log("player total hand: " + playerTotalHand);
-      myOutputValue += `Player chose to take another card, which is ${playerCard.name} of ${playerCard.suit}. <br>`;
     } else if (userInput == "stand") {
-      myOutputValue += `You chose to end your turn. <br>`;
-    }
-  }
-
-  // computer decides to hit or stand automatically
-  // computer has to hit if their hand is below 17
-  if (computerTotalHand <= 16) {
-    // computer take 1 card
-    computerCard = shuffledDeck.pop();
-    //push drawn cards info to array
-    computerHand.push(computerCard);
-    console.log("computer's hand array: ");
-    console.log(computerHand);
-
-    numberOfComputerCards += 1;
-    console.log("number of computer's cards in hand: " + numberOfComputerCards);
-
-    // computerTotalHand += computerCard.rank;
-    computerTotalHand += computerCard.value;
-
-    // if total hand =20, but get 1 ace. convert ace value to 1,
-    if (computerTotalHand >= 20 && numberAcesInHand >= 0) {
-      var counter = 0;
-      while (counter < numberAcesInHand) {
-        numberAcesInHand = numberAcesInHand - 1;
-        computerTotalHand -= 10;
-        counter += 1;
-      }
+      myOutputValue += `You chose to end your turn. <br> Player's cards are: <br>`;
     }
 
+    for (let i = 0; i < playerHand.length; i += 1) {
+      myOutputValue += `${playerHand[i].name} of ${playerHand[i].suit}. <br>`;
+    }
+
+    // computer decides to hit or stand automatically
+    // computer has to hit if their hand is below 17
+    computerTotalHand = totalValueInHand(computerHand);
     console.log("computer total hand: " + computerTotalHand);
-  } else {
-    // computer has to stand if their hand is 17 or higher
+    myOutputValue += `<br> Computer's cards are: <br>`;
+
+    if (computerTotalHand <= 16) {
+      // computer take 1 card
+      dealOneCardToHand(computerHand);
+
+      console.log("computer's hand array: ");
+      console.log(computerHand);
+
+      numberOfComputerCards += 1;
+      console.log(
+        "number of computer's cards in hand: " + numberOfComputerCards
+      );
+    } else {
+      // computer has to stand if their hand is 17 or higher
+    }
+    for (let i = 0; i < computerHand.length; i += 1) {
+      myOutputValue += `${computerHand[i].name} of ${computerHand[i].suit}. <br>`;
+    }
   }
 
   return myOutputValue;
 };
 
-// new total hand
-var totalHand = function (input) {
-  var myOutputValue = "";
-
-  // to see the player's hand
-  myOutputValue += `<br> Player's cards are: <br>`;
-  var counter = 0;
-  while (counter < numberOfPlayerCards) {
-    myOutputValue += `${playerHand[counter].name} of ${playerHand[counter].suit} <br>`;
-    counter += 1;
-  }
-
-  // to see the computer's hand
-  myOutputValue += `<br>Computer's cards are: <br>`;
-  var counter = 0;
-  while (counter < numberOfComputerCards) {
-    myOutputValue += `${computerHand[counter].name} of ${computerHand[counter].suit} <br>`;
-    counter += 1;
-  }
-
-  myOutputValue += `<br> Player's total hand is  ${playerTotalHand}. <br> Computer's total hand is ${computerTotalHand}.<br><br>`;
-
-  return myOutputValue;
+// to display output message for total value of player n comp
+var totalValueOutPutMessage = function () {
+  playerTotalHand = totalValueInHand(playerHand);
+  console.log("player total hand: " + playerTotalHand);
+  computerTotalHand = totalValueInHand(computerHand);
+  console.log("computer total hand: " + computerTotalHand);
+  return `<br> Player's total hand is  ${playerTotalHand}. <br> Computer's total hand is ${computerTotalHand}.<br><br>`;
 };
 
 var currentWinner = function (userInput) {
   var myOutputValue = "";
-
-  // player hand = 21, or player hand < 21 and > comp hand >16
-  if (playerTotalHand == 21) {
-    myOutputValue +=
-      "BLACK JACK! <br> Player wins by default! Computer loses. <br> Please refresh the page to play another round.";
-    return myOutputValue;
-  }
-  if (computerTotalHand == 21) {
-    myOutputValue +=
-      "BLACK JACK! <br> Computer wins by default! Player loses. <br> Please refresh the page to play another round.";
-    return myOutputValue;
-  }
+  playerTotalHand = totalValueInHand(playerHand);
+  console.log("player total hand: " + playerTotalHand);
+  computerTotalHand = totalValueInHand(computerHand);
+  console.log("computer total hand: " + computerTotalHand);
 
   if (playerTotalHand > 21) {
     myOutputValue +=
@@ -317,17 +252,17 @@ var currentWinner = function (userInput) {
     myOutputValue +=
       "Computer BUSTS! Player wins by default. <br> Please refresh the page to play another round.";
   } else if (
-    playerTotalHand < 21 &&
+    playerTotalHand <= 21 &&
     playerTotalHand > computerTotalHand &&
     computerTotalHand > 16
   ) {
     myOutputValue +=
       "Player wins! Computer loses. <br> Please refresh the page to play another round.";
-  } // player hand < 21 and player hand < comp hand , and comp =21,
-  else if (
-    playerTotalHand < 21 &&
+  } else if (
+    playerTotalHand < 16 &&
     playerTotalHand < computerTotalHand &&
-    computerTotalHand > 16
+    computerTotalHand > 16 &&
+    computerTotalHand <= 21
   ) {
     myOutputValue +=
       "Computer wins! Player loses. <br> Please refresh the page to play another round.";
@@ -346,12 +281,28 @@ var main = function (input) {
   userInput = input;
 
   if (currentGameMode == "deal two cards") {
-    // changingCardValue();
-    myOutputValue = dealTwoCards() + initialTotalHand();
-  } else if (currentGameMode == "player hit or stand") {
-    // changingCardValue();
-    myOutputValue = hitOrStand() + totalHand() + currentWinner();
-  }
+    var dealCards = dealTwoCards();
+    var playerTotalHand = totalValueInHand(playerHand);
+    var computerTotalHand = totalValueInHand(computerHand);
 
+    myOutputValue += `${dealCards} <br> Player's total hand is  ${playerTotalHand}. <br> Computer's total hand is ${computerTotalHand}.<br><br>`;
+
+    if (playerTotalHand == 21) {
+      myOutputValue +=
+        "BLACK JACK! <br> Player wins by default! Computer loses. <br> Please refresh the page to play another round.";
+      return myOutputValue;
+    }
+    if (computerTotalHand == 21) {
+      myOutputValue +=
+        "BLACK JACK! <br> Computer wins by default! Player loses. <br> Please refresh the page to play another round.";
+      return myOutputValue;
+    }
+    if (playerTotalHand < 21 && computerTotalHand < 21) {
+      myOutputValue += `Player do you want to 'hit' or 'stand'? <br> Please type out your choice, and click the 'Submit' button.`;
+      return myOutputValue;
+    }
+  } else if (currentGameMode == "player hit or stand") {
+    myOutputValue += hitOrStand() + totalValueOutPutMessage() + currentWinner();
+  }
   return myOutputValue;
 };
