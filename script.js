@@ -65,11 +65,29 @@ var shuffledDeck = shuffleCards(cardDeck);
 var dealerHand = [];
 var playerHand = [];
 
-//keeps track of game mode - starts with initial
+//keeps track of game mode - starts with pre-game
+var GAME_MODE_PRE_GAME = `pre game`;
 var GAME_MODE_INITIAL = `initial`;
 var GAME_MODE_HIT_OR_STAND = `hit or stand`;
 var GAME_MODE_END = `end turn`;
-var gameMode = GAME_MODE_INITIAL;
+var gameMode = GAME_MODE_PRE_GAME;
+
+//pre-game message
+var instructions = `Hello, welcome to Blackjack!<br><br>
+The rules of the game are as follows:<br>
+1. The dealer will deal 2 cards to himself and each player<br>
+2. Each player can choose to hit (draw another card) or stand (end turn)<br>
+3. After all players are done, the dealer will hit if their score is less than 17<br>
+4. Player wins if they score higher than the dealer without exceeding a total score of 21
+<br><br>
+Please type in your name to start.`
+
+//keeps track of player name
+var userName = ``;
+var createUserName = function(name){
+  userName = name
+  return `Hello ${userName}! Click submit to deal cards.`
+}
 
 //deals initial hand
 var dealInitialHand = function(){
@@ -86,7 +104,7 @@ var dealInitialHand = function(){
   console.log(`player initial hand`,playerHand);
 
   return `Dealer has ${dealerFaceUpCard.name}.<br>
-  Player has ${playerCard1.name} and ${playerCard2.name}.<br>`
+  ${userName} has ${playerCard1.name} and ${playerCard2.name}.`
 };
 
 //keeps track of dealer and player scores
@@ -141,7 +159,7 @@ return dealerScore;
 
 //displays player hand
 var displayPlayerHand = function(playerHand){
-  var playerHandMessage = `Player hand:<br>`
+  var playerHandMessage = `${userName}'s hand:<br>`
   var playerIndex = 0;
   while (playerIndex < playerHand.length){
     playerHandMessage += playerHand[playerIndex].name + `<br>`;
@@ -168,7 +186,7 @@ var generateGameResult = function(playerScore,dealerScore){
         return `Dealer wins!`
       }else if((dealerScore < playerScore && dealerScore <= 21 && playerScore <= 21) ||
         (dealerScore > 21 && playerScore <= 21)){
-        return `Player wins!`
+        return `${userName} wins!`
       } else if (dealerScore == playerScore ||
         (dealerScore > 21 && playerScore > 21)){
         return `It's a tie.`
@@ -182,10 +200,10 @@ var playerHitOrStand = function(playerChoice){
     var playerHitCard = shuffledDeck.pop();
     playerHand.push(playerHitCard);
     console.log(`player hand after hit`,playerHand);
-    return `Player chose to ${playerChoice}. Player drew ${playerHitCard.name}.`
+    return `${userName} chose to ${playerChoice}. ${userName} drew ${playerHitCard.name}.`
   }else if (playerChoice == `stand`){
     gameMode = GAME_MODE_END;
-    return `Player chose to ${playerChoice}. End turn.`;
+    return `${userName} chose to ${playerChoice}. End turn.`;
   }else {
     return `You can only choose to hit or stand.`;
   };
@@ -212,8 +230,15 @@ return dealerHitCardMessage;
 var main = function (input) {
   var myOutputValue = ``;
   var playerHandMessage = ``;
-  
-  if(gameMode == GAME_MODE_INITIAL){
+  if(gameMode == GAME_MODE_PRE_GAME){
+    if(input == ``){
+      myOutputValue = instructions;
+    }else{
+      var nameMessage = createUserName(input);
+      myOutputValue = nameMessage;
+      gameMode = GAME_MODE_INITIAL;
+    }
+  }else if(gameMode == GAME_MODE_INITIAL){
     var initialHand = dealInitialHand();
     playerScore = calculatePlayerScore(playerHand);
     playerHandMessage = displayPlayerHand(playerHand);
@@ -221,7 +246,7 @@ var main = function (input) {
     myOutputValue = `${initialHand}<br><br>
     Dealer face up card: ${dealerHand[0].name}<br><br>
     ${playerHandMessage}<br>
-    Player score: ${playerScore}`;
+    ${userName} score: ${playerScore}`;
   }else if (gameMode == GAME_MODE_HIT_OR_STAND){
     var hitOrStand = playerHitOrStand(input);
     playerScore = calculatePlayerScore(playerHand);
@@ -229,10 +254,10 @@ var main = function (input) {
     myOutputValue = `${hitOrStand}<br><br>
     Dealer face up card: ${dealerHand[0].name}<br><br>
     ${playerHandMessage}<br>
-    Player score: ${playerScore}`;
+    ${userName} score: ${playerScore}`;
     if(playerScore > 21){
       gameMode = GAME_MODE_END;
-      myOutputValue = `Player busted!`;
+      myOutputValue = `${userName} busted!`;
     };
   }else if (gameMode == GAME_MODE_END){
     playerScore = calculatePlayerScore(playerHand);
@@ -246,9 +271,10 @@ var main = function (input) {
     ${dealerHandMessage}<br>
     Dealer score: ${dealerScore}<br><br>
     ${playerHandMessage}<br>
-    Player score: ${playerScore}`
+    ${userName} score: ${playerScore}`
     gameMode = GAME_MODE_INITIAL;
     shuffledDeck = playerHand.concat(dealerHand,shuffledDeck);
+    shuffledDeck = shuffleCards(shuffledDeck);
     playerHand = [];
     dealerHand = [];
   };
