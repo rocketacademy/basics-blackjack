@@ -13,12 +13,15 @@ var createDeck = function () {
     }
     if (cardCounter == 11) {
       cardName = "Jack";
+      scoreCounter = 10;
     }
     if (cardCounter == 12) {
       cardName = "Queen";
+      scoreCounter = 10;
     }
     if (cardCounter == 13) {
       cardName = "King";
+      scoreCounter = 10;
     }
     var card = {
       name: cardName,
@@ -107,33 +110,46 @@ var main = function (input) {
     } else if (sumOfHand(playersCards) > 21) {
       return (
         "bust, you drew " +
-        playersCards[playersCards.length - 1].cardName +
+        playersCards[playersCards.length - 1].name +
         " of " +
         playersCards[playersCards.length - 1].suit
       );
     } else {
       return (
-        "Your cards are " +
-        playersCards[0].name +
+        "You just drew " +
+        playersCards[playersCards.length - 1].name +
         " of " +
-        playersCards[0].suit +
-        " and " +
-        playersCards[1].name +
-        " of " +
-        playersCards[1].suit +
+        playersCards[playersCards.length - 1].suit +
         "<br><br> Your score is " +
         sumOfHand(playersCards) +
         " Please choose to hit or stand"
       );
     }
   }
-  if (input == "stand") {
+  // if (input == "stand") {
+  //   if (sumOfHand(playersCards) > sumOfHand(computersCards)) {
+  //     return "you won";
+  //   } else if (sumOfHand(playersCards) < sumOfHand(computersCards)) {
+  //     return "you lost";
+  //   } else {
+  //     return "you lost cos it was a draw";
+  //   }
+  // }
+  if (input == "done" || input == "stand") {
+    console.log(sumOfHand(computersCards));
+    console.log(computersCards);
+    while (sumOfHand(computersCards) < 17) {
+      dealCard(computersCards, deckOfCards);
+    }
+    if (sumOfHand(computersCards) > 21) {
+      return "computer lose";
+    }
     if (sumOfHand(playersCards) > sumOfHand(computersCards)) {
-      return "you won";
+      return "the computer lost; you won";
     } else if (sumOfHand(playersCards) < sumOfHand(computersCards)) {
-      return "you lost";
+      return "the computer won; you lost";
     } else {
-      return "you lost cos it was a draw";
+      return "the computer won cos it was a draw";
     }
   }
 };
