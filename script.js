@@ -96,113 +96,117 @@ var COMPTURN = "compTurn"; //Hit until 17
 var ENDGAME = "endGame";
 var gameMode = START_HAND;
 
+//Store hands
 var compHand = [];
 var playerHand = [];
 
+//Determine score from hand
+var getScore = function (hand) {
+  var score = 0;
+  for (i = 0; i < hand.length; i++) {
+    var cards = hand[i];
+    if (cards.rank == 1 && hand.length == 2) {
+      score += 11;
+    } else if (i < hand.length) {
+      score += cards.points;
+    }
+  }
+  return score;
+};
+
+//Print hand
+var printHand = function (hand) {
+  return `${hand.map((card) => ` ${card.name} of ${card.suit}`)}`;
+};
+
 var main = function (input) {
-  var playerScore = 0;
-  var compScore = 0;
-  for (i = 0; i < playerHand.length; i++) {
-    playerScore += playerHand[i].points;
-  }
-  for (i = 0; i < compHand.length; i++) {
-    compScore += compHand[i].points;
-  }
   //Start game
   if (gameMode == START_HAND) {
     compHand = [newDeck.pop(), newDeck.pop()];
     playerHand = [newDeck.pop(), newDeck.pop()];
-    for (i = 0; i < playerHand.length; i++) {
-      playerScore += playerHand[i].points;
-    }
-    for (i = 0; i < compHand.length; i++) {
-      compScore += compHand[i].points;
-    }
-    console.log(`Comp:${compScore}`);
     gameMode = HIT_OR_STAND;
-    var myOutputValue = `Player has ${playerScore}. Choose to hit or stand.`;
+    playerScore = getScore(playerHand);
+    compScore = getScore(compHand);
+    playerGameScore = playerScore;
+    compGameScore = compScore;
+    console.log(`Comp score:${compGameScore}`);
+    var myOutputValue = `Player has ${playerScore}. <br> Player has ${printHand(
+      playerHand
+    )} <br> Choose to hit or stand.`;
     return myOutputValue;
   }
 
-  if (gameMode == HIT_OR_STAND && input == `hit`) {
+  if (gameMode == HIT_OR_STAND && input.toLowerCase() == `hit`) {
     playerHand.push(newDeck.pop());
-    for (i = 0; i < playerHand.length; i++) {
-      playerScore += playerHand[i].points;
-    }
+    playerScore = getScore(playerHand);
     if (playerScore > scoreLimit) {
       gameMode = COMPTURN;
-      var myOutputValue = `Player bust. Dealer turn now. <br> Player has ${playerScore}.`;
+      playerGameScore = 0;
+      console.log(`PlayerG: ${playerGameScore}`);
+      var myOutputValue = `Player bust. <br> Player has ${printHand(
+        playerHand
+      )} <br> Dealer turn now. <br> Player has ${playerScore}.`;
       return myOutputValue;
     } else {
       gameMode = HIT_OR_STAND;
-      var myOutputValue = `Player has ${playerScore}. Choose to hit or stand.`;
+      playerGameScore = playerScore;
+      var myOutputValue = `Player has ${printHand(
+        playerHand
+      )} <br> Player has ${playerScore}. <br>Choose to hit or stand.`;
       return myOutputValue;
     }
   }
 
-  if (gameMode == HIT_OR_STAND && input == `stand`) {
+  if (gameMode == HIT_OR_STAND && input.toLowerCase() == `stand`) {
     gameMode = COMPTURN;
-    var myOutputValue = `It is the dealer turn to play`;
+    playerGameScore = playerScore;
+    console.log(`PlayerG: ${playerGameScore}`);
+    var myOutputValue = `Player has ${playerScore}. It is the dealer turn to play. Dealer has ${compScore}`;
     return myOutputValue;
   }
 
-  if (gameMode == HIT_OR_STAND && input != `stand || hit`) {
-    var myOutputValue = `Player has ${playerScore}. Choose to hit or stand`;
+  if (gameMode == HIT_OR_STAND && input.toLowerCase() != `stand || hit`) {
+    var myOutputValue = `Invalid input. Player has ${playerScore}. Choose to hit or stand`;
     return myOutputValue;
   }
 
   //Dealer hit until 17. Then check score
   if (gameMode == COMPTURN) {
-    for (i = 0; i < compHand.length; i++) {
-      compScore += compHand[i].points;
-    }
-    while (compScore < 17) {
+    for (
+      compScore = getScore(compHand);
+      compScore < 17;
+      compScore = getScore(compHand)
+    ) {
       compHand.push(newDeck.pop());
-      compScore = 0;
-      for (i = 0; i < compHand.length; i++) {
-        compScore += compHand[i].points;
-      }
     }
-    console.log(`Comp:${compScore}`);
     gameMode = ENDGAME;
     var myOutputValue = `Dealer has ${compScore}.`;
+    compGameScore = compScore;
+    if (compScore > scoreLimit) {
+      compGameScore = 0;
+    }
+    console.log(`CompG:${compGameScore}`);
     return myOutputValue;
   }
 
   //Compare hands and announce winner
   if (gameMode == ENDGAME) {
-    for (i = 0; i < playerHand.length; i++) {
-      playerScore += playerHand[i].points;
-    }
-    for (i = 0; i < compHand.length; i++) {
-      compScore += compHand[i].points;
-    }
-    if (compScore > scoreLimit) {
-      compGameOver = true;
-    }
-    if (compGameOver) {
-      var myOutputValue = `Player wins. Dealer has ${compScore}. Player has ${playerScore}.`;
+    if (compGameScore > playerGameScore) {
+      myOutputValue = `Dealer had ${compScore} points. Player had ${playerScore} points.<br> Player loses.`;
+      console.log(`win`);
       return myOutputValue;
     }
-    if (playerScore > scoreLimit) {
-      playerGameOver = true;
+    if (compGameScore < playerGameScore) {
+      myOutputValue = `Dealer had ${compScore} points. Player had ${playerScore} points.<br> Player wins.`;
+      console.log(`lose`);
+      return myOutputValue;
     }
-    if (playerGameOver) {
-      var myOutputValue = `Dealer wins. Dealer has ${compScore}. Player has ${playerScore}.`;
+    if (compGameScore == playerGameScore) {
+      myOutputValue = `Dealer had ${compScore} points. Player had ${playerScore} points.<br> It's a tie.`;
+      console.log(`tie`);
       return myOutputValue;
     }
   }
-  if (compScore > playerScore) {
-    myOutputValue = `Computer had ${compScore} points. Player had ${playerScore} points.<br> Player loses.`;
-    return myOutputValue;
-  } else if (compScore < playerScore) {
-    myOutputValue = `Computer had ${compScore} points. Player had ${playerScore} points.<br> Player wins.`;
-    return myOutputValue;
-  } else {
-    myOutputValue = `Computer had ${compScore} points. Player had ${playerScore} points.<br> It's a tie.`;
-    return myOutputValue;
-  }
+  var myOutputValue = `Invalid Move. Restart game.`;
+  return myOutputValue;
 };
-// // Construct an output string to communicate which cards were drawn
-// var myOutputValue = `Game Error. Restart game`;
-// return myOutputValue;
