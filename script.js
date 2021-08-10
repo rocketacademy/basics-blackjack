@@ -5,21 +5,7 @@ var gameMode = "get initial hand";
 // player input if hit or stand
 // dealer hit or stand
 // compare and find winner
-// declar winner
-
-/**
- * Add all elements from fromArray to the start of toArray.
- */
-// var addArray = function (fromArray, toArray) {
-//   var fromArrayIndex = 0;
-//   while (fromArrayIndex < fromArray.length) {
-//     // Add each element in fromArray to toArray individually
-//     toArray.unshift(fromArray[fromArrayIndex]);
-//     // Increment the index to operate on the next index of fromArray
-//     fromArrayIndex += 1;
-//   }
-//   return toArray;
-// };
+// declare winner
 
 /**
  * Create a standard 52-card deck
