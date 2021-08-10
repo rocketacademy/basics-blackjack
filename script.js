@@ -14,235 +14,221 @@ var PLAYER = 'player'
 var COMPUTER = 'computer'
 var currentGameMode = GAME_MODE_DEAL_CARDS; //initialise dealing of cards
 var currentPlayer = 'player'
+var gameOver = false;
 
 //=======================Store player and computer's cards=====================
-var playerHand = [];
-var computerHand = [];
-var maxCardLimit = 21; //max value before bust is 21
-var dealerMinValue = 16; // dealer has to minimally deal 16
-var gameOver = false;
+const playerHand = [];
+const computerHand = [];
+let maxCardLimit = 21; //max value before bust is 21
+let dealerMinValue = 16; // dealer has to minimally deal 16
+let numOfCards = 0;
 
 //=======================Create 52-card deck=====================
 var makeDeck = function () {
-  // Initialise an empty deck array
-  var cardDeck = [];
-  // Initialise an array of the 4 suits in our deck. We will loop over this array.
+  // create the empty deck at the beginning
+  var deck = [];
   var suits = ['hearts', 'diamonds', 'clubs', 'spades'];
-
-  // Loop over the suits array
   var suitIndex = 0;
   while (suitIndex < suits.length) {
-    // Store the current suit in a variable
+    // make a variable of the current suit
     var currentSuit = suits[suitIndex];
-    // Loop from 1 to 13 to create all cards for a given suit
-    // Notice rankCounter starts at 1 and not 0, and ends at 13 and not 12.
-    // This is an example of a loop without an array.
+    // loop to create all cards in this suit
+    // rank 1-13
     var rankCounter = 1;
     while (rankCounter <= 13) {
-      // By default, the card name is the same as rankCounter
-      var cardRank = rankCounter;
       var cardName = rankCounter;
-      
-      // If rank is 1, 11, 12, or 13, set cardName to the ace or face card's name
+
+      // 1, 11, 12 ,13
       if (cardName == 1) {
         cardName = 'ace';
-        cardRank = 11
       } else if (cardName == 11) {
-        cardName = 'jack'
-        cardRank = 10;
+        cardName = 'jack';
       } else if (cardName == 12) {
         cardName = 'queen';
-        cardRank = 10;
       } else if (cardName == 13) {
         cardName = 'king';
-        cardRank = 10
-      } 
+      }
 
-
-      // Create a new card with the current name, suit, rank and value
+      // make a single card object variable
       var card = {
         name: cardName,
         suit: currentSuit,
         rank: rankCounter,
-        value: cardRank
       };
-      
-      // Add the new card to the deck
-      cardDeck.push(card);
-    
-      // Increment rankCounter to iterate over the next rank
-      rankCounter += 1;
+
+      // add the card to the deck
+      deck.push(card);
+      rankCounter = rankCounter + 1;
+      console.log(rankCounter)
     }
-    // Increment the suit index to iterate over the next suit
-    suitIndex += 1;
-}
-// Return the completed card deck
-return cardDeck;}
-
-
-//=======================Get random index=====================
-var getRandomIndex = function (max) {
-  return Math.floor(Math.random() * max);
+    suitIndex = suitIndex + 1;
+    console.log(suitIndex)
+  }
+  return deck;
 };
 
-//=======================Shuffle cards=====================
-var shuffleCards = function (cardDeck) {
-  // Loop over the card deck array once
-  var currentIndex = 0;
-  while (currentIndex < cardDeck.length) {
-    // Select a random index in the deck
-    var randomIndex = getRandomIndex(cardDeck.length);
-    // Select the card that corresponds to randomIndex
-    var randomCard = cardDeck[randomIndex];
-    // Select the card that corresponds to currentIndex
-    var currentCard = cardDeck[currentIndex];
-    // Swap positions of randomCard and currentCard in the deck
-    cardDeck[currentIndex] = randomCard;
-    cardDeck[randomIndex] = currentCard;
-    // Increment currentIndex to shuffle the next pair of cards
-    currentIndex += 1;
-  }
-  // Return the shuffled deck
-  return cardDeck;
-}
-var deck = shuffleCards(makeDeck());//shuffle cards once
+var getRandomIndex = function (size) {
+  return Math.floor(Math.random() * size);
+};
 
+var shuffleCards = function (cards) {
+  var index = 0;
+
+  while (index < cards.length) {
+    var randomIndex = getRandomIndex(cards.length);
+    var currentItem = cards[index];
+    var randomItem = cards[randomIndex];
+    cards[index] = randomItem;
+    cards[randomIndex] = currentItem;
+    index = index + 1;
+  }
+
+  console.log(cards)
+  return cards;
+};
+//=======================Shuffle cards once=====================
+var deck = shuffleCards(makeDeck());
+
+//=======================Deal card to hand=====================
+var dealCardToHand = function (hand) { 
+  hand.push(deck.pop());
+};
+
+// Return a string of ranks and suits of cards in the input cards array
+var printCards = function (cards) {
+  var returnString = '';
+  // Iterate until cards.length - 1 so we can avoid the extra comma at the end of return string
+  for (var i = 0; i < cards.length - 1; i += 1) {
+    var currCard = cards[i];
+    returnString += `${currCard.name} of ${currCard.suit}, `;
+  }
+  var lastCard = cards[cards.length - 1];
+  returnString += `${lastCard.name} of ${lastCard.suit}`;
+  return returnString;
+};
 //=======================Main function=====================
 var main = function (input){
-  var myOutputValue = ''
+  var myOutputValue = '';
   currentGameMode = GAME_MODE_DEAL_CARDS
-  if (gameOver){
-    return `Game Over! Hit refresh to play again.`
-} else if (!gameOver
-  && input == 'hit' || input == 'stand'){
+  var genericOutput = `Your cards: ${printCards(playerCard)}
+<br>Computer's cards: ${printCards(computerCard)}.`
+  if (playerHand.length == 0){
+  // draw one new card for player and computer each
+  var newPlayerCard = shuffledCardDeck.pop();
+  var newComputerCard = shuffledCardDeck.pop();
+  // add new card to player's hand and com's hand arrays
+  playerHand.push(newPlayerCard)
+  computerHand.push(newComputerCard)
+  // generate another card for each player
+  var playerCard = shuffledCardDeck.pop();
+  var computerCard = shuffledCardDeck.pop();
+  // add new card to player's hand and com's hand arrays
+  playerHand.push(newPlayerCard)
+  computerHand.push(newComputerCard)
+  } if (playerHand.length == 2){ 
+    currentGameMode == GAME_MODE_HIT_OR_STAND
+    console.log(`game mode: ${currentGameMode}`)
+    myOutputValue = `${genericOutput}}<br>
+    Please type 'hit' or 'stand' to decide if you wish to draw cards or end your turn.`
+    }
+//=======================Determine if player hits or stands=====================
+if (input.toLowerCase().includes('hit')){
   currentGameMode = GAME_MODE_HIT_OR_STAND
+  currentPlayer = PLAYER
+  console.log(`input: ${input}, game mode: ${currentGameMode}`)
+  // draw one card for player and computer each
+  var newPlayerCard = shuffledCardDeck.pop();
+  // add new card to player's hand and com's hand arrays
+  playerHand.push(newPlayerCard)
+  if (cardTotalSum > maxCardLimit){
+  gameOver = true;
+  myOutputValue = `${genericOutput}<br>Player went bust! Hit refresh to start again.`
+  }
+  else if (cardTotalSum < maxCardLimit)
+  myOutputValue = `${genericOutput}<br>Please type 'hit' or 'stand' to decide if you wish to draw cards or end your turn.`
+  }
+if (input.toLowerCase().includes('stand')){
+  currentGameMode = GAME_MODE_HIT_OR_STAND
+  console.log(`input: ${input}, game mode: ${currentGameMode}`)
+  currentPlayer = COMPUTER
+  myOutputValue = `${genericOutput}<br>Player chose to stand. Press submit for Computer's turn.`
 }
 return myOutputValue;
 }
-//=======================Deal cards=====================
- if(currentGameMode == GAME_MODE_DEAL_CARDS){
-  var dealCardstoHand = function(hand){
-  makeDeck();//run function once to create new deck
-  hand.push(deck.pop())
-  if (hand.length == 0){
-  var dealCardstoHand = deck.pop();
-  //click submit to deal cards to player then computer
-  dealCardstoHand(playerHand);
-  dealCardstoHand(computerHand);
-  var declarePlayerHand = `${playerHand.name} of ${playerHand.suit}`
-  var declareComputerHand = `${computerHand.name} of ${computerHand.suit}`
-  console.log (`player card 1: ${declarePlayerHand}, com card 1: ${declareComputerHand }`)
-  //click submit to deal cards to player then computer again
-  }
-  if (hand.length == 1){
-  var dealCardstoHand = deck.pop();
-  dealCardstoHand(playerHand);
-  dealCardstoHand(computerHand);
-  console.log (`player card 2: ${declarePlayerHand}, com card 2: ${declareComputerHand }`)
-  }
-  if (hand.length == 2){
-  currentGameMode == GAME_MODE_HIT_OR_STAND
-  console.log(`game mode: ${currentGameMode}`)
-  myOutputValue = `Player's cards are ${declarePlayerHand}<br>
-  Computer's cards are ${declareComputerHand}.
-  Please type 'hit' or 'stand' to decide if you wish to draw cards or end your turn.`
-  }
-}}
-//=======================Determine card total value=====================
-var determineCardTotal = function(hand){
-  var cardTotal = 0
-  var numAces = 0
-  var card = hand[0]
-  if (hand.length == 2){
-    if (card.rank >= 2 && card.rank <=10){
-      //ace is 10 if the other card is less than or equal to 10
-      cardTotal += card.rank
-    } else if (card.rank >= 11 && card.rank <= 13){
-      cardTotal += 10; // ace is 11 if other card is jack, queen, king
-    } else if (card.rank == 1){
-      numAces +=1;
-      determineCardTotal +=11
-    }
-}
-return determineCardTotal(hand);
-}
+
 //=======================Determine winner=====================
 var winner = function (){
-  if (determineCardTotal(playerHand) > determineCardTotal(computerHand)
-  && playerHand.rank > computerHand.rank){
-    myOutputValue = `Player wins!`
-  }
-  else if (determineCardTotal(computerHand)> determineCardTotal(playerHand)
-  && computerHand.rank > playerHand.rank){
-    myOutputValue = `Computer wins!`
-  }
-  return myOutputValue;
-}
-//=======================Generic Output for hand=====================
-var declarePlayerHand = `${playerHand.name} of ${playerHand.suit}`
-var declareComputerHand = `${computerHand.name} of ${computerHand.suit}`
-var genericOutput = `Player has ${declarePlayerHand} with total value ${determindCardTotal(playerHand)} <br>
-    Computer has ${declareComputerHand} with total value ${determineCardTotal(computerHand)}.${winner()}`
+  if (playerCard.rank > computerCard.rank
+    && input.toLowerCase().includes('stand')){
+    myOutputValue = `You win! Hit refresh to play again.`
+  } 
+  if (computerCard.rank > playerCard.rank
+    && input.toLowerCase().includes('stand')){
+    myOutputValue = `You lose! Hit refresh to play again.`
+  } 
 
+}
+
+//=======================Calculate sum total of cards=====================
+let cardTotalSum = 0;
+for (let i = 0; i < playerHand.length; i++) {
+    cardTotalSum += playerHand[i];
+    console.log('player card total:' + cardTotalSum);
+}
+for (let i = 0; i < computerHand.length; i++) {
+  cardTotalSum += computerHand[i];
+  console.log('com card total:' + cardTotalSum);
+}
 //=======================Blackjack logic=====================
-var blackJack = function (hand){
-  if (hand.length == 2
-    && determineCardTotal == maxCardLimit)
+var blackJack = function (){
+  //player has blackjack
+  if (playerHand.length == 2 
+    && cardTotalSum == maxCardLimit){
+      console.log('blackjack')
     if (blackJack(playerHand)){
       gameOver = true;
       myOutputValue = `Player has blackjack! ${genericOutput}.`
-    }else if (blackJack(computerHand)){
-      gameOver = true
-      myOutputValue = `Computer has blackjack! ${genericOutput}.`
-    }
-    return myOutputValue;
   }
-
-//=======================Determine if player should hit or stand=====================
-if (currentGameMode == GAME_MODE_HIT_OR_STAND){
-currentPlayer = PLAYER
-console.log(`game mode: ${currentGameMode}`)
-if (input != 'hit' && input != 'stand'){
-console.log ('input validation')
-myOutputValue = `Oops. Please type 'hit' or 'stand' to decide if you wish to draw cards or end your turn.`
-}
-if (input == 'hit'){
-  console.log(`input: ${input}, game mode: ${currentGameMode}`)
-  dealCardsToHand(playerHand);
-  if (playerHandTotal > maxCardLimit){
-  gameOver = true;
-  myOutputValue = `Player went bust!`
+} if (computerHand.length == 2
+  && cardTotalSum == maxCardLimit){
+    console.log('com blackjack')
+    if (blackJack(computerHand)){
+    gameOver = true
+    myOutputValue = `Computer has blackjack! ${genericOutput}.`
   }
-  else if (playerHandTotal < maxCardLimit)
-  myOutputValue = `Player's cards are ${declarePlayerHand}<br>
-      Computer's cards are ${declareComputerHand }.
-      Please type 'hit' or 'stand' to decide if you wish to draw cards or end your turn.`
-} else if (input == 'stand'){
-  console.log(`input: ${input}, game mode: ${currentGameMode}`)
-  currentPlayer = COMPUTER
-  myOutputValue `Player chose to stand. Press submit for Computer's turn.`
+}
+}
+//=======================Determine whether ace is 1 or 11 =====================  
+if (playerHand.length == 2 || computerHand.length == 2){
+if (card.rank >= 2 && card.rank <=10){
+//ace is 10 if the other card is less than or equal to 10
+cardTotalSum += card.rank
+} else if (card.rank >= 11 && card.rank <= 13){
+cardTotalSum += 10; // ace is 11 if other card is jack, queen, king
+} else if (card.rank == 1){
+numAces +=1;
+cardTotalSum +=11
 }
 }
 
-// //=======================Determine if computer should hit=====================
-// if (currentGameMode = GAME_MODE_HIT_OR_STAND){
-// var determineCardTotal = function(computerHand){
-// if (determineCardTotal <= dealerMinValue){
-// dealCardsToHand(computerHand);
-// computerHandTotal = determineCardTotal(computerHand)
-// } if (determineCardTotal > maxCardLimit){
-//   gameOver = true;
-//   return `Game over! Computer went bust!`
-// } else if (input == 'stand' && determineCardTotal > maxCardLimit){
-//   gameOver = true
-//   return `Game over! Player went bust`
-// }
-// if (input == 'stand' && determineCardTotal < maxCardLimit){
-// currentGameMode = GAME_MODE_DETERMINE_WINNER
-// }
-// }
-// }
-
-
-  
-
+//=======================Determine if computer hits or stands=====================
+if (currentPlayer == COMPUTER &&
+  currentGameMode == GAME_MODE_HIT_OR_STAND){
+    var computerHitOrStand = function (){
+    console.log ('com hit or stand')
+    if (computerHand.length >= 2){
+      if (cardTotalSum < dealerMinValue){
+        // draw one card for player and computer each
+       var newComputerCard = shuffledCardDeck.pop();
+      // add new card to player's hand and com's hand arrays
+       computerHand.push(newComputerCard)
+        myOutputValue = `Computer chose to hit. ${genericOutput}. ${winner()}`
+      }
+      if (cardTotalSum > maxCardLimit){
+        gameOver = true;
+        myOutputValue = `Computer chose to hit. ${genericOutput}. <br>Computer went bust! Hit refresh to start again.`
+      }
+      myOutputValue = `${genericOutput}`
+  }
+}
+  }
