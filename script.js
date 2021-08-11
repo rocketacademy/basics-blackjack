@@ -95,6 +95,9 @@ var computerHand = [];
 var playerPoints = 0;
 var computerPoints = 0;
 
+// Ace
+var numOfAce = 0;
+
 var pointCalculation = function (hand) {
   var totalPoints = 0;
   // To calculate each card's points starting from index 0, 1 ...
@@ -111,6 +114,10 @@ var pointCalculation = function (hand) {
     // Ace(11)
     else if (cardValue.rank == 1) {
       totalPoints += 11;
+      numOfAce += 1;
+      if (playerHand.length > 2) {
+        totalPoints -= 10;
+      }
     }
   }
   return totalPoints;
