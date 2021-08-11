@@ -153,7 +153,9 @@ var main = function (input) {
       computerHand[1].name +
       " of " +
       computerHand[1].suit +
-      ". Player had " +
+      "." +
+      "<br>" +
+      "Player had " +
       playerHand[0].name +
       " of " +
       playerHand[0].suit +
@@ -161,8 +163,10 @@ var main = function (input) {
       playerHand[1].name +
       " of " +
       playerHand[1].suit +
-      ". Player, please input either hit or stand" +
-      "<br>";
+      "." +
+      "<br>" +
+      "<br>" +
+      "Player, please enter either 'hit' to draw another card or 'stand' to hold your position. Thereafter, please click submit to proceed.";
 
     // Sum player cards
     sumPlayerTotal = sum(playerHand, sumPlayerTotal);
@@ -182,97 +186,144 @@ var main = function (input) {
   }
   // Hit or Stand Game Mode - 2nd block
   if (currGameMode == "hitOrStand") {
-    currGameMode = "computerDecides";
     // to determine if player hit or draw and show the player 3rd card
-    if (input)
+    if (input) {
       if (input == "stand") {
         myOutputValue =
-          "Player, you have chose to stand. Your cards are " +
+          "Player, you have chose to stand. Your cards are: " +
+          "<br>" +
           displayCardMessage +
-          "and your total score is " +
+          "Your total score is " +
           sumPlayerTotal +
-          ". Please click submit to see Computer's cards. ";
+          "." +
+          "<br>" +
+          "<br>" +
+          "Please click submit to see Computer's cards. ";
+        currGameMode = "computerDecides";
       }
 
-    if (input == "hit") {
-      console.log(shuffledDeck);
-      playerHand.push(shuffledDeck.pop());
-      sumPlayerTotal = sum(playerHand, sumPlayerTotal);
-      sumPlayerTotal = checkforAceCondition(playerHand, sumPlayerTotal);
-      if (sumPlayerTotal < 21) {
-        myOutputValue =
-          "Player, your cards are " +
-          displayCardMessage +
-          "and your total score is " +
-          sumPlayerTotal +
-          ". Please decide if you want to hit or stand" +
-          "<br>";
+      if (input == "hit") {
+        console.log(shuffledDeck);
+        playerHand.push(shuffledDeck.pop());
+        sumPlayerTotal = sum(playerHand, sumPlayerTotal);
+        sumPlayerTotal = checkforAceCondition(playerHand, sumPlayerTotal);
+        if (sumPlayerTotal <= 21) {
+          myOutputValue =
+            "Player, your cards are: " +
+            "<br>" +
+            displayCardMessage +
+            "<br>" +
+            "Your total score is " +
+            sumPlayerTotal +
+            "<br>" +
+            "<br>" +
+            "Player, please enter either 'hit' to draw another card or 'stand' to hold your position. Thereafter, please click submit to proceed." +
+            "<br>";
+        }
+        if (sumPlayerTotal > 21) {
+          myOutputValue =
+            "Player, your cards are: " +
+            "<br>" +
+            displayCardMessage +
+            "<br>" +
+            "Your total score is " +
+            sumPlayerTotal +
+            "." +
+            "<br>" +
+            "<br>" +
+            "Gameover, you're busted! Refresh the page to start a new game.";
+        }
+        return myOutputValue;
       }
-      if (sumPlayerTotal > 21) {
-        myOutputValue =
-          "Player, your cards are " +
-          displayCardMessage +
-          "and your total score is " +
-          sumPlayerTotal +
-          ". Gameover, you're busted! Refresh the page to start a new game." +
-          "<br>";
-      }
-      return myOutputValue;
     }
     // 3rd block: if computer has more than 16 then stay. if not, hit.
     // if after the 3rd card and computer go bust, player wins
-    if (currGameMode == "computerDecides");
-    {
-      currGameMode = "pickWinner";
+    if (currGameMode == "computerDecides") {
+      console.log("Expecting sum of computer total below 17", sumComputerTotal);
       if (sumComputerTotal < 17) {
         computerHand.push(shuffledDeck.pop());
-        console.log(computerHand);
+        console.log("Computer Hand", computerHand);
         sumComputerTotal = sum(computerHand, sumComputerTotal);
         sumComputerTotal = checkforAceCondition(computerHand, sumComputerTotal);
         if (sumComputerTotal < 21) {
           myOutputValue =
-            "Computer has the following cards " +
+            "Computer has the following cards: " +
+            "<br>" +
             displayCardMessage +
-            "and Computer total score is " +
+            "<br>" +
+            "Computer total score is " +
             sumComputerTotal +
-            ". Please click submit to reveal winner" +
+            "." +
+            "<br>" +
+            "<br>" +
+            "Please click submit to reveal winner." +
             "<br>";
         }
       }
       if (sumComputerTotal > 17) {
         myOutputValue =
-          "Computer has the following cards " +
+          "Computer has the following cards: " +
+          "<br>" +
           displayCardMessage +
-          "and Computer total score is " +
+          "<br>" +
+          "Computer total score is " +
           sumComputerTotal +
-          ". Please click submit to reveal winner" +
-          "<br>";
+          "." +
+          "<br>" +
+          "<br>" +
+          "Please click submit to reveal winner.";
       }
+      currGameMode = "pickWinner";
     }
     return myOutputValue;
   }
   //Compare and announce winner
   if (currGameMode == "pickWinner");
   {
-    if (sumComputerTotal >= sumPlayerTotal && sumComputerTotal <= 21) {
+    if (sumComputerTotal > sumPlayerTotal && sumComputerTotal < 22) {
       myOutputValue =
-        "Computer has a total score of " +
+        "Computer has a total score of  " +
         sumComputerTotal +
-        "and Player has a total score of " +
+        "<br>" +
+        "vs" +
+        "<br>" +
+        "Player has a total score of  " +
         sumPlayerTotal +
-        ". Computer wins. Please refresh the page to start a new game";
-    }
-    if (sumPlayerTotal > sumComputerTotal && sumPlayerTotal <= 21) {
+        "." +
+        "<br>" +
+        "<br>" +
+        "Computer wins. Please refresh the page to start a new game!";
+    } else if (sumPlayerTotal < sumComputerTotal && sumComputerTotal < 22) {
       myOutputValue =
-        "Computer has a total score of " +
+        "Computer has a total score of  " +
         sumComputerTotal +
-        "and Player has a total score of " +
+        "<br>" +
+        "vs" +
+        "<br>" +
+        "Player has a total score of  " +
         sumPlayerTotal +
-        ". Computer wins. Please refresh the page to start a new game";
-    }
-    if (sumComputerTotal > 21) {
+        "." +
+        "<br>" +
+        "<br>" +
+        "Computer wins. Please refresh the page to start a new game!";
+    } else if (sumComputerTotal > 21) {
       myOutputValue =
-        "Player Wins. Computer is busted! Please refresh the page to start a new game.";
+        "Player Wins. Computer is busted! Please refresh the page to start a new game!";
+    } else if (sumPlayerTotal > sumComputerTotal) {
+      myOutputValue =
+        "Computer has a total score of  " +
+        sumComputerTotal +
+        "<br>" +
+        "vs" +
+        "<br>" +
+        "Player has a total score of  " +
+        sumPlayerTotal +
+        "." +
+        "<br>" +
+        "<br>" +
+        "Player wins. Player has a higher score. Please refresh the page to start a new game!";
+    } else {
+      myOutputValue = "Its a tie! Please refresh the page to start a new game!";
     }
   }
   return myOutputValue;
