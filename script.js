@@ -142,19 +142,43 @@ var printCards = function (array, num) {
 };
 
 var printHands = function () {
-  var i = 0;
   var msg = "<br><br> ";
-  while (i < players.length) {
-    msg += `${players[i].name}'s hand: ${printCards(players[i].hand, 2)} ${
-      players[i].status
-    } `;
-    msg += "<br>";
-    i += 1;
-  }
+
   if (showCards == false) {
+    var i = 0;
+    while (i < players.length) {
+      if (players[i].status == STATUS_BJ) {
+        msg += `${players[i].name}'s hand: ${printCards(players[i].hand, 2)} ${
+          players[i].status
+        } `;
+      } else if (players[i].currentTurn == true) {
+        msg += `${players[i].name}'s hand: ${printCards(players[i].hand, 2)} ${
+          players[i].status
+        } `;
+      } else {
+        msg += `${players[i].name}'s hand: ${printCards(players[i].hand, 0)}`;
+      }
+      msg += "<br>";
+      i += 1;
+    }
     msg += `
  Computer's hand: ${printCards(comHand, 1)}`;
   } else {
+    var j = 0;
+    while (j < players.length) {
+      if (players[j].status == STATUS_BJ || players[j].status == STATUS_BUST) {
+        msg += `${players[j].name}'s hand: ${printCards(players[j].hand, 2)} ${
+          players[j].status
+        } `;
+      } else {
+        msg += `${players[j].name}'s hand: ${printCards(
+          players[j].hand,
+          2
+        )} (Score: ${players[j].sum})`;
+      }
+      msg += "<br>";
+      j += 1;
+    }
     msg += `Computer's hand: ${printCards(comHand, 2)}`;
   }
   msg += " <br><br>";
@@ -425,6 +449,7 @@ var main = function (input) {
       if (currentPlayer >= players.length) {
         endPlayersTurn(); // in case all players blackjack
       } else {
+        players[currentPlayer].currentTurn = true;
         myOutputValue += printHands();
         myOutputValue += `${players[currentPlayer].name}, ${HIT_STAND}`;
         myOutputValue += printPlayers("wagers");
@@ -450,10 +475,13 @@ var main = function (input) {
           players[currentPlayer].status = STATUS_BUST;
           players[currentPlayer].inRound = false;
           // move to next player
+          players[currentPlayer].currentTurn = false;
           currentPlayer = getNextPlayer();
           if (currentPlayer >= players.length) {
             endPlayersTurn();
             return myOutputValue;
+          } else {
+            players[currentPlayer].currentTurn = true;
           }
         }
       } else if (input == "stand") {
@@ -466,10 +494,13 @@ var main = function (input) {
         players[currentPlayer].sum = changeAces(players[currentPlayer].hand);
 
         // move to next player
+        players[currentPlayer].currentTurn = false;
         currentPlayer = getNextPlayer();
         if (currentPlayer >= players.length) {
           endPlayersTurn();
           return myOutputValue;
+        } else {
+          players[currentPlayer].currentTurn = true;
         }
       }
     }
