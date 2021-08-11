@@ -80,7 +80,28 @@ var shuffleCards = function (cardDeck) {
 
 // Copied initialisation of the shuffled card deck before the game starts.
 var deck = shuffleCards(makeDeck());
-
+// var deck = [
+//   {
+//     name: `ace`,
+//     suit: `spade`,
+//     rank: `1`,
+//   },
+//   {
+//     name: `ace`,
+//     suit: `spade`,
+//     rank: `1`,
+//   },
+//   {
+//     name: `ace`,
+//     suit: `spade`,
+//     rank: `1`,
+//   },
+//   {
+//     name: `ace`,
+//     suit: `spade`,
+//     rank: `1`,
+//   },
+// ];
 //Inital mode
 var gameMode = `Gamestart`;
 
@@ -115,7 +136,10 @@ var pointCalculation = function (hand) {
     else if (cardValue.rank == 1) {
       totalPoints += 11;
       numOfAce += 1;
-      if (playerHand.length > 2) {
+      if (playerHand.length > 2 || numOfAce == 2) {
+        totalPoints -= 1;
+      }
+      if (playerHand.length > 2 || numOfAce > 2) {
         totalPoints -= 10;
       }
     }
@@ -199,6 +223,12 @@ var main = function (input) {
       if (playerPoints == 21 || playerPoints > computerPoints) {
         playerWins += 1;
         myOutputValue = `You win! You got ${playerPoints} and computer got ${computerPoints}.<br><br>Scoreboard<br>Player:${playerWins}<br>Computer:${computerWins}
+        <br><br>Press submit to play again`;
+        gameMode = `Gamestart`;
+      }
+
+      if (playerPoints == computerPoints) {
+        myOutputValue = `You draw! You got ${playerPoints} and computer got ${computerPoints}.<br><br>Scoreboard<br>Player:${playerWins}<br>Computer:${computerWins}
         <br><br>Press submit to play again`;
         gameMode = `Gamestart`;
       } else {
