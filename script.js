@@ -9,7 +9,6 @@ const INPUT_PLAYERS = "inputPlayers";
 const INPUT_NAMES = "inputNames";
 const INPUT_BETS = "inputBets";
 const BLACKJACK = "blackjack";
-const STANDINGS = "standings";
 const COLOUR_BLUE = "#013D87";
 const COLOUR_GREEN = "#018786";
 const COLOUR_RED = "#B00020";
@@ -323,6 +322,7 @@ class Hand {
     ${this.playerName} got a Blackjack!
     </span></div>`;
     }
+
     // Player wins the dealer
     else if (
       (this.handValue > dealer.handValue && !this.hasBust) ||
@@ -537,6 +537,7 @@ function evalRound() {
   toEliminate.forEach((element) => players.splice(element, 1));
   if (players.length == 0) {
     gameMode = INPUT_PLAYERS;
+    playersNames.splice(0);
     output += `<br>All players have been eliminated!<br>
     Start a new game by entering the number of players.`;
   } else {
@@ -570,7 +571,7 @@ function endRound() {
 ////////////////////// DOM Decision Buttons //////////////////////
 //////////////////////////////////////////////////////////////////
 
-const decisions = ["hit", "stand", "split"];
+const decisions = [HIT, STAND, SPLIT];
 const buttonGroup = document.getElementById("decision-buttons");
 const appOutput = document.getElementById("output");
 
@@ -692,11 +693,16 @@ const gameplay = {
       // Input validation for bets amount.
       let betsError = "";
       for (let i = 0; i < players.length; i += 1) {
-        let bet = bets[i];
+        let bet = Number(bets[i]);
         let player = players[i];
         if (bet > player.points) {
-          betsError += `Hi ${player.name}, you have only ${player.points} points but you bet ${bet} points.<br>
+          betsError += `Hey ${player.name}, you have only ${player.points} points but you bet ${bet} points.<br>
           Please bet within your limit.<br><br>`;
+        }
+
+        if (isNaN(bet)) {
+          betsError += `Hey ${player.name}, you did not enter a valid number for a bet.<br>
+          Please check and try again.<br><br>`;
         }
       }
       if (betsError != "") {
@@ -720,7 +726,7 @@ const gameplay = {
       while (playerTurn < hands.length) {
         let hand = hands[playerTurn];
         switch (String(input).toLowerCase()) {
-          case "hit":
+          case HIT:
             if (hand.handValue >= 21) {
               playerTurn += 1;
               hand = hands[playerTurn];
@@ -733,10 +739,10 @@ const gameplay = {
             hand.hit(deck.pop());
             hand.checkBust;
             break;
-          case "stand":
+          case STAND:
             playerTurn += 1;
             break;
-          case "split":
+          case SPLIT:
             if (!hand.canSplit) {
               return `Your hand does not allow for a split. Please choose "hit/stand".<br><br>
               ${hand.playerDecide}`;
