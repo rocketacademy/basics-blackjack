@@ -25,8 +25,9 @@
       <div class="container-xxl">
         <!-- navbar brand / title -->
         <a class="navbar-brand" href="/rocket-academy-basics/#intro">
-          <span class="text-secondary fw-bold">
-            Rocket Academy Basics - Demo
+          <span class="fw-bold" style="color: #E73C3E">
+            <img src="logo.png" alt="" width="24" height="24" class="d-inline-block align-text-center">
+            Rocket Academy Basics
           </span>
         </a>
         <!-- toggle button for mobile nav -->
@@ -128,11 +129,13 @@
         <div class="row justify-content-center align-items-center m-4">
           <div class="col-lg-6 col-md-8 text-center">
             <form class="text-center" name="input-form" onsubmit="return processInAndOut(event)">
-              <div class="mb-3">
                 <input type="text" class="form-control text-center" name="input-field" id="input-field"aria-describedby="inputHelp" placeholder="Please enter your input."
                 autocomplete="off"/>
-                <button class="btn btn-primary btn-lg mt-3" id="submit-button">Launch</button>
-              </div>
+                <div class="my-2">
+                  <div class="btn-group" role="group" id="decision-buttons"></div>
+                </div>
+                
+                <button class="btn btn-primary btn-lg" id="submit-button">Launch</button>
             </form>
           </div>
         </div>
@@ -199,8 +202,7 @@
               <span class="badge rounded-pill bg-success px-3">Base</span>
             </p>
             <ul>
-              <li></li>
-              <li>Blackjack Gameplay</li>
+              <li>Single Player Blackjack</li>
               <li>Variable Ace Values</li>
             </ul>
 
