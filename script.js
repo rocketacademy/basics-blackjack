@@ -135,10 +135,8 @@ var main = function (input) {
   if (gameMode == `Gamestart`) {
     playerHand = [];
     playerPoints = 0;
-    playerWins = 0;
     computerHand = [];
     computerPoints = 0;
-    computerWins = 0;
 
     for (i = 0; i < 2; i++) {
       playerHand.push(shuffledDeck.pop());
@@ -177,7 +175,8 @@ var main = function (input) {
       }
       if (playerPoints > 21) {
         gameMode = `Gamestart`;
-        return `You lose!!! ${newPlayercards}, your points are ${playerPoints}.<br><br>Press submit to play again!`;
+        computerWins += 1;
+        return `You lose!!! ${newPlayercards}, your points are ${playerPoints}.<br><br>Scoreboard<br>Player:${playerWins}<br>Computer:${computerWins}<br><br>Press submit to play again!`;
       }
       myOutputValue = `${newPlayercards}, your points are ${playerPoints}.<br><br>Type in hit or stand.`;
     }
@@ -190,18 +189,21 @@ var main = function (input) {
           console.log(computerPoints, `Computer's points after it draws`);
           if (computerPoints > 21) {
             gameMode = `Gamestart`;
-            myOutputValue = `You win! You got ${playerPoints} and computer got ${computerPoints}.
+            playerWins += 1;
+            myOutputValue = `You win! You got ${playerPoints} and computer got ${computerPoints}.<br><br>Scoreboard<br>Player:${playerWins}<br>Computer:${computerWins}
         <br><br>Press submit to play again`;
             return myOutputValue;
           }
         }
       }
       if (playerPoints == 21 || playerPoints > computerPoints) {
-        myOutputValue = `You win! You got ${playerPoints} and computer got ${computerPoints}.
+        playerWins += 1;
+        myOutputValue = `You win! You got ${playerPoints} and computer got ${computerPoints}.<br><br>Scoreboard<br>Player:${playerWins}<br>Computer:${computerWins}
         <br><br>Press submit to play again`;
         gameMode = `Gamestart`;
       } else {
-        myOutputValue = `You lose! You got ${playerPoints} and computer got ${computerPoints}. <br><br>Press submit to play again!`;
+        computerWins += 1;
+        myOutputValue = `You lose! You got ${playerPoints} and computer got ${computerPoints}. <br><br>Scoreboard<br>Player:${playerWins}<br>Computer:${computerWins}<br><br>Press submit to play again!`;
         gameMode = `Gamestart`;
 
         return myOutputValue;
