@@ -80,28 +80,6 @@ var shuffleCards = function (cardDeck) {
 
 // Copied initialisation of the shuffled card deck before the game starts.
 var deck = shuffleCards(makeDeck());
-// var deck = [
-//   {
-//     name: `ace`,
-//     suit: `spade`,
-//     rank: `1`,
-//   },
-//   {
-//     name: `ace`,
-//     suit: `spade`,
-//     rank: `1`,
-//   },
-//   {
-//     name: `ace`,
-//     suit: `spade`,
-//     rank: `1`,
-//   },
-//   {
-//     name: `ace`,
-//     suit: `spade`,
-//     rank: `1`,
-//   },
-// ];
 //Inital mode
 var gameMode = `Gamestart`;
 
