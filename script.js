@@ -419,8 +419,15 @@ function createPlayers(names) {
 /**
  * ------------------------------------------------------------------------
  * Create hands based on the number of players.
+ * @param     {Array}     bets     Array of players' bets.
  * ------------------------------------------------------------------------
  */
+
+function createHands(bets) {
+  for (let i = 0; i < bets.length; i += 1) {
+    hands.push(new Hand(players[i].id, players[i].name, bets[i]));
+  }
+}
 
 /**
  * ------------------------------------------------------------------------
