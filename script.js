@@ -9,6 +9,7 @@ const INPUT_PLAYERS = "inputPlayers";
 const INPUT_NAMES = "inputNames";
 const INPUT_BETS = "inputBets";
 const BLACKJACK = "blackjack";
+const STANDINGS = "standings";
 const COLOUR_BLUE = "#013D87";
 const COLOUR_GREEN = "#018786";
 const COLOUR_RED = "#B00020";
@@ -38,6 +39,7 @@ const ranks = [
 ];
 var deck = [];
 const sumLimit = 21;
+const handIdEmoji = String.fromCodePoint(0xfe0f, 0x20e3);
 let gameMode = INPUT_PLAYERS;
 
 //////////////////////////////////////////////////////////////
@@ -130,9 +132,8 @@ function shuffleDeck() {
 /**
  * ------------------------------------------------------------------------
  * Template for player objects.
- * @argument  {String}  id        The player's id.
- * @argument  {String}  name      The player's name.
- * @argument  {Number}  points    Player starting points.
+ * @param  {String}  id        The player's id.
+ * @param  {String}  name      The player's name.
  * ------------------------------------------------------------------------
  */
 
@@ -144,21 +145,26 @@ class Player {
     this.id = id;
     this.name = name;
   }
+
+  get showPlayer() {
+    return `${this.name}<br>
+    Points: ${this.points}`;
+  }
 }
 
 /**
  * ------------------------------------------------------------------------
  * Template for hand objects.
- * @argument  {String}  playerId        The player's id.
- * @argument  {String}  playerName      The player's name.
- * @argument  {Number}  bet             The player's bet.
+ * @param  {String}  playerId        The player's id.
+ * @param  {String}  playerName      The player's name.
+ * @param  {Number}  bet             The player's bet.
  * ------------------------------------------------------------------------
  */
 
 class Hand {
   playerId = 0;
   playerName = "";
-  handId = "1️⃣";
+  handId = 1;
   cards = [];
   canSplit = false;
   isSplit = false;
@@ -215,25 +221,6 @@ class Hand {
 
   /**
    * ------------------------------------------------------------------------
-   * Displays all cards in the player's hand.
-   * @return {String} output
-   * ------------------------------------------------------------------------
-   */
-
-  get showHand() {
-    let output = `${this.playerName}'s hand<br>`;
-    if (this.isSplit) {
-      output = `${this.playerName}'s hand ${this.handId}<br>`;
-    }
-    output += `${BORDER_SPAN}
-    ${this.cards.map((card) => card.display).join(" | ")}
-    </span><br>
-    Value: ${this.handValue}<br>`;
-    return output;
-  }
-
-  /**
-   * ------------------------------------------------------------------------
    * Check the player's initial hand for blackjack or splits.
    * ------------------------------------------------------------------------
    */
@@ -247,6 +234,25 @@ class Hand {
     ) {
       this.canSplit = true;
     }
+  }
+
+  /**
+   * ------------------------------------------------------------------------
+   * Displays all cards in the player's hand.
+   * @return {String} output
+   * ------------------------------------------------------------------------
+   */
+
+  get showHand() {
+    let output = "";
+    if (this.isSplit) {
+      output = `${this.playerName}'s Hand ${this.handId}${handIdEmoji}<br>`;
+    }
+    output += `${BORDER_SPAN}
+    ${this.cards.map((card) => card.display).join(" | ")}
+    </span><br>
+    Value: ${this.handValue}<br>`;
+    return output;
   }
 
   /**
@@ -270,15 +276,17 @@ class Hand {
 
   /**
    * ------------------------------------------------------------------------
-   * Evaluates the player's hand and update player's points.
+   * Evaluates the player's hand and update the points.
    * ------------------------------------------------------------------------
    */
 
   get evalHand() {
+    let output = "";
+
     // Player and dealer have Blackjacks
     if (this.hasBlackjack && dealer.hasBlackjack) {
       this.hasDrew = true;
-      return `${createTextBackground(COLOUR_BLUE)}
+      output = `${createTextBackground(COLOUR_BLUE)}
     Both ${this.playerName} and the Dealer got Blackjacks, it's a draw!
     </div>`;
     }
@@ -286,7 +294,7 @@ class Hand {
     // Player has Blackjacks but not dealer
     if (this.hasBlackjack) {
       this.hasWon = true;
-      return `${createTextBackground(COLOUR_YELLOW)}
+      output = `${createTextBackground(COLOUR_YELLOW)}
     ${BLACK_TEXT}
     ${this.playerName} got a Blackjack!
     </span></div>`;
@@ -297,7 +305,7 @@ class Hand {
       (!this.hasBust && dealer.hasBust)
     ) {
       this.hasWon = true;
-      return `${createTextBackground(COLOUR_GREEN)}
+      output = `${createTextBackground(COLOUR_GREEN)}
     ${this.playerName} won!
     </div>`;
     }
@@ -307,16 +315,19 @@ class Hand {
       (!dealer.hasBust && dealer.handValue > this.handValue) ||
       (!dealer.hasBust && this.hasBust)
     ) {
-      return `${createTextBackground(COLOUR_RED)}
+      output = `${createTextBackground(COLOUR_RED)}
     ${this.playerName} lost to the Dealer.
     </div>`;
     }
 
     // Player draw with the the dealer
     this.hasDrew = true;
-    return `${createTextBackground(COLOUR_BLUE)}
+    output = `${createTextBackground(COLOUR_BLUE)}
     ${this.playerName} drew with the Dealer.
     </div>`;
+
+    this.updatePoints;
+    return output;
   }
   /**
    * ------------------------------------------------------------------------
@@ -407,6 +418,12 @@ function createPlayers(names) {
 
 /**
  * ------------------------------------------------------------------------
+ * Create hands based on the number of players.
+ * ------------------------------------------------------------------------
+ */
+
+/**
+ * ------------------------------------------------------------------------
  * Deal cards to players and dealer.
  * ------------------------------------------------------------------------
  */
@@ -463,20 +480,29 @@ function playerDecide(player) {
 function evalRound() {
   let toEliminate = [];
   let output = `${dealer.showHand}${evalDealerHand()}<br><br>`;
+
+  // Show round results
+  for (let hand of hands) {
+    output += hand.showHand;
+    output += hand.evalHand;
+  }
+
+  // For each player, show their points total and if they got eliminated
   for (let player of players) {
     output += `${player.showHand}`;
 
-    player.updatePoints();
-    player.reset();
     if (player.points <= 0) {
       output += `<br>${createTextBackground(COLOUR_RED)}
       ${player.name} ran out of points and is eliminated!</div>`;
       toEliminate.unshift(players.indexOf(player));
     }
-    output += `<br>Current Points: ${player.points}<br><br>`;
   }
   toEliminate.forEach((element) => players.splice(element, 1));
-  output += "Place your bets again for the next round!";
+
+  if (players.length == 0) {
+  } else {
+    output += "Place your bets again for the next round!";
+  }
   return output;
 }
 
