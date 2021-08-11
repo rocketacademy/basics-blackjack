@@ -3,16 +3,25 @@ var main = function (input) {
   // ask for player name
   if (gameMode == "get player names") {
     //// store player name in an array in the same index as the player hand
-    playerName.push(input);
-    myOutputValue = `Hello ${playerName}. Click "Play" to begin the game.`;
-    gameMode = "default";
+    myOutputValue = `Please enter your username to proceed.`;
+    if (input != "") {
+      playerName.push(input);
+      myOutputValue = `Welcome ${playerName}.<br><br> Submit your bet to begin the game.<br>You currently have ${playerPoints} points.`;
+      gameMode = "default";
+    }
   } else if (gameMode == "default") {
-    startGame();
-    myOutputValue = firstCheck();
+    myOutputValue = `Please enter an amount to place your bet.<br>You currently have ${playerPoints} points available for wager.`;
+    // input validation to make sure user enters bet
+    if (input >= 1 && input <= playerPoints) {
+      startGame(input);
+      myOutputValue = `You placed a bet for ${playerBet} points.<br><br>${firstCheck()}`;
+    }
   } else if (gameMode == "player turn") {
-    myOutputValue = `Please enter "hit" to draw another card, or "stay" to keep your hand as it is.`;
+    myOutputValue = `Please enter "hit" to draw another card, or "stay" to keep your hand as it is.<br><br>So far, your hand has:<br>${getHandMessage(
+      playerHand
+    )}<br>Your hand is now valued at ${sumArray(playerHand)}`;
   } else if (gameMode == "comp turn") {
-    myOutputValue = `${dealerTurn()}<br>${checkOutcome()}`;
+    myOutputValue = `${dealerTurn()}<br>${checkOutcome()}<br><br>Please submit your bet begin the next round.`;
   }
   console.log(gameDeck.length);
   return myOutputValue;
@@ -32,7 +41,8 @@ var hit = function (input) {
     )}<br>Your hand is now valued at ${playerValue}`;
     if (playerValue > 21) {
       resetRound();
-      playerTurnMessage += `<br><br>Game Over! You bust!`;
+      playerPoints -= playerBet;
+      playerTurnMessage += `<br><br>Game Over! You bust!<br><br>Player points: ${playerPoints}<br><br>Please submit your bet begin the next round.`;
     } else if (playerValue <= 21) {
       playerTurnMessage += `<br><br>Do you want to hit or stay?`;
     }
@@ -62,7 +72,8 @@ var stay = function (input) {
     }
     if (playerValue > 21) {
       resetRound();
-      playerTurnMessage += `Game Over! You bust!`;
+      playerPoints -= playerBet;
+      playerTurnMessage += `Game Over! You bust!<br><br>Player points: ${playerPoints}<br><br>Please submit your bet begin the next round.`;
     }
   } else {
     playerTurnMessage = `Please click Play to continue.`;
@@ -150,7 +161,8 @@ var playerHand = [];
 var compHand = [];
 
 // deal cards
-var startGame = function () {
+var startGame = function (input) {
+  playerBet = Number(input);
   playerHand.push(gameDeck.pop());
   compHand.push(gameDeck.pop());
   playerHand.push(gameDeck.pop());
@@ -176,6 +188,7 @@ var playerValue = 0;
 var compValue = 0;
 var playerName = [];
 var playerPoints = 100;
+var playerBet = 0;
 
 // check if there is Ace in hand
 var checkForAce = function (a) {
@@ -192,19 +205,22 @@ var firstCheck = function () {
   compValue = sumArray(compHand);
   // if true, that person wins 1.5 times the bet, game is over
   if (playerValue == 21) {
+    playerPoints += playerBet * 1.5;
     var firstCheckMessage = `You've been dealt with:<br>${getHandMessage(
       playerHand
-    )}<br><br>Blackjack! You Win!`;
+    )}<br><br>Blackjack! You Win!<br><br>Player points: ${playerPoints}<br><br>Please submit your bet begin the next round.`;
     resetRound();
   } else if (playerValue > 21) {
+    playerPoints -= playerBet;
     firstCheckMessage = `You've been dealt with:<br>${getHandMessage(
       playerHand
-    )}<br><br>Game over, you lost!`;
+    )}<br><br>Game over, you lost!<br><br>Player points: ${playerPoints}<br><br>Please submit your bet begin the next round.`;
     resetRound();
   } else if (checkForAce(playerHand) > -1 && playerValue + 10 == 21) {
+    playerPoints += playerBet * 1.5;
     firstCheckMessage = `You've been dealt with:<br>${getHandMessage(
       playerHand
-    )}<br><br>Blackjack! You Win!`;
+    )}<br><br>Blackjack! You Win! <br><br>Player points: ${playerPoints}<br><br>Please submit your bet begin the next round.`;
     resetRound();
   } else {
     gameMode = "player turn";
@@ -320,15 +336,19 @@ var dealerTurn = function () {
 var checkOutcome = function () {
   var outcomeMsg = `Player Hand Value: ${playerValue}<br>Dealer Hand Value: ${compValue}<br><br>`;
   if (compValue > 21 && playerValue <= 21) {
-    outcomeMsg += `Dealer bust. You win!`;
+    playerPoints += playerBet * 2;
+    outcomeMsg += `Dealer bust. You win!<br><br>Player points: ${playerPoints}`;
   } else if (playerValue > 21 && compValue <= 21) {
-    outcomeMsg += `You bust. Dealer wins!`;
+    playerPoints -= playerBet;
+    outcomeMsg += `You bust. Dealer wins!<br><br>Player points: ${playerPoints}`;
   } else if (playerValue > compValue) {
-    outcomeMsg += `Your hand is higher than dealer's. You win!`;
+    playerPoints += playerBet * 2;
+    outcomeMsg += `Your hand is higher than dealer's. You win!<br><br>Player points: ${playerPoints}`;
   } else if (playerValue < compValue) {
-    outcomeMsg += `Your hand is lower than dealer's. You lose!`;
+    playerPoints -= playerBet;
+    outcomeMsg += `Your hand is lower than dealer's. You lose!<br><br>Player points: ${playerPoints}`;
   } else if ((playerValue = compValue)) {
-    outcomeMsg += `It's a tie.`;
+    outcomeMsg += `It's a tie.<br><br>Player points: ${playerPoints}`;
   }
   resetRound();
   return outcomeMsg;
@@ -348,9 +368,14 @@ var getHandMessage = function (a) {
   return handMessage;
 };
 
+// all outcome text should show player points and the need to place a bet to proceed
+// done
+
 // debug the new buttons and add input validation
+// done
 
 // variable ace values
+// done
 
 // one more game mode initialised
 
