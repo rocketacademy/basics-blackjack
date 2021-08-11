@@ -522,7 +522,8 @@ function evalRound() {
 
   // For each player, show their points total and if they got eliminated
   let toEliminate = [];
-  output += `🔢 Players' standing 🔢<br>`;
+  output += `${createTextBackground(COLOUR_WHITE)}${BLACK_TEXT}
+  Players Standings</span></div><br>`;
   for (let player of players) {
     output += `${player.name}: ${player.points} points<br>`;
 
@@ -536,10 +537,11 @@ function evalRound() {
   toEliminate.forEach((element) => players.splice(element, 1));
   if (players.length == 0) {
     gameMode = INPUT_PLAYERS;
-    output += "<br>All players have been eliminated!";
+    output += `<br>All players have been eliminated!<br>
+    Start a new game by entering the number of players.`;
   } else {
     gameMode = INPUT_BETS;
-    output += "<br>Place your bets again for the next round!";
+    output += "<br>Players still in play, bet for the next round!";
   }
   return output;
 }
@@ -555,12 +557,57 @@ function evalRound() {
  */
 
 function endRound() {
+  removeButtons();
   dealer.hitStand;
   let evaluation = evalRound();
   hands.splice(0);
   deck.splice(0);
   playerTurn = 0;
   return evaluation;
+}
+
+//////////////////////////////////////////////////////////////////
+////////////////////// DOM Decision Buttons //////////////////////
+//////////////////////////////////////////////////////////////////
+
+const decisions = ["hit", "stand", "split"];
+const buttonGroup = document.getElementById("decision-buttons");
+const appOutput = document.getElementById("output");
+
+// <button type="button" class="btn btn-outline-primary">Left</button>
+
+function playerDecision(input) {
+  let result = main(input);
+  appOutput.innerHTML = result;
+}
+
+function createButton(decision) {
+  let button = document.createElement("button");
+  let decisionTitled = decision.charAt(0).toUpperCase() + decision.slice(1);
+  button.innerHTML = decisionTitled;
+  let buttonClass = document.createAttribute("class");
+  buttonClass.value = "btn btn-outline-primary";
+  let buttonType = document.createAttribute("type");
+  buttonType.value = "button";
+  let buttonOnclick = document.createAttribute("onclick");
+  buttonOnclick.value = "playerDecision(this.value)";
+  button.value = decision;
+  button.setAttributeNode(buttonClass);
+  button.setAttributeNode(buttonType);
+  button.setAttributeNode(buttonOnclick);
+  buttonGroup.append(button);
+}
+
+function createButtons() {
+  for (let decision of decisions) {
+    createButton(decision);
+  }
+}
+
+function removeButtons() {
+  for (let i = 0; i < 3; i += 1) {
+    buttonGroup.removeChild(buttonGroup.childNodes[0]);
+  }
 }
 
 ////////////////////////////////////////////////////////////
@@ -614,11 +661,12 @@ const gameplay = {
       }
       createPlayers(playersNames);
       gameMode = INPUT_BETS;
-      return `Now, let's place your bets for Blackjack!<br>
+      return `Now, place your bets for Blackjack!<br>
       Every player starts with 100 points.<br><br>
       Bet your points in this order "${players
         .map((player) => player.name)
-        .join("/")}.<br>
+        .join("/")}".<br>
+      Separate each player's bet with a slash "/".<br>
       Example: "10/25/30/15"`;
     },
   },
@@ -657,6 +705,7 @@ const gameplay = {
 
       // Blackjack game starts
       gameMode = BLACKJACK;
+      createButtons();
       setupRound(bets);
       let defaultMessage = "Bets are placed, cards are dealt.";
       if (dealer.hasBlackjack) {
