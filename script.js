@@ -108,7 +108,8 @@ var twoCardsVal = [];
 var players = ['Player1', 'Computer'];
 var myOutputValue = '';
 var gameOverOutput = '<br> Game Over! <br> Please refresh the game.';
-var input = '';
+
+
 // On submit deal the cards
 var dealCard = function (cards) {
  cards.push(shuffleDeck.pop());
@@ -168,7 +169,7 @@ checkForBlackjack = function (){
    ;
   } else if (playerCardSum != highestVal || compCardSum != highestVal) {
     myOutputValue = myOutputValue + '<br> What would you like to do? <br> Type hit or stand then submit!'
-    gameMode = 'hit or stand';
+    gameMode = 'hitstand';
     
   }
 };
@@ -204,30 +205,30 @@ console.log(playerCardSum);
 compCardSum = getCardSum (compCards);
 console.log (compCardSum);
 
-checkForBlackjack ();
-
+//check for blackjack
+    checkForBlackjack ();
+      return myOutputValue;
+    }
+  }
 //User decide to hit or stand using the submit button
-
-} if (gameMode == 'hit or stand') {
-  if (input == 'hit') {
+var input =""
+if (gameMode == 'hit or stand' && input == 'hit') {
+  
+  dealCard(playerCards);
+    
     dealCard (playerCards);
     console.log('hit me');
     console.log(playerCards);
-  }
-}
 
-// User's card are analysed for winning or losing condition
-//Computer decide to hit or stand automatically
-  // Dealer has to hit if hand below 17
-// Winning rules : closest to 21 will win
-//The game either ends or continue
-// Ace can be 1 or 11
-
-
-
-
-return myOutputValue;
+} else if (gameMode == 'hit or stand' && input == 'stand'){
+  dealCard(compCards);
 };
+
+
+
+
+
+
 
 
 
