@@ -121,6 +121,7 @@ var gameMode = `draw card`;
 var playerScore = 0;
 var computerScore = 0;
 var winMessage= ``
+var playerPoints = 100;
 
 var deck = makeDeck();
 var shuffledDeck = shuffleCards(deck);
@@ -145,8 +146,9 @@ var main = function (input) {
     gameMode = `hit or stand`;
   }
 
-  winMessage= `Your score is ${playerScore}.<br><br>
-  Computer score is ${computerScore}<br><br>
+  winMessage= `You drawed ${playerCards[0].name} of ${playerCards[0].suit}<br>
+  and ${playerCards[1].name} of ${playerCards[1].suit}.<br><br>
+  Your score is: ${playerScore}.<br><br>
   Enter hit or stand.`
 
   if (gameMode == `hit or stand`) {
@@ -160,6 +162,7 @@ var main = function (input) {
     };
     
     if ((playerScore == 21 && computerScore < 21) || computerScore > 21){
+        gameMode = `game start`
         winMessage = `You Win!<br><br>
         Computer got ${computerScore}<br><br>
         You got ${playerScore}.<br><br>
@@ -169,12 +172,17 @@ var main = function (input) {
       playerCards.push(shuffledDeck.pop());
       playerScore = getHandSum(playerCards);
       console.log(playerCards)
-      winMessage = `Your score is ${playerScore}.<br><br>
+      var drawnCard = `Your hand consist of `
+      for (j=0; j<playerCards.length; j++){
+        drawnCard += `${playerCards[j].name} of ${playerCards[j].suit}, `
+      }
+      winMessage = `${drawnCard}<br><br>
+      Your score is ${playerScore}.<br><br>
       Computer score is ${computerScore}.<br><br>
       Enter hit or stand.`
 
       if (playerScore>21){
-        winMessage = `You lose!<br><br>
+        winMessage = `You lose! ${drawnCard}<br><br>
         Your score is ${playerScore}.<br><br>
         Computer score is ${computerScore}.<br><br>`
       }
