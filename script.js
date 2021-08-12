@@ -155,11 +155,11 @@ class Player {
 /**
  * ------------------------------------------------------------------------
  * Template for hand objects.
- * @param  {String}  playerId        The player's id.
- * @param  {String}  playerName      The player's name.
- * @param  {Number}  bet             The player's bet.
- * @param  {Boolean} isSplit         Determine if a hand is split.
- * @param  {Number}  handId          For split hands.
+ * @param  {String}  playerId           The player's id.
+ * @param  {String}  playerName         The player's name.
+ * @param  {Number}  [bet=0]          The player's bet.
+ * @param  {Boolean} [isSplit=false]  Determine if a hand is split.
+ * @param  {Number}  [handId=1]       For split hands.
  * ------------------------------------------------------------------------
  */
 
@@ -173,24 +173,9 @@ class Hand {
   constructor(playerId, playerName, bet = 0, isSplit = false, handId = 1) {
     this.playerId = playerId;
     this.playerName = playerName;
-    this._bet = bet;
+    this.bet = bet;
     this.isSplit = isSplit;
     this.handId = Number(handId);
-  }
-
-  /**
-   * ------------------------------------------------------------------------
-   * Set the player's bet.
-   * @param {Number} bet
-   * ------------------------------------------------------------------------
-   */
-
-  set bet(bet) {
-    this._bet = Number(bet);
-  }
-
-  get bet() {
-    return this._bet;
   }
 
   /**
@@ -284,9 +269,9 @@ class Hand {
     // Show Dealer's Face up card
     // Show player's hand.
     // Decision for player to make
-    let output = `Now it's ${this.playerName}'s turn.<br><br>
-  Dealer's Face Up Card<br>
+    let output = `Dealer's Face Up Card<br>
   ${BORDER_SPAN}${dealerFaceUpCard.display}</span><br><br>
+  Now it's ${this.playerName}'s turn.<br><br>
   ${this.showHand}<br>`;
     if (this.canSplit) {
       output += `Your hand has two of the same cards, you can split if you want.<br>
@@ -315,7 +300,7 @@ class Hand {
     }
 
     // Player has Blackjacks but not dealer
-    if (this.hasBlackjack) {
+    else if (this.hasBlackjack) {
       this.hasWon = true;
       output = `${createTextBackground(COLOUR_YELLOW)}
     ${BLACK_TEXT}
@@ -365,13 +350,13 @@ class Hand {
   get updatePoints() {
     let player = players.find(({ id }) => id === this.playerId);
     if (this.hasBlackjack && this.hasWon) {
-      player.points += Number(this._bet) * 1.5;
+      player.points += Number(this.bet) * 1.5;
     } else if (this.hasDrew) {
       player.points += Number(0);
     } else if (this.hasWon) {
-      player.points += Number(this._bet);
+      player.points += Number(this.bet);
     } else if (!this.hasWon) {
-      player.points -= Number(this._bet);
+      player.points -= Number(this.bet);
     }
   }
 }
@@ -381,6 +366,9 @@ class Hand {
 ///////////////////////////////////////////////////////////////
 
 class Dealer extends Hand {
+  constructor() {
+    super(0, "Dealer");
+  }
   /**
    * ------------------------------------------------------------------------
    * Dealer hits if the hand value is below 17.
@@ -388,6 +376,7 @@ class Dealer extends Hand {
    */
 
   get hitStand() {
+    this.checkBust;
     while (this.handValue < 17) {
       this.hit(deck.pop());
       this.checkBust;
@@ -495,7 +484,7 @@ function setupRound(bets) {
   createDeck();
   shuffleDeck();
   createHands(bets);
-  dealer = new Dealer(0, "Dealer");
+  dealer = new Dealer();
   dealCards();
   dealerFaceUpCard = dealer.cards[0];
   initialChecks();
@@ -727,6 +716,9 @@ const gameplay = {
         let hand = hands[playerTurn];
         switch (String(input).toLowerCase()) {
           case HIT:
+            if (hand.canSplit) {
+              hand.canSplit = false;
+            }
             if (hand.handValue >= 21) {
               playerTurn += 1;
               hand = hands[playerTurn];
