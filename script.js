@@ -112,6 +112,39 @@ var getHandSum = function (hand) {
   console.log(sum)
   return sum;
 };
+// function to convert suit word to emoji
+var convertSuitWordToEmoji = function (suitWord) {
+  if (suitWord == 'spades') {
+    return '♠️';
+  }
+  if (suitWord == 'hearts') {
+    return '♥️';
+  }
+  if (suitWord == 'clubs') {
+    return '♣️';
+  }
+  if (suitWord == 'diamonds') {
+    return '♦️';
+  }
+  // If we reach here, we entered an invalid suit
+  return 'Invalid Suit!';
+};
+
+var getCardStringRepresentation = function (card) {
+  return `${card.name} of ${convertSuitWordToEmoji(card.suit)}`;
+};
+
+var printCardswithEmojiSuits = function (cards) {
+  var returnString = '';
+  // Iterate until cards.length - 1 so we can avoid the extra comma at the end of return string
+  for (var i = 0; i < cards.length - 1; i += 1) {
+    var currCard = cards[i];
+    returnString += `${getCardStringRepresentation(currCard)}, `;
+  }
+  var lastCard = cards[cards.length - 1];
+  returnString += getCardStringRepresentation(lastCard);
+  return returnString;
+};
 
 // features to work on
 //1. reset blackjack game game ends (solved)
@@ -160,8 +193,8 @@ var main = function (input) {
     gameMode = `hit or stand`;
   }
 
-  winMessage= `You drawed ${playerCards[0].name} of ${playerCards[0].suit}<br>
-  and ${playerCards[1].name} of ${playerCards[1].suit}.<br><br>
+  winMessage= `You drawed ${printCardswithEmojiSuits(playerCards)}
+  <br><br>
   Your score is: ${playerScore}.<br><br>
   Enter hit or stand.`
 
@@ -172,19 +205,18 @@ var main = function (input) {
       playerCards.push(shuffledDeck.pop());
       playerScore = getHandSum(playerCards);
       console.log(playerCards)
-      var drawnCard = `Ok, now these cards are in your hand `
-      for (j=0; j<playerCards.length; j++){
-        drawnCard += `${playerCards[j].name} of ${playerCards[j].suit}, `
-      }
+      var drawnCard = `${userName}, now these cards are in your hand `
       winMessage = `${drawnCard}<br><br>
+      ${printCardswithEmojiSuits(playerCards)}<br><br>
       Your score is ${playerScore}.<br><br>
       Enter hit or stand.`
 
       if (playerScore>21){
-        winMessage = `You lose! ${drawnCard}<br><br>
+        winMessage = `You lose!<br><br>
+        These cards are in your hand ${printCardswithEmojiSuits(playerCards)}<br><br>
         Your score is ${playerScore}.<br><br>`
       }
-    };
+     };
     
     if (input == `stand`) {
 
