@@ -113,6 +113,12 @@ var getHandSum = function (hand) {
   return sum;
 };
 
+// features to work on
+//1. reset blackjack game game ends (solved)
+//2. change suit to emoji
+//3. collect user name and display it
+//4. betting function
+
 // initalise global array to store the cards
 
 var playerCards = [];
@@ -128,7 +134,14 @@ var shuffledDeck = shuffleCards(deck);
 
 var main = function (input) {
 
-  // re-code so that computer draws only after player is done.
+  if (gameMode == `reset`){
+    playerCards = [];
+    computerCards = [];
+    playerScore = 0;
+    computerScore = 0;
+
+    gameMode = `draw card`
+  }
 
   if (gameMode === `draw card`) {
     for (i = 0; i < 2; i++) {
@@ -181,32 +194,37 @@ var main = function (input) {
 
       // computer draws blackjack while or player bursts.
       if ((computerScore == 21 && playerScore <21) || playerScore >21){
-        winMessage = `You Lost!<br><br>
+        gameMode = `reset`
+        return winMessage = `You Lost!<br><br>
         Computer got ${computerScore}<br><br>
         Your hand is  ${playerScore}.<br><br>
         Refresh page to Play Again.`
       };
   
       if ((playerScore == 21 && computerScore < 21) || computerScore > 21){
-      winMessage = `You Win!<br><br>
+      gameMode = `reset`
+      return winMessage = `You Win!<br><br>
       Computer got ${computerScore}<br><br>
       You got ${playerScore}.<br><br>
       Refresh page to Play Again.`}
 
       if ((playerScore > computerScore) && playerScore <21) {
-      winMessage = `You Win!<br><br>
+      gameMode = `reset`
+      return winMessage = `You Win!<br><br>
       Computer got ${computerScore}.<br><br>
       You got ${playerScore}.<br><br>
       Refresh page to Play Again.`} 
 
       if (playerScore < computerScore){
-      winMessage =`You Lose!<br><br>
+      gameMode = `reset`
+      return winMessage =`You Lose!<br><br>
       Computer got ${computerScore}.<br><br>
       You got ${playerScore}.<br><br>
       Refresh page to Play Again.`}
 
       if (playerScore == computerScore) {
-      winMessage =`Draw!<br><br>
+      gameMode = `reset`
+      return winMessage =`Draw!<br><br>
       Computer got ${computerScore}.<br><br>
       You got ${playerScore}.<br><br>
       Refresh page to Play Again.`
