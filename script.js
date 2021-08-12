@@ -61,10 +61,6 @@ var shuffleCards = function (cardDeck) {
 //shuffled card deck
 var shuffledDeck = shuffleCards(cardDeck);
 
-//keeps track of dealer and player hands
-var dealerHand = [];
-var playerHand = [];
-
 //keeps track of game mode - starts with pre-game
 var GAME_MODE_PRE_GAME = `pre game`;
 var GAME_MODE_BETTING = `betting`;
@@ -89,37 +85,109 @@ The rules of the game are as follows:<br>
 11. If dealer does not bust, players who score higher than the dealer win 2 times their bet<br>
 12. Everyone else loses their bet to the dealer
 <br><br>
-Please type in your name to start.`
+Please enter number of players to start.`
 
-//keeps track of player name
-var userName = ``;
-var createUserName = function(name){
-  userName = name;
-  return `Hello ${userName}!`;
+//keeps track of number of players
+var numPlayers = 0;
+var createNumPlayers = function(number){
+  numPlayers = Number(number);
+  return `There are ${numPlayers} players in this game.`;
 };
 
-// keeps track of player bets
-var playerBank = 100;
-var playerBet = 0;
+//creates player hands
+var createPlayerHands = function() {
+  var playerHands = [];
+  var playerIndex = 1;
+    while (playerIndex <= numPlayers) {
+      var playerHand = {
+        player: playerIndex,
+        hand:[],
+        bank: 100,
+        bet: 0
+      };
+      playerHands.push(playerHand);
+      playerIndex += 1;
+    };
+  return playerHands;
+};
 
-//creates player's bet 
-var createBet = function(input){
+// //creates player banks
+// var createPlayerBanks = function() {
+//   var playerBanks = [];
+//   var playerIndex = 1;
+//     while (playerIndex <= numPlayers) {
+//       var playerBank = {
+//         player: playerIndex,
+//         bank: 100,
+//       };
+//       playerBanks.push(playerBank);
+//       playerIndex += 1;
+//     };
+//   return playerBanks;
+// };
+
+// //creates player bets
+// var createPlayerBets = function() {
+//   var playerBets = [];
+//   var playerIndex = 1;
+//     while (playerIndex <= numPlayers) {
+//       var playerBet = {
+//         player: playerIndex,
+//         bet: 0,
+//       };
+//       playerBets.push(playerBet);
+//       playerIndex += 1;
+//     };
+//   return playerBets;
+// };
+
+//keeps track of dealer and player hands
+var dealerHand = [];
+var playerHands = [];
+
+// // keeps track of player bets
+// var playerBanks = [];
+// var playerBets = [];
+
+//keeps track of which player's turn it is - start with player 1
+var playerTurn = 0;
+var allPlayersHaveGone = false;
+
+//moves to next player's turn until every player has gone
+var nextTurn = function(){
+  playerTurn += 1;
+  if(playerTurn > (numPlayers-1)){
+    playerTurn = 0;
+    allPlayersHaveGone = true;
+  };
+  return `It's player ${playerTurn+1}'s turn.`
+};
+
+//creates a player's bet 
+var createBet = function(input,playerTurn){
   var bet = Number(input);
-  playerBank -= bet;
+  playerHands[playerTurn].bank -= bet;
   //checks that bet is not blank and is a number
   if (Number.isNaN(bet) ||
   bet == `` ){
     return `Please enter a number to place a bet.<br>
-    ${userName} bank: ${playerBank}`;
+    Player ${playerHands[playerTurn].player} bank: $${playerHands[playerTurn].bank}`;
   //checks if player has enough in bank to bet
-  }else if(playerBank < 0){
-    playerBank +=bet;
-    return `${userName} doesn't have enough in the bank!<br>
-    ${userName} bank: ${playerBank}`;
-  } else{
-    playerBet = bet;
+  }else if(playerHands[playerTurn].bank < 0){
+    playerHands[playerTurn].bank +=bet;
+    return `${playerHands[playerTurn].player} doesn't have enough in the bank!<br>
+    ${playerHands[playerTurn].player} bank: ${playerHands[playerTurn].bank}`;
+  } else if (playerHands[playerTurn].player < numPlayers){
+    playerHands[playerTurn].bet = bet;
+    var playerBetMessage = `Player ${playerHands[playerTurn].player} bet $${playerHands[playerTurn].bet}.`
+    var nextTurnMessage = nextTurn();
+    return `${playerBetMessage}<br>${nextTurnMessage}`
+  }else{
+    playerHands[playerTurn].bet = bet;
+    playerBetMessage = `Player ${playerHands[playerTurn].player} bet $${playerHands[playerTurn].bet}.`
+    nextTurnMessage = nextTurn();
     gameMode = GAME_MODE_INITIAL;
-    return `${userName} bet $${bet}.<br>Click submit to deal cards.`;
+    return `${playerBetMessage}<br>Click submit to deal cards.`;
   };
 };
 
@@ -129,16 +197,18 @@ var dealInitialHand = function(){
   var dealerFaceUpCard = shuffledDeck.pop();
   var dealerFaceDownCard = shuffledDeck.pop();
   dealerHand.push(dealerFaceUpCard,dealerFaceDownCard);
-  console.log(`dealer initial hand`,dealerHand);
 
-  //player draws 2 cards from shuffled deck
+  //each player is dealt 2 cards from shuffled deck
+  var playerIndex = 0;
+  while(playerIndex < numPlayers){
   var playerCard1 = shuffledDeck.pop();
   var playerCard2 = shuffledDeck.pop();
-  playerHand.push(playerCard1,playerCard2);
-  console.log(`player initial hand`,playerHand);
+  playerHands[playerIndex].hand.push(playerCard1,playerCard2);
+  playerIndex += 1;
+  };
 
-  return `Dealer has ${dealerFaceUpCard.name}.<br>
-  ${userName} has ${playerCard1.name} and ${playerCard2.name}.`
+  return `Cards have been dealt. Dealer has ${dealerFaceUpCard.name}.<br>
+  Click to move to Player 1's hand.`
 };
 
 //keeps track of dealer and player scores
@@ -246,20 +316,6 @@ gameMode = GAME_MODE_END;
 return dealerHitCardMessage;
 };
 
-// //compares scores of dealer and player to determine winner
-// var generateGameResult = function(playerScore,dealerScore){
-//   if((dealerScore >= playerScore && dealerScore <= 21 && playerScore <= 21) ||
-//     (playerScore > 21 && dealerScore <= 21)){
-//         return `Dealer wins!`
-//       }else if((dealerScore < playerScore && dealerScore <= 21 && playerScore <= 21) ||
-//         (dealerScore > 21 && playerScore <= 21)){
-//         return `${userName} wins!`
-//       } else if (dealerScore == playerScore ||
-//         (dealerScore > 21 && playerScore > 21)){
-//         return `It's a tie.`
-//       };
-// }; 
-
 //compares scores of dealer and player at end of game to determine winner and bets
 var generateGameResult = function(playerScore,dealerScore){
   //if dealer busts, player wins 2 times bet
@@ -302,23 +358,27 @@ var main = function (input) {
     if(input == ``){
       myOutputValue = instructions;
     }else{
-      var nameMessage = createUserName(input);
-      myOutputValue = `${nameMessage}<br>How much do you want to bet?`;
+      var numPlayerMessage = createNumPlayers(input);
+      playerHands = createPlayerHands(numPlayers);
+      // playerBanks = createPlayerBanks(numPlayers);
+      // playerBets = createPlayerBets(numPlayers);
+      myOutputValue = `${numPlayerMessage}<br>Player 1, how much do you want to bet?`;
       gameMode = GAME_MODE_BETTING;
     };
   }else if (gameMode == GAME_MODE_BETTING){
-    var bettingMessage = createBet(input);
+    var bettingMessage = createBet(input,playerTurn);
     myOutputValue = bettingMessage;
   }else if(gameMode == GAME_MODE_INITIAL){
     var initialHand = dealInitialHand();
-    playerScore = calculatePlayerScore(playerHand);
-    playerHandMessage = displayPlayerHand(playerHand);
+    //playerScore = calculatePlayerScore(playerHand);
+    //playerHandMessage = displayPlayerHand(playerHand);
     gameMode = GAME_MODE_HIT_OR_STAND;
-    myOutputValue = `${initialHand}<br><br>
-    Dealer face up card: ${dealerHand[0].name}<br><br>
-    ${playerHandMessage}<br>
-    ${userName}'s score: ${playerScore}<br><br>
-    ${userName}, hit or stand?`;
+    myOutputValue = `${initialHand}`;
+    //<br><br>
+    //Dealer face up card: ${dealerHand[0].name}<br><br>
+    //${playerHandMessage}<br>
+    //${userName}'s score: ${playerScore}<br><br>
+    //${userName}, hit or stand?;
     if(playerScore == 21){
       var betWon = (playerBet*1.5);
       playerBank += betWon;
