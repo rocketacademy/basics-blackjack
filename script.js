@@ -140,16 +140,12 @@ var dealTwoCards = function () {
   console.log(computerHand);
 
   myOutputValue += `Player ${playerName} drawn: <br>`;
-
   for (let i = 0; i < playerHand.length; i += 1) {
     myOutputValue += `${playerHand[i].name} of ${playerHand[i].suit}. <br>`;
   }
 
-  myOutputValue += `<br> Computer drawn: <br>`;
+  myOutputValue += `<br> Computer drawn: <br> ${computerHand[0].name} of ${computerHand[0].suit}. <br> -Folded Down Card- <br>`;
 
-  for (let i = 0; i < computerHand.length; i += 1) {
-    myOutputValue += `${computerHand[i].name} of ${computerHand[i].suit}. <br>`;
-  }
   return myOutputValue;
 };
 
@@ -199,37 +195,45 @@ var hitOrStand = function () {
 
     numberOfPlayerCards += 1;
     console.log("number of player's cards in hand: " + numberOfPlayerCards);
+
+    for (let i = 0; i < playerHand.length; i += 1) {
+      myOutputValue += `${playerHand[i].name} of ${playerHand[i].suit}. <br>`;
+    }
+
+    // computer decides to hit or stand automatically
+    computerTotalHand = totalValueInHand(computerHand);
+    console.log("computer total hand: " + computerTotalHand);
+    // computer has to hit if their hand is below 17
+    if (computerTotalHand <= 16) {
+      // computer take 1 card
+      dealOneCardToHand(computerHand);
+
+      console.log("computer's hand array: ");
+      console.log(computerHand);
+
+      numberOfComputerCards += 1;
+      console.log(
+        "number of computer's cards in hand: " + numberOfComputerCards
+      );
+
+      myOutputValue += `<br> Computer drawn: <br> ${computerHand[0].name} of ${computerHand[0].suit}. <br> -Folded Down Card- <br>`;
+    } else {
+      myOutputValue += `<br> Computer drawn: <br> ${computerHand[0].name} of ${computerHand[0].suit}. <br> -Folded Down Card- <br>`;
+    }
   } else if (userInput == "stand") {
+    //player output
     currentGameMode = "compare cards";
     myOutputValue += `Player ${playerName}, you choose to end your turn. <br> Player's cards are: <br>`;
+    for (let i = 0; i < playerHand.length; i += 1) {
+      myOutputValue += `${playerHand[i].name} of ${playerHand[i].suit}. <br>`;
+    }
+
+    // computer output
+    myOutputValue += `<br> Computer's cards are: <br>`;
+    for (let i = 0; i < computerHand.length; i += 1) {
+      myOutputValue += `${computerHand[i].name} of ${computerHand[i].suit}. <br>`;
+    }
   }
-
-  for (let i = 0; i < playerHand.length; i += 1) {
-    myOutputValue += `${playerHand[i].name} of ${playerHand[i].suit}. <br>`;
-  }
-
-  // computer decides to hit or stand automatically
-  // computer has to hit if their hand is below 17
-  computerTotalHand = totalValueInHand(computerHand);
-  console.log("computer total hand: " + computerTotalHand);
-  myOutputValue += `<br> Computer's cards are: <br>`;
-
-  if (computerTotalHand <= 16) {
-    // computer take 1 card
-    dealOneCardToHand(computerHand);
-
-    console.log("computer's hand array: ");
-    console.log(computerHand);
-
-    numberOfComputerCards += 1;
-    console.log("number of computer's cards in hand: " + numberOfComputerCards);
-  } else {
-    // computer has to stand if their hand is 17 or higher
-  }
-  for (let i = 0; i < computerHand.length; i += 1) {
-    myOutputValue += `${computerHand[i].name} of ${computerHand[i].suit}. <br>`;
-  }
-
   return myOutputValue;
 };
 
@@ -239,7 +243,11 @@ var totalValueOutPutMessage = function () {
   console.log("player total hand: " + playerTotalHand);
   computerTotalHand = totalValueInHand(computerHand);
   console.log("computer total hand: " + computerTotalHand);
-  return `<br> Player ${playerName}'s total hand is  ${playerTotalHand}. <br> Computer's total hand is ${computerTotalHand}.<br><br>`;
+  if (userInput == "hit") {
+    return `<br> Player ${playerName}'s total hand is  ${playerTotalHand}. <br><br>`;
+  } else if (userInput == "stand") {
+    return `<br> Player ${playerName}'s total hand is  ${playerTotalHand}. <br> Computer's total hand is ${computerTotalHand}.<br><br>`;
+  }
 };
 
 var currentWinner = function () {
@@ -273,10 +281,13 @@ var currentWinner = function () {
     winner = "player";
     myOutputValue += `Computer BUSTS! Player ${playerName} wins by default.`;
   } else if (
-    playerTotalHand >= 17 &&
-    playerTotalHand <= 21 &&
-    playerTotalHand > computerTotalHand &&
-    computerTotalHand >= 17
+    (playerTotalHand >= 17 &&
+      playerTotalHand <= 21 &&
+      playerTotalHand > computerTotalHand &&
+      computerTotalHand >= 17) ||
+    (playerTotalHand >= 17 &&
+      playerTotalHand <= 21 &&
+      playerTotalHand > computerTotalHand)
   ) {
     winner = "player";
     myOutputValue += `Player ${playerName} wins! Computer loses.`;
@@ -344,21 +355,8 @@ var main = function (input) {
   } else if (currentGameMode == "deal two cards") {
     var dealCards = dealTwoCards();
     var playerTotalHand = totalValueInHand(playerHand);
-    var computerTotalHand = totalValueInHand(computerHand);
-
-    myOutputValue += `${dealCards} <br> Player ${playerName}'s total hand is  ${playerTotalHand}. <br> Computer's total hand is ${computerTotalHand}.<br><br>`;
-
-    if (numberOfPlayerCards == 2 && playerTotalHand == 21) {
-      currentGameMode = "compare cards";
-      myOutputValue += `Click the 'Submit' button to continue.`;
-    } else if (numberOfComputerCards == 2 && computerTotalHand == 21) {
-      currentGameMode = "compare cards";
-      myOutputValue += `Click the 'Submit' button to continue.`;
-    } else if (playerTotalHand < 21 && computerTotalHand < 21) {
-      currentGameMode = "player hit or stand";
-      myOutputValue += `Player ${playerName} do you want to 'hit' or 'stand'? <br> Please type out your choice, and click the 'Submit' button.`;
-      return myOutputValue;
-    }
+    currentGameMode = "player hit or stand";
+    myOutputValue += `${dealCards} <br><br> Player ${playerName}'s total hand is  ${playerTotalHand}. <br><br> Player ${playerName} do you want to 'hit' or 'stand'? <br> Please type out your choice, and click the 'Submit' button.`;
   } else if (currentGameMode == "player hit or stand") {
     userInput = input;
     if (userInput == "hit") {
@@ -376,8 +374,9 @@ var main = function (input) {
     var winnerMessage = currentWinner();
     playerCurrentPoints = currentTotalPoints();
     currentGameMode = "restart the game";
-
     myOutputValue += `${winnerMessage} <br><br> Player ${playerName}, you bet: ${numberOfBet}. <br> Your current point is: ${playerCurrentPoints}. <br> <br> Click the 'Submit' button to play another round.`;
+  } else if (totalPoints == 0) {
+    return `Player GAME OVER. Please refresh to play.`;
   } else if (currentGameMode == "restart the game") {
     restartGame();
     playerCurrentPoints = currentTotalPoints();
