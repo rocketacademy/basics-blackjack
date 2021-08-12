@@ -84,26 +84,20 @@ var deck = shuffleCards(makeDeck())
 var playerCards = [];
 var dealerCards = [];
 var burstSum = 22
+var dealerHitThreshold = 16
 var playerSum;
 var dealerSum;
 var myOutputValue = ''
 
 // ==================  Game Modes ================= \\
-var gameMode = ''
-var initialDeal;
-var playerHitOrStand;
-var dealerHitOrStand;
-var results
-// 
-var currentGameMode = initialDeal
+var initialDeal = true
+var hitOrStand = false
+var gameOver = false
+var determineWinner = false
 
 // ==================  Card Dealing Function ================= \\
-var dealCardToPlayer = function() {
-  playerCards.push(deck.pop());
-};
-
-var dealCardToDealer = function() {
-  dealerCards.push(deck.pop());
+var dealCard = function(cards) {
+  cards.push(deck.pop());
 };
 
 // ==================  Output Messages ================= \\
@@ -111,79 +105,165 @@ var playerWonMessage = `You Won!`
 var playerLostMessage = `You Lost!`
 var drawMessage = `It is a draw!`
 var refreshMessage = `Please refresh the game to start a new game.`
+var hitOrStandMessage = `Please indicate if you want to "Hit" or "Stand"`
+
+
+
+// ==================  Sum Comparing Function ================= \\
+var compareSums = function(playerSum, dealerSum){
+  console.log(`comparing the sums`)
+  playerSum = getSum(playerCards);
+  dealerSum = getSum(dealerCards);
+  // player total is equal to dealer
+  if (playerSum == dealerSum && playerSum < burstSum && dealerSum < burstSum){
+    myOutputValue = drawMessage
+    console.log('Draw, both did not burst')
+    return myOutputValue
+  }
+  //player hits burst value
+  if (playerSum >= burstSum && dealerSum < burstSum){
+    myOutputValue = playerLostMessage
+    console.log(`Player burst, dealer did not`)
+    return myOutputValue
+  }
+  //dealer hits burst value
+  if (playerSum < burstSum && dealerSum >= burstSum){
+    myOutputValue = playerWonMessage
+    console.log(`Dealer burst, player did not`)
+    return myOutputValue
+  }
+  
+  //player total is less than dealer
+  if (playerSum < dealerSum && dealerSum < burstSum && playerSum < burstSum){
+    myOutputValue = playerLostMessage
+    console.log(`Player lost, both did not burst`)
+    return myOutputValue
+  }
+  if (playerSum > dealerSum && dealerSum < burstSum && playerSum < burstSum){
+    myOutputValue = playerWonMessage
+    console.log(`Player won, both did not burst`)
+    return myOutputValue
+  }
+}
+
+// ==================  Check for BlackJack ================= \\
+var checkBlackJack = function(){
+  console.log(`Checking for BlackJack`)
+  if(dealerCards.length == 2 && getSum(dealerCards) == 21){
+    gameOver = true
+    myOutputValue = playerLostMessage
+    console.log(`Dealer got Black Jack`)
+    return playerLostMessage
+  } else if (playerCards.length == 2 && getSum(playerCards) == 21 && getSum(dealerCards) != 21){
+    gameOver = true
+    myOutputValue = playerWonMessage
+    console.log(`Player got Black Jack`)
+    return playerWonMessage
+  }
+}
+
+// ==================  Sum of cards ================= \\
+var getSum = function(playerOrDealerCards){
+  console.log(`Trying to get sum`)
+  var sum = 0
+  var aceCounter = 0
+  for(let cardCounter = 0; cardCounter < playerOrDealerCards.length; cardCounter += 1){
+    currentCard = playerOrDealerCards[cardCounter]
+    if (currentCard.rank >= 2 && currentCard.rank <= 10) {
+    sum += currentCard.rank;
+  } else if (currentCard.rank >= 11 && currentCard.rank <= 13) {
+    sum += 10
+  } else if (currentCard.rank == 1){
+    aceCounter += 1
+    sum += 11
+  }
+}
+if(sum >= burstSum && aceCounter > 0){
+  for(checkingAllTheAcesCounter = 0; checkingAllTheAcesCounter < aceCounter ; checkingAllTheAcesCounter += 1){
+    sum -= 10
+  }
+}
+  console.log(`sum ${sum}`)
+  console.log(`finish summing`)
+  return sum
+}
+
 
 
 // ==================  Main Function ================= \\
-var main = function(){
-  if(playerCards.length == 0 && currentGameMode == initialDeal){
-    dealCardToPlayer();
-    dealCardToDealer();
+var main = function(input){
+  // deal 2 cards to dealer and player
+  if(playerCards.length == 0 && initialDeal == true){
+    dealCard(playerCards);
+    dealCard(dealerCards);
   }
-  if(playerCards.length == 1 && currentGameMode == initialDeal){
-    dealCardToPlayer();
-    dealCardToDealer();
+  if(playerCards.length == 1 && initialDeal == true){
+    dealCard(playerCards);
+    dealCard(dealerCards);
+    initialDeal = false
+    console.log(`Player Cards`)
+    console.log(playerCards)
+    console.log(`Dealer Cards`)
+    console.log(dealerCards)
+    console.log(`Finished dealing cards`)
   }
-  var sumUpCards = function(){
-  playerSum = Number(playerCards[0].rank + playerCards[1].rank)
-  dealerSum = Number(dealerCards[0].rank + dealerCards[1].rank)
-  console.log(`It reached here`)
-  }
-  if(playerCards.length == 2){
-  compareSums();
+  if(playerCards.length == 2 && gameOver == false && hitOrStand == false){
+  // Check if either players got Black Jack
+  checkBlackJack();
+    if(gameOver == true){
+      hitOrStand = false
+      console.log(`There was a BlackJack`)
+    } else if(gameOver == false){
+      console.log(`No BlackJack`)
+      hitOrStand = true
+      return hitOrStandMessage
+    }
+  } 
 
-  console.log (playerCards)
-  console.log (dealerCards)
-  console.log(playerSum)
-  console.log(dealerSum)
+   // ==================  Player Hit or Stand ================= \\ 
+  if(hitOrStand == true && input == `hit`){
+    console.log(`Player decided to hit`)
+    dealCard(playerCards)
+    console.log(`player cards`)
+    console.log(playerCards)
+    if(getSum(playerCards) > burstSum){
+      gameOver = true
+      myOutputValue = playerLostMessage
+      return myOutputValue
+    }
+  } 
+  if(hitOrStand == true && input == `stand`){
+    hitOrStand = false
+    console.log(`Player decided to stand`)
+    // ==================  Dealer Hit or Stand ================= \\
+    while (getSum(dealerCards) <= dealerHitThreshold && gameOver == false) {
+      dealCard(dealerCards);
+      console.log(`dealer drawing more cards`)
+      dealerSum = getSum(dealerCards);
+      console.log(`Dealer cards`)
+      console.log(dealerCards)
+      if (dealerSum >= burstSum) {
+        gameOver = true;
+        return playerWonMessage;
+      }
+      console.log(`Dealer stopped drawing more cards`)
+    }
+    compareSums()
   }
-  return myOutputValue
+  //return hit or stand message here---->>>>>
+
+  // ==================  Determine a winner ================= \\  
+  // if(gameOver == false && dealerSum < burstSum && playerSum < burstSum && hitOrStand == false){
+  //   compareSums()
+  //   // if(getSum(playerCards) > getSum(dealerCards)){
+  //   //   return playerWonMessage
+  //   // }
+  //   // if(getSum(playerCards) < getSum(dealerCards)){
+  //   //   return playerLostMessage
+  //   // }
+  // }
+    return myOutputValue
 }
 
-// ==================  Sum Comparing Function ================= \\
-  var compareSums = function(){
-    // Check if either players got Black Jack
-    checkBlackJack();
-    //player hits burst value
-    if (playerSum >= burstSum && dealerSum < burstSum){
-      myOutputValue = playerLostMessage
-      console.log(`Player burst, dealer did not`)
-      return myOutputValue
-    }
-    //dealer hits burst value
-    if (playerSum < burstSum && dealerSum >= burstSum){
-      myOutputValue = playerWonMessage
-      console.log(`Dealer burst, player did not`)
-      return myOutputValue
-    }
-    
-    //player total is less than dealer
-    if (playerSum < dealerSum && dealerSum < burstSum && playerSum < burstSum){
-      myOutputValue = playerLostMessage
-      console.log(`Player lost, both did not burst`)
-      return myOutputValue
-    }
-    if (playerSum > dealerSum && dealerSum < burstSum && playerSum < burstSum){
-      myOutputValue = playerWonMessage
-      console.log(`Player won, both did not burst`)
-      return myOutputValue
-    }
-    // player total is equal to dealer
-    if (playerSum == dealerSum && playerSum < burstSum && dealerSum < burstSum){
-      myOutputValue = drawMessage
-      console.log('Draw, both did not burst')
-      return myOutputValue
-    }
-  }
 
-// ==================  Sum Comparing Function ================= \\
-var checkBlackJack = function(){
-  if(dealerCards.length == 2 && dealerSum == 21){
-    myOutputValue = playerLostMessage
-    console.log(`Dealer got Black Jack`)
-    return myOutputValue
-  } else if (playerCards.length == 2 && playerSum == 21){
-    myOutputValue = playerWonMessage
-    console.log(`Player got Black Jack`)
-    return myOutputValue
-  }
-}
+//----->Don't forget about draws<!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
