@@ -5,23 +5,37 @@ var main = function (input) {
     //// store player name in an array in the same index as the player hand
     myOutputValue = `Please enter your username to proceed.`;
     if (input != "") {
-      playerName.push(input);
-      myOutputValue = `Welcome ${playerName}.<br><br> Submit your bet to begin the game.<br>You currently have ${playerPoints} points.`;
+      var nameElements = input.split(",");
+      playerName = nameElements;
+      numPlayers = playerName.length;
+      // assign starting player points for each player
+      var pointsCounter = 0;
+      while (pointsCounter < playerName.length) {
+        playerPoints.push(100);
+        pointsCounter += 1;
+      }
+      //---- add ability to pull playername based on index : playerName[playerTurnIndex]
+      currentPlayerName = playerName[playerTurnIndex];
+      currentPlayerPoints = playerPoints[playerTurnIndex];
+      myOutputValue = `Welcome ${playerName}!<br><br>${currentPlayerName}, submit your bet to begin the game.<br>You currently have ${playerPoints[playerTurnIndex]} points.`;
       gameMode = "default";
     }
+    currentPlayerName = playerName[playerTurnIndex];
+    currentPlayerPoints = playerPoints[playerTurnIndex];
   } else if (gameMode == "default") {
-    myOutputValue = `Please enter an amount to place your bet.<br>You currently have ${playerPoints} points available for wager.`;
+    myOutputValue = `${currentPlayerName}, please enter an amount to place your bet.<br>You currently have ${playerPoints[playerTurnIndex]} points available for wager.`;
     // input validation to make sure user enters bet
-    if (input >= 1 && input <= playerPoints) {
+    if (input >= 1 && input <= playerPoints[playerTurnIndex]) {
+      //checking this now
       startGame(input);
-      myOutputValue = `You placed a bet for ${playerBet} points.<br><br>${firstCheck()}`;
+      myOutputValue = `${currentPlayerName} placed a bet for ${playerBet} points.<br><br>${firstCheck()}`;
     }
   } else if (gameMode == "player turn") {
-    myOutputValue = `Please enter "hit" to draw another card, or "stay" to keep your hand as it is.<br><br>So far, your hand has:<br>${getHandMessage(
+    myOutputValue = `${currentPlayerName}, please enter "hit" to draw another card, or "stay" to keep your hand as it is.<br><br>So far, your hand has:<br>${getHandMessage(
       playerHand
     )}<br>Your hand is now valued at ${sumArray(playerHand)}`;
   } else if (gameMode == "comp turn") {
-    myOutputValue = `${dealerTurn()}<br>${checkOutcome()}<br><br>Please submit your bet begin the next round.`;
+    myOutputValue = `${dealerTurn()}<br>${checkOutcome()}<br><br>${currentPlayerName},please submit your bet begin the next round.`;
   }
   console.log(gameDeck.length);
   return myOutputValue;
@@ -32,7 +46,7 @@ var hit = function (input) {
     var newCard = gameDeck.pop();
     playerHand.push(newCard);
     playerValue = sumArray(playerHand);
-    var playerTurnMessage = `You chose HIT.<br><br>You drew ${
+    var playerTurnMessage = `${currentPlayerName} chose HIT.<br><br>You drew ${
       newCard.name
     } of ${
       newCard.suit
@@ -40,14 +54,15 @@ var hit = function (input) {
       playerHand
     )}<br>Your hand is now valued at ${playerValue}`;
     if (playerValue > 21) {
+      currentPlayerPoints = playerPoints[playerTurnIndex] -= playerBet;
+      playerTurnMessage += `<br><br>Game Over! You bust!<br><br>${currentPlayerName} points: ${currentPlayerPoints}`;
       resetRound();
-      playerPoints -= playerBet;
-      playerTurnMessage += `<br><br>Game Over! You bust!<br><br>Player points: ${playerPoints}<br><br>Please submit your bet begin the next round.`;
+      playerTurnMessage += `<br><br>${currentPlayerName}, please submit your bet begin the next round.`;
     } else if (playerValue <= 21) {
-      playerTurnMessage += `<br><br>Do you want to hit or stay?`;
+      playerTurnMessage += `<br><br>${currentPlayerName}, do you want to hit or stay?`;
     }
   } else {
-    playerTurnMessage = `Please click Play to continue.`;
+    playerTurnMessage = `${currentPlayerName}, please click Play to continue.`;
   }
   return playerTurnMessage;
 };
@@ -66,17 +81,18 @@ var stay = function (input) {
         playerValue += 0;
       }
       gameMode = "comp turn";
-      playerTurnMessage = `You chose STAY.<br><br>So far, you've been dealt with:<br>${getHandMessage(
+      playerTurnMessage = `${currentPlayerName}, you chose STAY.<br><br>So far, you've been dealt with:<br>${getHandMessage(
         playerHand
       )}<br>Your hand is now valued at ${playerValue}. It is now dealer's turn.`;
     }
     if (playerValue > 21) {
+      currentPlayerPoints = playerPoints[playerTurnIndex] -= playerBet;
+      playerTurnMessage += `Game Over, ${currentPlayerName}! You bust!<br><br>Player points: ${currentPlayerPoints}`;
+      playerTurnMessage += `<br><br>Please submit your bet to begin the next round.`;
       resetRound();
-      playerPoints -= playerBet;
-      playerTurnMessage += `Game Over! You bust!<br><br>Player points: ${playerPoints}<br><br>Please submit your bet begin the next round.`;
     }
   } else {
-    playerTurnMessage = `Please click Play to continue.`;
+    playerTurnMessage = `${currentPlayerName}, please click Play to continue.`;
   }
   return playerTurnMessage;
 };
@@ -187,8 +203,11 @@ var gameMode = "get player names";
 var playerValue = 0;
 var compValue = 0;
 var playerName = [];
-var playerPoints = 100;
+var playerPoints = [];
 var playerBet = 0;
+var numPlayers = 0;
+var currentPlayerName = "";
+var currentPlayerPoints = 0;
 
 // check if there is Ace in hand
 var checkForAce = function (a) {
@@ -205,28 +224,31 @@ var firstCheck = function () {
   compValue = sumArray(compHand);
   // if true, that person wins 1.5 times the bet, game is over
   if (playerValue == 21) {
-    playerPoints += playerBet * 1.5;
+    currentPlayerPoints = playerPoints[playerTurnIndex] += playerBet * 1.5;
     var firstCheckMessage = `You've been dealt with:<br>${getHandMessage(
       playerHand
-    )}<br><br>Blackjack! You Win!<br><br>Player points: ${playerPoints}<br><br>Please submit your bet begin the next round.`;
+    )}<br><br>Blackjack! You Win!<br><br>Player points: ${currentPlayerPoints}`;
     resetRound();
+    firstCheckMessage += `<br><br>${currentPlayerName}, please submit your bet begin the next round.`;
   } else if (playerValue > 21) {
-    playerPoints -= playerBet;
+    currentPlayerPoints = playerPoints[playerTurnIndex] -= playerBet;
     firstCheckMessage = `You've been dealt with:<br>${getHandMessage(
       playerHand
-    )}<br><br>Game over, you lost!<br><br>Player points: ${playerPoints}<br><br>Please submit your bet begin the next round.`;
+    )}<br><br>Game over, you lost!<br><br>Player points: ${currentPlayerPoints}<br><br>Please submit your bet begin the next round.`;
     resetRound();
   } else if (checkForAce(playerHand) > -1 && playerValue + 10 == 21) {
-    playerPoints += playerBet * 1.5;
+    currentPlayerPoints = playerPoints[playerTurnIndex] += playerBet * 1.5;
     firstCheckMessage = `You've been dealt with:<br>${getHandMessage(
       playerHand
-    )}<br><br>Blackjack! You Win! <br><br>Player points: ${playerPoints}<br><br>Please submit your bet begin the next round.`;
+    )}<br><br>Blackjack! You Win! <br><br>Player points: ${currentPlayerPoints}<br><br>Please submit your bet begin the next round.`;
     resetRound();
   } else {
     gameMode = "player turn";
     firstCheckMessage = `You've been dealt with:<br>${getHandMessage(
       playerHand
-    )}<br>Please enter "hit" to draw another card, or "stay" to keep your hand as it is.`;
+    )}<br>Your hand is now valued at ${sumArray(
+      playerHand
+    )}<br><br>Please enter "hit" to draw another card, or "stay" to keep your hand as it is.`;
   }
   return firstCheckMessage;
 };
@@ -284,6 +306,13 @@ var resetRound = function () {
   playerHand = [];
   compHand = [];
   gameMode = "default";
+  if (playerTurnIndex < playerName.length - 1) {
+    playerTurnIndex += 1;
+  } else {
+    playerTurnIndex = 0;
+  }
+  currentPlayerName = playerName[playerTurnIndex];
+  currentPlayerPoints = playerPoints[playerTurnIndex];
 };
 
 // else
@@ -336,19 +365,19 @@ var dealerTurn = function () {
 var checkOutcome = function () {
   var outcomeMsg = `Player Hand Value: ${playerValue}<br>Dealer Hand Value: ${compValue}<br><br>`;
   if (compValue > 21 && playerValue <= 21) {
-    playerPoints += playerBet * 2;
-    outcomeMsg += `Dealer bust. You win!<br><br>Player points: ${playerPoints}`;
+    playerPoints[playerTurnIndex] += playerBet * 2;
+    outcomeMsg += `Dealer bust. You win!<br><br>Player points: ${playerPoints[playerTurnIndex]}`;
   } else if (playerValue > 21 && compValue <= 21) {
-    playerPoints -= playerBet;
-    outcomeMsg += `You bust. Dealer wins!<br><br>Player points: ${playerPoints}`;
+    playerPoints[playerTurnIndex] -= playerBet;
+    outcomeMsg += `You bust. Dealer wins!<br><br>Player points: ${playerPoints[playerTurnIndex]}`;
   } else if (playerValue > compValue) {
-    playerPoints += playerBet * 2;
-    outcomeMsg += `Your hand is higher than dealer's. You win!<br><br>Player points: ${playerPoints}`;
+    playerPoints[playerTurnIndex] += playerBet * 2;
+    outcomeMsg += `Your hand is higher than dealer's. You win!<br><br>Player points: ${playerPoints[playerTurnIndex]}`;
   } else if (playerValue < compValue) {
-    playerPoints -= playerBet;
-    outcomeMsg += `Your hand is lower than dealer's. You lose!<br><br>Player points: ${playerPoints}`;
+    playerPoints[playerTurnIndex] -= playerBet;
+    outcomeMsg += `Your hand is lower than dealer's. You lose!<br><br>Player points: ${playerPoints[playerTurnIndex]}`;
   } else if ((playerValue = compValue)) {
-    outcomeMsg += `It's a tie.<br><br>Player points: ${playerPoints}`;
+    outcomeMsg += `It's a tie.<br><br>Player points: ${playerPoints[playerTurnIndex]}`;
   }
   resetRound();
   return outcomeMsg;
@@ -386,6 +415,10 @@ var getHandMessage = function (a) {
 /// deal cards loop based on num of players, and store each player as an array within a global player array
 /// in order to have player turn repeat until all players have gone, use if condition based on global player array length. add count to player turn as the limit. once max player turn count is reached, game mode switches to dealer turn
 //// to retrieve player hand, call the corresponding player array index of the global player array
+//// store points?
+// done
+
+var playerTurnIndex = 0;
 
 //// apply the multiplayer concept to pull player name
 
