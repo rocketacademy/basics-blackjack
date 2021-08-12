@@ -1,5 +1,9 @@
 var HIT = "hit";
 var STAND = "stand";
+var ASK_USERNAME = "asks for user's name";
+var INPUTS_NAME = "input user's name";
+var BLACKJACK = "blackjack starts";
+var GAME_MODE = ASK_USERNAME;
 
 var deck = [];
 
@@ -88,8 +92,6 @@ var dealCards = function (deck) {
 };
 
 var doesPlayerWin = function (playerCardSum, dealerCardSum) {
-  console.log("player sum: " + playerCardSum);
-  console.log("dealer sum: " + dealerCardSum);
   if (
     (playerCardSum <= 21 && playerCardSum > dealerCardSum) ||
     (dealerCardSum > 21 && playerCardSum <= 21) ||
@@ -106,7 +108,7 @@ var doesPlayerWin = function (playerCardSum, dealerCardSum) {
   }
   if (
     playerCardSum == dealerCardSum ||
-    (playerCard > 21 && dealerCardSum > 21)
+    (playerCardSum > 21 && dealerCardSum > 21)
   ) {
     return 3;
   }
@@ -124,88 +126,126 @@ var getOutputMsg = function (playerWins) {
 };
 
 var main = function (input) {
-  var cardDeck = createDeck();
-
-  var shuffledDeck = shuffleDeck(cardDeck);
-
-  var playerWins = doesPlayerWin(playerCardSum, dealerCardSum);
-
-  // deal the cards two times
-  var numOfDeals = 0;
-  while (numOfDeals < 2) {
-    dealCards(shuffledDeck);
-    numOfDeals += 1;
+  if (GAME_MODE == ASK_USERNAME) {
+    GAME_MODE = INPUTS_NAME;
+    return "Hi! May I know your name?";
   }
-
-  // list players' cards
-  var outputOfPlayersCards =
-    "Your cards are " +
-    playerCard[0].name +
-    " of " +
-    playerCard[0].suit +
-    " and " +
-    playerCard[1].name +
-    " of " +
-    playerCard[1].suit;
-
-  // show dealer second card
-  var outputOfDealersCards =
-    "Dealer's second card is " +
-    dealerCard[1].name +
-    " of " +
-    dealerCard[1].suit +
-    ".";
-
-  // create default output value.
-  var myOutputValue =
-    outputOfPlayersCards +
-    ". <br> Dealer's card is " +
-    dealerCard[0].name +
-    " of " +
-    dealerCard[0].suit;
-
-  // update value of player card sum and dealer card sum
-  playerCardSum = playerCard[0].rank + playerCard[1].rank;
-  console.log("player card sum is " + playerCardSum);
-
-  dealerCardSum = dealerCard[0].rank + dealerCard[1].rank;
-  console.log("dealer card sum is " + dealerCardSum);
-
-  // store the winning and losing message
-  var outputMsg = getOutputMsg(playerWins);
-
-  // check if player card totals to 21
-  // if playerCardSum == 21, player wins. Else, player choose 'hit' or 'stand'
-  if (playerCardSum == 21) {
-    myOutputValue =
-      outputOfPlayersCards + ". <br> You got a blackjack. You win!";
-  } else {
-    myOutputValue =
-      myOutputValue + ". <br> Please choose between hit or stand.";
+  if (GAME_MODE == INPUTS_NAME) {
+    var userName = input;
+    GAME_MODE = BLACKJACK;
+    return (
+      "Hi " +
+      userName +
+      ", nice to meet you. <br> Are you ready to play? <br> Please hit 'submit' once you're ready!"
+    );
   }
+  if (GAME_MODE == BLACKJACK) {
+    playerCard = [];
+    dealerCard = [];
 
-  // if player choose 'stand', open dealer's closed card.
-  if (input == STAND) {
-    myOutputValue =
-      "Player, you card sum is " +
-      playerCardSum +
-      ". <br> Dealer's card sum is " +
-      dealerCardSum +
-      ". ";
+    var cardDeck = createDeck();
+    var shuffledDeck = shuffleDeck(cardDeck);
 
-    if (dealerCardSum >= 17) {
-      // check winning condition
-      doesPlayerWin(playerCardSum, dealerCardSum);
-      return myOutputValue + "<br>" + outputMsg;
+    var playerWins = doesPlayerWin(playerCardSum, dealerCardSum);
+
+    // deal the cards two times
+    var numOfDeals = 0;
+    while (numOfDeals < 2) {
+      dealCards(shuffledDeck);
+      numOfDeals += 1;
     }
-    // if dealer card sum is <= 16, dealer draw
-    if (dealerCardSum <= 16) {
+
+    // list players' cards
+    var outputOfPlayersCards =
+      "Your cards are " +
+      playerCard[0].name +
+      " of " +
+      playerCard[0].suit +
+      " and " +
+      playerCard[1].name +
+      " of " +
+      playerCard[1].suit;
+
+    // create default output value.
+    var myOutputValue =
+      outputOfPlayersCards +
+      ". <br> Dealer's card is " +
+      dealerCard[0].name +
+      " of " +
+      dealerCard[0].suit;
+
+    // update value of player card sum and dealer card sum
+    playerCardSum = playerCard[0].rank + playerCard[1].rank;
+    console.log("player card sum is " + playerCardSum);
+
+    dealerCardSum = dealerCard[0].rank + dealerCard[1].rank;
+    console.log("dealer card sum is " + dealerCardSum);
+
+    // store the winning and losing message
+    var outputMsg = getOutputMsg(playerWins);
+
+    // check if player card totals to 21
+    // if playerCardSum == 21, player wins. Else, player choose 'hit' or 'stand'
+    if (playerCardSum == 21) {
+      myOutputValue =
+        outputOfPlayersCards + ". <br> You got a blackjack. You win!";
+    } else {
+      myOutputValue =
+        myOutputValue + ". <br> Please choose between hit or stand.";
+    }
+
+    // if player choose 'stand', open dealer's closed card.
+    if (input == STAND) {
+      myOutputValue =
+        "Player, you card sum is " +
+        playerCardSum +
+        ". <br> Dealer's card sum is " +
+        dealerCardSum +
+        ". ";
+
+      if (dealerCardSum >= 17) {
+        // check winning condition
+        doesPlayerWin(playerCardSum, dealerCardSum);
+        return myOutputValue + "<br>" + outputMsg;
+      }
+      // if dealer card sum is <= 16, dealer draw
+      if (dealerCardSum <= 16) {
+        dealCards(shuffledDeck);
+
+        dealerCardSum = dealerCardSum + dealerCard[2].rank;
+
+        playerWins = doesPlayerWin(playerCardSum, dealerCardSum);
+        outputMsg = getOutputMsg(playerWins);
+
+        myOutputValue =
+          "Player, you card sum is " +
+          playerCardSum +
+          ". <br> Dealer's card sum is " +
+          dealerCardSum +
+          ". ";
+
+        // check winning condition
+        if (doesPlayerWin(playerCardSum, dealerCardSum)) {
+          return myOutputValue + "<br>" + outputMsg;
+        } else if (!doesPlayerWin(playerCardSum, dealerCardSum)) {
+          return myOutputValue + "<br>" + outputMsg;
+        }
+      }
+    }
+
+    // if player choose 'hit', deal another card.
+    if (input == HIT) {
       dealCards(shuffledDeck);
 
-      dealerCardSum = dealerCardSum + dealerCard[2].rank;
+      playerCardSum = playerCardSum + playerCard[2].rank;
+      console.log(playerCardSum);
 
-      playerWins = doesPlayerWin(playerCardSum, dealerCardSum);
-      outputMsg = getOutputMsg(playerWins);
+      // if player card sum > 21 and player card 2 rank is 11, change the rank to 1
+      if (playerCardSum > 21 && playerCard[2].rank == 11) {
+        playerCard[2].rank = 1;
+        playerCardSum =
+          playerCard[0].rank + playerCard[1].rank + playerCard[2].rank;
+      }
 
       myOutputValue =
         "Player, you card sum is " +
@@ -215,68 +255,38 @@ var main = function (input) {
         ". ";
 
       // check winning condition
-      if (doesPlayerWin(playerCardSum, dealerCardSum)) {
-        return myOutputValue + "<br>" + outputMsg;
-      } else if (!doesPlayerWin(playerCardSum, dealerCardSum)) {
-        return myOutputValue + "<br>" + outputMsg;
+      if (dealerCardSum <= 16) {
+        dealCards(shuffledDeck);
+
+        dealerCardSum = dealerCardSum + dealerCard[2].rank;
+        console.log(dealerCardSum);
+
+        playerWins = doesPlayerWin(playerCardSum, dealerCardSum);
+        outputMsg = getOutputMsg(playerWins);
+
+        myOutputValue =
+          "Player, your card sum is " +
+          playerCardSum +
+          ". <br> Dealer's card sum is " +
+          dealerCardSum;
+
+        if (doesPlayerWin(playerCardSum, dealerCardSum)) {
+          return myOutputValue + ". <br>" + outputMsg;
+        } else if (!doesPlayerWin(playerCardSum, dealerCardSum)) {
+          return myOutputValue + ". <br>" + outputMsg;
+        }
+      }
+      if (dealerCardSum >= 17) {
+        playerWins = doesPlayerWin(playerCardSum, dealerCardSum);
+        outputMsg = getOutputMsg(playerWins);
+
+        if (doesPlayerWin(playerCardSum, dealerCardSum)) {
+          return myOutputValue + " <br>" + outputMsg;
+        } else if (!doesPlayerWin(playerCardSum, dealerCardSum)) {
+          return myOutputValue + " <br>" + outputMsg;
+        }
       }
     }
+    return myOutputValue;
   }
-
-  // if player choose 'hit', deal another card.
-  if (input == HIT) {
-    dealCards(shuffledDeck);
-
-    // update player card sums
-    playerCardSum = playerCardSum + playerCard[2].rank;
-    console.log(playerCardSum);
-
-    // if player card sum > 21 and player card 2 rank is 11, change the rank to 1
-    if (playerCardSum > 21 && playerCard[2].rank == 11) {
-      playerCard[2].rank = 1;
-      playerCardSum =
-        playerCard[0].rank + playerCard[1].rank + playerCard[2].rank;
-    }
-
-    myOutputValue =
-      "Player, you card sum is " +
-      playerCardSum +
-      ". <br> Dealer's card sum is " +
-      dealerCardSum +
-      ". ";
-
-    // check winning condition
-    if (dealerCardSum <= 16) {
-      dealCards(shuffledDeck);
-
-      dealerCardSum = dealerCardSum + dealerCard[2].rank;
-      console.log(dealerCardSum);
-
-      playerWins = doesPlayerWin(playerCardSum, dealerCardSum);
-      outputMsg = getOutputMsg(playerWins);
-
-      myOutputValue =
-        "Player, your card sum is " +
-        playerCardSum +
-        ". <br> Dealer's card sum is " +
-        dealerCardSum;
-
-      if (doesPlayerWin(playerCardSum, dealerCardSum)) {
-        return myOutputValue + ". <br>" + outputMsg;
-      } else if (!doesPlayerWin(playerCardSum, dealerCardSum)) {
-        return myOutputValue + ". <br>" + outputMsg;
-      }
-    }
-    if (dealerCardSum >= 17) {
-      playerWins = doesPlayerWin(playerCardSum, dealerCardSum);
-      outputMsg = getOutputMsg(playerWins);
-
-      if (doesPlayerWin(playerCardSum, dealerCardSum)) {
-        return myOutputValue + ". <br>" + outputMsg;
-      } else if (!doesPlayerWin(playerCardSum, dealerCardSum)) {
-        return myOutputValue + ". <br>" + outputMsg;
-      }
-    }
-  }
-  return myOutputValue;
 };
