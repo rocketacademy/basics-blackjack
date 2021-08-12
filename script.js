@@ -162,6 +162,7 @@ var computerScore = 0;
 var winMessage= ``;
 var playerPoints = 100;
 var userName = ``;
+var betPoints
 
 var deck = makeDeck();
 var shuffledDeck = shuffleCards(deck);
@@ -170,9 +171,10 @@ var main = function (input) {
 
   if (!userName ) {
     userName = input;
-    gameMode = `draw card`
+    gameMode = `betpoints`
     return winMessage = `Let's welcome ${userName} to our BlackJack game!<br><br>
-    Press Submit to Deal your cards.`
+    You have ${playerPoints} points.<br><br>
+    How many points do you want to bet?`
   }
 
   if (gameMode == `reset`){
@@ -180,8 +182,17 @@ var main = function (input) {
     computerCards = [];
     playerScore = 0;
     computerScore = 0;
+    gameMode = `betpoints`
+    return winMessage = `${userName}, Let play another game.<br><br>
+    You have ${playerPoints} points.<br><br>
+    How many points do you want to bet?`
+  }
 
+  if (gameMode == `betpoints`) {
     gameMode = `draw card`
+    betPoints = Number(input)
+    return winMessage = `You have bet ${betPoints} Points.<br><br>
+    Press Submit to Deal Cards.`
   }
 
   if (gameMode === `draw card`) {
@@ -212,9 +223,12 @@ var main = function (input) {
       Enter hit or stand.`
 
       if (playerScore>21){
+        playerPoints-= betPoints;
         winMessage = `You lose!<br><br>
         These cards are in your hand ${printCardswithEmojiSuits(playerCards)}<br><br>
-        Your score is ${playerScore}.<br><br>`
+        Your score is ${playerScore}.<br><br>
+        You have ${playerPoints} Points left.<br><br>
+        Refresh page to Play Again.`
       }
      };
     
@@ -235,31 +249,39 @@ var main = function (input) {
       // computer draws blackjack while or player bursts.
       if ((computerScore == 21 && playerScore <21) || playerScore >21){
         gameMode = `reset`
+        playerPoints-= betPoints;
         return winMessage = `You Lost!<br><br>
         Computer got ${computerScore}<br><br>
         Your hand is  ${playerScore}.<br><br>
+        You have ${playerPoints} Points left.<br><br>
         Refresh page to Play Again.`
       };
   
       if ((playerScore == 21 && computerScore < 21) || computerScore > 21){
       gameMode = `reset`
+      playerPoints+= betPoints;
       return winMessage = `You Win!<br><br>
       Computer got ${computerScore}<br><br>
       You got ${playerScore}.<br><br>
+      You have ${playerPoints} Points left.<br><br>
       Refresh page to Play Again.`}
 
       if ((playerScore > computerScore) && playerScore <21) {
       gameMode = `reset`
+      playerPoints+= betPoints;
       return winMessage = `You Win!<br><br>
       Computer got ${computerScore}.<br><br>
       You got ${playerScore}.<br><br>
+      You have ${playerPoints} Points left.<br><br>
       Refresh page to Play Again.`} 
 
       if (playerScore < computerScore){
       gameMode = `reset`
+      playerPoints-= betPoints;
       return winMessage =`You Lose!<br><br>
       Computer got ${computerScore}.<br><br>
       You got ${playerScore}.<br><br>
+      You have ${playerPoints} Points left.<br><br>
       Refresh page to Play Again.`}
 
       if (playerScore == computerScore) {
@@ -267,6 +289,7 @@ var main = function (input) {
       return winMessage =`Draw!<br><br>
       Computer got ${computerScore}.<br><br>
       You got ${playerScore}.<br><br>
+      You have ${playerPoints} Points left.<br><br>
       Refresh page to Play Again.`
     }
   }
