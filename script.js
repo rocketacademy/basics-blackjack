@@ -1,10 +1,4 @@
-//Game modes:
-//1. Get initial hand
-//2. Computer hit or stand
-//3. Player hit or stand
-//4. Compare values
- 
-var gameMode = "1. Get initial hand"
+var gameMode = 1 //Get initial hand
 
 var makeDeck = function () {
   // Initialise an empty deck array
@@ -22,6 +16,7 @@ var makeDeck = function () {
     // Notice rankCounter starts at 1 and not 0, and ends at 13 and not 12.
     // This is an example of a loop without an array.
     var rankCounter = 1;
+    var cardValue = 1;
     while (rankCounter <= 13) {
       // By default, the card name is the same as rankCounter
       var cardName = rankCounter;
@@ -87,31 +82,113 @@ var shuffleCards = function (cardDeck) {
 var deck = [];
 var shuffledDeck = shuffleCards(deck);
 
+// initialising variables
+var shuffledDeck = shuffleCards(makeDeck());
+var playerHand = [];
+var computerHand = [];
+var blackJackLimit = 21;
+var computerHitTill = 16;
+var drawCounter = 0;
+
+var initialDraw = function () {
+  while (drawCounter < 2) {
+    playerHand.push(shuffledDeck.pop());
+    computerHand.push(shuffledDeck.pop());
+    drawCounter += 1;
+  }
+};
+
+//hit function
+var getAdditionalCard = function (hand) {
+  var cardToPush = shuffledDeck.pop();
+  hand.push(cardToPush);
+};
+
+//do the following for all the cards in hand
+//if rank of cards between 2 to 10, add the rank to score
+//if rank of cards = 11, 12, 13, add 10 to score
+//if rank = 1, add 11 unless total sum > 21. then add 1
+var getHandSum = function (hand) {
+  var handSum = 0;
+  var handIndex = 0;
+  while (handIndex < hand.length) {
+    var currCard = hand[handIndex];
+    if (currCard.rank >= 2 && currCard.rank <= 10) {
+      handSum = handSum + currCard.rank;
+    } else if (currCard.rank > 10) {
+      handSum = handSum + 10;
+    } else if (currCard.rank = 1) {
+      if (handSum >= 11) {
+        handSum = handSum + 1;
+      } else {
+        handSum = handSum + 11;
+      }
+    }
+    handIndex += 1
+  }
+  return handSum;
+};
+
+
 var main = function (input) {
-  //Deal cards to computer and player
-  var computerCardOne = shuffledDeck.pop();
-  var playerCardOne = shuffledDeck.pop();
-  var computerCardTwo = shuffledDeck.pop();
-  var playerCardTwo = shuffledDeck.pop();
-  var additionalCard = shuffledDeck.pop();
-
-  //DO WE NEED TO SET VALUES TO EACH CARD FIRST??
-  //ERROR HERE: HOW TO ADD VALUES OF CARDS TOGETHER???
-  var computerInitial = computerCardOne + computerCardTwo;
-  console.log(computerInitial);
-  var playerInitial = playerCardOne + playerCardTwo;
-  console.log(playerInitial);
-
   var myOutputValue = "";
-// if computer's initial draw is less than 17, 
-if (computerInitial < 17){
-  while (computerInitial < 17){
-  var computerTotal = computerInitial + additionalCard;
-  console.log(computerTotal)
+  if (gameMode == 1) {
+    initialDraw();
+    console.log("Player Initial Hand: " + playerHand[0].rank + "," + playerHand[1].rank);
+    console.log("Computer Initial Hand: " + computerHand[0].rank + "," + computerHand[1].rank);
+    var playerHandSum = getHandSum(playerHand);
+    var computerHandSum = getHandSum(computerHand);
+    //if computer hand sum < 17, hit with additional card
+    while (computerHandSum < 17) {
+      getAdditionalCard(computerHand);
+      computerHandSum = getHandSum(computerHand);
+      console.log("Computer Final Hand: " + computerHandSum)
+    };
+    myOutputValue = "You were dealt " + playerHand[0].name + " of " + playerHand[0].suit + " and " + playerHand[1].name + " of " + playerHand[1].suit + ". Your current score is " + playerHandSum + ". Please type hit to draw additional card.";
+    console.log(gameMode);
+    gameMode = 2;
+    return myOutputValue;
+    // switch game mode to let player decide if want to hit or stand
   };
-};
-    myOutputValue = "hello <br>" + myOutputValue;
-  
-return myOutputValue;
-};
+  //Player to decide whether to hit or stand
+  if (gameMode == 2) {
+    if (input == "hit") {
+      getAdditionalCard(playerHand);
+      console.log("Additional card: " + playerHand[playerHand.length - 1].rank);
+      playerHandSum = getHandSum(playerHand);
+      console.log("Player's Hand: " + playerHandSum);
+      
+      if (playerHandSum > blackJackLimit) {
+        myOutputValue = "You drew " + playerHand[playerHand.length - 1].name + " of " + playerHand[playerHand.length - 1].suit + ". Your current score is " + playerHandSum + ". You bust!"
+        return myOutputValue
+      }
+      else {
+      } myOutputValue = "You drew " + playerHand[playerHand.length - 1].name + " of " + playerHand[playerHand.length - 1].suit + ". Your current score is " + playerHandSum + ". Please type hit to draw another additional card. If not, please hit submit.";
+      return myOutputValue
+    } else if (input != "hit") {
+      gameMode = 3; 
+    }
+  }
+  // Comparing scores:
+  if (gameMode == 3) {
+    console.log(gameMode)
+    playerHandSum = getHandSum(playerHand)
+    computerHandSum = getHandSum(computerHand)
+    if (playerHandSum > blackJackLimit) {// if player > 21, player loses
+      myOutputValue = "You bust! Your total hand is " + playerHandSum + ". Try again.";
+    } else if (computerHandSum > blackJackLimit) {// else if computer > 21, computer loses
+      myOutputValue = "Dealer bust! Dealer's total hand is " + computerHandSum + ". You won!";
+    } else if (computerHandSum > playerHandSum) {
+      myOutputValue = "You lost! Dealer's total hand is " + computerHandSum + ". Your total hand is " + playerHandSum + ".";
+    } else if (playerHandSum > computerHandSum) {
+      myOutputValue = " You won! Dealer's total hand is " + computerHandSum + ". Your total hand is " + playerHandSum + ".";
+    } else if (playerHandSum == computerHandSum) {
+      myOutputValue = "It's a draw. Dealer's total hand is " + computerHandSum + ".";
+     
+    }
+
+    return myOutputValue
+  }
+
+}
 
