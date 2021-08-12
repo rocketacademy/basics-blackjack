@@ -123,16 +123,24 @@ var getHandSum = function (hand) {
 
 var playerCards = [];
 var computerCards = [];
-var gameMode = `draw card`;
+var gameMode = `username`;
 var playerScore = 0;
 var computerScore = 0;
-var winMessage= ``
+var winMessage= ``;
 var playerPoints = 100;
+var userName = ``;
 
 var deck = makeDeck();
 var shuffledDeck = shuffleCards(deck);
 
 var main = function (input) {
+
+  if (!userName ) {
+    userName = input;
+    gameMode = `draw card`
+    return winMessage = `Let's welcome ${userName} to our BlackJack game!<br><br>
+    Press Submit to Deal your cards.`
+  }
 
   if (gameMode == `reset`){
     playerCards = [];
