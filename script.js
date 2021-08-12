@@ -18,6 +18,23 @@ var computerHand = [];
 var playerScore = 0;
 var computerScore = 0;
 var playerCardIndex = 2;
+var numPlayerAce = 0;
+var numCompAce = 0;
+var playerName = "";
+
+// function to check player name
+var checkPlayerName = function (input) {
+  playerName = input;
+
+  if (input == "") {
+    myOutputValue = `Hey you gotta type in a name!`;
+  } else {
+    myOutputValue = `Welcome, ${playerName}! Let's play Blackjack!<br>
+  Click Submit to shuffle and deal cards!`;
+    currentGameMode = "game starts";
+  }
+  return myOutputValue;
+};
 
 // function to make card deck
 var makeDeck = function () {
@@ -92,14 +109,33 @@ var shuffledCardDeck = shuffleCards(makeDeck());
 var dealCards = function () {
   playerHand.push(shuffledCardDeck.pop(), shuffledCardDeck.pop());
   computerHand.push(shuffledCardDeck.pop(), shuffledCardDeck.pop());
+
+  console.log("computer card 1");
+  console.log(computerHand[0].name);
+  console.log("computer card 2");
+  console.log(computerHand[1].name);
+
+  for (i = 0; i < playerHand.length; i += 1) {
+    if (playerHand[i].name == "ace") {
+      numPlayerAce += 1;
+    }
+  }
+  playerScore = playerHand[0].point + playerHand[1].point;
   myOutputValue = `Computer's hand is a secret for now, but you've got<br>
     Card 1: ${playerHand[0].name} of ${playerHand[0].suit}<br>
     Card 2: ${playerHand[1].name} of ${playerHand[1].suit}<br>`;
-  playerScore = playerHand[0].point + playerHand[1].point;
-  if (playerScore == 21) {
-    myOutputValue = myOutputValue + `21 points! Nice! You won!`;
+  if (
+    (playerHand[0].name == "ace" && playerHand[1].point == 10) ||
+    (playerHand[1].name == "ace" && playerHand[0].point == 10)
+  ) {
+    playerScore = playerScore + 10;
+    myOutputValue =
+      myOutputValue +
+      `21 points! Nice! You won, ${playerName}! 😀<br>
+    Refresh the page to play again!`;
   } else if (playerScore < 21) {
-    myOutputValue = myOutputValue + `Would you like to hit or stand?`;
+    myOutputValue =
+      myOutputValue + `${playerName}, would you like to hit or stand? 😎`;
   }
   return myOutputValue;
 };
@@ -112,8 +148,17 @@ var checkComputerHand = function () {
       return "computer stand >= 17";
     }
   } else if (computerScore < 17) {
+    if (
+      (computerHand[0].name == "ace" && computerHand[1].point == 10) ||
+      (computerHand[1].name == "ace" && computerHand[0].point == 10)
+    ) {
+      computerScore = computerScore + 10;
+      return `computer blackjack`;
+    }
     for (cardIndex = 2; computerScore < 17; cardIndex += 1) {
       computerHand.push(shuffledCardDeck.pop());
+      console.log("computer extra card");
+      console.log(computerHand[cardIndex].name);
       computerScore = computerScore + computerHand[cardIndex].point;
     }
     if (computerScore > 21) {
@@ -128,6 +173,7 @@ var checkComputerHand = function () {
 var checkPlayerHand = function (input) {
   if (playerCardIndex == 2 && input == "hit") {
     playerHand.push(shuffledCardDeck.pop());
+
     playerScore = playerScore + playerHand[playerCardIndex].point;
     myOutputValue = `You chose to hit, your cards are now<br>
     Card 1: ${playerHand[0].name} of ${playerHand[0].suit}<br>
@@ -137,14 +183,19 @@ var checkPlayerHand = function (input) {
     }.<br>
     Your current score is ${playerScore}.<br>`;
     if (playerScore == 21) {
-      myOutputValue = myOutputValue + `21 points! Nice! You won!`;
+      myOutputValue =
+        myOutputValue +
+        `21 points! Nice! You won, ${playerName}! 😀<br>
+    Refresh the page to play again!`;
     } else if (playerScore < 21) {
-      myOutputValue = myOutputValue + `Would you like to hit or stand?`;
+      myOutputValue =
+        myOutputValue + `${playerName}, would you like to hit or stand? 😎`;
     } else {
       myOutputValue =
         myOutputValue +
-        `Oh no, you bust :(<br>
-        You lost!`;
+        `Oh no, you bust 😖<br>
+        You lost, ${playerName}!<br>
+    Refresh the page to play again!`;
     }
     playerCardIndex += 1;
     return myOutputValue;
@@ -162,14 +213,19 @@ var checkPlayerHand = function (input) {
     }.<br>
     Your current score is ${playerScore}.<br>`;
     if (playerScore == 21) {
-      myOutputValue = myOutputValue + `21 points! Nice! You won!`;
+      myOutputValue =
+        myOutputValue +
+        `21 points! Nice! You won, ${playerName}! 😀<br>
+    Refresh the page to play again!`;
     } else if (playerScore < 21) {
-      myOutputValue = myOutputValue + `Would you like to hit or stand?`;
+      myOutputValue =
+        myOutputValue + `${playerName}, would you like to hit or stand? 😎`;
     } else {
       myOutputValue =
         myOutputValue +
-        `Oh no, you bust :(<br>
-        You lost!`;
+        `Oh no, you bust 😖<br>
+        You lost, ${playerName}!<br>
+    Refresh the page to play again!`;
     }
     playerCardIndex += 1;
     return myOutputValue;
@@ -188,14 +244,19 @@ var checkPlayerHand = function (input) {
     }.<br>
     Your current score is ${playerScore}.<br>`;
     if (playerScore == 21) {
-      myOutputValue = myOutputValue + `21 points! Nice! You won!`;
+      myOutputValue =
+        myOutputValue +
+        `21 points! Nice! You won, ${playerName}! 😀<br>
+    Refresh the page to play again!`;
     } else if (playerScore < 21) {
-      myOutputValue = myOutputValue + `Would you like to hit or stand?`;
+      myOutputValue =
+        myOutputValue + `${playerName}, would you like to hit or stand? 😎`;
     } else {
       myOutputValue =
         myOutputValue +
-        `Oh no, you bust :(<br>
-        You lost!`;
+        `Oh no, you bust 😖<br>
+        You lost, ${playerName}!<br>
+        Refresh the page to play again!`;
     }
     playerCardIndex += 1;
     return myOutputValue;
@@ -215,14 +276,19 @@ var checkPlayerHand = function (input) {
     }.<br>
     Your current score is ${playerScore}.<br>`;
     if (playerScore == 21) {
-      myOutputValue = myOutputValue + `21 points! Nice! You won!`;
+      myOutputValue =
+        myOutputValue +
+        `21 points! Nice! You won, ${playerName}!😀<br>
+    Refresh the page to play again!`;
     } else if (playerScore < 21) {
-      myOutputValue = myOutputValue + `Would you like to hit or stand?`;
+      myOutputValue =
+        myOutputValue + `${playerName}, would you like to hit or stand? 😎`;
     } else {
       myOutputValue =
         myOutputValue +
-        `Oh no, you bust :(<br>
-        You lost!`;
+        `Oh no, you bust 😖<br>
+        You lost, ${playerName}!<br>
+        Refresh the page to play again!`;
     }
     playerCardIndex += 1;
     return myOutputValue;
@@ -231,13 +297,13 @@ var checkPlayerHand = function (input) {
   if (input == "stand") {
     myOutputValue = `You chose to stand.<br>
     Your final score is ${playerScore}.<br>
-    Click Submit again to see who won!`;
+    Click Submit again to see who won! 😏`;
     currentGameMode = "reveal winner";
     return myOutputValue;
   }
 
   if (input != "hit" && input != "stand") {
-    return `Please only input either "hit" or "stand".`;
+    return `C'mon, ${playerName}, please only input either "hit" or "stand" 😬`;
   }
 };
 
@@ -246,24 +312,35 @@ var compareScores = function () {
   var checkComputerScore = checkComputerHand();
 
   if (checkComputerScore == "computer bust after hitting") {
-    myOutputValue = `Computer bust! You win!<br>
-  Computer's final score is ${computerScore} and your final score is ${playerScore}. Congrats!`;
+    myOutputValue = `Computer bust! You win!😀<br>
+  Computer's final score is ${computerScore} and your final score is ${playerScore}. Congrats, ${playerName}!<br>
+  Refresh the page to play again!`;
     return myOutputValue;
   }
 
   if (
     checkComputerScore == "computer stand >= 17" ||
-    checkComputerScore == "computer stand after hitting"
+    checkComputerScore == "computer stand after hitting" ||
+    checkComputerScore == "computer blackjack"
   ) {
     myOutputValue = `Computer's score is ${computerScore}<br>
     Your score is ${playerScore}.<br>`;
 
     if (computerScore > playerScore) {
-      myOutputValue = myOutputValue + `Computer won! You lost :(`;
+      myOutputValue =
+        myOutputValue +
+        `Computer won! You lost, ${playerName} 😖<br>
+  Refresh the page to play again!`;
     } else if (playerScore > computerScore) {
-      myOutputValue = myOutputValue + `You won! Computer lost :)`;
+      myOutputValue =
+        myOutputValue +
+        `You won, ${playerName}! Computer lost 😀<br>
+  Refresh the page to play again!`;
     } else {
-      myOutputValue = myOutputValue + `It's a tie!`;
+      myOutputValue =
+        myOutputValue +
+        `It's a tie! 😮<br>
+  Refresh the page to play again!`;
     }
     return myOutputValue;
   }
@@ -274,8 +351,13 @@ var main = function (input) {
   var myOutputValue = "";
 
   if (currentGameMode == "welcome") {
-    currentGameMode = "game starts";
-    return "Welcome to Blackjack! Click Submit to shuffle and deal cards!";
+    currentGameMode = "input player name";
+    return "Welcome to Blackjack! What's your name? 😀";
+  }
+
+  if (currentGameMode == "input player name") {
+    myOutputValue = checkPlayerName(input);
+    return myOutputValue;
   }
 
   if (currentGameMode == "game starts") {
