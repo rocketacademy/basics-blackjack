@@ -1,3 +1,4 @@
+//==================== Create Deck ========================
 var makeDeck = function () {
     var deck = [];
   
@@ -19,13 +20,13 @@ var makeDeck = function () {
         } else if (cardName == 13) {
           cardName = 'king';
         }
-  
+//================= Single Card Variable ======================
         var card = {
           name: cardName,
           suit: currentSuit,
           rank: rankCounter,
         };
-  
+//================ Card To Deck ====================== 
         deck.push(card);
   
         rankCounter = rankCounter + 1;
@@ -39,7 +40,7 @@ var makeDeck = function () {
   var getRandomIndex = function (size) {
     return Math.floor(Math.random() * size);
   };
-  
+//================= Shuffle Card ========================  
   var shuffleCards = function (cards) {
     var index = 0;
   
@@ -58,18 +59,20 @@ var makeDeck = function () {
   
     return cards;
   };
-  
+//================= System work =====================  
   var deck = shuffleCards(makeDeck());
   
   var maxNum = 21;
   var hitNum = 16;
   var moveStand = false;
   var gameOver = false;
+  var gameMode = "please enter player's name"
+  var playerName = ""
   
   var playerHand = [];
   var computerHand = [];
   
-
+//==================== Dealing Card and Calculate total card number ==========================
   var cardHand = function (hand) {
     hand.push(deck.pop());
   };
@@ -100,7 +103,7 @@ var makeDeck = function () {
     }
     return sum;
   };
-  
+//======================= Hand Reveal =========================
   var blackJack = function (hand) {
     return hand.length === 2 && handNum(hand) === maxNum;
   };
@@ -113,20 +116,24 @@ var makeDeck = function () {
     return `Player draws ${handString(playerHand)} worth ${handNum(playerHand)} . <br>
       Computer draws ${handString(computerHand)} worth ${handNum(computerHand)}.`;
   };
+
   
+//===================== main function ==============================  
   var main = function (input) {
     if (gameOver) {
       return 'Game Over, refresh to play again.';
-    }
+    };
   
-    if (playerHand.length === 0) {
+    if (playerHand.length === 0){
       cardHand(playerHand);
       cardHand(computerHand);
   
       cardHand(playerHand);
       cardHand(computerHand);
-  
-     
+    
+
+    
+//======================= Blackjack ===============================     
       if (blackJack(computerHand)) {
         gameOver = true;
         return `${myOutput()} <br>
@@ -138,16 +145,17 @@ var makeDeck = function () {
         return `${myOutput()} <br>
           Player draw Blackjack and wins.`;
       }
-  
+//======================= Determine player Hit or Stand ==========================  
       return `${myOutput()} <br>
         enter "hit" or "stand" as your next move`;
+      
     }
   
     if (!moveStand) {
       if (input !== 'hit' && input !== 'stand') {
         return 'Please input either "hit" or "stand"';
       }
-  
+//================== Determine winner  =======================
       if (input === 'hit') {
         cardHand(playerHand);
         if (handNum(playerHand) > maxNum) {
@@ -161,7 +169,7 @@ var makeDeck = function () {
         moveStand = true;
       }
     }
-  
+
     var computerHandNum = handNum(computerHand);
     if (computerHandNum <= hitNum) {
       cardHand(computerHand);
