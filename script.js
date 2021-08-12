@@ -79,7 +79,6 @@ var shuffleCards = function (cardDeck) {
   return cardDeck;
 };
 // ==================  Misc Variables ================= \\
-// prepared deck
 var deck = shuffleCards(makeDeck())
 var playerCards = [];
 var dealerCards = [];
@@ -93,23 +92,18 @@ var myOutputValue = ''
 var initialDeal = true
 var hitOrStand = false
 var gameOver = false
-var determineWinner = false
-
-
 
 // ==================  Card Dealing Function ================= \\
 var dealCard = function(cards) {
   cards.push(deck.pop());
 };
 
-
-
 // ==================  Sum Comparing Function ================= \\
 var compareSums = function(playerSum, dealerSum){
   console.log(`comparing the sums`)
   playerSum = getSum(playerCards);
   dealerSum = getSum(dealerCards);
-  // player total is equal to dealer
+  // draw; both did not burst
   if (playerSum == dealerSum && playerSum < burstSum && dealerSum < burstSum){
     myOutputValue = `${drawMessage} ${showPlayerCards()} ${showDealerCards()} ${refreshMessage}`
     console.log('Draw, both did not burst')
@@ -117,7 +111,7 @@ var compareSums = function(playerSum, dealerSum){
     hitOrStand = false
     return myOutputValue
   }
-  //player hits burst value
+  // check if player burst first
   if (playerSum >= burstSum && dealerSum < burstSum){
     myOutputValue = `${playerLostMessage} ${showPlayerCards()} ${showDealerCards()} ${refreshMessage}`
     console.log(`Player burst, dealer did not`)
@@ -125,7 +119,7 @@ var compareSums = function(playerSum, dealerSum){
     hitOrStand = false
     return myOutputValue
   }
-  //dealer hits burst value
+  // check if dealer burst, if player did not burst
   if (playerSum < burstSum && dealerSum >= burstSum){
     myOutputValue = `${playerWonMessage} ${showPlayerCards()} ${showDealerCards()} ${refreshMessage}`
     console.log(`Dealer burst, player did not`)
@@ -133,7 +127,7 @@ var compareSums = function(playerSum, dealerSum){
     hitOrStand = false
     return myOutputValue
   }
-  //player total is less than dealer
+  // if both players did not burst, check. Player value is less than dealer
   if (playerSum < dealerSum && dealerSum < burstSum && playerSum < burstSum){
     myOutputValue = `${playerLostMessage} ${showPlayerCards()} ${showDealerCards()} ${refreshMessage}`
     console.log(`Player lost, both did not burst`)
@@ -141,6 +135,7 @@ var compareSums = function(playerSum, dealerSum){
     hitOrStand = false
     return myOutputValue
   }
+  // if both players did not burst, check. Player value is more than dealer
   if (playerSum > dealerSum && dealerSum < burstSum && playerSum < burstSum){
     myOutputValue = `${playerWonMessage} ${showPlayerCards()} ${showDealerCards()} ${refreshMessage}`
     console.log(`Player won, both did not burst`)
@@ -153,13 +148,16 @@ var compareSums = function(playerSum, dealerSum){
 // ==================  Check for BlackJack ================= \\
 var checkBlackJack = function(){
   console.log(`Checking for BlackJack`)
+  // check only the first two cards
+  // check if dealer has blackjack first
   if(dealerCards.length == 2 && getSum(dealerCards) == 21){
     gameOver = true
     hitOrStand = false
     myOutputValue = `${playerLostMessage} ${showDealerCards()} ${dealerBlackJackMessage} ${refreshMessage}`
     console.log(`Dealer got Black Jack`)
     return playerLostMessage
-  } else if (playerCards.length == 2 && getSum(playerCards) == 21 && getSum(dealerCards) != 21){
+  } // if dealer did not have blackjack, check if player has
+    else if (playerCards.length == 2 && getSum(playerCards) == 21 && getSum(dealerCards) != 21){
     gameOver = true
     hitOrStand = false
     myOutputValue = `${playerWonMessage} ${showPlayerCards()} ${playerBlackJackMessage} ${refreshMessage}`
@@ -173,24 +171,29 @@ var getSum = function(playerOrDealerCards){
   console.log(`Trying to get sum`)
   var sum = 0
   var aceCounter = 0
+  // loop to add value of each card to the current sum
   for(let cardCounter = 0; cardCounter < playerOrDealerCards.length; cardCounter += 1){
     currentCard = playerOrDealerCards[cardCounter]
+    // if card is 2-10, add exact value of rank
     if (currentCard.rank >= 2 && currentCard.rank <= 10) {
       sum += currentCard.rank;
-    } else if (currentCard.rank >= 11 && currentCard.rank <= 13) {
+    } // if card is jack, queen or king, add 10 instead
+      else if (currentCard.rank >= 11 && currentCard.rank <= 13) {
       sum += 10
-    } else if (currentCard.rank == 1){
+    } // if card is ace, add 11
+      else if (currentCard.rank == 1){
       aceCounter += 1
       sum += 11
     }
   }
+  // if there is an ace in dealer/player's hand and it exceeds 21, change ace's value, one at a time, from 11 to 1, until it is 21 or less.
   if(sum >= burstSum && aceCounter > 0){
     for(checkingAllTheAcesCounter = 0; checkingAllTheAcesCounter < aceCounter ; checkingAllTheAcesCounter += 1){
       sum -= 10
     }
   }
   console.log(`sum ${sum}`)
-  console.log(`finish summing`)
+  console.log(`finished summing`)
   return sum
 }
 
@@ -217,14 +220,16 @@ var dealerBlackJackMessage = `Dealer had a BlackJack!`
 
 // ==================  Main Function ================= \\
 var main = function(input){
+  // check if game is completed
   if(gameOver == true){
     return refreshMessage
   }
-  // deal 2 cards to dealer and player
+  // deal first card to dealer, then player
   if(playerCards.length == 0 && initialDeal == true){
     dealCard(playerCards);
     dealCard(dealerCards);
   }
+  // deal second card to dealer, then player
   if(playerCards.length == 1 && initialDeal == true){
     dealCard(playerCards);
     dealCard(dealerCards);
@@ -249,16 +254,19 @@ var main = function(input){
   } 
   
   // ==================  Player Hit or Stand ================= \\ 
+    // If the player input anything other than hit or stand, ask them to do so.
   if((hitOrStand == true && input != "hit") && (hitOrStand == true && input != "stand")){
     myOutputValue = `${showPlayerCards()} ${hitOrStandMessage}`
     return myOutputValue
   }
+  // player chooses hit
   if(hitOrStand == true && input == `hit`){
     console.log(`Player decided to hit`)
     dealCard(playerCards)
     console.log(`player cards`)
     console.log(playerCards)
     myOutputValue = `${showPlayerCards()} ${hitOrStandMessage}`
+    // player busts while hitting
     if(getSum(playerCards) >= burstSum){
       gameOver = true
       hitOrStand = false
@@ -266,16 +274,20 @@ var main = function(input){
       return myOutputValue
     }
   } 
+  // player chooses stand
   if(hitOrStand == true && input == `stand`){
+    // player can no longer hit
     hitOrStand = false
     console.log(`Player decided to stand`)
     // ==================  Dealer Hit or Stand ================= \\
+     // If dealer has 16 or less total value
     while (getSum(dealerCards) <= dealerHitThreshold && gameOver == false) {
       dealCard(dealerCards);
       console.log(`dealer drawing more cards`)
       dealerSum = getSum(dealerCards);
       console.log(`Dealer cards`)
       console.log(dealerCards)
+      // Dealer bursts
       if (dealerSum >= burstSum) {
         gameOver = true;
         hitOrStand = false
@@ -283,6 +295,7 @@ var main = function(input){
       }
       console.log(`Dealer stopped drawing more cards`)
     }
+    // Determine a winner
     compareSums()
   }
         return myOutputValue
