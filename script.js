@@ -128,21 +128,14 @@ var shuffledDeck = shuffleCards(deck);
 
 var main = function (input) {
 
+  // re-code so that computer draws only after player is done.
+
   if (gameMode === `draw card`) {
     for (i = 0; i < 2; i++) {
       playerCards.push(shuffledDeck.pop());
-      computerCards.push(shuffledDeck.pop());
-    } 
+    };
     //summarise score and assign to global variable
     playerScore = getHandSum(playerCards);
-    computerScore = getHandSum(computerCards);
-  
-    while (computerScore < 17) {
-      currComputerCard = shuffledDeck.pop();
-      computerCards.push(currComputerCard)
-      computerScore = getHandSum(computerCards)
-    }
-
     gameMode = `hit or stand`;
   }
 
@@ -153,42 +146,53 @@ var main = function (input) {
 
   if (gameMode == `hit or stand`) {
 
-  // if computer or player hits blackjack end game
-    if ((computerScore == 21 && playerScore <21) || playerScore >21){
-    winMessage = `You Lost!<br><br>
-    Computer got ${computerScore}<br><br>
-    Your hand is  ${playerScore}.<br><br>
-    Refresh page to Play Again.`
-    };
-    
-    if ((playerScore == 21 && computerScore < 21) || computerScore > 21){
-        gameMode = `game start`
-        winMessage = `You Win!<br><br>
-        Computer got ${computerScore}<br><br>
-        You got ${playerScore}.<br><br>
-        Refresh page to Play Again.`}
-
     if (input == `hit`){
+
       playerCards.push(shuffledDeck.pop());
       playerScore = getHandSum(playerCards);
       console.log(playerCards)
-      var drawnCard = `Your hand consist of `
+      var drawnCard = `Ok, now these cards are in your hand `
       for (j=0; j<playerCards.length; j++){
         drawnCard += `${playerCards[j].name} of ${playerCards[j].suit}, `
       }
       winMessage = `${drawnCard}<br><br>
       Your score is ${playerScore}.<br><br>
-      Computer score is ${computerScore}.<br><br>
       Enter hit or stand.`
 
       if (playerScore>21){
         winMessage = `You lose! ${drawnCard}<br><br>
-        Your score is ${playerScore}.<br><br>
-        Computer score is ${computerScore}.<br><br>`
+        Your score is ${playerScore}.<br><br>`
       }
-    } 
-
+    };
+    
     if (input == `stand`) {
+
+      //computer starts to draw card after player hits stand
+      for (k = 0; k < 2; k++) {
+        computerCards.push(shuffledDeck.pop());
+        }
+        computerScore = getHandSum(computerCards);
+          
+         while (computerScore < 17) {
+          currComputerCard = shuffledDeck.pop();
+          computerCards.push(currComputerCard)
+          computerScore = getHandSum(computerCards)
+        }
+
+      // computer draws blackjack while or player bursts.
+      if ((computerScore == 21 && playerScore <21) || playerScore >21){
+        winMessage = `You Lost!<br><br>
+        Computer got ${computerScore}<br><br>
+        Your hand is  ${playerScore}.<br><br>
+        Refresh page to Play Again.`
+      };
+  
+      if ((playerScore == 21 && computerScore < 21) || computerScore > 21){
+      winMessage = `You Win!<br><br>
+      Computer got ${computerScore}<br><br>
+      You got ${playerScore}.<br><br>
+      Refresh page to Play Again.`}
+
       if ((playerScore > computerScore) && playerScore <21) {
       winMessage = `You Win!<br><br>
       Computer got ${computerScore}.<br><br>
@@ -211,3 +215,4 @@ var main = function (input) {
 }
 return winMessage
 };
+
