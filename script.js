@@ -92,8 +92,8 @@ var shuffleDeck = shuffleCards (deck);
 console.log(shuffleDeck);
 
 
-// 2 players, computer and player
-// Keep track Computer variables
+//2 players, computer and player
+//Keep track Computer variables
 var compCards = [];
 var compCardSum = 0;
 
@@ -105,25 +105,29 @@ var playerCardSum = 0;
 var gameMode = 'start game';
 var twoCardsVal = [];
 // Initialize an array for player
-var players = ['player1', 'computer'];
-
+var players = ['Player1', 'Computer'];
+var myOutputValue = '';
+var gameOverOutput = '<br> Game Over! <br> Please refresh the game.';
+var input = '';
 // On submit deal the cards
 var dealCard = function (cards) {
  cards.push(shuffleDeck.pop());
 }
- // Checking for cards value 
 
- // Checking for Ace
-var isAce = false
-checkForAce = function(cards) {
-  for (var i = 0; i < cards.length; i++) {
-    var currentCards = cards[i];
-  if (currentCards.rank == 1) {
-    return isAce = true;
-  }
-}
+ //Checking for cards value for 2 cards only
+  // Checking for Ace
 
-};
+// checkAce = function (cards) {
+//   var numOfAce = 0;
+
+//  for (var i = 0; i < cards.length; i++) {
+//      var currentCards = cards[i];
+//    if (currentCards.rank == 1) {
+//      return numOfAce += 1
+//    }
+//   }
+// };
+
   
  getCardSum = function (cards) {
    var cardSum = 0;
@@ -141,22 +145,40 @@ checkForAce = function(cards) {
      } if (currentCards.rank == 1) {
        aceCard = aceCard + 1;
      } if (aceCard > 0) {
-        if ( cardSum <= 10){
+        if ( cardSum <= 11 + aceCard){
           cardSum = cardSum + 10
         }
      }
     
     } return cardSum;
     
-  };
-      
-    // Value of Ace 1 or 11
+  }; 
 
+  
+ var highestVal = 21;
+checkForBlackjack = function (){
+  if (playerCardSum == highestVal && compCardSum == highestVal) {
+    myOutputValue = myOutputValue+ "Both have BlackJack!" + gameOverOutput;
+   ;
+  } else if (playerCardSum == highestVal){
+    myOutputValue = myOutputValue+ '<br>' + players[0] + "BlackJack!" + '<br> Game Over!'
+   ; 
+  } else if (compCardSum == highestVal){
+    myOutputValue = myOutputValue + '<br>'+ players[1] + " BlackJack!" + '<br> Game Over!' 
+   ;
+  } else if (playerCardSum != highestVal || compCardSum != highestVal) {
+    myOutputValue = myOutputValue + '<br> What would you like to do? <br> Type hit or stand then submit!'
+    gameMode = 'hit or stand';
     
-    
+  }
+};
+
 
 var main = function() {
-  deal cards, in the beginning 2 cards each
+  // if (isOver == true){
+  //   myOutputValue = "Game Over! <br> Please refresh to play again.";
+  // }
+  //deal cards, in the beginning 2 cards each
   if (gameMode == 'start game') {
     // first card
     dealCard(playerCards);
@@ -166,19 +188,45 @@ var main = function() {
     dealCard (compCards);
     console.log (playerCards);
     console.log (compCards);
-  };
+  
 
-// To test condition for ace
-// playerCards = [{name: "ace", suit: "hearts", rank: 1}, {name: "ace" , suit: "hearts", rank: 1}];
+// //To test condition for ace
+// playerCards = [{name: "ace", suit: "hearts", rank: 1}, {name: "2" , suit: "hearts", rank: 2}];
 
-// compCards = [{name: 10, suit: "spades", rank: 10}, {name: 2, suit: "hearts", rank: 2}];
+// compCards = [{name: 10, suit: "spades", rank: 10}, {name: "ace", suit: "diamonds", rank: 1}];
 
-  // Cards analyzed for game winning ex: Blackjack
+ myOutputValue = players[0] + ' cards: <br>'+ playerCards[0].name + ' of ' + playerCards[0].suit + '<br>' + playerCards[1].name + ' of ' + playerCards[1].suit + '<br>' + players[1] +' cards : <br> ' + compCards[0].name + ' of '+ compCards[0].suit ;
+
+  //Cards analyzed for game winning ex: Blackjack
 playerCardSum = getCardSum (playerCards);
 console.log(playerCardSum);
 
 compCardSum = getCardSum (compCards);
 console.log (compCardSum);
+
+checkForBlackjack ();
+
+//User decide to hit or stand using the submit button
+
+} if (gameMode == 'hit or stand') {
+  if (input == 'hit') {
+    dealCard (playerCards);
+    console.log('hit me');
+    console.log(playerCards);
+  }
+}
+
+// User's card are analysed for winning or losing condition
+//Computer decide to hit or stand automatically
+  // Dealer has to hit if hand below 17
+// Winning rules : closest to 21 will win
+//The game either ends or continue
+// Ace can be 1 or 11
+
+
+
+
+return myOutputValue;
 };
 
 
@@ -194,25 +242,26 @@ console.log (compCardSum);
 //   while (playerIndex < players.length) {
 //     // Store players in variable
 //     var playersName = players[playerIndex];
-    
+          
+//     // Create players card
+//       var dealtCards = {
+//             name: playersName,
+//             cardsVal: []
+//           }
+
 //         var cardIndex = 0;
 //         while (cardIndex < 2){
 //           var cards = dealCard(deck)
-
+//     dealtCards[playerIndex].cardsVal.push(cards)  
           
 //           cardIndex += 1;
-
-//           // Create players card
-//           var dealtCards = {
-//             name: playersName,
-//             cardsVal: cards,
-//           }
-
-//         twoCardsVal.push(dealtCards);
-//         }
+      
+        
+//     }
+// twoCardsVal.push(dealtCards);
 
 //     playerIndex += 1;
-//     console.log(twoCardsVal);
+//     console.log(dealtCards);
 
 //   }
 
@@ -220,14 +269,7 @@ console.log (compCardSum);
 // };
 
 
-// Cards displayed to user
-// User decide to hit or stand using the submit button
-// User's card are analysed for winning or losing condition
-//Computer decide to hit or stand automatically
-  // Dealer has to hit if hand below 17
-// Winning rules : closest to 21 will win
-//The game either ends or continue
-// Ace can be 1 or 11
+
 
 
 // var main = function (input) {
