@@ -646,8 +646,10 @@ const gameplay = {
       playersNames = input.split("/");
       if (input == "") {
         playersNames = defaultNames.slice(0, numOfPlayers);
-      } else if (playersNames.length != numOfPlayers) {
-        return `There are ${numOfPlayers} players but only ${playersNames.length} names entered, please check and try again.`;
+      } else if (playersNames.length < numOfPlayers) {
+        return `There are ${numOfPlayers} players, but only ${playersNames.length} names were entered, please check and try again.`;
+      } else if (playersNames.length > numOfPlayers) {
+        return `There are ${numOfPlayers} players, but ${playersNames.length} names were entered, please check and try again.`;
       }
       createPlayers(playersNames);
       gameMode = INPUT_BETS;
