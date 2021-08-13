@@ -3,6 +3,7 @@ var STAND = "stand";
 var ASK_USERNAME = "asks for user's name";
 var INPUTS_NAME = "input user's name";
 var BLACKJACK = "blackjack starts";
+var BET_POINTS = "bet points";
 var GAME_MODE = ASK_USERNAME;
 
 var deck = [];
@@ -114,29 +115,63 @@ var doesPlayerWin = function (playerCardSum, dealerCardSum) {
   }
 };
 
-var getOutputMsg = function (playerWins) {
+var countCurrPoints = function (playerWins, playerPoints, betPoints) {
+  if (playerWins == 1) {
+    var currPoints = Number(playerPoints) + Number(betPoints);
+  } else if (playerWins == 2) {
+    var currPoints = Number(playerPoints) - Number(betPoints);
+  } else if (playerWins == 3) {
+    var currPoints = playerPoints;
+  }
+  return currPoints;
+};
+
+var getOutputMsg = function (playerWins, currPoints) {
   console.log(playerWins);
   if (playerWins == 1) {
-    return "Congrats player! You win!";
+    return (
+      "Congrats player! You win! <br> Your current points is: " + currPoints
+    );
   } else if (playerWins == 2) {
-    return "Oh no, you lost :(";
+    return "Oh no, you lost :( <br> Your current points is: " + currPoints;
   } else if (playerWins == 3) {
-    return "There's no winner for this round.";
+    return (
+      "There's no winner for this round. <br> Your current points is: " +
+      currPoints
+    );
   }
 };
+
+// player starts with 100 points
+var playerPoints = 100;
+var userName = "";
+var pointsBet = 0;
+// if player wins, add bet points to current total points
+// if player looses, lessen the curr points with bet points.
 
 var main = function (input) {
   if (GAME_MODE == ASK_USERNAME) {
     GAME_MODE = INPUTS_NAME;
-    return "Hi! May I know your name?";
+    return "Welcome to Blackjack! <br> May I know your name?";
   }
   if (GAME_MODE == INPUTS_NAME) {
-    var userName = input;
-    GAME_MODE = BLACKJACK;
+    userName = input;
+    GAME_MODE = BET_POINTS;
     return (
       "Hi " +
       userName +
-      ", nice to meet you. <br> Are you ready to play? <br> Please hit 'submit' once you're ready!"
+      ", nice to meet you! <br> You currently have 100 points. Please enter your bet for this round."
+    );
+  }
+  // player decide how many points they want to bet
+  if (GAME_MODE == BET_POINTS) {
+    pointsBet = input;
+    GAME_MODE = BLACKJACK;
+    return (
+      userName +
+      ", you are betting " +
+      pointsBet +
+      " points. Now you're set to play. <br> Please hit 'submit' to start playing."
     );
   }
   if (GAME_MODE == BLACKJACK) {
@@ -145,8 +180,6 @@ var main = function (input) {
 
     var cardDeck = createDeck();
     var shuffledDeck = shuffleDeck(cardDeck);
-
-    var playerWins = doesPlayerWin(playerCardSum, dealerCardSum);
 
     // deal the cards two times
     var numOfDeals = 0;
@@ -181,14 +214,22 @@ var main = function (input) {
     dealerCardSum = dealerCard[0].rank + dealerCard[1].rank;
     console.log("dealer card sum is " + dealerCardSum);
 
+    var playerWins = doesPlayerWin(playerCardSum, dealerCardSum);
+    console.log(playerWins);
+
+    var currPoints = countCurrPoints(playerWins, playerPoints, pointsBet);
+    console.log(currPoints);
+
     // store the winning and losing message
-    var outputMsg = getOutputMsg(playerWins);
+    var outputMsg = getOutputMsg(playerWins, currPoints);
 
     // check if player card totals to 21
     // if playerCardSum == 21, player wins. Else, player choose 'hit' or 'stand'
     if (playerCardSum == 21) {
       myOutputValue =
-        outputOfPlayersCards + ". <br> You got a blackjack. You win!";
+        outputOfPlayersCards +
+        ". <br> You got a blackjack. You win! <br> You're current points are: " +
+        currPoints;
     } else {
       myOutputValue =
         myOutputValue + ". <br> Please choose between hit or stand.";
@@ -205,30 +246,35 @@ var main = function (input) {
 
       if (dealerCardSum >= 17) {
         // check winning condition
-        doesPlayerWin(playerCardSum, dealerCardSum);
-        return myOutputValue + "<br>" + outputMsg;
-      }
-      // if dealer card sum is <= 16, dealer draw
-      if (dealerCardSum <= 16) {
-        dealCards(shuffledDeck);
-
-        dealerCardSum = dealerCardSum + dealerCard[2].rank;
-
-        playerWins = doesPlayerWin(playerCardSum, dealerCardSum);
-        outputMsg = getOutputMsg(playerWins);
-
-        myOutputValue =
-          "Player, you card sum is " +
-          playerCardSum +
-          ". <br> Dealer's card sum is " +
-          dealerCardSum +
-          ". ";
-
-        // check winning condition
         if (doesPlayerWin(playerCardSum, dealerCardSum)) {
           return myOutputValue + "<br>" + outputMsg;
         } else if (!doesPlayerWin(playerCardSum, dealerCardSum)) {
           return myOutputValue + "<br>" + outputMsg;
+        }
+        // if dealer card sum is <= 16, dealer draw
+        if (dealerCardSum <= 16) {
+          dealCards(shuffledDeck);
+
+          dealerCardSum = dealerCardSum + dealerCard[2].rank;
+
+          playerWins = doesPlayerWin(playerCardSum, dealerCardSum);
+          outputMsg = getOutputMsg(playerWins);
+
+          myOutputValue =
+            "Player, you card sum is " +
+            playerCardSum +
+            ". <br> Dealer's card sum is " +
+            dealerCardSum +
+            ". ";
+
+          // check winning condition
+          if (doesPlayerWin(playerCardSum, dealerCardSum)) {
+            playerPoints += pointsBet;
+            return myOutputValue + "<br>" + outputMsg;
+          } else if (!doesPlayerWin(playerCardSum, dealerCardSum)) {
+            playerPoints -= pointsBet;
+            return myOutputValue + "<br>" + outputMsg;
+          }
         }
       }
     }
@@ -262,7 +308,8 @@ var main = function (input) {
         console.log(dealerCardSum);
 
         playerWins = doesPlayerWin(playerCardSum, dealerCardSum);
-        outputMsg = getOutputMsg(playerWins);
+        currPoints = countCurrPoints(playerWins, playerPoints, pointsBet);
+        outputMsg = getOutputMsg(playerWins, currPoints);
 
         myOutputValue =
           "Player, your card sum is " +
@@ -271,8 +318,10 @@ var main = function (input) {
           dealerCardSum;
 
         if (doesPlayerWin(playerCardSum, dealerCardSum)) {
+          playerPoints += pointsBet;
           return myOutputValue + ". <br>" + outputMsg;
         } else if (!doesPlayerWin(playerCardSum, dealerCardSum)) {
+          playerPoints -= pointsBet;
           return myOutputValue + ". <br>" + outputMsg;
         }
       }
@@ -280,13 +329,16 @@ var main = function (input) {
         playerWins = doesPlayerWin(playerCardSum, dealerCardSum);
         outputMsg = getOutputMsg(playerWins);
 
+        // check winning condition
         if (doesPlayerWin(playerCardSum, dealerCardSum)) {
+          playerPoints += pointsBet;
           return myOutputValue + " <br>" + outputMsg;
         } else if (!doesPlayerWin(playerCardSum, dealerCardSum)) {
+          playerPoints -= pointsBet;
           return myOutputValue + " <br>" + outputMsg;
         }
       }
     }
-    return myOutputValue;
   }
+  return myOutputValue;
 };
