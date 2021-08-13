@@ -77,8 +77,9 @@ var shuffleCards = function (cardDeck) {
   return cardDeck;
 };
 var deck = shuffleCards(makeDeck());
-
+//Max blackjack = 21
 var sumLimit = 21;
+//dealer has to hit 16
 var dealerHit = 16;
 var playerHasChosenToStand = false;
 var gameOver = false;
@@ -140,6 +141,7 @@ var getDefaultOutput = function () {
 };
 
 var main = function (input) {
+  //username section
   if (welcomeMessage == true) {
     myOutputValue = "Welcome to a game of Blackjack! Please input your name!";
     welcomeMessage = false;
