@@ -220,7 +220,7 @@ var main = function (input) {
   var myOutputValue = "";
   var shuffledDeck = shuffleCards(deck);
 
-  // ++++++++++ START ++++++++++
+  // ++++++++++ MODE: INITIALISE ++++++++++
   if (mode == "initialise") {
     // reset players array
     playersArr = [];
@@ -238,6 +238,7 @@ var main = function (input) {
     return myOutputValue;
   }
 
+  // ++++++++++ MODE: START ++++++++++
   if (mode == "start") {
     // // check current player
     currentPlayer = isPlayer(playersArr); // player object
@@ -250,7 +251,7 @@ var main = function (input) {
     return myOutputValue;
   }
 
-  // ++++++++++ DRAW ++++++++++
+  // ++++++++++ MODE: DRAW ++++++++++
   if (mode == "draw") {
     myOutputValue = `Player ${currentPlayer.number}, your current points is ${currentPlayer.score}<br>Hit or stand?`;
 
