@@ -179,15 +179,6 @@ checkForBlackjack = function (){
     
   }
 };
-// Check dealer (comp) hit or stand
-var checkCompHit = function (cards){
-  while (compCardSum < 17) {
-    dealCard(compCards);
-    compCardSum = getCardSum (compCards);
-    
-  }
-    
-};
 
 var main = function(input) {
   if (isOver){
@@ -225,8 +216,10 @@ console.log (compCardSum);
 }
   
 //User decide to hit or stand using the submit button
+if (gameMode == 'hit or stand' && input == '' || input != 'hit' || input != 'stand') {
+  myOutputValue = `Please enter hit or stand then submit`
 
-if (gameMode == 'hit or stand' && input == 'hit') {
+}if (gameMode == 'hit or stand' && input == 'hit') {
     
     dealCard(playerCards);
     console.log('hit me');
