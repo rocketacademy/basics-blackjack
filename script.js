@@ -4,6 +4,7 @@ var GM_NAME = "name";
 var GM_DEAL = "deal";
 var GM_PLAY = "play";
 var GM_REVEAL = "reveal";
+var GM_SPLIT = "split";
 var NEW_ROUND_MSG =
   "<br> <br> Please input the wagers for each player (separated by a space) and click 'Submit' to start a new round!";
 var HIT_STAND = "would you like to hit or stand? (hit/stand)";
@@ -152,10 +153,22 @@ var printHands = function () {
           players[i].status
         } `;
       } else if (players[i].currentTurn == true) {
+        if (players[i].hand2.length > 0) {
+          msg += `${players[i].name}'s hand: ${printCards(
+            players[i].hand2,
+            2
+          )} ${players[i].status2} // `;
+        }
         msg += `${players[i].name}'s hand: ${printCards(players[i].hand, 2)} ${
           players[i].status
         } `;
       } else {
+        if (players[i].hand2.length > 0) {
+          msg += `${players[i].name}'s hand: ${printCards(
+            players[i].hand2,
+            0
+          )} // `;
+        }
         msg += `${players[i].name}'s hand: ${printCards(players[i].hand, 0)}`;
       }
       msg += "<br>";
@@ -163,9 +176,25 @@ var printHands = function () {
     }
     msg += `
  Computer's hand: ${printCards(comHand, 1)}`;
-  } else {
+  } else if (showCards == true) {
     var j = 0;
     while (j < players.length) {
+      if (players[j].hand2.length > 0) {
+        if (
+          players[j].status2 == STATUS_BJ ||
+          players[j].status2 == STATUS_BUST
+        ) {
+          msg += `${players[j].name}'s hand: ${printCards(
+            players[j].hand2,
+            2
+          )} ${players[j].status2} // `;
+        } else {
+          msg += `${players[j].name}'s hand: ${printCards(
+            players[j].hand2,
+            2
+          )} (Score: ${players[j].sum2}) // `;
+        }
+      }
       if (players[j].status == STATUS_BJ || players[j].status == STATUS_BUST) {
         msg += `${players[j].name}'s hand: ${printCards(players[j].hand, 2)} ${
           players[j].status
@@ -197,6 +226,12 @@ var addPlayers = function (array) {
       status: "",
       inRound: true,
       currentTurn: false,
+      canSplit: false,
+      hand: [],
+      hand2: [],
+      sum: 0,
+      sum2: 0,
+      status2: "",
     };
     playersArray.push(currentObj);
     i += 1;
@@ -237,8 +272,17 @@ var createNewGame = function () {
   var i = 0;
   while (i < players.length) {
     players[i].hand = currentDeck.splice(0, 2);
+    players[i].hand2 = [];
     players[i].status = "";
+    players[i].status2 = "";
     players[i].inRound = true;
+    var cardOne = players[i].hand[0].rank;
+    var cardTwo = players[i].hand[1].rank;
+    if (cardOne == cardTwo) {
+      players[i].canSplit = true;
+    } else {
+      players[i].canSplit = false;
+    }
     i += 1;
   }
   comHand = currentDeck.splice(0, 2);
@@ -283,6 +327,7 @@ var payoutPlayerBJ = function () {
   while (PlayerBJIndex < players.length) {
     if (players[PlayerBJIndex].status == STATUS_BJ) {
       tallyPoints(PlayerBJIndex, "winBJ");
+      players[PlayerBJIndex].wager = 0;
     }
     PlayerBJIndex += 1;
   }
@@ -346,6 +391,12 @@ var payoutEnd = function (sum) {
       } else if (players[payoutIndex].status == STATUS_STAND) {
         tallyPoints(payoutIndex, "win");
       }
+      // for split hands
+      if (players[payoutIndex].status2 == STATUS_BUST) {
+        tallyPoints(payoutIndex, "tie");
+      } else if (players[payoutIndex].status2 == STATUS_STAND) {
+        tallyPoints(payoutIndex, "win");
+      }
     } else {
       if (players[payoutIndex].status == STATUS_BUST) {
         tallyPoints(payoutIndex, "lose");
@@ -353,6 +404,18 @@ var payoutEnd = function (sum) {
         if (players[payoutIndex].sum > sum) {
           tallyPoints(payoutIndex, "win");
         } else if (players[payoutIndex].sum == sum) {
+          tallyPoints(payoutIndex, "tie");
+        } else {
+          tallyPoints(payoutIndex, "lose");
+        }
+      }
+      // for split hands
+      if (players[payoutIndex].status2 == STATUS_BUST) {
+        tallyPoints(payoutIndex, "lose");
+      } else if (players[payoutIndex].status2 == STATUS_STAND) {
+        if (players[payoutIndex].sum2 > sum) {
+          tallyPoints(payoutIndex, "win");
+        } else if (players[payoutIndex].sum2 == sum) {
           tallyPoints(payoutIndex, "tie");
         } else {
           tallyPoints(payoutIndex, "lose");
@@ -389,7 +452,6 @@ var tallyPoints = function (i, result) {
     multiplier = 3;
   }
   players[i].points += Number(players[i].wager) * multiplier;
-  players[i].wager = 0;
 };
 
 // ---------------- MAIN ----------------//
@@ -456,13 +518,56 @@ var main = function (input) {
         gameMode = GM_PLAY;
       }
     }
-  } else if (gameMode == GM_PLAY) {
-    // ###################### PLAY (HIT/STAND) ###########################
+  } else if (gameMode == GM_SPLIT) {
     if (input != "hit" && input != "stand") {
       myOutputValue =
         "⚠️ Invalid input! Please input 'hit' or 'stand' only. ⚠️";
     } else {
       if (input == "hit") {
+        players[currentPlayer].hand2.push(currentDeck.shift());
+        myOutputValue = `${players[currentPlayer].name} drew a card for the first hand. `;
+        // variable ace value
+        players[currentPlayer].sum2 = changeAces(players[currentPlayer].hand2);
+
+        // ========== check for bust ==========
+        if (players[currentPlayer].sum2 > 21) {
+          players[currentPlayer].status2 = STATUS_BUST;
+          players[currentPlayer].canSplit = false;
+          gameMode = GM_PLAY;
+        }
+      } else if (input == "stand") {
+        players[currentPlayer].canSplit = false;
+        myOutputValue = `${players[currentPlayer].name} chose to stand for the first hand. `;
+        players[currentPlayer].status2 = STATUS_STAND;
+        gameMode = GM_PLAY;
+      }
+      myOutputValue += printHands();
+      myOutputValue += `${players[currentPlayer].name}, would you like to hit or stand for your second hand? (hit/stand)`;
+      myOutputValue += printPlayers("wagers");
+    }
+  } else if (gameMode == GM_PLAY) {
+    // ###################### PLAY (HIT/STAND) ###########################
+    if (input != "hit" && input != "stand" && input != "split") {
+      myOutputValue =
+        "⚠️ Invalid input! Please input 'hit', 'stand' or 'split' only. ⚠️";
+    } else {
+      if (input == "split") {
+        if (players[currentPlayer].canSplit == false) {
+          myOutputValue =
+            "⚠️ Invalid input! You are not eligible for a split. <br> Please input 'hit' or 'stand' only. ⚠️";
+        } else {
+          players[currentPlayer].points -= players[currentPlayer].wager;
+          players[currentPlayer].hand2.push(
+            players[currentPlayer].hand.shift()
+          );
+          players[currentPlayer].hand.push(currentDeck.shift());
+          players[currentPlayer].hand2.push(currentDeck.shift());
+          myOutputValue = `${players[currentPlayer].name} split.`;
+          gameMode = GM_SPLIT;
+        }
+      }
+      if (input == "hit") {
+        players[currentPlayer].canSplit == false;
         // ========== hit ==========
         players[currentPlayer].hand.push(currentDeck.shift());
         myOutputValue = `${players[currentPlayer].name} drew a card. `;
