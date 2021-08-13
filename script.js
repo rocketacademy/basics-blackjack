@@ -16,57 +16,58 @@ var playerSum = 0;
 
 var main = function (input) {
   var myOutputValue = "";
+  var shuffledDeck = shuffleCards(deck);
 
   // create deck & initiate the game
 
   if (currGameMode == "initiate game") {
     currGameMode = "deal two cards";
-    return `It's Blackjack time! Click submit to deal two cards each!`;
+    return `We are ready to play! Click submit to deal two cards each!`;
   }
 
   // click submit to deal two cards to player and computer
   // set a new game mode to choose winner if blackjack
-  if ((currGameMode = "deal two cards")) {
+  if (currGameMode == "deal two cards") {
     currGameMode = "blackjack winner";
   }
-  var computerCard1 = deck.pop();
+  var computerCard1 = shuffledDeck.pop();
   console.log("computerCard1", computerCard1);
-  var computerCard2 = deck.pop();
+  var computerCard2 = shuffledDeck.pop();
   console.log("computerCard2", computerCard2);
-  var playerCard1 = deck.pop();
+  var playerCard1 = shuffledDeck.pop();
   console.log("playerCard1", playerCard1);
-  var playerCard2 = deck.pop();
+  var playerCard2 = shuffledDeck.pop();
   console.log("playerCard2", playerCard2);
 
   // change player and computer picture cards to = 10
   if (
-    computerCard1.name == "jack" ||
-    computerCard1.name == "queen" ||
-    computerCard1.name == "king"
+    computerCard1.name == "💂‍♂️ jack" ||
+    computerCard1.name == "👸 queen" ||
+    computerCard1.name == "🤴 king"
   ) {
     computerCard1.rank = 10;
   }
 
   if (
-    computerCard2.name == "jack" ||
-    computerCard2.name == "queen" ||
-    computerCard2.name == "king"
+    computerCard2.name == "💂‍♂️ jack" ||
+    computerCard2.name == "👸 queen" ||
+    computerCard2.name == "🤴 king"
   ) {
     computerCard2.rank = 10;
   }
 
   if (
-    playerCard1.name == "jack" ||
-    playerCard1.name == "queen" ||
-    playerCard1.name == "king"
+    playerCard1.name == "💂‍♂️ jack" ||
+    playerCard1.name == "👸 queen" ||
+    playerCard1.name == "🤴 king"
   ) {
     playerCard1.rank = 10;
   }
 
   if (
-    playerCard2.name == "jack" ||
-    playerCard2.name == "queen" ||
-    playerCard2.name == "king"
+    playerCard2.name == "💂‍♂️ jack" ||
+    playerCard2.name == "👸 queen" ||
+    playerCard2.name == "🤴 king"
   ) {
     playerCard2.rank = 10;
   }
@@ -98,28 +99,31 @@ var main = function (input) {
       (playerCard1.rank == 1 && playerCard2.rank == 10) ||
       (playerCard1.rank == 10 && playerCard2.rank == 1)
     ) {
-      myOutputValue = `Blackjack, player wins! Player drew: <br>${playerAllCards}. <br>Refresh to play again.`;
+      myOutputValue = `Blackjack, player wins! <br><br>Player drew: <br>${playerAllCards}. <br><br>Refresh to play again.`;
     } else if (
       (computerCard1.rank == 1 && computerCard2.rank == 10) ||
       (computerCard1.rank == 10 && computerCard2.rank == 1)
     ) {
-      myOutputValue = `Blackjack, computer wins! Computer drew: <br>${computerAllCards}. <br>Refresh to play again.`;
-    } else if (playerSum < 21) {
+      myOutputValue = `Blackjack, computer wins! <br><br>Computer drew: <br>${computerAllCards}. <br><br>Refresh to play again.`;
+    } else {
+      myOutputValue = `Player, you drew:<br>${playerAllCards}. <br> Your total score is ${playerCardValue}. <br><br> Computer's first card is ${computerAllCards[0]}. <br><br> Please choose to hit or stand.`;
+      console.log("player < 21");
       currGameMode = "hit or stand";
-      myOutputValue = `Player, please choose to hit or stand. You drew:<br>${playerAllCards}.`;
+      console.log(currGameMode);
     }
   }
 
   // change game mode, player chooses to "hit" & draw another card or "Stand"
-  if (currGameMode == "hit or stand" && input == "hit") {
-    var playerCard3Hit1 = deck.pop();
-    var playerCard4Hit2 = deck.pop();
+  if (input == "hit" && currGameMode == "hit or stand") {
+    console.log("current game mode hit or stand");
+    var playerCard3Hit1 = shuffledDeck.pop();
+    var playerCard4Hit2 = shuffledDeck.pop();
 
     // change all of player's picture cards 3 and more to = 10
     if (
-      playerCard3Hit1.name == "jack" ||
-      playerCard3Hit1.name == "queen" ||
-      playerCard3Hit1.name == "king"
+      playerCard3Hit1.name == "💂‍♂️ jack" ||
+      playerCard3Hit1.name == "👸 queen" ||
+      playerCard3Hit1.name == "🤴 king"
     ) {
       playerCard3Hit1.rank = 10;
     }
@@ -135,9 +139,12 @@ var main = function (input) {
     playerSum += playerCard3Hit1.rank;
     console.log(`Player's cards total = ${playerAllCards}`);
 
-    return (myOutputValue = `Player chose to hit. <br> You drew ${playerCard3Hit1.name} of ${playerCard3Hit1.suit}. <br> You now hold ${playerAllCards}.<br> Player's total score: ${playerSum}.`);
+    return (myOutputValue = `Player chose to hit. <br> You drew ${playerCard3Hit1.name} of ${playerCard3Hit1.suit}. <br><br>You now hold ${playerAllCards}.<br><br>Player's total score: ${playerSum}.`);
   } else if (currGameMode == "hit or stand" && input == "stand") {
-    return (myOutputValue = `Player chose to stay. <br>You hold ${playerAllCards}.<br> Player's total score: ${playerSum}.`);
+    return (myOutputValue = `Player chose to stay. <br><br>You hold ${playerAllCards}.<br><br>Player's total score: ${playerSum}. Enter "next" to view dealer's cards.`);
+  } else {
+    console.log(input);
+    console.log(currGameMode);
   }
 
   return myOutputValue;
@@ -175,70 +182,83 @@ var main = function (input) {
 
 // player inputs hit to deal one more card
 
+// Function to shuffle cards:
+var shuffleCards = function (cards) {
+  var index = 0;
+
+  while (index < cards.length) {
+    var randomIndex = getRandomIndex(cards.length);
+    var currentItem = cards[index];
+    var randomItem = cards[randomIndex];
+
+    cards[index] = randomItem;
+    cards[randomIndex] = currentItem;
+
+    index = index + 1;
+  }
+
+  return cards;
+};
+
+// To generate random numbers/ cards:
+var getRandomIndex = function (size) {
+  return Math.floor(Math.random() * size);
+};
+
+// Card Deck:
 var makeDeck = function () {
-  var cardDeck = [];
-  // make 52 cards
-  // rank 1 - 13
-  // 1-4 suits , hearts, diamonds, clubs, spades
-  // 1-10 and jack, queen, king and ace
-  // loop 1
-  // suit hearts - spades
+  // Initialise an empty deck array
+  var deck = [];
+  // Initialise an array of the 4 suits in our deck. We will loop over this array.
+  var suits = ["Hearts ♥️", "Diamonds ♦️", "Clubs ♣️", "Spades ♠️"];
+
+  // Loop over the suits array
   var suitIndex = 0;
-  var suits = ["hearts", "diamonds", "clubs", "spades"];
   while (suitIndex < suits.length) {
+    // Store the current suit in a variable
     var currentSuit = suits[suitIndex];
-    console.log("current suit: " + currentSuit);
-    // loop 2
-    // rank 1-13
+    // console.log(`current suit: ${currentSuit}`);
+
+    // Loop from 1 to 13 to create all cards for a given suit
+    // Notice rankCounter starts at 1 and not 0, and ends at 13 and not 12.
+    // This is an example of a loop without an array.
     var rankCounter = 1;
     while (rankCounter <= 13) {
-      // 1, 11, 12, 13
+      // By default, the card name is the same as rankCounter
       var cardName = rankCounter;
+
+      // If rank is 1, 11, 12, or 13, set cardName to the ace or face card's name
       if (cardName == 1) {
-        cardName = "ace";
+        cardName = "🅰️ Ace";
       } else if (cardName == 11) {
-        cardName = "jack";
+        cardName = "💂‍♂️ Jack";
       } else if (cardName == 12) {
-        cardName = "queen";
+        cardName = "👸 Queen";
       } else if (cardName == 13) {
-        cardName = "king";
+        cardName = "🤴 King";
       }
+
+      // Create a new card with the current name, suit, and rank
       var card = {
         name: cardName,
         suit: currentSuit,
         rank: rankCounter,
       };
-      console.log("rank: " + rankCounter);
-      cardDeck.push(card);
-      rankCounter = rankCounter + 1;
+
+      // Add the new card to the deck
+      deck.push(card);
+      // console.log(`rank: ${rankCounter}`);
+
+      // Increment rankCounter to iterate over the next rank
+      rankCounter += 1;
     }
-    suitIndex = suitIndex + 1;
+
+    // Increment the suit index to iterate over the next suit
+    suitIndex += 1;
   }
-  return cardDeck;
+
+  // Return the completed card deck
+  return deck;
 };
 
-var getRandomIndex = function (max) {
-  return Math.floor(Math.random() * max);
-};
-
-var shuffleCards = function (cardDeck) {
-  // Loop over the card deck array once
-  var currentIndex = 0;
-  while (currentIndex < cardDeck.length) {
-    // Select a random index in the deck
-    var randomIndex = getRandomIndex(cardDeck.length);
-    // Select the card that corresponds to randomIndex
-    var randomCard = cardDeck[randomIndex];
-    // Select the card that corresponds to currentIndex
-    var currentCard = cardDeck[currentIndex];
-    // Swap positions of randomCard and currentCard in the deck
-    cardDeck[currentIndex] = randomCard;
-    cardDeck[randomIndex] = currentCard;
-    // Increment currentIndex
-    currentIndex = currentIndex + 1;
-  }
-  // Return the shuffled deck
-  return cardDeck;
-};
-
-var deck = shuffleCards(makeDeck());
+var deck = makeDeck();
