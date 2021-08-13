@@ -132,14 +132,17 @@ var dealCard = function (cards) {
      } if (currentCards.rank == 1) {
        aceCard = aceCard + 1;
      } if (aceCard > 0) {
-        if ( cardSum <= 11 + aceCard){
+        if ( cardSum <= highestVal + aceCard){
           cardSum = cardSum + 10
-        } if (cardSum > highestVal && aceCard > 0) {
-          cardSum = cardSum - 10
+        // } if (cardSum > highestVal && aceCard > 0) {
+        //   cardSum = cardSum - 10
         }
-     }
-    
-    } return cardSum;
+     } 
+    }
+    if (cardSum > highestVal && aceCard > 0){
+      cardSum = cardSum - 10
+    }
+     return cardSum;
     
   }; 
 
@@ -161,13 +164,15 @@ var dealCard = function (cards) {
 checkForBlackjack = function (){
   if (playerCardSum == highestVal && compCardSum == highestVal) {
     myOutputValue = myOutputValue+ "Both have BlackJack!" + gameOverOutput;
-   ;
+    isOver = true;
+   
   } else if (playerCardSum == highestVal){
     myOutputValue = myOutputValue+ '<br>' + players[0] + "BlackJack!" + '<br> Game Over!'
-   ; 
+    isOver = true;
+   
   } else if (compCardSum == highestVal){
     myOutputValue = myOutputValue + '<br>'+ players[1] + " BlackJack!" + '<br> Game Over!' 
-   ;
+    isOver = true;
   } else if (playerCardSum != highestVal || compCardSum != highestVal) {
     myOutputValue = myOutputValue + '<br> What would you like to do? <br> Type hit or stand then submit!'
     gameMode = 'hit or stand';
@@ -230,9 +235,10 @@ if (gameMode == 'hit or stand' && input == 'hit') {
 
       if (getCardSum (playerCards) > highestVal) {
         myOutputValue = `${defaultOuput()} <br> Player 1 has busted. <br> Game Over! <br> Please refresh the game`
+        isOver = true;
       } if (getCardSum (playerCards) == highestVal) {
         myOutputValue = `${defaultOuput()} <br> Player 1 wins! Blackjack! <b> Game Over, please refresh the game! `
-        isOver = true
+        isOver = true;
       } if (getCardSum (playerCards) < highestVal) { 
         myOutputValue = `${defaultOuput()} <br> Would you like to hit or stand?`
       return myOutputValue;
