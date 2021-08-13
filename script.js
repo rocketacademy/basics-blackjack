@@ -18,8 +18,6 @@ var computerHand = [];
 var playerScore = 0;
 var computerScore = 0;
 var playerCardIndex = 2;
-var numPlayerAce = 0;
-var numCompAce = 0;
 var playerName = "";
 
 // function to check player name
@@ -115,15 +113,11 @@ var dealCards = function () {
   console.log("computer card 2");
   console.log(computerHand[1].name);
 
-  for (i = 0; i < playerHand.length; i += 1) {
-    if (playerHand[i].name == "ace") {
-      numPlayerAce += 1;
-    }
-  }
   playerScore = playerHand[0].point + playerHand[1].point;
   myOutputValue = `Computer's hand is a secret for now, but you've got<br>
     Card 1: ${playerHand[0].name} of ${playerHand[0].suit}<br>
     Card 2: ${playerHand[1].name} of ${playerHand[1].suit}<br>`;
+  // if player gets ace + picture card = blackjack
   if (
     (playerHand[0].name == "ace" && playerHand[1].point == 10) ||
     (playerHand[1].name == "ace" && playerHand[0].point == 10)
@@ -182,6 +176,7 @@ var checkPlayerHand = function (input) {
       playerHand[playerCardIndex].suit
     }.<br>
     Your current score is ${playerScore}.<br>`;
+
     if (playerScore == 21) {
       myOutputValue =
         myOutputValue +
@@ -303,7 +298,7 @@ var checkPlayerHand = function (input) {
   }
 
   if (input != "hit" && input != "stand") {
-    return `C'mon, ${playerName}, please only input either "hit" or "stand" 😬`;
+    return `Hey ${playerName}, please only input either "hit" or "stand" 😬`;
   }
 };
 
