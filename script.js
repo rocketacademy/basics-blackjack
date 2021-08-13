@@ -91,11 +91,6 @@ var shuffleCards = function (cardDeck) {
   // Return the shuffled deck
   return cardDeck;
 };
-// Deck is shuffled.
-var shuffledDeck = shuffleCards(makeDeck());
-
-// player
-var playerHand = [];
 
 // computer, always the dealer, dealer hase to hit hands below 17
 var dealerHand = [];
@@ -114,11 +109,28 @@ var playerInput = hit;
 var gameStart = "start";
 var dealCards = "deal";
 var hitOrStand = "yes or no";
+var placeBet = "betting";
 // default game mode
 var gameMode = gameStart;
 
 // store player name
 var playerName;
+// store player info
+var playerInfo = [];
+
+// number of players
+var playerIndex = 0;
+
+// Betting
+// The player starts with 100 points. Each round the player wagers a number of points before their hand is dealt. Keep track of the player's points throughout the game.
+var createPlayer = function (nameInput) {
+  playerInfo.push({
+    name: nameInput,
+    hand: [],
+    bet: 0,
+    points: 100,
+  });
+};
 
 // get total value of cards on hand
 // ace can be 1 or 11
@@ -161,6 +173,9 @@ var getTotalHandsValue = function (currentHand) {
 
 // closer to 21 wins the hand
 var main = function (input) {
+  // Deck is shuffled.
+  var shuffledDeck = shuffleCards(makeDeck());
+
   var myOutputValue =
     "ERROR! Please be good and follow the instructions given! Hit Refresh and try again! 😡";
   // player hit or stand, default is hit
@@ -168,17 +183,21 @@ var main = function (input) {
     playerInput = input;
     var newPlayerCard = shuffledDeck.pop();
     if (playerInput == "yes") {
-      playerHand.push(newPlayerCard);
-      console.log("player add card", playerHand);
-      console.log("new player hands value", getTotalHandsValue(playerHand));
-      if (getTotalHandsValue(playerHand) > blackJack) {
-        gameMode = gameStart;
-        return `BUST! You LOSE! <br><br> Press Refresh to play again`;
+      playerInfo[playerIndex].hand.push(newPlayerCard);
+      console.log("player add card", playerInfo[playerIndex].hand);
+      console.log(
+        "new player hands value",
+        getTotalHandsValue(playerInfo[playerIndex].hand)
+      );
+      if (getTotalHandsValue(playerInfo[playerIndex].hand) > blackJack) {
+        playerInfo[playerIndex].points -= playerInfo[playerIndex].bet;
+        gameMode = placeBet;
+        return `BUST! You LOSE! <br><br> Player's points balance: ${playerInfo[playerIndex].points} <br><br> Place your bets to play again`;
       }
       return `Player new card is: <br> ${newPlayerCard.name} of ${
         newPlayerCard.suit
       } <br> Total hands value: ${getTotalHandsValue(
-        playerHand
+        playerInfo[playerIndex].hand
       )} <br><br> Do you require additional cards? (yes/no)`;
     }
     if (playerInput == "no") {
@@ -196,47 +215,80 @@ var main = function (input) {
       }
       // check if dealer bust
       if (getTotalHandsValue(dealerHand) > blackJack) {
-        gameMode = gameStart;
-        return `Dealer BUST! Player Wins!! Congratulations 🥂 <br><br> Press Refresh to play again`;
+        playerInfo[playerIndex].points += playerInfo[playerIndex].bet;
+        gameMode = placeBet;
+        return `Dealer BUST! Player Wins!! Congratulations 🥂 <br><br> Player's points balance: ${playerInfo[playerIndex].points} <br><br> Place your bets to play again`;
         // compare final hands value
         // higher value and closer to 21 wins, if daaw, stand off
       } else if (
-        getTotalHandsValue(dealerHand) < getTotalHandsValue(playerHand)
+        getTotalHandsValue(dealerHand) <
+        getTotalHandsValue(playerInfo[playerIndex].hand)
       ) {
-        gameMode = gameStart;
+        playerInfo[playerIndex].points += playerInfo[playerIndex].bet;
+        gameMode = placeBet;
         return `Congratulations 🥂 Players Wins with ${getTotalHandsValue(
-          playerHand
+          playerInfo[playerIndex].hand
         )} vs Dealer ${getTotalHandsValue(
           dealerHand
-        )} <br><br> Press Refresh to play again`;
+        )} <br><br> Player's points balance: ${
+          playerInfo[playerIndex].points
+        } <br><br> Place your bets to play again`;
       } else if (
-        getTotalHandsValue(dealerHand) > getTotalHandsValue(playerHand)
+        getTotalHandsValue(dealerHand) >
+        getTotalHandsValue(playerInfo[playerIndex].hand)
       ) {
-        gameMode = gameStart;
+        playerInfo[playerIndex].points -= playerInfo[playerIndex].bet;
+        gameMode = placeBet;
         return `Dealer Wins with ${getTotalHandsValue(
           dealerHand
         )} vs ${getTotalHandsValue(
-          playerHand
-        )} <br><br> Press Refresh to play again`;
+          playerInfo[playerIndex].hand
+        )} <br><br> Player's points balance: ${
+          playerInfo[playerIndex].points
+        } <br><br> Place your bets to play again`;
       } else if (
-        getTotalHandsValue(dealerHand) == getTotalHandsValue(playerHand)
+        getTotalHandsValue(dealerHand) ==
+        getTotalHandsValue(playerInfo[playerIndex].hand)
       ) {
-        gameMode = gameStart;
+        gameMode = placeBet;
         return `It's a Stand Off!! No winner. <br> Dealer Hands: ${getTotalHandsValue(
           dealerHand
         )} vs Player Hands: ${getTotalHandsValue(
-          playerHand
-        )} <br><br> Press Refresh to play again`;
+          playerInfo[playerIndex].hand
+        )} <br><br> Player's points balance: ${
+          playerInfo[playerIndex].points
+        } <br><br> Place your bets to play again`;
       }
     }
   }
-  // game start and game reset point
+  // game start
   if (gameMode == gameStart && input != "") {
     playerName = input;
-    playerHand = [];
+    createPlayer(playerName);
+    console.log("player info", playerInfo);
+
+    // gameMode = dealCards;
+    gameMode = placeBet;
+    return `Hi ${playerInfo[playerIndex].name}! Welcome to Basic BlackJack! <br><br> There will be only two players. <br> One human and one computer. <br> The computer will always be the dealer. <br> The player plays against the Dealer. <br> The dealer has to hit if their hand is below 17. <br> Closer to 21 wins the hand. Over 21 is bust. <br> When the player has the same total as the Dealer it is a stand off. <br> Aces can be 1 or 11. <br> Court cards count as 10 and all other cards have their face value. <br> Player may take as many cards as they wish up to a total of 21. <br><br> ▶ Player have 100 points. <br> Please enter yout bets and press submit`;
+  }
+
+  if (gameMode == placeBet && input != 0) {
+    if (Number.isNaN(Number(input)) == true) {
+      return `Please enter a correct bet! 1 to ${playerInfo[playerIndex].points}`;
+    }
+    if (input > playerInfo[playerIndex].points) {
+      if (playerInfo[playerIndex].points < 1) {
+        return `GameOver! You have lost all your points. <br><br> Hit refresh to restart. Bye Bye`;
+      }
+      return `Player only have ${playerInfo[playerIndex].points} points. Please enter a correct bet!!`;
+    }
+    playerInfo[playerIndex].hand = [];
     dealerHand = [];
+    playerInfo[playerIndex].bet = Number(input);
+    console.log("player bet", playerInfo[playerIndex].bet);
+    console.log("player points balance", playerInfo[playerIndex].points);
     gameMode = dealCards;
-    return `Hi ${playerName}! Welcome to Basic BlackJack! <br><br> There will be only two players. <br> One human and one computer. <br> The computer will always be the dealer. <br> The player plays against the Dealer. <br> The dealer has to hit if their hand is below 17. <br> Closer to 21 wins the hand. Over 21 is bust. <br> When the player has the same total as the Dealer it is a stand off. <br> Aces can be 1 or 11. <br> Court cards count as 10 and all other cards have their face value. <br> Player may take as many cards as they wish up to a total of 21. <br><br> Press submit to deal cards`;
+    return `${playerInfo[playerIndex].name} bet ${playerInfo[playerIndex].bet} points <br><br> Press submit to deal cards`;
   }
   // deal cards
   if (gameMode == dealCards && input == "") {
@@ -246,9 +298,9 @@ var main = function (input) {
       var computerCard = shuffledDeck.pop();
       var playerCard = shuffledDeck.pop();
       // var playerCard = fakeDeck.pop();
-      playerHand.push(playerCard);
-      console.log("player hands", playerHand);
-      console.log(getTotalHandsValue(playerHand));
+      playerInfo[playerIndex].hand.push(playerCard);
+      console.log("player hands", playerInfo[playerIndex].hand);
+      console.log(getTotalHandsValue(playerInfo[playerIndex].hand));
       dealerHand.push(computerCard);
       console.log("dealer hands", dealerHand);
       console.log(getTotalHandsValue(dealerHand));
@@ -256,25 +308,31 @@ var main = function (input) {
     }
 
     // check hands for blackjack
-    if (getTotalHandsValue(playerHand) == blackJack) {
+    if (getTotalHandsValue(playerInfo[playerIndex].hand) == blackJack) {
       // player wins
-      gameMode = gameStart;
-      return `BlackJack!! Player Wins! Congratulations 🥂 <br><br> Press Refresh to play again`;
+      var playerBlackJackWins = playerInfo[playerIndex].bet * 1.5;
+      console.log("blackjack 1.5 times", playerBlackJackWins);
+      playerInfo[playerIndex].points += playerBlackJackWins;
+      gameMode = placeBet;
+      return `BlackJack!! Player Wins! Congratulations 🥂 <br><br> Player's points balance: ${playerInfo[playerIndex].points} <br><br> Place your bets to play again`;
       // dealer wins
     } else if (getTotalHandsValue(dealerHand) == blackJack) {
-      gameMode = gameStart;
-      return `BlackJack!! Dealer Wins! <br><br> Press Refresh to play again`;
+      playerInfo[playerIndex].points -= playerInfo[playerIndex].bet;
+      gameMode = placeBet;
+      return `BlackJack!! Dealer Wins! <br><br> Player's points balance: ${playerInfo[playerIndex].points} <br><br> Place your bets to play again`;
     } else if (
       getTotalHandsValue(dealerHand) != blackJack &&
-      getTotalHandsValue(playerHand) != blackJack
+      getTotalHandsValue(playerInfo[playerIndex].hand) != blackJack
     ) {
       gameMode = hitOrStand;
-      return `Player current hands are: <br> ${playerHand[0].name} of ${
-        playerHand[0].suit
-      } & ${playerHand[1].name} of ${
-        playerHand[1].suit
+      return `Player current hands are: <br> ${
+        playerInfo[playerIndex].hand[0].name
+      } of ${playerInfo[playerIndex].hand[0].suit} & ${
+        playerInfo[playerIndex].hand[1].name
+      } of ${
+        playerInfo[playerIndex].hand[1].suit
       } <br> Total hands value: ${getTotalHandsValue(
-        playerHand
+        playerInfo[playerIndex].hand
       )} <br><br> Do you require additional cards? (yes/no)`;
     }
   }
