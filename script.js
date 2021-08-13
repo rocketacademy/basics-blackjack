@@ -1,11 +1,14 @@
 var cardDeck = []; // Initialise an empty deck array
 var suits = ["♥", "♦", "♣", "♠"]; // Initialise an array of the 4 suits in our deck. We will loop over this array
 
-var gameStage = `playerName`; // or shuffleNdeal or hitOrStay // determine which stage of game
+var gameStage = `noOfPlayers`; // or playerName or shuffleNdeal or hitOrStay // determine which stage of game
 var playerTurn = `player`; // or comp // determine whos turn, player, comp
 
-var playerName = ``;
+var playerIndex = 0;
+var nameArray = [];
+var noOfPlayers = ``;
 var bankRoll = 100;
+var allPlayerBankroll = [];
 var bet = ``;
 var cardDealt = ``; // card drawn by cardDeck.pop
 
@@ -26,33 +29,89 @@ var aceIndex = 0;
 
 var compLoseOrDraw = ``; // if comp lose or draw -> true
 
+/////////////////////////// MAIN STARTS ///////////////////////////
 var main = function (input) {
   var myOutputValue = ``;
+  console.log(gameStage);
+  if (gameStage == `noOfPlayers`) {
+    console.log(gameStage);
+    noOfPlayers = parseInt(input);
+    while (playerIndex < noOfPlayers) {
+      allPlayerBankroll.push(parseInt(100));
+      playerIndex += 1;
+    }
+    playerIndex = 0;
 
-  if (gameStage == `playerName`) {
     // execute all the function to make deck, shuffle
-    makeDeck();
-    shuffleCards();
+    // make as many decks as players so the deck will not run out so fast
+    while (playerIndex < noOfPlayers) {
+      makeDeck();
+      playerIndex += 1;
+    }
+    playerIndex = 0;
 
+    shuffleCards();
+    myOutputValue =
+      `There are ${noOfPlayers} players.` +
+      `<br>` +
+      `Key in your names! Add a "/" in between.` +
+      `<br>` +
+      `For example, Tom/Dick/Harry`;
+    gameStage = `playerName`;
+  } else if (gameStage == `playerName`) {
     if (input !== ``) {
-      playerName = input;
-      gameStage = `shuffleNdeal`;
-      myOutputValue = `Hello ${playerName}, submit your bet for the round! Minimum of 1, maximum of 100`;
+      nameArray = input.split(`/`); // split the name into array at every "/"
+      if (nameArray.length == noOfPlayers) {
+        gameStage = `shuffleNdeal`;
+        myOutputValue =
+          `Hello ${nameArray}, welcome to the game!` +
+          `<br>` +
+          `<br>` +
+          `${nameArray[0]}, submit your bet for the round! Minimum of 1, maximum of 100`;
+      } else {
+        myOutputValue =
+          `You did not key in ${noOfPlayers} names.` +
+          `<br>` +
+          `Please key in your names! Add a "/" in between.` +
+          `<br>` +
+          `For example, Tom/Dick/Harry`;
+      }
     } else {
-      myOutputValue = `Please key in your name!`;
+      myOutputValue =
+        `Please key in your names! Add a "/" in between.` +
+        `<br>` +
+        `For example, Tom/Dick/Harry`;
     }
   } else if (gameStage == `shuffleNdeal`) {
-    if (bankRoll > 0) {
-      if (input > 0 && input <= bankRoll) {
+    if (allPlayerBankroll[playerIndex] > 0) {
+      if (input > 0 && input <= allPlayerBankroll[playerIndex]) {
         bet = parseInt(input);
-        myOutputValue = `You bet ${bet}! Click submit to deal cards!`;
+        myOutputValue = `${nameArray[playerIndex]}, you bet ${bet}! Click submit to deal cards!`;
         gameStage = `blackjack`;
       } else {
         myOutputValue =
-          `Please enter a bet, minimum of 1, maximum of ` + bankRoll + `.`;
+          `${nameArray[playerIndex]}, please enter a bet, minimum of 1, maximum of ` +
+          allPlayerBankroll[playerIndex] +
+          `.`;
       }
     } else {
-      myOutputValue = `You are bankrupt! Refresh page to play again!`;
+      if (playerIndex + 1 == noOfPlayers) {
+        var currentPlayer = nameArray[playerIndex];
+        playerIndex = 0;
+        var nextPlayer = nameArray[playerIndex];
+      } else if (playerIndex >= 0 && playerIndex + 1 < noOfPlayers) {
+        currentPlayer = nameArray[playerIndex];
+        playerIndex += 1;
+        nextPlayer = nameArray[playerIndex];
+      }
+
+      myOutputValue =
+        currentPlayer +
+        `, you are bankrupt! ` +
+        `<br>` +
+        nextPlayer +
+        `, submit your bet for next round!`;
+      console.log(`here`);
     }
   } else if (gameStage == `blackjack`) {
     // deal firt two cards and determine if any blackjack during first deal
@@ -64,16 +123,41 @@ var main = function (input) {
   }
 
   // determine what kind of return message
-  if (bankRoll <= 0) {
+  if (allPlayerBankroll.every((item) => item === 0) == true) {
+    // if all bankrupt https://stackoverflow.com/questions/21860216/how-do-i-know-an-array-contains-all-zero0-in-javascript#:~:text=With%20every%20%2C%20you%20are%20going,item%20%3D%3E%20item%20%3D%3D%3D%200)%3B
     return (
-      `You are bankrupt! Refresh page to play again!` +
+      `All bankrupt! Refresh to restart game!` + `<br>` + `<br>` + scoreboard()
+    );
+  } else if (allPlayerBankroll[playerIndex] <= 0) {
+    console.log(`here2`);
+
+    if (playerIndex + 1 == noOfPlayers) {
+      var currentPlayer = nameArray[playerIndex];
+      playerIndex = 0;
+      var nextPlayer = nameArray[playerIndex];
+    } else if (playerIndex >= 0 && playerIndex + 1 < noOfPlayers) {
+      currentPlayer = nameArray[playerIndex];
+      playerIndex += 1;
+      nextPlayer = nameArray[playerIndex];
+    }
+
+    // playerIndex += 1;
+    return (
+      currentPlayer +
+      `, you are bankrupt! ` +
+      `<br>` +
+      nextPlayer +
+      `, submit your bet for next round!` +
       `<br>` +
       `<br>` +
       myOutputValue +
       `<br>` +
       `<br>` +
       `Cards left: ` +
-      cardDeck.length
+      cardDeck.length +
+      `<br>` +
+      `<br>` +
+      scoreboard()
     );
   } else if (cardDeck.length == 0) {
     return (
@@ -84,12 +168,25 @@ var main = function (input) {
       `<br>` +
       `<br>` +
       `Cards left: ` +
-      cardDeck.length
+      cardDeck.length +
+      `<br>` +
+      `<br>` +
+      scoreboard()
     );
   } else {
-    return myOutputValue + `<br>` + `<br>` + `Cards left: ` + cardDeck.length;
+    return (
+      myOutputValue +
+      `<br>` +
+      `<br>` +
+      `Cards left: ` +
+      cardDeck.length +
+      `<br>` +
+      `<br>` +
+      scoreboard()
+    );
   }
 };
+/////////////////////////// MAIN ENDS ///////////////////////////
 
 // copied from 10.2
 var makeDeck = function () {
@@ -187,6 +284,7 @@ var dealCards = function () {
 // function to hit or stay
 var hitCards = function (input) {
   var message = ``;
+  var points = ``;
   if (playerTurn == `player`) {
     playerNoOfAces = playerCardNameOnly.filter((x) => x === `Ace`).length;
     // conditional for player to change ace to 1 or 11
@@ -227,7 +325,7 @@ var hitCards = function (input) {
       playerCardNameOnly.push(cardDealt.name);
       playerSum = playerSum + cardDealt.value;
       playerNoOfAces = playerCardNameOnly.filter((x) => x === `Ace`).length;
-
+      points = nameArray[playerIndex] + `: ` + allPlayerBankroll[playerIndex];
       // if player total hand after hitting is >21, either immediately comp turn OR change for any remaining Aces not changed to 1 and continue to hit or stay
       if (playerSum > 21) {
         if (playerAceIndex < playerNoOfAces) {
@@ -273,7 +371,7 @@ var hitCards = function (input) {
   }
   // standard message for displaying player hand status
   var playerMessage =
-    `${playerName} : ` +
+    `${nameArray[playerIndex]} : ` +
     playerHand +
     ` (Total: ` +
     playerSum +
@@ -294,6 +392,16 @@ var hitCards = function (input) {
       compLoseOrDraw = true;
       playerTurn = `player`;
       gameStage = `shuffleNdeal`; // start betting for next round
+
+      points = nameArray[playerIndex] + `: ` + allPlayerBankroll[playerIndex];
+
+      // determine who is next player
+      if (playerIndex + 1 == noOfPlayers) {
+        playerIndex = 0;
+      } else if (playerIndex >= 0 && playerIndex + 1 < noOfPlayers) {
+        playerIndex += 1;
+      }
+
       message =
         `Computer : ` +
         compHand +
@@ -306,11 +414,21 @@ var hitCards = function (input) {
         `It's a draw!` +
         `<br>` +
         `<br>` +
-        `Submit your bet for next round!`;
+        nameArray[playerIndex] +
+        `, submit your bet for next round!`;
     } else if (compSum > 21 && playerSum > 21) {
       compLoseOrDraw = true;
       playerTurn = `player`;
       gameStage = `shuffleNdeal`;
+
+      points = nameArray[playerIndex] + `: ` + allPlayerBankroll[playerIndex];
+
+      if (playerIndex + 1 == noOfPlayers) {
+        playerIndex = 0;
+      } else if (playerIndex >= 0 && playerIndex + 1 < noOfPlayers) {
+        playerIndex += 1;
+      }
+
       message =
         `Computer : ` +
         compHand +
@@ -323,13 +441,23 @@ var hitCards = function (input) {
         `Both bust! Draw!` +
         `<br>` +
         `<br>` +
-        `Submit your bet for next round!`;
+        nameArray[playerIndex] +
+        `, submit your bet for next round!`;
     } else if (compSum > playerSum) {
       if (compSum <= 21) {
         compLoseOrDraw = false;
-        bankRoll = bankRoll - bet;
+        allPlayerBankroll[playerIndex] = allPlayerBankroll[playerIndex] - bet;
         playerTurn = `player`;
         gameStage = `shuffleNdeal`;
+
+        points = nameArray[playerIndex] + `: ` + allPlayerBankroll[playerIndex];
+
+        if (playerIndex + 1 == noOfPlayers) {
+          playerIndex = 0;
+        } else if (playerIndex >= 0 && playerIndex + 1 < noOfPlayers) {
+          playerIndex += 1;
+        }
+
         message =
           `Computer : ` +
           compHand +
@@ -342,15 +470,66 @@ var hitCards = function (input) {
           `Computer wins!` +
           `<br>` +
           `<br>` +
-          `Submit your bet for next round!`;
+          nameArray[playerIndex] +
+          `, submit your bet for next round!`;
       }
       // if comp loses or draw, if there are any Aces not changed to 1, bankroll wil not adjust yet because need to execute line 415 to reduce Ace to 1 and draw again to try to win player
       else {
         compLoseOrDraw = true;
         if (aceIndex == noOfAces) {
-          bankRoll = bankRoll + bet;
+          allPlayerBankroll[playerIndex] = allPlayerBankroll[playerIndex] + bet;
+
+          points =
+            nameArray[playerIndex] + `: ` + allPlayerBankroll[playerIndex];
+
+          if (playerIndex + 1 == noOfPlayers) {
+            playerIndex = 0;
+          } else if (playerIndex >= 0 && playerIndex + 1 < noOfPlayers) {
+            playerIndex += 1;
+          }
         } else {
-          bankRoll = bankRoll;
+          allPlayerBankroll[playerIndex] = allPlayerBankroll[playerIndex];
+
+          points =
+            nameArray[playerIndex] + `: ` + allPlayerBankroll[playerIndex];
+        }
+        playerTurn = `player`;
+        gameStage = `shuffleNdeal`;
+
+        message =
+          `Computer : ` +
+          compHand +
+          ` (Total: ` +
+          compSum +
+          `) ` +
+          compBust() +
+          `<br>` +
+          `<br>` +
+          `Player wins!` +
+          `<br>` +
+          `<br>` +
+          nameArray[playerIndex] +
+          `, submit your bet for next round!`;
+      }
+    } else if (compSum < playerSum) {
+      if (playerSum <= 21) {
+        compLoseOrDraw = true;
+        if (aceIndex == noOfAces) {
+          allPlayerBankroll[playerIndex] = allPlayerBankroll[playerIndex] + bet;
+
+          points =
+            nameArray[playerIndex] + `: ` + allPlayerBankroll[playerIndex];
+
+          if (playerIndex + 1 == noOfPlayers) {
+            playerIndex = 0;
+          } else if (playerIndex >= 0 && playerIndex + 1 < noOfPlayers) {
+            playerIndex += 1;
+          }
+        } else {
+          allPlayerBankroll[playerIndex] = allPlayerBankroll[playerIndex];
+
+          points =
+            nameArray[playerIndex] + `: ` + allPlayerBankroll[playerIndex];
         }
         playerTurn = `player`;
         gameStage = `shuffleNdeal`;
@@ -366,33 +545,22 @@ var hitCards = function (input) {
           `Player wins!` +
           `<br>` +
           `<br>` +
-          `Submit your bet for next round!`;
-      }
-    } else if (compSum < playerSum) {
-      if (playerSum <= 21) {
-        compLoseOrDraw = true;
-        if (aceIndex == noOfAces) {
-          bankRoll = bankRoll + bet;
-        } else {
-          bankRoll = bankRoll;
-        }
-        playerTurn = `player`;
-        gameStage = `shuffleNdeal`;
-        message =
-          `Computer : ` +
-          compHand +
-          ` (Total: ` +
-          compSum +
-          `) ` +
-          compBust() +
-          `<br>` +
-          `<br>` +
-          `Player wins! `;
+          nameArray[playerIndex] +
+          `, submit your bet for next round!`;
       } else {
         compLoseOrDraw = false;
-        bankRoll = bankRoll - bet;
+        allPlayerBankroll[playerIndex] = allPlayerBankroll[playerIndex] - bet;
         playerTurn = `player`;
         gameStage = `shuffleNdeal`;
+
+        points = nameArray[playerIndex] + `: ` + allPlayerBankroll[playerIndex];
+
+        if (playerIndex + 1 == noOfPlayers) {
+          playerIndex = 0;
+        } else if (playerIndex >= 0 && playerIndex + 1 < noOfPlayers) {
+          playerIndex += 1;
+        }
+
         message =
           `Computer : ` +
           compHand +
@@ -405,7 +573,8 @@ var hitCards = function (input) {
           `Computer wins!` +
           `<br>` +
           `<br>` +
-          `Submit your bet for next round!`;
+          nameArray[playerIndex] +
+          `, submit your bet for next round!`;
       }
     }
 
@@ -437,8 +606,7 @@ var hitCards = function (input) {
   }
 
   return (
-    `Points: ` +
-    bankRoll +
+    points +
     `<br>` +
     `Bet: ` +
     bet +
@@ -457,13 +625,29 @@ var hitCards = function (input) {
 var blackjack = function () {
   var message = ``;
   var playerMessageTwo = ``;
+  var points = ``;
 
   //check for double Aces
   if (
     compCardNameOnly.filter((x) => x === `Ace`).length == 2 &&
     playerCardNameOnly.filter((x) => x === `Ace`).length !== 2
   ) {
-    bankRoll = bankRoll - bet;
+    allPlayerBankroll[playerIndex] = allPlayerBankroll[playerIndex] - bet;
+
+    points = nameArray[playerIndex] + `: ` + allPlayerBankroll[playerIndex];
+
+    playerMessageTwo =
+      `${nameArray[playerIndex]} : ` +
+      playerHand +
+      ` (Total: ` +
+      playerSum +
+      `) `;
+
+    if (playerIndex + 1 == noOfPlayers) {
+      playerIndex = 0;
+    } else if (playerIndex >= 0 && playerIndex + 1 < noOfPlayers) {
+      playerIndex += 1;
+    }
 
     message =
       `Computer : ` +
@@ -476,17 +660,29 @@ var blackjack = function () {
       `Computer got a Double Aces! Computer wins!` +
       `<br>` +
       `<br>` +
-      `Submit your bet for next round!`;
+      `${nameArray[playerIndex]}, submit your bet for next round!`;
 
     gameStage = `shuffleNdeal`; // return to betting
-
-    playerMessageTwo =
-      `${playerName} : ` + playerHand + ` (Total: ` + playerSum + `) `;
   } else if (
     compCardNameOnly.filter((x) => x === `Ace`).length !== 2 &&
     playerCardNameOnly.filter((x) => x === `Ace`).length == 2
   ) {
-    bankRoll = bankRoll + bet;
+    allPlayerBankroll[playerIndex] = allPlayerBankroll[playerIndex] + bet;
+
+    points = nameArray[playerIndex] + `: ` + allPlayerBankroll[playerIndex];
+
+    playerMessageTwo =
+      `${nameArray[playerIndex]} : ` +
+      playerHand +
+      ` (Total: ` +
+      playerSum +
+      `) `;
+
+    if (playerIndex + 1 == noOfPlayers) {
+      playerIndex = 0;
+    } else if (playerIndex >= 0 && playerIndex + 1 < noOfPlayers) {
+      playerIndex += 1;
+    }
 
     message =
       `Computer : ` +
@@ -499,14 +695,26 @@ var blackjack = function () {
       `Player got a Double Aces! Player wins!` +
       `<br>` +
       `<br>` +
-      `Submit your bet for next round!`;
+      `${nameArray[playerIndex]}, submit your bet for next round!`;
 
     gameStage = `shuffleNdeal`;
+  } else if (playerSum == 21 && compSum !== 21) {
+    allPlayerBankroll[playerIndex] = allPlayerBankroll[playerIndex] + bet;
+
+    points = nameArray[playerIndex] + `: ` + allPlayerBankroll[playerIndex];
 
     playerMessageTwo =
-      `${playerName} : ` + playerHand + ` (Total: ` + playerSum + `) `;
-  } else if (playerSum == 21 && compSum !== 21) {
-    bankRoll = bankRoll + bet;
+      `${nameArray[playerIndex]} : ` +
+      playerHand +
+      ` (Total: ` +
+      playerSum +
+      `) `;
+
+    if (playerIndex + 1 == noOfPlayers) {
+      playerIndex = 0;
+    } else if (playerIndex >= 0 && playerIndex + 1 < noOfPlayers) {
+      playerIndex += 1;
+    }
 
     message =
       `Computer : ` +
@@ -519,14 +727,26 @@ var blackjack = function () {
       `Player got a Blackjack! Player wins!` +
       `<br>` +
       `<br>` +
-      `Submit your bet for next round!`;
+      `${nameArray[playerIndex]}, submit your bet for next round!`;
 
     gameStage = `shuffleNdeal`;
+  } else if (playerSum !== 21 && compSum == 21) {
+    allPlayerBankroll[playerIndex] = allPlayerBankroll[playerIndex] - bet;
+
+    points = nameArray[playerIndex] + `: ` + allPlayerBankroll[playerIndex];
 
     playerMessageTwo =
-      `${playerName} : ` + playerHand + ` (Total: ` + playerSum + `) `;
-  } else if (playerSum !== 21 && compSum == 21) {
-    bankRoll = bankRoll - bet;
+      `${nameArray[playerIndex]} : ` +
+      playerHand +
+      ` (Total: ` +
+      playerSum +
+      `) `;
+
+    if (playerIndex + 1 == noOfPlayers) {
+      playerIndex = 0;
+    } else if (playerIndex >= 0 && playerIndex + 1 < noOfPlayers) {
+      playerIndex += 1;
+    }
 
     message =
       `Computer : ` +
@@ -539,16 +759,28 @@ var blackjack = function () {
       `Computer got a Blackjack! Computer wins!` +
       `<br>` +
       `<br>` +
-      `Submit your bet for next round!`;
+      `${nameArray[playerIndex]}, submit your bet for next round!`;
 
     gameStage = `shuffleNdeal`;
-
-    playerMessageTwo =
-      `${playerName} : ` + playerHand + ` (Total: ` + playerSum + `) `;
   } else if (
     (playerSum == 21 && compSum == 21) ||
     (playerSum == 22 && compSum == 22)
   ) {
+    points = nameArray[playerIndex] + `: ` + allPlayerBankroll[playerIndex];
+
+    playerMessageTwo =
+      `${nameArray[playerIndex]} : ` +
+      playerHand +
+      ` (Total: ` +
+      playerSum +
+      `) `;
+
+    if (playerIndex + 1 == noOfPlayers) {
+      playerIndex = 0;
+    } else if (playerIndex >= 0 && playerIndex + 1 < noOfPlayers) {
+      playerIndex += 1;
+    }
+
     message =
       `Computer : ` +
       compHand +
@@ -560,15 +792,18 @@ var blackjack = function () {
       `Both Blackjack! Draw!` +
       `<br>` +
       `<br>` +
-      `Submit your bet for next round!`;
+      `${nameArray[playerIndex]}, submit your bet for next round!`;
 
     gameStage = `shuffleNdeal`;
+  } else {
+    points = nameArray[playerIndex] + `: ` + allPlayerBankroll[playerIndex];
 
     playerMessageTwo =
-      `${playerName} : ` + playerHand + ` (Total: ` + playerSum + `) `;
-  } else {
-    playerMessageTwo =
-      `${playerName} : ` + playerHand + ` (Total: ` + playerSum + `) `;
+      `${nameArray[playerIndex]} : ` +
+      playerHand +
+      ` (Total: ` +
+      playerSum +
+      `) `;
     gameStage = `hitOrStay`;
 
     // ??? for one of comp's card because one card of dealer is face down
@@ -579,11 +814,10 @@ var blackjack = function () {
       ` (Total: ??)` +
       `<br>` +
       `<br>` +
-      `No Blackjack! Player, enter "hit" or "stay"`;
+      `No Blackjack! ${nameArray[playerIndex]}, enter "hit" or "stay"`;
   }
   return (
-    `Points: ` +
-    bankRoll +
+    points +
     `<br>` +
     `Bet: ` +
     bet +
@@ -613,4 +847,20 @@ var compBust = function () {
   } else {
     return ``;
   }
+};
+
+var scoreboard = function () {
+  var message = ``;
+  var playerNo = 0;
+  while (playerNo < noOfPlayers) {
+    message =
+      message +
+      nameArray[playerNo] +
+      `: ` +
+      allPlayerBankroll[playerNo] +
+      `<br>`;
+    playerNo += 1;
+  }
+  playerNo = 0;
+  return message;
 };
