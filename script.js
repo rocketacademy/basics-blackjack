@@ -1,32 +1,27 @@
-/*ACE card variation
-Found on https://stackoverflow.com/questions/4689856/how-to-change-value-of-object-which-is-inside-an-array-using-javascript-or-jquer
-*/
-
-/*Rules:
-1) Player hits 21 = instant win
-2) Dealer/Player +1 card if hand <17
-3) Ace = 1 or 11
-4) player vs. dealer, whoever is closest to 21 is the winner
-5) >21 = bust
-*/
-
 gameDeck = [];
-playerHand = []; //Cards player has
-pTotal = 0; //Sum of cards
+playerTotals = [];
+playerHands = []; //Cards player has
 compHand = []; //Cards COMPUTER has
 cTotal = 0; //Sum of cards
-playerName = [];
-playerPoints = 100;
-pot = 0;
+playerNames = [];
+currentPlayer = 0; //playerNames[currentPlayer]
 
-/*Modes
-0a - Welcome, name save
-0b - Player bets, initial draw phase
-1 - player action
-2 - COMP action
-3 - Determine winner
+currentMode = "0";
+/*Modes:
+0 - Input names
+1 - Player(s) move. Will utilize playerNames[] indices as sub-modes
+1b - Player switch (loops back to mode 1), or COMP move when all players done
+2 - Determination
 */
-currentMode = "0a";
+
+//For when more than one name is entered into INPUT. Works with just one name.
+var multipleNames = function (input) {
+  //Splits input into multiple strings and puts into new array inputSplitter[]
+  var inputSplitter = input.split(" ");
+  //Modifies playerAdj[] array by adding elements in inputSplitter[] array
+  playerNames.push.apply(playerNames, inputSplitter);
+  console.log(`Player names: ${playerNames}.`);
+};
 
 //Creating deck
 var mainDeck = function () {
@@ -109,40 +104,50 @@ var shuffleTheDeck = function () {
   console.log(gameDeck);
 };
 
-//Display card properly in output to player
-var greyBoxCardOutput = function (playerHand, compHand) {
-  var playerOutputValue = "Your cards are:";
-  for (i = 0; i < playerHand.length; i += 1) {
-    playerOutputValue += `<br/>` + playerHand[i].name + playerHand[i].suit;
-  }
-  var compOutputValue = "The dealer's cards are:";
-  for (i = 0; i < compHand.length; i += 1) {
-    compOutputValue += `<br/>` + compHand[i].name + compHand[i].suit;
-  }
-  console.log(`Showing player their hand`);
-  return (
-    playerOutputValue +
-    `<br/>Your total count: ${pTotal}` +
-    `<br/><br/>` +
-    compOutputValue +
-    `<br/>Dealer's total count: ${cTotal}`
-  );
-  // + compOutputValue + `<br/><br/>`;
-};
-
 //Initial function - mode 0
-var initialDraw = function () {
+var initialCompDraw = function () {
   for (i = 0; i < 2; i += 1) {
     var compCard = gameDeck.pop();
     compHand.push(compCard);
-    var playerCard = gameDeck.pop();
-    playerHand.push(playerCard);
   }
-  console.log(`Cards pushed.`);
-  console.log(`Player Hand: `);
-  console.log(playerHand);
   console.log(`COMPUTER Hand: `);
   console.log(compHand);
+};
+
+var cardAssignment = function () {
+  for (i = 0; i < 2; i += 1) {
+    var compCard = gameDeck.pop();
+    compHand.push(compCard);
+  }
+  console.log(`COMPUTER Hand: `);
+  console.log(compHand);
+};
+
+//First assigns cards to players, but in a separate array, playerHands[].
+//Using the indexes in that array to correspond to the names in playerNames[]
+var initialPlayerCardAssign = function () {
+  for (i = 0; i < playerNames.length; i += 1) {
+    var cardsInHand = [];
+    for (idx = 0; idx < 2; idx += 1) {
+      var card = gameDeck.pop();
+      cardsInHand.push(card);
+    }
+    playerHands[i] = [cardsInHand]; //Assigning the two cards to each index in playerHands[]
+    console.log(cardsInHand);
+  }
+};
+
+//Displays what cards the current player has in hand
+var greyBoxCardOutput = function (currentPlayer) {
+  var playerOutputValue = playerNames[currentPlayer] + "'s cards:";
+  for (i = 0; i < playerHands[currentPlayer][0].length; i += 1) {
+    playerOutputValue +=
+      `<br/>` +
+      playerHands[currentPlayer][0][i].name +
+      playerHands[currentPlayer][0][i].suit;
+  }
+  console.log(`Showing player their hand`);
+  return playerOutputValue;
 };
 
 //Ace points changer. Faith helped!
@@ -151,23 +156,68 @@ var aceChange = function (pasteInHandType) {
     for (var i in pasteInHandType) {
       if (pasteInHandType[i].name == "Ace") {
         pasteInHandType[i].rank = 1;
-        break; //Stops loops once found
       }
     }
   }
 };
 
-//Calculating player score
-var playerScore = function () {
-  aceChange(playerHand);
+//Sums up a player's hand and gives the total number
+var playerScore = function (currentPlayer) {
+  aceChange(playerHands[currentPlayer][0]);
   var pSum = 0;
-  for (iTot = 0; iTot < playerHand.length; iTot += 1) {
-    pSum += Number(playerHand[iTot].rank);
+  for (iTot = 0; iTot < playerHands[currentPlayer][0].length; iTot += 1) {
+    pSum += Number(playerHands[currentPlayer][0][iTot].rank);
   }
-  console.log(`Player card score: ` + pSum);
-  pTotal = pSum;
-  console.log(`Player hand: `);
-  console.log(playerHand);
+  console.log(playerNames[currentPlayer] + `'s card score: ` + pSum);
+  console.log(playerNames[currentPlayer] + `'s hand: `);
+  console.log(playerHands[currentPlayer][0]);
+  playerTotals[currentPlayer] = pSum;
+  return pSum;
+};
+
+//Player adds cards - mode 1
+var playerAction = function (input) {
+  console.log(`Starting Player: ${currentPlayer}`);
+  if (input == "") {
+    console.log(`Drawing Player: ${currentPlayer}`);
+    playerScore(currentPlayer);
+    var playerCard = gameDeck.pop();
+    playerHands[currentPlayer][0].push(playerCard);
+    var playerOutputValue = greyBoxCardOutput(currentPlayer);
+    console.log(`>>Player added card.`);
+    playerScore(currentPlayer);
+    myOutputValue =
+      playerOutputValue +
+      `<br><br>Total count: ${playerTotals[currentPlayer]}<br><br>Would you like to stay as you are or add an additional card? Click SUBMIT to add a card, or enter 'stay' to finish your turn`;
+    return myOutputValue;
+  } else if (input == "stay") {
+    currentMode = "1b";
+    currentPlayer += 1;
+    console.log(`Player changed to: ` + playerNames[currentPlayer]);
+    console.log(`Mode Changed: ` + currentMode);
+  }
+};
+
+//Player Change - mode 1b
+var playerChange = function () {
+  if (currentPlayer < playerNames.length) {
+    console.log(`Current Mode: ` + currentMode);
+    console.log(`Current Player: ${currentPlayer}`);
+    playerScore(currentPlayer);
+    myOutputValue =
+      `You have decided to keep your hand. ` +
+      playerNames[currentPlayer] +
+      `, it's your turn! <br><br>` +
+      greyBoxCardOutput(currentPlayer) +
+      `<br><br>Total count: ${playerTotals[currentPlayer]}<br><br>Would you like to stay as you are or add an additional card? Click SUBMIT to add a card, or enter 'stay' to finish your turn.`;
+    currentMode = "1";
+    console.log(`Mode Changed: ` + currentMode);
+  } else if (currentPlayer == playerNames.length) {
+    compScore();
+    compAction();
+    myOutputValue = `The final player has had their turn! <br><br>The dealer has also taken their turn because I coded it to run this way and save you one less click.<br><br>Click SUBMIT to see who won/lost!`;
+  }
+  return myOutputValue;
 };
 
 //Calculating COMP score
@@ -183,144 +233,97 @@ var compScore = function () {
   console.log(compHand);
 };
 
-//Player adds cards - mode 1
-var playerAction = function (input) {
-  console.log(`-Current mode: ` + currentMode);
-  playerScore();
-  if (input == "stay") {
-    currentMode = 2;
-    console.log(`Mode changed to: ` + currentMode);
-    myOutputValue = `You have decided to keep your hand. Please click SUBMIT for the next player's turn.`;
-  } else if (input == "") {
-    var playerCard = gameDeck.pop();
-    playerHand.push(playerCard);
-    var playerOutputValue = "Your cards are:";
-    for (i = 0; i < playerHand.length; i += 1) {
-      playerOutputValue += `<br/>` + playerHand[i].name + playerHand[i].suit;
-    }
-    console.log(`CHECK MODE: ` + currentMode);
-    console.log(`>>Player added card.`);
-    playerScore();
-    myOutputValue =
-      playerOutputValue +
-      `<br><br>Total count: ${pTotal}<br><br>Would you like to stay as you are or add an additional card? Click SUBMIT to add a card, or enter 'stay' to finish your turn.`;
-  }
-  compScore();
-  return myOutputValue;
-};
-
-//COMP adds cards - mode 2
+//COMP adds cards - mode 1b
 var compAction = function () {
   console.log(`CHECK MODE: ` + currentMode);
   console.log(`COMP card score: ` + cTotal);
-  while (cTotal <= 17) {
+  while (cTotal < 17) {
     var compCard = gameDeck.pop();
     compHand.push(compCard);
     console.log(`>>COMPUTER added card.`);
     compScore(); //Necessary for pushing new score to cTotal global variable
   }
   cTotal += 1;
-  if (cTotal > 17) {
-    currentMode = 3;
+  if (cTotal >= 17) {
+    currentMode = 2;
     console.log(`Mode changed to: ` + currentMode);
-    return `The dealer has finished their action! Click SUBMIT to determine the winner!`;
   }
 };
-/* for (i=cTotal; cTotal<=17; i+=1){
-  var compCard = gameDeck.pop();
-    compHand.push(compCard);
-    console.log(`>>COMPUTER added card.`);
-    compScore();
-}
+
+/*Determination Rules:
+Over 21 = LOSE
+21 = WIN
+
+Within 21 limit:
+Bigger number = WIN
+Smaller number = LOSE
+Numbers same = DRAW
 */
 
-//Function to calculate points won because I'm lazy
-var win = function (multiplier) {
-  playerPoints = playerPoints + Number(pot) * Number(multiplier);
-  return `You've won ${pot} points! ${playerName}'s points: ${playerPoints}<br><br>`;
-};
-
-//Function to calculate points lost because I'm lazy
-var lose = function (multiplier) {
-  playerPoints = playerPoints - Number(pot) * Number(multiplier);
-  return `You've lost ${pot} points! ${playerName}'s points: ${playerPoints}<br><br>`;
-};
-
-//Determination - mode 3
+//Determine the winner - mode 2
 var determineWinner = function () {
-  var playAgainStatement = `<br><br>If you would like to play another round, please place your bet!`;
-  if (pTotal == cTotal) {
-    return (
-      `You draw with the dealer's hand of ${cTotal}!<br><br>` +
-      greyBoxCardOutput(playerHand, compHand) +
-      playAgainStatement
-    );
-  } else if (pTotal == 21 && cTotal !== 21) {
-    var myOutputValue = win(1);
-    myOutputValue =
-      myOutputValue +
-      `Your hand of ${pTotal} won and ${pot} points have been added to your bag! The dealer had a hand of ${cTotal}.<br><br>` +
-      greyBoxCardOutput(playerHand, compHand) +
-      playAgainStatement;
-    return myOutputValue;
-  } else if (cTotal == 21 && pTotal !== 21) {
-    var myOutputValue = lose(1);
-    myOutputValue =
-      myOutputValue +
-      `Your hand of ${pTotal} lost to the dealer's ${cTotal}!<br><br>` +
-      greyBoxCardOutput(playerHand, compHand) +
-      playAgainStatement;
-    return myOutputValue;
-  } else if (cTotal < 21 && pTotal > 21) {
-    var myOutputValue = lose(1);
-    myOutputValue =
-      myOutputValue +
-      `Your hand of ${pTotal} went bust! The dealer wins with a hand of ${cTotal}!<br><br>` +
-      greyBoxCardOutput(playerHand, compHand) +
-      playAgainStatement;
-    return myOutputValue;
-  } else if (pTotal > cTotal && pTotal <= 21) {
-    var myOutputValue = win(1);
-    myOutputValue =
-      myOutputValue +
-      `Congratulations! Your hand of ${pTotal} beat the dealer's hand of ${cTotal}!<br><br>` +
-      greyBoxCardOutput(playerHand, compHand) +
-      playAgainStatement;
-    return myOutputValue;
-  } else if (pTotal > 21 && cTotal > 21) {
-    var myOutputValue = `${playerName}'s points: ${playerPoints}<br><br>`;
-    myOutputValue =
-      myOutputValue +
-      `Both parties are bust! Your hand: ${pTotal}. Dealer's hand: ${cTotal}<br><br>` +
-      greyBoxCardOutput(playerHand, compHand) +
-      playAgainStatement;
-    return myOutputValue;
-  } else if (pTotal < cTotal && cTotal > 21) {
-    var myOutputValue = win(1);
-    myOutputValue =
-      myOutputValue +
-      `You win! Your hand of ${pTotal} beat the dealer's hand of ${cTotal}!<br><br>` +
-      greyBoxCardOutput(playerHand, compHand) +
-      playAgainStatement;
-    return myOutputValue;
-  } else if (pTotal < cTotal && cTotal <= 21) {
-    var myOutputValue = lose(1);
-    myOutputValue =
-      myOutputValue +
-      `Your hand of ${pTotal} lost to the dealer's hand of ${cTotal}!<br><br>` +
-      greyBoxCardOutput(playerHand, compHand) +
-      playAgainStatement;
-    return myOutputValue;
+  var playAgainStatement = `<br><br>To play another round, enter 'again'.`;
+  for (i = 0; i < playerNames.length; i += 1) {
+    if (playerTotals[i] == cTotal) {
+      myOutputValue =
+        playerNames[i] +
+        `: You draw with the dealer! ${playerTotals[i]} vs. ${cTotal}<br><br>`;
+    } else if (playerTotals[i] == 21 && cTotal !== 21) {
+      var myOutputValue =
+        playerNames[i] +
+        `: You beat the dealer! ${playerTotals[i]} vs. ${cTotal}<br><br>`;
+    } else if (cTotal == 21 && playerTotals[i] !== 21) {
+      var myOutputValue =
+        playerNames[i] +
+        `: You lose to the dealer! ${playerTotals[i]} vs. ${cTotal}<br><br>`;
+    } else if (cTotal < 21 && playerTotals[i] > 21) {
+      var myOutputValue =
+        playerNames[i] +
+        `: You went BUST! ${playerTotals[i]} vs. ${cTotal}<br><br>`;
+    } else if (playerTotals[i] > cTotal && playerTotals[i] <= 21) {
+      var myOutputValue =
+        playerNames[i] +
+        `: You beat the dealer! ${playerTotals[i]} vs. ${cTotal}<br><br>`;
+    } else if (playerTotals[i] > 21 && cTotal > 21) {
+      var myOutputValue =
+        playerNames[i] +
+        `: Both parties went BUST! ${playerTotals[i]} vs. ${cTotal}<br><br>`;
+    } else if (playerTotals[i] < cTotal && cTotal > 21) {
+      var myOutputValue =
+        playerNames[i] +
+        `: You beat the dealer! ${playerTotals[i]} vs. ${cTotal}<br><br>`;
+    } else if (playerTotals[i] < cTotal && cTotal <= 21) {
+      var myOutputValue =
+        playerNames[i] +
+        `: You lose to the dealer! ${playerTotals[i]} vs. ${cTotal}<br><br>`;
+    }
   }
+  return myOutputValue[i] + `<br><br>` + `<br><br>` + playAgainStatement;
+};
+
+//Function for repeat plays
+var lagiSatu = function () {
+  gameReset();
+  initialPlayerCardAssign();
+  initialCompDraw();
+  playerScore(currentPlayer);
+  currentMode = "1";
+  console.log(`Mode changed: ` + currentMode);
+  myOutputValue =
+    playerNames[0] +
+    `, you're up first.<br><br>` +
+    greyBoxCardOutput(currentPlayer) +
+    `<br><br>Total count: ${playerTotals[currentPlayer]}<br><br>Would you like to stay as you are or add an additional card? Click SUBMIT to add a card, or enter 'stay' to finish your turn.`;
+  return myOutputValue;
 };
 
 //Resets everything but player points
-var gameReset = function (input) {
-  playerHand = []; //Reset player hand
+var gameReset = function () {
+  playerHands = []; //Reset player hand
   console.log(`Resetting playerHand. Player hand: `);
-  console.log(playerHand);
-  pTotal = 0; //Reset sum of cards
-  console.log(`Player count: ${pTotal}`);
+  console.log(playerHands);
+  currentPlayer = 0;
+  console.log(`Current player reset: ${currentPlayer}`);
   compHand = []; //Reset player hand
   console.log(`Resetting compHand. COMP hand: `);
   console.log(compHand);
@@ -328,61 +331,44 @@ var gameReset = function (input) {
   console.log(`COMP count: ${cTotal}`);
 };
 
-//Main function
 var main = function (input) {
-  console.log(`>>>>Program start`);
   console.log(`Current Mode: ` + currentMode);
-  if (currentMode == 3) {
-    myOutputValue = determineWinner();
-    if (currentMode == 3 && input !== "") {
-      gameReset(input);
-      currentMode = "0b";
-    }
-  }
-  if (currentMode == 2) {
-    myOutputValue = compAction();
-  }
-  if (currentMode == 1) {
+  if (currentMode == "1") {
     myOutputValue = playerAction(input);
   }
-  if (currentMode == "0b") {
-    pot = input;
-    shuffleTheDeck();
-    initialDraw();
-    playerScore();
-    var betSaved = `Okay ${playerName}, your bet of ${input} points has been saved. <br><br>`;
-    var playerOutputValue = "Your cards are:";
-    for (i = 0; i < playerHand.length; i += 1) {
-      playerOutputValue += `<br/>` + playerHand[i].name + playerHand[i].suit;
-    }
-    myOutputValue =
-      betSaved +
-      playerOutputValue +
-      `<br><br>Total count: ${pTotal}<br><br>Would you like to stay as you are or add an additional card? Click SUBMIT to add a card, or enter 'stay' to finish your turn.`;
-    currentMode = 1;
-    console.log(`Mode changed to: ` + currentMode);
+  if (currentMode == "1b") {
+    myOutputValue = playerChange();
+    return myOutputValue;
   }
-  if (currentMode == "0a") {
+  if (currentMode == "0") {
     if (input == "help" || input == "Help") {
-      return `Welcome to the help page. You may SUBMIT your name at any time to begin!<br><br>HOW TO PLAY:<br />1) Players must
-        either beat the dealer's hand, OR, get 21 with two cards<br />2) Players
-        first place a bet, and then are dealt their cards.<br />3) Players may
-        choose to draw more cards, or stay at however many cards they have.<br />4)
-        WIN: you are given the amount you bet. LOSE: you lose your bet. DRAW: no
-        change in points.<br /><br />SETUP:<br />1) Each player starts with two
-        cards and 100 points.<br />2) The points do not replenish when a new
-        round starts.<br />3) Aces can count as either 1 or 11, but only 1 if
-        your hand has 3 cards or more.<br /><br />SPECIAL SCORING!<br />1) If
-        your hand has 5 cards and you are less-than or equal-to 21, you win
-        extra!<br />2) If you hit 21 with three cards of 7, you win 7x your
-        bid!<br />3) If you start with a winning hand of Ace and a card that
-        equals 10, you win double your bid!`;
-    } else playerName.push(input);
-    currentMode = "0b";
-    console.log(`Player name saved: ${playerName}`);
-    console.log(`Mode changed: ${currentMode}`);
-    return `Hello ${playerName}. Please place your bet!<br/><br/>You have ${playerPoints} points.`;
+      return `Welcome to the help page. You may SUBMIT your name(s) at any time to begin!<br><br>HOW TO PLAY:<br />1) Players must
+        either beat the dealer's hand, OR, get 21 with two cards<br />2) Players are dealt 2 cards each in their first turn.<br />3) Players may
+        choose to draw more cards, or stay at however many cards they have.<br /><br />SPECIAL RULE:<br />1) Aces can count as either 1 or 11, but only 1 if
+        your hand has 3 cards or more.`;
+    }
+    multipleNames(input);
+    shuffleTheDeck();
+    var nameSavedMessage = `Your names have been saved! `;
+    initialPlayerCardAssign();
+    initialCompDraw();
+    playerScore(currentPlayer);
+    currentMode = "1";
+    console.log(`Mode changed: ` + currentMode);
+    myOutputValue =
+      nameSavedMessage +
+      playerNames[0] +
+      `, you're up first.<br><br>` +
+      greyBoxCardOutput(currentPlayer) +
+      `<br><br>Total count: ${playerTotals[currentPlayer]}<br><br>Would you like to stay as you are or add an additional card? Click SUBMIT to add a card, or enter 'stay' to finish your turn.`;
   }
-  console.log("<<<<Program end");
+  if (currentMode == "2") {
+    if (input == "") {
+      myOutputValue = determineWinner();
+    }
+    if (input == "again") {
+      myOutputValue = `Another round has started! <br><br>` + lagiSatu();
+    }
+  }
   return myOutputValue;
 };
