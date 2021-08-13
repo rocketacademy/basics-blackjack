@@ -103,7 +103,9 @@ var createPlayerHands = function() {
         player: playerIndex,
         hand:[],
         bank: 100,
-        bet: 0
+        bet: 0,
+        score: 0,
+        result: ``
       };
       playerHands.push(playerHand);
       playerIndex += 1;
@@ -111,59 +113,25 @@ var createPlayerHands = function() {
   return playerHands;
 };
 
-// //creates player banks
-// var createPlayerBanks = function() {
-//   var playerBanks = [];
-//   var playerIndex = 1;
-//     while (playerIndex <= numPlayers) {
-//       var playerBank = {
-//         player: playerIndex,
-//         bank: 100,
-//       };
-//       playerBanks.push(playerBank);
-//       playerIndex += 1;
-//     };
-//   return playerBanks;
-// };
-
-// //creates player bets
-// var createPlayerBets = function() {
-//   var playerBets = [];
-//   var playerIndex = 1;
-//     while (playerIndex <= numPlayers) {
-//       var playerBet = {
-//         player: playerIndex,
-//         bet: 0,
-//       };
-//       playerBets.push(playerBet);
-//       playerIndex += 1;
-//     };
-//   return playerBets;
-// };
-
 //keeps track of dealer and player hands
 var dealerHand = [];
 var playerHands = [];
 
-// // keeps track of player bets
-// var playerBanks = [];
-// var playerBets = [];
-
 //keeps track of which player's turn it is - start with player 1
 var playerTurn = 0;
-var allPlayersHaveGone = false;
+// var allPlayersHaveGone = false;
 
 //moves to next player's turn until every player has gone
 var nextTurn = function(){
   playerTurn += 1;
   if(playerTurn > (numPlayers-1)){
     playerTurn = 0;
-    allPlayersHaveGone = true;
+    // allPlayersHaveGone = true;
   };
-  return `It's player ${playerTurn+1}'s turn.`
+  return `It's player ${playerHands[playerTurn].player}'s turn.`
 };
 
-//creates a player's bet 
+//creates a player's bet on their turn
 var createBet = function(input,playerTurn){
   var bet = Number(input);
   playerHands[playerTurn].bank -= bet;
@@ -175,8 +143,8 @@ var createBet = function(input,playerTurn){
   //checks if player has enough in bank to bet
   }else if(playerHands[playerTurn].bank < 0){
     playerHands[playerTurn].bank +=bet;
-    return `${playerHands[playerTurn].player} doesn't have enough in the bank!<br>
-    ${playerHands[playerTurn].player} bank: ${playerHands[playerTurn].bank}`;
+    return `Player ${playerHands[playerTurn].player} doesn't have enough in the bank!<br>
+    Player ${playerHands[playerTurn].player} bank: ${playerHands[playerTurn].bank}`;
   } else if (playerHands[playerTurn].player < numPlayers){
     playerHands[playerTurn].bet = bet;
     var playerBetMessage = `Player ${playerHands[playerTurn].player} bet $${playerHands[playerTurn].bet}.`
@@ -211,31 +179,27 @@ var dealInitialHand = function(){
   Click to move to Player 1's hand.`
 };
 
-//keeps track of dealer and player scores
-var dealerScore = 0;
-var playerScore = 0;
-
 //calculates player score
-var calculatePlayerScore = function(playerHand){
-  playerScore = 0;
+var calculatePlayerScore = function(playerHands, playerTurn){
+  playerHands[playerTurn].score = 0;
   var playerAces = 0;
   var playerIndex = 0;
-  while (playerIndex < playerHand.length){
-    playerScore += playerHand[playerIndex].value;
-    if(playerHand[playerIndex].value == 11){
+  while (playerIndex < playerHands[playerTurn].hand.length){
+    playerHands[playerTurn].score += playerHands[playerTurn].hand[playerIndex].value;
+    if(playerHands[playerTurn].hand[playerIndex].value == 11){
       playerAces += 1;
     };
     playerIndex += 1;
   };
   //if player has more than 1 ace, 2nd ace onwards are counted as 1s to prevent bust
   if(playerAces > 0){
-    playerScore -= 10*(playerAces-1);
+    playerHands[playerTurn].score -= 10*(playerAces-1);
     //if player score still busts, count 1st ace as 1 too.
-    if(playerScore > 21){
-      playerScore -= 10;
+    if(playerHands[playerTurn].score > 21){
+      playerHands[playerTurn].score -= 10;
     }; 
   };
-return playerScore;
+return playerHands[playerTurn].score;
 };
 
 //calculates dealer score
@@ -262,11 +226,11 @@ return dealerScore;
 };
 
 //displays player hand
-var displayPlayerHand = function(playerHand){
-  var playerHandMessage = `${userName}'s hand:<br>`
+var displayPlayerHand = function(playerHands, playerTurn){
+  var playerHandMessage = `Player ${playerHands[playerTurn].player}'s hand:<br>`
   var playerIndex = 0;
-  while (playerIndex < playerHand.length){
-    playerHandMessage += playerHand[playerIndex].name + `<br>`;
+  while (playerIndex < playerHands[playerTurn].hand.length){
+    playerHandMessage += playerHands[playerTurn].hand[playerIndex].name + `<br>`;
     playerIndex += 1;
   };
 return playerHandMessage;
@@ -283,20 +247,102 @@ var displayDealerHand = function(dealerHand){
 return dealerHandMessage;
 };
 
+// //if player chooses to hit, deals another card to player
+// //if player chooses to stand, ends turn
+// var playerHitOrStand = function(playerChoice,playerTurn){
+//   var playerScore = calculatePlayerScore(playerHands,playerTurn);
+//   var playerHandMessage = displayPlayerHand(playerHands,playerTurn);
+//   var currentPlayerMessage = `Dealer face up card: ${dealerHand[0].name}<br><br>
+//       ${playerHandMessage}<br>
+//       Player ${playerHands[playerTurn].player}'s score: ${playerHands[playerTurn].score}`
+//   if (playerHands[playerTurn].player < numPlayers){
+//     if(playerChoice == `hit`){
+//     var playerHitCard = shuffledDeck.pop();
+//     var currentPlayerHand = playerHands[playerTurn].hand;
+//     currentPlayerHand.push(playerHitCard);
+//     playerScore = calculatePlayerScore(playerHands,playerTurn);
+//     playerHandMessage = displayPlayerHand(playerHands,playerTurn);
+//     currentPlayerMessage = `Dealer face up card: ${dealerHand[0].name}<br><br>
+//       ${playerHandMessage}<br>
+//       Player ${playerHands[playerTurn].player}'s score: ${playerHands[playerTurn].score}`
+//     return `Player ${playerHands[playerTurn].player} chose to ${playerChoice}. Player ${playerHands[playerTurn].player} drew ${playerHitCard.name}.<br><br>
+//       ${currentPlayerMessage}`;
+//     }else if (playerChoice == `stand`){
+//     currentPlayerMessage = `Dealer face up card: ${dealerHand[0].name}<br><br>
+//       ${playerHandMessage}<br>
+//       Player ${playerHands[playerTurn].player}'s score: ${playerHands[playerTurn].score}`
+//     var nextTurnMessage = nextTurn();
+//     return `Player ${playerHands[playerTurn].player} chose to ${playerChoice}. End turn.<br><br>
+//       ${currentPlayerMessage}<br><br>
+//       ${nextTurnMessage}`;
+//     }else {
+//     return `${currentPlayerMessage}<br><br>
+//       Player ${playerHands[playerTurn].player}, hit or stand?`;
+//     };
+//   }else{
+//     if(playerChoice == `hit`){
+//       playerHitCard = shuffledDeck.pop();
+//       currentPlayerHand = playerHands[playerTurn].hand;
+//       currentPlayerHand.push(playerHitCard);
+//       currentPlayerHand.push(playerHitCard);
+//       playerScore = calculatePlayerScore(playerHands,playerTurn);
+//       playerHandMessage = displayPlayerHand(playerHands,playerTurn);
+//       currentPlayerMessage = `Dealer face up card: ${dealerHand[0].name}<br><br>
+//         ${playerHandMessage}<br>
+//         Player ${playerHands[playerTurn].player}'s score: ${playerHands[playerTurn].score}`
+//       return `Player ${playerHands[playerTurn].player} chose to ${playerChoice}. Player ${playerHands[playerTurn].player} drew ${playerHitCard.name}.<br><br>
+//         ${currentPlayerMessage}`
+//       }else if (playerChoice == `stand`){
+//       currentPlayerMessage = `Dealer face up card: ${dealerHand[0].name}<br><br>
+//         ${playerHandMessage}<br>
+//         Player ${playerHands[playerTurn].player}'s score: ${playerHands[playerTurn].score}`
+//       nextTurnMessage = nextTurn();
+//       gameMode = GAME_MODE_END;
+//       return `Player ${playerHands[playerTurn].player} chose to ${playerChoice}. End turn.<br><br>
+//         All players have finished. Click to see results.`;
+//       }else {
+//         return `${currentPlayerMessage}<br><br>Player ${playerHands[playerTurn].player}, hit or stand?`;
+//       };
+//   };
+// };
+
 //if player chooses to hit, deals another card to player
 //if player chooses to stand, ends turn
-var playerHitOrStand = function(playerChoice){
+var playerHitOrStand = function(playerChoice,playerTurn){
+  var playerScore = calculatePlayerScore(playerHands,playerTurn);
+  var playerHandMessage = displayPlayerHand(playerHands,playerTurn);
+  var currentPlayerMessage = `Dealer face up card: ${dealerHand[0].name}<br><br>
+      ${playerHandMessage}<br>
+      Player ${playerHands[playerTurn].player}'s score: ${playerHands[playerTurn].score}`
   if(playerChoice == `hit`){
     var playerHitCard = shuffledDeck.pop();
-    playerHand.push(playerHitCard);
-    console.log(`player hand after hit`,playerHand);
-    return `${userName} chose to ${playerChoice}. ${userName} drew ${playerHitCard.name}.`
+    var currentPlayerHand = playerHands[playerTurn].hand;
+    currentPlayerHand.push(playerHitCard);
+    playerScore = calculatePlayerScore(playerHands,playerTurn);
+    playerHandMessage = displayPlayerHand(playerHands,playerTurn);
+    currentPlayerMessage = `Dealer face up card: ${dealerHand[0].name}<br><br>
+      ${playerHandMessage}<br>
+      Player ${playerHands[playerTurn].player}'s score: ${playerHands[playerTurn].score}`
+    return `Player ${playerHands[playerTurn].player} chose to ${playerChoice}. Player ${playerHands[playerTurn].player} drew ${playerHitCard.name}.<br><br>
+      ${currentPlayerMessage}`;
   }else if (playerChoice == `stand`){
-    gameMode = GAME_MODE_END;
-    return `${userName} chose to ${playerChoice}. End turn.`;
-  }else {
-    return `You can only choose to hit or stand.`;
-  };
+    currentPlayerMessage = `Dealer face up card: ${dealerHand[0].name}<br><br>
+      ${playerHandMessage}<br>
+      Player ${playerHands[playerTurn].player}'s score: ${playerHands[playerTurn].score}`
+    var nextTurnMessage = nextTurn();
+    var standMessage = `Player ${playerHands[playerTurn].player} chose to ${playerChoice}. End turn.<br><br>
+      ${currentPlayerMessage}<br><br>
+      ${nextTurnMessage}`;
+    if(playerHands[playerTurn].player == playerHands.length){
+      gameMode = GAME_MODE_END;
+      standMessage = `Player ${playerHands[playerTurn].player} chose to ${playerChoice}. End turn.<br><br>
+        All players have finished. Click to see results.`
+      };
+    return standMessage;
+    }else {
+    return `${currentPlayerMessage}<br><br>
+      Player ${playerHands[playerTurn].player}, hit or stand?`;
+    };
 };
 
 //if dealer score is less than 17, dealer has to hit (deal another card to dealer)
@@ -312,110 +358,238 @@ var dealerHitOrStand = function(dealerScore){
     dealerScore = calculateDealerScore(dealerHand);
     dealerHitCardMessage += dealerHitCard.name +` `;
   };
-gameMode = GAME_MODE_END;
 return dealerHitCardMessage;
 };
 
-//compares scores of dealer and player at end of game to determine winner and bets
-var generateGameResult = function(playerScore,dealerScore){
-  //if dealer busts, player wins 2 times bet
-  if(dealerScore > 21 && playerScore <= 21){
-    var betWon = (playerBet*2);
-    playerBank += betWon;
-    return `Dealer busted!<br>
-    ${userName} wins $${betWon}.<br>
-    ${userName} bank: $${playerBank}`
-      }else if(dealerScore < playerScore && dealerScore <= 21 && playerScore <= 21){
-        var betWon = (playerBet*2);
-        playerBank += betWon;
-        return `${userName} wins!<br>
-        ${userName} wins $${betWon}.<br>
-        ${userName} bank: $${playerBank}`
-      } else if (dealerScore >= playerScore && dealerScore <= 21 && playerScore <= 21){
-        return `Dealer wins!<br>
-        You lost your bet.<br>
-        ${userName} bank: $${playerBank}`
-      };
-}; 
+// //compares scores of dealer and player at end of game to determine winner and bets
+// var generateGameResult = function(playerHands,playerTurn,dealerScore){
+//   //if dealer busts, all remaining player wins 2 times bet
+//   if(dealerScore > 21 && playerHands[playerTurn].score <= 21){
+//     var betWon = (playerHands[playerTurn].bet*2);
+//     playerHands[playerTurn].bank += betWon;
+//     return `Dealer busted!<br>
+//     Player ${playerHands[playerTurn].player} wins $${betWon}.<br>
+//     Player ${playerHands[playerTurn].player} bank: $${playerHands[playerTurn].bank}`
+//     //if dealer does not bust, players who score higher than dealer win 2 times bet
+//       }else if(dealerScore < playerHands[playerTurn].score  && dealerScore <= 21 && playerHands[playerTurn].score <= 21){
+//         var betWon = (playerHands[playerTurn].bet*2);
+//         playerHands[playerTurn].bank += betWon;
+//         return `Player ${playerHands[playerTurn].player} wins!<br>
+//         Player ${playerHands[playerTurn].player} wins $${betWon}.<br>
+//         Player ${playerHands[playerTurn].player} bank: $${playerHands[playerTurn].bank}`
+//         //players who score equal to dealer or lower lose their bet
+//       } else if (dealerScore >= playerHands[playerTurn].score && dealerScore <= 21 && playerHands[playerTurn].score <= 21){
+//         return `Dealer wins!<br>
+//         You lost your bet.<br>
+//         ${playerHands[playerTurn].player} bank: $${playerHands[playerTurn].bank}`
+//       };
+// }; 
 
-//restarts game, clears player and dealer hands and bets, shuffles new deck 
+//compares scores of dealer and player at end of game to determine winner and bets
+var generateGameResult = function(playerHands,dealerScore){
+  var playerIndex = 0;
+  while(playerIndex < playerHands.length){
+    //if player is has remained till end of game
+    if(playerHands[playerIndex].result == ``){
+      playerScore = calculatePlayerScore(playerHands,playerIndex);
+      //if dealer busts, player wins 2 times bet
+      if(dealerScore > 21){
+        var betWon = (playerHands[playerIndex].bet*2);
+        playerHands[playerIndex].bank += betWon;
+        playerHands[playerIndex].result = `win`;
+        return `Dealer busted!<br>
+        Player ${playerHands[playerIndex].player} wins $${betWon}.<br>
+        Player ${playerHands[playerIndex].player} bank: $${playerHands[playerIndex].bank}`
+      //if dealer does not bust
+      }else{
+        //players who score higher than dealer win 2 times bet
+        if(dealerScore < playerHands[playerIndex].score){
+          var betWon = (playerHands[playerIndex].bet*2);
+          playerHands[playerIndex].bank += betWon;
+          playerHands[playerIndex].result = `win`;
+          return `Player ${playerHands[playerIndex].player} wins!<br>
+          Player ${playerHands[playerIndex].player} wins $${betWon}.<br>
+          Player ${playerHands[playerIndex].player} bank: $${playerHands[playerIndex].bank}`
+        //players who score equal to dealer or lower lose their bet
+        }else if(dealerScore >= playerHands[playerIndex].score){
+          playerHands[playerIndex].result = `lose`;
+          return `Player ${playerHands[playerIndex].player} lost!<br>
+          ${playerHands[playerIndex].player} bank: $${playerHands[playerIndex].bank}`
+        };
+      };
+    playerIndex += 1;
+    };
+  }; 
+};
+
+
+//restarts game
 var gameRestart = false;
 var restartGame = function(){
   gameMode = GAME_MODE_BETTING;
-  shuffledDeck = playerHand.concat(dealerHand,shuffledDeck);
-  shuffledDeck = shuffleCards(shuffledDeck);
-  playerHand = [];
+  //shuffles new deck
+  shuffledDeck = shuffleCards(cardDeck);
+  //clears 
+  playerHands = createPlayerHands(numPlayers);
+  //clears dealer hand
   dealerHand = [];
-  playerBet = 0;
+  //start from player 1 again
+  playerTurn = 0;
   gameRestart = false;
 };
 
 //---MAIN FUNCTION----
+// var main = function (input) {
+//   var myOutputValue = ``;
+//   var playerHandMessage = ``;
+//   if(gameMode == GAME_MODE_PRE_GAME){
+//     if(input == ``){
+//       myOutputValue = instructions;
+//     }else{
+//       var numPlayerMessage = createNumPlayers(input);
+//       playerHands = createPlayerHands(numPlayers);
+//       // playerBanks = createPlayerBanks(numPlayers);
+//       // playerBets = createPlayerBets(numPlayers);
+//       myOutputValue = `${numPlayerMessage}<br>Player 1, how much do you want to bet?`;
+//       gameMode = GAME_MODE_BETTING;
+//     };
+//   }else if (gameMode == GAME_MODE_BETTING){
+//     var bettingMessage = createBet(input,playerTurn);
+//     myOutputValue = bettingMessage;
+//   }else if(gameMode == GAME_MODE_INITIAL){
+//     var initialHand = dealInitialHand();
+//     //playerScore = calculatePlayerScore(playerHand);
+//     //playerHandMessage = displayPlayerHand(playerHand);
+//     gameMode = GAME_MODE_HIT_OR_STAND;
+//     myOutputValue = `${initialHand}`;
+//     //<br><br>
+//     //Dealer face up card: ${dealerHand[0].name}<br><br>
+//     //${playerHandMessage}<br>
+//     //${userName}'s score: ${playerScore}<br><br>
+//     //${userName}, hit or stand?;
+//   }else if (gameMode == GAME_MODE_HIT_OR_STAND){
+//     playerScore = calculatePlayerScore(playerHands,playerTurn);
+//     playerHandMessage = displayPlayerHand(playerHands,playerTurn);
+//     myOutputValue = `Dealer face up card: ${dealerHand[0].name}<br><br>
+//     ${playerHandMessage}<br>
+//     Player ${playerHands[playerTurn].player} score: ${playerHands[playerTurn].score}<br><br>` 
+//     if(playerHands[playerTurn].score == 21){
+//       var betWon = (playerHands[playerTurn].bet*1.5);
+//       playerHands[playerTurn].bank += betWon;
+//       // gameRestart = true;
+//       myOutputValue += `<br><br>${userName} wins $${betWon}.<br>
+//       ${userName}'s bank: $${playerBank}`
+//     }else {
+//     var hitOrStand = playerHitOrStand(input);
+//     playerScore = calculatePlayerScore(playerHand);
+//     playerHandMessage = displayPlayerHand(playerHand);
+//     myOutputValue = `${hitOrStand}<br><br>
+//     Dealer face up card: ${dealerHand[0].name}<br><br>
+//     ${playerHandMessage}<br>
+//     ${userName}'s score: ${playerScore}`;
+//     if(playerScore > 21){
+//       gameRestart = true;
+//       myOutputValue += `<br><br>${userName} busted!<br>
+//       You lost your bet.<br>
+//       ${userName}'s bank: $${playerBank}`;
+//     };
+//   };
+//   }else if (gameMode == GAME_MODE_END){
+//     playerScore = calculatePlayerScore(playerHand);
+//     playerHandMessage = displayPlayerHand(playerHand);
+//     dealerScore = calculateDealerScore(dealerHand);
+//     var dealerTurn = dealerHitOrStand(dealerScore);
+//     var dealerHandMessage = displayDealerHand(dealerHand);
+//     var gameResult = generateGameResult(playerScore,dealerScore)
+//     myOutputValue = `${dealerTurn}<br><br>
+//     ${dealerHandMessage}<br>
+//     Dealer score: ${dealerScore}<br><br>
+//     ${playerHandMessage}<br>
+//     ${userName}'s score: ${playerScore}<br><br>
+//     ${gameResult}`
+//     gameRestart = true;
+//   };
+
+//   if(gameRestart == true){
+//     var restart = restartGame();
+//   };
+
+//   return myOutputValue;
+// };
+
 var main = function (input) {
   var myOutputValue = ``;
   var playerHandMessage = ``;
+  //display instructions and take input on number of players in the round
   if(gameMode == GAME_MODE_PRE_GAME){
     if(input == ``){
       myOutputValue = instructions;
     }else{
       var numPlayerMessage = createNumPlayers(input);
       playerHands = createPlayerHands(numPlayers);
-      // playerBanks = createPlayerBanks(numPlayers);
-      // playerBets = createPlayerBets(numPlayers);
       myOutputValue = `${numPlayerMessage}<br>Player 1, how much do you want to bet?`;
       gameMode = GAME_MODE_BETTING;
     };
+  //each player places their bets for the round
   }else if (gameMode == GAME_MODE_BETTING){
     var bettingMessage = createBet(input,playerTurn);
     myOutputValue = bettingMessage;
+  //dealer deals initial hand
   }else if(gameMode == GAME_MODE_INITIAL){
     var initialHand = dealInitialHand();
-    //playerScore = calculatePlayerScore(playerHand);
-    //playerHandMessage = displayPlayerHand(playerHand);
     gameMode = GAME_MODE_HIT_OR_STAND;
     myOutputValue = `${initialHand}`;
-    //<br><br>
-    //Dealer face up card: ${dealerHand[0].name}<br><br>
-    //${playerHandMessage}<br>
-    //${userName}'s score: ${playerScore}<br><br>
-    //${userName}, hit or stand?;
-    if(playerScore == 21){
-      var betWon = (playerBet*1.5);
-      playerBank += betWon;
-      gameRestart = true;
-      myOutputValue += `<br><br>${userName} wins $${betWon}.<br>
-      ${userName}'s bank: $${playerBank}`
-    };
   }else if (gameMode == GAME_MODE_HIT_OR_STAND){
-    var hitOrStand = playerHitOrStand(input);
-    playerScore = calculatePlayerScore(playerHand);
-    playerHandMessage = displayPlayerHand(playerHand);
-    myOutputValue = `${hitOrStand}<br><br>
-    Dealer face up card: ${dealerHand[0].name}<br><br>
-    ${playerHandMessage}<br>
-    ${userName}'s score: ${playerScore}`;
-    if(playerScore > 21){
-      gameRestart = true;
-      myOutputValue += `<br><br>${userName} busted!<br>
-      You lost your bet.<br>
-      ${userName}'s bank: $${playerBank}`;
+    var playerScore = calculatePlayerScore(playerHands,playerTurn);
+    playerHandMessage = displayPlayerHand(playerHands,playerTurn);
+    myOutputValue = `Dealer face up card: ${dealerHand[0].name}<br><br>
+      ${playerHandMessage}<br>
+      Player ${playerHands[playerTurn].player} score: ${playerHands[playerTurn].score}<br><br>`;
+    //if player's initial hand is 21, win 1.5 times of bet
+    if(playerHands[playerTurn].hand.length == 2 &&
+      playerHands[playerTurn].score == 21){
+      var betWon = (playerHands[playerTurn].bet*1.5);
+      playerHands[playerTurn].bank += betWon;
+      playerHands[playerTurn].result = `immediate win`;
+      var immediateWinMessage =`Player ${playerHands[playerTurn].player} wins $${betWon}.<br>
+        Player ${playerHands[playerTurn].player}'s bank: $${playerHands[playerTurn].bank}`;
+      nextTurnMessage = nextTurn();
+      myOutputValue += `${immediateWinMessage}<br><br>${nextTurnMessage}`;
+    //if not, each player chooses to hit or stand
+    }else {
+      var hitOrStand = playerHitOrStand(input,playerTurn);
+      // playerScore = calculatePlayerScore(playerHands,playerTurn);
+      // playerHandMessage = displayPlayerHand(playerHands,playerTurn);
+      myOutputValue = `${hitOrStand}`
+        // <br><br>
+        // Dealer face up card: ${dealerHand[0].name}<br><br>
+        // ${playerHandMessage}<br>
+        // Player ${playerHands[playerTurn].player}'s score: ${playerHands[playerTurn].score}`;
+      //if player busts, they lose their bet
+      if(playerHands[playerTurn].score > 21){
+        playerHands[playerTurn].result = `bust`;
+        var bustedMessage = `<br><br>Player ${playerHands[playerTurn].player} busted!<br>
+          You lost your bet.<br>
+          Player ${playerHands[playerTurn].player}'s bank: $${playerHands[playerTurn].bank}`;
+        nextTurnMessage = nextTurn();
+        myOutputValue += `${bustedMessage}<br><br>${nextTurnMessage}`;
+      };
     };
-  }else if (gameMode == GAME_MODE_END){
-    playerScore = calculatePlayerScore(playerHand);
-    playerHandMessage = displayPlayerHand(playerHand);
+  }else if(gameMode == GAME_MODE_END){
+    //after all players are done, dealer hits or stands
     dealerScore = calculateDealerScore(dealerHand);
     var dealerTurn = dealerHitOrStand(dealerScore);
     var dealerHandMessage = displayDealerHand(dealerHand);
-    var gameResult = generateGameResult(playerScore,dealerScore)
+    //generate result for all remaining players
+    var gameResult = generateGameResult(playerHands,dealerScore)
     myOutputValue = `${dealerTurn}<br><br>
     ${dealerHandMessage}<br>
     Dealer score: ${dealerScore}<br><br>
-    ${playerHandMessage}<br>
-    ${userName}'s score: ${playerScore}<br><br>
     ${gameResult}`
     gameRestart = true;
   };
 
+  //restart game
   if(gameRestart == true){
     var restart = restartGame();
   };
