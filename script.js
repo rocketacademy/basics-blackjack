@@ -215,7 +215,7 @@ var playerChange = function () {
   } else if (currentPlayer == playerNames.length) {
     compScore();
     compAction();
-    myOutputValue = `The final player has had their turn! <br><br>The dealer has also taken their turn because I coded it to run this way and save you one less click.<br><br>Click SUBMIT to see who won/lost!`;
+    myOutputValue = `The final player has had their turn! <br><br>The dealer has also taken their turn because I coded it to run this way and save you a click (IDK how to talk my way out of this shortcut).<br><br>Click SUBMIT to see who won/lost!`;
   }
   return myOutputValue;
 };
@@ -261,11 +261,13 @@ Numbers same = DRAW
 */
 
 //Determine the winner - mode 2
+//BY RIGHT, function will go through all the conditions based off which player is being represented by the index (i), then return statement after statement as it loops through all the playerNames[] indices.
 var determineWinner = function () {
+  var outputStatements = [];
   var playAgainStatement = `<br><br>To play another round, enter 'again'.`;
   for (i = 0; i < playerNames.length; i += 1) {
     if (playerTotals[i] == cTotal) {
-      myOutputValue =
+      var myOutputValue =
         playerNames[i] +
         `: You draw with the dealer! ${playerTotals[i]} vs. ${cTotal}<br><br>`;
     } else if (playerTotals[i] == 21 && cTotal !== 21) {
@@ -275,7 +277,7 @@ var determineWinner = function () {
     } else if (cTotal == 21 && playerTotals[i] !== 21) {
       var myOutputValue =
         playerNames[i] +
-        `: You lose to the dealer! ${playerTotals[i]} vs. ${cTotal}<br><br>`;
+        `: You lost to the dealer! ${playerTotals[i]} vs. ${cTotal}<br><br>`;
     } else if (cTotal < 21 && playerTotals[i] > 21) {
       var myOutputValue =
         playerNames[i] +
@@ -295,10 +297,12 @@ var determineWinner = function () {
     } else if (playerTotals[i] < cTotal && cTotal <= 21) {
       var myOutputValue =
         playerNames[i] +
-        `: You lose to the dealer! ${playerTotals[i]} vs. ${cTotal}<br><br>`;
+        `: You lost to the dealer! ${playerTotals[i]} vs. ${cTotal}<br><br>`;
     }
+    outputStatements.push(myOutputValue);
   }
-  return myOutputValue[i] + `<br><br>` + `<br><br>` + playAgainStatement;
+  console.log(outputStatements);
+  return outputStatements + `<br><br>` + `<br><br>` + playAgainStatement;
 };
 
 //Function for repeat plays
