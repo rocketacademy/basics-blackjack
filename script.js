@@ -56,16 +56,15 @@ function randomiser(max) {
 // ################ SHUFFLE DECK ################
 function shuffleCards(cardDeck) {
   // Loop over the card deck array once
-  for (index in cardDeck) {
-    //(i = 0; i < cardDeck.length; i++) {
+  for (i = 0; i < cardDeck.length; i++) {
     // Select a random index in the deck
     var randomIndex = randomiser(cardDeck.length);
     // Select the card that corresponds to randomIndex
     var randomCard = cardDeck[randomIndex];
     // Select the card that corresponds to currentIndex
-    var currentCard = cardDeck[index];
+    var currentCard = cardDeck[i];
     // Swap positions of randomCard and currentCard in the deck
-    cardDeck[index] = randomCard;
+    cardDeck[i] = randomCard;
     cardDeck[randomIndex] = currentCard;
   }
   // Return the shuffled deck
@@ -93,151 +92,230 @@ function handPoints(hand) {
   return totalPoints;
 }
 
-// ################ START MODE ################
-function initialDeal(playerPoints, dealerPoints, deck) {
+// ################ MULTIPLAYER ################
+function multiplayer(qty) {
+  // reset playersArr
+  playersArr = [];
+
+  // Add player to array
+  for (x = 0; x <= qty; x++) {
+    // player obj template
+    var playerObj = {
+      name: "",
+      number: x,
+      hand: [],
+      score: 0,
+      turn: 0,
+      // bettingPoints: 100,
+    };
+    if (x == 0) {
+      playerObj.name = "dealer";
+    }
+    //  else {
+    //   playerObj.number = x;
+    // }
+    playersArr.push(playerObj);
+  }
+  return playersArr; // obj array of players
+}
+
+// ################ INITIAL DEAL ################
+function initialDeal(deck, playersArr) {
+  var initialCards = [];
+
+  // deal 2 cards to each player
   for (i = 0; i < 2; i++) {
-    playerHand.push(deck.pop());
-    dealerHand.push(deck.pop());
+    var newDraw = deck.pop();
+    initialCards.push(newDraw);
   }
 
-  // count points
-  playerPoints = handPoints(playerHand);
-  dealerPoints = handPoints(dealerHand);
-
-  // BANLUCK
-  if (
-    playerPoints == 21 &&
-    dealerPoints != 21
-    // || (playerHand[0].name == "ace" && playerHand[1].name == "ace")
-  ) {
-    // player instant win
-    myOutputValue = `You have drawn<br><br>${playerHand[0].name} of ${playerHand[0].suit}<br>${playerHand[1].name} of ${playerHand[1].suit}<br><br>Your current points is ${playerPoints}<br>You won! Press 'Submit' to play again.`;
-    return myOutputValue;
+  // BANLUCK (only for 1 player)
+  if (playersArr.length == 2) {
+    // for (p = 1; p < playersArr; p++) {
+    if (playersArr[1].hand.length > 0) {
+      if (
+        (playersArr[1].score == 21 && playersArr[0].score != 21) ||
+        (playersArr[1].hand[0].name == "ace" &&
+          playersArr[1].hand[1].name == "ace")
+      ) {
+        // player instant win
+        myOutputValue = `You have drawn<br><br>${playersArr[p].hand[0].name} of ${playersArr[p].hand[0].suit}<br>${playersArr[p].hand[1].name} of ${playersArr[p].hand[1].suit}<br><br>Your current points is ${playersArr[p].score}<br>You won! Press 'Submit' to play again.`;
+        return myOutputValue;
+      }
+    }
+    // }
   }
 
-  // change mode
-  mode = "draw";
-
-  myOutputValue = `You have drawn<br><br>${playerHand[0].name} of ${playerHand[0].suit}<br>${playerHand[1].name} of ${playerHand[1].suit}<br><br>Your current points is ${playerPoints}<br>Hit or stand?`;
-
-  return myOutputValue;
+  return initialCards; // returns array of cards (objs)
 }
 
 // ################ WINNER CHECK ##################
-function winnerCheck(playerPoints, dealerPoints) {
-  // compare scores
-  var playerScoreDiff = 0;
-  var dealerScoreDiff = 0;
-  myOutputValue = `You had ${playerPoints}. Dealer had ${dealerPoints}.`;
+function winnerCheck(playersArr) {
+  var scoreDiff = 0;
+  var playersDiff = [];
+  var winner = []; // push winner into an array in case of tie
+  var scoreboard = "<u>~ P O I N T S ~</u><br>";
+  var winnerOutput;
 
-  // check score diff
-  if (playerPoints != 21) {
-    playerScoreDiff = Math.abs(playerPoints - 21);
+  for (s = 0; s < playersArr.length; s++) {
+    if (playersArr[s] == dealer) {
+      scoreboard += `${playersArr[s].name}: ${playersArr[s].score}<br>`;
+    } else {
+      scoreboard += `Player ${playersArr[s].number}: ${playersArr[s].score}<br>`;
+    }
   }
-  if (dealerPoints != 21) {
-    dealerScoreDiff = Math.abs(dealerPoints - 21);
+
+  // compare scores
+  for (const player of playersArr) {
+    // check score diff of players with score 21 or less
+    if (player.score <= 21) {
+      scoreDiff = Math.abs(player.score - 21);
+      player.diff = scoreDiff;
+      // add score diff to array for comparison later
+      playersDiff.push(scoreDiff);
+    }
+  }
+
+  // sort score diff in ascending order
+  playersDiff.sort(function (a, b) {
+    return a - b;
+  });
+
+  // find winner(s)
+  for (const winning of playersArr) {
+    if (winning.diff == playersDiff[0]) {
+      winner.push(winning);
+    }
   }
 
   // announce winner
-  if (playerPoints == 21 || playerScoreDiff < dealerScoreDiff) {
-    playerWins += 1;
-    myOutputValue += `<br>You win! <br>Press 'Submit' to play again. <br><br>Player wins: ${playerWins}<br>Dealer wins: ${dealerWins}`;
+  if (winner.length == 1) {
+    if (winner[0].name != "dealer")
+      winnerOutput = `Player ${winner[0].number} wins! <br>Press 'Submit' to play again.<br><br>${scoreboard}`;
   } else {
-    dealerWins += 1;
-    myOutputValue += `<br>Dealer wins! <br>Press 'Submit' to play again. <br><br>Player wins: ${playerWins}<br>Dealer wins: ${dealerWins}`;
+    winnerOutput = `${winner[0].name} wins! <br>Press 'Submit' to play again.<br><br>${scoreboard}`;
   }
-  return myOutputValue;
+  return winnerOutput;
+}
+
+// ################ CURRENT PLAYER CHECK ##################
+function isPlayer(playersArr) {
+  // check current player
+  for (playing = 0; playing < playersArr.length; playing++) {
+    if (playersArr[playing].turn == 1) {
+      return playersArr[playing]; // player object
+    }
+  }
 }
 
 // ################ GLOBAL VAR ################
 var deck = makeDeck();
-var playerHand = [];
-var dealerHand = [];
-var mode = "start";
-var playerPoints = 0;
-var dealerPoints = 0;
-var playerWins = 0;
-var dealerWins = 0;
+var mode = "initialise";
 var stand;
+var playersArr = [];
+var dealer;
 
 // ################ MAIN FUNCTION ################
 var main = function (input) {
   var myOutputValue = "";
   var shuffledDeck = shuffleCards(deck);
 
-  if (mode == "start") {
-    // reset hand and points
-    playerHand = [];
-    dealerHand = [];
-    playerPoints = 0;
-    dealerPoints = 0;
+  // ++++++++++ START ++++++++++
+  if (mode == "initialise") {
+    // reset players array
+    playersArr = [];
 
-    return initialDeal(playerPoints, dealerPoints, shuffledDeck);
+    myOutputValue = "Please enter the number of players";
+    if (isNaN(Number(input)) == false && input != "") {
+      multiplayer(Number(input)); // players is an array of objects
+      dealer = playersArr[0];
+      dealer.hand = initialDeal(shuffledDeck, playersArr);
+      dealer.turn = 0;
+      playersArr[1].turn = 1;
+      mode = "start";
+      return `${input} players playing. Player 1, press submit to draw.`;
+    }
+    return myOutputValue;
   }
-  if (mode == "draw") {
-    myOutputValue = `Your current points is ${playerPoints}<br>Hit or stand?`;
 
-    // -------------------- STAND --------------------
+  if (mode == "start") {
+    // // check current player
+    currentPlayer = isPlayer(playersArr); // player object
+
+    currentPlayer.hand = initialDeal(shuffledDeck, playersArr);
+    currentPlayer.score = handPoints(currentPlayer.hand);
+    myOutputValue = `Player ${currentPlayer.number}, you have drawn <br><br>${currentPlayer.hand[0].name} of ${currentPlayer.hand[0].suit}<br>${currentPlayer.hand[1].name} of ${currentPlayer.hand[1].suit}<br><br>Your current points is ${currentPlayer.score}.<br>Hit or stand?`;
+
+    mode = "draw";
+    return myOutputValue;
+  }
+
+  // ++++++++++ DRAW ++++++++++
+  if (mode == "draw") {
+    myOutputValue = `Player ${currentPlayer.number}, your current points is ${currentPlayer.score}<br>Hit or stand?`;
+
+    // ---------- STAND ----------
     if (input.toLowerCase() == "stand" || stand == "forced") {
       stand = "";
-      // dealer draws AFTER player stands if points less than 17
-      for (j = 0; j < 3; j++) {
-        if (dealerPoints < 17) {
-          dealerHand.push(shuffledDeck.pop());
-          dealerPoints = handPoints(dealerHand);
-        }
+      // change current player
+      // if current player is last on array, next player is dealer. else current player is next player in array
+      if (playersArr[playersArr.length - 1].turn == 1) {
+        dealer.turn = 1;
+        currentPlayer = dealer; // player object
+        console.log("changed to dealer");
+      } else {
+        currentPlayer.turn = 0;
+        playersArr[Number(currentPlayer.number) + 1].turn = 1;
+        currentPlayer = isPlayer(playersArr); // player object
+        console.log("changed player");
       }
-      playerPoints = handPoints(playerHand);
-      var winner = winnerCheck(playerPoints, dealerPoints);
-      mode = "start";
-      return winner;
 
-      // // compare scores
-      // var playerScoreDiff = 0;
-      // var dealerScoreDiff = 0;
-      // myOutputValue = `You had ${playerPoints}. Dealer had ${dealerPoints}.`;
+      // if current player is dealer
+      if (currentPlayer == dealer) {
+        dealer.score = handPoints(currentPlayer.hand);
+        // dealer draws AFTER all player stands if points less than 17
+        for (j = 0; j < 3; j++) {
+          if (dealer.score < 17) {
+            dealer.hand.push(shuffledDeck.pop());
+            dealer.score = handPoints(currentPlayer.hand);
+          }
+        }
+        var winner = winnerCheck(playersArr);
+        mode = "start";
 
-      // // check score diff
-      // if (playerPoints != 21) {
-      //   playerScoreDiff = Math.abs(playerPoints - 21);
-      // }
-      // if (dealerPoints != 21) {
-      //   dealerScoreDiff = Math.abs(dealerPoints - 21);
-      // }
+        // change to first player
+        currentPlayer.turn = 0;
+        playersArr[Number(currentPlayer.number) + 1].turn = 1;
+        currentPlayer = isPlayer(playersArr); // player object
 
-      // // announce winner
-      // if (playerPoints == 21 || playerScoreDiff < dealerScoreDiff) {
-      //   playerWins += 1;
-      //   myOutputValue += `<br>You win! <br>Press 'Submit' to play again. <br><br>Player wins: ${playerWins}<br>Dealer wins: ${dealerWins}`;
-      // } else {
-      //   dealerWins += 1;
-      //   myOutputValue += `<br>Dealer wins! <br>Press 'Submit' to play again. <br><br>Player wins: ${playerWins}<br>Dealer wins: ${dealerWins}`;
-      // }
-      // mode = "start";
-      // return myOutputValue;
+        return winner;
+      } else {
+        myOutputValue = `Player ${currentPlayer.number} is next. Press 'Submit' to draw.`;
+        mode = "start";
+      }
     }
 
-    // -------------------- HIT --------------------
+    // ---------- HIT ----------
     if (input.toLowerCase() == "hit") {
       var playerCards = "You have drawn<br><br>";
 
       // cannot draw more than 5 cards
-      if (playerHand.length != 5) {
-        playerHand.push(shuffledDeck.pop());
+      if (currentPlayer.hand.length <= 5) {
+        currentPlayer.hand.push(shuffledDeck.pop());
       } else {
         stand = "forced";
         myOutputValue =
-          "You cannot draw more than 5 cards.<br>Press 'Submit' to see if you've won.";
+          "You cannot draw more than 5 cards.<br>Press 'Submit' to continue.";
         return myOutputValue;
       }
 
-      // ---------- PLAYER POINTS ----------
-      playerPoints = handPoints(playerHand);
+      // recalculate player points
+      currentPlayer.score = handPoints(currentPlayer.hand);
 
-      for (k = 0; k < playerHand.length; k++) {
-        playerCards += `${playerHand[k].name} of ${playerHand[k].suit}<br>`;
+      for (k = 0; k < currentPlayer.hand.length; k++) {
+        playerCards += `${currentPlayer.hand[k].name} of ${currentPlayer.hand[k].suit}<br>`;
       }
-      myOutputValue = `${playerCards}<br>Your current points is ${playerPoints}<br>Hit or stand?`;
+      myOutputValue = `${playerCards}<br>Your current points is ${currentPlayer.score}<br>Hit or stand?`;
     }
     return myOutputValue;
   }
