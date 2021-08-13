@@ -140,7 +140,20 @@ var dealCard = function (cards) {
     
   }; 
 
-  
+  // Display Output
+ var cardsOutput = function (cards) {
+     return cards.map (hand =>[hand.name, hand.suit].join(" "))
+     
+ };
+
+ var defaultOuput = function () {
+   return `Player 1 hand are ${cardsOutput(playerCards)} with sum ${playerCardSum} <br> Dealer hand are ${cardsOutput(compCards)} with sum ${compCardSum}`
+};
+
+//  var cardOuputValue = function (cards) {
+//    return cards.map(cardsOutput);
+
+
  var highestVal = 21;
 checkForBlackjack = function (){
   if (playerCardSum == highestVal && compCardSum == highestVal) {
@@ -158,7 +171,17 @@ checkForBlackjack = function (){
     
   }
 };
+// Check dealer (comp) hit or stand
+var checkCompHit = function (cards){
+  if (compCardSum < 17) {
+    dealCard(compCards);
+    compCardSum = getCardSum (compCards);
+    myOutputValue = compCards.toString() + '<br> dealer sum is ' + compCardSum
 
+} else {myOutputValue = compCards.toString() + '<br> dealer sum is ' + compCardSum
+}
+
+};
 
 var main = function(input) {
   // if (isOver == true){
@@ -198,15 +221,26 @@ console.log (compCardSum);
 //User decide to hit or stand using the submit button
 
 if (gameMode == 'hit or stand' && input == 'hit') {
-       
+    
     dealCard(playerCards);
     console.log('hit me');
     console.log(playerCards);
+    playerCardSum = getCardSum(playerCards);
+    console.log(playerCardSum);
+
+       
+
+    myOutputValue = defaultOuput();
+
+    
 
   } else if (gameMode == 'hit or stand' && input == 'stand'){
-  dealCard(compCards);
-  console.log(compCards);
-  }
+    checkCompHit(compCards);
+  
+    compCardSum = getCardSum (compCards);
+   myOutputValue = defaultOuput();
+
+  } return myOutputValue;
 
 
 };
