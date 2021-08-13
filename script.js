@@ -146,6 +146,16 @@ var printCardswithEmojiSuits = function (cards) {
   return returnString;
 };
 
+var howToPlay = function() {
+  return `To play BlackJack, first place a bet.<br>
+  The aim of Black Jack is to draw cards up to 21<br>
+  After drawing 2 cards. Decide to hit to draw<br>
+  or stand to stop drawing. Cards are compared<br>
+  with computer's hand. The hand that is closest to 21 wins.<br><br>
+
+  Enjoy the Game!`
+}
+
 // features to work on
 //1. reset blackjack game game ends (solved)
 //2. change suit to emoji
@@ -169,7 +179,10 @@ var shuffledDeck = shuffleCards(deck);
 
 var main = function (input) {
 
-  if (!userName ) {
+  if (!userName) {
+    if (!input) {
+      return 'Please input a non-empty string as your user name!';
+    }
     userName = input;
     gameMode = `betpoints`
     return winMessage = `Let's welcome ${userName} to our BlackJack game!<br><br>

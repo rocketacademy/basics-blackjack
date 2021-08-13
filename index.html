@@ -90,6 +90,8 @@
       <input id="input-field" />
       <br />
       <button id="submit-button">Submit</button>
+      <button id="myBtn">How to Play</button>
+
       <p>Output:</p>
       <div id="output-div">Welcome to BlackJack. <br><br>Please enter a name and press submit!</div>
     </div>
@@ -110,6 +112,14 @@
         // Reset input value
         input.value = "";
       });
+
+      var instruction = document.querySelector("#myBtn");
+      instruction.addEventListener("click", function () {
+
+      var output = document.querySelector("#output-div");   
+      output.innerHTML = howToPlay();
+     });
+
     </script>
       <div align="center">
       <iframe width="560" height="28" src="https://www.youtube.com/embed/0ZiFruXesqw" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>  
