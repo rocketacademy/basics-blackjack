@@ -108,6 +108,7 @@ var input = "";
 var players = ['Player1', 'Computer'];
 var myOutputValue = '';
 var gameOverOutput = '<br> Game Over! <br> Please refresh the game.';
+var isOver = false;
 
 
 // On submit deal the cards
@@ -133,6 +134,8 @@ var dealCard = function (cards) {
      } if (aceCard > 0) {
         if ( cardSum <= 11 + aceCard){
           cardSum = cardSum + 10
+        } if (cardSum > highestVal && aceCard > 0) {
+          cardSum = cardSum - 10
         }
      }
     
@@ -173,20 +176,17 @@ checkForBlackjack = function (){
 };
 // Check dealer (comp) hit or stand
 var checkCompHit = function (cards){
-  if (compCardSum < 17) {
+  while (compCardSum < 17) {
     dealCard(compCards);
     compCardSum = getCardSum (compCards);
-    myOutputValue = compCards.toString() + '<br> dealer sum is ' + compCardSum
-
-} else {myOutputValue = compCards.toString() + '<br> dealer sum is ' + compCardSum
-}
-
+  }
+    
 };
 
 var main = function(input) {
-  // if (isOver == true){
-  //   myOutputValue = "Game Over! <br> Please refresh to play again.";
-  // }
+  if (isOver){
+    myOutputValue = "Game Over! <br> Please refresh to play again.";
+  }
   //deal cards, in the beginning 2 cards each
   if (gameMode == 'start game') {
     // first card
@@ -228,16 +228,20 @@ if (gameMode == 'hit or stand' && input == 'hit') {
     playerCardSum = getCardSum(playerCards);
     console.log(playerCardSum);
 
-       
-
-    myOutputValue = defaultOuput();
-
-    
+      if (getCardSum (playerCards) > highestVal) {
+        myOutputValue = `${defaultOuput()} <br> Player 1 has busted. <br> Game Over! <br> Please refresh the game`
+      } if (getCardSum (playerCards) == highestVal) {
+        myOutputValue = `${defaultOuput()} <br> Player 1 wins! Blackjack! <b> Game Over, please refresh the game! `
+        isOver = true
+      } if (getCardSum (playerCards) < highestVal) { 
+        myOutputValue = `${defaultOuput()} <br> Would you like to hit or stand?`
+      return myOutputValue;
+    } 
 
   } else if (gameMode == 'hit or stand' && input == 'stand'){
     checkCompHit(compCards);
   
-    compCardSum = getCardSum (compCards);
+    
    myOutputValue = defaultOuput();
 
   } return myOutputValue;
