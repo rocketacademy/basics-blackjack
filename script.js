@@ -82,18 +82,22 @@ var shuffleCards = function (cardDeck) {
 var deck = shuffleCards(makeDeck())
 var playerCards = [];
 var dealerCards = [];
+//var playerNames = [];
 var burstSum = 22
 var dealerHitThreshold = 16
 var playerSum;
 var dealerSum;
 var myOutputValue = ''
+var playerPoints = 100
+var userName = ''
 
 // ==================  Game Modes ================= \\
+var welcomeMessage = true
+var userNameRecord = false
+var betting = false
 var initialDeal = false
 var hitOrStand = false
 var gameOver = false
-var userNameRecord = false
-var welcomeMessage = true
 
 // ==================  Card Dealing Function ================= \\
 var dealCard = function(cards) {
@@ -119,6 +123,7 @@ var compareSums = function(playerSum, dealerSum){
     console.log(`Player burst, dealer did not`)
     gameOver = true
     hitOrStand = false
+    playerPoints -= currentBet
     return myOutputValue
   }
   // check if dealer burst, if player did not burst
@@ -127,6 +132,7 @@ var compareSums = function(playerSum, dealerSum){
     console.log(`Dealer burst, player did not`)
     gameOver = true
     hitOrStand = false
+    playerPoints += currentBet
     return myOutputValue
   }
   // if both players did not burst, check. Player value is less than dealer
@@ -135,6 +141,7 @@ var compareSums = function(playerSum, dealerSum){
     console.log(`Player lost, both did not burst`)
     gameOver = true
     hitOrStand = false
+    playerPoints -= currentBet
     return myOutputValue
   }
   // if both players did not burst, check. Player value is more than dealer
@@ -143,6 +150,7 @@ var compareSums = function(playerSum, dealerSum){
     console.log(`Player won, both did not burst`)
     gameOver = true
     hitOrStand = false
+    playerPoints += currentBet
     return myOutputValue
   }
 }
@@ -155,6 +163,7 @@ var checkBlackJack = function(){
   if(dealerCards.length == 2 && getSum(dealerCards) == 21){
     gameOver = true
     hitOrStand = false
+    playerPoints -= currentBet
     myOutputValue = `${playerLostMessage} ${showDealerCards()} ${dealerBlackJackMessage} ${refreshMessage}`
     console.log(`Dealer got Black Jack`)
     return playerLostMessage
@@ -162,6 +171,7 @@ var checkBlackJack = function(){
     else if (playerCards.length == 2 && getSum(playerCards) == 21 && getSum(dealerCards) != 21){
     gameOver = true
     hitOrStand = false
+    playerPoints += currentBet
     myOutputValue = `${playerWonMessage} ${showPlayerCards()} ${playerBlackJackMessage} ${refreshMessage}`
     console.log(`Player got Black Jack`)
     return playerWonMessage
@@ -203,11 +213,14 @@ var getSum = function(playerOrDealerCards){
 var playerWonMessage = `You Won! <br>`
 var playerLostMessage = `You Lost! <br>`
 var drawMessage = `It is a draw! <br>`
-var refreshMessage = `Please refresh to start a new game. <br>`
+var refreshMessage = `Please type "again" to start a new game. <br>`
+var restartMessage = `You do not have enough points to continue betting! Please refresh the website to play again.`
 var hitOrStandMessage = `Would you like to "Hit" or "Stand"? <br>`
 var playerBlackJackMessage = `You have gotten BlackJack! <br>`
 var dealerBlackJackMessage = `Dealer had a BlackJack! <br>`
 var userNameInputMessage = `Hello, my name is Kenneth. I will be your dealer. Please input your name. <br>`
+var secretCheatMessage = `Nice try! Please do not cheat. <br>`
+var betMessage =  ``
   // converting message to string (copied as kept getting undefined in messages)
   var convertHandToString = function (hand) {
     return `[${hand.map((card) => card.name)}]`;
@@ -225,22 +238,49 @@ var userNameInputMessage = `Hello, my name is Kenneth. I will be your dealer. Pl
 var main = function(input){
   // welcomes the player
   if(welcomeMessage == true){
+    console.log (`welcome message and ask player for their name`)
     myOutputValue = `${userNameInputMessage}`
     welcomeMessage = false
     return myOutputValue
   }
   // check if there is a player name
   if(userNameRecord == false && input != ""){
-    var userName = input
+    console.log(`asking player for their bet`)
+    userName = input
     userNameRecord = true
-    welcomeMessage = false
-    myOutputValue = `Hi ${userName}! Let's play Black Jack! Press submit again and I will deal out cards.`
-    initialDeal = true
+    myOutputValue = `Hi ${userName}! Let's play Black Jack! You currently have ${playerPoints} points. How much would you like to bet? (Min. 2 pts)`
     return myOutputValue
   }
   // check if game is completed
   if(gameOver == true){
+    if(input == "again"){
+      gameOver = false
+      betting = false
+      initialDeal = false
+      deck = shuffleCards(makeDeck())
+      myOutputValue = `Hi ${userName}! Let's play Black Jack! You currently have ${playerPoints} points. How much would you like to bet? (Min. 2 pts)`
+      if(playerPoints <2){
+        myOutputValue = restartMessage
+        return myOutputValue
+      }
+      return myOutputValue
+    }
     return refreshMessage
+  }
+  // ask player on bet amount
+  if(betting == false && playerPoints >= 2 && input >= 2){
+    // if player inputs more than playerPoints
+    if(input > playerPoints){
+      myOutputValue = `${secretCheatMessage} You currently have ${playerPoints} points. How much would you like to bet? (Min. 2 pts)` 
+      return myOutputValue
+    }
+    console.log (`recording player's bet and ready to deal cards`)
+    currentBet = input
+    console.log()
+    initialDeal = true
+    betting = true
+    myOutputValue = `Sure ${userName}! You bet ${currentBet}. <br> May luck be in your favour. <br> Press submit to deal cards.` 
+    return myOutputValue 
   }
   // deal first card to dealer, then player
   if(playerCards.length == 0 && initialDeal == true){
@@ -258,7 +298,7 @@ var main = function(input){
     console.log(dealerCards)
     console.log(`Finished dealing cards`)
   }
-  if(playerCards.length == 2 && gameOver == false && hitOrStand == false){
+  if(playerCards.length == 2 && gameOver == false && hitOrStand == false && betting == true){
     // Check if either players got Black Jack
     checkBlackJack();
     if(gameOver == true){
@@ -272,7 +312,7 @@ var main = function(input){
   } 
   
   // ==================  Player Hit or Stand ================= \\ 
-    // If the player input anything other than hit or stand, ask them to do so.
+  // If the player input anything other than hit or stand, ask them to do so.
   if((hitOrStand == true && input != "hit") && (hitOrStand == true && input != "stand")){
     myOutputValue = `${showPlayerCards()} ${hitOrStandMessage}`
     return myOutputValue
@@ -298,7 +338,7 @@ var main = function(input){
     hitOrStand = false
     console.log(`Player decided to stand`)
     // ==================  Dealer Hit or Stand ================= \\
-     // If dealer has 16 or less total value
+    // If dealer has 16 or less total value
     while (getSum(dealerCards) <= dealerHitThreshold && gameOver == false) {
       dealCard(dealerCards);
       console.log(`dealer drawing more cards`)
@@ -309,6 +349,7 @@ var main = function(input){
       if (dealerSum >= burstSum) {
         gameOver = true;
         hitOrStand = false
+        playerPoints += currentBet
         return `${playerWonMessage} ${showPlayerCards()} ${showDealerCards()} Dealer bust! `;
       }
       console.log(`Dealer stopped drawing more cards`)
@@ -316,6 +357,6 @@ var main = function(input){
     // Determine a winner
     compareSums()
   }
-        return myOutputValue
+  return myOutputValue
       }
       
