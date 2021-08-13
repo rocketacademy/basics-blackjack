@@ -36,12 +36,11 @@ const main = (input) => {
     if (currentPlayer < playersProfile.length) {
       if (input === "hit") {
         hitPlayer();
+        let message = `Player ${currentPlayer + 1} chose hit.\<br\>\ `;
         let bustcheck = checkBust();
-        let instantend = instantWinner(allProfiles);
-        currentPlayer += 1;
-        return `Player ${currentPlayer} chose hit.\<br\>\ ${bustcheck} \<br\>\ ${instantend} \<br\>\ ${displayProfile(
+        return (message += `${bustcheck} \<br\>\ ${displayProfile(
           allProfiles
-        )}`;
+        )}`);
       }
       if (input === "stand") {
         currentPlayer += 1;
@@ -164,7 +163,7 @@ const instantWinner = (anArray) => {
 //removing losers from array
 const removeLoser = (anArray) => {
   for (var i = 0; i < anArray.length; i++) {
-    if (anArray[i].Points > 21) {
+    while (anArray[i].Points > 21) {
       anArray.splice(i, 1);
     }
   }
@@ -189,7 +188,8 @@ const winnerFound = (anArray) => {
 //check if anybody is busted, then end the game
 const checkBust = () => {
   if (playersProfile[currentPlayer].Points > 21) {
-    return `Player: ${playersProfile[currentPlayer].ID} is BUSTED.`;
+    currentPlayer += 1;
+    return `Player: ${playersProfile[currentPlayer - 1].ID} is BUSTED.`;
   }
   return "";
 };
