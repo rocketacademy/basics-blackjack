@@ -103,7 +103,7 @@ var playerCardSum = 0;
 
 // Keep track of other variables
 var gameMode = 'start game';
-var twoCardsVal = [];
+var input = "";
 // Initialize an array for player
 var players = ['Player1', 'Computer'];
 var myOutputValue = '';
@@ -114,22 +114,7 @@ var gameOverOutput = '<br> Game Over! <br> Please refresh the game.';
 var dealCard = function (cards) {
  cards.push(shuffleDeck.pop());
 }
-
- //Checking for cards value for 2 cards only
-  // Checking for Ace
-
-// checkAce = function (cards) {
-//   var numOfAce = 0;
-
-//  for (var i = 0; i < cards.length; i++) {
-//      var currentCards = cards[i];
-//    if (currentCards.rank == 1) {
-//      return numOfAce += 1
-//    }
-//   }
-// };
-
-  
+ 
  getCardSum = function (cards) {
    var cardSum = 0;
    var aceCard = 0;
@@ -169,13 +154,13 @@ checkForBlackjack = function (){
    ;
   } else if (playerCardSum != highestVal || compCardSum != highestVal) {
     myOutputValue = myOutputValue + '<br> What would you like to do? <br> Type hit or stand then submit!'
-    gameMode = 'hitstand';
+    gameMode = 'hit or stand';
     
   }
 };
 
 
-var main = function() {
+var main = function(input) {
   // if (isOver == true){
   //   myOutputValue = "Game Over! <br> Please refresh to play again.";
   // }
@@ -206,22 +191,24 @@ compCardSum = getCardSum (compCards);
 console.log (compCardSum);
 
 //check for blackjack
-    checkForBlackjack ();
-      return myOutputValue;
-    }
-  }
-//User decide to hit or stand using the submit button
-var input =""
-if (gameMode == 'hit or stand' && input == 'hit') {
+ checkForBlackjack ();
+  return myOutputValue;
+}
   
-  dealCard(playerCards);
-    
-    dealCard (playerCards);
+//User decide to hit or stand using the submit button
+
+if (gameMode == 'hit or stand' && input == 'hit') {
+       
+    dealCard(playerCards);
     console.log('hit me');
     console.log(playerCards);
 
-} else if (gameMode == 'hit or stand' && input == 'stand'){
+  } else if (gameMode == 'hit or stand' && input == 'stand'){
   dealCard(compCards);
+  console.log(compCards);
+  }
+
+
 };
 
 
