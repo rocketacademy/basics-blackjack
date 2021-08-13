@@ -89,9 +89,11 @@ var dealerSum;
 var myOutputValue = ''
 
 // ==================  Game Modes ================= \\
-var initialDeal = true
+var initialDeal = false
 var hitOrStand = false
 var gameOver = false
+var userNameRecord = false
+var welcomeMessage = true
 
 // ==================  Card Dealing Function ================= \\
 var dealCard = function(cards) {
@@ -203,8 +205,9 @@ var playerLostMessage = `You Lost! <br>`
 var drawMessage = `It is a draw! <br>`
 var refreshMessage = `Please refresh to start a new game. <br>`
 var hitOrStandMessage = `Would you like to "Hit" or "Stand"? <br>`
-var playerBlackJackMessage = `You have gotten BlackJack!`
-var dealerBlackJackMessage = `Dealer had a BlackJack!`
+var playerBlackJackMessage = `You have gotten BlackJack! <br>`
+var dealerBlackJackMessage = `Dealer had a BlackJack! <br>`
+var userNameInputMessage = `Hello, my name is Kenneth. I will be your dealer. Please input your name. <br>`
   // converting message to string (copied as kept getting undefined in messages)
   var convertHandToString = function (hand) {
     return `[${hand.map((card) => card.name)}]`;
@@ -220,6 +223,21 @@ var dealerBlackJackMessage = `Dealer had a BlackJack!`
 
 // ==================  Main Function ================= \\
 var main = function(input){
+  // welcomes the player
+  if(welcomeMessage == true){
+    myOutputValue = `${userNameInputMessage}`
+    welcomeMessage = false
+    return myOutputValue
+  }
+  // check if there is a player name
+  if(userNameRecord == false && input != ""){
+    var userName = input
+    userNameRecord = true
+    welcomeMessage = false
+    myOutputValue = `Hi ${userName}! Let's play Black Jack! Press submit again and I will deal out cards.`
+    initialDeal = true
+    return myOutputValue
+  }
   // check if game is completed
   if(gameOver == true){
     return refreshMessage
