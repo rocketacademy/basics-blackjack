@@ -1,9 +1,3 @@
-// *** next step: ace can be 1 or 11 throughout the game
-// what about dealer's Ace?
-// if i let Ace = 1 initially, and later on let Ace = 11, the playerCard1PlusCard2PlusMore_alternative will be wrong
-
-// can delete redundant store in variable
-
 // Global variables:
 var dealersCard1PlusCard2 = ``;
 var dealersCard1PlusCard2PlusMore = ``;
@@ -16,9 +10,20 @@ var player_first_card_is_ace = ``;
 var player_second_card_is_ace = ``;
 var valueOfAce = ``;
 var dealerBlackjacksMessage = ``;
+var playerName = ``;
+var playerStash = 100;
+var bet = 0;
+var numberOfPlayers = 0;
+var playerCounter = 1;
 
 // To keep track of all the possible stages of the game
-var WAITING_FOR_PLAYER_TO_CLICK_SUBMIT = `waiting for player to click submit`;
+var HOW_MANY_PLAYERS = `How many players?`;
+var DISPLAY_NUMBER_OF_PLAYERS = `Display number of players`;
+var WHATS_YOUR_NAME = `Whats your name?`;
+var WAITING_FOR_NAME = `waiting for player to enter name`;
+var SHOW_NAME = `Show name`;
+var HOW_MUCH_BET = `How much do you wanna bet this round?`;
+var SHOW_BET = `Show bet`;
 var PLAYER_TO_ENTER_DEAL = `waiting for player to enter deal`;
 var DEAL_FIRST_2_CARDS = `deal first 2 cards`;
 var PLAYER_TO_ENTER_HIT_OR_STAND = `player to enter hit or stand`;
@@ -29,48 +34,104 @@ var ACE_TO_BE_1 = `Ace to be 1`;
 var ACE_TO_BE_11 = `Ace to be 11`;
 var ACE_VALUE_SELECTED = `Ace value selected`;
 var FINAL_ACE_VALUE = `Final ace value?`;
+var DO_YOU_WANNA_SPLIT = `Does player want to split?`;
 
 // Set the initial stage of game
-var stageOfGame = WAITING_FOR_PLAYER_TO_CLICK_SUBMIT;
+var stageOfGame = HOW_MANY_PLAYERS;
+
+// Function to reset game after each game ends
+var resetGame = function () {
+  stageOfGame = SHOW_NAME;
+  console.log(`game resets`);
+  arrayOfPlayerCards = [];
+  arrayOfDealersCards = [];
+  playerCard1PlusCard2 = 0;
+  valueOfAce = ``;
+};
 
 // Main function:
 var main = function (input) {
   var shuffledDeck = shuffleCards(deck);
   var myOutputValue = ``;
 
-  // When player clicks submit, tell him deck is shuffled, and prompt to enter "deal"
-  if (stageOfGame == WAITING_FOR_PLAYER_TO_CLICK_SUBMIT) {
-    myOutputValue = `The deck is shuffled. Enter "deal" to deal cards.`;
+  // Ask how many players
+  if (stageOfGame == HOW_MANY_PLAYERS) {
+    myOutputValue = `Hi there! How many players are there at the table?`;
+    stageOfGame = DISPLAY_NUMBER_OF_PLAYERS;
+  } else if (stageOfGame == DISPLAY_NUMBER_OF_PLAYERS) {
+    numberOfPlayers = input;
+    myOutputValue = `There are ${numberOfPlayers} number of players at the table.`;
+    stageOfGame = WHATS_YOUR_NAME;
+  }
+
+  // Ask player for his name
+  if (stageOfGame == WHATS_YOUR_NAME) {
+    myOutputValue = `Hi there! Welcome to the Blackjack table. What's your name?`;
+
+    if (playerCounter < numberOfPlayers) {
+      console.log(playerCounter);
+      console.log(numberOfPlayers);
+      stageOfGame = WHATS_YOUR_NAME;
+      playerCounter = playerCounter + 1;
+    } else {
+      stageOfGame = WAITING_FOR_NAME;
+    }
+
+    // stageOfGame = WAITING_FOR_NAME;
+  } else if (stageOfGame == WAITING_FOR_NAME) {
+    playerName = input;
+    console.log(`Player's name is: ${playerName}`);
+
+    stageOfGame = SHOW_NAME;
+  }
+
+  // Say hi to player's name, and ask to place bet
+  if (stageOfGame == SHOW_NAME) {
+    myOutputValue = `Nice to meet you, ${playerName}! Please place your bet.<br><br>Your stash now: $${playerStash}`;
+
+    stageOfGame = HOW_MUCH_BET;
+  } else if (stageOfGame == HOW_MUCH_BET && input <= playerStash) {
+    bet = input;
+    console.log(`Player's bet: ${bet}`);
+
+    stageOfGame = SHOW_BET;
+  }
+  // Player can't bet more than what he has and must only input a number
+  else if (input > playerStash) {
+    myOutputValue = `Oops! You can't bet more than what you have. Please enter another bet. <br><br>Your stash now: $${playerStash}`;
+  } else if (stageOfGame == HOW_MUCH_BET && isNaN(Number(input)) == true) {
+    myOutputValue = `Oops! You can only enter a number. Please place your bet.<br><br>Your stash now: $${playerStash}`;
+  }
+
+  // Show player his bet, and ask to enter "deal"
+  if (stageOfGame == SHOW_BET) {
+    playerStash = playerStash - bet;
+
+    myOutputValue = `Nice to meet you, ${playerName}! You've placed $${bet} as your bet this round. The deck is shuffled. Enter "deal" to deal cards.<br><br>Your bet this round: ${bet}<br><br>Your stash now: ${playerStash}`;
 
     stageOfGame = PLAYER_TO_ENTER_DEAL;
   }
 
-  // Player must enter "deal" to deal cards
+  // If player enters "deal", to deal 2 cards each
   else if (input == `deal` && stageOfGame == PLAYER_TO_ENTER_DEAL) {
     stageOfGame = DEAL_FIRST_2_CARDS;
 
     // Dealer draws 2 cards
     var dealersCard1 = shuffledDeck.pop();
+
+    // To be used if need to fix dealer's card 1
+    // dealersCard1.name = 2;
+    // dealersCard1.rank = 2;
+
     console.log(`Dealer's card: ${dealersCard1.name} of ${dealersCard1.suit}`);
+
     var dealersCard2 = shuffledDeck.pop();
+
+    // To be used if need to fix dealer's card 2
+    // dealersCard2.name = `🅰️ Ace`;
+    // dealersCard2.rank = 1;
+
     console.log(`Dealer's card: ${dealersCard2.name} of ${dealersCard2.suit}`);
-
-    // Change all of dealer's picture cards (if any) to = 10
-    if (
-      dealersCard1.name == "💂‍♂️ Jack" ||
-      dealersCard1.name == "👸 Queen" ||
-      dealersCard1.name == "🤴 King"
-    ) {
-      dealersCard1.rank = 10;
-    }
-
-    if (
-      dealersCard2.name == "💂‍♂️ Jack" ||
-      dealersCard2.name == "👸 Queen" ||
-      dealersCard2.name == "🤴 King"
-    ) {
-      dealersCard2.rank = 10;
-    }
 
     // Dealer's total score from first 2 cards
     dealersCard1PlusCard2 = dealersCard1.rank + dealersCard2.rank;
@@ -83,26 +144,20 @@ var main = function (input) {
 
     // Player draws 2 cards
     var playerCard1 = shuffledDeck.pop();
+
+    // To be used if need to fix player's card 1
+    playerCard1.name = 2;
+    playerCard1.rank = 2;
+
     console.log(`Player card: ${playerCard1.name} of ${playerCard1.suit}`);
+
     var playerCard2 = shuffledDeck.pop();
+
+    // To be used if need to fix player's card 2
+    playerCard2.name = 2;
+    playerCard2.rank = 2;
+
     console.log(`Player card: ${playerCard2.name} of ${playerCard2.suit}`);
-
-    // Change all of player's picture cards (if any) to = 10
-    if (
-      playerCard1.name == "💂‍♂️ Jack" ||
-      playerCard1.name == "👸 Queen" ||
-      playerCard1.name == "🤴 King"
-    ) {
-      playerCard1.rank = 10;
-    }
-
-    if (
-      playerCard2.name == "💂‍♂️ Jack" ||
-      playerCard2.name == "👸 Queen" ||
-      playerCard2.name == "🤴 King"
-    ) {
-      playerCard2.rank = 10;
-    }
 
     // Player's total score from first 2 cards
     playerCard1PlusCard2 = playerCard1.rank + playerCard2.rank;
@@ -113,38 +168,45 @@ var main = function (input) {
     arrayOfPlayerCards.push(` ${playerCard2.name} of ${playerCard2.suit}`);
     console.log(arrayOfPlayerCards);
 
-    // If player gets a 10 + an Ace = Blackjack!; Player wins; Dealer loses
-
+    // If player gets a 10 + an Ace = Blackjack!; Player wins; Dealer loses immediately
     if (
       (playerCard1.rank == 1 && playerCard2.rank == 10) ||
       (playerCard1.rank == 10 && playerCard2.rank == 1)
     ) {
-      console.log(`player blackjack!`);
-      myOutputValue = `You drew:<br>${arrayOfPlayerCards}.<br>Your total score now is 21.<br><br>Blackjack! You win!`;
+      // Unless if dealer has blackjack too, then it's a draw immediately
+      if (
+        (dealersCard1.rank == 1 && dealersCard2.rank == 10) ||
+        (dealersCard1.rank == 10 && dealersCard2.rank == 1)
+      ) {
+        console.log(`Both player and dealer blackjack!`);
 
+        playerStash = Number(playerStash) + Number(bet);
+        bet = 0;
+        myOutputValue = `You drew:${arrayOfPlayerCards}.<br><br>Your total score now is 21.<br><br>The Dealer's cards are: ${arrayOfDealersCards}.<br>The Dealer's total score is also 21.<br><br>Tough luck, both you and the Dealer Blackjack! It's a draw!<br><br>Your bet this round: ${bet}<br><br>Your stash now: ${playerStash}`;
+      } else {
+        console.log(`player blackjack!`);
+        console.log(dealersCard1.rank);
+        console.log(dealersCard2.rank);
+
+        playerStash = Number(playerStash) + 3 * Number(bet);
+        bet = 0;
+        myOutputValue = `You drew:<br>${arrayOfPlayerCards}.<br>Your total score now is 21.<br><br>Blackjack! You win!<br><br>Your bet this round: ${bet}<br><br>Your stash now: ${playerStash}`;
+      }
       // Game resets
-      stageOfGame = WAITING_FOR_PLAYER_TO_CLICK_SUBMIT;
-      console.log(`game resets`);
-      arrayOfPlayerCards = [];
-      arrayOfDealersCards = [];
-      playerCard1PlusCard2 = 0;
+      var gameResets = resetGame();
+
+      return myOutputValue;
     }
 
-    // // If dealer gets a 10 + an Ace = Blackjack!; Player loses; Dealer wins
-    // else if (
-    //   (dealersCard1.rank == 1 && dealersCard2.rank == 10) ||
-    //   (dealersCard1.rank == 10 && dealersCard2.rank == 1)
-    // ) {
-    //   console.log(`dealer blackjack!`);
-    //   dealerBlackjacksMessage = `You drew:<br>${arrayOfPlayerCards}.<br>Your total score now is ${playerCard1PlusCard2}.<br><br>The Dealer's cards are: ${arrayOfDealersCards}.<br>The Dealer's total score is 21.<br><br>Blackjack! You lose!`;
-    // }
-
-    // If player draws an Ace, ask if he wants it to be 1 or 11
-    else if (playerCard1.name == `🅰️ Ace` || playerCard2.name == `🅰️ Ace`) {
+    // If player draws an Ace and didn't blackjack, ask if he wants it to be 1 or 11
+    else if (
+      (playerCard1.name == `🅰️ Ace` && playerCard2.rank != 10) ||
+      (playerCard2.name == `🅰️ Ace` && playerCard1.rank != 10)
+    ) {
       console.log(
         `player's card name: ${playerCard1.name} and ${playerCard2.name}`
       );
-      myOutputValue = `You drew:<br>${arrayOfPlayerCards}.<br><br>The dealer's first card is ${arrayOfDealersCards[0]}.<br><br>Do you want the Ace to be 1 or 11?`;
+      myOutputValue = `You drew:<br>${arrayOfPlayerCards}.<br><br>The dealer's first card is ${arrayOfDealersCards[0]}.<br><br>Do you want the Ace to be 1 or 11?<br><br>Your bet this round: ${bet}<br><br>Your stash now: ${playerStash}`;
 
       stageOfGame = ACE_1_OR_11;
       console.log(stageOfGame);
@@ -152,7 +214,7 @@ var main = function (input) {
 
     // If no Blackjacks, and no Ace, continue playing and display to player his first 2 cards + dealer's first card, and ask to hit or stand
     else {
-      myOutputValue = `You drew:<br>${arrayOfPlayerCards}.<br>Your total score now is ${playerCard1PlusCard2}.<br><br>The dealer's first card is ${arrayOfDealersCards[0]}.<br><br>Enter "hit" to draw another card, or enter "stand" if you don't wish to draw any more cards.`;
+      myOutputValue = `You drew:<br>${arrayOfPlayerCards}.<br>Your total score now is ${playerCard1PlusCard2}.<br><br>The dealer's first card is ${arrayOfDealersCards[0]}.<br><br>Enter "hit" to draw another card, or enter "stand" if you don't wish to draw any more cards.<br><br>Your bet this round: ${bet}<br><br>Your stash now: ${playerStash}`;
 
       // Store player's and dealer's initial score in a variable
       playerCard1PlusCard2PlusMore = playerCard1PlusCard2;
@@ -171,8 +233,11 @@ var main = function (input) {
     ) {
       console.log(`dealer blackjack!`);
 
+      playerStash = playerStash;
+      bet = 0;
+
       // Store dealer blackjacks message in a variable, to be used at the end
-      dealerBlackjacksMessage = `You drew:<br>${arrayOfPlayerCards}.<br>Your total score now is ${playerCard1PlusCard2}.<br><br>The Dealer's cards are: ${arrayOfDealersCards}.<br>The Dealer's total score is 21.<br><br>Blackjack! You lose!`;
+      dealerBlackjacksMessage = `You drew:<br>${arrayOfPlayerCards}.<br>Your total score now is ${playerCard1PlusCard2}.<br><br>The Dealer's cards are: ${arrayOfDealersCards}.<br>The Dealer's total score is 21.<br><br>Blackjack! You lose!<br><br>Your bet this round: ${bet}<br><br>Your stash now: ${playerStash}`;
     }
   }
   // Restrict player to only enter "deal"
@@ -183,9 +248,11 @@ var main = function (input) {
   // If player wants Ace to be 1
   else if (input == "1" && stageOfGame == ACE_1_OR_11) {
     console.log(`Player wants Ace to be 1`);
+
     playerCard1PlusCard2 = playerCard1PlusCard2;
     console.log(playerCard1PlusCard2);
-    myOutputValue = `You drew:<br>${arrayOfPlayerCards}.<br>You have chosen Ace to be 1.<br>Your total score now is ${playerCard1PlusCard2}.<br><br>The dealer's first card is ${arrayOfDealersCards[0]}.<br><br>Enter "hit" to draw another card, or enter "stand" if you don't wish to draw any more cards.`;
+
+    myOutputValue = `You drew:<br>${arrayOfPlayerCards}.<br>You have chosen Ace to be 1.<br>Your total score now is ${playerCard1PlusCard2}.<br><br>The dealer's first card is ${arrayOfDealersCards[0]}.<br><br>Enter "hit" to draw another card, or enter "stand" if you don't wish to draw any more cards.<br><br>Your bet this round: ${bet}<br><br>Your stash now: ${playerStash}`;
 
     valueOfAce = 1;
 
@@ -204,9 +271,11 @@ var main = function (input) {
   // If player wants Ace to be 11
   else if (input == "11" && stageOfGame == ACE_1_OR_11) {
     console.log(`Player wants Ace to be 11`);
+
     playerCard1PlusCard2 = playerCard1PlusCard2 + 10;
     console.log(playerCard1PlusCard2);
-    myOutputValue = `You drew:<br>${arrayOfPlayerCards}.<br>You have chosen Ace to be 11.<br>Your total score now is ${playerCard1PlusCard2}.<br><br>The dealer's first card is ${arrayOfDealersCards[0]}.<br><br>Enter "hit" to draw another card, or enter "stand" if you don't wish to draw any more cards.`;
+
+    myOutputValue = `You drew:<br>${arrayOfPlayerCards}.<br>You have chosen Ace to be 11.<br>Your total score now is ${playerCard1PlusCard2}.<br><br>The dealer's first card is ${arrayOfDealersCards[0]}.<br><br>Enter "hit" to draw another card, or enter "stand" if you don't wish to draw any more cards.<br><br>Your bet this round: ${bet}<br><br>Your stash now: ${playerStash}`;
 
     valueOfAce = 11;
 
@@ -233,18 +302,9 @@ var main = function (input) {
     myOutputValue = `Oops! You have entered an invalid entry. Please only enter "hit" to draw another card or "stand" to stop drawing more cards.`;
   }
 
-  // While loop, every time player enters "hit", he'll draw another card
-  while (input == "hit" && stageOfGame == PLAYER_TO_ENTER_HIT_OR_STAND) {
+  // Every time player enters "hit", he'll draw another card
+  if (input == "hit" && stageOfGame == PLAYER_TO_ENTER_HIT_OR_STAND) {
     var playerCard3AndOnwards = shuffledDeck.pop();
-
-    // Change all of player's subsequent picture cards (if any) to = 10
-    if (
-      playerCard3AndOnwards.name == "💂‍♂️ Jack" ||
-      playerCard3AndOnwards.name == "👸 Queen" ||
-      playerCard3AndOnwards.name == "🤴 King"
-    ) {
-      playerCard3AndOnwards.rank = 10;
-    }
 
     console.log(
       `Player's new card: ${playerCard3AndOnwards.name} of ${playerCard3AndOnwards.suit}`
@@ -273,7 +333,7 @@ var main = function (input) {
       console.log(playerCard1PlusCard2PlusMore);
       console.log(playerCard1PlusCard2PlusMore_alternative);
 
-      myOutputValue = `You drew:<br>${arrayOfPlayerCards}.<br>You have an Ace. Your total score can be ${playerCard1PlusCard2PlusMore} or ${playerCard1PlusCard2PlusMore_alternative}.<br><br>The dealer's first card is ${arrayOfDealersCards[0]}.<br><br>Enter the score you want your hand to be.`;
+      myOutputValue = `You drew:<br>${arrayOfPlayerCards}.<br>You have an Ace. Your total score can be ${playerCard1PlusCard2PlusMore} or ${playerCard1PlusCard2PlusMore_alternative}.<br><br>The dealer's first card is ${arrayOfDealersCards[0]}.<br><br>Enter the score you want your hand to be.<br><br>Your bet this round: ${bet}<br><br>Your stash now: ${playerStash}`;
 
       stageOfGame = FINAL_ACE_VALUE;
     } else if (valueOfAce == 11) {
@@ -286,18 +346,15 @@ var main = function (input) {
       console.log(playerCard1PlusCard2PlusMore);
       console.log(playerCard1PlusCard2PlusMore_alternative);
 
-      myOutputValue = `You drew:<br>${arrayOfPlayerCards}.<br>You have an Ace. Your total score can be ${playerCard1PlusCard2PlusMore} or ${playerCard1PlusCard2PlusMore_alternative}.<br><br>The dealer's first card is ${arrayOfDealersCards[0]}.<br><br>Enter the score you want your hand to be.`;
+      myOutputValue = `You drew:<br>${arrayOfPlayerCards}.<br>You have an Ace. Your total score can be ${playerCard1PlusCard2PlusMore} or ${playerCard1PlusCard2PlusMore_alternative}.<br><br>The dealer's first card is ${arrayOfDealersCards[0]}.<br><br>Enter the score you want your hand to be.<br><br>Your bet this round: ${bet}<br><br>Your stash now: ${playerStash}`;
 
       stageOfGame = FINAL_ACE_VALUE;
     }
 
     // Display to player his cards and ask to continue to hit or stand
     else {
-      myOutputValue = `You drew:<br>${arrayOfPlayerCards}.<br>Your total score now is ${playerCard1PlusCard2PlusMore}.<br><br>The dealer's first card is ${arrayOfDealersCards[0]}.<br><br>Enter "hit" to draw another card, or enter "stand" if you don't wish to draw any more cards.`;
+      myOutputValue = `You drew:<br>${arrayOfPlayerCards}.<br>Your total score now is ${playerCard1PlusCard2PlusMore}.<br><br>The dealer's first card is ${arrayOfDealersCards[0]}.<br><br>Enter "hit" to draw another card, or enter "stand" if you don't wish to draw any more cards.<br><br>Your bet this round: ${bet}<br><br>Your stash now: ${playerStash}`;
     }
-
-    // To exit the loop until the next time user enters "hit" again or "stand"
-    input = ``;
   }
 
   // If player has Ace, and has drawn more cards, can now decide if he wants his Ace to be 1 or 11
@@ -308,14 +365,14 @@ var main = function (input) {
   ) {
     console.log(input);
     playerCard1PlusCard2PlusMore = Number(input);
-    myOutputValue = `You drew:<br>${arrayOfPlayerCards}.<br>Your total score now is ${playerCard1PlusCard2PlusMore}.<br><br>The dealer's first card is ${arrayOfDealersCards[0]}.<br><br>Enter "hit" to draw another card, or enter "stand" if you don't wish to draw any more cards.`;
+    myOutputValue = `You drew:<br>${arrayOfPlayerCards}.<br>Your total score now is ${playerCard1PlusCard2PlusMore}.<br><br>The dealer's first card is ${arrayOfDealersCards[0]}.<br><br>Enter "hit" to draw another card, or enter "stand" if you don't wish to draw any more cards.<br><br>Your bet this round: ${bet}<br><br>Your stash now: ${playerStash}`;
 
     stageOfGame = PLAYER_TO_ENTER_HIT_OR_STAND;
   }
 
   // If user enters "stand", ask him to enter "next" to view dealer's cards
   if (input == "stand" && stageOfGame == PLAYER_TO_ENTER_HIT_OR_STAND) {
-    myOutputValue = `You have chosen to "stand".<br>You drew:<br>${arrayOfPlayerCards}.<br>Your total score now is ${playerCard1PlusCard2PlusMore}.<br><br>The dealer's first card is ${arrayOfDealersCards[0]}.<br><br>Enter "next" to view the Dealer's cards.`;
+    myOutputValue = `You have chosen to "stand".<br>You drew:<br>${arrayOfPlayerCards}.<br>Your total score now is ${playerCard1PlusCard2PlusMore}.<br><br>The dealer's first card is ${arrayOfDealersCards[0]}.<br><br>Enter "next" to view the Dealer's cards.<br><br>Your bet this round: ${bet}<br><br>Your stash now: ${playerStash}`;
 
     stageOfGame = VIEW_DEALERS_FIRST_2_CARDS;
   }
@@ -332,15 +389,6 @@ var main = function (input) {
       console.log(
         `dealer's new card: ${dealersCard3AndOnwards.name} of ${dealersCard3AndOnwards.suit}`
       );
-
-      // Change all of dealer's subsequent picture cards (if any) to = 10
-      if (
-        dealersCard3AndOnwards.name == "💂‍♂️ Jack" ||
-        dealersCard3AndOnwards.name == "👸 Queen" ||
-        dealersCard3AndOnwards.name == "🤴 King"
-      ) {
-        dealersCard3AndOnwards.rank = 10;
-      }
 
       // Push Dealer's subsequent cards into array
       arrayOfDealersCards.push(
@@ -365,15 +413,13 @@ var main = function (input) {
       dealerBlackjacksMessage == `` &&
       stageOfGame == REVEAL_THE_WINNER
     ) {
-      myOutputValue = `You drew:<br>${arrayOfPlayerCards}.<br>Your total score is ${playerCard1PlusCard2PlusMore}.<br><br>The Dealer's cards are: ${arrayOfDealersCards}.<br>The Dealer's total score is ${dealersCard1PlusCard2PlusMore}.<br><br>You win!`;
+      playerStash = Number(playerStash) + Number(bet) + Number(bet);
+      bet = 0;
+
+      myOutputValue = `You drew:<br>${arrayOfPlayerCards}.<br>Your total score is ${playerCard1PlusCard2PlusMore}.<br><br>The Dealer's cards are: ${arrayOfDealersCards}.<br>The Dealer's total score is ${dealersCard1PlusCard2PlusMore}.<br><br>You win!<br><br>Your bet this round: ${bet}<br><br>Your stash now: ${playerStash}`;
 
       // To reset the game
-      stageOfGame = WAITING_FOR_PLAYER_TO_CLICK_SUBMIT;
-      console.log(`game resets`);
-      arrayOfPlayerCards = [];
-      arrayOfDealersCards = [];
-      playerCard1PlusCard2 = 0;
-      valueOfAce = ``;
+      var gameResets = resetGame();
     }
     // If player > 21, and dealer <= 21, player busts and loses
     else if (
@@ -382,15 +428,13 @@ var main = function (input) {
       dealerBlackjacksMessage == `` &&
       stageOfGame == REVEAL_THE_WINNER
     ) {
-      myOutputValue = `You drew:<br>${arrayOfPlayerCards}.<br>Your total score now is ${playerCard1PlusCard2PlusMore}.<br><br>The Dealer's cards are: ${arrayOfDealersCards}.<br>The Dealer's total score is ${dealersCard1PlusCard2PlusMore}.<br><br>You bust! You lose!`;
+      playerStash = playerStash;
+      bet = 0;
+
+      myOutputValue = `You drew:<br>${arrayOfPlayerCards}.<br>Your total score now is ${playerCard1PlusCard2PlusMore}.<br><br>The Dealer's cards are: ${arrayOfDealersCards}.<br>The Dealer's total score is ${dealersCard1PlusCard2PlusMore}.<br><br>You bust! You lose!<br><br>Your bet this round: ${bet}<br><br>Your stash now: ${playerStash}`;
 
       // To reset the game
-      stageOfGame = WAITING_FOR_PLAYER_TO_CLICK_SUBMIT;
-      console.log(stageOfGame);
-      arrayOfPlayerCards = [];
-      arrayOfDealersCards = [];
-      playerCard1PlusCard2 = 0;
-      valueOfAce = ``;
+      var gameResets = resetGame();
     }
 
     // If dealer > 21, and player <= 21 then player wins, dealer loses
@@ -399,15 +443,13 @@ var main = function (input) {
       playerCard1PlusCard2PlusMore <= 21 &&
       stageOfGame == REVEAL_THE_WINNER
     ) {
-      myOutputValue = `You drew:<br>${arrayOfPlayerCards}.<br>Your total score is ${playerCard1PlusCard2PlusMore}.<br><br>The Dealer's cards are: ${arrayOfDealersCards}.<br>The Dealer's total score is ${dealersCard1PlusCard2PlusMore}.<br><br>Dealer busts! You win!`;
+      playerStash = Number(playerStash) + Number(bet) + Number(bet);
+      bet = 0;
+
+      myOutputValue = `You drew:<br>${arrayOfPlayerCards}.<br>Your total score is ${playerCard1PlusCard2PlusMore}.<br><br>The Dealer's cards are: ${arrayOfDealersCards}.<br>The Dealer's total score is ${dealersCard1PlusCard2PlusMore}.<br><br>Dealer busts! You win!<br><br>Your bet this round: ${bet}<br><br>Your stash now: ${playerStash}`;
 
       // To reset the game
-      stageOfGame = WAITING_FOR_PLAYER_TO_CLICK_SUBMIT;
-      console.log(`game resets`);
-      arrayOfPlayerCards = [];
-      arrayOfDealersCards = [];
-      playerCard1PlusCard2 = 0;
-      valueOfAce = ``;
+      var gameResets = resetGame();
     }
 
     // If player = dealer and both <= 21, then draw
@@ -418,15 +460,13 @@ var main = function (input) {
       dealerBlackjacksMessage == `` &&
       stageOfGame == REVEAL_THE_WINNER
     ) {
-      myOutputValue = `You drew:<br>${arrayOfPlayerCards}.<br>Your total score is ${playerCard1PlusCard2PlusMore}.<br><br>The Dealer's cards are: ${arrayOfDealersCards}.<br>The Dealer's total score is ${dealersCard1PlusCard2PlusMore}.<br><br>It's a draw!`;
+      playerStash = Number(playerStash) + Number(bet);
+      bet = 0;
+
+      myOutputValue = `You drew:<br>${arrayOfPlayerCards}.<br>Your total score is ${playerCard1PlusCard2PlusMore}.<br><br>The Dealer's cards are: ${arrayOfDealersCards}.<br>The Dealer's total score is ${dealersCard1PlusCard2PlusMore}.<br><br>It's a draw!<br><br>Your bet this round: ${bet}<br><br>Your stash now: ${playerStash}`;
 
       // To reset the game
-      stageOfGame = WAITING_FOR_PLAYER_TO_CLICK_SUBMIT;
-      console.log(`game resets`);
-      arrayOfPlayerCards = [];
-      arrayOfDealersCards = [];
-      playerCard1PlusCard2 = 0;
-      valueOfAce = ``;
+      var gameResets = resetGame();
     }
 
     // If both player and dealer > 21, then draw
@@ -435,15 +475,13 @@ var main = function (input) {
       dealersCard1PlusCard2PlusMore > 21 &&
       stageOfGame == REVEAL_THE_WINNER
     ) {
-      myOutputValue = `You drew:<br>${arrayOfPlayerCards}.<br>Your total score is ${playerCard1PlusCard2PlusMore}.<br><br>The Dealer's cards are: ${arrayOfDealersCards}.<br>The Dealer's total score is ${dealersCard1PlusCard2PlusMore}.<br><br>Both player and dealer bust! It's a draw!`;
+      playerStash = Number(playerStash) + Number(bet);
+      bet = 0;
+
+      myOutputValue = `You drew:<br>${arrayOfPlayerCards}.<br>Your total score is ${playerCard1PlusCard2PlusMore}.<br><br>The Dealer's cards are: ${arrayOfDealersCards}.<br>The Dealer's total score is ${dealersCard1PlusCard2PlusMore}.<br><br>Both player and dealer bust! It's a draw!<br><br>Your bet this round: ${bet}<br><br>Your stash now: ${playerStash}`;
 
       // To reset the game
-      stageOfGame = WAITING_FOR_PLAYER_TO_CLICK_SUBMIT;
-      console.log(`game resets`);
-      arrayOfPlayerCards = [];
-      arrayOfDealersCards = [];
-      playerCard1PlusCard2 = 0;
-      valueOfAce = ``;
+      var gameResets = resetGame();
     }
 
     // If player < dealer and both <= 21, then player loses, dealer wins
@@ -454,15 +492,13 @@ var main = function (input) {
       dealerBlackjacksMessage == `` &&
       stageOfGame == REVEAL_THE_WINNER
     ) {
-      myOutputValue = `You drew:<br>${arrayOfPlayerCards}.<br>Your total score is ${playerCard1PlusCard2PlusMore}.<br><br>The Dealer's cards are: ${arrayOfDealersCards}.<br>The Dealer's total score is ${dealersCard1PlusCard2PlusMore}.<br><br>You lose!`;
+      playerStash = playerStash;
+      bet = 0;
+
+      myOutputValue = `You drew:<br>${arrayOfPlayerCards}.<br>Your total score is ${playerCard1PlusCard2PlusMore}.<br><br>The Dealer's cards are: ${arrayOfDealersCards}.<br>The Dealer's total score is ${dealersCard1PlusCard2PlusMore}.<br><br>You lose!<br><br>Your bet this round: ${bet}<br><br>Your stash now: ${playerStash}`;
 
       // To reset the game
-      stageOfGame = WAITING_FOR_PLAYER_TO_CLICK_SUBMIT;
-      console.log(`game resets`);
-      arrayOfPlayerCards = [];
-      arrayOfDealersCards = [];
-      playerCard1PlusCard2 = 0;
-      valueOfAce = ``;
+      var gameResets = resetGame();
     }
     // If dealer gets a 10 + an Ace = Blackjack!; Player loses; Dealer wins
     else if (dealerBlackjacksMessage != ``) {
@@ -470,13 +506,7 @@ var main = function (input) {
       myOutputValue = dealerBlackjacksMessage;
 
       // Game resets
-      stageOfGame = WAITING_FOR_PLAYER_TO_CLICK_SUBMIT;
-      console.log(`game resets`);
-      arrayOfPlayerCards = [];
-      arrayOfDealersCards = [];
-      playerCard1PlusCard2 = 0;
-      valueOfAce = ``;
-      dealerBlackjacksMessage = ``;
+      var gameResets = resetGame();
     }
   }
 
@@ -556,6 +586,20 @@ var makeDeck = function () {
 
     // Increment the suit index to iterate over the next suit
     suitIndex += 1;
+  }
+
+  // // Change all picture cards to = 10
+  var deckCounter = 0;
+  while (deckCounter < 52) {
+    if (deck[deckCounter].name == "💂‍♂️ Jack") {
+      deck[deckCounter].rank = 10;
+    } else if (deck[deckCounter].name == "👸 Queen") {
+      deck[deckCounter].rank = 10;
+    } else if (deck[deckCounter].name == "🤴 King") {
+      deck[deckCounter].rank = 10;
+    }
+
+    deckCounter = deckCounter + 1;
   }
 
   // Return the completed card deck
