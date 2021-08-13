@@ -131,8 +131,8 @@ var dealCard = function (cards) {
        cardSum = cardSum + 10;
      } if (currentCards.rank == 1) {
        aceCard = aceCard + 1;
-     } if (aceCard > 0) {
-        if ( cardSum <= highestVal + aceCard){
+     } if (aceCard == 1) {
+        if ( cardSum <= 11){
           cardSum = cardSum + 10
         // } if (cardSum > highestVal && aceCard > 0) {
         //   cardSum = cardSum - 10
@@ -184,6 +184,7 @@ var checkCompHit = function (cards){
   while (compCardSum < 17) {
     dealCard(compCards);
     compCardSum = getCardSum (compCards);
+    
   }
     
 };
@@ -237,18 +238,44 @@ if (gameMode == 'hit or stand' && input == 'hit') {
         myOutputValue = `${defaultOuput()} <br> Player 1 has busted. <br> Game Over! <br> Please refresh the game`
         isOver = true;
       } if (getCardSum (playerCards) == highestVal) {
-        myOutputValue = `${defaultOuput()} <br> Player 1 wins! Blackjack! <b> Game Over, please refresh the game! `
+        myOutputValue = `${defaultOuput()} <br> Player 1 wins! Blackjack! <br> Game Over, please refresh the game! `
         isOver = true;
       } if (getCardSum (playerCards) < highestVal) { 
+        playerCardSum = getCardSum (playerCards);
+
         myOutputValue = `${defaultOuput()} <br> Would you like to hit or stand?`
-      return myOutputValue;
+    
     } 
 
   } else if (gameMode == 'hit or stand' && input == 'stand'){
-    checkCompHit(compCards);
   
-    
-   myOutputValue = defaultOuput();
+  while (compCardSum < 17) {
+    dealCard(compCards);
+    console.log('comphit');
+    console.log(compCards);
+    compCardSum = getCardSum(compCards)
+  } if (getCardSum (compCards) > highestVal) {
+        myOutputValue = `${defaultOuput()} <br> Dealer has busted. <br> Game Over! <br> Please refresh the game`
+        isOver = true;
+      } if (getCardSum (compCards) == highestVal) {
+        myOutputValue = `${defaultOuput()} <br> Dealer wins! Blackjack! <br> Game Over, please refresh the game! `
+        isOver = true;
+      } if (getCardSum (compCards) < highestVal) { 
+        compCardSum = getCardSum (compCards);
+        
+       
+      
+    } 
+  
+  // Decide Winner 
+
+  if (compCardSum < playerCardSum) {
+    isover = true;
+    myOutputValue = `Player 1 wins! <br>${defaultOuput()} <br> Game Over! Please refresh the game.`
+  } else { myOutputValue = `Dealer wins! <br>${defaultOuput()} <br> Game Over! Please refresh the game.`;
+  isOver  = true;
+}
+   
 
   } return myOutputValue;
 
