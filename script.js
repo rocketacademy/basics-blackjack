@@ -106,7 +106,7 @@ function multiplayer(qty) {
       hand: [],
       score: 0,
       turn: 0,
-      // bettingPoints: 100,
+      bettingPoints: 100,
     };
     if (x == 0) {
       playerObj.name = "dealer";
@@ -155,15 +155,7 @@ function winnerCheck(playersArr) {
   var playersDiff = [];
   var winner = []; // push winner into an array in case of tie
   var scoreboard = "<u>~ P O I N T S ~</u><br>";
-  var winnerOutput;
-
-  for (s = 0; s < playersArr.length; s++) {
-    if (playersArr[s] == dealer) {
-      scoreboard += `${playersArr[s].name}: ${playersArr[s].score}<br>`;
-    } else {
-      scoreboard += `Player ${playersArr[s].number}: ${playersArr[s].score}<br>`;
-    }
-  }
+  var winnerOutput = "";
 
   // compare scores
   for (const player of playersArr) {
@@ -181,21 +173,53 @@ function winnerCheck(playersArr) {
     return a - b;
   });
 
-  // find winner(s)
+  // find winner(s) and payout bet
   for (const winning of playersArr) {
     if (winning.diff == playersDiff[0]) {
       winner.push(winning);
+      winning.bettingPoints += betHolder[winning.number] * 2;
+      console.log(winning.bettingPoints);
+    }
+  }
+
+  // scoreboard
+  for (s = 0; s < playersArr.length; s++) {
+    if (playersArr[s] == dealer) {
+      scoreboard += `${playersArr[s].name}: ${playersArr[s].score}<br>`;
+    } else {
+      scoreboard += `Player ${playersArr[s].number}: ${playersArr[s].score} // Points: ${playersArr[s].bettingPoints}<br>`;
     }
   }
 
   // announce winner
   if (winner.length == 1) {
-    if (winner[0].name != "dealer")
-      winnerOutput = `Player ${winner[0].number} wins! <br>Press 'Submit' to play again.<br><br>${scoreboard}`;
+    if (winner[0].name != "dealer") {
+      winnerOutput = `Player ${winner[0].number} `;
+    } else {
+      winnerOutput = `Dealer `;
+    }
   } else {
-    winnerOutput = `${winner[0].name} wins! <br>Press 'Submit' to play again.<br><br>${scoreboard}`;
+    for (const ties of winner) {
+      if (ties.name == "dealer") {
+        winnerOutput = `Dealer `;
+      } else {
+        winnerOutput += `Player ${ties.number}, `;
+      }
+    }
   }
-  return winnerOutput;
+  // check betting points balance
+  for (const pointsCheck of playersArr) {
+    // if anyone lost all their points, the game resets
+    if (pointsCheck.bettingPoints <= 0) {
+      winnerOutput += `wins! <br><br>Player ${pointsCheck.number} has run out of points to bet!<br>Press 'Submit' to reset.<br><br>${scoreboard}`;
+      mode = "initialise";
+      return winnerOutput;
+    } else {
+      mode = "betting";
+      winnerOutput += `wins! <br>Press 'Submit' to play again.<br><br>${scoreboard}`;
+      return winnerOutput;
+    }
+  }
 }
 
 // ################ CURRENT PLAYER CHECK ##################
@@ -209,41 +233,65 @@ function isPlayer(playersArr) {
 }
 
 // ################ GLOBAL VAR ################
-var deck = makeDeck();
+var deck = shuffleCards(makeDeck());
 var mode = "initialise";
 var stand;
 var playersArr = [];
 var dealer;
+var betHolder = [0];
+var betAmt = 0;
 
 // ################ MAIN FUNCTION ################
 var main = function (input) {
   var myOutputValue = "";
-  var shuffledDeck = shuffleCards(deck);
 
   // ++++++++++ MODE: INITIALISE ++++++++++
   if (mode == "initialise") {
     // reset players array
     playersArr = [];
+    betHolder = [0];
 
     myOutputValue = "Please enter the number of players";
     if (isNaN(Number(input)) == false && input != "") {
       multiplayer(Number(input)); // players is an array of objects
       dealer = playersArr[0];
-      dealer.hand = initialDeal(shuffledDeck, playersArr);
+      dealer.hand = initialDeal(deck, playersArr);
       dealer.turn = 0;
       playersArr[1].turn = 1;
+      mode = "betting";
+      return `${input} players playing. <br>Player 1, you currently have 100 points available to bet. <br>Please enter amount to bet.`;
+    }
+    return myOutputValue;
+  }
+
+  // ++++++++++ MODE: BETTING ++++++++++
+  if (mode == "betting") {
+    // regen shuffled deck
+    deck = shuffleCards(makeDeck());
+    // check current player
+    currentPlayer = isPlayer(playersArr); // player object
+    // reset bet amount
+    betAmt = 0;
+
+    myOutputValue = `Player ${currentPlayer.number}, you currently have ${currentPlayer.bettingPoints} points available to bet. <br>Please enter amount to bet.`;
+    if (
+      isNaN(Number(input)) == false &&
+      input != "" &&
+      Number(input) <= currentPlayer.bettingPoints
+    ) {
+      betAmt = input;
+      input = "";
+      betHolder.push(betAmt);
+      currentPlayer.bettingPoints -= betAmt;
+      myOutputValue = `Player ${currentPlayer.number}, you have bet ${betAmt} points. Press 'Submit' to draw.`;
       mode = "start";
-      return `${input} players playing. Player 1, press submit to draw.`;
     }
     return myOutputValue;
   }
 
   // ++++++++++ MODE: START ++++++++++
   if (mode == "start") {
-    // // check current player
-    currentPlayer = isPlayer(playersArr); // player object
-
-    currentPlayer.hand = initialDeal(shuffledDeck, playersArr);
+    currentPlayer.hand = initialDeal(deck, playersArr);
     currentPlayer.score = handPoints(currentPlayer.hand);
     myOutputValue = `Player ${currentPlayer.number}, you have drawn <br><br>${currentPlayer.hand[0].name} of ${currentPlayer.hand[0].suit}<br>${currentPlayer.hand[1].name} of ${currentPlayer.hand[1].suit}<br><br>Your current points is ${currentPlayer.score}.<br>Hit or stand?`;
 
@@ -277,7 +325,7 @@ var main = function (input) {
         // dealer draws AFTER all player stands if points less than 17
         for (j = 0; j < 3; j++) {
           if (dealer.score < 17) {
-            dealer.hand.push(shuffledDeck.pop());
+            dealer.hand.push(deck.pop());
             dealer.score = handPoints(currentPlayer.hand);
           }
         }
@@ -289,10 +337,12 @@ var main = function (input) {
         playersArr[Number(currentPlayer.number) + 1].turn = 1;
         currentPlayer = isPlayer(playersArr); // player object
 
+        mode = "betting";
+
         return winner;
       } else {
-        myOutputValue = `Player ${currentPlayer.number} is next. Press 'Submit' to draw.`;
-        mode = "start";
+        myOutputValue = `Player ${currentPlayer.number} is next. <br>You have ${currentPlayer.bettingPoints} points available to bet. <br>Please enter amount to bet.`;
+        mode = "betting";
       }
     }
 
@@ -302,7 +352,7 @@ var main = function (input) {
 
       // cannot draw more than 5 cards
       if (currentPlayer.hand.length <= 5) {
-        currentPlayer.hand.push(shuffledDeck.pop());
+        currentPlayer.hand.push(deck.pop());
       } else {
         stand = "forced";
         myOutputValue =
