@@ -186,16 +186,20 @@ var hitOrStand = function () {
 
   //player hits/stand
   if (userInput == "hit") {
-    myOutputValue += `Player ${playerName}, you choose to take another card. <br> Player's cards are: <br>`;
-    // player take one card
-    dealOneCardToHand(playerHand);
+    if (playerTotalHand < 21) {
+      myOutputValue += `Player ${playerName}, you choose to take another card. <br> Player's cards are: <br>`;
+      // player take one card
+      dealOneCardToHand(playerHand);
 
-    console.log("player's hand array: ");
-    console.log(playerHand);
+      console.log("player's hand array: ");
+      console.log(playerHand);
 
-    numberOfPlayerCards += 1;
-    console.log("number of player's cards in hand: " + numberOfPlayerCards);
-
+      numberOfPlayerCards += 1;
+      console.log("number of player's cards in hand: " + numberOfPlayerCards);
+    } // if player hand >21, cannot add more card
+    else if (playerTotalHand > 21) {
+      myOutputValue += `Player ${playerName}, you have exceeded the total of 21. <br> You can not add anymore card. <br> <br> Player's cards are: <br>`;
+    } // to display the cards array
     for (let i = 0; i < playerHand.length; i += 1) {
       myOutputValue += `${playerHand[i].name} of ${playerHand[i].suit}. <br>`;
     }
@@ -216,14 +220,14 @@ var hitOrStand = function () {
         "number of computer's cards in hand: " + numberOfComputerCards
       );
 
-      myOutputValue += `<br> Computer drawn: <br> ${computerHand[0].name} of ${computerHand[0].suit}. <br> -Folded Down Card- <br>`;
+      myOutputValue += `<br> Computer drawn: <br> ${computerHand[0].name} of ${computerHand[0].suit}. <br> -Facing Down Card- <br>`;
     } else {
-      myOutputValue += `<br> Computer drawn: <br> ${computerHand[0].name} of ${computerHand[0].suit}. <br> -Folded Down Card- <br>`;
+      myOutputValue += `<br> Computer drawn: <br> ${computerHand[0].name} of ${computerHand[0].suit}. <br> -Facing Down Card- <br>`;
     }
   } else if (userInput == "stand") {
     //player output
     currentGameMode = "compare cards";
-    myOutputValue += `Player ${playerName}, you choose to end your turn. <br> Player's cards are: <br>`;
+    myOutputValue += `Player ${playerName}, you choose to end your turn. <br><br> Player's cards are: <br>`;
     for (let i = 0; i < playerHand.length; i += 1) {
       myOutputValue += `${playerHand[i].name} of ${playerHand[i].suit}. <br>`;
     }
@@ -339,25 +343,45 @@ var main = function (input) {
   var myOutputValue = "";
 
   if (currentGameMode == "waiting for player name") {
-    playerName = input;
-    currentGameMode = "putting bet";
-    playerCurrentPoints = currentTotalPoints();
-    myOutputValue += `Player ${playerName}, your current point is: ${playerCurrentPoints}. <br><br> Please enter your number of bet, and click the 'Submit' button.`;
-  } else if (currentGameMode == "putting bet") {
+    if (input == "") {
+      return `Player, please input your name.`;
+    } else {
+      playerName = input;
+      currentGameMode = "putting bet";
+      playerCurrentPoints = currentTotalPoints();
+      myOutputValue += `Player ${playerName}, your current point is: ${playerCurrentPoints}. <br><br> Please enter your number of bet, and click the 'Submit' button.`;
+    }
+    return myOutputValue;
+  }
+
+  if (currentGameMode == "putting bet") {
     numberOfBet = input;
     //if input is not a number
     if (isNaN(Number(numberOfBet)) == true) {
       myOutputValue += `Please input a number.`;
+    } // bet need to be a certain value
+    else if (
+      numberOfBet == "" ||
+      numberOfBet < 0 ||
+      numberOfBet > playerCurrentPoints
+    ) {
+      myOutputValue += `Please input a number greater than 0, and within your current point. <br> Player ${playerName}, your current point is: ${playerCurrentPoints}. <br><br> Please enter your number of bet, and click the 'Submit' button.`;
     } else {
       currentGameMode = "deal two cards";
       myOutputValue += `Player ${playerName}, you have chosen to bet ${numberOfBet}.<br><br> Click the 'Submit' button to continue.`;
     }
-  } else if (currentGameMode == "deal two cards") {
+    return myOutputValue;
+  }
+
+  if (currentGameMode == "deal two cards") {
     var dealCards = dealTwoCards();
     var playerTotalHand = totalValueInHand(playerHand);
     currentGameMode = "player hit or stand";
     myOutputValue += `${dealCards} <br><br> Player ${playerName}'s total hand is  ${playerTotalHand}. <br><br> Player ${playerName} do you want to 'hit' or 'stand'? <br> Please type out your choice, and click the 'Submit' button.`;
-  } else if (currentGameMode == "player hit or stand") {
+    return myOutputValue;
+  }
+
+  if (currentGameMode == "player hit or stand") {
     userInput = input;
     if (userInput == "hit") {
       myOutputValue +=
@@ -369,19 +393,30 @@ var main = function (input) {
         hitOrStand() +
         totalValueOutPutMessage() +
         `Player ${playerName}, please click the 'Submit' button to see the winner.`;
+    } else if (userInput != "hit" || userInput != "stand") {
+      myOutputValue += `Please input 'hit' or 'stand' with lowercase. <br> We apologize for the incovenient.`;
     }
-  } else if (currentGameMode == "compare cards") {
+    return myOutputValue;
+  }
+
+  if (currentGameMode == "compare cards") {
     var winnerMessage = currentWinner();
     playerCurrentPoints = currentTotalPoints();
     currentGameMode = "restart the game";
     myOutputValue += `${winnerMessage} <br><br> Player ${playerName}, you bet: ${numberOfBet}. <br> Your current point is: ${playerCurrentPoints}. <br> <br> Click the 'Submit' button to play another round.`;
-  } else if (totalPoints == 0) {
-    return `Player GAME OVER. Please refresh to play.`;
-  } else if (currentGameMode == "restart the game") {
+    return myOutputValue;
+  }
+
+  if (totalPoints <= 0) {
+    return `Player ${playerName} GAME OVER. Please refresh the page to play.`;
+  }
+
+  if (currentGameMode == "restart the game") {
     restartGame();
     playerCurrentPoints = currentTotalPoints();
     currentGameMode = "putting bet";
     myOutputValue += `Player ${playerName}, your current point is: ${playerCurrentPoints}. <br><br> Please enter your number of bet, and click the 'Submit' button.`;
+    return myOutputValue;
   }
   return myOutputValue;
 };
