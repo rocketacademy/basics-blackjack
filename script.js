@@ -301,7 +301,7 @@ var playerTurn = function (input) {
       return `Your hand is ${hand}, with a score of ${playersHands[currentPlayer].score}.<br> Please choose to hit or stand`;
     } else {
       return `You have gone bust with a score of ${playersHands[currentPlayer].score}.<br> Your hand is ${hand}. <br><br> 
-┬─┬﻿︵/(.□.)╯.<br><br> Please submit stand to continue`;
+┬─┬﻿︵/(.□.)╯.<br><br> Please submit stand to continue!`;
     }
   } else {
     return `Please submit hit or stand to continue.<br> Current player score is ${playersHands[currentPlayer].score}`;
