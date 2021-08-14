@@ -16,6 +16,7 @@ var betCounter = 100;
 var bet = 0;
 var compWinCount = 0;
 
+var test = "test";
 // ======================= MAIN STARTS ============================
 var main = function (input) {
   var myOutputValue = "hello world, this msg should not appear";
