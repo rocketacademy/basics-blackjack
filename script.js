@@ -186,6 +186,9 @@ var hitOrStand = function () {
 
   //player hits/stand
   if (userInput == "hit") {
+    // computer decides to hit or stand automatically
+    computerTotalHand = totalValueInHand(computerHand);
+    console.log("computer total hand: " + computerTotalHand);
     if (playerTotalHand < 21) {
       myOutputValue += `Player ${playerName}, you choose to take another card. <br> Player's cards are: <br>`;
       // player take one card
@@ -204,9 +207,9 @@ var hitOrStand = function () {
       myOutputValue += `${playerHand[i].name} of ${playerHand[i].suit}. <br>`;
     }
 
-    // computer decides to hit or stand automatically
-    computerTotalHand = totalValueInHand(computerHand);
-    console.log("computer total hand: " + computerTotalHand);
+    // // computer decides to hit or stand automatically
+    // computerTotalHand = totalValueInHand(computerHand);
+    // console.log("computer total hand: " + computerTotalHand);
     // computer has to hit if their hand is below 17
     if (computerTotalHand <= 16) {
       // computer take 1 card
@@ -232,10 +235,26 @@ var hitOrStand = function () {
       myOutputValue += `${playerHand[i].name} of ${playerHand[i].suit}. <br>`;
     }
 
-    // computer output
-    myOutputValue += `<br> Computer's cards are: <br>`;
-    for (let i = 0; i < computerHand.length; i += 1) {
-      myOutputValue += `${computerHand[i].name} of ${computerHand[i].suit}. <br>`;
+    if (computerTotalHand <= 16) {
+      // computer take 1 card
+      dealOneCardToHand(computerHand);
+
+      console.log("computer's hand array: ");
+      console.log(computerHand);
+
+      numberOfComputerCards += 1;
+      console.log(
+        "number of computer's cards in hand: " + numberOfComputerCards
+      );
+      myOutputValue += `<br> Computer's cards are: <br>`;
+      for (let i = 0; i < computerHand.length; i += 1) {
+        myOutputValue += `${computerHand[i].name} of ${computerHand[i].suit}. <br>`;
+      }
+    } else if (computerTotalHand >= 17) {
+      myOutputValue += `<br> Computer's cards are: <br>`;
+      for (let i = 0; i < computerHand.length; i += 1) {
+        myOutputValue += `${computerHand[i].name} of ${computerHand[i].suit}. <br>`;
+      }
     }
   }
   return myOutputValue;
