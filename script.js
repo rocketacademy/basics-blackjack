@@ -146,7 +146,6 @@ var main = function (input){
 
 //=======================Determine if player hits or stands=====================
 if (currentGameMode = GAME_MODE_HIT_OR_STAND){
-  currentPlayer = PLAYER
   var playerScore = calcHandTotal(playerHand);
   if (input.toLowerCase().includes('hit')){
   console.log(`input: ${input}, game mode: ${currentGameMode}`)
@@ -169,7 +168,6 @@ if (currentGameMode = GAME_MODE_HIT_OR_STAND){
 }
 // draw one card for computer if computer has lower than dealer min value 16
 if (input.toLowerCase().includes('stand') || stand == 'forced'){
-  currentPlayer = COMPUTER
   var computerScore = calcHandTotal(computerHand);
     if (computerScore <= dealerMinValue) {
       computerHand.push(shuffledDeck.pop());
@@ -177,7 +175,7 @@ if (input.toLowerCase().includes('stand') || stand == 'forced'){
       console.log(`com score: ${computerScore}`)
   currentGameMode = GAME_MODE_DETERMINE_WINNER
   gameOver = true
-    myOutputValue = `${playerCards}.<br>${computerCards}.<br>${genericOutput}. <br> Hit refresh to start again.`
+    myOutputValue = `${playerCards}.<br>${computerCards}.<br>${genericOutput}. ${winner()}<br> Hit refresh to start again.`
   }
 }
 }
@@ -197,11 +195,11 @@ if (currentGameMode == GAME_MODE_DETERMINE_WINNER){
   //=======================Blackjack logic=====================
   if (playerHand.length == 2 && playerScore == maxCardLimit){
     gameOver = true;
-   return `${genericOutput}. Player has blackjack!`
+   return `Player has blackjack!`
   }
   if (computerHand.length ==2 && computerScore == maxCardLimit){
     gameOver = true
-    return `${genericOutput}. Computer has blackjack!`
+    return `Computer has blackjack!`
   }
   }
 }
