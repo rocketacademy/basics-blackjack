@@ -1,17 +1,19 @@
 // rules of the game:
 // two players - 1 human 1 computer
-// computer will always be the dealer. dealer always has to hit if hand < 17
+// computer will always be the dealer
+// player & dealer always have to hit if hand < 17
 // aces can be 1 or 11
-// winner is the player closest to 21
+// winner is the player closest to 21; busted if > 21
+// starting deck is 2 cards each; max number of cards is 5 on hand
 
-// 1. Deck is shuffled & Game/variables/function is set up (section 1.1 to 1.10)
+// 1. Deck is shuffled & Game/variables/function is set up (section 1.1 to 1.9)
 // 2. User clicks Submit to deal cards.
 // 3. The cards are analysed for game winning conditions, e.g. Blackjack.
 // 4. The cards are displayed to the user.
-// 5. The user decides whether to hit or stand, using the submit button to submit their choice.
+// 5. The user decides whether to hit or stand, using the submit button to submit their choice (up to 5 cards)
 // 6. The user's cards are analysed for winning or losing conditions.
 // 7. The computer decides to hit or stand automatically based on game rules.
-// 8. The game either ends or continues.
+// 8. Game ended, reset gameplay 
 
 // 1. Deck is shuffled & Game/variables/function is set up
 // 1.1 create make deck fuction
@@ -102,9 +104,8 @@ var deck = shuffleCards(makeDeck())
 var playerHand = [];
 var computerHand = [];
 var sumMax = 21; //max valid sum for blackjack is 21
-var gameOver = false; //once game is over, no further moves can be made
 var playerChosetoStand = false; // if player has decided to stand, he/she cannot choose to hit anymore
-var computerThreshold = 16; //computer always hit if sum <= 16
+var sumThreshold = 16; //computer always hit if sum <= 16
 var gameStatus = 'waitng for username'
 var username = '';
 
@@ -129,7 +130,7 @@ var generateHandSum = function(hand){
     } else if (currentCard.rank >=11 && currentCard.rank <= 13){
       sum +=  10;
       //if card is ace, value = 11 by default
-    } else if (currentCard.rank =1){
+    } else if (currentCard.rank = 1){
       numAcesInHand += 1
       sum += 11
     }
@@ -155,31 +156,18 @@ var isBlackjack = function(hand){
   return hand.length == 2 && generateHandSum(hand) == sumMax;
 };
 
-// 1.9. convert hand to string
-var convertHandToString = function(hand){
-  return hand.computerHand((card)=>card.name)
+// 1.9. create function to show deck
+var showDeck = function(hand){
+  message = ""; 
+  var counter = 0;
+  while (counter < hand.length){
+    message = message + hand[counter].name + ' of ' + hand[counter].suit + ', ';
+  counter = counter + 1;
+  }
+  return message;
 }
 
-// 1.10. create function to generate default output message
-var generateOutputMessage = function(){
-  if(computerHand.length == 2 && playerHand.length == 2){
-    return 'Your hand: '+playerHand[0].name + ' of ' + playerHand[0].suit+', '+playerHand[1].name + ' of ' + playerHand[1].suit+', with sum '+generateHandSum(playerHand)
-    +'<br>Computer has hand: '+computerHand[0].name + ' of ' + computerHand[0].suit+', '+computerHand[1].name + ' of ' + computerHand[1].suit+', with sum '+generateHandSum(computerHand)
-  }
-  else if(playerHand.length == 3 && computerHand.length == 2){
-    return 'Your hand: '+playerHand[0].name + ' of ' + playerHand[0].suit+', '+playerHand[1].name + ' of ' + playerHand[1].suit+', '+ playerHand[2].name + ' of ' + playerHand[2].suit+', with sum '+generateHandSum(playerHand)
-    +'<br>Computer has hand: '+computerHand[0].name + ' of ' + computerHand[0].suit+', '+computerHand[1].name + ' of ' + computerHand[1].suit+', with sum '+generateHandSum(computerHand)
-    }
-  else if(playerHand.length == 2 && computerHand.length == 3){
-    return 'Your hand: '+playerHand[0].name + ' of ' + playerHand[0].suit+', '+playerHand[1].name + ' of ' + playerHand[1].suit+', with sum '+generateHandSum(playerHand)
-    +'<br>Computer has hand: '+computerHand[0].name + ' of ' + computerHand[0].suit+', '+computerHand[1].name + ' of ' + computerHand[1].suit+', '+computerHand[2].name + ' of ' + computerHand[2].suit+', with sum '+generateHandSum(computerHand)
-    }
-  else {return 'Your hand: '+playerHand[0].name + ' of ' + playerHand[0].suit+', '+playerHand[1].name + ' of ' + playerHand[1].suit+', '+ playerHand[2].name + ' of ' + playerHand[2].suit+', with sum '+generateHandSum(playerHand)
-  +'<br>Computer has hand: '+computerHand[0].name + ' of ' + computerHand[0].suit+', '+computerHand[1].name + ' of ' + computerHand[1].suit+', '+computerHand[2].name + ' of ' + computerHand[2].suit+', with sum '+generateHandSum(computerHand)
-  }
-}
-
-// 2. User clicks Submit to deal cards.
+// 2. User clicks Submit to deal cards (2 cards each)
 var main = function (input) {
 
   if(gameStatus == 'waitng for username'){
@@ -201,89 +189,149 @@ var main = function (input) {
     dealCardtoHand(playerHand);
     dealCardtoHand(computerHand);
 
-    console.log("Player's hand: "+playerHand[0].name+' of '+playerHand[0].suit+' and '+playerHand[1].name+' of '+playerHand[1].suit)
-    console.log("Computer's hand: "+computerHand[0].name+' of '+computerHand[0].suit+' and '+computerHand[1].name+' of '+computerHand[1].suit)
+    console.log("Player's hand: "+showDeck(playerHand))
+    console.log("Computer's hand: "+showDeck(computerHand))
     console.log('Player has blackjack? '+isBlackjack(playerHand))
     console.log('Computer has blackjack? '+isBlackjack(computerHand))
 
     // 3. The cards are analysed for game winning conditions, e.g. Blackjack.
+    // if player got blackjack, player wins
     if(isBlackjack(playerHand)){
       gameStatus = 'gameover';
-      return 'Hello '+username+ '!'+'<br><br>'+ generateOutputMessage()+'<br><br> You got a Blackjack! You have won! Please refresh to play again.';
+      return 'Hello '+username+ '!'+
+      '<br><br>'+'You got a Blackjack! You have won!'+
+      '<br><br>'+ 'Your hand: '+ showDeck(playerHand) + 'with sum of '+ generateHandSum(playerHand) + 
+      '<br><br>'+ "Computer's hand: "+ showDeck(computerHand) + 'with sum of '+ generateHandSum(computerHand) + 
+      '<br><br> Please refresh to play again.';
     }
-  
+
+    // if computer got blackjack, computer wins
     if(isBlackjack(computerHand)){
       gameStatus = 'gameover';
-      return 'Hello '+username+ '!'+'<br><br>'+ generateOutputMessage()+'<br><br> Computer got a Blackjack! Computer has won! Please refresh to play again.';
+      return 'Hello '+username+ '!'+ 
+      '<br><br>'+'Computer got a Blackjack! Computer has won!'+
+      '<br><br>'+ 'Your hand: '+ showDeck(playerHand) + 'with sum of '+ generateHandSum(playerHand) + 
+      '<br>'+ "Computer's hand: "+ showDeck(computerHand) + 'with sum of '+ generateHandSum(computerHand) + 
+      '<br><br> Please refresh to play again.';
     }
 
-    // 4. The cards are displayed to the user.
-    // 5. The user decides whether to hit or stand, using the submit button to submit their choice.
-    gameStatus = 'hit or stand'
-    return 'Hello '+username+ '!'+'<br><br>'+ generateOutputMessage()+'<br><br> Please enter "hit" or "stand" to proceed.';
+    // 4. The cards are displayed to the user. 
+    gameStatus = 'player to hit or stand'
+    return 'Hello '+username+ '!'+
+    '<br><br>'+ 'Your hand: '+ showDeck(playerHand) + 'with sum of '+ generateHandSum(playerHand) +
+    '<br><br> Please enter "hit" or "stand" to proceed.';
   }
 
-  // 6. The user's cards are analysed for winning or losing conditions.
-  if(gameStatus == 'hit or stand'){
+  // 5. The user decides whether to hit or stand, using the submit button to submit their choice (up to 5 cards)
+  // player to submit only hit or stand, otherwise error
+  if(gameStatus == 'player to hit or stand'){
     if(!playerChosetoStand){
       if(input !== 'hit' && input !== 'stand'){
         return 'Invalid input. Please enter "hit" or "stand" to proceed.'
       }
-  }
+    }
 
-  if(input == 'hit'){
-    dealCardtoHand(playerHand)
-    console.log('Player hit '+playerHand[2].name+' of '+playerHand[2].suit)
+    // if player decides to hit 
+    if(input == 'hit'){
+      dealCardtoHand(playerHand)
+      console.log('Player hit '+ showDeck(playerHand)+'with a sum of '+ generateHandSum(playerHand))
 
-      //if burst, show it to player
-      if(generateHandSum(playerHand) > sumMax){
-        gameStatus = 'gameover';
-        return 'You have chosen to hit. <br><br>'+generateOutputMessage()+'<br><br>'+'You have busted and lost! Please refresh to play again.';
+      if(generateHandSum(playerHand) <= sumMax){
+        // if number of cards on hand > 5, player can only enter 'stand' to end their turn
+        if(playerHand.length > 5){
+          playerChosetoStand = true;
+          gameStatus = 'computer to hit or stand';    
+          return 'You reached the maximum numer of cards on hand. <br><br>'+ 
+          'Your hand: '+ showDeck(playerHand) + 'with sum of '+ generateHandSum(playerHand) +'<br>'+
+          'Please enter "stand" to end your turn.';
+        }
+        // otherwise, player can choose to deal one more card or to end turn
+        else return 'You have chosen to hit. <br><br>'+ 
+        'Your hand: '+ showDeck(playerHand) + 'with sum of '+ generateHandSum(playerHand) +'<br>'+
+        'Please enter "hit" if you want to deal 1 more card or "stand" to end your turn.';
       }
-  }
-  
-  if(input == 'stand'){
-    playerChosetoStand = true;
-  }
-  
-  // 7. The computer decides to hit or stand automatically based on game rules.
-  // hit if sum < threshold; stand if sum >= threshold
-  var computerHandSum = generateHandSum(computerHand);
-  if (computerHandSum <= computerThreshold){
-    dealCardtoHand(computerHand);
-    console.log('Computer hit '+computerHand[2].name+' of '+computerHand[2].suit)
+      //6. The user's cards are analysed for winning or losing conditions (if bust, player loses)
+      else if(generateHandSum(playerHand) > sumMax){
+        gameStatus = 'gameover';
+        return 'You have chosen to hit. <br><br>' +
+        'You have busted and lost! <br><br>' +
+        'Your hand: '+ showDeck(playerHand) + 'with sum of '+ generateHandSum(playerHand) +'<br>'+
+        "Computer's hand: "+ showDeck(computerHand) + 'with sum of '+ generateHandSum(computerHand) + '<br><br>'+
+        'Please refresh to play again.';
+      } 
+    } 
+    // if player decides to stand
+    if (input == 'stand'){
+      playerChosetoStand = true;
 
-    //update computer hand sum after drawing a new card
-    computerHandSum = generateHandSum(computerHand);
-      //if burst, show it to computer
+      // if player has not reached minimum threshold of sum 17
+      if(generateHandSum(playerHand) <= sumThreshold && playerChosetoStand){
+        return 'You have not reached the minimum threshold of sum 17. Please enter "hit" to deal 1 more card.';
+      }
+
+      // otherwise, player's turn ends
+      else gameStatus = 'computer to hit or stand';
+    } 
+  }
+ 
+  // 7. The computer decides to hit or stand automatically based on game rules (hit if sum < threshold; stand if sum >= threshold)
+  if(gameStatus == 'computer to hit or stand'){
+    var computerHandSum = generateHandSum(computerHand);
+    while (computerHandSum <= sumThreshold && computerHandSum < sumMax && computerHand.length <= 5){
+      dealCardtoHand(computerHand);
+
+      //update computer hand sum after drawing a new card
+      computerHandSum = generateHandSum(computerHand);
+
+      console.log('Computer hit '+ showDeck(computerHand) + 'with sum of '+ generateHandSum(computerHand))   
+      } 
+      //if burst, computer loses
       if(computerHandSum > sumMax){
-        gameStatus = 'gameover';
-        return generateOutputMessage()+'<br><br>'+'Computer has busted and lost! Please refresh to play again.';
-    } //if computer did not burst and if computer chose to hit --> analyse result
-      else if (generateHandSum(playerHand)<generateHandSum(computerHand)){
-        gameStatus = 'gameover';
-        return 'You have chosen to hit. <br><br>'+generateOutputMessage()+'<br><br>'+'Computer has won! Please refresh to play again.';
-    } else if (generateHandSum(playerHand)>generateHandSum(computerHand) && !playerChosetoStand){
-        return 'You have chosen to hit. <br><br>'+generateOutputMessage()+'<br><br>'+'You have won! Please refresh to play again.';
-      }
+        gameStatus = 'gameover'
+        return  'Computer has busted and lost!' +
+        '<br><br>'+ 'Your hand: '+ showDeck(playerHand) + 'with sum of '+ generateHandSum(playerHand) + 
+        '<br>'+ "Computer's hand: "+ showDeck(computerHand) + 'with sum of '+ generateHandSum(computerHand) + 
+        '<br><br>'+'Please refresh to play again.';
+      } 
+      //if computer did not burst and if sum > threshold --> proceed to analyse game result
+      else gameStatus = 'generate hand sum';
   }
 
   // if both player and computer have not busted and have chosen to stand, decide the winner
-  if(playerChosetoStand && computerHandSum > computerThreshold){
-    gameStatus = 'gameover';
-
-    if(generateHandSum(playerHand)>generateHandSum(computerHand)){
-      gameStatus = 'gameover';
-      return 'You have chosen to stand. <br><br>'+generateOutputMessage()+'<br><br>'+'You have won! Please refresh to play again.';
+  if(gameStatus == 'generate hand sum'){
+    if(playerChosetoStand && computerHandSum > sumThreshold){
+      // player wins
+      if(generateHandSum(playerHand)>generateHandSum(computerHand)){
+        return 'You have won!' +
+        '<br><br>'+'Your hand: '+ showDeck(playerHand) + 'with sum of '+ generateHandSum(playerHand) + 
+        '<br>'+ "Computer's hand: "+ showDeck(computerHand) + 'with sum of '+ generateHandSum(computerHand) +
+        '<br><br>'+'Please refresh to play again.';
       }
-  
-    if(generateHandSum(playerHand)<generateHandSum(computerHand)){
-      gameStatus = 'gameover';
-      return 'You have chosen to stand. <br><br>'+generateOutputMessage()+'<br><br>'+'Computer has won! Please refresh to play again.';
+      // computer wins
+      else if(generateHandSum(playerHand)<generateHandSum(computerHand)){
+        return 'Computer has won!' +
+        '<br><br>'+ 'Your hand: '+ showDeck(playerHand) + 'with sum of '+ generateHandSum(playerHand) + 
+        '<br>'+ "Computer's hand: "+ showDeck(computerHand) + 'with sum of '+ generateHandSum(computerHand) +      
+        '<br><br>'+'Please refresh to play again.';
+      } 
+      // tie
+      else {
+        return "It's a tie!" +
+        '<br><br>'+'Your hand: '+ showDeck(playerHand) + 'with sum of '+ generateHandSum(playerHand) + 
+        '<br>'+ "Computer's hand: "+ showDeck(computerHand) + 'with sum of '+ generateHandSum(computerHand) +      
+        '<br><br>'+"Please refresh to play again.";
       }
+    } 
+    gameStatus = 'gameover'
    }
-   //else computer wins
-   gameStatus = 'gameover'
-   return generateOutputMessage()+'<br><br>'+'Computer has won! Please refresh to play again.';
+   
+   // 8. Game ended, reset gameplay 
+   if(gameStatus == 'gameover'){
+    gameStatus = 'waitng for username';
+
+    // reshuffle deck & reset hands
+    playerHand = [];
+    computerHand = [];
+    deck = shuffleCards(makeDeck())
   }
-};
+}
