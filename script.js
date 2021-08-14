@@ -8,6 +8,12 @@ var BET_POINTS = "bet points";
 var HIT_OR_STAND = "hit or stand";
 var GAME_MODE = ASK_USERNAME;
 
+var cardDeck = [];
+var shuffledDeck = [];
+var playerWins = 0;
+var currPoints = 0;
+var outputMsg = "";
+
 // player starts with 100 points
 var playerPoints = 100;
 var pointsBet = 0;
@@ -151,11 +157,12 @@ var getOutputMsg = function (playerWins, currPoints) {
   }
 };
 
-var cardDeck = [];
-var shuffledDeck = [];
-var playerWins = 0;
-var currPoints = "";
-var outputMsg = "";
+var resetGame = function () {
+  pointsBet = 0;
+  playerPoints = 100;
+  GAME_MODE = BET_POINTS;
+  return "Please enter your bet for this round.";
+};
 
 var main = function (input) {
   if (GAME_MODE == ASK_USERNAME) {
@@ -222,22 +229,22 @@ var main = function (input) {
     dealerCardSum = dealerCard[0].rank + dealerCard[1].rank;
     console.log("dealer card sum is " + dealerCardSum);
 
+    GAME_MODE = HIT_OR_STAND;
+
     // check if player card totals to 21
     // if playerCardSum == 21, player wins. Else, player choose 'hit' or 'stand'
     if (playerCardSum == 21) {
       playerWins = doesPlayerWin(playerCardSum, dealerCardSum);
       currPoints = countCurrPoints(playerWins, playerPoints, pointsBet);
       outputMsg = getOutputMsg(playerWins, currPoints);
-
-      myOutputValue =
+      return (
         outputOfPlayersCards +
         ". <br> You got a blackjack. You win! <br> Your current points are: " +
-        currPoints;
+        currPoints
+      );
     } else {
-      myOutputValue =
-        myOutputValue + ". <br> Please choose between hit or stand.";
+      return myOutputValue + ". <br> Please choose between hit or stand.";
     }
-    GAME_MODE = HIT_OR_STAND;
   }
   if (GAME_MODE == HIT_OR_STAND) {
     // if player choose 'stand', open dealer's closed card.
@@ -352,7 +359,7 @@ var main = function (input) {
         }
       }
     }
-    return myOutputValue;
+    return resetGame();
   }
-  GAME_MODE = BET_POINTS;
+  return myOutputValue;
 };
