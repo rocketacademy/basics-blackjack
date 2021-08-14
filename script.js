@@ -154,10 +154,17 @@ var printHands = function () {
         } `;
       } else if (players[i].currentTurn == true) {
         if (players[i].hand2.length > 0) {
-          msg += `${players[i].name}'s hand: ${printCards(
-            players[i].hand2,
-            2
-          )} ${players[i].status2} // `;
+          if (players[i].canSplit == false) {
+            msg += `${players[i].name}'s hand: ${printCards(
+              players[i].hand2,
+              0
+            )} ${players[i].status2} // `;
+          } else {
+            msg += `${players[i].name}'s hand: ${printCards(
+              players[i].hand2,
+              2
+            )} ${players[i].status2} // `;
+          }
         }
         msg += `${players[i].name}'s hand: ${printCards(players[i].hand, 2)} ${
           players[i].status
@@ -496,12 +503,28 @@ var main = function (input) {
 
     // ========== check for COMPUTER blackjacks ==========
     if (getSum(comHand) == 21) {
+      // change scores
+      var playerSumIndex = 0;
+      while (playerSumIndex < players.length) {
+        players[playerSumIndex].sum = changeAces(players[playerSumIndex].hand);
+        playerSumIndex += 1;
+      }
+
       showCards = true;
       myOutputValue += printHands();
       myOutputValue += "Computer blackjack!";
       payoutComBJ();
-      myOutputValue += NEW_ROUND_MSG;
       myOutputValue += printPlayers("points");
+
+      myOutputValue += removePlayers();
+      if (players.length < 1) {
+        myOutputValue += NEW_GAME_MSG;
+        gameMode = GM_NAME;
+      } else {
+        myOutputValue += NEW_ROUND_MSG;
+        gameMode = GM_DEAL;
+      }
+      return myOutputValue;
     } else {
       // ========== else payout for player blackjack and... ==========
       payoutPlayerBJ();
@@ -522,6 +545,9 @@ var main = function (input) {
     if (input != "hit" && input != "stand") {
       myOutputValue =
         "⚠️ Invalid input! Please input 'hit' or 'stand' only. ⚠️";
+      myOutputValue += printHands();
+      myOutputValue += `${players[currentPlayer].name}, would you like to hit or stand? (hit/stand)`;
+      myOutputValue += printPlayers("wagers");
     } else {
       if (input == "hit") {
         players[currentPlayer].hand2.push(currentDeck.shift());
@@ -542,7 +568,7 @@ var main = function (input) {
         gameMode = GM_PLAY;
       }
       myOutputValue += printHands();
-      myOutputValue += `${players[currentPlayer].name}, would you like to hit or stand for your second hand? (hit/stand)`;
+      myOutputValue += `${players[currentPlayer].name}, would you like to hit or stand? (hit/stand)`;
       myOutputValue += printPlayers("wagers");
     }
   } else if (gameMode == GM_PLAY) {
