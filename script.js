@@ -2,33 +2,47 @@ var deck = [];
 var shuffledDeck = [];
 var playerCards = [];
 var computerCards = [];
-var gameMode = "drawCards";
+var gameMode = "userName";
+var coins = 100;
+var wager = 0;
+var userName = " ";
 
 var main = function (input) {
   var myOutputValue = " ";
   //find player hand and output in box
   //calPlayerCard gives string representing the card name and suit
-  var calCards = startOfGame();
-  myOutputValue = calCards;
 
+  if (gameMode == "userName") {
+    var name = findUserName(input);
+    return name;
+  }
+  if (gameMode == "reset") {
+    wager = 0;
+    playerCards = [];
+    computerCards = [];
+    deck = [];
+    shuffledDeck = [];
+    gameMode = "wager";
+  }
+
+  if (gameMode == "wager") {
+    var placeWager = calWager(input);
+    return placeWager;
+  }
+  if (gameMode == "drawCards") {
+    var calCards = startOfGame();
+    return calCards;
+  }
   if (gameMode == "hit" && input == "hit") {
     var playerHand = calPlayerCard(shuffledDeck);
     console.log(playerHand);
+
     if (calPlayerSum(playerCards) > 21) {
-      return (
-        playerHand +
-        "<br>" +
-        showPlayerCards(playerCards) +
-        "<br>" +
-        "Your total is " +
-        calPlayerSum(playerCards) +
-        "<br>" +
-        "You bust!, refresh to try again"
-      );
+      coins = coins - wager;
+      gameMode = "reset";
+      return "You bust!, Input new wager to try again";
     }
     myOutputValue =
-      playerHand +
-      "<br>" +
       showPlayerCards(playerCards) +
       "<br>" +
       "Your total is " +
@@ -49,8 +63,7 @@ var main = function (input) {
       "Press submit to hand over to Computer";
     gameMode = "ComputerTurn";
     return myOutputValue;
-  }
-  if (gameMode == "ComputerTurn") {
+  } else if (gameMode == "ComputerTurn") {
     var compCards = showComputerCards(computerCards);
     myOutputValue =
       "Computer got " +
@@ -58,11 +71,12 @@ var main = function (input) {
       compCards +
       "<br>" +
       "Computer's total is " +
-      calComputerSum(computerCards);
+      calComputerSum(computerCards) +
+      "<br>" +
+      "Calculating winner press submit ";
     gameMode = "results";
-  }
-  ////////////need to make gamewinning function
-  if (gameMode == "results") {
+    return myOutputValue;
+  } else if (gameMode == "results") {
     var calWinningFunction = calWinningHand(playerCards, computerCards);
     myOutputValue = calWinningFunction;
   }
@@ -80,23 +94,28 @@ var makeDeck = function () {
       if (cardName == 1) {
         cardName = "Ace";
         cardEmoji = "😎";
+        cardStrength = 1;
       } else if (cardName > 1 && cardName < 11) {
         cardName = rankCounter;
         cardEmoji = " ";
+        cardStrength = rankCounter;
       } else if (cardName == 11) {
         cardName = "Jack";
         cardEmoji = "👶";
+        cardStrength = 11;
       } else if (cardName == 12) {
         cardName = "Queen";
         cardEmoji = "👸";
+        cardStrength = 12;
       } else if (cardName == 13) {
         cardName = "King";
         cardEmoji = "🤴";
+        cardStrength = 13;
       }
       var card = {
         name: cardName,
         suit: currentSuits,
-        rank: rankCounter,
+        rank: cardStrength,
         Emoji: cardEmoji,
       };
       deck.push(card);
@@ -138,9 +157,8 @@ var startOfGame = function () {
     var shufflingDeck = shuffleCards(deck);
     var playerHand1 = calPlayerCard(shuffledDeck);
     var playerHand2 = calPlayerCard(shuffledDeck);
-    // logic for if player is > 21 or =21
     if (calPlayerSum(playerCards) == 21) {
-      return (
+      myOutputValue =
         showPlayerCards(playerCards) +
         "<br>" +
         showComputerCards(computerCards) +
@@ -148,17 +166,21 @@ var startOfGame = function () {
         "Your total is " +
         calPlayerSum(playerCards) +
         "<br>" +
-        "BlackJack! You won! Refresh to try again"
-      );
-    } else if (calPlayerSum(playerCards) > 21) {
-      return (
+        "BlackJack! You won! Input new wager to try again";
+      gameMode = "reset";
+      return myOutputValue;
+    }
+    if (calPlayerSum(playerCards) > 21) {
+      myOutputValue =
         showPlayerCards(playerCards) +
         "<br>" +
         "Your total is " +
         calPlayerSum(playerCards) +
         "<br>" +
-        "You went over! You bust! Refresh to try again"
-      );
+        "You went over! You bust! Input new wager to try again";
+      coins = coins - wager;
+      gameMode = "reset";
+      return myOutputValue;
     }
     //making two cards to add into sum so while loop below can run
     // while runs as long as computerSum is less then 17
@@ -193,7 +215,7 @@ var startOfGame = function () {
 var calPlayerCard = function (shuffledDeck) {
   var playerCard = shuffledDeck.pop();
   playerCards.push(playerCard);
-  var myOutputValue = playerCard.name + " of " + playerCard.suit;
+  myOutputValue = playerCard.name + " of " + playerCard.suit;
   return myOutputValue;
 };
 // function to show all cards in players hands as well as the sum of cards
@@ -234,18 +256,7 @@ var calWinningHand = function (playerCards, computerCards) {
   var computerSum = calComputerSum(computerCards);
   console.log(computerSum);
 
-  if (computerSum > 21) {
-    return (
-      " Your total was  " +
-      calPlayerSum(playerCards) +
-      "<br>" +
-      "Computer's total was  " +
-      calComputerSum(computerCards) +
-      "<br>" +
-      " The computer bust! You Won! Refresh to try again"
-    );
-  }
-  if (playerSum < computerSum) {
+  if (computerSum > 21 && playerSum < 21) {
     myOutputValue =
       " Your total was  " +
       calPlayerSum(playerCards) +
@@ -253,7 +264,17 @@ var calWinningHand = function (playerCards, computerCards) {
       "Computer's total was  " +
       calComputerSum(computerCards) +
       "<br>" +
-      "You Lost! Refresh to try again";
+      " The computer bust! You Won! Input new wager to try again";
+  } else if (playerSum < computerSum) {
+    myOutputValue =
+      " Your total was  " +
+      calPlayerSum(playerCards) +
+      "<br>" +
+      "Computer's total was  " +
+      calComputerSum(computerCards) +
+      "<br>" +
+      "You Lost! Input new wager to try again";
+    coins = coins - wager;
   } else if (playerSum > computerSum) {
     myOutputValue =
       " You got " +
@@ -262,7 +283,8 @@ var calWinningHand = function (playerCards, computerCards) {
       "Computer got " +
       calComputerSum(computerCards) +
       "<br>" +
-      "You Won! Refresh to try again";
+      "You Won! Input new wager to try again";
+    coins = coins + wager;
   } else if (playerSum == computerSum) {
     myOutputValue =
       " You got " +
@@ -271,8 +293,9 @@ var calWinningHand = function (playerCards, computerCards) {
       "Computer got " +
       calComputerSum(computerCards) +
       "<br>" +
-      "Draw!";
+      "Draw! Input new wager to try again";
   }
+  gameMode = "reset";
   return myOutputValue;
 };
 //adding hit or not funtionality for player and computer
@@ -307,7 +330,43 @@ var showComputerCards = function (computerCards) {
   return myOutputValue;
 };
 
+var findUserName = function (input) {
+  if (gameMode == "userName") {
+    userName = input;
+    gameMode = "wager";
+    myOutputValue =
+      "Hello " +
+      userName +
+      "<br>" +
+      "Please input your wager. Your total coins are " +
+      coins;
+  }
+  return myOutputValue;
+};
+var calWager = function (input) {
+  if (gameMode == "wager") {
+    wager = Number(input);
+    gameMode = "drawCards";
+    myOutputValue =
+      "Hello " +
+      userName +
+      "<br>" +
+      "Your total coins are " +
+      coins +
+      "<br>" +
+      "Your wager: " +
+      wager +
+      "<br>" +
+      "Press submit to draw cards";
+  }
+  return myOutputValue;
+};
 /////////////need to make an ace function and embed it into calPlayerCards function , give user choice to change ace to 1 or 11
 
 //// if players have an Ace and playerCards.length =2 , ace.rank == 11
 /// if players have an Ace and playerCards.length >3 Ace.rank == 1
+
+/////////ways to do ace functionality
+///////// add into hit or hit mode
+////////change from make deck function straight
+//////// change from calCard function, so if drawnCard.name == Ace, give choice to change it to 1 or 11
