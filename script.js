@@ -1,18 +1,24 @@
-var gameMode = "get initial hand";
-var playerScore = 100;
-
 // gamemodes:
-// get name
+// get player name & bet
 // get initial hand
 // player hit or stand
 // compare winner
+
+var gameMode = "get player name and bet";
+var playerScore = 100;
+var newScore = 100;
+var scoreCard = [100];
+var playerBet = 0;
+
+document.getElementById("output-div").innerHTML =
+  "Hi player, what is your name?";
 
 // create card deck
 var makeDeck = function () {
   // Initialise an empty deck array
   var cardDeck = [];
   // Initialise an array of the 4 suits in our deck. We will loop over this array.
-  var suits = ["hearts", "diamonds", "clubs", "spades"];
+  var suits = ["♦️", "♣️", "♥️", "♠️"];
 
   // Loop over the suits array
   var suitIndex = 0;
@@ -93,17 +99,23 @@ var shuffleCards = function (cardDeck) {
 
 var shuffledDeck = shuffleCards(makeDeck());
 
-// each player gets 2 shuffled cards
-var comCard = [shuffledDeck.pop(), shuffledDeck.pop()];
-var playerCard = [shuffledDeck.pop(), shuffledDeck.pop()];
-
 var playerName = "";
 var newPcard = [];
-var comTotal = comCard[0].rank + comCard[1].rank;
-var playerTotal = playerCard[0].rank + playerCard[1].rank;
+var comTotal = 0;
+var playerTotal = 0;
 var nameStore = [];
 
-// player adds
+// re-initialise player and com card hand after each round
+var initCards = function () {
+  playerCard = [];
+  comCard = [];
+  comCard = [shuffledDeck.pop(), shuffledDeck.pop()];
+  playerCard = [shuffledDeck.pop(), shuffledDeck.pop()];
+  comTotal = comCard[0].rank + comCard[1].rank;
+  playerTotal = playerCard[0].rank + playerCard[1].rank;
+};
+
+// player draws card
 var addCard = function () {
   var newCard = shuffledDeck.pop();
   newPcard = newCard;
@@ -114,7 +126,7 @@ var addCard = function () {
   return playerTotal;
 };
 
-// com adds
+// com draws card
 var comAdd = function () {
   comCard.push(shuffledDeck.pop()); // com adds one deck to card
   var getIndex = comCard.length - 1;
@@ -123,13 +135,13 @@ var comAdd = function () {
   return comTotal;
 };
 
-// accounting for ace
+// account for ace
 var aceChange = function (input) {
   if (input.length > 2) {
     for (var i in input) {
       if (input[i].name == "ace") {
         input[i].rank = 1;
-        break; //Stops loops once found
+        break;
       }
     }
   }
@@ -149,73 +161,94 @@ var outputPlayerCards = function () {
 // determine winner
 var declareWinner = function () {
   if (playerTotal > 21 && comTotal <= 21) {
-    return `Oops, you busted with a hand of ${playerTotal}!`;
+    var newScore = Number(playerScore) - Number(playerBet);
+    scoreCard.push(newScore);
+    return `Oops, you busted with a hand of ${playerTotal}! You are now left with a score of ${newScore}. <br>
+    Press submit for a new game!`;
   } else if (playerTotal == comTotal) {
-    return `You draw with the dealer's hand of ${comTotal}!`;
+    newScore = playerScore;
+    scoreCard.push(newScore);
+    return `You draw with the dealer's hand of ${comTotal}! Your score: ${playerScore} <br>
+    Press submit for a new game!`;
   } else if (playerTotal == 21 && comTotal !== 21) {
-    return `Your hand of ${playerTotal} won! The dealer had a hand of ${comTotal}.`;
+    newScore = Number(playerScore) + Number(playerBet) * 1.5;
+    scoreCard.push(newScore);
+    return `Your hand of ${playerTotal} won! The dealer had a hand of ${comTotal}. Your new score: ${newScore} <br>
+    Press submit for a new game!`;
   } else if (comTotal == 21 && playerTotal !== 21) {
-    return `Your hand of ${playerTotal} lost to the dealer's ${comTotal}!`;
+    newScore = Number(playerScore) - Number(playerBet);
+    scoreCard.push(newScore);
+    return `Your hand of ${playerTotal} lost to the dealer's ${comTotal}! You are now left with a score of ${newScore} <br>
+    Press submit for a new game!`;
   } else if (playerTotal > comTotal && playerTotal <= 21) {
-    return `Congratulations! Your hand of ${playerTotal} beat the dealer's hand of ${comTotal}!`;
+    newScore = Number(playerScore) + Number(playerBet);
+    scoreCard.push(newScore);
+    return `Congratulations! Your hand of ${playerTotal} beat the dealer's hand of ${comTotal}! Your score: ${newScore} <br>
+    Press submit for a new game!`;
   } else if (playerTotal > 21 && comTotal > 21) {
-    return `Both parties busted! Your hand: ${playerTotal}. Dealer's hand: ${comTotal}`;
+    newScore = Number(playerScore) - Number(playerBet);
+    scoreCard.push(newScore);
+    return `Both parties busted! Your hand: ${playerTotal}. Dealer's hand: ${comTotal}. Your score: ${newScore} <br>
+    Press submit for a new game!`;
   } else if (playerTotal < comTotal && comTotal > 21) {
-    return `The dealer went bust! Your hand of ${playerTotal} beat the dealer's hand of ${comTotal}!`;
+    newScore = Number(playerScore) + Number(playerBet);
+    scoreCard.push(newScore);
+    return `The dealer went bust! Your hand of ${playerTotal} beat the dealer's hand of ${comTotal}! Your score: ${newScore} <br>
+    Press submit for a new game!`;
   } else if (playerTotal < comTotal && comTotal <= 21) {
-    return `Your hand of ${playerTotal} lost to the dealer's hand of ${comTotal}!`;
+    newScore = Number(playerScore) - Number(playerBet);
+    scoreCard.push(newScore);
+    return `Your hand of ${playerTotal} lost to the dealer's hand of ${comTotal}! Your score: ${newScore} <br>
+    Press submit for a new game!`;
   } else if (playerTotal < 21 && playerCard.length == 5 && comTotal != 21) {
-    return `Congratulations! Your hand of ${playerTotal} beat the dealer's hand of ${comTotal}!`;
+    newScore = Number(playerScore) + Number(playerBet);
+    scoreCard.push(newScore);
+    return `Congratulations! Your hand of ${playerTotal} beat the dealer's hand of ${comTotal}! Your score: ${newScore} <br>
+    Press submit for a new game!`;
   }
 };
 
 var main = function (input) {
-  if (gameMode == "get initial hand") {
+  if (gameMode == "get player name and bet") {
     nameStore.push(input);
+    playerScore = scoreCard.pop();
+    if (playerScore <= 0) {
+      return `Hi ${nameStore[0]}, you have ${playerScore} points for betting. <br>
+    Time to stop!`; // stop player from continuing once score <= 0
+    }
+    gameMode = "get initial hand"; // otw, progress on
+    return `Hi ${nameStore[0]}, you have ${playerScore} points for betting. <br>
+    How much would you like to bet for this round?`;
+  }
+  if (gameMode == "get initial hand") {
+    initCards();
+    playerBet = input;
     gameMode = "player hit or stand";
-    return `Hi ${nameStore[0]}, <br>
-    Your cards: <br>
-    ${playerCard[0].name} of ${playerCard[0].suit} <br>
-    ${playerCard[1].name} of ${playerCard[1].suit} <br> <br>
+    var showPlayer = outputPlayerCards();
+    return `${nameStore[0]}, you bet ${input}. <br><br>
+    ${showPlayer} <br>
     Your total score is ${playerTotal}. Enter y to draw another card, otherwise click submit.`;
   }
 
   if (gameMode == "player hit or stand") {
-    if (input == "y" && playerTotal <= 21) {
+    if (input == "y") {
       addCard();
-      console.log(playerCard);
       var showPlayer = outputPlayerCards();
-      gameMode = "computer move";
-      return `${nameStore[0]}, you drew a ${newPcard.name} of ${newPcard.suit}. <br><br>
-      Enter y to draw another card, else click submit to view results. <br>
+      return `${nameStore[0]}, you drew a ${newPcard.name} of ${newPcard.suit}. Enter y to draw another card, else click submit to view results. <br><br>
       ${showPlayer} <br>
       Your new score: ${playerTotal} <br>`;
-    } else if (input == "" && playerTotal < 21) {
-      gameMode = "computer move";
-      return "Computer's move. Click submit";
-    } else if (input == "y" && playerTotal > 21) {
-      addCard();
-      console.log(`compare`);
-      console.log(playerTotal);
-      gameMode = "compare winner";
-    } else if (playerTotal == 21) {
-      gameMode = "compare winner";
+    } else if (input == "") {
+      while (comTotal < 17) {
+        comAdd();
+      }
+      gameMode = `compare winner`;
     }
-  }
-
-  // dealer adds card if needed
-  if (gameMode == "computer move") {
-    while (comTotal < 17) {
-      comAdd();
-    }
-    gameMode = `compare winner`;
   }
 
   // compare winner
   if (gameMode == "compare winner") {
-    console.log(comCard);
-    console.log(playerCard);
     var announceWinner = declareWinner(playerTotal, comTotal);
+    gameMode = "get player name and bet";
     return announceWinner;
   }
 };
