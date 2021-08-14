@@ -17,6 +17,8 @@ var playerTotalCards = [];
 var computerTotalCards = [];
 var playerSum = 0;
 var computerSum = 0;
+var playerPoints = 100;
+var playerBet = 0;
 
 // Shuffle Deck
 var makeDeck = function () {
@@ -82,7 +84,7 @@ var makeDeck = function () {
   return cardDeck;
 };
 
-var myOutputValue = `KNN CCB CAN U PUT IN THE RIGHT WORD`;
+var myOutputValue = `PUT IN THE RIGHT WORD CB DOG`;
 
 var getRandomIndex = function (max) {
   return Math.floor(Math.random() * max);
@@ -102,6 +104,22 @@ var shuffleCards = function (cardDeck) {
 
 var deck = shuffleCards(makeDeck());
 
+var determineAce = function () {
+  if (
+    player1stCard.name == `ace` ||
+    player2ndCard.name == `ace` ||
+    playerDraw.name == "ace" ||
+    playerDraw2.name == `ace`
+  ) {
+    if (input == "1") {
+      return (myOutputValue = `You have chosen to retain ace as 1! Moving on`);
+    } else if (input == `11`) {
+      playerSum + 10;
+      return (myOutputValue = `You have chosen to make ace 11! Moving on`);
+    }
+  }
+};
+
 var main = function (input) {
   var myOutputValue = ``;
   var player1stCard = deck.pop();
@@ -115,14 +133,44 @@ var main = function (input) {
   var playerCardValue = Number(player1stCard.rank) + Number(player2ndCard.rank);
   var computerCardValue =
     Number(computer1stCard.rank) + Number(computer2ndCard.rank);
+  var playerWin = playerPoints + Number(playerBet);
+  var playerLose = playerPoints - Number(playerBet);
 
   // Click submit to deal cards to both player and computer
   var genericOutput = ` PLAYER CARDS: <br> 1ST PLAYER CARD: ${player1stCard.name} of ${player1stCard.suit} <br> 2ND PLAYER CARD: ${player2ndCard.name} of ${player2ndCard.suit}  <br>COMPUTER CARDS: <br> 1ST COM CARD: ${computer1stCard.name} of ${computer1stCard.suit} <br> 2ND COM CARD: ${computer2ndCard.name} of ${computer2ndCard.suit}`;
 
   var genericScores = `<br> PLAYER SCORE = ${playerSum}. Computer score = ${computerSum}`;
 
+  //ACE
+  // if (
+  //   player1stCard.name == `ace` ||
+  //   player2ndCard.name == `ace` ||
+  //   playerDraw.name == "ace" ||
+  //   playerDraw2.name == `ace`
+  // ) {
+  //   currentGameMode = `ace`;
+  //   return (myOutputValue = `You have entered ace mode, please select if you would like to retain ace as 1 or convert it to 11`);
+  // }
+
+  // if (currentGameMode == `ace`) {
+  //   currentGameMode = `decide`;
+  //   if (input == `1`) {
+  //     return (myOutputValue = `You have chosen to retain your ace as 1. Moving on`);
+  //   } else if (input == `11`) {
+  //     playerSum + 10;
+  //     return (myOutputValue = `You have chosen to use ace as 11. Moving on.`);
+  //   }
+  // }
+
   if (currentGameMode == start) {
-    currentGameMode = "commence";
+    currentGameMode = "betting";
+    return (myOutputValue = `PLAYER PLACE YOUR DAMN BET BELOW 100 AND CHOOSE HOW MANY PLAYERS YOU WANT.`);
+  }
+
+  if (currentGameMode == `betting`) {
+    currentGameMode = `commence`;
+    playerBet += input;
+    return (myOutputValue = `PSYCHE!!! I DIDN'T KNOW HOW TO CODE MULTIPLAYER LMAO. <br> PLAYER!!!! YOU HAVE BET ${playerBet} OUT OF YOUR ${playerPoints} SEXY POINTS. MAY THE BEST DEGENERATE GAMBLER WIN`);
   }
   if (currentGameMode == `commence`) {
     currentGameMode = `decide`;
@@ -138,12 +186,14 @@ var main = function (input) {
       `${computer1stCard.name} of ${computer1stCard.suit}`,
       `${computer2ndCard.name} of ${computer2ndCard.suit}`
     );
+
+    //GETTING BLACKJACK ON FIRST ROUND
     if (playerSum == 21 && computerSum == 21) {
       return (myOutputValue = `Both win! please restart`);
     } else if (playerSum == 21) {
-      return (myOutputValue = `Player BLACKJACK with a score of: ${playerSum}. Please restart`);
+      return (myOutputValue = `Player BLACKJACK with a score of: ${playerSum}. Please restart <br> PLAYER YOU WIN ASSHOLE! HERE ARE YOUR STUPID POINTS: ${playerWin}`);
     } else if (computerSum == 21) {
-      return (myOutputValue = `Computer BLACKJACK with a score of: ${computerSum}. Please restart`);
+      return (myOutputValue = `Computer BLACKJACK with a score of: ${computerSum}. Please restart <br> PLAYER YOU LOST WTF!!! LOSER, HERE ARE YOUR POINTS: ${playerLose}`);
     }
     return (myOutputValue =
       genericOutput +
@@ -157,26 +207,17 @@ var main = function (input) {
   if (currentGameMode == `decide`) {
     // First round decider, if either player goes bust
     if (playerSum > 21 && computerSum > 21) {
-      return (myOutputValue = `Both bust! please restart`);
+      return (myOutputValue = `Both bust! please restart.`);
     } else if (playerSum > 21 && computerSum >= 17) {
-      return (myOutputValue = `Player bust with a score of: ${playerSum}. Computer wins! Please restart`);
+      return (myOutputValue = `Player bust with a score of: ${playerSum}. Computer wins! Please restart <br> PLAYER YOU LOST WTF!!! LOSER, HERE ARE YOUR POINTS: ${playerLose}`);
     } else if (computerSum > 21 && playerSum >= 17) {
-      return (myOutputValue = `Computer bust with a score of: ${computerSum}. Player wins! Please restart`);
+      return (myOutputValue = `Computer bust with a score of: ${computerSum}. Player wins! Please restart <br> PLAYER YOU LOST WTF!!! LOSER, HERE ARE YOUR POINTS: ${playerLose}`);
     } else if (
       (computerSum > 21 && playerSum <= 17) ||
       (playerSum > 21 && computerSum <= 17)
     ) {
       return (myOutputValue = `Bust and the other player has below 17!!. Please restart!`);
     }
-
-    // First round if either player BLACKJACK
-    // if (playerSum == 21 && computerSum == 21) {
-    //   return (myOutputValue = `Both win! please restart`);
-    // } else if (playerSum == 21) {
-    //   return (myOutputValue = `Player BLACKJACK with a score of: ${playerSum}. Please restart`);
-    // } else if (computerSum == 21) {
-    //   return (myOutputValue = `Computer BLACKJACK with a score of: ${computerSum}. Please restart`);
-    // }
 
     // First round forced draw if below 17
     if (playerSum < 17 && computerSum < 17) {
@@ -221,17 +262,17 @@ var main = function (input) {
   }
   if (currentGameMode == `closest`) {
     if (playerSum > computerSum && playerSum <= 21) {
-      return (myOutputValue = `PLAYER YOU WIN BITCH! <br> player score: ${playerSum}. computer score: ${computerSum}`);
+      return (myOutputValue = `PLAYER YOU WIN BITCH! <br> player score: ${playerSum}. computer score: ${computerSum}. <br> HERE ARE YOUR STUPID POINTS: ${playerWin}`);
     } else if (playerSum < computerSum && computerSum <= 21) {
-      return (myOutputValue = `COMPUTER YOU WIN BITCH! <br> player score: ${playerSum}. computer score: ${computerSum}`);
+      return (myOutputValue = `COMPUTER YOU WIN BITCH! <br> player score: ${playerSum}. computer score: ${computerSum}. <br> PLAYER YOU LOST WTF!!! LOSER, HERE ARE YOUR POINTS: ${playerLose}`);
     } else if (playerSum > 21) {
-      return (myOutputValue = `PLAYER YOU LOSE BITCH.<br> player score: ${playerSum}. computer score: ${computerSum}`);
+      return (myOutputValue = `PLAYER YOU LOSE BITCH.<br> player score: ${playerSum}. computer score: ${computerSum} <br> LOSER, HERE ARE YOUR POINTS: ${playerLose}`);
     } else if (computerSum > 21) {
-      return (myOutputValue = `COMPUTER YOU LOSE BITCH.<br> player score: ${playerSum}. computer score: ${computerSum}`);
+      return (myOutputValue = `COMPUTER YOU LOSE BITCH.<br> player score: ${playerSum}. computer score: ${computerSum} <br> PLAYER YOU WIN ASSHOLE! HERE ARE YOUR STUPID POINTS: ${playerWin}`);
     } else if (playerSum == computerSum && playerSum < 21 && computerSum < 21) {
-      return (myOutputValue = `YOU BOTH TIE BITCHES<br> player score: ${playerSum}. computer score: ${computerSum}`);
+      return (myOutputValue = `YOU BOTH TIE BITCHES<br> player score: ${playerSum}. computer score: ${computerSum}. <br> PLAYER YOU DONT LOSE ANY SEXY POINTS THIS ROUND: ${playerPoints}`);
     } else if (playerSum == computerSum && playerSum > 21 && computerSum > 21) {
-      return (myOutputValue = `YOU BOTH LOSE BITCHES<br> player score: ${playerSum}. computer score: ${computerSum}`);
+      return (myOutputValue = `YOU BOTH LOSE BITCHES<br> player score: ${playerSum}. computer score: ${computerSum} <br> PLAYER YOU DONT LOSE ANY SEXY POINTS THIS ROUND: ${playerPoints}`);
     }
   }
   return myOutputValue;
