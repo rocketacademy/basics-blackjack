@@ -265,6 +265,7 @@ var calWinningHand = function (playerCards, computerCards) {
       calComputerSum(computerCards) +
       "<br>" +
       " The computer bust! You Won! Input new wager to try again";
+    coins = coins + wager;
   } else if (playerSum < computerSum) {
     myOutputValue =
       " Your total was  " +
@@ -361,12 +362,3 @@ var calWager = function (input) {
   }
   return myOutputValue;
 };
-/////////////need to make an ace function and embed it into calPlayerCards function , give user choice to change ace to 1 or 11
-
-//// if players have an Ace and playerCards.length =2 , ace.rank == 11
-/// if players have an Ace and playerCards.length >3 Ace.rank == 1
-
-/////////ways to do ace functionality
-///////// add into hit or hit mode
-////////change from make deck function straight
-//////// change from calCard function, so if drawnCard.name == Ace, give choice to change it to 1 or 11
