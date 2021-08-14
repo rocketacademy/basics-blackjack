@@ -178,7 +178,7 @@ var generateResults = function () {
       }
       var obtainedWinnings = pointsWon(playerTurn);
       playerTurn.points += obtainedWinnings;
-      outcome += `${listIndex}. ${playerTurn.name}- Bet: ${playerTurn.bet}; <br> Change: - ${playerTurn.bet} points; <br> Remaining points: ${playerTurn.points}<br>`;
+      outcome += `${listIndex}. ${playerTurn.name}- Bet: ${playerTurn.bet}; <br> Change: + ${playerTurn.bet} points; <br> Remaining points: ${playerTurn.points}<br>`;
     }
     return outcome;
   }
@@ -210,7 +210,7 @@ var generateResults = function () {
     }
     var obtainedWinnings = pointsWon(playerTurn);
     playerTurn.points += obtainedWinnings;
-    outcome += `${listIndex}. ${playerTurn.name}- Bet: ${playerTurn.bet}; <br> Change: - ${playerTurn.bet} points; <br> Remaining points: ${playerTurn.points}<br>`;
+    outcome += `${listIndex}. ${playerTurn.name}- Bet: ${playerTurn.bet}; <br> Change: + ${playerTurn.bet} points; <br> Remaining points: ${playerTurn.points}<br>`;
   }
   return outcome;
 };
@@ -400,6 +400,7 @@ var main = function (input) {
         var OutOfPointPlayers = GetOutOfPointPlayers();
         var survivingPlayers = getSurvivingPlayers();
         if (survivingPlayers.length === 0) {
+          // The freshTable mode reverts back the game state to instructions
           freshTable = true;
           return `${resultMessage} <br> ${OutOfPointPlayers} was escorted off the table. Thank you for playing! <br> Hit submit to sit at another table!`;
         }
