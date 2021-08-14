@@ -88,7 +88,7 @@ var dealerHitThreshold = 16
 var playerSum;
 var dealerSum;
 var myOutputValue = ''
-var playerPoints = 100
+var playerPoints = Number(100)
 var userName = ''
 
 // ==================  Game Modes ================= \\
@@ -219,7 +219,7 @@ var hitOrStandMessage = `Would you like to "Hit" or "Stand"? <br>`
 var playerBlackJackMessage = `You have gotten BlackJack! <br>`
 var dealerBlackJackMessage = `Dealer had a BlackJack! <br>`
 var userNameInputMessage = `Hello, my name is Kenneth. I will be your dealer. Please input your name. <br>`
-var secretCheatMessage = `Nice try! Please do not cheat. <br>`
+var secretCheatMessage = `Nice try! Please do not cheat :'). <br>`
 var betMessage =  ``
   // converting message to string (copied as kept getting undefined in messages)
   var convertHandToString = function (hand) {
@@ -253,10 +253,13 @@ var main = function(input){
   }
   // check if game is completed
   if(gameOver == true){
+    // reset the game if user types this input, keeping username and 
     if(input == "again"){
       gameOver = false
       betting = false
       initialDeal = false
+      playerCards = []
+      dealerCards = []
       deck = shuffleCards(makeDeck())
       myOutputValue = `Hi ${userName}! Let's play Black Jack! You currently have ${playerPoints} points. How much would you like to bet? (Min. 2 pts)`
       if(playerPoints <2){
@@ -275,7 +278,7 @@ var main = function(input){
       return myOutputValue
     }
     console.log (`recording player's bet and ready to deal cards`)
-    currentBet = input
+    currentBet = Number(input)
     console.log()
     initialDeal = true
     betting = true
@@ -328,6 +331,7 @@ var main = function(input){
     if(getSum(playerCards) >= burstSum){
       gameOver = true
       hitOrStand = false
+      playerPoints -= currentBet
       myOutputValue = `${playerLostMessage} ${showPlayerCards()} You Bust!`
       return myOutputValue
     }
