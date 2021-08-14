@@ -60,6 +60,7 @@ var setNumPlayers = function (input) {
 
 var setUsername = function (input) {
   var myOutputValue = `Tell us your names! =)<br><br>Separate your names with a space`;
+  // if Go! is hit without any input, do not run the below code
   if (input != "") {
     var splitNames = input.split(" ");
     var names = "";
@@ -111,19 +112,32 @@ var createNewDeck = function () {
 
 var playerBet = function (input) {
   var myOutputValue = "";
-  if (Number(input) && currentPlayer <= players.length) {
+  if (
+    Number(input) &&
+    currentPlayer < players.length - 1 &&
+    Number(input) <= players[currentPlayer].points
+  ) {
     // setting the bet into each player's bet key
     players[currentPlayer].bet = input;
     myOutputValue = `${players[currentPlayer].name}'s bet is ${input}`;
     currentPlayer += 1;
-  }
-  if (currentPlayer == players.length) {
+  } else if (
+    Number(input) &&
+    currentPlayer == players.length - 1 &&
+    Number(input) <= players[currentPlayer].points
+  ) {
+    myOutputValue = `${players[currentPlayer].name}'s bet is ${input}`;
     GAME_MODE = DEAL_CARD_MODE;
     currentPlayer = 0;
   } else {
     myOutputValue =
       myOutputValue +
       `<br><br>${players[currentPlayer].name} please place your bets.💰`;
+  }
+
+  if (Number(input) > players[currentPlayer].points) {
+    myOutputValue =
+      myOutputValue + `<br><br>Your bet cannot be more than your points.`;
   }
   return myOutputValue;
 };
@@ -148,7 +162,6 @@ var dealCards = function () {
     dealCounter += 1;
     currentPlayer = 0;
   }
-
   // immediately after cards are dealt, we will run a check for any blackjacks.
 
   while (currentPlayer < players.length) {
@@ -215,11 +228,7 @@ var playerTurn = function (input) {
       `${currentHand(players[currentPlayer].hand)}` +
       `<br><br>${players[currentPlayer].name} has a BLACKJACK!🎉`;
     currentPlayer += 1;
-
-    // condition to check that is Player BUST, that they cannot pick more cards.
-    // checkScore is found at the end of code. checkScore has inbuilt logic for treatment of Ace
-  }
-  if (
+  } else if (
     checkScore(players[currentPlayer].hand) > 21 &&
     currentPlayer !== players.length - 1
   ) {
@@ -289,13 +298,20 @@ var computerTurn = function (input) {
 
 var checkWin = function (input) {
   var myOutputValue = "";
-  if (
+  if (isBlackjack(input.hand) == true && isBlackjack(computerHand) == false) {
+    myOutputValue =
+      myOutputValue +
+      `<br><br>${input.name}'s cards are ` +
+      `${currentHand(input.hand)}. ` +
+      `${input.name} BLACKJACK double your bet! 🙌🏻 `;
+    input.points += Number(input.bet) * 2;
+  } else if (
     (checkScore(input.hand) > checkScore(computerHand) &&
       checkScore(input.hand) < 22) ||
-    (checkScore(input.hand) < 22 && checkScore(computerHand) > 21) ||
-    (isBlackjack(input.hand) == true && isBlackjack(computerHand) == false)
+    (checkScore(input.hand) < 22 && checkScore(computerHand) > 21)
   ) {
-    myOutputValue = myOutputValue =
+    myOutputValue =
+      myOutputValue +
       `<br><br>${input.name}'s cards are ` +
       `${currentHand(input.hand)}. ` +
       `${input.name} WON 🙌🏻 !`;
@@ -319,7 +335,7 @@ var checkWin = function (input) {
     myOutputValue =
       `<br><br>${input.name}'s cards are ` +
       `${currentHand(input.hand)}. ` +
-      `${input.name} It's a Draw!`;
+      `It's a Draw!`;
   }
   return myOutputValue;
 };
