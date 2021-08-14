@@ -1,6 +1,6 @@
 //TASK LIST:
 //1. To include zero scoring bets situations (what if player 1 has 0 points left?), how to leave him out.
-//2. To allow player to decide Ace to be 1 or 11
+//2. To allow player to decide Ace to be 1 or 11. A function to calculate the highest score. [Done]
 
 var gameMode = "initial"; //Initialize global variable gameMode
 var totalPlayers = 0;
@@ -17,7 +17,7 @@ var contValue = 0; //Global variable for continue value
 
 var main = function (input) {
   if (gameMode == "initial") {
-    if (Number.isInteger(Number(input)) && Number(input) != 0) {
+    if (Number.isInteger(Number(input)) && Number(input) > 0) {
       //Error handling
       totalPlayers = Number(input);
       playerPool = makePlayers(totalPlayers);
@@ -38,7 +38,7 @@ var main = function (input) {
     while (currentIndex < totalPlayers && state == 0) {
       //question
       state = 1;
-      return `${playerPool[currentIndex].name},it's your turn to place your bets! Click 'Submit' to proceed.`;
+      return `${playerPool[currentIndex].name},it's your turn to place your bets! <br> You have ${playerPool[currentIndex].score} points remaining. <br><br> Key in the amount of points to bet.`;
     }
     while (currentIndex < totalPlayers && state == 1) {
       //answer
@@ -61,9 +61,11 @@ var main = function (input) {
         currentIndex += 1; //increment to next player
         return `${
           playerPool[currentIndex - 1].name
-        },you have bet ${playerBet} points in this round!`;
+        },you have bet ${playerBet} points in this round! <br> <br> Remaining points: ${
+          playerPool[currentIndex - 1].score
+        }`;
       } else {
-        return `Error! Please place bets in terms of integers! Your maximum bet is ${maxPoints}`;
+        return `Error! Please place bets in terms of integers! Your maximum bet is ${maxPoints} points.`;
       }
     }
     //*Note: At betTime remember to splitce from non players.Check there is at least 1 player, playable; drop the rest out (search for zero)
@@ -87,6 +89,7 @@ var main = function (input) {
     var dealTRank = calTotalRank(dealerObj.cards);
     console.log(`Dealer:${dealTRank}`);
     dealerObj.cardValue = dealTRank;
+    cardScore(dealerObj); //Ace handler (NEW)
     //Distribute 2 Cards to Players
     currentIndex = 0;
     while (currentIndex < totalPlayers) {
@@ -98,6 +101,7 @@ var main = function (input) {
       playerPool[currentIndex].cards.push(playerCard);
       var playerTRank = calTotalRank(playerPool[currentIndex].cards); //calculate total rank for this round
       playerPool[currentIndex].cardValue = playerTRank;
+      cardScore(playerPool[currentIndex]); //Ace handler (NEW)
       playerPool[currentIndex].outcome = rankComparison(playerTRank, dealTRank);
       console.log(`Player: ${playerTRank}`);
       console.log(`Dealer: ${dealTRank}`);
@@ -111,7 +115,7 @@ var main = function (input) {
     return `${handSummary(
       dealerObj.cards,
       playerPool
-    )}. <br> Press 'Submit' to move on to hit/stand. Let's start with Player 1`;
+    )}. <br> Press 'Submit' to move on to hit/stand. Let's start with Player 1. <br><br>Please key in 'hit' or 'stand' to proceed.`;
   }
 
   if (gameMode == "hitStand") {
@@ -123,7 +127,7 @@ var main = function (input) {
         state = 1; //Question
         return `${handSummary(dealerObj.cards, playerPool)}<br>${
           playerPool[playerIndex].name
-        }, do you hit/stand?`;
+        }, do you hit/stand? <br><br>Please key in 'hit' or 'stand' to proceed.`;
       }
       if (["hit", "stand"].includes(input) && state == 1) {
         //Response
@@ -134,6 +138,7 @@ var main = function (input) {
           playerPool[playerIndex].cards.push(playerCard);
           var playerTRank = calTotalRank(playerPool[playerIndex].cards); //calculate total rank for this round
           playerPool[playerIndex].cardValue = playerTRank;
+          cardScore(playerPool[playerIndex]); //(NEW)
           console.log([playerTRank, dealerObj.cardValue]);
           playerPool[playerIndex].outcome = rankComparison(
             playerTRank,
@@ -142,7 +147,7 @@ var main = function (input) {
           console.log(playerPool[playerIndex].outcome);
           return ` ${handSummary(dealerObj.cards, playerPool)} <br> ${
             playerPool[playerIndex].name
-          }, do you hit/stand?`;
+          }, do you hit/stand? <br><br>Please key in 'hit' or 'stand' to proceed.`;
         }
         if (input == "stand") {
           playerPool[playerIndex].state = "stand";
@@ -170,6 +175,7 @@ var main = function (input) {
         dealerObj.cards.push(dealerCard); //1st Card
         dealTRank = calTotalRank(dealerObj.cards);
         dealerObj.cardValue = dealTRank; //updates dealer's total rank
+        cardScore(dealerObj); //NEW
         return `${handSummary(
           dealerObj.cards,
           playerPool
@@ -459,4 +465,25 @@ var scoreBoard = function (playerArray) {
   }
 
   return scores;
+};
+
+//Function to conduct handling on ace
+var cardScore = function (player) {
+  for (var i = 0; i < player.cards.length; i++) {
+    console.log(player.cards[i]);
+    card = player.cards[i]; //find a card for ace value
+    if (card.name == "ace") {
+      newValue = player.cardValue + 10; //add 11 from it
+      if (newValue > 21) {
+        //to exit already
+        return player.cardValue; //return cardValue original
+      } else {
+        //if still less than 21 value
+        player.cardValue = newValue; //reassign new value
+        return player.cardValue; //new card value
+      }
+    } else {
+      return player.cardValue;
+    }
+  }
 };
