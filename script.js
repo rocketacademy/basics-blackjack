@@ -46,7 +46,7 @@ var main = function (input) {
 //______________________ Mode to set num of players_________________ //
 
 var setNumPlayers = function (input) {
-  var myOutputValue = `Welcome to Blackjack ♣︎♥︎♠︎♦︎!<br><br>How many players are there ⛹🏻‍♂️ ⛹🏻‍♀️ ?`;
+  var myOutputValue = `Welcome to Blackjack ♣️♥️♠️♦️!<br><br>How many players are there ⛹🏻‍♂️ ⛹🏻‍♀️ ?`;
   if (Number(input)) {
     numOfPlayers = input;
     myOutputValue = `${input} players vs Computer/Dealer 😈!<br><br>Tell us your names! =)<br><br>Separate your names with a space`;
@@ -79,7 +79,7 @@ var setUsername = function (input) {
       counter += 1;
     }
     console.log(players);
-    myOutputValue = `Hello ${names}!<br><br>Welcome to Blackjack! ♣︎♥︎♠︎♦︎`;
+    myOutputValue = `Hello ${names}!<br><br>Welcome to Blackjack! ♣️♥️♠️♦️`;
     GAME_MODE = SHUFFLE_DECK_MODE;
   }
   return myOutputValue;
@@ -126,6 +126,7 @@ var playerBet = function (input) {
     currentPlayer == players.length - 1 &&
     Number(input) <= players[currentPlayer].points
   ) {
+    players[currentPlayer].bet = input;
     myOutputValue = `${players[currentPlayer].name}'s bet is ${input}`;
     GAME_MODE = DEAL_CARD_MODE;
     currentPlayer = 0;
@@ -319,7 +320,7 @@ var checkWin = function (input) {
   } else if (
     (checkScore(input.hand) < checkScore(computerHand) &&
       checkScore(computerHand) < 22) ||
-    (checkScore(input.hand) > 22 && checkScore(computerHand) < 22)
+    (checkScore(input.hand) > 21 && checkScore(computerHand) < 22)
   ) {
     input.points -= Number(input.bet);
     myOutputValue =
@@ -394,13 +395,13 @@ var shuffleCards = function (cardDeck) {
 
 var cardName = function (card) {
   if (card.suit == "clubs") {
-    var suit = "♣︎";
+    var suit = "♣️";
   } else if (card.suit == "hearts") {
-    var suit = "♥︎";
+    var suit = "♥️";
   } else if (card.suit == "spades") {
-    var suit = "♠︎";
+    var suit = "♠️";
   } else if (card.suit == "diamonds") {
-    var suit = "♦︎";
+    var suit = "♦️";
   }
   return `${card.name}${suit}`;
 };
@@ -457,7 +458,7 @@ var isBlackjack = function (input) {
 };
 
 var getPointsSummary = function () {
-  var myOutputValue = "<br>";
+  var myOutputValue = "<br><br> === Current Points Board ===";
   var counter = 0;
   while (counter < players.length) {
     myOutputValue =
