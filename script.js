@@ -111,9 +111,9 @@ var convertHandToString = function (hand) {
 var main = function (input){
   var myOutputValue = '';
   var genericOutput = `Your cards: ${convertHandToString(playerHand)}  
-  <br>Computer's cards: ${convertHandToString(computerHand)}.`
-  var playerScore = `Your score: ${Number(calcHandTotal(playerHand))}`
-  var computerScore = `Computer's score: ${Number(calcHandTotal(computerHand))}`
+  <br>Computer's cards: ${convertHandToString(computerHand)}. 
+  <br> Your score: ${Number(calcHandTotal(playerHand))}
+  <br> Computer's score: ${Number(calcHandTotal(computerHand))}`
   var playerCards = `You have drawn<br>`
   for (j = 0; j < playerHand.length; j++) {
   playerCards += `${playerHand[j].name} of ${playerHand[j].suit}<br>`
@@ -125,16 +125,18 @@ var main = function (input){
 //=======================Deal cards=====================
   // draw one new card for each player
   if (currentGameMode == GAME_MODE_DEAL_CARDS){
-  if (input.toLowerCase().includes('hit')){
+  if (playerHand.length == 0){
   playerHand.push(shuffledDeck.pop())
   computerHand.push(shuffledDeck.pop())
-  } if (playerHand.length == 2){
   // generate another card for each player
   playerHand.push(shuffledDeck.pop())
   computerHand.push(shuffledDeck.pop())
+  playerScore = calcHandTotal(computerHand);
+  computerScore = calcHandTotal(computerHand);
   console.log(playerHand.length)
   console.log(computerHand.length) 
-  myOutputValue = `${playerCards}.<br>${computerCards}.<br>${genericOutput}<br>${playerScore}<br>${computerScore}<br>
+  } if (playerHand.length == 2){
+  myOutputValue = `${playerCards}.<br>${computerCards}.<br>${genericOutput}<br>
   Please type 'hit' or 'stand' to decide if you wish to draw cards or end your turn.`
   console.log(`game mode: ${currentGameMode}`)
   console.log (`player hand: ${playerCards}, <br>com hand: ${computerCards}`)
@@ -159,10 +161,10 @@ if (currentGameMode = GAME_MODE_HIT_OR_STAND){
     myOutputValue = `You have exceeded max hand length. Please type stand to see if you have won.`
   } if (playerScore > maxCardLimit){
   gameOver = true;
-  myOutputValue = `${playerCards}.<br>${computerCards}.<br>${genericOutput}<br>${playerScore}<br>${computerScore}<br>Player went bust! Hit refresh to start again.`
+  myOutputValue = `${playerCards}.<br>${computerCards}.<br>${genericOutput}<br>Player went bust! Hit refresh to start again.`
   }
   else if (playerScore < maxCardLimit){
-  myOutputValue = `${playerCards}.<br>${computerCards}.<br>${genericOutput}<br>${playerScore}<br>${computerScore}<br>Please type 'hit' or 'stand' to decide if you wish to draw cards or end your turn.`
+  myOutputValue = `${playerCards}.<br>${computerCards}.<br>${genericOutput}<br>Please type 'hit' or 'stand' to decide if you wish to draw cards or end your turn.`
   }
 }
 // draw one card for computer if computer has lower than dealer min value 16
@@ -175,7 +177,7 @@ if (input.toLowerCase().includes('stand') || stand == 'forced'){
       console.log(`com score: ${computerScore}`)
   currentGameMode = GAME_MODE_DETERMINE_WINNER
   gameOver = true
-    myOutputValue = `${playerCards}.<br>${computerCards}.<br>${genericOutput}<br>${playerScore}<br>${computerScore}. Hit refresh to start again.`
+    myOutputValue = `${playerCards}.<br>${computerCards}.<br>${genericOutput}. <br> Hit refresh to start again.`
   }
 }
 }
@@ -186,20 +188,20 @@ if (currentGameMode == GAME_MODE_DETERMINE_WINNER){
   var winner = function (){
   if (playerScore > computerScore){
     gameOver = true;
-    return `Player score is ${playerScore}. Computer score is ${computerScore}. <br>You win! Hit refresh to play again.`
+    return `You win! Hit refresh to play again.`
   } 
   if (playerScore < computerScore){
     gameOver = true;
-    return `Player score is ${playerScore}. Computer score is ${computerScore}. <br>You lose! Hit refresh to play again.`
+    return `You lose! Hit refresh to play again.`
   } 
   //=======================Blackjack logic=====================
   if (playerHand.length == 2 && playerScore == maxCardLimit){
     gameOver = true;
-   return `Player has blackjack! ${genericOutput}.`
+   return `${genericOutput}. Player has blackjack!`
   }
   if (computerHand.length ==2 && computerScore == maxCardLimit){
     gameOver = true
-    return`Computer has blackjack! ${genericOutput}.`
+    return `${genericOutput}. Computer has blackjack!`
   }
   }
 }
