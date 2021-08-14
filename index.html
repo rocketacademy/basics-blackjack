@@ -88,11 +88,13 @@
       <br />
       <button id="submit-button">Play</button>
       <button id="hit-button">Hit</button>
-      <button id="stay-button">Stay</button>
+      <button id="stand-button">Stand</button>
+      <button id="split-button">Split</button>
 
       <p>Output:</p>
       <div id="output-div">
-        To begin, please enter player names separated by a comma (",")
+        Welcome to Blackjack! 🃏<br />Please enter number of players.<br />Then,
+        click "Play".
       </div>
     </div>
     <!-- Import program logic -->
@@ -129,11 +131,26 @@
       });
     </script>
     <script>
-      var button = document.querySelector("#stay-button");
+      var button = document.querySelector("#stand-button");
       button.addEventListener("click", function () {
         // Set result to input value
         var input = document.querySelector("#input-field");
-        var result = stay(input.value);
+        var result = stand(input.value);
+
+        // Display result in output element
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
+
+        // Reset input value
+        input.value = "";
+      });
+    </script>
+    <script>
+      var button = document.querySelector("#split-button");
+      button.addEventListener("click", function () {
+        // Set result to input value
+        var input = document.querySelector("#input-field");
+        var result = split(input.value);
 
         // Display result in output element
         var output = document.querySelector("#output-div");
