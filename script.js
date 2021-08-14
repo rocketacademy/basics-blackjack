@@ -5,7 +5,7 @@ var aceDecision = "decide Ace value";
 var betMode = "bet mode";
 var gameMode = nameRequest;
 var instructions = "instructions for blackjack";
-var playerName = "MEL!";
+var playerName = "MELODII!";
 
 var playerHand = [];
 var computerHand = [];
