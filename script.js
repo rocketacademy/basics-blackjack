@@ -253,7 +253,7 @@ var main = function(input){
   }
   // check if game is completed
   if(gameOver == true){
-    // reset the game if user types this input, keeping username and 
+    // reset the game if user types this input, keeping username and playerPoints
     if(input == "again"){
       gameOver = false
       betting = false
@@ -262,6 +262,7 @@ var main = function(input){
       dealerCards = []
       deck = shuffleCards(makeDeck())
       myOutputValue = `Hi ${userName}! Let's play Black Jack! You currently have ${playerPoints} points. How much would you like to bet? (Min. 2 pts)`
+      // if player has less than the minimum bet, ask them to restart game
       if(playerPoints <2){
         myOutputValue = restartMessage
         return myOutputValue
@@ -278,6 +279,7 @@ var main = function(input){
       return myOutputValue
     }
     console.log (`recording player's bet and ready to deal cards`)
+    // track the player's bet
     currentBet = Number(input)
     console.log()
     initialDeal = true
