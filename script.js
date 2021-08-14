@@ -1,3 +1,5 @@
+// BLACKJACK
+
 // Global variables:
 var dealersCard1PlusCard2 = ``;
 var dealersCard1PlusCard2PlusMore = ``;
