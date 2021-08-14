@@ -1,10 +1,10 @@
 gameDeck = [];
-playerTotals = [];
+playerTotals = []; //Array containing the total count of each player's cards
 playerHands = []; //Cards player has
 compHand = []; //Cards COMPUTER has
 cTotal = 0; //Sum of cards
 playerNames = [];
-currentPlayer = 0; //playerNames[currentPlayer]
+currentPlayer = 0; //Thanks Nic! playerNames[currentPlayer] will display the actual names
 
 currentMode = "0";
 /*Modes:
@@ -302,7 +302,7 @@ var determineWinner = function () {
     outputStatements.push(myOutputValue);
   }
   console.log(outputStatements);
-  return outputStatements + `<br><br>` + `<br><br>` + playAgainStatement;
+  return outputStatements + playAgainStatement;
 };
 
 //Function for repeat plays
