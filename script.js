@@ -123,15 +123,21 @@ var makeDeck = function () {
     if (gameOver) {
       return 'Game Over, refresh to play again.';
     };
-  
+    if(gameMode == "please enter player's name"){
+      playerName = input;
+      gameMode = "balck jack";
+      return `hello! `+input+`! welcome to BlackJack, in this game you will start off with 2 random cards <br>
+      the player with the highest card wins the game, you have two options,<br>
+      first is "stand" that means you are playing with your current card,<br>
+      second is "hit" that means you are drawing one more card to add to your current deck`
+      };
+
     if (playerHand.length === 0){
       cardHand(playerHand);
       cardHand(computerHand);
   
       cardHand(playerHand);
       cardHand(computerHand);
-    
-
     
 //======================= Blackjack ===============================     
       if (blackJack(computerHand)) {
