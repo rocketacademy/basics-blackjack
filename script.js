@@ -57,6 +57,7 @@ var shuffleCards = function (cardDeck) {
     // it swaps random card and current card together for a result
     cardDeck[currentIndex] = randomCardGenerated;
     cardDeck[randomIndex] = currentCardGenerated;
+    console.log("current card", currentCardGenerated);
 
     currentIndex = currentIndex + 1;
   }
@@ -71,8 +72,7 @@ var gameMode = "enter name";
 var checkUsername = function (input) {
   gameMode == "enter name";
   if (input != ``) {
-    gameMode = "start game";
-
+    gameMode = "placing bets";
     username = input;
     console.log("Check username input:", username);
     var message = "Hi 😀" + username + " <br> </br> Click submit to play.🃏";
@@ -87,6 +87,8 @@ var checkUsername = function (input) {
 // store the player scores in global variable from functions below
 var playerOneTwoCardResult = [];
 var computerScore = [];
+var playerOneCardOne;
+var playerOneCardTwo;
 // shows the the player what card has been drawn
 var shuffledCardResultScreen = function () {
   var firstCardValue = [];
@@ -108,6 +110,7 @@ var shuffledCardResultScreen = function () {
   console.log("Player First Card value :", firstCardValue);
 
   // player's second card
+  // condition: second card must be 11 if first card is not ace
   var playerOneCardTwo = cardShuffled.pop();
   console.log("Player two card is :", playerOneCardTwo);
   // value of the second card drawn
@@ -123,6 +126,9 @@ var shuffledCardResultScreen = function () {
   if (firstCardValue == `1`) {
     firstCardValue = `11`;
     console.log("Turn Player Ace to:", firstCardValue);
+  } else if (firstCardValue != `11` && secondCardValue == `1`) {
+    secondCardValue = `11`;
+    console.log("Turn second player ace to", secondCardValue);
   } else if (
     firstCardValue == `11` ||
     firstCardValue == `12` ||
@@ -168,6 +174,8 @@ var shuffledCardResultScreen = function () {
     console.log("J Q K ", dealerSecondCardValue);
   }
 
+  var check = cardDeck[1];
+  console.log("check array", check);
   // dealer's second card
   var computerCardTwo = cardShuffled.pop();
   console.log("Dealer second Card is :", computerCardTwo);
@@ -211,9 +219,9 @@ var toHit = function (input) {
   gameMode = "stage 3";
   message = "processing request...";
   // Condition: If the player or Dealer total card value is less than blackjack, give player a choice
-  if (playerOneTwoCardResult < `17`) {
+  if (playerOneTwoCardResult < `16`) {
     // default choice message to player
-    message = "Value more than 17! Processing result with dealer....";
+    message = "Value more than 16! Processing result with dealer....";
     // player to input their decision to add card or not
     if (input === "yes") {
       // shuffle and select the card
@@ -228,18 +236,19 @@ var toHit = function (input) {
 
       // set the third card value to the first two card value
       playerOneTwoCardResult = playerOneThirdCardResult;
-      message2 = `Third Card is added a card of ${playerOneCardThird.name} of ${playerOneCardThird.suits} <br> </br> Current card value ${playerOneThirdCardResult}`;
+      message2 = `Third Card is added a card of ${playerOneCardThird.name} of ${playerOneCardThird.suits} <br> </br> Current card value ${playerOneThirdCardResult}.`;
       console.log("Player card value is changed", message2);
 
       // run loop if card value is still less than 17
       while (playerOneTwoCardResult <= blackjack) {
+        console.log("running the loop if added new card still less than 17");
         message2 =
           "Ah...new card added but still not enough. Please add another." +
           "<br> </br> Previous card was :" +
           `${playerOneCardThird.name} of ${playerOneCardThird.suits}` +
           "<br> </br> brings total card value to " +
           playerOneTwoCardResult +
-          "<br> </br>. You can add another card by pressing yes";
+          "<br> </br> You can add another card by pressing yes.";
         if (input === `add`) {
           // take new card
           var cardShuffled = shuffleCards(cardDeck);
@@ -261,16 +270,16 @@ var toHit = function (input) {
       }
       console.log("Check Message:", message2);
       return message2;
-    } else if (playerOneTwoCardResult < `17`) {
+    } else if (playerOneTwoCardResult < `16`) {
       gameMode = "stage 2";
       message2 =
-        "Ops... card value is less than 17. You have to input yes, to proceed.";
+        "Ops... card value is less than 16. You have to input yes, to proceed.";
       console.log("check message", message2);
       return message2;
     }
     console.log("Stage 3 Message:", message);
     return message;
-  } else if (playerOneTwoCardResult > 17)
+  } else if (playerOneTwoCardResult > 16)
     while (playerOneTwoCardResult <= blackjack) {
       message2 = `Ah...no card added.`;
       if (input === `add`) {
@@ -332,43 +341,67 @@ dealerHit = function () {
 
 // Conditons: To win the game comparing dealer and player score
 // Note: Some conditions may be missing, require another update.
+
+var playerBets = 100;
+var dealerBets = 100;
+
+//Let's say that you bet $100. If you lose, the dealer gets your $100.
+// If you win, you get your original $100 bet back, plus the dealer gives you $100.
+// If you draw (or push) you keep your bet money.
+// if you get blackjack, you get your original $100 bet back, plus $150 from the dealer because for blackjack, you get 1.5 times your bet.
+
 var gameResult = function () {
+  gameMode = "start game";
   message = `This result was not calculated, contact YK to update result.`;
 
   console.log("Win Message:", message);
   // if computer total card value > 21 lose
   if (computerScore > blackjack && playerOneTwoCardResult > blackjack) {
-    message = "Dealer lost and player lost together";
+    playerBets = playerBets;
+    dealerBets = dealerBets;
+    message = `Dealer lost and player lost together. No changes in score, player has ${playerBets} and dealer has ${dealerBets}`;
     console.log("check message: ", message);
     return message;
   }
   if (playerOneTwoCardResult <= blackjack && computerScore >= blackjack) {
-    message = `Dealer card bursted! Player card won`;
+    dealerBets = dealerBets - playerBets;
+    playerBets = playerBets + dealerBets;
+    message = `Dealer card bursted! Player card won ${playerBets} while dealer has ${dealerBets}`;
     console.log("Losing message:", message);
     return message;
   }
   if (computerScore == blackjack && playerOneTwoCardResult <= blackjack) {
-    message = "Dealer gotten blackjack";
+    dealerBets = dealerBets * 1.5;
+    playerBets = playerBets - playerBets;
+    message = `Dealer gotten blackjack, dealer has ${dealerBets}. Player has ${playerBets}`;
     console.log("Dealer Message", message);
     return message;
   }
   if (playerOneTwoCardResult == blackjack && computerScore <= blackjack) {
-    message = "You won the game, black jack";
+    playerBets = playerBets * 1.5;
+    dealerBets = dealerBets - playerBets;
+    message = `You won the game, black jack. You have ${playerBets} while dealer has ${dealerBets}`;
     console.log("BLACK JACKED", message);
     return message;
   }
   if (playerOneTwoCardResult == computerScore) {
-    message = "Wow! dealer and player both tie";
+    playerBets = playerBets;
+    dealerBets = dealerBets;
+    message = `Wow! dealer and player both tie. <br> </br> Current player score ${playerBets} and dealer is ${dealerBets}`;
     console.log("check message: ", message);
     return message;
   }
   if (computerScore >= blackjack) {
-    message = "dealer lost";
+    playerBets = playerBets + dealerBets;
+    dealerBets = dealerBets - playerBets;
+    message = `Dealer lost, player won. Player now has ${playerBets} while dealer has ${dealerBets}`;
     console.log("check message: ", message);
     return message;
   }
   if (playerOneTwoCardResult > blackjack && computerScore <= blackjack) {
-    message = "Your card bursted, dealer won";
+    playerBets = playerBets - dealerBets;
+    dealerBets = dealerBets + playerBets;
+    message = `Your card bursted, dealer won. Dealer has ${dealerBets} and ${playerBets}`;
     console.log("Bursted", message);
     return message;
   }
@@ -377,17 +410,38 @@ var gameResult = function () {
     computerScore <= blackjack &&
     computerScore >= playerOneTwoCardResult
   ) {
-    message = "Player card value is lower than dealer, dealer won!";
+    playerBets = playerBets - dealerBets;
+    dealerBets = dealerBets + playerBets;
+    message = `Player card value is lower than dealer, dealer won! Dealer has ${dealerBets} and player has ${playerBets}`;
     console.log("check message: ", message);
     return message;
   }
   if (playerOneTwoCardResult > computerScore && computerScore <= blackjack) {
-    message = "Player won!";
+    playerBets = playerBets + dealerBets;
+    dealerBets = dealerBets - playerBets;
+    message = `Player has won. Player has ${playerBets} and dealer has ${dealerBets}`;
     console.log("check message: ", message);
     return message;
   }
-
   return message;
+};
+
+var inputBets = function (input) {
+  gameMode = "placing bets";
+  if (input != ``) {
+    gameMode = "start game";
+    bet = input;
+    playerBets = playerBets + parseInt(bet);
+    console.log("Check bet:", playerBets);
+    var message =
+      "Hi 😀" + username + `<br> </br> You placed a bet of ${playerBets} 🃏`;
+    return message;
+  } else if (input == ``) {
+    gameMode == "placing bets";
+    message = "Please enter your bet 👀. e.g 123";
+    console.log("Please enter bet", message);
+    return message;
+  }
 };
 
 // main display screen
@@ -398,7 +452,12 @@ var main = function (input) {
   if (gameMode == "enter name") {
     var display = checkUsername(input);
     console.log("Game Mode username entered :", display);
-  } // once name is entered start the game
+  } // player to add a bet to global variable
+  else if (gameMode == "placing bets") {
+    var display = inputBets(input);
+    console.log("Placing bets:", display);
+  }
+  // once name is entered start the game
   else if (gameMode == "start game") {
     var display = shuffledCardResultScreen();
     console.log("Mode Display 1 :", display);
