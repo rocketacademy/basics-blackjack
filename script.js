@@ -209,6 +209,7 @@ var declareWinner = function () {
 };
 
 var main = function (input) {
+  // get player name and bet, or stop game based on score
   if (gameMode == "get player name and bet") {
     nameStore.push(input);
     playerScore = scoreCard.pop();
@@ -220,6 +221,8 @@ var main = function (input) {
     return `Hi ${nameStore[0]}, you have ${playerScore} points for betting. <br>
     How much would you like to bet for this round?`;
   }
+
+  // show initial player hand
   if (gameMode == "get initial hand") {
     initCards();
     playerBet = input;
@@ -230,6 +233,7 @@ var main = function (input) {
     Your total score is ${playerTotal}. Enter y to draw another card, otherwise click submit.`;
   }
 
+  // player adds card, otw com adds
   if (gameMode == "player hit or stand") {
     if (input == "y") {
       addCard();
@@ -245,7 +249,7 @@ var main = function (input) {
     }
   }
 
-  // compare winner
+  // output winning or losing condition and revised score
   if (gameMode == "compare winner") {
     var announceWinner = declareWinner(playerTotal, comTotal);
     gameMode = "get player name and bet";
