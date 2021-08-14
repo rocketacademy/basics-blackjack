@@ -88,17 +88,43 @@ var newDeck = shuffleCards(makeDeck());
 
 //Game Rules
 var scoreLimit = 21;
+var numOfPlayers = 0;
+var PLAYERSTART = `playerStart`;
+var PLAYERNAME = `playerName`;
+var BETTINGROUND = `bettingRound`;
 var START_HAND = `startHand`;
 var HIT_OR_STAND = "hitOrStand";
 var COMPTURN = "compTurn"; //Hit until 17
 var ENDGAME = "endGame";
 var RESTART = "restart";
 var blackJack = false;
-var gameMode = START_HAND;
+var gameMode = PLAYERSTART;
+
+// //JS output variables (https://www.w3schools.com/js/js_output.asp)
+// //Popup window with instruction
+// window.alert(
+//   `
+//   21 points to win.
+//   Type 'Hit' for more cards.
+//   Type 'Stand' to pass your turn.`
+// );
+//Element is case sensitive.
+document.getElementById(
+  "output-div"
+).innerHTML = `How many players for this game?`;
 
 //Store hands
 var compHand = [];
-var playerHand = [];
+var dealerBank = 100;
+var playersData = [];
+var currentPlayer = {
+  name: ``,
+  playerBank: 100,
+  playerHand: [],
+  playerScore: [],
+  playerGameScore: [],
+  Bet: ``,
+};
 
 //Determine score from hand
 var getScore = function (hand) {
@@ -114,7 +140,7 @@ var getScore = function (hand) {
   return score;
 };
 
-//Print hand (.map is interesting)
+//Print hand (.map is interesting, `card` can be randomly named but has to be referenced for the key to be called. `hand` is used for array reference and for .map to string)
 var printHand = function (hand) {
   return `${hand.map((card) => ` ${card.name} of ${card.suit}`)}`;
 };
@@ -125,90 +151,121 @@ var blackJackCheck = function (hand) {
 };
 
 var main = function (input) {
-  //Start game & check blackjack
+  //How many players to start game?
+  if (gameMode == PLAYERSTART) {
+    console.log(gameMode);
+    numOfPlayers = Number(input);
+    var myOutputValue = `Starting ${numOfPlayers} Player Game Mode. Key in your names.`;
+    gameMode = PLAYERNAME;
+    return myOutputValue;
+  }
+
+  if (gameMode == PLAYERNAME) {
+    console.log(gameMode);
+    currentPlayer.name = input;
+    var myOutputValue = `${currentPlayer.name} entered.`;
+    gameMode = BETTINGROUND;
+    return myOutputValue;
+  }
+  if (gameMode == BETTINGROUND) {
+    document.getElementById("output-div").innerHTML = `Input your bets.`;
+    currentPlayer.bet = Number(input);
+    var myOutputValue = `${currentPlayer.bet} bet by ${currentPlayer.name}`;
+    gameMode = START_HAND;
+    return myOutputValue;
+  }
+  //Start game & check blackjack for players and dealer.
   if (gameMode == START_HAND) {
+    //deal hand
     compHand = [newDeck.pop(), newDeck.pop()];
-    playerHand = [newDeck.pop(), newDeck.pop()];
-    playerScore = getScore(playerHand);
+    currentPlayer.playerHand = [newDeck.pop(), newDeck.pop()];
     compScore = getScore(compHand);
-    if (blackJackCheck(playerHand)) {
+    if (blackJackCheck(currentPlayer.playerHand)) {
       if (compScore == scoreLimit) {
-        var myOutputValue = `All Natural! Both tie! <br> Player has ${printHand(
-          playerHand
-        )} <br>`;
-        console.log(playerHand);
+        var myOutputValue = `All Natural! Both tie! <br> ${
+          currentPlayer.name
+        } has ${printHand(currentPlayer.playerHand)} <br>`;
+        console.log(currentPlayer.playerHand);
         console.log(compHand);
         return myOutputValue;
       } else if (compScore != scoreLimit) {
-        var myOutputValue = `Natural! Player wins! <br> Player has ${printHand(
-          playerHand
-        )} <br>`;
-        console.log(playerHand);
+        var myOutputValue = `Natural! ${currentPlayer.name} wins! <br> ${
+          currentPlayer.name
+        } has ${printHand(currentPlayer.playerHand)} <br>`;
+        console.log(currentPlayer.playerHand);
         console.log(compHand);
         return myOutputValue;
       }
     } else if (blackJackCheck(compHand)) {
-      if (playerScore == scoreLimit) {
-        var myOutputValue = `All Natural! Both tie! <br> Player has ${printHand(
-          playerHand
-        )} <br>`;
-        console.log(playerHand);
+      if (currentPlayer.playerScore == scoreLimit) {
+        var myOutputValue = `All Natural! Both tie! <br> ${
+          currentPlayer.name
+        } has ${printHand(currentPlayer.playerHand)} <br>`;
+        console.log(currentPlayer.playerHand);
         console.log(compHand);
         return myOutputValue;
-      } else if (playerScore != scoreLimit) {
-        var myOutputValue = `Natural! Dealer wins! <br> Player has ${printHand(
-          playerHand
-        )} <br>`;
-        console.log(playerHand);
+      } else if (currentPlayer.playerScore != scoreLimit) {
+        var myOutputValue = `Natural! Dealer wins! <br> ${
+          currentPlayer.name
+        } has ${printHand(currentPlayer.playerHand)} <br>`;
+        console.log(currentPlayer.playerHand);
         console.log(compHand);
         return myOutputValue;
       }
     }
-    playerGameScore = playerScore;
+    playerGameScore = currentPlayer.playerScore;
     compGameScore = compScore;
     gameMode = HIT_OR_STAND;
     console.log(`Comp score:${compGameScore}`);
-    var myOutputValue = `Player has ${playerScore}. <br> Player has ${printHand(
-      playerHand
+    var myOutputValue = `${currentPlayer.name} has ${
+      currentPlayer.playerScore
+    } points. <br> ${currentPlayer.name} has ${printHand(
+      currentPlayer.playerHand
     )} <br> Choose to hit or stand.`;
     return myOutputValue;
   }
 
   if (gameMode == HIT_OR_STAND && input.toLowerCase() == `hit`) {
-    playerHand.push(newDeck.pop());
-    playerScore = getScore(playerHand);
-    if (playerScore > scoreLimit) {
+    currentPlayer.playerHand.push(newDeck.pop());
+    currentPlayer.playerScore = getScore(currentPlayer.playerHand);
+    if (currentPlayer.playerScore > scoreLimit) {
       gameMode = COMPTURN;
-      playerGameScore = 0;
+      currentPlayer.playerGameScore = 0;
       console.log(`PlayerG: ${playerGameScore}`);
-      var myOutputValue = `Player bust. <br> Player has ${printHand(
-        playerHand
-      )} <br> Dealer turn now. <br> Player has ${playerScore}.`;
+      var myOutputValue = `${
+        currentPlayer.name
+      } bust. <br> Player has ${printHand(
+        currentPlayer.playerHand
+      )} <br> Dealer turn now. <br> ${currentPlayer.name} has ${
+        currentPlayer.playerScore
+      }.`;
       return myOutputValue;
     } else {
       gameMode = HIT_OR_STAND;
-      playerGameScore = playerScore;
-      var myOutputValue = `Player has ${printHand(
-        playerHand
-      )} <br> Player has ${playerScore}. <br>Choose to hit or stand.`;
+      currentPlayer.playerGameScore = currentPlayer.playerScore;
+      var myOutputValue = `${currentPlayer.name} has ${printHand(
+        currentPlayer.playerHand
+      )} <br> ${currentPlayer.name} has ${
+        currentPlayer.playerScore
+      }. <br>Choose to hit or stand.`;
       return myOutputValue;
     }
   }
 
   if (gameMode == HIT_OR_STAND && input.toLowerCase() == `stand`) {
     gameMode = COMPTURN;
-    playerGameScore = playerScore;
+    playerGameScore = currentPlayer.playerScore;
     console.log(`PlayerG: ${playerGameScore}`);
-    var myOutputValue = `Player has ${playerScore}. It is the dealer turn to play. Dealer has ${compScore}`;
+    var myOutputValue = `${currentPlayer.name} has ${currentPlayer.playerScore}. It is the dealer turn to play. Dealer has ${compScore}`;
     return myOutputValue;
   }
 
   if (gameMode == HIT_OR_STAND && input.toLowerCase() != `stand || hit`) {
-    var myOutputValue = `Invalid input. Player has ${playerScore}. Choose to hit or stand`;
+    var myOutputValue = `Invalid input. ${currentPlayer.name} has ${currentPlayer.playerScore} points. Choose to hit or stand`;
     return myOutputValue;
   }
 
-  //Dealer hit until 17. Then check score
+  //Dealer hit until 17. Then move to check score
   if (gameMode == COMPTURN) {
     for (
       compScore = getScore(compHand);
@@ -234,32 +291,36 @@ var main = function (input) {
   //Compare hands and announce winner
   if (gameMode == ENDGAME) {
     gameMode = RESTART;
-    if (compGameScore > playerGameScore) {
-      myOutputValue = `Dealer had ${compScore} points. Player had ${playerScore} points.<br> Player loses.`;
+    if (compGameScore > currentPlayer.playerGameScore) {
+      myOutputValue = `Dealer had ${compScore} points. ${currentPlayer.name} had ${currentPlayer.playerScore} points.<br> ${currentPlayer.name} loses.`;
       console.log(`Player lose`);
       return myOutputValue;
     }
-    if (compGameScore < playerGameScore) {
-      myOutputValue = `Dealer had ${compScore} points. Player had ${playerScore} points.<br> Player wins.`;
+    if (compGameScore < currentPlayer.playerGameScore) {
+      myOutputValue = `Dealer had ${compScore} points. ${currentPlayer.name} had ${currentPlayer.playerScore} points.<br> ${currentPlayer.name} wins.`;
       console.log(`Player Win`);
       return myOutputValue;
     }
-    if (compGameScore == playerGameScore) {
-      myOutputValue = `Dealer had ${compScore} points. Player had ${playerScore} points.<br> It's a tie.`;
+    if (compGameScore == currentPlayer.playerGameScore) {
+      myOutputValue = `Dealer had ${compScore} points. ${currentPlayer.name} had ${currentPlayer.playerScore} points.<br> It's a tie.`;
       console.log(`Game tie`);
       return myOutputValue;
     }
   }
 
+  //Resetting the game stats for next round.
   if ((gameMode = RESTART)) {
     newDeck = shuffleCards(makeDeck());
     blackJack = false;
     compHand = [];
-    playerHand = [];
+    currentPlayer.playerHand = [];
+    currentPlayer.playerScore = [];
+    currentPlayer.playerGameScore = [];
     gameMode = START_HAND;
-    var myOutputValue = `A new game awaits`;
+    var myOutputValue = `A new round awaits`;
     return myOutputValue;
   }
+  //Catch all
   var myOutputValue = `Invalid Move. Restart game.`;
   return myOutputValue;
 };
