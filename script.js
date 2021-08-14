@@ -163,16 +163,22 @@ var dealCard = function (cards) {
  var highestVal = 21;
 checkForBlackjack = function (){
   if (playerCardSum == highestVal && compCardSum == highestVal) {
-    myOutputValue = myOutputValue+ "Both have BlackJack!" + gameOverOutput;
     isOver = true;
+    myOutputValue = myOutputValue+ "Both have BlackJack!" + gameOverOutput;
+    
    
   } else if (playerCardSum == highestVal){
-    myOutputValue = myOutputValue+ '<br>' + players[0] + "BlackJack!" + '<br> Game Over!'
     isOver = true;
+    
+    myOutputValue = myOutputValue+ '<br>' + players[0] + "BlackJack!" + '<br> Game Over!'
+  
    
   } else if (compCardSum == highestVal){
-    myOutputValue = myOutputValue + '<br>'+ players[1] + " BlackJack!" + '<br> Game Over!' 
     isOver = true;
+    myOutputValue = myOutputValue + '<br>'+ players[1] + " BlackJack!" + '<br> Game Over!' 
+    
+    
+
   } else if (playerCardSum != highestVal || compCardSum != highestVal) {
     myOutputValue = myOutputValue + '<br> What would you like to do? <br> Type hit or stand then submit!'
     gameMode = 'hit or stand';
@@ -181,7 +187,7 @@ checkForBlackjack = function (){
 };
 
 var main = function(input) {
-  if (isOver){
+  if (isOver == true ){
     myOutputValue = "Game Over! <br> Please refresh to play again.";
   }
   //deal cards, in the beginning 2 cards each
@@ -212,7 +218,9 @@ console.log (compCardSum);
 
 //check for blackjack
  checkForBlackjack ();
+ console.log(gameMode);
   return myOutputValue;
+  
 }
   
 //User decide to hit or stand using the submit button
@@ -230,9 +238,12 @@ if (gameMode == 'hit or stand' && input == '' || input != 'hit' || input != 'sta
       if (getCardSum (playerCards) > highestVal) {
         myOutputValue = `${defaultOuput()} <br> Player 1 has busted. <br> Game Over! <br> Please refresh the game`
         isOver = true;
+        gameMode = 'start game';
+
       } if (getCardSum (playerCards) == highestVal) {
         myOutputValue = `${defaultOuput()} <br> Player 1 wins! Blackjack! <br> Game Over, please refresh the game! `
         isOver = true;
+        gameMode = 'start game'
       } if (getCardSum (playerCards) < highestVal) { 
         playerCardSum = getCardSum (playerCards);
 
@@ -247,16 +258,24 @@ if (gameMode == 'hit or stand' && input == '' || input != 'hit' || input != 'sta
     console.log('comphit');
     console.log(compCards);
     compCardSum = getCardSum(compCards)
-  } if (getCardSum (compCards) > highestVal) {
-        myOutputValue = `${defaultOuput()} <br> Dealer has busted. <br> Game Over! <br> Please refresh the game`
-        isOver = true;
-      } if (getCardSum (compCards) == highestVal) {
-        myOutputValue = `${defaultOuput()} <br> Dealer wins! Blackjack! <br> Game Over, please refresh the game! `
-        isOver = true;
-      } if (getCardSum (compCards) < highestVal) { 
-        compCardSum = getCardSum (compCards);
+    console.log('compval');
+    console.log(compCardSum);
+
+  } if (compCardSum > highestVal) {
+      isOver = true;
+      gameMode = 'start game'    
+      myOutputValue = `${defaultOuput()} <br> Dealer has busted. <br> Game Over! <br> Please refresh the game`
         
-       
+
+      } if (compCardSum == highestVal) {
+        isOver = true;
+        gameMode = 'start game';
+        myOutputValue = `${defaultOuput()} <br> Dealer wins! Blackjack! <br> Game Over, please refresh the game! `
+        
+
+      } if (compCardSum < highestVal) { 
+        compCardSum = getCardSum (compCards);
+             
       
     } 
   
@@ -264,12 +283,25 @@ if (gameMode == 'hit or stand' && input == '' || input != 'hit' || input != 'sta
 
   if (compCardSum < playerCardSum) {
     isover = true;
-    myOutputValue = `Player 1 wins! <br>${defaultOuput()} <br> Game Over! Please refresh the game.`
-  } else { myOutputValue = `Dealer wins! <br>${defaultOuput()} <br> Game Over! Please refresh the game.`;
-  isOver  = true;
+    gameMode = 'start game';
+    myOutputValue = `Player 1 wins! <br>${defaultOuput()} <br> Game Over! Please refresh the game`;
+    
+    
+  } if (compCardSum == playerCardSum){
+    isOver = true;
+    gameMode = 'start game'
+    myOutputValue = `It's a draw! <br> ${defaultOuput()} <br> Game Over! Please refresh the game`;
+  
+    
+  } if (compCardSum > playerCardSum) {
+    isOver  = true
+    gameMode = 'start game' 
+    myOutputValue = `Dealer wins! <br>${defaultOuput()} <br> Game Over! Please refresh the game`;
+  
+  
 }
    
-
+  console.log ('ending ' + (gameMode));
   } return myOutputValue;
 
 
