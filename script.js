@@ -87,11 +87,12 @@ var noOfPlayers = 0;
 var currentPlayer = -1;
 var playersBank = [];
 var playersBet = [];
-var dealerBank = 100;
+var dealerBank = 1000;
 var dealerBlackJack = false;
 var playerBlackJack = [];
 var noPlayerBlackJack = true;
-
+var playersInGame = [];
+// Have to change all the inputs and looks to jump currentplayer according to the playersIngame. currentPlayer = playersIngame[i] or value = playersIngame [currentPlayer]
 var main = function (input) {
   var myOutputValue = "";
   // Number of players
@@ -102,9 +103,12 @@ var main = function (input) {
       while (bank < Number(input)) {
         playersBank.push(100);
         console.log(playersBank[bank]);
+        playersInGame.push(bank); //fill in the players still in game
         bank += 1;
       }
-      noOfPlayers = Number(input) + 1; // add one CPU as dealer
+      console.log("Bank value:", bank);
+      playersInGame.push(bank); //push CPU as last player
+      noOfPlayers = playersInGame.length; // add one CPU as dealer
       gameState = "betPhase";
       myOutputValue = `Total of ${noOfPlayers - 1} players.`;
       return myOutputValue;
@@ -115,25 +119,40 @@ var main = function (input) {
   }
   //bet phase
   if (gameState == "betPhase") {
+    //starting display message
     if (currentPlayer < 0) {
-      myOutputValue = "Player 1 please bet.";
+      // display first player that is stil in game
       currentPlayer += 1;
+      myOutputValue = `Player ${
+        playersInGame[currentPlayer] + 1
+      }, please place bet.`;
       return myOutputValue;
     }
     if (isNaN(Number(input)) || Number(input) < 1) {
       myOutputValue = "Please enter a proper bet.";
       return myOutputValue;
     }
-    playersBet.push(Number(input));
-    console.log("bet", playersBet[currentPlayer]);
-    currentPlayer += 1;
-    if (currentPlayer == noOfPlayers - 1) {
-      gameState = "dealCards";
-      currentPlayer = 0;
-      return "Bets closed! Let's deal!";
+    // check for bad bet
+    if (Number(input) > playersBank[currentPlayer]) {
+      myOutputValue = `You are poor and only have ${
+        playersBank[playersInGame[currentPlayer]]
+      }, please bet less.`;
+      return myOutputValue;
     }
-    myOutputValue = `Player ${currentPlayer + 1} please bet.`;
-    return myOutputValue;
+    if (currentPlayer < noOfPlayers - 1) {
+      playersBet[playersInGame[currentPlayer]] = Number(input);
+      currentPlayer += 1;
+      if (currentPlayer < noOfPlayers - 1) {
+        myOutputValue = `Player ${
+          playersInGame[currentPlayer] + 1
+        }, please bet.`;
+        return myOutputValue;
+      }
+      console.log("bets", playersBet);
+    }
+    gameState = "dealCards";
+    currentPlayer = 0;
+    return "Bets closed! Let's deal!";
   }
   // Deal cards 2 each
   if (gameState == "dealCards") {
@@ -162,7 +181,8 @@ var main = function (input) {
   }
   //showing hands after dealer blackjack
   if (gameState == "showHand") {
-    myOutputValue = showAllHands(currentPlayer);
+    currentPlayer = 0;
+    myOutputValue = showAllHands(playersInGame[currentPlayer]);
     currentPlayer += 1;
     if (currentPlayer == noOfPlayers - 2) {
       gameState = "payOut";
@@ -173,7 +193,7 @@ var main = function (input) {
   //dont return to let it continue to display cards in the same submit
   if (gameState == "hitOrStand") {
     if (input == "hit") {
-      hitMe(currentPlayer);
+      hitMe(playersInGame[currentPlayer]);
       gameState = "playingPhase";
     }
     if (input == "stand") {
@@ -197,10 +217,11 @@ var main = function (input) {
   if (gameState == "playingPhase") {
     // Output cards in hand and check for bust.
     var outputIndex = 0;
+    console.log("playing phase current player", currentPlayer);
     //check for blackjack and move next
     if (playersScore[currentPlayer] == 21) {
-      myOutputValue = `Player ${currentPlayer + 1} BLACKJACK!`;
-      playerBlackJack.push(currentPlayer);
+      myOutputValue = `Player ${playersInGame[currentPlayer] + 1} BLACKJACK!`;
+      playerBlackJack.push(playersInGame[currentPlayer]);
       currentPlayer += 1;
       //Check if all players had a turn then dealer's turn
       if (currentPlayer == noOfPlayers - 1) {
@@ -209,9 +230,11 @@ var main = function (input) {
       return myOutputValue;
     }
     //check for bust and move next
-    if (playersScore[currentPlayer] > 21) {
-      myOutputValue = `Total count is ${playersScore[currentPlayer]}. Bust!`;
-      playersScore[currentPlayer] = 0;
+    if (playersScore[playersInGame[currentPlayer]] > 21) {
+      myOutputValue = `Total count is ${
+        playersScore[playersInGame[currentPlayer]]
+      }. Bust!`;
+      playersScore[playersInGame[currentPlayer]] = 0;
       currentPlayer += 1;
       //Check if all players had a turn then dealer's turn
       if (currentPlayer == noOfPlayers - 1) {
@@ -220,65 +243,69 @@ var main = function (input) {
       return myOutputValue;
     }
     //show hand and score
-    myOutputValue = `Player ${currentPlayer + 1}'s hand is:<br>`;
-    while (outputIndex < playersHand[currentPlayer].length) {
+    myOutputValue = `Player ${playersInGame[currentPlayer] + 1}'s hand is:<br>`;
+    while (outputIndex < playersHand[playersInGame[currentPlayer]].length) {
       myOutputValue =
         myOutputValue +
-        playersHand[currentPlayer][outputIndex].name +
+        playersHand[playersInGame[currentPlayer]][outputIndex].name +
         " of " +
-        playersHand[currentPlayer][outputIndex].suit +
+        playersHand[playersInGame[currentPlayer]][outputIndex].suit +
         "<br>";
       outputIndex += 1;
     }
     myOutputValue =
       myOutputValue +
-      `Total count: ${playersScore[currentPlayer]}<br> Hit or Stand?`;
+      `Total count: ${
+        playersScore[playersInGame[currentPlayer]]
+      }<br> Hit or Stand?`;
     gameState = "hitOrStand";
     return myOutputValue;
   }
   //dealer hit or stand
   if (gameState == "dealerPlay") {
-    if (playersScore[currentPlayer] > 17) {
+    if (playersScore[playersInGame[currentPlayer]] > 17) {
     }
-    if (playersScore[currentPlayer] > 17) {
+    if (playersScore[playersInGame[currentPlayer]] > 17) {
       myOutputValue = "Dealer stands!";
       gameState = "payOut";
       return myOutputValue;
     }
-    hitMe(currentPlayer);
-    console.log("current player", currentPlayer);
+    hitMe(playersInGame[currentPlayer]);
     gameState = "dealerOpen";
   }
   //open dealer's hand
   if (gameState == "dealerOpen") {
     myOutputValue = `Dealer's hand is:<br>`;
     outputIndex = 0;
-    while (outputIndex < playersHand[currentPlayer].length) {
+    while (outputIndex < playersHand[playersInGame[currentPlayer]].length) {
       myOutputValue =
         myOutputValue +
-        playersHand[currentPlayer][outputIndex].name +
+        playersHand[playersInGame[currentPlayer]][outputIndex].name +
         " of " +
-        playersHand[currentPlayer][outputIndex].suit +
+        playersHand[playersInGame[currentPlayer]][outputIndex].suit +
         "<br>";
       outputIndex += 1;
     }
     //black jack
-    if (playersScore[currentPlayer] == 21) {
+    if (playersScore[playersInGame[currentPlayer]] == 21) {
       dealerBlackJack = true;
       myOutputValue = myOutputValue + "Dealer Blackjack!";
       gameState = "payOut";
       return myOutputValue;
     }
     //bust
-    if (playersScore[currentPlayer] > 21) {
-      myOutputValue + `Total count: ${playersScore[currentPlayer]}<br>`;
+    if (playersScore[playersInGame[currentPlayer]] > 21) {
+      myOutputValue =
+        myOutputValue +
+        `Total count: ${playersScore[playersInGame[currentPlayer]]}<br>`;
       myOutputValue = myOutputValue + "Dealer bust!";
-      playersScore[currentPlayer] = 0;
+      playersScore[playersInGame[currentPlayer]] = 0;
       gameState = "payOut";
       return myOutputValue;
     }
     myOutputValue =
-      myOutputValue + `Total count: ${playersScore[currentPlayer]}<br>`;
+      myOutputValue +
+      `Total count: ${playersScore[playersInGame[currentPlayer]]}<br>`;
     gameState = "dealerPlay";
     return myOutputValue;
   }
@@ -290,7 +317,7 @@ var main = function (input) {
     //double the bet if dealer blackjack
     if (dealerBlackJack) {
       for (var i = 0; i < noOfPlayers - 2; i += 1) {
-        playersBet[i] = playersBet[i] * 2;
+        playersBet[playersInGame[i]] = playersBet[playersInGame[i]] * 2;
       }
     }
     //double the bet for players that blackjack
@@ -302,21 +329,48 @@ var main = function (input) {
     //bust == 0
     for (var i = 0; i < noOfPlayers - 1; i += 1) {
       //less than dealer
-      if (playersScore[i] < playersScore[noOfPlayers - 1]) {
-        playersBank[i] = playersBank[i] - playersBet[i];
-        dealerBank = dealerBank + playersBet[i];
-        losers = losers + `Player ${i + 1} with ${playersBank[i]} chips, `;
-        console.log(losers);
+      if (
+        playersScore[playersInGame[i]] <
+        playersScore[playersInGame[noOfPlayers - 1]]
+      ) {
+        if (playersBank[playersInGame[i]] - playersBet[playersInGame[i]] < 0) {
+          dealerBank += playersBank[playersInGame[i]];
+          playersBank[playersInGame[i]] = 0;
+        } else {
+          playersBank[playersInGame[i]] =
+            playersBank[playersInGame[i]] - playersBet[playersInGame[i]];
+          dealerBank = dealerBank + playersBet[playersInGame[i]];
+        }
+        losers =
+          losers +
+          `Player ${playersInGame[i] + 1} with ${
+            playersBank[playersInGame[i]]
+          } chips, `;
       }
       //same as dealer
-      else if (playersScore[i] == playersScore[noOfPlayers - 1]) {
-        lucky = lucky + `Player ${i + 1} with ${playersBank[i]} chips, `;
+      else if (
+        playersScore[playersInGame[i]] ==
+        playersScore[playersInGame[noOfPlayers - 1]]
+      ) {
+        lucky =
+          lucky +
+          `Player ${playersInGame[i] + 1} with ${
+            playersBank[playersInGame[i]]
+          } chips, `;
       }
       //more than dealer plus bet to bank
-      else if (playersScore[i] > playersScore[noOfPlayers - 1]) {
-        playersBank[i] = playersBank[i] + playersBet[i];
-        dealerBank = dealerBank - playersBet[i];
-        winners = winners + `Player ${i + 1} with ${playersBank[i]} chips, `;
+      else if (
+        playersScore[playersInGame[i]] >
+        playersScore[playersInGame[noOfPlayers - 1]]
+      ) {
+        playersBank[playersInGame[i]] =
+          playersBank[playersInGame[i]] + playersBet[playersInGame[i]];
+        dealerBank = dealerBank - playersBet[playersInGame[i]];
+        winners =
+          winners +
+          `Player ${playersInGame[i] + 1} with ${
+            playersBank[playersInGame[i]]
+          } chips, `;
       }
     }
     myOutputValue =
@@ -331,12 +385,18 @@ var main = function (input) {
   }
   if (gameState == "reDeal") {
     gameDeck = shuffleCards(makeDeck());
-    playersScore = [];
-    playersHand = [];
-    playersBet = [];
+    if (dealerBank <= 0) {
+      myOutputValue = "House has fallen! Refresh to play again.";
+      return myOutputValue;
+    }
+    bouncePleb(); // kick the broke people
+    //playersScore = [];
+    //playersHand = [];
+    //playersBet = [];
     currentPlayer = -1;
     dealerBlackJack = false;
     outputIndex = 0;
+    noOfPlayers = playersInGame.length; //recount remaining no of players for the loops
     gameState = "betPhase";
     myOutputValue = "Next round!";
     return myOutputValue;
@@ -372,8 +432,8 @@ var dealCards = function (playerNumber) {
     var hand = [];
     hand[0] = roundOne.pop();
     hand[1] = roundTwo.pop();
-    playersHand[player] = hand;
-    playersScore[player] = countScore(player);
+    playersHand[playersInGame[player]] = hand;
+    playersScore[playersInGame[player]] = countScore(playersInGame[player]);
     hand = [];
     player -= 1;
   }
@@ -384,6 +444,7 @@ var dealCards = function (playerNumber) {
 var countScore = function (index) {
   var noOfCards = 0;
   var handValue = 0;
+  var noOfAce = 0;
   //counts through whole hand
   while (noOfCards < playersHand[index].length) {
     // rank 11-13 = value 13
@@ -392,12 +453,8 @@ var countScore = function (index) {
     }
     // rank 1 = value 1 or 11
     if (playersHand[index][noOfCards].rank == 1) {
-      var tempValue = handValue + 11;
-      if (tempValue <= 21) {
-        handValue = handValue + 11;
-      } else {
-        handValue = handValue + 1;
-      }
+      noOfAce += 1;
+      handValue = handValue + 1;
     }
     if (
       playersHand[index][noOfCards].rank > 1 &&
@@ -406,6 +463,13 @@ var countScore = function (index) {
       handValue = handValue + playersHand[index][noOfCards].rank;
     }
     noOfCards += 1;
+  }
+  while (noOfAce > 0) {
+    if (handValue < 22 && handValue + 10 < 22) {
+      handValue = handValue + 10;
+      noOfAce = noOfAce - 1;
+    }
+    noOfAce = 0;
   }
   return handValue;
 };
@@ -436,4 +500,14 @@ var showAllHands = function (index) {
   }
   myOutputValue = myOutputValue + `Total count: ${playersScore[index]}.<br>`;
   return myOutputValue;
+};
+
+//kick the broke people
+var bouncePleb = function () {
+  for (var i = 0; i < noOfPlayers - 1; i += 1) {
+    if (playersScore[playersInGame[i]] == 0) {
+      playersInGame.splice(i, 1);
+    }
+  }
+  return;
 };
