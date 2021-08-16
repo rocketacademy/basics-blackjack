@@ -83,10 +83,11 @@
     </h1>
     <h1 class="header">♣️ Basics - Blackjack ♠️</h1>
     <div id="container">
-      <p>Input:</p>
+      <p>Type here:</p>
       <input id="input-field" />
       <br />
-      <button id="submit-button">Submit</button>
+      <button id="submit-button">Click me!</button>
+      <button id="get-help-button">How to play</button>
       <p>Output:</p>
       <div id="output-div"></div>
     </div>
@@ -106,6 +107,12 @@
 
         // Reset input value
         input.value = "";
+      });
+      var button = document.querySelector("#get-help-button");
+      button.addEventListener("click", function () {
+        var output = document.querySelector("#output-div");
+        output.innerHTML =
+          "Please click on the 'Click me!' button. <br> Further explanations would be given then :)";
       });
     </script>
   </body>
