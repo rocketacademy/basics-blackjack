@@ -135,7 +135,7 @@ var countCurrPoints = function (playerWins, currPoints, betPoints) {
     currPoints = Number(currPoints) - Number(betPoints);
     // else, curr points doesn't change
   } else if (playerWins == 3) {
-    currPoints = currPoints;
+    currPoints = Number(currPoints);
   }
   return currPoints;
 };
@@ -180,13 +180,23 @@ var main = function (input) {
   // player decide how many points they want to bet
   if (GAME_MODE == BET_POINTS) {
     pointsBet = input;
-    GAME_MODE = BLACKJACK;
-    return (
-      userName +
-      ", you are betting " +
-      pointsBet +
-      " points. Now you're set to play. <br> Please hit 'submit' to start playing."
-    );
+    if (pointsBet > currPoints) {
+      return (
+        "Whoops " +
+        userName +
+        ", you're betting higher than the points you have. <br> Your current points are " +
+        currPoints +
+        ". <br> Please enter a number lower than that."
+      );
+    } else {
+      GAME_MODE = BLACKJACK;
+      return (
+        userName +
+        ", you are betting " +
+        pointsBet +
+        " points. Now you're set to play. <br> Please hit the 'Click me!' to start playing."
+      );
+    }
   }
   if (GAME_MODE == BLACKJACK) {
     playerCard = [];
@@ -258,7 +268,6 @@ var main = function (input) {
       if (dealerCardSum >= 17) {
         playerWins = doesPlayerWin(playerCardSum, dealerCardSum);
         currPoints = countCurrPoints(playerWins, currPoints, pointsBet);
-        console.log(currPoints);
         outputMsg = getOutputMsg(playerWins, currPoints);
 
         // check winning condition
@@ -276,7 +285,6 @@ var main = function (input) {
 
         playerWins = doesPlayerWin(playerCardSum, dealerCardSum);
         currPoints = countCurrPoints(playerWins, currPoints, pointsBet);
-        console.log(currPoints);
         outputMsg = getOutputMsg(playerWins, currPoints);
 
         myOutputValue =
@@ -325,7 +333,6 @@ var main = function (input) {
 
         playerWins = doesPlayerWin(playerCardSum, dealerCardSum);
         currPoints = countCurrPoints(playerWins, currPoints, pointsBet);
-        console.log(currPoints);
         outputMsg = getOutputMsg(playerWins, currPoints);
 
         myOutputValue =
@@ -343,8 +350,7 @@ var main = function (input) {
       if (dealerCardSum >= 17) {
         playerWins = doesPlayerWin(playerCardSum, dealerCardSum);
         currPoints = countCurrPoints(playerWins, currPoints, pointsBet);
-        console.log(currPoints);
-        outputMsg = getOutputMsg(playerWins);
+        outputMsg = getOutputMsg(playerWins, currPoints);
 
         // check winning condition
         if (doesPlayerWin(playerCardSum, dealerCardSum)) {
