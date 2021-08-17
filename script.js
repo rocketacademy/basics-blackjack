@@ -1,7 +1,7 @@
 //to generate deck
 var makeDeck = function () {
   var cardDeck = [];
-  var suits = ["hearts", "diamonds", "clubs", "spades"];
+  var suits = ["Hearts", "Diamonds", "Clubs", "Spades"];
 
   //loop over suits array
   var suitIndex = 0;
@@ -10,49 +10,42 @@ var makeDeck = function () {
     var rankCounter = 1;
     while (rankCounter <= 13) {
       var cardName = rankCounter;
-      var valueCard =rankCounter; 
-
+      var valueCard = rankCounter;
       if (cardName == 1) {
-        cardName = "ace";
-        valueCard = 11
+        cardName = "Ace";
+        valueCard = 11;
       } else if (cardName == 11) {
-        cardName = "jack";
-        valueCard = 10
+        cardName = "Jack";
+        valueCard = 10;
       } else if (cardName == 12) {
-        cardName = "queen";
-        valueCard = 10
+        cardName = "Queen";
+        valueCard = 10;
       } else if (cardName == 13) {
-        cardName = "king";
-        valueCard =10
+        cardName = "King";
+        valueCard = 10;
       }
-
       // Create a new card with the current name, suit, and rank
       var card = {
         name: cardName,
         suit: currentSuit,
         rank: rankCounter,
+        value: valueCard,
       };
-
       // Add the new card to the deck
       cardDeck.push(card);
-
       // Increment rankCounter to iterate over the next rank
       rankCounter += 1;
     }
-
     // Increment the suit index to iterate over the next suit
     suitIndex += 1;
   }
-
   // Return the completed card deck
   return cardDeck;
 };
-
 // Get a random index ranging from 0 (inclusive) to max (exclusive).
 var getRandomIndex = function (max) {
   return Math.floor(Math.random() * max);
 };
-
 // Shuffle the elements in the cardDeck array
 var shuffleCards = function (cardDeck) {
   var currentIndex = 0;
@@ -64,11 +57,9 @@ var shuffleCards = function (cardDeck) {
     cardDeck[randomIndex] = currentCard;
     currentIndex = currentIndex + 1;
   }
-
   // Return the shuffled deck
   return cardDeck;
 };
-
 //to store card value on player hand
 var playerHand = [];
 
@@ -76,282 +67,239 @@ var playerHand = [];
 var dealerHand = [];
 
 //game modes:
-var deal_TWOCARDS = "deal_TWOCARDS";
-var DRAWCARDS = "DRAWCARDS";
-var HIT = "HIT";
-var STAND = "STAND";
+var dealTwoCards = "dealTwoCards";
+var actionHitStand = "actionHitStand";
 
 //initialise game mode to start with dealing two cards
-var gameMode = deal_TWOCARDS;
-​
+var gameMode = dealTwoCards;
+
 //to store player and dealer points eg combination of 2 cards give how many points
 var playerPoints = 0;
 var dealerPoints = 0;
-​
+
 //to store player and dealer score
 var playerWins = 0;
 var dealerWins = 0;
 
-​
-var main = function (input) {
-  var shuffledDeck = shuffleCards(makeDeck());
-  if (gameMode = deal_TWOCARDS) {
-    playerHand = [];
-    dealerHand = [];
-    playerPoints = 0;
-    dealerPoints = 0;
-    for (i = 0; i < 2; i++) {
-      playerHand.push(shuffledDeck.pop());
-      dealerHand.push(shuffledDeck.pop());
-    }
-    console.log("dealer:", dealerHand);
-    console.log("player:", playerHand);
-​
-    playerPoints = handPoints(playerHand);
-    dealerPoints = handPoints(dealerHand);
-    console.log("dealer starting points:", dealerPoints);
-​
-    //if an ace card is drawn for player,
-    for (const pCard of playerHand) {
-      if (pCard.name == "ace") {
-        console.log("ace check", pCard);
-        if (playerPoints < 21) {
-          pCard.value = 11;
-          console.log("ace value", pCard.value);
-        } else if (playerPoints > 21) {
-          pCard.value = 1;
-          console.log("ace value", pCard.value);
-        }
-        playerPoints = handPoints(playerHand);
-        console.log("final player points:", playerPoints);
-      }
-    }
-​
-    //if an ace card is drawn for dealer,
-    for (const dCard of dealerHand) {
-      if (dCard.name == "ace") {
-        console.log("ace check", dCard);
-        if (dealerPoints < 21) {
-          dCard.value = 11;
-          console.log("ace value", dCard.value);
-        } else if (dealerPoints > 21) {
-          dCard.value = 1;
-          console.log("ace value", dCard.value);
-        }
-        playerPoints = handPoints(dealerHand);
-        console.log("final player points:", dealerPoints);
-      }
-    }
-​
-    //if player/dealer scores 21 or busts
-    // if player gets 21 points, player wins
-    if (playerPoints == 21 && dealerPoints != 21) {
-      // player instant win
-      return (
-        "You have drawn " +
-        playerHand[0].name +
-        " " +
-        playerHand[0].suit +
-        " and " +
-        playerHand[1].name +
-        " " +
-        playerHand[1].suit +
-        "<br><br>" +
-        "You won! Current points:" +
-        playerPoints +
-        "<br><br>" +
-        'Please press "Submit" to play again.'
-      );
-    }
+//keep track whether player bets already or not
+var trackBet = false;
 
-    //if dealer gets 21 points, dealer wins
-    if (dealerPoints == 21 && playerPoints != 21){
-      return  "You have drawn " +
-        playerHand[0].name +
-        " " +
-        playerHand[0].suit +
-        " and " +
-        playerHand[1].name +
-        " " +
-        playerHand[1].suit + 
-        "<br><br>" +
-        "Dealer has drawn drawn " +
-        dealerHand[0].name +
-        " " +
-        dealerHand[0].suit +
-        " and " +
-        dealerHand[1].name +
-        " " +
-        dealerHand[1].suit +
-        "<br><br>" +
-        "You lost! Current points:" +
-        playerPoints +
-        "<br><br>" +
-        'Please press "Submit" to play again.'
-    }
+//to store player betting points
+var gamePoints = 100;
 
-    //BUSTS
-    if (dealerPoints > 21) {
-      return "Dealer busts. You have drawn " +
-        playerHand[0].name +
-        " " +
-        playerHand[0].suit +
-        " and " +
-        playerHand[1].name +
-        " " +
-        playerHand[1].suit + 
-        "<br><br>" +
-        "Dealer has drawn drawn " +
-        dealerHand[0].name +
-        " " +
-        dealerHand[0].suit +
-        " and " +
-        dealerHand[1].name +
-        " " +
-        dealerHand[1].suit +
-        "<br><br>" +
-        "You won! Current points:" +
-        playerPoints +
-        "<br><br>" + "Your points: " + playerPoints +
-       "<br><br>" + "Dealer points: " + dealerPoints +
-       "Please press 'Submit' to play again."
-    }
+//to store player bets temporarily
+var playerBet = 0;
 
-    if (playerPonts > 21){
-      return "You bust. You have drawn " +
-        playerHand[0].name +
-        " " +
-        playerHand[0].suit +
-        " and " +
-        playerHand[1].name +
-        " " +
-        playerHand[1].suit + 
-        "<br><br>" +
-        "Dealer has drawn" +
-        dealerHand[0].name +
-        " " +
-        dealerHand[0].suit +
-        " and " +
-        dealerHand[1].name +
-        " " +
-        dealerHand[1].suit +
-        "<br><br>" +
-        "You lost! Current points:" +
-        playerPoints +
-        "<br><br>" + "Your points: " + playerPoints +
-       "<br><br>" + "Dealer points: " + dealerPoints +
-       "Please press 'Submit' to play again."
+//to store player and dealer last action
+var playerLastAction = "";
+var dealerLastAction = "";
+var handPoints = function (hand) {
+  var score = 0;
+  for (var i = 0; i < hand.length; i++) {
+    score += hand[i].value;
+  }
+  return score;
+};
+
+// If player or dealer deals ACE card
+var aceCards = function (hand) {
+  handValue = handPoints(hand);
+  for (var i = 0; i < hand.length; i++) {
+    if (hand[i].name == "ace" && handValue > 21) {
+      hand[i].value = 1;
+      handValue -= 10;
     }
-  ​}
-​   if (gameMode == DRAWCARDS) {
-    myOutputValue =
-      "Your current points: " +
+  }
+  return hand, handValue;
+};
+// Compare player and dealer scores
+var compareScores = function (playerPoints, dealerPoints) {
+  var returnStringFinal = "";
+  var returnStringPlayer = "You have drawn ";
+  for (var i = 0; i < playerHand.length; i++) {
+    if (i == playerHand.length - 1) {
+      returnStringPlayer +=
+        " and " + playerHand[i].name + " of " + playerHand[i].suit;
+    } else {
+      returnStringPlayer += playerHand[i].name + " of " + playerHand[i].suit;
+    }
+    if (playerHand.length > 2 && i < playerHand.length - 2) {
+      returnStringPlayer += ", ";
+    }
+  }
+  returnStringPlayer += "<br><br>";
+  var returnStringDealer = "Dealer has drawn ";
+  for (var i = 0; i < dealerHand.length; i++) {
+    if (i == dealerHand.length - 1) {
+      returnStringDealer +=
+        " and " + dealerHand[i].name + " of " + dealerHand[i].suit;
+    } else {
+      returnStringDealer += dealerHand[i].name + " of " + dealerHand[i].suit;
+    }
+    if (dealerHand.length > 2 && i < dealerHand.length - 2) {
+      returnStringDealer += ", ";
+    }
+  }
+  returnStringDealer += "<br><br>";
+  if (playerLastAction == "stand" && dealerLastAction == "stand") {
+    var returnStringWinner = "It's a tie!";
+    if (playerPoints > dealerPoints) {
+      gamePoints += playerBet * 2;
+      returnStringWinner = "You won!";
+    } else if (playerPoints < dealerPoints) {
+      returnStringWinner = "You lost!";
+    }
+    returnStringFinal +=
+      returnStringPlayer +
+      returnStringDealer +
+      "Your points: " +
+      playerPoints +
+      "<br>Dealer points: " +
+      dealerPoints +
+      "<br><br>" +
+      returnStringWinner;
+  }
+  //if player/dealer scores 21 or busts
+  // if player gets 21 points, player wins
+  else if (playerPoints == 21 && dealerPoints != 21) {
+    // player instant win
+    gamePoints += playerBet * 2;
+    returnStringFinal +=
+      returnStringPlayer + "You won! Current points:" + playerPoints;
+  }
+  //if dealer gets 21 points, dealer wins
+  else if (dealerPoints == 21 && playerPoints != 21) {
+    returnStringFinal +=
+      returnStringDealer + "You lost! Current points:" + playerPoints;
+  }
+  //BUSTS
+  else if (dealerPoints > 21) {
+    gamePoints += playerBet * 2;
+    returnStringFinal +=
+      "Dealer busts. " +
+      returnStringPlayer +
+      returnStringDealer +
+      "You won!" +
+      "<br><br>" +
+      "Your points: " +
       playerPoints +
       "<br><br>" +
-      "Would you like to hit or stand?";
-    }
-​
-    // player choose stand
-    if (gameMode == STAND){
-    if (input.toLowerCase() == "stand") {
-      if (input.toLowerCase() == "stand" || stand == "forced") {
-        // dealer draws AFTER player stands if points less than 17
-        for (j = 0; j < 5; j++) {
-          for (j = 0; j < 3; j++) {
-            if (dealerPoints < 17) {
-              dealerHand.push(shuffledDeck.pop());
-              dealerPoints = handPoints(dealerHand);
-              console.log("dealer hand:", dealerHand);
-              console.log("dealer points:", dealerPoints);
-            }
-          }
-          // compare scores
-          var playerScoreDiff = 0;
-          var dealerScoreDiff = 0;
-          myOutputValue =
-            "You have " + playerPoints + ". Dealer has" + dealerPoints;
-​
-          if (playerPoints != 21) {
-            playerScoreDiff = Math.abs(playerPoints - 21);
-          }
-          if (dealerPoints != 21) {
-            dealerScoreDiff = Math.abs(dealerPoints - 21);
-          }
-          // announce winner
-          if (playerPoints == 21 || playerScoreDiff < dealerScoreDiff) {
-            playerWins += 1;
-            myOutputValue +=
-              "<br><br>" +
-              'You win! Press "Submit" to play again. ' +
-              "<br><br>" +
-              "Player wins: " +
-              playerWins +
-              "Dealer wins: " +
-              dealerWins;
-          } else {
-            dealerWins += 1;
-            myOutputValue +=
-              "Dealer wins! Player wins: " +
-              playerWins +
-              "Dealer wins: " +
-              dealerWins +
-              "<br><br>" +
-              'Press "Submit" to play again.';
-          }
-          mode = "start";
-          return myOutputValue;
+      "Dealer points: " +
+      dealerPoints;
+  } else if (playerPoints > 21) {
+    returnStringFinal +=
+      "You bust." +
+      returnStringPlayer +
+      returnStringDealer +
+      "You lost!" +
+      "<br><br>" +
+      "Your points: " +
+      playerPoints +
+      "<br><br>" +
+      "Dealer points: " +
+      dealerPoints;
+  } else if (playerPoints < 21 && dealerPoints < 21) {
+    gameMode = actionHitStand;
+    return (
+      returnStringPlayer +
+      "Current points:" +
+      playerPoints +
+      "<br><br>Hit or Stand?"
+    );
+  }
+  gameMode = dealTwoCards;
+  trackBet = false;
+  return (
+    returnStringFinal +
+    "<br><br>You have " +
+    gamePoints +
+    " game points!<br><br>Press 'Submit' to play again!"
+  );
+};
+var shuffledDeck;
+var main = function (input) {
+  var returnString = "";
+  if (gameMode == dealTwoCards) {
+    if (input == "") {
+      console.log("Empty hands!");
+      playerHand = [];
+      dealerHand = [];
+      playerPoints = 0;
+      dealerPoints = 0;
+      if (trackBet) {
+        playerLastAction = "hit";
+        dealerLastAction = "hit";
+        shuffledDeck = shuffleCards(makeDeck());
+        console.log("Start new game, deal two cards!");
+        for (i = 0; i < 2; i++) {
+          playerHand.push(shuffledDeck.pop());
+          dealerHand.push(shuffledDeck.pop());
         }
       }
+      console.log("dealer:", dealerHand);
+      console.log("player:", playerHand);
     }
-​
+    if (!trackBet) {
+      if (gamePoints == 0) {
+        gameMode = dealTwoCards;
+        gamePoints += 100;
+        returnString +=
+          "You don't have any game points.<br><br>Press 'Submit' to earn 100 game points for FREEEE!";
+      } else if (input <= gamePoints && input > 0) {
+        gamePoints -= input;
+        playerBet = input;
+        returnString +=
+          "Your Bet: " +
+          playerBet +
+          "<br>Your Remaining Game Points: " +
+          gamePoints +
+          "<br><br>Press 'Submit' to start the game!";
+        trackBet = true;
+      } else if (input > gamePoints || input < 0) {
+        returnString +=
+          "Your Game Points: " +
+          gamePoints +
+          "<br>Bet is invalid! Please enter a valid bet amount to start the game!";
+      } else {
+        returnString +=
+          "Your Game Points: " +
+          gamePoints +
+          "<br>Please enter a bet to start the game!";
+      }
+    }
+  } else if (
+    (input.toLowerCase() == "hit" || input.toLowerCase() == "stand") &&
+    gameMode == actionHitStand
+  ) {
+    // player choose stand
+    if (input.toLowerCase() == "stand") {
+      playerLastAction = "stand";
+      returnString += "You stand!<br><br>";
+    }
     // player choose hit
     else if (input.toLowerCase() == "hit") {
-      gameMode = STAND
-      var playerCards = "You have drawn: ";
-​
+      playerLastAction = "hit";
       playerHand.push(shuffledDeck.pop());
-      // cannot draw more than 5 cards
-      if (playerHand.length != 5) {
-        playerHand.push(shuffledDeck.pop());
-      } else {
-        console.log("force stand");
-        stand = "forced";
-        myOutputValue =
-          "You cannot draw more than 5 cards." +
-          "<br><br>" +
-          "Please enter 'stand' to see if you've won.";
-        return myOutputValue;
-      }
-​
-      console.log("player hits:", playerHand);
-​
-      //player points
       playerPoints = handPoints(playerHand);
-      console.log("player points:", playerPoints);
-      // checking ace values either 1/11
-      for (const card of playerHand) {
-        if (card.name == "ace") {
-          console.log("ace check", card);
-          if (playerPoints < 21) {
-            card.value = 11;
-            console.log("ace value", card.value);
-          } else if (playerPoints > 21) {
-            card.value = 1;
-            console.log("ace value", card.value);
-          }
-          playerPoints = handPoints(playerHand);
-        }
-      }
-      console.log("final player points:", playerPoints);
-      for (k = 0; k < playerHand.length; k++) {
-        playerCards += `${playerHand[k].name} of ${playerHand[k].suit}<br>`;
-      }
-      myOutputValue =
-        playerCards +
-        "Your current points: " +
-        playerPoints +
-        "Would you like to hit or stand";
+      returnString += "You hit!<br><br>";
     }
-    return myOutputValue;
+    // dealer draws if points less than 17
+    if (dealerPoints < 17) {
+      dealerLastAction = "hit";
+      dealerHand.push(shuffledDeck.pop());
+      dealerPoints = handPoints(dealerHand);
+      returnString += "Dealer hits!<br><br>";
+    } else {
+      dealerLastAction = "stand";
+      returnString += "Dealer stands!<br><br>";
+    }
+  } else if (gameMode == actionHitStand) {
+    returnString += "Please decide to hit or stand!<br><br>";
   }
+  if (playerHand.length > 0 && dealerHand.length > 0 && trackBet) {
+    playerHand, (playerPoints = aceCards(playerHand));
+    dealerHand, (dealerPoints = aceCards(dealerHand));
+    returnString += compareScores(playerPoints, dealerPoints);
+  }
+  return returnString;
 };
