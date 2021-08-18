@@ -162,14 +162,6 @@ The rules of the game are as follows:<br>
 <br><br>
 Can we find out who we're playing with today? Type in your name and press submit!`;
 
-// //keeps track of player name
-// var userName = ``;
-// var createUserName = function (input) {
-//   userName = input;
-//   output = `Hello ${userName}! Let's start. Click submit to deal cards.`;
-//   return output;
-// };
-
 // dealing initial hand
 
 var dealInitialHand = function () {
@@ -203,16 +195,20 @@ var checkHitOrStand = function () {
   }
 };
 
-// function for player hitting or standing
+// function for pushing deck array
 
 var playerDeckArray = function () {
   deckIndex = 0;
+  var messageResult = "";
   while (deckIndex < playerDeck.length) {
-    output = playerDeck[deckIndex].name;
+    messageResult += playerDeck[deckIndex].name;
+    console.log(`player deck array ${playerDeck[deckIndex].name}`);
     deckIndex += 1;
-    return output;
   }
+  return messageResult;
 };
+
+// function for player hitting or standing
 
 var playerHitOrStand = function (input, output) {
   var playerChoice = input;
@@ -220,8 +216,14 @@ var playerHitOrStand = function (input, output) {
   if (input == `hit`) {
     var playerHitCard = shuffledDeck.pop();
     playerDeck.push(playerHitCard);
+    var playerDeckNames = playerDeckArray();
+    calculatePlayerScore = playerScore(playerDeck);
+    console.log(`player deck names ${playerDeckNames}`);
     output = `You chose to ${playerChoice}. You drew ${playerHitCard.name}
-  <br><br>Would you like to hit again or stand?`;
+  <br>
+  Your current hand is:
+  <br>${playerDeckNames}
+  <br>Your score is ${calculatePlayerScore}. Would you like to hit again or stand?`;
     return output;
   }
 
@@ -238,15 +240,16 @@ var playerHitOrStand = function (input, output) {
 
 var dealerHitOrStand = function () {
   if (computerScore() >= 17) {
-    output = `The dealer will not be drawing any additional cards.`;
+    output = `the dealer will not be drawing any additional cards.`;
+    return output;
   }
 
   while (computerScore() < 17) {
-    var dealerHitHand = shuffledDeck.pop();
+    dealerHitHand = shuffledDeck.pop();
     computerDeck.push(dealerHitHand);
     dealerScore = computerScore(computerDeck);
-    output = `The dealer drew ${dealerHitCard.name}.`;
-    return dealerScore;
+    output = `the dealer drew another card: ${dealerHitHand.name}`;
+    return output;
   }
 
   gameMode = "compare results";
@@ -260,7 +263,7 @@ var main = function (input) {
 
   var output = "";
 
-  // DEALING CARDS
+  // linear flow of game modes - mostly self-explanatory
 
   if (gameMode == "pre-game") {
     if (input == ``) {
@@ -289,9 +292,8 @@ var main = function (input) {
     console.log(`inside game mode hit or stand`);
     console.log(input);
     var hitOrStand = playerHitOrStand(input, output);
-
-    output = hitOrStand;
-    gameMode = "compare results";
+    var computerHitOrStand = dealerHitOrStand();
+    output = hitOrStand + "<br><br>Meanwhile, " + computerHitOrStand;
     return output;
   }
 
@@ -312,7 +314,7 @@ var main = function (input) {
     } else if (calculatePlayerScore == calculateComputerScore) {
       output = `It's a tie! Both of you scored ${calculatePlayerScore}.<br><br>Want to play again? Hit submit or refresh the page!`;
     } else if (calculatePlayerScore > 21) {
-      output = `Dang, sorry ${userName}, you busted.<br><br>Your score is ${playerScore()}. Want to play again? Hit submit or refresh the page!`;
+      output = `Dang, sorry ${userName}, you busted.<br><br>Your score is ${calculatePlayerScore}, while the dealer scored ${calculateComputerScore}.<br><br>Want to play again? Hit submit or refresh the page!`;
     }
     gameMode = "dealing cards";
     shuffledDeck = playerDeck.concat(computerDeck, shuffledDeck);
@@ -322,179 +324,3 @@ var main = function (input) {
     return output;
   }
 };
-
-//     output = messageShuffledDeck + messageHitStand;
-//     gameMode = "hit or stand";
-
-//     if (playerScore() < 17) {
-//       output = messageShuffledDeck + messageLess17;
-//       gameMode = "hit or stand";
-//       return output;
-//     }
-
-//     if (computerScore() < 17) {
-//       output =
-//         messageShuffledDeck +
-//         `The computer needs to hit as it has less than 17. Click to see what the computer got!`;
-//       gameMode = "computer hits";
-//     }
-
-//     if (computerScore() < 17 && playerScore() < 17) {
-//       output =
-//         messageShuffledDeck +
-//         `Both the computer and you need to hit as you have less than 17. Type hit to see what each of you got!`;
-//       gameMode = "computer and player hits";
-//     }
-
-//     return output;
-//   }
-
-//   if (gameMode == "computer and player hits" && input == "hit") {
-//     var computerHitIndex = 0;
-//     while (computerHitIndex < computerDeck.length) {
-//       computerDeck.push(shuffledDeck.pop());
-//       computerHitIndex += 1;
-//     }
-
-//     var playerHitIndex = 0;
-//     while (playerHitIndex < playerDeck.length) {
-//       playerDeck.push(shuffledDeck.pop());
-//       playerHitIndex += 1;
-//     }
-
-//     output = `${messageComputerHits}.<br><br>This brings its score to ${computerScore2()}, while you scored ${playerScore()}. Would you like to hit or stand?`;
-//     gameMode == "hit or stand";
-//   }
-
-//   if (gameMode == "computer and player hits") {
-//     output = `${messageComputerHits}.<br><br>This brings its score to ${computerScore2()}, while you scored ${playerScore()}. Would you like to hit or stand?`;
-//     gameMode == "hit or stand";
-//   }
-
-//   ///// ASK MICHELLE : how can i prevent the system from drawing cards again? i want there to only be ONE score. but everytime i hit, it draws a new card.
-
-//   if (gameMode == "hit or stand") {
-//     if (input == "hit" || input == "Hit") {
-//       playerDeck.push(shuffledDeck.pop());
-//       console.log(playerDeck, "playerDeck");
-
-//       var playerScore2 = function () {
-//         totalPlayerCardsScore = playerScore() + playerCard3.value;
-//         return totalPlayerCardsScore;
-//       };
-
-//       messageHitScore = `You drew ${playerCard3.name} of ${
-//         playerCard3.suit
-//       }.<br><br>This brings your score to ${playerScore2()}, while the computer scored ${computerScore()}. `;
-//       messageComputerHits = `The computer drew ${computerCard3.name} of ${computerCard3.suit}. `;
-
-//       //// ASK MICHELLE: i'm not sure how i can repeat the hit multiple times, is it through using a loop? but how do i edit my score because it keeps adding on, then the code becomes too long. same for the computer's hit.
-
-//       if (playerScore2() < 17) {
-//         output = messageHitScore + messageLess17;
-//         gameMode == "hit or stand";
-//         return output;
-//       } else if (playerScore2() >= 17 && playerScore2() <= 21) {
-//         output = `${messageHitScore} ${messageCompareResults}`;
-//         gameMode = "compare results";
-//         return output;
-//       } else if (playerScore2() > 21) {
-//         output = `Bummer, you busted! You drew ${playerCard3.name} of ${
-//           playerCard3.suit
-//         }.<br><br>Your final score is ${playerScore2()} while the computer scored ${computerScore()}. Press submit or refresh the page to play again!`;
-//         gameMode = "dealing cards";
-//         return output;
-//       } ///// ASK MICHELLE: i can't get the computer hit to work
-//       else if (playerScore2() < 17 && computerScore() < 17) {
-//         output = `You drew ${playerCard3.name} of ${
-//           playerCard3.suit
-//         }, while the computer drew ${computerCard3.name} of ${
-//           computerCard3.suit
-//         }. <br><br>Your final score is ${playerScore2()} while the computer scored ${computerScore2()}. Press submit to see the results!`;
-//         gameMode = "compare results";
-//       }
-//     } else if (input == "stand" || input == "Stand") {
-//       output = messageCompareResults;
-//       gameMode = "compare results";
-//       return output;
-//     }
-//   }
-
-//   // compare results - highest card wins
-//   if (gameMode == "compare results") {
-//     console.log(`your compare results is working`);
-//     if (computerScore() > playerScore() || computerScore() > playerScore2()) {
-//       output = `The computer won! Press submit or refresh the page to play again!`;
-//       gameMode = "dealing cards";
-
-//       return output;
-//     } else if (
-//       playerScore() > computerScore() ||
-//       playerScore2() > computerScore()
-//     ) {
-//       output = `You win! Press submit or refresh the page to play again!`;
-//       gameMode = "dealing cards";
-//       return output;
-//     } else if (
-//       playerScore() == computerScore() ||
-//       playerScore2() == computerScore()
-//     ) {
-//       output = `It's a tie! Press submit or refresh the page to play again!`;
-//       gameMode = "dealing cards";
-//       return output;
-//     }
-//   }
-
-//   //////// ASK MICHELLE -- error validation. not sure how to do.
-//   // if all the cards are gone
-//   // if the players hands are empty
-
-//   if (shuffledDeck.length == 0 || shuffledDeck.length == 1) {
-//     cardsFinished = true;
-//     console.log("cards are finished");
-//     output = "The deck is finished, refresh to start again";
-//   }
-
-//   if (cardsFinished == true) {
-//     output = "The deck is finished, refresh to start again";
-//   }
-// };
-
-// // compare results - highest card wins
-// else if (gameMode == "compare results") {
-//   console.log(`your compare results is working`);
-//   if (computerScore() > playerScore() || computerScore() > playerScore2()) {
-//     output = `The computer won! The computer scored ${computerScore()}, while you scored ${playerScore2()}. Press submit or refresh the page to play again!`;
-//     gameMode = "dealing cards";
-
-//     return output;
-//   } else if (
-//     playerScore() > computerScore() ||
-//     playerScore2() > computerScore()
-//   ) {
-//     output = `You win! The computer scored ${computerScore()}, while you scored ${playerScore2()}. Press submit or refresh the page to play again!`;
-//     gameMode = "dealing cards";
-//     return output;
-//   } else if (
-//     playerScore() == computerScore() ||
-//     playerScore2() == computerScore()
-//   ) {
-//     output = `It's a tie! The computer scored ${computerScore()}, while you scored ${playerScore2()}. Press submit or refresh the page to play again!`;
-//     gameMode = "dealing cards";
-//     return output;
-//   }
-// }
-
-// ////// automatically draw two cards via pop
-
-// var cardIndex = 0;
-// while (cardIndex < 2) {
-//   playerDeck.push(shuffledDeck.pop());
-//   cardIndex += 1;
-// }
-
-// var cardIndex2 = 0;
-// while (cardIndex2 < 2) {
-//   computerDeck.push(shuffledDeck.pop());
-//   cardIndex2 += 1;
-// }
