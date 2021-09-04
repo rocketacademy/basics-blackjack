@@ -7,62 +7,133 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <!-- Favicon configuration -->
-    <link rel="apple-touch-icon" sizes="180x180" href="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/favicons/apple-touch-icon.png?v=2">
-    <link rel="icon" type="image/png" sizes="32x32" href="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/favicons/favicon-32x32.png?v=2">
-    <link rel="icon" type="image/png" sizes="16x16" href="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/favicons/favicon-16x16.png?v=2">
-    <link rel="manifest" href="/site.webmanifest?v=2">
-    <link rel="mask-icon" href="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/favicons/safari-pinned-tab.svg?v=2" color="#e73c3e">
-    <link rel="shortcut icon" href="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/favicons/favicon.ico?v=2">
-    <meta name="apple-mobile-web-app-title" content="Rocket Academy">
-    <meta name="application-name" content="Rocket Academy">
-    <meta name="msapplication-TileColor" content="#2b5797">
-    <meta name="theme-color" content="#ffffff">
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/favicons/apple-touch-icon.png?v=2"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/favicons/favicon-32x32.png?v=2"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/favicons/favicon-16x16.png?v=2"
+    />
+    <link rel="manifest" href="/site.webmanifest?v=2" />
+    <link
+      rel="mask-icon"
+      href="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/favicons/safari-pinned-tab.svg?v=2"
+      color="#e73c3e"
+    />
+    <link
+      rel="shortcut icon"
+      href="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/favicons/favicon.ico?v=2"
+    />
+    <meta name="apple-mobile-web-app-title" content="Rocket Academy" />
+    <meta name="application-name" content="Rocket Academy" />
+    <meta name="msapplication-TileColor" content="#2b5797" />
+    <meta name="theme-color" content="#ffffff" />
 
     <!-- Inline CSS -->
     <style>
+      /*|| General Styles*/
       * {
         box-sizing: border-box;
       }
 
       body {
         font-family: sans-serif;
+        font-size: 1 rem;
         margin-left: 30px;
         margin-right: 30px;
       }
 
+      button {
+        display: inline-block;
+        font-weight: 400;
+        line-height: 1.5;
+        color: #212529;
+        text-align: center;
+        vertical-align: middle;
+        background-color: transparent;
+        border: 1px solid transparent;
+        margin: auto 8px;
+        padding: 0.375rem 0.75rem;
+        font-size: 0.9rem;
+        border-radius: 0.25rem;
+      }
+
+      table {
+        table-layout: fixed;
+        width: 380px;
+      }
+
+      th,
+      td,
+      tr {
+        border: 1px solid black;
+        width: 70px;
+        overflow: hidden;
+        font-size: 0.9rem;
+      }
+
+      /*|| Specific Styles*/
       .header {
         text-align: center;
-        font-size: 1.1rem;
-        margin-bottom: 3rem;
+        font-size: 1rem;
+        margin-bottom: 1rem;
       }
 
-      #container {
-        background-color: pink;
-        margin: 40px auto;
-        max-width: 800px;
-        padding: 38px 31px;
+      #TextUpdates {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        width: 600px;
+        min-height: 60px;
+        background-color: #75b3625e;
+        margin: 10px auto;
+        border-radius: 10px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
       }
 
-      input {
-        font-size: 21px;
-        line-height: 33px;
-        margin: 0 0 23px 0;
-        padding: 0 9px;
-        width: 100%;
+      #ButtonBox,
+      #DisplayArea {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
       }
 
-      button {
-        font-size: 21px;
-        line-height: 33px;
-        margin: 0 0 23px 0;
-        padding: 0 6px;
+      #NewGame,
+      #DealAgain,
+      #Restart {
+        color: #fff;
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+      }
+      #Hit {
+        color: #fff;
+        background-color: #198754;
+        border-color: #198754;
+      }
+      #Stay {
+        color: #fff;
+        background-color: #dc3545;
+        border-color: #dc3545;
       }
 
-      #output-div {
-        background-color: lightgrey;
-        margin: 20px auto;
-        padding: 20px;
-        width: 100%;
+      .hidden {
+        display: none;
+      }
+
+      #ScoreBox {
+        margin: 10px auto;
+        text-align: center;
       }
 
       .logo-img {
@@ -71,6 +142,71 @@
         top: 22px;
       }
 
+      #BckgrdLogo{
+        position: absolute;
+        width: 90%;
+        height: 50%;
+        z-index: -1;
+        opacity: 0.3;
+      }
+
+      .cards-display {
+        text-align: center;
+        justify-content: center;
+        border: 1px solid black;
+        padding: 3px;
+        margin: 5px;
+        height: 18rem;
+        width: 15.5rem;
+        border-radius: 8%;
+      }
+
+      .display-table {
+        table-layout: fixed;
+        width: 240px;
+      }
+
+      .display-table-cards {
+        height: 9rem;
+      }
+
+      .display-table-text {
+        height: 1.8rem;
+      }
+
+      td.display-table-cards, td.display-table-text{
+        border: none;
+        font-size: 1rem;
+      }
+      
+
+      i.club,
+      i.diamond,
+      i.heart,
+      i.spade {
+        font-size: 2rem;
+      }
+
+      i.club::after {
+        content: "♣";
+      }
+
+      i.diamond::after {
+        content: "♦";
+      }
+
+      i.heart::after {
+        content: "♥";
+      }
+
+      i.spade::after {
+        content: "♠";
+      }
+
+      i.diamond::after,
+      i.heart::after {
+        color: #ff0000;
+      }
       /* increase header font size on wider screens */
       @media screen and (min-width: 600px) {
         .header {
@@ -84,36 +220,122 @@
 
   <body>
     <h1 class="header">
-      <img class="logo-img" src="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/brand/logo.png" />
+      <img
+        class="logo-img"
+        src="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/brand/logo.png"
+      />
       Rocket Academy
-      <img class="logo-img" src="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/brand/logo.png" />
+      <img
+        class="logo-img"
+        src="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/brand/logo.png"
+      />
     </h1>
     <h1 class="header">♣️ Basics - Blackjack ♠️</h1>
-    <div id="container">
-      <p>Input:</p>
-      <input id="input-field" />
-      <br />
-      <button id="submit-button">Submit</button>
-      <p>Output:</p>
-      <div id="output-div"></div>
+    <div id="TextUpdates">
+      <h3>Select number of players and click 'New Game' below to begin!</h3>
+    </div>
+    <div id="ButtonBox">
+      <div id="NewGameBox">
+        <label for="playersSelected">Select number of players:</label>
+        <select name="playersSelected" id="PlayersSelected">
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+        </select>
+        <button id="NewGame">New Game</button>
+      </div>
+      <div class="hidden" id="OthBtnsBox">
+        <button id="Hit">Hit</button>
+        <button id="Stay">Stay</button>
+        <button id="DealAgain">Deal Again</button>
+        <button id="Restart">Restart</button>
+      </div>
+    </div>
+    <table class="hidden" id="ScoreBox">
+      <tr>
+        <th colspan="5">Score Table</th>
+      </tr>
+      <tr>
+        <th>Score:</th>
+        <th id="DlrHead">Dealer</th>
+        <th id="P1Head">Player 1</th>
+        <th id="P2Head"></th>
+        <th id="P3Head"></th>
+      </tr>
+      <tr>
+        <td id="RdScore">This round</td>
+        <td id="RdDlrScore"></td>
+        <td id="RdP1Score"></td>
+        <td id="RdP2Score"></td>
+        <td id="RdP3Score"></td>
+      </tr>
+      <tr>
+        <td id="TtScore">All rounds</td>
+        <td id="DlrScore"></td>
+        <td id="P1Score"></td>
+        <td id="P2Score"></td>
+        <td id="P3Score"></td>
+      </tr>
+    </table>
+    <div id="DisplayArea">
+      <img id="BckgrdLogo" src="king-cards-casino-preview.jpg">
+      <div class="cards-display hidden" id="DlrDisplay">
+        <strong>Dealer</strong>
+        <br /><br /><br />
+        <table class="display-table">
+          <tr>
+            <td class="display-table-cards" id="DlrDisplayCards"></td>
+          </tr>
+          <tr>
+            <td class="display-table-text"><strong><span id="DlrDisplayPoints"></strong></span></td>
+          </tr>
+        </table>
+      </div>
+      <div class="cards-display hidden" id="NowPlayerDisplay">
+        <strong><span id="NowPlayer">Player 1</span></strong
+        ><br /><br /><br />
+        <table class="display-table">
+          <tr>
+            <td class="display-table-cards" id="NowPlayerDisplayCards"></td>
+          </tr>
+          <tr>
+          <td class="display-table-text"><strong><span id="NowPlayerDisplayPoints"></strong></span></td>
+          </tr>
+        </table>
+      </div>
+      <div class="cards-display hidden" id="P2Display">
+        <strong>Player 2</strong><br /><br /><br />
+        <table class="display-table">
+          <tr>
+            <td class="display-table-cards" id="P2DisplayCards"></td>
+          </tr>
+          <tr>
+            <td class="display-table-text"><strong><span id="P2DisplayPoints"></strong></span></td>
+          </tr>
+        </table>
+      </div>
+      <div class="cards-display hidden" id="P3Display">
+        <strong>Player 3</strong><br /><br /><br />
+        <table class="display-table">
+          <tr>
+            <td class="display-table-cards" id="P3DisplayCards"></td>
+          </tr>
+          <tr>
+            <td class="display-table-text"><strong><span id="P3DisplayPoints"></strong></span></td>
+          </tr>
+        </table>
+      </div>
     </div>
     <!-- Import program logic -->
     <script src="script.js"></script>
     <!-- Define button click functionality -->
     <script>
-      var button = document.querySelector("#submit-button");
-      button.addEventListener("click", function () {
-        // Set result to input value
-        var input = document.querySelector("#input-field");
-        var result = main(input.value);
-
-        // Display result in output element
-        var output = document.querySelector("#output-div");
-        output.innerHTML = result;
-
-        // Reset input value
-        input.value = "";
-      });
+      playersSelected.addEventListener("change", getPlayersSelected);
+      newGameBtn.addEventListener("click", startGame);
+      hitBtn.addEventListener("click", hit);
+      stayBtn.addEventListener("click", stay);
+      dealAgainBtn.addEventListener("click", dealAgain);
+      restartBtn.addEventListener("click", restartGame);
     </script>
   </body>
 </html>
