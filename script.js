@@ -66,45 +66,46 @@ let round = 0;
 let numPlayers = 1;
 let remainingPlayers = [];
 //DOM variables
-let header = document.querySelectorAll(".header");
-let textUpdates = document.getElementById("TextUpdates");
-let playersSelected = document.getElementById("PlayersSelected");
+const header = document.querySelectorAll(".header");
+const textUpdates = document.getElementById("TextUpdates");
+const playersSelected = document.getElementById("PlayersSelected");
 //DOM variables - Buttons
-let newGameBox = document.getElementById("NewGameBox");
-let othBtnsBox = document.getElementById("OthBtnsBox");
-let newGameBtn = document.getElementById("NewGame");
-let hitBtn = document.getElementById("Hit");
-let stayBtn = document.getElementById("Stay");
-let dealAgainBtn = document.getElementById("DealAgain");
-let restartBtn = document.getElementById("Restart");
+const newGameBox = document.getElementById("NewGameBox");
+const othBtnsBox = document.getElementById("OthBtnsBox");
+const newGameBtn = document.getElementById("NewGame");
+const hitBtn = document.getElementById("Hit");
+const stayBtn = document.getElementById("Stay");
+const dealAgainBtn = document.getElementById("DealAgain");
+const restartBtn = document.getElementById("Restart");
 //DOM variables - Score box
-let scoreBox = document.getElementById("ScoreBox");
-let p2Head = document.getElementById("P2Head");
-let p3Head = document.getElementById("P3Head");
-let dlrScore = document.getElementById("DlrScore");
-let p1Score = document.getElementById("P1Score");
-let p2Score = document.getElementById("P2Score");
-let p3Score = document.getElementById("P3Score");
-let rdDlrScore = document.getElementById("RdDlrScore");
-let rdP1Score = document.getElementById("RdP1Score");
-let rdP2Score = document.getElementById("RdP2Score");
-let rdP3Score = document.getElementById("RdP3Score");
+const scoreBox = document.getElementById("ScoreBox");
+const p2Head = document.getElementById("P2Head");
+const p3Head = document.getElementById("P3Head");
+const dlrScore = document.getElementById("DlrScore");
+const p1Score = document.getElementById("P1Score");
+const p2Score = document.getElementById("P2Score");
+const p3Score = document.getElementById("P3Score");
+const rdDlrScore = document.getElementById("RdDlrScore");
+const rdP1Score = document.getElementById("RdP1Score");
+const rdP2Score = document.getElementById("RdP2Score");
+const rdP3Score = document.getElementById("RdP3Score");
 //DOM variables - Display area
-let bckgrdLogo = document.getElementById("BckgrdLogo");
-let displayArea = document.getElementById("DisplayArea");
-let dlrDisplay = document.getElementById("DlrDisplay");
-let dlrDisplayCards = document.getElementById("DlrDisplayCards");
-let dlrDisplayPoints = document.getElementById("DlrDisplayPoints");
-let nowPlayer = document.getElementById("NowPlayer");
-let nowPlayerDisplay = document.getElementById("NowPlayerDisplay");
-let nowPlayerDisplayCards = document.getElementById("NowPlayerDisplayCards");
-let nowPlayerDisplayPoints = document.getElementById("NowPlayerDisplayPoints");
-let p2Display = document.getElementById("P2Display");
-let p2DisplayCards = document.getElementById("P2DisplayCards");
-let p2DisplayPoints = document.getElementById("P2DisplayPoints");
-let p3Display = document.getElementById("P3Display");
-let p3DisplayCards = document.getElementById("P3DisplayCards");
-let p3DisplayPoints = document.getElementById("P3DisplayPoints");
+const bckgrdLogo = document.getElementById("BckgrdLogo");
+const dlrDisplay = document.getElementById("DlrDisplay");
+const dlrDisplayCards = document.getElementById("DlrDisplayCards");
+const dlrDisplayPoints = document.getElementById("DlrDisplayPoints");
+const nowPlayer = document.getElementById("NowPlayer");
+const nowPlayerDisplay = document.getElementById("NowPlayerDisplay");
+const nowPlayerDisplayCards = document.getElementById("NowPlayerDisplayCards");
+const nowPlayerDisplayPoints = document.getElementById(
+  "NowPlayerDisplayPoints"
+);
+const p2Display = document.getElementById("P2Display");
+const p2DisplayCards = document.getElementById("P2DisplayCards");
+const p2DisplayPoints = document.getElementById("P2DisplayPoints");
+const p3Display = document.getElementById("P3Display");
+const p3DisplayCards = document.getElementById("P3DisplayCards");
+const p3DisplayPoints = document.getElementById("P3DisplayPoints");
 //*****************************************************************
 //Game Play Codes
 //*****************************************************************
