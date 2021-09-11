@@ -1,3 +1,6 @@
+// this helper function has been altered from the original
+// version so that the deck is made for BlackJack.
+// All the face cards have a rank of 10.
 var makeDeck = function () {
   // create the empty deck at the beginning
   var deck = [];
@@ -17,6 +20,7 @@ var makeDeck = function () {
       var cardName = rankCounter;
 
       // 1, 11, 12 ,13
+      // for BlackJack only, change the card rank for the face cards to 10.
       if (cardName == 1) {
         cardName = 'ace';
       } else if (cardName == 11) {
@@ -74,6 +78,7 @@ var shuffleCards = function (cards) {
 var deck = shuffleCards(makeDeck());
 
 /* ========== Everything above this line is helper methods taken from Module 10.3 ========== */
+/* EXCEPT the makeDeck function - see notes above.
 // I have removed console.logs in the starter code to remove noise in console
 
 // The maximum valid sum in Blackjack is 21.
