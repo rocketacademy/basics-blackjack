@@ -5,7 +5,23 @@ var makeDeck = function () {
   // create the empty deck at the beginning
   var deck = [];
 
-  var suits = ['hearts', 'diamonds', 'clubs', 'spades'];
+  var suits = ['♥️', '♦️', '♣️', '♣️'];
+
+  var emojiNames = {
+    1:'A',
+    2:'2️⃣',
+    3:'3️⃣',
+    4:'4️⃣',
+    5:'5️⃣',
+    6:'6️⃣',
+    7:'7️⃣',
+    8:'8️⃣',
+    9:'9️⃣',
+    10:'🔟',
+    11:'🕺🏽',
+    12:'👸🏽',
+    13:'🤴🏽',
+  };
 
   var suitIndex = 0;
   while (suitIndex < suits.length) {
@@ -26,6 +42,7 @@ var makeDeck = function () {
       } else if (cardName == 11) {
         rankCounter = 10;
         cardName = 'jack';
+
       } else if (cardName == 12) {
         rankCounter = 10;
         cardName = 'queen';
@@ -34,11 +51,13 @@ var makeDeck = function () {
         cardName = 'king';
       }
 
+      var emojiName = emojiNames[counter];
       // make a single card object variable
       var card = {
         name: cardName,
         suit: currentSuit,
         rank: rankCounter,
+        emojiName: emojiName,
       };
 
       // add the card to the deck
@@ -145,7 +164,8 @@ var convertHandToString = function (hand) {
   var handIndex = 0;
 
   while (handIndex < hand.length) {
-    cards = cards + ',' + hand[handIndex].name;
+    var card = hand[handIndex];
+    cards = cards + '👉' + card.emojiName + ' of ' + card.suit;
     handIndex = handIndex + 1;
   }
 
@@ -153,8 +173,26 @@ var convertHandToString = function (hand) {
 };
 
 var getDefaultOutput = function () {
-  return `Player has hand ${convertHandToString(playerHand)} with sum ${getHandSum(playerHand)}. <br>
-    Computer has hand ${convertHandToString(computerHand)} with sum ${getHandSum(computerHand)}.`;
+  return `<br><br>Player has hand: 👉 ${convertHandToString(playerHand)} with sum ${getHandSum(playerHand)}. <br><br><br>
+    Computer has hand: 👉 ${convertHandToString(computerHand)} with sum ${getHandSum(computerHand)}.<br><br>`;
+};
+
+var playerCardScoreMessage = function(score){
+  if(score < 14){
+    return '<br>Hint: Pssst, you need to hit....<br>';
+  }else if(score > 18){
+    return "<br>Hint: Pretty good! Hope you're not thinking of hitting ;)<br>";
+  }else{
+    return "<br>Hint: Could go either way! Hit if you're feeling lucky...<br>";
+  }
+};
+
+var playerLoseMessage = function () {
+  return `Sorry, you lose.<br/><img src="https://c.tenor.com/hVYBGNEbu-8AAAAj/oh-no-oh-my-gosh.gif"/><br/>`;
+};
+
+var playerWinMessage = function () {
+  return `Congrats! You win!<br/><img src="https://c.tenor.com/oPxqSNibk-sAAAAj/busythings-pink-man.gif"/><br/>`;
 };
 
 var main = function (input) {
@@ -178,7 +216,7 @@ var main = function (input) {
     if (isBlackjack(computerHand)) {
       gameOver = true;
       // Computer wins, return
-      return `${getDefaultOutput()} <br>
+      return `${playerLoseMessage()}${getDefaultOutput()} <br>
         Computer has Blackjack and wins. Please refresh to play again.`;
     }
 
@@ -186,12 +224,15 @@ var main = function (input) {
     if (isBlackjack(playerHand)) {
       gameOver = true;
       // Player wins, return
-      return `${getDefaultOutput()} <br>
+      return `${playerWinMessage()}${getDefaultOutput()} <br>
         Player has Blackjack and wins. Please refresh to play again.`;
     }
 
+    var playerHandScore = getHandSum(playerHand);
+
     // The cards are displayed to the user.
     return `${getDefaultOutput()} <br>
+      ${playerCardScoreMessage(playerHandScore)} <br><br>
       Please enter "hit" or "stand", then press Submit`;
   }
 
@@ -207,8 +248,8 @@ var main = function (input) {
       // If bust, show player that she busts
       if (getHandSum(playerHand) > TWENTY_ONE) {
         gameOver = true;
-        return `${getDefaultOutput()} <br>
-          Player has busted and loses. Please refresh to play again.`;
+        return `${playerLoseMessage()}${getDefaultOutput()} <br>
+          Player has busted.<br/> Please refresh to play again.`;
       }
     }
 
@@ -228,8 +269,8 @@ var main = function (input) {
     // If bust, show computer that she busts
     if (computerHandSum > TWENTY_ONE) {
       gameOver = true;
-      return `${getDefaultOutput()} <br>
-      Computer has busted and loses. Please refresh to play again.`;
+      return `${playerWinMessage()}${getDefaultOutput()} <br>
+      Computer has busted.<br/> Please refresh to play again.`;
     }
   }
 
@@ -239,17 +280,20 @@ var main = function (input) {
     gameOver = true;
     // If player hand sum is greater than computer hand sum, player wins!
     if (getHandSum(playerHand) > computerHandSum) {
-      return `${getDefaultOutput()} <br>
-        Player wins! Please refresh to play again.`;
+      return `${playerWinMessage()}${getDefaultOutput()} <br>
+        Please refresh to play again.`;
     }
     // Else, computer wins
-    return `${getDefaultOutput()} <br>
+    return `${playerLoseMessage()}${getDefaultOutput()} <br>
       Computer wins! Please refresh to play again.`;
   }
 
+  var playerHandScore = getHandSum(playerHand);
+
   // If game is not yet over, show current game status
-  return `${getDefaultOutput()} <br>
-    playerHasChosenToStand is ${playerHasChosenToStand} <br>
+  return `${getDefaultOutput()} <br><br>
+    playerHasChosenToStand is ${playerHasChosenToStand} <br><br>
+    ${playerCardScoreMessage(playerHandScore)} <br><br>
     If player has not yet chosen to stand, please enter "hit" or "stand". <br>
     Else, press Submit to see Computer's next move.`;
 };
