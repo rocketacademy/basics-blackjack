@@ -77,8 +77,7 @@ var shuffleCards = function (cards) {
 
 var deck = shuffleCards(makeDeck());
 
-/* ========== Everything above this line is helper methods taken from Module 10.3 ========== */
-/* EXCEPT the makeDeck function - see notes above.
+/* ========== Everything above this line is helper methods taken from Module 10.3, EXCEPT the makeDeck function - see notes above.  ===== */
 // I have removed console.logs in the starter code to remove noise in console
 
 // The maximum valid sum in Blackjack is 21.
