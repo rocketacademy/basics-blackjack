@@ -10,6 +10,12 @@ var mustStand = false;
 var playerTotalRank = 0;
 var numberOfWins = 0;
 var numberOfLose = 0;
+var winImage =
+  '<img src="https://c.tenor.com/kEOz87vlud0AAAAC/minions-yahoo.gif"/>';
+var loseImage =
+  '<img src="https://c.tenor.com/XDeOwV3fT5IAAAAC/puppy-eyes-agnes.gif"/>';
+var drawImage =
+  '<img src="https://c.tenor.com/2w0ss8jJzXwAAAAC/lol-friends.gif"/>';
 
 var makeDeck = function () {
   var newDeck = [
@@ -331,7 +337,7 @@ var main = function (input) {
     computerCard.push(shuffledDeck.pop());
     playerCard.push(shuffledDeck.pop());
     computerCard.push(shuffledDeck.pop());
-    myOutputValue = `You have drawn ${playerCard[0].suit} ${playerCard[0].name} and ${playerCard[1].suit} ${playerCard[1].name}. Type "Hit" if you wish to draw another card. If not, type "Stand" to reveal computer's hand.`;
+    myOutputValue = `You have drawn ${playerCard[0].suit} ${playerCard[0].name} and ${playerCard[1].suit} ${playerCard[1].name}. <br><br> Type "Hit" if you wish to draw another card. If not, type "Stand" to reveal computer's hand.`;
     currentGameMode = "Play Cards";
   } else if (currentGameMode == "Play Cards") {
     if (input == "Hit" && mustStand == false) {
@@ -363,23 +369,28 @@ var main = function (input) {
       }
       console.log(computerTotalRank);
 
+      // print out player cards
+      playerCurrentHand = printCards(playerCard);
       //print out computer cards
       computerCurrentHand = printCards(computerCard);
 
       // compare player and computer cards and print results
-      if (playerTotalRank > computerTotalRank && playerTotalRank < 21) {
-        myOutputValue = `You won!`;
+      if (
+        playerTotalRank <= 21 &&
+        (playerTotalRank > computerTotalRank || computerTotalRank > 21)
+      ) {
+        myOutputValue = `<b>You won!</b><br><br>${winImage}`;
         numberOfWins += 1;
       } else if (
-        computerTotalRank > playerTotalRank &&
-        computerTotalRank < 21
+        computerTotalRank <= 21 &&
+        (computerTotalRank > playerTotalRank || playerTotalRank > 21)
       ) {
-        myOutputValue = `You lost!`;
+        myOutputValue = `<b>You lost!</b><br><br>${loseImage}`;
         numberOfLose += 1;
       } else {
-        myOutputValue = `It's a draw!`;
+        myOutputValue = `<b>It's a draw!</b><br><br>${drawImage}`;
       }
-      myOutputValue += `<br><br>Your cards are:<br> ${playerCurrentHand}<br>Computer cards are:<br> ${computerCurrentHand} <br><br>Total number of rounds you won: ${numberOfWins}<br>Total number of rounds computer won: ${numberOfLose}<br><br>Click submit to start a new round!`;
+      myOutputValue += `<br><u>Your cards are:</u><br> ${playerCurrentHand}<br><u>Computer cards are:</u><br> ${computerCurrentHand}<br>Total number of rounds you won: ${numberOfWins}<br>Total number of rounds computer won: ${numberOfLose}<br><br>Click submit to start a new round!`;
 
       // reinitialise game
       currentGameMode = "Draw Cards";
