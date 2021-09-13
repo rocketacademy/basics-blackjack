@@ -1,4 +1,12 @@
-gameStage = 0;
+var gameStageOne = "Draw 1st 2 cards for Player";
+var gameStageTwo = "Player choose to press 'hit' or 'stand'";
+var gameMode = gameStageOne;
+var userDraw = [];
+var dealerDraw = [];
+var userTotalValue = 0;
+var dealerTotalValue = 0;
+var userCurrentDrawCard = 0;
+
 var deck = function () {
   var cardDeck = [];
   var suit = ["hearts", "diamonds", "clubs", "spade"];
@@ -9,6 +17,7 @@ var deck = function () {
 
     while (numberCounter <= 13) {
       var cardName = numberCounter;
+      var actualvalue = numberCounter;
       if (cardName == 1) {
         cardName = "Ace";
       } else {
@@ -24,12 +33,14 @@ var deck = function () {
           }
         }
       }
+      if (numberCounter > 10) {
+        actualvalue = 10;
+      }
       var card = {
         name: cardName,
         suit: suitDeck,
-        rank: numberCounter,
+        rank: actualvalue,
       };
-
       cardDeck.push(card);
       numberCounter = numberCounter + 1;
     }
@@ -48,47 +59,144 @@ var cardShuffle = function () {
   var deckCard = deck();
   while (currentIndex < deckCard.length) {
     var randomIndex = cardRandom(deckCard);
-    console.log(randomIndex, "randomIndex");
+
     var randomCard = deckCard[randomIndex];
-    console.log(randomCard, "randomCard");
+
     var currentCard = deckCard[currentIndex];
-    console.log(currentCard, "CurrentCard");
+
     deckCard[currentIndex] = randomCard;
     deckCard[randomIndex] = currentCard;
     currentIndex = currentIndex + 1;
   }
   return deckCard;
 };
+var card1st2Draw = function () {
+  var draw2Card = 0;
+  while (draw2Card < 2) {
+    var userCard = shuffleCard.pop();
+    var dealerCard = shuffleCard.pop();
+    userDraw.push(userCard);
+    dealerDraw.push(dealerCard);
+    draw2Card += 1;
+    userCurrentDrawCard = 0;
+    userTotalValue = 0;
+    while (userDraw.length > userCurrentDrawCard) {
+      userTotalValue = userTotalValue + userDraw[userCurrentDrawCard].rank;
+      userCurrentDrawCard += 1;
+      counter = 0;
+    }
+  }
+  if (
+    (userDraw[0].rank == 1 && userDraw[1].rank >= 10) ||
+    (userDraw[0].rank == 1 && userDraw[1].rank >= 10)
+  ) {
+    return `<b>BLACKJACK</b><br>You win.<br>You have drawn ${userDraw[0].name} and ${userDraw[1].name} <br>`;
+  }
+  if (
+    !(userDraw[0].rank == 1 && userDraw[1].rank >= 10) ||
+    !(userDraw[0].rank == 1 && userDraw[1].rank >= 10)
+  ) {
+    gameMode = gameStageTwo;
+
+    return `Player 1 has drawn 1st card '<b>${userDraw[0].suit} ${userDraw[0].name}</b>' and 2nd card '<b>${userDraw[1].suit} ${userDraw[1].name}</b>'<br> Your total value is ${userTotalValue} <br><br> Dealer has drawn 1st card '<b>${dealerDraw[0].suit} ${dealerDraw[0].name}</b>' and 2nd card 'covered' <br><br>Player 1, Please choose to 'hit' or 'stand'`;
+  }
+};
+var hitButton = function () {
+  userTotalValue = 0;
+  while (userDraw.length > userCurrentDrawCard) {
+    userTotalValue = userTotalValue + userDraw[userCurrentDrawCard].rank;
+    userCurrentDrawCard += 1;
+  }
+  console.log("totalvalue", userTotalValue);
+  if (userTotalValue <= 21 && userDraw.length < 5) {
+    var hitDrawcard = shuffleCard.pop();
+    userDraw.push(hitDrawcard);
+    userCurrentDrawCard = 0;
+    userTotalValue = 0;
+    while (userDraw.length > userCurrentDrawCard) {
+      userTotalValue = userTotalValue + userDraw[userCurrentDrawCard].rank;
+      userCurrentDrawCard += 1;
+      counter = 0;
+    }
+    var userTotalCard = "You have drawn these cards:<br> ";
+    while (userDraw.length > counter) {
+      userTotalCard =
+        userTotalCard +
+        `
+        ${counter + 1} card is <b>${userDraw[counter].suit} ${
+          userDraw[counter].name
+        }</b><br> `;
+      counter = counter + 1;
+    }
+    console.log(userTotalCard, "userTotalCard");
+    return `${userTotalCard} Total value is <b>${userTotalValue}</b><br>Please key in <b>'h'</b>for hit or<b> 's' </b>for submit`;
+  }
+  if (userDraw.length == 5) {
+    var counter = 0;
+    var userTotalCard = "You have draw these card:<br> ";
+    while (userDraw.length > counter) {
+      userTotalCard =
+        userTotalCard +
+        `<b>${userDraw[counter].name} ${userDraw[counter].suit}</b><br>`;
+      counter = counter + 1;
+    }
+    return `You have hit your number of card limit, ${userTotalCard} <br>Total value of your cards is <b>${userTotalValue}</b><br>Please key in <b> 's' </b>for submit `;
+  }
+  if (userTotalValue > 21) {
+    var counter = 0;
+    var userTotalCard = "You have draw these card: <br>";
+    while (userDraw.length > counter) {
+      userTotalCard =
+        userTotalCard +
+        `<b>${userDraw[counter].name} ${userDraw[counter].suit}</b><br>`;
+      counter = counter + 1;
+      console.log(userTotalCard);
+    }
+    return ` You have <b>Burst </b>so unable to draw any cards <br>${userTotalCard} </<br>Total value of your cards is <b>${userTotalValue}</b><br>Please key in <b>'h'</b>for hit or<b> 's' </b>for submit `;
+  }
+
+  // var currentCardIndex = userDraw.length;
+  // if (currentCardIndex < 5) {
+  //   var hitDrawcard = shuffleCard.pop();
+  //   userDraw.push(hitDrawcard);
+  // }
+  // return userDraw;
+};
 var shuffleCard = cardShuffle();
 var main = function (input) {
-  var userDraw = shuffleCard.pop();
-  var userDraw1 = shuffleCard.pop();
-  var dealerDraw = shuffleCard.pop();
-  var dealerDraw1 = shuffleCard.pop();
-
-  if (userDraw.rank + userDraw1.rank > dealerDraw.rank + dealerDraw1.rank) {
-    return `You win ${userDraw.name} and ${userDraw1.name} while Dealer have draw ${dealerDraw.name} and ${dealerDraw1.name}`;
-  } else {
-    return `You Lose ${userDraw.name} and ${userDraw1.name} while Dealer have draw ${dealerDraw.name} and ${dealerDraw1.name}`;
+  console.log(userDraw, "User Draw");
+  console.log(dealerDraw, "dealer Draw");
+  if (gameMode == gameStageOne) {
+    return card1st2Draw();
   }
-  // if (gameStage == 0) {
-  //   if (
-  //     (userDraw.rank == 1 && userDraw1.rank > 10) ||
-  //     (userDraw1.rank == 1 && userDraw.rank > 10)
-  //   ) {
-  //     return `You win ${userDraw.name} and ${userDraw1.name}`;
-  //   }
-  //   if (
-  //     !(userDraw.rank == 1 && userDraw1.rank > 10) ||
-  //     !(userDraw1.rank == 1 && userDraw.rank > 10)
-  //   ) {
-  //     gameStage = 1;
-  //     return `Your cards are ${userDraw.name} and ${userDraw1.name} <br>Please choose to 'hit' or 'stand'`;
-  //   }
-  // }
-  // if (gameStage == 1) {
-  //   if (input == "hit" && gameStage == 1) {
-  //     var userDraw3 = shuffleCard.pop();
-  //   }
-  // }
+  console.log(gameMode, "gameMode");
+  if (gameMode == gameStageTwo) {
+    if (input == "h") {
+      return hitButton();
+    }
+    if (input == "s") {
+      var dealerCounter = 0;
+      var dealerTotalValue = 0;
+
+      while (dealerDraw.length > dealerCounter) {
+        dealerTotalValue = dealerTotalValue + dealerDraw[dealerCounter].rank;
+        dealerCounter += 1;
+      }
+      console.log("dealertotal", dealerTotalValue);
+      if (dealerTotalValue > 21 && userTotalValue > 21) {
+        return `Its a draw <br> Player has total value of <b>${userTotalValue}</b> while dealer has a total value of <b>${dealerTotalValue}</b>`;
+      }
+      if (dealerTotalValue <= 21 && userTotalValue <= 21) {
+        console.log("result");
+        if (dealerTotalValue > userTotalValue) {
+          return `Dealer Win <br> Player has total value of <b>${userTotalValue}</b> while dealer has a total value of <b>${dealerTotalValue}</b>`;
+        } else {
+          return `Player Win <br> Player has total value of <b>${userTotalValue}</b> while dealer has a total value of <b>${dealerTotalValue}</b>`;
+        }
+      }
+      console.log("total value", userTotalValue);
+      // return submit();
+    }
+  }
+  return `Please key in 'h'for hit or 's' for submit`;
 };
