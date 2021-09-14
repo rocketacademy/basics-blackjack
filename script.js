@@ -51,11 +51,34 @@ var shuffleDeck = function (cardDeck) {
   return cardDeck;
 };
 
+var dealCard = function () {
+  var playerIndex = 0;
+  while (playerIndex < playerCount) {
+    cardHolders[playerIndex].push(deck.pop());
+    playerIndex += 1;
+  }
+};
+
+var determineWinner = function () {
+  if (cardHolders[0][0].rank > cardHolders[1][0].rank) {
+    return "player wins";
+  } else if (cardHolders[0][0].rank < cardHolders[1][0].rank) {
+    return "dealer wins";
+  } else {
+    return "it's a tie";
+  }
+};
+
 var deck = makeDeck();
 
 shuffleDeck(deck);
 
+var playerCount = 2;
+var cardHolders = [[], []];
+
 var main = function (input) {
   var myOutputValue = "hello world";
+  dealCard();
+  myOutputValue = determineWinner();
   return myOutputValue;
 };
