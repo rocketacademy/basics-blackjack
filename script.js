@@ -72,15 +72,25 @@ var resetGame = function () {
 
 // returns true/false based on whether the starting two cards satisfy blackjack
 var checkForBlackjack = function (cards) {
-  cards.sort((a, b) => a.points - b.points);
-  return cards[0].points == 1 && cards[1].points == 10;
+  var cardsCopy = [...cards];
+  cardsCopy.sort((a, b) => a.points - b.points);
+  return cardsCopy[0].points == 1 && cardsCopy[1].points == 10;
 };
 
 // returns blackjack point total for a given array of cards
 var calculatePoints = function (cards) {
   var total = 0;
+  var numAces = cards.reduce(
+    (acc, cur) => (cur.name == "A" ? acc + 1 : acc),
+    0
+  );
+
   for (var i = 0; i < cards.length; i += 1) {
     total += cards[i].points;
+  }
+
+  for (var i = 0; i < numAces; i += 1) {
+    if (total + 10 <= MAX_VALUE) total += 10;
   }
   return total;
 };
