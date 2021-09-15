@@ -49,7 +49,6 @@ var shuffleDeck = function (cardDeck) {
 };
 
 var deck;
-
 var playerCards = [];
 var computerCards = [];
 
@@ -60,6 +59,19 @@ var resetGame = function () {
   deck = shuffleDeck(deck);
   playerCards = [];
   computerCards = [];
+};
+
+var checkForBlackjack = function (cards) {
+  cards.sort((a, b) => a.points - b.points);
+  return cards[0].points == 1 && cards[1].points == 10;
+};
+
+var calculatePoints = function (cards) {
+  var total = 0;
+  for (var i = 0; i < cards.length; i += 1) {
+    total += cards[i].points;
+  }
+  return total;
 };
 
 var main = function (input) {
@@ -77,6 +89,19 @@ var main = function (input) {
   output += "<br>Computer's cards:<br>";
   for (var i = 0; i < STARTING_CARDS; i += 1) {
     output += `${computerCards[i].name} of ${computerCards[i].emoji}<br>`;
+  }
+
+  if (checkForBlackjack(playerCards)) {
+    output += `<br>Player has blackjack. Player wins!`;
+  } else {
+    var playerPoints = calculatePoints(playerCards);
+    var computerPoints = calculatePoints(computerCards);
+
+    output += `<br>Player has ${playerPoints} points.<br>Computer has ${computerPoints} points.<br>`;
+
+    if (playerPoints == computerPoints) output += `It's a tie!`;
+    else if (playerPoints > computerPoints) output += `Player wins!`;
+    else output += `Computer wins!`;
   }
 
   return output;
