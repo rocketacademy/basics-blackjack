@@ -103,10 +103,9 @@
     </h1>
     <h1 class="header">♣️ Basics - Blackjack ♠️</h1>
     <div id="container">
-      <p>Input:</p>
-      <input id="input-field" />
-      <br />
-      <button id="submit-button">Submit</button>
+      <button id="new-hand-button">New Hand</button>
+      <button id="hit-button">Hit</button>
+      <button id="stand-button">Stand</button>
       <p>Output:</p>
       <div id="output-div"></div>
     </div>
@@ -114,18 +113,21 @@
     <script src="script.js"></script>
     <!-- Define button click functionality -->
     <script>
-      var button = document.querySelector("#submit-button");
-      button.addEventListener("click", function () {
-        // Set result to input value
-        var input = document.querySelector("#input-field");
-        var result = main(input.value);
+      var newHand = document.querySelector("#new-hand-button");
+      var hit = document.querySelector("#hit-button");
+      var stand = document.querySelector("#stand-button");
+      var output = document.querySelector("#output-div");
 
-        // Display result in output element
-        var output = document.querySelector("#output-div");
-        output.innerHTML = result;
+      newHand.addEventListener("click", function () {
+        output.innerHTML = dealNewHand();
+      });
 
-        // Reset input value
-        input.value = "";
+      hit.addEventListener("click", function () {
+        output.innerHTML = playerHit();
+      });
+
+      stand.addEventListener("click", function () {
+        output.innerHTML = playerStand();
       });
     </script>
   </body>

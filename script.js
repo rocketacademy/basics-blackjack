@@ -51,7 +51,7 @@ var shuffleDeck = function (cardDeck) {
 var deck;
 var playerCards = [];
 var computerCards = [];
-var gameMode = "input";
+var playerDone = false;
 
 const STARTING_CARDS = 2;
 
@@ -75,13 +75,13 @@ var calculatePoints = function (cards) {
   return total;
 };
 
-var outputCards = function (cards) {
+var outputCards = function () {
   var output = "Player's cards:<br>";
   for (var i = 0; i < playerCards.length; i += 1) {
     output += `${playerCards[i].name} of ${playerCards[i].emoji}<br>`;
   }
 
-  if (gameMode == "playerStood") {
+  if (playerDone) {
     output += "<br>Computer's cards:<br>";
     for (var i = 0; i < computerCards.length; i += 1) {
       output += `${computerCards[i].name} of ${computerCards[i].emoji}<br>`;
@@ -93,53 +93,59 @@ var outputCards = function (cards) {
   return output;
 };
 
-var main = function (input) {
+var dealNewHand = function () {
   var output = "";
-  if (gameMode == "input" && input == "st") {
-    gameMode = "handInProgress";
-    resetGame();
-    for (var i = 0; i < STARTING_CARDS; i += 1) {
-      playerCards.push(deck.pop());
-      computerCards.push(deck.pop());
-    }
-
-    output += outputCards();
-
-    if (checkForBlackjack(playerCards)) {
-      output += `<br>Player has blackjack. Player wins!`;
-      gameMode = "input";
-    }
+  resetGame();
+  for (var i = 0; i < STARTING_CARDS; i += 1) {
+    playerCards.push(deck.pop());
+    computerCards.push(deck.pop());
   }
 
-  if (gameMode == "handInProgress") {
-    if (input == "h") {
-      playerCards.push(deck.pop());
-      output += outputCards();
-      var playerPoints = calculatePoints(playerCards);
-      if (playerPoints > 21) {
-        output += `Player busts. Computer wins!`;
-        gameMode = "input";
-      }
-    }
+  output += outputCards();
 
-    if (input == "s") {
-      gameMode = "playerStood";
-      while (calculatePoints(computerCards) < 17) {
-        computerCards.push(deck.pop());
-      }
-      output += outputCards();
-      var playerPoints = calculatePoints(playerCards);
-      var computerPoints = calculatePoints(computerCards);
-
-      output += `<br>Player has ${playerPoints} points.<br>Computer has ${computerPoints} points.<br>`;
-
-      if (playerPoints > computerPoints || computerPoints > 21)
-        output += `Player wins!`;
-      else if (playerPoints < computerPoints) output += `Computer wins!`;
-      else output += `It's a tie!`;
-
-      gameMode = "input";
-    }
+  if (checkForBlackjack(playerCards)) {
+    output += `<br>Player has blackjack. Player wins!`;
+  } else {
+    document.querySelector("#new-hand-button").disabled = true;
+    document.querySelector("#hit-button").style.visibility = "visible";
+    document.querySelector("#stand-button").style.visibility = "visible";
   }
+  return output;
+};
+
+var playerHit = function () {
+  var output = "";
+  playerCards.push(deck.pop());
+  output += outputCards();
+  var playerPoints = calculatePoints(playerCards);
+  if (playerPoints > 21) {
+    output += `Player busts. Computer wins!`;
+    document.querySelector("#new-hand-button").disabled = false;
+    document.querySelector("#hit-button").style.visibility = "hidden";
+    document.querySelector("#stand-button").style.visibility = "hidden";
+  }
+  return output;
+};
+
+var playerStand = function () {
+  var output = "";
+  playerDone = true;
+  while (calculatePoints(computerCards) < 17) {
+    computerCards.push(deck.pop());
+  }
+  output += outputCards();
+  var playerPoints = calculatePoints(playerCards);
+  var computerPoints = calculatePoints(computerCards);
+
+  output += `<br>Player has ${playerPoints} points.<br>Computer has ${computerPoints} points.<br>`;
+
+  if (playerPoints > computerPoints || computerPoints > 21)
+    output += `Player wins!`;
+  else if (playerPoints < computerPoints) output += `Computer wins!`;
+  else output += `It's a tie!`;
+
+  document.querySelector("#new-hand-button").disabled = false;
+  document.querySelector("#hit-button").style.visibility = "hidden";
+  document.querySelector("#stand-button").style.visibility = "hidden";
   return output;
 };

@@ -66,3 +66,8 @@ button {
     font-size: 2rem;
   }
 }
+
+#hit-button,
+#stand-button {
+  visibility: hidden;
+}
