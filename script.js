@@ -2,10 +2,18 @@ var deck;
 var playerCards = [];
 var computerCards = [];
 var playerDone = false;
+var playerChips = 100;
+var playerWager = 0;
 
 const STARTING_CARDS = 2;
 const MAX_VALUE = 21;
 const DEALER_MIN = 17;
+
+const newHandButton = document.getElementById("new-hand-button");
+const hitButton = document.getElementById("hit-button");
+const standButton = document.getElementById("stand-button");
+const wagerInput = document.getElementById("wager");
+const wagerVal = document.getElementById("wager-value");
 
 // helper function to create card
 var makeCard = function (suit, emoji, rank) {
@@ -68,6 +76,14 @@ var resetGame = function () {
   playerCards = [];
   computerCards = [];
   playerDone = false;
+
+  newHandButton.disabled = false;
+  wagerInput.disabled = false;
+  wagerInput.setAttribute("max", playerChips);
+  wagerInput.value = 1;
+  wagerVal.innerHTML = 1;
+  hitButton.style.visibility = "hidden";
+  standButton.style.visibility = "hidden";
 };
 
 // returns true/false based on whether the starting two cards satisfy blackjack
@@ -95,6 +111,10 @@ var calculatePoints = function (cards) {
   return total;
 };
 
+var outputCurrentChips = function () {
+  return `<br><br>Current chips: ${playerChips}`;
+};
+
 // returns an output to inform the player of the cards in play
 var outputCards = function () {
   var output = "";
@@ -118,9 +138,10 @@ var outputCards = function () {
 };
 
 // this function is called when the new hand button is clicked
-var dealNewHand = function () {
+var dealNewHand = function (bet) {
+  if (!deck) deck = shuffleDeck(makeDeck());
   var output = "";
-  resetGame();
+  playerWager = Number(bet);
 
   // deal cards just like irl - player, dealer, player, dealer
   for (var i = 0; i < STARTING_CARDS; i += 1) {
@@ -133,12 +154,17 @@ var dealNewHand = function () {
   if (checkForBlackjack(playerCards)) {
     // if player has blackjack then hand is over
     output += `<br><br>Player has blackjack. Player wins!`;
+    playerChips += Math.round(1.5 * playerWager);
+    resetGame();
   } else {
     // otherwise show the hit/stand buttons to continue gameplay
-    document.querySelector("#new-hand-button").disabled = true;
-    document.querySelector("#hit-button").style.visibility = "visible";
-    document.querySelector("#stand-button").style.visibility = "visible";
+    wagerInput.disabled = true;
+    newHandButton.disabled = true;
+    hitButton.style.visibility = "visible";
+    standButton.style.visibility = "visible";
   }
+
+  output += outputCurrentChips();
   return output;
 };
 
@@ -151,10 +177,10 @@ var playerHit = function () {
   if (playerPoints > MAX_VALUE) {
     // if player busts then output msg and reset ui
     output += `<br><br>Player busts. Computer wins!`;
-    document.querySelector("#new-hand-button").disabled = false;
-    document.querySelector("#hit-button").style.visibility = "hidden";
-    document.querySelector("#stand-button").style.visibility = "hidden";
+    playerChips -= playerWager;
+    resetGame();
   }
+  output += outputCurrentChips();
   return output;
 };
 
@@ -173,13 +199,15 @@ var playerStand = function () {
   // generate game outcome and reset ui
   output += `<br><br>Player has ${playerPoints} points.<br>Computer has ${computerPoints} points.<br>`;
 
-  if (playerPoints > computerPoints || computerPoints > MAX_VALUE)
+  if (playerPoints > computerPoints || computerPoints > MAX_VALUE) {
     output += `Player wins!`;
-  else if (playerPoints < computerPoints) output += `Computer wins!`;
-  else output += `It's a tie!`;
+    playerChips += playerWager;
+  } else if (playerPoints < computerPoints) {
+    output += `Computer wins!`;
+    playerChips -= playerWager;
+  } else output += `It's a tie!`;
 
-  document.querySelector("#new-hand-button").disabled = false;
-  document.querySelector("#hit-button").style.visibility = "hidden";
-  document.querySelector("#stand-button").style.visibility = "hidden";
+  output += outputCurrentChips();
+  resetGame();
   return output;
 };

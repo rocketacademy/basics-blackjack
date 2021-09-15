@@ -103,6 +103,11 @@
     </h1>
     <h1 class="header">♣️ Basics - Blackjack ♠️</h1>
     <div id="container">
+      <div id="wager-container">
+        <p id="bet-label">Bet:</p>
+        <input id="wager" type="range" min="1" value="1" oninput="change()" />
+        <span id="wager-value">1</span>
+      </div>
       <button id="new-hand-button">New Hand</button>
       <button id="hit-button">Hit</button>
       <button id="stand-button">Stand</button>
@@ -118,8 +123,15 @@
       var stand = document.querySelector("#stand-button");
       var output = document.querySelector("#output-div");
 
+      var wager = document.querySelector("#wager");
+      var wagerValue = document.querySelector("#wager-value");
+
+      function change() {
+        wagerValue.innerHTML = wager.value;
+      }
+
       newHand.addEventListener("click", function () {
-        output.innerHTML = dealNewHand();
+        output.innerHTML = dealNewHand(wager.value);
       });
 
       hit.addEventListener("click", function () {

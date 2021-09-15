@@ -67,6 +67,25 @@ button {
   }
 }
 
+#wager-container {
+  display: flex;
+  align-items: center;
+  width: 50%;
+}
+
+#bet-label {
+  padding-right: 10px;
+}
+
+#wager {
+  margin: 0;
+  padding: 0;
+}
+
+#wager-value {
+  padding-left: 10px;
+}
+
 #hit-button,
 #stand-button {
   visibility: hidden;
