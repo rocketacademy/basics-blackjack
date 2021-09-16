@@ -67,22 +67,22 @@ button {
   }
 }
 
-#wager-container {
+.player {
   display: flex;
   align-items: center;
   width: 50%;
 }
 
-#bet-label {
+.bet-label {
   padding-right: 10px;
 }
 
-#wager {
+.wager {
   margin: 0;
   padding: 0;
 }
 
-#wager-value {
+.value-wager {
   padding-left: 10px;
 }
 

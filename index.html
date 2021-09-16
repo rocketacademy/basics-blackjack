@@ -116,11 +116,7 @@
         <button id="start-game-button">Start Game</button>
       </div>
       <div id="game">
-        <div id="wager-container">
-          <p id="bet-label">Bet:</p>
-          <input id="wager" type="range" min="1" value="1" oninput="change()" />
-          <span id="wager-value">1</span>
-        </div>
+        <div id="players-container"></div>
         <button id="new-hand-button">New Hand</button>
         <button id="hit-button">Hit</button>
         <button id="stand-button">Stand</button>
@@ -138,25 +134,54 @@
       var stand = document.querySelector("#stand-button");
       var output = document.querySelector("#output-div");
 
-      var wager = document.querySelector("#wager");
-      var wagerValue = document.querySelector("#wager-value");
-
       function change() {
-        wagerValue.innerHTML = wager.value;
+        var target = `#value-${this.id}`;
+        document.querySelector(target).innerHTML = this.value;
       }
 
       start.addEventListener("click", function () {
         var numPlayers = document.querySelector("#num-player");
-        initialisePlayers(numPlayers.value);
-
         var numPlayerInput = document.querySelector("#num-player-input");
         var game = document.querySelector("#game");
+        var playersContainer = document.querySelector("#players-container");
+
+        initialisePlayers(numPlayers.value);
+
+        for (var i = 0; i < numPlayers.value; i += 1) {
+          var player = document.createElement("div");
+          player.className = "player";
+
+          var p = document.createElement("p");
+          var text = document.createTextNode(`Player ${i + 1}`);
+          p.className = "bet-label";
+          p.appendChild(text);
+          player.appendChild(p);
+
+          var bet = document.createElement("input");
+          bet.className = "wager";
+          bet.id = `wager-${i}`;
+          bet.type = "range";
+          bet.min = "1";
+          bet.value = "1";
+          bet.addEventListener("input", change);
+          player.appendChild(bet);
+
+          var betValue = document.createElement("span");
+          betValue.className = "value-wager";
+          betValue.id = `value-wager-${i}`;
+          var defaultValue = document.createTextNode("1");
+          betValue.appendChild(defaultValue);
+          player.appendChild(betValue);
+
+          playersContainer.appendChild(player);
+        }
+
         numPlayerInput.style.display = "none";
         game.style.display = "block";
       });
 
       newHand.addEventListener("click", function () {
-        output.innerHTML = dealNewHand(wager.value);
+        output.innerHTML = dealNewHand();
       });
 
       hit.addEventListener("click", function () {

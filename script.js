@@ -10,8 +10,6 @@ const DEALER_MIN = 17;
 const newHandButton = document.getElementById("new-hand-button");
 const hitButton = document.getElementById("hit-button");
 const standButton = document.getElementById("stand-button");
-const wagerInput = document.getElementById("wager");
-const wagerVal = document.getElementById("wager-value");
 
 var initialisePlayers = function (playerNum) {
   for (var i = 0; i < Number(playerNum); i += 1) {
@@ -80,15 +78,18 @@ var resetGame = function () {
   for (var i = 0; i < players.length; i += 1) {
     players[i].cards = [];
     players[i].done = false;
+
+    var wagerSlider = document.getElementById(`wager-${i}`);
+    var wagerVal = document.getElementById(`value-wager-${i}`);
+    wagerSlider.disabled = false;
+    wagerSlider.setAttribute("max", players[i].chips);
+    wagerSlider.value = 1;
+    wagerVal.innerHTML = 1;
   }
   curPlayer = 0;
   computerCards = [];
 
   newHandButton.disabled = false;
-  wagerInput.disabled = false;
-  // wagerInput.setAttribute("max", playerChips);
-  wagerInput.value = 1;
-  wagerVal.innerHTML = 1;
   hitButton.style.visibility = "hidden";
   standButton.style.visibility = "hidden";
 };
@@ -164,13 +165,13 @@ var outputCards = function (showComputerCards = false) {
 };
 
 // this function is called when the new hand button is clicked
-var dealNewHand = function (bet) {
+var dealNewHand = function () {
   if (!deck) deck = shuffleDeck(makeDeck());
   var output = "";
-  playerWager = Number(bet);
 
   for (var i = 0; i < players.length; i += 1) {
-    players[i].wager = playerWager;
+    var playerWager = document.getElementById(`wager-${i}`).value;
+    players[i].wager = Number(playerWager);
   }
 
   // deal cards just like irl - players, dealer, players, dealer
@@ -189,7 +190,10 @@ var dealNewHand = function (bet) {
     resetGame();
   } else {
     // otherwise show the hit/stand buttons to continue gameplay
-    wagerInput.disabled = true;
+    for (var i = 0; i < players.length; i += 1) {
+      var wagerSlider = document.getElementById(`wager-${i}`);
+      wagerSlider.disabled = true;
+    }
     newHandButton.disabled = true;
     hitButton.style.visibility = "visible";
     standButton.style.visibility = "visible";
