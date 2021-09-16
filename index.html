@@ -103,21 +103,36 @@
     </h1>
     <h1 class="header">♣️ Basics - Blackjack ♠️</h1>
     <div id="container">
-      <div id="wager-container">
-        <p id="bet-label">Bet:</p>
-        <input id="wager" type="range" min="1" value="1" oninput="change()" />
-        <span id="wager-value">1</span>
+      <div id="num-player-input">
+        <p>Number of players:</p>
+        <input
+          id="num-player"
+          type="number"
+          min="1"
+          max="6"
+          value="1"
+          onkeydown="return false"
+        />
+        <button id="start-game-button">Start Game</button>
       </div>
-      <button id="new-hand-button">New Hand</button>
-      <button id="hit-button">Hit</button>
-      <button id="stand-button">Stand</button>
-      <p>Output:</p>
-      <div id="output-div"></div>
+      <div id="game">
+        <div id="wager-container">
+          <p id="bet-label">Bet:</p>
+          <input id="wager" type="range" min="1" value="1" oninput="change()" />
+          <span id="wager-value">1</span>
+        </div>
+        <button id="new-hand-button">New Hand</button>
+        <button id="hit-button">Hit</button>
+        <button id="stand-button">Stand</button>
+        <p>Output:</p>
+        <div id="output-div"></div>
+      </div>
     </div>
     <!-- Import program logic -->
     <script src="script.js"></script>
     <!-- Define button click functionality -->
     <script>
+      var start = document.querySelector("#start-game-button");
       var newHand = document.querySelector("#new-hand-button");
       var hit = document.querySelector("#hit-button");
       var stand = document.querySelector("#stand-button");
@@ -129,6 +144,16 @@
       function change() {
         wagerValue.innerHTML = wager.value;
       }
+
+      start.addEventListener("click", function () {
+        var numPlayers = document.querySelector("#num-player");
+        initialisePlayers(numPlayers.value);
+
+        var numPlayerInput = document.querySelector("#num-player-input");
+        var game = document.querySelector("#game");
+        numPlayerInput.style.display = "none";
+        game.style.display = "block";
+      });
 
       newHand.addEventListener("click", function () {
         output.innerHTML = dealNewHand(wager.value);

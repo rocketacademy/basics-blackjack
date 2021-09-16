@@ -86,6 +86,10 @@ button {
   padding-left: 10px;
 }
 
+#game {
+  display: none;
+}
+
 #hit-button,
 #stand-button {
   visibility: hidden;

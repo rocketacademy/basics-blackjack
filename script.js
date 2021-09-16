@@ -1,9 +1,7 @@
 var deck;
-var playerCards = [];
+var players = [];
+var curPlayer = 0;
 var computerCards = [];
-var playerDone = false;
-var playerChips = 100;
-var playerWager = 0;
 
 const STARTING_CARDS = 2;
 const MAX_VALUE = 21;
@@ -14,6 +12,12 @@ const hitButton = document.getElementById("hit-button");
 const standButton = document.getElementById("stand-button");
 const wagerInput = document.getElementById("wager");
 const wagerVal = document.getElementById("wager-value");
+
+var initialisePlayers = function (playerNum) {
+  for (var i = 0; i < Number(playerNum); i += 1) {
+    players[i] = { cards: [], chips: 100, wager: 0, done: false };
+  }
+};
 
 // helper function to create card
 var makeCard = function (suit, emoji, rank) {
@@ -73,13 +77,16 @@ var shuffleDeck = function (cardDeck) {
 // reset game by making and shuffling a new deck, and clearing the player/computer cards
 var resetGame = function () {
   deck = shuffleDeck(makeDeck());
-  playerCards = [];
+  for (var i = 0; i < players.length; i += 1) {
+    players[i].cards = [];
+    players[i].done = false;
+  }
+  curPlayer = 0;
   computerCards = [];
-  playerDone = false;
 
   newHandButton.disabled = false;
   wagerInput.disabled = false;
-  wagerInput.setAttribute("max", playerChips);
+  // wagerInput.setAttribute("max", playerChips);
   wagerInput.value = 1;
   wagerVal.innerHTML = 1;
   hitButton.style.visibility = "hidden";
@@ -87,10 +94,21 @@ var resetGame = function () {
 };
 
 // returns true/false based on whether the starting two cards satisfy blackjack
-var checkForBlackjack = function (cards) {
-  var cardsCopy = [...cards];
-  cardsCopy.sort((a, b) => a.points - b.points);
-  return cardsCopy[0].points == 1 && cardsCopy[1].points == 10;
+var checkForBlackjack = function () {
+  var output = "";
+  for (var i = 0; i < players.length; i += 1) {
+    var cardsCopy = [...players[i].cards];
+    cardsCopy.sort((a, b) => a.points - b.points);
+
+    if (cardsCopy[0].points == 1 && cardsCopy[1].points == 10) {
+      var amtWon = Math.round(1.5 * players[i].wager);
+      players[i].chips += amtWon;
+      players[i].done = true;
+      output += `Player ${i + 1} has blackjack and wins ${amtWon} chips!<br>`;
+    }
+  }
+
+  return output;
 };
 
 // returns blackjack point total for a given array of cards
@@ -112,14 +130,18 @@ var calculatePoints = function (cards) {
 };
 
 var outputCurrentChips = function () {
-  return `<br><br>Current chips: ${playerChips}`;
+  var output = "<br>";
+  for (var i = 0; i < players.length; i += 1) {
+    output += `Player ${i + 1} chips: ${players[i].chips}<br>`;
+  }
+  return output;
 };
 
 // returns an output to inform the player of the cards in play
-var outputCards = function () {
+var outputCards = function (showComputerCards = false) {
   var output = "";
-  if (playerDone) {
-    // if player is done drawing, then we can output all the dealer's cards
+  if (showComputerCards) {
+    // output all the dealer's cards
     output += "Computer's cards:<br>";
     for (var i = 0; i < computerCards.length; i += 1) {
       output += `${computerCards[i].name}${computerCards[i].emoji} `;
@@ -130,9 +152,13 @@ var outputCards = function () {
     output += `${computerCards[0].name}${computerCards[0].emoji}`;
   }
 
-  output += "<br><br>Player's cards:<br>";
-  for (var i = 0; i < playerCards.length; i += 1) {
-    output += `${playerCards[i].name}${playerCards[i].emoji} `;
+  output += "<br><br>";
+  for (var i = 0; i < players.length; i += 1) {
+    output += `Player ${i + 1}<br>`;
+    for (var j = 0; j < players[i].cards.length; j += 1) {
+      output += `${players[i].cards[j].name}${players[i].cards[j].emoji} `;
+    }
+    output += "<br><br>";
   }
   return output;
 };
@@ -143,18 +169,23 @@ var dealNewHand = function (bet) {
   var output = "";
   playerWager = Number(bet);
 
-  // deal cards just like irl - player, dealer, player, dealer
+  for (var i = 0; i < players.length; i += 1) {
+    players[i].wager = playerWager;
+  }
+
+  // deal cards just like irl - players, dealer, players, dealer
   for (var i = 0; i < STARTING_CARDS; i += 1) {
-    playerCards.push(deck.pop());
+    for (var j = 0; j < players.length; j += 1) {
+      players[j].cards.push(deck.pop());
+    }
     computerCards.push(deck.pop());
   }
 
   output += outputCards();
+  output += checkForBlackjack();
 
-  if (checkForBlackjack(playerCards)) {
-    // if player has blackjack then hand is over
-    output += `<br><br>Player has blackjack. Player wins!`;
-    playerChips += Math.round(1.5 * playerWager);
+  if (players.every((p) => p.done)) {
+    // if players are all done then hand is over
     resetGame();
   } else {
     // otherwise show the hit/stand buttons to continue gameplay
@@ -162,23 +193,67 @@ var dealNewHand = function (bet) {
     newHandButton.disabled = true;
     hitButton.style.visibility = "visible";
     standButton.style.visibility = "visible";
+
+    while (curPlayer < players.length && players[curPlayer].done) {
+      curPlayer += 1;
+    }
   }
 
   output += outputCurrentChips();
   return output;
 };
 
+var compareHandsWithDealer = function () {
+  var output = "";
+  while (calculatePoints(computerCards) < DEALER_MIN) {
+    // dealer has to hit to at least 17
+    computerCards.push(deck.pop());
+  }
+  output += outputCards(true);
+  var computerPoints = calculatePoints(computerCards);
+  output += `<br><br>Computer has ${computerPoints} points.<br>`;
+
+  for (var i = 0; i < players.length; i += 1) {
+    if (!players[i].done) {
+      var playerPoints = calculatePoints(players[i].cards);
+      output += `Player ${i + 1} has ${playerPoints} points. `;
+
+      if (playerPoints > computerPoints || computerPoints > MAX_VALUE) {
+        players[i].chips += players[i].wager;
+        output += `Player ${i + 1} wins ${players[i].wager} chips!<br>`;
+      } else if (playerPoints < computerPoints) {
+        players[i].chips -= players[i].wager;
+        output += `Computer wins! Player ${i + 1} loses ${
+          players[i].wager
+        } chips.<br>`;
+      } else output += `It's a tie!<br>`;
+
+      players[i].done = true;
+    }
+  }
+
+  if (players.every((p) => p.done)) resetGame();
+  return output;
+};
+
 // this function is called when the hit button is clicked
 var playerHit = function () {
   var output = "";
-  playerCards.push(deck.pop());
+  players[curPlayer].cards.push(deck.pop());
   output += outputCards();
-  var playerPoints = calculatePoints(playerCards);
+  var playerPoints = calculatePoints(players[curPlayer].cards);
   if (playerPoints > MAX_VALUE) {
-    // if player busts then output msg and reset ui
-    output += `<br><br>Player busts. Computer wins!`;
-    playerChips -= playerWager;
-    resetGame();
+    // if player busts then output msg
+    output += `<br><br>Player ${curPlayer + 1} busts. Computer wins!<br>`;
+    players[curPlayer].chips -= players[curPlayer].wager;
+    players[curPlayer].done = true;
+    curPlayer += 1;
+    while (curPlayer < players.length && players[curPlayer].done) {
+      curPlayer += 1;
+    }
+    if (curPlayer < players.length)
+      output += `Player ${curPlayer + 1}'s turn.<br>`;
+    else output += compareHandsWithDealer();
   }
   output += outputCurrentChips();
   return output;
@@ -187,27 +262,21 @@ var playerHit = function () {
 // this function is called when the stand button is clicked
 var playerStand = function () {
   var output = "";
-  playerDone = true; // set this to true so that we show all the dealer cards later
-  while (calculatePoints(computerCards) < DEALER_MIN) {
-    // dealer has to hit to at least 17
-    computerCards.push(deck.pop());
+
+  curPlayer += 1;
+  while (curPlayer < players.length && players[curPlayer].done) {
+    curPlayer += 1;
   }
-  output += outputCards();
-  var playerPoints = calculatePoints(playerCards);
-  var computerPoints = calculatePoints(computerCards);
 
-  // generate game outcome and reset ui
-  output += `<br><br>Player has ${playerPoints} points.<br>Computer has ${computerPoints} points.<br>`;
+  if (curPlayer < players.length) {
+    output += outputCards();
+    output += `Player ${curPlayer + 1}'s turn.<br>`;
+    output += outputCurrentChips();
+    return output;
+  }
 
-  if (playerPoints > computerPoints || computerPoints > MAX_VALUE) {
-    output += `Player wins!`;
-    playerChips += playerWager;
-  } else if (playerPoints < computerPoints) {
-    output += `Computer wins!`;
-    playerChips -= playerWager;
-  } else output += `It's a tie!`;
-
+  output += compareHandsWithDealer();
   output += outputCurrentChips();
-  resetGame();
+
   return output;
 };
