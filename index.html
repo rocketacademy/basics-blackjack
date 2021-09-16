@@ -116,6 +116,12 @@
         <button id="start-game-button">Start Game</button>
       </div>
       <div id="game">
+        <div id="dealer">
+          <p>Dealer</p>
+          <span id="dealer-cards"></span>
+          <span id="dealer-points"></span>
+        </div>
+        <hr />
         <div id="players-container"></div>
         <button id="new-hand-button">New Hand</button>
         <button id="hit-button">Hit</button>
@@ -150,12 +156,25 @@
         for (var i = 0; i < numPlayers.value; i += 1) {
           var player = document.createElement("div");
           player.className = "player";
+          player.id = `player-${i}`;
 
           var p = document.createElement("p");
           var text = document.createTextNode(`Player ${i + 1}`);
-          p.className = "bet-label";
+          p.className = "player-label";
           p.appendChild(text);
           player.appendChild(p);
+
+          var cards = document.createElement("span");
+          text = document.createTextNode("");
+          cards.id = `player-cards-${i}`;
+          cards.appendChild(text);
+          player.appendChild(cards);
+
+          var playerPoints = document.createElement("span");
+          text = document.createTextNode("");
+          playerPoints.id = `player-points-${i}`;
+          playerPoints.appendChild(text);
+          player.appendChild(playerPoints);
 
           var bet = document.createElement("input");
           bet.className = "wager";
@@ -169,9 +188,15 @@
           var betValue = document.createElement("span");
           betValue.className = "value-wager";
           betValue.id = `value-wager-${i}`;
-          var defaultValue = document.createTextNode("1");
-          betValue.appendChild(defaultValue);
+          text = document.createTextNode("1");
+          betValue.appendChild(text);
           player.appendChild(betValue);
+
+          var chipCount = document.createElement("p");
+          chipCount.id = `chip-count-${i}`;
+          text = document.createTextNode("Chip count: 100");
+          chipCount.appendChild(text);
+          player.appendChild(chipCount);
 
           playersContainer.appendChild(player);
         }

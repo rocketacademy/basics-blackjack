@@ -130,36 +130,53 @@ var calculatePoints = function (cards) {
   return total;
 };
 
-var outputCurrentChips = function () {
-  var output = "<br>";
+var updateChips = function () {
   for (var i = 0; i < players.length; i += 1) {
-    output += `Player ${i + 1} chips: ${players[i].chips}<br>`;
+    document.getElementById(
+      `chip-count-${i}`
+    ).innerHTML = `Chip count: ${players[i].chips}`;
   }
-  return output;
 };
 
 // returns an output to inform the player of the cards in play
 var outputCards = function (showComputerCards = false) {
   var output = "";
+
+  var computerCardsString = "";
+  var computerPoints;
   if (showComputerCards) {
     // output all the dealer's cards
-    output += "Computer's cards:<br>";
+    // output += "Computer's cards:<br>";
     for (var i = 0; i < computerCards.length; i += 1) {
-      output += `${computerCards[i].name}${computerCards[i].emoji} `;
+      // output += `${computerCards[i].name}${computerCards[i].emoji} `;
+      computerCardsString += `${computerCards[i].name}${computerCards[i].emoji} `;
+      computerPoints = calculatePoints(computerCards);
     }
   } else {
     // otherwise only output the first card
-    output += "Computer's face up card:<br>";
-    output += `${computerCards[0].name}${computerCards[0].emoji}`;
+    // output += "Computer's face up card:<br>";
+    // output += `${computerCards[0].name}${computerCards[0].emoji}`;
+    computerCardsString += `${computerCards[0].name}${computerCards[0].emoji}`;
+    computerPoints =
+      computerCards[0].points == 1 ? "1 / 11" : computerCards[0].points;
   }
+  document.getElementById("dealer-cards").innerHTML = computerCardsString;
+  document.getElementById("dealer-points").innerHTML = `(${computerPoints})`;
 
-  output += "<br><br>";
+  // output += "<br><br>";
   for (var i = 0; i < players.length; i += 1) {
-    output += `Player ${i + 1}<br>`;
+    var playerCardsString = "";
+    var playerPoints = calculatePoints(players[i].cards);
+    // output += `Player ${i + 1}<br>`;
     for (var j = 0; j < players[i].cards.length; j += 1) {
-      output += `${players[i].cards[j].name}${players[i].cards[j].emoji} `;
+      playerCardsString += `${players[i].cards[j].name}${players[i].cards[j].emoji} `;
+      // output += `${players[i].cards[j].name}${players[i].cards[j].emoji} `;
     }
-    output += "<br><br>";
+    // output += "<br><br>";
+    document.getElementById(`player-cards-${i}`).innerHTML = playerCardsString;
+    document.getElementById(
+      `player-points-${i}`
+    ).innerHTML = `(${playerPoints})`;
   }
   return output;
 };
@@ -203,7 +220,7 @@ var dealNewHand = function () {
     }
   }
 
-  output += outputCurrentChips();
+  updateChips();
   return output;
 };
 
@@ -259,7 +276,7 @@ var playerHit = function () {
       output += `Player ${curPlayer + 1}'s turn.<br>`;
     else output += compareHandsWithDealer();
   }
-  output += outputCurrentChips();
+  updateChips();
   return output;
 };
 
@@ -275,12 +292,12 @@ var playerStand = function () {
   if (curPlayer < players.length) {
     output += outputCards();
     output += `Player ${curPlayer + 1}'s turn.<br>`;
-    output += outputCurrentChips();
+    updateChips();
     return output;
   }
 
   output += compareHandsWithDealer();
-  output += outputCurrentChips();
+  updateChips();
 
   return output;
 };

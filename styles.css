@@ -67,10 +67,22 @@ button {
   }
 }
 
-.player {
+#dealer {
+  width: 33%;
+  margin: auto;
+  text-align: center;
+}
+
+#players-container {
   display: flex;
-  align-items: center;
-  width: 50%;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.player {
+  width: 33%;
+  padding: 0 10px 10px 10px;
+  text-align: center;
 }
 
 .bet-label {
