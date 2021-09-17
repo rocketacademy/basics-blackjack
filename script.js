@@ -116,6 +116,22 @@ var checkTwentyOne = function (playerDrawOne, playerDrawTwo) {
   } else return -1;
 };
 
+//Helper function to calculate total value of player's hand at present
+var checkCurrentTotal = function (existingTotal, latestPlayerDraw) {
+  var latestCardValue = latestPlayerDraw;
+  if (latestCardValue > 10) {
+    latestCardValue = 10;
+  }
+  if (latestCardValue == 1) {
+    latestCardValue = 11;
+  }
+  if (existingTotal + latestCardValue > 21 && latestCardValue == 11) {
+    latestCardValue = 1;
+  }
+  currentTotal = existingTotal + latestCardValue;
+  return currentTotal;
+};
+
 // Initialise starting conditions
 var gameMode = "";
 var playerHand = [];
@@ -151,7 +167,30 @@ var main = function (input) {
     }
   }
   if (gameMode == "hitOrStand") {
-    //If player calls for a hit, add a new card to array. Share total value of cards at present.
+    //If player calls for a hit, add a new card to array. Share total value of cards at present. Ask player if wanna hit again or stand.
+    if (input == "h") {
+      playerHand.push(shuffledDeck.pop());
+      console.log(playerHand[playerHand.length - 1]);
+      console.log(playerHand[playerHand.length - 1].rank);
+      currentTotal = checkCurrentTotal(
+        currentTotal,
+        playerHand[playerHand.length - 1].rank
+      );
+      if (currentTotal > 21) {
+        return `Bust! Your latest card was ${
+          playerHand[playerHand.length - 1].name
+        } of ${
+          playerHand[playerHand.length - 1].suit
+        }. That brings the total value of your hand to ${currentTotal}. Refresh the page to play again.`;
+      }
+      if (currentTotal <= 21) {
+        return `Your latest card was ${
+          playerHand[playerHand.length - 1].name
+        } of ${
+          playerHand[playerHand.length - 1].suit
+        }. That brings the total value of your hand to ${currentTotal}. Type "h" to hit and "s" to stand.`;
+      }
+    }
     //If player calls to stand, change game mode to evaluation.
   }
   return myOutputValue;
