@@ -1,12 +1,8 @@
-var main = function (input) {
-  var myOutputValue = "hello world";
-  return myOutputValue;
-};
-
 // Creating a deck
 var makeDeck = function () {
-  // Initialise an empty deck array
+  //Initialise card deck
   var cardDeck = [];
+
   // Initialise an array of the 4 suits in our deck. We will loop over this array.
   var suits = ["hearts", "diamonds", "clubs", "spades"];
 
@@ -82,4 +78,14 @@ var shuffleCards = function (cardDeck) {
   }
   // Return the shuffled deck
   return cardDeck;
+};
+
+var shuffledDeck = shuffleCards(makeDeck());
+
+//Check that a shuffled deck exists
+console.log(shuffledDeck);
+
+var main = function (input) {
+  var myOutputValue = "hello world";
+  return myOutputValue;
 };
