@@ -109,6 +109,8 @@ var checkTwentyOne = function (playerDrawOne, playerDrawTwo) {
   }
   console.log(firstValue);
   console.log(secondValue);
+  currentTotal = firstValue + secondValue;
+  console.log(currentTotal);
   if (firstValue + secondValue == 21) {
     return 1;
   } else return -1;
@@ -119,6 +121,7 @@ var gameMode = "";
 var playerHand = [];
 var dealerHand = [];
 var firstCheckResult;
+var currentTotal;
 
 var main = function (input) {
   var myOutputValue;
@@ -147,6 +150,9 @@ var main = function (input) {
       return `${myOutputValue} These do not add up to 21. Type "h" to hit and "s" to stand. Just so you know, the dealer's 1st card is ${dealerHand[0].name} of ${dealerHand[0].suit}.`;
     }
   }
-
+  if (gameMode == "hitOrStand") {
+    //If player calls for a hit, add a new card to array. Share total value of cards at present.
+    //If player calls to stand, change game mode to evaluation.
+  }
   return myOutputValue;
 };
