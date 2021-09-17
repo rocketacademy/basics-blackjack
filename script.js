@@ -103,7 +103,7 @@ var main = function (input) {
       dealCounter += 1;
     }
     gameMode = "hitOrStand";
-    return `Player, you drew ${playerHand[0].name} of ${playerHand[0].suit} and ${playerHand[1].name} of ${playerHand[1].suit}. The dealer's 2nd card is ${dealerHand[1].name} of ${dealerHand[1].suit}.`;
+    return `Player, you drew ${playerHand[0].name} of ${playerHand[0].suit} and ${playerHand[1].name} of ${playerHand[1].suit}. The dealer's 1st card is ${dealerHand[0].name} of ${dealerHand[0].suit}.`;
   }
   var myOutputValue = "hello world";
   return myOutputValue;
