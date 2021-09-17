@@ -104,7 +104,10 @@
     <h1 class="header">♣️ Basics - Blackjack ♠️</h1>
     <div id="container">
       <div id="dealer-ui">
-        <div id="space"></div>
+        <div id="space">
+          BLACKJACK PAYS 3 TO 2<br /><br />
+          DEALER MUST DRAW ON 16 OR LESS AND STAND ON ALL 17S
+        </div>
         <div id="dealer">
           <img id="dealer-image" src="dealer.png" />
           <span id="dealer-cards"></span>
@@ -146,7 +149,7 @@
 
       function change() {
         var target = `#value-${this.id}`;
-        document.querySelector(target).innerHTML = this.value;
+        document.querySelector(target).innerHTML = `Bet: ${this.value}`;
       }
 
       start.addEventListener("click", function () {
@@ -189,14 +192,15 @@
           bet.addEventListener("input", change);
           player.appendChild(bet);
 
-          var betValue = document.createElement("span");
+          var betValue = document.createElement("p");
           betValue.className = "value-wager";
           betValue.id = `value-wager-${i}`;
-          text = document.createTextNode("1");
+          text = document.createTextNode("Bet: 1");
           betValue.appendChild(text);
           player.appendChild(betValue);
 
           var chipCount = document.createElement("p");
+          chipCount.className = "chip-count";
           chipCount.id = `chip-count-${i}`;
           text = document.createTextNode("Chip count: 100");
           chipCount.appendChild(text);

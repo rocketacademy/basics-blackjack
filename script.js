@@ -82,20 +82,22 @@ var resetGame = function () {
 
     var wagerSlider = document.getElementById(`wager-${i}`);
     var wagerVal = document.getElementById(`value-wager-${i}`);
-    wagerSlider.disabled = false;
+    wagerSlider.style.display = "block";
     wagerSlider.setAttribute("max", players[i].chips);
     wagerSlider.value = 1;
-    wagerVal.innerHTML = 1;
+    wagerVal.innerHTML = "Bet: 1";
     document.getElementById(`player-${i}`).style.opacity = 1;
     document.getElementById(`player-${i}`).style.border = "none";
+    document.getElementById(`player-cards-${i}`).innerHTML = "";
+    document.getElementById(`player-points-${i}`).innerHTML = "";
   }
   curPlayer = 0;
   computerCards = [];
   handInProgress = false;
 
-  newHandButton.disabled = false;
-  hitButton.style.visibility = "hidden";
-  standButton.style.visibility = "hidden";
+  newHandButton.style.display = "inline-block";
+  hitButton.style.display = "none";
+  standButton.style.display = "none";
 };
 
 // returns true/false based on whether the starting two cards satisfy blackjack
@@ -201,8 +203,9 @@ var dealNewHand = function () {
   var output = "Dealing cards...<br><br>";
 
   for (var i = 0; i < players.length; i += 1) {
-    var playerWager = document.getElementById(`wager-${i}`).value;
-    players[i].wager = Number(playerWager);
+    var playerWager = document.getElementById(`wager-${i}`);
+    players[i].wager = Number(playerWager.value);
+    playerWager.style.display = "none";
   }
 
   // deal cards just like irl - players, dealer, players, dealer
@@ -222,13 +225,9 @@ var dealNewHand = function () {
     output += "<br>Hand is over. Please place your bets.";
   } else {
     // otherwise show the hit/stand buttons to continue gameplay
-    for (var i = 0; i < players.length; i += 1) {
-      var wagerSlider = document.getElementById(`wager-${i}`);
-      wagerSlider.disabled = true;
-    }
-    newHandButton.disabled = true;
-    hitButton.style.visibility = "visible";
-    standButton.style.visibility = "visible";
+    newHandButton.style.display = "none";
+    hitButton.style.display = "inline-block";
+    standButton.style.display = "inline-block";
 
     while (curPlayer < players.length && players[curPlayer].done) {
       curPlayer += 1;
