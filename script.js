@@ -33,8 +33,14 @@ var main = function (input) {
     console.log("dealer stage");
     myOutputValue = dealerGame();
   } else if (gameMode == 7) {
-    // working here
     console.log("settlement stage");
+    myOutputValue = checkWinningCondition();
+  } else if (gameMode == 8) {
+    playerCount = 0;
+    playerIndex = 0;
+    naturalList = [];
+
+    console.log("ending stage?");
   }
 
   return myOutputValue;
@@ -244,24 +250,45 @@ var dealerGame = function () {
   gameMode += 1;
   return myString;
 };
-// ux and ace substitute
-
-// settlement stage work
-
-// if player has natural 21 skip :: how to identify naturals?
-
-// after player bursts skip
-
-// after player stands at 21 settle **
-
-// after player stands at less than 21 settle **
 
 var checkWinningCondition = function () {
+  var myString = "";
   var dealer = playerList[playerList.length - 1];
   var dealerScore = calculatePlayerScore(dealer);
   if (dealerScore > 21) {
-    console.log("dealer burst");
+    console.log("dealer bust");
+    for (var i = 0; i < playerList.length - 1; i += 1) {
+      var currentPlayerScore = calculatePlayerScore(playerList[i]);
+      // if player has hit 21, or less than 21
+      // nothing happens if player has > 21
+      if (!naturalList.includes(i)) {
+        if (currentPlayerScore <= 21) {
+          myString += `Player ${i} wins<br><br>`;
+        }
+      }
+    }
   } else if (dealerScore <= 21) {
     console.log("dealer stand");
+    for (var i = 0; i < playerList.length - 1; i += 1) {
+      var currentPlayerScore = calculatePlayerScore(playerList[i]);
+      // if player has hit 21, or less than 21
+      // nothing happens if player has > 21
+      if (!naturalList.includes(i)) {
+        if (currentPlayerScore < dealerScore) {
+          myString += `Player ${i} loses<br><br>`;
+        } else if (currentPlayerScore == dealerScore) {
+          myString += `Player ${i} ties<br><br>`;
+        } else if (
+          currentPlayerScore > dealerScore &&
+          currentPlayerScore <= 21
+        ) {
+          myString += `Player ${i} wins<br><br>`;
+        }
+      }
+    }
   }
+  gameMode += 1;
+  return myString;
 };
+
+// ux and ace substitute
