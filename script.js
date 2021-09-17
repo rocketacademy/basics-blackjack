@@ -1,24 +1,24 @@
 var deck;
 var players = [];
-var curPlayer = 0;
+var curPlayer = -1;
 var computerCards = [];
 var handInProgress = false;
 
 const STARTING_CARDS = 2;
 const MAX_VALUE = 21;
 const DEALER_MIN = 17;
-
 const newHandButton = document.getElementById("new-hand-button");
 const hitButton = document.getElementById("hit-button");
 const standButton = document.getElementById("stand-button");
 
+// init players array by getting num players from user, and create player objects
 var initialisePlayers = function (playerNum) {
   for (var i = 0; i < Number(playerNum); i += 1) {
-    players[i] = { cards: [], chips: 100, wager: 0, done: false };
+    players[i] = { cards: [], points: 0, chips: 100, wager: 0, settled: false };
   }
 };
 
-// helper function to create card
+// helper function to create card object
 var makeCard = function (suit, emoji, rank) {
   // rank will be a number from 1 to 13, define a specialranks object for use later
   var specialRanks = {
@@ -29,17 +29,14 @@ var makeCard = function (suit, emoji, rank) {
   };
 
   // set name and points value to first be equivalent to the rank value
-  var name = rank.toString();
-  var points = rank;
-
   // if the name is one of the keys in special ranks,
   // change name to be the corresponding value
+  var name = rank.toString();
+  var points = rank;
   if (Object.keys(specialRanks).includes(name)) {
     name = specialRanks[rank];
     if (name != "A") points = 10; // for blackjack purpose, jack/queen/king = 10
   }
-
-  // return card object
   return { name, suit, points, emoji };
 };
 
@@ -73,62 +70,69 @@ var shuffleDeck = function (cardDeck) {
   return cardDeck;
 };
 
-// reset game by making and shuffling a new deck, and clearing the player/computer cards
+// reset game by making and shuffling a new deck, clearing cards, resetting ui
 var resetGame = function () {
   deck = shuffleDeck(makeDeck());
-  for (var i = 0; i < players.length; i += 1) {
-    players[i].cards = [];
-    players[i].done = false;
-
-    var wagerSlider = document.getElementById(`wager-${i}`);
-    var wagerVal = document.getElementById(`value-wager-${i}`);
-    wagerSlider.style.display = "block";
-    wagerSlider.setAttribute("max", players[i].chips);
-    wagerSlider.value = 1;
-    wagerVal.innerHTML = "Bet: 1";
-    document.getElementById(`player-${i}`).style.opacity = 1;
-    document.getElementById(`player-${i}`).style.border = "none";
-    document.getElementById(`player-cards-${i}`).innerHTML = "";
-    document.getElementById(`player-points-${i}`).innerHTML = "";
-  }
-  curPlayer = 0;
+  curPlayer = -1;
   computerCards = [];
   handInProgress = false;
 
   newHandButton.style.display = "inline-block";
   hitButton.style.display = "none";
   standButton.style.display = "none";
+
+  for (var i = 0; i < players.length; i += 1) {
+    players[i].cards = [];
+    players[i].settled = false;
+
+    const wagerSlider = document.getElementById(`wager-${i}`);
+    wagerSlider.style.display = "block";
+    wagerSlider.setAttribute("max", players[i].chips);
+    wagerSlider.value = 1;
+    document.getElementById(`value-wager-${i}`).innerHTML = "Bet: 1";
+    document.getElementById(`player-${i}`).style.opacity = 1;
+    document.getElementById(`player-${i}`).style.border = "none";
+  }
+  return "<br>Hand is over. Please place your bets.";
 };
 
-// returns true/false based on whether the starting two cards satisfy blackjack
-var checkForBlackjack = function () {
+// check whether the starting two cards satisfy blackjack
+var settleBlackjacks = function () {
   var output = "";
   for (var i = 0; i < players.length; i += 1) {
-    var cardsCopy = [...players[i].cards];
-    cardsCopy.sort((a, b) => a.points - b.points);
-
-    if (cardsCopy[0].points == 1 && cardsCopy[1].points == 10) {
+    if (players[i].points == 21) {
       var amtWon = Math.round(1.5 * players[i].wager);
       players[i].chips += amtWon;
-      players[i].done = true;
+      players[i].settled = true;
       output += `Player ${i + 1} has blackjack and wins ${amtWon} chips!<br>`;
     }
   }
-
   return output;
 };
 
-// returns blackjack point total for a given array of cards
+// this function is called after a player busts or stands, or after the initial deal
+var findNextPlayer = function () {
+  curPlayer += 1;
+  while (curPlayer < players.length && players[curPlayer].settled) {
+    curPlayer += 1;
+  }
+
+  if (curPlayer == players.length) return compareHandsWithDealer(); // no players left
+  return `Player ${curPlayer + 1}, it's your turn.`;
+};
+
+// returns point total for a given array of cards
 var calculatePoints = function (cards) {
   var total = 0;
+  for (var i = 0; i < cards.length; i += 1) {
+    total += cards[i].points;
+  }
+
+  // count aces and add to total if it is possible to
   var numAces = cards.reduce(
     (acc, cur) => (cur.name == "A" ? acc + 1 : acc),
     0
   );
-
-  for (var i = 0; i < cards.length; i += 1) {
-    total += cards[i].points;
-  }
 
   for (var i = 0; i < numAces; i += 1) {
     if (total + 10 <= MAX_VALUE) total += 10;
@@ -136,64 +140,46 @@ var calculatePoints = function (cards) {
   return total;
 };
 
-var updateChips = function () {
+// update UI after each turn e.g. chip counts, and player effects
+var updateUIAfterTurn = function () {
   for (var i = 0; i < players.length; i += 1) {
-    document.getElementById(
-      `chip-count-${i}`
-    ).innerHTML = `Chip count: ${players[i].chips}`;
+    const chipCountUI = document.getElementById(`chip-count-${i}`);
+    chipCountUI.innerHTML = `Chip count: ${players[i].chips}`;
 
-    if (players[i].done)
-      document.getElementById(`player-${i}`).style.opacity = 0.3;
+    const playerUI = document.getElementById(`player-${i}`);
+    if (players[i].settled) playerUI.style.opacity = 0.3;
 
-    if (handInProgress && i == curPlayer) {
-      document.getElementById(`player-${i}`).style.border = "solid 1px black";
-    } else {
-      document.getElementById(`player-${i}`).style.border = "none";
-    }
+    if (handInProgress && i == curPlayer)
+      playerUI.style.border = "solid 1px black";
+    else playerUI.style.border = "none";
   }
 };
 
-// returns an output to inform the player of the cards in play
-var outputCards = function (showComputerCards = false) {
-  var output = "";
-
+// update the cards displayed to the players on the UI
+var updateCardsUI = function (showComputerCards = false) {
   var computerCardsString = "";
-  var computerPoints;
   if (showComputerCards) {
     // output all the dealer's cards
-    // output += "Computer's cards:<br>";
     for (var i = 0; i < computerCards.length; i += 1) {
-      // output += `${computerCards[i].name}${computerCards[i].emoji} `;
       computerCardsString += `${computerCards[i].name}${computerCards[i].emoji} `;
-      computerPoints = calculatePoints(computerCards);
     }
   } else {
     // otherwise only output the first card
-    // output += "Computer's face up card:<br>";
-    // output += `${computerCards[0].name}${computerCards[0].emoji}`;
     computerCardsString += `${computerCards[0].name}${computerCards[0].emoji}`;
-    computerPoints =
-      computerCards[0].points == 1 ? "1 / 11" : computerCards[0].points;
   }
   document.getElementById("dealer-cards").innerHTML = computerCardsString;
-  document.getElementById("dealer-points").innerHTML = `(${computerPoints})`;
 
-  // output += "<br><br>";
   for (var i = 0; i < players.length; i += 1) {
     var playerCardsString = "";
-    var playerPoints = calculatePoints(players[i].cards);
-    // output += `Player ${i + 1}<br>`;
+    players[i].points = calculatePoints(players[i].cards);
     for (var j = 0; j < players[i].cards.length; j += 1) {
       playerCardsString += `${players[i].cards[j].name}${players[i].cards[j].emoji} `;
-      // output += `${players[i].cards[j].name}${players[i].cards[j].emoji} `;
     }
-    // output += "<br><br>";
     document.getElementById(`player-cards-${i}`).innerHTML = playerCardsString;
     document.getElementById(
       `player-points-${i}`
-    ).innerHTML = `(${playerPoints})`;
+    ).innerHTML = `(${players[i].points})`;
   }
-  return output;
 };
 
 // this function is called when the new hand button is clicked
@@ -203,7 +189,7 @@ var dealNewHand = function () {
   var output = "Dealing cards...<br><br>";
 
   for (var i = 0; i < players.length; i += 1) {
-    var playerWager = document.getElementById(`wager-${i}`);
+    const playerWager = document.getElementById(`wager-${i}`);
     players[i].wager = Number(playerWager.value);
     playerWager.style.display = "none";
   }
@@ -216,104 +202,78 @@ var dealNewHand = function () {
     computerCards.push(deck.pop());
   }
 
-  output += outputCards();
-  output += checkForBlackjack();
+  updateCardsUI();
+  output += settleBlackjacks(); // settle blackjacks first
 
-  if (players.every((p) => p.done)) {
-    // if players are all done then hand is over
-    resetGame();
-    output += "<br>Hand is over. Please place your bets.";
+  if (players.every((p) => p.settled)) {
+    // if players are all settled then hand is over
+    output += resetGame();
   } else {
     // otherwise show the hit/stand buttons to continue gameplay
     newHandButton.style.display = "none";
     hitButton.style.display = "inline-block";
     standButton.style.display = "inline-block";
 
-    while (curPlayer < players.length && players[curPlayer].done) {
-      curPlayer += 1;
-    }
-
-    output += `<br>Player ${curPlayer + 1}, it's your turn.`;
+    output += findNextPlayer();
   }
-
-  updateChips();
+  updateUIAfterTurn();
   return output;
 };
 
+// this function is called when no players are left to act
+// dealer will draw and compare value with all remaining players
 var compareHandsWithDealer = function () {
   var output = "";
-  while (calculatePoints(computerCards) < DEALER_MIN) {
-    // dealer has to hit to at least 17
+  var computerPoints = 0;
+  while (computerPoints < DEALER_MIN) {
     computerCards.push(deck.pop());
+    computerPoints = calculatePoints(computerCards);
   }
-  output += outputCards(true);
-  var computerPoints = calculatePoints(computerCards);
+  updateCardsUI(true);
   output += `Computer has ${computerPoints} points.<br>`;
 
   for (var i = 0; i < players.length; i += 1) {
-    if (!players[i].done) {
-      var playerPoints = calculatePoints(players[i].cards);
-      output += `Player ${i + 1} has ${playerPoints} points`;
+    if (!players[i].settled) {
+      output += `Player ${i + 1} has ${players[i].points} points`;
+      players[i].settled = true;
 
-      if (playerPoints > computerPoints || computerPoints > MAX_VALUE) {
+      if (players[i].points > computerPoints || computerPoints > MAX_VALUE) {
         players[i].chips += players[i].wager;
         output += ` and wins ${players[i].wager} chips!<br>`;
-      } else if (playerPoints < computerPoints) {
+      } else if (players[i].points < computerPoints) {
         players[i].chips -= players[i].wager;
         output += ` and loses ${players[i].wager} chips.<br>`;
       } else output += `. It's a tie!<br>`;
-
-      players[i].done = true;
     }
   }
-
-  if (players.every((p) => p.done)) resetGame();
+  output += resetGame();
   return output;
 };
 
 // this function is called when the hit button is clicked
-var playerHit = function () {
+var onPlayerHit = function () {
   var output = "";
   players[curPlayer].cards.push(deck.pop());
-  output += outputCards();
-  var playerPoints = calculatePoints(players[curPlayer].cards);
-  if (playerPoints > MAX_VALUE) {
+  updateCardsUI();
+  if (players[curPlayer].points > MAX_VALUE) {
     // if player busts then output msg
-    output += `Player ${curPlayer + 1} busts and loses ${
-      players[curPlayer].wager
-    } chips.<br><br>`;
-    players[curPlayer].chips -= players[curPlayer].wager;
-    players[curPlayer].done = true;
-    curPlayer += 1;
-    while (curPlayer < players.length && players[curPlayer].done) {
-      curPlayer += 1;
-    }
-    if (curPlayer < players.length)
-      output += `Player ${curPlayer + 1}, it's your turn.`;
-    else output += compareHandsWithDealer();
+    var amtLost = players[curPlayer].wager;
+    output += `Player ${
+      curPlayer + 1
+    } busts and loses ${amtLost} chips.<br><br>`;
+    players[curPlayer].chips -= amtLost;
+    players[curPlayer].settled = true;
+
+    if (players.every((p) => p.settled)) output += resetGame();
+    else output += findNextPlayer();
   }
-  updateChips();
+  updateUIAfterTurn();
   return output;
 };
 
 // this function is called when the stand button is clicked
-var playerStand = function () {
-  var output = "";
-
-  curPlayer += 1;
-  while (curPlayer < players.length && players[curPlayer].done) {
-    curPlayer += 1;
-  }
-
-  if (curPlayer < players.length) {
-    output += outputCards();
-    output += `Player ${curPlayer + 1}, it's your turn.`;
-    updateChips();
-    return output;
-  }
-
-  output += compareHandsWithDealer();
-  updateChips();
-
+var onPlayerStand = function () {
+  var output = findNextPlayer();
+  updateUIAfterTurn();
   return output;
 };

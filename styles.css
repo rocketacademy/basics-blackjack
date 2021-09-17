@@ -65,7 +65,7 @@ button {
   align-items: flex-start;
 }
 
-#space {
+#rules {
   flex: 2;
   padding-top: 20px;
   font-family: serif;
@@ -90,14 +90,23 @@ button {
   padding-top: 20px;
 }
 
+#num-player-input {
+  text-align: center;
+}
+
+#num-player {
+  width: 50%;
+}
+
+#game {
+  display: none;
+  text-align: center;
+}
+
 #players-container {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-}
-
-.player-label {
-  margin: 0 0 5px 0;
 }
 
 .player {
@@ -106,8 +115,8 @@ button {
   text-align: center;
 }
 
-.bet-label {
-  padding-right: 10px;
+.player-label {
+  margin: 0 0 5px 0;
 }
 
 .wager {
@@ -123,20 +132,7 @@ button {
   margin: 0;
 }
 
-#game {
-  display: none;
-  text-align: center;
-}
-
 #hit-button,
 #stand-button {
   display: none;
-}
-
-#num-player-input {
-  text-align: center;
-}
-
-#num-player {
-  width: 50%;
 }

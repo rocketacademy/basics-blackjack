@@ -104,7 +104,7 @@
     <h1 class="header">♣️ Basics - Blackjack ♠️</h1>
     <div id="container">
       <div id="dealer-ui">
-        <div id="space">
+        <div id="rules">
           BLACKJACK PAYS 3 TO 2<br /><br />
           DEALER MUST DRAW ON 16 OR LESS AND STAND ON ALL 17S
         </div>
@@ -147,11 +147,6 @@
       var stand = document.querySelector("#stand-button");
       var output = document.querySelector("#output-div");
 
-      function change() {
-        var target = `#value-${this.id}`;
-        document.querySelector(target).innerHTML = `Bet: ${this.value}`;
-      }
-
       start.addEventListener("click", function () {
         var numPlayers = document.querySelector("#num-player");
         var numPlayerInput = document.querySelector("#num-player-input");
@@ -160,38 +155,48 @@
 
         initialisePlayers(numPlayers.value);
 
+        // create ui for each player
         for (var i = 0; i < numPlayers.value; i += 1) {
+          // player div
           var player = document.createElement("div");
           player.className = "player";
           player.id = `player-${i}`;
 
+          // player label
           var p = document.createElement("p");
           var text = document.createTextNode(`Player ${i + 1}`);
           p.className = "player-label";
           p.appendChild(text);
           player.appendChild(p);
 
+          // cards
           var cards = document.createElement("span");
           text = document.createTextNode("");
           cards.id = `player-cards-${i}`;
           cards.appendChild(text);
           player.appendChild(cards);
 
+          // point value
           var playerPoints = document.createElement("span");
           text = document.createTextNode("");
           playerPoints.id = `player-points-${i}`;
           playerPoints.appendChild(text);
           player.appendChild(playerPoints);
 
+          // slider input for bet amount
           var bet = document.createElement("input");
           bet.className = "wager";
           bet.id = `wager-${i}`;
           bet.type = "range";
           bet.min = "1";
           bet.value = "1";
-          bet.addEventListener("input", change);
+          bet.addEventListener("input", function change() {
+            var target = `#value-${this.id}`;
+            document.querySelector(target).innerHTML = `Bet: ${this.value}`;
+          });
           player.appendChild(bet);
 
+          // bet value that will update according to slider
           var betValue = document.createElement("p");
           betValue.className = "value-wager";
           betValue.id = `value-wager-${i}`;
@@ -199,6 +204,7 @@
           betValue.appendChild(text);
           player.appendChild(betValue);
 
+          // chip count
           var chipCount = document.createElement("p");
           chipCount.className = "chip-count";
           chipCount.id = `chip-count-${i}`;
@@ -219,11 +225,11 @@
       });
 
       hit.addEventListener("click", function () {
-        output.innerHTML = playerHit();
+        output.innerHTML = onPlayerHit();
       });
 
       stand.addEventListener("click", function () {
-        output.innerHTML = playerStand();
+        output.innerHTML = onPlayerStand();
       });
     </script>
   </body>
