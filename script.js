@@ -83,6 +83,15 @@ var shuffleCards = function (cardDeck) {
   return cardDeck;
 };
 
+// Input validator, returns boolean
+var inputValidator = function (input) {
+  if (input != "hit" && input != "stand") {
+    return false;
+  }
+
+  return true;
+};
+
 // Deal two cards from the given deck, returns array
 var dealCards = function (deck) {
   var dealtHand = [];
@@ -112,12 +121,48 @@ var handCalculate = function (hand) {
   return handValue;
 };
 
+// Checks if the computer has a lower card value than the player and has <17 value, returns boolean
+var doesComHit = function () {
+  if (comValue < playerValue) {
+    return true;
+  }
+
+  if (comValue < 17) {
+    return true;
+  }
+
+  return false;
+};
+
+// Checks if the hand value is a bust, returns boolean
+var isBust = function (value) {
+  if (value > 21) {
+    return true;
+  }
+
+  return false;
+};
+
 // Prints out a string of the cards in the hand, returns string
 var printHand = function (hand) {
   var outputString = "";
   for (let i = 0; i < hand.length; i += 1) {
     outputString += `${hand[i].name} of ${hand[i].suit}<br>`;
   }
+  return outputString;
+};
+
+// Prints value and hand neatly, returns string
+var printResults = function () {
+  var outputString = "";
+
+  outputString += `<br><br>Your hand value is ${playerValue}.<br>${printHand(
+    playerHand
+  )}<br>`;
+  outputString += `The computer's hand value is ${comValue}.<br>${printHand(
+    comHand
+  )}`;
+
   return outputString;
 };
 
@@ -132,30 +177,75 @@ var comValue = 0;
 // Main function
 var main = function (input) {
   if (gameState == "init") {
+    gameState = "player";
     playerHand = dealCards(mainDeck);
     comHand = dealCards(mainDeck);
 
     playerValue = handCalculate(playerHand);
     comValue = handCalculate(comHand);
 
+    var outputString = "Do you want to hit or stand?";
+
+    outputString += printResults();
+
+    return outputString;
+  }
+
+  if (gameState == "player") {
+    if (!inputValidator(input)) {
+      return `Please input hit or stand!${printResults()}`;
+    }
+
+    if (input == "hit") {
+      playerHand.push(mainDeck.pop());
+      playerValue = handCalculate(playerHand);
+    }
+
     var outputString = "";
 
-    outputString += `Your card value is ${playerValue}.<br>${printHand(
-      playerHand
-    )}<br>`;
-    outputString += `Computer card value is ${comValue}.<br>${printHand(
-      comHand
-    )}`;
+    if (isBust(playerValue)) {
+      outputString += "You've gone bust! Better luck next time.";
+      gameState = "init";
+    } else if (input == "stand") {
+      outputString += "Press submit to see the computer's turn.";
+      gameState = "com";
+    } else {
+      outputString += "Do you want to hit or stand?";
+    }
+
+    outputString += printResults();
+
+    return outputString;
+  }
+
+  if (gameState == "com") {
+    if (doesComHit()) {
+      comHand.push(mainDeck.pop());
+      comValue = handCalculate(comHand);
+    }
+
+    var outputString = "";
+
+    if (isBust(comValue)) {
+      outputString += "The computer's gone bust!";
+      gameState = "init";
+    } else if (doesComHit()) {
+      outputString += "The computer will hit again.";
+    } else {
+      outputString += "The computer stands.";
+    }
+
+    outputString += printResults();
 
     return outputString;
   }
 };
 
 // Deck is shuffled. DONE
-// User clicks Submit to deal cards.
-// The cards are analysed for game winning conditions, e.g. Blackjack.
-// The cards are displayed to the user.
-// The user decides whether to hit or stand, using the submit button to submit their choice.
-// The user's cards are analysed for winning or losing conditions.
-// The computer decides to hit or stand automatically based on game rules.
-// The game either ends or continues.
+// User clicks Submit to deal cards. DONE
+// The cards are analysed for game winning conditions, e.g. Blackjack. DONE
+// The cards are displayed to the user. DONE
+// The user decides whether to hit or stand, using the submit button to submit their choice. DONE
+// The user's cards are analysed for winning or losing conditions. DONE
+// The computer decides to hit or stand automatically based on game rules. DONE
+// The game either ends or continues. DONE
