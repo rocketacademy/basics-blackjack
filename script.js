@@ -39,8 +39,8 @@ var main = function (input) {
     playerCount = 0;
     playerIndex = 0;
     naturalList = [];
-
-    console.log("ending stage?");
+    gameMode = 0;
+    console.log("reset stage");
   }
 
   return myOutputValue;
