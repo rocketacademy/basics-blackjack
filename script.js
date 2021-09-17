@@ -85,7 +85,26 @@ var shuffledDeck = shuffleCards(makeDeck());
 //Check that a shuffled deck exists
 console.log(shuffledDeck);
 
+// Initialise starting conditions
+var gameMode = "";
+var playerHand = [];
+var dealerHand = [];
+
 var main = function (input) {
+  if (gameMode == "") {
+    var dealCounter = 0;
+    while (dealCounter < 2) {
+      var playerCard = shuffledDeck.pop();
+      var dealerCard = shuffledDeck.pop();
+      console.log(playerCard);
+      console.log(dealerCard);
+      playerHand.push(playerCard);
+      dealerHand.push(dealerCard);
+      dealCounter += 1;
+    }
+    gameMode = "hitOrStand";
+    return `Player, you drew ${playerHand[0].name} of ${playerHand[0].suit} and ${playerHand[1].name} of ${playerHand[1].suit}. The dealer's 2nd card is ${dealerHand[1].name} of ${dealerHand[1].suit}.`;
+  }
   var myOutputValue = "hello world";
   return myOutputValue;
 };
