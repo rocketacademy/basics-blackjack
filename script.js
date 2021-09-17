@@ -3,6 +3,7 @@ var deck = [];
 var playerCount = 0;
 var playerList = [];
 var playerIndex = 0;
+var naturalList = [];
 
 var main = function (input) {
   var myOutputValue = "hello world";
@@ -22,15 +23,18 @@ var main = function (input) {
     gameMode += 1;
   } else if (gameMode == 3) {
     myOutputValue = "checking winning conditions...";
-    myOutputValue += checkWinningCondition();
+    myOutputValue += checkNaturalCondition();
   } else if (gameMode == 4) {
     playerIndex = checkPlayerValid();
     myOutputValue = checkEdge();
   } else if (gameMode == 5) {
     myOutputValue = playGame(input);
   } else if (gameMode == 6) {
-    // working here
     console.log("dealer stage");
+    myOutputValue = dealerGame();
+  } else if (gameMode == 7) {
+    // working here
+    console.log("settlement stage");
   }
 
   return myOutputValue;
@@ -143,7 +147,7 @@ var calculatePlayerScore = function (player) {
   return totalScore;
 };
 
-var checkWinningCondition = function () {
+var checkNaturalCondition = function () {
   var myString = "";
   var dealerScore = calculatePlayerScore(playerList[playerList.length - 1]);
   if (dealerScore == 21) {
@@ -161,6 +165,7 @@ var checkWinningCondition = function () {
       var currentPlayerScore = calculatePlayerScore(playerList[i]);
       if (currentPlayerScore == 21) {
         myString += `<br><br>Player ${i} wins`;
+        naturalList.push(i);
       } else if (currentPlayerScore != 21) {
         myString += `<br><br>Player ${i} continues`;
       }
@@ -220,4 +225,43 @@ var checkEdge = function () {
     myString = `Player ${playerIndex} turn is up! Type "h" to hit and "s" to stand.`;
   }
   return myString;
+};
+
+var dealerGame = function () {
+  var dealer = playerList[playerList.length - 1];
+  var dealerScore = calculatePlayerScore(dealer);
+  var myString = `Dealer will stand. Has score of ${dealerScore}.`;
+  while (dealerScore <= 16) {
+    dealer.push(deck.pop());
+    console.log("popping");
+    dealerScore = calculatePlayerScore(dealer);
+    console.log("updated dealer score: " + dealerScore);
+    myString = `Dealer will stand. Has score of ${dealerScore}.`;
+  }
+  if (dealerScore > 21) {
+    myString = `Dealer has burst. Has score of ${dealerScore}.`;
+  }
+  gameMode += 1;
+  return myString;
+};
+// ux and ace substitute
+
+// settlement stage work
+
+// if player has natural 21 skip :: how to identify naturals?
+
+// after player bursts skip
+
+// after player stands at 21 settle **
+
+// after player stands at less than 21 settle **
+
+var checkWinningCondition = function () {
+  var dealer = playerList[playerList.length - 1];
+  var dealerScore = calculatePlayerScore(dealer);
+  if (dealerScore > 21) {
+    console.log("dealer burst");
+  } else if (dealerScore <= 21) {
+    console.log("dealer stand");
+  }
 };
