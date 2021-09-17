@@ -47,13 +47,6 @@ button {
   padding: 0 6px;
 }
 
-#output-div {
-  background-color: lightgrey;
-  margin: 20px auto;
-  padding: 20px;
-  width: 100%;
-}
-
 .logo-img {
   height: 49px;
   position: relative;
@@ -67,10 +60,30 @@ button {
   }
 }
 
+#dealer-ui {
+  display: flex;
+  align-items: flex-start;
+}
+
+#space {
+  flex: 2;
+}
+
 #dealer {
-  width: 33%;
-  margin: auto;
   text-align: center;
+  flex: 1;
+}
+
+#dealer-image {
+  display: block;
+  width: 100%;
+  margin: auto;
+}
+
+#output-div {
+  flex: 2;
+  font-size: 12px;
+  padding-top: 20px;
 }
 
 #players-container {

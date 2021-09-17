@@ -103,6 +103,18 @@
     </h1>
     <h1 class="header">♣️ Basics - Blackjack ♠️</h1>
     <div id="container">
+      <div id="dealer-ui">
+        <div id="space"></div>
+        <div id="dealer">
+          <img id="dealer-image" src="dealer.png" />
+          <span id="dealer-cards"></span>
+          <span id="dealer-points"></span>
+        </div>
+        <div id="output-div">
+          Welcome! To begin, please tell me how many players would like to play.
+        </div>
+      </div>
+      <hr />
       <div id="num-player-input">
         <p>Number of players:</p>
         <input
@@ -116,18 +128,10 @@
         <button id="start-game-button">Start Game</button>
       </div>
       <div id="game">
-        <div id="dealer">
-          <p>Dealer</p>
-          <span id="dealer-cards"></span>
-          <span id="dealer-points"></span>
-        </div>
-        <hr />
         <div id="players-container"></div>
         <button id="new-hand-button">New Hand</button>
         <button id="hit-button">Hit</button>
         <button id="stand-button">Stand</button>
-        <p>Output:</p>
-        <div id="output-div"></div>
       </div>
     </div>
     <!-- Import program logic -->
@@ -203,6 +207,7 @@
 
         numPlayerInput.style.display = "none";
         game.style.display = "block";
+        output.innerHTML = "Players, please place your bets.";
       });
 
       newHand.addEventListener("click", function () {

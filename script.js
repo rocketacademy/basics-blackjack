@@ -2,6 +2,7 @@ var deck;
 var players = [];
 var curPlayer = 0;
 var computerCards = [];
+var handInProgress = false;
 
 const STARTING_CARDS = 2;
 const MAX_VALUE = 21;
@@ -85,9 +86,12 @@ var resetGame = function () {
     wagerSlider.setAttribute("max", players[i].chips);
     wagerSlider.value = 1;
     wagerVal.innerHTML = 1;
+    document.getElementById(`player-${i}`).style.opacity = 1;
+    document.getElementById(`player-${i}`).style.border = "none";
   }
   curPlayer = 0;
   computerCards = [];
+  handInProgress = false;
 
   newHandButton.disabled = false;
   hitButton.style.visibility = "hidden";
@@ -135,6 +139,15 @@ var updateChips = function () {
     document.getElementById(
       `chip-count-${i}`
     ).innerHTML = `Chip count: ${players[i].chips}`;
+
+    if (players[i].done)
+      document.getElementById(`player-${i}`).style.opacity = 0.3;
+
+    if (handInProgress && i == curPlayer) {
+      document.getElementById(`player-${i}`).style.border = "solid 1px black";
+    } else {
+      document.getElementById(`player-${i}`).style.border = "none";
+    }
   }
 };
 
@@ -184,7 +197,8 @@ var outputCards = function (showComputerCards = false) {
 // this function is called when the new hand button is clicked
 var dealNewHand = function () {
   if (!deck) deck = shuffleDeck(makeDeck());
-  var output = "";
+  handInProgress = true;
+  var output = "Dealing cards...<br><br>";
 
   for (var i = 0; i < players.length; i += 1) {
     var playerWager = document.getElementById(`wager-${i}`).value;
@@ -205,6 +219,7 @@ var dealNewHand = function () {
   if (players.every((p) => p.done)) {
     // if players are all done then hand is over
     resetGame();
+    output += "<br>Hand is over. Please place your bets.";
   } else {
     // otherwise show the hit/stand buttons to continue gameplay
     for (var i = 0; i < players.length; i += 1) {
@@ -218,6 +233,8 @@ var dealNewHand = function () {
     while (curPlayer < players.length && players[curPlayer].done) {
       curPlayer += 1;
     }
+
+    output += `<br>Player ${curPlayer + 1}, it's your turn.`;
   }
 
   updateChips();
@@ -232,22 +249,20 @@ var compareHandsWithDealer = function () {
   }
   output += outputCards(true);
   var computerPoints = calculatePoints(computerCards);
-  output += `<br><br>Computer has ${computerPoints} points.<br>`;
+  output += `Computer has ${computerPoints} points.<br>`;
 
   for (var i = 0; i < players.length; i += 1) {
     if (!players[i].done) {
       var playerPoints = calculatePoints(players[i].cards);
-      output += `Player ${i + 1} has ${playerPoints} points. `;
+      output += `Player ${i + 1} has ${playerPoints} points`;
 
       if (playerPoints > computerPoints || computerPoints > MAX_VALUE) {
         players[i].chips += players[i].wager;
-        output += `Player ${i + 1} wins ${players[i].wager} chips!<br>`;
+        output += ` and wins ${players[i].wager} chips!<br>`;
       } else if (playerPoints < computerPoints) {
         players[i].chips -= players[i].wager;
-        output += `Computer wins! Player ${i + 1} loses ${
-          players[i].wager
-        } chips.<br>`;
-      } else output += `It's a tie!<br>`;
+        output += ` and loses ${players[i].wager} chips.<br>`;
+      } else output += `. It's a tie!<br>`;
 
       players[i].done = true;
     }
@@ -265,7 +280,9 @@ var playerHit = function () {
   var playerPoints = calculatePoints(players[curPlayer].cards);
   if (playerPoints > MAX_VALUE) {
     // if player busts then output msg
-    output += `<br><br>Player ${curPlayer + 1} busts. Computer wins!<br>`;
+    output += `Player ${curPlayer + 1} busts and loses ${
+      players[curPlayer].wager
+    } chips.<br><br>`;
     players[curPlayer].chips -= players[curPlayer].wager;
     players[curPlayer].done = true;
     curPlayer += 1;
@@ -273,7 +290,7 @@ var playerHit = function () {
       curPlayer += 1;
     }
     if (curPlayer < players.length)
-      output += `Player ${curPlayer + 1}'s turn.<br>`;
+      output += `Player ${curPlayer + 1}, it's your turn.`;
     else output += compareHandsWithDealer();
   }
   updateChips();
@@ -291,7 +308,7 @@ var playerStand = function () {
 
   if (curPlayer < players.length) {
     output += outputCards();
-    output += `Player ${curPlayer + 1}'s turn.<br>`;
+    output += `Player ${curPlayer + 1}, it's your turn.`;
     updateChips();
     return output;
   }
