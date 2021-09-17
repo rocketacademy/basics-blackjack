@@ -85,12 +85,43 @@ var shuffledDeck = shuffleCards(makeDeck());
 //Check that a shuffled deck exists
 console.log(shuffledDeck);
 
+//Helper function to check for player's immediate win upon dealing
+var checkTwentyOne = function (playerDrawOne, playerDrawTwo) {
+  var firstValue = playerDrawOne;
+  var secondValue = playerDrawTwo;
+  if (firstValue > 10) {
+    firstValue = 10;
+  }
+  if (secondValue > 10) {
+    secondValue = 10;
+  }
+  if (firstValue == 1) {
+    firstValue = 11;
+  }
+  if (secondValue == 1) {
+    secondValue = 11;
+  }
+  if (firstValue + secondValue > 21 && firstValue == 11) {
+    firstValue = 1;
+  }
+  if (firstValue + secondValue > 21 && secondValue == 11) {
+    secondValue = 1;
+  }
+  console.log(firstValue);
+  console.log(secondValue);
+  if (firstValue + secondValue == 21) {
+    return 1;
+  } else return -1;
+};
+
 // Initialise starting conditions
 var gameMode = "";
 var playerHand = [];
 var dealerHand = [];
+var firstCheckResult;
 
 var main = function (input) {
+  var myOutputValue;
   if (gameMode == "") {
     var dealCounter = 0;
     while (dealCounter < 2) {
@@ -102,9 +133,20 @@ var main = function (input) {
       dealerHand.push(dealerCard);
       dealCounter += 1;
     }
-    gameMode = "hitOrStand";
-    return `Player, you drew ${playerHand[0].name} of ${playerHand[0].suit} and ${playerHand[1].name} of ${playerHand[1].suit}. The dealer's 1st card is ${dealerHand[0].name} of ${dealerHand[0].suit}.`;
+    gameMode = "firstCheck";
+    myOutputValue = `You drew ${playerHand[0].name} of ${playerHand[0].suit} and ${playerHand[1].name} of ${playerHand[1].suit}.`;
   }
-  var myOutputValue = "hello world";
+  if (gameMode == "firstCheck") {
+    //Check if player's hand adds up to 21
+    firstCheckResult = checkTwentyOne(playerHand[0].rank, playerHand[1].rank);
+    //If player's hand adds up to 21, immediate win for player. Else change game mode to hit or stand.
+    if (firstCheckResult == 1) {
+      return `You won! ${myOutputValue} These add up to 21.`;
+    } else if (firstCheckResult == -1) {
+      gameMode = "hitOrStand";
+      return `${myOutputValue} These do not add up to 21. Type "h" to hit and "s" to stand. Just so you know, the dealer's 1st card is ${dealerHand[0].name} of ${dealerHand[0].suit}.`;
+    }
+  }
+
   return myOutputValue;
 };
