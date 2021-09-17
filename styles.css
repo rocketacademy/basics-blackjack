@@ -22,14 +22,14 @@ body {
 .header {
   text-align: center;
   font-size: 1.1rem;
-  margin-bottom: 3rem;
+  margin-bottom: 1rem;
 }
 
 #container {
   background-color: #51b683;
-  margin: 40px auto;
-  max-width: 800px;
-  padding: 38px 31px;
+  margin: auto;
+  max-width: 1000px;
+  padding: 30px;
 }
 
 input {
@@ -43,7 +43,7 @@ input {
 button {
   font-size: 21px;
   line-height: 33px;
-  margin: 0 0 23px 0;
+  margin: 0;
   padding: 0 6px;
 }
 
@@ -62,12 +62,11 @@ button {
 
 #dealer-ui {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
 }
 
 #rules {
   flex: 2;
-  padding-top: 20px;
   font-family: serif;
   font-weight: bold;
   text-align: center;
@@ -87,7 +86,7 @@ button {
 #output-div {
   flex: 2;
   font-size: 12px;
-  padding-top: 20px;
+  margin-left: 5px;
 }
 
 #num-player-input {
@@ -135,4 +134,49 @@ button {
 #hit-button,
 #stand-button {
   display: none;
+}
+
+@media (max-width: 750px) {
+  #dealer-ui {
+    justify-content: center;
+  }
+
+  #rules {
+    display: none;
+  }
+
+  #dealer-image {
+    width: 120px;
+  }
+
+  .player {
+    width: 50%;
+  }
+}
+
+@media (max-width: 500px) {
+  #dealer-ui {
+    justify-content: center;
+    flex-direction: column;
+  }
+
+  #rules {
+    display: none;
+  }
+
+  #dealer-image {
+    width: 120px;
+  }
+
+  .player {
+    width: 100%;
+  }
+
+  #output-div {
+    margin-top: 5px;
+  }
+
+  body {
+    overflow: visible;
+  }
 }
