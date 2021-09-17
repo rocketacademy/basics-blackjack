@@ -2,11 +2,11 @@ var gameMode = 0;
 var deck = [];
 var playerCount = 0;
 var playerList = [];
+var playerIndex = 0;
 
 var main = function (input) {
   var myOutputValue = "hello world";
   if (gameMode == 0) {
-    // mode to make a deck and then shuffle the deck
     deck = makeDeck();
     deck = shuffleDeck(deck);
     myOutputValue = "How many players are there?";
@@ -21,12 +21,16 @@ var main = function (input) {
     myOutputValue = "Dealing cards...";
     gameMode += 1;
   } else if (gameMode == 3) {
-    myOutputValue = "in mode 3";
+    myOutputValue = "checking winning conditions...";
+    myOutputValue += checkWinningCondition();
+  } else if (gameMode == 4) {
+    playerIndex = checkPlayerValid();
+    myOutputValue = `Player ${playerIndex} turn is up! Type "h" to hit and "s" to stand.`;
     gameMode += 1;
+  } else if (gameMode == 5) {
+    // working here
+    playGame(input);
   }
-
-  console.log("curret mode: " + gameMode);
-  console.log(playerList);
 
   return myOutputValue;
 };
@@ -115,6 +119,7 @@ var shuffleDeck = function (cardDeck) {
 };
 
 var initialisePlayers = function () {
+  playerList = [];
   for (var i = 0; i < playerCount; i += 1) {
     playerList.push([]);
   }
@@ -137,16 +142,55 @@ var calculatePlayerScore = function (player) {
   return totalScore;
 };
 
-var playNatural = function () {
-  for (var i = 0; i < playerList.length; i += 1) {
-    console.log(calculatePlayerScore(playerList[i]));
+var checkWinningCondition = function () {
+  var myString = "";
+  var dealerScore = calculatePlayerScore(playerList[playerList.length - 1]);
+  if (dealerScore == 21) {
+    for (var i = 0; i < playerList.length - 1; i += 1) {
+      var currentPlayerScore = calculatePlayerScore(playerList[i]);
+      if (currentPlayerScore == 21) {
+        myString += `<br<br>>Player ${i} stand-off`;
+      } else if (currentPlayerScore != 21) {
+        myString += `<br><br>Player ${i} loses`;
+      }
+    }
+    gameMode = 0;
+  } else if (dealerScore != 21) {
+    for (var i = 0; i < playerList.length - 1; i += 1) {
+      var currentPlayerScore = calculatePlayerScore(playerList[i]);
+      if (currentPlayerScore == 21) {
+        myString += `<br><br>Player ${i} wins`;
+      } else if (currentPlayerScore != 21) {
+        myString += `<br><br>Player ${i} continues`;
+      }
+    }
+    gameMode += 1;
+  }
+  return myString;
+};
+
+var checkPlayerValid = function () {
+  for (var i = playerIndex; i < playerList.length - 1; i += 1) {
+    var currentPlayer = playerList[i];
+    var currentPlayerScore = calculatePlayerScore(currentPlayer);
+    if (currentPlayerScore != 21) {
+      return i;
+    }
   }
 };
 
-// [{name: 7, suit: 'diamonds', rank: 7, value: 7}, {name: 6, suit: 'diamonds', rank: 6, value: 6}]
+var playGame = function (input) {
+  if (input == "h") {
+    myOutputValue = `Player ${playerIndex} decides to hit! What next?`;
+  } else if (input == "s") {
+    myOutputValue = `Player ${playerIndex} decides to stand! Next player!`;
+    if (playerIndex < playerList.length - 2) {
+      playerIndex += 1;
+    }
+    gameMode = 4;
+  }
+};
 
-// list of players
-// [[], []];
-
-// list of objects
-// [<<<< [{}, {}, {}] >>>>, [{}, {}], [{}]];
+// issues of winning or continuing player
+// need to know whether player is playing
+// determine if player is valid
