@@ -25,11 +25,12 @@ var main = function (input) {
     myOutputValue += checkWinningCondition();
   } else if (gameMode == 4) {
     playerIndex = checkPlayerValid();
-    myOutputValue = `Player ${playerIndex} turn is up! Type "h" to hit and "s" to stand.`;
-    gameMode += 1;
+    myOutputValue = checkEdge();
   } else if (gameMode == 5) {
+    myOutputValue = playGame(input);
+  } else if (gameMode == 6) {
     // working here
-    playGame(input);
+    console.log("dealer stage");
   }
 
   return myOutputValue;
@@ -149,7 +150,7 @@ var checkWinningCondition = function () {
     for (var i = 0; i < playerList.length - 1; i += 1) {
       var currentPlayerScore = calculatePlayerScore(playerList[i]);
       if (currentPlayerScore == 21) {
-        myString += `<br<br>>Player ${i} stand-off`;
+        myString += `<br<br>Player ${i} stand-off`;
       } else if (currentPlayerScore != 21) {
         myString += `<br><br>Player ${i} loses`;
       }
@@ -174,23 +175,49 @@ var checkPlayerValid = function () {
     var currentPlayer = playerList[i];
     var currentPlayerScore = calculatePlayerScore(currentPlayer);
     if (currentPlayerScore != 21) {
+      gameMode += 1;
       return i;
     }
   }
 };
 
 var playGame = function (input) {
+  var myString = "";
   if (input == "h") {
-    myOutputValue = `Player ${playerIndex} decides to hit! What next?`;
-  } else if (input == "s") {
-    myOutputValue = `Player ${playerIndex} decides to stand! Next player!`;
-    if (playerIndex < playerList.length - 2) {
-      playerIndex += 1;
+    playerList[playerIndex].push(deck.pop());
+    var currentPlayerScore = calculatePlayerScore(playerList[playerIndex]);
+    if (currentPlayerScore > 21) {
+      myString = `Player ${playerIndex} has burst! Next Player!`;
+      myString += defineNextPlayer();
+    } else if (currentPlayerScore <= 21) {
+      myString = `Player ${playerIndex} decides to hit! What next?`;
     }
-    gameMode = 4;
+  } else if (input == "s") {
+    myString = `Player ${playerIndex} decides to stand! Next player!`;
+    myString += defineNextPlayer();
   }
+  return myString;
 };
 
-// issues of winning or continuing player
-// need to know whether player is playing
-// determine if player is valid
+var defineNextPlayer = function () {
+  var myString = "";
+  if (playerIndex < playerList.length - 2) {
+    playerIndex += 1;
+    gameMode = 4;
+  } else if (playerIndex == playerList.length - 2) {
+    myString = `<br><br>Next player is the dealer.`;
+    gameMode = 6;
+  }
+  return myString;
+};
+
+var checkEdge = function () {
+  var myString = "";
+  if (isNaN(playerIndex)) {
+    gameMode = 6;
+    myString = `Next player is the dealer.`;
+  } else {
+    myString = `Player ${playerIndex} turn is up! Type "h" to hit and "s" to stand.`;
+  }
+  return myString;
+};
