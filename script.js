@@ -132,12 +132,61 @@ var checkCurrentTotal = function (existingTotal, latestPlayerDraw) {
   return currentTotal;
 };
 
+//Helper function to check the total value of dealer's hand after dealing
+var checkDealerCurrentTotal = function (dealerDrawOne, dealerDrawTwo) {
+  var dFirstValue = dealerDrawOne;
+  var dSecondValue = dealerDrawTwo;
+  if (dFirstValue > 10) {
+    dFirstValue = 10;
+  }
+  if (dSecondValue > 10) {
+    dSecondValue = 10;
+  }
+  if (dFirstValue == 1) {
+    dFirstValue = 11;
+  }
+  if (dSecondValue == 1) {
+    dSecondValue = 11;
+  }
+  if (dFirstValue + dSecondValue > 21 && dFirstValue == 11) {
+    dFirstValue = 1;
+  }
+  if (dFirstValue + dSecondValue > 21 && dSecondValue == 11) {
+    dSecondValue = 1;
+  }
+  console.log(dFirstValue);
+  console.log(dSecondValue);
+  dealerCurrentTotal = dFirstValue + dSecondValue;
+  return dealerCurrentTotal;
+};
+
+//Helper function to calculate total value of dealer's hand after hitting
+var checkDealerLatestTotal = function (dealerExistingTotal, latestDealerDraw) {
+  var latestDealerCardValue = latestDealerDraw;
+  if (latestDealerCardValue > 10) {
+    latestDealerCardValue = 10;
+  }
+  if (latestDealerCardValue == 1) {
+    latestDealerCardValue = 11;
+  }
+  if (
+    dealerExistingTotal + latestDealerCardValue > 21 &&
+    latestDealerCardValue == 11
+  ) {
+    latestDealerCardValue = 1;
+  }
+  dealerLatestTotal = dealerExistingTotal + latestDealerCardValue;
+  return dealerLatestTotal;
+};
+
 // Initialise starting conditions
 var gameMode = "";
 var playerHand = [];
 var dealerHand = [];
 var firstCheckResult;
 var currentTotal;
+var dealerCurrentTotal;
+var dealerLatestTotal;
 
 var main = function (input) {
   var myOutputValue;
@@ -170,8 +219,13 @@ var main = function (input) {
     //If player calls for a hit, add a new card to array. Share total value of cards at present. Ask player if wanna hit again or stand.
     if (input == "h") {
       playerHand.push(shuffledDeck.pop());
-      console.log(playerHand[playerHand.length - 1]);
-      console.log(playerHand[playerHand.length - 1].rank);
+      console.log(
+        "Player's latest card is " + playerHand[playerHand.length - 1]
+      );
+      console.log(
+        "Rank of player's latest card is " +
+          playerHand[playerHand.length - 1].rank
+      );
       currentTotal = checkCurrentTotal(
         currentTotal,
         playerHand[playerHand.length - 1].rank
@@ -182,8 +236,7 @@ var main = function (input) {
         } of ${
           playerHand[playerHand.length - 1].suit
         }. That brings the total value of your hand to ${currentTotal}. Refresh the page to play again.`;
-      }
-      if (currentTotal <= 21) {
+      } else if (currentTotal <= 21) {
         return `Your latest card was ${
           playerHand[playerHand.length - 1].name
         } of ${
@@ -191,7 +244,56 @@ var main = function (input) {
         }. That brings the total value of your hand to ${currentTotal}. Type "h" to hit and "s" to stand.`;
       }
     }
-    //If player calls to stand, change game mode to evaluation.
+    //If player calls to stand, evaluate against dealer. Dealer shows hand. If 17 or above, jump straight into comparing player vs dealer. If below 17, dealer must hit before comparing player vs dealer.
+    if (input == "s") {
+      console.log(
+        "Dealer's first card is " +
+          dealerHand[0].name +
+          " of " +
+          dealerHand[0].suit
+      );
+      console.log(
+        "Dealer's second card is " +
+          dealerHand[1].name +
+          " of " +
+          dealerHand[1].suit
+      );
+      dealerCurrentTotal = checkDealerCurrentTotal(
+        dealerHand[0].rank,
+        dealerHand[1].rank
+      );
+    }
+    if (dealerCurrentTotal >= 17) {
+      if (currentTotal == dealerCurrentTotal) {
+        return `You draw with the dealer - ${currentTotal} to ${dealerCurrentTotal}. Refresh the page to play again.`;
+      } else if (currentTotal > dealerCurrentTotal) {
+        return `You beat the dealer - ${currentTotal} to ${dealerCurrentTotal}. Refresh the page to play again.`;
+      } else if (dealerCurrentTotal > currentTotal) {
+        return `You lost to the dealer - ${currentTotal} to ${dealerCurrentTotal}. Refresh the page to play again.`;
+      }
+    } else if (dealerCurrentTotal < 17) {
+      dealerHand.push(shuffledDeck.pop());
+      console.log(
+        "Dealer's latest card is " +
+          dealerHand[dealerHand.length - 1].name +
+          " of " +
+          dealerHand[dealerHand.length - 1].suit
+      );
+      dealerLatestTotal = checkDealerLatestTotal(
+        dealerCurrentTotal,
+        dealerHand[dealerHand.length - 1].rank
+      );
+      if (dealerLatestTotal > 21) {
+        return `The dealer went bust! You win with ${currentTotal} to ${dealerLatestTotal}! Refresh the page to play again.`;
+      } else if (dealerLatestTotal <= 21) {
+        if (currentTotal == dealerLatestTotal) {
+          return `You draw with the dealer - ${currentTotal} to ${dealerLatestTotal}. Refresh the page to play again.`;
+        } else if (currentTotal > dealerLatestTotal) {
+          return `You beat the dealer - ${currentTotal} to ${dealerLatestTotal}. Refresh the page to play again.`;
+        } else if (currentTotal < dealerLatestTotal) {
+          return `You lost to the dealer - ${currentTotal} to ${dealerLatestTotal}. Refresh the page to play again.`;
+        }
+      }
+    }
   }
-  return myOutputValue;
 };
