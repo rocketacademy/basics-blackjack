@@ -28,7 +28,7 @@ var main = function (input) {
     // working here
     dealCards();
     myOutputValue = displayDealtCards(); // change to show dealt cards
-    //gameMode += 1;
+    gameMode += 1;
   } else if (gameMode == 3) {
     myOutputValue = "checking winning conditions...";
     myOutputValue += checkNaturalCondition();
