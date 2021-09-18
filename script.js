@@ -6,28 +6,38 @@ var playerIndex = 0;
 var naturalList = [];
 
 var main = function (input) {
-  var myOutputValue = "hello world";
+  var myOutputValue = "♣♦♥♠";
   if (gameMode == 0) {
-    deck = makeDeck();
-    deck = shuffleDeck(deck);
-    myOutputValue = "How many players are there?";
-    gameMode += 1;
+    deck = shuffleDeck(makeDeck());
+    myOutputValue = "How many players are there including the dealer?<br><br>";
+    myOutputValue +=
+      "Please input a number from 2 through 8 and click the submit button.";
   } else if (gameMode == 1) {
-    playerCount = input;
-    initialisePlayers();
-    myOutputValue = "Press submit to deal cards.";
-    gameMode += 1;
+    if (!isNaN(input) && input >= 2 && input <= 8) {
+      initialisePlayers(input);
+      myOutputValue = `There are ${input} players including the dealer.<br><br>`;
+      myOutputValue += `Click the submit button to deal cards to all ${input} players.`;
+    } else {
+      myOutputValue = "You have entered an invalid input.<br><br>";
+      myOutputValue +=
+        "How many players are there including the dealer?<br><br>";
+      myOutputValue +=
+        "Please input a number from 2 through 8 and click the submit button.";
+    }
   } else if (gameMode == 2) {
+    // working here
     dealCards();
-    myOutputValue = "Dealing cards...";
-    gameMode += 1;
+    myOutputValue = displayDealtCards(); // change to show dealt cards
+    //gameMode += 1;
   } else if (gameMode == 3) {
     myOutputValue = "checking winning conditions...";
     myOutputValue += checkNaturalCondition();
   } else if (gameMode == 4) {
     playerIndex = checkPlayerValid();
     myOutputValue = checkEdge();
+    console.log(playerList[playerIndex]);
   } else if (gameMode == 5) {
+    console.log(playerList[playerIndex]);
     myOutputValue = playGame(input);
   } else if (gameMode == 6) {
     console.log("dealer stage");
@@ -125,20 +135,24 @@ var shuffleDeck = function (cardDeck) {
     // Increment currentIndex
     currentIndex += 1;
   }
+  // move gamemode forward 1 step
+  gameMode += 1;
   // Return the shuffled deck
   return cardDeck;
 };
 
-var initialisePlayers = function () {
+var initialisePlayers = function (playerCount) {
   playerList = [];
   for (var i = 0; i < playerCount; i += 1) {
     playerList.push([]);
   }
+  console.log(playerList);
+  gameMode += 1;
 };
 
 var dealCards = function () {
   for (var j = 0; j < 2; j += 1) {
-    for (var i = 0; i < playerCount; i += 1) {
+    for (var i = 0; i < playerList.length; i += 1) {
       playerList[i].push(deck.pop());
     }
   }
@@ -291,4 +305,28 @@ var checkWinningCondition = function () {
   return myString;
 };
 
-// ux and ace substitute
+var displayDealtCards = function () {
+  var myString = "";
+  for (var i = 0; i < playerList.length; i += 1) {
+    myString += `Player ${i} cards:<br>`;
+    for (var j = 0; j < playerList[i].length; j += 1) {
+      myString += `${playerList[i][j].name} of `;
+      if (playerList[i][j].suit == "clubs") {
+        myString += "<span style=font-size:25px>♣</span>  ";
+      } else if (playerList[i][j].suit == "diamonds") {
+        myString += "<span style=font-size:25px>♦</span>  ";
+      } else if (playerList[i][j].suit == "hearts") {
+        myString += "<span style=font-size:25px>♥</span>  ";
+      } else if (playerList[i][j].suit == "spades") {
+        myString += "<span style=font-size:25px>♠</span>  ";
+      }
+    }
+    myString += "<br><br>";
+  }
+  return myString;
+};
+
+// ux
+
+// display card?
+// ace logic?
