@@ -1,11 +1,14 @@
-var gameStatus = "CARD DISTRIBUTION";
+var gameStatus = "AFTER-PLACING-BET";
 var bestScore = 21;
 var cardDeck = [];
 var isDealerTurn = false;
+var gameOver = false;
 
 var player = {
   cards: [],
   roundScore: 0,
+  points: 100,
+  currentBet: 0,
 };
 var computer = {
   cards: [],
@@ -52,21 +55,21 @@ var deck = [
   },
   {
     // Player
-    name: "ace",
+    name: "10",
     suit: "hearts",
-    rank: 11,
+    rank: 10,
   },
   {
     // Computer
-    name: "5",
+    name: "7",
     suit: "hearts",
-    rank: 5,
+    rank: 7,
   },
   {
     //player
-    name: "5",
+    name: "6",
     suit: "hearts",
-    rank: 5,
+    rank: 6,
   },
 ];
 
@@ -160,12 +163,38 @@ var shuffleCards = function (cardDeck) {
   return cardDeck;
 };
 
-// var cardDeck = updateFaceCardRank(makeDeck());
-
 var main = function (input) {
-  var myOutputValue = "";
+  var myOutputValue = "Error, please refresh page.";
 
-  return playBlackJack(input);
+  var playerPoints = player.points;
+
+  var inputValidationResults = inputValidity(input);
+
+  if (inputValidationResults == true) {
+    if (gameStatus == "BETTING") {
+      if (player.points < 1) {
+        myOutputValue = `You have 0 points left. Please refresh the page to start a new game.`;
+        return myOutputValue;
+      }
+      myOutputValue = `You have ${playerPoints} points. Please enter the numbers of points you would like to bet for this round.`;
+      player.currentBet = 0;
+      gameStatus = "AFTER-PLACING-BET";
+      return myOutputValue;
+    }
+
+    if (gameStatus == "AFTER-PLACING-BET") {
+      player.currentBet = Number(input);
+      player.points = Number(player.points) - Number(player.currentBet);
+      console.log("Player Current bet (main) is " + player.currentBet);
+      console.log("Player points (main) left is " + player.points);
+      gameStatus = "CARD DISTRIBUTION";
+      myOutputValue = `You have placed ${player.currentBet} points as the bet. Click submit to start playing.<br><br>Good Luck!!`;
+      return myOutputValue;
+    }
+
+    return playBlackJack(input);
+  }
+  return inputValidationResults;
 };
 
 // Function to check input validity
@@ -175,6 +204,17 @@ var inputValidity = function (input) {
   if (gameStatus == "HIT-OR-STAND") {
     if (!(input.toUpperCase() == "H" || input.toUpperCase() == "S")) {
       returnStatement = `Wrong input. Please enter "h" for hit or "s" for stand`;
+      return returnStatement;
+    }
+  }
+
+  if (gameStatus == "AFTER-PLACING-BET") {
+    if (Number(input) > player.points) {
+      returnStatement = `You only have ${player.points} points. Please place a bet within your means`;
+      return returnStatement;
+    }
+    if (isNaN(Number(input)) == true || input == "" || input.includes(" ")) {
+      returnStatement = "Plese enter only enter a number";
       return returnStatement;
     }
   }
@@ -220,7 +260,7 @@ var distributeCards = function () {
     output =
       cardsDrawnStatement +
       "<br>Both you and dealer drew a blackjack! It's a draw.<br><br>Click Submit to start a new round.";
-    gameStatus = "CARD DISTRIBUTION";
+    gameStatus = "BETTING";
     return output;
   }
 
@@ -230,15 +270,24 @@ var distributeCards = function () {
     output =
       cardsDrawnStatement +
       "<br>Dealer drew a blackjack! Dealer Wins!<br><br>Click Submit to start a new round.";
-    gameStatus = "CARD DISTRIBUTION";
+    gameStatus = "BETTING";
+
+    console.log(
+      "Player's total points after Dealer wins BJ is " + player.points
+    );
+
     return output;
   }
 
   if (haveBlackjack(player)) {
+    player.points = player.points + player.currentBet + player.currentBet * 1.5;
     output =
       cardsDrawnStatement +
       "<br>You drew a blackjack and dealer does not have a blackjack! You Won! <br><br>Click Submit to start a new round.";
-    gameStatus = "CARD DISTRIBUTION";
+    gameStatus = "BETTING";
+
+    console.log("Player's total points after winning BJ is " + player.points);
+
     return output;
   }
 
@@ -269,7 +318,7 @@ var hitCard = function (playerObject) {
     "You have requested for a card. " + displayHand(playerObject);
 
   if (cardBusted(playerObject)) {
-    gameStatus = "CARD DISTRIBUTION";
+    gameStatus = "BETTING";
     playerCardsDrawn =
       playerCardsDrawn +
       "<br>You bust!<br><br>Click Submit to start a new round.";
@@ -361,20 +410,19 @@ var calWinOrLose = function (playerCards, computerCards) {
 
   var nextRoundInstruction = "Click Submit to start a new round.";
 
-  var resultsStatement = "<b>You won!</b><br><br>" + nextRoundInstruction;
+  var resultsStatement = "<b>Dealer won!</b><br><br>" + nextRoundInstruction;
 
   if (playerTotalCardRank == computerTotalCardRank) {
     resultsStatement = "<b>It's a draw!</b><br><br>" + nextRoundInstruction;
+    player.points = player.points + player.currentBet;
     return resultsStatement;
   }
 
-  if (playerTotalCardRank < computerTotalCardRank) {
-    resultsStatement = "<b>Dealer won!</b><br><br>" + nextRoundInstruction;
+  if (playerTotalCardRank > computerTotalCardRank) {
+    resultsStatement = "<b>You won!</b><br><br>" + nextRoundInstruction;
+    player.points = player.points + player.currentBet + player.currentBet * 2;
     return resultsStatement;
   }
-
-  console.log(`Player's score is ${playerTotalCardRank}`);
-  console.log(`Computer's score is ${computerTotalCardRank}`);
 
   return resultsStatement;
 };
@@ -420,8 +468,10 @@ var dealerHitOrStand = function () {
   if (computerCardRank < 17 && isDealerTurn) {
     // *********Code for Debugging - DO NOT DELETE **********
     // computer.cards.push(deck.pop());
+
     // *********Actual Code - DO NOT DELETE **********
     computer.cards.push(cardDeck.pop());
+
     computerCardRank = calCardRank(computer);
     if (computerCardRank < 17) {
       gameStatus = "DEALER-HIT-OR-STAND";
@@ -447,11 +497,12 @@ var dealerHitOrStand = function () {
   }
 
   // Set game status to card distribution so after showing the result, user can click submit to start a new round
-  gameStatus = "CARD DISTRIBUTION";
+  gameStatus = "BETTING";
 
   // If dealer's hand is more than 17, check if dealer bust
   if (cardBusted(computer)) {
     console.log(`Dealer bust. ${computerCardRank}`);
+    player.points = player.points + player.currentBet + player.currentBet * 2;
     returnStatement =
       returnStatement +
       "<br>" +
@@ -469,6 +520,9 @@ var dealerHitOrStand = function () {
 // Function to play game
 var playBlackJack = function (input) {
   console.log(`Current game status is ${gameStatus}`);
+
+  console.log("Player Current bet (playBJ) is " + player.currentBet);
+  console.log("Player points (playBJs) left is " + player.points);
 
   var inputValidationResults = inputValidity(input);
 
@@ -500,3 +554,4 @@ var playBlackJack = function (input) {
 };
 
 // Reduce repetitive in dealer hit or stand function
+// Do we need to show current bet and points on every turn?
