@@ -26,7 +26,7 @@ var blackJackCounter = []; //indicate who have win the black jack
 var winning = []; //indicate winning amount
 var deck = function () {
   var cardDeck = [];
-  var suit = ["hearts", "diamonds", "clubs", "spade"];
+  var suit = ["💖", "💎", "♣️", "♠️ "];
   var suitCounter = 0;
   while (suitCounter < suit.length) {
     var suitDeck = suit[suitCounter];
@@ -158,8 +158,6 @@ var card1st2Draw = function () {
 
   var outPut = "";
   while (counter < noOfPlayer) {
-    totalValueUser[1] = 21;
-    totalValueUser[0] = 21;
     if (totalValueUser[counter] == 21) {
       winning[counter] = playerBetting[counter] * 2;
       console.log(winning, "winning amount");
