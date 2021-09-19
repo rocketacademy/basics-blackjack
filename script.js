@@ -130,13 +130,36 @@ var main = function (input) {
   let userTotalScore;
   let compTotalScore;
 
+  // generates the first 2 cards
   userCards = firstCardsDeal(userCards);
   compCards = firstCardsDeal(compCards);
+
+  // calculate the score
   userTotalScore = calculateScore(userCards);
   compTotalScore = calculateScore(compCards);
-  let message = compareTheScore(userTotalScore, compTotalScore);
 
-  return `user cards are: ${userCards[0].name} ${userCards[0].emojiSuit} and ${userCards[1].name} ${userCards[1].emojiSuit}, total score : ${userTotalScore} <br>
-          comp cards are: ${compCards[0].name} ${compCards[0].emojiSuit} and ${compCards[1].name} ${compCards[1].emojiSuit}, total score : ${compTotalScore} <br>
-          ${message}`;
+  // comapring the score from the 1st 2 cards
+  compareTheScore(userTotalScore, compTotalScore);
+
+  const userCardsMessage = `user cards are: ${userCards[0].name} ${userCards[0].emojiSuit} and ${userCards[1].name} ${userCards[1].emojiSuit}`;
+  const compCardsMessage = `computer cards are: ${compCards[0].name} ${compCards[0].emojiSuit} and ${compCards[1].name} ${compCards[1].emojiSuit}`;
+  // check if there's blackjack
+  if (compTotalScore == 0) {
+    return `${userCardsMessage}<br>${compCardsMessage}<br>
+            Lose, opponent has Blackjack 😱`;
+  } else if (userTotalScore == 0) {
+    return `${userCardsMessage}<br>${compCardsMessage}<br>
+            Win with a Blackjack 😎`;
+  } // if there's no blackjack, continue to play, ask the user whether to hit or stand
+  else {
+    return `${userCardsMessage}, total score : ${userTotalScore} <br>
+            ${compCardsMessage}, total score : ${compTotalScore} <br>
+            Type 'y' to get another card, type 'n' to pass: `;
+  }
+
+  if (input == "y") {
+    userCards.push(dealARandomCard());
+  }
+
+  return myOutputValue;
 };
