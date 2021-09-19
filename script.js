@@ -1,7 +1,45 @@
-var main = function (input) {
-  var cardDeck = shuffleCards(makeDeck());
+//Global variables defining the different game modes and setting default to gameModeOne
+var gameModeOne = "deal cards";
+var gameModeTwo = "player turn";
+var gameModeThree = "dealer turn";
+var gameModeFour = "results";
+var gameMode = gameModeOne;
+var playerHand = [];
+var dealerHand = [];
 
-  console.log(cardDeck);
+var main = function (input) {
+  if (gameMode == gameModeOne) {
+    //Deck is created and shuffled
+    var cardDeck = shuffleCards(makeDeck());
+    //Players are dealt 2 cards each
+    playerHand = dealPlayerCards(cardDeck);
+    console.log(playerHand);
+    //Dealer is dealt 2 cards
+    dealerHand = dealDealerCards(cardDeck);
+    console.log(dealerHand);
+
+    console.log(cardDeck);
+    //GameMode changes to player turn
+    gameMode = gameModeFour;
+
+    var myOutputValue =
+      "Player hand:<br>" +
+      showHand(playerHand) +
+      "<br>To hit: Input H<br>To stand: Input S";
+    return myOutputValue;
+  }
+
+  if (gameMode == gameModeFour && input == "S") {
+    myOutputValue =
+      "Player hand:<br>" +
+      showHand(playerHand) +
+      "<br><br>Dealer hand:<br>" +
+      showHand(dealerHand) +
+      "<br><br>" +
+      determineWinner(dealerHand, playerHand);
+
+    return myOutputValue;
+  }
 
   var myOutputValue = "hello world";
   return myOutputValue;
@@ -12,7 +50,7 @@ var makeDeck = function () {
   //Create empty deck array
   var cardDeck = [];
   //Create array of 4 suits
-  var suits = ["diamonds", "clubs", "hearts", "spades"];
+  var suits = ["♦️", "♣️", "♥️", "♠️"];
 
   //Loop over suits array
   var suitIndex = 0;
@@ -26,13 +64,13 @@ var makeDeck = function () {
       var cardName = rankCounter;
       //Special names for cards with rank 1,11-13
       if (cardName == 1) {
-        cardName = "ace";
+        cardName = "Ace";
       } else if (cardName == 11) {
-        cardName = "jack";
+        cardName = "Jack";
       } else if (cardName == 12) {
-        cardName = "queen";
+        cardName = "Queen";
       } else if (cardName == 13) {
-        cardName = "king";
+        cardName = "King";
       }
       //Create card with current name, suit and rank
       var card = {
@@ -56,7 +94,6 @@ var makeDeck = function () {
 var getRandomIndex = function (max) {
   return Math.floor(Math.random() * max);
 };
-
 var shuffleCards = function (deck) {
   //Loop over array of cards
   var currentIndex = 0;
@@ -74,4 +111,85 @@ var shuffleCards = function (deck) {
     currentIndex += 1;
   }
   return deck;
+};
+
+//Function to deal cards to players
+var dealPlayerCards = function (cardDeck) {
+  //Empty array to store cards that are dealt to player
+  var playerHand = [];
+
+  //Loop to deal 2 cards to each player (currently only support 1 player)
+  var cardIndex = 0;
+  while (cardIndex < 2) {
+    var drawnCard = cardDeck.pop();
+    playerHand.push(drawnCard);
+    cardIndex += 1;
+  }
+  return playerHand;
+};
+
+//Function to deal cards to dealer
+var dealDealerCards = function (cardDeck) {
+  //Empty array to store cards that are dealt to dealer
+  var dealerHand = [];
+
+  //Loop to deal 2 cards to dealer
+  var cardIndex = 0;
+  while (cardIndex < 2) {
+    var drawnCard = cardDeck.pop();
+    dealerHand.push(drawnCard);
+    cardIndex += 1;
+  }
+  return dealerHand;
+};
+
+//Funtion to print out cards in player's hand
+var showHand = function (hand) {
+  var handIndex = 0;
+  var handOutput = " ";
+  while (handIndex < hand.length) {
+    handOutput =
+      handOutput + hand[handIndex].name + hand[handIndex].suit + ", ";
+
+    console.log(hand[handIndex].name);
+    console.log(hand[handIndex].suit);
+    handIndex += 1;
+  }
+  return handOutput;
+};
+
+//Function to sum up points in player's hand
+var countHand = function (hand) {
+  var rankIndex = 0;
+  var totalPoints = 0;
+  while (rankIndex < hand.length) {
+    //Get the point of each card in hand
+    var currentCardPoints = hand[rankIndex].rank;
+    //Add points into totalPoints
+    totalPoints = totalPoints + currentCardPoints;
+
+    rankIndex += 1;
+  }
+  return totalPoints;
+};
+
+//Function to determine winner
+var determineWinner = function (dealerHand, playerHand) {
+  var dealerPoints = countHand(dealerHand);
+  var playerPoints = countHand(playerHand);
+
+  if (dealerPoints > 21 && playerPoints > 21) {
+    return "Its a draw";
+  }
+  if (dealerPoints > 21 && playerPoints <= 21) {
+    return "Player win";
+  }
+  if (dealerPoints <= 21 && playerPoints > 21) {
+    return "Dealer win";
+  }
+  if (dealerPoints <= 21 && playerPoints <= 21) {
+    if (dealerPoints > playerPoints) return "Dealer win";
+    if (dealerPoints < playerPoints) return "Player win";
+    else return "Its a draw";
+  }
 };
