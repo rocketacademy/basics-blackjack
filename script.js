@@ -1,10 +1,7 @@
 var gameStatus = "CARD DISTRIBUTION";
 var bestScore = 21;
-var gameResult = "";
 var cardDeck = [];
-var dealerMustHit = false;
 var isDealerTurn = false;
-var dealerShown2ndCard = false;
 
 var player = {
   cards: [],
@@ -16,7 +13,6 @@ var computer = {
 };
 
 // Deck of cards for debugging
-
 var deck = [
   {
     name: "ace",
@@ -34,43 +30,43 @@ var deck = [
     rank: 3,
   },
   {
-    name: "4",
+    name: "2",
     suit: "hearts",
-    rank: 4,
+    rank: 2,
   },
   {
-    name: "5",
+    name: "ace",
     suit: "hearts",
-    rank: 1,
+    rank: 11,
   },
   {
-    name: "6",
+    name: "10",
     suit: "hearts",
-    rank: 1,
+    rank: 10,
   },
   {
     // Computer
-    name: "7",
+    name: "10",
     suit: "hearts",
     rank: 10,
   },
   {
     // Player
-    name: "8",
+    name: "ace",
     suit: "hearts",
-    rank: 10,
+    rank: 11,
   },
   {
     // Computer
-    name: "9",
+    name: "5",
     suit: "hearts",
-    rank: 6,
+    rank: 5,
   },
   {
     //player
-    name: "10",
+    name: "5",
     suit: "hearts",
-    rank: 2,
+    rank: 5,
   },
 ];
 
@@ -117,6 +113,11 @@ var makeDeck = function () {
 
       if (cardName == "jack" || cardName == "queen" || cardName == "king") {
         card.rank = 10;
+      }
+
+      // Update rank of card if it is an ace card
+      if (cardName == "ace") {
+        card.rank = 11;
       }
       // Add the new card to the deck
       cardDeck.push(card);
@@ -189,14 +190,11 @@ var distributeCards = function () {
   var output = "";
 
   // Reset game result to neutral and attributes in player and computer's object
-  gameResult = "";
-  dealerMustHit = false;
   player.cards = [];
   player.roundScore = 0;
   computer.cards = [];
   computer.roundScore = 0;
   isDealerTurn = false;
-  dealerShown2ndCard = false;
 
   // Take 1 card from the deck and distribute to the player then the computer
 
@@ -210,11 +208,6 @@ var distributeCards = function () {
   for (var counter = 0; counter < 2; counter += 1) {
     player.cards.push(cardDeck.pop());
     computer.cards.push(cardDeck.pop());
-  }
-
-  // Check if dealer needs to hit after player stand
-  if (calCardRank(computer) < 17) {
-    dealerMustHit = true;
   }
 
   // Display cards to player but only show 1 card from dealer
@@ -266,6 +259,10 @@ var distributeCards = function () {
 
 // Function to add a card to player's hand
 var hitCard = function (playerObject) {
+  // ***** Code for debugging - DO NOT DELETE ***********
+  // playerObject.cards.push(deck.pop());
+
+  // ***** Actual Code - DO NOT DELETE ***********
   playerObject.cards.push(cardDeck.pop());
 
   var playerCardsDrawn =
@@ -362,53 +359,54 @@ var calWinOrLose = function (playerCards, computerCards) {
   var playerTotalCardRank = calCardRank(playerCards);
   var computerTotalCardRank = calCardRank(computerCards);
 
-  gameResult = "PLAYER-WON";
+  var nextRoundInstruction = "Click Submit to start a new round.";
+
+  var resultsStatement = "<b>You won!</b><br><br>" + nextRoundInstruction;
 
   if (playerTotalCardRank == computerTotalCardRank) {
-    gameResult = "DRAW";
-    return gameResult;
+    resultsStatement = "<b>It's a draw!</b><br><br>" + nextRoundInstruction;
+    return resultsStatement;
   }
 
   if (playerTotalCardRank < computerTotalCardRank) {
-    gameResult = "COMPUTER-WON";
-    return gameResult;
+    resultsStatement = "<b>Dealer won!</b><br><br>" + nextRoundInstruction;
+    return resultsStatement;
   }
-
-  console.log(`Game result is ${gameResult}`);
 
   console.log(`Player's score is ${playerTotalCardRank}`);
   console.log(`Computer's score is ${computerTotalCardRank}`);
-
-  return gameResult;
-};
-
-// Function to generate win or lose statement based on game results
-var winLoseStatement = function (result) {
-  var resultsStatement = "";
-
-  var nextRoundInstruction = "Click Submit to start a new round.";
-
-  if (result == "COMPUTER-WON") {
-    resultsStatement = "<b>Dealer won!</b><br><br>" + nextRoundInstruction;
-  } else if (result == "DRAW") {
-    resultsStatement = "<b>It's a draw!</b><br><br>" + nextRoundInstruction;
-  } else if (result == "PLAYER-WON") {
-    resultsStatement = "<b>You won!</b><br><br>" + nextRoundInstruction;
-  }
 
   return resultsStatement;
 };
 
 // Find the sum of all cards that player have on hand
 var calCardRank = function (partyObject) {
+  var totalScore = 0;
   partyObject.roundScore = 0;
+  var numOfAceCards = 0;
 
-  for (counter = 0; counter < partyObject.cards.length; counter += 1) {
-    partyObject.roundScore =
-      partyObject.roundScore + partyObject.cards[counter].rank;
+  // Check how many ace cards are there in the array and adds up all card rank
+  for (var i = 0; i < partyObject.cards.length; i += 1) {
+    if (partyObject.cards[i].name == "ace") {
+      numOfAceCards += 1;
+    }
+    totalScore = totalScore + partyObject.cards[i].rank;
   }
 
-  return partyObject.roundScore;
+  // If there are ace cards on hand, change the rank of ace card from 11 to 1
+  // Keep only 1 ace card with rank 11
+  if (numOfAceCards >= 1 && totalScore > bestScore) {
+    totalScore = totalScore - (numOfAceCards - 1) * 10;
+    // If the total score still exceed best score,
+    // change the rank of the last ace card from 11 to 1
+    if (totalScore > bestScore) {
+      totalScore = totalScore - 10;
+    }
+  }
+
+  partyObject.roundScore = totalScore;
+
+  return totalScore;
 };
 
 // Function to decide if computer wants to draw a card
@@ -419,7 +417,10 @@ var dealerHitOrStand = function () {
   var computerCardRank = calCardRank(computer);
 
   // If dealer's hand is lesser than 17, dealer will draw a card and check his total card again
-  if (computerCardRank < 17 && dealerShown2ndCard) {
+  if (computerCardRank < 17 && isDealerTurn) {
+    // *********Code for Debugging - DO NOT DELETE **********
+    // computer.cards.push(deck.pop());
+    // *********Actual Code - DO NOT DELETE **********
     computer.cards.push(cardDeck.pop());
     computerCardRank = calCardRank(computer);
     if (computerCardRank < 17) {
@@ -438,7 +439,6 @@ var dealerHitOrStand = function () {
 
   // Show dealer's card before hitting if dealer have not shown his face down card
   if (computerCardRank < 17) {
-    dealerShown2ndCard = true;
     gameStatus = "DEALER-HIT-OR-STAND";
     returnStatement =
       returnStatement +
@@ -459,7 +459,7 @@ var dealerHitOrStand = function () {
       "Click Submit to start a new round.";
   } else {
     // Compare the cards to determine who wins
-    var roundResults = winLoseStatement(calWinOrLose(player, computer));
+    var roundResults = calWinOrLose(player, computer);
     returnStatement = returnStatement + "<br>" + roundResults;
   }
 
@@ -469,8 +469,6 @@ var dealerHitOrStand = function () {
 // Function to play game
 var playBlackJack = function (input) {
   console.log(`Current game status is ${gameStatus}`);
-
-  console.log(`Game Result is ${gameResult}`);
 
   var inputValidationResults = inputValidity(input);
 
@@ -502,5 +500,3 @@ var playBlackJack = function (input) {
 };
 
 // Reduce repetitive in dealer hit or stand function
-// Implement the option or logic to select 1 or 11 if an ace card is received
-// Merge winLoseStatement into calWinOrLose
