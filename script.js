@@ -82,18 +82,50 @@ const firstCardsDeal = (playerCards) => {
 const calculateScore = (playerCards) => {
   let totalScore = 0;
   for (let i = 0; i < playerCards.length; i++) {
-    totalScore = totalScore + Number(playerCards[i].value);
+    let cardValue = Number(playerCards[i].value);
+    totalScore = totalScore + cardValue;
+    // check for an 11 (ace). If the score is already over 21, remove the 11 and replace it with a 1.
+    if (cardValue == 11 && totalScore > 21) {
+      cardValue = 1;
+    }
+  }
+  // check for a blackjack (a hand with only 2 cards: ace + 10) and return 0 instead of the actual score. 0 will represent a blackjack in our game.
+  if (totalScore == 21 && playerCards.length == 2) {
+    return 0;
   }
   return totalScore;
 };
 
+// define a function to compare the score
+const compareTheScore = (userTotalScore, compTotalScore) => {
+  // If you and the computer are both over, you lose.
+  if (userTotalScore > 21 && compTotalScore > 21) {
+    return `You went over. You lose 😤`;
+  }
+
+  if (userTotalScore == compTotalScore) {
+    return `Draw 🙃`;
+  } else if (compTotalScore == 0) {
+    return `Lose, opponent has Blackjack 😱`;
+  } else if (userTotalScore == 0) {
+    return `Win with a Blackjack 😎`;
+  } else if (userTotalScore > 21) {
+    return `You went over. You lose 😭`;
+  } else if (compTotalScore > 21) {
+    return `Opponent went over. You win 😁`;
+  } else if (userTotalScore > compTotalScore) {
+    return `You win 😃`;
+  } else {
+    return `You lose 😤`;
+  }
+};
+
+//play the game
 var main = function (input) {
   var myOutputValue = "hello world";
-
   // assign an array for user and comp cards
   let userCards = [];
   let compCards = [];
-
   // assign a var for the total amount of cards in hand
   let userTotalScore;
   let compTotalScore;
@@ -101,9 +133,10 @@ var main = function (input) {
   userCards = firstCardsDeal(userCards);
   compCards = firstCardsDeal(compCards);
   userTotalScore = calculateScore(userCards);
-  console.log(userTotalScore);
   compTotalScore = calculateScore(compCards);
+  let message = compareTheScore(userTotalScore, compTotalScore);
 
   return `user cards are: ${userCards[0].name} ${userCards[0].emojiSuit} and ${userCards[1].name} ${userCards[1].emojiSuit}, total score : ${userTotalScore} <br>
-          comp cards are: ${compCards[0].name} ${compCards[0].emojiSuit} and ${compCards[1].name} ${compCards[1].emojiSuit}, total score : ${compTotalScore}`;
+          comp cards are: ${compCards[0].name} ${compCards[0].emojiSuit} and ${compCards[1].name} ${compCards[1].emojiSuit}, total score : ${compTotalScore} <br>
+          ${message}`;
 };
