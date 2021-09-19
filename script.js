@@ -95,16 +95,34 @@ var dealTwoCards = function (cardDeck, toCardDeck) {
 };
 
 //calculating total value of card
-var valueOfCards = function (cardArray) {
-  var cardArrayIndex = 0;
+var sumOfCards = function (cardArray) {
   var totalCardValue = 0;
+  var cardArrayIndex = 0;
   while (cardArrayIndex < cardArray.length) {
     var cardValue = cardArray[cardArrayIndex].value;
     totalCardValue += cardValue;
-    console.log(totalCardValue, "total card value");
     cardArrayIndex += 1;
   }
+
   return totalCardValue;
+};
+
+//sumofCards with variable Ace
+//if total value exceeds 21, to check if there are any aces on hand and convert the value to 1
+var totalCardValue = function (cardArray) {
+  var sumCardValue = sumOfCards(cardArray);
+  if (sumCardValue > 21) {
+    var cardIndex = 0;
+    while (cardIndex < cardArray.length) {
+      //to convert aces to the point where total card value does not exceed 21
+      if (sumOfCards(cardArray) > 21 && cardArray[cardIndex].value == 11) {
+        cardArray[cardIndex].value = 1;
+      }
+      cardIndex += 1;
+    }
+  }
+  var cardValueAfterConversion = sumOfCards(cardArray);
+  return cardValueAfterConversion;
 };
 
 //display card name and suit on output of all cards in array
@@ -123,7 +141,9 @@ var cardArrayDisplay = function (cardArray) {
 var newDeck = makeDeck();
 var shuffledDeck = shuffleCards(newDeck);
 var playerCards = [];
+var playerCardValue = 0;
 var dealerCards = [];
+var dealerCardValue = 0;
 
 var main = function (input) {
   if (currentGameMode == issueCards) {
@@ -132,95 +152,112 @@ var main = function (input) {
     //issue two cards to player and dealer at start of round
     dealTwoCards(shuffledDeck, playerCards);
     console.log(playerCards, "player card at start");
-    dealTwoCards(shuffledDeck, dealerCards);
-    console.log(dealerCards, "dealer card at start");
+    playerCardValue = totalCardValue(playerCards);
 
-    var displayPlayerCards = cardArrayDisplay(playerCards);
-    var displayDealerCards = cardArrayDisplay(dealerCards);
+    dealTwoCards(shuffledDeck, dealerCards);
+    dealerCardValue = totalCardValue(dealerCards);
+    console.log(dealerCards, "dealer card at start");
 
     //check if player's hand is 21, if yes & dealer's hand is not 21, user instant wins and start new round again
     //tie if both hands are natural 21s
-    if (valueOfCards(playerCards) == 21 && valueOfCards(dealerCards) != 21) {
-      return `Player hand: <br>${displayPlayerCards}<br>Dealer hand: <br>${displayDealerCards} Blackjack! Lucky!<br>Press submit again to play another round.`;
+    if (playerCardValue == 21 && dealerCardValue != 21) {
+      return `Player hand: <br>${cardArrayDisplay(
+        playerCards
+      )}<br>Dealer hand: <br>${cardArrayDisplay(
+        dealerCards
+      )}<br> NAT 21! Lucky!<br>Press submit again to play another round.`;
     }
-    if (valueOfCards(playerCards) == 21 && valueOfCards(dealerCards) == 21) {
-      return `Player hand: <br>${displayPlayerCards}<br>Dealer hand: <br>${displayDealerCards}<br>Whoa two natural blackjacks. It's a tie.<br>Press submit again to play another round.`;
+    if (playerCardValue == 21 && dealerCardValue == 21) {
+      return `Player hand: <br>${cardArrayDisplay(
+        playerCards
+      )}<br>Dealer hand: <br>${cardArrayDisplay(
+        dealerCards
+      )}<br>WHOA TWO NAT 21s! It's a tie.<br>Press submit again to play another round.`;
     }
 
     currentGameMode = playerRound;
 
     //if not 21, player can decide to hit (add another card) or stay (not add another card)
-    //only show one of dealer's cards
-    return `Player hand: <br>${displayPlayerCards}<br> Dealer hand:<br> ${dealerCards[0].name} of ${dealerCards[0].suit}<br>Please submit "hit" for another card, or "stay" to remain with your current hand.`;
+    //only show dealer's first cards
+    return `Player hand: <br>${cardArrayDisplay(
+      playerCards
+    )}<br> Dealer hand:<br> ${dealerCards[0].name} of ${
+      dealerCards[0].suit
+    }<br> <br>Please submit "hit" for another card, or "stay" to remain with your current hand.`;
   }
 
   //if player hits, add another card into hand
-
   if (currentGameMode == playerRound && input == "hit") {
     var newCard = shuffledDeck.pop();
     playerCards.push(newCard);
+    playerCardValue = totalCardValue(playerCards);
     console.log(shuffledDeck, "shuffled deck array 2");
     console.log(playerCards, "player cards array 2");
 
-    displayPlayerCards = cardArrayDisplay(playerCards);
-    displayDealerCards = cardArrayDisplay(dealerCards);
-
     //if a hit results in a bust, to restart round
-    if (valueOfCards(playerCards) > 21) {
+    if (playerCardValue > 21) {
       currentGameMode = issueCards;
-      playerCards = [];
-      dealerCards = [];
-      return `You drew ${newCard.name} of ${newCard.suit}.<br> <br> You have busted 21 points, better luck next time.<br> Player hand: <br>${displayPlayerCards}<br>Press submit again to play another round.`;
+      return `You drew ${newCard.name} of ${
+        newCard.suit
+      }.<br> <br> Your cards have exceeded 21 points, better luck next time.<br> Player hand: <br>${cardArrayDisplay(
+        playerCards
+      )}<br>Press submit again to play another round.`;
     }
-    if (valueOfCards(playerCards) == 21 && valueOfCards(dealerCards) != 21) {
+    //if a hit results in 21, to check if dealer hand is also 21, if dealer hand is not 21, player wins
+    if (playerCardValue == 21 && dealerCardValue != 21) {
       currentGameMode = issueCards;
-      return `Player hand: <br>${displayPlayerCards}<br>Dealer hand: <br>${displayDealerCards}<br> You won!<br>Press submit again to play another round.`;
+      return `Player hand: <br>${cardArrayDisplay(
+        playerCards
+      )}<br>Dealer hand: <br>${cardArrayDisplay(
+        dealerCards
+      )}<br> You won!<br>Press submit again to play another round.`;
     }
-    if (valueOfCards(playerCards) == 21 && valueOfCards(dealerCards) == 21) {
+    if (playerCardValue == 21 && dealerCardValue == 21) {
       currentGameMode = issueCards;
-      return `Player hand: <br>${displayPlayerCards}<br>Dealer hand: <br>${displayDealerCards}<br>You won!<br>Press submit again to play another round.`;
+      return `Player hand: <br>${cardArrayDisplay(
+        playerCards
+      )}<br>Dealer hand: <br>${cardArrayDisplay(
+        dealerCards
+      )}<br>You won!<br>Press submit again to play another round.`;
     }
 
-    return `You drew ${newCard.name} of ${newCard.suit}.<br> <br>Player hand: <br>${displayPlayerCards}<br> Dealer hand:<br> ${dealerCards[0].name} of ${dealerCards[0].suit}<br> <br>Please submit "hit" for another card, or "stay" to remain with your current hand.`;
+    return `You drew ${newCard.name} of ${
+      newCard.suit
+    }.<br> <br>Player hand: <br>${cardArrayDisplay(
+      playerCards
+    )}<br> Dealer hand:<br> ${dealerCards[0].name} of ${
+      dealerCards[0].suit
+    }<br> <br>Please submit "hit" for another card, or "stay" to remain with your current hand.`;
   }
 
   //if player stays, switches to dealer's turn
   //to determine winner here
   if (currentGameMode == playerRound && input == "stay") {
-    //if dealer's hand totals less than 17, they must hit
-    //loop out when reaches 17
-    if (valueOfCards(dealerCards) < 17) {
-      var dealerDrawCounter1 = 0;
-      while (valueOfCards(dealerCards) < 17) {
-        dealerCards.push(shuffledDeck.pop());
-        dealerDrawCounter1 += 1;
-        console.log(dealerCards);
-        if (valueOfCards(dealerCards) > 21) {
-          return `The dealer drew ${dealerDrawCounter1} more card(s), and busted 21.<br>Player's Hand: <br>${cardArrayDisplay(
-            playerCards
-          )}<br> <br>Dealer's Hand: ${cardArrayDisplay(
-            dealerCards
-          )}<br>Press submit to play another round.`;
-        }
-      }
+    //if dealer's hand totals less than 17, they must hit, till their hand exceeds 17 in value
+    var dealerCardsDrawn = [];
+    while (dealerCardValue < 17) {
+      var dealerDrawnCard = shuffledDeck.pop();
+      dealerCardsDrawn.push(dealerDrawnCard);
+      dealerCards.push(dealerDrawnCard);
+      dealerCardValue = totalCardValue(dealerCards);
+      console.log(dealerCards);
     }
 
     //if dealer's cards equals or more than 17 but less than player's total, dealer to draw again till they get more than player
-    if (valueOfCards(dealerCards) < valueOfCards(playerCards)) {
-      var dealerDrawCounter2 = 0;
-      while (valueOfCards(dealerCards) < valueOfCards(playerCards)) {
-        dealerCards.push(shuffledDeck.pop());
-        console.log("loop ran");
-        dealerDrawCounter2 += 1;
-      }
+    while (dealerCardValue < playerCardValue) {
+      dealerDrawnCard = shuffledDeck.pop();
+      dealerCardsDrawn.push(dealerDrawnCard);
+      dealerCards.push(dealerDrawnCard);
+      dealerCardValue = totalCardValue(dealerCards);
+      console.log("loop ran");
     }
+
     //if dealer's card values busts 21, they lose
-    if (valueOfCards(dealerCards) > 21) {
-      var totalCardsDealerDrew = Number(
-        dealerDrawCounter1 + dealerDrawCounter2
-      );
+    if (dealerCardValue > 21) {
       currentGameMode = issueCards;
-      return `The dealer drew ${totalCardsDealerDrew} more card(s), and busted 21.<br>Player's Hand: <br>${cardArrayDisplay(
+      return `The dealer drew:<br>${cardArrayDisplay(
+        dealerCardsDrawn
+      )}<br>Dealer busts 21, Player wins.<br> <br>Player's Hand: <br>${cardArrayDisplay(
         playerCards
       )}<br> <br>Dealer's Hand: ${cardArrayDisplay(
         dealerCards
@@ -228,7 +265,7 @@ var main = function (input) {
     }
 
     //if dealer's cards more than player's cards, dealer wins
-    if (valueOfCards(dealerCards) > valueOfCards(playerCards)) {
+    if (dealerCardValue > playerCardValue) {
       currentGameMode = issueCards;
       console.log(dealerCards, "dealer cards at end");
       return `Player's Hand: <br>${cardArrayDisplay(
@@ -239,3 +276,9 @@ var main = function (input) {
     }
   }
 };
+
+//for testing
+// playerCards = [
+//   { suit: "Diamonds", rank: 12, name: "Queen", value: 9 },
+//   { suit: "Spades", rank: 1, name: "Ace", value: 11 },
+// ];
