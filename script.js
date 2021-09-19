@@ -88,8 +88,11 @@ var resetGame = function () {
     const wagerSlider = document.getElementById(`wager-${i}`);
     wagerSlider.style.display = "block";
     wagerSlider.setAttribute("max", players[i].chips);
-    wagerSlider.value = 1;
-    document.getElementById(`value-wager-${i}`).innerHTML = "Bet: 1";
+    wagerSlider.value =
+      players[i].chips > players[i].wager ? players[i].wager : 1;
+    document.getElementById(
+      `value-wager-${i}`
+    ).innerHTML = `Bet: ${wagerSlider.value}`;
     document.getElementById(`player-${i}`).style.opacity = 1;
     document.getElementById(`player-${i}`).style.border = "none";
   }
@@ -224,7 +227,7 @@ var dealNewHand = function () {
 // dealer will draw and compare value with all remaining players
 var compareHandsWithDealer = function () {
   var output = "";
-  var computerPoints = 0;
+  var computerPoints = calculatePoints(computerCards);
   while (computerPoints < DEALER_MIN) {
     computerCards.push(deck.pop());
     computerPoints = calculatePoints(computerCards);
