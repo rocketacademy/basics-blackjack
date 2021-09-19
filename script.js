@@ -63,12 +63,16 @@ var main = function (input) {
       "<br><br>Dealer hand:<br>" +
       showHand(dealerHand) +
       "<br><br>" +
-      determineWinner(dealerHand, playerHand);
+      determineWinner(dealerHand, playerHand) +
+      '<br><br>Input "R" to play another round.';
 
+    if (input == "R") {
+      gameMode = gameModeOne;
+      myOutputValue =
+        "Dealer is shuffling the new deck...<br><br><br>Press submit once you're ready to play.";
+    }
     return myOutputValue;
   }
-
-  return myOutputValue;
 };
 
 //Function to create deck of 52 cards
@@ -116,7 +120,7 @@ var makeDeck = function () {
   return cardDeck;
 };
 
-//Functions to shuffle deck
+//Function to shuffle deck
 var getRandomIndex = function (max) {
   return Math.floor(Math.random() * max);
 };
