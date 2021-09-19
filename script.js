@@ -3,6 +3,8 @@ var bestScore = 21;
 var cardDeck = [];
 var isDealerTurn = false;
 var gameOver = false;
+var blackjackPayout = 1.5;
+var winPayout = 1;
 
 var player = {
   cards: [],
@@ -280,7 +282,8 @@ var distributeCards = function () {
   }
 
   if (haveBlackjack(player)) {
-    player.points = player.points + player.currentBet + player.currentBet * 1.5;
+    player.points =
+      player.points + player.currentBet + player.currentBet * blackjackPayout;
     output =
       cardsDrawnStatement +
       "<br>You drew a blackjack and dealer does not have a blackjack! You Won! <br><br>Click Submit to start a new round.";
@@ -420,7 +423,8 @@ var calWinOrLose = function (playerCards, computerCards) {
 
   if (playerTotalCardRank > computerTotalCardRank) {
     resultsStatement = "<b>You won!</b><br><br>" + nextRoundInstruction;
-    player.points = player.points + player.currentBet + player.currentBet * 2;
+    player.points =
+      player.points + player.currentBet + player.currentBet * winPayout;
     return resultsStatement;
   }
 
@@ -502,7 +506,8 @@ var dealerHitOrStand = function () {
   // If dealer's hand is more than 17, check if dealer bust
   if (cardBusted(computer)) {
     console.log(`Dealer bust. ${computerCardRank}`);
-    player.points = player.points + player.currentBet + player.currentBet * 2;
+    player.points =
+      player.points + player.currentBet + player.currentBet * winPayout;
     returnStatement =
       returnStatement +
       "<br>" +
