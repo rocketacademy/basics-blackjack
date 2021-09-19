@@ -205,6 +205,7 @@ var card1st2Draw = function () {
           } of ${userDraw[counter][counterCard].suit} <br> `;
         counterCard += 1;
       }
+
       outPut =
         outPut +
         `Player ${[counter + 1]}<br> ${outPut1}Total card value is ${
@@ -212,13 +213,16 @@ var card1st2Draw = function () {
         }<br><br>`;
       counter += 1;
     }
+    console.log("after while loop");
     gameMode = gameStageTwo;
     var counterStart = 0;
 
-    while (blackJackCounter[counterStart] != 0) {
-      counterStart += 1;
-    }
-
+    // while (blackJackCounter[counterStart] != 0) {
+    //   console.log("blackJackCounter");
+    //   console.log(counterStart, " counterStart");
+    //   counterStart += 1;
+    // }
+    console.log("outPut dealer");
     return (
       outPut +
       `Dealer<br>'<b>Card 1: ${dealerDraw[0].name} of ${dealerDraw[0].suit}</b>'<br> Card 2: 'covered' <br><br>${nameOfPlayer[counterStart]}, Please choose to 'hit' or 'stand'`
@@ -295,7 +299,6 @@ var hitButton = function (counter) {
   }
 };
 var submitButton = function () {
-  var counter1 = 0;
   currentDrawCard = 0;
 
   while (dealerTotalValue < 17) {
@@ -325,13 +328,13 @@ var submitButton = function () {
     counter = counter + 1;
   }
   gameMode = gameStageThree;
-  return `${dealerTotalCard} Dealer's total value is ${dealerTotalValue}`;
+  return `${dealerTotalCard} Dealer's total value is ${dealerTotalValue}<br><br> Please press submit button to see final result`;
 };
 var finalResult = function () {
   console.log(playerBetting, "playerBetting");
   if (dealerTotalValue > 21) {
     var counter = 0;
-    var outPut = `Dealer have Burst. <br> Dealer value is ${dealerTotalValue}<br><br> `;
+    var outPut = `Summary <br>Dealer have Burst. <br> Dealer value is ${dealerTotalValue}<br><br> `;
     while (counter < totalValueUser.length) {
       if (totalValueUser[counter] > 21) {
         outPut =
@@ -361,7 +364,7 @@ var finalResult = function () {
   }
   if (dealerTotalValue <= 21) {
     console.log(noOfPoints, "noOfPoints");
-    var outPut = `Dealer card total value is ${dealerTotalValue}<br><br> `;
+    var outPut = `Summary <br> Dealer card total value is ${dealerTotalValue}<br><br> `;
     var counter = 0;
 
     while (counter < totalValueUser.length) {
@@ -409,7 +412,9 @@ var finalResult = function () {
       }
     }
   }
-  return outPut;
+  gameMode = gameStageBetting;
+  reset();
+  return outPut + `${nameOfPlayer[0]}, Please key in your bet `;
 };
 var card1or11 = function (counterPlayer) {
   if (userAceCard[counterPlayer] == 1) {
@@ -439,7 +444,31 @@ var card1or11 = function (counterPlayer) {
     }
   }
 };
+var reset = function () {
+  playerBetting = [];
 
+  userDraw = [];
+  dealerDraw = [];
+  totalValueUser = [];
+  dealerTotalValue = 0;
+  userAceCard = [];
+  user11Card = [];
+  dealerAceCard = 0;
+  dealer11Card = 0;
+  counterHit = 0;
+  counterAmount = 0;
+  blackJackCounter = [];
+  winning = [];
+  var counter = 0;
+  while (noOfPlayer > counter) {
+    userAceCard.push(0);
+    user11Card.push(0);
+
+    blackJackCounter.push(0);
+    winning.push(0);
+    counter += 1;
+  }
+};
 var nameInput = function (playerName) {
   if (noOfPlayer - 1 > counterName && playerName != "") {
     var name = playerName;
@@ -478,6 +507,7 @@ var nameInput = function (playerName) {
   }
 };
 var betting = function (amount) {
+  console.log("betting");
   if (counterAmount < noOfPlayer - 1 && amount != "" && !isNaN(amount)) {
     var bettingAmount = amount;
     playerBetting.push(bettingAmount);
@@ -532,6 +562,7 @@ var main = function (input) {
   }
   if (gameMode == gameStageBetting) {
     var number = input;
+    console.log("betting");
     realNumber = Number(number);
     return betting(realNumber);
   }
@@ -540,6 +571,7 @@ var main = function (input) {
   }
 
   if (gameMode == gameStageTwo) {
+    console.log("gamemode2");
     if (counterHit < userDraw.length) {
       if (input == "h") {
         return hitButton(counterHit);
@@ -560,7 +592,6 @@ var main = function (input) {
         if (blackJackCounter[counterHit] == 1 && counterHit >= noOfPlayer - 1) {
           console.log("black jack counter");
           console.log(counterHit, "counterHit");
-
           gameMode = gameStageThree;
           return submitButton();
         }
