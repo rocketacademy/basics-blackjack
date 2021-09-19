@@ -3,23 +3,51 @@ var shuffledDeck = [];
 var turn = "player";
 var playerCards;
 var computerCards;
+var playerSum;
+var computerSum;
 
-var main = function () {
+var main = function (input) {
   // deck only reshuffles if game ends and return back to player
   if (turn == "player") {
-    var deck = makeDeck();
-    shuffledDeck = shuffleCards(deck);
-    console.log("cards are shuffled");
-    playerCards = drawnCards();
-    turn = "computer";
-    return `Player draws: ${playerCards}`;
+    if (input == "") {
+      var deck = makeDeck();
+      shuffledDeck = shuffleCards(deck);
+      console.log("cards are shuffled");
+      playerCards = drawnCards();
+      myOutputValue = `Player draws: ${playerCards}`;
+    }
+
+    if (input == "hit") {
+      hitDrawCard();
+      var hitCounter = 2;
+      while (hitCounter < drawnCard.length) {
+        myOutputValue = `You draw: ${drawnCard[hitCounter].name} of ${
+          drawnCard[hitCounter].suit
+        }. ${calSumOfCards()} ${resultsBurst()}. <br>
+        Enter 'hit' to draw cards or 'stand' to see results.`;
+        hitCounter += 1;
+      }
+    }
+
+    if (input == "stand") {
+      turn = "computer";
+    }
   }
 
   if (turn == "computer") {
     computerCards = drawnCards();
     turn = "player";
-    return `Computer draws: ${computerCards}`;
+    myOutputValue = `Computer draws: ${computerCards}`;
   }
+
+  return myOutputValue;
+};
+
+var hitDrawCard = function () {
+  drawnCard.push(shuffledDeck.pop());
+  console.log(drawnCard);
+  calSumOfCards();
+  return drawnCard;
 };
 
 var calSumOfCards = function () {
@@ -39,22 +67,33 @@ var calSumOfCards = function () {
   }
   sumOfCards = drawnCard.map(rank).reduce(sum);
   console.log(sumOfCards);
-  return sumOfCards;
+
+  if (turn == "player") {
+    playerSum = sumOfCards;
+    return `Your sum is now ${playerSum}`;
+  } else if (turn == "computer") {
+    computerSum = sumOfCards;
+    return `Your sum is now ${computerSum}`;
+  }
 };
 
 // function to convert all picture cards to rank = 10
 var convertRank = function () {
-  if (drawnCard[0].rank == 11 || drawnCard[1].rank == 11) {
-    cardRankIndex = drawnCard.findIndex((obj) => obj.rank == 11);
-    drawnCard[cardRankIndex].rank = 10;
-  }
-  if (drawnCard[0].rank == 12 || drawnCard[1].rank == 12) {
-    cardRankIndex = drawnCard.findIndex((obj) => obj.rank == 12);
-    drawnCard[cardRankIndex].rank = 10;
-  }
-  if (drawnCard[0].rank == 13 || drawnCard[1].rank == 13) {
-    cardRankIndex = drawnCard.findIndex((obj) => obj.rank == 13);
-    drawnCard[cardRankIndex].rank = 10;
+  var convertCounter = 0;
+  while (convertCounter < drawnCard.length) {
+    if (drawnCard[convertCounter].rank == 11) {
+      cardRankIndex = drawnCard.findIndex((obj) => obj.rank == 11);
+      drawnCard[cardRankIndex].rank = 10;
+    }
+    if (drawnCard[convertCounter].rank == 12) {
+      cardRankIndex = drawnCard.findIndex((obj) => obj.rank == 12);
+      drawnCard[cardRankIndex].rank = 10;
+    }
+    if (drawnCard[convertCounter].rank == 13) {
+      cardRankIndex = drawnCard.findIndex((obj) => obj.rank == 13);
+      drawnCard[cardRankIndex].rank = 10;
+    }
+    convertCounter += 1;
   }
 };
 
@@ -68,25 +107,29 @@ var drawnCards = function () {
     cardsCounter += 1;
   }
 
-  calSumOfCards();
-
   if (turn == "player") {
-    playerSum = sumOfCards;
     console.log(
       `player: ${drawnCard[0].name} of ${drawnCard[0].suit} and ${drawnCard[1].name} of ${drawnCard[1].suit}. `
     );
-    return `${drawnCard[0].name} of ${drawnCard[0].suit} and ${drawnCard[1].name} of ${drawnCard[1].suit}. Your sum is now ${playerSum}.`;
+    myOutputValue = `${drawnCard[0].name} of ${drawnCard[0].suit} and ${
+      drawnCard[1].name
+    } of ${drawnCard[1].suit}. ${calSumOfCards()}.<br>
+    Enter 'hit' to draw cards or 'stand' to see results.`;
   }
   if (turn == "computer") {
-    computerSum = sumOfCards;
     console.log(
-      `computer: ${drawnCard[0].name} of ${drawnCard[0].suit} and ${drawnCard[1].name} of ${drawnCard[1].suit}.Your sum is now ${computerSum}.`
+      `computer: ${drawnCard[0].name} of ${drawnCard[0].suit} and ${
+        drawnCard[1].name
+      } of ${drawnCard[1].suit}.${calSumOfCards()}.`
     );
-    return `${drawnCard[0].name} of ${
-      drawnCard[0].suit
-    } and 2nd card is unknown. <br><br>
-    ${resultsOfGame()}`;
+    myOutputValue = `${drawnCard[0].name} of ${drawnCard[0].suit} and ${
+      drawnCard[1].name
+    } of ${drawnCard[1].suit} <br><br>
+    ${resultsOfGame()} <br>
+    Click refresh to restart the game.`;
   }
+
+  return myOutputValue;
 };
 
 // use total sum of game to calculate who is winning
@@ -108,6 +151,33 @@ var resultsOfGame = function () {
     Computer sum = ${computerSum}<br>
     It's a tie!`;
   }
+
+  if (playerSum == 21) {
+    return `Player sum = ${playerSum}<br>
+    Computer sum = ${computerSum}<br>
+    Player wins!`;
+  }
+
+  if (computerSum == 21) {
+    return `Player sum = ${playerSum}<br>
+    Computer sum = ${computerSum}<br>
+    Computer wins!`;
+  }
+
+  resultsBurst();
+};
+
+// when sum is more than 21
+var resultsBurst = function () {
+  if (playerSum > 21) {
+    return `<br>Player has lost! Game Over! <br>
+    Click refresh to restart the game.`;
+  }
+
+  if (computerSum > 21) {
+    return `<br>Computer has lost! Game Over<br>
+    Click refresh to restart the game.`;
+  } else return "";
 };
 
 var makeDeck = function () {
