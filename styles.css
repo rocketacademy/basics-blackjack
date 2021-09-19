@@ -12,6 +12,7 @@ body {
   background-position: center; /* Center the image */
   background-repeat: no-repeat; /* Do not repeat the image */
   background-size: cover; /* Resize the background image to cover the entire container */
+  min-height: 100vh;
 }
 
 #output-div img {
@@ -27,9 +28,11 @@ body {
 
 #container {
   background-color: #51b683;
+  /* background-color: rgba(81, 182, 131, 0.8); */
   margin: auto;
   max-width: 1000px;
   padding: 30px;
+  border-radius: 24%;
 }
 
 input {
