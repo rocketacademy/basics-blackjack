@@ -24,6 +24,15 @@ var counterHit = 0; // different player hit turn
 var counterAmount = 0; //counter for Betting
 var blackJackCounter = []; //indicate who have win the black jack
 var winning = []; //indicate winning amount
+var myImage =
+  '<img src="https://c.tenor.com/1wNeqqZZ8jcAAAAC/monkey-ape.gif"/>';
+var nameImage =
+  '<img src="https://c.tenor.com/OlEmizIGQeoAAAAj/whats-your-name-ike-broflovski.gif"/>';
+var betImage =
+  '<img src="https://c.tenor.com/DYlOhYGUOloAAAAj/how-much-you-wanna-bet-kyle-broflovski.gif"/>';
+var blackJackImage =
+  '<img src="https://secureservercdn.net/160.153.138.163/97w.5c4.myftpupload.com/wp-content/uploads/2018/11/Blackjack-Flash-21.gif"/>';
+
 var deck = function () {
   var cardDeck = [];
   var suit = ["💖", "💎", "♣️", "♠️ "];
@@ -169,14 +178,18 @@ var card1st2Draw = function () {
       console.log(blackJackCounter);
       outPut =
         outPut +
-        `<b>BLACKJACK</b><br>Player${[counter + 1]} win.<br>You have drawn  ${
-          userDraw[counter][0].name
-        } of ${userDraw[counter][0].suit}<br>
-         and ${userDraw[counter][1].name} of ${userDraw[counter][1].suit}<br> ${
-          nameOfPlayer[counter]
-        } have win ${winning[counter]}<br> ${
-          nameOfPlayer[counter]
-        } total point left is ${noOfPoints[counter]}<br><br>`;
+        `<b>BLACKJACK<br>Player${[
+          counter + 1,
+        ]} win.</b><br>You have drawn <b> ${userDraw[counter][0].name} of ${
+          userDraw[counter][0].suit
+        }<br>
+         and ${userDraw[counter][1].name} of ${
+          userDraw[counter][1].suit
+        }${blackJackImage} ${nameOfPlayer[counter]}</b> have win ${
+          winning[counter]
+        }<br> ${nameOfPlayer[counter]} total point left is ${
+          noOfPoints[counter]
+        }<br><br>`;
     }
     counter += 1;
   }
@@ -198,15 +211,15 @@ var card1st2Draw = function () {
         console.log("counterCard");
         outPut1 =
           outPut1 +
-          ` Card ${[counterCard + 1]}:  ${
+          ` Card ${[counterCard + 1]}:<b>  ${
             userDraw[counter][counterCard].name
-          } of ${userDraw[counter][counterCard].suit} <br> `;
+          } of ${userDraw[counter][counterCard].suit} </b><br> `;
         counterCard += 1;
       }
 
       outPut =
         outPut +
-        `Player ${[counter + 1]}<br> ${outPut1}Total card value is ${
+        `<b>Player ${[counter + 1]}</b><br> ${outPut1}Total card value is ${
           totalValueUser[counter]
         }<br><br>`;
       counter += 1;
@@ -215,11 +228,6 @@ var card1st2Draw = function () {
     gameMode = gameStageTwo;
     var counterStart = 0;
 
-    // while (blackJackCounter[counterStart] != 0) {
-    //   console.log("blackJackCounter");
-    //   console.log(counterStart, " counterStart");
-    //   counterStart += 1;
-    // }
     console.log("outPut dealer");
     return (
       outPut +
@@ -234,15 +242,14 @@ var hitButton = function (counter) {
     }
     var hitDrawcard = shuffleCard.pop();
     userDraw[counter].push(hitDrawcard);
-    // currentDrawCard = 0;
+
     var totalValue = 0;
     totalValueUser[counter] = 0;
     console.log("userDraw", userDraw);
     console.log(counter, "counter");
 
-    // while (userDraw[counter].length > currentDrawCard) {
     var counterCard = 0;
-    //   console.log("while");
+
     while (userDraw[counter].length > counterCard) {
       console.log("while loop");
       if (userDraw[counter][counterCard].rank == 1) {
@@ -259,7 +266,7 @@ var hitButton = function (counter) {
     totalValueUser[counter] = totalValue;
     console.log(totalValueUser, "totalValueUser");
 
-    card1or11();
+    card1or11(counter);
 
     var userTotalCard = `${nameOfPlayer[counter]} have drawn these cards:<br> `;
     counterCard = 0;
@@ -278,7 +285,7 @@ var hitButton = function (counter) {
     }
 
     if (totalValueUser[counter] > 21) {
-      return ` ${nameOfPlayer[counter]} have <b>Bust </b>so unable to draw any cards <br>${userTotalCard} </<br>Total value of your cards is <b>${totalValueUser[counter]}</b><br>Please key in <b>'h'</b>for hit or<b> 's' </b>for submit `;
+      return `<b> ${nameOfPlayer[counter]} have Bust </b>so unable to draw any cards <br>${userTotalCard} </<br>Total value of your cards is <b>${totalValueUser[counter]}</b><br>Please key in <b>'h'</b>for hit or<b> 's' </b>for submit `;
     }
   } else {
     var counterCard = 0;
@@ -330,9 +337,9 @@ var submitButton = function () {
 };
 var finalResult = function () {
   console.log(playerBetting, "playerBetting");
+  var counter = 0;
   if (dealerTotalValue > 21) {
-    var counter = 0;
-    var outPut = `Summary <br>Dealer have Burst. <br> Dealer value is ${dealerTotalValue}<br><br> `;
+    var outPut = `Summary <br>Dealer have Burst. <br>  ${myImage} Dealer value is ${dealerTotalValue}<br><br> `;
     while (counter < totalValueUser.length) {
       if (totalValueUser[counter] > 21) {
         outPut =
@@ -340,9 +347,9 @@ var finalResult = function () {
           `${nameOfPlayer[counter - 1]} have Burst. <br> ${
             nameOfPlayer[counter - 1]
           } card value is ${totalValueUser[counter - 1]}
-        <br>You have lose ${
+        <br><b>Player Lose</b> ${
           playerBetting[counter]
-        }<br>Your total point have is ${noOfPoints[counter]}<br><br>`;
+        }💸<br>Your total point have is ${noOfPoints[counter]}💰<br><br>`;
         counter += 1;
       }
 
@@ -355,7 +362,7 @@ var finalResult = function () {
         }
         outPut =
           outPut +
-          `Player Win<br> ${nameOfPlayer[counter]} card value is ${totalValueUser[counter]}<br>You have win ${winning[counter]}<br>Your total point have is ${noOfPoints[counter]}<br><br>`;
+          `<b>Player Win</b><br> ${nameOfPlayer[counter]} card value is ${totalValueUser[counter]}<br>You have win ${winning[counter]}💵<br>Your total point have is ${noOfPoints[counter]}💰<br><br>`;
         counter += 1;
       }
     }
@@ -365,7 +372,7 @@ var finalResult = function () {
     var outPut = `Summary <br> Dealer card total value is ${dealerTotalValue}<br><br> `;
     var counter = 0;
 
-    while (counter < totalValueUser.length) {
+    while (counter <= totalValueUser.length) {
       if (
         totalValueUser[counter] > dealerTotalValue &&
         totalValueUser[counter] <= 21
@@ -380,16 +387,17 @@ var finalResult = function () {
         }
         outPut =
           outPut +
-          `Player Win <br> ${nameOfPlayer[counter]} card value is ${totalValueUser[counter]}<br>You have win ${winning[counter]}<br>Your total point have is ${noOfPoints[counter]}<br><br>`;
-        counter += 1;
+          `<b>Player Win</b> <br> ${nameOfPlayer[counter]} card value is ${totalValueUser[counter]}<br>You have win ${winning[counter]}💵<br>Your total point have is ${noOfPoints[counter]}💰<br><br>`;
+        // counter += 1;
+        console.log("counter");
       }
       if (totalValueUser[counter] < dealerTotalValue) {
         console.log("noofpoint", noOfPoints);
         console.log(playerBetting, "playerBetting");
         outPut =
           outPut +
-          `<br>Player Lose<br> ${nameOfPlayer[counter]} card value is ${totalValueUser[counter]}<br>You have lose ${playerBetting[counter]}<br>Your total point have is ${noOfPoints[counter]}<br><br>`;
-        counter += 1;
+          `<br><b>Player Lose</b><br> ${nameOfPlayer[counter]} card value is ${totalValueUser[counter]}<br>You have lose ${playerBetting[counter]}💸<br>Your total point have is ${noOfPoints[counter]}💰<br><br>`;
+        // counter += 1;
       }
       if (dealerTotalValue == totalValueUser[counter]) {
         console.log("noofpoint", noOfPoints);
@@ -400,19 +408,24 @@ var finalResult = function () {
           console.log("noofpoint", noOfPoints);
           outPut =
             outPut +
-            `<br>Player Draw<br> ${nameOfPlayer[counter]} card value is ${totalValueUser[counter]}<br>Your total point have is ${noOfPoints[counter]}<br><br>`;
+            `<br><b>Player Draw</b><br> ${nameOfPlayer[counter]} card value is ${totalValueUser[counter]}<br>Your total point have is ${noOfPoints[counter]}💰<br><br>`;
+          counter += 1;
         } else if (blackJackCounter[counter] == 1) {
           outPut =
             outPut +
-            `Player Win <br> ${nameOfPlayer[counter]} card value is ${totalValueUser[counter]}<br>You have win ${winning[counter]}<br>Your total point have is ${noOfPoints[counter]}<br><br>`;
+            `<b>Player Win</b> <br> ${nameOfPlayer[counter]} card value is ${totalValueUser[counter]}<br>You have win ${winning[counter]}💵<br>Your total point have is ${noOfPoints[counter]}💰<br><br>`;
         }
-        counter += 1;
       }
+      counter += 1;
+      console.log("counter", counter);
     }
   }
   gameMode = gameStageBetting;
   reset();
-  return outPut + `${nameOfPlayer[0]}, Please key in your bet `;
+  return (
+    `${nameOfPlayer[0]}, Please key in your bet to start a new game <br>Summary <br>` +
+    outPut
+  );
 };
 var card1or11 = function (counterPlayer) {
   if (userAceCard[counterPlayer] == 1) {
@@ -444,7 +457,7 @@ var card1or11 = function (counterPlayer) {
 };
 var reset = function () {
   playerBetting = [];
-
+  shuffleCard = cardShuffle();
   userDraw = [];
   dealerDraw = [];
   totalValueUser = [];
@@ -472,9 +485,12 @@ var nameInput = function (playerName) {
     var name = playerName;
     nameOfPlayer.push(name);
     counterName = counterName + 1;
-    return `Welcome <b>${
-      nameOfPlayer[counterName - 1]
-    }</b><br> Player${counterName}, Please key in your name`;
+    console.log(counterName);
+    return (
+      `Welcome <b>${nameOfPlayer[counterName - 1]}</b><br><br> Player${
+        counterName + 1
+      } ` + nameImage
+    );
   }
 
   if (noOfPlayer - 1 == counterName) {
@@ -489,20 +505,17 @@ var nameInput = function (playerName) {
       winning.push(0);
       counter += 1;
     }
-    // console.log(nameOfPlayer);
-    // var objectCounter = 0;
-    // while (nameOfPlayer.length > objectCounter) {
-    //   var leaderBoardName = {
-    //     name: nameOfPlayer[objectCounter],
-    //     point: noOfPoints[objectCounter],
-    //   };
-    //   playerNameWithPoint.push(leaderBoardName);
-    //   objectCounter += 1;
-    // }
+
     console.log(noOfPoints);
     gameMode = gameStageBetting;
-    return `Hi ${nameOfPlayer}, we will start with 100 points per player. <br> ${nameOfPlayer[0]}, Please key in your bet`;
+    return (
+      `Hi ${nameOfPlayer},<br> All will start with 100 points. <br><br><b> ${nameOfPlayer[0]}, </b>` +
+      betImage
+    );
   }
+  return ` <b>Player ${
+    counterName + 1
+  }</b> Please enter your name ${nameImage} `;
 };
 var betting = function (amount) {
   console.log("betting");
@@ -513,7 +526,10 @@ var betting = function (amount) {
 
     counterAmount += 1;
     console.log(counterAmount);
-    return `${nameOfPlayer[counterAmount]}, Please key in your betting amount`;
+    return (
+      `${nameOfPlayer[counterAmount]}, Please key in your betting amount` +
+      betImage
+    );
   }
   if (counterAmount <= noOfPlayer - 1 && amount != "" && !isNaN(amount)) {
     console.log("last player");
@@ -531,7 +547,7 @@ var betting = function (amount) {
 
       outPut =
         outPut +
-        `${nameOfPlayer[counter]}'s <br>bet: ${playerBetting[counter]} point<br> left: ${noOfPoints[counter]} point<br><br>`;
+        `${nameOfPlayer[counter]}'s <br>bet: ${playerBetting[counter]} point💵<br> left: ${noOfPoints[counter]} point 💰<br><br>`;
       counter += 1;
 
       // if (playerBetting[counter] > noOfPoints[counter]) {
@@ -542,7 +558,7 @@ var betting = function (amount) {
     return outPut + `<br> Please click Submit for all player to draw card`;
   }
 
-  return `Please key in your betting amount`;
+  return `Please key in your betting amount` + betImage;
 };
 var shuffleCard = cardShuffle();
 var main = function (input) {
@@ -552,7 +568,10 @@ var main = function (input) {
     }
     gameMode = gameStageName;
     noOfPlayer = input;
-    return `Player 1, please key in your name`;
+
+    return (
+      `Welcome All ${noOfPlayer} Players<br><br><b>Player 1<br>` + nameImage
+    );
   }
 
   if (gameMode == gameStageName) {
@@ -593,7 +612,7 @@ var main = function (input) {
           gameMode = gameStageThree;
           return submitButton();
         }
-        if (blackJackCounter[counterHit] == 0 && counterHit >= noOfPlayer - 1) {
+        if (blackJackCounter[counterHit] == 0 && counterHit >= noOfPlayer) {
           gameMode = gameStageThree;
           return submitButton();
         }
@@ -608,7 +627,7 @@ var main = function (input) {
               } of ${userDraw[counterHit][counterCard].suit}<br>`;
             counterCard += 1;
           }
-          return `${nextPlayerOutput} <br> Please key in 'h'for hit or 's' fors submit`;
+          return `<b>${nextPlayerOutput} </b> Your total card value is: <b>${totalValueUser[counterHit]}</b><br> Please key in 'h'for hit or 's' fors submit`;
         }
         gameMode = gameStageThree;
         return submitButton();
