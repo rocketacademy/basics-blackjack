@@ -134,6 +134,7 @@
         <button id="new-hand-button">New Hand</button>
         <button id="hit-button">Hit</button>
         <button id="stand-button">Stand</button>
+        <button id="split-button">Split</button>
       </div>
     </div>
     <!-- Import program logic -->
@@ -144,6 +145,7 @@
       var newHand = document.querySelector("#new-hand-button");
       var hit = document.querySelector("#hit-button");
       var stand = document.querySelector("#stand-button");
+      var split = document.querySelector("#split-button");
       var output = document.querySelector("#output-div");
 
       start.addEventListener("click", function () {
@@ -168,19 +170,40 @@
           p.appendChild(text);
           player.appendChild(p);
 
+          var cardContainer = document.createElement("div");
+          var splitContainer = document.createElement("div");
+          cardContainer.id = `card-container-${i}-0`;
+          splitContainer.id = `card-container-${i}-1`;
+          splitContainer.className = "split-container";
+
           // cards
           var cards = document.createElement("span");
           text = document.createTextNode("");
-          cards.id = `player-cards-${i}`;
+          cards.id = `player-cards-${i}-0`;
           cards.appendChild(text);
-          player.appendChild(cards);
+          cardContainer.appendChild(cards);
 
           // point value
           var playerPoints = document.createElement("span");
           text = document.createTextNode("");
-          playerPoints.id = `player-points-${i}`;
+          playerPoints.id = `player-points-${i}-0`;
           playerPoints.appendChild(text);
-          player.appendChild(playerPoints);
+          cardContainer.appendChild(playerPoints);
+
+          var split = document.createElement("span");
+          text = document.createTextNode("");
+          split.id = `player-cards-${i}-1`;
+          split.appendChild(text);
+          splitContainer.appendChild(split);
+
+          var splitPoints = document.createElement("span");
+          text = document.createTextNode("");
+          splitPoints.id = `player-points-${i}-1`;
+          splitPoints.appendChild(text);
+          splitContainer.appendChild(splitPoints);
+
+          player.appendChild(cardContainer);
+          player.appendChild(splitContainer);
 
           // slider input for bet amount
           var bet = document.createElement("input");
@@ -242,6 +265,10 @@
 
       stand.addEventListener("click", function () {
         output.innerHTML = onPlayerStand();
+      });
+
+      split.addEventListener("click", function () {
+        output.innerHTML = onPlayerSplit();
       });
     </script>
   </body>
