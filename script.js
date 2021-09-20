@@ -2,15 +2,14 @@ var playerArrayOfCards = [];
 var dealerAarrayOfCards = [];
 var gameMode = 'input username';
 var deck = [];
-var bet_amount = 0;
-var capital = 100;
-var dealerScore = 0;
-var playerScore = 0;
 var userName = ''
 var twentyOne = 21;
 var dealerThreshold = 16;
 var playerChoseToSkip = false;
 var gameOver = false;
+var playerTotalSum = (calSumInHand(playerArrayOfCards))
+var dealerTotalSum = (calSumInHand(dealerAarrayOfCards))
+
 
 var makeDeck = function () {
   // Initialise an empty deck array
@@ -158,7 +157,7 @@ if (!playerChoseToSkip) {
 
   if (input == 'hit') {
     dealCardToHand(playerArrayOfCards);
-    if (getSumInHand(playerArrayOfCards > twentyOne)) {
+    if (calSumInHand(playerArrayOfCards > twentyOne)) {
       gameOver = true;
       return `${getStandardOutputValue()} <br>
       ${userName} busted and loses. Please refresh to play again.`;
@@ -169,20 +168,20 @@ if (input == 'skip') {
   }
 }
 
-var dealerCardsSum = getSumInHand(dealerAarrayOfCards);
+var dealerCardsSum = calSumInHand(dealerAarrayOfCards);
 if (dealerCardsSum <= dealerThreshold) {
   dealCardToHand(dealerAarrayOfCards);
-  dealerCardsSum = getSumInHand(dealerAarrayOfCards);
-  if (getSumInHand(dealerAarrayOfCards > twentyOne)) {
+  dealerCardsSum = calSumInHand(dealerAarrayOfCards);
+  if (calSumInHand(dealerAarrayOfCards > twentyOne)) {
   gameOver = true;
   return `${getStandardOutputValue()} <br>
-  Dealer busted and loses. Please refresh to play again.`;
+  Dealer busted and ${userName} wins. Please refresh to play again.`;
   }
 }
 
   if (playerChoseToSkip && dealerCardsSum > dealerThreshold) {
     gameOver = true;
-    if (getSumInHand(playerArrayOfCards) > dealerCardsSum) {
+    if (calSumInHand(playerArrayOfCards) > dealerCardsSum) {
       return `${getStandardOutputValue()} <br>
         ${userName} wins! Please refresh to play again.`;
     }
@@ -191,7 +190,7 @@ if (dealerCardsSum <= dealerThreshold) {
   }
   return `${getStandardOutputValue()} <br>
     playerChoseToSkip is ${playerChoseToSkip} <br>
-    If player has not yet chosen to stand, please enter "hit" or "stand". <br>
+    No valid input, please enter "hit" or "skip". <br>
     Else, press Submit to continue.`;
 }
 };
@@ -203,7 +202,8 @@ var dealCardToHand = function (hand) {
 };
 
 // sum of cards in hand
-var getSumInHand = function (hand) {
+// doesn't work
+var calSumInHand = function (hand) {
   var numOfAcesInHand = 0;
   var sum = 0;
   var counter = 0;
@@ -218,26 +218,28 @@ var getSumInHand = function (hand) {
     }
     counter += 1
   }
-
+};
 
 // covert ace rank from 11 to 1
-
-if (sum > twentyOne && numOfAcesInHand > 0) {
-  var aceCounter = 0;
-  while (aceCounter < numOfAcesInHand) {
-    sum -= 10;
-    if (sum <= twentyOne) {
-      break;
-    }
-    aceCounter += 1;
+// don't know how to do
+var convertAceValue = function () {
+  if (numOfAcesHand >= 1) {
+   if (playerTotalSum <= 21) {
+    currentCard.rank == 11
+  } else {
+    currentCard.rank == 1
+  }
+  if (dealerTotalSum <= 21) {
+    currentCard.rank == 11
+  } else {
+    currentCard.rank == 1
   }
 }
-return sum
 };
 
 // when the hand is blackjack
 var isBlackjack = function (hand) {
-return hand.length == 2 && getSumInHand(hand) == twentyOne;
+return hand.length == 2 && calSumInHand(hand) == twentyOne;
 };
 
 var convertHandToString = function (hand) {
@@ -253,8 +255,8 @@ var convertHandToString = function (hand) {
 var getStandardOutputValue = function () {
   return `${userName}'s hand ${convertHandToString(
     playerArrayOfCards
-  )} with sum ${getSumInHand(playerArrayOfCards)}. <br>
+  )} with sum ${calSumInHand(playerArrayOfCards)}. <br>
     Dealer's hand ${convertHandToString(
       dealerAarrayOfCards
-    )} with sum ${getSumInHand(dealerAarrayOfCards)}.`;
+    )} with sum ${calSumInHand(dealerAarrayOfCards)}.`;
 };
