@@ -19,22 +19,24 @@ var main = function (input) {
       playerCards = drawnCards();
       myOutputValue = `Player draws: ${playerCards}`;
     }
-    // if player choose to hit, draw a card & show results if it is > 21
+    // if player choose to hit, draw a card
     if (input == "hit") {
       hitDrawCard();
       var playerHitCounter = 2;
       while (playerHitCounter < drawnCard.length) {
+        // if playersum is within 21, show sum of cards
         if (playerSum <= 21) {
           myOutputValue = `You draw: ${drawnCard[playerHitCounter].name} of ${
             drawnCard[playerHitCounter].suit
           }. ${calSumOfCards()}. <br>
         Enter 'hit' to draw cards or 'stand' to see results.`;
-        } else {
+        }
+        // else shows game over
+        else {
           myOutputValue = `You draw: ${drawnCard[playerHitCounter].name} of ${
             drawnCard[playerHitCounter].suit
           }. ${calSumOfCards()} ${resultsBurst()}.`;
         }
-
         playerHitCounter += 1;
       }
     }
@@ -47,7 +49,7 @@ var main = function (input) {
   if (turn == "computer") {
     computerCards = drawnCards();
     myOutputValue = `Computer draws: ${computerCards}`;
-    // change turn back to player so that the game restarts
+    // change turn back to player so that the game restarts by clicking submit
     turn = "player";
   }
 
@@ -68,7 +70,6 @@ var calSumOfCards = function () {
   while (drawnCardCounter < drawnCard.length) {
     convertPicRank();
     convertAceRank();
-
     drawnCardCounter += 1;
   }
 
@@ -82,11 +83,7 @@ var calSumOfCards = function () {
   sumOfCards = drawnCard.map(rank).reduce(sum);
   console.log(sumOfCards);
 
-  // // cal sum when rank of ace is 11
-  // sumWhenAceIsEleven = 10 + sumOfCards;
-  // console.log(`sum when ace is 11 = ${sumWhenAceIsEleven}`);
-
-  // assign value of sum according to their turn
+  // assign value of sum to player/ computer according to their turn
   if (turn == "player") {
     playerSum = sumOfCards;
     return `Your sum is now ${playerSum}`;
@@ -120,7 +117,7 @@ var convertAceRank = function () {
   var aceCounter = 0;
   while (aceCounter < drawnCard.length) {
     if (drawnCard[aceCounter].name == "ace") {
-      // cal sum when rank of ace is 11
+      // calculate sum of cards if rank of ace is 11
       sumWhenAceIsEleven = 10 + sumOfCards;
       console.log(`sum when ace is 11 = ${sumWhenAceIsEleven}`);
       // if ace is 11 & sum is < 21, assign value of 11 to ace
@@ -232,21 +229,9 @@ var resultsOfGame = function () {
     Computer sum = ${computerSum}<br>
     It's a tie!`;
   }
-
-  if (playerSum == 21) {
-    return `Player sum = ${playerSum}<br>
-    Computer sum = ${computerSum}<br>
-    Player wins!`;
-  }
-
-  if (computerSum == 21) {
-    return `Player sum = ${playerSum}<br>
-    Computer sum = ${computerSum}<br>
-    Computer wins!`;
-  }
 };
 
-// when sum is more than 21
+// results when sum is more than 21
 var resultsBurst = function () {
   if (playerSum > 21) {
     return `<br>Player has lost! Game Over! <br>
