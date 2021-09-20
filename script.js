@@ -6,6 +6,7 @@ let numberOfPlayers = 1; // dealer computer is not a player, per se
 let gameOver = false;
 let playerActionLock = false;
 let fullResponseMessage = "";
+let winner = "";
 // at round start, every player is given 2 cards (dealer's 2nd is face down)
 // hit: draw another card
 // stand: no more cards
@@ -67,6 +68,13 @@ const cardSuitEmojiMap = {
   diamonds: "♦",
   clubs: "♣",
   spades: "♠",
+};
+
+const catPictureMap = {
+  // key indicates winner
+  Player: `<img src = "https://c.tenor.com/906nGAL7Xw0AAAAi/mochi-peachcat-cute-cat.gif/">`,
+  Dealer: `<img src = "https://c.tenor.com/yhMZIW9G7BkAAAAi/peachcat-cat.gif/">`,
+  Nobody: `<img src = "https://c.tenor.com/hjmx7LPWUC0AAAAi/peach-cat.gif/">`,
 };
 
 const refreshMessage = "Please refresh the page to play again.";
@@ -219,10 +227,12 @@ const isBlackjack = function (playerNumber) {
 const checkPlayersforBlackjack = function () {
   if (isBlackjack(0)) {
     gameOver = true;
-    fullResponseMessage += `Computer insta-wins by Blackjack. ${refreshMessage}<br><br>`;
+    winner = "Dealer";
+    fullResponseMessage += `${winner} insta-wins by Blackjack. ${refreshMessage}<br><br>${catPictureMap[winner]}`;
   } else if (isBlackjack(1)) {
     gameOver = true;
-    fullResponseMessage += `Player insta-wins by Blackjack. ${refreshMessage}<br><br>`;
+    winner = "Player";
+    fullResponseMessage += `${winner} insta-wins by Blackjack. ${refreshMessage}<br><br>${catPictureMap[winner]}`;
   }
   // no action if neither player nor dealer have a 21
 };
@@ -269,6 +279,7 @@ const dealerHitStand = function () {
     )}!<br>`;
     if (checkBust(dealer) == true) {
       fullResponseMessage += "Looks like the dealer busted! ";
+      winner = "Player";
       gameOver = true;
       break;
     }
@@ -318,6 +329,10 @@ const chooseWinner = function () {
   return win;
 };
 
+const appendCatForGameOver = function (ww) {
+  return `${catPictureMap[ww]}`;
+};
+
 const main = function (input) {
   fullResponseMessage = "";
   if (gameOver) {
@@ -337,16 +352,21 @@ const main = function (input) {
         handsArray[1][handsArray.length]
       )}!<br>`;
       if (checkBust(1) == true) {
-        return `You've busted! Dealer Wins.<br><br>${sendDefaultSummaryMessage()} <br><br>${refreshMessage}`;
+        winner = "Dealer";
+        return `You've busted! Dealer Wins.<br><br>${sendDefaultSummaryMessage()} <br><br>${refreshMessage}<br><br>${
+          catPictureMap[winner]
+        }`;
       }
       givePlayerHitStandHints();
       return `${sendFullResponseMessage()}`;
     } else if (input == "stand") {
       playerActionLock = true;
       dealerHitStand();
-      let winner = chooseWinner();
+      winner = chooseWinner();
       gameOver = true;
-      fullResponseMessage += `${winner} wins this round! <br><br>${sendDefaultSummaryMessage()} <br><br>${refreshMessage}`;
+      fullResponseMessage += `${winner} wins this round! <br><br>${sendDefaultSummaryMessage()} <br><br>${refreshMessage}<br><br>${
+        catPictureMap[winner]
+      }`;
       return fullResponseMessage;
     }
     return `Input unrecognized. ${refreshMessage}`;
