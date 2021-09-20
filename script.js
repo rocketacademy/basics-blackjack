@@ -78,14 +78,14 @@ const firstCardsDeal = (playerCards) => {
 // a funtion to generates a new card
 const addingNewCard = (playerCards, playerTotalScore) => {
   // generate a new card
-  let newCard = dealARandomCard();
+  let newPlayerCard = dealARandomCard();
   // calculate the new user's score
-  let newPlayerTotalScore = playerTotalScore + newCard.value;
+  let newPlayerTotalScore = playerTotalScore + newPlayerCard.value;
   // push the new card to userCards array
-  playerCards.push(newCard);
-  let newCardMessage = `Your new card is : ${newCard.name} ${newCard.emojiSuit} total score : ${newPlayerTotalScore}. <br>`;
+  playerCards.push(newPlayerCard);
+  let newCardMessage = `Your new card is : ${newPlayerCard.name} ${newPlayerCard.emojiSuit} total score : ${newPlayerTotalScore}. <br>`;
 
-  return { newCard, newPlayerTotalScore, newCardMessage };
+  return { newPlayerCard, newPlayerTotalScore, newCardMessage };
 };
 
 // a function to calculate in hand score with params playerCards
@@ -133,6 +133,7 @@ const compareTheScore = (userTotalScore, compTotalScore) => {
 // assign game mode for the game
 const startTheGameMode = "START_THE_GAME_MODE";
 const addCardMode = "ADD_CARD_MODE";
+const dealerAddCardMode = "DEALER_ADD_CARD_MODE";
 const gameOver = "GAME_OVER ";
 
 let gameMode = startTheGameMode;
@@ -148,7 +149,7 @@ let compTotalScore;
 var main = function (input) {
   var myOutputValue = "Click Submit to deal cards.";
 
-  while (gameMode == startTheGameMode) {
+  if (gameMode == startTheGameMode) {
     // generates the first 2 cards
     userCards = firstCardsDeal(userCards);
     compCards = firstCardsDeal(compCards);
@@ -172,43 +173,64 @@ var main = function (input) {
       gameMode = gameOver;
       return `${userCardsMessage}<br>${compCardsMessage}<br>
             Win with a Blackjack 😎`;
+    } else {
+      // if there's no blackjack, continue to play, ask the user whether to hit or stand
+      gameMode = addCardMode;
+      console.log(gameMode);
     }
-    // if there's no blackjack, continue to play, ask the user whether to hit or stand
-    gameMode = addCardMode;
+
     return `${userCardsMessage}, total score : ${userTotalScore} <br>
           ${compCardsMessage}, total score : ${compTotalScore} <br>
           Type 'y' to get another card, type 'n' to pass: `;
   }
 
-  // ask the user whether to hit or stand
-  if (gameMode == addCardMode && userTotalScore < 21 && input == "y") {
-    // generate a new user's card
-    let { newUserTotalScore, newCardMessage } = addingNewCard(
-      userCards,
-      userTotalScore
-    );
+  // // ask the user whether to hit or stand
+  // else if (gameMode == addCardMode) {
+  //   if (input == "y") {
+  //     // generate a new user's card
+  //     let { newUserTotalScore, newCardMessage } = addingNewCard(
+  //       userCards,
+  //       userTotalScore
+  //     );
+  //     // check if the score is bigger or equal to 21
+  //     if (newUserTotalScore <= 21) {
+  //       addingNewCard(userCards, userTotalScore);
+  //       return `${newCardMessage} <br>
+  //               Type 'y' to get another card, type 'n' to pass:`;
+  //     } // if new total score is bigger than 21, the player busts, the game is over, user lose, return the message
+  //     else if (userTotalScore > 21) {
+  //       gameMode = dealerAddCardMode;
+  //       return `${newCardMessage} <br>
+  //               ${compareTheScore(newUserTotalScore, compTotalScore)}`;
+  //     }
+  //     // if the user input is "no"
+  //   } else if (input == "no") {
+  //     gameMode = dealerAddCardMode;
+  //   }
+  // }
+  // else if (gameMode == dealerAddCardMode) {
+  //     while (newCompTotalScore < 17) {
+  //       // generate a new comp's card if comp's card's score is less than 17
+  //       let { newCompCard, newCompTotalScore } = addingNewCard(
+  //         compCards,
+  //         compTotalScore
+  //       );
+  //       compTotalScore = newCompTotalScore;
 
-    // if new total score is bigger than 21, the game is over, user lose, return the message
-    if (newUserTotalScore > 21) {
-      gameMode = gameOver;
-
-      return compareTheScore(newUserTotalScore, compTotalScore);
-    }
-    return `${newCardMessage} <br>
-            Type 'y' to get another card, type 'n' to pass:`;
-  }
-
-  if (input == "no") {
-    let newCard = dealARandomCard();
-    compCards.push(newCard);
-    compTotalScore += newCard.value;
-    return compareTheScore(userTotalScore, compTotalScore);
-  }
-
+  //       return newCompCard;
+  //     } // if new total score is bigger than 21, the game is over, comp busts, return the message
+  //     return `${newCardMessage} <br>
+  //             ${compareTheScorecompareTheScore(
+  //               userTotalScore,
+  //               newCompTotalScore
+  //             )}`;
+  //   }
+  // if (gameMode == gameOver) {
   userCards = [];
   compCards = [];
   userTotalScore = 0;
   compTotalScore = 0;
+  // }
   gameMode = startTheGameMode;
   return myOutputValue;
 };
