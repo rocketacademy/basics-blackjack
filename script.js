@@ -5,6 +5,7 @@ var playerCards;
 var computerCards;
 var playerSum;
 var computerSum;
+var sumWhenAceIsEleven;
 
 var main = function (input) {
   // starts with player's turn
@@ -26,7 +27,7 @@ var main = function (input) {
         if (playerSum <= 21) {
           myOutputValue = `You draw: ${drawnCard[playerHitCounter].name} of ${
             drawnCard[playerHitCounter].suit
-          }. ${calSumOfCards()} ${resultsBurst()}. <br>
+          }. ${calSumOfCards()}. <br>
         Enter 'hit' to draw cards or 'stand' to see results.`;
         } else {
           myOutputValue = `You draw: ${drawnCard[playerHitCounter].name} of ${
@@ -65,7 +66,9 @@ var calSumOfCards = function () {
   // converts all picture cards to rank = 10
   var drawnCardCounter = 0;
   while (drawnCardCounter < drawnCard.length) {
-    convertRank();
+    convertPicRank();
+    convertAceRank();
+
     drawnCardCounter += 1;
   }
 
@@ -79,6 +82,10 @@ var calSumOfCards = function () {
   sumOfCards = drawnCard.map(rank).reduce(sum);
   console.log(sumOfCards);
 
+  // // cal sum when rank of ace is 11
+  // sumWhenAceIsEleven = 10 + sumOfCards;
+  // console.log(`sum when ace is 11 = ${sumWhenAceIsEleven}`);
+
   // assign value of sum according to their turn
   if (turn == "player") {
     playerSum = sumOfCards;
@@ -90,22 +97,44 @@ var calSumOfCards = function () {
 };
 
 // function to convert all picture cards to rank = 10
-var convertRank = function () {
+var convertPicRank = function () {
   var convertCounter = 0;
   while (convertCounter < drawnCard.length) {
-    if (drawnCard[convertCounter].rank == 11) {
-      cardRankIndex = drawnCard.findIndex((obj) => obj.rank == 11);
+    if (drawnCard[convertCounter].name == "jack") {
+      cardRankIndex = drawnCard.findIndex((obj) => obj.name == "jack");
       drawnCard[cardRankIndex].rank = 10;
     }
-    if (drawnCard[convertCounter].rank == 12) {
-      cardRankIndex = drawnCard.findIndex((obj) => obj.rank == 12);
+    if (drawnCard[convertCounter].name == "queen") {
+      cardRankIndex = drawnCard.findIndex((obj) => obj.name == "queen");
       drawnCard[cardRankIndex].rank = 10;
     }
-    if (drawnCard[convertCounter].rank == 13) {
-      cardRankIndex = drawnCard.findIndex((obj) => obj.rank == 13);
+    if (drawnCard[convertCounter].name == "king") {
+      cardRankIndex = drawnCard.findIndex((obj) => obj.name == "king");
       drawnCard[cardRankIndex].rank = 10;
     }
     convertCounter += 1;
+  }
+};
+
+var convertAceRank = function () {
+  var aceCounter = 0;
+  while (aceCounter < drawnCard.length) {
+    if (drawnCard[aceCounter].name == "ace") {
+      // cal sum when rank of ace is 11
+      sumWhenAceIsEleven = 10 + sumOfCards;
+      console.log(`sum when ace is 11 = ${sumWhenAceIsEleven}`);
+      // if ace is 11 & sum is < 21, assign value of 11 to ace
+      if (sumWhenAceIsEleven < 21) {
+        cardRankIndex = drawnCard.findIndex((obj) => obj.name == "ace");
+        drawnCard[cardRankIndex].rank = 11;
+      }
+      // if ace is 11 & sum is > 21, assigned value of 1 to ace
+      if (sumWhenAceIsEleven > 21) {
+        cardRankIndex = drawnCard.findIndex((obj) => obj.name == "ace");
+        drawnCard[cardRankIndex].rank = 1;
+      }
+    }
+    aceCounter += 1;
   }
 };
 
@@ -145,13 +174,13 @@ var drawnCards = function () {
     console.log(
       `computer: ${drawnCard[0].name} of ${drawnCard[0].suit} and ${drawnCard[1].name} of ${drawnCard[1].suit}.`
     );
+    calSumOfCards();
     // check for computer blackjack
     if (
       drawnCard.length == 2 &&
       (drawnCard[0].name == "ace" || drawnCard[1].name == "ace") &&
       (drawnCard[0].rank == 10 || drawnCard[1].rank == 10)
     ) {
-      console.log("b");
       return "Computer got a blackjack! Computer won!";
     }
     // if no blackjack, show the 2 cards that computer draw at the beginning
@@ -162,7 +191,7 @@ var drawnCards = function () {
     // while loop to continuously draw cards when computersum is < 17
     var computerCounter = 0;
     while (computerCounter < drawnCard.length) {
-      calSumOfCards();
+      // calSumOfCards();
       if (computerSum < 17) {
         hitDrawCard();
       }
@@ -227,7 +256,7 @@ var resultsBurst = function () {
   if (computerSum > 21) {
     return `<br>Computer has lost! Game Over<br>
     Click 'Submit' to restart the game`;
-  } else return "";
+  }
 };
 
 var makeDeck = function () {
