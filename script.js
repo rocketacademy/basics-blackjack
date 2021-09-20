@@ -1,7 +1,7 @@
 var deck;
 var players = [];
 var curPlayer = -1;
-var computerCards = [];
+var dealerCards = [];
 var handInProgress = false;
 
 const STARTING_CARDS = 2;
@@ -16,10 +16,12 @@ const splitButton = document.getElementById("split-button");
 var initialisePlayers = function (playerNum) {
   for (var i = 0; i < Number(playerNum); i += 1) {
     players[i] = {
-      cards: [[]],
-      curHand: 0,
-      points: [0],
-      settled: [false],
+      // hands is an array storing one array of cards
+      // if player splits, then another array of cards will be added
+      hands: [[]],
+      points: [0], // array of points corresponding to hands
+      settled: [false], // array denoting whether the hand is settled
+      curHand: 0, // set current hand index as 0
       chips: 100,
       wager: 0,
       buyIn: 100,
@@ -49,7 +51,7 @@ var makeCard = function (suit, emoji, rank) {
   return { name, suit, points, emoji };
 };
 
-// helper function to create deck
+// helper function to create a shuffled deck
 var makeDeck = function () {
   var deck = [];
   var suits = ["hearts", "diamonds", "clubs", "spades"];
@@ -63,54 +65,61 @@ var makeDeck = function () {
       deck.push(card);
     }
   }
+
+  // shuffle deck
+  for (var i = 0; i < deck.length; i += 1) {
+    var randomIndex = Math.floor(Math.random() * deck.length);
+    var randomCard = deck[randomIndex];
+    var currentCard = deck[i];
+
+    deck[i] = randomCard;
+    deck[randomIndex] = currentCard;
+  }
   return deck;
 };
 
-// Shuffle the elements in the cardDeck array
-var shuffleDeck = function (cardDeck) {
-  for (var i = 0; i < cardDeck.length; i += 1) {
-    var randomIndex = Math.floor(Math.random() * cardDeck.length);
-    var randomCard = cardDeck[randomIndex];
-    var currentCard = cardDeck[i];
+// helper function to reset player
+var resetPlayer = function (index) {
+  players[index].hands = [[]];
+  players[index].settled = [false];
+  players[index].curHand = 0;
+  players[index].points = [0];
 
-    cardDeck[i] = randomCard;
-    cardDeck[randomIndex] = currentCard;
+  // top up a player with 100 chips if he has 0 or less chips
+  var count = 0;
+  while (players[index].chips <= 0) {
+    players[index].chips += 100;
+    players[index].buyIn += 100;
+    count += 1;
   }
-  return cardDeck;
+  if (count > 0)
+    return `<br>Player ${index + 1} is topped up with ${count * 100} chips.`;
+  else return "";
 };
 
 // reset game by making and shuffling a new deck, clearing cards, resetting ui
 var resetGame = function () {
+  // reset state variables
   var output = "";
-  deck = shuffleDeck(makeDeck());
+  deck = makeDeck();
   curPlayer = -1;
-  computerCards = [];
+  dealerCards = [];
   handInProgress = false;
 
+  // reset buttons
   newHandButton.style.display = "inline-block";
   hitButton.style.display = "none";
   standButton.style.display = "none";
   splitButton.style.display = "none";
 
+  // reset players ui and state
   for (var i = 0; i < players.length; i += 1) {
-    for (var j = 0; j < players[i].cards.length; j += 1) {
+    for (var j = 0; j < players[i].hands.length; j += 1) {
       document.getElementById(`card-container-${i}-${j}`).style.opacity = 1;
       document.getElementById(`card-container-${i}-${j}`).style.border = "none";
     }
 
-    players[i].cards = [[]];
-    players[i].settled = [false];
-    players[i].curHand = 0;
-    players[i].points = [0];
-
-    var count = 0;
-    while (players[i].chips <= 0) {
-      players[i].chips += 100;
-      players[i].buyIn += 100;
-      count += 1;
-    }
-    if (count > 0)
-      output += `<br>Player ${i + 1} is topped up with ${count * 100} chips.`;
+    output += resetPlayer(i);
 
     const wagerSlider = document.getElementById(`wager-${i}`);
     wagerSlider.style.display = "block";
@@ -129,10 +138,7 @@ var resetGame = function () {
 
 // returns point total for a given array of cards
 var calculatePoints = function (cards) {
-  var total = 0;
-  for (var i = 0; i < cards.length; i += 1) {
-    total += cards[i].points;
-  }
+  var total = cards.reduce((acc, cur) => acc + cur.points, 0);
 
   // count aces and add to total if it is possible to
   var numAces = cards.reduce(
@@ -174,6 +180,16 @@ var settleBlackjacks = function (dealerBlackjack) {
 
 // this function is called after a player busts or stands, or after the initial deal
 var findNextPlayer = function () {
+  if (
+    curPlayer != -1 &&
+    players[curPlayer].hands.length == 2 &&
+    players[curPlayer].curHand == 0
+  ) {
+    // current player has 2 hands and we are only on the first hand
+    players[curPlayer].curHand += 1;
+    return "";
+  }
+
   curPlayer += 1;
   while (curPlayer < players.length && players[curPlayer].settled[0]) {
     curPlayer += 1;
@@ -181,8 +197,9 @@ var findNextPlayer = function () {
 
   if (curPlayer == players.length) return compareHandsWithDealer(); // no players left
 
+  // next player's starting hand is splittable, show the split button
   if (
-    players[curPlayer].cards[0][0].name == players[curPlayer].cards[0][1].name
+    players[curPlayer].hands[0][0].name == players[curPlayer].hands[0][1].name
   ) {
     splitButton.style.display = "inline-block";
   } else {
@@ -192,8 +209,9 @@ var findNextPlayer = function () {
 };
 
 // update UI after each turn e.g. chip counts, and player effects
-var updateUIAfterTurn = function () {
+var updateTableUI = function () {
   for (var i = 0; i < players.length; i += 1) {
+    // update chip count and W/L
     const chipCountUI = document.getElementById(`chip-count-${i}`);
     const winLossUI = document.getElementById(`win-loss-${i}`);
     const win = players[i].chips - players[i].buyIn;
@@ -203,18 +221,21 @@ var updateUIAfterTurn = function () {
     else if (win < 0) winLossUI.className = "win-loss-red";
     else winLossUI.className = "win-loss";
 
-    for (var j = 0; j < players[i].cards.length; j += 1) {
+    // update opacity effect for settled hands
+    for (var j = 0; j < players[i].hands.length; j += 1) {
       var container = document.getElementById(`card-container-${i}-${j}`);
       if (players[i].settled[j]) container.style.opacity = 0.5;
     }
 
+    // if all the player's hands are settled, update the player opacity
     const playerUI = document.getElementById(`player-${i}`);
     if (players[i].settled.every((s) => s)) playerUI.style.opacity = 0.5;
 
+    // set border around active player (and active hand if split hand)
     if (handInProgress && i == curPlayer) {
       playerUI.style.border = "solid 1px black";
-      if (players[i].cards.length == 2) {
-        for (var j = 0; j < players[i].cards.length; j += 1) {
+      if (players[i].hands.length == 2) {
+        for (var j = 0; j < players[i].hands.length; j += 1) {
           var container = document.getElementById(`card-container-${i}-${j}`);
           if (j == players[i].curHand)
             container.style.border = "solid 1px black";
@@ -223,7 +244,7 @@ var updateUIAfterTurn = function () {
       }
     } else {
       playerUI.style.border = "none";
-      for (var j = 0; j < players[i].cards.length; j += 1) {
+      for (var j = 0; j < players[i].hands.length; j += 1) {
         document.getElementById(`card-container-${i}-${j}`).style.border =
           "none";
       }
@@ -232,25 +253,25 @@ var updateUIAfterTurn = function () {
 };
 
 // update the cards displayed to the players on the UI
-var updateCardsUI = function (showComputerCards = false) {
-  var computerCardsString = "";
-  if (showComputerCards) {
+var updateCardsUI = function (showDealerCards = false) {
+  var dealerCardsString = "";
+  if (showDealerCards) {
     // output all the dealer's cards
-    for (var i = 0; i < computerCards.length; i += 1) {
-      computerCardsString += `${computerCards[i].name}${computerCards[i].emoji} `;
+    for (var i = 0; i < dealerCards.length; i += 1) {
+      dealerCardsString += `${dealerCards[i].name}${dealerCards[i].emoji} `;
     }
   } else {
     // otherwise only output the first card
-    computerCardsString += `${computerCards[0].name}${computerCards[0].emoji}`;
+    dealerCardsString += `${dealerCards[0].name}${dealerCards[0].emoji}`;
   }
-  document.getElementById("dealer-cards").innerHTML = computerCardsString;
+  document.getElementById("dealer-cards").innerHTML = dealerCardsString;
 
   for (var i = 0; i < players.length; i += 1) {
-    for (var j = 0; j < players[i].cards.length; j += 1) {
+    for (var j = 0; j < players[i].hands.length; j += 1) {
       var playerCardsString = "";
-      players[i].points[j] = calculatePoints(players[i].cards[j]);
-      for (var k = 0; k < players[i].cards[j].length; k += 1) {
-        playerCardsString += `${players[i].cards[j][k].name}${players[i].cards[j][k].emoji} `;
+      players[i].points[j] = calculatePoints(players[i].hands[j]);
+      for (var k = 0; k < players[i].hands[j].length; k += 1) {
+        playerCardsString += `${players[i].hands[j][k].name}${players[i].hands[j][k].emoji} `;
       }
       document.getElementById(`player-cards-${i}-${j}`).innerHTML =
         playerCardsString;
@@ -263,7 +284,7 @@ var updateCardsUI = function (showComputerCards = false) {
 
 // this function is called when the new hand button is clicked
 var dealNewHand = function () {
-  if (!deck) deck = shuffleDeck(makeDeck());
+  if (!deck) deck = makeDeck();
   handInProgress = true;
   var output = "Dealing cards...<br><br>";
 
@@ -277,12 +298,12 @@ var dealNewHand = function () {
   // deal cards just like irl - players, dealer, players, dealer
   for (var i = 0; i < STARTING_CARDS; i += 1) {
     for (var j = 0; j < players.length; j += 1) {
-      players[j].cards[0].push(deck.pop());
+      players[j].hands[0].push(deck.pop());
     }
-    computerCards.push(deck.pop());
+    dealerCards.push(deck.pop());
   }
 
-  var dealerBlackjack = calculatePoints(computerCards) == 21;
+  var dealerBlackjack = calculatePoints(dealerCards) == 21;
   updateCardsUI(dealerBlackjack);
   output += settleBlackjacks(dealerBlackjack); // settle blackjacks first
 
@@ -296,7 +317,7 @@ var dealNewHand = function () {
     hitButton.style.display = "inline-block";
     standButton.style.display = "inline-block";
   }
-  updateUIAfterTurn();
+  updateTableUI();
   return output;
 };
 
@@ -304,27 +325,24 @@ var dealNewHand = function () {
 // dealer will draw and compare value with all remaining players
 var compareHandsWithDealer = function () {
   var output = "";
-  var computerPoints = calculatePoints(computerCards);
-  while (computerPoints < DEALER_MIN) {
-    computerCards.push(deck.pop());
-    computerPoints = calculatePoints(computerCards);
+  var dealerPoints = calculatePoints(dealerCards);
+  while (dealerPoints < DEALER_MIN) {
+    dealerCards.push(deck.pop());
+    dealerPoints = calculatePoints(dealerCards);
   }
   updateCardsUI(true);
-  output += `Computer has ${computerPoints} points.<br>`;
+  output += `Dealer has ${dealerPoints} points.<br>`;
 
   for (var i = 0; i < players.length; i += 1) {
-    for (var j = 0; j < players[i].cards.length; j += 1) {
+    for (var j = 0; j < players[i].hands.length; j += 1) {
       if (!players[i].settled[j]) {
         output += `Player ${i + 1} has ${players[i].points[j]} points`;
         players[i].settled[j] = true;
 
-        if (
-          players[i].points[j] > computerPoints ||
-          computerPoints > MAX_VALUE
-        ) {
+        if (players[i].points[j] > dealerPoints || dealerPoints > MAX_VALUE) {
           players[i].chips += players[i].wager;
           output += ` and wins ${players[i].wager} chips!<br>`;
-        } else if (players[i].points[j] < computerPoints) {
+        } else if (players[i].points[j] < dealerPoints) {
           players[i].chips -= players[i].wager;
           output += ` and loses ${players[i].wager} chips.<br>`;
         } else output += `. It's a tie!<br>`;
@@ -339,7 +357,7 @@ var compareHandsWithDealer = function () {
 var onPlayerHit = function () {
   var output = "";
   var handNum = players[curPlayer].curHand;
-  players[curPlayer].cards[handNum].push(deck.pop());
+  players[curPlayer].hands[handNum].push(deck.pop());
   updateCardsUI();
   if (players[curPlayer].points[handNum] > MAX_VALUE) {
     // if player busts then output msg
@@ -350,41 +368,38 @@ var onPlayerHit = function () {
     players[curPlayer].chips -= amtLost;
     players[curPlayer].settled[handNum] = true;
 
-    if (players[curPlayer].cards.length == 2 && players[curPlayer].curHand == 0)
-      players[curPlayer].curHand += 1;
-    else if (players.every((p) => p.settled.every((s) => s)))
-      output += resetGame();
+    if (players.every((p) => p.settled.every((s) => s))) output += resetGame();
     else output += findNextPlayer();
   } else {
     splitButton.style.display = "none";
   }
-  updateUIAfterTurn();
+  updateTableUI();
   return output;
 };
 
 // this function is called when the stand button is clicked
 var onPlayerStand = function () {
-  var output = "";
-  if (players[curPlayer].cards.length == 2 && players[curPlayer].curHand == 0)
-    players[curPlayer].curHand += 1;
-  else {
-    output = findNextPlayer();
-  }
-  updateUIAfterTurn();
+  var output = findNextPlayer();
+  updateTableUI();
   return output;
 };
 
+// this function is called when the split button is clicked
 var onPlayerSplit = function () {
-  players[curPlayer].cards.push([]);
-  players[curPlayer].cards[1].push(players[curPlayer].cards[0].pop());
-  players[curPlayer].cards[0].push(deck.pop());
-  players[curPlayer].cards[1].push(deck.pop());
+  // give the player another hand, move one card from current hand to new hand
+  // then deal one card each to both hands
+  players[curPlayer].hands.push([]);
+  players[curPlayer].hands[1].push(players[curPlayer].hands[0].pop());
+  players[curPlayer].hands[0].push(deck.pop());
+  players[curPlayer].hands[1].push(deck.pop());
 
   players[curPlayer].points.push(0);
   players[curPlayer].settled.push(false);
 
   updateCardsUI();
-  updateUIAfterTurn();
+  updateTableUI();
+
+  // show the 2nd hand and hide split button
   document.getElementById(`card-container-${curPlayer}-1`).style.display =
     "block";
   splitButton.style.display = "none";
