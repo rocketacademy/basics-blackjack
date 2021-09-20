@@ -124,19 +124,40 @@ var drawnCards = function () {
       `player: ${drawnCard[0].name} of ${drawnCard[0].suit} and ${drawnCard[1].name} of ${drawnCard[1].suit}. `
     );
     calSumOfCards();
-    // Ask if player wants to hit or stand.
-    myOutputValue = `${drawnCard[0].name} of ${drawnCard[0].suit} and ${
-      drawnCard[1].name
-    } of ${drawnCard[1].suit}. ${calSumOfCards()}. <br>
+    // check for player blackjack
+    if (
+      drawnCard.length == 2 &&
+      (drawnCard[0].name == "ace" || drawnCard[1].name == "ace") &&
+      (drawnCard[0].rank == 10 || drawnCard[1].rank == 10)
+    ) {
+      return "You got a blackjack! You won!";
+    }
+    // if no blackjack, ask if player wants to hit or stand.
+    else {
+      myOutputValue = `${drawnCard[0].name} of ${drawnCard[0].suit} and ${
+        drawnCard[1].name
+      } of ${drawnCard[1].suit}. ${calSumOfCards()}. <br>
     Enter 'hit' to draw cards or 'stand' to see results.`;
+    }
   }
   // 2 initial drawn cards will be assigned to computer
   if (turn == "computer") {
     console.log(
       `computer: ${drawnCard[0].name} of ${drawnCard[0].suit} and ${drawnCard[1].name} of ${drawnCard[1].suit}.`
     );
-    // show the 2 cards that computer draw at the beginning
-    myOutputValue = `${drawnCard[0].name} of ${drawnCard[0].suit} and ${drawnCard[1].name} of ${drawnCard[1].suit}. <br>`;
+    // check for computer blackjack
+    if (
+      drawnCard.length == 2 &&
+      (drawnCard[0].name == "ace" || drawnCard[1].name == "ace") &&
+      (drawnCard[0].rank == 10 || drawnCard[1].rank == 10)
+    ) {
+      console.log("b");
+      return "Computer got a blackjack! Computer won!";
+    }
+    // if no blackjack, show the 2 cards that computer draw at the beginning
+    else {
+      myOutputValue = `${drawnCard[0].name} of ${drawnCard[0].suit} and ${drawnCard[1].name} of ${drawnCard[1].suit}. <br>`;
+    }
 
     // while loop to continuously draw cards when computersum is < 17
     var computerCounter = 0;
