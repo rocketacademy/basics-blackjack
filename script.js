@@ -7,42 +7,53 @@ var playerSum;
 var computerSum;
 
 var main = function (input) {
-  // deck only reshuffles if game ends and return back to player
+  // starts with player's turn
   if (turn == "player") {
+    // when input is blank, draw 2 cards for player
     if (input == "") {
       var deck = makeDeck();
+      // deck only reshuffles if game ends and return back to player
       shuffledDeck = shuffleCards(deck);
       console.log("cards are shuffled");
       playerCards = drawnCards();
       myOutputValue = `Player draws: ${playerCards}`;
     }
-
+    // if player choose to hit, draw a card & show results if it is > 21
     if (input == "hit") {
       hitDrawCard();
-      var hitCounter = 2;
-      while (hitCounter < drawnCard.length) {
-        myOutputValue = `You draw: ${drawnCard[hitCounter].name} of ${
-          drawnCard[hitCounter].suit
-        }. ${calSumOfCards()} ${resultsBurst()}. <br>
+      var playerHitCounter = 2;
+      while (playerHitCounter < drawnCard.length) {
+        if (playerSum <= 21) {
+          myOutputValue = `You draw: ${drawnCard[playerHitCounter].name} of ${
+            drawnCard[playerHitCounter].suit
+          }. ${calSumOfCards()} ${resultsBurst()}. <br>
         Enter 'hit' to draw cards or 'stand' to see results.`;
-        hitCounter += 1;
+        } else {
+          myOutputValue = `You draw: ${drawnCard[playerHitCounter].name} of ${
+            drawnCard[playerHitCounter].suit
+          }. ${calSumOfCards()} ${resultsBurst()}.`;
+        }
+
+        playerHitCounter += 1;
       }
     }
-
+    // when player choose to stand, change turn to computer
     if (input == "stand") {
       turn = "computer";
     }
   }
-
+  // when it is computer's turn, draw 2 cards & play game
   if (turn == "computer") {
     computerCards = drawnCards();
-    turn = "player";
     myOutputValue = `Computer draws: ${computerCards}`;
+    // change turn back to player so that the game restarts
+    turn = "player";
   }
 
   return myOutputValue;
 };
 
+// function to draw 1 card
 var hitDrawCard = function () {
   drawnCard.push(shuffledDeck.pop());
   console.log(drawnCard);
@@ -58,7 +69,7 @@ var calSumOfCards = function () {
     drawnCardCounter += 1;
   }
 
-  // calculate total sum of cards using value of rank
+  // calculate total sum of cards using new value of rank
   function rank(value) {
     return value.rank;
   }
@@ -68,6 +79,7 @@ var calSumOfCards = function () {
   sumOfCards = drawnCard.map(rank).reduce(sum);
   console.log(sumOfCards);
 
+  // assign value of sum according to their turn
   if (turn == "player") {
     playerSum = sumOfCards;
     return `Your sum is now ${playerSum}`;
@@ -106,27 +118,40 @@ var drawnCards = function () {
     drawnCard.push(shuffledDeck.pop());
     cardsCounter += 1;
   }
-
+  // 2 initial drawn cards will be assigned to player
   if (turn == "player") {
     console.log(
       `player: ${drawnCard[0].name} of ${drawnCard[0].suit} and ${drawnCard[1].name} of ${drawnCard[1].suit}. `
     );
+    calSumOfCards();
+    // Ask if player wants to hit or stand.
     myOutputValue = `${drawnCard[0].name} of ${drawnCard[0].suit} and ${
       drawnCard[1].name
-    } of ${drawnCard[1].suit}. ${calSumOfCards()}.<br>
+    } of ${drawnCard[1].suit}. ${calSumOfCards()}. <br>
     Enter 'hit' to draw cards or 'stand' to see results.`;
   }
+  // 2 initial drawn cards will be assigned to computer
   if (turn == "computer") {
     console.log(
-      `computer: ${drawnCard[0].name} of ${drawnCard[0].suit} and ${
-        drawnCard[1].name
-      } of ${drawnCard[1].suit}.${calSumOfCards()}.`
+      `computer: ${drawnCard[0].name} of ${drawnCard[0].suit} and ${drawnCard[1].name} of ${drawnCard[1].suit}.`
     );
-    myOutputValue = `${drawnCard[0].name} of ${drawnCard[0].suit} and ${
-      drawnCard[1].name
-    } of ${drawnCard[1].suit} <br><br>
-    ${resultsOfGame()} <br>
-    Click refresh to restart the game.`;
+    // show the 2 cards that computer draw at the beginning
+    myOutputValue = `${drawnCard[0].name} of ${drawnCard[0].suit} and ${drawnCard[1].name} of ${drawnCard[1].suit}. <br>`;
+
+    // while loop to continuously draw cards when computersum is < 17
+    var computerCounter = 0;
+    while (computerCounter < drawnCard.length) {
+      calSumOfCards();
+      if (computerSum < 17) {
+        hitDrawCard();
+      }
+      computerCounter += 1;
+    }
+    // show how many additional cards computer automatically draw + results of game
+    var numOfCardsDrawn = drawnCard.length - 2;
+    myOutputValue =
+      myOutputValue +
+      ` Computer continues to draw ${numOfCardsDrawn} cards. <br><br> ${resultsOfGame()} `;
   }
 
   return myOutputValue;
@@ -134,6 +159,12 @@ var drawnCards = function () {
 
 // use total sum of game to calculate who is winning
 var resultsOfGame = function () {
+  if (computerSum > 21) {
+    return `Player sum = ${playerSum}<br>
+    Computer sum = ${computerSum}<br>
+    ${resultsBurst()}`;
+  }
+
   if (playerSum > computerSum) {
     return `Player sum = ${playerSum}<br>
     Computer sum = ${computerSum}<br>
@@ -163,20 +194,18 @@ var resultsOfGame = function () {
     Computer sum = ${computerSum}<br>
     Computer wins!`;
   }
-
-  resultsBurst();
 };
 
 // when sum is more than 21
 var resultsBurst = function () {
   if (playerSum > 21) {
     return `<br>Player has lost! Game Over! <br>
-    Click refresh to restart the game.`;
+    Click 'Submit' to restart the game`;
   }
 
   if (computerSum > 21) {
     return `<br>Computer has lost! Game Over<br>
-    Click refresh to restart the game.`;
+    Click 'Submit' to restart the game`;
   } else return "";
 };
 
