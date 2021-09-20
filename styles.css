@@ -6,29 +6,20 @@ body {
   font-family: "Open Sans", sans-serif;
   margin-left: 30px;
   margin-right: 30px;
-  background-color: white;
+  background-color: #a9a9a9;
   color: black; /* sets the font color */
-  background-image: url(""); /* The image used */
-  background-position: center; /* Center the image */
-  background-repeat: no-repeat; /* Do not repeat the image */
-  background-size: cover; /* Resize the background image to cover the entire container */
-  min-height: 100vh;
 }
 
-#output-div img {
-  display: block;
-  max-width: 100%;
-  max-height: 200px;
-}
-.header {
+.header,
+.footer {
+  font-weight: bold;
   text-align: center;
   font-size: 1.1rem;
   margin-bottom: 1rem;
 }
 
 #container {
-  background-color: #51b683;
-  /* background-color: rgba(81, 182, 131, 0.8); */
+  background-color: #519977;
   margin: auto;
   max-width: 1000px;
   padding: 30px;
@@ -58,7 +49,8 @@ button {
 
 /* increase header font size on wider screens */
 @media screen and (min-width: 600px) {
-  .header {
+  .header,
+  .footer {
     font-size: 2rem;
   }
 }
@@ -86,6 +78,10 @@ button {
   margin: auto;
 }
 
+#dealer-cards {
+  font-size: 20px;
+}
+
 #output-div {
   flex: 2;
   font-size: 12px;
@@ -98,6 +94,7 @@ button {
 
 #num-player {
   width: 50%;
+  max-width: 200px;
 }
 
 #game {
@@ -154,7 +151,7 @@ button {
   display: none;
 }
 
-@media (max-width: 750px) {
+@media (max-width: 800px) {
   #dealer-ui {
     justify-content: center;
   }
@@ -172,7 +169,7 @@ button {
   }
 }
 
-@media (max-width: 500px) {
+@media (max-width: 550px) {
   #dealer-ui {
     justify-content: center;
     flex-direction: column;

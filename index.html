@@ -101,7 +101,6 @@
         src="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/brand/logo.png"
       />
     </h1>
-    <h1 class="header">♣️ Basics - Blackjack ♠️</h1>
     <div id="container">
       <div id="dealer-ui">
         <div id="rules">
@@ -120,14 +119,7 @@
       <hr />
       <div id="num-player-input">
         <p>Number of players:</p>
-        <input
-          id="num-player"
-          type="number"
-          min="1"
-          max="6"
-          value="1"
-          onkeydown="return false"
-        />
+        <input id="num-player" type="number" min="1" max="6" value="1" />
         <button id="start-game-button">Start Game</button>
       </div>
       <div id="game">
@@ -138,10 +130,12 @@
         <button id="split-button">Split</button>
       </div>
     </div>
+    <footer class="footer">♣️ Basics - Blackjack ♠️</footer>
     <!-- Import program logic -->
     <script src="script.js"></script>
     <!-- Define button click functionality -->
     <script>
+      var numPlayers = document.querySelector("#num-player");
       var start = document.querySelector("#start-game-button");
       var newHand = document.querySelector("#new-hand-button");
       var hit = document.querySelector("#hit-button");
@@ -149,8 +143,15 @@
       var split = document.querySelector("#split-button");
       var output = document.querySelector("#output-div");
 
+      numPlayers.addEventListener("input", function () {
+        if (numPlayers.value >= 1 && numPlayers.value <= 6) {
+          start.disabled = false;
+        } else {
+          start.disabled = true;
+        }
+      });
+
       start.addEventListener("click", function () {
-        var numPlayers = document.querySelector("#num-player");
         var numPlayerInput = document.querySelector("#num-player-input");
         var game = document.querySelector("#game");
         var playersContainer = document.querySelector("#players-container");
