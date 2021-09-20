@@ -1,11 +1,11 @@
-var deck = [];
-var currentRoundScores = [];
-var activePlayer = 1; // player 0 is computer
-var handsArray = []; // will initialize into a nested array
-var numberOfPlayers = 1; // dealer computer is not a player, per se
-var gameOver = false;
-var playerActionLock = false;
-var fullResponseMessage = "";
+let deck = [];
+let currentRoundScores = [];
+let activePlayer = 1; // player 0 is computer
+let handsArray = []; // will initialize into a nested array
+let numberOfPlayers = 1; // dealer computer is not a player, per se
+let gameOver = false;
+let playerActionLock = false;
+let fullResponseMessage = "";
 // at round start, every player is given 2 cards (dealer's 2nd is face down)
 // hit: draw another card
 // stand: no more cards
@@ -72,31 +72,31 @@ const cardSuitEmojiMap = {
 const refreshMessage = "Please refresh the page to play again.";
 const hitStandMessage = "<br><br>To continue, please type 'hit' or 'stand'.";
 
-var initializeHandsArray = function (numberOfPlayers) {
+const initializeHandsArray = function (numberOfPlayers) {
   handsArray = [];
-  for (var i = 0; i <= numberOfPlayers; i += 1) {
+  for (let i = 0; i <= numberOfPlayers; i += 1) {
     handsArray.push([]); // create new nested array for every player
   }
   return handsArray;
 };
 
-var readEmojiFromCard = function (cardObject) {
+const readEmojiFromCard = function (cardObject) {
   // takes a card, reads emoji keys, and combines into a string
-  var cardSummary = `${cardObject.cardRankEmoji} ${cardObject.cardSuitEmoji}`;
+  let cardSummary = `${cardObject.cardRankEmoji} ${cardObject.cardSuitEmoji}`;
   // console.log(cardSummary);
   return cardSummary;
 };
 
-var createEmojiHandSummary = function (arr) {
+const createEmojiHandSummary = function (arr) {
   // the array input must be a subarrray of hands array
-  var summaryMessage = "";
+  let summaryMessage = "";
   for (let cardIndex = 0; cardIndex < arr.length; cardIndex += 1) {
     summaryMessage += readEmojiFromCard(arr[cardIndex]) + " | ";
   }
   return summaryMessage;
 };
 
-var sendDefaultSummaryMessage = function () {
+const sendDefaultSummaryMessage = function () {
   return `Computer has Drawn: <br>${createEmojiHandSummary(
     handsArray[0]
   )} with score ${calculateHandValue(
@@ -106,20 +106,20 @@ var sendDefaultSummaryMessage = function () {
   )} with score ${calculateHandValue(1)}`;
 };
 
-var makeDeck = function () {
-  var cardDeck = [];
-  var suits = ["hearts", "diamonds", "clubs", "spades"];
-  var suitIndex = 0;
+const makeDeck = function () {
+  let cardDeck = [];
+  let suits = ["hearts", "diamonds", "clubs", "spades"];
+  let suitIndex = 0;
   while (suitIndex < suits.length) {
-    var currentSuit = suits[suitIndex];
-    var rankCounter = 1;
+    let currentSuit = suits[suitIndex];
+    let rankCounter = 1;
     while (rankCounter <= 13) {
-      var cardName = cardNameMap[rankCounter];
-      var cardSuitEmoji = cardSuitEmojiMap[suits[suitIndex]];
-      var cardRankEmoji = cardRankEmojiMap[rankCounter];
-      var cardScoreValue = cardScoreValueMap[rankCounter];
+      let cardName = cardNameMap[rankCounter];
+      let cardSuitEmoji = cardSuitEmojiMap[suits[suitIndex]];
+      let cardRankEmoji = cardRankEmojiMap[rankCounter];
+      let cardScoreValue = cardScoreValueMap[rankCounter];
 
-      var card = {
+      let card = {
         name: cardName,
         suit: currentSuit,
         rank: rankCounter,
@@ -135,32 +135,32 @@ var makeDeck = function () {
   return cardDeck;
 };
 
-var shuffleArray = function (array) {
+const shuffleArray = function (array) {
   // based on Durstenfeld shuffle
   // https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
-  for (var i = array.length - 1; i > 0; i -= 1) {
-    var j = Math.floor(Math.random() * (i + 1));
-    var temp = array[i];
+  for (let i = array.length - 1; i > 0; i -= 1) {
+    let j = Math.floor(Math.random() * (i + 1));
+    let temp = array[i];
     array[i] = array[j];
     array[j] = temp;
   }
   return array;
 };
 
-var drawCardIntoHand = function (activePlayer) {
-  var drawnCard = deck.pop();
+const drawCardIntoHand = function (activePlayer) {
+  let drawnCard = deck.pop();
   handsArray[activePlayer].push(drawnCard);
   return;
 };
 
-var initialDraw = function (numberOfPlayers) {
+const initialDraw = function (numberOfPlayers) {
   for (let i = numberOfPlayers; i !== -1; i -= 1) {
     drawCardIntoHand(i);
     drawCardIntoHand(i);
   }
 };
 
-var initializeGame = function () {
+const initializeGame = function () {
   currentRoundScores = [];
   initializeHandsArray(numberOfPlayers);
   deck = shuffleArray(makeDeck());
@@ -170,16 +170,12 @@ var initializeGame = function () {
   return;
 };
 
-// var getDealerFaceUpCard = function () {
-//   return handsArray[0][0];
-// };
-
-var calculateHandValue = function (actPlyr) {
-  var currentPlayerHand = handsArray[actPlyr];
-  var totalHandScoreValue = 0;
-  var acesHeld = 0;
-  var currentCard;
-  var currentScoreValue;
+const calculateHandValue = function (actPlyr) {
+  let currentPlayerHand = handsArray[actPlyr];
+  let totalHandScoreValue = 0;
+  let acesHeld = 0;
+  let currentCard;
+  let currentScoreValue;
   for (
     let cardIndex = 0;
     cardIndex < currentPlayerHand.length;
@@ -194,7 +190,7 @@ var calculateHandValue = function (actPlyr) {
   }
   if (totalHandScoreValue > 21 && acesHeld != 0) {
     // if the player might bust but still has aces
-    var aceIncrementer = 0;
+    let aceIncrementer = 0;
     while (aceIncrementer < acesHeld) {
       // manually convert ace score from 11 to 1
       totalHandScoreValue -= 10;
@@ -204,12 +200,12 @@ var calculateHandValue = function (actPlyr) {
       aceIncrementer += 1;
     }
   }
-  // this updates currentRoundScores global variable!!!
+  // this updates currentRoundScores global letiable!!!
   currentRoundScores[actPlyr] = totalHandScoreValue;
   return totalHandScoreValue;
 };
 
-var isBlackjack = function (playerNumber) {
+const isBlackjack = function (playerNumber) {
   if (
     calculateHandValue(playerNumber) == 21 &&
     handsArray[playerNumber].length == 2
@@ -220,7 +216,7 @@ var isBlackjack = function (playerNumber) {
   return false;
 };
 
-var checkPlayersforBlackjack = function () {
+const checkPlayersforBlackjack = function () {
   if (isBlackjack(0)) {
     gameOver = true;
     fullResponseMessage += `Computer insta-wins by Blackjack. ${refreshMessage}<br><br>`;
@@ -231,8 +227,8 @@ var checkPlayersforBlackjack = function () {
   // no action if neither player nor dealer have a 21
 };
 
-var givePlayerHitStandHints = function () {
-  var plyrScore = currentRoundScores[1];
+const givePlayerHitStandHints = function () {
+  let plyrScore = currentRoundScores[1];
   if (isBlackjack(0) || isBlackjack(1)) {
     return;
   } else if (plyrScore < 14) {
@@ -247,7 +243,7 @@ var givePlayerHitStandHints = function () {
     "<br>Well, do you feel lucky? Either a hit or a stand would work for you.<br><br>";
 };
 
-var sendFullResponseMessage = function () {
+const sendFullResponseMessage = function () {
   fullResponseMessage += `${sendDefaultSummaryMessage()}`;
   if (!gameOver) {
     fullResponseMessage += `${hitStandMessage}`;
@@ -255,7 +251,7 @@ var sendFullResponseMessage = function () {
   return fullResponseMessage;
 };
 
-var checkBust = function (plyrNum) {
+const checkBust = function (plyrNum) {
   if (calculateHandValue(plyrNum) > 21) {
     gameOver = true;
     return true;
@@ -263,9 +259,9 @@ var checkBust = function (plyrNum) {
   return false;
 };
 
-var dealerHitStand = function () {
-  var dealer = 0;
-  var dealerScore = currentRoundScores[0];
+const dealerHitStand = function () {
+  let dealer = 0;
+  let dealerScore = currentRoundScores[0];
   while (dealerScore < 17) {
     drawCardIntoHand(dealer);
     fullResponseMessage += `Dealer drew a ${readEmojiFromCard(
@@ -283,11 +279,11 @@ var dealerHitStand = function () {
   return;
 };
 
-var comparePlayerandDealerScores = function (scoreArr) {
+const comparePlayerandDealerScores = function (scoreArr) {
   // this part is designed for 1 human player
   // this is for initial hands, so neither player will bust
-  var dealerScore = scoreArr[0];
-  var playerScore = scoreArr[1];
+  let dealerScore = scoreArr[0];
+  let playerScore = scoreArr[1];
   // console.log(dealerScore, playerScore);
   if (isBlackjack(0) || isBlackjack(1)) {
     return;
@@ -301,9 +297,9 @@ var comparePlayerandDealerScores = function (scoreArr) {
   fullResponseMessage += "Looks like a draw.";
 };
 
-var chooseWinner = function () {
+const chooseWinner = function () {
   // this function assumes neither dealer not player busted
-  var win;
+  let win;
   if (checkBust(0) == true || checkBust(1) == true) {
     if (checkBust(0) == true) {
       win = "Player"; // since dealer busted
@@ -322,7 +318,7 @@ var chooseWinner = function () {
   return win;
 };
 
-var main = function (input) {
+const main = function (input) {
   fullResponseMessage = "";
   if (gameOver) {
     return `${refreshMessage}`;
@@ -348,10 +344,11 @@ var main = function (input) {
     } else if (input == "stand") {
       playerActionLock = true;
       dealerHitStand();
-      var winner = chooseWinner();
+      let winner = chooseWinner();
       gameOver = true;
       fullResponseMessage += `${winner} wins this round! <br><br>${sendDefaultSummaryMessage()} <br><br>${refreshMessage}`;
       return fullResponseMessage;
     }
+    return `Input unrecognized. ${refreshMessage}`;
   }
 };
