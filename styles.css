@@ -134,6 +134,16 @@ button {
   margin: 0;
 }
 
+.win-loss-green {
+  color: #00ff00;
+  font-weight: bold;
+}
+
+.win-loss-red {
+  color: #dc143c;
+  font-weight: bold;
+}
+
 #hit-button,
 #stand-button {
   display: none;

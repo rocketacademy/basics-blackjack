@@ -14,7 +14,14 @@ const standButton = document.getElementById("stand-button");
 // init players array by getting num players from user, and create player objects
 var initialisePlayers = function (playerNum) {
   for (var i = 0; i < Number(playerNum); i += 1) {
-    players[i] = { cards: [], points: 0, chips: 100, wager: 0, settled: false };
+    players[i] = {
+      cards: [],
+      points: 0,
+      chips: 100,
+      wager: 0,
+      buyIn: 100,
+      settled: false,
+    };
   }
 };
 
@@ -72,6 +79,7 @@ var shuffleDeck = function (cardDeck) {
 
 // reset game by making and shuffling a new deck, clearing cards, resetting ui
 var resetGame = function () {
+  var output = "";
   deck = shuffleDeck(makeDeck());
   curPlayer = -1;
   computerCards = [];
@@ -85,18 +93,25 @@ var resetGame = function () {
     players[i].cards = [];
     players[i].settled = false;
 
+    if (players[i].chips == 0) {
+      players[i].chips = 100;
+      players[i].buyIn += 100;
+      output += `<br>Player ${i + 1} is topped up with 100 chips.`;
+    }
+
     const wagerSlider = document.getElementById(`wager-${i}`);
     wagerSlider.style.display = "block";
     wagerSlider.setAttribute("max", players[i].chips);
     wagerSlider.value =
-      players[i].chips > players[i].wager ? players[i].wager : 1;
+      players[i].chips >= players[i].wager ? players[i].wager : 1;
     document.getElementById(
       `value-wager-${i}`
     ).innerHTML = `Bet: ${wagerSlider.value}`;
     document.getElementById(`player-${i}`).style.opacity = 1;
     document.getElementById(`player-${i}`).style.border = "none";
   }
-  return "<br>Hand is over. Please place your bets.";
+  output += "<br>Hand is over. Please place your bets.";
+  return output;
 };
 
 // check whether the starting two cards satisfy blackjack
@@ -147,7 +162,13 @@ var calculatePoints = function (cards) {
 var updateUIAfterTurn = function () {
   for (var i = 0; i < players.length; i += 1) {
     const chipCountUI = document.getElementById(`chip-count-${i}`);
+    const winLossUI = document.getElementById(`win-loss-${i}`);
+    const win = players[i].chips - players[i].buyIn;
     chipCountUI.innerHTML = `Chip count: ${players[i].chips}`;
+    winLossUI.innerHTML = win;
+    if (win > 0) winLossUI.className = "win-loss-green";
+    else if (win < 0) winLossUI.className = "win-loss-red";
+    else winLossUI.className = "win-loss";
 
     const playerUI = document.getElementById(`player-${i}`);
     if (players[i].settled) playerUI.style.opacity = 0.3;

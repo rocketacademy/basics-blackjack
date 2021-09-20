@@ -211,6 +211,19 @@
           chipCount.appendChild(text);
           player.appendChild(chipCount);
 
+          // win loss
+          var winLossLabel = document.createElement("span");
+          winLossLabel.className = "win-loss-label";
+          text = document.createTextNode("Total W/L: ");
+          winLossLabel.appendChild(text);
+          player.appendChild(winLossLabel);
+
+          var winLoss = document.createElement("span");
+          winLoss.id = `win-loss-${i}`;
+          text = document.createTextNode("0");
+          winLoss.appendChild(text);
+          player.appendChild(winLoss);
+
           playersContainer.appendChild(player);
         }
 
