@@ -114,31 +114,6 @@ var resetGame = function () {
   return output;
 };
 
-// check whether the starting two cards satisfy blackjack
-var settleBlackjacks = function () {
-  var output = "";
-  for (var i = 0; i < players.length; i += 1) {
-    if (players[i].points == 21) {
-      var amtWon = Math.round(1.5 * players[i].wager);
-      players[i].chips += amtWon;
-      players[i].settled = true;
-      output += `Player ${i + 1} has blackjack and wins ${amtWon} chips!<br>`;
-    }
-  }
-  return output;
-};
-
-// this function is called after a player busts or stands, or after the initial deal
-var findNextPlayer = function () {
-  curPlayer += 1;
-  while (curPlayer < players.length && players[curPlayer].settled) {
-    curPlayer += 1;
-  }
-
-  if (curPlayer == players.length) return compareHandsWithDealer(); // no players left
-  return `Player ${curPlayer + 1}, it's your turn.`;
-};
-
 // returns point total for a given array of cards
 var calculatePoints = function (cards) {
   var total = 0;
@@ -156,6 +131,43 @@ var calculatePoints = function (cards) {
     if (total + 10 <= MAX_VALUE) total += 10;
   }
   return total;
+};
+
+// check whether the starting two cards satisfy blackjack
+var settleBlackjacks = function (dealerBlackjack) {
+  var output = "";
+  if (dealerBlackjack) output += `Dealer has blackjack!<br>`;
+
+  for (var i = 0; i < players.length; i += 1) {
+    if (!dealerBlackjack) {
+      if (players[i].points == 21) {
+        var amtWon = Math.round(1.5 * players[i].wager);
+        players[i].chips += amtWon;
+        players[i].settled = true;
+        output += `Player ${i + 1} has blackjack and wins ${amtWon} chips!<br>`;
+      }
+    } else {
+      if (players[i].points == 21) {
+        output += `Player ${i + 1} has blackjack. It's a tie!<br>`;
+      } else {
+        output += `Player ${i + 1} loses ${players[i].wager} chips.<br>`;
+        players[i].chips -= players[i].wager;
+      }
+      players[i].settled = true;
+    }
+  }
+  return output;
+};
+
+// this function is called after a player busts or stands, or after the initial deal
+var findNextPlayer = function () {
+  curPlayer += 1;
+  while (curPlayer < players.length && players[curPlayer].settled) {
+    curPlayer += 1;
+  }
+
+  if (curPlayer == players.length) return compareHandsWithDealer(); // no players left
+  return `Player ${curPlayer + 1}, it's your turn.`;
 };
 
 // update UI after each turn e.g. chip counts, and player effects
@@ -226,8 +238,9 @@ var dealNewHand = function () {
     computerCards.push(deck.pop());
   }
 
-  updateCardsUI();
-  output += settleBlackjacks(); // settle blackjacks first
+  var dealerBlackjack = calculatePoints(computerCards) == 21;
+  updateCardsUI(dealerBlackjack);
+  output += settleBlackjacks(dealerBlackjack); // settle blackjacks first
 
   if (players.every((p) => p.settled)) {
     // if players are all settled then hand is over
