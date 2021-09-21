@@ -62,7 +62,7 @@ const makeDecks = () => {
 // generate a new card Deck
 const deck = makeDecks();
 
-// Returns a random card object from the deck.
+// a funtion to generates a random card object from the deck.
 const dealARandomCard = () => {
   let randomCard = deck[Math.floor(Math.random() * deck.length)];
   return randomCard;
@@ -102,7 +102,7 @@ const calculateScore = (playerCards) => {
   return totalScore;
 };
 
-// define a function to compare the score
+// define a function to compare the score with params userTotalScore and compTotalScore
 const compareTheScore = (userTotalScore, compTotalScore) => {
   // If you and the computer are both over, you lose.
   if (userTotalScore > 21 && compTotalScore > 21) {
@@ -126,23 +126,25 @@ const compareTheScore = (userTotalScore, compTotalScore) => {
   }
 };
 
-// assign game mode for the game
+// assign game modes for the game
 const startTheGameMode = "START_THE_GAME_MODE";
 const addCardMode = "ADD_CARD_MODE";
 const dealerAddCardMode = "DEALER_ADD_CARD_MODE";
 const gameOver = "GAME_OVER ";
 
+// assign the gameMode to start the game
 let gameMode = startTheGameMode;
 
-// assign an array for user and comp cards
+// assign arrays for user and comp cards
 let userCards = [];
 let compCards = [];
+
 // assign a var for the total amount of cards in hand
 let userTotalScore;
 let compTotalScore;
 
 // Game Mode 1. Start the game
-var main = function (input) {
+const main = (input) => {
   var myOutputValue = "Click Submit to deal cards.";
 
   if (gameMode == startTheGameMode) {
@@ -157,8 +159,8 @@ var main = function (input) {
     // comapring the score from the 1st 2 cards
     compareTheScore(userTotalScore, compTotalScore);
 
-    const userCardsMessage = `user cards are: ${userCards[0].name} ${userCards[0].emojiSuit} and ${userCards[1].name} ${userCards[1].emojiSuit}`;
-    const compCardsMessage = `computer cards are: ${compCards[0].name} ${compCards[0].emojiSuit} and ${compCards[1].name} ${compCards[1].emojiSuit}`;
+    const userCardsMessage = `User cards are: ${userCards[0].name} ${userCards[0].emojiSuit} and ${userCards[1].name} ${userCards[1].emojiSuit}`;
+    const compCardsMessage = `Computer cards are: ${compCards[0].name} ${compCards[0].emojiSuit} and ${compCards[1].name} ${compCards[1].emojiSuit}`;
 
     // check if there's blackjack
     if (compTotalScore == 0) {
@@ -174,12 +176,10 @@ var main = function (input) {
       gameMode = addCardMode;
       console.log(gameMode);
     }
-
     return `${userCardsMessage}, total score : ${userTotalScore} <br>
           ${compCardsMessage}, total score : ${compTotalScore} <br>
           Type 'y' to get another card, type 'n' to pass: `;
   }
-
   // Game Mode 2. Ask the user whether to hit or stand, play in "addCardMode"
   else if (gameMode == addCardMode) {
     if (input == "y") {
@@ -187,7 +187,7 @@ var main = function (input) {
       // generate a new user's card
       let newCard = addingNewCard(userCards);
       userTotalScore += newCard.value;
-      let newUserCardMessage = `Your new card is : ${newCard.name} ${newCard.emojiSuit} total score : ${userTotalScore}. <br>`;
+      let newUserCardMessage = `Your new card is : ${newCard.name} ${newCard.emojiSuit}, total score : ${userTotalScore}.<br> Computer's total score is : ${compTotalScore} <br>`;
       // check if the score is bigger or equal to 21
       if (userTotalScore <= 21) {
         // addingNewCard(userCards, userTotalScore);
@@ -211,15 +211,15 @@ var main = function (input) {
       gameMode = gameOver;
       console.log("i'm in game over mode");
       let resultMessage = compareTheScore(userTotalScore, compTotalScore);
-      let endGameMessage = `comp total score is: ${compTotalScore}, user total score is: ${userTotalScore}`;
-      return `${endGameMessage}  <br> ${resultMessage}`;
+      let endGameMessage = `Computer's total score is : ${compTotalScore}, user's total score is: ${userTotalScore}`;
+      return `${endGameMessage}  <br> ${resultMessage} <br> Click Submit to start a new game.`;
     }
   }
+  // reset the game
   userCards = [];
   compCards = [];
   userTotalScore = 0;
   compTotalScore = 0;
-
   gameMode = startTheGameMode;
   return myOutputValue;
 };
