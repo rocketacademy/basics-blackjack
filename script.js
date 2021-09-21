@@ -180,7 +180,7 @@ var main = function (input) {
       playerHand
     )} <br><br> Computer hand: <br><br> ${computerHand[0].name} ${
       computerHand[0].suit
-    } <br><br> [PLAYER] Enter HIT or STAND to continue.`;
+    } <br><br> [PLAYER's TURN] Enter HIT or STAND to continue.`;
   }
 
   if (input != `hit` && input != `stand`) {
