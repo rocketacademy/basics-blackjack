@@ -71,6 +71,12 @@ const cardSuitEmojiMap = {
   spades: "♠",
 };
 
+const winnerNameIndexMap = {
+  0: "Dealer",
+  1: "Player",
+  2: "Nobody",
+};
+
 const catPictureMap = {
   // key indicates winner
   Player: `<img src = "https://c.tenor.com/906nGAL7Xw0AAAAi/mochi-peachcat-cute-cat.gif/">`,
@@ -105,18 +111,25 @@ const createEmojiHandSummary = function (arr) {
   return summaryMessage;
 };
 
+const checkAce = function (cardObj) {
+  return cardObj.name == "Ace";
+};
+
+const getCardScoreValue = function (cardObj) {
+  return cardObj.scoreValue;
+};
+
 const calculateHandValue = function (actPlyr) {
   const currentPlayerHand = handsArray[actPlyr];
   let totalHandScoreValue = 0;
   let acesHeld = 0;
-  let currentCard;
-  for (let cardIdx = 0; cardIdx < currentPlayerHand.length; cardIdx += 1) {
-    currentCard = handsArray[actPlyr][cardIdx];
-    if (currentCard.name == "Ace") {
-      acesHeld += 1;
-    }
-    totalHandScoreValue += currentCard.scoreValue;
-  }
+
+  const currentPlayerHandScoresArr = currentPlayerHand.map(getCardScoreValue);
+  // create new array with only scoreValues from each card
+  totalHandScoreValue = currentPlayerHandScoresArr.reduce((a, b) => a + b, 0);
+  // use reduce function to add elements from left to right
+  acesHeld = currentPlayerHand.filter(checkAce).length;
+
   if (totalHandScoreValue > 21 && acesHeld != 0) {
     // if the player might bust but still has aces
     let aceIncrementer = 0;
@@ -187,7 +200,6 @@ const shuffleArray = function (array) {
 const drawCardIntoHand = function (actvPlyr) {
   const drawnCard = deck.pop();
   handsArray[actvPlyr].push(drawnCard);
-  return;
 };
 
 const initialDraw = function (numOfPlyrs) {
@@ -204,6 +216,9 @@ const initializeGame = function () {
   initialDraw(numberOfPlayers);
   calculateHandValue(0);
   calculateHandValue(1);
+  checkPlayersforBlackjack();
+  comparePlayerandDealerScores(currentRoundScores);
+  givePlayerHitStandHints();
 };
 
 const isBlackjack = function (playerNumber) {
@@ -239,7 +254,8 @@ const givePlayerHitStandHints = function () {
   if (plyrScore < 14) {
     fullResponseMessage += "<br>You need to hit, by the way. <br><br>";
     return;
-  } else if (plyrScore > 18) {
+  }
+  if (plyrScore > 18) {
     fullResponseMessage +=
       "<br>You should probably stand. Don't want to bust, do we? <br><br>";
     return;
@@ -262,6 +278,16 @@ const checkBust = function (plyrNum) {
     return true;
   }
   return false;
+};
+
+const dealerTurnActions = function () {
+  playerActionLock = true;
+  dealerHitStand();
+  winner = chooseWinner();
+  gameOver = true;
+  fullResponseMessage += `${winner} wins this round! <br><br>${sendDefaultSummaryMessage()} <br><br>${refreshMessage}<br><br>${
+    catPictureMap[winner]
+  }`;
 };
 
 const dealerHitStand = function () {
@@ -307,24 +333,24 @@ const comparePlayerandDealerScores = function (scoreArr) {
 };
 
 const chooseWinner = function () {
-  // this function assumes neither dealer not player busted
-  let win;
-  if (checkBust(0) == true || checkBust(1) == true) {
-    if (checkBust(0) == true) {
-      win = "Player"; // since dealer busted
-    } else if (checkBust(1) == true) {
-      win = "Dealer";
-    }
-    return win;
-  }
-  if (currentRoundScores[0] > currentRoundScores[1]) {
+  const winIndex = currentRoundScores.indexOf(Math.max(...currentRoundScores));
+  let win = winnerNameIndexMap[winIndex];
+  //special conditions
+  if (checkBust(0) == true) {
+    win = "Player"; // since dealer busted
+  } else if (checkBust(1) == true) {
     win = "Dealer";
-  } else if (currentRoundScores[0] < currentRoundScores[1]) {
-    win = "Player";
   } else if (currentRoundScores[0] == currentRoundScores[1]) {
     win = "Nobody";
   }
   return win;
+};
+
+const playerHitActions = function () {
+  drawCardIntoHand(activePlayer);
+  fullResponseMessage += `You drew a ${readEmojiFromCard(
+    handsArray[1][handsArray.length]
+  )}!<br>`;
 };
 
 const main = function (input) {
@@ -334,37 +360,22 @@ const main = function (input) {
   }
   if (handsArray.length == 0) {
     initializeGame();
-    checkPlayersforBlackjack();
-    comparePlayerandDealerScores(currentRoundScores);
-    givePlayerHitStandHints();
     return sendFullResponseMessage();
   }
-  if (!playerActionLock) {
-    if (input == "hit") {
-      drawCardIntoHand(activePlayer);
-      fullResponseMessage += `You drew a ${readEmojiFromCard(
-        handsArray[1][handsArray.length]
-      )}!<br>`;
-      if (checkBust(1) == true) {
-        winner = "Dealer";
-        return `You've busted! Dealer Wins.<br><br>${sendDefaultSummaryMessage()} <br><br>${refreshMessage}<br><br>${
-          catPictureMap[winner]
-        }`;
-      }
-      givePlayerHitStandHints();
-      return `${sendFullResponseMessage()}`;
-    }
-    if (input == "stand") {
-      playerActionLock = true;
-      dealerHitStand();
-      winner = chooseWinner();
-      gameOver = true;
-      fullResponseMessage += `${winner} wins this round! <br><br>${sendDefaultSummaryMessage()} <br><br>${refreshMessage}<br><br>${
+  if (input == "hit") {
+    playerHitActions();
+    if (checkBust(1) == true) {
+      winner = "Dealer";
+      return `You've busted! Dealer Wins.<br><br>${sendDefaultSummaryMessage()} <br><br>${refreshMessage}<br><br>${
         catPictureMap[winner]
       }`;
-      return fullResponseMessage;
     }
-    return `Input unrecognized. ${refreshMessage}`;
+    givePlayerHitStandHints();
+    return `${sendFullResponseMessage()}`;
   }
-  return `Fatal Error. ${refreshMessage}`;
+  if (input == "stand") {
+    dealerTurnActions();
+    return fullResponseMessage;
+  }
+  return `Input unrecognized. ${refreshMessage}`;
 };
