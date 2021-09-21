@@ -168,13 +168,13 @@ const firstDealCards = () => {
 const dealerAddCard = () => {
   while (compTotalScore < 17) {
     // generate a new comp's card if comp's card's score is less than 17
-    let newCard = addingNewCard(compCards);
+    const newCard = addingNewCard(compCards);
     compTotalScore += newCard.value;
   } // if comp total score is bigger than 21, the game is over, comp busts, return the message
   gameMode = gameOver;
   // console.log("i'm in game over mode");
-  let resultMessage = compareTheScore(userTotalScore, compTotalScore);
-  let endGameMessage = `User's total score is: ${userTotalScore} <br> Computer's total score is : ${compTotalScore} `;
+  const resultMessage = compareTheScore(userTotalScore, compTotalScore);
+  const endGameMessage = `User's total score is: ${userTotalScore} <br> Computer's total score is : ${compTotalScore} `;
   return { resultMessage, endGameMessage };
 };
 
@@ -191,7 +191,8 @@ const main = (input) => {
       gameMode = gameOver;
       return `${userCardsMessage}<br>${compCardsMessage}<br>
             Lose, opponent has Blackjack 😱`;
-    } else if (userTotalScore == 0) {
+    }
+    if (userTotalScore == 0) {
       gameMode = gameOver;
       return `${userCardsMessage}<br>${compCardsMessage}<br>
             Win with a Blackjack 😎`;
@@ -214,7 +215,7 @@ const main = (input) => {
   }
 
   // Game Mode 2. Ask the user whether to hit or stand, play in "addCardMode"
-  else if (gameMode == addCardMode) {
+  if (gameMode == addCardMode) {
     // to check whether player wants their ace value to be 1 or 11
     if (input == "1") {
       // console.log("player wants to change the ace value");
@@ -222,7 +223,8 @@ const main = (input) => {
       return `${userCardsMessage}, total score : ${userTotalScore} <br>
           ${compCardsMessage}, total score : ${compTotalScore} <br>
           Type 'y' to get another card, type 'n' to pass: `;
-    } else if (input == 11) {
+    }
+    if (input == 11) {
       return `${userCardsMessage}, total score : ${userTotalScore} <br>
           ${compCardsMessage}, total score : ${compTotalScore} <br>
           Type 'y' to get another card, type 'n' to pass: `;
@@ -230,7 +232,7 @@ const main = (input) => {
     if (input == "y") {
       // console.log("i'm running add card mode");
       // generate a new card for user and add it to the userCards array with addingNewCard function
-      let newCard = addingNewCard(userCards);
+      const newCard = addingNewCard(userCards);
       // update user's new score
       userTotalScore += newCard.value;
       newUserCardMessage = `Your new card is : ${newCard.name} ${newCard.emojiSuit}, total score : ${userTotalScore}.<br> Computer's total score is : ${compTotalScore} <br>`;
@@ -241,7 +243,7 @@ const main = (input) => {
                 Type 'y' to get another card, type 'n' to pass:`;
       }
       // check if new user's total score is bigger than 21
-      else if (userTotalScore > 21) {
+      if (userTotalScore > 21) {
         // if the user busts, the game is over, user lose, return the message
         gameMode = gameOver;
         // console.log(gameMode);
