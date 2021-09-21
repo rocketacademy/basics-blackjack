@@ -1,3 +1,5 @@
+//  * Create a standard 52-card deck
+//  */
 var makeDeck = function () {
   // Initialise an empty deck array
   var cardDeck = [];
@@ -51,12 +53,12 @@ var makeDeck = function () {
   return cardDeck;
 };
 
-// Get a random index ranging from 0 (inclusive) to max (exclusive).
+//  Get a random index ranging from 0 (inclusive) to max (exclusive).
 var getRandomIndex = function (max) {
   return Math.floor(Math.random() * max);
 };
 
-// Shuffle the elements in the cardDeck array
+//  Shuffle elements in the cardDeck array. Return the shuffled deck.
 var shuffleCards = function (cardDeck) {
   // Loop over the card deck array once
   var currentIndex = 0;
@@ -70,8 +72,8 @@ var shuffleCards = function (cardDeck) {
     // Swap positions of randomCard and currentCard in the deck
     cardDeck[currentIndex] = randomCard;
     cardDeck[randomIndex] = currentCard;
-    // Increment currentIndex
-    currentIndex = currentIndex + 1;
+    // Increment currentIndex to shuffle the next pair of cards
+    currentIndex += 1;
   }
   // Return the shuffled deck
   return cardDeck;
@@ -90,62 +92,130 @@ var shuffleCards = function (cardDeck) {
 // Initialise the shuffled card deck before the game starts.
 var deck = shuffleCards(makeDeck());
 
-var playerHand = deck;
-var computerHand = deck;
+//  Global variable for game modes
+var mode1 = "mode 1: deal cards";
+var mode2 = "mode 2: player hit or stand";
+currentMode = mode1;
+console.log(currentMode);
 
-var gameMode1 = "deck shuffled";
-var gameMode2 = "hit or stand";
+//  Arrays for player and computer hands
+var playerHand = [];
+var computerHand = [];
 
-//Each player action triggers the main function.
-var main = function (winOrLose) {
-  // The player and computer each draw the top card from their hand.
-  var playerCard1 = playerHand.pop();
-  var playerCard2 = playerHand.pop();
-  var computerCard1 = computerHand.pop();
-  var computerCard2 = computerHand.pop();
-
-  console.log(playerCard1);
-  console.log(playerCard2);
-  console.log(computerCard1);
-  console.log(computerCard2);
-
-  var playerPoints = playerCard1.rank + playerCard2.rank;
-  var computerPoints = computerCard1.rank + computerCard2.rank;
-  console.log("player points " + playerPoints);
-  console.log("computer points " + computerPoints);
-
-  // Initialise an output value with the cards drawn by each player.
-  var myOutputValue =
-    "PLAYER card 1: " +
-    playerCard1.name +
-    " of " +
-    playerCard1.suit +
-    "<br>PLAYER card 2: " +
-    playerCard2.name +
-    " of " +
-    playerCard2.suit +
-    "<br> Total points is " +
-    playerPoints +
-    "<br><br>COMPUTER card 1: " +
-    computerCard1.name +
-    " of " +
-    computerCard1.suit +
-    "<br>COMPUTER card 2: " +
-    computerCard2.name +
-    " of " +
-    computerCard2.suit +
-    "<br> Total points is " +
-    computerPoints +
-    "<br><br>Enter 'Hit' to hit or 'Stand' to stand";
-
-  return myOutputValue;
+// Function to push 2 cards into player's hand
+var draw2Cards = function (userHand) {
+  var counter = 0;
+  while (counter < 2) {
+    var drawnCard = deck.pop();
+    userHand.push(drawnCard);
+    counter += 1;
+  }
 };
 
-var winOrLose = function () {
-  if (playerPoints >= 21) {
-    myOutputValue = "Player wins";
+// Function to push 1 card into player's hand <-- NOT WORKING
+var drawCard = function (userHand) {
+  var drawnCard = deck.pop();
+  userHand.push(drawnCard);
+};
+
+var main = function (input) {
+  // Draw 2 cards
+  draw2Cards(playerHand);
+  draw2Cards(computerHand);
+
+  console.log(playerHand);
+  console.log(computerHand);
+
+  // Count points in player's hand
+  playerHand[0].rank;
+  playerHand[1].rank;
+  console.log("player card 1 " + playerHand[0].rank);
+  console.log("player card 2 " + playerHand[1].rank);
+
+  var playerPoints = playerHand[0].rank + playerHand[1].rank;
+  console.log("player points " + playerPoints);
+
+  computerHand[0].rank;
+  computerHand[1].rank;
+  console.log("computer card 1 " + computerHand[0].rank);
+  console.log("computer card 1 " + computerHand[1].rank);
+
+  var computerPoints = computerHand[0].rank + computerHand[1].rank;
+  console.log("computer points " + computerPoints);
+
+  //  Second verion:
+  //  1. The player hitting or standing is different from the dealer hitting or standing. The rules state that the dealer hits or stands after all players are done, so let's work on the players hitting or standing first.
+
+  // 2. The player hitting or standing is a new mode in the game that allows the player to enter their choice. Add the logic for when the player busts.
+
+  //  If player and computer hands are under 22, change mode to mode2 and tell player to enter hit or stand
+  if (playerPoints < 22 && computerPoints < 22) {
+    currentMode = mode2;
+    console.log(currentMode);
+    return (
+      "player points is " +
+      playerPoints +
+      "<br>computer points is " +
+      computerPoints +
+      "<br>enter 'hit' or 'stand'"
+    );
   }
-  if (computerPoints >= 21) {
-    myOutputValue = "Computer wins";
+
+  // If current mode is mode 2, and player enters 'hit', draw a card into player's hand
+  if (currentMode == mode2) {
+    console.log("current mode is " + currentMode);
+    if (input == hit) {
+      playerHand = drawCard(playerHand);
+      console.log(playerHand);
+    }
   }
+
+  //  First Version: Compare Initial Hands to Determine Winner
+  // if (playerPoints >= 22) {
+  //   return (
+  //     "player loses" +
+  //     "<br>player points is " +
+  //     playerPoints +
+  //     "<br>computer points is " +
+  //     computerPoints
+  //   );
+  // }
+
+  // if (computerPoints >= 22) {
+  //   return (
+  //     "computer loses" +
+  //     "<br>player points is " +
+  //     playerPoints +
+  //     "<br>computer points is " +
+  //     computerPoints
+  //   );
+  // }
+
+  // if (
+  //   playerPoints < 22 &&
+  //   playerPoints > computerPoints &&
+  //   computerPoints < 22
+  // ) {
+  //   return (
+  //     "player wins" +
+  //     "<br>player points is " +
+  //     playerPoints +
+  //     "<br>computer points is " +
+  //     computerPoints
+  //   );
+  // }
+
+  // if (
+  //   computerPoints < 22 &&
+  //   computerPoints > playerPoints &&
+  //   playerPoints < 22
+  // ) {
+  //   return (
+  //     "computer wins" +
+  //     "<br>player points is " +
+  //     playerPoints +
+  //     "<br>computer points is " +
+  //     computerPoints
+  //   );
+  // }
 };
