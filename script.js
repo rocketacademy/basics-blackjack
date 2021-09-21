@@ -341,111 +341,111 @@ var displayDealtCards = function () {
 
 var displayCardImage = function (name, suit) {
   if (name == "ace" && suit == "hearts") {
-    return '<div class="column"><img src="images/aceHearts.png" /></div>';
+    return '<div class="column"><img src="images/aceHearts.PNG" /></div>';
   } else if (name == 2 && suit == "hearts") {
-    return '<div class="column"><img src="images/twoHearts.png" /></div>';
+    return '<div class="column"><img src="images/twoHearts.PNG" /></div>';
   } else if (name == 3 && suit == "hearts") {
-    return '<div class="column"><img src="images/threeHearts.png" /></div>';
+    return '<div class="column"><img src="images/threeHearts.PNG" /></div>';
   } else if (name == 4 && suit == "hearts") {
-    return '<div class="column"><img src="images/fourHearts.png" /></div>';
+    return '<div class="column"><img src="images/fourHearts.PNG" /></div>';
   } else if (name == 5 && suit == "hearts") {
-    return '<div class="column"><img src="images/fiveHearts.png" /></div>';
+    return '<div class="column"><img src="images/fiveHearts.PNG" /></div>';
   } else if (name == 6 && suit == "hearts") {
-    return '<div class="column"><img src="images/sixHearts.png" /></div>';
+    return '<div class="column"><img src="images/sixHearts.PNG" /></div>';
   } else if (name == 7 && suit == "hearts") {
-    return '<div class="column"><img src="images/sevenHearts.png" /></div>';
+    return '<div class="column"><img src="images/sevenHearts.PNG" /></div>';
   } else if (name == 8 && suit == "hearts") {
-    return '<div class="column"><img src="images/eightHearts.png" /></div>';
+    return '<div class="column"><img src="images/eightHearts.PNG" /></div>';
   } else if (name == 9 && suit == "hearts") {
-    return '<div class="column"><img src="images/nineHearts.png" /></div>';
+    return '<div class="column"><img src="images/nineHearts.PNG" /></div>';
   } else if (name == 10 && suit == "hearts") {
-    return '<div class="column"><img src="images/tenHearts.png" /></div>';
+    return '<div class="column"><img src="images/tenHearts.PNG" /></div>';
   } else if (name == "jack" && suit == "hearts") {
-    return '<div class="column"><img src="images/jackHearts.png" /></div>';
+    return '<div class="column"><img src="images/jackHearts.PNG" /></div>';
   } else if (name == "queen" && suit == "hearts") {
-    return '<div class="column"><img src="images/queenHearts.png" /></div>';
+    return '<div class="column"><img src="images/queenHearts.PNG" /></div>';
   } else if (name == "king" && suit == "hearts") {
-    return '<div class="column"><img src="images/kingHearts.png" /></div>';
+    return '<div class="column"><img src="images/kingHearts.PNG" /></div>';
   } else if (name == "ace" && suit == "diamonds") {
-    return '<div class="column"><img src="images/aceDiamonds.png" /></div>';
+    return '<div class="column"><img src="images/aceDiamonds.PNG" /></div>';
   } else if (name == 2 && suit == "diamonds") {
-    return '<div class="column"><img src="images/twoDiamonds.png" /></div>';
+    return '<div class="column"><img src="images/twoDiamonds.PNG" /></div>';
   } else if (name == 3 && suit == "diamonds") {
-    return '<div class="column"><img src="images/threeDiamonds.png" /></div>';
+    return '<div class="column"><img src="images/threeDiamonds.PNG" /></div>';
   } else if (name == 4 && suit == "diamonds") {
-    return '<div class="column"><img src="images/fourDiamonds.png" /></div>';
+    return '<div class="column"><img src="images/fourDiamonds.PNG" /></div>';
   } else if (name == 5 && suit == "diamonds") {
-    return '<div class="column"><img src="images/fiveDiamonds.png" /></div>';
+    return '<div class="column"><img src="images/fiveDiamonds.PNG" /></div>';
   } else if (name == 6 && suit == "diamonds") {
-    return '<div class="column"><img src="images/sixDiamonds.png" /></div>';
+    return '<div class="column"><img src="images/sixDiamonds.PNG" /></div>';
   } else if (name == 7 && suit == "diamonds") {
-    return '<div class="column"><img src="images/sevenDiamonds.png" /></div>';
+    return '<div class="column"><img src="images/sevenDiamonds.PNG" /></div>';
   } else if (name == 8 && suit == "diamonds") {
-    return '<div class="column"><img src="images/eightDiamonds.png" /></div>';
+    return '<div class="column"><img src="images/eightDiamonds.PNG" /></div>';
   } else if (name == 9 && suit == "diamonds") {
-    return '<div class="column"><img src="images/nineDiamonds.png" /></div>';
+    return '<div class="column"><img src="images/nineDiamonds.PNG" /></div>';
   } else if (name == 10 && suit == "diamonds") {
-    return '<div class="column"><img src="images/tenDiamonds.png" /></div>';
+    return '<div class="column"><img src="images/tenDiamonds.PNG" /></div>';
   } else if (name == "jack" && suit == "diamonds") {
-    return '<div class="column"><img src="images/jackDiamonds.png" /></div>';
+    return '<div class="column"><img src="images/jackDiamonds.PNG" /></div>';
   } else if (name == "queen" && suit == "diamonds") {
-    return '<div class="column"><img src="images/queenDiamonds.png" /></div>';
+    return '<div class="column"><img src="images/queenDiamonds.PNG" /></div>';
   } else if (name == "king" && suit == "diamonds") {
-    return '<div class="column"><img src="images/kingDiamonds.png" /></div>';
+    return '<div class="column"><img src="images/kingDiamonds.PNG" /></div>';
   } else if (name == "ace" && suit == "clubs") {
-    return '<div class="column"><img src="images/aceClubs.png" /></div>';
+    return '<div class="column"><img src="images/aceClubs.PNG" /></div>';
   } else if (name == 2 && suit == "clubs") {
-    return '<div class="column"><img src="images/twoClubs.png" /></div>';
+    return '<div class="column"><img src="images/twoClubs.PNG" /></div>';
   } else if (name == 3 && suit == "clubs") {
-    return '<div class="column"><img src="images/threeClubs.png" /></div>';
+    return '<div class="column"><img src="images/threeClubs.PNG" /></div>';
   } else if (name == 4 && suit == "clubs") {
-    return '<div class="column"><img src="images/fourClubs.png" /></div>';
+    return '<div class="column"><img src="images/fourClubs.PNG" /></div>';
   } else if (name == 5 && suit == "clubs") {
-    return '<div class="column"><img src="images/fiveClubs.png" /></div>';
+    return '<div class="column"><img src="images/fiveClubs.PNG" /></div>';
   } else if (name == 6 && suit == "clubs") {
-    return '<div class="column"><img src="images/sixClubs.png" /></div>';
+    return '<div class="column"><img src="images/sixClubs.PNG" /></div>';
   } else if (name == 7 && suit == "clubs") {
-    return '<div class="column"><img src="images/sevenClubs.png" /></div>';
+    return '<div class="column"><img src="images/sevenClubs.PNG" /></div>';
   } else if (name == 8 && suit == "clubs") {
-    return '<div class="column"><img src="images/eightClubs.png" /></div>';
+    return '<div class="column"><img src="images/eightClubs.PNG" /></div>';
   } else if (name == 9 && suit == "clubs") {
-    return '<div class="column"><img src="images/nineClubs.png" /></div>';
+    return '<div class="column"><img src="images/nineClubs.PNG" /></div>';
   } else if (name == 10 && suit == "clubs") {
-    return '<div class="column"><img src="images/tenClubs.png" /></div>';
+    return '<div class="column"><img src="images/tenClubs.PNG" /></div>';
   } else if (name == "jack" && suit == "clubs") {
-    return '<div class="column"><img src="images/jackClubs.png" /></div>';
+    return '<div class="column"><img src="images/jackClubs.PNG" /></div>';
   } else if (name == "queen" && suit == "clubs") {
-    return '<div class="column"><img src="images/queenClubs.png" /></div>';
+    return '<div class="column"><img src="images/queenClubs.PNG" /></div>';
   } else if (name == "king" && suit == "clubs") {
-    return '<div class="column"><img src="images/kingClubs.png" /></div>';
+    return '<div class="column"><img src="images/kingClubs.PNG" /></div>';
   } else if (name == "ace" && suit == "spades") {
-    return '<div class="column"><img src="images/aceSpades.png" /></div>';
+    return '<div class="column"><img src="images/aceSpades.PNG" /></div>';
   } else if (name == 2 && suit == "spades") {
-    return '<div class="column"><img src="images/twoSpades.png" /></div>';
+    return '<div class="column"><img src="images/twoSpades.PNG" /></div>';
   } else if (name == 3 && suit == "spades") {
-    return '<div class="column"><img src="images/threeSpades.png" /></div>';
+    return '<div class="column"><img src="images/threeSpades.PNG" /></div>';
   } else if (name == 4 && suit == "spades") {
-    return '<div class="column"><img src="images/fourSpades.png" /></div>';
+    return '<div class="column"><img src="images/fourSpades.PNG" /></div>';
   } else if (name == 5 && suit == "spades") {
-    return '<div class="column"><img src="images/fiveSpades.png" /></div>';
+    return '<div class="column"><img src="images/fiveSpades.PNG" /></div>';
   } else if (name == 6 && suit == "spades") {
-    return '<div class="column"><img src="images/sixSpades.png" /></div>';
+    return '<div class="column"><img src="images/sixSpades.PNG" /></div>';
   } else if (name == 7 && suit == "spades") {
-    return '<div class="column"><img src="images/sevenSpades.png" /></div>';
+    return '<div class="column"><img src="images/sevenSpades.PNG" /></div>';
   } else if (name == 8 && suit == "spades") {
-    return '<div class="column"><img src="images/eightSpades.png" /></div>';
+    return '<div class="column"><img src="images/eightSpades.PNG" /></div>';
   } else if (name == 9 && suit == "spades") {
-    return '<div class="column"><img src="images/nineSpades.png" /></div>';
+    return '<div class="column"><img src="images/nineSpades.PNG" /></div>';
   } else if (name == 10 && suit == "spades") {
-    return '<div class="column"><img src="images/tenSpades.png" /></div>';
+    return '<div class="column"><img src="images/tenSpades.PNG" /></div>';
   } else if (name == "jack" && suit == "spades") {
-    return '<div class="column"><img src="images/jackSpades.png" /></div>';
+    return '<div class="column"><img src="images/jackSpades.PNG" /></div>';
   } else if (name == "queen" && suit == "spades") {
-    return '<div class="column"><img src="images/queenSpades.png" /></div>';
+    return '<div class="column"><img src="images/queenSpades.PNG" /></div>';
   } else if (name == "king" && suit == "spades") {
-    return '<div class="column"><img src="images/kingSpades.png" /></div>';
+    return '<div class="column"><img src="images/kingSpades.PNG" /></div>';
   } else if (name == "cover" && suit == "cover") {
-    return '<div class="column"><img src="images/coverCard.png" /></div>';
+    return '<div class="column"><img src="images/coverCard.PNG" /></div>';
   }
 };
 
