@@ -116,6 +116,17 @@ var sumOfHand = function (hand) {
   return handSum;
 };
 
+var printCardArray = function (cardArray) {
+  var cardNames = ``;
+  var arrayIndexLoopCounter = 0;
+  while (arrayIndexLoopCounter < cardArray.length) {
+    var singleCardName = `<br> ${cardArray[arrayIndexLoopCounter].name} ${cardArray[arrayIndexLoopCounter].suit}`;
+    cardNames += singleCardName;
+    arrayIndexLoopCounter += 1;
+  }
+  return cardNames;
+};
+
 var main = function (input) {
   var playerCardValue = 0;
   var computerCardvalue = 0;
@@ -138,17 +149,39 @@ var main = function (input) {
 
     // evaluate player and computer hands
     if (playerCardValue == 21 && computerCardvalue != 21) {
-      return `WOO HOO! YOU WIN WITH 21! <br><br> Player hand: <br> ${playerHand[0].name} ${playerHand[0].suit} <br> ${playerHand[1].name} ${playerHand[1].suit}.`;
+      return `WOO HOO! YOU WIN WITH 21! <br><br> Player hand <br> 
+      ${printCardArray(
+        playerHand
+      )} <br><br> Computer hand: <br> ${printCardArray(computerHand)}.`;
     }
 
     if (playerCardValue == 21 && computerCardvalue == 21) {
-      return `IT IS A DRAW! Player and Computer both get 21! <br> Player hand: <br> ${playerHand[0].name} ${playerHand[0].suit} <br> ${playerHand[1].name} ${playerHand[1].suit} <br><br> Computer hand: <br> ${computerHand[0].name} ${computerHand[0].suit}`;
+      return `IT IS A DRAW! <br> Player and Computer both get 21! <br><br> Player hand: <br> ${printCardArray(
+        playerHand
+      )} <br><br> Computer hand: <br> ${printCardArray(computerHand)}`;
     }
 
     if (computerCardvalue == 21 && playerCardValue != 21) {
-      return `SORRY! COMPUTER WINS WITH 21. <br><br> Player hand: <br> ${playerHand[0].name} ${playerHand[0].suit} <br> ${playerHand[1].name} ${playerHand[1].suit} <br><br> Computer hand:  <br> ${computerHand[1].name} ${computerHand[1].suit} `;
+      return `SORRY! COMPUTER WINS WITH 21. <br><br> Player hand: <br> ${printCardArray(
+        playerHand
+      )} <br><br> Computer hand:  <br> ${printCardArray(computerHand)} `;
     }
 
-    return `Player hand: <br> ${playerHand[0].name} ${playerHand[0].suit} <br> ${playerHand[1].name} ${playerHand[1].suit} <br><br> Computer hand: <br> ${computerHand[0].name} ${computerHand[0].suit} <br><br> Enter HIT or STAND to continue.`;
+    return `Player hand: <br> ${printCardArray(
+      playerHand
+    )} <br><br> Computer hand: <br> ${printCardArray(
+      computerHand
+    )} <br><br> Enter HIT or STAND to continue.`;
+  }
+
+  if (gameMode == gameMode2) {
+    if (input == `hit`) {
+      dealCard(playerHand);
+      playerCardValue = sumOfHand(playerHand);
+    }
+
+    if (playerCardValue > 21) {
+      return `Sorry you busted!`;
+    }
   }
 };
