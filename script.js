@@ -5,6 +5,43 @@ var playerCards;
 var computerCards;
 var playerSum;
 var computerSum;
+var numOfAce;
+
+const cardNameMap = {
+  1: "Ace",
+  2: 2,
+  3: 3,
+  4: 4,
+  5: 5,
+  6: 6,
+  7: 7,
+  8: 8,
+  9: 9,
+  10: 10,
+  11: "Jack",
+  12: "Queen",
+  13: "King",
+};
+
+const cardScoreValueMap = {
+  1: 11, // can be 1 or 11, defaults to 11 before user input
+  2: 2,
+  3: 3,
+  4: 4,
+  5: 5,
+  6: 6,
+  7: 7,
+  8: 8,
+  9: 9,
+  10: 10,
+  11: 10,
+  12: 10,
+  13: 10,
+};
+
+const refreshMessage = "Please refresh the page to play again.";
+const hitStandMessage =
+  "<br>Enter 'hit' to draw 1 more card or 'stand' to see results.";
 
 var main = function (input) {
   // starts with player's turn
@@ -17,6 +54,7 @@ var main = function (input) {
       console.log("cards are shuffled");
       playerCards = drawnCards();
       myOutputValue = `Player draws: ${playerCards}`;
+      console.log(drawnCard);
     }
     // if player choose to hit, draw a card
     if (input == "hit") {
@@ -27,8 +65,7 @@ var main = function (input) {
         if (playerSum <= 21) {
           myOutputValue = `You draw: ${drawnCard[playerHitCounter].name} of ${
             drawnCard[playerHitCounter].suit
-          }. ${calSumOfCards()}. <br>
-        Enter 'hit' to draw cards or 'stand' to see results.`;
+          }. ${calSumOfCards()}. ${hitStandMessage}`;
         }
         // else shows game over
         else {
@@ -67,22 +104,30 @@ var calSumOfCards = function () {
   // converts all picture cards to rank = 10
   var drawnCardCounter = 0;
   while (drawnCardCounter < drawnCard.length) {
-    convertPicRank();
-    convertAceRank();
     drawnCardCounter += 1;
   }
 
   // calculate total sum of cards using new value of rank
-  function rank(value) {
-    return value.rank;
+  function scoreValue(value) {
+    return value.scoreValue;
   }
   function sum(prev, next) {
     return prev + next;
   }
-  sumOfCards = drawnCard.map(rank).reduce(sum);
-  console.log(sumOfCards);
+  sumOfCards = drawnCard.map(scoreValue).reduce(sum);
+  console.log(`Before: ${sumOfCards}`);
 
-  // assign value of sum to player/ computer according to their turn
+  // calculate number of ace cards on hand
+  numOfAce = drawnCard.filter(checkAce).length;
+  console.log(`Num of Ace: ${numOfAce}`);
+
+  // if sum is > 21 & drawn cards contain Ace, convert ace value
+  if (sumOfCards > 21 && numOfAce != 0) {
+    reduceAceScores();
+    console.log(`After: ${sumOfCards}`);
+  }
+
+  // assign value of sum to player / computer according to their turn
   if (turn == "player") {
     playerSum = sumOfCards;
     return `Your sum is now ${playerSum}`;
@@ -92,43 +137,21 @@ var calSumOfCards = function () {
   }
 };
 
-// function to convert all picture cards to rank = 10
-var convertPicRank = function () {
-  var convertCounter = 0;
-  while (convertCounter < drawnCard.length) {
-    if (drawnCard[convertCounter].name == "jack") {
-      cardRankIndex = drawnCard.findIndex((obj) => obj.name == "jack");
-      drawnCard[cardRankIndex].rank = 10;
-    }
-    if (drawnCard[convertCounter].name == "queen") {
-      cardRankIndex = drawnCard.findIndex((obj) => obj.name == "queen");
-      drawnCard[cardRankIndex].rank = 10;
-    }
-    if (drawnCard[convertCounter].name == "king") {
-      cardRankIndex = drawnCard.findIndex((obj) => obj.name == "king");
-      drawnCard[cardRankIndex].rank = 10;
-    }
-    convertCounter += 1;
-  }
+const checkAce = function (cardObj) {
+  return cardObj.name == "Ace";
 };
 
-var convertAceRank = function () {
-  var aceCounter = 0;
-  while (aceCounter < drawnCard.length) {
-    if (drawnCard[aceCounter].name == "ace") {
-      // if sum is < 12, assign value of 11 to ace
-      if (sumOfCards < 12) {
-        cardRankIndex = drawnCard.findIndex((obj) => obj.name == "ace");
-        drawnCard[cardRankIndex].rank = 11;
-      }
-      // if sum is > 12, assigned value of 1 to ace
-      if (sumOfCards > 12) {
-        cardRankIndex = drawnCard.findIndex((obj) => obj.name == "ace");
-        drawnCard[cardRankIndex].rank = 1;
-      }
+const reduceAceScores = function () {
+  let aceCounter = 0;
+  while (aceCounter < numOfAce) {
+    // manually convert ace score from 11 to 1 by deducting 10 from sumofvalue
+    sumOfCards -= 10;
+    if (sumOfCards <= 21) {
+      break;
     }
     aceCounter += 1;
   }
+  return sumOfCards;
 };
 
 var drawnCards = function () {
@@ -147,19 +170,14 @@ var drawnCards = function () {
     );
     calSumOfCards();
     // check for player blackjack
-    if (
-      drawnCard.length == 2 &&
-      (drawnCard[0].name == "ace" || drawnCard[1].name == "ace") &&
-      (drawnCard[0].rank == 10 || drawnCard[1].rank == 10)
-    ) {
+    if (drawnCard.length == 2 && playerSum == 21) {
       return "You got a blackjack! You won!";
     }
     // if no blackjack, ask if player wants to hit or stand.
     else {
       myOutputValue = `${drawnCard[0].name} of ${drawnCard[0].suit} and ${
         drawnCard[1].name
-      } of ${drawnCard[1].suit}. ${calSumOfCards()}. <br>
-    Enter 'hit' to draw cards or 'stand' to see results.`;
+      } of ${drawnCard[1].suit}. ${calSumOfCards()}. ${hitStandMessage}`;
     }
   }
   // 2 initial drawn cards will be assigned to computer
@@ -169,11 +187,7 @@ var drawnCards = function () {
     );
     calSumOfCards();
     // check for computer blackjack
-    if (
-      drawnCard.length == 2 &&
-      (drawnCard[0].name == "ace" || drawnCard[1].name == "ace") &&
-      (drawnCard[0].rank == 10 || drawnCard[1].rank == 10)
-    ) {
+    if (drawnCard.length == 2 && computerSum == 21) {
       return "Computer got a blackjack! Computer won!";
     }
     // if no blackjack, show the 2 cards that computer draw at the beginning
@@ -239,49 +253,28 @@ var resultsBurst = function () {
   }
 };
 
-var makeDeck = function () {
-  // Initialise an empty deck array
-  var cardDeck = [];
-  // Initialise an array of the 4 suits in our deck. We will loop over this array.
-  var suits = ["hearts", "diamonds", "clubs", "spades"];
-
-  // Loop over the suits array
-  var suitIndex = 0;
+const makeDeck = function () {
+  const cardDeck = [];
+  const suits = ["hearts", "diamonds", "clubs", "spades"];
+  let suitIndex = 0;
   while (suitIndex < suits.length) {
-    // Store the current suit in a variable
     var currentSuit = suits[suitIndex];
-    // Loop from 1 to 13 to create all cards for a given suit
-    // Notice rankCounter starts at 1 and not 0, and ends at 13 and not 12.
-    // This is an example of a loop without an array.
-    var rankCounter = 1;
+    let rankCounter = 1;
     while (rankCounter <= 13) {
-      // By default, the card name is the same as rankCounter
-      var cardName = rankCounter;
-      // If rank is 1, 11, 12, or 13, set cardName to the ace or face card's name
-      if (cardName == 1) {
-        cardName = "ace";
-      } else if (cardName == 11) {
-        cardName = "jack";
-      } else if (cardName == 12) {
-        cardName = "queen";
-      } else if (cardName == 13) {
-        cardName = "king";
-      }
-      // Create a new card with the current name, suit, and rank
-      var card = {
+      const cardName = cardNameMap[rankCounter];
+      const cardScoreValue = cardScoreValueMap[rankCounter];
+
+      const card = {
         name: cardName,
         suit: currentSuit,
         rank: rankCounter,
+        scoreValue: cardScoreValue,
       };
-      // Add the new card to the deck
       cardDeck.push(card);
-      // Increment rankCounter to iterate over the next rank
       rankCounter += 1;
     }
-    // Increment the suit index to iterate over the next suit
     suitIndex += 1;
   }
-  // Return the completed card deck
   return cardDeck;
 };
 
