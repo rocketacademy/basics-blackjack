@@ -1,7 +1,6 @@
 // assign game modes for the game
 const startTheGameMode = "START_THE_GAME_MODE";
 const addCardMode = "ADD_CARD_MODE";
-const dealerAddCardMode = "DEALER_ADD_CARD_MODE";
 const gameOver = "GAME_OVER ";
 
 // assign the gameMode to start the game
@@ -114,13 +113,9 @@ const addingNewCard = (playerCards) => {
 // a function to calculate in hand score with params playerCards
 const calculateScore = (playerCards) => {
   let totalScore = 0;
-  for (let i = 0; i < playerCards.length; i++) {
+  for (let i = 0; i < playerCards.length; i += 1) {
     let cardValue = Number(playerCards[i].value);
     totalScore = totalScore + cardValue;
-    // check for an 11 (ace). If the score is already over 21, remove the 11 and replace it with a 1.
-    if (cardValue == 11 && totalScore > 21) {
-      cardValue = 1;
-    }
   }
   // check for a blackjack (a hand with only 2 cards: ace + 10) and return 0 instead of the actual score. 0 will represent a blackjack in our game.
   if (totalScore == 21 && playerCards.length == 2) {
@@ -153,36 +148,49 @@ const compareTheScore = (userTotalScore, compTotalScore) => {
   }
 };
 
+// function to reset the game
+const resetTheGame = () => {
+  userCards = [];
+  compCards = [];
+  userTotalScore = 0;
+  compTotalScore = 0;
+  gameMode = startTheGameMode;
+};
+
+// a function to generates the first 2 cards
+const firstDealCards = () => {
+  userCards = firstCardsDeal(userCards);
+  compCards = firstCardsDeal(compCards);
+
+  // calculate the score
+  userTotalScore = calculateScore(userCards);
+  compTotalScore = calculateScore(compCards);
+
+  // comapring the score from the 1st 2 cards
+  compareTheScore(userTotalScore, compTotalScore);
+
+  userCardsMessage = `User cards are: ${userCards[0].name} ${userCards[0].emojiSuit} and ${userCards[1].name} ${userCards[1].emojiSuit}`;
+  compCardsMessage = `Computer cards are: ${compCards[0].name} ${compCards[0].emojiSuit} and ${compCards[1].name} ${compCards[1].emojiSuit}`;
+
+  // check if there's blackjack
+  if (compTotalScore == 0) {
+    gameMode = gameOver;
+    return `${userCardsMessage}<br>${compCardsMessage}<br>
+            Lose, opponent has Blackjack 😱`;
+  } else if (userTotalScore == 0) {
+    gameMode = gameOver;
+    return `${userCardsMessage}<br>${compCardsMessage}<br>
+            Win with a Blackjack 😎`;
+  }
+};
+
 const main = (input) => {
   var myOutputValue = "Click Submit to deal cards.";
 
   // Game Mode 1. Start the game
   if (gameMode == startTheGameMode) {
     // generates the first 2 cards
-    userCards = firstCardsDeal(userCards);
-    compCards = firstCardsDeal(compCards);
-
-    // calculate the score
-    userTotalScore = calculateScore(userCards);
-    compTotalScore = calculateScore(compCards);
-
-    // comapring the score from the 1st 2 cards
-    compareTheScore(userTotalScore, compTotalScore);
-
-    userCardsMessage = `User cards are: ${userCards[0].name} ${userCards[0].emojiSuit} and ${userCards[1].name} ${userCards[1].emojiSuit}`;
-    compCardsMessage = `Computer cards are: ${compCards[0].name} ${compCards[0].emojiSuit} and ${compCards[1].name} ${compCards[1].emojiSuit}`;
-
-    // console.log(`the current compTotalScore: ${compTotalScore}`);
-    // check if there's blackjack
-    if (compTotalScore == 0) {
-      gameMode = gameOver;
-      return `${userCardsMessage}<br>${compCardsMessage}<br>
-            Lose, opponent has Blackjack 😱`;
-    } else if (userTotalScore == 0) {
-      gameMode = gameOver;
-      return `${userCardsMessage}<br>${compCardsMessage}<br>
-            Win with a Blackjack 😎`;
-    }
+    firstDealCards();
 
     // check if the player wants to assign Ace as 1 or 11
     if (userCards[0].value == 11 || userCards[1].value == 11) {
@@ -247,16 +255,12 @@ const main = (input) => {
       gameMode = gameOver;
       // console.log("i'm in game over mode");
       let resultMessage = compareTheScore(userTotalScore, compTotalScore);
-      let endGameMessage = `Computer's total score is : ${compTotalScore}<br> User's total score is: ${userTotalScore}`;
+      let endGameMessage = `User's total score is: ${userTotalScore} <br> Computer's total score is : ${compTotalScore} `;
       return `${endGameMessage}  <br> ${resultMessage}`;
     }
   }
 
   // reset the game
-  userCards = [];
-  compCards = [];
-  userTotalScore = 0;
-  compTotalScore = 0;
-  gameMode = startTheGameMode;
+  resetTheGame();
   return myOutputValue;
 };
