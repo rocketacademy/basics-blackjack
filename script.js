@@ -145,6 +145,10 @@ var main = function (input) {
       return `IT IS A DRAW! Player and Computer both get 21! <br> Player hand: <br> ${playerHand[0].name} ${playerHand[0].suit} <br> ${playerHand[1].name} ${playerHand[1].suit} <br><br> Computer hand: <br> ${computerHand[0].name} ${computerHand[0].suit}`;
     }
 
+    if (computerCardvalue == 21 && playerCardValue != 21) {
+      return `SORRY! COMPUTER WINS WITH 21. <br><br> Player hand: <br> ${playerHand[0].name} ${playerHand[0].suit} <br> ${playerHand[1].name} ${playerHand[1].suit} <br><br> Computer hand:  <br> ${computerHand[1].name} ${computerHand[1].suit} `;
+    }
+
     return `Player hand: <br> ${playerHand[0].name} ${playerHand[0].suit} <br> ${playerHand[1].name} ${playerHand[1].suit} <br><br> Computer hand: <br> ${computerHand[0].name} ${computerHand[0].suit} <br><br> Enter HIT or STAND to continue.`;
   }
 };
