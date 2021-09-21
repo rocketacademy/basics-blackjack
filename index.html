@@ -106,7 +106,8 @@
         <div id="rules">
           BLACKJACK PAYS 3 TO 2<br /><br />
           DEALER MUST DRAW ON 16 OR LESS AND STAND ON ALL 17S<br /><br />
-          SPLITTING ALLOWED, NO RE-SPLITTING
+          SPLITTING ALLOWED, NO RE-SPLITTING<br /><br />
+          <span id="detailed-rules">Detailed Rules</span>
         </div>
         <div id="dealer">
           <img id="dealer-image" src="dealer.png" />
@@ -128,6 +129,121 @@
         <button id="hit-button">Hit</button>
         <button id="stand-button">Stand</button>
         <button id="split-button">Split</button>
+      </div>
+
+      <div id="modal">
+        <div id="modal-content">
+          <span id="close">&times;</span>
+          <p>
+            Welcome to Blackjack! The version implemented here is one-deck
+            casino blackjack. Since there are so many rule variations out there,
+            the detailed rules are spelled out here.
+          </p>
+
+          <p>
+            To start, input the number of players. Each player starts with 100
+            chips. Use the slider to place your bets and click New Hand to deal.
+            If a player runs out of chips, he will be topped up with 100 chips.
+            A player's chip count and win/loss are tracked.
+          </p>
+
+          <p>
+            In Blackjack, the objective is to win by creating card totals higher
+            than those of the dealer's hand but not exceeding 21, or by stopping
+            at a total in the hope that dealer will bust. Number cards count as
+            their number, the jack, queen, and king ("face cards" or "pictures")
+            count as 10, and aces count as either 1 or 11 according to the
+            player's choice. A total of 21 on the first two cards is a "natural"
+            or "blackjack."
+          </p>
+
+          <p>
+            The players and dealer will be dealt two cards. All players will
+            receive their hands face-up. The dealer will receive the first card
+            face up and the second card face down. The dealer peeks at the
+            second card but only reveals it if it makes the dealer's hand a
+            blackjack.
+          </p>
+
+          <p>- <b>If the dealer has blackjack:</b></p>
+          <ul>
+            <li>
+              All players with blackjack tie with the dealer and their bets are
+              returned to them.
+            </li>
+            <li>All players without blackjack lose their bets.</li>
+            <li>
+              The hand is over, and players can place their bets again for the
+              new hand.
+            </li>
+          </ul>
+
+          <p>- <b>If the dealer doesn't have blackjack:</b></p>
+          <ul>
+            <li>
+              All players with blackjack win and receive a payout at 3:2 odds,
+              or 1.5 times their bet.
+            </li>
+            <li>
+              All players without blackjack will take turns, starting from the
+              player first dealt. On each turn, the options available are:<br /><br />
+              <ol>
+                <li>
+                  <b>Hit</b>. The player will receive a card from the top of the
+                  deck.
+                </li>
+                <li>
+                  <b>Stand</b>. The player ends their turn and play continues
+                  with the next player.
+                </li>
+                <li>
+                  <b>Split</b>. This option is only available when the player
+                  has two cards and if the starting two cards have the same
+                  rank. The two cards will be separated into two hands and one
+                  card each will be dealt to them. Play proceeds as normal.
+                  Further rules on splitting below.
+                </li>
+                <li>
+                  <b>Surrender</b>. The player gives up half their bet and
+                  forfeits their hand.
+                </li>
+                <li>
+                  <b>Double down</b>. The player doubles their bet, and receives
+                  a single card.
+                </li>
+              </ol>
+            </li>
+            <br />
+            <li>
+              If a player busts upon hitting or doubling, the player loses his
+              bet.
+            </li>
+            <li>
+              Once all players have finished their turn, the dealer reveals his
+              face down card and draws card if needed until the hand achieves a
+              total of 17 or higher. The dealer never doubles, splits, or
+              surrenders. If the dealer busts, all remaining player hands win.
+              If the dealer does not bust, each remaining bet wins if its hand
+              is higher than the dealer's, loses if it is lower, and ties if it
+              is the same.
+            </li>
+            <li>
+              The hand is over, and players can place their bets again for the
+              new hand.
+            </li>
+          </ul>
+
+          <p><b>Rules on splitting:</b></p>
+          <ul>
+            <li>Re-splitting not allowed.</li>
+            <li>Hitting split aces allowed.</li>
+            <li>
+              A ten-value card dealt on a split ace (or vice versa) will not be
+              counted as a blackjack, but simply as 21 points.
+            </li>
+            <li>Double down after split allowed.</li>
+          </ul>
+        </div>
       </div>
     </div>
     <footer class="footer">♣️ Basics - Blackjack ♠️</footer>
@@ -272,6 +388,26 @@
       split.addEventListener("click", function () {
         output.innerHTML = onPlayerSplit();
       });
+
+      // For modal on detailed rules
+
+      var modal = document.querySelector("#modal");
+      var modalOpen = document.querySelector("#detailed-rules");
+      var span = document.querySelector("#close");
+
+      modalOpen.onclick = function () {
+        modal.style.display = "block";
+      };
+
+      span.onclick = function () {
+        modal.style.display = "none";
+      };
+
+      window.onclick = function (event) {
+        if (event.target == modal) {
+          modal.style.display = "none";
+        }
+      };
     </script>
   </body>
 </html>
