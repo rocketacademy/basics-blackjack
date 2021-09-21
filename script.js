@@ -109,7 +109,7 @@ const addingNewCard = (playerCards) => {
 const calculateScore = (playerCards) => {
   let totalScore = 0;
   for (let i = 0; i < playerCards.length; i += 1) {
-    let cardValue = Number(playerCards[i].value);
+    const cardValue = Number(playerCards[i].value);
     totalScore = totalScore + cardValue;
   }
   // check for a blackjack (a hand with only 2 cards: ace + 10)
@@ -128,11 +128,13 @@ const compareTheScore = (userScore, compScore) => {
   }
   if (userScore == compScore) {
     return `Draw 🙃 ${restartGameMessage}`;
-  } else if (compScore == 0) {
+  }
+  if (compScore == 0) {
     return `Lose, opponent has Blackjack 😱 ${restartGameMessage} `;
   } else if (userScore == 0) {
     return `Win with a Blackjack 😎 ${restartGameMessage}`;
-  } else if (userScore > 21) {
+  }
+  if (userScore > 21) {
     return `You went over. You lose 😭 ${restartGameMessage}`;
   } else if (compTotalScore > 21) {
     return `Opponent went over. You win 😁 ${restartGameMessage}`;
