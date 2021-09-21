@@ -85,8 +85,18 @@ var shuffleCards = function (cardDeck) {
 
 // Input validator, returns boolean
 var inputValidator = function (input) {
-  if (input != "hit" && input != "stand") {
-    return false;
+  if (gameState == "player") {
+    if (input != "hit" && input != "stand" && input != "h" && input != "s") {
+      return false;
+    }
+    return true;
+  }
+
+  if (gameState == "init") {
+    if (isNaN(input) || input == "" || input > playerPoints) {
+      return false;
+    }
+    return true;
   }
 
   return true;
@@ -121,13 +131,11 @@ var handCalculate = function (hand) {
   return handValue;
 };
 
-// Checks if the computer has a lower card value than the player and has <17 value, returns boolean
+// Checks that the computer doesn't have 21, then if the computer has a lower card value than the player or has <17 value, returns true, returns boolean
 var doesComHit = function () {
-  if (comValue < playerValue) {
-    return true;
-  }
-
-  if (comValue < 17) {
+  if (comValue == 21) {
+    return false;
+  } else if (comValue < playerValue || comValue < 17) {
     return true;
   }
 
@@ -166,6 +174,30 @@ var printResults = function () {
   return outputString;
 };
 
+// Determines who wins, pays out bets; returns string
+var determineWinner = function () {
+  var result = "<br>";
+
+  // Draw
+  if (playerValue == comValue) {
+    result += "It's a draw!";
+  }
+
+  // Player win
+  if ((playerValue > comValue && !isBust(playerValue)) || isBust(comValue)) {
+    result += "The player wins!";
+    playerPoints += playerBet;
+  }
+
+  // Computer win
+  if ((playerValue < comValue && !isBust(comValue)) || isBust(playerValue)) {
+    result += "The computer wins!";
+    playerPoints -= playerBet;
+  }
+
+  return `${result}<br>You currently have ${playerPoints} points.<br>Submit another bet to play again!`;
+};
+
 // Global variables
 var mainDeck = shuffleCards(makeDeck());
 var gameState = "init"; // States: initialise, player, computer
@@ -173,10 +205,16 @@ var playerHand = [];
 var comHand = [];
 var playerValue = 0;
 var comValue = 0;
+var playerPoints = 100;
+var playerBet = 0;
 
 // Main function
 var main = function (input) {
   if (gameState == "init") {
+    if (!inputValidator(input)) {
+      return `Please input a bet within your points (${playerPoints}).`;
+    }
+    playerBet = parseInt(input);
     gameState = "player";
     playerHand = dealCards(mainDeck);
     comHand = dealCards(mainDeck);
@@ -184,7 +222,7 @@ var main = function (input) {
     playerValue = handCalculate(playerHand);
     comValue = handCalculate(comHand);
 
-    var outputString = "Do you want to hit or stand?";
+    var outputString = "Do you want to hit(h) or stand(s)?";
 
     outputString += printResults();
 
@@ -193,10 +231,10 @@ var main = function (input) {
 
   if (gameState == "player") {
     if (!inputValidator(input)) {
-      return `Please input hit or stand!${printResults()}`;
+      return `Please input hit(h) or stand(s)!${printResults()}`;
     }
 
-    if (input == "hit") {
+    if (input == "hit" || input == "h") {
       playerHand.push(mainDeck.pop());
       playerValue = handCalculate(playerHand);
     }
@@ -205,12 +243,13 @@ var main = function (input) {
 
     if (isBust(playerValue)) {
       outputString += "You've gone bust! Better luck next time.";
+      outputString += determineWinner();
       gameState = "init";
-    } else if (input == "stand") {
+    } else if (input == "stand" || input == "s") {
       outputString += "Press submit to see the computer's turn.";
       gameState = "com";
     } else {
-      outputString += "Do you want to hit or stand?";
+      outputString += "Do you want to hit(h) or stand(s)?";
     }
 
     outputString += printResults();
@@ -228,11 +267,14 @@ var main = function (input) {
 
     if (isBust(comValue)) {
       outputString += "The computer's gone bust!";
+      outputString += determineWinner();
       gameState = "init";
     } else if (doesComHit()) {
       outputString += "The computer will hit again.";
     } else {
       outputString += "The computer stands.";
+      outputString += determineWinner();
+      gameState = "init";
     }
 
     outputString += printResults();
