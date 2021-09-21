@@ -154,7 +154,8 @@ button {
 #hit-button,
 #stand-button,
 #split-button,
-#double-down-button {
+#double-down-button,
+#surrender-button {
   display: none;
 }
 

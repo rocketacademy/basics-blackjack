@@ -130,6 +130,7 @@
         <button id="stand-button">Stand</button>
         <button id="split-button">Split</button>
         <button id="double-down-button">Double Down</button>
+        <button id="surrender-button">Surrender</button>
       </div>
 
       <div id="modal">
@@ -259,6 +260,7 @@
       var stand = document.querySelector("#stand-button");
       var split = document.querySelector("#split-button");
       var double = document.querySelector("#double-down-button");
+      var surrender = document.querySelector("#surrender-button");
       var output = document.querySelector("#output-div");
 
       numPlayers.addEventListener("input", function () {
@@ -384,7 +386,7 @@
       });
 
       stand.addEventListener("click", function () {
-        output.innerHTML = onPlayerStand();
+        output.innerHTML = onPlayerStandOrSurrender();
       });
 
       split.addEventListener("click", function () {
@@ -393,6 +395,10 @@
 
       double.addEventListener("click", function () {
         output.innerHTML = onPlayerHitOrDoubleDown(true);
+      });
+
+      surrender.addEventListener("click", function () {
+        output.innerHTML = onPlayerStandOrSurrender(true);
       });
 
       // For modal on detailed rules

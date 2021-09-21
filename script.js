@@ -12,6 +12,7 @@ const hitButton = document.getElementById("hit-button");
 const standButton = document.getElementById("stand-button");
 const splitButton = document.getElementById("split-button");
 const doubleDownButton = document.getElementById("double-down-button");
+const surrenderButton = document.getElementById("surrender-button");
 
 // init players array by getting num players from user, and create player objects
 var initialisePlayers = function (playerNum) {
@@ -113,6 +114,7 @@ var resetGame = function () {
   standButton.style.display = "none";
   splitButton.style.display = "none";
   doubleDownButton.style.display = "none";
+  surrenderButton.style.display = "none";
 
   // reset players ui and state
   for (var i = 0; i < players.length; i += 1) {
@@ -199,7 +201,9 @@ var findNextPlayer = function () {
 
   if (curPlayer == players.length) return compareHandsWithDealer(); // no players left
 
-  doubleDownButton.style.display = "inline-block"; // show double down button again
+  // show double down and surrender button again
+  doubleDownButton.style.display = "inline-block";
+  surrenderButton.style.display = "inline-block";
 
   // next player's starting hand is splittable, show the split button
   if (
@@ -321,6 +325,7 @@ var dealNewHand = function () {
     hitButton.style.display = "inline-block";
     standButton.style.display = "inline-block";
     doubleDownButton.style.display = "inline-block";
+    surrenderButton.style.display = "inline-block";
   }
   updateTableUI();
   return output;
@@ -389,14 +394,25 @@ var onPlayerHitOrDoubleDown = function (doubledDown = false) {
 
     if (doubledDown) output += findNextPlayer();
     // if he doubled down, find the next player as he can only draw one card
-    else doubleDownButton.style.display = "none"; // if he didnt double down, hide the dd button
+    else {
+      // if he didnt double down, hide the dd and surrender button
+      doubleDownButton.style.display = "none";
+      surrenderButton.style.display = "none";
+    }
   }
   updateTableUI();
   return output;
 };
 
 // this function is called when the stand button is clicked
-var onPlayerStand = function () {
+var onPlayerStandOrSurrender = function (surrender = false) {
+  if (surrender) {
+    // if player surrendered, forfeit half the bet and mark this hand as settled
+    var handNum = players[curPlayer].curHand;
+    players[curPlayer].chips -= 0.5 * players[curPlayer].wager;
+    players[curPlayer].settled[handNum] = true;
+  }
+
   var output = findNextPlayer();
   updateTableUI();
   return output;
