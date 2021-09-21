@@ -8,6 +8,8 @@ var gameMode2 = `evaluate hand`;
 var gameMode3 = `hit or stand`;
 var gameMode4 = `decide winner`;
 var gameMode = gameMode1;
+// reset gamemode
+var gameOver = false;
 
 // make card deck
 var makeDeck = function () {
@@ -130,6 +132,11 @@ var printCardArray = function (cardArray) {
 var main = function (input) {
   var playerCardValue = 0;
   var computerCardvalue = 0;
+
+  if (gameOver == true) {
+    return `GAME OVER. <br><br> Refresh page to restart game.`;
+  }
+
   // distribute two cards to player and computer
   // only reveal player cards
   if (gameMode == gameMode1) {
@@ -149,22 +156,25 @@ var main = function (input) {
 
     // evaluate player and computer hands
     if (playerCardValue == 21 && computerCardvalue != 21) {
+      gameOver = true;
       return `WOO HOO! YOU WIN WITH 21! <br><br> Player hand <br> 
       ${printCardArray(
         playerHand
-      )} <br><br> Computer hand: <br> ${printCardArray(computerHand)}.`;
+      )} <br><br> Computer hand: <br> ${printCardArray(computerHand)}`;
     }
 
     if (playerCardValue == 21 && computerCardvalue == 21) {
+      gameOver = true;
       return `IT IS A DRAW! <br> Player and Computer both get 21! <br><br> Player hand: <br> ${printCardArray(
         playerHand
       )} <br><br> Computer hand: <br> ${printCardArray(computerHand)}`;
     }
 
     if (computerCardvalue == 21 && playerCardValue != 21) {
+      gameOver = true;
       return `SORRY! COMPUTER WINS WITH 21. <br><br> Player hand: <br> ${printCardArray(
         playerHand
-      )} <br><br> Computer hand:  <br> ${printCardArray(computerHand)} `;
+      )} <br><br> Computer hand:  <br> ${printCardArray(computerHand)}`;
     }
 
     return `Player hand: <br> ${printCardArray(
@@ -178,10 +188,29 @@ var main = function (input) {
     if (input == `hit`) {
       dealCard(playerHand);
       playerCardValue = sumOfHand(playerHand);
+      console.log(playerCardValue);
     }
 
     if (playerCardValue > 21) {
-      return `Sorry you busted!`;
+      gameOver = true;
+      return `Sorry you busted! You lose! <br><br> Player hand: <br> ${printCardArray(
+        playerHand
+      )} <br><br> Computer hand: <br> ${printCardArray(computerHand)};`;
+    }
+
+    if (computerCardvalue == 21 && playerCardValue != 21) {
+      gameOver = true;
+      return `SORRY! COMPUTER WINS WITH 21. <br><br> Player hand: <br> ${printCardArray(
+        playerHand
+      )} <br><br> Computer hand:  <br> ${printCardArray(computerHand)} `;
+    }
+
+    if ((playerCardValue = 21 && computerCardvalue != 21)) {
+      gameOver = true;
+      return `WOO HOO! YOU WIN WITH 21! <br><br> Player hand <br> 
+      ${printCardArray(
+        playerHand
+      )} <br><br> Computer hand: <br> ${printCardArray(computerHand)}`;
     }
   }
 };
