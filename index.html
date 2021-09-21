@@ -21,20 +21,20 @@
     <!-- sharing configuration -->
     <!-- Primary Meta Tags -->
     <title>Blackjack - Basics - Rocket Academy</title>
-    <meta name="title" content="YOURNAME's BlackJack Game!" />
+    <meta name="title" content="Avery's BlackJack Game!" />
     <meta name="description" content="A fun card game I made myself! 😄💪🌈" />
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://rocketacademy.github.io/basics-blackjack/index.html" />
-    <meta property="og:title" content="YOURNAME's BlackJack Game!" />
+    <meta property="og:title" content="Avery's BlackJack Game!" />
     <meta property="og:description" content="A fun card game I made myself! 😄💪🌈" />
     <meta property="og:image" content="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/basics/basics-blackjack-share-small.jpeg" />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:url" content="https://rocketacademy.github.io/basics-blackjack/index.html" />
-    <meta name="twitter:title" content="YOURNAME's BlackJack Game!" />
+    <meta name="twitter:title" content="Avery's BlackJack Game!" />
     <meta name="twitter:description" content="A fun card game I made myself! 😄💪🌈" />
     <meta name="twitter:image" content="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/basics/basics-blackjack-share-small.jpeg" />
     <meta name="twitter:site" content="@rocketacademyco" />
@@ -56,7 +56,7 @@
         margin-right: 30px;
         background-color: white;
         color: black; /* sets the font color */
-        background-image: linear-gradient(to bottom, #00c9ff, #92fe9d);
+        background-image: linear-gradient(to right, #2bc0e4, #eaecc6);
         background-position: center; /* Center the image */
         background-repeat: no-repeat; /* Do not repeat the image */
         background-size: cover; /* Resize the background image to cover the entire container */
@@ -77,11 +77,11 @@
       #container {
         background-color: ;
         margin: 40px auto;
-        max-width: 800px;
+        max-width: 700px;
         padding: 38px 31px;
         border: 5px white;
         border-style: solid;
-        border-radius: 15px;
+        border-radius: 20px;
         font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
         font-size: 18px;
         text-align: center;
@@ -111,6 +111,7 @@
         margin: 20px auto;
         padding: 20px;
         width: 100%;
+        border-radius: 5px;
         font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
         text-align: center;
       }
@@ -127,8 +128,39 @@
         margin-right: auto;
       }
 
+      /* Style the button that is used to open and close the collapsible content */
+      .collapsible {
+        background-color: rgb(241, 241, 241);
+        color: rgb(48, 46, 46);
+        cursor: pointer;
+        padding: 12px 18px;
+        width: 100%;
+        border: none;
+        text-align: center;
+        border-radius: 5px;
+        outline: none;
+        font-size: 18px;
+      }
+
+      /* Add a background color to the button if the mouse hovers over it */
+      .active,
+      .collapsible:hover {
+        background-color: rgb(231, 231, 231);
+      }
+
+      /* Style the collapsible content. */
+      .content {
+        padding: 0 25px;
+        background-color: rgb(241, 241, 241);
+        color: rgb(4, 55, 114);
+        max-height: 0;
+        overflow: hidden;
+        width: 100%;
+        transition: max-height 0.2s ease-out;
+      }
+
       #instructions {
-        color: rgb(57, 80, 209);
+        color: rgb(4, 55, 114);
       }
 
       #gameinstructions {
@@ -165,8 +197,17 @@
       <button id="restart-button">Restart</button>
 
       <p>Game Results:</p>
-      <div id="output-div"><img src="https://media.giphy.com/media/l2Sq2mPVJr4tfk436/giphy.gif?cid=ecf05e476lnb74zm24qr786hhgkpep7qv15y2sna7zuj0p1f&rid=giphy.gif&ct=g" class ="center">
+      <div id="output-div"><img src="https://media.giphy.com/media/l2Sq2mPVJr4tfk436/giphy.gif?cid=ecf05e476lnb74zm24qr786hhgkpep7qv15y2sna7zuj0p1f&rid=giphy.gif&ct=g" class="center" /></div>
+      <br />
+      <button type="button" class="collapsible">Never played Blackjack?</button>
+      <div class="content">
+        <p>
+          <u><i>Rules of Blackjack</i></u><br /><br />Player attempts to beat the dealer by getting a count as close to 21 as possible, without going over 21.<br><br>Cards will be shuffled. Dealer deals two cards to each player.<br/><br>Player can choose to hit (draw another card from the deck) or stand (proceed without adding another card). <br><br/>After player is done with the turn, dealer
+          makes their play.<br /><br>Cards of the player and dealer are compared - the higher number wins. <br /><br /><i>Goodluck!</i></p>
+        </p>
+      </div>
     </div>
+
     <!-- Import program logic -->
     <script src="script.js"></script>
     <!-- Define button click functionality -->
@@ -199,7 +240,7 @@
 
       //Stand event listener
       stand.addEventListener("click", function () {
-        gameMode = `winning condition`
+        gameMode = `winning condition`;
         var result = main();
         output.innerHTML = result;
       });
@@ -218,6 +259,22 @@
         //Reload page to restart game
         location.reload();
       });
+
+      var coll = document.getElementsByClassName("collapsible");
+      var i;
+
+      //Collapsible instructions
+      for (i = 0; i < coll.length; i++) {
+        coll[i].addEventListener("click", function () {
+          this.classList.toggle("active");
+          var content = this.nextElementSibling;
+          if (content.style.maxHeight) {
+            content.style.maxHeight = null;
+          } else {
+            content.style.maxHeight = content.scrollHeight + "px";
+          }
+        });
+      }
     </script>
   </body>
 </html>
