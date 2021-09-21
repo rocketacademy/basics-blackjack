@@ -169,9 +169,9 @@ var main = function (input) {
 
     return `Player hand: <br> ${printCardArray(
       playerHand
-    )} <br><br> Computer hand: <br> ${printCardArray(
-      computerHand
-    )} <br><br> Enter HIT or STAND to continue.`;
+    )} <br><br> Computer hand: <br> ${computerHand[0].name} ${
+      computerHand[0].suit
+    } <br><br> Enter HIT or STAND to continue.`;
   }
 
   if (gameMode == gameMode2) {
