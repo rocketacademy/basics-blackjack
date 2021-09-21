@@ -131,9 +131,11 @@ const compareTheScore = (userScore, compScore) => {
   }
   if (userScore > 21) {
     return `You went over. You lose 😭 ${restartGameMessage}`;
-  } else if (compTotalScore > 21) {
+  }
+  if (compTotalScore > 21) {
     return `Opponent went over. You win 😁 ${restartGameMessage}`;
-  } else if (userScore > compTotalScore) {
+  }
+  if (userScore > compTotalScore) {
     return `You win 😃 ${restartGameMessage}`;
   }
   return `You lose 😤 ${restartGameMessage}`;
