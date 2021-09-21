@@ -9,6 +9,7 @@ let gameMode = startTheGameMode;
 // assign arrays for user and comp cards
 let userCards = [];
 let compCards = [];
+const suits = ["spades", "hearts", "clubs", "diamonds"];
 
 // assign a var for the total amount of cards in hand
 let userTotalScore;
@@ -23,10 +24,8 @@ const restartGameMessage = `<br> Click Submit to start a new game.`;
 // make function to generate a card deck
 const makeDecks = () => {
   const deck = [];
-  let suitIndex = 0;
-  const suits = ["spades", "hearts", "clubs", "diamonds"];
   // loop 1 , 4 suits, give every suit an emoji
-  while (suitIndex < suits.length) {
+  for (let suitIndex = 0; suitIndex < suits.length; suitIndex += 1) {
     const currentSuit = suits[suitIndex];
     let emojiSuit = "";
     if (currentSuit == "spades") {
@@ -38,12 +37,10 @@ const makeDecks = () => {
     } else if (currentSuit == "diamonds") {
       emojiSuit = "♦️";
     }
-    // loop 2, rank 1-13
-    let rankCounter = 1;
-    // assign card's value and different name for card 1, 11, 12, 13
-    let cardValue = rankCounter;
-    while (rankCounter <= 13) {
+    // loop 2, rank 1-13, assign card's value and different name for card 1, 11, 12, 13
+    for (let rankCounter = 1; rankCounter <= 13; rankCounter += 1) {
       let cardName = "";
+      let cardValue = rankCounter;
       if (rankCounter == 1) {
         cardName = "ace";
         cardValue = 11;
@@ -65,14 +62,12 @@ const makeDecks = () => {
         rank: rankCounter,
         suit: currentSuit,
         name: cardName,
-        emojiSuit: emojiSuit,
+        emojiSuit,
         value: cardValue,
       };
       // push the card to card deck
       deck.push(card);
-      rankCounter += 1;
     }
-    suitIndex += 1;
   }
   // return a card deck
   return deck;
@@ -83,7 +78,7 @@ const deck = makeDecks();
 
 // a funtion to generates a random card object from the deck.
 const dealARandomCard = () => {
-  let randomCard = deck[Math.floor(Math.random() * deck.length)];
+  const randomCard = deck[Math.floor(Math.random() * deck.length)];
   return randomCard;
 };
 
@@ -104,7 +99,7 @@ const firstCardsDeal = (playerCards) => {
 // a funtion to generates a new card
 const addingNewCard = (playerCards) => {
   // generate a new card
-  let newCard = dealARandomCard();
+  const newCard = dealARandomCard();
   // push the new card to userCards array
   playerCards.push(newCard);
   return newCard;
@@ -117,7 +112,8 @@ const calculateScore = (playerCards) => {
     let cardValue = Number(playerCards[i].value);
     totalScore = totalScore + cardValue;
   }
-  // check for a blackjack (a hand with only 2 cards: ace + 10) and return 0 instead of the actual score. 0 will represent a blackjack in our game.
+  // check for a blackjack (a hand with only 2 cards: ace + 10)
+  // and return 0 instead of the actual score. 0 will represent a blackjack in our game.
   if (totalScore == 21 && playerCards.length == 2) {
     return 0;
   }
@@ -143,9 +139,8 @@ const compareTheScore = (userTotalScore, compTotalScore) => {
     return `Opponent went over. You win 😁 ${restartGameMessage}`;
   } else if (userTotalScore > compTotalScore) {
     return `You win 😃 ${restartGameMessage}`;
-  } else {
-    return `You lose 😤 ${restartGameMessage}`;
   }
+  return `You lose 😤 ${restartGameMessage}`;
 };
 
 // function to reset the game
@@ -161,27 +156,28 @@ const resetTheGame = () => {
 const firstDealCards = () => {
   userCards = firstCardsDeal(userCards);
   compCards = firstCardsDeal(compCards);
-
   // calculate the score
   userTotalScore = calculateScore(userCards);
   compTotalScore = calculateScore(compCards);
-
   // comapring the score from the 1st 2 cards
   compareTheScore(userTotalScore, compTotalScore);
 
   userCardsMessage = `User cards are: ${userCards[0].name} ${userCards[0].emojiSuit} and ${userCards[1].name} ${userCards[1].emojiSuit}`;
   compCardsMessage = `Computer cards are: ${compCards[0].name} ${compCards[0].emojiSuit} and ${compCards[1].name} ${compCards[1].emojiSuit}`;
+};
 
-  // check if there's blackjack
-  if (compTotalScore == 0) {
-    gameMode = gameOver;
-    return `${userCardsMessage}<br>${compCardsMessage}<br>
-            Lose, opponent has Blackjack 😱`;
-  } else if (userTotalScore == 0) {
-    gameMode = gameOver;
-    return `${userCardsMessage}<br>${compCardsMessage}<br>
-            Win with a Blackjack 😎`;
-  }
+// a function to add dealer hit or stand
+const dealerAddCard = () => {
+  while (compTotalScore < 17) {
+    // generate a new comp's card if comp's card's score is less than 17
+    let newCard = addingNewCard(compCards);
+    compTotalScore += newCard.value;
+  } // if comp total score is bigger than 21, the game is over, comp busts, return the message
+  gameMode = gameOver;
+  // console.log("i'm in game over mode");
+  let resultMessage = compareTheScore(userTotalScore, compTotalScore);
+  let endGameMessage = `User's total score is: ${userTotalScore} <br> Computer's total score is : ${compTotalScore} `;
+  return { resultMessage, endGameMessage };
 };
 
 const main = (input) => {
@@ -191,6 +187,17 @@ const main = (input) => {
   if (gameMode == startTheGameMode) {
     // generates the first 2 cards
     firstDealCards();
+
+    // check if there's blackjack
+    if (compTotalScore == 0) {
+      gameMode = gameOver;
+      return `${userCardsMessage}<br>${compCardsMessage}<br>
+            Lose, opponent has Blackjack 😱`;
+    } else if (userTotalScore == 0) {
+      gameMode = gameOver;
+      return `${userCardsMessage}<br>${compCardsMessage}<br>
+            Win with a Blackjack 😎`;
+    }
 
     // check if the player wants to assign Ace as 1 or 11
     if (userCards[0].value == 11 || userCards[1].value == 11) {
@@ -235,7 +242,6 @@ const main = (input) => {
         return `${newUserCardMessage} <br>
                 Type 'y' to get another card, type 'n' to pass:`;
       }
-
       // check if new user's total score is bigger than 21
       else if (userTotalScore > 21) {
         // if the user busts, the game is over, user lose, return the message
@@ -246,16 +252,8 @@ const main = (input) => {
       }
     } // if the user input is "n". Game Mode 3. Add Dealer Hit or Stand
     else if (input == "n") {
-      // console.log("i'm in dealerAddCardMode");
-      while (compTotalScore < 17) {
-        // generate a new comp's card if comp's card's score is less than 17
-        let newCard = addingNewCard(compCards);
-        compTotalScore += newCard.value;
-      } // if comp total score is bigger than 21, the game is over, comp busts, return the message
-      gameMode = gameOver;
-      // console.log("i'm in game over mode");
-      let resultMessage = compareTheScore(userTotalScore, compTotalScore);
-      let endGameMessage = `User's total score is: ${userTotalScore} <br> Computer's total score is : ${compTotalScore} `;
+      // dealer add card mode
+      const { endGameMessage, resultMessage } = dealerAddCard();
       return `${endGameMessage}  <br> ${resultMessage}`;
     }
   }
