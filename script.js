@@ -315,11 +315,24 @@ var displayDealtCards = function () {
       var displayNum = i + 1;
       myString += `Player ${displayNum} cards:<br><div class="row">`;
     }
-    for (var j = 0; j < playerList[i].length; j += 1) {
-      myString += displayCardImage(
-        playerList[i][j].name,
-        playerList[i][j].suit
-      );
+    if (i == playerList.length - 1) {
+      for (var j = 0; j < playerList[i].length; j += 1) {
+        if (j == playerList[i].length - 1 && gameMode < 4) {
+          myString += displayCardImage("cover", "cover");
+        } else {
+          myString += displayCardImage(
+            playerList[i][j].name,
+            playerList[i][j].suit
+          );
+        }
+      }
+    } else {
+      for (var j = 0; j < playerList[i].length; j += 1) {
+        myString += displayCardImage(
+          playerList[i][j].name,
+          playerList[i][j].suit
+        );
+      }
     }
     myString += "</div><br>";
   }
@@ -431,6 +444,8 @@ var displayCardImage = function (name, suit) {
     return '<div class="column"><img src="images/queenSpades.png" /></div>';
   } else if (name == "king" && suit == "spades") {
     return '<div class="column"><img src="images/kingSpades.png" /></div>';
+  } else if (name == "cover" && suit == "cover") {
+    return '<div class="column"><img src="images/coverCard.png" /></div>';
   }
 };
 
@@ -456,4 +471,3 @@ var displayPlayerCards = function () {
 // Ace logic
 // plug gap when all win but continue to play dealer
 // plug gap when all bust but continue to play dealer
-// hide dealer second card
