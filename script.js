@@ -129,11 +129,6 @@ const compareTheScore = (userScore, compScore) => {
   if (userScore == compScore) {
     return `Draw 🙃 ${restartGameMessage}`;
   }
-  if (compScore == 0) {
-    return `Lose, opponent has Blackjack 😱 ${restartGameMessage} `;
-  } else if (userScore == 0) {
-    return `Win with a Blackjack 😎 ${restartGameMessage}`;
-  }
   if (userScore > 21) {
     return `You went over. You lose 😭 ${restartGameMessage}`;
   } else if (compTotalScore > 21) {
