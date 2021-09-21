@@ -141,7 +141,7 @@ let compCards = [];
 let userTotalScore;
 let compTotalScore;
 
-//play the game
+// Game Mode 1. Start the game
 var main = function (input) {
   var myOutputValue = "Click Submit to deal cards.";
 
@@ -180,55 +180,46 @@ var main = function (input) {
           Type 'y' to get another card, type 'n' to pass: `;
   }
 
-  // ask the user whether to hit or stand
+  // Game Mode 2. Ask the user whether to hit or stand, play in "addCardMode"
   else if (gameMode == addCardMode) {
     if (input == "y") {
       console.log("i'm running add card mode");
       // generate a new user's card
       let newCard = addingNewCard(userCards);
       userTotalScore += newCard.value;
-      let newCardMessage = `Your new card is : ${newCard.name} ${newCard.emojiSuit} total score : ${userTotalScore}. <br>`;
+      let newUserCardMessage = `Your new card is : ${newCard.name} ${newCard.emojiSuit} total score : ${userTotalScore}. <br>`;
       // check if the score is bigger or equal to 21
       if (userTotalScore <= 21) {
         // addingNewCard(userCards, userTotalScore);
-        return `${newCardMessage} <br>
+        return `${newUserCardMessage} <br>
                 Type 'y' to get another card, type 'n' to pass:`;
       } // if new total score is bigger than 21, the player busts, the game is over, user lose, return the message
       else if (userTotalScore > 21) {
         gameMode = gameOver;
-        return `${newCardMessage} <br>
+        console.log(gameMode);
+        return `${newUserCardMessage} <br>
                 ${compareTheScore(userTotalScore, compTotalScore)}`;
       }
-    } // if the user input is "n"
+    } // if the user input is "n". Game Mode 3. Add Dealer Hit or Stand
     else if (input == "n") {
-      gameMode = dealerAddCardMode;
       console.log("i'm in dealerAddCardMode");
+      while (compTotalScore < 17) {
+        // generate a new comp's card if comp's card's score is less than 17
+        let newCard = addingNewCard(compCards);
+        compTotalScore += newCard.value;
+      } // if comp total score is bigger than 21, the game is over, comp busts, return the message
+      gameMode = gameOver;
+      console.log("i'm in game over mode");
+      let resultMessage = compareTheScore(userTotalScore, compTotalScore);
+      let endGameMessage = `comp total score is: ${compTotalScore}, user total score is: ${userTotalScore}`;
+      return `${endGameMessage}  <br> ${resultMessage}`;
     }
   }
-
-  // else if (gameMode == dealerAddCardMode) {
-  //     while (newCompTotalScore < 17) {
-  //       // generate a new comp's card if comp's card's score is less than 17
-  //       let { newCompCard, newCompTotalScore } = addingNewCard(
-  //         compCards,
-  //         compTotalScore
-  //       );
-  //       compTotalScore = newCompTotalScore;
-
-  //       return newCompCard;
-  //     } // if new total score is bigger than 21, the game is over, comp busts, return the message
-  //     return `${newCardMessage} <br>
-  //             ${compareTheScorecompareTheScore(
-  //               userTotalScore,
-  //               newCompTotalScore
-  //             )}`;
-  //   }
-  // if (gameMode == gameOver) {
   userCards = [];
   compCards = [];
   userTotalScore = 0;
   compTotalScore = 0;
-  // }
+
   gameMode = startTheGameMode;
   return myOutputValue;
 };
