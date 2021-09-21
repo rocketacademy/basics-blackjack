@@ -131,7 +131,7 @@ var printCardArray = function (cardArray) {
 
 var main = function (input) {
   var playerCardValue = 0;
-  var computerCardvalue = 0;
+  var computerCardValue = 0;
 
   if (gameOver == true) {
     return `GAME OVER. <br><br> Refresh page to restart game.`;
@@ -184,12 +184,14 @@ var main = function (input) {
     } <br><br> Enter HIT or STAND to continue.`;
   }
 
-  if (gameMode == gameMode2) {
-    if (input == `hit`) {
-      dealCard(playerHand);
-      playerCardValue = sumOfHand(playerHand);
-      console.log(playerCardValue);
-    }
+  if (input != `hit` && input != `stand`) {
+    return `INVALID. Please entire HIT or STAND only.`;
+  }
+
+  if (gameMode == gameMode2 && input == `hit`) {
+    dealCard(playerHand);
+    playerCardValue = sumOfHand(playerHand);
+    console.log(playerCardValue);
 
     if (playerCardValue > 21) {
       gameOver = true;
@@ -208,6 +210,34 @@ var main = function (input) {
     if ((playerCardValue = 21 && computerCardvalue != 21)) {
       gameOver = true;
       return `WOO HOO! YOU WIN WITH 21! <br><br> Player hand <br> 
+      ${printCardArray(
+        playerHand
+      )} <br><br> Computer hand: <br> ${printCardArray(computerHand)}`;
+    }
+  }
+
+  if (gameMode == gameMode2 && input == `stand`) {
+    dealCard(computerHand);
+    computerCardValue = sumOfHand(computerHand);
+    console.log(computerCardValue);
+
+    if (computerCardValue > 21) {
+      gameOver = true;
+      return `You win! Computer busted! <br><br> Player hand: <br> ${printCardArray(
+        playerHand
+      )} <br><br> Computer hand: <br> ${printCardArray(computerHand)}`;
+    }
+
+    if (computerCardValue == 21 && playerCardValue != 21) {
+      gameOver = true;
+      return `SORRY! COMPUTER WINS WITH 21. <br><br> Player hand: <br> ${printCardArray(
+        playerHand
+      )} <br><br> Computer hand:  <br> ${printCardArray(computerHand)}`;
+    }
+
+    if (playerCardValue < computerCardvalue && computerCardValue < 21) {
+      gameOver = true;
+      return `Computer wins! <br><br> Player hand <br> 
       ${printCardArray(
         playerHand
       )} <br><br> Computer hand: <br> ${printCardArray(computerHand)}`;
