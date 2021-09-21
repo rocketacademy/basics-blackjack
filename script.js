@@ -207,8 +207,8 @@ var playerGame = function (input) {
   if (input == "h") {
     playerList[playerIndex].push(deck.pop());
     var currentPlayerScore = calculatePlayerScore(playerList[playerIndex]);
+    // ace value placeholder
     if (currentPlayerScore > 21) {
-      // ace value placeholder
       bustList.push(playerIndex);
       myString = `Player ${displayNum} has bust!<br><br>Click the submit button to continue.<br><br>`;
       myString += displayPlayerCards();
@@ -469,5 +469,7 @@ var displayPlayerCards = function () {
 
 //////////////////////////////////////
 // Ace logic
+// while bust and ace counter
 // plug gap when all win but continue to play dealer
 // plug gap when all bust but continue to play dealer
+// if playerlist.length - 1 == bustlist + naturallist
