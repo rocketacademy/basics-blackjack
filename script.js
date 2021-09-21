@@ -4,7 +4,6 @@ const activePlayer = 1; // player 0 is computer
 let handsArray = []; // will initialize into a nested array
 const numberOfPlayers = 1; // dealer computer is not a player, per se
 let gameOver = false;
-let playerActionLock = false;
 let fullResponseMessage = "";
 let winner = "";
 // at round start, every player is given 2 cards (dealer's 2nd is face down)
@@ -119,6 +118,21 @@ const getCardScoreValue = function (cardObj) {
   return cardObj.scoreValue;
 };
 
+const reduceAceScores = function (currHandValue, numAces) {
+  // if the player might bust but still has aces
+  // can probably throw this into another function
+  let aceIncrementer = 0;
+  while (aceIncrementer < numAces) {
+    // manually convert ace score from 11 to 1
+    currHandValue -= 10;
+    if (currHandValue <= 21) {
+      break;
+    }
+    aceIncrementer += 1;
+  }
+  return currHandValue;
+};
+
 const calculateHandValue = function (actPlyr) {
   const currentPlayerHand = handsArray[actPlyr];
   let totalHandScoreValue = 0;
@@ -131,17 +145,9 @@ const calculateHandValue = function (actPlyr) {
   acesHeld = currentPlayerHand.filter(checkAce).length;
 
   if (totalHandScoreValue > 21 && acesHeld != 0) {
-    // if the player might bust but still has aces
-    let aceIncrementer = 0;
-    while (aceIncrementer < acesHeld) {
-      // manually convert ace score from 11 to 1
-      totalHandScoreValue -= 10;
-      if (totalHandScoreValue <= 21) {
-        break;
-      }
-      aceIncrementer += 1;
-    }
+    totalHandScoreValue = reduceAceScores(totalHandScoreValue, acesHeld);
   }
+
   currentRoundScores[actPlyr] = totalHandScoreValue;
   return totalHandScoreValue;
 };
@@ -165,16 +171,16 @@ const makeDeck = function () {
     let rankCounter = 1;
     while (rankCounter <= 13) {
       const cardName = cardNameMap[rankCounter];
-      const cardSuitEmoji = cardSuitEmojiMap[suits[suitIndex]];
-      const cardRankEmoji = cardRankEmojiMap[rankCounter];
+      const cardSuitEmojiTemp = cardSuitEmojiMap[suits[suitIndex]];
+      const cardRankEmojiTemp = cardRankEmojiMap[rankCounter];
       const cardScoreValue = cardScoreValueMap[rankCounter];
 
       const card = {
         name: cardName,
         suit: currentSuit,
         rank: rankCounter,
-        cardSuitEmoji: cardSuitEmoji,
-        cardRankEmoji: cardRankEmoji,
+        cardSuitEmoji: cardSuitEmojiTemp,
+        cardRankEmoji: cardRankEmojiTemp,
         scoreValue: cardScoreValue,
       };
       cardDeck.push(card);
@@ -209,31 +215,8 @@ const initialDraw = function (numOfPlyrs) {
   }
 };
 
-const initializeGame = function () {
-  currentRoundScores = [];
-  initializeHandsArray(numberOfPlayers);
-  deck = shuffleArray(makeDeck());
-  initialDraw(numberOfPlayers);
-  calculateHandValue(0);
-  calculateHandValue(1);
-  checkPlayersforBlackjack();
-  comparePlayerandDealerScores(currentRoundScores);
-  givePlayerHitStandHints();
-};
-
-const isBlackjack = function (playerNumber) {
-  if (
-    calculateHandValue(playerNumber) == 21 &&
-    handsArray[playerNumber].length == 2
-  ) {
-    // only applies to blackjack in the initial draw
-    return true;
-  }
-  return false;
-};
-
 const checkPlayersforBlackjack = function () {
-  // can be refactored
+  // can be refactored. filter function????
   if (isBlackjack(0)) {
     gameOver = true;
     winner = "Dealer";
@@ -244,70 +227,6 @@ const checkPlayersforBlackjack = function () {
     fullResponseMessage += `${winner} insta-wins by Blackjack. ${refreshMessage}<br><br>${catPictureMap[winner]}<br>`;
   }
   // no action if neither player nor dealer have a 21
-};
-
-const givePlayerHitStandHints = function () {
-  const plyrScore = currentRoundScores[1];
-  if (isBlackjack(0) || isBlackjack(1)) {
-    return;
-  }
-  if (plyrScore < 14) {
-    fullResponseMessage += "<br>You need to hit, by the way. <br><br>";
-    return;
-  }
-  if (plyrScore > 18) {
-    fullResponseMessage +=
-      "<br>You should probably stand. Don't want to bust, do we? <br><br>";
-    return;
-  }
-  fullResponseMessage +=
-    "<br>Well, do you feel lucky? Either a hit or a stand would work for you.<br><br>";
-};
-
-const sendFullResponseMessage = function () {
-  fullResponseMessage += `${sendDefaultSummaryMessage()}`;
-  if (!gameOver) {
-    fullResponseMessage += `${hitStandMessage}`;
-  }
-  return fullResponseMessage;
-};
-
-const checkBust = function (plyrNum) {
-  if (calculateHandValue(plyrNum) > 21) {
-    gameOver = true;
-    return true;
-  }
-  return false;
-};
-
-const dealerTurnActions = function () {
-  playerActionLock = true;
-  dealerHitStand();
-  winner = chooseWinner();
-  gameOver = true;
-  fullResponseMessage += `${winner} wins this round! <br><br>${sendDefaultSummaryMessage()} <br><br>${refreshMessage}<br><br>${
-    catPictureMap[winner]
-  }`;
-};
-
-const dealerHitStand = function () {
-  const dealer = 0;
-  const dealerScore = currentRoundScores[0];
-  while (dealerScore < 17) {
-    drawCardIntoHand(dealer);
-    fullResponseMessage += `Dealer drew a ${readEmojiFromCard(
-      handsArray[0][handsArray[0].length - 1]
-    )}!<br>`;
-    if (checkBust(dealer) == true) {
-      fullResponseMessage += "Looks like the dealer busted! ";
-      winner = "Player";
-      gameOver = true;
-      break;
-    }
-    if (calculateHandValue(dealer) >= 17) {
-      break;
-    }
-  }
 };
 
 const comparePlayerandDealerScores = function (scoreArr) {
@@ -332,6 +251,83 @@ const comparePlayerandDealerScores = function (scoreArr) {
   fullResponseMessage += "Looks like a draw.";
 };
 
+const isBlackjack = function (playerNumber) {
+  if (
+    calculateHandValue(playerNumber) == 21 &&
+    handsArray[playerNumber].length == 2
+  ) {
+    // only applies to blackjack in the initial draw
+    return true;
+  }
+  return false;
+};
+
+const givePlayerHitStandHints = function () {
+  const plyrScore = currentRoundScores[1];
+  if (isBlackjack(0) || isBlackjack(1)) {
+    return;
+  }
+  if (plyrScore < 14) {
+    fullResponseMessage += "<br>You need to hit, by the way. <br><br>";
+    return;
+  }
+  if (plyrScore > 18) {
+    fullResponseMessage +=
+      "<br>You should probably stand. Don't want to bust, do we? <br><br>";
+    return;
+  }
+  fullResponseMessage +=
+    "<br>Well, do you feel lucky? Either a hit or a stand would work for you.<br><br>";
+};
+
+const initializeGame = function () {
+  currentRoundScores = [];
+  initializeHandsArray(numberOfPlayers);
+  deck = shuffleArray(makeDeck());
+  initialDraw(numberOfPlayers);
+  calculateHandValue(0);
+  calculateHandValue(1);
+  checkPlayersforBlackjack();
+  comparePlayerandDealerScores(currentRoundScores);
+  givePlayerHitStandHints();
+};
+
+const sendFullResponseMessage = function () {
+  fullResponseMessage += `${sendDefaultSummaryMessage()}`;
+  if (!gameOver) {
+    fullResponseMessage += `${hitStandMessage}`;
+  }
+  return fullResponseMessage;
+};
+
+const checkBust = function (plyrNum) {
+  if (calculateHandValue(plyrNum) > 21) {
+    gameOver = true;
+    return true;
+  }
+  return false;
+};
+
+const dealerHitStand = function () {
+  const dealer = 0;
+  const dealerScore = currentRoundScores[0];
+  while (dealerScore < 17) {
+    drawCardIntoHand(dealer);
+    fullResponseMessage += `Dealer drew a ${readEmojiFromCard(
+      handsArray[0][handsArray[0].length - 1]
+    )}!<br>`;
+    if (checkBust(dealer) == true) {
+      fullResponseMessage += "Looks like the dealer busted! ";
+      winner = "Player";
+      gameOver = true;
+      break;
+    }
+    if (calculateHandValue(dealer) >= 17) {
+      break;
+    }
+  }
+};
+
 const chooseWinner = function () {
   const winIndex = currentRoundScores.indexOf(Math.max(...currentRoundScores));
   let win = winnerNameIndexMap[winIndex];
@@ -346,11 +342,22 @@ const chooseWinner = function () {
   return win;
 };
 
+const dealerTurnActions = function () {
+  playerActionLock = true;
+  dealerHitStand();
+  winner = chooseWinner();
+  gameOver = true;
+  fullResponseMessage += `${winner} wins this round! <br><br>${sendDefaultSummaryMessage()} <br><br>${refreshMessage}<br><br>${
+    catPictureMap[winner]
+  }`;
+};
+
 const playerHitActions = function () {
   drawCardIntoHand(activePlayer);
   fullResponseMessage += `You drew a ${readEmojiFromCard(
     handsArray[1][handsArray.length]
   )}!<br>`;
+  calculateHandValue(1);
 };
 
 const main = function (input) {
