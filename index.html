@@ -56,7 +56,7 @@
         margin-right: 30px;
         background-color: white;
         color: black; /* sets the font color */
-        background-image: linear-gradient(to top, #83a4d4, #b6fbff);;
+        background-image: linear-gradient(to bottom, #00c9ff, #92fe9d);
         background-position: center; /* Center the image */
         background-repeat: no-repeat; /* Do not repeat the image */
         background-size: cover; /* Resize the background image to cover the entire container */
@@ -127,6 +127,16 @@
         margin-right: auto;
       }
 
+      #instructions {
+        color: rgb(57, 80, 209);
+      }
+
+      #gameinstructions {
+        color: rgb(155, 153, 153);
+        text-align: center;
+        margin-top: 38px;
+      }
+
       /* increase header font size on wider screens */
       @media screen and (min-width: 600px) {
         .header {
@@ -151,6 +161,7 @@
       <button id="submit-button">Submit</button>
       <button id="hit-button">Hit</button>
       <button id="stand-button">Stand</button>
+      <button id="continue-button">Continue</button>
       <button id="restart-button">Restart</button>
 
       <p>Game Results:</p>
@@ -164,6 +175,8 @@
       var stand = document.querySelector("#stand-button");
       var restart = document.querySelector("#restart-button");
       var button = document.querySelector("#submit-button");
+      var cont = document.querySelector("#continue-button");
+      var output = document.querySelector("#output-div");
 
       button.addEventListener("click", function () {
         // Set result to input value
@@ -171,7 +184,6 @@
         var result = main(input.value);
 
         // Display result in output element
-        var output = document.querySelector("#output-div");
         output.innerHTML = result;
 
         // Reset input value
@@ -180,22 +192,24 @@
 
       //Hit event listener
       hit.addEventListener("click", function () {
-        //change game mode to player hit
-        gameMode = `player choice`
-        console.log("hit");
-        //hit function runs
-        main();
-        document.getElementById("output-div").innerHTML = printPlayerHand();
+        generateHitCard();
+        var result = main();
+        output.innerHTML = result;
       });
 
       //Stand event listener
       stand.addEventListener("click", function () {
-        //change game state to winning condition
         gameMode = `winning condition`
-        console.log("stand");
-        main();
-        //stand function runs
-        document.getElementById("output-div").innerHTML = winningCondition();
+        var result = main();
+        output.innerHTML = result;
+      });
+
+      //Stand event listener
+      cont.addEventListener("click", function () {
+        cont.disabled = true;
+        nextTurn();
+        var result = main();
+        output.innerHTML = result;
       });
 
       //Restart event listener
