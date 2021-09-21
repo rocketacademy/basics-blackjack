@@ -5,7 +5,6 @@ var playerCards;
 var computerCards;
 var playerSum;
 var computerSum;
-var sumWhenAceIsEleven;
 
 var main = function (input) {
   // starts with player's turn
@@ -117,16 +116,13 @@ var convertAceRank = function () {
   var aceCounter = 0;
   while (aceCounter < drawnCard.length) {
     if (drawnCard[aceCounter].name == "ace") {
-      // calculate sum of cards if rank of ace is 11
-      sumWhenAceIsEleven = 10 + sumOfCards;
-      console.log(`sum when ace is 11 = ${sumWhenAceIsEleven}`);
-      // if ace is 11 & sum is < 21, assign value of 11 to ace
-      if (sumWhenAceIsEleven < 21) {
+      // if sum is < 12, assign value of 11 to ace
+      if (sumOfCards < 12) {
         cardRankIndex = drawnCard.findIndex((obj) => obj.name == "ace");
         drawnCard[cardRankIndex].rank = 11;
       }
-      // if ace is 11 & sum is > 21, assigned value of 1 to ace
-      if (sumWhenAceIsEleven > 21) {
+      // if sum is > 12, assigned value of 1 to ace
+      if (sumOfCards > 12) {
         cardRankIndex = drawnCard.findIndex((obj) => obj.name == "ace");
         drawnCard[cardRankIndex].rank = 1;
       }
@@ -188,7 +184,6 @@ var drawnCards = function () {
     // while loop to continuously draw cards when computersum is < 17
     var computerCounter = 0;
     while (computerCounter < drawnCard.length) {
-      // calSumOfCards();
       if (computerSum < 17) {
         hitDrawCard();
       }
