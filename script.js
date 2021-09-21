@@ -100,12 +100,40 @@ var dealCards = function (input) {
   playersCard2 = cardDeck.pop();
   playersHand.push(playersCard2);
   console.log("Player's array:", playersHand);
-  dealersCard1 = cardDeck.pop();
+  // dealersCard1 = cardDeck.pop();
+  dealersCard1 = { name: "Ace", suit: "hearts", rank: 1 };
   dealersHand.push(dealersCard1);
   dealersCard2 = cardDeck.pop();
   dealersHand.push(dealersCard2);
   console.log("Dealer's array:", dealersHand);
+
+  //first ace is always 11 except for if both cards are aces
+  if (playersCard1.name == "Ace") {
+    playersCard1.rank = 11;
+  }
+  if (playersCard2.name == "Ace") {
+    playersCard2.rank = 11;
+  }
+  if (playersCard1.rank + playersCard2.rank > 21) {
+    playersCard1.rank = 1;
+  }
   playersTotal = Number(playersCard1.rank) + Number(playersCard2.rank);
+  console.log("Player's Total:", playersTotal);
+
+  if (dealersCard1.name == "Ace") {
+    dealersCard1.rank = 11;
+    console.log("Dealer's Ace rank: 11");
+  }
+  if (dealersCard2.name == "Ace") {
+    dealersCard2.rank = 11;
+    console.log("Dealer's Ace rank: 11");
+  }
+  if (dealersCard1.rank + dealersCard2.rank > 21) {
+    dealersCard1.rank = 1;
+    console.log("Double Ace - dealer's Ace reverts to 1: card 1", dealersHand);
+  }
+  dealersTotal = Number(dealersCard1.rank) + Number(dealersCard2.rank);
+  console.log("Dealer's Total:", dealersTotal);
 
   //check for Blackjack
   var myOutputValue;
@@ -113,12 +141,22 @@ var dealCards = function (input) {
     (dealersCard1.name == "Ace" && dealersCard2.rank == 10) ||
     (dealersCard2.name == "Ace" && dealersCard1.rank == 10)
   ) {
+    gameMode = "reset";
     myOutputValue = "The dealer got a natural blackjack! You lose.";
   } else if (
     (playersCard1.name == "Ace" && playersCard2.rank == 10) ||
     (playersCard2.name == "Ace" && playersCard1.rank == 10)
   ) {
+    gameMode = "reset";
     myOutputValue = "You got a natural blackjack! You win.";
+  } else if (
+    ((dealersCard1.name == "Ace" && dealersCard2.rank == 10) ||
+      (dealersCard2.name == "Ace" && dealersCard1.rank == 10)) &&
+    ((playersCard1.name == "Ace" && playersCard2.rank == 10) ||
+      (playersCard2.name == "Ace" && playersCard1.rank == 10))
+  ) {
+    myOutputValue =
+      "Both you and the dealer got natural blackjacks! It's a tie.";
   } else {
     myOutputValue =
       "You got " +
@@ -129,7 +167,9 @@ var dealCards = function (input) {
       playersCard2.name +
       " of " +
       playersCard2.suit +
-      ". Enter 'draw' to draw another card or 'end' if you're satisfied with your cards.";
+      ". Your total is " +
+      playersTotal +
+      " points. Enter 'draw' to draw another card or 'end' if you're satisfied with your cards.";
   }
   return myOutputValue;
 };
@@ -142,10 +182,48 @@ var playersPlay = function () {
   playersHand.push(playersDrawCard);
   var arrayIndex = 0;
   while (arrayIndex < playersHand.length) {
+    //first ace is always 11 except for if both cards are aces
+    if (
+      (arrayIndex == "0" || arrayIndex == "1") &&
+      playersHand[arrayIndex].name == "Ace"
+    ) {
+      playersHand[arrayIndex].rank = 11;
+      console.log("Array Index:", arrayIndex);
+      console.log("Player's Ace rank: 11");
+    }
+    if (playersHand[0].rank + playersHand[1].rank > 21) {
+      playersHand[0].rank = 1;
+      console.log("Array Index:", arrayIndex);
+      console.log("Double Ace - player's Ace reverts to 1:", playersHand);
+    }
     playersTotal += Number(playersHand[arrayIndex].rank);
     arrayIndex += 1;
   }
-  console.log("Player's Total:", playersTotal);
+  console.log("Player's total before recount:", playersTotal);
+  //if player's total hand exceeds 21, revert ace with a 11 value to ace with a 1 value
+  if (playersTotal > 21) {
+    if (playersHand[0].name == "Ace") {
+      playersHand[0].rank = 1;
+      console.log(
+        "Exceeds 21 - player's Ace reverts to 1: index 0",
+        playersHand
+      );
+    }
+    if (playersHand[1].name == "Ace") {
+      playersHand[1].rank = 1;
+      console.log(
+        "Exceeds 21 - player's Ace reverts to 1: index 1",
+        playersHand
+      );
+    }
+    playersTotal = 0;
+    var recountArrayIndex = 0;
+    while (recountArrayIndex < playersHand.length) {
+      playersTotal += Number(playersHand[recountArrayIndex].rank);
+      recountArrayIndex += 1;
+    }
+  }
+  console.log("Player's total after recount:", playersTotal);
   if (playersTotal <= 21) {
     return (
       "You have drawn " +
@@ -174,6 +252,19 @@ var playersPlay = function () {
 //if dealer is < 17, dealer has to draw
 var dealersPlay = function () {
   dealersTotal = 0;
+  //first ace is always 11 except for if both cards are aces
+  if (dealersCard1.name == "Ace") {
+    dealersCard1.rank = 11;
+    console.log("Dealer's Ace rank: 11");
+  }
+  if (dealersCard2.name == "Ace") {
+    dealersCard2.rank = 11;
+    console.log("Dealer's Ace rank: 11");
+  }
+  if (dealersCard1.rank + dealersCard2.rank > 21) {
+    dealersCard1.rank = 1;
+    console.log("Double Ace - dealer's Ace reverts to 1: card 1", dealersHand);
+  }
   dealersTotal = Number(dealersCard1.rank) + Number(dealersCard2.rank);
   while (dealersTotal < 17) {
     var dealersDrawCard = cardDeck.pop();
@@ -181,11 +272,41 @@ var dealersPlay = function () {
     dealersHand.push(dealersDrawCard);
     dealersTotal += Number(dealersDrawCard.rank);
   }
-  console.log("Dealer's Total:", dealersTotal);
+  console.log("Dealer's total before recount:", dealersTotal);
+  //if dealer's total hand exceeds 21, revert ace with a 11 value to ace with a 1 value
+  if (dealersTotal > 21) {
+    if (dealersCard1.name == "Ace") {
+      dealersCard1.rank = 1;
+      console.log(
+        "Exceeds 21 - dealer's Ace reverts to 1: card 1",
+        dealersHand
+      );
+    }
+    if (dealersCard2.name == "Ace") {
+      dealersCard2.rank = 1;
+      console.log(
+        "Exceeds 21 - dealer's Ace reverts to 1: card 2",
+        dealersHand
+      );
+    }
+    dealersTotal = 0;
+    recountArrayIndex = 0;
+    while (recountArrayIndex < dealersHand.length) {
+      dealersTotal += Number(dealersHand[recountArrayIndex].rank);
+      recountArrayIndex += 1;
+    }
+    while (dealersTotal < 17) {
+      dealersDrawCard = cardDeck.pop();
+      console.log("Dealer's Draw Card:", dealersDrawCard);
+      dealersHand.push(dealersDrawCard);
+      dealersTotal += Number(dealersDrawCard.rank);
+    }
+  }
+  console.log("Dealer's total after recount:", dealersTotal);
   return dealersTotal;
 };
 
-//output results
+//output results, aces can be 1 or 11
 var compareResults = function () {
   if (dealersTotal > playersTotal) {
     return (
