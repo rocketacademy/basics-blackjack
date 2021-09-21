@@ -195,14 +195,14 @@ var main = function (input) {
       gameOver = true;
       return `Sorry you busted! You lose! <br><br> Player hand: <br> ${printCardArray(
         playerHand
-      )} <br><br> Computer hand: <br> ${printCardArray(computerHand)};`;
+      )} <br><br> Computer hand: <br> ${printCardArray(computerHand)}`;
     }
 
     if (computerCardvalue == 21 && playerCardValue != 21) {
       gameOver = true;
       return `SORRY! COMPUTER WINS WITH 21. <br><br> Player hand: <br> ${printCardArray(
         playerHand
-      )} <br><br> Computer hand:  <br> ${printCardArray(computerHand)} `;
+      )} <br><br> Computer hand:  <br> ${printCardArray(computerHand)}`;
     }
 
     if ((playerCardValue = 21 && computerCardvalue != 21)) {
