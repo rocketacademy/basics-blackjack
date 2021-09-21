@@ -11,6 +11,7 @@ const newHandButton = document.getElementById("new-hand-button");
 const hitButton = document.getElementById("hit-button");
 const standButton = document.getElementById("stand-button");
 const splitButton = document.getElementById("split-button");
+const doubleDownButton = document.getElementById("double-down-button");
 
 // init players array by getting num players from user, and create player objects
 var initialisePlayers = function (playerNum) {
@@ -111,6 +112,7 @@ var resetGame = function () {
   hitButton.style.display = "none";
   standButton.style.display = "none";
   splitButton.style.display = "none";
+  doubleDownButton.style.display = "none";
 
   // reset players ui and state
   for (var i = 0; i < players.length; i += 1) {
@@ -196,6 +198,8 @@ var findNextPlayer = function () {
   }
 
   if (curPlayer == players.length) return compareHandsWithDealer(); // no players left
+
+  doubleDownButton.style.display = "inline-block"; // show double down button again
 
   // next player's starting hand is splittable, show the split button
   if (
@@ -311,11 +315,12 @@ var dealNewHand = function () {
     // if players are all settled then hand is over
     output += resetGame();
   } else {
-    // otherwise show the hit/stand buttons to continue gameplay
+    // otherwise show the action buttons to continue gameplay
     output += findNextPlayer();
     newHandButton.style.display = "none";
     hitButton.style.display = "inline-block";
     standButton.style.display = "inline-block";
+    doubleDownButton.style.display = "inline-block";
   }
   updateTableUI();
   return output;
@@ -354,8 +359,16 @@ var compareHandsWithDealer = function () {
 };
 
 // this function is called when the hit button is clicked
-var onPlayerHit = function () {
+var onPlayerHitOrDoubleDown = function (doubledDown = false) {
   var output = "";
+  if (doubledDown) {
+    // double player wager by 2 if this is a double down
+    players[curPlayer].wager *= 2;
+    document.getElementById(
+      `value-wager-${curPlayer}`
+    ).innerHTML = `Bet: ${players[curPlayer].wager}`;
+  }
+
   var handNum = players[curPlayer].curHand;
   players[curPlayer].hands[handNum].push(deck.pop());
   updateCardsUI();
@@ -371,7 +384,12 @@ var onPlayerHit = function () {
     if (players.every((p) => p.settled.every((s) => s))) output += resetGame();
     else output += findNextPlayer();
   } else {
+    // if player didnt bust
     splitButton.style.display = "none";
+
+    if (doubledDown) output += findNextPlayer();
+    // if he doubled down, find the next player as he can only draw one card
+    else doubleDownButton.style.display = "none"; // if he didnt double down, hide the dd button
   }
   updateTableUI();
   return output;

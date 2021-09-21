@@ -129,6 +129,7 @@
         <button id="hit-button">Hit</button>
         <button id="stand-button">Stand</button>
         <button id="split-button">Split</button>
+        <button id="double-down-button">Double Down</button>
       </div>
 
       <div id="modal">
@@ -257,6 +258,7 @@
       var hit = document.querySelector("#hit-button");
       var stand = document.querySelector("#stand-button");
       var split = document.querySelector("#split-button");
+      var double = document.querySelector("#double-down-button");
       var output = document.querySelector("#output-div");
 
       numPlayers.addEventListener("input", function () {
@@ -378,7 +380,7 @@
       });
 
       hit.addEventListener("click", function () {
-        output.innerHTML = onPlayerHit();
+        output.innerHTML = onPlayerHitOrDoubleDown();
       });
 
       stand.addEventListener("click", function () {
@@ -387,6 +389,10 @@
 
       split.addEventListener("click", function () {
         output.innerHTML = onPlayerSplit();
+      });
+
+      double.addEventListener("click", function () {
+        output.innerHTML = onPlayerHitOrDoubleDown(true);
       });
 
       // For modal on detailed rules

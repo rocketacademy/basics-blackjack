@@ -153,7 +153,8 @@ button {
 
 #hit-button,
 #stand-button,
-#split-button {
+#split-button,
+#double-down-button {
   display: none;
 }
 
