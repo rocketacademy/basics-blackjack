@@ -24,6 +24,7 @@ var counterHit = 0; // different player hit turn
 var counterAmount = 0; //counter for Betting
 var blackJackCounter = []; //indicate who have win the black jack
 var winning = []; //indicate winning amount
+
 var myImage =
   '<img src="https://c.tenor.com/1wNeqqZZ8jcAAAAC/monkey-ape.gif"/>';
 var nameImage =
@@ -48,13 +49,13 @@ var deck = function () {
         cardName = "Ace";
       } else {
         if (cardName == 11) {
-          cardName = "Jack";
+          cardName = "🤵";
         } else {
           if (cardName == 12) {
-            cardName = "Queen";
+            cardName = "👸";
           } else {
             if (cardName == 13) {
-              cardName = "King";
+              cardName = "🤴";
             }
           }
         }
@@ -200,8 +201,9 @@ var card1st2Draw = function () {
     console.log("not 21");
     while (counter < noOfPlayer) {
       while (blackJackCounter[counter] == 1) {
-        counter += 1;
+        counter = counter + 1;
       }
+      console.log("counter", counter);
       counterCard = 0;
       var outPut1 = "";
 
@@ -226,6 +228,9 @@ var card1st2Draw = function () {
     console.log("after while loop");
     gameMode = gameStageTwo;
     var counterStart = 0;
+    while (blackJackCounter[counterStart] == 1) {
+      counterStart += 1;
+    }
 
     console.log("outPut dealer");
     return (
@@ -339,41 +344,52 @@ var finalResult = function () {
   console.log(playerBetting, "playerBetting");
   var counter = 0;
   if (dealerTotalValue > 21) {
+    console.log("test1");
     var outPut = `Dealer have Burst. <br>  ${myImage} Dealer value is ${dealerTotalValue}<br><br> `;
     while (counter < totalValueUser.length) {
+      console.log("test2");
       if (totalValueUser[counter] > 21) {
+        console.log("test3");
         outPut =
           outPut +
           `😭${nameOfPlayer[counter]}😭 have Burst. <br> ${nameOfPlayer[counter]} card value is ${totalValueUser[counter]}
         <br><b>Player Lose</b> ${playerBetting[counter]}💸<br>Your total point have is ${noOfPoints[counter]}💰<br><br>`;
-        counter += 1;
+        console.log("test4");
       }
 
       if (totalValueUser[counter] <= 21) {
+        console.log("test5");
         if (blackJackCounter[counter] == 0) {
+          console.log("test6");
           winning[counter] = playerBetting[counter] * 2;
           playerBetting[counter] = playerBetting[counter] * 3;
 
           noOfPoints[counter] = noOfPoints[counter] + playerBetting[counter];
         }
+        console.log("test7");
         outPut =
           outPut +
           `<b>Player Win🤑🤑</b><br> ${nameOfPlayer[counter]} card value is ${totalValueUser[counter]}<br>You have win ${winning[counter]}💵<br>Your total point have is ${noOfPoints[counter]}💰<br><br>`;
-        counter += 1;
       }
+      console.log("test8");
+      counter += 1;
     }
   }
   if (dealerTotalValue <= 21) {
+    console.log("test9");
     console.log(noOfPoints, "noOfPoints");
     var outPut = ` Dealer card total value is ${dealerTotalValue}<br><br> `;
     var counter = 0;
 
     while (counter <= totalValueUser.length) {
+      console.log("test10");
       if (
         totalValueUser[counter] > dealerTotalValue &&
         totalValueUser[counter] <= 21
       ) {
+        console.log("test11");
         if (blackJackCounter[counter] == 0) {
+          console.log("test12");
           winning[counter] = playerBetting[counter];
           playerBetting[counter] = playerBetting[counter] * 2;
 
@@ -381,36 +397,46 @@ var finalResult = function () {
           console.log(noOfPoints, "noOfPoints");
           console.log(playerBetting, "playerBetting");
         }
+        console.log("test13");
         outPut =
           outPut +
           `<b>Player Win</b> <br> ${nameOfPlayer[counter]} card value is ${totalValueUser[counter]}<br>You have win🤑🤑 ${winning[counter]}💵<br>Your total point have is ${noOfPoints[counter]}💰<br><br>`;
         // counter += 1;
       }
-    }
-    if (totalValueUser[counter] < dealerTotalValue) {
-      console.log("noofpoint", noOfPoints);
-      console.log(playerBetting, "playerBetting");
-      outPut =
-        outPut +
-        `<br><b>😭Player Lose😭</b><br> ${nameOfPlayer[counter]} card value is ${totalValueUser[counter]}<br>You have lose ${playerBetting[counter]}💸<br>Your total point have is ${noOfPoints[counter]}💰<br><br>`;
-      // counter += 1;
-    }
-    if (dealerTotalValue == totalValueUser[counter]) {
-      console.log("noofpoint", noOfPoints);
-      if (blackJackCounter[counter] == 0) {
+      console.log("test14");
+      if (
+        totalValueUser[counter] < dealerTotalValue ||
+        totalValueUser[counter] > 21
+      ) {
+        console.log("test15");
         console.log("noofpoint", noOfPoints);
         console.log(playerBetting, "playerBetting");
-        noOfPoints[counter] = noOfPoints[counter] + playerBetting[counter];
-        console.log("noofpoint", noOfPoints);
         outPut =
           outPut +
-          `<br><b>🥺Player Draw🥺</b><br> ${nameOfPlayer[counter]} card value is ${totalValueUser[counter]}<br>Your total point have is ${noOfPoints[counter]}💰<br><br>`;
+          `<br><b>😭Player Lose😭</b><br> ${nameOfPlayer[counter]} card value is ${totalValueUser[counter]}<br>You have lose ${playerBetting[counter]}💸<br>Your total point have is ${noOfPoints[counter]}💰<br><br>`;
         // counter += 1;
-      } else if (blackJackCounter[counter] == 1) {
-        outPut =
-          outPut +
-          `<b>Player Win🤑🤑</b> <br> ${nameOfPlayer[counter]} card value is ${totalValueUser[counter]}<br>You have win ${winning[counter]}💵<br>Your total point have is ${noOfPoints[counter]}💰<br><br>`;
       }
+      if (dealerTotalValue == totalValueUser[counter]) {
+        console.log("noofpoint", noOfPoints);
+        console.log("test16");
+        if (blackJackCounter[counter] == 0) {
+          console.log("test17");
+          console.log("noofpoint", noOfPoints);
+          console.log(playerBetting, "playerBetting");
+          noOfPoints[counter] = noOfPoints[counter] + playerBetting[counter];
+          console.log("noofpoint", noOfPoints);
+          outPut =
+            outPut +
+            `<br><b>🥺Player Draw🥺</b><br> ${nameOfPlayer[counter]} card value is ${totalValueUser[counter]}<br>Your total point have is ${noOfPoints[counter]}💰<br><br>`;
+          // counter += 1;
+        } else if (blackJackCounter[counter] == 1) {
+          console.log("test18");
+          outPut =
+            outPut +
+            `<b>Player Win🤑🤑</b> <br> ${nameOfPlayer[counter]} card value is ${totalValueUser[counter]}<br>You have win ${winning[counter]}💵<br>Your total point have is ${noOfPoints[counter]}💰<br><br>`;
+        }
+      }
+      console.log("test19");
       counter += 1;
       console.log("counter", counter);
     }
@@ -584,6 +610,9 @@ var main = function (input) {
 
   if (gameMode == gameStageTwo) {
     console.log("gamemode2");
+    while (blackJackCounter[counterHit] == 1) {
+      counterHit += 1;
+    }
     if (counterHit < userDraw.length) {
       if (input == "h") {
         return hitButton(counterHit);
