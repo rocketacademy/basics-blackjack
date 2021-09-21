@@ -10,6 +10,13 @@ var CAPITAL = 100;
 var anyoneBJ = false;
 
 var main = function (input) {
+  var BJimage =
+    '<img src="https://media.istockphoto.com/photos/blackjack-spades-picture-id155428832?k=20&m=155428832&s=612x612&w=0&h=2uVeWUxa8E86H52kFutx5TJN8rPWddQ2qyteZM04TmQ="/>';
+  var WINimage =
+    '<img src="https://media1.giphy.com/media/2gtoSIzdrSMFO/giphy.gif"/>';
+  var LOSEimage =
+    '<img src="https://studio.code.org/v3/assets/Nz46a971-jrid5b_mNfMJxVgk_1R22dASJY8LDKBIOM/youlose.gif"/>';
+
   // Dealer to hit or stand
   if (gameMode == "Dealer's Turn") {
     if (GLOBAL_DEALERSCORE >= 17 && GLOBAL_DEALERSCORE <= 21) {
@@ -48,7 +55,7 @@ var main = function (input) {
 
     if (
       PLAYER_ARRAY_OF_CARDS[0].rank == 1 ||
-      DEALER_ARRAY_OF_CARDS[1].rank == 1
+      PLAYER_ARRAY_OF_CARDS[1].rank == 1
     ) {
       GLOBAL_PLAYERSCORE = tabulateScorewithACE11pts(PLAYER_ARRAY_OF_CARDS);
     } else GLOBAL_PLAYERSCORE = tabulateScorewithACE1pt(PLAYER_ARRAY_OF_CARDS);
@@ -69,7 +76,8 @@ var main = function (input) {
         DEALER_ARRAY_OF_CARDS[1].suit +
         ". Dealer wins with BLACKJACK!<br> <br> Next Round <br> Your balance is $" +
         CAPITAL +
-        "<br> Enter a new betting amount.";
+        "<br> Enter a new betting amount." +
+        BJimage;
     } else if (playerBJ == true) {
       gameMode = "New Game";
       CAPITAL = Number(CAPITAL) + Number(BET_AMOUNT) * 1.5;
@@ -85,7 +93,8 @@ var main = function (input) {
         userName[0] +
         " wins!<br> <br> Next Round <br> Your balance is $" +
         CAPITAL +
-        "<br> Enter a new betting amount.";
+        "<br> Enter a new betting amount." +
+        BJimage;
     } else {
       myOutputValue =
         "Dealer's Hand: " +
@@ -131,7 +140,6 @@ var main = function (input) {
       " has joined the table with a capital of $100! <br> <br>Choose the amount you want to bet!";
   }
   // Round end: either one has above 21
-  // burst portions never work
   if (GLOBAL_PLAYERSCORE > 21) {
     CAPITAL = CAPITAL - BET_AMOUNT;
     gameMode = "Betting Amount";
@@ -147,7 +155,8 @@ var main = function (input) {
       GLOBAL_DEALERSCORE +
       "pts. <br> <br> Dealer wins! <br> Your balance is $" +
       CAPITAL +
-      "<br> Enter a new betting amount.";
+      "<br> Enter a new betting amount.<br>" +
+      LOSEimage;
   }
   if (GLOBAL_DEALERSCORE > 21) {
     CAPITAL = Number(CAPITAL) + Number(BET_AMOUNT);
@@ -166,11 +175,12 @@ var main = function (input) {
       userName[0] +
       " wins! <br> Your balance is $" +
       CAPITAL +
-      "<br> Enter a new betting amount.";
+      "<br> Enter a new betting amount. <br>" +
+      WINimage;
   }
   // Round end: comparison mode with both below 21
   if (gameMode == "Higher Points") {
-    // Tie - works
+    // Tie
     if (GLOBAL_PLAYERSCORE == GLOBAL_DEALERSCORE) {
       gameMode = "Betting Amount";
       myOutputValue =
@@ -182,7 +192,7 @@ var main = function (input) {
         CAPITAL +
         "<br> Enter a new betting amount.";
     }
-    // Dealer win - works
+    // Dealer win
     if (GLOBAL_DEALERSCORE > GLOBAL_PLAYERSCORE) {
       gameMode = "Betting Amount";
       CAPITAL = CAPITAL - BET_AMOUNT;
@@ -195,9 +205,10 @@ var main = function (input) {
         GLOBAL_PLAYERSCORE +
         "pts.<br> <br> Next Round <br> Your balance is $" +
         CAPITAL +
-        "<br> Enter a new betting amount.";
+        "<br> Enter a new betting amount.<br>" +
+        LOSEimage;
     }
-    //Player win -- DOENST WORK, becomes a string instead of addition
+    //Player win
     if (GLOBAL_DEALERSCORE < GLOBAL_PLAYERSCORE) {
       gameMode = "Betting Amount";
       CAPITAL = Number(CAPITAL) + Number(BET_AMOUNT);
@@ -211,10 +222,11 @@ var main = function (input) {
         GLOBAL_PLAYERSCORE +
         "pts.<br> <br> Next Round <br> Your balance is $" +
         CAPITAL +
-        "<br> Enter a new betting amount.";
+        "<br> Enter a new betting amount.<br>" +
+        WINimage;
     }
   }
-  console.log("End of Round");
+
   return (
     myOutputValue +
     "<br> <br> Dealer current points: " +
@@ -294,7 +306,7 @@ var playerDrawAdditionalCard = function (playerChoice) {
       }
       playerArrayIndex = playerArrayIndex + 1;
     }
-
+    local_playerscore = GLOBAL_PLAYERSCORE;
     return (myOutputValue =
       "You got " +
       playerNewCard.name +
@@ -396,7 +408,7 @@ var tabulateScorewithACE11pts = function (cardsArray) {
 var tabulateScorewithACE1pt = function (cardsArray) {
   var score = 0;
   var arrayIndex = 0;
-  console.log("No ACE");
+  console.log("ACE is assuming as 1 pt");
   while (arrayIndex < cardsArray.length) {
     if (cardsArray[arrayIndex].rank < 10) {
       score = score + cardsArray[arrayIndex].rank;
