@@ -121,23 +121,22 @@ const calculateScore = (playerCards) => {
 };
 
 // define a function to compare the score with params userTotalScore and compTotalScore
-const compareTheScore = (userTotalScore, compTotalScore) => {
+const compareTheScore = (userScore, compScore) => {
   // If you and the computer are both over, you lose.
-  if (userTotalScore > 21 && compTotalScore > 21) {
+  if (userScore > 21 && compScore > 21) {
     return `You went over. You lose 😤 ${restartGameMessage}`;
   }
-
-  if (userTotalScore == compTotalScore) {
+  if (userScore == compScore) {
     return `Draw 🙃 ${restartGameMessage}`;
-  } else if (compTotalScore == 0) {
+  } else if (compScore == 0) {
     return `Lose, opponent has Blackjack 😱 ${restartGameMessage} `;
-  } else if (userTotalScore == 0) {
+  } else if (userScore == 0) {
     return `Win with a Blackjack 😎 ${restartGameMessage}`;
-  } else if (userTotalScore > 21) {
+  } else if (userScore > 21) {
     return `You went over. You lose 😭 ${restartGameMessage}`;
   } else if (compTotalScore > 21) {
     return `Opponent went over. You win 😁 ${restartGameMessage}`;
-  } else if (userTotalScore > compTotalScore) {
+  } else if (userScore > compTotalScore) {
     return `You win 😃 ${restartGameMessage}`;
   }
   return `You lose 😤 ${restartGameMessage}`;
