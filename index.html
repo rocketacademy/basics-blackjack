@@ -145,8 +145,9 @@
           <p>
             To start, input the number of players. Each player starts with 100
             chips. Use the slider to place your bets and click New Hand to deal.
-            If a player runs out of chips, he will be topped up with 100 chips.
-            A player's chip count and win/loss are tracked.
+            The bet has to be an integer amount. If a player has less than 1
+            chip, he will be topped up with 100 chips. A player's chip count and
+            win/loss are tracked.
           </p>
 
           <p>
@@ -167,7 +168,7 @@
             blackjack.
           </p>
 
-          <p>- <b>If the dealer has blackjack:</b></p>
+          <p><b>If the dealer has blackjack:</b></p>
           <ul>
             <li>
               All players with blackjack tie with the dealer and their bets are
@@ -180,7 +181,7 @@
             </li>
           </ul>
 
-          <p>- <b>If the dealer doesn't have blackjack:</b></p>
+          <p><b>If the dealer doesn't have blackjack:</b></p>
           <ul>
             <li>
               All players with blackjack win and receive a payout at 3:2 odds,
@@ -206,12 +207,14 @@
                   Further rules on splitting below.
                 </li>
                 <li>
-                  <b>Surrender</b>. The player gives up half their bet and
-                  forfeits their hand.
+                  <b>Double down</b>. The player doubles their bet, and receives
+                  a single card. This option is only available when the player
+                  has two cards.
                 </li>
                 <li>
-                  <b>Double down</b>. The player doubles their bet, and receives
-                  a single card.
+                  <b>Surrender</b>. The player gives up half their bet and
+                  forfeits their hand. This option is only available when the
+                  player has two cards.
                 </li>
               </ol>
             </li>
@@ -222,7 +225,7 @@
             </li>
             <li>
               Once all players have finished their turn, the dealer reveals his
-              face down card and draws card if needed until the hand achieves a
+              face down card and draws cards if needed until the hand achieves a
               total of 17 or higher. The dealer never doubles, splits, or
               surrenders. If the dealer busts, all remaining player hands win.
               If the dealer does not bust, each remaining bet wins if its hand
