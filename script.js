@@ -4,7 +4,7 @@ var computerHand = [];
 
 // gamemodes
 var gameMode1 = `distribute hand`;
-var gameMode2 = `hit or stand`;
+var gameMode2 = `player hit or stand`;
 var gameMode3 = `computer's turn`;
 var gameMode = gameMode1;
 // reset gamemode
