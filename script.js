@@ -9,6 +9,9 @@ var playerCardsValue = 0
 //Initialize global variable for ace card
 var aceCard = false
 
+//Initialize global variable for black jack
+var blackJack = false
+
 var main = function (input) {
   
   //if player array is empty, deal cards to computer and player
@@ -34,6 +37,19 @@ var makeDeck = function () {
     // Store the current suit in a variable
     var currentSuit = suits[suitIndex];
 
+    //create a variable for suits emoji
+    var suitEmoji
+
+    if (suits[suitIndex] == 'hearts'){
+      suitEmoji = '♥️';
+    }else if (suits[suitIndex] == 'diamonds'){
+      suitEmoji = '♦️';
+    }else if (suits[suitIndex] == 'clubs'){
+      suitEmoji = '♣';
+    }else if (suits[suitIndex] == 'spades'){
+      suitEmoji = '♠';
+    }
+
     // Loop from 1 to 13 to create all cards for a given suit
     // Notice rankCounter starts at 1 and not 0, and ends at 13 and not 12.
     // This is an example of a loop without an array.
@@ -45,26 +61,55 @@ var makeDeck = function () {
       //Create a variable for card value
       var cardValue = rankCounter
 
+      //Create a variable for number emoji
+      var numEmoji
+
       // If rank is 1, 11, 12, or 13, set cardName to the ace or face card's name
       if (cardName == 1) {
         cardName = 'ace';
-      } else if (cardName == 11) {
+        numEmoji = '🅰️'
+      } else if (cardName == 2){
+        numEmoji = '2️⃣'
+      }else if (cardName == 3){
+        numEmoji = '3️⃣'
+      }else if (cardName == 3){
+        numEmoji = '3️⃣'
+      }else if (cardName == 4){
+        numEmoji = '4️⃣'
+      }else if (cardName == 5){
+        numEmoji = '5️⃣'
+      }else if (cardName == 6){
+        numEmoji = '6️⃣'
+      }else if (cardName == 7){
+        numEmoji = '7️⃣'
+      }else if (cardName == 8){
+        numEmoji = '8️⃣'
+      }else if (cardName == 9){
+        numEmoji = '9️⃣'
+      }else if (cardName == 10){
+        numEmoji = '🔟'
+      }
+      else if (cardName == 11) {
         cardName = 'jack';
         cardValue = 10
+        numEmoji = '🎃'
       } else if (cardName == 12) {
         cardName = 'queen';
         cardValue = 10
+        numEmoji = '👸'
       } else if (cardName == 13) {
         cardName = 'king';
         cardValue = 10
+        numEmoji = '🤴'
       }
 
       // Create a new card with the current name, suit, and rank
       var card = {
         name: cardName,
         suit: currentSuit,
-        rank: rankCounter,
-        value: cardValue
+        value: cardValue,
+        emoji: suitEmoji,
+        number: numEmoji
       };
 
       // Add the new card to the deck
@@ -133,37 +178,47 @@ var dealCards = function(){
     cardsCounter += 1
 
   }
-  return `Computer first card is ${computerCards[0].name} of ${computerCards[0].suit}.<br>Player, you have ${playerCards[0].name} of ${playerCards[0].suit} and ${playerCards[1].name} of ${playerCards[1].suit}.<br>You have ${calcPlayerCardsValue()} points.<br><br>Do you want to hit or stand?`
+
+  calcComputerCardsValue()
+  calcPlayerCardsValue()
+
+  //if computer hits blackjack or player hits blackjack
+  if ((computerCardsValue == 21 && playerCardsValue !=21) ||
+  (computerCardsValue != 21 && playerCardsValue == 21)){
+    blackJack = true
+    return compareCardsValue()
+  }
+
+  else return bananaImage + `<br>Your Bananas: ${playerCardsValue}<br><br>Computer First Card: ${computerCards[0].number} ${computerCards[0].emoji}<br>Your Cards: ${showPlayerCards()}<br><br>Type 'hit' for more bananas or 'stand' if you have enough bananas.`
 }
+
+var bananaImage = '<img src="https://c.tenor.com/kZfgm_rTypwAAAAC/minions-stuart-the-minion.gif"/>';
 
 //create a function for player to choose hit or stand
 var playerHitOrStand = function(input){
   console.log('player hit or stand function is running');
 
   var myOutputValue = ''
+  var bustImage = '<img src="https://c.tenor.com/aae3d8PF48AAAAAC/despicable-me-minion.gif"/>';
 
   //if input is hit, pop a card from the shuffled deck to player hands and calculate player cards value
   if (input == 'hit' && playerCardsValue < 21){
 
       playerCards.push(shuffledDeck.pop())
 
-      //initalize variable to know the index of player last card
-      var playerLastCard = playerCards.length - 1
+      console.log(`hit player cards -> ${showPlayerCards()}`)
 
-      console.log(`hit playerCards -> ${playerCards[playerLastCard].name} of ${playerCards[playerLastCard].suit}`)
-
-      myOutputValue = `Player, you have drawn ${playerCards[playerLastCard].name} of ${playerCards[playerLastCard].suit}.<br>You have ${calcPlayerCardsValue()} points.<br><br>`
+      myOutputValue = `Your Bananas: ${calcPlayerCardsValue()}<br><br>Your Cards: ${showPlayerCards()}<br><br>`
 
       //if player cards value > 21, player bust
       if (playerCardsValue > 21){
 
-        //aceValue()
-        //if player bust, cannot draw cards anymore. change mode to stand
-        myOutputValue = myOutputValue + 'You have bust. It is computer turn. Press submit'
+        //if player bust, cannot draw cards anymore.
+        myOutputValue = bustImage + '<br>' + myOutputValue + 'Oh no, you have bust. It is computer turn. Press submit.'
 
       //else, ask if player want to hit or stand  
       }else
-        myOutputValue = myOutputValue + 'Do you want to hit or stand?'
+        myOutputValue = bananaImage + '<br>' + myOutputValue + `Type 'hit' for more bananas or 'stand' if you have enough bananas.`
 
       return myOutputValue
       
@@ -177,15 +232,13 @@ var playerHitOrStand = function(input){
 var computerHitOrStand = function(){
   console.log(`computer hit or stand function is running`);
   
-  if (calcComputerCardsValue() < 17){
+  while (calcComputerCardsValue() < 17){
 
     computerCards.push(shuffledDeck.pop())
 
-    var computerLastCard = computerCards.length - 1
-    console.log(`hit computer card -> ${computerCards[computerLastCard].name} of ${computerCards[computerLastCard].suit}`);
+  }
 
-    }
-  if (calcComputerCardsValue() > 16){
+  if (calcComputerCardsValue() >= 17){
     return compareCardsValue()
   }
 }
@@ -194,19 +247,25 @@ var computerHitOrStand = function(){
 var compareCardsValue = function(){
   console.log('compare cards value function is running')
 
-  var message = `Computer cards value: ${computerCardsValue}<br>Player cards value: ${playerCardsValue}<br><br>`
+  var message = `Computer Bananas: ${computerCardsValue}<br>Your Bananas: ${playerCardsValue}<br><br>Computer Cards: ${showComputerCards()}<br>Player Cards: ${showPlayerCards()}<br><br>`
+
+  var winImage = '<img src="https://c.tenor.com/B_zYdea4l-4AAAAC/yay-minions.gif"/>';
+  var loseImage = '<img src="https://c.tenor.com/jGobNIabMIkAAAAC/minion-minions.gif"/>';
+  var tieImage = '<img src="https://c.tenor.com/jNcYEscYhwoAAAAC/stuart-bob.gif"/>';
 
   //if computer cards value is greater than player cards value, computer wins
-  if ((computerCardsValue > playerCardsValue && computerCardsValue < 22) || (computerCardsValue < 22 && playerCardsValue > 21)){
-    message = message + `Computer win! Press submit to play again!`
+    //if black jack = true and computer cards value = 21, computer wins
+  if ((computerCardsValue > playerCardsValue && computerCardsValue < 22) || (computerCardsValue < 22 && playerCardsValue > 21) || (blackJack == true && computerCardsValue == 21)){
+    message = loseImage + '<br>' + message + `Computer win! Press submit to play again!`
   }
   //if player cards value is greater than computer cards value, player wins
-  else if ((playerCardsValue > computerCardsValue && playerCardsValue < 22) || (playerCardsValue < 22 && computerCardsValue > 21)){
-    message = message + `Player win! Press submit to play again!`
+    //if black jack = true and player cards value = 21, player wins
+  else if ((playerCardsValue > computerCardsValue && playerCardsValue < 22) || (playerCardsValue < 22 && computerCardsValue > 21) || (blackJack == true && playerCardsValue == 21)){
+    message = winImage + '<br>' + message + `You win! Press submit to play again!`
   }
   //if computer cards value = player cards value, it's a tie
   else if ((playerCardsValue == computerCardsValue) || (playerCardsValue > 21 && computerCardsValue > 21)){
-    message = message + `It's a tie! Press submit to play again!`
+    message = tieImage + '<br>' + message + `It's a tie! Press submit to play again!`
   }
 
   //reset computer and player cards array and reshuffle cards
@@ -279,4 +338,28 @@ var calcComputerCardsValue = function(){
 
 
 return computerCardsValue
+}
+
+//create a function to show player cards
+var showPlayerCards = function(){
+  console.log('show player cards function is running');
+  var showOutput = ''
+  var showIndex = 0
+  while (showIndex < playerCards.length){
+    showOutput = showOutput += playerCards[showIndex].number + ' ' + playerCards[showIndex].emoji + ' | '
+    showIndex += 1
+  }
+  return showOutput
+}
+
+//create a function to show computer cards
+var showComputerCards = function(){
+  console.log('show computer cards function is running');
+  var computerOutput = ''
+  var computerIndex = 0
+  while (computerIndex < computerCards.length){
+    computerOutput = computerOutput += computerCards[computerIndex].number + ' ' + computerCards[computerIndex].emoji + ' | '
+    computerIndex += 1
+  }
+  return computerOutput
 }
