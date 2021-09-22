@@ -33,6 +33,12 @@ var betImage =
   '<img src="https://c.tenor.com/DYlOhYGUOloAAAAj/how-much-you-wanna-bet-kyle-broflovski.gif"/>';
 var blackJackImage =
   '<img src="https://secureservercdn.net/160.153.138.163/97w.5c4.myftpupload.com/wp-content/uploads/2018/11/Blackjack-Flash-21.gif"/>';
+var loseImage =
+  '<img src="https://media4.giphy.com/media/gJ37zufSHnARnzObsl/giphy.gif?cid=ecf05e47k38gap02p1554rc41f39yyjlqt6yz4r2i7x633qh&rid=giphy.gif&ct=g"/>';
+var winImage =
+  '<img src="https://media1.giphy.com/media/3kD720zFVu22rfIA0s/giphy.gif?cid=ecf05e4706ckzp1zdweeaxmaffc2y1l97sdbtk5n3yf1cke0&rid=giphy.gif&ct=g"/>';
+var drawImage =
+  '<img src="https://cdn66.picsart.com/192486183001202.gif?to=min&r=640"/>';
 
 var deck = function () {
   var cardDeck = [];
@@ -355,7 +361,7 @@ var finalResult = function () {
         outPut =
           outPut +
           `😭${nameOfPlayer[counter]}😭 have Burst. <br> ${nameOfPlayer[counter]} card value is ${totalValueUser[counter]}
-        <br><b>Player Lose</b> ${playerBetting[counter]}💸<br>Your total point have is ${noOfPoints[counter]}💰<br><br>`;
+        <br><b>Player Lose</b> ${playerBetting[counter]}💸<br>Your total point have is ${noOfPoints[counter]}💰${loseImage}<br><br>`;
         console.log("test4");
       }
 
@@ -371,7 +377,7 @@ var finalResult = function () {
         console.log("test7");
         outPut =
           outPut +
-          `<b>Player Win🤑🤑</b><br> ${nameOfPlayer[counter]} card value is ${totalValueUser[counter]}<br>You have win ${winning[counter]}💵<br>Your total point have is ${noOfPoints[counter]}💰<br><br>`;
+          `<b>Player Win🤑🤑</b><br> ${nameOfPlayer[counter]} card value is ${totalValueUser[counter]}<br>You have win ${winning[counter]}💵<br>Your total point have is ${noOfPoints[counter]}💰${winImage}<br><br>`;
       }
       console.log("test8");
       counter += 1;
@@ -402,7 +408,7 @@ var finalResult = function () {
         console.log("test13");
         outPut =
           outPut +
-          `<b>Player Win</b> <br> ${nameOfPlayer[counter]} card value is ${totalValueUser[counter]}<br>You have win🤑🤑 ${winning[counter]}💵<br>Your total point have is ${noOfPoints[counter]}💰<br><br>`;
+          `<b>Player Win</b> <br> ${nameOfPlayer[counter]} card value is ${totalValueUser[counter]}<br>You have win🤑🤑 ${winning[counter]}💵<br>Your total point have is ${noOfPoints[counter]}💰${winImage}<br><br>`;
         // counter += 1;
       }
       console.log("test14");
@@ -415,7 +421,7 @@ var finalResult = function () {
         console.log(playerBetting, "playerBetting");
         outPut =
           outPut +
-          `<br><b>😭Player Lose😭</b><br> ${nameOfPlayer[counter]} card value is ${totalValueUser[counter]}<br>You have lose ${playerBetting[counter]}💸<br>Your total point have is ${noOfPoints[counter]}💰<br><br>`;
+          `<br><b>😭Player Lose😭</b><br> ${nameOfPlayer[counter]} card value is ${totalValueUser[counter]}<br>You have lose ${playerBetting[counter]}💸<br>Your total point have is ${noOfPoints[counter]}💰${loseImage}<br><br>`;
         // counter += 1;
       }
       if (dealerTotalValue == totalValueUser[counter]) {
@@ -429,13 +435,13 @@ var finalResult = function () {
           console.log("noofpoint", noOfPoints);
           outPut =
             outPut +
-            `<br><b>🥺Player Draw🥺</b><br> ${nameOfPlayer[counter]} card value is ${totalValueUser[counter]}<br>Your total point have is ${noOfPoints[counter]}💰<br><br>`;
+            `<br><b>🥺Player Draw🥺</b><br> ${nameOfPlayer[counter]} card value is ${totalValueUser[counter]}<br>Your total point have is ${noOfPoints[counter]}💰${drawImage}<br><br>`;
           // counter += 1;
         } else if (blackJackCounter[counter] == 1) {
           console.log("test18");
           outPut =
             outPut +
-            `<b>Player Win🤑🤑</b> <br> ${nameOfPlayer[counter]} card value is ${totalValueUser[counter]}<br>You have win ${winning[counter]}💵<br>Your total point have is ${noOfPoints[counter]}💰<br><br>`;
+            `<b>Player Win🤑🤑</b> <br> ${nameOfPlayer[counter]} card value is ${totalValueUser[counter]}<br>You have win ${winning[counter]}💵<br>Your total point have is ${noOfPoints[counter]}💰${winImage}<br><br>`;
         }
       }
       console.log("test19");
