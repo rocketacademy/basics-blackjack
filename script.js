@@ -109,6 +109,7 @@ var card1st2Draw = function () {
       draw2Card += 1;
     }
     userDraw.push(userCardDrawn);
+
     counterPlayer += 1;
   }
   console.log(userDraw, "userDraw");
@@ -238,6 +239,7 @@ var card1st2Draw = function () {
       `Dealer<br>'<b>Card 1: ${dealerDraw[0].name} of ${dealerDraw[0].suit}</b>'<br> Card 2: 'covered' <br><br>${nameOfPlayer[counterStart]}, Please choose to 'hit' or 'stand'`
     );
   }
+  console.log(userAceCard, "userAceCard");
 };
 var hitButton = function (counter) {
   if (totalValueUser[counter] <= 21) {
@@ -507,11 +509,9 @@ var nameInput = function (playerName) {
     nameOfPlayer.push(name);
     counterName = counterName + 1;
     console.log(counterName);
-    return (
-      `Welcome <b>${nameOfPlayer[counterName - 1]}</b><br><br> Player${
-        counterName + 1
-      } ` + nameImage
-    );
+    return `Welcome <b>${nameOfPlayer[counterName - 1]}</b><br><br> Player${
+      counterName + 1
+    } <br>  ${nameImage}`;
   }
 
   if (noOfPlayer - 1 == counterName) {
@@ -526,6 +526,7 @@ var nameInput = function (playerName) {
       winning.push(0);
       counter += 1;
     }
+    console.log(userAceCard, "user Ace card");
 
     console.log(noOfPoints);
     gameMode = gameStageBetting;
