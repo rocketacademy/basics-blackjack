@@ -147,8 +147,8 @@ var main = function (input) {
       console.log(`computer hand`, computerHand);
       playerCardValue = sumOfHand(playerHand);
       computerCardvalue = sumOfHand(computerHand);
-      console.log(`playerCardValue x1`, playerCardValue);
-      console.log(`computerCardValuex1`, computerCardvalue);
+      console.log(`playerCardValue`, playerCardValue);
+      console.log(`computerCardValue`, computerCardvalue);
       dealCounter += 1;
       gameMode = gameMode2;
     }
@@ -199,7 +199,7 @@ var main = function (input) {
       )} <br><br> Computer hand: <br> ${printCardArray(computerHand)}`;
     }
 
-    if (computerCardvalue == 21 && playerCardValue != 21) {
+    if (computerCardvalue == 21 && computerCardValue > playerCardValue != 21) {
       gameOver = true;
       return `SORRY! COMPUTER WINS WITH 21. <br><br> Player hand: <br> ${printCardArray(
         playerHand
@@ -212,6 +212,13 @@ var main = function (input) {
       ${printCardArray(
         playerHand
       )} <br><br> Computer hand: <br> ${printCardArray(computerHand)}`;
+    }
+
+    if (playerCardValue < 21 && computerCardvalue < 21) {
+      gameMode = gameMode2;
+      return `Player hand: <br> ${printCardArray(
+        playerHand
+      )} <br><br> You may HIT or STAND.`;
     }
   }
 
