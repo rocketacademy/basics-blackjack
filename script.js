@@ -8,21 +8,12 @@ var bustList = [];
 var main = function (input) {
   var myOutputValue = "♣♦♥♠";
   if (gameMode == 0) {
-    deck = shuffleDeck(makeDeck());
-    myOutputValue =
-      "How many players are there?<br><br>Please input a number from 1 through 7 and click the submit button.";
+    myOutputValue = initialiseDeck();
   } else if (gameMode == 1) {
-    if (!isNaN(input) && input >= 1 && input <= 7) {
-      initialiseParticipants(input);
-      myOutputValue = `There are ${playerList.length} participants including the dealer.<br><br>Click the submit button to deal cards to all participants.`;
-    } else {
-      myOutputValue =
-        "You have entered an invalid input.<br><br>How many players are there?<br><br>Please input a number from 1 through 7 and click the submit button.";
-    }
+    myOutputValue = initialiseParticipants(input);
   } else if (gameMode == 2) {
     dealCards();
-    myOutputValue = "Click the submit button to continue.<br><br>";
-    myOutputValue += checkNaturalCondition();
+    myOutputValue = checkNaturalCondition();
     myOutputValue += displayDealtCards();
   } else if (gameMode == 3) {
     playerIndex = checkParticipantValid();
@@ -35,12 +26,7 @@ var main = function (input) {
   } else if (gameMode == 6) {
     myOutputValue = checkWinningCondition();
   } else if (gameMode == 7) {
-    console.log("reset stage");
-    myOutputValue = "Click the submit button to reset the game.";
-    gameMode = 0;
-    playerIndex = 0;
-    naturalList = [];
-    bustList = [];
+    myOutputValue = resetGame();
   }
 
   return myOutputValue;
@@ -131,13 +117,28 @@ var shuffleDeck = function (cardDeck) {
   return cardDeck;
 };
 
+var initialiseDeck = function () {
+  deck = shuffleDeck(makeDeck());
+  var myString =
+    "How many players are there?<br><br>Please input a number from 1 through 7 and click the submit button.";
+  return myString;
+};
+
 var initialiseParticipants = function (playerCount) {
-  playerList = [];
-  var participants = Number(playerCount) + 1;
-  for (var i = 0; i < participants; i += 1) {
-    playerList.push([]);
+  var myString = "";
+  if (!isNaN(playerCount) && playerCount >= 1 && playerCount <= 7) {
+    playerList = [];
+    var participants = Number(playerCount) + 1;
+    for (var i = 0; i < participants; i += 1) {
+      playerList.push([]);
+    }
+    myString = `There are ${playerList.length} participants including the dealer.<br><br>Click the submit button to deal cards to all participants.`;
+    gameMode += 1;
+  } else {
+    myString =
+      "You have entered an invalid input.<br><br>How many players are there?<br><br>Please input a number from 1 through 7 and click the submit button.";
   }
-  gameMode += 1;
+  return myString;
 };
 
 var dealCards = function () {
@@ -158,7 +159,7 @@ var calculatePlayerScore = function (player) {
 };
 
 var checkNaturalCondition = function () {
-  var myString = "";
+  var myString = "Click the submit button to continue.<br><br>";
   var dealerScore = calculatePlayerScore(playerList[playerList.length - 1]);
   if (dealerScore == 21) {
     for (var i = 0; i < playerList.length - 1; i += 1) {
@@ -306,6 +307,15 @@ var checkWinningCondition = function () {
   return myString;
 };
 
+var resetGame = function () {
+  gameMode = 0;
+  playerIndex = 0;
+  naturalList = [];
+  bustList = [];
+  var myString = "Click the submit button to reset the game.";
+  return myString;
+};
+
 var displayDealtCards = function () {
   var myString = "";
   for (var i = 0; i < playerList.length; i += 1) {
@@ -316,8 +326,13 @@ var displayDealtCards = function () {
       myString += `Player ${displayNum} cards:<br><div class="row">`;
     }
     if (i == playerList.length - 1) {
+      var dealerScore = calculatePlayerScore(playerList[i]);
       for (var j = 0; j < playerList[i].length; j += 1) {
-        if (j == playerList[i].length - 1 && gameMode < 4) {
+        if (
+          j == playerList[i].length - 1 &&
+          gameMode < 4 &&
+          dealerScore != 21
+        ) {
           myString += displayCardImage("cover", "cover");
         } else {
           myString += displayCardImage(
@@ -470,6 +485,7 @@ var displayPlayerCards = function () {
 //////////////////////////////////////
 // Ace logic
 // while bust and ace counter
+
 // plug gap when all win but continue to play dealer
 // plug gap when all bust but continue to play dealer
 // if playerlist.length - 1 == bustlist + naturallist
