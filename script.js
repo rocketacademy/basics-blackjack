@@ -92,7 +92,7 @@ var makeDeck = function () {
       else if (cardName == 11) {
         cardName = 'jack';
         cardValue = 10
-        numEmoji = '🎃'
+        numEmoji = 'J'
       } else if (cardName == 12) {
         cardName = 'queen';
         cardValue = 10
@@ -192,7 +192,7 @@ var dealCards = function(){
   else return bananaImage + `<br>Your Bananas: ${playerCardsValue}<br><br>Computer First Card: ${computerCards[0].number} ${computerCards[0].emoji}<br>Your Cards: ${showPlayerCards()}<br><br>Type 'hit' for more bananas or 'stand' if you have enough bananas.`
 }
 
-var bananaImage = '<img src="https://c.tenor.com/kZfgm_rTypwAAAAC/minions-stuart-the-minion.gif"/>';
+var bananaImage = '<img src="https://th.bing.com/th/id/OIP.DT4i9tYI3l0Lt7psD5GlvAHaEK?pid=ImgDet&rs=1"/>';
 
 //create a function for player to choose hit or stand
 var playerHitOrStand = function(input){
