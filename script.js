@@ -25,7 +25,6 @@ var main = function (input) {
     myOutputValue = dealerGame();
   } else if (gameMode == 6) {
     myOutputValue = checkWinningCondition();
-    resetGame();
   } else if (gameMode == 7) {
     myOutputValue = resetGame();
   }
