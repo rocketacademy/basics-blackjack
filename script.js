@@ -21,7 +21,7 @@ var initialisePlayers = function (playerNum) {
       // hands is an array storing one array of cards
       // if player splits, then another array of cards will be added
       hands: [[]],
-      points: [0], // array of points corresponding to hands
+      points: [0], // array of points and wagers corresponding to hands
       wager: [0],
       settled: [false], // array denoting whether the hand is settled
       curHand: 0, // set current hand index as 0
@@ -42,10 +42,11 @@ var makeCard = function (suit, emoji, rank) {
   };
 
   // set name and points value to first be equivalent to the rank value
-  // if the name is one of the keys in special ranks,
-  // change name to be the corresponding value
   var name = rank.toString();
   var points = rank;
+
+  // if the name is one of the keys in special ranks,
+  // change name to be the corresponding value
   if (Object.keys(specialRanks).includes(name)) {
     name = specialRanks[rank];
     if (name != "A") points = 10; // for blackjack purpose, jack/queen/king = 10
@@ -97,7 +98,7 @@ var resetPlayer = function (index) {
   }
   if (count > 0)
     return `<br>Player ${index + 1} is topped up with ${count * 100} chips.`;
-  else return "";
+  return "";
 };
 
 // reset game by making and shuffling a new deck, clearing cards, resetting ui
@@ -161,6 +162,9 @@ var calculatePoints = function (cards) {
 var settleBlackjacks = function (dealerBlackjack) {
   var output = "";
   if (dealerBlackjack) output += `Dealer has blackjack!<br>`;
+  else if (dealerCards[0].points == 1 || dealerCards[0].points == 10) {
+    output += `Dealer peeks at facedown card and does not have blackjack.<br>`;
+  }
 
   for (var i = 0; i < players.length; i += 1) {
     if (!dealerBlackjack) {
@@ -199,6 +203,7 @@ var findNextPlayer = function () {
     return "";
   }
 
+  // find the next player that hasn't been settled
   curPlayer += 1;
   while (curPlayer < players.length && players[curPlayer].settled[0]) {
     curPlayer += 1;
@@ -230,11 +235,10 @@ var updateTableUI = function () {
     else if (win < 0) winLossUI.className = "win-loss-red";
     else winLossUI.className = "win-loss";
 
-    if (players[i].wager.length > 1) {
-      document.getElementById(
-        `value-wager-${i}`
-      ).innerHTML = `Bet: ${players[i].wager[0]} | ${players[i].wager[1]}`;
-    }
+    // update bet label
+    var betLabel = `Bet: ${players[i].wager[0]}`;
+    if (players[i].wager.length > 1) betLabel += ` | ${players[i].wager[1]}`;
+    document.getElementById(`value-wager-${i}`).innerHTML = betLabel;
 
     // update opacity effect for settled hands
     for (var j = 0; j < players[i].hands.length; j += 1) {
@@ -376,7 +380,10 @@ var onPlayerHitOrDoubleDown = function (doubledDown = false) {
   var handNum = players[curPlayer].curHand;
 
   // double wager by 2 if this is a double down
-  if (doubledDown) players[curPlayer].wager[handNum] *= 2;
+  if (doubledDown) {
+    players[curPlayer].wager[handNum] *= 2;
+    output += `Player ${curPlayer + 1} doubles down.<br><br>`;
+  } else output += `Player ${curPlayer + 1} hits.<br><br>`;
 
   players[curPlayer].hands[handNum].push(deck.pop());
   updateCardsUI();
@@ -408,14 +415,16 @@ var onPlayerHitOrDoubleDown = function (doubledDown = false) {
 
 // this function is called when the stand button is clicked
 var onPlayerStandOrSurrender = function (surrender = false) {
+  var output = "";
   if (surrender) {
     // if player surrendered, forfeit half the bet and mark this hand as settled
     var handNum = players[curPlayer].curHand;
     players[curPlayer].chips -= 0.5 * players[curPlayer].wager[handNum];
     players[curPlayer].settled[handNum] = true;
-  }
+    output += `Player ${curPlayer + 1} surrenders.<br><br>`;
+  } else output += `Player ${curPlayer + 1} stands.<br><br>`;
 
-  var output = findNextPlayer();
+  output += findNextPlayer();
   updateTableUI();
   return output;
 };
