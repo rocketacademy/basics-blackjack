@@ -189,7 +189,7 @@ var dealCards = function(){
     return compareCardsValue()
   }
 
-  else return bananaImage + `<br>Your Bananas: ${playerCardsValue}<br><br>Computer First Card: ${computerCards[0].number} ${computerCards[0].emoji}<br>Your Cards: ${showPlayerCards()}<br><br>Type 'hit' for more bananas or 'stand' if you have enough bananas.`
+  else return bananaImage + `<br>Your Bananas: ${playerCardsValue}<br><br>Computer First Card: ${computerCards[0].number}${computerCards[0].emoji}<br>Your Cards: ${showPlayerCards()}<br><br>Type 'hit' for more bananas or 'stand' if you have enough bananas.`
 }
 
 var bananaImage = '<img src="https://th.bing.com/th/id/OIP.DT4i9tYI3l0Lt7psD5GlvAHaEK?pid=ImgDet&rs=1"/>';
@@ -346,7 +346,7 @@ var showPlayerCards = function(){
   var showOutput = ''
   var showIndex = 0
   while (showIndex < playerCards.length){
-    showOutput = showOutput += playerCards[showIndex].number + ' ' + playerCards[showIndex].emoji + ' | '
+    showOutput = showOutput += playerCards[showIndex].number + playerCards[showIndex].emoji + ' | '
     showIndex += 1
   }
   return showOutput
@@ -358,7 +358,7 @@ var showComputerCards = function(){
   var computerOutput = ''
   var computerIndex = 0
   while (computerIndex < computerCards.length){
-    computerOutput = computerOutput += computerCards[computerIndex].number + ' ' + computerCards[computerIndex].emoji + ' | '
+    computerOutput = computerOutput += computerCards[computerIndex].number + computerCards[computerIndex].emoji + ' | '
     computerIndex += 1
   }
   return computerOutput
