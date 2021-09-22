@@ -257,7 +257,10 @@ var changeAceValue = function () {
 var defineNextPlayer = function () {
   if (playerIndex < playerList.length - 1) {
     playerIndex += 1;
-    gameMode = 3;
+    gameMode -= 1;
+  }
+  if (bustList.length + naturalList.length == playerList.length - 1) {
+    gameMode = 6;
   }
 };
 
@@ -265,7 +268,7 @@ var checkDealerOrPlayerTurn = function () {
   var myString = "";
   if (playerIndex == playerList.length - 1) {
     myString = `Dealer turn is up!<br><br>Click the submit button to continue.<br><br>`;
-    gameMode = 5;
+    gameMode += 1;
   } else {
     var displayNum = playerIndex + 1;
     myString = `Player ${displayNum} turn!<br><br>Type 'h' to hit and 's' to stand.<br><br>`;
