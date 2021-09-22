@@ -39,9 +39,37 @@ const cardScoreValueMap = {
   13: 10,
 };
 
-const refreshMessage = "Please refresh the page to play again.";
-const hitStandMessage =
-  "<br>Enter 'hit' to draw 1 more card or 'stand' to see results.";
+const cardRankEmojiMap = {
+  1: "🅰",
+  2: "2️⃣",
+  3: "3️⃣",
+  4: "4️⃣",
+  5: "5️⃣",
+  6: "6️⃣",
+  7: "7️⃣",
+  8: "8️⃣",
+  9: "9️⃣",
+  10: "🔟",
+  11: "<b>J</b>",
+  12: "<b>Q</b>",
+  13: "<b>K</b>",
+};
+
+const cardSuitEmojiMap = {
+  hearts: "♥",
+  diamonds: "♦",
+  clubs: "♣",
+  spades: "♠",
+};
+
+const happyImg = `<img src = "https://c.tenor.com/t0aPGUJ4TDgAAAAj/budding-pop-happy.gif">`;
+const waitingImg = `<img src = "https://c.tenor.com/JqRnfuG4ZXIAAAAj/kawai-cute.gif"></img>`;
+const sadImg = `<img src = "https://c.tenor.com/sC5zcz9GAEYAAAAj/sad-emo.gif">`;
+const laughImg = `<img src = "https://c.tenor.com/yBhWvOq4ry4AAAAj/kawai-budding-pop.gif">`;
+const tieImg = `<img src = "https://c.tenor.com/16iWaRZX6agAAAAj/kawai-budding-pop.gif">`;
+
+const refreshMessage = "<br>Click on 'Submit' to play again.";
+const hitStandMessage = `<br>Enter 'hit' to draw 1 more card or 'stand' to see results.${waitingImg}`;
 
 var main = function (input) {
   // starts with player's turn
@@ -52,8 +80,7 @@ var main = function (input) {
       // deck only reshuffles if game ends and return back to player
       shuffledDeck = shuffleCards(deck);
       console.log("cards are shuffled");
-      playerCards = drawnCards();
-      myOutputValue = `Player draws: ${playerCards}`;
+      myOutputValue = drawnCards();
       console.log(drawnCard);
     }
     // if player choose to hit, draw a card
@@ -63,15 +90,17 @@ var main = function (input) {
       while (playerHitCounter < drawnCard.length) {
         // if playersum is within 21, show sum of cards
         if (playerSum <= 21) {
-          myOutputValue = `You draw: ${drawnCard[playerHitCounter].name} of ${
-            drawnCard[playerHitCounter].suit
-          }. ${calSumOfCards()}. ${hitStandMessage}`;
+          myOutputValue = `You draw: ${
+            drawnCard[playerHitCounter].cardRankEmoji
+          } of ${drawnCard[playerHitCounter].cardSuitEmoji}. <br><br>
+          Player Cards: ${showDrawnCards()} ${calSumOfCards()} ${hitStandMessage} `;
         }
         // else shows game over
         else {
-          myOutputValue = `You draw: ${drawnCard[playerHitCounter].name} of ${
-            drawnCard[playerHitCounter].suit
-          }. ${calSumOfCards()} ${resultsBurst()}.`;
+          myOutputValue = `You draw: ${
+            drawnCard[playerHitCounter].cardRankEmoji
+          } of ${drawnCard[playerHitCounter].cardSuitEmoji}. <br><br>
+             Player Cards: ${showDrawnCards()}${calSumOfCards()} ${resultsBurst()}`;
         }
         playerHitCounter += 1;
       }
@@ -83,8 +112,7 @@ var main = function (input) {
   }
   // when it is computer's turn, draw 2 cards & play game
   if (turn == "computer") {
-    computerCards = drawnCards();
-    myOutputValue = `Computer draws: ${computerCards}`;
+    myOutputValue = drawnCards();
     // change turn back to player so that the game restarts by clicking submit
     turn = "player";
   }
@@ -130,10 +158,10 @@ var calSumOfCards = function () {
   // assign value of sum to player / computer according to their turn
   if (turn == "player") {
     playerSum = sumOfCards;
-    return `Your sum is now ${playerSum}`;
+    return `Your sum is now ${playerSum}.<br>`;
   } else if (turn == "computer") {
     computerSum = sumOfCards;
-    return `Your sum is now ${computerSum}`;
+    return `Your sum is now ${computerSum}.<br>`;
   }
 };
 
@@ -154,6 +182,21 @@ const reduceAceScores = function () {
   return sumOfCards;
 };
 
+var showDrawnCards = function () {
+  console.log("show drawn cards function is running");
+  var showOutput = "";
+  var showIndex = 0;
+  while (showIndex < drawnCard.length) {
+    showOutput = showOutput +=
+      drawnCard[showIndex].cardRankEmoji +
+      " " +
+      drawnCard[showIndex].cardSuitEmoji +
+      " | ";
+    showIndex += 1;
+  }
+  return showOutput;
+};
+
 var drawnCards = function () {
   drawnCard = [];
 
@@ -171,14 +214,11 @@ var drawnCards = function () {
     calSumOfCards();
     // check for player blackjack
     if (drawnCard.length == 2 && playerSum == 21) {
-      return "You got a blackjack! You won!";
+      return `Player draws: ${showDrawnCards()} <br> You got a blackjack! You won! ${happyImg}`;
     }
     // if no blackjack, ask if player wants to hit or stand.
-    else {
-      myOutputValue = `${drawnCard[0].name} of ${drawnCard[0].suit} and ${
-        drawnCard[1].name
-      } of ${drawnCard[1].suit}. ${calSumOfCards()}. ${hitStandMessage}`;
-    }
+
+    myOutputValue = `Player draws: ${showDrawnCards()} ${calSumOfCards()} ${hitStandMessage}`;
   }
   // 2 initial drawn cards will be assigned to computer
   if (turn == "computer") {
@@ -188,11 +228,11 @@ var drawnCards = function () {
     calSumOfCards();
     // check for computer blackjack
     if (drawnCard.length == 2 && computerSum == 21) {
-      return "Computer got a blackjack! Computer won!";
+      return `Computer got a blackjack! Computer won! ${sadImg}`;
     }
     // if no blackjack, show the 2 cards that computer draw at the beginning
     else {
-      myOutputValue = `${drawnCard[0].name} of ${drawnCard[0].suit} and ${drawnCard[1].name} of ${drawnCard[1].suit}. <br>`;
+      myOutputValue = `Computer draws: ${showDrawnCards()} <br>`;
     }
 
     // while loop to continuously draw cards when computersum is < 17
@@ -203,11 +243,8 @@ var drawnCards = function () {
       }
       computerCounter += 1;
     }
-    // show how many additional cards computer automatically draw + results of game
-    var numOfCardsDrawn = drawnCard.length - 2;
-    myOutputValue =
-      myOutputValue +
-      ` Computer continues to draw ${numOfCardsDrawn} cards. <br><br> ${resultsOfGame()} `;
+
+    myOutputValue = `Computer Cards: ${showDrawnCards()}<br><br>${resultsOfGame()}`;
   }
 
   return myOutputValue;
@@ -218,38 +255,36 @@ var resultsOfGame = function () {
   if (computerSum > 21) {
     return `Player sum = ${playerSum}<br>
     Computer sum = ${computerSum}<br>
-    ${resultsBurst()}`;
+    ${resultsBurst()} ${laughImg} `;
   }
 
   if (playerSum > computerSum) {
     return `Player sum = ${playerSum}<br>
-    Computer sum = ${computerSum}<br>
-    Player wins!`;
+    Computer sum = ${computerSum}<br><br>
+    Player wins! Yay! ${refreshMessage} ${happyImg}`;
   }
 
   if (playerSum < computerSum) {
     return `Player sum = ${playerSum}<br>
-    Computer sum = ${computerSum}<br>
-    Computer wins!`;
+    Computer sum = ${computerSum}<br><br>
+    Computer wins! Oh man... ${refreshMessage}${sadImg}`;
   }
 
   if ((playerSum = computerSum)) {
     return `Player sum = ${playerSum}<br>
-    Computer sum = ${computerSum}<br>
-    It's a tie!`;
+    Computer sum = ${computerSum}<br><br>
+    It's a tie! Boring... ${refreshMessage}${tieImg}`;
   }
 };
 
 // results when sum is more than 21
 var resultsBurst = function () {
   if (playerSum > 21) {
-    return `<br>Player has lost! Game Over! <br>
-    Click 'Submit' to restart the game`;
+    return `<br>Player burst! Game Over! ${refreshMessage}${sadImg}`;
   }
 
   if (computerSum > 21) {
-    return `<br>Computer has lost! Game Over<br>
-    Click 'Submit' to restart the game`;
+    return `<br>Computer burst! Game Over! ${refreshMessage}`;
   }
 };
 
@@ -262,12 +297,16 @@ const makeDeck = function () {
     let rankCounter = 1;
     while (rankCounter <= 13) {
       const cardName = cardNameMap[rankCounter];
+      const cardSuitEmojiTemp = cardSuitEmojiMap[suits[suitIndex]];
+      const cardRankEmojiTemp = cardRankEmojiMap[rankCounter];
       const cardScoreValue = cardScoreValueMap[rankCounter];
 
       const card = {
         name: cardName,
         suit: currentSuit,
         rank: rankCounter,
+        cardSuitEmoji: cardSuitEmojiTemp,
+        cardRankEmoji: cardRankEmojiTemp,
         scoreValue: cardScoreValue,
       };
       cardDeck.push(card);
