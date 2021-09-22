@@ -185,11 +185,16 @@ var main = function (input) {
     } <br><br> [PLAYER'S TURN] Enter HIT or STAND to continue.`;
   }
 
-  if (input != `hit` && input != `stand`) {
+  if (
+    input != `hit` &&
+    input != `HIT` &&
+    input != `stand` &&
+    input != `STAND`
+  ) {
     return `INVALID. Please enter HIT or STAND only!!!`;
   }
 
-  if (gameMode == gameMode2 && input == `hit`) {
+  if ((gameMode == gameMode2 && input === `hit`) || input === `HIT`) {
     dealCard(playerHand);
     playerCardValue = sumOfHand(playerHand);
     console.log(`playerCardValue`, playerCardValue);
@@ -230,18 +235,23 @@ var main = function (input) {
     }
   }
 
-  if (gameMode == gameMode2 && input == `stand`) {
+  if ((gameMode == gameMode2 && input === `stand`) || input === `STAND`) {
     gameMode = gameMode3;
     return `[COMPUTER'S TURN] Enter HIT or STAND. <br><br> Computer hand: <br> ${printCardArray(
       computerHand
     )}`;
   }
 
-  if (input != `hit` && input != `stand`) {
+  if (
+    input != `hit` &&
+    input != `HIT` &&
+    input != `stand` &&
+    input != `STAND`
+  ) {
     return `INVALID. Please enter HIT or STAND only!!!`;
   }
 
-  if (gameMode == gameMode3 && input == `hit`) {
+  if ((gameMode == gameMode3 && input == `hit`) || input === `HIT`) {
     dealCard(computerHand);
     computerCardValue = sumOfHand(computerHand);
     console.log(`computerCardValue`, computerCardValue);
@@ -275,7 +285,7 @@ var main = function (input) {
     }
   }
 
-  if (gameMode == gameMode3 && input == `stand`) {
+  if ((gameMode == gameMode3 && input == `stand`) || input === `STAND`) {
     computerCardValue = sumOfHand(computerHand);
     playerCardValue = sumOfHand(playerHand);
     console.log(`computerCardValue`, computerCardValue);
