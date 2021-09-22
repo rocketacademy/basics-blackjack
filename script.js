@@ -51,7 +51,7 @@ var getRandomIndex = function (max) {
   return Math.floor(Math.random() * max);
 };
 
-//function to shuffle cards (related to line 45)
+//function to shuffle cards (linked to getRandomIndex)
 var shuffleCards = function (cardDeck) {
   var currentIndex = 0;
   while (currentIndex < cardDeck.length) {
@@ -68,6 +68,7 @@ var shuffleCards = function (cardDeck) {
 //create deck of cards upon loading
 cardDeck = shuffleCards(makeDeck())
 
+//function to return true if Blackjack occurs in first round
 var checkBlackJack = function(cardsInHand){
   if ((cardsInHand[0].name == 'ace' && cardsInHand[1].rank == '10') || (cardsInHand[1].name == 'ace' && cardsInHand[0].rank == '10')){
     return true;
@@ -76,6 +77,7 @@ var checkBlackJack = function(cardsInHand){
   }
 }
 
+//function to return output of cards
 var outputOfCards = function(cardsInHand){
 var cards = '';
 var handIndex = 0;
@@ -124,7 +126,8 @@ var main = function (input) {
     dealerBlackJackCheck = checkBlackJack(dealerCards);
     console.log('playerblackjackcheck', playerBlackJackCheck)
     console.log('dealerblackjackcheck', dealerBlackJackCheck)    
-  
+    
+    //blackjack conditions
     if (playerBlackJackCheck == true && dealerBlackJackCheck != true) {
       gameMode = 'Initialize Game'
       return `You got ${outputOfCards(playerCards)}. <br> A BlackJack!!. You Won!`;
@@ -165,7 +168,6 @@ var main = function (input) {
         
         dealerCards.push(cardDeck[0]);
         cardDeck.splice(0, 1);
-
        
         dealerCardsValue = dealerCards.reduce(( sum, dealerCards) => {
           return sum + dealerCards.rank
@@ -184,3 +186,6 @@ var main = function (input) {
     }
 
 };      
+
+//check condition if ace is in array, if yes to define condition (if ace value +11 > 21, ace equal 1,)
+// else if ace value + 11 < 21, change total value of hands to equal either ace+=1 or ace+=11
