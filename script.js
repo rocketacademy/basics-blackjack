@@ -177,12 +177,13 @@ var checkNaturalCondition = function () {
       var currentPlayerScore = calculatePlayerScore(playerList[i]);
       var displayNum = i + 1;
       if (currentPlayerScore == 21) {
-        myString += `Player ${displayNum} wins<br>`; //???
+        myString += `Player ${displayNum} wins<br>`;
         naturalList.push(i);
       } else if (currentPlayerScore != 21) {
         myString += `Player ${displayNum} continues<br>`;
       }
     }
+    // if all players get 21 except the dealer game reset
     if (naturalList.length == playerList.length - 1) {
       gameMode = 0;
     } else {
@@ -208,7 +209,9 @@ var playerGame = function (input) {
   if (input == "h") {
     playerList[playerIndex].push(deck.pop());
     var currentPlayerScore = calculatePlayerScore(playerList[playerIndex]);
-    // ace value placeholder
+    if (currentPlayerScore > 21) {
+      currentPlayerScore = changeAceValue();
+    }
     if (currentPlayerScore > 21) {
       bustList.push(playerIndex);
       myString = `Player ${displayNum} has bust!<br><br>Click the submit button to continue.<br><br>`;
@@ -227,6 +230,28 @@ var playerGame = function (input) {
     myString += displayPlayerCards();
   }
   return myString;
+};
+
+var changeAceValue = function () {
+  var player = playerList[playerIndex];
+  var playerScore = calculatePlayerScore(player);
+  var aceCounter = 0;
+  for (var i = 0; i < player.length; i += 1) {
+    if (player[i].rank == 1 && player[i].value == 11) {
+      aceCounter += 1;
+    }
+  }
+  if (aceCounter > 0) {
+    for (var j = 0; j < player.length; j += 1) {
+      if (playerScore > 21) {
+        if (player[j].rank == 1 && player[j].value == 11) {
+          player[j].value = 1;
+          playerScore = calculatePlayerScore(player);
+        }
+      }
+    }
+  }
+  return playerScore;
 };
 
 var defineNextPlayer = function () {
@@ -255,6 +280,9 @@ var dealerGame = function () {
   while (dealerScore <= 16) {
     dealer.push(deck.pop());
     dealerScore = calculatePlayerScore(dealer);
+    if (dealerScore > 21) {
+      dealerScore = changeAceValue();
+    }
     myString = `Click the submit button to continue.<br><br>Dealer will stand with score of ${dealerScore}.<br><br>`;
   }
   if (dealerScore > 21) {
@@ -483,9 +511,6 @@ var displayPlayerCards = function () {
 };
 
 //////////////////////////////////////
-// Ace logic
-// while bust and ace counter
 
-// plug gap when all win but continue to play dealer
 // plug gap when all bust but continue to play dealer
 // if playerlist.length - 1 == bustlist + naturallist
