@@ -22,10 +22,10 @@ var initialisePlayers = function (playerNum) {
       // if player splits, then another array of cards will be added
       hands: [[]],
       points: [0], // array of points corresponding to hands
+      wager: [0],
       settled: [false], // array denoting whether the hand is settled
       curHand: 0, // set current hand index as 0
       chips: 100,
-      wager: 0,
       buyIn: 100,
     };
   }
@@ -86,6 +86,7 @@ var resetPlayer = function (index) {
   players[index].settled = [false];
   players[index].curHand = 0;
   players[index].points = [0];
+  if (players[index].wager.length > 1) players[index].wager.pop();
 
   // top up a player with 100 chips if he has 0 or less chips
   var count = 0;
@@ -129,7 +130,7 @@ var resetGame = function () {
     wagerSlider.style.display = "block";
     wagerSlider.setAttribute("max", players[i].chips);
     wagerSlider.value =
-      players[i].chips >= players[i].wager ? players[i].wager : 1;
+      players[i].chips >= players[i].wager[0] ? players[i].wager[0] : 1;
     document.getElementById(
       `value-wager-${i}`
     ).innerHTML = `Bet: ${wagerSlider.value}`;
@@ -164,7 +165,7 @@ var settleBlackjacks = function (dealerBlackjack) {
   for (var i = 0; i < players.length; i += 1) {
     if (!dealerBlackjack) {
       if (players[i].points[0] == 21) {
-        var amtWon = Math.round(1.5 * players[i].wager);
+        var amtWon = Math.round(1.5 * players[i].wager[0]);
         players[i].chips += amtWon;
         players[i].settled[0] = true;
         output += `Player ${i + 1} has blackjack and wins ${amtWon} chips!<br>`;
@@ -173,8 +174,8 @@ var settleBlackjacks = function (dealerBlackjack) {
       if (players[i].points[0] == 21) {
         output += `Player ${i + 1} has blackjack. It's a tie!<br>`;
       } else {
-        output += `Player ${i + 1} loses ${players[i].wager} chips.<br>`;
-        players[i].chips -= players[i].wager;
+        output += `Player ${i + 1} loses ${players[i].wager[0]} chips.<br>`;
+        players[i].chips -= players[i].wager[0];
       }
       players[i].settled[0] = true;
     }
@@ -184,6 +185,10 @@ var settleBlackjacks = function (dealerBlackjack) {
 
 // this function is called after a player busts or stands, or after the initial deal
 var findNextPlayer = function () {
+  // show double down and surrender button again
+  doubleDownButton.style.display = "inline-block";
+  surrenderButton.style.display = "inline-block";
+
   if (
     curPlayer != -1 &&
     players[curPlayer].hands.length == 2 &&
@@ -200,10 +205,6 @@ var findNextPlayer = function () {
   }
 
   if (curPlayer == players.length) return compareHandsWithDealer(); // no players left
-
-  // show double down and surrender button again
-  doubleDownButton.style.display = "inline-block";
-  surrenderButton.style.display = "inline-block";
 
   // next player's starting hand is splittable, show the split button
   if (
@@ -228,6 +229,12 @@ var updateTableUI = function () {
     if (win > 0) winLossUI.className = "win-loss-green";
     else if (win < 0) winLossUI.className = "win-loss-red";
     else winLossUI.className = "win-loss";
+
+    if (players[i].wager.length > 1) {
+      document.getElementById(
+        `value-wager-${i}`
+      ).innerHTML = `Bet: ${players[i].wager[0]} | ${players[i].wager[1]}`;
+    }
 
     // update opacity effect for settled hands
     for (var j = 0; j < players[i].hands.length; j += 1) {
@@ -298,7 +305,7 @@ var dealNewHand = function () {
 
   for (var i = 0; i < players.length; i += 1) {
     const playerWager = document.getElementById(`wager-${i}`);
-    players[i].wager = Number(playerWager.value);
+    players[i].wager[0] = Number(playerWager.value);
     playerWager.style.display = "none";
     document.getElementById(`card-container-${i}-1`).style.display = "none";
   }
@@ -350,11 +357,11 @@ var compareHandsWithDealer = function () {
         players[i].settled[j] = true;
 
         if (players[i].points[j] > dealerPoints || dealerPoints > MAX_VALUE) {
-          players[i].chips += players[i].wager;
-          output += ` and wins ${players[i].wager} chips!<br>`;
+          players[i].chips += players[i].wager[j];
+          output += ` and wins ${players[i].wager[j]} chips!<br>`;
         } else if (players[i].points[j] < dealerPoints) {
-          players[i].chips -= players[i].wager;
-          output += ` and loses ${players[i].wager} chips.<br>`;
+          players[i].chips -= players[i].wager[j];
+          output += ` and loses ${players[i].wager[j]} chips.<br>`;
         } else output += `. It's a tie!<br>`;
       }
     }
@@ -366,24 +373,19 @@ var compareHandsWithDealer = function () {
 // this function is called when the hit button is clicked
 var onPlayerHitOrDoubleDown = function (doubledDown = false) {
   var output = "";
-  if (doubledDown) {
-    // double player wager by 2 if this is a double down
-    players[curPlayer].wager *= 2;
-    document.getElementById(
-      `value-wager-${curPlayer}`
-    ).innerHTML = `Bet: ${players[curPlayer].wager}`;
-  }
-
   var handNum = players[curPlayer].curHand;
+
+  // double wager by 2 if this is a double down
+  if (doubledDown) players[curPlayer].wager[handNum] *= 2;
+
   players[curPlayer].hands[handNum].push(deck.pop());
   updateCardsUI();
   if (players[curPlayer].points[handNum] > MAX_VALUE) {
     // if player busts then output msg
-    var amtLost = players[curPlayer].wager;
-    output += `Player ${
-      curPlayer + 1
-    } busts and loses ${amtLost} chips.<br><br>`;
-    players[curPlayer].chips -= amtLost;
+    output += `Player ${curPlayer + 1} busts and loses ${
+      players[curPlayer].wager[handNum]
+    } chips.<br><br>`;
+    players[curPlayer].chips -= players[curPlayer].wager[handNum];
     players[curPlayer].settled[handNum] = true;
 
     if (players.every((p) => p.settled.every((s) => s))) output += resetGame();
@@ -409,7 +411,7 @@ var onPlayerStandOrSurrender = function (surrender = false) {
   if (surrender) {
     // if player surrendered, forfeit half the bet and mark this hand as settled
     var handNum = players[curPlayer].curHand;
-    players[curPlayer].chips -= 0.5 * players[curPlayer].wager;
+    players[curPlayer].chips -= 0.5 * players[curPlayer].wager[handNum];
     players[curPlayer].settled[handNum] = true;
   }
 
@@ -429,6 +431,7 @@ var onPlayerSplit = function () {
 
   players[curPlayer].points.push(0);
   players[curPlayer].settled.push(false);
+  players[curPlayer].wager.push(players[curPlayer].wager[0]);
 
   updateCardsUI();
   updateTableUI();
