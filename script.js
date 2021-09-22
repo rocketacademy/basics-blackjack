@@ -88,9 +88,9 @@ var resetPlayer = function (index) {
   players[index].points = [0];
   if (players[index].wager.length > 1) players[index].wager.pop();
 
-  // top up a player with 100 chips if he has 0 or less chips
+  // top up a player with 100 chips if he has less than 1 chip
   var count = 0;
-  while (players[index].chips <= 0) {
+  while (players[index].chips < 1) {
     players[index].chips += 100;
     players[index].buyIn += 100;
     count += 1;
@@ -165,7 +165,7 @@ var settleBlackjacks = function (dealerBlackjack) {
   for (var i = 0; i < players.length; i += 1) {
     if (!dealerBlackjack) {
       if (players[i].points[0] == 21) {
-        var amtWon = Math.round(1.5 * players[i].wager[0]);
+        var amtWon = 1.5 * players[i].wager[0];
         players[i].chips += amtWon;
         players[i].settled[0] = true;
         output += `Player ${i + 1} has blackjack and wins ${amtWon} chips!<br>`;
