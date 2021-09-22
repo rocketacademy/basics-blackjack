@@ -74,6 +74,7 @@ const hitStandMessage = `<br>Enter 'hit' to draw 1 more card or 'stand' to see r
 var main = function (input) {
   // starts with player's turn
   if (turn == "player") {
+    myOutputValue = `Invalid input. ${hitStandMessage}`;
     // when input is blank, draw 2 cards for player
     if (input == "") {
       var deck = makeDeck();
