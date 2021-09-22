@@ -187,8 +187,11 @@ var settleBlackjacks = function (dealerBlackjack) {
   return output;
 };
 
-// this function is called after a player busts or stands, or after the initial deal
+// this function is called to find the next player, there are 4 cases
 var findNextPlayer = function () {
+  // CASE 1: every player's hand(s) is settled
+  if (players.every((p) => p.settled.every((s) => s))) return resetGame();
+
   // show double down and surrender button again
   doubleDownButton.style.display = "inline-block";
   surrenderButton.style.display = "inline-block";
@@ -198,7 +201,7 @@ var findNextPlayer = function () {
     players[curPlayer].hands.length == 2 &&
     players[curPlayer].curHand == 0
   ) {
-    // current player has 2 hands and we are only on the first hand
+    // CASE 2: current player has 2 hands and we are only on the first hand
     players[curPlayer].curHand += 1;
     return "";
   }
@@ -209,12 +212,14 @@ var findNextPlayer = function () {
     curPlayer += 1;
   }
 
-  if (curPlayer == players.length) return compareHandsWithDealer(); // no players left
+  // CASE 3: no players left to act but some hands are not settled
+  if (curPlayer == players.length) return compareHandsWithDealer();
 
-  // next player's starting hand is splittable, show the split button
+  // CASE 4: new player's turn
   if (
     players[curPlayer].hands[0][0].name == players[curPlayer].hands[0][1].name
   ) {
+    // next player's starting hand is splittable, show the split button
     splitButton.style.display = "inline-block";
   } else {
     splitButton.style.display = "none";
@@ -235,37 +240,39 @@ var updateTableUI = function () {
     else if (win < 0) winLossUI.className = "win-loss-red";
     else winLossUI.className = "win-loss";
 
-    // update bet label
-    var betLabel = `Bet: ${players[i].wager[0]}`;
-    if (players[i].wager.length > 1) betLabel += ` | ${players[i].wager[1]}`;
-    document.getElementById(`value-wager-${i}`).innerHTML = betLabel;
+    if (handInProgress) {
+      // update bet label
+      var betLabel = `Bet: ${players[i].wager[0]}`;
+      if (players[i].wager.length > 1) betLabel += ` | ${players[i].wager[1]}`;
+      document.getElementById(`value-wager-${i}`).innerHTML = betLabel;
 
-    // update opacity effect for settled hands
-    for (var j = 0; j < players[i].hands.length; j += 1) {
-      var container = document.getElementById(`card-container-${i}-${j}`);
-      if (players[i].settled[j]) container.style.opacity = 0.5;
-    }
-
-    // if all the player's hands are settled, update the player opacity
-    const playerUI = document.getElementById(`player-${i}`);
-    if (players[i].settled.every((s) => s)) playerUI.style.opacity = 0.5;
-
-    // set border around active player (and active hand if split hand)
-    if (handInProgress && i == curPlayer) {
-      playerUI.style.border = "solid 1px black";
-      if (players[i].hands.length == 2) {
-        for (var j = 0; j < players[i].hands.length; j += 1) {
-          var container = document.getElementById(`card-container-${i}-${j}`);
-          if (j == players[i].curHand)
-            container.style.border = "solid 1px black";
-          else container.style.border = "none";
-        }
-      }
-    } else {
-      playerUI.style.border = "none";
+      // update opacity effect for settled hands
       for (var j = 0; j < players[i].hands.length; j += 1) {
-        document.getElementById(`card-container-${i}-${j}`).style.border =
-          "none";
+        var container = document.getElementById(`card-container-${i}-${j}`);
+        if (players[i].settled[j]) container.style.opacity = 0.5;
+      }
+
+      // if all the player's hands are settled, update the player opacity
+      const playerUI = document.getElementById(`player-${i}`);
+      if (players[i].settled.every((s) => s)) playerUI.style.opacity = 0.5;
+
+      // set border around active player (and active hand if split hand)
+      if (i == curPlayer) {
+        playerUI.style.border = "solid 1px black";
+        if (players[i].hands.length == 2) {
+          for (var j = 0; j < players[i].hands.length; j += 1) {
+            var container = document.getElementById(`card-container-${i}-${j}`);
+            if (j == players[i].curHand)
+              container.style.border = "solid 1px black";
+            else container.style.border = "none";
+          }
+        }
+      } else {
+        playerUI.style.border = "none";
+        for (var j = 0; j < players[i].hands.length; j += 1) {
+          document.getElementById(`card-container-${i}-${j}`).style.border =
+            "none";
+        }
       }
     }
   }
@@ -325,19 +332,17 @@ var dealNewHand = function () {
   var dealerBlackjack = calculatePoints(dealerCards) == 21;
   updateCardsUI(dealerBlackjack);
   output += settleBlackjacks(dealerBlackjack); // settle blackjacks first
+  output += findNextPlayer();
 
-  if (players.every((p) => p.settled[0])) {
-    // if players are all settled then hand is over
-    output += resetGame();
-  } else {
-    // otherwise show the action buttons to continue gameplay
-    output += findNextPlayer();
+  if (handInProgress) {
+    // handinprogress will be false here if all players have blackjack and the hand is over
     newHandButton.style.display = "none";
     hitButton.style.display = "inline-block";
     standButton.style.display = "inline-block";
     doubleDownButton.style.display = "inline-block";
     surrenderButton.style.display = "inline-block";
   }
+
   updateTableUI();
   return output;
 };
@@ -374,7 +379,7 @@ var compareHandsWithDealer = function () {
   return output;
 };
 
-// this function is called when the hit button is clicked
+// this function is called when the hit or double down button is clicked
 var onPlayerHitOrDoubleDown = function (doubledDown = false) {
   var output = "";
   var handNum = players[curPlayer].curHand;
@@ -395,8 +400,7 @@ var onPlayerHitOrDoubleDown = function (doubledDown = false) {
     players[curPlayer].chips -= players[curPlayer].wager[handNum];
     players[curPlayer].settled[handNum] = true;
 
-    if (players.every((p) => p.settled.every((s) => s))) output += resetGame();
-    else output += findNextPlayer();
+    output += findNextPlayer();
   } else {
     // if player didnt bust
     splitButton.style.display = "none";
@@ -414,16 +418,8 @@ var onPlayerHitOrDoubleDown = function (doubledDown = false) {
 };
 
 // this function is called when the stand button is clicked
-var onPlayerStandOrSurrender = function (surrender = false) {
-  var output = "";
-  if (surrender) {
-    // if player surrendered, forfeit half the bet and mark this hand as settled
-    var handNum = players[curPlayer].curHand;
-    players[curPlayer].chips -= 0.5 * players[curPlayer].wager[handNum];
-    players[curPlayer].settled[handNum] = true;
-    output += `Player ${curPlayer + 1} surrenders.<br><br>`;
-  } else output += `Player ${curPlayer + 1} stands.<br><br>`;
-
+var onPlayerStand = function () {
+  var output = `Player ${curPlayer + 1} stands.<br><br>`;
   output += findNextPlayer();
   updateTableUI();
   return output;
@@ -450,4 +446,23 @@ var onPlayerSplit = function () {
     "block";
   splitButton.style.display = "none";
   return `Player ${curPlayer + 1} splits.`;
+};
+
+// this function is called when the surrender button is clicked
+var onPlayerSurrender = function () {
+  var output = "";
+
+  // forfeit half the bet and mark this hand as settled
+  var handNum = players[curPlayer].curHand;
+  var amtLost = 0.5 * players[curPlayer].wager[handNum];
+  players[curPlayer].chips -= amtLost;
+  players[curPlayer].settled[handNum] = true;
+  output += `Player ${
+    curPlayer + 1
+  } surrenders and loses ${amtLost} chips.<br><br>`;
+
+  output += findNextPlayer();
+
+  updateTableUI();
+  return output;
 };
