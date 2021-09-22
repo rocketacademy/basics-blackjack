@@ -25,6 +25,7 @@ var main = function (input) {
     myOutputValue = dealerGame();
   } else if (gameMode == 6) {
     myOutputValue = checkWinningCondition();
+    resetGame();
   } else if (gameMode == 7) {
     myOutputValue = resetGame();
   }
@@ -279,6 +280,9 @@ var checkDealerOrPlayerTurn = function () {
 var dealerGame = function () {
   var dealer = playerList[playerList.length - 1];
   var dealerScore = calculatePlayerScore(dealer);
+  if (dealerScore > 21) {
+    dealerScore = changeAceValue();
+  }
   var myString = `Click the submit button to continue.<br><br>Dealer will stand with score of ${dealerScore}.<br><br>`;
   while (dealerScore <= 16) {
     dealer.push(deck.pop());
@@ -512,8 +516,3 @@ var displayPlayerCards = function () {
   myString += "</div><br>";
   return myString;
 };
-
-//////////////////////////////////////
-
-// plug gap when all bust but continue to play dealer
-// if playerlist.length - 1 == bustlist + naturallist
