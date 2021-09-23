@@ -256,6 +256,7 @@ var main = function (input) {
 
     return outputString;
   }
+  //test
 
   if (gameState == "com") {
     if (doesComHit()) {
