@@ -209,7 +209,7 @@ var main = function (input) {
     firstCheckResult = checkTwentyOne(playerHand[0].rank, playerHand[1].rank);
     //If player's hand adds up to 21, immediate win for player. Else change game mode to hit or stand.
     if (firstCheckResult == 1) {
-      return `You won! ${myOutputValue} These add up to 21.`;
+      return `You won! ${myOutputValue} These add up to 21. Refresh the page to play again.`;
     } else if (firstCheckResult == -1) {
       gameMode = "hitOrStand";
       return `${myOutputValue} These do not add up to 21. Type "h" to hit and "s" to stand. Just so you know, the dealer's 1st card is ${dealerHand[0].name} of ${dealerHand[0].suit}.`;
