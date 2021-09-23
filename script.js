@@ -1,3 +1,4 @@
+// Declaration of variables
 var playerArray = [];
 var computerArray = [];
 var playerValue = 0;
@@ -71,7 +72,7 @@ var deck = [
   {
     name: "ace",
     suit: "diamonds",
-    rank: 1,
+    rank: 11,
   },
   {
     name: "2",
@@ -136,7 +137,7 @@ var deck = [
   {
     name: "ace",
     suit: "clubs",
-    rank: 1,
+    rank: 11,
   },
   {
     name: "2",
@@ -201,7 +202,7 @@ var deck = [
   {
     name: "ace",
     suit: "spades",
-    rank: 1,
+    rank: 11,
   },
   {
     name: "2",
@@ -292,18 +293,34 @@ var END = "end";
 var RESET = "reset";
 gameMode = DEALCARDS;
 
+// Declaration of functions
+var resetValues = function () {
+  playerArray = [];
+  computerArray = [];
+  playerValue = 0;
+  computerValue = 0;
+};
+
+var add2Cards = function (deck) {
+  playerArray.push(deck.pop());
+  playerArray.push(deck.pop());
+  computerArray.push(deck.pop());
+  computerArray.push(deck.pop());
+};
+
+//Main function
 var main = function (input) {
   console.log(gameMode);
   var myOutputValue = "";
+  if (gameMode == DEALCARDS) {
+    // *Player returns cards to deck - reset playerValue, playerArray, computerValue & computerArray
+    resetValues();
 
-  if (gameMode == "dealCards") {
     // 1. Deck is shuffled.
     shuffleCards(deck);
+
     // 2. User clicks Submit to deal cards.
-    playerArray.push(deck.pop());
-    playerArray.push(deck.pop());
-    computerArray.push(deck.pop());
-    computerArray.push(deck.pop());
+    add2Cards(deck);
 
     // Cards are summed up to get playerValue and computerValue
     for (i = 0; i < playerArray.length; i++) {
@@ -347,6 +364,7 @@ var main = function (input) {
       <br/>`;
       if (playerValue > 21) {
         myOutputValue = myOutputValue + "You lost!";
+        gameMode = RESET;
       } else {
         myOutputValue =
           myOutputValue +
@@ -360,11 +378,11 @@ var main = function (input) {
       } else if (playerValue > 21) {
         myOutputValue = `You lost! Your hand: ${playerValue}.`;
       } else {
-        myOutputValue = "Hit 'Submit' again to see the results!";
         gameMode = END;
       }
     }
-  } else if (gameMode == END) {
+  }
+  if (gameMode == END) {
     while (computerValue < 17) {
       computerArray.push(deck.pop());
       computerValue += computerArray[computerArray.length - 1].rank;
@@ -384,8 +402,11 @@ var main = function (input) {
         gameMode = RESET;
       }
     }
-  } else if (gameMode == RESET) {
-    myOutputValue = "Click 'Submit' to play again!";
+  }
+
+  if (gameMode == RESET) {
+    myOutputValue = myOutputValue + "<br/>Click 'Submit' to play again!";
+    gameMode = DEALCARDS;
   }
   return myOutputValue;
 };
