@@ -284,7 +284,7 @@ var winningCondition = function () {
 var nextTurn = function () {
   if (points < 10) {
     gameMode = `no points`;
-    return `<img src="https://media.giphy.com/media/KINAUcarXNxWE/giphy.gif?cid=ecf05e47s0fxtu6iwzpb8kebm4qakrjjoztruad4mi0yvyle&rid=giphy.gif&ct=g" class="center"></img><br>❗️ You have <b>${points}</b> points ❗️<br>Insufficient points to continue playing <br><br><hr><br><div id="instructions">Press restart to end game.</div>`;
+    return `<img src="https://media.giphy.com/media/KINAUcarXNxWE/giphy.gif?cid=ecf05e47s0fxtu6iwzpb8kebm4qakrjjoztruad4mi0yvyle&rid=giphy.gif&ct=g" class="center"></img><br>❗️ You have <b>${points}</b> points ❗️<br>Insufficient points to continue playing <br><br><div id="instructions">Press restart to end game.</div>`;
   } else {
     gameMode = `deal cards`;
     //Current player and dealer hand
