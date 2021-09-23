@@ -1,3 +1,8 @@
+var myWinningImage =
+  '<img src="https://c.tenor.com/VExHMtIttBEAAAAC/money-make-it-rain.gif"/>';
+var myLosingImage =
+  '<img src="https://c.tenor.com/8JAUqjB08EoAAAAC/homer-simpson-revenge.gif"/>';
+
 // global array to store cards
 var playerHand = [];
 var computerHand = [];
@@ -16,7 +21,23 @@ var makeDeck = function () {
   // Initialise an empty deck array
   var cardDeck = [];
   // Initialise an array of the 4 suits in our deck. We will loop over this array.
-  var suits = ["hearts", "diamonds", "clubs", "spades"];
+  var suits = ["♥️", "♦️", "♣️", "♣️"];
+
+  var emojiNames = {
+    1: "A",
+    2: "2️⃣",
+    3: "3️⃣",
+    4: "4️⃣",
+    5: "5️⃣",
+    6: "6️⃣",
+    7: "7️⃣",
+    8: "8️⃣",
+    9: "9️⃣",
+    10: "🔟",
+    11: "🕺🏽",
+    12: "👸🏽",
+    13: "🤴🏽",
+  };
 
   // Loop over the suits array
   var suitIndex = 0;
@@ -49,12 +70,15 @@ var makeDeck = function () {
         cardValue = 10;
       }
 
+      var emojiName = emojiNames[rankCounter];
+
       // Create a new card with the current name, suit, and rank
       var card = {
         name: cardName,
         suit: currentSuit,
         rank: rankValue,
         value: cardValue,
+        emojiName: emojiName,
       };
 
       // Add the new card to the deck
@@ -145,7 +169,7 @@ var printCardArray = function (cardArray) {
   var cardNames = ``;
   var arrayIndexLoopCounter = 0;
   while (arrayIndexLoopCounter < cardArray.length) {
-    var singleCardName = `<br> ${cardArray[arrayIndexLoopCounter].name} ${cardArray[arrayIndexLoopCounter].suit}`;
+    var singleCardName = `<br> ${cardArray[arrayIndexLoopCounter].emojiName} ${cardArray[arrayIndexLoopCounter].suit}`;
     cardNames += singleCardName;
     arrayIndexLoopCounter += 1;
   }
@@ -181,7 +205,7 @@ var main = function (input) {
     // evaluate player and computer hands
     if (playerCardValue == 21 && computerCardvalue != 21) {
       gameOver = true;
-      return `WOO HOO! YOU WIN WITH 21! <br><br> Player hand <br> 
+      return `${myWinningImage} <br><br> WOO HOO! YOU WIN WITH 21! <br><br> Player hand <br> 
       ${printCardArray(
         playerHand
       )} <br><br> Computer hand: <br> ${printCardArray(computerHand)}`;
@@ -228,7 +252,7 @@ var main = function (input) {
 
     if (playerCardValue > 21) {
       gameOver = true;
-      return `Sorry you busted! You lose! <br><br> Player hand: <br> ${printCardArray(
+      return `${myLosingImage} <br><br> Sorry you busted! You lose! <br><br> Player hand: <br> ${printCardArray(
         playerHand
       )} <br><br> Computer hand: <br> ${printCardArray(
         computerHand
@@ -237,7 +261,7 @@ var main = function (input) {
 
     if (playerCardValue == 21 && computerCardvalue != 21) {
       gameOver = true;
-      return `WOO HOO! YOU WIN WITH 21! <br><br> Player hand <br> 
+      return `${myWinningImage} <br><br> WOO HOO! YOU WIN WITH 21! <br><br> Player hand <br> 
       ${printCardArray(
         playerHand
       )} <br><br> Computer hand: <br> ${printCardArray(
@@ -266,7 +290,7 @@ var main = function (input) {
 
     if (computerCardValue > 21) {
       gameOver = true;
-      return `You win! Computer busted! <br><br> Player hand: <br> ${printCardArray(
+      return `${myWinningImage} <br><br> You win! Computer busted! <br><br> Player hand: <br> ${printCardArray(
         playerHand
       )} <br><br> Computer hand: <br> ${printCardArray(
         computerHand
@@ -275,7 +299,7 @@ var main = function (input) {
 
     if (computerCardValue > playerCardValue) {
       gameOver = true;
-      return `You lose! <br><br> Player hand: <br> ${printCardArray(
+      return `${myLosingImage} <br><br> You lose! <br><br> Player hand: <br> ${printCardArray(
         playerHand
       )} <br><br> Computer hand: <br> ${printCardArray(
         computerHand
@@ -284,7 +308,7 @@ var main = function (input) {
 
     if (computerCardValue == 21) {
       gameOver = true;
-      return `You lose! Computer wins with 21! <br><br> Player hand: <br> ${printCardArray(
+      return `${myLosingImage} <br><br> You lose! Computer wins with 21! <br><br> Player hand: <br> ${printCardArray(
         playerHand
       )} <br><br> Computer hand: <br> ${printCardArray(
         computerHand
@@ -293,7 +317,7 @@ var main = function (input) {
 
     if (playerCardValue > computerCardValue) {
       gameOver = true;
-      return `You win! <br><br> Player hand: <br> ${printCardArray(
+      return `${myWinningImage} <br><br> You win! <br><br> Player hand: <br> ${printCardArray(
         playerHand
       )} <br><br> Computer hand: <br> ${printCardArray(
         computerHand
