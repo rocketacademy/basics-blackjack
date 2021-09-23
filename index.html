@@ -233,7 +233,7 @@
 
       //Hit event listener
       hit.addEventListener("click", function () {
-        generateHitCard();
+        generateHitCard(playerHand);
         var result = main();
         output.innerHTML = result;
       });
