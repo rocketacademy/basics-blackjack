@@ -275,5 +275,14 @@ var main = function (input) {
         computerHand
       )}  <br><br> Click SUBMIT to continue.`;
     }
+
+    if (playerCardValue == computerCardValue) {
+      gameOver = true;
+      return `It is a draw! <br><br> Player hand: <br> ${printCardArray(
+        playerHand
+      )} <br><br> Computer hand: <br> ${printCardArray(
+        computerHand
+      )}  <br><br> Click SUBMIT to continue.`;
+    }
   }
 };
