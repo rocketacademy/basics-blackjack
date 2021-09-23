@@ -164,8 +164,8 @@
             The players and dealer will be dealt two cards. All players will
             receive their hands face-up. The dealer will receive the first card
             face up and the second card face down. The dealer peeks at the
-            second card but only reveals it if it makes the dealer's hand a
-            blackjack.
+            second card if the first card is an ace or ten-value card but only
+            reveals it if it makes the dealer's hand a blackjack.
           </p>
 
           <p><b>If the dealer has blackjack:</b></p>
@@ -200,21 +200,21 @@
                   with the next player.
                 </li>
                 <li>
-                  <b>Split</b>. This option is only available when the player
-                  has two cards and if the starting two cards have the same
+                  <b>Split</b>. This option is only available when the player's
+                  hand has two cards and if the starting two cards have the same
                   rank. The two cards will be separated into two hands and one
                   card each will be dealt to them. Play proceeds as normal.
                   Further rules on splitting below.
                 </li>
                 <li>
                   <b>Double down</b>. The player doubles their bet, and receives
-                  a single card. This option is only available when the player
-                  has two cards.
+                  a single card. This option is only available when the player's
+                  hand has two cards.
                 </li>
                 <li>
                   <b>Surrender</b>. The player gives up half their bet and
                   forfeits their hand. This option is only available when the
-                  player has two cards.
+                  player's hand has two cards.
                 </li>
               </ol>
             </li>
@@ -225,12 +225,12 @@
             </li>
             <li>
               Once all players have finished their turn, the dealer reveals his
-              face down card and draws cards if needed until the hand achieves a
-              total of 17 or higher. The dealer never doubles, splits, or
-              surrenders. If the dealer busts, all remaining player hands win.
-              If the dealer does not bust, each remaining bet wins if its hand
-              is higher than the dealer's, loses if it is lower, and ties if it
-              is the same.
+              face down card. If there are still remaining players, the dealer
+              draws cards if needed until the hand achieves a total of 17 or
+              higher. The dealer never doubles, splits, or surrenders. If the
+              dealer busts, all remaining player hands win. If the dealer does
+              not bust, each remaining bet wins if its hand is higher than the
+              dealer's, loses if it is lower, and ties if it is the same.
             </li>
             <li>
               The hand is over, and players can place their bets again for the
@@ -246,7 +246,7 @@
               A ten-value card dealt on a split ace (or vice versa) will not be
               counted as a blackjack, but simply as 21 points.
             </li>
-            <li>Double down after split allowed.</li>
+            <li>Double down and surrender after split allowed.</li>
           </ul>
         </div>
       </div>
