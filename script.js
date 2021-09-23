@@ -110,8 +110,8 @@ var main = function (input) {
       playerMode += 1;
       playerOneDeck.push(` ${playerOneHand[0].name} ${playerOneHand[0].suit}`);
       playerTwoDeck.push(` ${playerTwoHand[0].name} ${playerTwoHand[0].suit}`);
-      return `Your current score is ${playerOneScore} while the dealer's score is ${playerTwoScore}. <br>The card you have drawn is: (${playerOneDeck}).
-      <br>The card the dealer has drawn is:(${playerTwoDeck}).
+      return `Your current score is ${playerOneScore} while the dealer's score is ${playerTwoScore}. <br>The card you have drawn is: ${playerOneDeck}.
+      <br>The card the dealer has drawn is:${playerTwoDeck}.
       <br><br>Click 'submit' again for a faced down card.`;
     }
 
@@ -129,7 +129,7 @@ var main = function (input) {
       if (playerOneScore == 21) {
         gameMode = 3;
         return ` You have Won!!<br>
-        Your current score is ${playerOneScore}. <br>The cards you have drawn, in order of rounds, are: (${playerOneDeck}). 
+        Your current score is ${playerOneScore}. <br>The cards you have drawn, in order of rounds, are: ${playerOneDeck}. 
         <br> The dealer's current score is ${playerTwoScore}.
         <br>The cards the dealer drawn were ${playerTwoDeck}.
         <br><br>Refresh the page to start again`;
@@ -137,12 +137,12 @@ var main = function (input) {
       if (playerTwoScore == 21 || playerOneScore > 21) {
         gameMode = 4;
         return `You have bust!!<br>
-        Your current score is ${playerOneScore}. <br>The cards you have drawn, in order of rounds, are: (${playerOneDeck}). 
+        Your current score is ${playerOneScore}. <br>The cards you have drawn, in order of rounds, are: ${playerOneDeck}. 
         <br> The dealer's current score is ${playerTwoScore}.
         <br>The cards the dealer drawn were ${playerTwoDeck}.
         <br><br>Refresh the page to start again`;
       }
-      return `Your current score is ${playerOneScore} while the computer's score is a secret now... <br>The cards you have drawn, in order of rounds, are: (${playerOneDeck}). 
+      return `Your current score is ${playerOneScore} while the computer's score is a secret now... <br>The cards you have drawn, in order of rounds, are: ${playerOneDeck}. 
       <br>The only known card the dealer has drawn is ${playerTwoHand[0].name} ${playerTwoHand[0].suit}. The other is unknown.
       <br><br>Type 'h' if you want to hit or 's' if you want to stand.`;
     }
@@ -164,7 +164,7 @@ var main = function (input) {
         gameMode = 3;
         return ` You have Won!!<br>
         Your current score is ${playerOneScore}. 
-        <br>The cards you have drawn, in order of rounds, are: (${playerOneDeck}). 
+        <br>The cards you have drawn, in order of rounds, are: ${playerOneDeck}. 
         <br> The dealer's current score is ${playerTwoScore}.
         <br>The cards the dealer drawn were ${playerTwoDeck}.
         <br><br>Refresh the page to start again`;
@@ -173,18 +173,19 @@ var main = function (input) {
         gameMode = 4;
         return `You have bust!!<br>
         Your current score is ${playerOneScore}. 
-        <br>The cards you have drawn, in order of rounds, are: (${playerOneDeck}). 
-        <br>The only known card the dealer has drawn is ${playerTwoHand[0].name} ${playerTwoHand[0].suit}. The other is unknown.
+        <br>The cards you have drawn, in order of rounds, are: ${playerOneDeck}. 
+        <br> The dealer's current score is ${playerTwoScore}.
+        <br>The cards the dealer drawn were ${playerTwoDeck}.
         <br><br>Refresh the page to start again`;
       }
-      return `Your current score is ${playerOneScore} while the dealer's score is still a secret... <br>The cards you have drawn, in order of rounds, are: (${playerOneDeck}). 
+      return `Your current score is ${playerOneScore} while the dealer's score is still a secret... <br>The cards you have drawn, in order of rounds, are: ${playerOneDeck}. 
       <br>The only known card the dealer has drawn is ${playerTwoHand[0].name} ${playerTwoHand[0].suit}. The other is unknown.
       <br><br>Type 'h' if you want to hit or 's' if you want to stand.`;
     }
     if (playerMode == 2 && input == "s") {
       gameMode = 2;
       return `Your final score is ${playerOneScore}. 
-      <br>The cards you have drawn, in order of rounds, are: (${playerOneDeck}). 
+      <br>The cards you have drawn, in order of rounds, are: ${playerOneDeck}. 
       <br>The only known card the dealer has drawn is ${playerTwoHand[0].name} ${playerTwoHand[0].suit}. The other is unknown.
       <br><br>The dealer will now reveal his face down card and then decide whether to hit or stand. Click 'submit'.`;
     }
@@ -195,7 +196,7 @@ var main = function (input) {
       dealerMode += 1;
       if (playerTwoScore < 17) {
         return `Your final score is ${playerOneScore}. 
-      <br>The cards you have drawn, in order of rounds, are: (${playerOneDeck}).
+      <br>The cards you have drawn, in order of rounds, are: ${playerOneDeck}.
       <br> The dealer's current score is ${playerTwoScore}.
       <br>The cards the dealer drawn were ${playerTwoDeck}.
       <br> Since the dealer's score is below 17, the dealer must hit. Click 'submit'.`;
@@ -206,7 +207,7 @@ var main = function (input) {
       ) {
         gameMode = 4;
         return `You have Lost!!<br>
-          Your final score is ${playerOneScore}. <br>The cards you have drawn, in order of rounds, are: (${playerOneDeck}). 
+          Your final score is ${playerOneScore}. <br>The cards you have drawn, in order of rounds, are: ${playerOneDeck}. 
           <br>The dealer's current score is ${playerTwoScore}.
           <br>The cards the dealer drawn were ${playerTwoDeck}.
           <br><br>Refresh the page to start again`;
@@ -215,7 +216,7 @@ var main = function (input) {
       if (playerTwoScore < playerOneScore || playerTwoScore > 21) {
         gameMode = 3;
         return ` You have Won!!<br>
-          Your final score is ${playerOneScore}. <br>The cards you have drawn, in order of rounds, are: (${playerOneDeck}).
+          Your final score is ${playerOneScore}. <br>The cards you have drawn, in order of rounds, are: ${playerOneDeck}.
           <br>The dealer's current score is ${playerTwoScore}.
           <br>The cards the dealer drawn were ${playerTwoDeck}.
           <br><br>Refresh the page to start again`;
@@ -224,13 +225,13 @@ var main = function (input) {
       if (playerTwoScore == playerOneScore) {
         gameMode = 5;
         return `It's a draw!!<br>
-          Your final score is ${playerOneScore}. <br>The cards you have drawn, in order of rounds, are: (${playerOneDeck}).
+          Your final score is ${playerOneScore}. <br>The cards you have drawn, in order of rounds, are: ${playerOneDeck}.
           <br>The dealer's current score is ${playerTwoScore}.
           <br>The cards the dealer drawn were ${playerTwoDeck}.
           <br><br>Refresh the page to start again`;
       }
       return `Your final score is ${playerOneScore}. 
-      <br>The cards you have drawn, in order of rounds, are: (${playerOneDeck}).
+      <br>The cards you have drawn, in order of rounds, are: ${playerOneDeck}.
       <br> The dealer's current score is ${playerTwoScore}.
       <br>The cards the dealer drawn were ${playerTwoDeck}.
       <br> The dealer will now decide to hit or stand... 
@@ -257,7 +258,7 @@ var main = function (input) {
         ) {
           gameMode = 4;
           return `You have Lost!!<br>
-          Your final score is ${playerOneScore}. <br>The cards you have drawn, in order of rounds, are: (${playerOneDeck}). 
+          Your final score is ${playerOneScore}. <br>The cards you have drawn, in order of rounds, are: ${playerOneDeck}. 
           <br>The dealer's current score is ${playerTwoScore}.
           <br>The cards the dealer drawn were ${playerTwoDeck}.
           <br><br>Refresh the page to start again`;
@@ -268,7 +269,7 @@ var main = function (input) {
         ) {
           gameMode = 3;
           return ` You have Won!!<br>
-          Your final score is ${playerOneScore}. <br>The cards you have drawn, in order of rounds, are: (${playerOneDeck}).
+          Your final score is ${playerOneScore}. <br>The cards you have drawn, in order of rounds, are: ${playerOneDeck}.
           <br>The dealer's current score is ${playerTwoScore}.
           <br>The cards the dealer drawn were ${playerTwoDeck}.
           <br><br>Refresh the page to start again`;
@@ -276,14 +277,14 @@ var main = function (input) {
         if (playerTwoScore == playerOneScore) {
           gameMode = 5;
           return `It's a draw!!<br>
-          Your final score is ${playerOneScore}. <br>The cards you have drawn, in order of rounds, are: (${playerOneDeck}).
+          Your final score is ${playerOneScore}. <br>The cards you have drawn, in order of rounds, are: ${playerOneDeck}.
           <br>The dealer's current score is ${playerTwoScore}.
           <br>The cards the dealer drawn were ${playerTwoDeck}.
           <br><br>Refresh the page to start again`;
         }
 
         return `Your final score is ${playerOneScore}. 
-        <br>The cards you have drawn, in order of rounds, are: (${playerOneDeck}).
+        <br>The cards you have drawn, in order of rounds, are: ${playerOneDeck}.
         <br> The dealer's current score is ${playerTwoScore}.
         <br>The cards the dealer drawn were ${playerTwoDeck}.
         <br>Since the dealer's score is below 17, the dealer must hit. Click 'submit' again. 
@@ -293,7 +294,7 @@ var main = function (input) {
   }
   if (gameMode == 3) {
     return ` You have Won!!<br>
-    Your final score is ${playerOneScore}. <br>The cards you have drawn, in order of rounds, are: (${playerOneDeck}).
+    Your final score is ${playerOneScore}. <br>The cards you have drawn, in order of rounds, are: ${playerOneDeck}.
     <br>The dealer's final score is ${playerTwoScore}.
     <br>The cards the dealer drawn were ${playerTwoDeck}.
     <br><br>Refresh the page to start again`;
@@ -301,7 +302,7 @@ var main = function (input) {
 
   if (gameMode == 4) {
     return `You have Lost!!<br>
-    Your final score is ${playerOneScore}. <br>The cards you have drawn, in order of rounds, are: (${playerOneDeck}). 
+    Your final score is ${playerOneScore}. <br>The cards you have drawn, in order of rounds, are: ${playerOneDeck}. 
     <br>The dealer's final score is ${playerTwoScore}.
     <br>The cards the dealer drawn were ${playerTwoDeck}.
     <br><br>Refresh the page to start again`;
@@ -309,7 +310,7 @@ var main = function (input) {
 
   if (gameMode == 5) {
     return `It's a draw!!<br>
-    Your final score is ${playerOneScore}. <br>The cards you have drawn, in order of rounds, are: (${playerOneDeck}). 
+    Your final score is ${playerOneScore}. <br>The cards you have drawn, in order of rounds, are: ${playerOneDeck}. 
     <br>The dealer's final score is ${playerTwoScore}.
     <br>The cards the dealer drawn were ${playerTwoDeck}.
     <br><br>Refresh the page to start again`;
