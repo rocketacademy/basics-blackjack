@@ -23,20 +23,20 @@
     <!-- Primary Meta Tags -->
     <title>Blackjack Base - Basics - Rocket Academy</title>
     <meta name="title" content="Mia's BlackJack Game!">
-    <meta name="description" content="A fun card game I made! 😄💪🌈">
+    <meta name="description" content="Let's play Blackjack! 😁🃏🌠">
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://rocketacademy.github.io/basics-blackjack/index.html">
     <meta property="og:title" content="Mia's BlackJack Game!">
-    <meta property="og:description" content="A fun card game I made! 😄💪🌈">
+    <meta property="og:description" content="Let's play Blackjack! 😁🃏🌠">
     <meta property="og:image" content="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/basics/basics-blackjack-share-small.jpeg">
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="https://rocketacademy.github.io/basics-blackjack/index.html">
     <meta name="twitter:title" content="Mia's BlackJack Game!">
-    <meta name="twitter:description" content="A fun card game I made! 😄💪🌈">
+    <meta name="twitter:description" content="Let's play Blackjack! 😁🃏🌠">
     <meta name="twitter:image" content="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/basics/basics-blackjack-share-small.jpeg">
     <meta name="twitter:site" content="@rocketacademyco">
     <meta name="twitter:creator" content="@rocketacademyco">
@@ -56,7 +56,7 @@
         margin-right: 30px;
         background-color:white;
         color: rgb(13, 20, 87); /* sets the font color */
-        background-image: url(""); /* The image used */
+        background-image: url("cool-background.png"); /* The image used */
         background-position: center; /* Center the image */
         background-repeat: no-repeat; /* Do not repeat the image */
         background-size: cover; /* Resize the background image to cover the entire container */
@@ -74,7 +74,7 @@
       }
 
       #container {
-        background-color: rgb(255, 195, 31);
+        background-color: rgb(252, 177, 106);
         margin: 40px auto;
         max-width: 800px;
         padding: 38px 31px;
@@ -108,6 +108,10 @@
         top: 22px;
       }
 
+      .animated-gif {
+        width: 120px;
+        height: auto;
+      }
       /* increase header font size on wider screens */
       @media screen and (min-width: 600px) {
         .header {
@@ -131,7 +135,8 @@
       <br />
       <button id="submit-button">Submit</button>
       <p>Output:</p>
-      <div id="output-div">Welcome to Mia's Base Blackjack! Click the submit button to get started!</div>
+      <div id="output-div">Welcome to Mia's Blackjack! Click the submit button to get started!</div>
+      <img class="animated-gif" img src="letsplay.gif">
     </div>
     <!-- Import program logic -->
     <script src="script.js"></script>

@@ -150,11 +150,11 @@ if (mode == MODE_DEAL_CARDS) {
   dealCard(deck);
   playerHandSum = getHandSum(playerHand);
   computerHandSum = getHandSum(computerHand);
-  var myOutputValue = `Your cards are ${playerHand[0].name}, ${playerHand[1].name} with a total of ${playerHandSum} and first computer card is ${computerHand[0].name}. <br><br> Do you want to Hit or Stand? Type your answer and Submit`;
+  var myOutputValue = `Your cards are ${playerHand[0].name} of ${playerHand[0].suit}, ${playerHand[1].name} of ${playerHand[1].suit} with a total of ${playerHandSum} <p> first computer card is ${computerHand[0].name} of ${computerHand[0].suit}. <br><br> Do you want to Hit or Stand? Type 'h' or 's' and Submit`;
   mode = MODE_HIT_OR_STAND;
 // If Hit, deal another card to player and check player hand sum
 } else if (mode == MODE_HIT_OR_STAND){
-  if (input == 'hit'){
+  if (input == 'h'){
     playerHand.push(deck.pop());
     playerHandSum = getHandSum(playerHand);
         console.log(playerHandSum)
@@ -169,9 +169,9 @@ if (mode == MODE_DEAL_CARDS) {
     } else if (playerHandSum > blackjackLimit){
       myOutputValue = `Your card total is ${playerHandSum}. Game over!`;
     }
-// If player chooses to Stand, check computer Hand.
+// If player chooses to Stand, check computer hand.
 // If less than 17, draw another card.
-  } else if (input == 'stand'){
+  } else if (input == 's'){
     for(var y = 0; y<= computerHand.length; y+=1){
 
       if (computerHandSum <= computerStandLimit){
@@ -192,8 +192,18 @@ if (mode == MODE_DEAL_CARDS) {
         myOutputValue = `Your cards are ${printCardsInHand(playerHand)} with a total of ${playerHandSum}.<br><br> Computer's cards are ${printCardsInHand(computerHand)} with a total of ${computerHandSum}. <br><br> Boo, Computer wins :( <p> Refresh the page to restart the game`;
       };
     }
-    }
+// If case of draw
+    } if (computerHandSum = playerHandSum){
+      myOutputValue = `Your cards are ${printCardsInHand(playerHand)} with a total of ${playerHandSum}.<br><br> Computer's cards are ${printCardsInHand(computerHand)} with a total of ${computerHandSum}. <p>It's a draw! <p> Refresh the page to restart the game`
+    }  
+// If computer hand sum is 21, player automatically wins
+  } if (computerHandSum = 21){
+    myOutputValue = `Your cards are ${printCardsInHand(playerHand)} with a total of ${playerHandSum}.<br><br> Computer's cards are ${printCardsInHand(computerHand)} with a total of ${computerHandSum}. <p> What luck! Player wins! <p> Refresh the page to restart the game`
+  } 
+// If player hand sum is 21, computer automatically wins
+} if (playerHandSum = 21){
+  myOutputValue = `Your cards are ${printCardsInHand(playerHand)} with a total of ${playerHandSum}.<br><br> Computer's cards are ${printCardsInHand(computerHand)} with a total of ${computerHandSum}. <p> Bummer, Computer wins! <p> Refresh the page to restart the game`
   }
-}
+  }
   return myOutputValue;
 };
