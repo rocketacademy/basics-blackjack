@@ -190,7 +190,10 @@ var settleBlackjacks = function (dealerBlackjack) {
 // this function is called to find the next player, there are 4 cases
 var findNextPlayer = function () {
   // CASE 1: every player's hand(s) is settled
-  if (players.every((p) => p.settled.every((s) => s))) return resetGame();
+  if (players.every((p) => p.settled.every((s) => s))) {
+    updateCardsUI(true);
+    return resetGame();
+  }
 
   // show double down and surrender button again
   doubleDownButton.style.display = "inline-block";
@@ -288,7 +291,7 @@ var updateCardsUI = function (showDealerCards = false) {
     }
   } else {
     // otherwise only output the first card
-    dealerCardsString += `${dealerCards[0].name}${dealerCards[0].emoji}`;
+    dealerCardsString += `${dealerCards[0].name}${dealerCards[0].emoji}&#9646;`;
   }
   document.getElementById("dealer-cards").innerHTML = dealerCardsString;
 
