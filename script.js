@@ -1,5 +1,4 @@
 // game images
-var myWelcomeImage = '<img src="/images/myawesomecat.jpeg"/>';
 var myWinningImage =
   '<img src="https://c.tenor.com/VExHMtIttBEAAAAC/money-make-it-rain.gif"/>';
 var myLosingImage =
@@ -180,7 +179,6 @@ var printCardArray = function (cardArray) {
 
 // main function to index.html
 var main = function (input) {
-  var myOutputValue = myOutputValue + myWelcomeImage;
   var playerCardValue = 0;
   var computerCardValue = 0;
 
