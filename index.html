@@ -1,3 +1,10 @@
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Mouse+Memoirs&display=swap"
+  rel="stylesheet"
+/>
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -92,10 +99,10 @@
       }
 
       body {
-        font-family: "Open Sans", sans-serif;
+        font-family: "Mouse Memoirs", sans-serif;
         margin-left: 30px;
         margin-right: 30px;
-        background-color: white;
+        background-color: rgb(181, 234, 234);
         color: black; /* sets the font color */
         background-image: url(""); /* The image used */
         background-position: center; /* Center the image */
@@ -110,15 +117,16 @@
       }
       .header {
         text-align: center;
-        font-size: 1.1rem;
+        font-size: 2.1rem;
         margin-bottom: 3rem;
       }
 
       #container {
-        background-color: pink;
+        background-color: rgb(252, 209, 209);
         margin: 40px auto;
         max-width: 800px;
         padding: 38px 31px;
+        font-size: 1.4rem;
       }
 
       input {
@@ -137,7 +145,7 @@
       }
 
       #output-div {
-        background-color: lightgrey;
+        background-color: rgb(237, 246, 229);
         margin: 20px auto;
         padding: 20px;
         width: 100%;
@@ -152,7 +160,7 @@
       /* increase header font size on wider screens */
       @media screen and (min-width: 600px) {
         .header {
-          font-size: 2rem;
+          font-size: 3rem;
         }
       }
     </style>
@@ -172,12 +180,12 @@
     </h1>
     <h1 class="header">♣️ Basics - Blackjack ♠️</h1>
     <div id="container">
-      <p>Input:</p>
+      <p><u>Input:</u></p>
       <input id="input-field" />
       <br />
       <button id="submit-button">Submit</button>
-      <p>Output:</p>
-      <div id="output-div">Click submit to start round!</div>
+      <p><u>Output:</u></p>
+      <div id="output-div">Click Submit to start round!</div>
     </div>
     <!-- Import program logic -->
     <script src="script.js"></script>
