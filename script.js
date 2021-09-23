@@ -92,7 +92,7 @@ var dealerHand = [];
 var playerSum = 0;
 var dealerSum = 0;
 //Current points
-var points = 100;
+var points = 10;
 var aceValue = ``;
 
 //Function to prompt user for name
@@ -185,7 +185,7 @@ var dealCards = function () {
     points -= 20;
     return `Awww... looks like dealer drew BlackJack!<br><br>You drew:<br> ${printCards(playerHand)}<br>Dealer drew: ${printCards(
       dealerHand
-    )}<br><hr> You lost 20 points! <br>${printPoints()}<hr><br><div id ="instructions">Press continue to play another turn. Press restart to end game.</div>`;
+    )}<br><hr> You lost 20 points...<br>${printPoints()}<hr><br><div id ="instructions">Press continue to play another turn. Press restart to end game.</div>`;
   }
   //Return message: Player drew (cards) and dealer drew (cards)
   return `${userName} drew: <br>${printCards(playerHand)}${aceValue}<br><b>Current sum: ${playerSum}</b><br><br><div id="instructions">Do you want to hit or stand?</div>`;
@@ -273,7 +273,7 @@ var winningCondition = function () {
     announceWinner = `Dealer wins! <br><br> ${userName} drew:<br>${printCards(playerHand)} 
     <b>Player sum ${playerSum}</b>. <br><br>Dealer drew:<br>${printCards(
       dealerHand
-    )}<b>Dealer sum ${dealerSum}</b><br><br><hr>You lost 10 points!<br> ${printPoints()}<hr><br><div id="instructions">Press continue to play another turn or restart to end game</div>`;
+    )}<b>Dealer sum ${dealerSum}</b><br><br><hr>You lost 10 points...<br> ${printPoints()}<hr><br><div id="instructions">Press continue to play another turn or restart to end game</div>`;
   } else {
     announceWinner = `Error 1`;
   }
@@ -281,15 +281,20 @@ var winningCondition = function () {
 };
 
 //Function for next turn (continue button)
-var nextTurn = function (cardDeck) {
-  gameMode = `deal cards`;
-  //Current player and dealer hand
-  playerHand = [];
-  dealerHand = [];
-  //Current sum of cards
-  playerSum = 0;
-  dealerSum = 0;
-  startGame(userName);
+var nextTurn = function () {
+  if (points < 10) {
+    gameMode = `no points`;
+    return `<img src="https://media.giphy.com/media/KINAUcarXNxWE/giphy.gif?cid=ecf05e47s0fxtu6iwzpb8kebm4qakrjjoztruad4mi0yvyle&rid=giphy.gif&ct=g" class="center"></img><br>❗️ You have <b>${points}</b> points ❗️<br>Insufficient points to continue playing <br><br><hr><br><div id="instructions">Press restart to end game.</div>`;
+  } else {
+    gameMode = `deal cards`;
+    //Current player and dealer hand
+    playerHand = [];
+    dealerHand = [];
+    //Current sum of cards
+    playerSum = 0;
+    dealerSum = 0;
+    startGame(userName);
+  }
 };
 
 //Main Function
@@ -310,6 +315,8 @@ var main = function (input) {
     dealersPlay();
     //Determine and announce winner
     myOutputValue = winningCondition();
+  } else if (gameMode == `no points`) {
+    myOutputValue = nextTurn();
   }
   return myOutputValue;
 };
