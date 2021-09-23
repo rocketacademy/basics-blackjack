@@ -126,7 +126,7 @@ var calSumInHand = function (hand) {
   }
   return sum;
 };
-// convert number to string
+// convert number to string function
 var convertHandToString = function (hand) {
   var cards = "";
   var handIndex = 0;
@@ -138,7 +138,7 @@ var convertHandToString = function (hand) {
 
   return cards;
 };
-// standard output
+// standard output function
 var getDefaultOutput = function () {
   return `${playerProfilesArray[currentPlayerIndex].name}'s hand: <br>
   ${convertHandToString(playerProfilesArray[currentPlayerIndex].hand)} <br>
@@ -147,12 +147,12 @@ var getDefaultOutput = function () {
   Dealer's first card: ${convertHandToString([dealerHandArray[0]])} <br>
   Sum: ${calSumInHand([dealerHandArray[0]])}`;
 };
-// show dealer cards
+// show dealer cards function
 var displayDealerHand = function () {
   return `Dealer's hand: ${convertHandToString(dealerHandArray)}<br>
   Sum: ${calSumInHand(dealerHandArray)}`;
 };
-// store players info
+// store players info function
 var createPlayerProfiles = function (playerName) {
   playerProfilesArray.push({
     id: currentPlayerIndex + 1,
@@ -162,7 +162,7 @@ var createPlayerProfiles = function (playerName) {
     points: 100,
   });
 };
-// deal cards to all
+// deal cards to all function
 var dealCardsToPlayersAndDealer = function () {
   for (var counter = 0; counter < 2; counter += 1) {
     for (
@@ -175,11 +175,11 @@ var dealCardsToPlayersAndDealer = function () {
     dealCardToHand(dealerHandArray);
   }
 };
-// check if it's blackjack
+// check if it's blackjack function
 var isBlackjack = function (hand) {
   return hand.length == 2 && calSumInHand(hand) == twentyOne;
 };
-// calculate winnings
+// calculate winnings function
 var calcBetWinnings = function (player) {
   var winAmt = player.bet;
   if (isBlackjack(player.hand)) {
@@ -188,21 +188,20 @@ var calcBetWinnings = function (player) {
   }
   return winAmt;
 };
-// calculate losses
+// calculate losses function
 var calcBetLosses = function (player) {
   return player.bet;
 };
-
-// tell players to continue
+// tell players to continue function
 var getInstructionsToContinuePlaying = function () {
   if (isLastPlayer()) {
-    return `All players have played. Click Submit to see Dealer's move`;
+    return `Players' turn is over. Click Submit to see Dealer's move`;
   }
   return (
     `"It's ${playerProfilesArray[currentPlayerIndex + 1].name}'s turn. Click submit to continue`
   );
 };
-// empty hands to restart
+// empty hands to restart function
 var emptyAllHands = function () {
   for (
     var handIndex = 0;
@@ -213,14 +212,14 @@ var emptyAllHands = function () {
   }
   dealerHandArray = [];
 };
-// start new game with bets
+// start new game with bets function
 var restartFromBets = function () {
   emptyAllHands();
   mode = MODE_BETTING;
   currentPlayerIndex = 0;
   dealerCardHidden = true;
 };
-// end a player turn
+// end a player turn function
 var endPlayerTurn = function () {
   if (isLastPlayer()) {
     mode = MODE_DEALER_PLAYS;
@@ -230,15 +229,15 @@ var endPlayerTurn = function () {
   currentPlayerIndex += 1;
   mode = MODE_CHECK_FOR_BLACKJACK;
 };
-// check if current player is last player
+// check if current player is last player function
 var isLastPlayer = function () {
   return currentPlayerIndex == playerProfilesArray.length - 1;
 };
-// check if dealer dust
+// check if dealer bust function
 var checkIfDealerBust = function () {
   return calSumInHand(dealerHandArray) > twentyOne;
 };
-// game results
+// game results function
 var getGameResults = function () {
   var gameResults = "Results: <br>";
   if (checkIfDealerBust()) {
@@ -311,21 +310,21 @@ var getGameResults = function () {
   }
   return gameResults;
 };
-// eliminate player
+// eliminate player function
 var getPlayersOut = function () {
   var criterionToGetPlayersOut = function (player) {
     return player.points < 1;
   };
   return playerProfilesArray.filter(criterionToGetPlayersOut);
 };
-// check remaining players
+// check remaining players function
 var checkRemainingPlayers = function () {
   var criterionToRemain = function (player) {
     return player.points > 0;
   };
   return playerProfilesArray.filter(criterionToRemain);
 };
-// show eliminated players
+// show eliminated players function
 var displayEliminatedPlayers = function (eliminatedPlayersArray) {
   var eliPlayersArray = []
  
@@ -349,7 +348,7 @@ var displayEliminatedPlayers = function (eliminatedPlayersArray) {
 };
 
 
-// main
+// main function
 var main = function (input) {
   // if game over
   if (gameOver) {
@@ -358,7 +357,7 @@ var main = function (input) {
   // input how many players are playing
   if (mode == MODE_INPUT_NUM_OF_PLAYERS) {
     if (isNaN(input) == true || !Number(input) > 0) {
-      return "Please input number of players participating";
+      return "Please input no. of players";
     }
     startingNumOfPlayers = Number(input);
     // input player name
@@ -403,13 +402,13 @@ var main = function (input) {
     if (isNaN(input) == true || !Number(input) > 0) {
       return "Please input a number larger than 0";
     }
-
+    // if bet amount is over the total chips the player has
     if (input > playerProfilesArray[currentPlayerIndex].points) {
       return `${playerProfilesArray[currentPlayerIndex].name}, you have ${playerProfilesArray[currentPlayerIndex].points} chips. Please input an amount less than or equal to this.`;
     }
     
     playerProfilesArray[currentPlayerIndex].bet = Number(input);
-
+    // check if all players have placed bet
     if (isLastPlayer()) {
       mode = MODE_DEAL_CARDS;
 
@@ -430,13 +429,13 @@ var main = function (input) {
     return ` ${playerProfilesArray[PreviousPlayerIndex].name}, you've chosen to bet ${playerProfilesArray[PreviousPlayerIndex].bet} chips. ${playerProfilesArray[currentPlayerIndex].name}, please input your bet amount.`;
   }
 
-  
+  // deal cards
   if (mode == MODE_DEAL_CARDS) {
     deck = shuffleCards(makeDeck());
     dealCardsToPlayersAndDealer();
     mode = MODE_CHECK_FOR_BLACKJACK;
   }
-
+  // check for blackjack
   if (mode === MODE_CHECK_FOR_BLACKJACK) {
     if (isBlackjack(playerProfilesArray[currentPlayerIndex].hand)) {
       var myOutputValue = `
@@ -456,7 +455,7 @@ var main = function (input) {
        Please input "h" or "s", and press Submit`;
   }
 
-
+  // select hit or stand
   if (mode == MODE_HIT_OR_STAND) {
     if (input !== hit && input !== stand) {
       return ' Please input either "h" or "s" to continue';
@@ -464,7 +463,7 @@ var main = function (input) {
 
     var defaultOutput = getDefaultOutput();
     var instructionsForNextSteps = getInstructionsToContinuePlaying();
-
+    // if hit
     if (input == hit) {
       dealCardToHand(playerProfilesArray[currentPlayerIndex].hand);
 
@@ -485,7 +484,7 @@ var main = function (input) {
       <br> Please input "h" to draw another card, or "s" to end turn.`;
     }
 
-    
+    // if stand
     if (input == stand) {
       
       if (isLastPlayer()) {
@@ -507,15 +506,15 @@ var main = function (input) {
       return myOutputValue;
     }
   }
-
+  // dealer plays
   if (mode == MODE_DEALER_PLAYS) {
     if (dealerCardHidden) {
       dealerCardHidden = false;
 
       return `Dealer's cards: <br> ${displayDealerHand()}.
-      <br><br> Click submit to see continue`;
+      <br><br> Click submit to continue`;
     }
-
+    // check if dealer blackjack
     if (isBlackjack(dealerHandArray)) {
       mode = MODE_SHOW_RESULTS;
       return `Dealer got Blackjack and wins! <br>
@@ -525,16 +524,16 @@ var main = function (input) {
     
     var DealerHandSum = calSumInHand(dealerHandArray);
 
-  
+    // check if dealer's hand hits threshold
     if (DealerHandSum <= dealerMinimumPointsThreshold) {
       dealCardToHand(dealerHandArray);
 
       DealerHandSum = calSumInHand(dealerHandArray);
-
+      // check if dealer bust
       if (checkIfDealerBust()) {
         mode = MODE_SHOW_RESULTS;
 
-        return `Dealer busted and loses. <br> ${displayDealerHand()} 
+        return `Dealer busted. <br> ${displayDealerHand()} 
         <br><br> Click submit to see results `;
       }
 
