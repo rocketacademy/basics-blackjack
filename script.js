@@ -19,6 +19,9 @@ var main = function (input) {
     playerIndex = checkParticipantValid();
     myOutputValue = checkDealerOrPlayerTurn();
     myOutputValue += displayPlayerCards();
+    if (playerIndex != playerList.length - 1) {
+      myOutputValue += displayDealerCards();
+    }
   } else if (gameMode == 4) {
     myOutputValue = playerGame(input);
   } else if (gameMode == 5) {
@@ -216,18 +219,22 @@ var playerGame = function (input) {
       bustList.push(playerIndex);
       myString = `Player ${displayNum} has bust!<br><br>Click the submit button to continue.<br><br>`;
       myString += displayPlayerCards();
+      myString += displayDealerCards();
       defineNextPlayer();
     } else if (currentPlayerScore <= 21) {
       myString = `Player ${displayNum} decides to hit!<br><br>Type 'h' to hit and 's' to stand.<br><br>`;
       myString += displayPlayerCards();
+      myString += displayDealerCards();
     }
   } else if (input == "s") {
     myString = `Player ${displayNum} decides to stand!<br><br>Click the submit button to continue.<br><br>`;
     myString += displayPlayerCards();
+    myString += displayDealerCards();
     defineNextPlayer();
   } else {
     myString = `Player ${displayNum} turn!<br><br>Type 'h' to hit and 's' to stand.<br><br>`;
     myString += displayPlayerCards();
+    myString += displayDealerCards();
   }
   return myString;
 };
@@ -511,6 +518,20 @@ var displayPlayerCards = function () {
       playerList[playerIndex][i].name,
       playerList[playerIndex][i].suit
     );
+  }
+  myString += "</div><br>";
+  return myString;
+};
+
+var displayDealerCards = function () {
+  var myString = `Dealer cards:<br><div class ="row">`;
+  var dealer = playerList[playerList.length - 1];
+  for (var i = 0; i < dealer.length; i += 1) {
+    if (i == dealer.length - 1) {
+      myString += displayCardImage("cover", "cover");
+    } else {
+      myString += displayCardImage(dealer[i].name, dealer[i].suit);
+    }
   }
   myString += "</div><br>";
   return myString;
