@@ -247,7 +247,7 @@ var main = function (input) {
   ) {
     dealCard(playerHand);
     playerCardValue = sumOfHand(playerHand);
-    playerCardValue = sumOfHand(playerHand);
+    computerCardValue = sumOfHand(computerHand);
     console.log(`playerCardValue`, playerCardValue);
 
     if (playerCardValue > 21) {
@@ -284,6 +284,7 @@ var main = function (input) {
     gameMode = gameMode3;
     if (computerCardValue < 17) {
       dealCard(computerHand);
+      playerCardValue = sumOfHand(playerHand);
       computerCardValue = sumOfHand(computerHand);
       console.log(`computerCardValue`, computerCardValue);
     }
