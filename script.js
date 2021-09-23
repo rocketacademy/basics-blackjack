@@ -1,32 +1,53 @@
+// gamestate
 var gameMode = 0;
+// an array representing a deck of cards
 var deck = [];
+// an array of arrays where each represents a player
 var playerList = [];
+// index number of current player
 var playerIndex = 0;
+// an array of index numbers of players who won with initial dealt cards
 var naturalList = [];
+// an array of index numbers of players who bust
 var bustList = [];
 
 var main = function (input) {
   var myOutputValue = "♣♦♥♠";
   if (gameMode == 0) {
+    // initialise a deck of card with user instructions and move gamestate forward one step
     myOutputValue = initialiseDeck();
   } else if (gameMode == 1) {
+    // initialise the playerList with empty arrays representing all participants and move the gamestate forward one step
     myOutputValue = initialiseParticipants(input);
   } else if (gameMode == 2) {
+    // deal cards to all participants
     dealCards();
+    // check for initial game winning conditions and move the gamestate forward one step
     myOutputValue = checkNaturalCondition();
+    // display the dealt card objects as images
     myOutputValue += displayDealtCards();
   } else if (gameMode == 3) {
+    // return the index of a valid participant and move the gamestate forward one step
     playerIndex = checkParticipantValid();
+    // identify if the current valid participant is the dealer or a player
     myOutputValue = checkDealerOrPlayerTurn();
+    // display the current participant's cards
     myOutputValue += displayPlayerCards();
+    // if the current participant is not the dealer
     if (playerIndex != playerList.length - 1) {
+      // display the dealer's cards with the second card face down
       myOutputValue += displayDealerCards();
     }
   } else if (gameMode == 4) {
+    // function that defines the game logic including changing the gamestate during any player's turn
+    // includes input validation and user instruction
     myOutputValue = playerGame(input);
   } else if (gameMode == 5) {
+    // function that define the game logic during the dealer's turn and move the gamestate forward one step
     myOutputValue = dealerGame();
   } else if (gameMode == 6) {
+    // working here
+    // check for game winning conditions and move the gamestate forward one step
     myOutputValue = checkWinningCondition();
   } else if (gameMode == 7) {
     myOutputValue = resetGame();
@@ -121,7 +142,9 @@ var shuffleDeck = function (cardDeck) {
 };
 
 var initialiseDeck = function () {
+  // make and shuffle a list of objects representing a deck of cards and store in deck
   deck = shuffleDeck(makeDeck());
+  // provide instructions for input of number of players
   var myString =
     "How many players are there?<br><br>Please input a number from 1 through 7 and click the submit button.";
   return myString;
@@ -129,15 +152,22 @@ var initialiseDeck = function () {
 
 var initialiseParticipants = function (playerCount) {
   var myString = "";
+  // input validation condition to accept numbers 1 through 7 only
   if (!isNaN(playerCount) && playerCount >= 1 && playerCount <= 7) {
+    // ensure playerList is an empty array
     playerList = [];
+    // participants is the number of players plus one dealer
     var participants = Number(playerCount) + 1;
+    // for each participant push an empty array into playerList to represent them
     for (var i = 0; i < participants; i += 1) {
       playerList.push([]);
     }
+    // acknowledge the number of participants and provide user instruction
     myString = `There are ${playerList.length} participants including the dealer.<br><br>Click the submit button to deal cards to all participants.`;
+    // move gamestate forward one step
     gameMode += 1;
   } else {
+    // acknowledge an invalid input and reiterate question with user instruction
     myString =
       "You have entered an invalid input.<br><br>How many players are there?<br><br>Please input a number from 1 through 7 and click the submit button.";
   }
@@ -145,51 +175,79 @@ var initialiseParticipants = function (playerCount) {
 };
 
 var dealCards = function () {
+  // for two rounds
   for (var j = 0; j < 2; j += 1) {
+    // for each participant deal a card from the deck
     for (var i = 0; i < playerList.length; i += 1) {
       playerList[i].push(deck.pop());
     }
   }
-  console.log(playerList);
+  // print to check what cards are dealt
+  //console.log(playerList);
 };
 
 var calculatePlayerScore = function (player) {
+  // initialise player score at 0
   var totalScore = 0;
+  // for all cards in a player
   for (var i = 0; i < player.length; i += 1) {
+    // sum the value of cards
     totalScore += player[i].value;
   }
   return totalScore;
 };
 
 var checkNaturalCondition = function () {
+  // provide user instruction
   var myString = "Click the submit button to continue.<br><br>";
+  // determine the score of the dealer's cards
   var dealerScore = calculatePlayerScore(playerList[playerList.length - 1]);
+  // if the scenario is the dealer with a score of 21
   if (dealerScore == 21) {
+    // for all players except the dealer
     for (var i = 0; i < playerList.length - 1; i += 1) {
+      // determine the score of the player
       var currentPlayerScore = calculatePlayerScore(playerList[i]);
+      // player number representation
       var displayNum = i + 1;
+      // if the score of the player is 21
       if (currentPlayerScore == 21) {
+        // the player will tie with the dealer
         myString += `Player ${displayNum} stand-off<br>`;
+        // if the score of the player is not 21
       } else if (currentPlayerScore != 21) {
+        // the player will lose to the dealer
         myString += `Player ${displayNum} loses<br>`;
       }
     }
+    // gamestate is reset as all players tie or lose
     gameMode = 0;
+    // if the scenario is the dealer with a score not 21
   } else if (dealerScore != 21) {
+    // for all players except the dealer
     for (var i = 0; i < playerList.length - 1; i += 1) {
+      // determine the score of the player
       var currentPlayerScore = calculatePlayerScore(playerList[i]);
+      // player number representation
       var displayNum = i + 1;
+      // if the score of the player is 21
       if (currentPlayerScore == 21) {
+        // the player wins against the dealer
         myString += `Player ${displayNum} wins<br>`;
+        // the index of the player that wins is pushed to the naturalList array
         naturalList.push(i);
+        // if the score of the player is not 21
       } else if (currentPlayerScore != 21) {
+        // the player continues on to play the game against the dealer
         myString += `Player ${displayNum} continues<br>`;
       }
     }
-    // if all players get 21 except the dealer game reset
+    // in the unlikely scenario of all players drawing a blackjack
     if (naturalList.length == playerList.length - 1) {
+      // the game will reset as all players win against the dealer
       gameMode = 0;
     } else {
+      // move gamestate forward one step for continuing players
       gameMode += 1;
     }
   }
@@ -198,9 +256,13 @@ var checkNaturalCondition = function () {
 };
 
 var checkParticipantValid = function () {
+  // for all participants
   for (var i = playerIndex; i < playerList.length; i += 1) {
+    // if the player has not won with their initially dealt cards
     if (!naturalList.includes(i)) {
+      // move the gamestate forward one step
       gameMode += 1;
+      // return the index of a valid participant
       return i;
     }
   }
@@ -208,51 +270,88 @@ var checkParticipantValid = function () {
 
 var playerGame = function (input) {
   var myString = "";
+  // player number representation
   var displayNum = playerIndex + 1;
+  // if the user hits
   if (input == "h") {
+    // draw a card from the deck in the player's hand
     playerList[playerIndex].push(deck.pop());
+    // calculate the player's score
     var currentPlayerScore = calculatePlayerScore(playerList[playerIndex]);
+    // if the player has tentatively bust after hitting
     if (currentPlayerScore > 21) {
+      // check for aces and update player score
       currentPlayerScore = changeAceValue();
     }
+    // if the current player bust
     if (currentPlayerScore > 21) {
+      // push the index of the bust player to the array bustList
       bustList.push(playerIndex);
+      // state player has bust and user instructions
       myString = `Player ${displayNum} has bust!<br><br>Click the submit button to continue.<br><br>`;
+      // display the player cards
       myString += displayPlayerCards();
+      // display the dealer cards
       myString += displayDealerCards();
+      // define the next participant and change the gamestate
       defineNextPlayer();
+      // if the current player has not bust
     } else if (currentPlayerScore <= 21) {
+      // state the player's previous action and user instruction
       myString = `Player ${displayNum} decides to hit!<br><br>Type 'h' to hit and 's' to stand.<br><br>`;
+      // display the player cards
       myString += displayPlayerCards();
+      // display the dealer cards
       myString += displayDealerCards();
     }
+    // if the user stands
   } else if (input == "s") {
+    // state the player's previous action and user instruction
     myString = `Player ${displayNum} decides to stand!<br><br>Click the submit button to continue.<br><br>`;
+    // display the player cards
     myString += displayPlayerCards();
+    // display the dealer cards
     myString += displayDealerCards();
+    // define the next participant and change the gamestate
     defineNextPlayer();
+    // if the input is not valid
   } else {
+    // state the current player's turn and the user instruction
     myString = `Player ${displayNum} turn!<br><br>Type 'h' to hit and 's' to stand.<br><br>`;
+    // display the player cards
     myString += displayPlayerCards();
+    // display the dealer cards
     myString += displayDealerCards();
   }
   return myString;
 };
 
 var changeAceValue = function () {
+  // define the player
   var player = playerList[playerIndex];
+  // calculate the player's score
   var playerScore = calculatePlayerScore(player);
+  // initialise the counter of qualifying aces
   var aceCounter = 0;
+  // for all cards in a player
   for (var i = 0; i < player.length; i += 1) {
+    // if the card is an ace and has a value of 11
     if (player[i].rank == 1 && player[i].value == 11) {
+      // increment the ace counter
       aceCounter += 1;
     }
   }
+  // if there is any qualifying ace
   if (aceCounter > 0) {
+    // for all cards in a player
     for (var j = 0; j < player.length; j += 1) {
+      // if the current player score is a bust
       if (playerScore > 21) {
+        // if the current card is a qualifying ace
         if (player[j].rank == 1 && player[j].value == 11) {
+          // change the value of ace to 1
           player[j].value = 1;
+          // update the current player score
           playerScore = calculatePlayerScore(player);
         }
       }
@@ -262,46 +361,72 @@ var changeAceValue = function () {
 };
 
 var defineNextPlayer = function () {
+  // if the current participant is not the dealer
   if (playerIndex < playerList.length - 1) {
+    // define the next participant
     playerIndex += 1;
+    // move the gamestate back one step
     gameMode -= 1;
   }
+  // if all players have bust or won in the initial deal
   if (bustList.length + naturalList.length == playerList.length - 1) {
+    // change the gamestate to check the winning conditions
     gameMode = 6;
   }
 };
 
 var checkDealerOrPlayerTurn = function () {
   var myString = "";
+  // if the current participant is the dealer
   if (playerIndex == playerList.length - 1) {
+    // state the dealer's turn and provide user instructions
     myString = `Dealer turn is up!<br><br>Click the submit button to continue.<br><br>`;
+    // move the gamestate forward one step
     gameMode += 1;
+    // if the current participant is not the dealer (it is a player)
   } else {
+    // player number representation
     var displayNum = playerIndex + 1;
+    // state the player's turn and provide user instructions
     myString = `Player ${displayNum} turn!<br><br>Type 'h' to hit and 's' to stand.<br><br>`;
   }
   return myString;
 };
 
 var dealerGame = function () {
+  // define the dealer
   var dealer = playerList[playerList.length - 1];
+  // calculate the dealer score
   var dealerScore = calculatePlayerScore(dealer);
+  // if the dealer in the unlikely scenario drew two aces initially and tentatively bust
   if (dealerScore > 21) {
+    // change the ace value and update the dealer score
     dealerScore = changeAceValue();
   }
+  // provide user instruction and state the dealer stands by default
   var myString = `Click the submit button to continue.<br><br>Dealer will stand with score of ${dealerScore}.<br><br>`;
+  // while the dealer score is less than 16
   while (dealerScore <= 16) {
+    // dealer will draw a card
     dealer.push(deck.pop());
+    // dealer score is updated
     dealerScore = calculatePlayerScore(dealer);
+    // if dealer score is a bust
     if (dealerScore > 21) {
+      // change the ace value and update the dealer score
       dealerScore = changeAceValue();
     }
+    // provide user instruction and state the dealer stands by default with updated score
     myString = `Click the submit button to continue.<br><br>Dealer will stand with score of ${dealerScore}.<br><br>`;
   }
+  // if the dealer goes bust
   if (dealerScore > 21) {
+    // provide user instruction and state the dealer is bust
     myString = `Click the submit button to continue.<br><br>Dealer has bust with score of ${dealerScore}.<br><br>`;
   }
+  // display participant cards
   myString += displayPlayerCards();
+  // move the gamestate forward one step
   gameMode += 1;
   return myString;
 };
@@ -507,13 +632,20 @@ var displayCardImage = function (name, suit) {
 
 var displayPlayerCards = function () {
   var myString = "";
+  // if the current participant is the dealer
   if (playerIndex == playerList.length - 1) {
+    // state the dealer
     myString = `Dealer cards:<br><div class ="row">`;
+    // if the current participant is not the dealer (it is a player)
   } else {
+    // player number representation
     var displayNum = playerIndex + 1;
+    // state the player
     myString = `Player ${displayNum} cards:<br><div class="row">`;
   }
+  // for all cards of a participant
   for (var i = 0; i < playerList[playerIndex].length; i += 1) {
+    // display the cards
     myString += displayCardImage(
       playerList[playerIndex][i].name,
       playerList[playerIndex][i].suit
@@ -524,12 +656,19 @@ var displayPlayerCards = function () {
 };
 
 var displayDealerCards = function () {
+  // state the dealer
   var myString = `Dealer cards:<br><div class ="row">`;
+  // the dealer is defined the last person in the playerList
   var dealer = playerList[playerList.length - 1];
+  // for all cards of the dealer
   for (var i = 0; i < dealer.length; i += 1) {
+    // if the card is the last dealt card
     if (i == dealer.length - 1) {
+      // face down the card
       myString += displayCardImage("cover", "cover");
+      // if the card is not the last dealt card
     } else {
+      // face up the card
       myString += displayCardImage(dealer[i].name, dealer[i].suit);
     }
   }
