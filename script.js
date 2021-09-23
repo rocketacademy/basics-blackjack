@@ -92,7 +92,7 @@ var dealerHand = [];
 var playerSum = 0;
 var dealerSum = 0;
 //Current points
-var points = 10;
+var points = 100;
 var aceValue = ``;
 
 //Function to prompt user for name
