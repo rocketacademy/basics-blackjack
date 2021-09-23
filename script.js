@@ -7,6 +7,7 @@ var gameMode1 = `distribute hand`;
 var gameMode2 = `player hit or stand`;
 var gameMode3 = `computer's turn`;
 var gameMode = gameMode1;
+
 // reset gamemode
 var gameOver = false;
 
@@ -36,7 +37,7 @@ var makeDeck = function () {
       // If rank is 1, 11, 12, or 13, set cardName to the ace or face card's name
       if (cardName == 1) {
         cardName = "ace";
-        cardValue = 11;
+        // cardValue = 11;
       } else if (cardName == 11) {
         cardName = "jack";
         cardValue = 10;
@@ -108,11 +109,33 @@ var dealCard = function (hand) {
 
 // calculate total value of hand in array
 var sumOfHand = function (hand) {
+  var numOfAce = 0;
   var handSum = 0;
   var sumCounter = 0;
+
   while (sumCounter < hand.length) {
-    handSum = handSum + hand[sumCounter].value;
-    sumCounter += 1;
+    var currCard = hand[sumCounter];
+
+    if (hand[sumCounter].name === `ace`) {
+      numOfAce += 1;
+      handSum += 11;
+    } else {
+      handSum += currCard.value;
+    }
+
+    sumCounter = sumCounter + 1;
+  }
+
+  if (handSum > 21 && numOfAce > 0) {
+    var aceCounter = 0;
+
+    while (aceCounter < numOfAce) {
+      handSum -= 10;
+      if (handSum <= 21) {
+        break;
+      }
+      aceCounter += 1;
+    }
   }
   return handSum;
 };
@@ -200,6 +223,7 @@ var main = function (input) {
   ) {
     dealCard(playerHand);
     playerCardValue = sumOfHand(playerHand);
+    playerCardValue = sumOfHand(playerHand);
     console.log(`playerCardValue`, playerCardValue);
 
     if (playerCardValue > 21) {
@@ -249,18 +273,18 @@ var main = function (input) {
       )}  <br><br> Click SUBMIT to continue.`;
     }
 
-    if (computerCardValue == 21 && playerCardValue != 21) {
+    if (computerCardValue > playerCardValue) {
       gameOver = true;
-      return `You lose! Computer wins with 21! <br><br> Player hand: <br> ${printCardArray(
+      return `You lose! <br><br> Player hand: <br> ${printCardArray(
         playerHand
       )} <br><br> Computer hand: <br> ${printCardArray(
         computerHand
       )}  <br><br> Click SUBMIT to continue.`;
     }
 
-    if (computerCardValue > playerCardValue && computerCardValue < 21) {
+    if (computerCardValue == 21) {
       gameOver = true;
-      return `You lose! <br><br> Player hand: <br> ${printCardArray(
+      return `You lose! Computer wins with 21! <br><br> Player hand: <br> ${printCardArray(
         playerHand
       )} <br><br> Computer hand: <br> ${printCardArray(
         computerHand
