@@ -2,7 +2,6 @@ var gameStatus = "AFTER-PLACING-BET";
 var bestScore = 21;
 var cardDeck = [];
 var isDealerTurn = false;
-var gameOver = false;
 var blackjackPayout = 1.5;
 var winPayout = 1;
 
@@ -45,9 +44,9 @@ var deck = [
     rank: 11,
   },
   {
-    name: "10",
+    name: "6",
     suit: "hearts",
-    rank: 10,
+    rank: 6,
   },
   {
     // Computer
@@ -63,15 +62,15 @@ var deck = [
   },
   {
     // Computer
-    name: "7",
-    suit: "hearts",
-    rank: 7,
-  },
-  {
-    //player
     name: "6",
     suit: "hearts",
     rank: 6,
+  },
+  {
+    //player
+    name: "2",
+    suit: "hearts",
+    rank: 2,
   },
 ];
 
@@ -105,6 +104,37 @@ var makeDeck = function () {
         cardName = "queen";
       } else if (cardName == 13) {
         cardName = "king";
+      } else if (cardName == 1) {
+        cardName = "1️⃣";
+      } else if (cardName == 2) {
+        cardName = "2️⃣";
+      } else if (cardName == 3) {
+        cardName = "3️⃣";
+      } else if (cardName == 4) {
+        cardName = "4️⃣";
+      } else if (cardName == 5) {
+        cardName = "5️⃣";
+      } else if (cardName == 6) {
+        cardName = "6️⃣";
+      } else if (cardName == 7) {
+        cardName = "7️⃣";
+      } else if (cardName == 8) {
+        cardName = "8️⃣";
+      } else if (cardName == 9) {
+        cardName = "9️⃣";
+      } else if (cardName == 10) {
+        cardName = "🔟";
+      }
+
+      // If card suit is hearts, diamonds, clubs or spades, set cardSuit to emoji
+      if (currentSuit == "hearts") {
+        currentSuit = "♥";
+      } else if (currentSuit == "diamonds") {
+        currentSuit = "♦";
+      } else if (currentSuit == "clubs") {
+        currentSuit = "♣";
+      } else if (currentSuit == "spades") {
+        currentSuit = "♠";
       }
 
       // Create a new card with the current name, suit, and rank
@@ -168,19 +198,11 @@ var shuffleCards = function (cardDeck) {
 var main = function (input) {
   var myOutputValue = "Error, please refresh page.";
 
-  var playerPoints = player.points;
-
   var inputValidationResults = inputValidity(input);
 
   if (inputValidationResults == true) {
-    if (gameStatus == "BETTING") {
-      if (player.points < 1) {
-        myOutputValue = `You have 0 points left. Please refresh the page to start a new game.`;
-        return myOutputValue;
-      }
-      myOutputValue = `You have ${playerPoints} points. Please enter the numbers of points you would like to bet for this round.`;
-      player.currentBet = 0;
-      gameStatus = "AFTER-PLACING-BET";
+    if (gameStatus == "GAME-OVER") {
+      myOutputValue = `You have 0 points left. Please refresh the page to start a new game.`;
       return myOutputValue;
     }
 
@@ -190,8 +212,7 @@ var main = function (input) {
       console.log("Player Current bet (main) is " + player.currentBet);
       console.log("Player points (main) left is " + player.points);
       gameStatus = "CARD DISTRIBUTION";
-      myOutputValue = `You have placed ${player.currentBet} points as the bet. Click submit to start playing.<br><br>Good Luck!!`;
-      return myOutputValue;
+      return playBlackJack(input);
     }
 
     return playBlackJack(input);
@@ -219,6 +240,10 @@ var inputValidity = function (input) {
       returnStatement = "Plese enter only enter a number";
       return returnStatement;
     }
+    if (Number(input) == 0) {
+      returnStatement = `No 0 bets allowed. Please place a bet more than 0.`;
+      return returnStatement;
+    }
   }
   return true;
 };
@@ -226,6 +251,9 @@ var inputValidity = function (input) {
 var distributeCards = function () {
   // Generate and shuffle the card deck before each distribution
   cardDeck = shuffleCards(makeDeck());
+
+  //  ******** Code for debugging - DO NOT DELETE **********
+  // cardDeck = deck;
 
   console.log(`Numbers of cards in CardDeck is ` + cardDeck.length);
 
@@ -255,24 +283,30 @@ var distributeCards = function () {
   // Display cards to player but only show 1 card from dealer
   var cardsDrawnStatement = displayHand(player);
 
+  var nextRoundInstruction = "";
+
   // If player or dealer has blackjack, the game ends
   if (haveBlackjack(computer) && haveBlackjack(player)) {
     isDealerTurn = true;
     cardsDrawnStatement = displayHand(player);
+    player.points = player.points + player.currentBet;
+    nextRoundInstruction = calNextRound();
     output =
       cardsDrawnStatement +
-      "<br>Both you and dealer drew a blackjack! It's a draw.<br><br>Click Submit to start a new round.";
-    gameStatus = "BETTING";
+      "<br><b>Both you and dealer drew a blackjack! It's a draw.</b><br><br>" +
+      nextRoundInstruction;
     return output;
   }
 
   if (haveBlackjack(computer)) {
     isDealerTurn = true;
     cardsDrawnStatement = displayHand(player);
+    player.currentBet = 0;
+    nextRoundInstruction = calNextRound();
     output =
       cardsDrawnStatement +
-      "<br>Dealer drew a blackjack! Dealer Wins!<br><br>Click Submit to start a new round.";
-    gameStatus = "BETTING";
+      "<br><b>Dealer drew a blackjack! Dealer Wins!</b><br><br>" +
+      nextRoundInstruction;
 
     console.log(
       "Player's total points after Dealer wins BJ is " + player.points
@@ -284,10 +318,12 @@ var distributeCards = function () {
   if (haveBlackjack(player)) {
     player.points =
       player.points + player.currentBet + player.currentBet * blackjackPayout;
+    player.currentBet = 0;
+    nextRoundInstruction = calNextRound();
     output =
       cardsDrawnStatement +
-      "<br>You drew a blackjack and dealer does not have a blackjack! You Won! <br><br>Click Submit to start a new round.";
-    gameStatus = "BETTING";
+      "<br><b>You drew a blackjack and dealer does not have a blackjack! You Won! </b><br><br>" +
+      nextRoundInstruction;
 
     console.log("Player's total points after winning BJ is " + player.points);
 
@@ -321,10 +357,11 @@ var hitCard = function (playerObject) {
     "You have requested for a card. " + displayHand(playerObject);
 
   if (cardBusted(playerObject)) {
-    gameStatus = "BETTING";
+    gameStatus = "AFTER-PLACING-BET";
+    player.currentBet = 0;
+    var nextRoundInstruction = calNextRound();
     playerCardsDrawn =
-      playerCardsDrawn +
-      "<br>You bust!<br><br>Click Submit to start a new round.";
+      playerCardsDrawn + `<br><b>You bust!</b><br><br>${nextRoundInstruction}`;
     return playerCardsDrawn;
   }
 
@@ -361,7 +398,7 @@ var displayHand = function (currentPlayer) {
     playerCard +
     "<br>Dealer's hand has:<br>" +
     showCards(computer, 1) +
-    "One face down card<br>";
+    "➻One face down card<br>";
 
   return displayHandCards;
 };
@@ -377,6 +414,7 @@ var showCards = function (party, numOfCards) {
   for (var counter = 0; counter < numOfCards; counter += 1) {
     listOfCards =
       listOfCards +
+      "➻" +
       party.cards[counter].name +
       " of " +
       party.cards[counter].suit +
@@ -411,24 +449,40 @@ var calWinOrLose = function (playerCards, computerCards) {
   var playerTotalCardRank = calCardRank(playerCards);
   var computerTotalCardRank = calCardRank(computerCards);
 
-  var nextRoundInstruction = "Click Submit to start a new round.";
-
-  var resultsStatement = "<b>Dealer won!</b><br><br>" + nextRoundInstruction;
+  var resultsStatement = "<b>Dealer won!</b><br><br>";
 
   if (playerTotalCardRank == computerTotalCardRank) {
-    resultsStatement = "<b>It's a draw!</b><br><br>" + nextRoundInstruction;
+    resultsStatement = "<b>It's a draw!</b><br><br>";
     player.points = player.points + player.currentBet;
-    return resultsStatement;
   }
 
   if (playerTotalCardRank > computerTotalCardRank) {
-    resultsStatement = "<b>You won!</b><br><br>" + nextRoundInstruction;
+    resultsStatement = "<b>You won!</b><br><br>";
     player.points =
       player.points + player.currentBet + player.currentBet * winPayout;
-    return resultsStatement;
   }
 
+  var nextRoundInstruction = calNextRound();
+
+  resultsStatement = resultsStatement + nextRoundInstruction;
+  player.currentBet = 0;
+
   return resultsStatement;
+};
+
+// Function to calculate of player have sufficient points to play next round
+var calNextRound = function () {
+  var myOutputValue = "";
+
+  if (player.points < 1) {
+    myOutputValue = `You have 0 points left. Please refresh the page to start a new game.`;
+    gameStatus = "GAME-OVER";
+    return myOutputValue;
+  }
+
+  myOutputValue = `You now have ${player.points} points. Submit the numbers of points you would like to bet for next round.`;
+  gameStatus = "AFTER-PLACING-BET";
+  return myOutputValue;
 };
 
 // Find the sum of all cards that player have on hand
@@ -501,18 +555,19 @@ var dealerHitOrStand = function () {
   }
 
   // Set game status to card distribution so after showing the result, user can click submit to start a new round
-  gameStatus = "BETTING";
+  gameStatus = "AFTER-PLACING-BET";
 
   // If dealer's hand is more than 17, check if dealer bust
   if (cardBusted(computer)) {
-    console.log(`Dealer bust. ${computerCardRank}`);
     player.points =
       player.points + player.currentBet + player.currentBet * winPayout;
+    player.currentBet = 0;
+    var nextRoundInstruction = calNextRound();
     returnStatement =
       returnStatement +
       "<br>" +
-      "The dealer bust! " +
-      "Click Submit to start a new round.";
+      "<b>The dealer bust!</b><br><br>" +
+      nextRoundInstruction;
   } else {
     // Compare the cards to determine who wins
     var roundResults = calWinOrLose(player, computer);
