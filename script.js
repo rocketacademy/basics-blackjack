@@ -29,8 +29,6 @@ var main = function (input) {
     console.log(`mode 1`);
     currentMode = mode2;
     var startHand = startCardDistribute(randomDeck);
-    var counter = 0;
-    while (counter < 2) {}
     console.log(
       `playerHand: ${playerHand[0].name} of ${playerHand[0].suit} and ${playerHand[1].name} of ${playerHand[1].suit}`
     );
@@ -258,4 +256,21 @@ var botAutoDealer = function (randomDeck) {
   }
 
   return botNumber;
+};
+
+var aceDecider = function (number, hand) {
+  number = 0;
+  counter = 0;
+  while (counter < hand.length) {
+    if (number < 21 && hand[counter].rank == 11) {
+      hand[counter].rank = 1;
+    }
+    counter += 1;
+  }
+  counterTwo = 0;
+  while (counterTwo < hand.length) {
+    number += hand[counterTwo].rank;
+    counterTwo += 1;
+  }
+  return number;
 };
