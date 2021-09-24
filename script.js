@@ -177,16 +177,16 @@ var dealCards = function () {
   //Analyze for player or dealer blackjack
   var playerBlackjack = blackjack(playerHand);
   if (playerBlackjack == true) {
-    points += 20;
-    return `Wow! You got BlackJack!<br><br>You drew:<br> ${printCards(playerHand)}<br><hr>You won 20 points!<br> ${printPoints()}<hr><br>
+    points += 10;
+    return `Wow! You got BlackJack!<br><br>You drew:<br> ${printCards(playerHand)}<br><hr>You won 10 points!<br> ${printPoints()}<hr><br>
     <div id ="instructions">Press continue to play another turn. Press restart to end game.</div>`;
   }
   var dealerBlackjack = blackjack(dealerHand);
   if (dealerBlackjack == true) {
-    points -= 20;
+    points -= 10;
     return `Awww... looks like dealer drew BlackJack!<br><br>You drew:<br> ${printCards(playerHand)}<br>Dealer drew:<br> ${printCards(
       dealerHand
-    )}<br><hr> You lost 20 points...<br>${printPoints()}<hr><br><div id ="instructions">Press continue to play another turn. Press restart to end game.</div>`;
+    )}<br><hr> You lost 10 points...<br>${printPoints()}<hr><br><div id ="instructions">Press continue to play another turn. Press restart to end game.</div>`;
   }
   //Return message: Player drew (cards) and dealer drew (cards)
   return `${userName} drew: <br>${printCards(playerHand)}${aceValue}<br><b>Current sum: ${playerSum}</b><br><br><div id="instructions">Do you want to hit or stand?</div>`;
