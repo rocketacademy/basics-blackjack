@@ -1,9 +1,3 @@
-// game images
-var myWinningImage =
-  '<img src="https://c.tenor.com/VExHMtIttBEAAAAC/money-make-it-rain.gif"/>';
-var myLosingImage =
-  '<img src="https://c.tenor.com/8JAUqjB08EoAAAAC/homer-simpson-revenge.gif"/>';
-
 // global array to store cards
 var playerHand = [];
 var computerHand = [];
@@ -13,7 +7,6 @@ var gameMode1 = `distribute hand`;
 var gameMode2 = `player hit or stand`;
 var gameMode3 = `computer's turn`;
 var gameMode = gameMode1;
-
 // reset gamemode
 var gameOver = false;
 
@@ -22,23 +15,7 @@ var makeDeck = function () {
   // Initialise an empty deck array
   var cardDeck = [];
   // Initialise an array of the 4 suits in our deck. We will loop over this array.
-  var suits = ["♥️", "♦️", "♣️", "♣️"];
-
-  var emojiNames = {
-    1: "A",
-    2: "2️⃣",
-    3: "3️⃣",
-    4: "4️⃣",
-    5: "5️⃣",
-    6: "6️⃣",
-    7: "7️⃣",
-    8: "8️⃣",
-    9: "9️⃣",
-    10: "🔟",
-    11: "🕺🏽",
-    12: "👸🏽",
-    13: "🤴🏽",
-  };
+  var suits = ["hearts", "diamonds", "clubs", "spades"];
 
   // Loop over the suits array
   var suitIndex = 0;
@@ -59,7 +36,7 @@ var makeDeck = function () {
       // If rank is 1, 11, 12, or 13, set cardName to the ace or face card's name
       if (cardName == 1) {
         cardName = "ace";
-        // cardValue = 11;
+        cardValue = 11;
       } else if (cardName == 11) {
         cardName = "jack";
         cardValue = 10;
@@ -71,15 +48,12 @@ var makeDeck = function () {
         cardValue = 10;
       }
 
-      var emojiName = emojiNames[rankCounter];
-
       // Create a new card with the current name, suit, and rank
       var card = {
         name: cardName,
         suit: currentSuit,
         rank: rankValue,
         value: cardValue,
-        emojiName: emojiName,
       };
 
       // Add the new card to the deck
@@ -134,33 +108,11 @@ var dealCard = function (hand) {
 
 // calculate total value of hand in array
 var sumOfHand = function (hand) {
-  var numOfAce = 0;
   var handSum = 0;
   var sumCounter = 0;
-
   while (sumCounter < hand.length) {
-    var currCard = hand[sumCounter];
-
-    if (hand[sumCounter].name === `ace`) {
-      numOfAce += 1;
-      handSum += 11;
-    } else {
-      handSum += currCard.value;
-    }
-
-    sumCounter = sumCounter + 1;
-  }
-
-  if (handSum > 21 && numOfAce > 0) {
-    var aceCounter = 0;
-
-    while (aceCounter < numOfAce) {
-      handSum -= 10;
-      if (handSum <= 21) {
-        break;
-      }
-      aceCounter += 1;
-    }
+    handSum = handSum + hand[sumCounter].value;
+    sumCounter += 1;
   }
   return handSum;
 };
@@ -170,11 +122,11 @@ var printCardArray = function (cardArray) {
   var cardNames = ``;
   var arrayIndexLoopCounter = 0;
   while (arrayIndexLoopCounter < cardArray.length) {
-    var singleCardName = `<br> ${cardArray[arrayIndexLoopCounter].emojiName} ${cardArray[arrayIndexLoopCounter].suit}`;
+    var singleCardName = `<br> ${cardArray[arrayIndexLoopCounter].name} ${cardArray[arrayIndexLoopCounter].suit}`;
     cardNames += singleCardName;
     arrayIndexLoopCounter += 1;
   }
-  return cardNames + `<br><br> **Total value: ${sumOfHand(cardArray)}**`;
+  return cardNames;
 };
 
 // main function to index.html
@@ -206,7 +158,7 @@ var main = function (input) {
     // evaluate player and computer hands
     if (playerCardValue == 21 && computerCardvalue != 21) {
       gameOver = true;
-      return `${myWinningImage} <br><br> WOO HOO! YOU WIN WITH 21! <br><br> Player hand <br> 
+      return `WOO HOO! YOU WIN WITH 21! <br><br> Player hand <br> 
       ${printCardArray(
         playerHand
       )} <br><br> Computer hand: <br> ${printCardArray(computerHand)}`;
@@ -230,7 +182,7 @@ var main = function (input) {
       playerHand
     )} <br><br> Computer hand: <br><br> ${computerHand[0].name} ${
       computerHand[0].suit
-    } <br><br> Enter HIT or STAND to continue.`;
+    } <br><br> [PLAYER'S TURN] Enter HIT or STAND to continue.`;
   }
 
   if (
@@ -248,21 +200,29 @@ var main = function (input) {
   ) {
     dealCard(playerHand);
     playerCardValue = sumOfHand(playerHand);
-    computerCardValue = sumOfHand(computerHand);
     console.log(`playerCardValue`, playerCardValue);
 
     if (playerCardValue > 21) {
       gameOver = true;
-      return `${myLosingImage} <br><br> Sorry you busted! You lose! <br><br> Player hand: <br> ${printCardArray(
+      return `Sorry you busted! You lose! <br><br> Player hand: <br> ${printCardArray(
         playerHand
       )} <br><br> Computer hand: <br> ${printCardArray(
         computerHand
       )}. <br><br> Click SUBMIT to continue.`;
     }
 
+    if (computerCardvalue == 21 && computerCardValue > playerCardValue != 21) {
+      gameOver = true;
+      return `SORRY! COMPUTER WINS WITH 21. <br><br> Player hand: <br> ${printCardArray(
+        playerHand
+      )} <br><br> Computer hand:  <br> ${printCardArray(
+        computerHand
+      )}  <br><br> Click SUBMIT to continue.`;
+    }
+
     if (playerCardValue == 21 && computerCardvalue != 21) {
       gameOver = true;
-      return `${myWinningImage} <br><br> WOO HOO! YOU WIN WITH 21! <br><br> Player hand <br> 
+      return `WOO HOO! YOU WIN WITH 21! <br><br> Player hand <br> 
       ${printCardArray(
         playerHand
       )} <br><br> Computer hand: <br> ${printCardArray(
@@ -283,34 +243,79 @@ var main = function (input) {
     (gameMode == gameMode2 && input === `STAND`)
   ) {
     gameMode = gameMode3;
-    if (computerCardValue < 17) {
-      dealCard(computerHand);
-      playerCardValue = sumOfHand(playerHand);
-      computerCardValue = sumOfHand(computerHand);
-      console.log(`computerCardValue`, computerCardValue);
-    }
+    return `[COMPUTER'S TURN] Enter HIT or STAND. <br><br> Computer hand: <br> ${printCardArray(
+      computerHand
+    )}`;
+  }
+
+  if (
+    input != `hit` &&
+    input != `HIT` &&
+    input != `stand` &&
+    input != `STAND`
+  ) {
+    return `INVALID. Please enter HIT or STAND only!!!`;
+  }
+
+  if (
+    (gameMode == gameMode3 && input == `hit`) ||
+    (gameMode == gameMode3 && input === `HIT`)
+  ) {
+    dealCard(computerHand);
+    computerCardValue = sumOfHand(computerHand);
+    console.log(`computerCardValue`, computerCardValue);
 
     if (computerCardValue > 21) {
       gameOver = true;
-      return `${myWinningImage} <br><br> You win! Computer busted! <br><br> Player hand: <br> ${printCardArray(
+      return `You win! Computer busted! <br><br> Player hand: <br> ${printCardArray(
         playerHand
       )} <br><br> Computer hand: <br> ${printCardArray(
         computerHand
       )}  <br><br> Click SUBMIT to continue.`;
     }
 
-    if (computerCardValue > playerCardValue) {
+    if (computerCardValue == 21 && playerCardValue != 21) {
       gameOver = true;
-      return `${myLosingImage} <br><br> You lose! <br><br> Player hand: <br> ${printCardArray(
+      return `SORRY! COMPUTER WINS WITH 21. <br><br> Player hand: <br> ${printCardArray(
+        playerHand
+      )} <br><br> Computer hand:  <br> ${printCardArray(
+        computerHand
+      )}  <br><br> Click SUBMIT to continue.`;
+    }
+
+    if (playerCardValue < computerCardvalue && computerCardValue < 21) {
+      gameOver = true;
+      return `Computer wins! <br><br> Player hand <br> 
+      ${printCardArray(
+        playerHand
+      )} <br><br> Computer hand: <br> ${printCardArray(
+        computerHand
+      )}  <br><br> Click SUBMIT to continue.`;
+    }
+  }
+
+  if (
+    (gameMode == gameMode3 && input == `stand`) ||
+    (gameMode == gameMode3 && input === `STAND`)
+  ) {
+    computerCardValue = sumOfHand(computerHand);
+    playerCardValue = sumOfHand(playerHand);
+    console.log(`computerCardValue`, computerCardValue);
+    console.log(`playerCardValue`, playerCardValue);
+    if (computerCardValue > playerCardValue && computerCardValue < 21) {
+      gameOver = true;
+      return `Computer wins! <br><br> Player hand <br> 
+      ${printCardArray(
         playerHand
       )} <br><br> Computer hand: <br> ${printCardArray(
         computerHand
       )}  <br><br> Click SUBMIT to continue.`;
     }
 
-    if (computerCardValue == 21) {
+    if (computerCardValue == playerCardValue) {
       gameOver = true;
-      return `${myLosingImage} <br><br> You lose! Computer wins with 21! <br><br> Player hand: <br> ${printCardArray(
+      return `It is a draw! <br><br> Player hand <br> 
+      ${printCardArray(
         playerHand
       )} <br><br> Computer hand: <br> ${printCardArray(
         computerHand
@@ -319,16 +324,8 @@ var main = function (input) {
 
     if (playerCardValue > computerCardValue) {
       gameOver = true;
-      return `${myWinningImage} <br><br> You win! <br><br> Player hand: <br> ${printCardArray(
-        playerHand
-      )} <br><br> Computer hand: <br> ${printCardArray(
-        computerHand
-      )}  <br><br> Click SUBMIT to continue.`;
-    }
-
-    if (playerCardValue == computerCardValue) {
-      gameOver = true;
-      return `It is a draw! <br><br> Player hand: <br> ${printCardArray(
+      return `You win! <br><br> Player hand <br> 
+      ${printCardArray(
         playerHand
       )} <br><br> Computer hand: <br> ${printCardArray(
         computerHand
