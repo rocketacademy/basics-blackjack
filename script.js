@@ -93,16 +93,16 @@ var shuffleCards = function (cardDeck) {
 var deck = shuffleCards(makeDeck());
 
 //  Global variable for game modes
-var mode1 = "mode 1: deal cards";
-var mode2 = "mode 2: player hit or stand";
-currentMode = mode1;
+var modeDeal2Cards = "deal 2 cards";
+var modePlayerHitStand = "player hit or stand";
+currentMode = modeDeal2Cards;
 console.log(currentMode);
 
 //  Arrays for player and computer hands
 var playerHand = [];
 var computerHand = [];
 
-// Function to push 2 cards into player's hand
+// Helper function to push 2 cards into player's hand
 var draw2Cards = function (userHand) {
   var counter = 0;
   while (counter < 2) {
@@ -112,7 +112,7 @@ var draw2Cards = function (userHand) {
   }
 };
 
-// Function to push 1 card into player's hand <-- NOT WORKING
+// Function to push 1 card into player's hand
 var drawCard = function (userHand) {
   var drawnCard = deck.pop();
   userHand.push(drawnCard);
@@ -120,28 +120,41 @@ var drawCard = function (userHand) {
 
 var main = function (input) {
   // Draw 2 cards
-  draw2Cards(playerHand);
-  draw2Cards(computerHand);
+  if (currentMode == modeDeal2Cards) {
+    draw2Cards(playerHand);
+    draw2Cards(computerHand);
 
-  console.log(playerHand);
-  console.log(computerHand);
+    console.log(playerHand);
+    console.log(computerHand);
 
-  // Count points in player's hand
-  playerHand[0].rank;
-  playerHand[1].rank;
-  console.log("player card 1 " + playerHand[0].rank);
-  console.log("player card 2 " + playerHand[1].rank);
+    // Count points in player's hand
+    playerHand[0].rank;
+    playerHand[1].rank;
+    console.log("player card 1 " + playerHand[0].rank);
+    console.log("player card 2 " + playerHand[1].rank);
 
-  var playerPoints = playerHand[0].rank + playerHand[1].rank;
-  console.log("player points " + playerPoints);
+    var playerPoints = playerHand[0].rank + playerHand[1].rank;
+    console.log("player points " + playerPoints);
 
-  computerHand[0].rank;
-  computerHand[1].rank;
-  console.log("computer card 1 " + computerHand[0].rank);
-  console.log("computer card 1 " + computerHand[1].rank);
+    computerHand[0].rank;
+    computerHand[1].rank;
+    console.log("computer card 1 " + computerHand[0].rank);
+    console.log("computer card 1 " + computerHand[1].rank);
 
-  var computerPoints = computerHand[0].rank + computerHand[1].rank;
-  console.log("computer points " + computerPoints);
+    var computerPoints = computerHand[0].rank + computerHand[1].rank;
+    console.log("computer points " + computerPoints);
+
+    //  Declare BLACKJACK if either player or computer points == 21
+    if (playerPoints == 21 || computerPoints == 21) {
+      return (
+        "Blackjack!" +
+        "</br>player points is " +
+        playerPoints +
+        "<br>computer points is " +
+        computerPoints
+      );
+    }
+  }
 
   //  Second verion:
   //  1. The player hitting or standing is different from the dealer hitting or standing. The rules state that the dealer hits or stands after all players are done, so let's work on the players hitting or standing first.
@@ -150,7 +163,7 @@ var main = function (input) {
 
   //  If player and computer hands are under 22, change mode to mode2 and tell player to enter hit or stand
   if (playerPoints < 22 && computerPoints < 22) {
-    currentMode = mode2;
+    currentMode = modePlayerHitStand;
     console.log(currentMode);
     return (
       "player points is " +
@@ -161,12 +174,31 @@ var main = function (input) {
     );
   }
 
-  // If current mode is mode 2, and player enters 'hit', draw a card into player's hand
-  if (currentMode == mode2) {
+  //  Declare BUST if either player or computer points is more than 21
+  if (playerPoints > 21 || computerPoints > 21) {
+    return (
+      "Bust!" +
+      "<br>player points is " +
+      playerPoints +
+      "<br>computer points is " +
+      computerPoints
+    );
+  }
+
+  // If current mode is mode 2, and player enters 'hit', draw a card into player's hand <-- NOT WORKING
+  if (currentMode == modePlayerHitStand) {
     console.log("current mode is " + currentMode);
-    if (input == hit) {
-      playerHand = drawCard(playerHand);
+    if (input == "hit") {
+      var drawnCard = deck.pop();
+      playerHand.push(drawnCard);
       console.log(playerHand);
+
+      return (
+        "player points is " +
+        playerPoints +
+        "<br>computer points is " +
+        computerPoints
+      );
     }
   }
 
