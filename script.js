@@ -32,7 +32,7 @@ var initialisePlayers = function (playerNum) {
 };
 
 // helper function to create card object
-var makeCard = function (suit, emoji, rank) {
+var makeCard = function (suit, rank) {
   // rank will be a number from 1 to 13, define a specialranks object for use later
   var specialRanks = {
     11: "J",
@@ -51,20 +51,19 @@ var makeCard = function (suit, emoji, rank) {
     name = specialRanks[rank];
     if (name != "A") points = 10; // for blackjack purpose, jack/queen/king = 10
   }
-  return { name, suit, points, emoji };
+  return { name, suit, points };
 };
 
 // helper function to create a shuffled deck
 var makeDeck = function () {
   var deck = [];
-  var suits = ["hearts", "diamonds", "clubs", "spades"];
-  var suitEmojis = ["♥️", "♦", "♣️", "♠️"];
+  var suits = ["♥️", "♦", "♣️", "♠️"];
   const NUM_RANKS = 13;
 
   // loop thru suits and ranks to generate 52 cards
   for (var suitIndex = 0; suitIndex < suits.length; suitIndex += 1) {
     for (var rank = 1; rank <= NUM_RANKS; rank += 1) {
-      var card = makeCard(suits[suitIndex], suitEmojis[suitIndex], rank);
+      var card = makeCard(suits[suitIndex], rank);
       deck.push(card);
     }
   }
@@ -82,22 +81,39 @@ var makeDeck = function () {
 };
 
 // helper function to reset player
-var resetPlayer = function (index) {
-  players[index].hands = [[]];
-  players[index].settled = [false];
-  players[index].curHand = 0;
-  players[index].points = [0];
-  if (players[index].wager.length > 1) players[index].wager.pop();
+var resetPlayer = function (i) {
+  for (var j = 0; j < players[i].hands.length; j += 1) {
+    document.getElementById(`card-container-${i}-${j}`).style.opacity = 1;
+    document.getElementById(`card-container-${i}-${j}`).style.border = "none";
+  }
+
+  players[i].hands = [[]];
+  players[i].settled = [false];
+  players[i].curHand = 0;
+  players[i].points = [0];
+  if (players[i].wager.length > 1) players[i].wager.pop();
 
   // top up a player with 100 chips if he has less than 1 chip
   var count = 0;
-  while (players[index].chips < 1) {
-    players[index].chips += 100;
-    players[index].buyIn += 100;
+  while (players[i].chips < 1) {
+    players[i].chips += 100;
+    players[i].buyIn += 100;
     count += 1;
   }
+
+  const wagerSlider = document.getElementById(`wager-${i}`);
+  wagerSlider.style.display = "block";
+  wagerSlider.setAttribute("max", players[i].chips);
+  wagerSlider.value =
+    players[i].chips >= players[i].wager[0] ? players[i].wager[0] : 1;
+  document.getElementById(
+    `value-wager-${i}`
+  ).innerHTML = `Bet: ${wagerSlider.value}`;
+  document.getElementById(`player-${i}`).style.opacity = 1;
+  document.getElementById(`player-${i}`).style.border = "none";
+
   if (count > 0)
-    return `<br>Player ${index + 1} is topped up with ${count * 100} chips.`;
+    return `<br>Player ${i + 1} is topped up with ${count * 100} chips.`;
   return "";
 };
 
@@ -120,23 +136,7 @@ var resetGame = function () {
 
   // reset players ui and state
   for (var i = 0; i < players.length; i += 1) {
-    for (var j = 0; j < players[i].hands.length; j += 1) {
-      document.getElementById(`card-container-${i}-${j}`).style.opacity = 1;
-      document.getElementById(`card-container-${i}-${j}`).style.border = "none";
-    }
-
     output += resetPlayer(i);
-
-    const wagerSlider = document.getElementById(`wager-${i}`);
-    wagerSlider.style.display = "block";
-    wagerSlider.setAttribute("max", players[i].chips);
-    wagerSlider.value =
-      players[i].chips >= players[i].wager[0] ? players[i].wager[0] : 1;
-    document.getElementById(
-      `value-wager-${i}`
-    ).innerHTML = `Bet: ${wagerSlider.value}`;
-    document.getElementById(`player-${i}`).style.opacity = 1;
-    document.getElementById(`player-${i}`).style.border = "none";
   }
   output += "<br>Hand is over. Please place your bets.";
   return output;
@@ -287,11 +287,11 @@ var updateCardsUI = function (showDealerCards = false) {
   if (showDealerCards) {
     // output all the dealer's cards
     for (var i = 0; i < dealerCards.length; i += 1) {
-      dealerCardsString += `${dealerCards[i].name}${dealerCards[i].emoji} `;
+      dealerCardsString += `${dealerCards[i].name}${dealerCards[i].suit} `;
     }
   } else {
     // otherwise only output the first card
-    dealerCardsString += `${dealerCards[0].name}${dealerCards[0].emoji}&#9646;`;
+    dealerCardsString += `${dealerCards[0].name}${dealerCards[0].suit}&#9646;`;
   }
   document.getElementById("dealer-cards").innerHTML = dealerCardsString;
 
@@ -300,7 +300,7 @@ var updateCardsUI = function (showDealerCards = false) {
       var playerCardsString = "";
       players[i].points[j] = calculatePoints(players[i].hands[j]);
       for (var k = 0; k < players[i].hands[j].length; k += 1) {
-        playerCardsString += `${players[i].hands[j][k].name}${players[i].hands[j][k].emoji} `;
+        playerCardsString += `${players[i].hands[j][k].name}${players[i].hands[j][k].suit} `;
       }
       document.getElementById(`player-cards-${i}-${j}`).innerHTML =
         playerCardsString;
