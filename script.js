@@ -46,13 +46,12 @@ var main = function (input) {
     // function that define the game logic during the dealer's turn and move the gamestate forward one step
     myOutputValue = dealerGame();
   } else if (gameMode == 6) {
-    // working here
     // check for game winning conditions and move the gamestate forward one step
     myOutputValue = checkWinningCondition();
   } else if (gameMode == 7) {
+    // reset gloval variables and provide user instruction
     myOutputValue = resetGame();
   }
-
   return myOutputValue;
 };
 
@@ -432,43 +431,62 @@ var dealerGame = function () {
 };
 
 var checkWinningCondition = function () {
+  // provide user instructions
   var myString = "Click the submit button to continue.<br><br>";
+  // define the dealer
   var dealer = playerList[playerList.length - 1];
+  // calculate the dealer score
   var dealerScore = calculatePlayerScore(dealer);
+  // if the dealer is bust
   if (dealerScore > 21) {
+    // for all players
     for (var i = 0; i < playerList.length - 1; i += 1) {
+      // player number representation
       var displayNum = i + 1;
+      // calculate the player score
       var currentPlayerScore = calculatePlayerScore(playerList[i]);
-      // if player has hit 21, or less than 21
-      // nothing happens if player has > 21
+      // if player did not win with initial dealt cards
       if (!naturalList.includes(i)) {
+        // if the player score is 21 or less
         if (currentPlayerScore <= 21) {
+          // state the player wins
           myString += `Player ${displayNum} wins<br>`;
         }
       }
     }
+    // if the dealer stands
   } else if (dealerScore <= 21) {
+    // for all players
     for (var i = 0; i < playerList.length - 1; i += 1) {
+      // player number representation
       var displayNum = i + 1;
+      // calculate the player score
       var currentPlayerScore = calculatePlayerScore(playerList[i]);
-      // if player has hit 21, or less than 21
-      // nothing happens if player has > 21
+      // if player did not win with initial dealt cards
       if (!naturalList.includes(i)) {
+        // if the player score is less than the dealer score
         if (currentPlayerScore < dealerScore) {
+          // state the player loses
           myString += `Player ${displayNum} loses<br>`;
+          // if the player score is equal the dealer score
         } else if (currentPlayerScore == dealerScore) {
+          // state the tie
           myString += `Player ${displayNum} ties<br>`;
+          // if the player score is not a bust and is greater than the dealer score
         } else if (
           currentPlayerScore > dealerScore &&
           currentPlayerScore <= 21
         ) {
+          // state the player wins
           myString += `Player ${displayNum} wins<br>`;
         }
       }
     }
   }
   myString += "<br>";
+  // display all dealt cards
   myString += displayDealtCards();
+  // move the gamestate forward one step
   gameMode += 1;
   return myString;
 };
