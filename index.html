@@ -82,7 +82,7 @@
     <!-- fonts -->
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css?family=Open+Sans"
+      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;700&display=swap"
     />
 
     <!-- CSS -->
@@ -95,8 +95,8 @@
         font-family: "Open Sans", sans-serif;
         margin-left: 30px;
         margin-right: 30px;
-        background-color: white;
-        color: black; /* sets the font color */
+        background-color: #0d0d0d;
+        color: #ffffff; /* sets the font color */
         background-image: url(""); /* The image used */
         background-position: center; /* Center the image */
         background-repeat: no-repeat; /* Do not repeat the image */
@@ -109,13 +109,18 @@
         max-height: 200px;
       }
       .header {
+        font-family: "Baloo 2", cursive;
+        font-weight: 700;
         text-align: center;
         font-size: 1.1rem;
         margin-bottom: 3rem;
       }
 
       #container {
-        background-color: pink;
+        font-family: "Baloo 2", cursive;
+        font-weight: 400;
+        background-color: #d95043;
+        color: #000000;
         margin: 40px auto;
         max-width: 800px;
         padding: 38px 31px;
@@ -134,10 +139,12 @@
         line-height: 33px;
         margin: 0 0 23px 0;
         padding: 0 6px;
+        background-color: #f2b950;
       }
 
       #output-div {
-        background-color: lightgrey;
+        background-color: #f2f2f2;
+        color: #000000;
         margin: 20px auto;
         padding: 20px;
         width: 100%;
@@ -172,12 +179,15 @@
     </h1>
     <h1 class="header">♣️ Basics - Blackjack ♠️</h1>
     <div id="container">
-      <p>Input:</p>
+      <p style="color: #ffffff; font-weight: 700">Input:</p>
       <input id="input-field" />
       <br />
       <button id="submit-button">Submit</button>
-      <p>Output:</p>
-      <div id="output-div">Welcome! Please enter the number of players.</div>
+      <p style="color: #ffffff; font-weight: 700">Output:</p>
+      <div id="output-div">
+        Welcome! You have 100 points to start the game.<br /><br />Please enter
+        the numbers of points you would like to bet for this round.
+      </div>
     </div>
     <!-- Import program logic -->
     <script src="script.js"></script>

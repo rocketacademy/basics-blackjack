@@ -68,9 +68,9 @@ var deck = [
   },
   {
     //player
-    name: "2",
+    name: "10",
     suit: "hearts",
-    rank: 2,
+    rank: 10,
   },
 ];
 
@@ -257,6 +257,9 @@ var distributeCards = function () {
 
   console.log(`Numbers of cards in CardDeck is ` + cardDeck.length);
 
+  var dealerBlackjackImg = `<img src="https://c.tenor.com/l99hses0uC8AAAAC/hehe-mr-bean.gif" width="30%";>`;
+  var playerBlackjackImg = `<img src="https://c.tenor.com/Y9bt10ptCPQAAAAC/mr-bean-dance.gif" width="30%";>`;
+
   var output = "";
 
   // Reset game result to neutral and attributes in player and computer's object
@@ -285,7 +288,7 @@ var distributeCards = function () {
 
   var nextRoundInstruction = "";
 
-  // If player or dealer has blackjack, the game ends
+  // If player or dealer has blackjack, this round ends
   if (haveBlackjack(computer) && haveBlackjack(player)) {
     isDealerTurn = true;
     cardsDrawnStatement = displayHand(player);
@@ -305,7 +308,9 @@ var distributeCards = function () {
     nextRoundInstruction = calNextRound();
     output =
       cardsDrawnStatement +
-      "<br><b>Dealer drew a blackjack! Dealer Wins!</b><br><br>" +
+      "<br><b>Dealer drew a blackjack! Dealer Wins!</b><br>" +
+      dealerBlackjackImg +
+      "<br>" +
       nextRoundInstruction;
 
     console.log(
@@ -322,7 +327,9 @@ var distributeCards = function () {
     nextRoundInstruction = calNextRound();
     output =
       cardsDrawnStatement +
-      "<br><b>You drew a blackjack and dealer does not have a blackjack! You Won! </b><br><br>" +
+      "<br><b>You drew a blackjack and dealer does not have a blackjack! You Won! </b><br>" +
+      playerBlackjackImg +
+      "<br>" +
       nextRoundInstruction;
 
     console.log("Player's total points after winning BJ is " + player.points);
@@ -331,9 +338,12 @@ var distributeCards = function () {
   }
 
   // If there is no blackjack, player will decide to hit or stand
+  var hintStatement = generateHint();
+
   output =
     cardsDrawnStatement +
-    `<br>Do you want to hit or stand? Submit "h" to hit, "s" to stand.`;
+    `<br>Do you want to hit or stand? Submit "h" to hit, "s" to stand.` +
+    hintStatement;
 
   console.log(player);
   console.log(computer);
@@ -353,6 +363,8 @@ var hitCard = function (playerObject) {
   // ***** Actual Code - DO NOT DELETE ***********
   playerObject.cards.push(cardDeck.pop());
 
+  var playerBustImg = `<img src="https://c.tenor.com/FA_EB9CjiXEAAAAd/mr-bean-faints.gif" width="30%";>`;
+
   var playerCardsDrawn =
     "You have requested for a card. " + displayHand(playerObject);
 
@@ -361,13 +373,19 @@ var hitCard = function (playerObject) {
     player.currentBet = 0;
     var nextRoundInstruction = calNextRound();
     playerCardsDrawn =
-      playerCardsDrawn + `<br><b>You bust!</b><br><br>${nextRoundInstruction}`;
+      playerCardsDrawn +
+      "<br><b>You bust!</b><br>" +
+      playerBustImg +
+      `<br>${nextRoundInstruction}`;
     return playerCardsDrawn;
   }
 
+  var hintStatement = generateHint();
+
   playerCardsDrawn =
     playerCardsDrawn +
-    `<br>Do you want to hit or stand? Submit "h" to hit, "s" to stand.`;
+    `<br>Do you want to hit or stand? Submit "h" to hit, "s" to stand.` +
+    hintStatement;
 
   return playerCardsDrawn;
 };
@@ -449,15 +467,19 @@ var calWinOrLose = function (playerCards, computerCards) {
   var playerTotalCardRank = calCardRank(playerCards);
   var computerTotalCardRank = calCardRank(computerCards);
 
-  var resultsStatement = "<b>Dealer won!</b><br><br>";
+  var winImg = `<img src="https://c.tenor.com/MMwDCNWyptsAAAAd/mr-bean-mr-beans-holiday.gif" width="30%";>`;
+  var loseImg = `<img src="https://c.tenor.com/UWKxURNg6TMAAAAC/mr-bean-what.gif" width="30%";>`;
+  var drawImg = `<img src="https://c.tenor.com/lowhvrplIS8AAAAC/mr-bean.gif" width="30%";>`;
+
+  var resultsStatement = "<b>Dealer won!</b><br>" + loseImg + "<br>";
 
   if (playerTotalCardRank == computerTotalCardRank) {
-    resultsStatement = "<b>It's a draw!</b><br><br>";
+    resultsStatement = "<b>It's a draw!</b><br>" + drawImg + "<br>";
     player.points = player.points + player.currentBet;
   }
 
   if (playerTotalCardRank > computerTotalCardRank) {
-    resultsStatement = "<b>You won!</b><br><br>";
+    resultsStatement = "<b>You won!</b><br>" + winImg + "<br>";
     player.points =
       player.points + player.currentBet + player.currentBet * winPayout;
   }
@@ -515,6 +537,26 @@ var calCardRank = function (partyObject) {
   return totalScore;
 };
 
+// Function to generate hint statement to hit or stand
+var generateHint = function () {
+  var playerCurrentScore = calCardRank(player);
+  var genieImg =
+    '<img src="https://c.tenor.com/szvEC0QjFzYAAAAi/gwiz-genie-and-the-power-belt.gif" width="20%";>';
+
+  var outputStatement = genieImg + "If I were you, I would stand~~";
+
+  if (playerCurrentScore <= 15) {
+    outputStatement = genieImg + "If I were you, I would hit~~";
+    if (player.cards.length >= 3) {
+      outputStatement = genieImg + "I would hit again~~";
+    }
+  } else if (playerCurrentScore > 15 && playerCurrentScore <= 17) {
+    outputStatement = genieImg + "Hit if you are feeling lucky today!!";
+  }
+
+  return outputStatement;
+};
+
 // Function to decide if computer wants to draw a card
 var dealerHitOrStand = function () {
   var returnStatement = "";
@@ -562,11 +604,15 @@ var dealerHitOrStand = function () {
     player.points =
       player.points + player.currentBet + player.currentBet * winPayout;
     player.currentBet = 0;
+    var dealerBustImg =
+      '<img src="https://c.tenor.com/udUeGlxama8AAAAC/mr-bean-bean.gif" width="30%";>';
     var nextRoundInstruction = calNextRound();
     returnStatement =
       returnStatement +
       "<br>" +
-      "<b>The dealer bust!</b><br><br>" +
+      "<b>The dealer bust!</b><br>" +
+      dealerBustImg +
+      "<br>" +
       nextRoundInstruction;
   } else {
     // Compare the cards to determine who wins
