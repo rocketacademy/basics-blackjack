@@ -21,13 +21,13 @@ var makeDeck = function () {
 
       //if rank is 1, 11, 12, 13, change card name to ace, jack, queen, king
       if (cardName == 1) {
-        cardName = `Ace of`;
+        cardName = `Ace`;
       } else if (cardName == 11) {
-        cardName = `Jack of`;
+        cardName = `Jack`;
       } else if (cardName == 12) {
-        cardName = `Queen of`;
+        cardName = `Queen`;
       } else if (cardName == 13) {
-        cardName = `King of`;
+        cardName = `King`;
       }
 
       //create a new card object with name, suit, rank
@@ -153,8 +153,9 @@ var printCards = function (cardsOnHand) {
   currentCards = ``;
   for (i = 0; i < cardsOnHand.length; i++) {
     console.log(i);
-    currentCards += `${cardsOnHand[i].name} ${cardsOnHand[i].suit} ${cardsOnHand[i].emoji}<br>`;
+    currentCards += `<div id="card" class="card">${cardsOnHand[i].name}<br><span class="emoji">${cardsOnHand[i].emoji}</span></div>`;
   }
+  currentCards += `<br>`;
   return currentCards;
 };
 
@@ -183,7 +184,7 @@ var dealCards = function () {
   var dealerBlackjack = blackjack(dealerHand);
   if (dealerBlackjack == true) {
     points -= 20;
-    return `Awww... looks like dealer drew BlackJack!<br><br>You drew:<br> ${printCards(playerHand)}<br>Dealer drew: ${printCards(
+    return `Awww... looks like dealer drew BlackJack!<br><br>You drew:<br> ${printCards(playerHand)}<br>Dealer drew:<br> ${printCards(
       dealerHand
     )}<br><hr> You lost 20 points...<br>${printPoints()}<hr><br><div id ="instructions">Press continue to play another turn. Press restart to end game.</div>`;
   }
@@ -282,6 +283,10 @@ var winningCondition = function () {
 
 //Function for next turn (continue button)
 var nextTurn = function () {
+  if (cardDeck.length < 8) {
+    gameMode = `no cards`;
+    return `<img src="https://media.giphy.com/media/KINAUcarXNxWE/giphy.gif?cid=ecf05e47s0fxtu6iwzpb8kebm4qakrjjoztruad4mi0yvyle&rid=giphy.gif&ct=g" class="center"></img><br> Looks like there are not enough cards to continue playing.<br>❗️ You ended the game with <b>${points}</b> points ❗️<br><br><div id="instructions">Press restart to end game.</div>`;
+  }
   if (points < 10) {
     gameMode = `no points`;
     return `<img src="https://media.giphy.com/media/KINAUcarXNxWE/giphy.gif?cid=ecf05e47s0fxtu6iwzpb8kebm4qakrjjoztruad4mi0yvyle&rid=giphy.gif&ct=g" class="center"></img><br>❗️ You have <b>${points}</b> points ❗️<br>Insufficient points to continue playing <br><br><div id="instructions">Press restart to end game.</div>`;
@@ -316,6 +321,8 @@ var main = function (input) {
     //Determine and announce winner
     myOutputValue = winningCondition();
   } else if (gameMode == `no points`) {
+    myOutputValue = nextTurn();
+  } else if (gameMode == `no cards`) {
     myOutputValue = nextTurn();
   }
   return myOutputValue;
