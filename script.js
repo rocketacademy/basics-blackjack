@@ -122,7 +122,7 @@ var runFunctionBasedOnBlackJackOutcome = function(playerBlackJackCheck, dealerBl
   }
   else {
     gameMode = 'HitOrStand';
-    if (playerAceInHand == true){
+    if (playerAceInHand == true && playerAceCardsValue <= 21){
     return myOutputValue = `You got ${outputOfCards(playerCards)} with a total value of ${playerCardsValue} or ${playerAceCardsValue}. <br> Dealer one-sided card value = ${dealerCards[0].name} <br> Please choose hit or stand.`}
     else {
       return myOutputValue = `You got ${outputOfCards(playerCards)} with a total value of ${playerCardsValue}. <br> Dealer one-sided card value = ${dealerCards[0].name} <br> Please choose hit or stand.`
