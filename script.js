@@ -5,12 +5,10 @@ var gameStageOne = "Draw 1st 2 cards for Player";
 var gameStageTwo = "Player choose to press 'hit' or 'stand'";
 var gameStageThree = "Result of winner";
 var gameMode = gameStagePlayer; //starting og game
-
 var noOfPlayer = 0;
-var nameOfPlayer = [];
-var playerNameWithPoint = [];
-var playerBetting = [];
-var noOfPoints = [];
+var nameOfPlayer = []; //create input player name array for number of player
+var playerBetting = []; //create betting array for number of player
+var noOfPoints = []; //create money left array for number of player
 var userDraw = []; // user cards
 var dealerDraw = []; // dealer cards
 var totalValueUser = []; // Total value of the user card
