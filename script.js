@@ -12,8 +12,14 @@ var computerScore = 0;
 var playerScore = 0;
 var gameOver = false;
 
+// for image
+var youWin =
+  '<img src="https://c.tenor.com/m1VMTi9N1A8AAAAi/you-win-you-did-it.gif"/>';
+var youLose =
+  '<img src="https://c.tenor.com/FhF7cOauHTcAAAAC/oyun-bitti-loser.gif"/>';
+
 // MAKE DECK FUNCTION to build up deck of cards//
-var makeDeck = function () {
+https: var makeDeck = function () {
   var cardDeck = [];
   var suits = ["hearts ♥", "diamonds ♦", "clubs ♣", "spades ♠"];
   var suitIndex = 0;
@@ -139,19 +145,47 @@ var getMessage = function () {
   scoreUpdates();
   // first message after clicking submit to give basic information
   if (gameMode == initial) {
-    return validMessage() + "<br><br>" + 'Enter "hit" or "stand".';
+    // check the game to identify the gameOver whether it's true or false
+    checkGame();
+    if (gameOver) {
+      return validMessage() + "<br><br>" + checkGame();
+    } else {
+      return validMessage() + "<br><br>" + 'Enter "hit" or "stand".';
+    }
   }
   // enter hit as input in main function
   if (gameMode == "hit mode") {
     //draw out one more card
     playerCards.push(drawOutCardPlayer());
-    return validMessage() + "<br><br>" + endOfGame();
+    // check the game to identify the gameOver whether it's true or false
+    checkGame();
+    if (!gameOver) {
+      return validMessage() + "<br><br>" + 'Please enter "hit" or "stand".';
+    }
+    return validMessage() + "<br><br>" + checkGame();
   }
   // enter stand as input in main function
   if (gameMode == "stand mode") {
-    //draw out one more card
-    computerCard.push(drawOutCardComputer());
-    return validMessage() + "<br><br>" + endOfGame();
+    //draw out card if computer score is below or equal to 17
+    if (computerScore <= 17) {
+      computerCard.push(drawOutCardComputer());
+      // check the game to identify the gameOver whether it's true or false
+      checkGame();
+      if (computerScore > 17) {
+        //resultMessage = "computer score kurang dri 17";
+        gameOver = true;
+      }
+    } else if (computerScore > 17) {
+      checkGame();
+      //resultMessage = "computer score lebih dri 17";
+      gameOver = true;
+    }
+    //checkGame();
+    //computerCard.push(drawOutCardComputer());
+    if (!gameOver) {
+      return validMessage() + "<br><br>" + 'Please enter "hit" or "stand".';
+    }
+    return validMessage() + "<br><br>" + checkGame();
   }
 };
 
@@ -162,10 +196,11 @@ var scoreUpdates = function () {
 };
 
 //to check if the game is end. by various way of ending
-var endOfGame = function () {
+var checkGame = function () {
   var resultMessage = "";
   scoreUpdates();
   if (gameOver) {
+    //console.log("game over" + gameOver == 1);
     while (
       computerScore < playerScore &&
       playerScore <= 21 &&
@@ -177,26 +212,40 @@ var endOfGame = function () {
   }
   if (playerScore == 21) {
     resultMessage =
-      "PLAYER BLACKJACK ! <br> Congratulation ~ Player wins <br> Refresh game to play again";
+      "PLAYER BLACKJACK ! <br> Congratulation ~ Player wins <br>" +
+      youWin +
+      "<br> Refresh game to play again";
+    gameOver = true;
   } else if (computerScore == 21) {
     resultMessage =
-      "COMPUTER BLACKJACK ! <br> Congratulation ~ Computer wins <br> Refresh game to play again";
+      "COMPUTER BLACKJACK ! Computer wins !! <br>" +
+      youLose +
+      "<br> Refresh game to play again";
+    gameOver = true;
   } else if (playerScore > 21) {
     resultMessage =
-      "Player went over 21 <br> Computer wins !! <br> Refresh game to play again";
+      "Player went over 21 <br> Computer wins !! <br>" +
+      youLose +
+      "<br> Refresh game to play again";
     gameOver = true;
   } else if (computerScore > 21) {
     resultMessage =
-      "Congratulation ~ Player wins <br> Refresh game to play again";
+      "Congratulation ~ Player wins <br>" +
+      youWin +
+      "<br> Refresh game to play again";
     gameOver = true;
   } else if (gameOver) {
+    //console.log("game over" + gameOver == 1);
     if (playerScore > computerScore) {
       console.log("PLAYER SCORE > COMPUTER SCORE");
       resultMessage =
-        "Congratulation ~ Player wins <br> Refresh game to play again";
+        "Congratulation ~ Player wins <br>" +
+        youWin +
+        "<br> Refresh game to play again";
     } else {
       console.log("COMPUTER SCORE > PLAYER SCORE");
-      resultMessage = "Computer wins !! <br> Refresh game to play again";
+      resultMessage =
+        "Computer wins !! <br>" + youLose + "<br> Refresh game to play again";
     }
   }
   return resultMessage;
@@ -212,6 +261,10 @@ var main = function (input) {
   input = input.toLowerCase();
   var myOutputValue = "";
 
+  // check if the gameOver is true
+  if (gameOver) {
+    return "End of Game ! <br> Please refresh your page";
+  }
   //press submit to get initial message
   if (!input && gameMode == initial) {
     console.log(gameMode);

@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <!-- Favicon configuration
+    Favicon configuration
     <link
       rel="apple-touch-icon"
       sizes="180x180"
@@ -33,7 +33,7 @@
     <link
       rel="shortcut icon"
       href="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/favicons/favicon.ico?v=2"
-    /> -->
+    />
     <meta name="apple-mobile-web-app-title" content="Rocket Academy" />
     <meta name="application-name" content="Rocket Academy" />
     <meta name="msapplication-TileColor" content="#2b5797" />
@@ -115,7 +115,7 @@
       }
 
       #container {
-        background-color: pink;
+        background-color: rgb(255, 228, 192);
         margin: 40px auto;
         max-width: 800px;
         padding: 38px 31px;
@@ -176,8 +176,14 @@
       <input id="input-field" />
       <br />
       <button id="submit-button">Submit</button>
+      <button id="hit-button">Hit</button>
+      <button id="stand-button">Stand</button>
       <p>Output:</p>
-      <div id="output-div">Please press submit to draw out the cards ~</div>
+      <div id="output-div">
+        <img src="https://c.tenor.com/uwlUGDhYo5wAAAAC/slothilda-sloth.gif" />
+        Hi ! Let's play BLACKJACK ! <br />
+        Please press "Submit" to draw out the cards ~ <br />
+      </div>
     </div>
     <!-- Import program logic -->
     <script src="script.js"></script>
@@ -187,6 +193,38 @@
       button.addEventListener("click", function () {
         // Set result to input value
         var input = document.querySelector("#input-field");
+        var result = main(input.value);
+
+        // Display result in output element
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
+
+        // Reset input value
+        input.value = "";
+      });
+    </script>
+    <script>
+      var buttonhit = document.querySelector("#hit-button");
+      buttonhit.addEventListener("click", function () {
+        // Set result to input value
+        var input = document.querySelector("#input-field");
+        input.value = "hit";
+        var result = main(input.value);
+
+        // Display result in output element
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
+
+        // Reset input value
+        input.value = "";
+      });
+    </script>
+    <script>
+      var buttonstand = document.querySelector("#stand-button");
+      buttonstand.addEventListener("click", function () {
+        // Set result to input value
+        var input = document.querySelector("#input-field");
+        input.value = "stand";
         var result = main(input.value);
 
         // Display result in output element
