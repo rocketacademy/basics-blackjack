@@ -1,11 +1,13 @@
 var createDeck = [];
 var num = [];
+var betPoints = 0;
 
 // Dealer object consists of the dealer data
 var dealerObject = {
   name: "Dealer",
   cards: [],
   totalCardValue: 0,
+  cardHidden: true,
 };
 
 // Player object consists of the player data
@@ -13,6 +15,7 @@ var playerObject = {
   name: "",
   cards: [],
   totalCardValue: 0,
+  points: 100,
 };
 
 var currentPlayer = playerObject;
@@ -140,9 +143,9 @@ var getCardToString = function (hand) {
 
   while (counter < hand.length) {
     var text = hand[counter].name + " of " + hand[counter].suit;
-    // if (hand == dealerObject.cards && counter > 0) {
-    //   text = "[Hidden]";
-    // }
+    if (hand == dealerObject.cards && counter > 0 && dealerObject.cardHidden) {
+      text = "[Hidden]";
+    }
     console.log(text);
     output += text + "<br>";
     counter += 1;
@@ -152,17 +155,38 @@ var getCardToString = function (hand) {
 };
 
 // This function is to check if the player or dealer has wins a blackjack or bust
-var check = function (handValue, name) {
+var check = function (hand) {
+  var addMessage = "";
+
   // Check if player has blackjack then player after getting the card
-  if (handValue == 21) {
+  if (hand.totalCardValue == 21) {
+    if (currentPlayer == playerObject) {
+      winPoints = betPoints * 2;
+      playerObject.points += winPoints;
+      addMessage += `Your bet points has been twiced. You won ${winPoints} points! It has been added to your current points.`;
+      betPoints = 0;
+    } else {
+      addMessage += `You lose ${betPoints} points. Dealer wins! Better luck next time!`;
+    }
     gameOver = true;
-    return `<br><br> Its blackjack. ${name} has won !`;
+    dealerObject.cardHidden = false;
+    return `<br><br> Its blackjack. ${hand.name} won! ${addMessage}`;
+
     // Check if its busts
-  } else if (handValue > 21) {
+  } else if (hand.totalCardValue > 21) {
+    if (currentPlayer == dealerObject) {
+      winPoints = betPoints * 2;
+      playerObject.points += winPoints;
+      addMessage += `Your bet points has been twiced. You won ${winPoints} points! It has been added to your current points.`;
+      betPoints = 0;
+    } else {
+      addMessage += `You lose ${betPoints} points. Dealer wins! Better luck next time!`;
+    }
     gameOver = true;
-    return `<br><br> ${name} busts.`;
+    dealerObject.cardHidden = false;
+    return `<br><br> ${hand.name} busts. ${addMessage}`;
   } else {
-    if (name != "Dealer") {
+    if (hand.name != "Dealer") {
       return `<br><br> Do you want to [H]it or [S]tand? (H/S)`;
     }
 
@@ -173,7 +197,7 @@ var check = function (handValue, name) {
 var defaultMessage = function () {
   var showDealerHand = getCardToString(dealerObject.cards);
   var showPlayerHand = getCardToString(playerObject.cards);
-  return ` ${showDealerHand} Dealer's hand valued at: ${dealerObject.totalCardValue} <br><br> ${showPlayerHand} Your hand valued at: ${playerObject.totalCardValue} `;
+  return ` ${showDealerHand} Dealer's hand valued at: ${dealerObject.totalCardValue} <br><br> ${showPlayerHand} Your hand valued at: ${playerObject.totalCardValue} <br> Current points: ${playerObject.points}`;
 };
 
 var main = function (input) {
@@ -190,14 +214,30 @@ var main = function (input) {
   console.log(createDeck);
 
   if (!playerObject.name) {
+    console.log("yes");
     if (!input) {
       return "The game will start after you enter your name. ";
     }
     playerObject.name = "Player " + input;
-    return `Welcome ${playerObject.name}. Click submit to draw your cards.`;
+    var myImage =
+      '<img src="https://c.tenor.com/IkDEp2JfsbcAAAAC/davidt-tennant-doctor-who.gif"/>';
+    return ` ${myImage} <br> Welcome ${playerObject.name}, you got a 100 points to play the game. Please input a bet number between 0 and 100 to start the game.`;
+  }
+
+  if (!betPoints) {
+    if (!Number(input)) {
+      return "Please enter a number or a number between 0 or 100.";
+    }
+    if (input == 0 || input > 100) {
+      return "Please input a bet number between 0 and 100";
+    }
+    betPoints = input;
+    return `${playerObject.name}, you bet ${betPoints} out of your ${playerObject.points} points. Your current points will be immediately deducted from your bet points! Click submit to draw out cards.`;
   }
 
   if (playerObject.cards.length == 0) {
+    playerObject.points -= betPoints;
+
     // 1st card distributed
     getCard(playerObject.cards);
     getCard(dealerObject.cards);
@@ -211,12 +251,14 @@ var main = function (input) {
 
     // Count player cards
     playerObject.totalCardValue = countCards(playerObject.cards);
-    dealerObject.totalCardValue = countCards(dealerObject.cards);
+    if (dealerObject.cardHidden) {
+      dealerObject.totalCardValue = dealerObject.cards[0].value;
+    } else {
+      dealerObject.totalCardValue = countCards(dealerObject.cards);
+    }
 
     //Check player cardValue if there is blackjack
-    output = check(playerObject.totalCardValue, playerObject.name);
-
-    gameStart = true;
+    output = check(playerObject);
     return defaultMessage() + output;
   }
 
@@ -230,16 +272,18 @@ var main = function (input) {
       console.log("Player hits");
       console.log(playerObject.cards);
       playerObject.totalCardValue = countCards(playerObject.cards);
-      output = check(playerObject.totalCardValue, playerObject.name);
-      if (gameOver) {
-        output += ` Dealer wins! Better luck next time! <br><br> Please refresh the page for a new game.`;
-      }
+      output = check(playerObject);
+      // if (gameOver) {
+      //   output += `Dealer wins! Better luck next time! <br><br> Please refresh the page for a new game.`;
+      // }
       return defaultMessage() + output;
     }
 
     if (input === "s") {
       console.log("player stand");
       playerStand = true;
+      dealerObject.cardHidden = false;
+      currentPlayer = dealerObject;
     }
     // how to output the winner name when the player bust
   }
@@ -248,9 +292,9 @@ var main = function (input) {
     getCard(dealerObject.cards);
     console.log("Dealer hits");
     dealerObject.totalCardValue = countCards(dealerObject.cards);
-    output = check(dealerObject.totalCardValue, dealerObject.name);
+    output = check(dealerObject);
     if (gameOver) {
-      output += ` ${playerObject.name} wins! Please refresh the page for a new game.`;
+      output += ` Please refresh the page for a new game.`;
       return `${defaultMessage()} ${output}`;
     }
   }
@@ -258,11 +302,24 @@ var main = function (input) {
   if (playerStand && dealerObject.totalCardValue > 17) {
     gameOver = true;
     if (playerObject.totalCardValue > dealerObject.totalCardValue) {
-      return `${defaultMessage()} <br><br> Player wins! Please refresh the page for a new game.`;
+      winPoints = betPoints * 2;
+      playerObject.points += winPoints;
+      betPoints = 0;
+      return `${defaultMessage()} <br><br> ${
+        playerObject.name
+      } wins! Your bet points has been twiced. You won ${winPoints}! It has been added to your current points. Please refresh the page for a new game.`;
     } else if (playerObject.totalCardValue == dealerObject.totalCardValue) {
-      return `${defaultMessage()} <br><br> Its a tie! Please refresh the page for a new game.`;
+      playerObject.points = playerObject.points + betPoints;
+      return `${defaultMessage()} <br><br> Its a tie! ${
+        playerObject.name
+      } Please refresh the page for a new game.`;
     }
-    return `${defaultMessage()} <br><br> Dealer wins! Please refresh the page for a new game.`;
+
+    losePoints = betPoints;
+    betPoints = 0;
+    return `${defaultMessage()} <br><br> Dealer wins! ${
+      playerObject.name
+    }. You lose ${losePoints} points! Please refresh the page for a new game.`;
   }
 
   return `${defaultMessage()}. <br><br> Click submit to see Dealer's next move`;

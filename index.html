@@ -115,7 +115,7 @@
       }
 
       #container {
-        background-color: pink;
+        background-color: #add8e6;
         margin: 40px auto;
         max-width: 800px;
         padding: 38px 31px;
@@ -176,8 +176,14 @@
       <input id="input-field" />
       <br />
       <button id="submit-button">Submit</button>
+      <button id="hit-button">Hit</button>
+      <button id="stand-button">Stand</button>
       <p>Output:</p>
       <div id="output-div">
+        <img
+          src="https://c.tenor.com/pvFJwncehzIAAAAC/hello-there-private-from-penguins-of-madagascar.gif"
+        />
+        <br />
         Welcome to Blackjack game. Please enter your name.
       </div>
     </div>
@@ -189,6 +195,38 @@
       button.addEventListener("click", function () {
         // Set result to input value
         var input = document.querySelector("#input-field");
+        var result = main(input.value);
+
+        // Display result in output element
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
+
+        // Reset input value
+        input.value = "";
+      });
+    </script>
+    <script>
+      var buttonHit = document.querySelector("#hit-button");
+      buttonHit.addEventListener("click", function () {
+        // Set result to input value
+        var input = document.querySelector("#input-field");
+        input.value = "h";
+        var result = main(input.value);
+
+        // Display result in output element
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
+
+        // Reset input value
+        input.value = "";
+      });
+    </script>
+    <script>
+      var buttonStand = document.querySelector("#stand-button");
+      buttonStand.addEventListener("click", function () {
+        // Set result to input value
+        var input = document.querySelector("#input-field");
+        input.value = "s";
         var result = main(input.value);
 
         // Display result in output element
