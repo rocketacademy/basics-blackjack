@@ -180,18 +180,21 @@ var determineWinner = function () {
 
   // Draw
   if (playerValue == comValue) {
-    result += "It's a draw!";
+    result +=
+      "<img src='https://c.tenor.com/x0KMo8Z7dDAAAAAd/maru-turns-maru-eyes.gif'><br>It's a draw!";
   }
 
   // Player win
   if ((playerValue > comValue && !isBust(playerValue)) || isBust(comValue)) {
-    result += "The player wins!";
+    result +=
+      "<img src='https://c.tenor.com/GTcT7HODLRgAAAAC/smiling-cat-creepy-cat.gif'><br>The player wins!";
     playerPoints += playerBet;
   }
 
   // Computer win
   if ((playerValue < comValue && !isBust(comValue)) || isBust(playerValue)) {
-    result += "The computer wins!";
+    result +=
+      "<img src='https://c.tenor.com/hu4sl_5rDXcAAAAC/cat-catcry.gif'><br>The computer wins!";
     playerPoints -= playerBet;
   }
 
@@ -222,7 +225,8 @@ var main = function (input) {
     playerValue = handCalculate(playerHand);
     comValue = handCalculate(comHand);
 
-    var outputString = "Do you want to hit(h) or stand(s)?";
+    var outputString =
+      "<img src='https://c.tenor.com/8rYvToRbFGMAAAAd/tom-and.gif'><br>Do you want to hit(h) or stand(s)?";
 
     outputString += printResults();
 
@@ -242,14 +246,16 @@ var main = function (input) {
     var outputString = "";
 
     if (isBust(playerValue)) {
-      outputString += "You've gone bust! Better luck next time.";
+      outputString +=
+        "<img src='https://c.tenor.com/cGbrvf_JNgIAAAAC/steiner-final-fantasy9.gif'><br>You've gone bust! Better luck next time.";
       outputString += determineWinner();
       gameState = "init";
     } else if (input == "stand" || input == "s") {
       outputString += "Press submit to see the computer's turn.";
       gameState = "com";
     } else {
-      outputString += "Do you want to hit(h) or stand(s)?";
+      outputString +=
+        "<img src='https://c.tenor.com/8rYvToRbFGMAAAAd/tom-and.gif'><br>Do you want to hit(h) or stand(s)?";
     }
 
     outputString += printResults();
