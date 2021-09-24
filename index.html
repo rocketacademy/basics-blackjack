@@ -150,7 +150,7 @@
 
       /* Style the collapsible content. */
       .content {
-        padding: 0 25px;
+        padding: 0 30px;
         background-color: rgb(241, 241, 241);
         color: rgb(4, 55, 114);
         max-height: 0;
@@ -163,23 +163,16 @@
         color: rgb(4, 55, 114);
       }
 
-      #gameinstructions {
-        color: rgb(155, 153, 153);
-        text-align: center;
-        margin-top: 38px;
-      }
-
       .card {
         width: 80px;
         height: 100px;
         padding: 10px;
-        border: solid 1px #808080;
         background-color: white;
         display: inline-block;
         border-radius: 10px;
         font-size: 13pt;
         text-align: center;
-        margin: 3px;
+        margin: 5px;
         border: solid 3px;
       }
 
@@ -208,7 +201,6 @@
     <div id="container">
       <p>Input your name to start game:</p>
       <input id="input-field" />
-      <br />
 
       <button id="submit-button">Submit</button>
       <button id="hit-button">Hit</button>
@@ -222,7 +214,7 @@
       <button type="button" class="collapsible">Never played Blackjack?</button>
       <div class="content">
         <p>
-          <u><i>Rules of Blackjack</i></u><br /><br />Player attempts to beat the dealer by getting a count as close to 21 as possible, without going over 21.<br><br>Cards will be shuffled. Dealer deals two cards to each player.<br/><br>Player can choose to hit (draw another card from the deck) or stand (proceed without adding another card). <br><br/>After player is done with the turn, dealer
+          <u><i>Rules of Blackjack</i></u><br /><br />Player attempts to beat the dealer by getting a count as close to 21 as possible, without going over 21.<br><br>Player starts with 100 points. Each turn's wager is 10 points.<br><br>Cards will be shuffled. Dealer deals two cards to each player.<br/><br>If player or dealer draws ace and 10, jack, queen or king, they win the turn with Blackjack cards <br><br>Player can choose to hit (draw another card from the deck) or stand (proceed without adding another card). <br><br/>After player is done with the turn, dealer
           makes their play.<br /><br>Cards of the player and dealer are compared - the higher number wins. <br /><br /><i>Goodluck!</i></p>
         </p>
       </div>
