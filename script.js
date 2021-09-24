@@ -17,6 +17,8 @@ var youWin =
   '<img src="https://c.tenor.com/m1VMTi9N1A8AAAAi/you-win-you-did-it.gif"/>';
 var youLose =
   '<img src="https://c.tenor.com/FhF7cOauHTcAAAAC/oyun-bitti-loser.gif"/>';
+var tie =
+  '<img src="https://c.tenor.com/W3xytTvpWAUAAAAC/shade-whatever.gif"/>';
 
 // MAKE DECK FUNCTION to build up deck of cards//
 https: var makeDeck = function () {
@@ -166,18 +168,20 @@ var getMessage = function () {
   }
   // enter stand as input in main function
   if (gameMode == "stand mode") {
-    //draw out card if computer score is below or equal to 17
+    //draw out card if computer score is below
     if (computerScore <= 17) {
       computerCard.push(drawOutCardComputer());
       // check the game to identify the gameOver whether it's true or false
       checkGame();
       if (computerScore > 17) {
-        //resultMessage = "computer score kurang dri 17";
+        //scoreUpdates();
+        resultMessage = "computer score kurang dri 17";
         gameOver = true;
       }
     } else if (computerScore > 17) {
+      //scoreUpdates();
       checkGame();
-      //resultMessage = "computer score lebih dri 17";
+      resultMessage = "computer score lebih dri 17";
       gameOver = true;
     }
     //checkGame();
@@ -233,6 +237,10 @@ var checkGame = function () {
       "Congratulation ~ Player wins <br>" +
       youWin +
       "<br> Refresh game to play again";
+    gameOver = true;
+  } else if (playerScore == computerScore) {
+    resultMessage =
+      "It's a tie !! <br>" + tie + "<br> Refresh game to play again";
     gameOver = true;
   } else if (gameOver) {
     //console.log("game over" + gameOver == 1);
