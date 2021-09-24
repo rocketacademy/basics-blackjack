@@ -12,7 +12,7 @@ var currentGameMode = issueCards;
 //52 card deck function
 var makeDeck = function () {
   var cardDeck = [];
-  var suits = ["Diamonds", "Clubs", "Hearts", "Spades"];
+  var suits = ["♦", "♣", "♥", "♠"];
   //create suits
   var suitCounter = 0;
   while (suitCounter < suits.length) {
@@ -48,7 +48,7 @@ var makeDeck = function () {
       var currentCard = {
         suit: currentSuit,
         rank: currentRank,
-        name: currentName,
+        name: `${currentName} of ${currentSuit}`,
         value: currentValue,
       };
 
@@ -130,7 +130,7 @@ var cardArrayDisplay = function (cardArray) {
   var cardNames = "";
   var arrayIndex = 0;
   while (arrayIndex < cardArray.length) {
-    var singleCardNames = `${cardArray[arrayIndex].name} of ${cardArray[arrayIndex].suit}<br>`;
+    var singleCardNames = `${cardArray[arrayIndex].name} <br>`;
     cardNames += singleCardNames;
     arrayIndex += 1;
   }
@@ -151,12 +151,10 @@ var main = function (input) {
     dealerCards = [];
     //issue two cards to player and dealer at start of round
     dealTwoCards(shuffledDeck, playerCards);
-    console.log(playerCards, "player card at start");
     playerCardValue = totalCardValue(playerCards);
 
     dealTwoCards(shuffledDeck, dealerCards);
     dealerCardValue = totalCardValue(dealerCards);
-    console.log(dealerCards, "dealer card at start");
 
     //check if player's hand is 21, if yes & dealer's hand is not 21, user instant wins and start new round again
     //tie if both hands are natural 21s
@@ -165,14 +163,14 @@ var main = function (input) {
         playerCards
       )}<br>Dealer hand: <br>${cardArrayDisplay(
         dealerCards
-      )}<br> NAT 21! Lucky!<br>Press submit again to play another round.`;
+      )}<br> NAT 21! Lucky!<br>${margeMagnificentGif} <br>Press submit again to play another round.`;
     }
     if (playerCardValue == 21 && dealerCardValue == 21) {
       return `Player hand: <br>${cardArrayDisplay(
         playerCards
       )}<br>Dealer hand: <br>${cardArrayDisplay(
         dealerCards
-      )}<br>WHOA TWO NAT 21s! It's a tie.<br>Press submit again to play another round.`;
+      )}<br>WHOA TWO NAT 21s! It's a tie.<br>Press submit again to play another round.<br> ${cheeringGif}`;
     }
 
     currentGameMode = playerRound;
@@ -181,9 +179,10 @@ var main = function (input) {
     //only show dealer's first cards
     return `Player hand: <br>${cardArrayDisplay(
       playerCards
-    )}<br> Dealer hand:<br> ${dealerCards[0].name} of ${
-      dealerCards[0].suit
-    }<br> <br>Please submit "hit" for another card, or "stay" to remain with your current hand.`;
+    )}<br> Dealer hand:<br> ${
+      dealerCards[0].name
+    }<br> <br>Please submit "hit" for another card, or "stay" to remain with your current hand.
+    ${alienStrikeGif}`;
   }
 
   //if player hits, add another card into hand
@@ -191,17 +190,14 @@ var main = function (input) {
     var newCard = shuffledDeck.pop();
     playerCards.push(newCard);
     playerCardValue = totalCardValue(playerCards);
-    console.log(shuffledDeck, "shuffled deck array 2");
-    console.log(playerCards, "player cards array 2");
 
     //if a hit results in a bust, to restart round
     if (playerCardValue > 21) {
       currentGameMode = issueCards;
-      return `You drew ${newCard.name} of ${
-        newCard.suit
-      }.<br> <br> Your cards have exceeded 21 points, better luck next time.<br> Player hand: <br>${cardArrayDisplay(
+      return `You drew ${newCard.name}
+      .<br> <br> Your cards have exceeded 21 points, better luck next time.<br> Player hand: <br>${cardArrayDisplay(
         playerCards
-      )}<br>Press submit again to play another round.`;
+      )}<br>Press submit again to play another round.<br>${bartTriedGif}`;
     }
     //if a hit results in 21, to check if dealer hand is also 21, if dealer hand is not 21, player wins
     if (playerCardValue == 21 && dealerCardValue != 21) {
@@ -210,7 +206,7 @@ var main = function (input) {
         playerCards
       )}<br>Dealer hand: <br>${cardArrayDisplay(
         dealerCards
-      )}<br> You won!<br>Press submit again to play another round.`;
+      )}<br> You won! ${cheeringGif}<br>Press submit again to play another round.`;
     }
     if (playerCardValue == 21 && dealerCardValue == 21) {
       currentGameMode = issueCards;
@@ -218,16 +214,16 @@ var main = function (input) {
         playerCards
       )}<br>Dealer hand: <br>${cardArrayDisplay(
         dealerCards
-      )}<br>You won!<br>Press submit again to play another round.`;
+      )}<br>You won!<br>${homerWhooGif}<br>Press submit again to play another round.`;
     }
 
-    return `You drew ${newCard.name} of ${
-      newCard.suit
+    console.log(playerCards, "player cards is it added?");
+    return `You drew ${
+      newCard.name
     }.<br> <br>Player hand: <br>${cardArrayDisplay(
       playerCards
-    )}<br> Dealer hand:<br> ${dealerCards[0].name} of ${
-      dealerCards[0].suit
-    }<br> <br>Please submit "hit" for another card, or "stay" to remain with your current hand.`;
+    )}<br> Dealer hand:<br> ${dealerCards[0].name}
+    <br> <br>Please submit "hit" for another card, or "stay" to remain with your current hand.<br>${dooDooGif}`;
   }
 
   //if player stays, switches to dealer's turn
@@ -240,7 +236,6 @@ var main = function (input) {
       dealerCardsDrawn.push(dealerDrawnCard);
       dealerCards.push(dealerDrawnCard);
       dealerCardValue = totalCardValue(dealerCards);
-      console.log(dealerCards);
     }
 
     //if dealer's cards equals or more than 17 but less than player's total, dealer to draw again till they get more than player
@@ -249,7 +244,17 @@ var main = function (input) {
       dealerCardsDrawn.push(dealerDrawnCard);
       dealerCards.push(dealerDrawnCard);
       dealerCardValue = totalCardValue(dealerCards);
-      console.log("loop ran");
+    }
+
+    //if both hands equal
+    if (dealerCardValue == playerCardValue) {
+      currentGameMode = issueCards;
+      return `It's a draw.<br> <br>Player's Hand: <br>${cardArrayDisplay(
+        playerCards
+      )}<br> <br>Dealer's Hand: ${cardArrayDisplay(
+        dealerCards
+      )}<br>${thatsItGif}<br>
+        Press submit to play another round.`;
     }
 
     //if dealer's card values busts 21, they lose
@@ -261,7 +266,8 @@ var main = function (input) {
         playerCards
       )}<br> <br>Dealer's Hand: ${cardArrayDisplay(
         dealerCards
-      )}<br>Press submit to play another round.`;
+      )}<br>${thatsItGif}<br>
+        Press submit to play another round.`;
     }
 
     //if dealer's cards more than player's cards, dealer wins
@@ -272,7 +278,7 @@ var main = function (input) {
         playerCards
       )}<br>Dealer's Hand:<br>${cardArrayDisplay(
         dealerCards
-      )}<br>Dealer won.<br> Press submit to play another round`;
+      )}<br>Dealer won.<br> Press submit to play another round <br> ${lifeIsHardGif}`;
     }
   }
 };
@@ -282,3 +288,22 @@ var main = function (input) {
 //   { suit: "Diamonds", rank: 12, name: "Queen", value: 9 },
 //   { suit: "Spades", rank: 1, name: "Ace", value: 11 },
 // ];
+
+var alienStrikeGif =
+  '<img src="https://giphy.com/gifs/thesimpsons-l2JdWTvw05sUAN6jm"/>';
+var margeMagnificentGif =
+  '<img src="https://giphy.com/gifs/foxtv-the-simpsons-marge-lumberjill-QsgFAdImwI3CNmMaM2"/>';
+var bartTriedGif =
+  '<img src ="https://giphy.com/gifs/the-simpsons-bart-simpson-at-least-you-tried-26ybwvTX4DTkwst6U"/>';
+var homerWhooGif =
+  '<img src ="https://giphy.com/gifs/season-17-the-simpsons-17x10-xT5LMHxhOfscxPfIfm"/>';
+var cheeringGif =
+  '<img src ="https://giphy.com/gifs/season-11-the-simpsons-11x6-3o6MbdObm34dbYAld6"/>';
+var hiFiveGif =
+  '<img src ="https://giphy.com/gifs/season-4-the-simpsons-4x4-xT5LMPJcI6tuY4Tqr6"/>';
+var thatsItGif =
+  '<img src="https://giphy.com/gifs/season-17-the-simpsons-17x12-l2JecJFtch8Xlsjpm"/>';
+var dooDooGif =
+  '<img src="https://giphy.com/gifs/season-17-the-simpsons-17x8-l2Jeja1WW50EQJVQI"/>';
+var lifeIsHardGif =
+  '<img src="https://giphy.com/gifs/funny-the-simpsons-kEY1upmMn0DVC"/>';
