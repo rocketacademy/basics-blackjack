@@ -426,6 +426,11 @@ var displayEliminatedPlayers = function (eliminatedPlayersArray) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 var main = function (input) {
+  var blackJackImg =
+    "<img src= https://c.tenor.com/IHsmIuB1ntgAAAAd/batman-joker.gif/>";
+  var letsBeginImg =
+    "<img src= https://c.tenor.com/yFZpXBKX61sAAAAC/poker-chips.gif>";
+
   if (gameOver) {
     return "The game is over. Please refresh to play again.";
   }
@@ -440,7 +445,7 @@ var main = function (input) {
     //Progress game to next mode
     mode = GAME_MODE_PLAYER_NAME;
     // Output a msg about the number of players the user has chosen
-    return `There are ${initialNumOfPlayers} players in this game. Player 1, please enter your name to begin.`;
+    return `There are ${initialNumOfPlayers} players in this game. Player 1, please enter your name to begin. <br> ${letsBeginImg}`;
   }
   // Mode to get player names
   if (mode == GAME_MODE_PLAYER_NAME) {
@@ -543,7 +548,7 @@ var main = function (input) {
       var myOutputValue = `
       ${playerProfiles[currPlayerIndex].name}
       has a Blackjack! Player will win if computer/dealer does not also have a Blackjack.<br>
-      ${getDefaultOutput()} `;
+      ${getDefaultOutput()} <br> ${blackJackImg} `;
 
       // End curr player's turn: Cue next player to play, else cue computer's turn if currPlayer is the last player
       endCurrPlayerTurn();
@@ -555,7 +560,7 @@ var main = function (input) {
 
     // Display card to user and prompt them to hit or stand
     return `${getDefaultOutput()} <br><br>
-      ==> Please enter "hit" or "stand", then press Submit`;
+      ==> Please enter "hit" or "stand", then press Deal`;
   }
 
   //Mode where user must decide whether to hit or stand.
