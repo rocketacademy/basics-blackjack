@@ -12,6 +12,15 @@ var multiplier = 1;
 var noOfAces_Player = 0;
 var noOfAces_Computer = 0;
 var deck = [];
+var yesImage = '<img src="https://c.tenor.com/Ud36Rrav628AAAAC/yes-baby.gif"/>';
+var damnitImage =
+  '<img src="https://c.tenor.com/TO4pjcXk3OwAAAAM/angry-seccato.gif"/>';
+var bankruptImage =
+  '<img src="https://c.tenor.com/JC3PMZZdsO0AAAAM/wheel-of-fortune-wheel.gif"/>';
+var drawImage =
+  '<img src="https://c.tenor.com/Nrdj_o8Kj3kAAAAC/standoff-dominic-toretto.gif"/>';
+var casinoImage =
+  '<img src="https://c.tenor.com/ueqZ53hTwzsAAAAM/gagarin-partners-cpa-casino.gif"/>';
 var makeDeck = function () {
   // create the empty deck at the beginning
   var deck = [];
@@ -119,16 +128,22 @@ var resetValues = function () {
   computerValue = 0;
   playerHand = [];
   computerHand = [];
+  noOfAces_Player = 0;
+  noOfAces_Computer = 0;
 };
 
-// Function: Display your hand + computer's hand
-var displayHand = function () {
+// Function: Add card name and suit into your hand + computer's hand
+var createHand = function () {
   for (i = 0; i < playerArray.length; i++) {
     playerHand.push(`${playerArray[i].name} ${playerArray[i].suit}`);
   }
   for (i = 0; i < computerArray.length; i++) {
     computerHand.push(`${computerArray[i].name} ${computerArray[i].suit}`);
   }
+};
+
+// Function: Display your hand + computer's hand
+var displayHand = function () {
   return `Your hand: ${playerHand.join(
     ", "
   )} with a sum of ${playerValue}.<br/><br/>Computer's hand: ${computerHand.join(
@@ -189,19 +204,32 @@ var hitCard = function (array, value) {
 var playerWin = function () {
   playerWallet += betValue;
   myOutputValue =
-    `You won $${betValue}! <br/><br/>` + displayHand() + displayWallet();
+    `You won $${betValue}!<br/><br/>` +
+    yesImage +
+    `<br/>` +
+    displayHand() +
+    displayWallet();
   gameMode = RESET;
 };
 
 var playerLose = function () {
   playerWallet -= betValue;
   myOutputValue =
-    `You lost $${betValue}! <br/><br/>` + displayHand() + displayWallet();
+    `You lost $${betValue}! <br/><br/>` +
+    damnitImage +
+    `<br/>` +
+    displayHand() +
+    displayWallet();
   gameMode = RESET;
 };
 
 var draw = function () {
-  myOutputValue = `It's a draw! <br/><br/>` + displayHand() + displayWallet();
+  myOutputValue =
+    `It's a draw! <br/><br/>` +
+    drawImage +
+    `<br/>` +
+    displayHand() +
+    displayWallet();
   gameMode = RESET;
 };
 
@@ -212,25 +240,29 @@ var determineBlackJack = function (playerValue, computerValue) {
   } else if (noOfAces_Player == 2) {
     multiplier = 3;
     betValue = betValue * multiplier;
+    createHand();
     playerWin();
     myOutputValue = "Two Aces! " + myOutputValue;
   } else if (playerValue == 21) {
     multiplier = 2;
     betValue = betValue * multiplier;
+    createHand();
     playerWin();
     myOutputValue = "Blackjack! " + myOutputValue;
   } else if (noOfAces_Computer == 2) {
     multiplier = 3;
     betValue = betValue * multiplier;
+    createHand();
     playerLose();
     myOutputValue = "The computer has two Aces! " + myOutputValue;
   } else if (computerValue == 21) {
     multiplier = 2;
     betValue = betValue * multiplier;
+    createHand();
     playerLose();
     myOutputValue = "The computer got a Blackjack! " + myOutputValue;
   } else {
-    displayHand();
+    createHand();
     console.log(playerHand);
     myOutputValue =
       `Your hand: <br/><br/>${playerHand.join(
@@ -337,8 +369,6 @@ var main = function (input) {
     // Cards are summed up to get playerValue and computerValue
     playerValue = sumArrayValues(playerArray, playerValue);
     computerValue = sumArrayValues(computerArray, computerValue);
-    console.log(playerValue);
-    console.log(computerValue);
     // The cards are analysed for game winning conditions, e.g. Blackjack.
     determineBlackJack(playerValue, computerValue);
 
@@ -379,7 +409,9 @@ var main = function (input) {
       playerWallet = 20;
       myOutputValue =
         myOutputValue +
-        "...<br/><br/>...<br/><br/>...<br/><br/>Oops, you are BANKRUPT! <br/><br/>Hey, cheer up, here's $20. Click 'Submit' to play again! ";
+        "...<br/><br/>Oops, you are BANKRUPT! <br/><br/>" +
+        bankruptImage +
+        "<br/><br/>Hey, cheer up, here's $20. Click 'Submit' to play again! ";
       gameMode = START;
     }
   }
