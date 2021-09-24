@@ -26,7 +26,23 @@ var dealerAceInHand = false;
 //function to create deck
 var makeDeck = function () {
   
-  var suits = ['hearts', 'diamonds', 'clubs', 'spades'];
+  var suits = ['♥️', '♦️', '♣️', '♣️'];
+  var emojiNames = {
+    1:'🅰️',
+    2:'2️⃣',
+    3:'3️⃣',
+    4:'4️⃣',
+    5:'5️⃣',
+    6:'6️⃣',
+    7:'7️⃣',
+    8:'8️⃣',
+    9:'9️⃣',
+    10:'🔟',
+    11:'🕺🏽',
+    12:'👸🏽',
+    13:'🤴🏽',
+  };
+
   var suitIndex = 0;
   while (suitIndex < suits.length) {
     var currentSuit = suits[suitIndex];
@@ -47,11 +63,13 @@ var makeDeck = function () {
         rankCounter = 10;
         cardName = 'king';
       }
-
+      
+      var emojiName = emojiNames[counter];
       var card = {
         name: cardName,
         suit: currentSuit,
         rank: rankCounter,
+        emojiName: emojiName,
       };
       cardDeck.push(card);
        counter += 1;
@@ -96,11 +114,11 @@ var checkBlackJack = function(cardsInHand){
 var runFunctionBasedOnBlackJackOutcome = function(playerBlackJackCheck, dealerBlackJackCheck){
   if (playerBlackJackCheck == true && dealerBlackJackCheck != true) {
     gameMode = 'Initialize Game'
-    return myOutputValue = `You got ${outputOfCards(playerCards)}. <br> A BlackJack!!. You Won!`;
+    return myOutputValue = `You got ${outputOfCards(playerCards)}. <br> A BlackJack!! You Won! <br>\<img src="https://c.tenor.com/EuASQmkMttsAAAAC/chow-yun-fat-laughing.gif"\>`;
   }
   else if (playerBlackJackCheck == true && dealerBlackJackCheck == true) {
     gameMode = 'Initialize Game';
-    return myOutputValue = `You got ${outputOfCards(playerCards)}. <br> Dealer got ${outputOfCards(dealerCards)}. <br> It's a tie with both blackjack!!`;
+    return myOutputValue = `You got ${outputOfCards(playerCards)}. <br> Dealer got ${outputOfCards(dealerCards)}. <br> It's a tie with both blackjack!! <br>\<img src="https://c.tenor.com/1B3KuSRuHRsAAAAM/embarrassing-fail.gif"\>`;
   }
   else {
     gameMode = 'HitOrStand';
@@ -117,7 +135,7 @@ var outputOfCards = function(cardsInHand){
 var cards = '';
 var handIndex = 0;
 while (handIndex < cardsInHand.length){
-  cards = cards + ' , ' + cardsInHand[handIndex].name +  ' of ' + cardsInHand[handIndex].suit;
+  cards = cards + ' , ' + cardsInHand[handIndex].emojiName +  ' of ' + cardsInHand[handIndex].suit;
   handIndex += 1;
 }
 
@@ -198,8 +216,29 @@ var calculateDealerAceValue = function(){
   }
 };
 
+//helper function for input validation check and corresponding message
+var inputValidation = function(input){
+  if (input != 'hit' && input != 'stand'){
+  return myOutputValue = `Invalid input. Pls enter either hit or stand.<br>You got ${outputOfCards(playerCards)}. <br> Dealer one-sided card value = ${dealerCards[0].name}`
+  }
+}
+
+//helper function for hit conditions and messages
+var runFunctionBasedOnHit = function(){
+  if(playerAceInHand == true && playerAceCardsValue <= 21 && playerCardsValue <= 21){
+    return myOutputValue = `You got ${outputOfCards(playerCards)} with a total value of ${playerCardsValue} or ${playerAceCardsValue}. <br> Dealer one-sided card value = ${dealerCards[0].name}  <br>  Please choose hit or stand.`
+  }
+    //if value does not exceed 21, return value and if player wants to continue hit or stand
+   else if((playerAceInHand != true && playerCardsValue <= 21) || (playerAceInHand == true && (playerAceCardsValue <= 21 || playerCardsValue <= 21))){
+    return myOutputValue = `You got ${outputOfCards(playerCards)} with a total value of ${playerCardsValue}. <br> Dealer one-sided card value = ${dealerCards[0].name}  <br>  Please choose hit or stand.`
+    } else{
+      gameMode = 'Initialize Game'
+      return myOutputValue = `You have busted with ${outputOfCards(playerCards)} with a total value of ${playerCardsValue}. <br> Dealer has won!`
+    }
+}
+
 var main = function (input) {
-  
+
   if (gameMode == 'Initialize Game'){
     //deal 2 cards to player and dealer
     playerCards = cardDeck.splice(0, 2);
@@ -243,7 +282,11 @@ var main = function (input) {
   }
   
   //player decision to hit or stand based on initial cards
-  if (gameMode == 'HitOrStand'){
+  if (gameMode == 'HitOrStand'){    
+  //input validation to ensure either hit or stand
+    if (inputValidation(input)){
+      return myOutputValue;  
+    } 
     //condition if player decide to hit
     if (input == 'hit'){    
      // add one card to playerCards
@@ -263,21 +306,12 @@ var main = function (input) {
     playerAceInHand = true;
     calculatePlayerAceValue();    
     }
-    
-    if(playerAceInHand == true && playerAceCardsValue <= 21 && playerCardsValue <= 21){
-      return `You got ${outputOfCards(playerCards)} with a total value of ${playerCardsValue} or ${playerAceCardsValue}. <br> Dealer one-sided card value = ${dealerCards[0].name}  <br>  Please choose hit or stand.`
-    }
-      //if value does not exceed 21, return value and if player wants to continue hit or stand
-     else if((playerAceInHand != true && playerCardsValue <= 21) || (playerAceInHand == true && (playerAceCardsValue <= 21 || playerCardsValue <= 21))){
-      return `You got ${outputOfCards(playerCards)} with a total value of ${playerCardsValue}. <br> Dealer one-sided card value = ${dealerCards[0].name}  <br>  Please choose hit or stand.`
-      } else{
-        gameMode = 'Initialize Game'
-        return `You have busted with ${outputOfCards(playerCards)} with a total value of ${playerCardsValue}. <br> Dealer has won!`
-      }
+    //run function based on hit criteria
+    runFunctionBasedOnHit();
+    return myOutputValue;    
     }
     //condition if player decide to stand
-    else if (input == 'stand'){
-      
+    else if (input == 'stand'){      
       //use highest value of player ace hand.
       if(playerAceInHand == true && playerAceCardsValue <= 21 && playerCardsValue < playerAceCardsValue){
         playerCardsValue = playerAceCardsValue;
@@ -286,8 +320,7 @@ var main = function (input) {
       //if dealer has blackjack, game ends.
       if(dealerBlackJackCheck == true) {
         gameMode = 'Initialize Game'
-        return `You got ${outputOfCards(playerCards)} with a total value of ${playerCardsValue}. <br> Dealer has cards ${outputOfCards(dealerCards)} <br> Dealer has won with a blackjack!`
-      
+        return `You got ${outputOfCards(playerCards)} with a total value of ${playerCardsValue}. <br> Dealer has cards ${outputOfCards(dealerCards)} <br> Dealer has won with a blackjack!<br>\<img src="https://thumbs.gfycat.com/UnacceptablePowerlessDoctorfish-max-1mb.gif"\>`      
         
       // while dealer total value < 17 then add one card to dealer (loop) and sum dealer cards value
       } else{
@@ -319,12 +352,8 @@ var main = function (input) {
         console.log('final print out', finalResults)
         gameMode = 'Initialize Game'
         return finalResults
-        } 
-      }
+      } 
+    }
   }
 
-      // //input validation to ensure that only hit or stand are entered.
-      // else{      
-      // return `Pls enter either hit or stand.<br>You got ${outputOfCards(playerCards)} with a total value of ${playerCardsValue}. <br> Dealer one-sided card value = ${dealerCards[0].name}`
-      // } 
 }; 
