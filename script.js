@@ -1,78 +1,117 @@
 //Global variables defining the different game modes and setting default to gameModeOne
+var gameModeZero = "enter number of players";
 var gameModeOne = "deal cards";
 var gameModeTwo = "player turn";
 var gameModeThree = "results";
 
-var gameMode = gameModeOne;
+var gameMode = gameModeZero;
 var playerHand = [];
+var allPlayerHand = [];
 var dealerHand = [];
 var cardDeck = [];
+var numberOfPlayers = 0;
+var playerNumber = 0;
 
+//Game mode zero to input number of players
 var main = function (input) {
+  var myOutputValue =
+    "Please enter the number of players and hit submit to play.";
+  if (gameMode == gameModeZero && input > 0) {
+    numberOfPlayers = input;
+    gameMode = gameModeOne;
+    return (
+      (myOutputValue = "Number of players: " + numberOfPlayers) +
+      "<br><br>Once all players are ready, hit the submit button and the dealer will start dealing."
+    );
+  }
+
+  //Game mode one where cards are shuffled and dealt to all players and dealer
   if (gameMode == gameModeOne) {
+    allPlayerHand = [];
     //Deck is created and shuffled
     cardDeck = shuffleCards(makeDeck());
+
     //Players are dealt 2 cards each
-    playerHand = dealPlayerCards(cardDeck);
-    console.log(playerHand);
+    var playerIndex = 0;
+    while (playerIndex < numberOfPlayers) {
+      var currentPlayerHand = dealPlayerCards(cardDeck);
+      playerIndex += 1;
+      allPlayerHand.push(currentPlayerHand);
+    }
+    console.log(allPlayerHand);
+
     //Dealer is dealt 2 cards
     dealerHand = dealDealerCards(cardDeck);
     console.log(dealerHand);
-    console.log(cardDeck);
+
     //GameMode changes to player turn
     gameMode = gameModeTwo;
+    playerNumber = 0;
 
     var myOutputValue =
-      "Dealer deals the cards...<br><br><br>Player's turn.<br><br>Hit the submit button to view your hand";
+      "Dealer deals the cards...<br><br><br>Player " +
+      (playerNumber + 1) +
+      "'s turn.<br><br>Hit the submit button to view your hand";
     return myOutputValue;
   }
 
-  //Game mode 2 where player views his hand and decides on whether to hit or stand
+  //Game mode 2 where each player views his hand and decides on whether to hit or stand
   //Check to ensure that player has > 14 points
-  if (gameMode == gameModeTwo) {
+  if (gameMode == gameModeTwo && playerNumber < numberOfPlayers) {
     //In game mode 2, submitting empty input box will show player hand
     var myOutputValue =
-      "Player hand:<br>" +
-      showHand(playerHand) +
-      "<br>To hit: Input H<br>To stand: Input S<br><br>You need a minimum of 14 points to Stand";
+      "Player " +
+      (playerNumber + 1) +
+      "'s hand:<br>" +
+      showHand(allPlayerHand[playerNumber]) +
+      '<br>To hit: Input "h"<br>To stand: Input "s"<br><br>You need a minimum of 14 points to Stand';
     //If player enters H, additional card will be drawn
-    if (input == "H") {
-      playerHand = drawCard(playerHand, cardDeck);
+    if (input == "h") {
+      drawCard(allPlayerHand[playerNumber], cardDeck);
       myOutputValue =
-        "Player hand:<br>" +
-        showHand(playerHand) +
-        "<br>To hit: Input H<br>To stand: Input S<br><br>You need a minimum of 14 points to Stand";
+        "Player " +
+        (playerNumber + 1) +
+        "'s hand:<br>" +
+        showHand(allPlayerHand[playerNumber]) +
+        '<br>To hit: Input "h"<br>To stand: Input "s"<br><br>You need a minimum of 14 points to Stand';
       return myOutputValue;
       //If player enters S, dealer will draw cards automatically and game mode will change to game mode 3. In multiplayer mode, this will move on to next player instead until all players have drawn.
     }
-    if (input == "S" && countHand(playerHand) >= 14) {
-      //Once player chooses to stand, dealer can start drawing cards
-      dealerHand = topupDealerHand(dealerHand, cardDeck);
-      gameMode = gameModeThree;
+    if (input == "s" && countHand(allPlayerHand[playerNumber]) >= 14) {
+      playerNumber += 1;
+      if (playerNumber == numberOfPlayers) {
+        //Once all players are done, dealer can start drawing cards
+        dealerHand = topupDealerHand(dealerHand, cardDeck);
+        gameMode = gameModeThree;
+        return (myOutputValue =
+          "Dealer's turn.<br><br>Dealer is drawing the necessary cards...<br><br><br>Press submit to view results.");
+      }
       return (myOutputValue =
-        "Dealer's turn.<br><br>Dealer is drawing the necessary cards...<br><br><br>Press submit to view results.");
+        "Player " +
+        (playerNumber + 1) +
+        "'s turn.<br><br>Hit the submit button to view your hand");
     }
     return myOutputValue;
+  }
+  if (gameMode == gameModeTwo && playerNumber == numberOfPlayers) {
+    //Once player chooses to stand, dealer can start drawing cards
+    dealerHand = topupDealerHand(dealerHand, cardDeck);
+    gameMode = gameModeThree;
   }
 
   //After dealer is done adding cards, dealer will call for the results
   if (gameMode == gameModeThree) {
     myOutputValue =
-      "Player hand:<br>" +
-      showHand(playerHand) +
-      "<br><br>Dealer hand:<br>" +
-      showHand(dealerHand) +
-      "<br><br>" +
-      determineWinner(dealerHand, playerHand) +
-      '<br><br>Input "R" to play another round.';
+      printFinalResults() + '<br>Input "r" to play another round.';
 
-    if (input == "R") {
+    if (input == "r") {
       gameMode = gameModeOne;
       myOutputValue =
         "Dealer is shuffling the new deck...<br><br><br>Press submit once you're ready to play.";
     }
     return myOutputValue;
   }
+  return myOutputValue;
 };
 
 //Function to create deck of 52 cards
@@ -155,6 +194,7 @@ var dealPlayerCards = function (cardDeck) {
     playerHand.push(drawnCard);
     cardIndex += 1;
   }
+  console.log(playerHand);
   return playerHand;
 };
 
@@ -173,7 +213,7 @@ var dealDealerCards = function (cardDeck) {
   return dealerHand;
 };
 
-//Funtion to print out cards in player's hand
+//Function to print out cards in player's hand
 var showHand = function (hand) {
   var handIndex = 0;
   var handOutput = " ";
@@ -181,8 +221,8 @@ var showHand = function (hand) {
     handOutput =
       handOutput + hand[handIndex].name + hand[handIndex].suit + "<br>";
 
-    console.log(hand[handIndex].name);
-    console.log(hand[handIndex].suit);
+    //console.log(hand[number][handIndex].name);
+    //console.log(hand[number][handIndex].suit);
     handIndex += 1;
   }
   return handOutput;
@@ -209,26 +249,46 @@ var countHand = function (hand) {
 
     rankIndex += 1;
   }
+  //Check for ace pairs
+  if (totalPoints == 2) {
+    totalPoints = totalPoints + 19;
+    return totalPoints;
+  }
+
+  //loop through hand to check for ace and add 10 to total points
+  var index = 0;
+  while (index < hand.length) {
+    var currentCardRank = hand[index].rank;
+    var currentCardPoints = currentCardRank;
+    if (currentCardPoints == 1 && totalPoints <= 11) {
+      totalPoints = totalPoints + 10;
+
+      return totalPoints;
+    }
+    index += 1;
+  }
+
   return totalPoints;
 };
 
 //Function to determine winner
-var determineWinner = function (dealerHand, playerHand) {
+var determineWinner = function (dealerHand, hand, number) {
   var dealerPoints = countHand(dealerHand);
-  var playerPoints = countHand(playerHand);
+  var playerPoints = countHand(hand);
+  var playerIndex = number + 1;
 
   if (dealerPoints > 21 && playerPoints > 21) {
     return "Its a draw";
   }
   if (dealerPoints > 21 && playerPoints <= 21) {
-    return "Player win";
+    return "Player " + playerIndex + " wins";
   }
   if (dealerPoints <= 21 && playerPoints > 21) {
-    return "Dealer win";
+    return "Dealer wins";
   }
   if (dealerPoints <= 21 && playerPoints <= 21) {
-    if (dealerPoints > playerPoints) return "Dealer win";
-    if (dealerPoints < playerPoints) return "Player win";
+    if (dealerPoints > playerPoints) return "Dealer wins";
+    if (dealerPoints < playerPoints) return "Player " + playerIndex + " wins";
     else return "Its a draw";
   }
 };
@@ -254,4 +314,23 @@ var topupDealerHand = function (hand, deck) {
     topupIndex += 1;
   }
   return hand;
+};
+
+//Function to print final results
+var printFinalResults = function () {
+  var myOutputValue = "Dealer's hand:<br>" + showHand(dealerHand) + "<br>";
+  var resultsIndex = 0;
+  while (resultsIndex < numberOfPlayers) {
+    myOutputValue =
+      myOutputValue +
+      "Player " +
+      (resultsIndex + 1) +
+      "'s hand:<br>" +
+      showHand(allPlayerHand[resultsIndex]) +
+      "<br>" +
+      determineWinner(dealerHand, allPlayerHand[resultsIndex], resultsIndex) +
+      "<br><br>";
+    resultsIndex += 1;
+  }
+  return myOutputValue;
 };
