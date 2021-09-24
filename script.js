@@ -62,15 +62,15 @@ var deck = [
   },
   {
     // Computer
-    name: "6",
+    name: "ace",
     suit: "hearts",
-    rank: 6,
+    rank: 11,
   },
   {
     //player
-    name: "10",
+    name: "ace",
     suit: "hearts",
-    rank: 10,
+    rank: 11,
   },
 ];
 
@@ -79,7 +79,7 @@ var makeDeck = function () {
   // Initialise an empty deck array
   var cardDeck = [];
   // Initialise an array of the 4 suits in our deck. We will loop over this array.
-  var suits = ["hearts", "diamonds", "clubs", "spades"];
+  var suits = ["Hearts", "Diamonds", "Clubs", "Spades"];
 
   // Loop over the suits array
   var suitIndex = 0;
@@ -97,13 +97,13 @@ var makeDeck = function () {
 
       // If rank is 1, 11, 12, or 13, set cardName to the ace or face card's name
       if (cardName == 1) {
-        cardName = "ace";
+        cardName = "Ace";
       } else if (cardName == 11) {
-        cardName = "jack";
+        cardName = "Jack";
       } else if (cardName == 12) {
-        cardName = "queen";
+        cardName = "Queen";
       } else if (cardName == 13) {
-        cardName = "king";
+        cardName = "King";
       } else if (cardName == 1) {
         cardName = "1️⃣";
       } else if (cardName == 2) {
@@ -127,13 +127,13 @@ var makeDeck = function () {
       }
 
       // If card suit is hearts, diamonds, clubs or spades, set cardSuit to emoji
-      if (currentSuit == "hearts") {
+      if (currentSuit == "Hearts") {
         currentSuit = "♥";
-      } else if (currentSuit == "diamonds") {
+      } else if (currentSuit == "Diamonds") {
         currentSuit = "♦";
-      } else if (currentSuit == "clubs") {
+      } else if (currentSuit == "Clubs") {
         currentSuit = "♣";
-      } else if (currentSuit == "spades") {
+      } else if (currentSuit == "Spades") {
         currentSuit = "♠";
       }
 
@@ -146,12 +146,12 @@ var makeDeck = function () {
 
       // Update rank of card if the card is a face card
 
-      if (cardName == "jack" || cardName == "queen" || cardName == "king") {
+      if (cardName == "Jack" || cardName == "Queen" || cardName == "King") {
         card.rank = 10;
       }
 
       // Update rank of card if it is an ace card
-      if (cardName == "ace") {
+      if (cardName == "Ace") {
         card.rank = 11;
       }
       // Add the new card to the deck
@@ -209,8 +209,6 @@ var main = function (input) {
     if (gameStatus == "AFTER-PLACING-BET") {
       player.currentBet = Number(input);
       player.points = Number(player.points) - Number(player.currentBet);
-      console.log("Player Current bet (main) is " + player.currentBet);
-      console.log("Player points (main) left is " + player.points);
       gameStatus = "CARD DISTRIBUTION";
       return playBlackJack(input);
     }
@@ -259,6 +257,7 @@ var distributeCards = function () {
 
   var dealerBlackjackImg = `<img src="https://c.tenor.com/l99hses0uC8AAAAC/hehe-mr-bean.gif" width="30%";>`;
   var playerBlackjackImg = `<img src="https://c.tenor.com/Y9bt10ptCPQAAAAC/mr-bean-dance.gif" width="30%";>`;
+  var drawImg = `<img src="https://c.tenor.com/lowhvrplIS8AAAAC/mr-bean.gif" width="30%";>`;
 
   var output = "";
 
@@ -283,6 +282,9 @@ var distributeCards = function () {
     computer.cards.push(cardDeck.pop());
   }
 
+  console.log(player);
+  console.log(computer);
+
   // Display cards to player but only show 1 card from dealer
   var cardsDrawnStatement = displayHand(player);
 
@@ -296,7 +298,9 @@ var distributeCards = function () {
     nextRoundInstruction = calNextRound();
     output =
       cardsDrawnStatement +
-      "<br><b>Both you and dealer drew a blackjack! It's a draw.</b><br><br>" +
+      "<br><b>Both you and dealer drew a blackjack! It's a draw.</b><br>" +
+      drawImg +
+      "<br>" +
       nextRoundInstruction;
     return output;
   }
@@ -313,10 +317,6 @@ var distributeCards = function () {
       "<br>" +
       nextRoundInstruction;
 
-    console.log(
-      "Player's total points after Dealer wins BJ is " + player.points
-    );
-
     return output;
   }
 
@@ -332,25 +332,17 @@ var distributeCards = function () {
       "<br>" +
       nextRoundInstruction;
 
-    console.log("Player's total points after winning BJ is " + player.points);
-
     return output;
   }
 
-  // If there is no blackjack, player will decide to hit or stand
+  // Generate hint statement
   var hintStatement = generateHint();
 
+  // If there is no blackjack, player will decide to hit or stand
   output =
     cardsDrawnStatement +
     `<br>Do you want to hit or stand? Submit "h" to hit, "s" to stand.` +
     hintStatement;
-
-  console.log(player);
-  console.log(computer);
-
-  console.log(
-    `Numbers of cards in CardDeck after card distribution is ` + cardDeck.length
-  );
 
   return output;
 };
@@ -625,11 +617,6 @@ var dealerHitOrStand = function () {
 
 // Function to play game
 var playBlackJack = function (input) {
-  console.log(`Current game status is ${gameStatus}`);
-
-  console.log("Player Current bet (playBJ) is " + player.currentBet);
-  console.log("Player points (playBJs) left is " + player.points);
-
   var inputValidationResults = inputValidity(input);
 
   if (inputValidationResults == true) {
@@ -658,6 +645,3 @@ var playBlackJack = function (input) {
 
   return inputValidationResults;
 };
-
-// Reduce repetitive in dealer hit or stand function
-// Do we need to show current bet and points on every turn?
