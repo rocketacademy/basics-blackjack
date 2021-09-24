@@ -492,32 +492,49 @@ var checkWinningCondition = function () {
 };
 
 var resetGame = function () {
+  // reset gamestate to 0
   gameMode = 0;
+  // clear the current player tracking index
   playerIndex = 0;
+  // empty the natural winner list
   naturalList = [];
+  // empty the list of bust players
   bustList = [];
+  // provide user instruction
   var myString = "Click the submit button to reset the game.";
   return myString;
 };
 
 var displayDealtCards = function () {
   var myString = "";
+  // for all participants
   for (var i = 0; i < playerList.length; i += 1) {
+    // if the participant is the dealer
     if (i == playerList.length - 1) {
+      // state the dealer cards
       myString += `Dealer cards:<br><div class="row">`;
+      // if not the dealer (it is a player)
     } else {
+      // player number representation
       var displayNum = i + 1;
+      // state the player cards
       myString += `Player ${displayNum} cards:<br><div class="row">`;
     }
+    // if the participant is the dealer
     if (i == playerList.length - 1) {
+      // calculate the dealer score
       var dealerScore = calculatePlayerScore(playerList[i]);
+      // for all cards in a participant
       for (var j = 0; j < playerList[i].length; j += 1) {
+        // if the card is the last card and the gamestate is before state 4 and the dealer score is not 21
         if (
           j == playerList[i].length - 1 &&
           gameMode < 4 &&
           dealerScore != 21
         ) {
+          // the last card is face down
           myString += displayCardImage("cover", "cover");
+          // the last card is face up
         } else {
           myString += displayCardImage(
             playerList[i][j].name,
@@ -525,8 +542,11 @@ var displayDealtCards = function () {
           );
         }
       }
+      // if the participant is not the dealer
     } else {
+      // for all cards in a participant
       for (var j = 0; j < playerList[i].length; j += 1) {
+        // display the card
         myString += displayCardImage(
           playerList[i][j].name,
           playerList[i][j].suit
