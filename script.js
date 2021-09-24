@@ -122,15 +122,16 @@ const reduceAceScores = function (currHandValue, numAces) {
   // if the player might bust but still has aces
   // can probably throw this into another function
   let aceIncrementer = 0;
+  let currScoreToReduce = currHandValue;
   while (aceIncrementer < numAces) {
     // manually convert ace score from 11 to 1
-    currHandValue -= 10;
-    if (currHandValue <= 21) {
+    currScoreToReduce -= 10;
+    if (currScoreToReduce <= 21) {
       break;
     }
     aceIncrementer += 1;
   }
-  return currHandValue;
+  return currScoreToReduce;
 };
 
 const calculateHandValue = function (actPlyr) {
@@ -215,18 +216,30 @@ const initialDraw = function (numOfPlyrs) {
   }
 };
 
-const checkPlayersforBlackjack = function () {
-  // can be refactored. filter function????
-  if (isBlackjack(0)) {
-    gameOver = true;
-    winner = "Dealer";
-    fullResponseMessage += `${winner} insta-wins by Blackjack. ${refreshMessage}<br><br>${catPictureMap[winner]}<br>`;
-  } else if (isBlackjack(1)) {
-    gameOver = true;
-    winner = "Player";
-    fullResponseMessage += `${winner} insta-wins by Blackjack. ${refreshMessage}<br><br>${catPictureMap[winner]}<br>`;
+const isBlackjack = function (playerNumber) {
+  if (
+    calculateHandValue(playerNumber) == 21 &&
+    handsArray[playerNumber].length == 2
+  ) {
+    // only applies to blackjack in the initial draw
+    return true;
   }
-  // no action if neither player nor dealer have a 21
+  return false;
+};
+
+const checkPlayersforBlackjack = function () {
+  const localBlackjackWinnerMap = {
+    0: "Dealer",
+    1: "Player",
+  };
+
+  for (let i = 0; i < 2; i += 1) {
+    if (isBlackjack(i)) {
+      gameOver = true;
+      winner = localBlackjackWinnerMap[i];
+      fullResponseMessage += `${winner} insta-wins by Blackjack. ${refreshMessage}<br><br>${catPictureMap[winner]}<br>`;
+    }
+  }
 };
 
 const comparePlayerandDealerScores = function (scoreArr) {
@@ -249,17 +262,6 @@ const comparePlayerandDealerScores = function (scoreArr) {
     //  for the scenario where scores are equal
   }
   fullResponseMessage += "Looks like a draw.";
-};
-
-const isBlackjack = function (playerNumber) {
-  if (
-    calculateHandValue(playerNumber) == 21 &&
-    handsArray[playerNumber].length == 2
-  ) {
-    // only applies to blackjack in the initial draw
-    return true;
-  }
-  return false;
 };
 
 const givePlayerHitStandHints = function () {
