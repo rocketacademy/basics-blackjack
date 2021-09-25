@@ -251,12 +251,12 @@ var getGameResults = function () {
       if (calSumInHand(currentPlayer.hand) > twentyOne) {
         var amtLost = calcBetLosses(currentPlayer);
         currentPlayer.points -= amtLost;
-        gameResults += `${listIndex}. ${currentPlayer.name}- Bet: ${currentPlayer.bet} || win/lose: - ${currentPlayer.bet} chips. || Total Chips: ${currentPlayer.points}<br>`;
+        gameResults += `${listIndex}. ${currentPlayer.name}- Bet: ${currentPlayer.bet}  win/lose: - ${currentPlayer.bet} chips.  Total Chips: ${currentPlayer.points}<br>`;
         continue;
       }
       var amtWon = calcBetWinnings(currentPlayer);
       currentPlayer.points += amtWon;
-      gameResults += `${listIndex}. ${currentPlayer.name}- Bet: ${currentPlayer.bet} || win/lose: + ${amtWon} chips. || Total Chips: ${currentPlayer.points}<br>`;
+      gameResults += `${listIndex}. ${currentPlayer.name}- Bet: ${currentPlayer.bet}  win/lose: + ${amtWon} chips.  Total Chips: ${currentPlayer.points}<br>`;
     }
   
     return gameResults;
@@ -272,7 +272,7 @@ var getGameResults = function () {
       var listIndex = playerIndex + 1;
       var amtLost = calcBetLosses(currentPlayer);
       currentPlayer.points -= amtLost;
-      gameResults += `${listIndex}. ${currentPlayer.name}- Bet: ${currentPlayer.bet} || win/lose: - ${currentPlayer.bet} chips. || Total Chips: ${currentPlayer.points}<br>`;
+      gameResults += `${listIndex}. ${currentPlayer.name}- Bet: ${currentPlayer.bet}  win/lose: - ${currentPlayer.bet} chips.  Total Chips: ${currentPlayer.points}<br>`;
     }
     return gameResults;
   }
@@ -286,26 +286,26 @@ var getGameResults = function () {
 
     if ( calSumInHand(currentPlayer.hand) > twentyOne && calSumInHand(dealerHandArray) > twentyOne) {
       currentPlayer.points += 0;
-      gameResults += `${listIndex}. ${currentPlayer.name}- Bet: ${currentPlayer.bet} || win/lose: + 0 chips. || Total Chips: ${currentPlayer.points}<br>`;
+      gameResults += `${listIndex}. ${currentPlayer.name}- Bet: ${currentPlayer.bet}  win/lose: + 0 chips.  Total Chips: ${currentPlayer.points}<br>`;
     } else if (calSumInHand(currentPlayer.hand) > twentyOne) {
       var amtLost = calcBetLosses(currentPlayer);
       currentPlayer.points -= amtLost;
-      gameResults += `${listIndex}. ${currentPlayer.name}- Bet: ${currentPlayer.bet} || win/lose: - ${currentPlayer.bet} chips. || Total Chips: ${currentPlayer.points}<br>`;
+      gameResults += `${listIndex}. ${currentPlayer.name}- Bet: ${currentPlayer.bet}  win/lose: - ${currentPlayer.bet} chips.  Total Chips: ${currentPlayer.points}<br>`;
     } else if (
       calSumInHand(currentPlayer.hand) > calSumInHand(dealerHandArray)
     ) {
       var amtWon = calcBetWinnings(currentPlayer);
       currentPlayer.points += amtWon;
-      gameResults += `${listIndex}. ${currentPlayer.name}- Bet: ${currentPlayer.bet} || win/lose: + ${amtWon} chips. || Total Chips: ${currentPlayer.points}<br>`;
+      gameResults += `${listIndex}. ${currentPlayer.name}- Bet: ${currentPlayer.bet}  win/lose: + ${amtWon} chips.  Total Chips: ${currentPlayer.points}<br>`;
     } else if (
       calSumInHand(currentPlayer.hand) == calSumInHand(dealerHandArray)
     ) {
       currentPlayer.points += 0;
-      gameResults += `${listIndex}. ${currentPlayer.name}- Bet: ${currentPlayer.bet} || win/lose: + 0 chips. || Total Chips: ${currentPlayer.points}<br>`;
+      gameResults += `${listIndex}. ${currentPlayer.name}- Bet: ${currentPlayer.bet}  win/lose: + 0 chips.  Total Chips: ${currentPlayer.points}<br>`;
     } else {
       var amtLost = calcBetLosses(currentPlayer);
       currentPlayer.points -= amtLost;
-      gameResults += `${listIndex}. ${currentPlayer.name} - Bet: ${currentPlayer.bet} || win/lose: - ${currentPlayer.bet} chips. || Total Chips: ${currentPlayer.points}<br>`;
+      gameResults += `${listIndex}. ${currentPlayer.name} - Bet: ${currentPlayer.bet}  win/lose: - ${currentPlayer.bet} chips.  Total Chips: ${currentPlayer.points}<br>`;
     }
   }
   return gameResults;
@@ -357,7 +357,7 @@ var main = function (input) {
   // input how many players are playing
   if (mode == MODE_INPUT_NUM_OF_PLAYERS) {
     if (isNaN(input) == true || !Number(input) > 0) {
-      return "Please input no. of players";
+      return "Please input no. of players.";
     }
     startingNumOfPlayers = Number(input);
     // input player name
@@ -380,14 +380,7 @@ var main = function (input) {
       currentPlayerIndex = 0;
 
       return (
-        "Welcome, " +
-        playerProfilesArray[playerProfilesArray.length - 1].name +
-        ". <br><br>" +
-        playerProfilesArray[0].name +
-        ", you have " +
-        playerProfilesArray[0].points +
-        " chips.<br> Please input bet amount."
-      );
+      `Welcome ${playerProfilesArray[playerProfilesArray.length - 1].name}! <br> You have ${playerProfilesArray[0].points} chips. <br> Please input your bet amount.`);
     }
 
     var PreviousPlayerIndex = currentPlayerIndex;
@@ -426,7 +419,7 @@ var main = function (input) {
     var PreviousPlayerIndex = currentPlayerIndex;
 
     currentPlayerIndex += 1;
-    return ` ${playerProfilesArray[PreviousPlayerIndex].name}, you've chosen to bet ${playerProfilesArray[PreviousPlayerIndex].bet} chips. ${playerProfilesArray[currentPlayerIndex].name}, please input your bet amount.`;
+    return ` ${playerProfilesArray[PreviousPlayerIndex].name}, you've chosen to bet ${playerProfilesArray[PreviousPlayerIndex].bet} out of ${playerProfilesArray[currentPlayerIndex].points} chips. <br> ${playerProfilesArray[currentPlayerIndex].name}, please input your bet amount.`;
   }
 
   // deal cards
