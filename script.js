@@ -31,10 +31,10 @@ const makeDecks = () => {
   for (let suitIndex = 0; suitIndex < suits.length; suitIndex += 1) {
     const currentSuit = suits[suitIndex];
     let emojiSuit = "";
-    if (currentSuit == "spades") { emojiSuit = "♠️" } 
-    else if (currentSuit == "hearts") {emojiSuit = "♥️"} 
-    else if (currentSuit == "clubs") {emojiSuit = "♣️"}
-    else if (currentSuit == "diamonds") {emojiSuit = "♦️"}
+    if (currentSuit == "spades") { emojiSuit = "♠️"; } 
+    else if (currentSuit == "hearts") { emojiSuit = "♥️"; } 
+    else if (currentSuit == "clubs") { emojiSuit = "♣️"; }
+    else if (currentSuit == "diamonds") { emojiSuit = "♦️"; }
     // loop 2, rank 1-13, assign card's value and different name for card 1, 11, 12, 13
     for (let rankCounter = 1; rankCounter <= 13; rankCounter += 1) {
       let cardName = "";
@@ -56,7 +56,10 @@ const makeDecks = () => {
         cardValue = rankCounter;
       }
       // assign a card object
-      const card = {rank: rankCounter, suit: currentSuit, name: cardName, emojiSuit, value: cardValue };
+      const card = { 
+        rank: rankCounter, suit: currentSuit, 
+        name: cardName, emojiSuit, value: cardValue 
+      };
       // push the card to card deck
       deck.push(card);
     }
@@ -206,7 +209,7 @@ const main = (input) => {
     if (userTotalScore == 0) {
       gameMode = gameOver;
       return `${userCardsMessage}<br>${compIfTheresBJMessage}<br>
-            Win with a Blackjack 😎`;}
+            Win with a Blackjack 😎`; }
     // check if the player wants to assign Ace as 1 or 11
     if (userCards[0].value == 11 || userCards[1].value == 11) {
       gameMode = addCardMode;
