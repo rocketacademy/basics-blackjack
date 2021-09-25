@@ -115,6 +115,8 @@ console.log(cardDeck);
 
 var main = function (input) {
   var myOutputValue = "";
+  var showComputerHand = "";
+  var showPlayerHand = "";
   var totalPlayerHand = 0;
   var totalComputerHand = 0;
 
@@ -165,7 +167,11 @@ var main = function (input) {
 
   // if player chooses no assess the winning conditions//
   if (input == "no") {
-    if (totalPlayerHand == 21 || totalPlayerHand > totalComputerHand) {
+    if (
+      totalPlayerHand == 21 ||
+      totalPlayerHand > totalComputerHand ||
+      totalComputerHand > 21
+    ) {
       gameMode = "gameover";
       return ` The computer cards are ${computerHand[0].cardemoji} of ${computerHand[0].suitEmoji} and ${computerHand[1].cardemoji} of ${computerHand[1].suitEmoji}. <br><br> Your cards are ${playerHand[0].cardemoji} of ${playerHand[0].suitEmoji} and ${playerHand[1].cardemoji} of ${playerHand[1].suitEmoji}.<br><br>  Lucky you, you win! Thanks for playing the game ❤️. `;
     } else if (totalPlayerHand > 21 || totalPlayerHand < totalComputerHand) {
@@ -176,10 +182,12 @@ var main = function (input) {
   }
   //if player chooses yes, shuffle and play another card//
   gameMode = "roundthree";
+
   if (input == "yes") {
     gameMode = "roundthree";
     var playerThirdCard = shuffledDeck.pop();
     playerHand.push(playerThirdCard);
+    console.log(totalPlayerHand);
     playerThirdCard = `${playerHand[2].cardemoji} of ${playerHand[2].suitEmoji}`;
     console.log("player third card");
     console.log(playerThirdCard);
@@ -188,7 +196,6 @@ var main = function (input) {
     console.log(showPlayerHand);
     totalPlayerHand += Number(playerHand[2].rank);
     console.log("curr total value of player hand");
-    console.log(totalPlayerHand);
     if (totalPlayerHand < 16) {
       return `you drew ${showPlayerHand}. Type either 'hell yes' or 'nope' to draw again.`;
     } else if (totalPlayerHand > 16 && totalPlayerHand < 21) {
@@ -223,6 +230,8 @@ var main = function (input) {
     console.log("showcomputerhand");
     console.log(showComputerHand);
     totalComputerHand += Number(computerHand[2].rank);
+    console.log("total computer hand");
+    console.log(totalComputerHand);
     if (totalComputerHand < 16) {
       myOutputValue = `Computer draws again. Click enter`;
     } else if (totalComputerHand > 16 && totalComputerHand < 21) {
@@ -238,6 +247,12 @@ var main = function (input) {
   gameMode = "round five";
   if (input == "end game") {
     gameMode = "round five";
+    computerThirdCard = `${computerHand[2].cardemoji} of ${computerHand[2].suitEmoji}`;
+    showComputerHand += computerThirdCard + "";
+    totalComputerHand += Number(computerHand[2].rank);
+    playerThirdCard = `${playerHand[2].cardemoji} of ${playerHand[2].suitEmoji}`;
+    showPlayerHand += playerThirdCard + "";
+    totalPlayerHand += Number(playerHand[2].rank);
     if (totalPlayerHand > totalComputerHand) {
       return ` The computer cards are ${showComputerHand}. Your cards are ${showPlayerHand} <br><br>  Lucky you, you win! Thanks for playing the game ❤️. `;
     } else if (totalPlayerHand < totalComputerHand) {
