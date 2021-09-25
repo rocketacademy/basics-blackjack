@@ -5,6 +5,7 @@ var playerValue = 0;
 var computerValue = 0;
 var playerHand = [];
 var computerHand = [];
+var playerWinStreak = 0;
 var myOutputValue = "";
 var playerWallet = 20;
 var betValue = 2;
@@ -117,6 +118,7 @@ var END = "end";
 var RESET = "reset";
 var CHOOSEBET = "chooseBet";
 var START = "start";
+var WINNINGSTREAK = "winningStreak";
 gameMode = START;
 
 // Function: Reset all variables to base values
@@ -183,8 +185,12 @@ var sumArrayValues = function (array, value) {
 };
 
 // Function: Add last card in deck to playerArray + add number to playerValue.
-var hitCard = function (array, value) {
+var hitCard = function (array, hand, value, noOfAces) {
   array.push(deck.pop());
+  hand.push(`${array[array.length - 1].name} ${array[array.length - 1].suit}`);
+  if (noOfAces == 1) {
+    value -= 1;
+  }
   if (array[array.length - 1].name == "ace") {
     if (array.length == 3) {
       if (value > 11) {
@@ -203,6 +209,7 @@ var hitCard = function (array, value) {
 
 var playerWin = function () {
   playerWallet += betValue;
+  playerWinStreak += 1;
   myOutputValue =
     `You won $${betValue}!<br/><br/>` +
     yesImage +
@@ -214,6 +221,7 @@ var playerWin = function () {
 
 var playerLose = function () {
   playerWallet -= betValue;
+  playerWinStreak = 0;
   myOutputValue =
     `You lost $${betValue}! <br/><br/>` +
     damnitImage +
@@ -224,6 +232,7 @@ var playerLose = function () {
 };
 
 var draw = function () {
+  playerWinStreak = 0;
   myOutputValue =
     `It's a draw! <br/><br/>` +
     drawImage +
@@ -275,7 +284,7 @@ var determineBlackJack = function (playerValue, computerValue) {
 
 // Function: Determine if player lost. If not, continue.
 var hitResult = function () {
-  playerValue = hitCard(playerArray, playerValue);
+  playerValue = hitCard(playerArray, playerHand, playerValue, noOfAces_Player);
   myOutputValue = `You drew ${playerArray[playerArray.length - 1].name} of ${
     playerArray[playerArray.length - 1].suit
   }.<br/><br/>Your hand is now ${playerValue}.<br/><br/>`;
@@ -294,7 +303,12 @@ var hitResult = function () {
 // Function: Computer draw cards until > 16. Compare with player to determine winner. Change gameMode to RESET
 var tabulateResult = function () {
   while (computerValue < 16) {
-    computerValue = hitCard(computerArray, computerValue);
+    computerValue = hitCard(
+      computerArray,
+      computerHand,
+      computerValue,
+      noOfAces_Computer
+    );
   }
   // If 5 cards + Value < 21: multiplier = 3x
   if (playerArray.length > 4) {
@@ -350,7 +364,6 @@ var main = function (input) {
   else if (gameMode == CHOOSEBET) {
     if (0 < parseInt(input) && parseInt(input) <= playerWallet) {
       betValue = parseInt(input);
-      console.log("betValue: " + betValue);
       gameMode = DEALCARDS;
     } else {
       myOutputValue = `Please place your bet properly. You have $${playerWallet} in your wallet. <br/><br/>Click 'Submit' to deal cards.`;
@@ -376,7 +389,6 @@ var main = function (input) {
   } else if (gameMode == HITORSTAND) {
     // If user hits, add last card in deck to playerArray + add number to playerValue. Determine if player lost. If not, continue.
     if (input == "h") {
-      console.log(myOutputValue);
       hitResult();
     }
     // If user stands,prompt user to hit if playerValue < 16.  If not, move on to computer's turn (gameMode: END)
@@ -404,7 +416,11 @@ var main = function (input) {
   if (gameMode == RESET) {
     if (playerWallet > 0) {
       myOutputValue = myOutputValue + "Click 'Submit' to play again!";
-      gameMode = START;
+      if (playerWinStreak == 3) {
+        gameMode = WINNINGSTREAK;
+      } else {
+        gameMode = START;
+      }
     } else {
       playerWallet = 20;
       myOutputValue =
@@ -414,6 +430,11 @@ var main = function (input) {
         "<br/><br/>Hey, cheer up, here's $20. Click 'Submit' to play again! ";
       gameMode = START;
     }
+  } else if (gameMode == WINNINGSTREAK) {
+    playerWallet += 100;
+    myOutputValue =
+      "Winning streak! A generous person gifted you $100 to keep up the good work.<br/><br/>Click 'Submit' to play again!";
+    gameMode = START;
   }
   return myOutputValue;
 };
