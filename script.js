@@ -1,5 +1,6 @@
 //Global variables defining the different game modes and setting default to gameModeOne
 var gameModeZero = "enter number of players";
+var gameModePointFive = "enter betting amount";
 var gameModeOne = "deal cards";
 var gameModeTwo = "player turn";
 var gameModeThree = "results";
@@ -11,6 +12,9 @@ var dealerHand = [];
 var cardDeck = [];
 var numberOfPlayers = 0;
 var playerNumber = 0;
+var playerWallet = [];
+var playerBets = [];
+var bettingIndex = 0;
 
 //Game mode zero to input number of players
 var main = function (input) {
@@ -18,15 +22,61 @@ var main = function (input) {
     "Please enter the number of players and hit submit to play.";
   if (gameMode == gameModeZero && input > 0) {
     numberOfPlayers = input;
-    gameMode = gameModeOne;
+    gameMode = gameModePointFive;
+    //Function to create coin wallet for each player
+    createWallet(numberOfPlayers);
+    playerNumber = 1;
+    return (myOutputValue =
+      "Number of players: " +
+      numberOfPlayers +
+      "<br><br>" +
+      printWallet(numberOfPlayers) +
+      "<br>Player 1, enter the number of coins you'll like to bet and press submit.");
+    //"<br><br>Once all players are ready, hit the submit button and the dealer will start dealing."
+  }
+
+  //Game mode 0.5 where bets are collected
+  if (gameMode == gameModePointFive) {
+    if (gameMode == gameModePointFive && input == "r")
+      return (myOutputValue =
+        "Dealer is shuffling a new deck...<br><br>Player " +
+        playerNumber +
+        ", enter the number of coins you'll like to bet and press submit.");
+
+    if (
+      gameMode == gameModePointFive &&
+      input > 0 &&
+      playerNumber < numberOfPlayers
+    ) {
+      playerBets.push(input);
+      playerNumber += 1;
+      return (myOutputValue =
+        printBettingSlip() +
+        "<br><br>Player " +
+        playerNumber +
+        ", enter the number of coins you'll like to bet and press submit.");
+    }
+    if (
+      gameMode == gameModePointFive &&
+      input > 0 &&
+      playerNumber == numberOfPlayers
+    ) {
+      playerBets.push(input);
+      playerNumber = 0;
+      gameMode = gameModeOne;
+      return (myOutputValue =
+        printBettingSlip() +
+        "<br>All players have submitted their bets. Hit submit to start the game.");
+    }
     return (
-      (myOutputValue = "Number of players: " + numberOfPlayers) +
-      "<br><br>Once all players are ready, hit the submit button and the dealer will start dealing."
+      "Player " +
+      playerNumber +
+      ", enter the number of coins you'll like to bet and press submit."
     );
   }
 
-  //Game mode one where cards are shuffled and dealt to all players and dealer
   if (gameMode == gameModeOne) {
+    //Game mode one where cards are shuffled and dealt to all players and dealer
     allPlayerHand = [];
     //Deck is created and shuffled
     cardDeck = shuffleCards(makeDeck());
@@ -101,17 +151,74 @@ var main = function (input) {
 
   //After dealer is done adding cards, dealer will call for the results
   if (gameMode == gameModeThree) {
-    myOutputValue =
-      printFinalResults() + '<br>Input "r" to play another round.';
+    // if (input == "r") {
+    //   gameMode = gameModePointFive;
+    //   playerNumber = 1;
+    //   console.log(playerWallet);
+    // return (myOutputValue =
+    //   "Dealer is shuffling a new deck...<br><br>Player " +
+    //   playerNumber +
+    //   ", enter the number of coins you'll like to bet and press submit.");
+    // }
 
-    if (input == "r") {
-      gameMode = gameModeOne;
-      myOutputValue =
-        "Dealer is shuffling the new deck...<br><br><br>Press submit once you're ready to play.";
-    }
+    myOutputValue =
+      printFinalResults() +
+      "<br>" +
+      printWallet(numberOfPlayers) +
+      '<br>Input "r" to play another round.';
+    playerBets = [];
+    playerNumber = 1;
+    gameMode = gameModePointFive;
+    console.log(playerWallet);
     return myOutputValue;
   }
   return myOutputValue;
+};
+
+//Function to create coin wallet for each player
+var createWallet = function (number) {
+  var walletIndex = 0;
+  while (walletIndex < number) {
+    playerWallet.push(Number(100));
+    walletIndex += 1;
+  }
+  return playerWallet;
+};
+
+var printWallet = function (number) {
+  var walletBalance = "Current coin balance.<br>";
+  var walletIndex = 0;
+
+  while (walletIndex < number) {
+    var playerIndex = walletIndex + 1;
+    walletBalance =
+      walletBalance +
+      "Player " +
+      playerIndex +
+      ": " +
+      playerWallet[walletIndex] +
+      " coins<br>";
+    walletIndex += 1;
+  }
+  console.log(playerWallet);
+  return walletBalance;
+};
+
+var printBettingSlip = function () {
+  var bettingSlip = "Bets on the table:<br>";
+  var betIndex = 0;
+  while (betIndex < playerBets.length) {
+    var playerIndex = betIndex + 1;
+    bettingSlip =
+      bettingSlip +
+      "Player " +
+      playerIndex +
+      ": " +
+      playerBets[betIndex] +
+      " coins<br>";
+    betIndex += 1;
+  }
+  return bettingSlip;
 };
 
 //Function to create deck of 52 cards
@@ -271,7 +378,7 @@ var countHand = function (hand) {
   return totalPoints;
 };
 
-//Function to determine winner
+//Function to determine winner and tablulate bets
 var determineWinner = function (dealerHand, hand, number) {
   var dealerPoints = countHand(dealerHand);
   var playerPoints = countHand(hand);
@@ -281,16 +388,78 @@ var determineWinner = function (dealerHand, hand, number) {
     return "Its a draw";
   }
   if (dealerPoints > 21 && playerPoints <= 21) {
+    if (playerPoints == 21 && hand.length == 2) {
+      playerBlackjackSettlement(number);
+      return "Player " + playerIndex + " BLACKJACK!!";
+    }
+    playerWinSettlement(number);
     return "Player " + playerIndex + " wins";
   }
   if (dealerPoints <= 21 && playerPoints > 21) {
+    if (dealerPoints == 21 && dealerHand.length == 2) {
+      dealerBlackjackSettlement(number);
+      return "Dealer BLACKJACK!!";
+    }
+    dealerWinSettlement(number);
     return "Dealer wins";
   }
   if (dealerPoints <= 21 && playerPoints <= 21) {
-    if (dealerPoints > playerPoints) return "Dealer wins";
-    if (dealerPoints < playerPoints) return "Player " + playerIndex + " wins";
-    else return "Its a draw";
+    if (
+      dealerPoints == 21 &&
+      dealerHand.length == 2 &&
+      dealerPoints > playerPoints
+    ) {
+      dealerBlackjackSettlement(number);
+      return "Dealer BLACKJACK!!";
+    }
+    if (playerPoints == 21 && hand.length == 2 && playerPoints > dealerPoints) {
+      playerBlackjackSettlement(number);
+      return "Player " + playerIndex + " BLACKJACK!!";
+    }
+    if (playerPoints == 21 && hand.length == 2 && dealerHand.length > 2) {
+      playerBlackjackSettlement(number);
+      return "Player " + playerIndex + " BLACKJACK!!";
+    }
+    if (dealerPoints == 21 && dealerHand.length == 2 && hand.length > 2) {
+      dealerBlackjackSettlement(number);
+      return "Dealer BLACKJACK!!";
+    }
+    if (dealerPoints > playerPoints) {
+      dealerWinSettlement(number);
+      return "Dealer wins";
+    }
+    if (dealerPoints < playerPoints) {
+      playerWinSettlement(number);
+      return "Player " + playerIndex + " wins";
+    } else return "Its a draw";
   }
+};
+
+//Function to tabulate player win
+var playerWinSettlement = function (number) {
+  var playerCurrentPoints = playerWallet[number];
+  var playerBet = playerBets[number];
+  playerWallet[number] = Number(playerCurrentPoints) + Number(playerBet);
+};
+
+//Function to tablulate dealer win
+var dealerWinSettlement = function (number) {
+  var playerCurrentPoints = playerWallet[number];
+  var playerBet = playerBets[number];
+  playerWallet[number] = Number(playerCurrentPoints) - Number(playerBet);
+};
+//Function to tabulate player BLACKJACK
+var playerBlackjackSettlement = function (number) {
+  var playerCurrentPoints = playerWallet[number];
+  var playerBet = playerBets[number];
+  playerWallet[number] = Number(playerCurrentPoints) + Number(2 * playerBet);
+};
+
+//Function to tabulate dealer BLACKJACK
+var dealerBlackjackSettlement = function (number) {
+  var playerCurrentPoints = playerWallet[number];
+  var playerBet = playerBets[number];
+  playerWallet[number] = Number(playerCurrentPoints) - Number(2 * playerBet);
 };
 
 //Funtion to draw an additional card into a specified hand array
