@@ -149,6 +149,20 @@ var checkScore = function (handToCheck) {
   return currentScore;
 };
 
+var emojiSuit = function (suit) {
+  var suitReturn;
+  if (suit == "Hearts") {
+    suitReturn = "♥️";
+  } else if (suit == "Spades") {
+    suitReturn = "♠️";
+  } else if (suit == "Diamonds") {
+    suitReturn = "♦️";
+  } else if (suit == "Clubs") {
+    suitReturn = "♣️";
+  }
+  return suitReturn;
+};
+
 //Function to print out the hand
 var handPrinter = function (handToPrint) {
   var checker = 0;
@@ -158,8 +172,8 @@ var handPrinter = function (handToPrint) {
       printHand +
       " " +
       handToPrint[checker].name +
-      " of " +
-      handToPrint[checker].suit +
+      " " +
+      emojiSuit(handToPrint[checker].suit) +
       ", ";
     checker++;
   }
@@ -167,8 +181,8 @@ var handPrinter = function (handToPrint) {
     printHand +
     "and " +
     handToPrint[checker].name +
-    " of " +
-    handToPrint[checker].suit +
+    " " +
+    emojiSuit(handToPrint[checker].suit) +
     ". " +
     (checker + parseInt("1")) +
     " cards drawn in all.";
@@ -189,38 +203,27 @@ var comDraw = function (hand) {
 };
 
 //FUNCTION: Compare first dealing results and returns outcome or forward prompt to player
-var initialDealresults = function (playerHand, comHand) {
-  playerScore = checkScore(playerHand);
-  comScore = checkScore(comHand);
-  printPlayerHand = handPrinter(playerHand);
-  printComHand = handPrinter(comHand);
-
-  var roundOutcome = `Initial hands dealt
-                      </br></br>Player's hand: ${printPlayerHand} Total: ${playerScore} points.
-                      </br></br> Computer's hand: ${printComHand} Total: ${comScore} points.`;
-  //Announce initial results
-  if (playerScore == 21 && comScore == 21) {
-    gameMode = "firstDraw";
+var initialDealresults = function (player, comHand) {
+  //Score checking & printing
+  var counter = 0;
+  var roundOutcome = "Initial hands dealt </br></br>";
+  while (counter < playerCount) {
     roundOutcome =
       roundOutcome +
-      `</br></br> Looks like it's a draw. You both got BlackJack.
-      </br> Hit submit to start a new round.`;
-  } else if (playerScore == 21) {
-    gameMode = "drawPhase";
-    roundOutcome =
-      roundOutcome +
-      `</br></br> Looks like you got BlackJack. Enter "hit" or "h" to draw, or "stand" or "s" to stop drawing. </br> You probably want to stand here...just saying...`;
-  } else if (comScore == 21) {
-    gameMode = "drawPhase";
-    roundOutcome =
-      roundOutcome +
-      `</br></br> Looks like the computer got BlackJack. Enter "hit" or "h" to draw, or "stand" or "s" to stop drawing. </br> It's probably a good idea to just hit here...`;
-  } else {
-    gameMode = "drawPhase";
-    roundOutcome =
-      roundOutcome +
-      `</br></br> Would you like to draw? Enter "hit" or "h" to draw, or "stand" or "s" to stop drawing.`;
+      `Player ${counter + 1} bet ${
+        player[counter].playerBet
+      } points. </br>Hand: ${handPrinter(
+        player[counter].playerHand
+      )} </br>Current hand score: ${checkScore(
+        player[counter].playerHand
+      )}</br></br>`;
+    counter++;
   }
+  roundOutcome =
+    roundOutcome +
+    `Computer's hand: ${handPrinter(
+      comHand
+    )} </br>Current hand score: ${checkScore(comHand)} points.`;
   return roundOutcome;
 };
 
@@ -239,7 +242,9 @@ var preComDrawResults = function (playerHand, comHand) {
     drawRoundOutcome =
       drawRoundOutcome +
       `</br></br> Looks like you went bust and lost the game...
+      </br></br> Your bet of ${playerBet} is lost. Total points now at ${playerPoints}.
         </br> Hit submit to start a new round`;
+    playerBet = 0;
   } else if (playerScore > 21 && comScore < 17) {
     gameMode = "results";
     drawRoundOutcome =
@@ -268,53 +273,171 @@ var postComDrawResults = function (playerHand, comHand) {
                           </br></br>Player's hand: ${printPlayerHand} Total: ${playerScore} points.
                           </br></br> Computer's hand: ${printComHand} Total: ${comScore} points.`;
   if (playerScore > 21 && comScore > 21) {
+    playerPoints = playerPoints + playerBet;
     lastRoundOutcome =
       lastRoundOutcome +
-      `</br></br> Looks like it's a tie, you've both gone bust. Hit submit to start a new round.`;
+      `</br></br> Looks like it's a tie, you've both gone bust.
+      </br></br> Your bet of ${playerBet} is returned. Total points now at ${playerPoints}.
+      </br></br> Hit submit to start a new round.`;
+    playerBet = 0;
   } else if (playerScore > 21 && comScore <= 21) {
     lastRoundOutcome =
       lastRoundOutcome +
-      `</br></br> Looks like you've lost by going bust. Hit submit to start a new round.`;
+      `</br></br> Looks like you've lost by going bust.
+      </br></br> Your bet of ${playerBet} is lost. Total points now at ${playerPoints}.
+      </br></br> Hit submit to start a new round.`;
+    playerBet = 0;
   } else if (playerScore <= 21 && comScore > 21) {
+    playerPoints = playerPoints + playerBet * 2;
     lastRoundOutcome =
       lastRoundOutcome +
-      `</br></br> Looks like you've won! The dealer went bust. Hit submit to start a new round.`;
+      `</br></br> Looks like you've won! The dealer went bust. 
+      </br></br> Your bet of ${playerBet} paid off. Total points now at ${playerPoints}.
+      </br></br> Hit submit to start a new round.`;
+    playerBet = 0;
   } else if (playerScore == comScore) {
+    playerPoints = playerPoints + playerBet;
     lastRoundOutcome =
       lastRoundOutcome +
-      `</br></br> Looks like you've got the same total score. It's a tie. Hit submit to start a new round.`;
+      `</br></br> Looks like you've got the same total score. It's a tie. 
+      </br></br> Your bet of ${playerBet} is returned. Total points now at ${playerPoints}.
+      </br></br> Hit submit to start a new round.`;
+    playerBet = 0;
   } else if (playerScore > comScore) {
+    playerPoints = playerPoints + playerBet * 2;
     lastRoundOutcome =
       lastRoundOutcome +
-      `</br></br> Looks like you've won! Hit submit to start a new round.`;
+      `</br></br> Looks like you've won!
+      </br></br> Your bet of ${playerBet} paid off. Total points now at ${playerPoints}.
+      </br></br> Hit submit to start a new round.`;
+    playerBet = 0;
   } else {
     lastRoundOutcome =
       lastRoundOutcome +
-      `</br></br> Looks like you've lost the round, better luck next time. Hit submit to start a new round.`;
+      `</br></br> Looks like you've lost the round, better luck next time. 
+      </br></br> Your bet of ${playerBet} is lost. Total points now at ${playerPoints}.
+      </br></br> Hit submit to start a new round.`;
+    playerBet = 0;
   }
   return lastRoundOutcome;
 };
 
+var setPlayers = function (playerCount) {
+  var counter = 0;
+  var player = [];
+  while (counter < playerCount) {
+    var playerDetails = {
+      playerHand: [],
+      playerPoints: 100,
+      playerBet: 0,
+      drawPhaseCounter: 0,
+    };
+    player.push(playerDetails);
+    counter++;
+  }
+  return player;
+};
+
 //GLOBAL VARIABLES
 var shuffledDeck = shuffleCards(makeDeck());
-var gameMode = "firstDraw";
-var playerHand = [];
+var gameMode = "setPlayers";
+var playerCount = 1;
 var comHand = [];
-var drawPhaseCounter = 0;
+var player = [];
+player[0] = {
+  playerHand: [],
+  playerPoints: 100,
+  playerBet: 0,
+  drawPhaseCounter: 0,
+  handOut: "",
+};
+player[1] = {
+  playerHand: [],
+  playerPoints: 100,
+  playerBet: 0,
+  drawPhaseCounter: 0,
+  handOut: "",
+};
+player[2] = {
+  playerHand: [],
+  playerPoints: 100,
+  playerBet: 0,
+  drawPhaseCounter: 0,
+  handOut: "",
+};
+player[3] = {
+  playerHand: [],
+  playerPoints: 100,
+  playerBet: 0,
+  drawPhaseCounter: 0,
+  handOut: "",
+};
+player[4] = {
+  playerHand: [],
+  playerPoints: 100,
+  playerBet: 0,
+  drawPhaseCounter: 0,
+  handOut: "",
+};
+var betCounter = 0;
+
 //MAIN FUNCTION
 var main = function (input) {
-  if (gameMode == "firstDraw") {
+  if (gameMode == "setPlayers") {
+    if (input <= 5 && input >= 1) {
+      playerCount = input;
+      gameMode = "firstDraw";
+      return `Total of ${input} players. Player 1, please enter bet amount of 100 or less.`;
+    } else {
+      return "Please enter the number of players. Up to 5 players allowed.";
+    }
+  } else if (gameMode == "firstDraw") {
     //Resets hands & counters in case new round
-    playerHand = [];
+    var resetCounter = 0;
+    while (resetCounter < playerCount) {
+      player[resetCounter].playerHand = [];
+      player[resetCounter].drawPhaseCounter = 0;
+      resetCounter++;
+    }
     comHand = [];
-    drawPhaseCounter = 0;
-    //Deals cards
-    playerHand[0] = shuffledDeck.pop();
+    //Deals first cards com last
+    var dealCounter = 0;
+    while (dealCounter < playerCount) {
+      player[dealCounter].playerHand[0] = shuffledDeck.pop();
+      dealCounter++;
+    }
     comHand[0] = shuffledDeck.pop();
-    playerHand[1] = shuffledDeck.pop();
+    //Deals second cards com last
+    var deal2Counter = 0;
+    while (deal2Counter < playerCount) {
+      player[deal2Counter].playerHand[1] = shuffledDeck.pop();
+      deal2Counter++;
+    }
     comHand[1] = shuffledDeck.pop();
-    //Announce initial results & triggers next round if not BlackJack tie
-    return initialDealresults(playerHand, comHand);
+    //Cycles through bets
+    if (betCounter < playerCount) {
+      while (betCounter < player.length) {
+        if (input <= player[betCounter].playerPoints && input > 0) {
+          //Sets bet
+          player[betCounter].playerBet = input;
+          player[betCounter].playerPoints =
+            player[betCounter].playerPoints - input;
+          var betAnnounce = `Player ${betCounter + 1} bet set at ${
+            player[betCounter].playerBet
+          }.`;
+          betCounter++;
+          return betAnnounce;
+        } else {
+          return `Player ${
+            betCounter + 1
+          } please set your bet. You currently have ${
+            player[betCounter].playerPoints
+          } points.`;
+        }
+      }
+    } else {
+      return initialDealresults(player, comHand);
+    }
 
     //Start of player drawphase if no blackjack
   } else if (gameMode == "drawPhase") {
