@@ -1,6 +1,14 @@
 var createDeck = [];
 var num = [];
 var betPoints = 0;
+var winImage =
+  '<img src="https://c.tenor.com/tw0owCZcG2UAAAAC/congrats-congratulations.gif"/>';
+
+var confusedImage =
+  '<img src="https://c.tenor.com/HnJpjRirG5UAAAAC/jackie-chan-meme.gif"/>';
+
+var loseImage =
+  '<img src="https://c.tenor.com/SIkFPWob0yUAAAAM/failure-fail.gif"/>';
 
 // Dealer object consists of the dealer data
 var dealerObject = {
@@ -30,7 +38,7 @@ var makeDeck = function () {
   var cardDeck = [];
 
   //1-4 suits : hearts, clubs, diamonds, spades
-  var cardSuits = ["hearts", "clubs", "diamonds", "spades"];
+  var cardSuits = ["hearts ♥️", "clubs ♣️", "diamonds ♦️", "spades ♠️"];
 
   // we want to loop card suits array using an index that starts from 0
   var suitsIndex = 0;
@@ -163,28 +171,28 @@ var check = function (hand) {
     if (currentPlayer == playerObject) {
       winPoints = betPoints * 2;
       playerObject.points += winPoints;
-      addMessage += `Your bet points has been twiced. You won ${winPoints} points! It has been added to your current points.`;
+      addMessage += ` ${winImage} <br> Your bet points has been twiced. You won ${winPoints} points! It has been added to your current points.`;
       betPoints = 0;
     } else {
-      addMessage += `You lose ${betPoints} points. Dealer wins! Better luck next time!`;
+      addMessage += ` ${loseImage} <br> You lose ${betPoints} points. Dealer wins! Better luck next time!`;
     }
     gameOver = true;
     dealerObject.cardHidden = false;
-    return `<br><br> Its blackjack. ${hand.name} won! ${addMessage}`;
+    return `<br><br> Its blackjack. ${hand.name} won! ${addMessage} <br>`;
 
     // Check if its busts
   } else if (hand.totalCardValue > 21) {
     if (currentPlayer == dealerObject) {
       winPoints = betPoints * 2;
       playerObject.points += winPoints;
-      addMessage += `Your bet points has been twiced. You won ${winPoints} points! It has been added to your current points.`;
+      addMessage += `${winImage} <br> Your bet points has been twiced. You won ${winPoints} points! It has been added to your current points.`;
       betPoints = 0;
     } else {
-      addMessage += `You lose ${betPoints} points. Dealer wins! Better luck next time!`;
+      addMessage += ` ${loseImage} <br> You lose ${betPoints} points. Dealer wins! Better luck next time!`;
     }
     gameOver = true;
     dealerObject.cardHidden = false;
-    return `<br><br> ${hand.name} busts. ${addMessage}`;
+    return `<br><br> ${hand.name} busts. ${addMessage} <br>`;
   } else {
     if (hand.name != "Dealer") {
       return `<br><br> Do you want to [H]it or [S]tand? (H/S)`;
@@ -216,7 +224,7 @@ var main = function (input) {
   if (!playerObject.name) {
     console.log("yes");
     if (!input) {
-      return "The game will start after you enter your name. ";
+      return ` ${confusedImage} <br><br>The game will start after you enter your name. `;
     }
     playerObject.name = "Player " + input;
     var myImage =
@@ -226,10 +234,10 @@ var main = function (input) {
 
   if (!betPoints) {
     if (!Number(input)) {
-      return "Please enter a number or a number between 0 or 100.";
+      return ` ${confusedImage} <br><br> Please enter a number or a number between 0 or 100.`;
     }
     if (input == 0 || input > 100) {
-      return "Please input a bet number between 0 and 100";
+      return `${confusedImage} <br><br> Please input a bet number between 0 and 100`;
     }
     betPoints = input;
     return `${playerObject.name}, you bet ${betPoints} out of your ${playerObject.points} points. Your current points will be immediately deducted from your bet points! Click submit to draw out cards.`;
@@ -305,7 +313,7 @@ var main = function (input) {
       winPoints = betPoints * 2;
       playerObject.points += winPoints;
       betPoints = 0;
-      return `${defaultMessage()} <br><br> ${
+      return `${defaultMessage()} <br><br> ${winImage} <br> ${
         playerObject.name
       } wins! Your bet points has been twiced. You won ${winPoints}! It has been added to your current points. Please refresh the page for a new game.`;
     } else if (playerObject.totalCardValue == dealerObject.totalCardValue) {
@@ -317,7 +325,7 @@ var main = function (input) {
 
     losePoints = betPoints;
     betPoints = 0;
-    return `${defaultMessage()} <br><br> Dealer wins! ${
+    return `${defaultMessage()} <br><br> ${loseImage} <br>Dealer wins! ${
       playerObject.name
     }. You lose ${losePoints} points! Please refresh the page for a new game.`;
   }
