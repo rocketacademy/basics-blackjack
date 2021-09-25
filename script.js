@@ -191,7 +191,7 @@ var main = function (input) {
     playerThirdCard = `${playerHand[2].cardemoji} of ${playerHand[2].suitEmoji}`;
     console.log("player third card");
     console.log(playerThirdCard);
-    showPlayerHand += playerThirdCard + "";
+    showPlayerHand = showComputerHand + playerThirdCard + "";
     console.log("showplayerhand");
     console.log(showPlayerHand);
     totalPlayerHand += Number(playerHand[2].rank);
