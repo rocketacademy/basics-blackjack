@@ -163,7 +163,7 @@ var main = function (input) {
         playerCards
       )}<br>Dealer hand: <br>${cardArrayDisplay(
         dealerCards
-      )}<br> NAT 21! Lucky!<br>${margeMagnificentGif} <br>Press submit again to play another round.`;
+      )}<br> NAT 21! Lucky!<br>${homerWhooGif} <br>Press submit again to play another round.`;
     }
     if (playerCardValue == 21 && dealerCardValue == 21) {
       return `Player hand: <br>${cardArrayDisplay(
@@ -223,7 +223,7 @@ var main = function (input) {
     }.<br> <br>Player hand: <br>${cardArrayDisplay(
       playerCards
     )}<br> Dealer hand:<br> ${dealerCards[0].name}
-    <br> <br>Please submit "hit" for another card, or "stay" to remain with your current hand.<br>${dooDooGif}`;
+    <br> <br>Please submit "hit" for another card, or "stay" to remain with your current hand.`;
   }
 
   //if player stays, switches to dealer's turn
@@ -266,7 +266,7 @@ var main = function (input) {
         playerCards
       )}<br> <br>Dealer's Hand: ${cardArrayDisplay(
         dealerCards
-      )}<br>${thatsItGif}<br>
+      )}<br>${cheeringGif}<br>
         Press submit to play another round.`;
     }
 
@@ -278,7 +278,7 @@ var main = function (input) {
         playerCards
       )}<br>Dealer's Hand:<br>${cardArrayDisplay(
         dealerCards
-      )}<br>Dealer won.<br> Press submit to play another round <br> ${lifeIsHardGif}`;
+      )}<br>Dealer won.<br> Press submit to play another round <br> ${bartTriedGif}`;
     }
   }
 };
@@ -289,21 +289,9 @@ var main = function (input) {
 //   { suit: "Spades", rank: 1, name: "Ace", value: 11 },
 // ];
 
-var alienStrikeGif =
-  '<img src="https://giphy.com/gifs/thesimpsons-l2JdWTvw05sUAN6jm"/>';
-var margeMagnificentGif =
-  '<img src="https://giphy.com/gifs/foxtv-the-simpsons-marge-lumberjill-QsgFAdImwI3CNmMaM2"/>';
-var bartTriedGif =
-  '<img src ="https://giphy.com/gifs/the-simpsons-bart-simpson-at-least-you-tried-26ybwvTX4DTkwst6U"/>';
-var homerWhooGif =
-  '<img src ="https://giphy.com/gifs/season-17-the-simpsons-17x10-xT5LMHxhOfscxPfIfm"/>';
-var cheeringGif =
-  '<img src ="https://giphy.com/gifs/season-11-the-simpsons-11x6-3o6MbdObm34dbYAld6"/>';
-var hiFiveGif =
-  '<img src ="https://giphy.com/gifs/season-4-the-simpsons-4x4-xT5LMPJcI6tuY4Tqr6"/>';
-var thatsItGif =
-  '<img src="https://giphy.com/gifs/season-17-the-simpsons-17x12-l2JecJFtch8Xlsjpm"/>';
-var dooDooGif =
-  '<img src="https://giphy.com/gifs/season-17-the-simpsons-17x8-l2Jeja1WW50EQJVQI"/>';
-var lifeIsHardGif =
-  '<img src="https://giphy.com/gifs/funny-the-simpsons-kEY1upmMn0DVC"/>';
+var alienStrikeGif = '<img src="https://i.gifer.com/8Qk2.gif"/>';
+var bartTriedGif = '<img src ="https://i.gifer.com/225.gif"/>';
+var homerWhooGif = '<img src ="https://i.gifer.com/1vDs.gif"/>';
+var cheeringGif = '<img src ="https://i.gifer.com/AiAw.gif"/>';
+var thatsItGif = '<img src="https://i.gifer.com/1P1b.gif"/>';
+var lifeIsHardGif = '<img src="https://i.gifer.com/6Mr7.gif"/>';
