@@ -29,6 +29,7 @@ var main = function (input) {
     console.log(`mode 1`);
     currentMode = mode2;
     var startHand = startCardDistribute(randomDeck);
+    playerNumber = ace11(playerNumber, playerHand);
     console.log(
       `playerHand: ${playerHand[0].name} of ${playerHand[0].suit} and ${playerHand[1].name} of ${playerHand[1].suit}`
     );
@@ -59,6 +60,7 @@ var main = function (input) {
       console.log(`hit mode`);
       currentMode = mode2;
       var newCard = dealOneCard(randomDeck, hit);
+      playerNumber = ace1(playerNumber, playerHand);
       console.log(`playerNumber: ${playerNumber}`);
       hit += 1;
       console.log(`hit: ${hit}`);
@@ -89,7 +91,7 @@ var main = function (input) {
     console.log(`mode 4`);
     currentMode = mode5;
     if (playerNumber == 21) {
-      playerWin += 1;
+      playerWin += 2;
       return `You win. Your number: ${playerNumber}<br>Dealer number: ${botNumber}`;
     } else if (playerNumber > botNumber && playerNumber < 21) {
       playerWin += 1;
@@ -188,6 +190,7 @@ var makeDeck = function () {
       if (rankCounter > 10) {
         gameValue = 10;
       }
+
       // Create a new card with the current name, suit, and rank
       var card = {
         name: cardName,
@@ -205,14 +208,6 @@ var makeDeck = function () {
     // Increment the suit index to iterate over the next suit
     suitIndex += 1;
   }
-
-  // var counter = 0;
-  // while (counter < 52) {
-  //   if (cardDeck[counter].name == "jack" || "queen" || "king") {
-  //     cardDeck[counter].rank = 10;
-  //     counter += 1;
-  //   }
-  // }
 
   // Return the completed card deck
   return cardDeck;
@@ -242,7 +237,6 @@ var playerCardAnalysis = function (playerNumber) {
   if (playerNumber > 21) {
     return `Bust!`;
   } else if (playerNumber == 21) {
-    playerWin += 1;
     return `Blackjack!`;
   } else return `Hit or stand. Your number is ${playerNumber}`;
 };
@@ -251,18 +245,37 @@ var botAutoDealer = function (randomDeck) {
   var counter = 2;
   while (botNumber < 17) {
     botHand.push(randomDeck.pop());
-    botNumber += botHand[counter].rank;
+    botNumber = ace11(botNumber, botHand);
     counter += 1;
   }
 
   return botNumber;
 };
 
-var aceDecider = function (number, hand) {
+var ace11 = function (number, hand) {
+  console.log(`ace 11`);
   number = 0;
   counter = 0;
   while (counter < hand.length) {
-    if (number < 21 && hand[counter].rank == 11) {
+    if (number < 11 && hand[counter].rank == 1) {
+      hand[counter].rank = 11;
+    }
+    counter += 1;
+  }
+  counterTwo = 0;
+  while (counterTwo < hand.length) {
+    number += hand[counterTwo].rank;
+    counterTwo += 1;
+  }
+  return number;
+};
+
+var ace1 = function (number, hand) {
+  console.log(`ace 1`);
+  number = 0;
+  counter = 0;
+  while (counter < hand.length) {
+    if (number > 21 && hand[counter].rank == 11) {
       hand[counter].rank = 1;
     }
     counter += 1;
