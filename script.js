@@ -1,35 +1,32 @@
 //Initialise global variable for computer cards and player cards
-var computerCards = []
-var playerCards = []
+var computerCards = [];
+var playerCards = [];
 
 //Initialise global variable for computer and player cards value
-var computerCardsValue = 0
-var playerCardsValue = 0
+var computerCardsValue = 0;
+var playerCardsValue = 0;
 
 //Initialize global variable for ace card
-var aceCard = false
+var aceCard = false;
 
 //Initialize global variable for black jack
-var blackJack = false
+var blackJack = false;
 
 var main = function (input) {
-  
   //if player array is empty, deal cards to computer and player
-  if (playerCards.length == 0 && input == ''){
-    return dealCards()
+  if (playerCards.length == 0 && input == "") {
+    return dealCards();
   }
 
   //play the game
-  else
-    return playerHitOrStand(input)
-  
+  else return playerHitOrStand(input);
 };
 
 var makeDeck = function () {
   // Initialise an empty deck array
   var cardDeck = [];
   // Initialise an array of the 4 suits in our deck. We will loop over this array.
-  var suits = ['hearts', 'diamonds', 'clubs', 'spades'];
+  var suits = ["hearts", "diamonds", "clubs", "spades"];
 
   // Loop over the suits array
   var suitIndex = 0;
@@ -38,16 +35,16 @@ var makeDeck = function () {
     var currentSuit = suits[suitIndex];
 
     //create a variable for suits emoji
-    var suitEmoji
+    var suitEmoji;
 
-    if (suits[suitIndex] == 'hearts'){
-      suitEmoji = '♥️';
-    }else if (suits[suitIndex] == 'diamonds'){
-      suitEmoji = '♦️';
-    }else if (suits[suitIndex] == 'clubs'){
-      suitEmoji = '♣';
-    }else if (suits[suitIndex] == 'spades'){
-      suitEmoji = '♠';
+    if (suits[suitIndex] == "hearts") {
+      suitEmoji = "♥️";
+    } else if (suits[suitIndex] == "diamonds") {
+      suitEmoji = "♦️";
+    } else if (suits[suitIndex] == "clubs") {
+      suitEmoji = "♣";
+    } else if (suits[suitIndex] == "spades") {
+      suitEmoji = "♠";
     }
 
     // Loop from 1 to 13 to create all cards for a given suit
@@ -59,48 +56,47 @@ var makeDeck = function () {
       var cardName = rankCounter;
 
       //Create a variable for card value
-      var cardValue = rankCounter
+      var cardValue = rankCounter;
 
       //Create a variable for number emoji
-      var numEmoji
+      var numEmoji;
 
       // If rank is 1, 11, 12, or 13, set cardName to the ace or face card's name
       if (cardName == 1) {
-        cardName = 'ace';
-        numEmoji = '🅰️'
-      } else if (cardName == 2){
-        numEmoji = '2️⃣'
-      }else if (cardName == 3){
-        numEmoji = '3️⃣'
-      }else if (cardName == 3){
-        numEmoji = '3️⃣'
-      }else if (cardName == 4){
-        numEmoji = '4️⃣'
-      }else if (cardName == 5){
-        numEmoji = '5️⃣'
-      }else if (cardName == 6){
-        numEmoji = '6️⃣'
-      }else if (cardName == 7){
-        numEmoji = '7️⃣'
-      }else if (cardName == 8){
-        numEmoji = '8️⃣'
-      }else if (cardName == 9){
-        numEmoji = '9️⃣'
-      }else if (cardName == 10){
-        numEmoji = '🔟'
-      }
-      else if (cardName == 11) {
-        cardName = 'jack';
-        cardValue = 10
-        numEmoji = 'J'
+        cardName = "ace";
+        numEmoji = "🅰️";
+      } else if (cardName == 2) {
+        numEmoji = "2️⃣";
+      } else if (cardName == 3) {
+        numEmoji = "3️⃣";
+      } else if (cardName == 3) {
+        numEmoji = "3️⃣";
+      } else if (cardName == 4) {
+        numEmoji = "4️⃣";
+      } else if (cardName == 5) {
+        numEmoji = "5️⃣";
+      } else if (cardName == 6) {
+        numEmoji = "6️⃣";
+      } else if (cardName == 7) {
+        numEmoji = "7️⃣";
+      } else if (cardName == 8) {
+        numEmoji = "8️⃣";
+      } else if (cardName == 9) {
+        numEmoji = "9️⃣";
+      } else if (cardName == 10) {
+        numEmoji = "🔟";
+      } else if (cardName == 11) {
+        cardName = "jack";
+        cardValue = 10;
+        numEmoji = "J";
       } else if (cardName == 12) {
-        cardName = 'queen';
-        cardValue = 10
-        numEmoji = '👸'
+        cardName = "queen";
+        cardValue = 10;
+        numEmoji = "Q";
       } else if (cardName == 13) {
-        cardName = 'king';
-        cardValue = 10
-        numEmoji = '🤴'
+        cardName = "king";
+        cardValue = 10;
+        numEmoji = "K";
       }
 
       // Create a new card with the current name, suit, and rank
@@ -109,7 +105,7 @@ var makeDeck = function () {
         suit: currentSuit,
         value: cardValue,
         emoji: suitEmoji,
-        number: numEmoji
+        number: numEmoji,
       };
 
       // Add the new card to the deck
@@ -134,9 +130,8 @@ var getRandomIndex = function (max) {
 
 // Shuffle the elements in the cardDeck array
 var shuffleCards = function () {
-
   //Initialise variable for make Deck function
-  var deckCard = makeDeck()
+  var deckCard = makeDeck();
 
   // Loop over the card deck array once
   var currentIndex = 0;
@@ -158,208 +153,249 @@ var shuffleCards = function () {
 };
 
 //var shuffledDeck = shuffleCards()
-var shuffledDeck = shuffleCards()
+var shuffledDeck = shuffleCards();
 
 //Create a function to deal 2 cards to player and computer
-var dealCards = function(){
-  console.log('deal cards function is running')
+var dealCards = function () {
+  console.log("deal cards function is running");
 
   //create a loop to add 2 cards to computer and player cards array
-  var cardsCounter = 0
+  var cardsCounter = 0;
 
-  while (cardsCounter < 2){
+  while (cardsCounter < 2) {
+    computerCards.push(shuffledDeck.pop());
+    console.log(
+      `computer cards ${computerCards[cardsCounter].name} of ${computerCards[cardsCounter].suit}`
+    );
 
-    computerCards.push(shuffledDeck.pop())
-    console.log(`computer cards ${computerCards[cardsCounter].name} of ${computerCards[cardsCounter].suit}`)
+    playerCards.push(shuffledDeck.pop());
+    console.log(
+      `player cards ${playerCards[cardsCounter].name} of ${playerCards[cardsCounter].suit}`
+    );
 
-    playerCards.push(shuffledDeck.pop())
-    console.log(`player cards ${playerCards[cardsCounter].name} of ${playerCards[cardsCounter].suit}`)
-
-    cardsCounter += 1
-
+    cardsCounter += 1;
   }
 
-  calcComputerCardsValue()
-  calcPlayerCardsValue()
+  calcComputerCardsValue();
+  calcPlayerCardsValue();
 
   //if computer hits blackjack or player hits blackjack
-  if ((computerCardsValue == 21 && playerCardsValue !=21) ||
-  (computerCardsValue != 21 && playerCardsValue == 21)){
-    blackJack = true
-    return compareCardsValue()
-  }
+  if (
+    (computerCardsValue == 21 && playerCardsValue != 21) ||
+    (computerCardsValue != 21 && playerCardsValue == 21)
+  ) {
+    blackJack = true;
+    return compareCardsValue();
+  } else
+    return (
+      bananaImage +
+      `<br>Your Bananas: ${playerCardsValue}<br><br>Computer First Card: ${
+        computerCards[0].number
+      }${
+        computerCards[0].emoji
+      }<br>Your Cards: ${showPlayerCards()}<br><br>Type 'hit' for more bananas or 'stand' if you have enough bananas.`
+    );
+};
 
-  else return bananaImage + `<br>Your Bananas: ${playerCardsValue}<br><br>Computer First Card: ${computerCards[0].number}${computerCards[0].emoji}<br>Your Cards: ${showPlayerCards()}<br><br>Type 'hit' for more bananas or 'stand' if you have enough bananas.`
-}
-
-var bananaImage = '<img src="https://th.bing.com/th/id/OIP.DT4i9tYI3l0Lt7psD5GlvAHaEK?pid=ImgDet&rs=1"/>';
+var bananaImage =
+  '<img src="https://th.bing.com/th/id/OIP.DT4i9tYI3l0Lt7psD5GlvAHaEK?pid=ImgDet&rs=1"/>';
 
 //create a function for player to choose hit or stand
-var playerHitOrStand = function(input){
-  console.log('player hit or stand function is running');
+var playerHitOrStand = function (input) {
+  console.log("player hit or stand function is running");
 
-  var myOutputValue = ''
-  var bustImage = '<img src="https://c.tenor.com/aae3d8PF48AAAAAC/despicable-me-minion.gif"/>';
+  var myOutputValue = "";
+  var bustImage =
+    '<img src="https://c.tenor.com/aae3d8PF48AAAAAC/despicable-me-minion.gif"/>';
 
   //if input is hit, pop a card from the shuffled deck to player hands and calculate player cards value
-  if (input == 'hit' && playerCardsValue < 21){
+  if (input == "hit" && playerCardsValue < 21) {
+    playerCards.push(shuffledDeck.pop());
 
-      playerCards.push(shuffledDeck.pop())
+    console.log(`hit player cards -> ${showPlayerCards()}`);
 
-      console.log(`hit player cards -> ${showPlayerCards()}`)
+    myOutputValue = `Your Bananas: ${calcPlayerCardsValue()}<br><br>Your Cards: ${showPlayerCards()}<br><br>`;
 
-      myOutputValue = `Your Bananas: ${calcPlayerCardsValue()}<br><br>Your Cards: ${showPlayerCards()}<br><br>`
+    //if player cards value > 21, player bust
+    if (playerCardsValue > 21) {
+      //if player bust, cannot draw cards anymore.
+      myOutputValue =
+        bustImage +
+        "<br>" +
+        myOutputValue +
+        "Oh no, you have bust. It is computer turn. Press submit.";
 
-      //if player cards value > 21, player bust
-      if (playerCardsValue > 21){
+      //else, ask if player want to hit or stand
+    } else
+      myOutputValue =
+        bananaImage +
+        "<br>" +
+        myOutputValue +
+        `Type 'hit' for more bananas or 'stand' if you have enough bananas.`;
 
-        //if player bust, cannot draw cards anymore.
-        myOutputValue = bustImage + '<br>' + myOutputValue + 'Oh no, you have bust. It is computer turn. Press submit.'
-
-      //else, ask if player want to hit or stand  
-      }else
-        myOutputValue = bananaImage + '<br>' + myOutputValue + `Type 'hit' for more bananas or 'stand' if you have enough bananas.`
-
-      return myOutputValue
-      
-    
-  //else, it is computer's turn to hit or stand
-  }else 
-    return computerHitOrStand()
-}
+    return myOutputValue;
+  } else if (input == "" && playerCardsValue < 21) {
+    return (
+      bananaImage +
+      `<br>Your Bananas: ${playerCardsValue}<br><br>Your Cards: ${showPlayerCards()}<br><br>Type 'hit' for more bananas or 'stand' if you have enough bananas.`
+    );
+  } else if (input == "stand" || playerCardsValue >= 21)
+    return computerHitOrStand();
+};
 
 //create a function for computer/deal to hit or stand
-var computerHitOrStand = function(){
+var computerHitOrStand = function () {
   console.log(`computer hit or stand function is running`);
-  
-  while (calcComputerCardsValue() < 17){
 
-    computerCards.push(shuffledDeck.pop())
-
+  while (calcComputerCardsValue() < 17) {
+    computerCards.push(shuffledDeck.pop());
   }
 
-  if (calcComputerCardsValue() >= 17){
-    return compareCardsValue()
+  if (calcComputerCardsValue() >= 17) {
+    return compareCardsValue();
   }
-}
+};
 
 //create a function to compare the drawn cards value
-var compareCardsValue = function(){
-  console.log('compare cards value function is running')
+var compareCardsValue = function () {
+  console.log("compare cards value function is running");
 
-  var message = `Computer Bananas: ${computerCardsValue}<br>Your Bananas: ${playerCardsValue}<br><br>Computer Cards: ${showComputerCards()}<br>Player Cards: ${showPlayerCards()}<br><br>`
+  var message = `Computer Bananas: ${computerCardsValue}<br>Your Bananas: ${playerCardsValue}<br><br>Computer Cards: ${showComputerCards()}<br>Player Cards: ${showPlayerCards()}<br><br>`;
 
-  var winImage = '<img src="https://c.tenor.com/B_zYdea4l-4AAAAC/yay-minions.gif"/>';
-  var loseImage = '<img src="https://c.tenor.com/jGobNIabMIkAAAAC/minion-minions.gif"/>';
-  var tieImage = '<img src="https://c.tenor.com/jNcYEscYhwoAAAAC/stuart-bob.gif"/>';
+  var winImage =
+    '<img src="https://c.tenor.com/B_zYdea4l-4AAAAC/yay-minions.gif"/>';
+  var loseImage =
+    '<img src="https://c.tenor.com/jGobNIabMIkAAAAC/minion-minions.gif"/>';
+  var tieImage =
+    '<img src="https://c.tenor.com/jNcYEscYhwoAAAAC/stuart-bob.gif"/>';
 
   //if computer cards value is greater than player cards value, computer wins
-    //if black jack = true and computer cards value = 21, computer wins
-  if ((computerCardsValue > playerCardsValue && computerCardsValue < 22) || (computerCardsValue < 22 && playerCardsValue > 21) || (blackJack == true && computerCardsValue == 21)){
-    message = loseImage + '<br>' + message + `Computer win! Press submit to play again!`
+  //if black jack = true and computer cards value = 21, computer wins
+  if (
+    (computerCardsValue > playerCardsValue && computerCardsValue < 22) ||
+    (computerCardsValue < 22 && playerCardsValue > 21) ||
+    (blackJack == true && computerCardsValue == 21)
+  ) {
+    message =
+      loseImage +
+      "<br>" +
+      message +
+      `Computer win! Press submit to play again!`;
   }
   //if player cards value is greater than computer cards value, player wins
-    //if black jack = true and player cards value = 21, player wins
-  else if ((playerCardsValue > computerCardsValue && playerCardsValue < 22) || (playerCardsValue < 22 && computerCardsValue > 21) || (blackJack == true && playerCardsValue == 21)){
-    message = winImage + '<br>' + message + `You win! Press submit to play again!`
+  //if black jack = true and player cards value = 21, player wins
+  else if (
+    (playerCardsValue > computerCardsValue && playerCardsValue < 22) ||
+    (playerCardsValue < 22 && computerCardsValue > 21) ||
+    (blackJack == true && playerCardsValue == 21)
+  ) {
+    message =
+      winImage + "<br>" + message + `You win! Press submit to play again!`;
   }
   //if computer cards value = player cards value, it's a tie
-  else if ((playerCardsValue == computerCardsValue) || (playerCardsValue > 21 && computerCardsValue > 21)){
-    message = tieImage + '<br>' + message + `It's a tie! Press submit to play again!`
+  else if (
+    playerCardsValue == computerCardsValue ||
+    (playerCardsValue > 21 && computerCardsValue > 21)
+  ) {
+    message =
+      tieImage + "<br>" + message + `It's a tie! Press submit to play again!`;
   }
 
   //reset computer and player cards array and reshuffle cards
-  computerCards = []
-  playerCards = []
-  shuffledDeck = shuffleCards()
+  computerCards = [];
+  playerCards = [];
+  shuffledDeck = shuffleCards();
+  blackJack = false;
 
-  return message
-}
+  return message;
+};
 
 //create a function to calculate player card value
-var calcPlayerCardsValue = function(){
+var calcPlayerCardsValue = function () {
   console.log(`calculate player cards value is running`);
 
   //reset player cards value
-  playerCardsValue = 0
+  playerCardsValue = 0;
 
-  var playerCardIndex = 0
+  var playerCardIndex = 0;
 
-  while(playerCardIndex < playerCards.length){
+  while (playerCardIndex < playerCards.length) {
+    playerCardsValue += playerCards[playerCardIndex].value;
 
-    playerCardsValue += playerCards[playerCardIndex].value
-
-    if (playerCards[playerCardIndex].name == 'ace'){
-      aceCard = true
+    if (playerCards[playerCardIndex].name == "ace") {
+      aceCard = true;
     }
 
-    playerCardIndex += 1
+    playerCardIndex += 1;
   }
 
   //if aceCard = true and player cards value is < 12, add 10 to player cards value
-  if (aceCard == true && playerCardsValue < 12){
-    console.log('ace card is running');
-    playerCardsValue += 10 
+  if (aceCard == true && playerCardsValue < 12) {
+    console.log("ace card is running");
+    playerCardsValue += 10;
   }
   console.log(`player cards value -> ${playerCardsValue}`);
 
   //reset ace card to false
-  aceCard = false
+  aceCard = false;
 
-return playerCardsValue
-}
+  return playerCardsValue;
+};
 
 //create a function to calculate computer card value
-var calcComputerCardsValue = function(){
+var calcComputerCardsValue = function () {
   console.log(`calculate computer cards value is running`);
 
   //reset computer cards value
-  computerCardsValue = 0
+  computerCardsValue = 0;
 
-  var computerCardIndex = 0
+  var computerCardIndex = 0;
 
-  while (computerCardIndex < computerCards.length){
-    computerCardsValue += computerCards[computerCardIndex].value
+  while (computerCardIndex < computerCards.length) {
+    computerCardsValue += computerCards[computerCardIndex].value;
 
-    if (computerCards[computerCardIndex].name == 'ace'){
-      aceCard = true
+    if (computerCards[computerCardIndex].name == "ace") {
+      aceCard = true;
     }
-    computerCardIndex += 1
+    computerCardIndex += 1;
   }
 
   //if aceCard = true and computer cards value is < 12, add 10 to computer cards value
-  if (aceCard == true && computerCardsValue < 12){
-    console.log('ace card is running');
-    computerCardsValue += 10 
+  if (aceCard == true && computerCardsValue < 12) {
+    console.log("ace card is running");
+    computerCardsValue += 10;
   }
   console.log(`computer cards value -> ${computerCardsValue}`);
   //reset ace card to false
-  aceCard = false
+  aceCard = false;
 
-
-return computerCardsValue
-}
+  return computerCardsValue;
+};
 
 //create a function to show player cards
-var showPlayerCards = function(){
-  console.log('show player cards function is running');
-  var showOutput = ''
-  var showIndex = 0
-  while (showIndex < playerCards.length){
-    showOutput = showOutput += playerCards[showIndex].number + playerCards[showIndex].emoji + ' | '
-    showIndex += 1
+var showPlayerCards = function () {
+  console.log("show player cards function is running");
+  var showOutput = "";
+  var showIndex = 0;
+  while (showIndex < playerCards.length) {
+    showOutput = showOutput +=
+      playerCards[showIndex].number + playerCards[showIndex].emoji + " | ";
+    showIndex += 1;
   }
-  return showOutput
-}
+  return showOutput;
+};
 
 //create a function to show computer cards
-var showComputerCards = function(){
-  console.log('show computer cards function is running');
-  var computerOutput = ''
-  var computerIndex = 0
-  while (computerIndex < computerCards.length){
-    computerOutput = computerOutput += computerCards[computerIndex].number + computerCards[computerIndex].emoji + ' | '
-    computerIndex += 1
+var showComputerCards = function () {
+  console.log("show computer cards function is running");
+  var computerOutput = "";
+  var computerIndex = 0;
+  while (computerIndex < computerCards.length) {
+    computerOutput = computerOutput +=
+      computerCards[computerIndex].number +
+      computerCards[computerIndex].emoji +
+      " | ";
+    computerIndex += 1;
   }
-  return computerOutput
-}
+  return computerOutput;
+};
