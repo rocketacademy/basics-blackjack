@@ -19,8 +19,8 @@ let compTotalScore;
 let newUserCardMessage;
 let userCardsMessage;
 let compCardsMessage;
-let showCompCardsMessage = "Comp's cards are : ";
-let showUserCardsMessage = "User's cards are : ";
+const showCompCardsMessage = "Comp's cards are : ";
+const showUserCardsMessage = "User's cards are : ";
 let compIfTheresBJMessage = "";
 const restartGameMessage = `<br> Click Submit to start a new game.`;
 
@@ -144,15 +144,6 @@ const compareTheScore = (userScore, compScore) => {
   return `You lose 😤 ${restartGameMessage}`;
 };
 
-// function to reset the game
-const resetTheGame = () => {
-  userCards = [];
-  compCards = [];
-  userTotalScore = 0;
-  compTotalScore = 0;
-  gameMode = startTheGameMode;
-};
-
 // a function to generates the first 2 cards
 const firstDealCards = () => {
   userCards = firstCardsDeal(userCards);
@@ -170,9 +161,13 @@ const firstDealCards = () => {
 
 // a function to show player's cards
 const showPlayerCards = (playerCards, showPlayerCardsMessage) => {
-  for (let i = 0; i < playerCards.length; i++) {
-    showPlayerCardsMessage +=
-      playerCards[i].name + " " + playerCards[i].emojiSuit + ", ";
+  for (let i = 0; i < playerCards.length; i += 1) {
+    showPlayerCardsMessage =
+      showPlayerCardsMessage +
+      playerCards[i].name +
+      " " +
+      playerCards[i].emojiSuit +
+      ", ";
   }
   return showPlayerCardsMessage;
 };
@@ -186,8 +181,8 @@ const dealerAddCard = () => {
   } // if comp total score is bigger than 21, the game is over, comp busts, return the message
   gameMode = gameOver;
 
-  let allCompCards = showPlayerCards(compCards, showCompCardsMessage);
-  let allUsersCards = showPlayerCards(userCards, showUserCardsMessage);
+  const allCompCards = showPlayerCards(compCards, showCompCardsMessage);
+  const allUsersCards = showPlayerCards(userCards, showUserCardsMessage);
 
   const resultMessage = compareTheScore(userTotalScore, compTotalScore);
   const endGameMessage = `${allUsersCards} User's total score is: ${userTotalScore} <br> ${allCompCards} Computer's total score is : ${compTotalScore} <br> ${resultMessage}`;
@@ -196,24 +191,9 @@ const dealerAddCard = () => {
   };
 };
 
-// a function to check if the player wants to assign Ace as 1 or 11
-// const checkAceValues = (playerCards) => {
-//   for (let i = 0; i < playerCards.length; i++) {
-//     if (playerCards[i].value == 11) {
-//       gameMode = addCardMode;
-//       console.log("i have 11");
-//       return `${userCardsMessage}<br>${compCardsMessage}<br>
-//             Do you wish your Ace value is 1 or 11?`;
-//     }
-//   }
-// };
-
-const main = (input) => {
-  var myOutputValue = "Click Submit to deal cards.";
-
-  // Game Mode 1. Start the game
-  if (gameMode == startTheGameMode) {
-    // generates the first 2 cards
+// assign a function to run in the startTheGameMode
+const startTheGame = () => {
+      // generates the first 2 cards
     firstDealCards();
 
     // check if there's blackjack
@@ -234,11 +214,26 @@ const main = (input) => {
       return `${userCardsMessage}<br>${compCardsMessage}<br>
             Do you wish your Ace value is 1 or 11?`;
     }
+}
+
+// function to reset the game
+const resetTheGame = () => {
+  userCards = [];
+  compCards = [];
+  userTotalScore = 0;
+  compTotalScore = 0;
+  gameMode = startTheGameMode;
+};
+
+const main = (input) => {
+  var myOutputValue = "Click Submit to deal cards.";
+
+  // Game Mode 1. Start the game
+  if (gameMode == startTheGameMode) {
+    startTheGame()
 
     // if there's no blackjack, continue to play, ask the user whether to hit or stand
-    gameMode = addCardMode;
-    // console.log(gameMode);
-
+    gameMode = addCardMode;   
     return `${userCardsMessage}, total score : ${userTotalScore} <br>
           ${compCardsMessage}<br>
           Type 'y' to get another card, type 'n' to pass: `;
@@ -264,14 +259,8 @@ const main = (input) => {
       const newCard = addingNewCard(userCards);
       // update user's new score
       userTotalScore += newCard.value;
-      newUserCardMessage = `Your new card is : ${newCard.name} ${
-        newCard.emojiSuit
-      }<br>
-      ${showPlayerCards(
-        userCards,
-        showUserCardsMessage
-      )} total score : ${userTotalScore}.<br>
-      `;
+      newUserCardMessage = `Your new card is : ${newCard.name} ${newCard.emojiSuit}<br>
+      ${showPlayerCards(userCards, showUserCardsMessage)} total score : ${userTotalScore}.<br>`;
 
       // check if the user score is less or equal to 21 to give option to add a new card
       if (userTotalScore <= 21) {
@@ -283,10 +272,8 @@ const main = (input) => {
         // if the user busts, the game is over, user lose,
         // return the message that shows new player's card and comp cards and total scores
         gameMode = gameOver;
-        return `${newUserCardMessage} <br> ${showPlayerCards(
-          compCards,
-          showCompCardsMessage
-        )}${compareTheScore(userTotalScore, compTotalScore)}`;
+        return `${newUserCardMessage}${showPlayerCards(compCards, showCompCardsMessage)} 
+        ${compareTheScore(userTotalScore, compTotalScore)}`;
       }
     } // if the user input is "n". Game Mode 3. Add Dealer Hit or Stand
     else if (input == "n") {
@@ -296,7 +283,6 @@ const main = (input) => {
     }
     resetTheGame();
   }
-
   // reset the game
   resetTheGame();
   return myOutputValue;
