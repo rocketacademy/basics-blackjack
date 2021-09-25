@@ -31,15 +31,10 @@ const makeDecks = () => {
   for (let suitIndex = 0; suitIndex < suits.length; suitIndex += 1) {
     const currentSuit = suits[suitIndex];
     let emojiSuit = "";
-    if (currentSuit == "spades") {
-      emojiSuit = "♠️";
-    } else if (currentSuit == "hearts") {
-      emojiSuit = "♥️";
-    } else if (currentSuit == "clubs") {
-      emojiSuit = "♣️";
-    } else if (currentSuit == "diamonds") {
-      emojiSuit = "♦️";
-    }
+    if (currentSuit == "spades") { emojiSuit = "♠️" } 
+    else if (currentSuit == "hearts") {emojiSuit = "♥️"} 
+    else if (currentSuit == "clubs") {emojiSuit = "♣️"}
+    else if (currentSuit == "diamonds") {emojiSuit = "♦️"}
     // loop 2, rank 1-13, assign card's value and different name for card 1, 11, 12, 13
     for (let rankCounter = 1; rankCounter <= 13; rankCounter += 1) {
       let cardName = "";
@@ -61,13 +56,7 @@ const makeDecks = () => {
         cardValue = rankCounter;
       }
       // assign a card object
-      const card = {
-        rank: rankCounter,
-        suit: currentSuit,
-        name: cardName,
-        emojiSuit,
-        value: cardValue,
-      };
+      const card = {rank: rankCounter, suit: currentSuit, name: cardName, emojiSuit, value: cardValue };
       // push the card to card deck
       deck.push(card);
     }
@@ -191,31 +180,6 @@ const dealerAddCard = () => {
   };
 };
 
-// assign a function to run in the startTheGameMode
-const startTheGame = () => {
-      // generates the first 2 cards
-    firstDealCards();
-
-    // check if there's blackjack
-    if (compTotalScore == 0) {
-      gameMode = gameOver;
-      return `${userCardsMessage}<br>${compIfTheresBJMessage}<br>
-            Lose, opponent has Blackjack 😱`;
-    }
-    if (userTotalScore == 0) {
-      gameMode = gameOver;
-      return `${userCardsMessage}<br>${compIfTheresBJMessage}<br>
-            Win with a Blackjack 😎`;
-    }
-
-    // check if the player wants to assign Ace as 1 or 11
-    if (userCards[0].value == 11 || userCards[1].value == 11) {
-      gameMode = addCardMode;
-      return `${userCardsMessage}<br>${compCardsMessage}<br>
-            Do you wish your Ace value is 1 or 11?`;
-    }
-}
-
 // function to reset the game
 const resetTheGame = () => {
   userCards = [];
@@ -229,8 +193,26 @@ const main = (input) => {
   var myOutputValue = "Click Submit to deal cards.";
 
   // Game Mode 1. Start the game
+  
   if (gameMode == startTheGameMode) {
-    startTheGame()
+    // generates the first 2 cards
+    firstDealCards();  
+    // check if there's blackjack
+    if (compTotalScore == 0) {
+      gameMode = gameOver;
+      return `${userCardsMessage}<br>${compIfTheresBJMessage}<br>
+            Lose, opponent has Blackjack 😱`;
+    }
+    if (userTotalScore == 0) {
+      gameMode = gameOver;
+      return `${userCardsMessage}<br>${compIfTheresBJMessage}<br>
+            Win with a Blackjack 😎`;}
+    // check if the player wants to assign Ace as 1 or 11
+    if (userCards[0].value == 11 || userCards[1].value == 11) {
+      gameMode = addCardMode;
+      return `${userCardsMessage}<br>${compCardsMessage}<br>
+            Do you wish your Ace value is 1 or 11?`;
+    }
 
     // if there's no blackjack, continue to play, ask the user whether to hit or stand
     gameMode = addCardMode;   
