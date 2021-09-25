@@ -19,6 +19,9 @@ let compTotalScore;
 let newUserCardMessage;
 let userCardsMessage;
 let compCardsMessage;
+let showCompCardsMessage = "Comp's cards are : ";
+let showUserCardsMessage = "User's cards are : ";
+let compIfTheresBJMessage = "";
 const restartGameMessage = `<br> Click Submit to start a new game.`;
 
 // make function to generate a card deck
@@ -159,9 +162,19 @@ const firstDealCards = () => {
   compTotalScore = calculateScore(compCards);
   // comapring the score from the 1st 2 cards
   compareTheScore(userTotalScore, compTotalScore);
+  // Assign messages to show user's cards and one of comp's card
+  userCardsMessage = `User's cards are: ${userCards[0].name} ${userCards[0].emojiSuit} and ${userCards[1].name} ${userCards[1].emojiSuit}`;
+  compCardsMessage = `Computer's cards are:   --hidden 🏴‍☠️--  and ${compCards[1].name} ${compCards[1].emojiSuit}`;
+  compIfTheresBJMessage = `Comp's cards are: ${compCards[0].name} ${compCards[0].emojiSuit} and ${compCards[1].name} ${compCards[1].emojiSuit}`;
+};
 
-  userCardsMessage = `User cards are: ${userCards[0].name} ${userCards[0].emojiSuit} and ${userCards[1].name} ${userCards[1].emojiSuit}`;
-  compCardsMessage = `Computer cards are: ${compCards[0].name} ${compCards[0].emojiSuit} and ${compCards[1].name} ${compCards[1].emojiSuit}`;
+// a function to show player's cards
+const showPlayerCards = (playerCards, showPlayerCardsMessage) => {
+  for (let i = 0; i < playerCards.length; i++) {
+    showPlayerCardsMessage +=
+      playerCards[i].name + " " + playerCards[i].emojiSuit + ", ";
+  }
+  return showPlayerCardsMessage;
 };
 
 // a function to add dealer hit or stand
@@ -172,11 +185,28 @@ const dealerAddCard = () => {
     compTotalScore += newCard.value;
   } // if comp total score is bigger than 21, the game is over, comp busts, return the message
   gameMode = gameOver;
-  // console.log("i'm in game over mode");
+
+  let allCompCards = showPlayerCards(compCards, showCompCardsMessage);
+  let allUsersCards = showPlayerCards(userCards, showUserCardsMessage);
+
   const resultMessage = compareTheScore(userTotalScore, compTotalScore);
-  const endGameMessage = `User's total score is: ${userTotalScore} <br> Computer's total score is : ${compTotalScore} `;
-  return { resultMessage, endGameMessage };
+  const endGameMessage = `${allUsersCards} User's total score is: ${userTotalScore} <br> ${allCompCards} Computer's total score is : ${compTotalScore} <br> ${resultMessage}`;
+  return {
+    endGameMessage,
+  };
 };
+
+// a function to check if the player wants to assign Ace as 1 or 11
+// const checkAceValues = (playerCards) => {
+//   for (let i = 0; i < playerCards.length; i++) {
+//     if (playerCards[i].value == 11) {
+//       gameMode = addCardMode;
+//       console.log("i have 11");
+//       return `${userCardsMessage}<br>${compCardsMessage}<br>
+//             Do you wish your Ace value is 1 or 11?`;
+//     }
+//   }
+// };
 
 const main = (input) => {
   var myOutputValue = "Click Submit to deal cards.";
@@ -189,12 +219,12 @@ const main = (input) => {
     // check if there's blackjack
     if (compTotalScore == 0) {
       gameMode = gameOver;
-      return `${userCardsMessage}<br>${compCardsMessage}<br>
+      return `${userCardsMessage}<br>${compIfTheresBJMessage}<br>
             Lose, opponent has Blackjack 😱`;
     }
     if (userTotalScore == 0) {
       gameMode = gameOver;
-      return `${userCardsMessage}<br>${compCardsMessage}<br>
+      return `${userCardsMessage}<br>${compIfTheresBJMessage}<br>
             Win with a Blackjack 😎`;
     }
 
@@ -210,7 +240,7 @@ const main = (input) => {
     // console.log(gameMode);
 
     return `${userCardsMessage}, total score : ${userTotalScore} <br>
-          ${compCardsMessage}, total score : ${compTotalScore} <br>
+          ${compCardsMessage}<br>
           Type 'y' to get another card, type 'n' to pass: `;
   }
 
@@ -230,32 +260,41 @@ const main = (input) => {
           Type 'y' to get another card, type 'n' to pass: `;
     }
     if (input == "y") {
-      // console.log("i'm running add card mode");
       // generate a new card for user and add it to the userCards array with addingNewCard function
       const newCard = addingNewCard(userCards);
       // update user's new score
       userTotalScore += newCard.value;
-      newUserCardMessage = `Your new card is : ${newCard.name} ${newCard.emojiSuit}, total score : ${userTotalScore}.<br> Computer's total score is : ${compTotalScore} <br>`;
+      newUserCardMessage = `Your new card is : ${newCard.name} ${
+        newCard.emojiSuit
+      }<br>
+      ${showPlayerCards(
+        userCards,
+        showUserCardsMessage
+      )} total score : ${userTotalScore}.<br>
+      `;
 
       // check if the user score is less or equal to 21 to give option to add a new card
       if (userTotalScore <= 21) {
-        return `${newUserCardMessage} <br>
-                Type 'y' to get another card, type 'n' to pass:`;
+        return `${newUserCardMessage} ${compCardsMessage} <br>
+                Type "y" to get another card, type "n" to pass:`;
       }
       // check if new user's total score is bigger than 21
       if (userTotalScore > 21) {
-        // if the user busts, the game is over, user lose, return the message
+        // if the user busts, the game is over, user lose,
+        // return the message that shows new player's card and comp cards and total scores
         gameMode = gameOver;
-        // console.log(gameMode);
-        return `${newUserCardMessage} <br>
-                ${compareTheScore(userTotalScore, compTotalScore)}`;
+        return `${newUserCardMessage} <br> ${showPlayerCards(
+          compCards,
+          showCompCardsMessage
+        )}${compareTheScore(userTotalScore, compTotalScore)}`;
       }
     } // if the user input is "n". Game Mode 3. Add Dealer Hit or Stand
     else if (input == "n") {
       // dealer add card mode
-      const { endGameMessage, resultMessage } = dealerAddCard();
-      return `${endGameMessage}  <br> ${resultMessage}`;
+      const { endGameMessage } = dealerAddCard();
+      return `${endGameMessage}<br> `;
     }
+    resetTheGame();
   }
 
   // reset the game
