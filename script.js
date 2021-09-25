@@ -9,7 +9,7 @@ var makeDeck = function () {
   var deck = [];
   //initialize an array of the 4 suits in deck
   var suits = [`hearts`, `diamonds`, `clubs`, `spades`];
-  var emoji = [`♥`, `◆`, `♣`, `♠️`];
+  var emoji = [`♥`, `♦️`, `♣`, `♠️`];
 
   //loop over suits array
   for (var suitIndex = 0; suitIndex < suits.length; suitIndex++) {
