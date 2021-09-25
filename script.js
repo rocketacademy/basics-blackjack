@@ -416,7 +416,7 @@ var main = function (input) {
   if (gameMode == RESET) {
     if (playerWallet > 0) {
       myOutputValue = myOutputValue + "Click 'Submit' to play again!";
-      if (playerWinStreak == 3) {
+      if (playerWinStreak == 2) {
         gameMode = WINNINGSTREAK;
       } else {
         gameMode = START;
