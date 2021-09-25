@@ -153,7 +153,11 @@ var printCards = function (cardsOnHand) {
   currentCards = ``;
   for (i = 0; i < cardsOnHand.length; i++) {
     console.log(i);
-    currentCards += `<div id="card" class="card">${cardsOnHand[i].name}<br><span class="emoji">${cardsOnHand[i].emoji}</span></div>`;
+    if (cardsOnHand[i].suit == `diamonds` || cardsOnHand[i].suit == `hearts`) {
+      currentCards += `<div id="redcard" class="card">${cardsOnHand[i].name}<br><span class="emoji">${cardsOnHand[i].emoji}</span></div>`;
+    } else {
+      currentCards += `<div id="card" class="card">${cardsOnHand[i].name}<br><span class="emoji">${cardsOnHand[i].emoji}</span></div>`;
+    }
   }
   currentCards += `<br>`;
   return currentCards;
@@ -178,7 +182,7 @@ var dealCards = function () {
   var playerBlackjack = blackjack(playerHand);
   if (playerBlackjack == true) {
     points += 10;
-    return `Wow! You got BlackJack!<br><br>You drew:<br> ${printCards(playerHand)}<br><hr>You won 10 points!<br> ${printPoints()}<hr><br>
+    return `Wow! You got BlackJack!<br><br>You drew:<br> ${printCards(playerHand)}<br><hr><div id="points">You won 10 points!<br>${printPoints()}</div><hr><br>
     <div id ="instructions">Press continue to play another turn. Press restart to end game.</div>`;
   }
   var dealerBlackjack = blackjack(dealerHand);
@@ -186,10 +190,12 @@ var dealCards = function () {
     points -= 10;
     return `Awww... looks like dealer drew BlackJack!<br><br>You drew:<br> ${printCards(playerHand)}<br>Dealer drew:<br> ${printCards(
       dealerHand
-    )}<br><hr> You lost 10 points...<br>${printPoints()}<hr><br><div id ="instructions">Press continue to play another turn. Press restart to end game.</div>`;
+    )}<br><hr><div id="points">You lost 10 points...<br>${printPoints()}</div><hr><br><div id ="instructions">Press continue to play another turn. Press restart to end game.</div>`;
   }
   //Return message: Player drew (cards) and dealer drew (cards)
-  return `${userName} drew: <br>${printCards(playerHand)}${aceValue}<br><b>Current sum: ${playerSum}</b><br><br><div id="instructions">Do you want to hit or stand?</div>`;
+  return `${userName} drew: <br>${printCards(
+    playerHand
+  )}${aceValue}<br><b>Current sum: ${playerSum}</b><br><br><hr><div id="points">${printPoints()}</div><hr><br><div id="instructions">Do you want to hit or stand?</div>`;
 };
 
 //Blackjack function
@@ -217,18 +223,24 @@ var playerHit = function (currentPlayerHand) {
   var currentPlayerHand = ``;
   if (playerSum <= 20) {
     currentPlayerHand = `You hit, and... it was successful!<br><br>You drew:<br>`;
-    currentPlayerHand += ` ${printCards(playerHand)}${aceValue}<br><b>Current sum: ${playerSum}</b><br><br><div id="instructions">Do you want to hit or stand?</div>`;
+    currentPlayerHand += ` ${printCards(
+      playerHand
+    )}${aceValue}<br><b>Current sum: ${playerSum}</b><br><br><hr><div id="points">${printPoints()}</div><hr><br><div id="instructions">Do you want to hit or stand?</div>`;
   }
   //Player hit, current sum = 21
   else if (playerSum == 21) {
     currentPlayerHand = `You hit! Wow, your current sum is 21! <br><br>You drew:<br>`;
-    currentPlayerHand += ` ${printCards(playerHand)}${aceValue}<br><b>Current sum: ${playerSum}</b><br><br><div id="instructions">Press stand to continue!</div>`;
+    currentPlayerHand += ` ${printCards(
+      playerHand
+    )}${aceValue}<br><b>Current sum: ${playerSum}</b><br><br><hr><div id="points">${printPoints()}</div><hr><br><div id="instructions">Press stand to continue!</div>`;
     hit.disabled = true;
   }
   //Player hit unsuccessful, >21
   else {
     currentPlayerHand = `You hit! Too bad, you went over 21... <br><br>You drew:<br>`;
-    currentPlayerHand += ` ${printCards(playerHand)}${aceValue}<br><b>Current sum: ${playerSum}</b><br><br><div id="instructions">Press stand to continue!</div>`;
+    currentPlayerHand += ` ${printCards(
+      playerHand
+    )}${aceValue}<br><b>Current sum: ${playerSum}</b><br><br><hr><div id="points">${printPoints()}</div><hr><br><div id="instructions">Press stand to continue!</div>`;
     hit.disabled = true;
   }
   return currentPlayerHand;
@@ -258,7 +270,7 @@ var winningCondition = function () {
     var announceWinner = `It's a tie!<br><br> ${userName} drew:<br>${printCards(playerHand)} 
     <b>Player sum ${playerSum}</b>. <br><br>Dealer drew:<br>${printCards(
       dealerHand
-    )}<b>Dealer sum ${dealerSum}</b><br><br><hr>${printPoints()}<hr><br><div id="instructions">Press continue to play another turn or restart to end game</div>`;
+    )}<b>Dealer sum ${dealerSum}</b><br><br><hr><div id="points">${printPoints()}</div><hr><br><div id="instructions">Press continue to play another turn or restart to end game</div>`;
   }
   //If player wins
   else if (playerSum <= 21 && (playerSum > dealerSum || dealerSum > 21)) {
@@ -266,7 +278,7 @@ var winningCondition = function () {
     var announceWinner = `You won! <br><br> ${userName} drew:<br>${printCards(playerHand)} 
     <b>Player sum ${playerSum}</b>. <br><br>Dealer drew:<br>${printCards(
       dealerHand
-    )}<b>Dealer sum ${dealerSum}</b><br><br><hr>You won 10 points!<br> ${printPoints()}<hr><br><div id="instructions">Press continue to play another turn or restart to end game</div>`;
+    )}<b>Dealer sum ${dealerSum}</b><br><br><hr><div id="points">You won 10 points!<br> ${printPoints()}</div><hr><br><div id="instructions">Press continue to play another turn or restart to end game</div>`;
   }
   //If computer wins
   else if (dealerSum <= 21 && (dealerSum > playerSum || playerSum > 21)) {
@@ -274,7 +286,7 @@ var winningCondition = function () {
     announceWinner = `Dealer wins! <br><br> ${userName} drew:<br>${printCards(playerHand)} 
     <b>Player sum ${playerSum}</b>. <br><br>Dealer drew:<br>${printCards(
       dealerHand
-    )}<b>Dealer sum ${dealerSum}</b><br><br><hr>You lost 10 points...<br> ${printPoints()}<hr><br><div id="instructions">Press continue to play another turn or restart to end game</div>`;
+    )}<b>Dealer sum ${dealerSum}</b><br><br><hr><div id="points">You lost 10 points...<br> ${printPoints()}</div><hr><br><div id="instructions">Press continue to play another turn or restart to end game</div>`;
   } else {
     announceWinner = `Error 1`;
   }

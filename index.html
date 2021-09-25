@@ -43,6 +43,14 @@
     <!-- fonts -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans" />
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fondamento:ital@0;1&display=swap" rel="stylesheet">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tangerine&display=swap" rel="stylesheet">
+
     <!-- CSS -->
     <style>
       * {
@@ -55,11 +63,11 @@
         margin-left: 30px;
         margin-right: 30px;
         background-color: white;
-        color: black; /* sets the font color */
+        color: black; 
         background-image: linear-gradient(to right, #2bc0e4, #eaecc6);
-        background-position: center; /* Center the image */
-        background-repeat: no-repeat; /* Do not repeat the image */
-        background-size: cover; /* Resize the background image to cover the entire container */
+        background-position: center; 
+        background-repeat: no-repeat; 
+        background-size: cover; 
         height: 100%;
       }
 
@@ -163,10 +171,15 @@
         color: rgb(4, 55, 114);
       }
 
+      #points {
+        color: rgb(4, 55, 114);
+      }
+
       .card {
         width: 80px;
         height: 100px;
         padding: 10px;
+        font-family: 'Fondamento', cursive;
         background-color: white;
         display: inline-block;
         border-radius: 10px;
@@ -174,6 +187,21 @@
         text-align: center;
         margin: 5px;
         border: solid 3px;
+      }
+
+      #redcard {
+        width: 80px;
+        height: 100px;
+        padding: 10px;
+        color: rgb(219, 37, 37); 
+        background-color: white;
+        border-color: rgb(219, 37, 37); 
+        display: inline-block;
+        border-radius: 10px;
+        font-size: 13pt;
+        text-align: center;
+        margin: 5px;
+        border: solid rgb(219, 37, 37);  3px;
       }
 
       span.emoji {
