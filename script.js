@@ -57,8 +57,11 @@ const makeDecks = () => {
       }
       // assign a card object
       const card = { 
-        rank: rankCounter, suit: currentSuit, 
-        name: cardName, emojiSuit, value: cardValue 
+        rank: rankCounter, 
+        suit: currentSuit, 
+        name: cardName, 
+        emojiSuit, 
+        value: cardValue 
       };
       // push the card to card deck
       deck.push(card);
