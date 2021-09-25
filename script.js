@@ -56,9 +56,9 @@ var deck = [
   },
   {
     // Player
-    name: "10",
+    name: "ace",
     suit: "hearts",
-    rank: 10,
+    rank: 11,
   },
   {
     // Computer
@@ -494,7 +494,7 @@ var calNextRound = function () {
     return myOutputValue;
   }
 
-  myOutputValue = `You now have ${player.points} points. Submit the numbers of points you would like to bet for next round.`;
+  myOutputValue = `You now have ${player.points} points. Submit the number of points you would like to bet for next round.`;
   gameStatus = "AFTER-PLACING-BET";
   return myOutputValue;
 };
@@ -507,7 +507,7 @@ var calCardRank = function (partyObject) {
 
   // Check how many ace cards are there in the array and adds up all card rank
   for (var i = 0; i < partyObject.cards.length; i += 1) {
-    if (partyObject.cards[i].name == "ace") {
+    if (partyObject.cards[i].name == "Ace") {
       numOfAceCards += 1;
     }
     totalScore = totalScore + partyObject.cards[i].rank;
