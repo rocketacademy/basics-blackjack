@@ -94,10 +94,10 @@ const playersF = function () {
 };
 
 // deal hand a time //auto updates dealerCards & humanCards & playersScore // auto checks Ace post deal round
-const dealHandsF = function () {
+const dealHandsF = function (sCards) {
   let card = sCards.pop();
   let output;
-  //
+
   card = aceF(card);
   console.log(card);
   if (activePlayer === 0) {
@@ -107,7 +107,7 @@ const dealHandsF = function () {
   } else {
     dealerCards.push(card);
     playersScore[activePlayer] += card.ranks;
-    output = `Dealer draws ${card.faces} of ${card.suits}`;
+    output = `Dealer draws ${card.faces} of ${card.suits}<br>`;
   }
   return output;
 };
@@ -122,7 +122,7 @@ const playersUpdateF = function () {
   players[activePlayer].deck();
 };
 
-// playersScore update //not used, bugged; spews out NAN error in one part of array
+// playersScore update //not used in project cuz initial error due to sCards. Now solved.
 const totalScoreF = function () {
   let currentScore;
   if (activePlayer === 0) {
@@ -143,7 +143,7 @@ const aceF = function (card) {
   let value = card.ranks;
   let currentScore = playersScore[activePlayer];
   let totalValue = currentScore + value;
-  let nameCard = card.face;
+  let nameCard = card.faces;
 
   if (nameCard === "ace") {
     if (totalValue > 21) {
@@ -175,7 +175,7 @@ const dealerCheck = function () {
   let i = 1;
 
   while (playersScore[1] < 17 && i < 5) {
-    output1 = dealHandsF(); // has auto Ace check & playersScore update
+    output1 = dealHandsF(sCards); // has auto Ace check & playersScore update
     console.log(output1);
     dealerArray.push(output1);
     i++;
@@ -279,7 +279,7 @@ var main = function (input) {
   // if hit
   if (playing && input === "hit") {
     roundFirst = false;
-    let output1 = dealHandsF(); // has Ace check function automated
+    let output1 = dealHandsF(sCards); // has Ace check function automated
     let output2 = checkF(playersScore[0], playersScore[1]);
     console.log(playersScore);
     myOutputValue = `${output1}<br><br>${output2}`;
