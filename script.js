@@ -42,7 +42,7 @@ const makeDeckF = function () {
   return deckCards;
 };
 
-// //  shuffle cards
+//  shuffle cards
 const shuffleF = function () {
   const randomNumberF = function (dice) {
     return Math.trunc(Math.random() * dice) + 1;
@@ -50,7 +50,7 @@ const shuffleF = function () {
   const deck = makeDeckF();
   for (let currentIndex = 0; currentIndex < deck.length; currentIndex++) {
     let currentCard = deck[currentIndex];
-    let randomIndex = randomNumberF(deck.length);
+    let randomIndex = randomNumberF(deck.length - 1);
 
     deck[currentIndex] = deck[randomIndex];
     deck[randomIndex] = currentCard;
