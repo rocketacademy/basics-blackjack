@@ -28,7 +28,7 @@ const makeDeckF = function () {
         rank = face;
       }
       // object created for cardFaceObject
-      // let ranks = 0; // error that might need removal, causing ranks undefined error
+
       const cardObject = {
         faces: face,
         suits: suit,
@@ -43,7 +43,7 @@ const makeDeckF = function () {
 };
 
 //  shuffle cards
-const shuffleF = function () {
+const shuffleF = () => {
   const randomNumberF = function (dice) {
     return Math.trunc(Math.random() * dice) + 1;
   };
@@ -138,7 +138,7 @@ const totalScoreF = function () {
     }
   }
 };
-
+// ace check to be 1 if total score > 21
 const aceF = function (card) {
   let value = card.ranks;
   let currentScore = playersScore[activePlayer];
@@ -154,7 +154,7 @@ const aceF = function (card) {
   }
   return card;
 };
-
+// resets game to ground zero
 const startF = function () {
   dealerCards = [];
   humanCards = [];
@@ -168,7 +168,7 @@ const startF = function () {
   sCards = shuffleF();
   return `enter (☞ﾟヮﾟ)☞  deal  ☜(ﾟヮﾟ☜) to deal cards`;
 };
-
+// check dealer to keep drawing if dealer score < 17
 const dealerCheck = function () {
   let output1;
   let dealerArray = [];
@@ -244,7 +244,10 @@ var main = function (input) {
 
   // start new game: Resets declared global variables
   if (input === "") {
-    myOutputValue = startF();
+    let image =
+      '<img src="https://c.tenor.com/FNWDvGwBAA4AAAAC/tom-hardy-yak%C4%B1%C5%9F%C4%B1kl%C4%B1.gif"/>';
+
+    myOutputValue = image + startF();
   }
   // deal cards to starting round first only
   if (playing && input === "deal") {
@@ -276,7 +279,7 @@ var main = function (input) {
     myOutputValue = `${output0}<br><br>${output1}`;
   }
 
-  // if hit
+  // hit
   if (playing && input === "hit") {
     roundFirst = false;
     let output1 = dealHandsF(sCards); // has Ace check function automated

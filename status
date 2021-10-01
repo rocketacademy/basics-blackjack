@@ -1,0 +1,51 @@
+[1mdiff --git a/script.js b/script.js[m
+[1mindex 5906c08..ecb3512 100644[m
+[1m--- a/script.js[m
+[1m+++ b/script.js[m
+[36m@@ -18,17 +18,17 @@[m [mconst makeDeckF = function () {[m
+ [m
+     for (let facesIndex = 0; facesIndex < faces.length; facesIndex++) {[m
+       let face = faces[facesIndex];[m
+[31m-      let rank = face;[m
+[32m+[m[32m      let rank;[m
+ [m
+[31m-      if (rank == "ace") {[m
+[32m+[m[32m      if (face == "ace") {[m
+         rank = 11;[m
+[31m-      } else if (rank == "jack" || rank == "queen" || rank == "king") {[m
+[32m+[m[32m      } else if (face == "jack" || face == "queen" || face == "king") {[m
+         rank = 10;[m
+       } else {[m
+         rank = face;[m
+       }[m
+       // object created for cardFaceObject[m
+[31m-      let ranks = 0; // error that might need removal, causing ranks undefined error[m
+[32m+[m[32m      // let ranks = 0; // error that might need removal, causing ranks undefined error[m
+       const cardObject = {[m
+         faces: face,[m
+         suits: suit,[m
+[36m@@ -38,6 +38,7 @@[m [mconst makeDeckF = function () {[m
+       deckCards.push(cardObject);[m
+     }[m
+   }[m
+[32m+[m[32m  // console.log(deckCards);[m
+   return deckCards;[m
+ };[m
+ [m
+[36m@@ -58,6 +59,7 @@[m [mconst shuffleF = function () {[m
+   return deck;[m
+ };[m
+ let sCards = shuffleF();[m
+[32m+[m[32mconsole.log(sCards);[m
+ [m
+ // push Cards to human and dealer[m
+ const pushCardsF = function (card) {[m
+[36m@@ -241,7 +243,7 @@[m [mvar main = function (input) {[m
+   let output1;[m
+ [m
+   // start new game: Resets declared global variables[m
+[31m-  if (input === "start") {[m
+[32m+[m[32m  if (input === "") {[m
+     myOutputValue = startF();[m
+   }[m
+   // deal cards to starting round first only[m
