@@ -103,19 +103,14 @@ var playerHands = [];
 var computerHand = [];
 
 /**
- * Deal a card to a player or computer. 
+ * Deal a card to a hand (player or computer).
+ * @param {object} hand Card hand. 
  */
-var dealCard = (player) => {
+var dealCard = (hand) => {
   var dealtCard = deck.pop();
 
-  if (player == 0) {
-    computerHand[0].total += getBlackjackCardValue(dealtCard.rank);
-    computerHand[0].cards.push(dealtCard);  
-  }
-  else {
-    playerHands[player-1].total += getBlackjackCardValue(dealtCard.rank);
-    playerHands[player-1].cards.push(dealtCard);  
-  }
+  hand.total += getBlackjackCardValue(dealtCard.rank);
+  hand.cards.push(dealtCard);  
 }
 
 /**
@@ -136,54 +131,46 @@ var dealCards = (numOfPlayers, numOfCards) => {
   }
 
   // Deal cards to players and computer
-  for (var count=0; count < numOfCards; count++) {
-    for (var i=0; i < numOfPlayers; i++) {
-      dealCard(i+1); 
+  for (let count=0; count < numOfCards; count++) {
+    for (let i=0; i < numOfPlayers; i++) {
+      dealCard(playerHands[i]); 
     }
-    dealCard(0);  
+    dealCard(computerHand[0]);  
   }
 
 }
 
-var printPlayerCards = (name, player) => {
-    var myOutputValue = name + " " + player + " has ";
+/**
+ * Print cards in a hand.
+ * @param {string} name Name of the hand holder.
+ * @param {object} hand Hand object that hold the cards. 
+ */
+var printCards = (name, hand, onlyFirstCard = false) => {
+    let myOutputValue;
+    
+    if (name == "DEALER") myOutputValue = name + " has ";
+    else myOutputValue = name + " " + hand.player + " has ";
 
     // Print out first card
     myOutputValue +=
-    playerHands[player-1].cards[0].name + " of " + playerHands[player-1].cards[0].suit;
+    hand.cards[0].name + " of " + hand.cards[0].suit;
 
-    // Print out more cards
-    for (var j=1; j < playerHands[player-1].cards.length; j++) {
+    if (!onlyFirstCard) {
+      // Print out more cards
+      for (let j=1; j < hand.cards.length; j++) {
+        myOutputValue +=
+        " and " +
+        hand.cards[j].name + " of " + hand.cards[j].suit;  
+      }
+
+      // Print out total
       myOutputValue +=
-      " and " +
-      playerHands[player-1].cards[j].name + " of " + playerHands[player-1].cards[j].suit;  
+      " with total hands of  " + hand.total; 
     }
-
-    // Print out total
-    myOutputValue +=
-    " with total hands of  " + playerHands[player-1].total + "<br/>"; 
     
+    myOutputValue += "<br/>";
+
     return myOutputValue;
-}
-var printComputerCards = (name) => {
-  var myOutputValue = name + " has ";
-
-  // Print out computer's first card
-  myOutputValue +=
-    computerHand[0].cards[0].name + " of " + computerHand[0].cards[0].suit;
-
-  // Print out computer's next cards
-  for (var k=1; k < computerHand[0].cards.length; k++) {
-    myOutputValue +=
-    " and " +
-    computerHand[0].cards[k].name + " of " + computerHand[0].cards[k].suit;
-  }
-
-  myOutputValue +=
-  " with total hands of  " + computerHand[0].total +   
-  "<br/>";
-  
-  return myOutputValue;
 }
 
 /*
@@ -204,6 +191,10 @@ var deck = shuffleCards(makeDeck());
 var gameMode = "start";
 var playerFocus = 1;
 
+const BLACKJACK = 21;
+const DEALER_HIT_LIMIT = 17;
+const NUMBER_OF_CARDS_TO_START = 2;
+
 /**
  * Each player action triggers the main function.
  */
@@ -217,11 +208,11 @@ var main = function (input) {
     playerHands = [];
     computerHand = [];
 
-    dealCards(numOfPlayers, 2);
+    dealCards(numOfPlayers, NUMBER_OF_CARDS_TO_START);
   }
   else if ((gameMode == "started") && (input == "h")) {
     //deal a card to player
-    dealCard(playerFocus);
+    dealCard(playerHands[playerFocus-1]);
   }
   else if ((gameMode == "started") && (input == "s")) {
     //deal card to next player
@@ -233,57 +224,62 @@ var main = function (input) {
   var myOutputValue = ""; 
 
   // Print out what the players have
-  for (var i=0; i < numOfPlayers; i++) {
-    myOutputValue += printPlayerCards("PLAYER", playerHands[i].player);
+  for (let i=0; i < numOfPlayers; i++) {
+    myOutputValue += printCards("PLAYER", playerHands[i]);
   }
 
   // Print out what the computer has
-  myOutputValue += printComputerCards("COMPUTER");
+  myOutputValue += printCards("DEALER", computerHand[0], true);
 
+  // TODO: put this in helper function
   // Determine if any of the players or computer has blackjack
-  if ((computerHand[0].total == 21) && (playerHands[0].total == 21)) {
+  if ((computerHand[0].total == BLACKJACK) && (playerHands[0].total == BLACKJACK)) {
     myOutputValue += "<br/>It's a Blackjack push!";
+    myOutputValue += "<br/><br/>Click on the Submit button to play again.";    
     gameMode = "start";
   }
-  else if (playerHands[0].total == 21) {
+  else if (playerHands[0].total == BLACKJACK) {
     myOutputValue += "<br/>You win! You have Blackjack!";
+    myOutputValue += "<br/><br/>Click on the Submit button to play again.";    
     gameMode = "start";
   }
-  else if (computerHand[0].total == 21) {
+  else if (computerHand[0].total == BLACKJACK) {
     myOutputValue += "<br/>Sorry, you lost. The computer has Blackjack.";
+    myOutputValue += "<br/><br/>Click on the Submit button to play again.";    
     gameMode = "start";
   }
-  else if (playerHands[0].total > 21) {
+  else if (playerHands[0].total > BLACKJACK) {
     myOutputValue += "<br/>Sorry, you busted.";
+    myOutputValue += "<br/><br/>Click on the Submit button to play again.";    
     gameMode = "start";
   }
   else if (gameMode == "evaluateHands") {
     // Add cards to computer
-    if (computerHand[0].total < 17) {
-      while (computerHand[0].total < 17) {
-        dealCard(0);
+    if (computerHand[0].total < DEALER_HIT_LIMIT) {
+      while (computerHand[0].total < DEALER_HIT_LIMIT) {
+        dealCard(computerHand[0]);
       }
-
-      // Print out what the players have
-      for (var i=0; i < numOfPlayers; i++) {
-        myOutputValue = printPlayerCards("PLAYER", playerHands[i].player);
-      }
-
-      // Print out what the computer has
-      myOutputValue += printComputerCards("COMPUTER");
     }
   
+    // Print out what the players have
+    for (let i=0; i < numOfPlayers; i++) {
+      myOutputValue = printCards("PLAYER", playerHands[i]);
+    }
+
+    // Print out what the computer has
+    myOutputValue += printCards("DEALER", computerHand[0]);
+    
     // Determine if any of the players or computer has blackjack
-    if ((computerHand[0].total == 21) && (playerHands[0].total == 21)) {
+    if ((computerHand[0].total == BLACKJACK) && (playerHands[0].total == BLACKJACK)) {
       myOutputValue += "<br/>It's a Blackjack push!";
     }
-    else if (playerHands[0].total == 21) {
+    else if (playerHands[0].total == BLACKJACK) {
       myOutputValue += "<br/>You win! You have Blackjack!";
     }
-    else if (computerHand[0].total == 21) {
+    else if (computerHand[0].total == BLACKJACK) {
       myOutputValue += "<br/>Sorry, you lost. The computer has Blackjack.";
     }
-    else if (computerHand[0].total > 21) {
+    else if (computerHand[0].total > BLACKJACK) {
       myOutputValue += "<br/>You win! The computer has busted.";
     }
     else {
@@ -299,6 +295,12 @@ var main = function (input) {
       }
     }
 
+    // TODO
+    // Print hands
+    // Print result
+    // Print message
+
+    myOutputValue += "<br/><br/>Click on the Submit button to play again.";    
     gameMode = "start";
   }
   else {
