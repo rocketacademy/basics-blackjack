@@ -173,29 +173,53 @@ var dealCards = (numOfPlayers, numOfCards) => {
 var printCards = (name, hand, onlyFirstCard = false) => {
     let myOutputValue;
     
+    let cardSuitEmojis = {
+      "hearts": "♥️", "diamonds": "♦️", "clubs": "♣️", "spades": "♠️"
+    };
+
+    let cardRankEmojis = {
+      2: "2️⃣", 3: "3️⃣", 4: "4️⃣", 5: "5️⃣", 6: "6️⃣",
+      7: "7️⃣", 8: "8️⃣", 9: "9️⃣", 10: "🔟",
+    }
+
     if (name == "DEALER") myOutputValue = name + " has ";
     else myOutputValue = name + " " + hand.player + " has ";
 
     // Print out first card
-    myOutputValue +=
-    hand.cards[0].name + " of " + hand.cards[0].suit;
+    myOutputValue += 
+      ((hand.cards[0].name.length > 2) ? hand.cards[0].name.charAt(0).toUpperCase() : cardRankEmojis[hand.cards[0].rank]) 
+      + cardSuitEmojis[hand.cards[0].suit];
 
     if (!onlyFirstCard) {
       // Print out more cards
       for (let j=1; j < hand.cards.length; j++) {
         myOutputValue +=
         " and " +
-        hand.cards[j].name + " of " + hand.cards[j].suit;  
+        ((hand.cards[j].name.length > 2) ? hand.cards[j].name.charAt(0).toUpperCase() : cardRankEmojis[hand.cards[j].rank]) 
+        + cardSuitEmojis[hand.cards[j].suit];  
       }
 
       // Print out total
-      myOutputValue +=
-      " with total hands of  " + hand.total; 
+      myOutputValue += " with total of  " + hand.total; 
     }
     
     myOutputValue += "<br/>";
 
     return myOutputValue;
+}
+
+/**
+ * Get suggestion whether to hit or stand.
+ * @param {number} playerTotal Total of current player hand. 
+ * @param {number} dealerUpcard Value of dealer card that's already open.
+ */
+var getSuggestion = (playerTotal, dealerUpcard) => {
+  if ((playerTotal >= 17)
+    || ((playerTotal < 17) && (playerTotal > 12) && (dealerUpcard < 6))
+    || ((playerTotal == 12) && (dealerUpcard > 3) && (dealerUpcard < 7))) {
+      return "stand";
+  }
+  return "hit";
 }
 
 /*
@@ -241,7 +265,7 @@ var main = function (input) {
     //player chooses to 'stay' so go the next step
     gameMode = "EVALUATE_HANDS";
   }
-  else if ((gameMode == "GAME_IN_PROGRESS") && (input == "ha")) {
+  else if ((gameMode == "GAME_IN_PROGRESS") && (input == "h ")) {
     //deal an Ace of Spades to player because the player wants to win
     dealAceOfSpades(playerHands[playerInFocus-1]);
   }
@@ -280,6 +304,9 @@ var main = function (input) {
       gameMode = "READY";
     }
     else {
+      directionMessage = directionMessage + "<br/>You have " + playerHands[playerInFocus-1].total + ".";
+      directionMessage = directionMessage + " I would suggest to " 
+        + getSuggestion(playerHands[playerInFocus-1].total, dealerHand[0].cards[0]) + ".<br/>";
       directionMessage += "<br/>Please input 'h' if you want to hit (add a card) or 's' if you want to stand (stay with your cards)."
       gameMode = "GAME_IN_PROGRESS";
     }
@@ -305,6 +332,9 @@ var main = function (input) {
       gameMode = "READY";
     }
     else {
+      directionMessage = directionMessage + "<br/>You have " + playerHands[playerInFocus-1].total + ".";
+      directionMessage = directionMessage + " I would suggest to " 
+        + getSuggestion(playerHands[playerInFocus-1].total, dealerHand[0].cards[0]) + ".<br/>";
       directionMessage += "<br/>Please input 'h' if you want to hit (add a card) or 's' if you want to stand (stay with your cards)."
     }
   }
@@ -365,7 +395,8 @@ var main = function (input) {
     gameMode = "READY";
   }
 
-  let myOutputValue = playerInfoMessage + dealerInfoMessage + resultMessage + directionMessage;
+  let myOutputValue = playerInfoMessage + dealerInfoMessage + 
+    "<br/>PLAYER " + playerInFocus + "!" + resultMessage + directionMessage;
   //myOutputValue = myOutputValue + "<br/><br/>game mode: " + gameMode;
 
   // Return output to screen.
