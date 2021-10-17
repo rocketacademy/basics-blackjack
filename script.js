@@ -284,7 +284,7 @@ var printPlayerChipValues = () => {
 
   // Get amount of money (or in the form of chips) left in players' wallets
   for (let i=0; i < numOfPlayers; i++) {
-    myOutputValue += "PLAYER " + (i+1) + " has $" + playerWallets[i] + " left.<br/>";
+    myOutputValue += "PLAYER " + (i+1) + " has $" + playerWallets[i] + ".<br/>";
   }
 
   myOutputValue += "<br/>";
@@ -335,7 +335,7 @@ TODO:
 2. Option to have players set their own amout of bets, instead of fixed
 3. Other functionalities such as Doubling bets, Splitting
 4. Unit tests
-5. Improve look and feel with images and possibly animations
+5. Improve look and feel with colors, images, and possibly animations
 
 */
 
@@ -357,7 +357,7 @@ const BET_AMOUNT = 10;
 const MAX_PLAYERS = 7;
 
 // Initialise the shuffled card deck before the game starts.
-var deck;
+var deck = [];
 
 // Initialize player wallets
 var wallet = buyInPlayers(MAX_PLAYERS); 
@@ -423,7 +423,18 @@ var main = function (input) {
       if (playerHands[playerInFocus-1].acesAsEleven > 0) {
         playerHands[playerInFocus-1].total -= 10;
         playerHands[playerInFocus-1].acesAsEleven--;
-        playerInfoMessage = printCards("PLAYER", playerHands[playerInFocus-1]);
+
+        // If last dealt card is an Ace and player still bust
+        if (playerHands[playerInFocus-1].total > BLACKJACK) {
+          resultMessage += "<br/>PLAYER " + playerInFocus + "! Sorry, you bust.";
+          isGameDone = true;  
+        }
+
+        // Reprint all players' cards
+        playerInfoMessage = "";
+        for (let i=0; i < numOfPlayers; i++) {
+          playerInfoMessage += printCards("PLAYER", playerHands[i]);
+        }
       }
       else {
         resultMessage += "<br/>PLAYER " + playerInFocus + "! Sorry, you bust.";
@@ -482,11 +493,7 @@ var main = function (input) {
       }              
     }
     
-    // Print out what the players and dealer have
-    playerInfoMessage = "";
-    for (let i=0; i < numOfPlayers; i++) {
-      playerInfoMessage += printCards("PLAYER", playerHands[i]);
-    }
+    // Reprint the dealer's cards
     dealerInfoMessage = printCards("DEALER", dealerHand[0]);
     
     // Go through all players' hands to determine if they win/lose/push(tie)
@@ -558,11 +565,9 @@ var main = function (input) {
   }
 
   // Print out all messages
-  let myOutputValue = printPlayerChipValues() + playerInfoMessage + dealerInfoMessage + 
+  let myOutputValue = printPlayerChipValues() + playerInfoMessage + "<br/>" + dealerInfoMessage + 
     resultMessage + directionMessage;
   
-  myOutputValue = myOutputValue + "<br/><br/>game mode: " + gameMode;
-
   // Return output to screen.
   return myOutputValue;
 };
