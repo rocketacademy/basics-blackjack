@@ -182,12 +182,18 @@ var dealCards = (numOfPlayers, numOfCards) => {
     dealCard(dealerHand[0]);  
   }
 
-  // Check for double aces
+  // Check for double aces in player hand
   for (let i=0; i < numOfPlayers; i++) {
     if (playerHands[i].acesAsEleven == 2) {
       playerHands[i].total -= 10;
       playerHands[i].acesAsEleven--;
     }
+  }
+
+  // Check for double aces in dealer hand
+  if (dealerHand[0].acesAsEleven == 2) {
+    dealerHand[0].total -= 10;
+    dealerHand[0].acesAsEleven--;
   }
 }
 
@@ -352,6 +358,8 @@ const NUMBER_OF_CARDS_TO_START = 2;
 // Constants related to Betting
 const BUY_IN_AMOUNT = 100;
 const BET_AMOUNT = 10;
+const WIN_MULTIPLIER = 2;
+const BLACJACK_MULTIPLIER = 2.5;
 
 // Constants related to Multiplayer
 const MAX_PLAYERS = 7;
@@ -413,7 +421,7 @@ var main = function (input) {
     let isGameDone = false, isBlackjack = false;
     
     // Check if player has Blackjack
-    if ((playerHands[playerInFocus-1].total == BLACKJACK) && (playerHands[playerInFocus-1].cards.length == 2)) {
+    if ((playerHands[playerInFocus-1].total == BLACKJACK) && (playerHands[playerInFocus-1].cards.length == NUMBER_OF_CARDS_TO_START)) {
       resultMessage += "<br/>PLAYER " + playerInFocus + "! You have Blackjack! Wait to see if DEALER also has Blackjack.";
       isBlackjack = true;
     }
@@ -503,7 +511,8 @@ var main = function (input) {
 
         // Player and dealer both has Blackjack
         if ((dealerHand[0].total == BLACKJACK) && (playerHands[playerIndex].total == BLACKJACK)) {
-          if ((dealerHand[0].cards.length == 2) && (playerHands[playerIndex].cards.length == 2)) {
+          if ((dealerHand[0].cards.length == NUMBER_OF_CARDS_TO_START) 
+          && (playerHands[playerIndex].cards.length == NUMBER_OF_CARDS_TO_START)) {
             resultMessage += "It's a Blackjack push! You get your $" + BET_AMOUNT + " back.";
           } 
           else { //Player and dealer both has 21
@@ -514,19 +523,19 @@ var main = function (input) {
         // Only player has Blackjack or 21
         else if (playerHands[playerIndex].total == BLACKJACK) {
           // Player has Blackjack
-          if (playerHands[playerIndex].cards.length == 2) {
-            playerWallets[playerIndex] += (BET_AMOUNT * 2.5);
-            resultMessage += "Congrats! You win $" + (BET_AMOUNT * 2.5) + ".";  
+          if (playerHands[playerIndex].cards.length == NUMBER_OF_CARDS_TO_START) {
+            playerWallets[playerIndex] += (BET_AMOUNT * BLACJACK_MULTIPLIER);
+            resultMessage += "Congrats! You win $" + (BET_AMOUNT * BLACJACK_MULTIPLIER) + ".";  
           } 
           else { // Player has 21
-            playerWallets[playerIndex] += (BET_AMOUNT * 2);
-            resultMessage += "Congrats! You win $" + (BET_AMOUNT * 2) + ".";  
+            playerWallets[playerIndex] += (BET_AMOUNT * WIN_MULTIPLIER);
+            resultMessage += "Congrats! You win $" + (BET_AMOUNT * WIN_MULTIPLIER) + ".";  
           } 
         }
         // Only dealer has Blackjack or 21
         else if (dealerHand[0].total == BLACKJACK) {
           // Dealer has Blackjack
-          if (dealerHand[0].cards.length == 2) {
+          if (dealerHand[0].cards.length == NUMBER_OF_CARDS_TO_START) {
             resultMessage += "Sorry, you lost. The dealer has Blackjack.";
           }
           else { // Dealer has 21
@@ -535,8 +544,8 @@ var main = function (input) {
         }
         // Dealer busts
         else if (dealerHand[0].total > BLACKJACK) {
-          playerWallets[playerIndex] += (BET_AMOUNT * 2);
-          resultMessage += "The dealer busts. You win $" + (BET_AMOUNT * 2) + ".";
+          playerWallets[playerIndex] += (BET_AMOUNT * WIN_MULTIPLIER);
+          resultMessage += "The dealer busts. You win $" + (BET_AMOUNT * WIN_MULTIPLIER) + ".";
         }
         else {
           // Determine who wins between the players and the dealer
@@ -548,8 +557,8 @@ var main = function (input) {
           }
           // Player has better hand than dealer, player wins
           else if (playerHands[playerIndex].total > dealerHand[0].total) {
-            playerWallets[playerIndex] += (BET_AMOUNT * 2);
-            resultMessage += "Congrats! You win $" + (BET_AMOUNT * 2) + ".";    
+            playerWallets[playerIndex] += (BET_AMOUNT * WIN_MULTIPLIER);
+            resultMessage += "Congrats! You win $" + (BET_AMOUNT * WIN_MULTIPLIER) + ".";    
           }
           else { // Dealer has better hand than player, player loses
             resultMessage += "Sorry, you lost.";    
