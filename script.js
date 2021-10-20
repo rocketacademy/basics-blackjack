@@ -4,7 +4,7 @@ let players = [];
 let activePlayer = 0;
 let playing = false;
 let roundFirst = true;
-let userNameRound = true;
+let userNameRound = false;
 let dealRound = 1;
 
 // //Create makeDeckF function
@@ -169,7 +169,7 @@ const initGame = function () {
   activePlayer = 0;
   playing = false;
   roundFirst = true;
-  userNameRound = true;
+  userNameRound = false;
   dealRound = 1;
   shuffleDeck();
   console.log(shuffleDeck());
@@ -329,14 +329,14 @@ const introRestartGame = function () {
       (userNameRound == false && playing == false))
   ) {
     initGame();
-    let introMessage = `Welcome to Basics Blackjack game. Please provide us with your name before game initiates.`;
+    let introMessage = `Welcome to Basics Blackjack game.<br/><br/> Please provide us with your name before game initiates.`;
     myOutputValue = introMessage;
   }
 
   if (userNameRound == true && playing == false) {
     initGame();
     console.log(userNameRound);
-    let introMessage = `Welcome to Basics Blackjack game. Please provide us with your name before game initiates.`;
+    let introMessage = `Welcome to Basics Blackjack game.<br/><br/> Please provide us with your name before game initiates.`;
     myOutputValue = introMessage;
   }
   return myOutputValue;
@@ -348,7 +348,7 @@ const storeNameGuide2InputD = function (input) {
   players[0].name = userName;
   userNameRound = false;
   playing = true;
-  myOutputValue = `Thank you ${userName}. Please input "d" exactly to start dealing cards to you and the computer.`;
+  myOutputValue = `Thank you ${userName}. <br/><br/>Please input "d" exactly to start dealing cards to you and the computer.`;
   return myOutputValue;
 };
 const dealStandHit = function (input) {
@@ -366,8 +366,8 @@ const dealStandHit = function (input) {
 };
 const main = function (input) {
   // default message when no condition satisfy meaning == ERROR ==
-  let myOutputValue = `Error. You either have not given us your name or tried keying in invalid inputs.
-  To continue, gives us your name or input "d" or "h" or "s" when prompted. You may press "Submit" anytime to restart game.`;
+  let myOutputValue = `Error. You either have not given us your name or tried keying in invalid inputs. <br/><br/>
+  To continue, gives us your name or input "d" or "h" or "s" when prompted.<br/><br/>You may press "Submit" anytime to restart game.`;
   // constant image to browser
   const imageConstant =
     '<img src="https://c.tenor.com/FNWDvGwBAA4AAAAC/tom-hardy-yak%C4%B1%C5%9F%C4%B1kl%C4%B1.gif"/>';
@@ -375,9 +375,9 @@ const main = function (input) {
   // intro or restart Game
   if (input == "") {
     myOutputValue = introRestartGame(input);
+    userNameRound = true;
   }
   // store players name and guide to press "d" to deal initial hands
-  console.log(playing);
   if (
     !(input == "" || input == "s" || input == "d" || input == "h") &&
     userNameRound == true &&
