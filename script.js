@@ -1,14 +1,14 @@
-// "use strict";
-let dealerCards = [];
-let humanCards = [];
+"use strict";
 let playersScore = [0, 0];
 let players = [];
 let activePlayer = 0;
-let playing = true;
+let playing = false;
 let roundFirst = true;
+let userNameRound = true;
+let dealRound = 1;
 
 // //Create makeDeckF function
-const makeDeckF = function () {
+const makeDeck = function () {
   const deckCards = [];
   // console.log(deckCards);
   const suits = ["diamonds", "clubs", "hearts", "spades"];
@@ -43,14 +43,14 @@ const makeDeckF = function () {
 };
 
 //  shuffle cards
-const shuffleF = () => {
-  const randomNumberF = function (dice) {
+const shuffleDeck = () => {
+  const randomNumber = function (dice) {
     return Math.trunc(Math.random() * dice) + 1;
   };
-  const deck = makeDeckF();
+  const deck = makeDeck();
   for (let currentIndex = 0; currentIndex < deck.length; currentIndex++) {
     let currentCard = deck[currentIndex];
-    let randomIndex = randomNumberF(deck.length - 1);
+    let randomIndex = randomNumber(deck.length - 1);
 
     deck[currentIndex] = deck[randomIndex];
     deck[randomIndex] = currentCard;
@@ -58,79 +58,87 @@ const shuffleF = () => {
 
   return deck;
 };
-let sCards = shuffleF();
-console.log(sCards);
+let shuffledCards = shuffleDeck();
+// console.log(shuffledCards);
 
-// push Cards to human and dealer
-const pushCardsF = function (card) {
-  if (activePlayer === 0) {
-    humanCards.push(card);
-  } else {
-    dealerCards.push(card);
-  }
-};
+// create players that contains *** method called deck () ==> picks card ==> pushes to cardsHeld array ; auto updates playersScore
+const playersCreate = function () {
+  let cardsArray = [];
 
-// create players // includes property: deck () - auto updates playersScore && dealersCards && humanCards
-const playersF = function () {
-  let cards = [];
   const playerHuman = {
-    name: "human",
+    name: "",
     deck: function () {
-      let card = sCards.pop();
+      let card = shuffledCards.pop();
       playersScore[activePlayer] = playersScore[activePlayer] + card.ranks;
-      pushCardsF(card);
+      pushCardsToPlayersCardsHeld(card);
+      return card;
     },
+    cardsHeld: cardsArray,
   };
+
   const playerDealer = {
     name: "dealer",
     deck: function () {
-      let card = sCards.pop();
+      // draws card from shuffled deck
+      let card = shuffledCards.pop();
       playersScore[activePlayer] = playersScore[activePlayer] + card.ranks;
-      pushCardsF(card);
+      pushCardsToPlayersCardsHeld(card);
+      return card;
     },
+    cardsHeld: cardsArray,
   };
 
   players.push(playerHuman, playerDealer);
 };
 
-// deal hand a time //auto updates dealerCards & humanCards & playersScore // auto checks Ace post deal round
-const dealHandsF = function (sCards) {
-  let card = sCards.pop();
-  let output;
+const pushCardsToPlayersCardsHeld = function (card) {
+  if (activePlayer == 0) {
+    players[0].cardsHeld.push(card);
+  } else {
+    players[1].cardsHeld.push(card);
+  }
+  return card;
+};
 
-  card = aceF(card);
+// deal hand a time //auto updates cardHeld array & playersScore // auto checks Ace post deal round
+const dealHands = function (sCards) {
+  let card = sCards.pop();
+  let myOutputValue;
+
+  card = aceCheck(card);
   console.log(card);
   if (activePlayer === 0) {
-    humanCards.push(card);
+    players[activePlayer].cardsHeld.push(card);
     playersScore[activePlayer] += card.ranks;
-    output = `You draw ${card.faces} of ${card.suits}`;
+    myOutputValue = `You draw ${card.faces} of ${card.suits}`;
   } else {
-    dealerCards.push(card);
+    players[activePlayer].cardsHeld.push(card);
     playersScore[activePlayer] += card.ranks;
-    output = `Dealer draws ${card.faces} of ${card.suits}<br>`;
+    myOutputValue = `Dealer draws ${card.faces} of ${card.suits}<br>`;
   }
-  return output;
+  return myOutputValue;
 };
 
 // switch player
-const switchPlayersF = function () {
+const switchPlayers = function () {
   activePlayer = activePlayer === 0 ? 1 : 0;
 };
 
-// auto update using players object : draws a card and ; playersScore update; humanCards && dealerCards update
-const playersUpdateF = function () {
-  players[activePlayer].deck();
+// auto update using players object : draws a card-->push to property cardsHeld in Player object, and updates playersScore,
+const playersMethodActivate = function () {
+  // activiate method-deck in player object
+  return players[activePlayer].deck();
 };
 
 // playersScore update //not used in project cuz initial error due to sCards. Now solved.
-const totalScoreF = function () {
+const totalScore = function () {
   let currentScore;
-  if (activePlayer === 0) {
+  if (activePlayer == 0) {
     for (let i = 0; i < humanCards.length; i++) {
       currentScore = currentScore + humanCards[i].ranks;
       playersScore[activePlayer] = currentScore;
     }
-    if (activePlayer === 1) {
+    if (activePlayer == 1) {
       for (let x = 0; x < dealerCards.length; x++) {
         currentScore = currentScore + dealerCards[x].ranks;
         playersScore[activePlayer] = currentScore;
@@ -139,7 +147,7 @@ const totalScoreF = function () {
   }
 };
 // ace check to be 1 if total score > 21
-const aceF = function (card) {
+const aceCheck = function (card) {
   let value = card.ranks;
   let currentScore = playersScore[activePlayer];
   let totalValue = currentScore + value;
@@ -155,73 +163,89 @@ const aceF = function (card) {
   return card;
 };
 // resets game to ground zero
-const startF = function () {
-  dealerCards = [];
-  humanCards = [];
+const initGame = function () {
   playersScore = [0, 0];
   players = [];
   activePlayer = 0;
-  playing = true;
+  playing = false;
   roundFirst = true;
-  shuffleF();
-  playersF();
-  sCards = shuffleF();
-  return `enter (☞ﾟヮﾟ)☞  deal  ☜(ﾟヮﾟ☜) to deal cards`;
+  userNameRound = true;
+  dealRound = 1;
+  shuffleDeck();
+  console.log(shuffleDeck());
+  playersCreate();
 };
 // check dealer to keep drawing if dealer score < 17
-const dealerCheck = function () {
+const dealerWinCheck = function () {
   let output1;
   let dealerArray = [];
   let i = 1;
 
   while (playersScore[1] < 17 && i < 5) {
-    output1 = dealHandsF(sCards); // has auto Ace check & playersScore update
+    output1 = dealHands(shuffledCards); // has auto Ace check & playersScore update
     console.log(output1);
     dealerArray.push(output1);
     i++;
   }
-  return `${dealerArray}<br>dealer has enough`;
+  return `${dealerArray}<br>Dealer has enough`;
 };
 
 // check win lose draw conditions
-const checkF = function (human, dealer) {
+const humanWinCheck = function (human, dealer) {
   let checkWin;
+  // if ((activePlayer == 0 && human < 21 && dealer == 21) || human > 21) {
+  //   checkWin = `You lose. DEaler `;
+  // }
+
+  // if (
+  //   (activePlayer == 1 && (dealer < human || dealer > 21)) ||
+  //   (activePlayer == 0 &&
+  //     ((roundFirst && human == 21 && dealer < 21) ||
+  //       (!roundFirst && human == 21 && dealer < 21)))
+  // ) {
+  //   playing = false;
+  //   checkWin = `You win`;
+  // }
+
   if (activePlayer === 0) {
     if (human === 21 && dealer === 21) {
       checkWin = `It is a 👔 tie, both Black Jack`;
       playing = false;
     }
     if (human < 21 && dealer === 21) {
-      checkWin = `🥵 you lose. dealer has Black Jack`;
+      checkWin = `🥵 you lose. Dealer has Black Jack`; // lose
       playing = false;
     }
     if (human < 21 && dealer !== 21) {
       checkWin = `Enter 🎯🎯 hit or 🏡🏡 stay?`;
     }
     if (human > 21) {
-      checkWin = `🥵 You lose`;
+      checkWin = `🥵 You lose`; // lose
       playing = false;
     }
     if (roundFirst && human === 21 && dealer < 21) {
+      // win
       checkWin = `💯You win, Black Jack`;
       playing = false;
     }
     if (!roundFirst && human === 21 && dealer < 21) {
+      // win
       checkWin = `💯You win, it is not BJ`;
       playing = false;
     }
   }
+
   if (activePlayer === 1) {
     if (dealer === 21) {
-      checkWin = `👿 dealer wins`;
+      checkWin = `👿 Dealer wins`; // lose
       playing = false;
     }
     if (dealer > human && dealer <= 21) {
-      checkWin = `👿 dealer wins`;
+      checkWin = `👿 Dealer wins`; // lose
       playing = false;
     }
     if (dealer < human) {
-      checkWin = `😇 dealer loses, you win`;
+      checkWin = `😇 Dealer loses, you win`; // win
       playing = false;
     }
     if (dealer === human) {
@@ -229,63 +253,150 @@ const checkF = function (human, dealer) {
       playing = false;
     }
     if (dealer > 21) {
-      checkWin = `😇 dealer loses`;
+      checkWin = `😇 Dealer loses`; // win
       playing = false;
     }
   }
-  output = `You have ${playersScore[0]} score. Dealer has ${playersScore[1]}`;
+
+  let output = `You have ${playersScore[0]} score. Dealer has ${playersScore[1]}`;
   return `${output}<br><br>${checkWin}`;
 };
-// myOutputvalue function to UI
-var main = function (input) {
-  var myOutputValue;
+
+const dealCardsInitial = function () {
+  let myOutputValue;
+  let cardFace = "";
+  let cardSuit = "";
   let output0;
   let output1;
+  let output00;
+  let output11;
+  console.log(playing);
+  if (dealRound == 1) {
+    let cardDrawn = playersMethodActivate(); // player--0
+    cardFace = cardDrawn.faces;
+    cardSuit = cardDrawn.suits;
+    output0 = `You draw ${cardFace} of ${cardSuit}`;
+    switchPlayers();
 
-  // start new game: Resets declared global variables
-  if (input === "") {
-    let image =
-      '<img src="https://c.tenor.com/FNWDvGwBAA4AAAAC/tom-hardy-yak%C4%B1%C5%9F%C4%B1kl%C4%B1.gif"/>';
+    playersMethodActivate(); // player--1
+    cardFace = cardDrawn.faces;
+    cardSuit = cardDrawn.suits;
+    output1 = `Dealer draws ${cardFace} of ${cardSuit}`;
+    switchPlayers();
+    dealRound += 1;
+  }
+  if (dealRound == 2) {
+    playersMethodActivate(); // player--0
+    output00 = `You draw ${cardFace} of ${cardSuit}`;
+    switchPlayers();
 
-    myOutputValue = image + startF();
+    playersMethodActivate(); // player--1
+    output11 = `Dealer draws ${cardFace} of ${cardSuit}`;
+    switchPlayers();
+    dealRound += 1;
   }
-  // deal cards to starting round first only
-  if (playing && input === "deal") {
-    playersUpdateF(); // player--0
-    output0 = `You draw ${humanCards[0].faces} of ${humanCards[0].suits}`;
-    switchPlayersF();
-    playersUpdateF(); // player--1
-    output1 = `Dealer draws ${dealerCards[0].faces} of ${dealerCards[0].suits}`;
-    switchPlayersF();
-    playersUpdateF(); // player--0
-    let output00 = `You draw ${humanCards[1].faces} of ${humanCards[1].suits}`;
-    switchPlayersF();
-    playersUpdateF(); // player--1
-    let output11 = `Dealer draws ${dealerCards[1].faces} of ${dealerCards[1].suits}`;
-    switchPlayersF();
-    myOutputValue = `${output0} <br><br>${output1}<br><br>${output00}<br><br>${output11}<br><br>${checkF(
-      playersScore[0],
-      playersScore[1]
-    )}`;
-  }
-  // stay
-  if (playing && input === "stay") {
-    roundFirst = false;
-    switchPlayersF();
-    console.log(activePlayer);
-    output0 = dealerCheck();
-    output1 = checkF(playersScore[0], playersScore[1]);
-    console.log(output1);
-    myOutputValue = `${output0}<br><br>${output1}`;
+  myOutputValue = `${output0} <br><br>${output1}<br><br>${output00}<br><br>${output11}<br><br>${humanWinCheck(
+    playersScore[0],
+    playersScore[1]
+  )}`;
+  console.log(playing);
+  return myOutputValue;
+};
+
+const stayHand = function () {
+  roundFirst = false;
+  switchPlayers();
+  let output0 = dealerWinCheck();
+  let output1 = humanWinCheck(playersScore[0], playersScore[1]);
+  let myOutputValue = `${output0}<br><br>${output1}`;
+  return myOutputValue;
+};
+
+const hitHand = function () {
+  roundFirst = false;
+  let output1 = dealHands(shuffledCards); // has Ace check function automated
+  let output2 = humanWinCheck(playersScore[0], playersScore[1]);
+  console.log(playersScore);
+  let myOutputValue = `${output1}<br><br>${output2}`;
+  return myOutputValue;
+};
+
+const introRestartGame = function () {
+  let myOutputValue = "";
+  if (
+    dealRound >= 1 &&
+    ((userNameRound == false && playing == true) ||
+      (userNameRound == false && playing == false))
+  ) {
+    initGame();
+    let introMessage = `Welcome to Basics Blackjack game. Please provide us with your name before game initiates.`;
+    myOutputValue = introMessage;
   }
 
-  // hit
-  if (playing && input === "hit") {
-    roundFirst = false;
-    let output1 = dealHandsF(sCards); // has Ace check function automated
-    let output2 = checkF(playersScore[0], playersScore[1]);
-    console.log(playersScore);
-    myOutputValue = `${output1}<br><br>${output2}`;
+  if (userNameRound == true && playing == false) {
+    initGame();
+    console.log(userNameRound);
+    let introMessage = `Welcome to Basics Blackjack game. Please provide us with your name before game initiates.`;
+    myOutputValue = introMessage;
   }
   return myOutputValue;
+};
+
+const storeNameGuide2InputD = function (input) {
+  let userName = input;
+  let myOutputValue;
+  players[0].name = userName;
+  userNameRound = false;
+  playing = true;
+  myOutputValue = `Thank you ${userName}. Please input "d" exactly to start dealing cards to you and the computer.`;
+  return myOutputValue;
+};
+const dealStandHit = function (input) {
+  console.log("got in");
+  let myOutputValue;
+  if (input == "d") {
+    myOutputValue = dealCardsInitial();
+  } else if (input == "s") {
+    myOutputValue = stayHand();
+  } else if (input == "h") {
+    myOutputValue = hitHand();
+  }
+  console.log(playing);
+  return myOutputValue;
+};
+const main = function (input) {
+  // default message when no condition satisfy meaning == ERROR ==
+  let myOutputValue = `Error. You either have not given us your name or tried keying in invalid inputs.
+  To continue, gives us your name or input "d" or "h" or "s" when prompted. You may press "Submit" anytime to restart game.`;
+  // constant image to browser
+  const imageConstant =
+    '<img src="https://c.tenor.com/FNWDvGwBAA4AAAAC/tom-hardy-yak%C4%B1%C5%9F%C4%B1kl%C4%B1.gif"/>';
+
+  // intro or restart Game
+  if (input == "") {
+    myOutputValue = introRestartGame(input);
+  }
+  // store players name and guide to press "d" to deal initial hands
+  console.log(playing);
+  if (
+    !(input == "" || input == "s" || input == "d" || input == "h") &&
+    userNameRound == true &&
+    playing == false
+  ) {
+    myOutputValue = storeNameGuide2InputD(input);
+  }
+  // deal; hit; stand choice and choice consequence
+  console.log(dealRound);
+  console.log(userNameRound);
+  console.log(playing);
+  if (
+    userNameRound == false &&
+    playing == true &&
+    ((input == "d" && dealRound < 3) ||
+      (input == "s" && dealRound >= 3) ||
+      (input == "h" && dealRound >= 3))
+  ) {
+    myOutputValue = dealStandHit(input);
+  }
+  return imageConstant + "<br />" + myOutputValue;
 };
