@@ -7,6 +7,12 @@ let roundFirst = true;
 let userNameRound = false;
 let dealRound = 1;
 
+const output = document.querySelector("#output-div");
+const dealBtn = document.querySelector("#deal-button");
+const stayBtn = document.querySelector("#stay-button");
+const hitBtn = document.querySelector("#hit-button");
+const restartBtn = document.querySelector("#restart-button");
+
 // //Create makeDeckF function
 const makeDeck = function () {
   const deckCards = [];
@@ -58,6 +64,7 @@ const shuffleDeck = () => {
 
   return deck;
 };
+
 let shuffledCards = shuffleDeck();
 // console.log(shuffledCards);
 
@@ -114,7 +121,7 @@ const dealHands = function (sCards) {
   } else {
     players[activePlayer].cardsHeld.push(card);
     playersScore[activePlayer] += card.ranks;
-    myOutputValue = `Dealer draws ${card.faces} of ${card.suits}<br>`;
+    myOutputValue = `🆚Dealer draws ${card.faces} of ${card.suits}<br/><br/>`;
   }
   return myOutputValue;
 };
@@ -181,7 +188,7 @@ const dealerWinCheck = function () {
   let dealerArray = [];
   let i = 1;
 
-  while (playersScore[1] < 17 && i < 5) {
+  while (playersScore[1] < 17 && i < 21) {
     output1 = dealHands(shuffledCards); // has auto Ace check & playersScore update
     console.log(output1);
     dealerArray.push(output1);
@@ -193,19 +200,6 @@ const dealerWinCheck = function () {
 // check win lose draw conditions
 const humanWinCheck = function (human, dealer) {
   let checkWin;
-  // if ((activePlayer == 0 && human < 21 && dealer == 21) || human > 21) {
-  //   checkWin = `You lose. DEaler `;
-  // }
-
-  // if (
-  //   (activePlayer == 1 && (dealer < human || dealer > 21)) ||
-  //   (activePlayer == 0 &&
-  //     ((roundFirst && human == 21 && dealer < 21) ||
-  //       (!roundFirst && human == 21 && dealer < 21)))
-  // ) {
-  //   playing = false;
-  //   checkWin = `You win`;
-  // }
 
   if (activePlayer === 0) {
     if (human === 21 && dealer === 21) {
@@ -213,11 +207,11 @@ const humanWinCheck = function (human, dealer) {
       playing = false;
     }
     if (human < 21 && dealer === 21) {
-      checkWin = `🥵 you lose. Dealer has Black Jack`; // lose
+      checkWin = `🥵 You lose. Dealer has Black Jack`; // lose
       playing = false;
     }
     if (human < 21 && dealer !== 21) {
-      checkWin = `Enter 🎯🎯 hit or 🏡🏡 stay?`;
+      checkWin = `Click 🎯🎯 "Hit" or 🏡🏡 "Stay" ?`;
     }
     if (human > 21) {
       checkWin = `🥵 You lose`; // lose
@@ -249,7 +243,7 @@ const humanWinCheck = function (human, dealer) {
       playing = false;
     }
     if (dealer === human) {
-      checkWin = `it is a tie`;
+      checkWin = `It is a tie`;
       playing = false;
     }
     if (dealer > 21) {
@@ -270,15 +264,16 @@ const dealCardsInitial = function () {
   let output1;
   let output00;
   let output11;
-  console.log(playing);
+  let cardDrawn;
+
   if (dealRound == 1) {
-    let cardDrawn = playersMethodActivate(); // player--0
+    cardDrawn = playersMethodActivate(); // player--0
     cardFace = cardDrawn.faces;
     cardSuit = cardDrawn.suits;
     output0 = `You draw ${cardFace} of ${cardSuit}`;
     switchPlayers();
 
-    playersMethodActivate(); // player--1
+    cardDrawn = playersMethodActivate(); // player--1
     cardFace = cardDrawn.faces;
     cardSuit = cardDrawn.suits;
     output1 = `Dealer draws ${cardFace} of ${cardSuit}`;
@@ -286,11 +281,11 @@ const dealCardsInitial = function () {
     dealRound += 1;
   }
   if (dealRound == 2) {
-    playersMethodActivate(); // player--0
+    cardDrawn = playersMethodActivate(); // player--0
     output00 = `You draw ${cardFace} of ${cardSuit}`;
     switchPlayers();
 
-    playersMethodActivate(); // player--1
+    cardDrawn = playersMethodActivate(); // player--1
     output11 = `Dealer draws ${cardFace} of ${cardSuit}`;
     switchPlayers();
     dealRound += 1;
@@ -299,7 +294,6 @@ const dealCardsInitial = function () {
     playersScore[0],
     playersScore[1]
   )}`;
-  console.log(playing);
   return myOutputValue;
 };
 
@@ -329,7 +323,7 @@ const introRestartGame = function () {
       (userNameRound == false && playing == false))
   ) {
     initGame();
-    let introMessage = `Welcome to Basics Blackjack game.<br/><br/> Please provide us with your name before game initiates.`;
+    let introMessage = `☠☠☠ Welcome to Basics Blackjack game ☠☠☠<br/><br/> Please provide us your name before game initiates.`;
     myOutputValue = introMessage;
   }
 
@@ -348,11 +342,10 @@ const storeNameGuide2InputD = function (input) {
   players[0].name = userName;
   userNameRound = false;
   playing = true;
-  myOutputValue = `Thank you ${userName}. <br/><br/>Please input "d" exactly to start dealing cards to you and the computer.`;
+  myOutputValue = `Thank you ${userName}. <br/><br/>Please press "Deal" to start dealing cards to you and the computer.`;
   return myOutputValue;
 };
 const dealStandHit = function (input) {
-  console.log("got in");
   let myOutputValue;
   if (input == "d") {
     myOutputValue = dealCardsInitial();
@@ -361,13 +354,35 @@ const dealStandHit = function (input) {
   } else if (input == "h") {
     myOutputValue = hitHand();
   }
-  console.log(playing);
   return myOutputValue;
 };
+
+// Deal button click --> function
+dealBtn.addEventListener("click", function () {
+  var result = main("d");
+  output.innerHTML = result;
+});
+// Stay button click --> function
+stayBtn.addEventListener("click", function () {
+  var result = main("s");
+  output.innerHTML = result;
+});
+// Hit button click --> function
+hitBtn.addEventListener("click", function () {
+  var result = main("h");
+  output.innerHTML = result;
+});
+// Restart button click --> function
+restartBtn.addEventListener("click", function () {
+  var result = main("");
+  output.innerHTML = result;
+});
+
 const main = function (input) {
   // default message when no condition satisfy meaning == ERROR ==
   let myOutputValue = `Error. You either have not given us your name or tried keying in invalid inputs. <br/><br/>
-  To continue, gives us your name or input "d" or "h" or "s" when prompted.<br/><br/>You may press "Submit" anytime to restart game.`;
+  To continue, gives us your name or click "Deal" or "Hit" or "Stay" when prompted.<br/><br/>You may click "Submit" or "Restart anytime to restart game.`;
+
   // constant image to browser
   const imageConstant =
     '<img src="https://c.tenor.com/FNWDvGwBAA4AAAAC/tom-hardy-yak%C4%B1%C5%9F%C4%B1kl%C4%B1.gif"/>';
@@ -377,7 +392,8 @@ const main = function (input) {
     myOutputValue = introRestartGame(input);
     userNameRound = true;
   }
-  // store players name and guide to press "d" to deal initial hands
+
+  // store players name and guide to press click Deal to deal initial hands
   if (
     !(input == "" || input == "s" || input == "d" || input == "h") &&
     userNameRound == true &&
@@ -385,10 +401,8 @@ const main = function (input) {
   ) {
     myOutputValue = storeNameGuide2InputD(input);
   }
+
   // deal; hit; stand choice and choice consequence
-  console.log(dealRound);
-  console.log(userNameRound);
-  console.log(playing);
   if (
     userNameRound == false &&
     playing == true &&

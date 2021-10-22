@@ -92,10 +92,11 @@
       }
 
       body {
+        background-color: rgba(233, 38, 38, 0.438);
         font-family: "Open Sans", sans-serif;
         margin-left: 30px;
         margin-right: 30px;
-        background-color: white;
+        /* background-color: white; */
         color: black; /* sets the font color */
         background-image: url(""); /* The image used */
         background-position: center; /* Center the image */
@@ -107,15 +108,18 @@
         display: block;
         max-width: 100%;
         max-height: 200px;
+        border: solid;
+        border-color: red;
       }
       .header {
         text-align: center;
-        font-size: 1.1rem;
+        font-size: 2rem;
         margin-bottom: 3rem;
+        color: yellow;
       }
 
       #container {
-        background-color: pink;
+        background-color: rgb(19, 18, 18);
         margin: 40px auto;
         max-width: 800px;
         padding: 38px 31px;
@@ -127,13 +131,25 @@
         margin: 0 0 23px 0;
         padding: 0 9px;
         width: 100%;
+        border: solid;
+        border-color: red;
+      }
+
+      button:hover {
+        background: rgb(255, 0, 0);
+        color: white;
       }
 
       button {
+        width: 100px;
         font-size: 21px;
         line-height: 33px;
         margin: 0 0 23px 0;
         padding: 0 6px;
+        /* border: solid; */
+        background-color: yellow;
+        /* border-color: red; */
+        color: red;
       }
 
       #output-div {
@@ -148,11 +164,27 @@
         position: relative;
         top: 22px;
       }
-
+      span {
+        float: right;
+      }
       /* increase header font size on wider screens */
-      @media screen and (min-width: 600px) {
+      @media screen and (max-width: 500px) {
+        body {
+          background-color: yellow;
+        }
+        input {
+          border-color: yellow;
+        }
         .header {
-          font-size: 2rem;
+          font-size: 20px;
+          color: red;
+        }
+        button {
+          background-color: red;
+          color: yellow;
+        }
+        #restart-button {
+          background-color: yellow;
         }
       }
     </style>
@@ -173,9 +205,20 @@
     <h1 class="header">♣️ Basics - Blackjack ♠️</h1>
     <div id="container">
       <p>Input:</p>
-      <input id="input-field" />
+      <input id="input-field" placeholder="nama saya anda ?" />
       <br />
       <button id="submit-button">Submit</button>
+      <button id="deal-button">Deal</button>
+      <button id="stay-button">Stay</button>
+      <button id="hit-button">Hit</button>
+      <span
+        ><button
+          id="restart-button"
+          style="background-color: red; color: white"
+        >
+          Restart
+        </button></span
+      >
       <p>Output:</p>
       <div id="output-div"></div>
     </div>
