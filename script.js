@@ -19,7 +19,7 @@ const makeDeck = function () {
   // console.log(deckCards);
   const suits = ["diamonds", "clubs", "hearts", "spades"];
   const faces = [2, 3, 4, 5, 6, 7, 8, 9, 10, "jack", "queen", "king", "ace"];
-  for (let suitsIndex = 0; suitsIndex < suits.length; suitsIndex++) {
+  for (let suitsIndex = 0; suitsIndex < suits.length; suitsIndex += 1) {
     let suit = suits[suitsIndex];
 
     for (let facesIndex = 0; facesIndex < faces.length; facesIndex++) {
@@ -53,8 +53,8 @@ const shuffleDeck = () => {
   const randomNumber = function (dice) {
     return Math.trunc(Math.random() * dice) + 1;
   };
-  const deck = makeDeck();
-  for (let currentIndex = 0; currentIndex < deck.length; currentIndex++) {
+  let deck = makeDeck();
+  for (let currentIndex = 0; currentIndex < deck.length; currentIndex += 1) {
     let currentCard = deck[currentIndex];
     let randomIndex = randomNumber(deck.length - 1);
 
@@ -65,12 +65,21 @@ const shuffleDeck = () => {
   return deck;
 };
 
-let shuffledCards = shuffleDeck();
+const shuffledCards = shuffleDeck();
 // console.log(shuffledCards);
+
+const pushCardsToPlayersCardsHeld = function (card) {
+  if (activePlayer == 0) {
+    players[0].cardsHeld.push(card);
+  } else {
+    players[1].cardsHeld.push(card);
+  }
+  return card;
+};
 
 // create players that contains *** method called deck () ==> picks card ==> pushes to cardsHeld array ; auto updates playersScore
 const playersCreate = function () {
-  let cardsArray = [];
+  const cardsArray = [];
 
   const playerHuman = {
     name: "",
@@ -98,26 +107,18 @@ const playersCreate = function () {
   players.push(playerHuman, playerDealer);
 };
 
-const pushCardsToPlayersCardsHeld = function (card) {
-  if (activePlayer == 0) {
-    players[0].cardsHeld.push(card);
-  } else {
-    players[1].cardsHeld.push(card);
-  }
-  return card;
-};
-
 // deal hand a time //auto updates cardHeld array & playersScore // auto checks Ace post deal round
 const dealHands = function (sCards) {
   let card = sCards.pop();
-  let myOutputValue;
+  let myOutputValue = "";
+  let playersName = players[0].name;
 
   card = aceCheck(card);
   console.log(card);
   if (activePlayer === 0) {
     players[activePlayer].cardsHeld.push(card);
     playersScore[activePlayer] += card.ranks;
-    myOutputValue = `You draw ${card.faces} of ${card.suits}`;
+    myOutputValue = `${playersName} draw ${card.faces} of ${card.suits}`;
   } else {
     players[activePlayer].cardsHeld.push(card);
     playersScore[activePlayer] += card.ranks;
@@ -200,6 +201,7 @@ const dealerWinCheck = function () {
 // check win lose draw conditions
 const humanWinCheck = function (human, dealer) {
   let checkWin;
+  let playersName = players[0].name;
 
   if (activePlayer === 0) {
     if (human === 21 && dealer === 21) {
@@ -207,24 +209,24 @@ const humanWinCheck = function (human, dealer) {
       playing = false;
     }
     if (human < 21 && dealer === 21) {
-      checkWin = `🥵 You lose. Dealer has Black Jack`; // lose
+      checkWin = `🥵 ${playersName} lose. Dealer has Black Jack`; // lose
       playing = false;
     }
     if (human < 21 && dealer !== 21) {
       checkWin = `Click 🎯🎯 "Hit" or 🏡🏡 "Stay" ?`;
     }
     if (human > 21) {
-      checkWin = `🥵 You lose`; // lose
+      checkWin = `🥵 ${playersName} lose`; // lose
       playing = false;
     }
     if (roundFirst && human === 21 && dealer < 21) {
       // win
-      checkWin = `💯You win, Black Jack`;
+      checkWin = `💯${playersName} win, Black Jack`;
       playing = false;
     }
     if (!roundFirst && human === 21 && dealer < 21) {
       // win
-      checkWin = `💯You win, it is not BJ`;
+      checkWin = `💯${playersName} win, it is not BJ`;
       playing = false;
     }
   }
@@ -239,7 +241,7 @@ const humanWinCheck = function (human, dealer) {
       playing = false;
     }
     if (dealer < human) {
-      checkWin = `😇 Dealer loses, you win`; // win
+      checkWin = `😇 Dealer loses, ${playersName} win`; // win
       playing = false;
     }
     if (dealer === human) {
@@ -252,7 +254,7 @@ const humanWinCheck = function (human, dealer) {
     }
   }
 
-  let output = `You have ${playersScore[0]} score. Dealer has ${playersScore[1]}`;
+  let output = `${playersName} has ${playersScore[0]} score. Dealer has ${playersScore[1]}`;
   return `${output}<br><br>${checkWin}`;
 };
 
@@ -265,12 +267,13 @@ const dealCardsInitial = function () {
   let output00;
   let output11;
   let cardDrawn;
+  let playersName = players[0].name;
 
   if (dealRound == 1) {
     cardDrawn = playersMethodActivate(); // player--0
     cardFace = cardDrawn.faces;
     cardSuit = cardDrawn.suits;
-    output0 = `You draw ${cardFace} of ${cardSuit}`;
+    output0 = `${playersName} draw ${cardFace} of ${cardSuit}`;
     switchPlayers();
 
     cardDrawn = playersMethodActivate(); // player--1
@@ -282,7 +285,7 @@ const dealCardsInitial = function () {
   }
   if (dealRound == 2) {
     cardDrawn = playersMethodActivate(); // player--0
-    output00 = `You draw ${cardFace} of ${cardSuit}`;
+    output00 = `${playersName} draw ${cardFace} of ${cardSuit}`;
     switchPlayers();
 
     cardDrawn = playersMethodActivate(); // player--1
@@ -359,22 +362,22 @@ const dealStandHit = function (input) {
 
 // Deal button click --> function
 dealBtn.addEventListener("click", function () {
-  var result = main("d");
+  let result = main("d");
   output.innerHTML = result;
 });
 // Stay button click --> function
 stayBtn.addEventListener("click", function () {
-  var result = main("s");
+  let result = main("s");
   output.innerHTML = result;
 });
 // Hit button click --> function
 hitBtn.addEventListener("click", function () {
-  var result = main("h");
+  let result = main("h");
   output.innerHTML = result;
 });
 // Restart button click --> function
 restartBtn.addEventListener("click", function () {
-  var result = main("");
+  let result = main("");
   output.innerHTML = result;
 });
 
