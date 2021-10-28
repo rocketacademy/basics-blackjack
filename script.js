@@ -153,8 +153,8 @@ var convertHandToString = function (hand) {
 };
 
 var getDefaultOutput = function () {
-  return `Player has hand ${convertHandToString(playerHand)} with sum ${getHandSum(playerHand)}. <br>
-    Computer has hand ${convertHandToString(computerHand)} with sum ${getHandSum(computerHand)}.`;
+  return `Player has: ${convertHandToString(playerHand)} with sum ${getHandSum(playerHand)}. <br>
+    Computer has: ${convertHandToString(computerHand)} with sum ${getHandSum(computerHand)}.`;
 };
 
 var main = function (input) {
