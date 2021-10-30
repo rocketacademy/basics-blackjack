@@ -1,17 +1,42 @@
 "use strict";
-let playersScore = [0, 0];
 let players = [];
 let activePlayer = 0;
-let playing = false;
-let roundFirst = true;
-let userNameRound = false;
-let dealRound = 1;
+let multiPlayerMode = false;
+let bettingMode = false;
+let dealHitStayMode = false;
+let hitStay = false;
+let hitStayRound = 1;
+let dealerTurn = false;
+let endGame = false;
+let playingContinue = false;
+let continueMode = true;
 
 const output = document.querySelector("#output-div");
 const dealBtn = document.querySelector("#deal-button");
 const stayBtn = document.querySelector("#stay-button");
 const hitBtn = document.querySelector("#hit-button");
 const restartBtn = document.querySelector("#restart-button");
+
+// Deal button click --> function
+dealBtn.addEventListener("click", function () {
+  let result = main("d");
+  output.innerHTML = result;
+});
+// Stay button click --> function
+stayBtn.addEventListener("click", function () {
+  let result = main("s");
+  output.innerHTML = result;
+});
+// Hit button click --> function
+hitBtn.addEventListener("click", function () {
+  let result = main("h");
+  output.innerHTML = result;
+});
+// Restart button click --> function
+restartBtn.addEventListener("click", function () {
+  let result = main("");
+  output.innerHTML = result;
+});
 
 // //Create makeDeckF function
 const makeDeck = function () {
@@ -65,104 +90,284 @@ const shuffleDeck = () => {
   return deck;
 };
 
-const shuffledCards = shuffleDeck();
-// console.log(shuffledCards);
-
-const pushCardsToPlayersCardsHeld = function (card) {
-  if (activePlayer == 0) {
-    players[0].cardsHeld.push(card);
-  } else {
-    players[1].cardsHeld.push(card);
-  }
-  return card;
-};
-
-// create players that contains *** method called deck () ==> picks card ==> pushes to cardsHeld array ; auto updates playersScore
-const playersCreate = function () {
+// create multiplayers
+const multiPlayerCreate = function (numPlayers) {
   const cardsArray = [];
-
-  const playerHuman = {
-    name: "",
-    deck: function () {
-      let card = shuffledCards.pop();
-      playersScore[activePlayer] = playersScore[activePlayer] + card.ranks;
-      pushCardsToPlayersCardsHeld(card);
-      return card;
-    },
-    cardsHeld: cardsArray,
-  };
-
-  const playerDealer = {
-    name: "dealer",
-    deck: function () {
-      // draws card from shuffled deck
-      let card = shuffledCards.pop();
-      playersScore[activePlayer] = playersScore[activePlayer] + card.ranks;
-      pushCardsToPlayersCardsHeld(card);
-      return card;
-    },
-    cardsHeld: cardsArray,
-  };
-
-  players.push(playerHuman, playerDealer);
+  let dealerNum = Number(numPlayers) + 1;
+  for (let counter = 1; counter <= dealerNum; counter += 1) {
+    if (counter === dealerNum) {
+      const playerObject = {
+        name: "Dealer",
+        cardsHeld: cardsArray,
+        cash: 1000,
+        totalCardValue: 0,
+        bet: 0,
+      };
+      players.push(playerObject);
+    } else {
+      const playerObject = {
+        name: `player--${counter}`,
+        cardsHeld: cardsArray,
+        cash: 100,
+        totalCardValue: 0,
+        bet: 0,
+        playing: true,
+        win: "",
+      };
+      players.push(playerObject);
+    }
+    // players.push(playerObject);
+  }
 };
 
-// deal hand a time //auto updates cardHeld array & playersScore // auto checks Ace post deal round
-const dealHands = function (sCards) {
-  let card = sCards.pop();
-  let myOutputValue = "";
-  let playersName = players[0].name;
+// multiPlayerCreate(5);
 
-  card = aceCheck(card);
-  console.log(card);
-  if (activePlayer === 0) {
-    players[activePlayer].cardsHeld.push(card);
-    playersScore[activePlayer] += card.ranks;
-    myOutputValue = `${playersName} draw ${card.faces} of ${card.suits}`;
-  } else {
-    players[activePlayer].cardsHeld.push(card);
-    playersScore[activePlayer] += card.ranks;
-    myOutputValue = `🆚Dealer draws ${card.faces} of ${card.suits}<br/><br/>`;
+// retstart game
+const initGame = function () {
+  players = [];
+  activePlayer = 0;
+  multiPlayerMode = false;
+  bettingMode = false;
+  dealHitStayMode = false;
+  hitStay = false;
+  hitStayRound = 1;
+  dealerTurn = false;
+  endGame = false;
+  playingContinue = false;
+};
+
+const displayTotalCardValueAllPlayers = function () {
+  let playerScore = "";
+  let playerName = "";
+  let myOutputValue = "";
+
+  for (let counter = 0; counter < players.length; counter += 1) {
+    playerScore = players[counter].totalCardValue;
+    playerName = players[counter].name;
+    myOutputValue += `${playerName} total card value is ${playerScore}<br>`;
   }
   return myOutputValue;
 };
+// draw, update cardsHeld, totalCardValue and display
+const drawACardUpdateAndDisplay = function () {
+  let shuffledCards = shuffleDeck();
+  let cardDrawn = shuffledCards.pop();
+  let cardAceCleared = aceCheck(cardDrawn);
+  let cardSuit = cardAceCleared.suits;
+  let cardFace = cardAceCleared.faces;
+  let myOutputValue = "";
+  let currentPlayer = players[activePlayer].name;
 
-// switch player
-const switchPlayers = function () {
-  activePlayer = activePlayer === 0 ? 1 : 0;
+  players[activePlayer].cardsHeld.push(cardAceCleared);
+  players[activePlayer].totalCardValue += cardAceCleared.ranks;
+  myOutputValue = `${currentPlayer} drew ${cardFace} of ${cardSuit}.<br/>`;
+  return myOutputValue;
+};
+// card value display
+const intermittentCardValueDisplay = function () {
+  let myOutputValue = "";
+  let cardPlayer = players[activePlayer].name;
+  let cardValue = players[activePlayer].totalCardValue;
+  myOutputValue = `${cardPlayer} total current card value is ${cardValue}.<br/>`;
+  return myOutputValue;
 };
 
-// auto update using players object : draws a card-->push to property cardsHeld in Player object, and updates playersScore,
-const playersMethodActivate = function () {
-  // activiate method-deck in player object
-  return players[activePlayer].deck();
+// deal cards one round
+const dealCardsOneRound = function () {
+  let myOutputValue = "";
+  for (let counter = 0; counter < players.length; counter += 1) {
+    myOutputValue += drawACardUpdateAndDisplay() + "<br/>";
+    myOutputValue += intermittentCardValueDisplay() + "<br/>";
+    activePlayer += 1;
+  }
+  activePlayer = 0;
+  return myOutputValue;
 };
-
-// playersScore update //not used in project cuz initial error due to sCards. Now solved.
-const totalScore = function () {
-  let currentScore;
-  if (activePlayer == 0) {
-    for (let i = 0; i < humanCards.length; i++) {
-      currentScore = currentScore + humanCards[i].ranks;
-      playersScore[activePlayer] = currentScore;
-    }
-    if (activePlayer == 1) {
-      for (let x = 0; x < dealerCards.length; x++) {
-        currentScore = currentScore + dealerCards[x].ranks;
-        playersScore[activePlayer] = currentScore;
-      }
+// search for BlackJack in dealing round
+const dealBlackjackCheckLoop = function () {
+  let myOutputValue = "";
+  for (let counter = 0; counter < players.length; counter += 1) {
+    myOutputValue += `${winLossChecker()}<br>`;
+    activePlayer += 1;
+  }
+  return myOutputValue;
+};
+// search for any that is still playing to continue
+const playingLoopCheck = function () {
+  for (let i = 0; i < players.lenghth - 1; i++) {
+    if (players[i].playing === true) {
+      playingContinue = true;
     }
   }
 };
-// ace check to be 1 if total score > 21
+// win loss check
+const winLossChecker = function () {
+  let player = players[activePlayer].name;
+  let myOutputValue = "";
+  let cleanHuman = players[activePlayer].totalCardValue;
+  let cleanDealer = players[players.length - 1].totalCardValue;
+
+  // round: find players/dealer with Blackjack --> playing = false
+  if (hitStay === false) {
+    //player BlackJack. Player Wins
+    if (cleanHuman === 21 && cleanDealer !== 21) {
+      myOutputValue = `${players[activePlayer].name} wins with Blackjack.`;
+      players[activePlayer].win = "win";
+      players[activePlayer].playing = false;
+    } // Both Blackjack. Both Tie
+    else if (cleanHuman === 21 && cleanDealer === 21) {
+      players[activePlayer].playing = false;
+      players[activePlayer].win = "tie";
+      myOutputValue += `${players[activePlayer].name} has Blackjack, so does the Dealer. It is a tie of Blackjacks.`;
+    } // Dealer Blackjack. Player loses
+    else if (cleanDealer === 21) {
+      console.log(player);
+      myOutputValue += `${players[activePlayer].name} loses. Dealer has Blackjack.`;
+      for (let i = 0; i < players.length; i++) {
+        players[i].playing = false;
+        players[i].win = "lose";
+      }
+      endGame = true;
+    } else {
+      if (player === "Dealer") {
+        myOutputValue += "***Dealer kneels and prays for your card to flop.***";
+      } else if (players[activePlayer].playing === true) {
+        myOutputValue += `${players[activePlayer].name}, decide Hit or Stay ?`;
+      }
+    }
+  }
+  // find players when Hit --> lose, hence playing = false
+  if (hitStay === true && activePlayer < players.length - 1) {
+    // activePlayer += 1;
+    if (cleanHuman > 21) {
+      players[activePlayer].win = "lose";
+      myOutputValue = `${players[activePlayer].name} loses.`;
+      players[activePlayer].playing = false;
+      activePlayer += 1;
+      if (activePlayer == players.length - 1) {
+        myOutputValue += `<br>Dealer's turn to roll`;
+        playingContinue = true;
+      } else {
+        // activePlayer += 1;
+        myOutputValue += `<br>${players[activePlayer].name}, you are next, Hit or Stay?`;
+      }
+    }
+  } // End game check
+  if (hitStay === false && endGame === true) {
+    console.log(players[activePlayer].name);
+    if (cleanHuman === cleanDealer) {
+      console.log(players[activePlayer].name);
+      // tie
+      players[activePlayer].win = "tie";
+      myOutputValue = `${players[activePlayer].name} and dealer have a tie.`;
+    } // player wins
+    else if (
+      (cleanHuman <= 21 && cleanHuman > cleanDealer) ||
+      cleanDealer > 21
+    ) {
+      myOutputValue = `${players[activePlayer].name} wins. Dealer loses.`;
+      players[activePlayer].win = "win";
+    } // player and dealer lose
+    else if (cleanHuman > 21 && cleanDealer > 21) {
+      myOutputValue = `Both died.`;
+      players[activePlayer].win = "tie";
+    } // player loses
+    else {
+      myOutputValue = `${players[activePlayer].name} loses. Dealer wins.`;
+      players[activePlayer].win = "lose";
+      players[activePlayer].playing = false;
+    }
+  }
+
+  return myOutputValue;
+};
+// all in one: deal, hit or stay
+const dealHitStay = (input) => {
+  let playerStatus = players[activePlayer].playing;
+  let currentPlayer = players[activePlayer].name;
+  let myOutputValue = "Error !. Invalid click. ";
+
+  if (input === "d" && hitStay === false) {
+    myOutputValue = "=== 1st round of deal cards === <br>";
+    myOutputValue += dealCardsOneRound();
+    myOutputValue += "<br/> === 2nd round of deal cards ===<br>";
+    myOutputValue += dealCardsOneRound();
+    activePlayer = 0;
+    myOutputValue += dealBlackjackCheckLoop();
+    activePlayer = 0;
+    hitStay = true;
+    const findFirstPlayer2HitOrStay = () => {
+      for (let i = 0; i < players.length; i++) {
+        if (players[i].playing == true) {
+          myOutputValue += `<br>=== Hit or Stay ===<br>${currentPlayer}. Click Hit or Stay.`;
+          return myOutputValue;
+        } else {
+          return `=== this round is over ===`;
+        }
+      }
+    };
+    // find first player to begin hit or stay
+    myOutputValue = findFirstPlayer2HitOrStay();
+  } // hit choice
+  else if (input === "h" && hitStay === true && playerStatus === true) {
+    console.log(players[activePlayer].name);
+    myOutputValue = drawACardUpdateAndDisplay();
+    myOutputValue += intermittentCardValueDisplay();
+    myOutputValue += winLossChecker();
+
+    if (players[activePlayer].playing == true) {
+      myOutputValue += `${players[activePlayer].name}, please decide to Hit or Stay.`;
+    } else {
+      // condition prevents dealer to enter
+      if (activePlayer < players.length - 2) {
+        activePlayer += 1;
+        myOutputValue += `${players[activePlayer].name}, please decide to Hit or Stay.`;
+      } else {
+      }
+    }
+  } // stay choice
+  else if (input === "s" && hitStay === true && playerStatus === true) {
+    playingContinue = true;
+    if (players[activePlayer].playing == true) {
+      myOutputValue = `${players[activePlayer].name} chose to stay.<br/>`;
+      players[activePlayer].playing = false;
+      activePlayer += 1;
+      if (activePlayer < players.length - 1) {
+        myOutputValue += `${players[activePlayer].name}, please decide to Hit or Stay.`;
+      } else {
+        myOutputValue += `***Players are done picking.***`;
+      }
+    }
+  }
+  return myOutputValue;
+};
+// betting amount display
+const bettingDisplay = function (betAmt) {
+  let myOutputValue = "";
+  let currentPlayerObject = players[activePlayer];
+  let currentPlayerName = currentPlayerObject.name;
+  currentPlayerObject.bet = betAmt;
+  myOutputValue += `${currentPlayerName} bets ${betAmt} dollars.<br>`;
+
+  return myOutputValue;
+};
+// betting deduct from cash display
+const betDeductNDisplay = function (betAmt) {
+  let currentPlayerObject = players[activePlayer];
+  let currentPlayerName = currentPlayerObject.name;
+  players[activePlayer].cash -= betAmt;
+  let currentPlayerCash = currentPlayerObject.cash;
+  return `${currentPlayerName} has ${currentPlayerCash} dollars left.`;
+};
+// check Ace 11 or 1
 const aceCheck = function (card) {
-  let value = card.ranks;
-  let currentScore = playersScore[activePlayer];
-  let totalValue = currentScore + value;
+  let cardRank = card.ranks;
   let nameCard = card.faces;
+  let currentTotalC = players[activePlayer].totalCardValue;
+  let totalWithCard = currentTotalC + cardRank;
 
   if (nameCard === "ace") {
-    if (totalValue > 21) {
+    if (totalWithCard >= 21) {
       card.ranks = 1;
     } else {
       card.ranks = 11;
@@ -170,250 +375,138 @@ const aceCheck = function (card) {
   }
   return card;
 };
-// resets game to ground zero
-const initGame = function () {
-  playersScore = [0, 0];
-  players = [];
-  activePlayer = 0;
-  playing = false;
-  roundFirst = true;
-  userNameRound = false;
-  dealRound = 1;
-  shuffleDeck();
-  console.log(shuffleDeck());
-  playersCreate();
-};
-// check dealer to keep drawing if dealer score < 17
-const dealerWinCheck = function () {
-  let output1;
-  let dealerArray = [];
+// dealer picks cards
+const dealerPickCard = function () {
+  let myOutputValue = `Dealer's total hand ${
+    players[players.length - 1].totalCardValue
+  }<br>`;
   let i = 1;
 
-  while (playersScore[1] < 17 && i < 21) {
-    output1 = dealHands(shuffledCards); // has auto Ace check & playersScore update
-    console.log(output1);
-    dealerArray.push(output1);
+  while (players[activePlayer].totalCardValue < 17 && i < 21) {
+    myOutputValue += `${drawACardUpdateAndDisplay()} <br/>`;
+    myOutputValue += `${intermittentCardValueDisplay()}<br/>`;
     i++;
-  }
-  return `${dealerArray}<br>Dealer has enough`;
-};
-
-// check win lose draw conditions
-const humanWinCheck = function (human, dealer) {
-  let checkWin;
-  let playersName = players[0].name;
-
-  if (activePlayer === 0) {
-    if (human === 21 && dealer === 21) {
-      checkWin = `It is a 👔 tie, both Black Jack`;
-      playing = false;
-    }
-    if (human < 21 && dealer === 21) {
-      checkWin = `🥵 ${playersName} lose. Dealer has Black Jack`; // lose
-      playing = false;
-    }
-    if (human < 21 && dealer !== 21) {
-      checkWin = `Click 🎯🎯 "Hit" or 🏡🏡 "Stay" ?`;
-    }
-    if (human > 21) {
-      checkWin = `🥵 ${playersName} lose`; // lose
-      playing = false;
-    }
-    if (roundFirst && human === 21 && dealer < 21) {
-      // win
-      checkWin = `💯${playersName} win, Black Jack`;
-      playing = false;
-    }
-    if (!roundFirst && human === 21 && dealer < 21) {
-      // win
-      checkWin = `💯${playersName} win, it is not BJ`;
-      playing = false;
+    if (players[activePlayer].totalCardValue > 21) {
+      myOutputValue += `Dealer died/lose.<br>`;
+    } else {
+      myOutputValue += `Dealer has enough cards. Total hand ${
+        players[players.length - 1].totalCardValue
+      } <br/>`;
     }
   }
-
-  if (activePlayer === 1) {
-    if (dealer === 21) {
-      checkWin = `👿 Dealer wins`; // lose
-      playing = false;
-    }
-    if (dealer > human && dealer <= 21) {
-      checkWin = `👿 Dealer wins`; // lose
-      playing = false;
-    }
-    if (dealer < human) {
-      checkWin = `😇 Dealer loses, ${playersName} win`; // win
-      playing = false;
-    }
-    if (dealer === human) {
-      checkWin = `It is a tie`;
-      playing = false;
-    }
-    if (dealer > 21) {
-      checkWin = `😇 Dealer loses`; // win
-      playing = false;
-    }
-  }
-
-  let output = `${playersName} has ${playersScore[0]} score. Dealer has ${playersScore[1]}`;
-  return `${output}<br><br>${checkWin}`;
-};
-
-const dealCardsInitial = function () {
-  let myOutputValue;
-  let cardFace = "";
-  let cardSuit = "";
-  let output0;
-  let output1;
-  let output00;
-  let output11;
-  let cardDrawn;
-  let playersName = players[0].name;
-
-  if (dealRound == 1) {
-    cardDrawn = playersMethodActivate(); // player--0
-    cardFace = cardDrawn.faces;
-    cardSuit = cardDrawn.suits;
-    output0 = `${playersName} draw ${cardFace} of ${cardSuit}`;
-    switchPlayers();
-
-    cardDrawn = playersMethodActivate(); // player--1
-    cardFace = cardDrawn.faces;
-    cardSuit = cardDrawn.suits;
-    output1 = `Dealer draws ${cardFace} of ${cardSuit}`;
-    switchPlayers();
-    dealRound += 1;
-  }
-  if (dealRound == 2) {
-    cardDrawn = playersMethodActivate(); // player--0
-    output00 = `${playersName} draw ${cardFace} of ${cardSuit}`;
-    switchPlayers();
-
-    cardDrawn = playersMethodActivate(); // player--1
-    output11 = `Dealer draws ${cardFace} of ${cardSuit}`;
-    switchPlayers();
-    dealRound += 1;
-  }
-  myOutputValue = `${output0} <br><br>${output1}<br><br>${output00}<br><br>${output11}<br><br>${humanWinCheck(
-    playersScore[0],
-    playersScore[1]
-  )}`;
+  console.log(myOutputValue);
   return myOutputValue;
+  // endGame = true
 };
-
-const stayHand = function () {
-  roundFirst = false;
-  switchPlayers();
-  let output0 = dealerWinCheck();
-  let output1 = humanWinCheck(playersScore[0], playersScore[1]);
-  let myOutputValue = `${output0}<br><br>${output1}`;
-  return myOutputValue;
-};
-
-const hitHand = function () {
-  roundFirst = false;
-  let output1 = dealHands(shuffledCards); // has Ace check function automated
-  let output2 = humanWinCheck(playersScore[0], playersScore[1]);
-  console.log(playersScore);
-  let myOutputValue = `${output1}<br><br>${output2}`;
-  return myOutputValue;
-};
-
-const introRestartGame = function () {
+// end game win loss check
+const endGameWinLossLoopCheck = function () {
   let myOutputValue = "";
-  if (
-    dealRound >= 1 &&
-    ((userNameRound == false && playing == true) ||
-      (userNameRound == false && playing == false))
-  ) {
-    initGame();
-    let introMessage = `☠☠☠ Welcome to Basics Blackjack game ☠☠☠<br/><br/> Please provide us your name before game initiates.`;
-    myOutputValue = introMessage;
-  }
-
-  if (userNameRound == true && playing == false) {
-    initGame();
-    console.log(userNameRound);
-    let introMessage = `Welcome to Basics Blackjack game.<br/><br/> Please provide us with your name before game initiates.`;
-    myOutputValue = introMessage;
+  for (let counter = 0; counter < players.length - 1; counter += 1) {
+    myOutputValue += `${winLossChecker()}<br>`;
+    activePlayer += 1;
   }
   return myOutputValue;
 };
+// pay out of win and loss
+const payOut = function () {
+  let myOutputValue = "";
+  console.log(players[activePlayer].win);
+  console.log(players[activePlayer].name);
+  for (let i = 0; i < players.length - 1; i++) {
+    let betAmt = Number(players[i].bet);
+    console.log(players[activePlayer].name);
+    if (players[i].win === "win") {
+      console.log("code 330");
+      players[i].cash += betAmt;
+      players[i].cash += betAmt;
+      players[players.length - 1].cash -= betAmt;
 
-const storeNameGuide2InputD = function (input) {
-  let userName = input;
-  let myOutputValue;
-  players[0].name = userName;
-  userNameRound = false;
-  playing = true;
-  myOutputValue = `Thank you ${userName}. <br/><br/>Please press "Deal" to start dealing cards to you and the computer.`;
-  return myOutputValue;
-};
-const dealStandHit = function (input) {
-  let myOutputValue;
-  if (input == "d") {
-    myOutputValue = dealCardsInitial();
-  } else if (input == "s") {
-    myOutputValue = stayHand();
-  } else if (input == "h") {
-    myOutputValue = hitHand();
+      myOutputValue += `${players[activePlayer].name} wins ${betAmt}, cash at ${
+        players[i].cash
+      } dollars. Dealer cash now at ${
+        players[players.length - 1].cash
+      } dollars.<br>`;
+    } else if (players[i].win === "lose") {
+      console.log(players[activePlayer].name);
+      players[players.length - 1].cash += betAmt;
+      myOutputValue += "<br>" + "=== Payout ===" + "<br>";
+      myOutputValue += `${
+        players[activePlayer].name
+      } loses ${betAmt} dollars, cash at ${
+        players[i].cash
+      } dollars. Dealer gains ${betAmt} dollars, cash at ${
+        players[players.length - 1].cash
+      } dollars.<br>`;
+    } else if (players[i].win === "tie") {
+      myOutputValue += `It is a tie. No one loses any cash.`;
+    }
+    activePlayer += 1;
+    players[i].bet = 0;
   }
   return myOutputValue;
 };
-
-// Deal button click --> function
-dealBtn.addEventListener("click", function () {
-  let result = main("d");
-  output.innerHTML = result;
-});
-// Stay button click --> function
-stayBtn.addEventListener("click", function () {
-  let result = main("s");
-  output.innerHTML = result;
-});
-// Hit button click --> function
-hitBtn.addEventListener("click", function () {
-  let result = main("h");
-  output.innerHTML = result;
-});
-// Restart button click --> function
-restartBtn.addEventListener("click", function () {
-  let result = main("");
-  output.innerHTML = result;
-});
 
 const main = function (input) {
-  // default message when no condition satisfy meaning == ERROR ==
-  let myOutputValue = `Error. You either have not given us your name or tried keying in invalid inputs. <br/><br/>
-  To continue, gives us your name or click "Deal" or "Hit" or "Stay" when prompted.<br/><br/>You may click "Submit" or "Restart anytime to restart game.`;
-
-  // constant image to browser
-  const imageConstant =
-    '<img src="https://c.tenor.com/FNWDvGwBAA4AAAAC/tom-hardy-yak%C4%B1%C5%9F%C4%B1kl%C4%B1.gif"/>';
-
-  // intro or restart Game
-  if (input == "") {
-    myOutputValue = introRestartGame(input);
-    userNameRound = true;
-  }
-
-  // store players name and guide to press click Deal to deal initial hands
-  if (
-    !(input == "" || input == "s" || input == "d" || input == "h") &&
-    userNameRound == true &&
-    playing == false
+  let myOutputValue = "Error. Invalid response !";
+  // start game by clicking "submit"
+  if (input === "") {
+    initGame();
+    myOutputValue = `Input number of Players`;
+    multiPlayerMode = true;
+  } else if (
+    multiPlayerMode === true &&
+    Number.isNaN(Number(input)) === false
   ) {
-    myOutputValue = storeNameGuide2InputD(input);
-  }
-
-  // deal; hit; stand choice and choice consequence
-  if (
-    userNameRound == false &&
-    playing == true &&
-    ((input == "d" && dealRound < 3) ||
-      (input == "s" && dealRound >= 3) ||
-      (input == "h" && dealRound >= 3))
+    // multiplayer input
+    let playerNumbers = input;
+    multiPlayerCreate(playerNumbers);
+    multiPlayerMode = false;
+    bettingMode = true;
+    myOutputValue = `Excluding the Dealer, ${playerNumbers} players were created.<br> Please input your bets now.<br>Start with Player--1.<br/>`;
+  } // bet amount input
+  else if (
+    bettingMode === true &&
+    activePlayer < players.length - 1 &&
+    Number.isInteger(Number(input))
   ) {
-    myOutputValue = dealStandHit(input);
+    let bet = Number(input);
+    myOutputValue = bettingDisplay(bet);
+    myOutputValue += betDeductNDisplay(bet);
+    activePlayer += 1;
+    if (activePlayer >= players.length - 1) {
+      myOutputValue += `<br/>Bets done! Dealing cards now.<br> Click Deal now.`;
+      bettingMode = false;
+      dealHitStayMode = true;
+      activePlayer = 0;
+    }
+    // deal hit and stay mode begins
+  } else if (
+    dealHitStayMode === true &&
+    (input === "d" || input === "h" || input === "s")
+  ) {
+    // deal cards to everyone, hit or stay
+    myOutputValue = dealHitStay(input); //line 172
+    playingLoopCheck();
+
+    // Dealer to pick cards as last person
+    if (playingContinue && activePlayer >= players.length - 1) {
+      myOutputValue += `<br/><br> Dealer's turn.<br>`;
+      myOutputValue += dealerPickCard();
+      console.log(myOutputValue);
+      dealHitStayMode = false;
+      console.log(players[activePlayer].name);
+      activePlayer = 0;
+      endGame = true;
+    }
   }
-  return imageConstant + "<br />" + myOutputValue;
+  if (endGame === true) {
+    hitStay = false;
+    myOutputValue += endGameWinLossLoopCheck();
+    activePlayer = 0;
+    myOutputValue += payOut();
+    activePlayer = 0;
+    myOutputValue += `<br>restart by clicking Restart or Submit.`;
+    initGame();
+  }
+  return myOutputValue;
 };
