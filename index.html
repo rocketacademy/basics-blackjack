@@ -167,6 +167,24 @@
       span {
         float: right;
       }
+      label {
+        color: yellow;
+        /* background-color: red; */
+        /* text-align: center; */
+        padding: 10px;
+        margin-right: 10px;
+      }
+      .bet {
+        background-color: red;
+        color: yellow;
+        display: inline;
+        border-radius: 50%;
+        width: 60px;
+      }
+
+      #div {
+        display: block;
+      }
       /* increase header font size on wider screens */
       @media screen and (max-width: 500px) {
         body {
@@ -219,7 +237,13 @@
           Restart
         </button></span
       >
-      <p>Output:</p>
+      <div id="bet-block">
+        <label>BETS </label>
+        <button class="bet" id="five">$5</button>
+        <button class="bet" id="ten">$10</button>
+        <!-- <p>Output:</p> -->
+      </div>
+
       <div id="output-div"></div>
     </div>
     <!-- Import program logic -->

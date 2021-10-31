@@ -16,6 +16,18 @@ const dealBtn = document.querySelector("#deal-button");
 const stayBtn = document.querySelector("#stay-button");
 const hitBtn = document.querySelector("#hit-button");
 const restartBtn = document.querySelector("#restart-button");
+const bet5Btn = document.querySelector("#five");
+const bet10Btn = document.querySelector("#ten");
+
+bet5Btn.addEventListener("click", function () {
+  let result = main("5");
+  output.innerHTML = result;
+});
+
+bet10Btn.addEventListener("click", function () {
+  let result = main("10");
+  output.innerHTML = result;
+});
 
 // Deal button click --> function
 dealBtn.addEventListener("click", function () {
@@ -37,6 +49,7 @@ restartBtn.addEventListener("click", function () {
   let result = main("");
   output.innerHTML = result;
 });
+// ===== HELPER FUNCTIONS =====
 
 // //Create makeDeckF function
 const makeDeck = function () {
@@ -102,6 +115,7 @@ const multiPlayerCreate = function (numPlayers) {
         cash: 1000,
         totalCardValue: 0,
         bet: 0,
+        win: "",
       };
       players.push(playerObject);
     } else {
@@ -116,13 +130,12 @@ const multiPlayerCreate = function (numPlayers) {
       };
       players.push(playerObject);
     }
-    // players.push(playerObject);
   }
 };
 
 // multiPlayerCreate(5);
 
-// retstart game
+// restart game
 const initGame = function () {
   players = [];
   activePlayer = 0;
@@ -160,7 +173,7 @@ const drawACardUpdateAndDisplay = function () {
 
   players[activePlayer].cardsHeld.push(cardAceCleared);
   players[activePlayer].totalCardValue += cardAceCleared.ranks;
-  myOutputValue = `${currentPlayer} drew ${cardFace} of ${cardSuit}.<br/>`;
+  myOutputValue = `${currentPlayer} drew ${cardFace} of ${cardSuit}. `;
   return myOutputValue;
 };
 // card value display
@@ -176,8 +189,8 @@ const intermittentCardValueDisplay = function () {
 const dealCardsOneRound = function () {
   let myOutputValue = "";
   for (let counter = 0; counter < players.length; counter += 1) {
-    myOutputValue += drawACardUpdateAndDisplay() + "<br/>";
-    myOutputValue += intermittentCardValueDisplay() + "<br/>";
+    myOutputValue += `${drawACardUpdateAndDisplay()}${intermittentCardValueDisplay()}`;
+    // myOutputValue += intermittentCardValueDisplay();
     activePlayer += 1;
   }
   activePlayer = 0;
@@ -190,9 +203,10 @@ const dealBlackjackCheckLoop = function () {
     myOutputValue += `${winLossChecker()}<br>`;
     activePlayer += 1;
   }
+  activePlayer = 0;
   return myOutputValue;
 };
-// search for any that is still playing to continue
+// search for Players that are still playing. Allowing to continue to Hit/stay else straight to payout.
 const playingLoopCheck = function () {
   for (let i = 0; i < players.lenghth - 1; i++) {
     if (players[i].playing === true) {
@@ -219,21 +233,16 @@ const winLossChecker = function () {
       players[activePlayer].playing = false;
       players[activePlayer].win = "tie";
       myOutputValue += `${players[activePlayer].name} has Blackjack, so does the Dealer. It is a tie of Blackjacks.`;
-    } // Dealer Blackjack. Player loses
+    } // Dealer Blackjack. Player loses. Game go straight to payout.
     else if (cleanDealer === 21) {
       console.log(player);
       myOutputValue += `${players[activePlayer].name} loses. Dealer has Blackjack.`;
+      players[players.lenght - 1].win = "win";
       for (let i = 0; i < players.length; i++) {
         players[i].playing = false;
         players[i].win = "lose";
       }
       endGame = true;
-    } else {
-      if (player === "Dealer") {
-        myOutputValue += "***Dealer kneels and prays for your card to flop.***";
-      } else if (players[activePlayer].playing === true) {
-        myOutputValue += `${players[activePlayer].name}, decide Hit or Stay ?`;
-      }
     }
   }
   // find players when Hit --> lose, hence playing = false
@@ -245,7 +254,7 @@ const winLossChecker = function () {
       players[activePlayer].playing = false;
       activePlayer += 1;
       if (activePlayer == players.length - 1) {
-        myOutputValue += `<br>Dealer's turn to roll`;
+        // myOutputValue += `<br>Dealer's turn to roll`;
         playingContinue = true;
       } else {
         // activePlayer += 1;
@@ -259,17 +268,17 @@ const winLossChecker = function () {
       console.log(players[activePlayer].name);
       // tie
       players[activePlayer].win = "tie";
-      myOutputValue = `${players[activePlayer].name} and dealer have a tie.`;
+      myOutputValue = `${players[activePlayer].name} and Dealer have a tie.`;
     } // player wins
     else if (
       (cleanHuman <= 21 && cleanHuman > cleanDealer) ||
-      cleanDealer > 21
+      (cleanHuman <= 21 && cleanDealer > 21)
     ) {
       myOutputValue = `${players[activePlayer].name} wins. Dealer loses.`;
       players[activePlayer].win = "win";
     } // player and dealer lose
     else if (cleanHuman > 21 && cleanDealer > 21) {
-      myOutputValue = `Both died.`;
+      myOutputValue = `Both ${players[activePlayer].name} and Dealer died.`;
       players[activePlayer].win = "tie";
     } // player loses
     else {
@@ -292,14 +301,12 @@ const dealHitStay = (input) => {
     myOutputValue += dealCardsOneRound();
     myOutputValue += "<br/> === 2nd round of deal cards ===<br>";
     myOutputValue += dealCardsOneRound();
-    activePlayer = 0;
     myOutputValue += dealBlackjackCheckLoop();
-    activePlayer = 0;
     hitStay = true;
     const findFirstPlayer2HitOrStay = () => {
       for (let i = 0; i < players.length; i++) {
         if (players[i].playing == true) {
-          myOutputValue += `<br>=== Hit or Stay ===<br>${currentPlayer}. Click Hit or Stay.`;
+          myOutputValue += `=== Hit or Stay ===<br>${currentPlayer}. Click Hit or Stay.`;
           return myOutputValue;
         } else {
           return `=== this round is over ===`;
@@ -311,9 +318,7 @@ const dealHitStay = (input) => {
   } // hit choice
   else if (input === "h" && hitStay === true && playerStatus === true) {
     console.log(players[activePlayer].name);
-    myOutputValue = drawACardUpdateAndDisplay();
-    myOutputValue += intermittentCardValueDisplay();
-    myOutputValue += winLossChecker();
+    myOutputValue = `${drawACardUpdateAndDisplay()}${intermittentCardValueDisplay()}${winLossChecker()}`;
 
     if (players[activePlayer].playing == true) {
       myOutputValue += `${players[activePlayer].name}, please decide to Hit or Stay.`;
@@ -335,7 +340,7 @@ const dealHitStay = (input) => {
       if (activePlayer < players.length - 1) {
         myOutputValue += `${players[activePlayer].name}, please decide to Hit or Stay.`;
       } else {
-        myOutputValue += `***Players are done picking.***`;
+        myOutputValue += `===Players are done picking===`;
       }
     }
   }
@@ -377,16 +382,17 @@ const aceCheck = function (card) {
 };
 // dealer picks cards
 const dealerPickCard = function () {
-  let myOutputValue = `Dealer's total hand ${
+  let myOutputValue = `Dealer's current hand ${
     players[players.length - 1].totalCardValue
-  }<br>`;
-  let i = 1;
+  }.<br>`;
 
+  let i = 1;
   while (players[activePlayer].totalCardValue < 17 && i < 21) {
     myOutputValue += `${drawACardUpdateAndDisplay()} <br/>`;
     myOutputValue += `${intermittentCardValueDisplay()}<br/>`;
     i++;
     if (players[activePlayer].totalCardValue > 21) {
+      players[players.length - 1].win = "lose";
       myOutputValue += `Dealer died/lose.<br>`;
     } else {
       myOutputValue += `Dealer has enough cards. Total hand ${
@@ -394,55 +400,51 @@ const dealerPickCard = function () {
       } <br/>`;
     }
   }
-  console.log(myOutputValue);
+  activePlayer = 0;
   return myOutputValue;
-  // endGame = true
 };
 // end game win loss check
 const endGameWinLossLoopCheck = function () {
   let myOutputValue = "";
   for (let counter = 0; counter < players.length - 1; counter += 1) {
     myOutputValue += `${winLossChecker()}<br>`;
+    myOutputValue += intermittentCardValueDisplay();
     activePlayer += 1;
   }
+  activePlayer = 0;
   return myOutputValue;
 };
 // pay out of win and loss
 const payOut = function () {
-  let myOutputValue = "";
-  console.log(players[activePlayer].win);
-  console.log(players[activePlayer].name);
+  let myOutputValue = "<br>=== payout round ===<br>";
   for (let i = 0; i < players.length - 1; i++) {
     let betAmt = Number(players[i].bet);
-    console.log(players[activePlayer].name);
+    let player = players[i].name;
+    let playerObj = players[i];
+    let dealerObj = players[players.length - 1];
+    let dealer = players[players.length - 1].name;
     if (players[i].win === "win") {
-      console.log("code 330");
       players[i].cash += betAmt;
       players[i].cash += betAmt;
       players[players.length - 1].cash -= betAmt;
 
-      myOutputValue += `${players[activePlayer].name} wins ${betAmt}, cash at ${
-        players[i].cash
-      } dollars. Dealer cash now at ${
-        players[players.length - 1].cash
-      } dollars.<br>`;
-    } else if (players[i].win === "lose") {
-      console.log(players[activePlayer].name);
+      myOutputValue += `${player} wins ${betAmt}, cash at ${playerObj.cash} dollars. Dealer cash now at ${dealerObj.cash} dollars.<br>`;
+    }
+    if (players[i].win === "lose") {
       players[players.length - 1].cash += betAmt;
-      myOutputValue += "<br>" + "=== Payout ===" + "<br>";
-      myOutputValue += `${
-        players[activePlayer].name
-      } loses ${betAmt} dollars, cash at ${
-        players[i].cash
-      } dollars. Dealer gains ${betAmt} dollars, cash at ${
-        players[players.length - 1].cash
-      } dollars.<br>`;
-    } else if (players[i].win === "tie") {
-      myOutputValue += `It is a tie. No one loses any cash.`;
+      // myOutputValue += "<br>" + "=== Payout ===" + "<br>";
+      myOutputValue += `${player} loses ${betAmt} dollars, cash at ${playerObj.cash} dollars. ${dealer} gains ${betAmt} dollars, cash at ${dealerObj.cash} dollars.<br>`;
+    }
+    if (
+      players[i].win === players[players.length - 1].win ||
+      players[i].win === "tie"
+    ) {
+      myOutputValue += `${player} and ${dealer} are tied. No one loses any cash.<br>`;
     }
     activePlayer += 1;
     players[i].bet = 0;
   }
+  activePlayer = 0;
   return myOutputValue;
 };
 
@@ -471,8 +473,11 @@ const main = function (input) {
   ) {
     let bet = Number(input);
     myOutputValue = bettingDisplay(bet);
-    myOutputValue += betDeductNDisplay(bet);
+    myOutputValue += `${betDeductNDisplay(bet)}<br>`;
     activePlayer += 1;
+    if (activePlayer < players.length - 1) {
+      myOutputValue += `${players[activePlayer].name}, what is your bet ?`;
+    }
     if (activePlayer >= players.length - 1) {
       myOutputValue += `<br/>Bets done! Dealing cards now.<br> Click Deal now.`;
       bettingMode = false;
@@ -485,27 +490,22 @@ const main = function (input) {
     (input === "d" || input === "h" || input === "s")
   ) {
     // deal cards to everyone, hit or stay
-    myOutputValue = dealHitStay(input); //line 172
+    myOutputValue = dealHitStay(input);
     playingLoopCheck();
 
-    // Dealer to pick cards as last person
+    // Dealer picking cards as last Index
     if (playingContinue && activePlayer >= players.length - 1) {
-      myOutputValue += `<br/><br> Dealer's turn.<br>`;
+      myOutputValue += `<br/><br>===Dealer's turn.===<br>`;
       myOutputValue += dealerPickCard();
-      console.log(myOutputValue);
       dealHitStayMode = false;
-      console.log(players[activePlayer].name);
-      activePlayer = 0;
       endGame = true;
     }
   }
   if (endGame === true) {
     hitStay = false;
-    myOutputValue += endGameWinLossLoopCheck();
-    activePlayer = 0;
-    myOutputValue += payOut();
-    activePlayer = 0;
-    myOutputValue += `<br>restart by clicking Restart or Submit.`;
+    myOutputValue += "<br>===End game winners and losers===<br>";
+    myOutputValue += `${endGameWinLossLoopCheck()}${payOut()}`;
+    myOutputValue += `<br>===Restart by clicking Restart or Submit===.`;
     initGame();
   }
   return myOutputValue;
