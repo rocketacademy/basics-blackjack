@@ -98,10 +98,8 @@ const shuffleCards = function (cardDeck) {
 let totalPlayers  = 1
 let recordParticipants = {}
 let mode = "start mode"
-
-
 const playBlackJack = function () {
-  if (mode == "start mode") {
+  if (mode === "start mode") {
     // shuffle card
     let shuffledDeck = shuffleCards(deck)
     // initialise object for their cards and their score
@@ -142,12 +140,15 @@ const playBlackJack = function () {
       
       players.push(playerNum)
       console.log(`players array: `, players)
-      mode = "dealer mode"
+      
       dealerDeck = playDeck
-      if (sumOfHandPlayer === 21){
-        return "player won blackjack."
+      if ((cardsOfPlayer[0].value ===10 && cardsOfPlayer[1].name === 'ace') ||
+          (cardsOfPlayer[1].value === 10 && cardsOfPlayer[0].name === 'ace')){
+            mode = "start mode"
+            return "player won blackjack."
       }else{
-      return  `the player total of 2 cards is ${sumOfHandPlayer}.`
+        mode = "dealer mode"
+        return  `the player total of 2 cards is ${sumOfHandPlayer}.`
       }
     }
     //create object
@@ -174,7 +175,11 @@ const playBlackJack = function () {
       console.log(`the dealers cards are: `, cardsOfDealer, `and the dealer sum is `, sumOfDealer)
       console.log(`Remaining Deck now has`, dealerDeck.length, `cards.`)
 
-      if (sumOfDealer >= 17){
+      if((cardsOfDealer[0].value ===10 && cardsOfDealer[1].name === 'ace') ||
+         (cardsOfDealer[1].value === 10 && cardsOfDealer[0].name === 'ace')){
+          mode = "start mode"
+           return "player won blackjack." 
+      }else if(sumOfDealer >= 17){
         if(sumOfDealer>sumOfHandPlayer){
           mode = "start mode"
           message = `dealer wins. The dealer sum is ${sumOfDealer}.`
@@ -184,8 +189,6 @@ const playBlackJack = function () {
         }else if(sumOfDealer===sumOfHandPlayer){
           mode = "start mode"
           message = `its a draw. The dealer sum is ${sumOfDealer}.`
-        }else{
-          message = "Dealer win blackjack"
         }
       } else if (sumOfDealer < 17){
           mode = "start mode"
