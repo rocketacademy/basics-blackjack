@@ -1,6 +1,6 @@
 const main = function(input) {
-  makeDeck()
-  return "Hello"
+  myOutputValue = playBlackJack()
+  return myOutputValue
 }
 
 
@@ -86,9 +86,9 @@ const shuffleCards = function (cardDeck) {
     // Select the card that corresponds to randomIndex
     let randomCard = cardDeck[randomIndex];
     // Select the card that corresponds to currentIndex
-    let currentCard = cardDeck[currentIndex];
+    let currentCard = cardDeck[cardIndex];
     // Swap positions of randomCard and currentCard in the deck
-    cardDeck[currentIndex] = randomCard;
+    cardDeck[cardIndex] = randomCard;
     cardDeck[randomIndex] = currentCard;
   }
   // Return the shuffled deck
@@ -99,74 +99,101 @@ let totalPlayers  = 1
 let recordParticipants = {}
 let mode = "start mode"
 
-const playBlackJact = function (command) {
+
+const playBlackJack = function () {
   if (mode == "start mode") {
     // shuffle card
     let shuffledDeck = shuffleCards(deck)
     // initialise object for their cards and their score
+    let playDeck = shuffledDeck
     let handOfPlayer = {
         hands : [],
         sumInHand : 0
     }
-    // create indexPlayer array
+    // create indexPlayer and sum array
     let players = []
+    // array to stare each player sum of cards
+    let sumOfHand = []
 
+    // initialise array for each player to hold their cards
+    let cardsOfPlayer = []
     // store score of every player
     for (let playerIndex = 0; playerIndex <= totalPlayers-1 ; playerIndex ++) {
-      //  // initialise array for each player to hold their cards
-      let cardsOfPlayer = []
-      // // initialise for each player card score
-      // let sumOfHand = 0
- 
+    
       // player and computer take 2 cards each. participants first
-      let playerCard1 = shuffledDeck.pop()
+      let playerCard1 = playDeck.pop()
       cardsOfPlayer.push(playerCard1)
-      let playerCard2 = shuffleCDeck.pop()
+      let playerCard2 = playDeck.pop()
       cardsOfPlayer.push(playerCard2)
       // find total of each participant. Jacks/Queen/Kings are 10. Aces can be 1 or 11
-      sumOfHand = cardsOfPlayer[0].value + cardsOfPlayer[1].value
+      sumOfHandPlayer = cardsOfPlayer[playerIndex].value + cardsOfPlayer[playerIndex+1].value
+      // push sum into array
+      sumOfHand.push(sumOfHandPlayer)
+      console.log(`sum of all players hand`, sumOfHand)
 
-      // ?????? to push info into object for each player
-      // handOfPlayer = {
-      //   playerIndex : {
-      //       cardsInHand : cardsOfPlayer,
-      //       sumOfCards : sumOfHand
-      //   },
-      // }
       // push each player cards and sum into object handOfPlayer
       handOfPlayer.hands = cardsOfPlayer;
-      handOfPlayer.sumInHand = sumOfHand;    
-      console.log(handOfPlayer)
+      handOfPlayer.sumInHand = sumOfHand[playerIndex];    
+      console.log(`handOfPlayer`, handOfPlayer)
 
       // build array of playerIndex as key  
       let playerNum = "player" + (playerIndex + 1).toString()
+      console.log(`players are: `, playerNum)
+      
       players.push(playerNum)
-      console.log(`players are: `, players)
-      
-      // build record Participant by mappin?***********
-      recordParticipants.recordNum = handOfPlayer
-      
+      console.log(`players array: `, players)
+      mode = "dealer mode"
+      dealerDeck = playDeck
+      if (sumOfHandPlayer === 21){
+        return "player won blackjack."
+      }else{
+      return  `the player total of 2 cards is ${sumOfHandPlayer}.`
+      }
     }
-    
+    //create object
+    const recordParticipants = Object.fromEntries(players.map(key=>[key, handOfPlayer]))  
+    console.log(`record of cards across players `, recordParticipants) 
+  }
     // map recordNum in  players as key and handofPlayer as values
 
 
     // mode = "dealer mode" /// ????
   
-  // if (mode == "dealer mode") {  
+  if (mode == "dealer mode") {  
       // initialise array for dealer cards
       let cardsOfDealer = []
-      // initialise for dealer card score
-      let sumOfDealer = 0
+  
       // // initialise object for dealer cards and dealer score
       // let handOfDealer = {}
       // computer take 2 cards 
-      let dealerCard1 = shuffledDeck.pop()
+      let dealerCard1 = dealerDeck.pop()
       cardsOfDealer.push(dealerCard1)
-      let dealerCard2 = shuffledDeck.pop()
-      handOfPlayer.push(dealerCard2)
-      sumOfDealer = cardsOfDealer[0] + cardsOfDealer[1] 
-      // add in dealer 
+      let dealerCard2 = dealerDeck.pop()
+      cardsOfDealer.push(dealerCard2)
+      let sumOfDealer = cardsOfDealer[0].value + cardsOfDealer[1].value 
+      console.log(`the dealers cards are: `, cardsOfDealer, `and the dealer sum is `, sumOfDealer)
+      console.log(`Remaining Deck now has`, dealerDeck.length, `cards.`)
+
+      if (sumOfDealer >= 17){
+        if(sumOfDealer>sumOfHandPlayer){
+          mode = "start mode"
+          message = `dealer wins. The dealer sum is ${sumOfDealer}.`
+        }else if(sumOfDealer<sumOfHandPlayer){
+          mode = "start mode"
+          message = `you win. The Dealer sum is ${sumOfDealer}.`
+        }else if(sumOfDealer===sumOfHandPlayer){
+          mode = "start mode"
+          message = `its a draw. The dealer sum is ${sumOfDealer}.`
+        }else{
+          message = "Dealer win blackjack"
+        }
+      } else if (sumOfDealer < 17){
+          mode = "start mode"
+          message = `Hit and end game. The dealer sum is ${sumOfDealer}.`
+      } 
+        return message  
+  }
+}    
 
       
 
@@ -174,5 +201,3 @@ const playBlackJact = function (command) {
     // player decides hit (draw a card) or stand (end their turn)
     // find new total of every participannt
 
-  } 
-}
