@@ -9,10 +9,14 @@ for now - find winner
 */
 
 // GLOBAL VARIABLES
-var deck = [];
 var mode = "init";
-var shuffledDeck = [];
+var numberOfPlayers = 4;
 var myOutputValue = "";
+
+// GAME STATUS
+var deck = [];
+var shuffledDeck = [];
+var players = [];
 
 // create a standard 52-card deck
 var initialiseDeck = function () {
@@ -51,6 +55,19 @@ var initialiseDeck = function () {
   }
 };
 
+// initialise computer and players
+var initialisePlayers = function () {
+  for (var i = 0; i < numberOfPlayers; i += 1) {
+    // computer
+    if (i == 0) {
+      players[i] = { player: "Dealer", hands: [] };
+      continue;
+    }
+    // rest of the players
+    players[i] = { player: `Player ${i}`, hands: [] };
+  }
+};
+
 // Get a random index ranging from 0 (inclusive) to max (exclusive).
 var getRandomIndex = function (max) {
   return Math.floor(Math.random() * max);
@@ -77,30 +94,47 @@ var shuffleCards = function (cardDeck) {
   return cardDeck;
 };
 
+// TODO - deal cards to players first
 var dealStartingHand = function () {
-  player.push(shuffledDeck.pop());
-  computer.push(shuffledDeck.pop());
-  player.push(shuffledDeck.pop());
-  computer.push(shuffledDeck.pop());
-  console.log("==== deal starting hand ====");
-  console.log(player);
-  console.log(computer);
+  // deal starting cards to players
+  var startingHandSize = 2;
+
+  // rounds of dealing
+  for (var round = 0; round < startingHandSize; round += 1) {
+    // deal player by player
+    for (var i = 0; i < numberOfPlayers; i += 1) {
+      var randomCard = shuffledDeck.pop();
+      players[i]["hands"].push(randomCard);
+    }
+  }
 };
 
 var showHandMessage = function () {
   // use loop to display hand status
-  var playerHand = [];
-  var computerHand = [];
-  for (var i = 0; i < player.length; i += 1) {
-    playerHand.push(player[i].name + " of " + player[i].suit);
-    computerHand.push(computer[i].name + " of " + computer[i].suit);
+  myOutputValue = "";
+  for (var i = 0; i < numberOfPlayers; i += 1) {
+    var name = players[i].player;
+    var firstCard =
+      players[i].hands[0].name + " of " + players[i].hands[0].suit;
+    var secondCard =
+      players[i].hands[1].name + " of " + players[i].hands[1].suit;
+    var value = players[i].hands[0].value + players[i].hands[1].value;
+    myOutputValue += `${name}, your hands are ${firstCard} and ${secondCard} (Value: ${value}).
+    <br>`;
   }
-  myOutputValue = `Player: ${playerHand[0]} and ${playerHand[1]}
-  <br>
-  Computer: ${computerHand[0]} and ${computerHand[1]}`;
-  return;
 };
 
 var main = function (input) {
+  // shuffle deck
+  // deal cards to players
+  if (mode == "init") {
+    initialisePlayers();
+    initialiseDeck();
+    shuffledDeck = shuffleCards(deck);
+    dealStartingHand();
+    showHandMessage();
+    return myOutputValue;
+  }
+
   return myOutputValue;
 };
