@@ -13,6 +13,9 @@ var generateDeck = function (input) {
     }
   }
 
+  //Assign ace to have 11 pts for a start. Put 10, because will add on below.
+  ranks[0] = 10;
+
   for (let i = 0; i < suits.length; i += 1) {
     var suit1 = suits[i]; // Allow the suit to go through the loop
     var j = 0;
@@ -65,6 +68,8 @@ var createPlayerProfile = function (playerName) {
   element.name = playerName;
   element.score = 0;
   element.points = 0;
+  element.ace = 0;
+  element.blackjack = 0;
   element.remarks = "";
   player.push(element);
 
@@ -91,6 +96,7 @@ var allPlayerProfile = function (noOfPlayers, COM) {
 
 var drawCard = function (listOfPlayers, shuffledDeck) {
   var noOfDraws = 2;
+
   for (j = 0; j < noOfDraws; j += 1) {
     for (let i = 0; i < listOfPlayers.length; i += 1) {
       // Draw card, inside draw card there is e.g. {name: 'ace', suit : 'spades', rank : 1}
@@ -102,6 +108,9 @@ var drawCard = function (listOfPlayers, shuffledDeck) {
       listOfPlayers[i][0].score += rankScore;
       listOfPlayers[i][0].remarks += cardType;
 
+      if (cardDrawn.name == "ace") {
+        listOfPlayers[i][0].ace += 1;
+      }
       console.log(cardType);
     }
   }
@@ -134,13 +143,12 @@ var blackJack = function (allCardDrawn) {
     }
     // Check if there is blackjack, if there is, push 1, otherwise push 0.
     if (blackJack == true) {
-      listOfBlackjack.push(1);
+      allCardDrawn[i][0].blackjack = 1;
     } else {
-      listOfBlackjack.push(0);
+      allCardDrawn[i][0].blackjack = 0;
     }
   }
-  console.log(`This is the list of blackjackers ${listOfBlackjack}`);
-  return listOfBlackjack;
+  return;
 };
 
 var winningCondition = function (allCardDrawn) {
@@ -149,6 +157,21 @@ var winningCondition = function (allCardDrawn) {
   var draw = "";
   var bust = "";
   var overshotScore = 21;
+
+  // Re-assess all the scores if there is an ace.
+  // allCardDrawn[0][0] is {name: 'Player 1', score :0, points:0, ace:0,remarks: ""}
+  for (let i = 0; i < allCardDrawn.length; i += 1) {
+    var reAdjustScore = allCardDrawn[i][0].score;
+    // If above 21, check for aces. Depending on the number of ace, there'll be reduction.
+    if (reAdjustScore > overshotScore) {
+      var ace_counter = 0;
+      while (ace_counter < allCardDrawn[i][0].ace) {
+        reAdjustScore -= 10;
+        ace_counter += 1;
+      }
+    }
+  }
+
   // Taking out the score of COM thus far
   var COM_score = allCardDrawn[allCardDrawn.length - 1][0].score;
   var COMStatus = `COM Card Score: ${COM_score}`;
@@ -172,11 +195,11 @@ var winningCondition = function (allCardDrawn) {
     }
 
     if (checkCardScore > checkCOMscore) {
-      win += `${cardName} has won. Card score: ${checkCardScore} <br> `;
+      win += `${cardName} has won. Card score: ${cardScore} <br> `;
     } else if (checkCardScore == checkCOMscore) {
-      draw += `${cardName} has draw. Card score: ${checkCardScore} <br> `;
-    } else {
-      lose += `${cardName} has lost. Card score: ${checkCardScore}<br> `;
+      draw += `${cardName} has draw. Card score: ${cardScore} <br> `;
+    } else if (checkCardScore != 0) {
+      lose += `${cardName} has lost. Card score: ${cardScore}<br> `;
     }
   }
 
@@ -195,11 +218,13 @@ var obtainCardsDrawnRemarks = function (allCardDrawn, index) {
 };
 
 var ResetGame = function () {
-  var gameMode = "Select Game Mode";
+  var gameMode = "Blackjack";
   var noOfPlayers = 0;
   var allCardDrawn = "";
   var indexCounter = 1;
   var remarksCOM = "";
+  var deck = "";
+  var shuffledDeck = "";
 };
 
 //Initialise variables
@@ -212,12 +237,12 @@ var allCardDrawn = ""; // Will be used to update the profile and scores of playe
 var indexCounter = 1; // this indexCounter is used to check who wants to draw a card
 var remarksCOM = "";
 // Generate deck and shuffle
-var deck = generateDeck();
-var shuffledDeck = shuffleDeck(deck);
+var deck = "";
+var shuffledDeck = "";
 
 // DELETE LTR //
-var gameMode = "Blackjack";
-var noOfPlayers = 2;
+// var gameMode = "Blackjack";
+// var noOfPlayers = 2;
 //////////////////
 
 var main = function (input) {
@@ -244,19 +269,25 @@ var main = function (input) {
   }
   // First part of the game
   if (gameMode == "Blackjack") {
+    deck = generateDeck();
+    shuffledDeck = shuffleDeck(deck);
     // Store all player profile into a list
     listOfPlayers = allPlayerProfile(noOfPlayers, COM);
     console.log(`The number of players are : ${listOfPlayers.length} and the list is: ${listOfPlayers[0]}`);
 
     // Draw 2 Cards. To access first player card details.
-    //i.e. allCardDrawn[0][0] is {name: 'Player 1', score :0, points:0, remarks: ""} same as listofplayers but updated with scores.
+    //i.e. allCardDrawn[0][0] is {name: 'Player 1', score :0, points:0, ace:0,remarks: ""} same as listofplayers but updated with scores.
     allCardDrawn = drawCard(listOfPlayers, shuffledDeck);
+    // Check blackJack
+    blackJack(allCardDrawn);
+
     for (let i = 0; i < allCardDrawn.length; i += 1) {
+      var blackjackCounter = 0;
+      if (allCardDrawn[i][0].blackjack == 1) {
+        blackjackCounter += 1;
+      }
       console.log(allCardDrawn[i][0]);
     }
-
-    // Check blackjack but haven't do anything with it yet.
-    var listOfBlackJack = blackJack(allCardDrawn);
 
     // Change gamemode to hit or stand
     gameMode = hitOrStand;
