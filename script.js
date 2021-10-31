@@ -58,13 +58,13 @@ var initialiseDeck = function () {
 // initialise computer and players
 var initialisePlayers = function () {
   for (var i = 0; i < numberOfPlayers; i += 1) {
-    // computer
-    if (i == 0) {
+    // last player to be computer/dealer
+    if (i == numberOfPlayers - 1) {
       players[i] = { player: "Dealer", hands: [] };
       continue;
     }
     // rest of the players
-    players[i] = { player: `Player ${i}`, hands: [] };
+    players[i] = { player: `Player ${i + 1}`, hands: [] };
   }
 };
 
@@ -94,7 +94,6 @@ var shuffleCards = function (cardDeck) {
   return cardDeck;
 };
 
-// TODO - deal cards to players first
 var dealStartingHand = function () {
   // deal starting cards to players
   var startingHandSize = 2;
