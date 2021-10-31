@@ -2,26 +2,24 @@ var playerCards = [];
 var dealerCards = [];
 
 // created objects to store the player information
-var player = [
+var players = [
   {
     name: "",
     card: [],
     score: 0,
   },
-  {
-    name: "dealer",
-    card: [],
-    score: 0,
-  },
 ];
+
+var dealer = {
+  card: [],
+  score: 0,
+};
 
 var main = function (input) {
   var deck = makeDeck();
   var shuffledDeck = shuffleCards(deck);
   makeTurn(shuffledDeck);
   makeTurn(shuffledDeck);
-
-  
 };
 
 var makeTurn = function (shuffledDeck) {
