@@ -11,6 +11,7 @@ for now - find winner
 // GLOBAL VARIABLES
 var mode = "init";
 var numberOfPlayers = 4;
+var numberOfDecks = 1;
 var myOutputValue = "";
 
 // GAME STATUS
@@ -18,7 +19,7 @@ var deck = [];
 var shuffledDeck = [];
 var players = [];
 
-// create a standard 52-card deck
+// create X standard 52-card deck
 var initialiseDeck = function () {
   var names = [
     "Ace",
@@ -39,18 +40,21 @@ var initialiseDeck = function () {
   var ranks = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
   var suits = ["Spades", "Hearts", "Diamonds", "Clubs"];
 
-  // loop thru suits length = 4
-  index = 0;
-  for (var suit = 0; suit < suits.length; suit += 1) {
-    // nested loop thru names length = 13
-    for (var name = 0; name < names.length; name += 1) {
-      deck[index] = {
-        name: names[name],
-        value: values[name],
-        rank: ranks[name],
-        suit: suits[suit],
-      };
-      index += 1;
+  var index = 0;
+  // make X standard 52-card deck
+  for (var counter = 0; counter < numberOfDecks; counter += 1) {
+    // loop thru suits length = 4
+    for (var suit = 0; suit < suits.length; suit += 1) {
+      // nested loop thru names length = 13
+      for (var name = 0; name < names.length; name += 1) {
+        deck[index] = {
+          name: names[name],
+          value: values[name],
+          rank: ranks[name],
+          suit: suits[suit],
+        };
+        index += 1;
+      }
     }
   }
 };
