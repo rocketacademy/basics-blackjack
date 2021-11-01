@@ -134,7 +134,9 @@ var drawAdditionalCard = function (index, shuffledDeck, allCardDrawn) {
 var blackJack = function (allCardDrawn) {
   var blackJackScore = 21;
   var listOfBlackjack = [];
+  var msg = "";
 
+  // Loop through every player profile
   for (let i = 0; i < allCardDrawn.length; i += 1) {
     var scoreBeat = allCardDrawn[i][0].score;
     var blackJack = false;
@@ -195,7 +197,12 @@ var winningCondition = function (allCardDrawn) {
     }
 
     if (checkCardScore > checkCOMscore) {
-      win += `${cardName} has won. Card score: ${cardScore} <br> `;
+      win += `${cardName} has won. `;
+      if (allCardDrawn[i][0].blackjack == 1) {
+        win += `Black Jack! Card score: ${cardScore} <br>`;
+      } else {
+        win += `Card score: ${cardScore} <br> `;
+      }
     } else if (checkCardScore == checkCOMscore) {
       draw += `${cardName} has draw. Card score: ${cardScore} <br> `;
     } else if (checkCardScore != 0) {
@@ -219,7 +226,7 @@ var obtainCardsDrawnRemarks = function (allCardDrawn, index) {
 
 var ResetGame = function () {
   var gameMode = "Blackjack";
-  var noOfPlayers = 0;
+  // var noOfPlayers = 0;
   var allCardDrawn = "";
   var indexCounter = 1;
   var remarksCOM = "";
@@ -241,8 +248,8 @@ var deck = "";
 var shuffledDeck = "";
 
 // DELETE LTR //
-// var gameMode = "Blackjack";
-// var noOfPlayers = 2;
+var gameMode = "Blackjack";
+var noOfPlayers = 2;
 //////////////////
 
 var main = function (input) {
@@ -280,12 +287,25 @@ var main = function (input) {
     allCardDrawn = drawCard(listOfPlayers, shuffledDeck);
     // Check blackJack
     blackJack(allCardDrawn);
+    // if COM is blackjack. Check if any other blackjack.
+    if (allCardDrawn[allCardDrawn.length - 1][0].blackjack == 1) {
+      var listOfOtherBlackJacks = [];
+      var msgBlackJack = "";
+      for (let i = 0; i < allCardDrawn.length - 1; i += 1) {
+        if (allCardDrawn[i][0].blackjack == 1) {
+          listOfOtherBlackJacks.push("has tied!");
+        } else if (allCardDrawn[i][0].blackjack == 0) {
+          listOfOtherBlackJacks.push("has lost!");
+        }
+      }
+      for (let i = 0; i < listOfOtherBlackJacks.length; i += 1) {
+        msgBlackJack += `Player ${i + 1} ${listOfOtherBlackJacks[i]}<br>`;
+      }
+      msgBlackJack += "<br> COM has Black Jack!";
+      return msgBlackJack;
+    }
 
     for (let i = 0; i < allCardDrawn.length; i += 1) {
-      var blackjackCounter = 0;
-      if (allCardDrawn[i][0].blackjack == 1) {
-        blackjackCounter += 1;
-      }
       console.log(allCardDrawn[i][0]);
     }
 
@@ -305,10 +325,19 @@ var main = function (input) {
   if (gameMode == hitOrStand) {
     msg = "Please enter a valid input. Either 'hit' or 'stand'";
     var remarks = obtainCardsDrawnRemarks(allCardDrawn, indexCounter - 1);
-    // Check for blackjack / 21 here
+    // Check if player has blackjack, if he has, skip his turn.
+    if (allCardDrawn[indexCounter - 1][0].blackjack == 1 || !input) {
+      indexCounter += 1;
+      remarks = obtainCardsDrawnRemarks(allCardDrawn, indexCounter - 1);
+      msg = `Player ${indexCounter - 1} has Black Jack! Does not need to draw! `;
+      if (indexCounter < allCardDrawn.length) {
+        msg += `<br> Player ${indexCounter}'s turn.<br> Your current cards are : ${remarks} <br><br> COM has ${remarksCOM} <br><br> 'Hit' or 'Stand' or 'Submit'`;
+      }
+      return msg;
+    }
 
     // indexCounter starts from 1. Purpose is to stop right before the COM's profile
-    if (indexCounter < allCardDrawn.length) {
+    if (indexCounter < allCardDrawn.length && allCardDrawn[indexCounter - 1][0].blackjack == 0) {
       if (input.toLowerCase() == "hit") {
         // Draw additional cards, whatCard returns what card was drawn in string
         whatCard = drawAdditionalCard(indexCounter - 1, shuffledDeck, allCardDrawn);
@@ -319,6 +348,9 @@ var main = function (input) {
         indexCounter += 1;
         remarks = obtainCardsDrawnRemarks(allCardDrawn, indexCounter - 1);
         msg = `Player ${indexCounter - 1} picked stand. <br><br> Player ${indexCounter}'s turn.<br> Your current cards are : ${remarks} <br><br> COM has ${remarksCOM} <br><br> 'Hit' or 'Stand'`;
+      }
+      if (!input) {
+        indexCounter += 1;
       }
     }
     // Once indexcounter reaches last. which is COM's
@@ -331,7 +363,7 @@ var main = function (input) {
       // If computer score is below 17, auto draw till reach above 17.
       while (currentScoreCOM < 17) {
         whatCard = drawAdditionalCard(indexCounter - 1, shuffledDeck, allCardDrawn);
-        var msg1 = `${whatCard} was drawn.<br> Player ${indexCounter} / COM now has ${remarks}, ${whatCard} <br><br>`;
+        var msg1 = `${whatCard} was drawn.<br> COM now has ${remarks}, ${whatCard} <br><br>`;
         currentScoreCOM = allCardDrawn[allCardDrawn.length - 1][0].score;
       }
       gameMode = cardsDrawn;
@@ -344,6 +376,7 @@ var main = function (input) {
 
   if (gameMode == cardsDrawn) {
     msg = winningCondition(allCardDrawn);
+    ResetGame();
     return msg;
   }
 
