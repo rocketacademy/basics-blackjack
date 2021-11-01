@@ -8,7 +8,7 @@ let hitStay = false;
 let dealerTurn = false;
 let endGame = false;
 let playingContinue = false;
-let continueMode = true;
+let CONTINUE = false;
 
 const output = document.querySelector("#output-div");
 const dealBtn = document.querySelector("#deal-button");
@@ -179,13 +179,11 @@ const intermittentCardValueDisplay = function () {
   myOutputValue = `${cardPlayer} total current card value is ${cardValue}.<br/>`;
   return myOutputValue;
 };
-
 // deal cards one round
 const dealCardsOneRound = function () {
   let myOutputValue = "";
   for (let counter = 0; counter < players.length; counter += 1) {
     myOutputValue += `${drawACardUpdateAndDisplay()}${intermittentCardValueDisplay()}`;
-    // myOutputValue += intermittentCardValueDisplay();
     activePlayer += 1;
   }
   activePlayer = 0;
@@ -232,7 +230,7 @@ const winLossChecker = function () {
     else if (cleanDealer === 21) {
       console.log(player);
       myOutputValue += `${players[activePlayer].name} loses. Dealer has Blackjack.`;
-      players[players.lenght - 1].win = "win";
+      players[players.length - 1].win = "win";
       for (let i = 0; i < players.length; i++) {
         players[i].playing = false;
         players[i].win = "lose";
@@ -290,7 +288,7 @@ const dealHitStay = (input) => {
   let playerStatus = players[activePlayer].playing;
   let currentPlayer = players[activePlayer].name;
   let myOutputValue = "Error !. Invalid click. ";
-
+  console.log(players[activePlayer].name);
   if (input === "d" && hitStay === false) {
     myOutputValue = "=== 1st round of deal cards === <br>";
     myOutputValue += dealCardsOneRound();
@@ -441,14 +439,30 @@ const payOut = function () {
   activePlayer = 0;
   return myOutputValue;
 };
+const noNewPlayersInitGame = function () {
+  let cashArray = [];
 
+  for (let i = 0; i < players.length; i++) {
+    cashArray.push(players[i].cash);
+  }
+  initGame();
+  multiPlayerCreate(cashArray.length - 1);
+  bettingMode = true;
+  for (let index = 0; index < players.length; index++) {
+    players[index].cash = cashArray[index];
+  }
+
+  let myOutputValue = "Please make your bets now. Start with Player--1";
+  return myOutputValue;
+};
 const main = function (input) {
   let myOutputValue = "Error. Invalid response !";
   // start game by clicking "submit"
   if (input === "") {
     initGame();
-    myOutputValue = `Welcome to sure "Blackjack Gaming Den". To begin, please input number of players`;
+    myOutputValue = `Welcome to sure2Lose##Blackjack Gaming Den##sure2Lose. To begin, please input number of players`;
     multiPlayerMode = true;
+    CONTINUE = false;
   } else if (
     multiPlayerMode === true &&
     Number.isNaN(Number(input)) === false
@@ -465,6 +479,7 @@ const main = function (input) {
     activePlayer < players.length - 1 &&
     Number.isInteger(Number(input))
   ) {
+    // console.log("was here betting");
     let bet = Number(input);
     myOutputValue = bettingDisplay(bet);
     myOutputValue += `${betDeductNDisplay(bet)}<br>`;
@@ -495,12 +510,25 @@ const main = function (input) {
       endGame = true;
     }
   }
+  // end game
   if (endGame === true) {
     hitStay = false;
     myOutputValue += "<br>===End game winners and losers===<br>";
     myOutputValue += `${endGameWinLossLoopCheck()}${payOut()}`;
-    myOutputValue += `<br>===Restart by clicking Restart or Submit===.`;
-    initGame();
+    myOutputValue += `<br>===Restart by clicking Restart or Submit===<br>===To continue with the same players, type "C"===`;
+    endGame = false;
+    CONTINUE = true;
+  }
+  // if decision to continue game with existing players
+  if (CONTINUE && input !== "") {
+    console.log("at the end");
+
+    if (input === "C") {
+      myOutputValue = noNewPlayersInitGame();
+      CONTINUE = false;
+    } else {
+      myOutputValue = `Please only click "C" in capitals to continue game with current players or click restart for new players`;
+    }
   }
   return myOutputValue;
 };
