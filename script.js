@@ -132,8 +132,6 @@ const multiPlayerCreate = function (numPlayers) {
   }
 };
 
-// multiPlayerCreate(5);
-
 // restart game
 const initGame = function () {
   players = [];
@@ -160,7 +158,7 @@ const displayTotalCardValueAllPlayers = function () {
   }
   return myOutputValue;
 };
-// draw, update cardsHeld, totalCardValue and display
+// draw, update cardsHeld & totalCardValue and display
 const drawACardUpdateAndDisplay = function () {
   let shuffledCards = shuffleDeck();
   let cardDrawn = shuffledCards.pop();
@@ -431,7 +429,6 @@ const payOut = function () {
     }
     if (players[i].win === "lose") {
       players[players.length - 1].cash += betAmt;
-      // myOutputValue += "<br>" + "=== Payout ===" + "<br>";
       myOutputValue += `${player} loses ${betAmt} dollars, cash at ${playerObj.cash} dollars. ${dealer} gains ${betAmt} dollars, cash at ${dealerObj.cash} dollars.<br>`;
     }
     if (
