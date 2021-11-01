@@ -93,11 +93,10 @@ const shuffleDeck = () => {
   };
   let deck = makeDeck();
   for (let currentIndex = 0; currentIndex < deck.length; currentIndex += 1) {
-    let currentCard = deck[currentIndex];
     let randomIndex = randomNumber(deck.length - 1);
 
     deck[currentIndex] = deck[randomIndex];
-    deck[randomIndex] = currentCard;
+    deck[randomIndex] = deck[currentIndex];
   }
 
   return deck;
@@ -453,7 +452,7 @@ const main = function (input) {
   // start game by clicking "submit"
   if (input === "") {
     initGame();
-    myOutputValue = `Input number of Players`;
+    myOutputValue = `Welcome to sure "Blackjack Gaming Den". To begin, please input number of players`;
     multiPlayerMode = true;
   } else if (
     multiPlayerMode === true &&
