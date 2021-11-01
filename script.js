@@ -10,6 +10,7 @@ let endGame = false;
 let playingContinue = false;
 let CONTINUE = false;
 
+// global variables for html elements
 const output = document.querySelector("#output-div");
 const dealBtn = document.querySelector("#deal-button");
 const stayBtn = document.querySelector("#stay-button");
@@ -18,16 +19,16 @@ const restartBtn = document.querySelector("#restart-button");
 const bet5Btn = document.querySelector("#five");
 const bet10Btn = document.querySelector("#ten");
 
+// bet button for $5
 bet5Btn.addEventListener("click", function () {
   let result = main("5");
   output.innerHTML = result;
 });
-
+// bet button for $10
 bet10Btn.addEventListener("click", function () {
   let result = main("10");
   output.innerHTML = result;
 });
-
 // Deal button click --> function
 dealBtn.addEventListener("click", function () {
   let result = main("d");
@@ -144,7 +145,7 @@ const initGame = function () {
   playingContinue = false;
   CONTINUE = false;
 };
-
+// display total card value for all players at once
 const displayTotalCardValueAllPlayers = function () {
   let playerScore = "";
   let playerName = "";
@@ -457,13 +458,14 @@ const noNewPlayersInitGame = function () {
   let myOutputValue = "Please make your bets now. Start with Player--1";
   return myOutputValue;
 };
+// display to browser function
 const main = function (input) {
   let myOutputValue = "Error. Invalid response !";
   // start game by clicking "submit"
   // introduction
   if (input === "") {
     initGame();
-    myOutputValue = `Welcome to sure2Lose##Blackjack Gaming Den##sure2Lose. To begin, please input number of players`;
+    myOutputValue = `Welcome to...<br><br> sure2Lose##Blackjack Gaming Den##sure2Lose.<br><br> To begin, please input number of players`;
     multiPlayerMode = true;
     CONTINUE = false;
   } else if (
@@ -474,7 +476,7 @@ const main = function (input) {
     let playerNumbers = input;
     multiPlayerCreate(playerNumbers);
     multiPlayerMode = false;
-    bettingMode = true;
+    bettingMode = true; // switches on betting
     myOutputValue = `Excluding the Dealer, ${playerNumbers} players were created.<br> Please input your bets now.<br>Start with Player--1.<br/>`;
   } // bet amount input n display
   else if (
@@ -493,8 +495,8 @@ const main = function (input) {
     } // catches the last player EX-dealer and ends betting round
     if (activePlayer >= players.length - 1) {
       myOutputValue += `<br/>Bets done! Dealing cards now.<br> Click Deal now.`;
-      bettingMode = false;
-      dealHitStayMode = true;
+      bettingMode = false; // switches off betting
+      dealHitStayMode = true; // switches on dealHitStay mode
       activePlayer = 0;
     }
     // deal hit and stay mode begins
@@ -510,18 +512,18 @@ const main = function (input) {
     if (playingContinue && activePlayer >= players.length - 1) {
       myOutputValue += `<br/><br>===Dealer's turn.===<br>`;
       myOutputValue += dealerPickCard();
-      dealHitStayMode = false;
-      endGame = true;
+      dealHitStayMode = false; // turn off deal hit stay mode
+      endGame = true; // turn on end game
     }
   }
   // end game check and payout
   if (endGame === true) {
-    hitStay = false;
+    hitStay = false; // turn off hit stay mode
     myOutputValue += "<br>===End game winners and losers===<br>";
     myOutputValue += `${endGameWinLossLoopCheck()}${payOut()}`;
     myOutputValue += `<br>===Restart by clicking Restart or Submit===<br>===To continue with the same players, type "C"===`;
-    endGame = false;
-    CONTINUE = true;
+    endGame = false; // turn off end game mode
+    CONTINUE = true; // turn on continue with exist players cash retained mode
   }
   // if decision to continue game with existing players
   if (CONTINUE && input !== "") {
