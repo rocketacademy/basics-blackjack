@@ -142,6 +142,7 @@ const initGame = function () {
   dealerTurn = false;
   endGame = false;
   playingContinue = false;
+  CONTINUE = false;
 };
 
 const displayTotalCardValueAllPlayers = function () {
@@ -439,6 +440,7 @@ const payOut = function () {
   activePlayer = 0;
   return myOutputValue;
 };
+// restart game for continuation of existing players while retain cash
 const noNewPlayersInitGame = function () {
   let cashArray = [];
 
@@ -458,6 +460,7 @@ const noNewPlayersInitGame = function () {
 const main = function (input) {
   let myOutputValue = "Error. Invalid response !";
   // start game by clicking "submit"
+  // introduction
   if (input === "") {
     initGame();
     myOutputValue = `Welcome to sure2Lose##Blackjack Gaming Den##sure2Lose. To begin, please input number of players`;
@@ -467,26 +470,27 @@ const main = function (input) {
     multiPlayerMode === true &&
     Number.isNaN(Number(input)) === false
   ) {
-    // multiplayer input
+    // multiplayer input. Player Numbers are non inclusive of dealer
     let playerNumbers = input;
     multiPlayerCreate(playerNumbers);
     multiPlayerMode = false;
     bettingMode = true;
     myOutputValue = `Excluding the Dealer, ${playerNumbers} players were created.<br> Please input your bets now.<br>Start with Player--1.<br/>`;
-  } // bet amount input
+  } // bet amount input n display
   else if (
+    // ensures only numbers are input
     bettingMode === true &&
     activePlayer < players.length - 1 &&
     Number.isInteger(Number(input))
   ) {
-    // console.log("was here betting");
     let bet = Number(input);
     myOutputValue = bettingDisplay(bet);
     myOutputValue += `${betDeductNDisplay(bet)}<br>`;
     activePlayer += 1;
+    // prompts players for bets while keeping below array length n EX-dealer
     if (activePlayer < players.length - 1) {
       myOutputValue += `${players[activePlayer].name}, what is your bet ?`;
-    }
+    } // catches the last player EX-dealer and ends betting round
     if (activePlayer >= players.length - 1) {
       myOutputValue += `<br/>Bets done! Dealing cards now.<br> Click Deal now.`;
       bettingMode = false;
@@ -498,11 +502,11 @@ const main = function (input) {
     dealHitStayMode === true &&
     (input === "d" || input === "h" || input === "s")
   ) {
-    // deal cards to everyone, hit or stay
+    // deal cards to everyone for two round then,--> hit or stay decision
     myOutputValue = dealHitStay(input);
     playingLoopCheck();
 
-    // Dealer picking cards as last Index
+    // Dealer picking cards as last player
     if (playingContinue && activePlayer >= players.length - 1) {
       myOutputValue += `<br/><br>===Dealer's turn.===<br>`;
       myOutputValue += dealerPickCard();
@@ -510,7 +514,7 @@ const main = function (input) {
       endGame = true;
     }
   }
-  // end game
+  // end game check and payout
   if (endGame === true) {
     hitStay = false;
     myOutputValue += "<br>===End game winners and losers===<br>";
@@ -521,11 +525,9 @@ const main = function (input) {
   }
   // if decision to continue game with existing players
   if (CONTINUE && input !== "") {
-    console.log("at the end");
-
     if (input === "C") {
+      //extracts cash from players[], restarts game and push cash back to "new" players[]
       myOutputValue = noNewPlayersInitGame();
-      CONTINUE = false;
     } else {
       myOutputValue = `Please only click "C" in capitals to continue game with current players or click restart for new players`;
     }
