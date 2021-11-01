@@ -106,7 +106,7 @@ var main = function (input) {
         "<br>" +
         "Player hand: <br><br>" +
         showHand(dealerHand) +
-        "<br>Select submit to restart game.";
+        "<br>Select start to restart game.";
 
       gameMode = "gameStart";
     } else {
@@ -145,9 +145,9 @@ var shuffleCards = function (deck) {
 // Generate Score
 
 var generateScore = function (hand) {
-  scoreWithoutAce = 0; // Ace as 1
-  scoreWithAce = []; // Ace as 11
-  score = 0;
+  var scoreWithoutAce = 0; // Ace as 1
+  var scoreWithAce = []; // Ace as 11
+  var score = 0;
 
   currentIndex = 0;
   while (currentIndex < hand.length) {
@@ -156,22 +156,16 @@ var generateScore = function (hand) {
     currentIndex++;
   }
 
+  // option to add 10 if there is a Ace
   currentIndex = 0;
+  scoreWithAce = [score];
   while (currentIndex < hand.length) {
-    if (Number(hand[currentIndex].score) == 1)
-      scoreWithAce.push(Number(hand[currentIndex].score) + 10);
-    currentIndex++;
-
-    var currentIndex2 = 0;
-    while (currentIndex2 < scoreWithAce.length) {
-      if (
-        scoreWithAce[currentIndex] > score &&
-        scoreWithAce[currentIndex] <= 21
-      ) {
-        score = scoreWithAce[currentIndex];
+    if (Number(hand[currentIndex].score) == 1) {
+      if (score + 10 <= 21) {
+        score += 10;
       }
-      currentIndex2++;
     }
+    currentIndex++;
   }
 
   var myOutputValue = score;
