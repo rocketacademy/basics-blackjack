@@ -1,33 +1,146 @@
-var playerCards = [];
-var dealerCards = [];
-
 // created objects to store the player information
-var players = [
-  {
-    name: "",
-    card: [],
-    score: 0,
-  },
-];
-
-var dealer = {
+var player = {
+  name: "player",
   card: [],
   score: 0,
+};
+var dealer = {
+  name: "dealer",
+  card: [],
+  score: 0,
+};
+var shuffledDeck = [];
+var round = 1;
+
+var confirmWinPlayer = {
+  name: "confirmWinPlayer",
+  card: [],
+  score: 21,
 };
 
 var main = function (input) {
   var deck = makeDeck();
-  var shuffledDeck = shuffleCards(deck);
-  makeTurn(shuffledDeck);
-  makeTurn(shuffledDeck);
+  shuffledDeck = shuffleCards(deck);
+  var myOutputValue = "";
+
+  if (round == 1) {
+    // 1st round
+    playerMakeTurn();
+    dealerMakeTurn();
+    round = round + 1;
+  }
+
+  if (round == 2) {
+    // 2nd round
+    playerMakeTurn();
+    dealerMakeTurn();
+    round = round + 1;
+    var playerWins = checkBlackjack(player);
+    if (playerWins) {
+      myOutputValue = printUserCards(player);
+      myOutputValue += "You win.";
+      return myOutputValue;
+    }
+  }
+
+  myOutputValue = printUserCards(player);
+
+  // process the input = either hit or stand
+  if (input == "hit") {
+    playerMakeTurn();
+    var playerWins = checkBlackjack(player);
+
+    if (playerWins) {
+      myOutputValue = printUserCards(player);
+      myOutputValue += "You win.";
+      return myOutputValue;
+    } else {
+      var playerScoreAbove21 = checkUserScoreAbove21(player);
+      if (playerScoreAbove21) {
+        myOutputValue = printUserCards(player);
+        myOutputValue += "You lose.";
+        return myOutputValue;
+      } else {
+        myOutputValue = printUserCards(player);
+        return myOutputValue;
+      }
+    }
+  } else if (input == "stand") {
+    // compare dealer and player scores
+    checkWhetherDealerHitsOrStands();
+    var comparisonResult = compareUsers();
+    myOutputValue = printUserCards(player);
+    myOutputValue += "<br/>";
+    myOutputValue += printUserCards(dealer);
+    myOutputValue += "<br/>";
+    myOutputValue += comparisonResult;
+    return myOutputValue;
+  }
+
+  round = round + 1;
+  return myOutputValue;
 };
 
-var makeTurn = function (shuffledDeck) {
-  for (var i = 0; i < player.length; i++) {
-    var dealtCard = dealCard(shuffledDeck);
-    player[i].card.push(dealtCard);
-    player[i].score += dealtCard.score;
+// The user's cards are analysed for winning or losing conditions.
+// Come into this function everytime user selects "hit"
+// Also come into this function at first two rounds of giving cards
+var checkBlackjack = function (user) {
+  if (user.score == 21) {
+    return true;
+  } else {
+    return false;
   }
+};
+
+// output user cards
+var printUserCards = function (user) {
+  myOutputValue = `${user.name} cards are: `;
+
+  for (var i = 0; i < user.card.length; i++) {
+    var myCard = user.card[i];
+    myOutputValue += myCard.name + " " + myCard.suit + " ";
+  }
+
+  return myOutputValue;
+};
+
+// Come into this function everytime user selects "hit"
+var checkUserScoreAbove21 = function (user) {
+  if (user.score > 21) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
+// Come into this function only after user selects "stand"
+var compareUsers = function () {
+  if (player.score > dealer.score) {
+    // player wins
+    return "You win.";
+  } else {
+    // player loses
+    return "You lose.";
+  }
+};
+
+var playerMakeTurn = function () {
+  var dealtCard = dealCard(shuffledDeck);
+  player.card.push(dealtCard);
+  player.score += dealtCard.score;
+};
+
+var checkWhetherDealerHitsOrStands = function () {
+  if (dealer.score < 17) {
+    dealerMakeTurn();
+  }
+};
+
+var dealerMakeTurn = function () {
+  // since dealerMakeTurn is after playerMakeTurn, the shuffledDeck here is 1 less card
+  var dealtCard = dealCard(shuffledDeck);
+  dealer.card.push(dealtCard);
+  dealer.score += dealtCard.score;
 };
 
 var dealCard = function (deck) {
