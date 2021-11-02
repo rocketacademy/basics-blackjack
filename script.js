@@ -249,10 +249,11 @@ const winLossChecker = function () {
       if (activePlayer == players.length - 1) {
         // myOutputValue += `<br>Dealer's turn to roll`;
         playingContinue = true;
-      } else {
-        // activePlayer += 1;
-        myOutputValue += `<br>${players[activePlayer].name}, you are next, Hit or Stay?`;
       }
+      //  else {
+      //   // activePlayer += 1;
+      //   myOutputValue += `<br>${players[activePlayer].name}, you are next, Hit or Stay?`;
+      // }
     }
   } // End game check
   if (hitStay === false && endGame === true) {
@@ -298,7 +299,7 @@ const dealHitStay = (input) => {
     const findFirstPlayer2HitOrStay = () => {
       for (let i = 0; i < players.length; i++) {
         if (players[i].playing == true) {
-          myOutputValue += `=== Hit or Stay ===<br>${currentPlayer}. Click Hit or Stay.`;
+          myOutputValue += `=== Hit or Stay ===<br>${currentPlayer}.<br>${intermittentCardValueDisplay()}Click Hit or Stay.`;
           return myOutputValue;
         } else {
           return `=== this round is over ===`;
@@ -318,7 +319,9 @@ const dealHitStay = (input) => {
       // condition prevents dealer to enter
       if (activePlayer < players.length - 2) {
         activePlayer += 1;
-        myOutputValue += `${players[activePlayer].name}, please decide to Hit or Stay.`;
+        myOutputValue += `${
+          players[activePlayer].name
+        },${intermittentCardValueDisplay()} please decide to Hit or Stay.<br>`;
       } else {
       }
     }
@@ -326,11 +329,15 @@ const dealHitStay = (input) => {
   else if (input === "s" && hitStay === true && playerStatus === true) {
     playingContinue = true;
     if (players[activePlayer].playing == true) {
-      myOutputValue = `${players[activePlayer].name} chose to stay.<br/>`;
+      myOutputValue = `${
+        players[activePlayer].name
+      } chose to stay.<br/>${intermittentCardValueDisplay()}<br>`;
       players[activePlayer].playing = false;
       activePlayer += 1;
       if (activePlayer < players.length - 1) {
-        myOutputValue += `${players[activePlayer].name}, please decide to Hit or Stay.`;
+        myOutputValue += `${
+          players[activePlayer].name
+        }, please decide to Hit or Stay.<br>${intermittentCardValueDisplay()}`;
       } else {
         myOutputValue += `===Players are done picking===`;
       }
@@ -464,7 +471,7 @@ const main = function (input) {
     initGame();
     myOutputValue = `Welcome to...<br><br> sure2Lose##Blackjack Gaming Den##sure2Lose.<br><br> To begin, please input number of players`;
     multiPlayerMode = true;
-    CONTINUE = false;
+    // CONTINUE = false;
   } else if (
     multiPlayerMode === true &&
     Number.isNaN(Number(input)) === false
