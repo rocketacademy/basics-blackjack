@@ -9,6 +9,7 @@ let dealerTurn = false;
 let endGame = false;
 let playingContinue = false;
 let CONTINUE = false;
+let firstRound = false;
 
 // global variables for html elements
 const output = document.querySelector("#output-div");
@@ -170,7 +171,14 @@ const drawACardUpdateAndDisplay = function () {
 
   players[activePlayer].cardsHeld.push(cardAceCleared);
   players[activePlayer].totalCardValue += cardAceCleared.ranks;
-  myOutputValue = `${currentPlayer} drew ${cardFace} of ${cardSuit}. `;
+  if (
+    firstRound === false ||
+    (firstRound === true && players[activePlayer].name !== "Dealer")
+  ) {
+    myOutputValue = ` ${currentPlayer} drew ${cardFace} of ${cardSuit}.`;
+  } else {
+    myOutputValue = ` ${currentPlayer} drew "Hidden" of "Hidden.`;
+  }
   return myOutputValue;
 };
 // card value display
@@ -178,7 +186,15 @@ const intermittentCardValueDisplay = function () {
   let myOutputValue = "";
   let cardPlayer = players[activePlayer].name;
   let cardValue = players[activePlayer].totalCardValue;
-  myOutputValue = `${cardPlayer} total current card value is ${cardValue}.<br/>`;
+
+  if (
+    firstRound === false ||
+    (firstRound === true && players[activePlayer].name !== "Dealer")
+  ) {
+    myOutputValue = ` ${cardPlayer} total current card value is ${cardValue}.<br/>`;
+  } else {
+    myOutputValue = ` ${cardPlayer} total current card value is hidden.<br/>`;
+  }
   return myOutputValue;
 };
 // deal cards one round
@@ -291,8 +307,10 @@ const dealHitStay = (input) => {
   console.log(players[activePlayer].name);
   if (input === "d" && hitStay === false) {
     myOutputValue = "=== 1st round of deal cards === <br>";
+    firstRound = true;
     myOutputValue += dealCardsOneRound();
     myOutputValue += "<br/> === 2nd round of deal cards ===<br>";
+    firstRound = false;
     myOutputValue += dealCardsOneRound();
     myOutputValue += dealBlackjackCheckLoop();
     hitStay = true;
