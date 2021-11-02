@@ -211,7 +211,6 @@ const playingLoopCheck = function () {
 };
 // win loss check
 const winLossChecker = function () {
-  let player = players[activePlayer].name;
   let myOutputValue = "";
   let cleanHuman = players[activePlayer].totalCardValue;
   let cleanDealer = players[players.length - 1].totalCardValue;
@@ -230,7 +229,6 @@ const winLossChecker = function () {
       myOutputValue += `${players[activePlayer].name} has Blackjack, so does the Dealer. It is a tie of Blackjacks.`;
     } // Dealer Blackjack. Player loses. Game go straight to payout.
     else if (cleanDealer === 21) {
-      console.log(player);
       myOutputValue += `${players[activePlayer].name} loses. Dealer has Blackjack.`;
       players[players.length - 1].win = "win";
       for (let i = 0; i < players.length; i++) {
@@ -258,7 +256,6 @@ const winLossChecker = function () {
     }
   } // End game check
   if (hitStay === false && endGame === true) {
-    console.log(players[activePlayer].name);
     if (cleanHuman === cleanDealer) {
       console.log(players[activePlayer].name);
       // tie
@@ -507,7 +504,6 @@ const main = function (input) {
     // deal cards to everyone for two round then,--> hit or stay decision
     myOutputValue = dealHitStay(input);
     playingLoopCheck();
-
     // Dealer picking cards as last player
     if (playingContinue && activePlayer >= players.length - 1) {
       myOutputValue += `<br/><br>===Dealer's turn.===<br>`;
@@ -524,6 +520,7 @@ const main = function (input) {
     myOutputValue += `<br>===Restart by clicking Restart or Submit===<br>===To continue with the same players, type "C"===`;
     endGame = false; // turn off end game mode
     CONTINUE = true; // turn on continue with exist players cash retained mode
+    return myOutputValue;
   }
   // if decision to continue game with existing players
   if (CONTINUE && input !== "") {
