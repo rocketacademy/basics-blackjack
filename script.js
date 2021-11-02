@@ -320,7 +320,6 @@ var playerScore = 0;
 
 // modes inputName , betAmount, deal2cards , decidehit/Stay , dealerMode 2card autohit
 var main = function (input) {
-  //
   if (gameMode == "inputName") {
     playerName = input;
     gameMode = "betAmount";
@@ -328,7 +327,29 @@ var main = function (input) {
   }
   if (gameMode == "betAmount") {
     yourBetAmount = input;
-    gameMode = "hitStay";
+    gameMode = "ace1/11";
+    return (
+      playerName +
+      "you have bet:" +
+      yourBetAmount +
+      "<br>" +
+      "select ACE value 1 or 11 for this round "
+    );
+  }
+
+  if (gameMode == "ace1/11") {
+    gameMode = "dealCards";
+    var counter = 0;
+    while (counter < shuffledDeck.length) {
+      if (shuffledDeck[counter].name == "ace") {
+        shuffledDeck[counter].rank == input;
+      }
+      counter = counter + 1;
+    }
+    return " press submit for dealer to pull out two cards for you,from shuffled deck";
+  }
+
+  if (gameMode == "dealCards") {
     var card1 = shuffledDeck.pop();
     var card2 = shuffledDeck.pop();
     playerScore = card1.rank + card2.rank;
@@ -366,6 +387,7 @@ var main = function (input) {
       decision1
     );
   }
+
   if (gameMode == "hitStay") {
     if (input == "hit") {
       var card3 = shuffledDeck.pop();
