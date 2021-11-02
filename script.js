@@ -112,6 +112,8 @@ var resultPlayer = function (card1, card2) {
   return card1.rank + card2.rank;
 };
 
+//----------------------------------------------------------------------------------
+
 var main = function (input) {
   // 2 cards for each player
   players[0][1] = shuffledDeck.pop();
@@ -119,11 +121,19 @@ var main = function (input) {
   players[1][1] = shuffledDeck.pop();
   players[1][2] = shuffledDeck.pop();
 
-  total1 = players[0][1].rank + players[0][2].rank;
-  total2 = players[1][1].rank + players[1][2].rank;
+  totalPlayer = resultPlayer(players[0][1], players[0][2]);
+  totalDealer = resultPlayer(players[1][1] + players[1][2]);
 
   console.table(players);
   console.log(total1);
+
+  if (totalPlayer == "Blackjack" && totalDealer == "Blackjack") {
+    return "It's a draw";
+  }
+
+  if (totalPlayer > 21) {
+    return "You lose";
+  }
 
   var myOutputValue =
     "Player hand : " +
