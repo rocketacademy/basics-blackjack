@@ -188,8 +188,9 @@ const intermittentCardValueDisplay = function () {
   let cardValue = players[activePlayer].totalCardValue;
 
   if (
-    firstRound === false ||
-    (firstRound === true && players[activePlayer].name !== "Dealer")
+    (firstRound === false && players[activePlayer].name !== "Dealer") ||
+    (firstRound === true && players[activePlayer].name !== "Dealer") ||
+    dealerTurn === true
   ) {
     myOutputValue = ` ${cardPlayer} total current card value is ${cardValue}.<br/>`;
   } else {
@@ -211,7 +212,7 @@ const dealCardsOneRound = function () {
 const dealBlackjackCheckLoop = function () {
   let myOutputValue = "";
   for (let counter = 0; counter < players.length; counter += 1) {
-    myOutputValue += `${winLossChecker()}<br>`;
+    myOutputValue += `${winLossChecker()}`;
     activePlayer += 1;
   }
   activePlayer = 0;
@@ -229,13 +230,14 @@ const playingLoopCheck = function () {
 const winLossChecker = function () {
   let myOutputValue = "";
   let cleanHuman = players[activePlayer].totalCardValue;
+  // let cleanHuman = 5;
   let cleanDealer = players[players.length - 1].totalCardValue;
-
+  // let cleanDealer = 21;
   // round: find players/dealer with Blackjack --> playing = false
   if (hitStay === false) {
     //player BlackJack. Player Wins
     if (cleanHuman === 21 && cleanDealer !== 21) {
-      myOutputValue = `${players[activePlayer].name} wins with Blackjack.`;
+      myOutputValue = `${players[activePlayer].name} wins with Blackjack.<br>`;
       players[activePlayer].win = "win";
       players[activePlayer].playing = false;
     } // Both Blackjack. Both Tie
@@ -243,13 +245,15 @@ const winLossChecker = function () {
       players[activePlayer].playing = false;
       players[activePlayer].win = "tie";
       myOutputValue += `${players[activePlayer].name} has Blackjack, so does the Dealer. It is a tie of Blackjacks.`;
-    } // Dealer Blackjack. Player loses. Game go straight to payout.
+    } // Dealer Blackjack. Players with no BJ loses, playings stops. Game goes to payout.
     else if (cleanDealer === 21) {
       myOutputValue += `${players[activePlayer].name} loses. Dealer has Blackjack.`;
       players[players.length - 1].win = "win";
       for (let i = 0; i < players.length; i++) {
         players[i].playing = false;
-        players[i].win = "lose";
+        if (players[i].totalCardValue !== 21) {
+          players[i].win = "lose";
+        }
       }
       endGame = true;
     }
@@ -266,10 +270,6 @@ const winLossChecker = function () {
         // myOutputValue += `<br>Dealer's turn to roll`;
         playingContinue = true;
       }
-      //  else {
-      //   // activePlayer += 1;
-      //   myOutputValue += `<br>${players[activePlayer].name}, you are next, Hit or Stay?`;
-      // }
     }
   } // End game check
   if (hitStay === false && endGame === true) {
@@ -316,11 +316,11 @@ const dealHitStay = (input) => {
     hitStay = true;
     const findFirstPlayer2HitOrStay = () => {
       for (let i = 0; i < players.length; i++) {
-        if (players[i].playing == true) {
-          myOutputValue += `=== Hit or Stay ===<br>${currentPlayer}.<br>${intermittentCardValueDisplay()}Click Hit or Stay.`;
+        if (players[i].playing === true) {
+          myOutputValue += `=== Hit or Stay ===<br>${intermittentCardValueDisplay()}Click Hit or Stay.`;
           return myOutputValue;
         } else {
-          return `=== this round is over ===`;
+          myOutputValue = `===this round is over===`;
         }
       }
     };
@@ -328,19 +328,21 @@ const dealHitStay = (input) => {
     myOutputValue = findFirstPlayer2HitOrStay();
   } // hit choice
   else if (input === "h" && hitStay === true && playerStatus === true) {
+    console.log(playerStatus);
     console.log(players[activePlayer].name);
     myOutputValue = `${drawACardUpdateAndDisplay()}${intermittentCardValueDisplay()}${winLossChecker()}`;
 
     if (players[activePlayer].playing == true) {
-      myOutputValue += `${players[activePlayer].name}, please decide to Hit or Stay.`;
+      myOutputValue += `<br>${
+        players[activePlayer].name
+      }${intermittentCardValueDisplay()}please decide to Hit or Stay.`;
     } else {
       // condition prevents dealer to enter
       if (activePlayer < players.length - 2) {
         activePlayer += 1;
-        myOutputValue += `${
+        myOutputValue += `<br>${
           players[activePlayer].name
-        },${intermittentCardValueDisplay()} please decide to Hit or Stay.<br>`;
-      } else {
+        },${intermittentCardValueDisplay()}please decide to Hit or Stay.<br>`;
       }
     }
   } // stay choice
@@ -352,13 +354,20 @@ const dealHitStay = (input) => {
       } chose to stay.<br/>${intermittentCardValueDisplay()}<br>`;
       players[activePlayer].playing = false;
       activePlayer += 1;
-      if (activePlayer < players.length - 1) {
+      if (
+        activePlayer < players.length - 1 &&
+        players[activePlayer].playing === true
+      ) {
         myOutputValue += `${
           players[activePlayer].name
         }, please decide to Hit or Stay.<br>${intermittentCardValueDisplay()}`;
-      } else {
-        myOutputValue += `===Players are done picking===`;
+      } else if (players[activePlayer].playing === false) {
+        myOutputValue += `${players[activePlayer].name}, you have Blackjack hence have to wait till payout round.<br>`;
+        activePlayer += 1;
+        myOutputValue += `${players[activePlayer].name}, please decide whether to Hit or Stay.`;
       }
+    } else {
+      myOutputValue += `===Players are done picking===`;
     }
   }
   return myOutputValue;
@@ -526,11 +535,12 @@ const main = function (input) {
     dealHitStayMode === true &&
     (input === "d" || input === "h" || input === "s")
   ) {
-    // deal cards to everyone for two round then,--> hit or stay decision
+    // deal cards to everyone for two rounds then,--> hit or stay decision
     myOutputValue = dealHitStay(input);
     playingLoopCheck();
     // Dealer picking cards as last player
     if (playingContinue && activePlayer >= players.length - 1) {
+      dealerTurn = true;
       myOutputValue += `<br/><br>===Dealer's turn.===<br>`;
       myOutputValue += dealerPickCard();
       dealHitStayMode = false; // turn off deal hit stay mode
