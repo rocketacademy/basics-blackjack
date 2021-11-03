@@ -1,57 +1,116 @@
 var DEAL = "deal";
+var HIT = "hit";
+var STAY = "stay";
 var PLAY = "play";
-var gamesection = DEAL;
+var RESULTS = "results";
+var section = DEAL;
 var playerCards = [];
 var dealerCards = [];
+var playerValue = 0;
+var dealerValue = 0;
 
 var main = function (input) {
   var mydeck = generateDeck();
   var shuffledDeck = shuffleDeck(mydeck);
-  var cardIndex = 0;
 
-  while (cardIndex < 2) {
-    playerCards[cardIndex] = shuffledDeck.pop();
-    console.log(playerCards);
-    dealerCards[cardIndex] = shuffledDeck.pop();
-    console.log(dealerCards);
-    cardIndex += 1;
+  if (section == DEAL) {
+    var cardIndex = 0;
+    while (cardIndex < 2) {
+      playerCards[cardIndex] = shuffledDeck.pop();
+      console.log(playerCards);
+      dealerCards[cardIndex] = shuffledDeck.pop();
+      console.log(dealerCards);
+      cardIndex += 1;
+    }
+
+    var playerBlackjack = checkForBlackjack(playerCards);
+    var computerBlackjack = checkForBlackjack(dealerCards);
+    playerValue = playerCards[0].value + playerCards[1].value;
+    dealerValue = dealerCards[0].value + dealerCards[1].value;
+
+    if (playerBlackjack === true && computerBlackjack === true) {
+      return (
+        leaderboard(playerCards, playerValue, dealerCards, dealerValue) +
+        "<br> Both players have blackjacks!, Its a tie!"
+      );
+    } else if (playerBlackjack === true && computerBlackjack === false) {
+      return (
+        leaderboard(playerCards, playerValue, dealerCards, dealerValue) +
+        "<br> Player have blackjack!, You win!"
+      );
+    } else if (playerBlackjack === false && computerBlackjack === true) {
+      return (
+        leaderboard(playerCards, playerValue, dealerCards, dealerValue) +
+        "<br> Computer have blackjack!, You lose!"
+      );
+    }
+
+    section = PLAY;
+    return (
+      leaderboard(playerCards, playerValue, dealerCards, dealerValue) +
+      "<br><br> Please input 'stay' or 'hit'"
+    );
   }
 
-  var playerBlackjack = checkForBlackjack(playerCards);
-  var computerBlackjack = checkForBlackjack(dealerCards);
+  if (section == PLAY) {
+    if (!input || !(input == STAY || input == HIT)) {
+      return "Please input 'stay' or 'hit'";
+    }
 
-  if (playerBlackjack === true && computerBlackjack === true) {
-    myOutputValue = "<br> Both players have blackjacks!, Its a tie!";
-  } else if (playerBlackjack === true && computerBlackjack === false) {
-    myOutputValue = "<br> Player have blackjack!, You win!";
-  } else if (playerBlackjack === false && computerBlackjack === true) {
-    myOutputValue = "<br> Computer have blackjack!, You lose!";
-  }
+    if (input == HIT) {
+      var newCard = shuffledDeck.pop();
+      playerCards.push(newCard);
+      console.log("New card", newCard.value);
+      playerValue = playerValue + newCard.value;
+      console.log("Player Value", playerValue);
+      playerValue = adjustForAces(playerCards, playerValue);
 
-  if (playerBlackjack === false && computerBlackjack === false) {
-    var playerValue = playerCards[0].value + playerCards[1].value;
-    var dealerValue = dealerCards[0].value + dealerCards[1].value;
-    if (playerValue < dealerValue) {
-      myOutputValue = "<br> You Lose!";
-    } else if (playerValue > dealerValue) {
-      myOutputValue = "<br> You Win!";
-    } else if (playerValue == dealerValue) {
-      myOutputValue = "<br> Its a Draw!";
+      if (playerValue > 21 && dealerValue < 22) {
+        section = DEAL;
+        return (
+          leaderboard(playerCards, playerValue, dealerCards, dealerValue) +
+          "<br> You Bust! You Lose <br> Press submit to restart game"
+        );
+      }
+
+      return (
+        leaderboard(playerCards, playerValue, dealerCards, dealerValue) +
+        "<br><br> Please input 'stay' or 'hit'"
+      );
+    }
+
+    if (input == STAY) {
+      while (dealerValue <= 15) {
+        newCard = shuffledDeck.pop();
+        dealerCards.push(newCard);
+        dealerValue = dealerValue + newCard.value;
+        dealerValue = adjustForAces(dealerCards, dealerValue);
+      }
+
+      if (playerValue > 21 && dealerValue < 22) {
+        myOutputValue = "<br> You Bust! You Lose";
+      } else if (playerValue < 22 && dealerValue > 21) {
+        myOutputValue = "<br> Computer Bust! You Win";
+      } else if (playerValue > 21 && dealerValue > 21) {
+        myOutputValue = "<br> Both Busts! Its a draw";
+      } else if (playerValue < dealerValue) {
+        myOutputValue = "<br> You Lose!";
+      } else if (playerValue > dealerValue) {
+        myOutputValue = "<br> You Win!";
+      } else if (playerValue == dealerValue) {
+        myOutputValue = "<br> Its a Draw!";
+      }
+
+      section = DEAL;
+      cardIndex = 0;
+      myOutputValue =
+        leaderboard(playerCards, playerValue, dealerCards, dealerValue) +
+        myOutputValue;
+      playerCards = [];
+      dealerCards = [];
+      return myOutputValue + "<br><br> Press Submit to start a new game";
     }
   }
-
-  myOutputValue =
-    "Player your cards are: <br>" +
-    printCard(playerCards) +
-    "Player value is: " +
-    playerValue +
-    "<br><br> The dealer cards are: <br>" +
-    printCard(dealerCards) +
-    "Dealer value is: " +
-    dealerValue +
-    myOutputValue;
-
-  return myOutputValue;
 };
 
 //Generating the deck
@@ -119,18 +178,14 @@ var shuffleDeck = function (cardDeck) {
 };
 
 var printCard = function (array) {
-  var card1 = array[0];
-  var card2 = array[1];
-  return (
-    card1.name +
-    " of " +
-    card1.suit +
-    "<br>" +
-    card2.name +
-    " of " +
-    card2.suit +
-    "<br>"
-  );
+  var count = 0;
+  var printedCard = "";
+  while (count < array.length) {
+    printedCard =
+      printedCard + array[count].name + " of " + array[count].suit + "<br>";
+    count += 1;
+  }
+  return printedCard;
 };
 
 var checkForBlackjack = function (array) {
@@ -141,4 +196,48 @@ var checkForBlackjack = function (array) {
     blackjack = true;
   }
   return blackjack;
+};
+
+var leaderboard = function (
+  playerCards,
+  playerValue,
+  dealerCards,
+  dealerValue
+) {
+  return (
+    "Player your cards are: <br>" +
+    printCard(playerCards) +
+    "Player value is: " +
+    playerValue +
+    "<br><br> The dealer cards are: <br>" +
+    printCard(dealerCards) +
+    "Dealer value is: " +
+    dealerValue
+  );
+};
+
+var checkForAces = function (array) {
+  var aceIndex = 0;
+  var noOfAces = 0;
+  while (aceIndex < array.length) {
+    var card = array[aceIndex];
+    if (card.rank == 1) {
+      noOfAces += 1;
+    }
+    aceIndex += 1;
+  }
+  return noOfAces;
+};
+
+var adjustForAces = function (array, value) {
+  var aces = checkForAces(array);
+  console.log("Aces", aces);
+
+  while (aces > 0 && value < 11) {
+    aces = aces - 1;
+    value = value + 10;
+  }
+
+  console.log("Value", value);
+  return value;
 };
