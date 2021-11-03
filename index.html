@@ -96,190 +96,110 @@
   </head>
 
   <body>
-    <!-- <div class="container mt-5">
-      <div id="blackjack-table">
-        <div class="row justify-content-center">
-          <div class="col col-lg-4 text-center">
-            <h5 style="color: white">Dealer</h5>
-            <img src="./images/dealer.png" style="width: 100px" />
-            <div class="row">
-              <div class="col-lg-12 mt-3">
-                <img
-                  src="./images/cards/9_of_diamonds.png"
-                  style="width: 75px; position: relative"
-                />
-                <img
-                  src="./images/cards/9_of_diamonds.png"
-                  style="width: 75px; position: relative; margin-left: -65px"
-                />
-                <img
-                  src="./images/cards/9_of_diamonds.png"
-                  style="width: 75px; position: relative; margin-left: -65px"
-                />
-              </div>
+    <div id="play-time">
+      <div class="container mt-5">
+        <div id="blackjack-table">
+          <div class="row justify-content-center">
+            <div class="col col-lg-4 text-center">
+              <h5 style="color: white">Dealer</h5>
+              <img src="./images/dealer.png" style="width: 100px" />
+              <div class="row" id="dealer-cards"></div>
             </div>
           </div>
+          <div class="row justify-content-center" style="margin-top: 11rem">
+            <div class="col col-lg-2 text-center">
+              <img
+                src="./images/arrow.png"
+                style="transform: rotate(180deg)"
+                id="turn"
+              />
+            </div>
+            <div class="col col-lg-2 text-center"></div>
+            <div class="col col-lg-2 text-center"></div>
+            <div class="col col-lg-2 text-center"></div>
+            <div class="col col-lg-2 text-center"></div>
+            <div class="col col-lg-2 text-center"></div>
+          </div>
+          <div class="row justify-content-center" id="list-of-players">
+            <!-- <div class="col col-lg-2 text-center">
+              <h5 style="color: white">Player 1</h5>
+              <img src="./images/players/0.png" style="width: 100px" />
+              <div class="row">
+                <div class="col-lg-12 mt-3" id="player-1-cards">
+                  <img
+                    src="./images/cards/9_of_diamonds.png"
+                    style="width: 75px; position: relative"
+                  />
+                  <img
+                    src="./images/cards/9_of_diamonds.png"
+                    style="width: 75px; position: relative; margin-left: -65px"
+                  />
+                  <img
+                    src="./images/cards/9_of_diamonds.png"
+                    style="width: 75px; position: relative; margin-left: -65px"
+                  />
+                </div>
+              </div>
+            </div> -->
+          </div>
         </div>
-        <div class="row justify-content-center" style="margin-top: 11rem">
-          <div class="col col-lg-2 text-center">
+      </div>
+    </div>
+    <div id="welcome">
+      <div class="container mt-5">
+        <div class="row">
+          <div class="col-md-8 offset-md-2">
             <img
-              src="./images/arrow.png"
-              style="transform: rotate(180deg)"
-              id="turn"
+              src="https://media1.giphy.com/media/E2UlE5Of9zEjK/giphy.gif?cid=ecf05e47mpudj9iciymjia3q8e3o6lv07tws9jwjb4mt9lg9&rid=giphy.gif&ct=g"
+              style="width: 100%"
             />
           </div>
-          <div class="col col-lg-2 text-center"></div>
-          <div class="col col-lg-2 text-center"></div>
-          <div class="col col-lg-2 text-center"></div>
-          <div class="col col-lg-2 text-center"></div>
-          <div class="col col-lg-2 text-center"></div>
         </div>
-        <div class="row justify-content-center">
-          <div class="col col-lg-2 text-center">
-            <h5 style="color: white">Player 1</h5>
-            <img src="./images/players/0.png" style="width: 100px" />
-            <div class="row">
-              <div class="col-lg-12 mt-3">
-                <img
-                  src="./images/cards/9_of_diamonds.png"
-                  style="width: 75px; position: relative"
-                />
-                <img
-                  src="./images/cards/9_of_diamonds.png"
-                  style="width: 75px; position: relative; margin-left: -65px"
-                />
-                <img
-                  src="./images/cards/9_of_diamonds.png"
-                  style="width: 75px; position: relative; margin-left: -65px"
-                />
-              </div>
-            </div>
-          </div>
-          <div class="col col-lg-2 text-center">
-            <h5 style="color: white">Player 2</h5>
-            <img src="./images/players/1.png" style="width: 100px" />
-            <div class="row">
-              <div class="col-lg-12 mt-3">
-                <img
-                  src="./images/cards/9_of_diamonds.png"
-                  style="width: 75px; position: relative"
-                />
-                <img
-                  src="./images/cards/9_of_diamonds.png"
-                  style="width: 75px; position: relative; margin-left: -65px"
-                />
-                <img
-                  src="./images/cards/9_of_diamonds.png"
-                  style="width: 75px; position: relative; margin-left: -65px"
-                />
-              </div>
-            </div>
-          </div>
-          <div class="col col-lg-2 text-center">
-            <h5 style="color: white">Player 3</h5>
-            <img src="./images/players/2.png" style="width: 100px" />
-            <div class="row">
-              <div class="col-lg-12 mt-3">
-                <img
-                  src="./images/cards/9_of_diamonds.png"
-                  style="width: 75px; position: relative"
-                />
-                <img
-                  src="./images/cards/9_of_diamonds.png"
-                  style="width: 75px; position: relative; margin-left: -65px"
-                />
-                <img
-                  src="./images/cards/9_of_diamonds.png"
-                  style="width: 75px; position: relative; margin-left: -65px"
-                />
-              </div>
-            </div>
-          </div>
-          <div class="col col-lg-2 text-center">
-            <h5 style="color: white">Player 4</h5>
-            <img src="./images/players/3.png" style="width: 100px" />
-            <div class="row">
-              <div class="col-lg-12 mt-3">
-                <img
-                  src="./images/cards/9_of_diamonds.png"
-                  style="width: 75px; position: relative"
-                />
-                <img
-                  src="./images/cards/9_of_diamonds.png"
-                  style="width: 75px; position: relative; margin-left: -65px"
-                />
-                <img
-                  src="./images/cards/9_of_diamonds.png"
-                  style="width: 75px; position: relative; margin-left: -65px"
-                />
-              </div>
-            </div>
-          </div>
-          <div class="col col-lg-2 text-center">
-            <h5 style="color: white">Player 5</h5>
-            <img src="./images/players/4.png" style="width: 100px" />
-            <div class="row">
-              <div class="col-lg-12 mt-3">
-                <img
-                  src="./images/cards/9_of_diamonds.png"
-                  style="width: 75px; position: relative"
-                />
-                <img
-                  src="./images/cards/9_of_diamonds.png"
-                  style="width: 75px; position: relative; margin-left: -65px"
-                />
-                <img
-                  src="./images/cards/9_of_diamonds.png"
-                  style="width: 75px; position: relative; margin-left: -65px"
-                />
-              </div>
-            </div>
-          </div>
-          <div class="col col-lg-2 text-center">
-            <h5 style="color: white">Player 6</h5>
-            <img src="./images/players/5.png" style="width: 100px" />
-            <div class="row">
-              <div class="col-lg-12 mt-3">
-                <img
-                  src="./images/cards/9_of_diamonds.png"
-                  style="width: 75px; position: relative"
-                />
-                <img
-                  src="./images/cards/9_of_diamonds.png"
-                  style="width: 75px; position: relative; margin-left: -65px"
-                />
-                <img
-                  src="./images/cards/9_of_diamonds.png"
-                  style="width: 75px; position: relative; margin-left: -65px"
-                />
-              </div>
+        <div class="row mt-4">
+          <div class="col-md-4 offset-md-4">
+            <div class="input-group mb-3 input-group-lg">
+              <input
+                type="number"
+                min="1"
+                max="6"
+                id="no-of-players"
+                class="form-control"
+                placeholder="Enter number of people"
+                aria-label="Enter number of people"
+                aria-describedby="button-addon2"
+                onkeyup="checkNoOfPeopleNotEmpty()"
+                onmouseup="checkNoOfPeopleNotEmpty()"
+              />
+              <button
+                class="btn btn-dark"
+                type="button"
+                id="start-round"
+                disabled
+              >
+                Start Round
+              </button>
             </div>
           </div>
         </div>
       </div>
-    </div> -->
-    <div class="container mt-5">
-      <img
-        src="https://media1.giphy.com/media/E2UlE5Of9zEjK/giphy.gif?cid=ecf05e47mpudj9iciymjia3q8e3o6lv07tws9jwjb4mt9lg9&rid=giphy.gif&ct=g"
-        style="width: 100%"
-      />
     </div>
     <!-- Import program logic -->
     <script src="script.js"></script>
     <!-- Define button click functionality -->
     <script>
-      var button = document.querySelector("#submit-button");
-      button.addEventListener("click", function () {
-        // Set result to input value
-        var input = document.querySelector("#input-field");
-        var result = main(input.value);
+      var checkNoOfPeopleNotEmpty = function () {
+        if (document.getElementById("no-of-players").value.length !== 0) {
+          if (document.getElementById("no-of-players").value <= 0) {
+            document.getElementById("start-round").disabled = true;
+          } else {
+            document.getElementById("start-round").disabled = false;
+          }
+        }
+      };
 
-        // Display result in output element
-        var output = document.querySelector("#output-div");
-        output.innerHTML = result;
-
-        // Reset input value
-        input.value = "";
+      var startRoundButton = document.querySelector("#start-round");
+      startRoundButton.addEventListener("click", function () {
+        startRound(document.getElementById("no-of-players").value);
       });
     </script>
   </body>

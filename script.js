@@ -1,16 +1,13 @@
 // created objects to store the player information
-var player = {
-  name: "player",
-  card: [],
-  score: 0,
-};
+var players = [];
+
 var dealer = {
   name: "dealer",
   card: [],
   score: 0,
 };
+
 var shuffledDeck = [];
-var round = 1;
 
 var confirmWinPlayer = {
   name: "confirmWinPlayer",
@@ -18,67 +15,20 @@ var confirmWinPlayer = {
   score: 21,
 };
 
-var main = function (input) {
+var startRound = function (noOfPlayers) {
   var deck = makeDeck();
   shuffledDeck = shuffleCards(deck);
-  var myOutputValue = "";
 
-  if (round == 1) {
-    // 1st round
-    playerMakeTurn();
-    dealerMakeTurn();
-    round = round + 1;
-  }
+  makePlayers(noOfPlayers);
 
-  if (round == 2) {
-    // 2nd round
-    playerMakeTurn();
-    dealerMakeTurn();
-    round = round + 1;
-    var playerWins = checkBlackjack(player);
-    if (playerWins) {
-      myOutputValue = printUserCards(player);
-      myOutputValue += "You win.";
-      return myOutputValue;
-    }
-  }
+  playerMakeTurn();
+  dealerMakeTurn();
 
-  myOutputValue = printUserCards(player);
+  playerMakeTurn();
+  dealerMakeTurn();
 
-  // process the input = either hit or stand
-  if (input == "hit") {
-    playerMakeTurn();
-    var playerWins = checkBlackjack(player);
-
-    if (playerWins) {
-      myOutputValue = printUserCards(player);
-      myOutputValue += "You win.";
-      return myOutputValue;
-    } else {
-      var playerScoreAbove21 = checkUserScoreAbove21(player);
-      if (playerScoreAbove21) {
-        myOutputValue = printUserCards(player);
-        myOutputValue += "You lose.";
-        return myOutputValue;
-      } else {
-        myOutputValue = printUserCards(player);
-        return myOutputValue;
-      }
-    }
-  } else if (input == "stand") {
-    // compare dealer and player scores
-    checkWhetherDealerHitsOrStands();
-    var comparisonResult = compareUsers();
-    myOutputValue = printUserCards(player);
-    myOutputValue += "<br/>";
-    myOutputValue += printUserCards(dealer);
-    myOutputValue += "<br/>";
-    myOutputValue += comparisonResult;
-    return myOutputValue;
-  }
-
-  round = round + 1;
-  return myOutputValue;
+  populateDealerOnTable();
+  populatePlayersOnTable();
 };
 
 // The user's cards are analysed for winning or losing conditions.
@@ -90,6 +40,55 @@ var checkBlackjack = function (user) {
   } else {
     return false;
   }
+};
+
+var makePlayers = function (noOfPlayers) {
+  for (var i = 0; i < noOfPlayers; i++) {
+    var newPerson = new Object();
+    newPerson.name = `Player ${i + 1}`;
+    newPerson.card = [];
+    newPerson.score = 0;
+
+    players.push(newPerson);
+  }
+};
+
+var populateDealerOnTable = function () {
+  var innerHtml = `<div class="col-lg-12 mt-3">`;
+
+  for (var i = 0; i < dealer.card.length; i++) {
+    if (i !== 0) {
+      innerHtml += `<img src="${dealer.card[i].pic}" style="width: 75px; position: relative; margin-left: -60px" />`;
+    } else {
+      innerHtml += `<img src="${dealer.card[i].pic}" style="width: 75px; position: relative;" />`;
+    }
+  }
+
+  innerHtml += `</div>`;
+
+  document.getElementById("dealer-cards").innerHTML = innerHtml;
+};
+
+var populatePlayersOnTable = function () {
+  var innerHtml = "";
+
+  for (var i = 0; i < players.length; i++) {
+    innerHtml += `<div class="col col-lg-2 text-center"><h5 style="color: white">Player ${
+      i + 1
+    }</h5><img src="./images/players/${i}.png" style="width: 100px" /><div class="row"><div class="col-lg-12 mt-3" id="player-${i}-cards">`;
+
+    for (var j = 0; j < players[i].card.length; j++) {
+      if (j !== 0) {
+        innerHtml += `<img src="${players[i].card[j].pic}" style="width: 75px; position: relative; margin-left: -60px" />`;
+      } else {
+        innerHtml += `<img src="${players[i].card[j].pic}" style="width: 75px; position: relative;" />`;
+      }
+    }
+
+    innerHtml += `</div></div></div>`;
+  }
+
+  document.getElementById("list-of-players").innerHTML = innerHtml;
 };
 
 // output user cards
@@ -125,9 +124,11 @@ var compareUsers = function () {
 };
 
 var playerMakeTurn = function () {
-  var dealtCard = dealCard(shuffledDeck);
-  player.card.push(dealtCard);
-  player.score += dealtCard.score;
+  for (var i = 0; i < players.length; i++) {
+    var dealtCard = dealCard(shuffledDeck);
+    players[i].card.push(dealtCard);
+    players[i].score += dealtCard.score;
+  }
 };
 
 var checkWhetherDealerHitsOrStands = function () {
@@ -190,6 +191,7 @@ var makeDeck = function () {
         suit: currentSuit,
         rank: rankCounter,
         score: score,
+        pic: `./images/cards/${cardName}_of_${currentSuit}.png`,
       };
 
       // Add the new card to the deck
