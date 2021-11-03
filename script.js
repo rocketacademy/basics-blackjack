@@ -7,6 +7,13 @@ let activePlayer = 0;
 let gameMode = 'start';
 let playerScores = [];
 
+/* TODO
+add DOM elements for:
+1. New game button
+3. Change submit button to match the player playing
+2. Track wins of each player
+*/
+
 /////////////////
 /// MAIN FUNCTION
 ////////
@@ -29,8 +36,9 @@ var main = function (input) {
     if (activePlayer < playerProfiles.length) {
       if (blackJackCheck(playerProfiles[activePlayer].hand)) {
         playerProfiles[activePlayer].blackjack = 1;
+        let output = `Player ${activePlayer + 1} has blackjack!`;
         activePlayer += 1;
-        return `Player ${activePlayer + 1} has blackjack!`;
+        return output;
       }
       gameMode = 'hit';
       // FIXME can i remove this return??
@@ -58,12 +66,29 @@ var main = function (input) {
       return output;
     } else {
       // show dealer cards
+      // DOING if dealer cards are less than 17, dealer has to hit, max hand size = 5
       let sum = sumOfCards(dealerCards);
-      // DOING if dealer cards are less than 17, dealer has to hit
-      if (sum < 17) {
-      } else {
+      for (let i = 0; dealerCards.length <= 5; i++) {
+        if (sum < 17) {
+          dealerCards.push(deck.pop());
+          sum = sumOfCards(dealerCards);
+          console.log(`After drawing, dealer hand is ${sum}`);
+        } else {
+          gameMode = 'checkResults';
+          console.log(`W/o drawing, dealer hand is ${sum}`);
+          return `Dealer has finished his turn.`;
+        }
       }
     }
+  }
+  if (gameMode === 'checkResults') {
+    /*
+  if dealer has blackjack, check if anyone else has blackjack, else everyone loses.
+  if no blackjack, compare dealer's cards with all.
+    -- if dealer > 21, anyone > 21 draw, anyone < 21 win.
+    -- same => draw; > dealer => win; < dealer => lose
+  
+  */
   }
 };
 
