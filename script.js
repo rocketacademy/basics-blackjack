@@ -3,15 +3,30 @@ var HIT = "hit";
 var STAY = "stay";
 var PLAY = "play";
 var RESULTS = "results";
-var section = DEAL;
+var BET = "bet";
+
+//global variables
+var section = BET;
 var playerCards = [];
 var dealerCards = [];
 var playerValue = 0;
 var dealerValue = 0;
+var playerPoints = 100;
+var playerBet = 0;
 
 var main = function (input) {
   var mydeck = generateDeck();
   var shuffledDeck = shuffleDeck(mydeck);
+
+  if (section == BET) {
+    if (!input || isNaN(input)) {
+      return "Please input the number of points that you want to bet";
+    }
+
+    playerBet = Number(input);
+    section = DEAL;
+    return `Current Bet : ${playerBet}. <br> Remaining Points : ${playerPoints} <br> Press submit to start! `;
+  }
 
   if (section == DEAL) {
     var cardIndex = 0;
@@ -31,17 +46,19 @@ var main = function (input) {
     if (playerBlackjack === true && computerBlackjack === true) {
       return (
         leaderboard(playerCards, playerValue, dealerCards) +
-        "<br> Both players have blackjacks!, Its a tie!"
+        "<br><br> Both players have blackjacks!, Its a tie!"
       );
     } else if (playerBlackjack === true && computerBlackjack === false) {
+      playerPoints = playerPoints + playerBet;
       return (
         leaderboard(playerCards, playerValue, dealerCards) +
-        "<br> Player have blackjack!, You win!"
+        "<br><br> Player have blackjack!, You win!"
       );
     } else if (playerBlackjack === false && computerBlackjack === true) {
+      playerPoints = playerPoints - playerBet;
       return (
         leaderboard(playerCards, playerValue, dealerCards) +
-        "<br> Computer have blackjack!, You lose!"
+        "<br><br> Computer have blackjack!, You lose!"
       );
     }
 
@@ -67,9 +84,10 @@ var main = function (input) {
 
       if (playerValue > 21 && dealerValue < 22) {
         section = DEAL;
+        playerPoints = playerPoints - playerBet;
         return (
           dealtBoard(playerCards, playerValue, dealerCards) +
-          "<br> You Bust! You Lose <br> Press submit to restart game"
+          `<br><br> You Bust! You Lose <br> <br><br> Remaining points <br>  ${playerPoints} <br><br> Press Submit to start a new game`
         );
       }
 
@@ -88,27 +106,34 @@ var main = function (input) {
       }
 
       if (playerValue > 21 && dealerValue < 22) {
-        myOutputValue = "<br> You Bust! You Lose";
+        playerPoints = playerPoints - playerBet;
+        myOutputValue = "<br><br> You Bust! You Lose";
       } else if (playerValue < 22 && dealerValue > 21) {
-        myOutputValue = "<br> Computer Bust! You Win";
+        playerPoints = playerPoints + playerBet;
+        myOutputValue = "<br><br> Computer Bust! You Win";
       } else if (playerValue > 21 && dealerValue > 21) {
-        myOutputValue = "<br> Both Busts! Its a draw";
+        myOutputValue = "<br><br> Both Busts! Its a draw";
       } else if (playerValue < dealerValue) {
-        myOutputValue = "<br> You Lose!";
+        playerPoints = playerPoints - playerBet;
+        myOutputValue = "<br><br> You Lose!";
       } else if (playerValue > dealerValue) {
-        myOutputValue = "<br> You Win!";
+        playerPoints = playerPoints + playerBet;
+        myOutputValue = "<br><br> You Win!";
       } else if (playerValue == dealerValue) {
-        myOutputValue = "<br> Its a Draw!";
+        myOutputValue = "<br><br> Its a Draw!";
       }
 
-      section = DEAL;
+      section = BET;
       cardIndex = 0;
       myOutputValue =
         leaderboard(playerCards, playerValue, dealerCards, dealerValue) +
         myOutputValue;
       playerCards = [];
       dealerCards = [];
-      return myOutputValue + "<br><br> Press Submit to start a new game";
+      return (
+        myOutputValue +
+        `<br><br> Remaining points : <br> ${playerPoints} <br><br> Press Submit to start a new game`
+      );
     }
   }
 };
