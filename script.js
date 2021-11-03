@@ -30,24 +30,24 @@ var main = function (input) {
 
     if (playerBlackjack === true && computerBlackjack === true) {
       return (
-        leaderboard(playerCards, playerValue, dealerCards, dealerValue) +
+        leaderboard(playerCards, playerValue, dealerCards) +
         "<br> Both players have blackjacks!, Its a tie!"
       );
     } else if (playerBlackjack === true && computerBlackjack === false) {
       return (
-        leaderboard(playerCards, playerValue, dealerCards, dealerValue) +
+        leaderboard(playerCards, playerValue, dealerCards) +
         "<br> Player have blackjack!, You win!"
       );
     } else if (playerBlackjack === false && computerBlackjack === true) {
       return (
-        leaderboard(playerCards, playerValue, dealerCards, dealerValue) +
+        leaderboard(playerCards, playerValue, dealerCards) +
         "<br> Computer have blackjack!, You lose!"
       );
     }
 
     section = PLAY;
     return (
-      leaderboard(playerCards, playerValue, dealerCards, dealerValue) +
+      dealtBoard(playerCards, playerValue, dealerCards) +
       "<br><br> Please input 'stay' or 'hit'"
     );
   }
@@ -68,13 +68,13 @@ var main = function (input) {
       if (playerValue > 21 && dealerValue < 22) {
         section = DEAL;
         return (
-          leaderboard(playerCards, playerValue, dealerCards, dealerValue) +
+          dealtBoard(playerCards, playerValue, dealerCards) +
           "<br> You Bust! You Lose <br> Press submit to restart game"
         );
       }
 
       return (
-        leaderboard(playerCards, playerValue, dealerCards, dealerValue) +
+        dealtBoard(playerCards, playerValue, dealerCards) +
         "<br><br> Please input 'stay' or 'hit'"
       );
     }
@@ -196,6 +196,20 @@ var checkForBlackjack = function (array) {
     blackjack = true;
   }
   return blackjack;
+};
+
+var dealtBoard = function (playerCards, playerValue, dealerCards) {
+  return (
+    "Player your cards are: <br>" +
+    printCard(playerCards) +
+    "Player value is: " +
+    playerValue +
+    "<br><br> The dealer cards are: <br>" +
+    "*** Hidden Card *** <br>" +
+    dealerCards[1].name +
+    " of " +
+    dealerCards[1].suit
+  );
 };
 
 var leaderboard = function (
