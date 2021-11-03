@@ -202,12 +202,26 @@ var shuffleDeck = function (cardDeck) {
   return cardDeck;
 };
 
+var cardImage = function (suit) {
+  var image = "♠️";
+
+  if (suit === "hearts") {
+    image = "♥";
+  } else if (suit === "diamonds") {
+    image = "♦️";
+  } else if (suit === "clubs") {
+    image = "♣️";
+  }
+
+  return image;
+};
+
 var printCard = function (array) {
   var count = 0;
   var printedCard = "";
   while (count < array.length) {
     printedCard =
-      printedCard + array[count].name + " of " + array[count].suit + "<br>";
+      printedCard + array[count].name + cardImage(array[count].suit) + "<br>";
     count += 1;
   }
   return printedCard;
@@ -232,8 +246,7 @@ var dealtBoard = function (playerCards, playerValue, dealerCards) {
     "<br><br> The dealer cards are: <br>" +
     "*** Hidden Card *** <br>" +
     dealerCards[1].name +
-    " of " +
-    dealerCards[1].suit
+    cardImage(dealerCards[1].suit)
   );
 };
 
