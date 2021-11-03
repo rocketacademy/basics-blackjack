@@ -1,0 +1,19 @@
+// each player will be dealt 2 cards each at the start
+
+// player turn
+if player has below 16, they can only choose to hit
+if player has above 16 they can choose to stay or hit
+if player can choose to hit as many times as they want
+when player has 3 cards or above = ace is value 1
+if player hand value is above 21 = they lose
+if player has 21 in the opening hand, they win 2x
+if player has 22 in the opening hand, they win 3x
+
+//dealer turn
+dealer has to hit if their hand is below 17
+if dealer hand value is above 21 = dealer loses
+if player hand value is above dealer hand value = player wins
+
+// show hand
+if player hand value is below dealer hand value = dealer wins
+(jack/queen/ king is 10) (ace is 1 or 11)
