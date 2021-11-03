@@ -364,7 +364,9 @@ const dealHitStay = (input) => {
       } else if (players[activePlayer].playing === false) {
         myOutputValue += `${players[activePlayer].name}, you have Blackjack hence have to wait till payout round.<br>`;
         activePlayer += 1;
-        myOutputValue += `${players[activePlayer].name}, please decide whether to Hit or Stay.`;
+        myOutputValue += `${
+          players[activePlayer].name
+        }, please decide whether to Hit or Stay.<br>${intermittentCardValueDisplay()}`;
       }
     } else {
       myOutputValue += `===Players are done picking===`;
@@ -420,8 +422,10 @@ const dealerPickCard = function () {
     if (players[activePlayer].totalCardValue > 21) {
       players[players.length - 1].win = "lose";
       myOutputValue += `Dealer died/lose.<br>`;
+    } else if (players[activePlayer].totalCardValue < 17) {
+      myOutputValue += `Dealer needs more.`;
     } else {
-      myOutputValue += `Dealer has enough cards. Total hand ${
+      myOutputValue += `Dealer has enough. Total hand ${
         players[players.length - 1].totalCardValue
       } <br/>`;
     }
@@ -496,7 +500,7 @@ const main = function (input) {
   // introduction
   if (input === "") {
     initGame();
-    myOutputValue = `Welcome to...<br><br> sure2Lose##Blackjack Gaming Den##sure2Lose.<br><br> To begin, please input number of players`;
+    myOutputValue = `Welcome to...<br><br> sure2Lose## Blackjack Gaming Den ##sure2Lose.<br><br> To begin, please input number of players`;
     multiPlayerMode = true;
     // CONTINUE = false;
   } else if (
