@@ -1,3 +1,6 @@
+var playerHand = [];
+var dealerHand = [];
+
 // page loads
 // deck is created
 var makeDeck = function () {
@@ -85,10 +88,68 @@ var shuffleCards = function (cardDeck) {
 var shuffledDeck = shuffleCards(newDeck);
 console.log(shuffledDeck);
 
-// each player will be dealt 2 cards each at the first button press
+// function to deal each player with 2 cards + sum up initial value of hands
+var dealCards = function () {
+  playerdrawCount = 0;
+  dealerdrawCount = 0;
 
-// player turn
-//if player has below 16, they can only choose to hit (by inputting Hit)
+  while (playerdrawCount < 2) {
+    playerCard = shuffledDeck.pop();
+    playerHand.push(playerCard);
+    playerdrawCount += 1;
+  }
+
+  while (dealerdrawCount < 2) {
+    dealerCard = shuffledDeck.pop();
+    dealerHand.push(dealerCard);
+    dealerdrawCount += 1;
+  }
+
+  console.log("playerHand");
+  console.log(playerHand);
+  console.log("dealerHand");
+  console.log(dealerHand);
+
+  sumHandFunction();
+  console.log("playerHandValue");
+  console.log(playerHandValue);
+  console.log("dealerHandValue");
+  console.log(dealerHandValue);
+};
+
+//sum up both player and dealer hand from scratch
+var sumHandFunction = function () {
+  playerSumCounter = 0;
+  playerHandValue = 0;
+  while (playerSumCounter < playerHand.length) {
+    playerHandValue = playerHandValue + playerHand[playerSumCounter].rank;
+    playerSumCounter += 1;
+  }
+  dealerSumCounter = 0;
+  dealerHandValue = 0;
+  while (dealerSumCounter < dealerHand.length) {
+    dealerHandValue = dealerHandValue + dealerHand[dealerSumCounter].rank;
+    dealerSumCounter += 1;
+  }
+};
+
+// FUNCTION - player draws 1 card
+var playerDraw = function () {
+  playerCard = shuffledDeck.pop();
+  console.log("Player drew a " + playerCard.name);
+  playerHand.push(playerCard);
+
+  playerSumCounter = 0;
+  playerHandValue = 0;
+  while (playerSumCounter < playerHand.length) {
+    playerHandValue = playerHandValue + playerHand[playerSumCounter].rank;
+    playerSumCounter += 1;
+  }
+
+  console.log("Player Draws. Hand value is now:");
+  console.log(playerHandValue);
+};
+
 //if player has above 16 they can choose to stay or hit (by inputting Hit or Stay)
 //if player can choose to hit as many times as they want (by Inputting Hit)
 //when player has 3 cards or above = ace is value 1
@@ -107,11 +168,24 @@ console.log(shuffledDeck);
 //(jack/queen/ king is 10) (ace is 1 or 11)
 
 var main = function (input) {
-  var myOutputValue = "hello world";
-  return myOutputValue;
-};
+  //declare output value
+  var myOutputValue = "";
 
-// Get a random index ranging from 0 (inclusive) to max (exclusive).
-var getRandomIndex = function (max) {
-  return Math.floor(Math.random() * max);
+  //if no cards are in player of dealer Hands
+  if (playerHand == "" || dealerHand == "") {
+    dealCards();
+    if (playerHand[0].rank + playerHand[1].rank < 16) {
+      myOutputValue =
+        "Your hand value is " +
+        playerHandValue +
+        ".<br>You have to Hit. <br>Please input Hit and click on Submit to draw another card";
+    } else if (playerHand[0].rank + playerHand[1].rank >= 16) {
+      myOutputValue =
+        "Your hand value is " +
+        playerHandValue +
+        ".<br>You can choose to Hit or Stay.<br>Please input Hit or Stay and click on Submit to draw another card";
+    } else myOutputValue = "hello world";
+  }
+
+  return myOutputValue;
 };
