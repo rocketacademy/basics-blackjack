@@ -1,5 +1,7 @@
 var playerHand = [];
 var dealerHand = [];
+var turnTracker = 1;
+var myOutputValue = "";
 
 // page loads
 // deck is created
@@ -22,16 +24,20 @@ var makeDeck = function () {
     while (rankCounter <= 13) {
       // By default, the card name is the same as rankCounter
       var cardName = rankCounter;
-
+      var cardValue = rankCounter;
       // If rank is 1, 11, 12, or 13, set cardName to the ace or face card's name
       if (cardName == 1) {
         cardName = "ace";
+        cardValue = 11;
       } else if (cardName == 11) {
         cardName = "jack";
+        cardValue = 10;
       } else if (cardName == 12) {
         cardName = "queen";
+        cardValue = 10;
       } else if (cardName == 13) {
         cardName = "king";
+        cardValue = 10;
       }
 
       // Create a new card with the current name, suit, and rank
@@ -39,6 +45,7 @@ var makeDeck = function () {
         name: cardName,
         suit: currentSuit,
         rank: rankCounter,
+        value: cardValue,
       };
 
       // Add the new card to the deck
@@ -122,13 +129,13 @@ var sumHandFunction = function () {
   playerSumCounter = 0;
   playerHandValue = 0;
   while (playerSumCounter < playerHand.length) {
-    playerHandValue = playerHandValue + playerHand[playerSumCounter].rank;
+    playerHandValue = playerHandValue + playerHand[playerSumCounter].value;
     playerSumCounter += 1;
   }
   dealerSumCounter = 0;
   dealerHandValue = 0;
   while (dealerSumCounter < dealerHand.length) {
-    dealerHandValue = dealerHandValue + dealerHand[dealerSumCounter].rank;
+    dealerHandValue = dealerHandValue + dealerHand[dealerSumCounter].value;
     dealerSumCounter += 1;
   }
 };
@@ -137,29 +144,50 @@ var sumHandFunction = function () {
 var playerDraw = function () {
   playerCard = shuffledDeck.pop();
   console.log("Player drew a " + playerCard.name);
+
   playerHand.push(playerCard);
 
   playerSumCounter = 0;
   playerHandValue = 0;
   while (playerSumCounter < playerHand.length) {
-    playerHandValue = playerHandValue + playerHand[playerSumCounter].rank;
+    playerHandValue = playerHandValue + playerHand[playerSumCounter].value;
     playerSumCounter += 1;
   }
-
+  myOutputValue =
+    "Player drew a " +
+    playerCard.name +
+    " . Players hand value is now " +
+    playerHandValue;
   console.log("Player Draws. Hand value is now:");
   console.log(playerHandValue);
 };
 
-//if player has above 16 they can choose to stay or hit (by inputting Hit or Stay)
-//if player can choose to hit as many times as they want (by Inputting Hit)
+// FUNCTION - dealer draws 1 card
+var dealerDraw = function () {
+  dealerCard = shuffledDeck.pop();
+  console.log("Dealer drew a " + dealerCard.name);
+  dealerHand.push(dealerCard);
+
+  dealerSumCounter = 0;
+  dealerHandValue = 0;
+  while (dealerSumCounter < dealerHand.length) {
+    dealerHandValue = dealerHandValue + dealerHand[dealerSumCounter].value;
+    dealerSumCounter += 1;
+  }
+  myOutputValue =
+    "Dealer drew a " +
+    dealerCard.name +
+    " . Dealers hand value is now " +
+    dealerHandValue;
+  console.log("Dealer Draws. Hand value is now:");
+  console.log(dealerHandValue);
+};
+
 //when player has 3 cards or above = ace is value 1
-//if player hand value is above 21 = they lose
+
 //if player has 21 in the opening hand, they win 2x
 //if player has 22 in the opening hand, they win 3x
 
-//dealer turn
-//dealer will hit once if their hand is below 17
-//dealer will stay if their hand is 17 and above
 //if dealer hand value is above 21 = dealer loses
 //if player hand value is above dealer hand value = player wins
 
@@ -169,22 +197,106 @@ var playerDraw = function () {
 
 var main = function (input) {
   //declare output value
-  var myOutputValue = "";
 
   //if no cards are in player of dealer Hands
   if (playerHand == "" || dealerHand == "") {
     dealCards();
-    if (playerHand[0].rank + playerHand[1].rank < 16) {
+    if (playerHand[0].value + playerHand[1].value < 16) {
       myOutputValue =
         "Your hand value is " +
         playerHandValue +
         ".<br>You have to Hit. <br>Please input Hit and click on Submit to draw another card";
-    } else if (playerHand[0].rank + playerHand[1].rank >= 16) {
+    } else if (playerHand[0].value + playerHand[1].value >= 16) {
       myOutputValue =
         "Your hand value is " +
         playerHandValue +
-        ".<br>You can choose to Hit or Stay.<br>Please input Hit or Stay and click on Submit to draw another card";
-    } else myOutputValue = "hello world";
+        ".<br>You can choose to Hit or Stay.<br>Please input Hit to draw another card or Stay to go to the Dealer turn ";
+    } else myOutputValue = "Invalid";
+  }
+
+  //if player has above 16 they can choose to stay or hit (by inputting Hit or Stay)
+  //if player can choose to hit as many times as they want (by Inputting Hit)
+  if (input == "hit" && turnTracker == 1) {
+    playerDraw();
+    myOutputValue =
+      myOutputValue +
+      "<br>Please input Hit to draw another card or Stay to go to the Dealer turn.";
+    console.log("output after drawing");
+    console.log(myOutputValue);
+    //if player hand value is 21 or above = they have to stay
+    if (playerHandValue >= 21) {
+      turnTracker = 2;
+      myOutputValue =
+        myOutputValue +
+        "<br>Your hand value is now >= 21. <br>You will have to stay. <br><br>It is dealers turn now. Please click on Submit for dealer to act";
+    }
+    // when player inputs stay, it will change to dealer's turn
+  } else if (input == "stay" && turnTracker == 1) {
+    turnTracker = 2;
+  }
+  //dealer turn
+  //dealer will hit once if their hand is below 17
+  if (turnTracker == 2 && dealerHand[0].value + dealerHand[1].value < 17) {
+    dealerDraw();
+    turnTracker = 3;
+    //dealer will stay if their hand is 17 and above
+  } else if (
+    turnTracker == 2 &&
+    dealerHand[0].value + dealerHand[1].value >= 17
+  ) {
+    turnTracker = 3;
+    myOutputValue =
+      "Dealers hand value is " +
+      dealerHandValue +
+      "<br> Dealer stays. Click on Submit to compare Hands.";
+  }
+  // mode to compare hands
+  // PLAYER LOSES. player goes bust, dealer does not go bust
+  if (turnTracker == 3 && playerHandValue > 21 && dealerHandValue <= 21) {
+    myOutputValue =
+      "Player loses for exceeding 21 with a hand value of " +
+      playerHandValue +
+      "<br>Dealer has a hand value of " +
+      dealerHandValue +
+      ".";
+    // PLAYER LOSES. no one goes bust. Player hand is smaller than dealer hand
+  } else if (
+    turnTracker == 3 &&
+    playerHandValue <= 21 &&
+    dealerHandValue <= 21 &&
+    playerHandValue < dealerHandValue
+  ) {
+    myOutputValue =
+      "Player loses for having a smaller hand value with a hand value of " +
+      playerHandValue +
+      "<br>Dealer has a hand value of " +
+      dealerHandValue +
+      ".";
+    // PLAYER WINS. no one goes bust. Player hand is larger than dealer hand
+  } else if (
+    turnTracker == 3 &&
+    playerHandValue <= 21 &&
+    dealerHandValue <= 21 &&
+    playerHandValue > dealerHandValue
+  ) {
+    myOutputValue =
+      "Player wins for having a larger hand value with a hand value of " +
+      playerHandValue +
+      "<br>Dealer has a hand value of " +
+      dealerHandValue +
+      ".";
+    // PLAYER WINS. player does not go bust, dealer goes bust
+  } else if (
+    turnTracker == 3 &&
+    playerHandValue <= 21 &&
+    dealerHandValue > 21
+  ) {
+    myOutputValue =
+      "Dealer busts! Dealer has a hand value of " +
+      dealerHandValue +
+      "<br>Player does no exceed 21 with a hand value of " +
+      playerHandValue +
+      ".";
   }
 
   return myOutputValue;
