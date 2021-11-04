@@ -27,9 +27,9 @@ body {
 
 #container {
   background-color: pink;
-  margin: 40px auto;
+  margin: 20px auto;
   max-width: 800px;
-  padding: 38px 31px;
+  padding: 20px 31px;
 }
 
 input {
@@ -66,6 +66,18 @@ button {
   background-color: red;
   border: darkred;
   cursor: pointer;
+}
+#scoreboard {
+  background-color: grey;
+  padding: 20px 31px 31px;
+  margin: 20px auto;
+  max-width: 800px;
+}
+#scoreboard-data {
+  background-color: lightgrey;
+  padding: 20px 20px;
+  color: black;
+  white-space: pre;
 }
 /* increase header font size on wider screens */
 @media screen and (min-width: 600px) {
