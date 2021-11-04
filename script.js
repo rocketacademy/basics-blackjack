@@ -1,3 +1,10 @@
+/* Things to add
+  + Ace/Ten = Blackjack
+  + Enter number of players
+  + Splits
+  + Bets
+  + UI/UX (Make it nicer)*/
+
 /*===========================================================================*/
 /*============================ GLOBAL VARIABLES =============================*/
 /*===========================================================================*/
@@ -18,7 +25,11 @@ var playerObject = {
 };
 var gotBusted = false;
 
-/*============================== DECK CREATION ==============================*/
+/*===========================================================================*/
+/*========================== ADDITIONAL FUNCTIONS ===========================*/
+/*===========================================================================*/
+
+/*===== DECK CREATION =====*/
 var makeDeck = function () {
   // Initialise empty deck array
   var cardDeck = [];
@@ -64,7 +75,7 @@ var makeDeck = function () {
   return cardDeck;
 };
 
-/*============================== SHUFFLE CARDS ==============================*/
+/*===== SHUFFLE CARDS =====*/
 var getRandomIndex = function (max) {
   return Math.floor(Math.random() * max);
 };
@@ -88,7 +99,7 @@ var shuffleCards = function (cardDeck) {
   return cardDeck;
 };
 
-/*========================= GET TOTAL VALUE ON HAND =========================*/
+/*===== GET TOTAL VALUE ON HAND =====*/
 var getValue = function (cardOnHand) {
   var handValue = 0;
   var aceCounter = 0;
@@ -108,7 +119,7 @@ var getValue = function (cardOnHand) {
   return handValue;
 };
 
-/*================== GET WINNER BETWEEN PLAYERS AND DEALER ==================*/
+/*===== GET WINNER BETWEEN PLAYERS AND DEALER =====*/
 var getWinner = function (dealerValue, playerValue) {
   if (playerValue > dealerValue) {
     return `Player Win, Dealer Lose  <br>
@@ -121,6 +132,42 @@ var getWinner = function (dealerValue, playerValue) {
             Press 'Start Game' to play again!`;
   }
 };
+
+/*===== RESET VALUES =====*/
+var reset = function () {
+  var deck = makeDeck();
+  shuffledDeck = [];
+  turns = PLAYER_TURN;
+  gotBusted = false;
+  shuffledDeck = [];
+  dealerObject = {
+    name: "Dealer",
+    hands: [],
+    value: 0,
+  };
+  playerObject = {
+    name: "Player",
+    hands: [],
+    value: 0,
+  };
+  shuffledDeck = shuffleCards(deck);
+};
+
+/*===== CHECK IF PLAYER BUST =====*/
+var checkIfBusted = function (playerValue) {
+  if (playerValue <= 21) {
+    return `Player Value: ${playerValue}`;
+  } else {
+    gotBusted = true;
+    return `Player Value: ${playerValue} <br> 
+            Player Busted! <br> 
+            Press 'Start Game' to play again!`;
+  }
+};
+
+/*===========================================================================*/
+/*============================= MAIN FUNCTIONS ==============================*/
+/*===========================================================================*/
 
 var startGame = function () {
   // Reset all variables for a new game
@@ -226,34 +273,4 @@ var standHand = function () {
   return `${dealerOutputValue} Dealer value: ${dealerObject.value} <br><br>
           ${playerOutputValue} Player value: ${playerObject.value} <br><br>
           ${outcome}`;
-};
-
-var reset = function () {
-  var deck = makeDeck();
-  shuffledDeck = [];
-  turns = PLAYER_TURN;
-  gotBusted = false;
-  shuffledDeck = [];
-  dealerObject = {
-    name: "Dealer",
-    hands: [],
-    value: 0,
-  };
-  playerObject = {
-    name: "Player",
-    hands: [],
-    value: 0,
-  };
-  shuffledDeck = shuffleCards(deck);
-};
-
-var checkIfBusted = function (playerValue) {
-  if (playerValue <= 21) {
-    return `Player Value: ${playerValue}`;
-  } else {
-    gotBusted = true;
-    return `Player Value: ${playerValue} <br> 
-            Player Busted! <br> 
-            Press 'Start Game' to play again!`;
-  }
 };
