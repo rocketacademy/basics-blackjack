@@ -1,5 +1,6 @@
 // created objects to store the player information
 var players = [];
+var turn = 1;
 
 var dealer = {
   name: "dealer",
@@ -85,7 +86,7 @@ var populatePlayersOnTable = function () {
       }
     }
 
-    innerHtml += `</div></div></div>`;
+    innerHtml += `</div></div><p class="text-white">Score: ${players[i].score}</p><div class="btn-group" role="group" aria-label="Basic example"><button type="button" class="btn btn-dark" id="hit_${i + 1}">Hit</button><button type="button" class="btn btn-light" id="stand_${i + 1}">Stand</button></div></div>`;
   }
 
   document.getElementById("list-of-players").innerHTML = innerHtml;
