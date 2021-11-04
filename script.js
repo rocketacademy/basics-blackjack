@@ -7,10 +7,11 @@ let gameMode = 'start';
 let roundsPlayed = 0;
 
 const inputEl = document.querySelector('#input-field');
-
+const newGameBtn = document.querySelector('.new-game');
+const outputEl = document.querySelector('#output-div');
 /* TODO
 add DOM elements for:
-1. New game button
+1. New game button (done)
 3. Change submit button to match the player playing
 2. Track wins of each player
 */
@@ -21,6 +22,9 @@ inputEl.addEventListener('keydown', function (e) {
   if (e.key === 'Enter') {
     document.querySelector('#submit-button').click();
   }
+  newGameBtn.addEventListener('click', function () {
+    newGame();
+  });
 });
 
 // <--- DOM
@@ -45,6 +49,7 @@ var main = function (input) {
       // logic for every round after 1st round
     } else {
       // DOING clear cards from existing hand
+      activePlayer = 0;
       resetCards();
       dealCards(noOfPlayers);
       // next game mode
@@ -90,7 +95,8 @@ var main = function (input) {
           output += `<br>${playerName} lost the game as ${playerName} did not have a blackjack.`;
         }
       }
-      return output;
+      roundsPlayed += 1;
+      return `${output}<br> Starting next round.`;
     } else {
       // show dealer cards
       // if dealer cards are less than 17, dealer has to hit, max hand size = 5
@@ -115,7 +121,7 @@ var main = function (input) {
   */ sumOfEachPlayerCards();
     let dealerCardSum = sumOfCards(dealerCards);
     if (dealerCardSum > 21) {
-      let output = '';
+      let output = `Dealer's cards are more than 21.<br>`;
       for (const [i, { playerName, sumOfCards }] of playerProfiles.entries()) {
         if (sumOfCards > 21) {
           output += `${playerName} is safe.<br>`;
@@ -160,8 +166,8 @@ var main = function (input) {
 // reset cards for all players incl dealer DOING
 const resetCards = function () {
   dealerCards = [];
-  for (let [i, { hand }] of playerProfiles.entries()) {
-    hand = [];
+  for (let i = 0; i < playerProfiles.length; i++) {
+    playerProfiles[i].hand = [];
   }
 };
 
@@ -343,5 +349,16 @@ const randomNumberGenerator = (deckLength) => {
 };
 // create and shuffle deck
 deck = deckGenerator();
+
+const newGame = function () {
+  noOfPlayers = 0;
+  playerProfiles = [];
+  dealerCards = [];
+  deck = [];
+  activePlayer = 0;
+  gameMode = 'start';
+  roundsPlayed = 0;
+  outputEl.textContent = '';
+};
 
 // -----> BUG //

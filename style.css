@@ -60,6 +60,13 @@ button {
   top: 22px;
 }
 
+.new-game {
+  margin: 1px;
+  float: right;
+  background-color: red;
+  border: darkred;
+  cursor: pointer;
+}
 /* increase header font size on wider screens */
 @media screen and (min-width: 600px) {
   .header {
