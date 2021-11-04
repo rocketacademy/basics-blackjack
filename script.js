@@ -19,6 +19,10 @@ var deck = [];
 var shuffledDeck = [];
 var players = [];
 
+// GAME MODE
+var INIT = "init";
+var CHECK_FOR_BLACKJACK = "check for blackjack";
+
 // create X standard 52-card deck
 var initialiseDeck = function () {
   var names = [
@@ -64,11 +68,11 @@ var initialisePlayers = function () {
   for (var i = 0; i < numberOfPlayers; i += 1) {
     // last player to be computer/dealer
     if (i == numberOfPlayers - 1) {
-      players[i] = { player: "Dealer", hands: [] };
+      players[i] = { player: "Dealer", hands: [], blackjack: false };
       continue;
     }
     // rest of the players
-    players[i] = { player: `Player ${i + 1}`, hands: [] };
+    players[i] = { player: `Player ${i + 1}`, hands: [], blackjack: false };
   }
 };
 
@@ -122,21 +126,92 @@ var showHandMessage = function () {
     var secondCard =
       players[i].hands[1].name + " of " + players[i].hands[1].suit;
     var value = players[i].hands[0].value + players[i].hands[1].value;
-    myOutputValue += `${name}, your hands are ${firstCard} and ${secondCard} (Value: ${value}).
-    <br>`;
+    myOutputValue += `${name}, your hands are ${firstCard} and ${secondCard} (Value: ${value}).<br>`;
+  }
+};
+
+// return true if player(s) got blackjack
+var playersGotBlackjack = function () {
+  var anyBlackjack = false;
+  // use loop to check thru all players hands
+  for (var i = 0; i < numberOfPlayers; i += 1) {
+    // check if got ace
+    var firstCardName = players[i].hands[0].name;
+    var SecondCardName = players[i].hands[1].name;
+    var hasAce = checkForAce(firstCardName, SecondCardName);
+
+    // check if got 10s
+    var firstCardValue = players[i].hands[0].value;
+    var SecondCardValue = players[i].hands[1].value;
+    var hasTen = checkForTen(firstCardValue, SecondCardValue);
+
+    // check if got blackjack
+    if (hasAce == true && hasTen == true) {
+      players[i].blackjack = true;
+      anyBlackjack = true;
+    }
+    console.log("======== checking for blackjack ========");
+    console.log(players[i]);
+  }
+  console.log(`anyBlackjack: ${anyBlackjack}`);
+  return anyBlackjack;
+};
+
+var checkForAce = function (firstCardName, SecondCardName) {
+  if (firstCardName == "Ace" || SecondCardName == "Ace") {
+    return true;
+  }
+  return false;
+};
+
+var checkForTen = function (firstCardValue, SecondCardValue) {
+  if (firstCardValue == 10 || SecondCardValue == 10) {
+    return true;
+  }
+  return false;
+};
+
+var showBlackjackMessage = function () {
+  // use loop to display hand status
+  myOutputValue = "Congratulations! <br>";
+  for (var i = 0; i < numberOfPlayers; i += 1) {
+    // if got blackjack, display winner
+    var isBlackjack = players[i].blackjack;
+    if (isBlackjack) {
+      var name = players[i].player;
+      var firstCard =
+        players[i].hands[0].name + " of " + players[i].hands[0].suit;
+      var secondCard =
+        players[i].hands[1].name + " of " + players[i].hands[1].suit;
+      myOutputValue += `${name}, your hands are ${firstCard} and ${secondCard}. You got a Blackjack! <br>`;
+    }
   }
 };
 
 var main = function (input) {
   // shuffle deck
   // deal cards to players
-  if (mode == "init") {
+  if (mode == INIT) {
     initialisePlayers();
     initialiseDeck();
     shuffledDeck = shuffleCards(deck);
     dealStartingHand();
     showHandMessage();
+    mode = CHECK_FOR_BLACKJACK;
     return myOutputValue;
+  }
+
+  // check if any players have blackjack
+  if (mode == CHECK_FOR_BLACKJACK) {
+    if (playersGotBlackjack()) {
+      // return true is any players got blackjack
+      showBlackjackMessage();
+      mode = INIT; // reset game
+      return myOutputValue;
+    }
+    // if no blackjack, move to next mode
+    myOutputValue = "no blackjack";
+    mode = INIT;
   }
 
   return myOutputValue;
