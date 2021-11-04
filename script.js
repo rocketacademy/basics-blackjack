@@ -10,22 +10,25 @@ var dealer = {
 
 var shuffledDeck = [];
 
-var confirmWinPlayer = {
-  name: "confirmWinPlayer",
-  card: [],
-  score: 21,
+var placeBets = function (noOfPlayers) {
+  document.getElementById("welcome").style.display = "none";
+  document.getElementById("place-bets").style.display = "";
+
+  makePlayers(noOfPlayers);
+  populatePlayersBets();
 };
 
 var startRound = function (noOfPlayers) {
+  document.getElementById("place-bets").style.display = "none";
+  document.getElementById("play-time").style.display = "";
+
   var deck = makeDeck();
   shuffledDeck = shuffleCards(deck);
 
-  makePlayers(noOfPlayers);
-
-  playerMakeTurn();
+  giveAllPlayers1Card();
   dealerMakeTurn();
 
-  playerMakeTurn();
+  giveAllPlayers1Card();
   dealerMakeTurn();
 
   populateDealerOnTable();
@@ -49,6 +52,8 @@ var makePlayers = function (noOfPlayers) {
     newPerson.name = `Player ${i + 1}`;
     newPerson.card = [];
     newPerson.score = 0;
+    newPerson.bet = 0;
+    newPerson.amount = 100;
 
     players.push(newPerson);
   }
@@ -59,7 +64,11 @@ var populateDealerOnTable = function () {
 
   for (var i = 0; i < dealer.card.length; i++) {
     if (i !== 0) {
-      innerHtml += `<img src="${dealer.card[i].pic}" style="width: 75px; position: relative; margin-left: -60px" />`;
+      if (i == dealer.card.length - 1) {
+        innerHtml += `<img src="./images/cards/back.png" style="width: 75px; position: relative; margin-left: -60px" />`;
+      } else {
+        innerHtml += `<img src="${dealer.card[i].pic}" style="width: 75px; position: relative; margin-left: -60px" />`;
+      }
     } else {
       innerHtml += `<img src="${dealer.card[i].pic}" style="width: 75px; position: relative;" />`;
     }
@@ -70,26 +79,112 @@ var populateDealerOnTable = function () {
   document.getElementById("dealer-cards").innerHTML = innerHtml;
 };
 
+var populatePlayersBets = function () {
+  // remove welcome screen
+  var innerHtml = "";
+
+  for (var i = 0; i < players.length; i++) {
+    innerHtml += `<div class="col col-lg-2 text-center"><h5 style="color: white">Player ${
+      i + 1
+    }</h5><div class="row"><div class="col-lg-12 mt-3" id="player-${
+      i + 1
+    }-cards">`;
+
+    innerHtml += `<input type="number" class="form-control" id="player-${
+      i + 1
+    }-bet" min="1" max="${players[i].amount}" placeholder="Player ${
+      i + 1
+    } bet amount." />`;
+
+    innerHtml += `</div></div></div></div>`;
+  }
+
+  document.getElementById("list-of-bets").innerHTML = innerHtml;
+};
+
 var populatePlayersOnTable = function () {
   var innerHtml = "";
 
   for (var i = 0; i < players.length; i++) {
     innerHtml += `<div class="col col-lg-2 text-center"><h5 style="color: white">Player ${
       i + 1
-    }</h5><img src="./images/players/${i}.png" style="width: 100px" /><div class="row"><div class="col-lg-12 mt-3" id="player-${i}-cards">`;
+    }</h5><div class="row"><div class="col-lg-12 mt-3" id="player-${
+      i + 1
+    }-cards">`;
 
     for (var j = 0; j < players[i].card.length; j++) {
-      if (j !== 0) {
-        innerHtml += `<img src="${players[i].card[j].pic}" style="width: 75px; position: relative; margin-left: -60px" />`;
+      if (i == 0) {
+        if (j !== 0) {
+          innerHtml += `<img src="${players[i].card[j].pic}" style="width: 75px; position: relative; margin-left: -60px" />`;
+        } else {
+          innerHtml += `<img src="${players[i].card[j].pic}" style="width: 75px; position: relative;" />`;
+        }
       } else {
-        innerHtml += `<img src="${players[i].card[j].pic}" style="width: 75px; position: relative;" />`;
+        if (j !== 0) {
+          innerHtml += `<img src="./images/cards/back.png" style="width: 75px; position: relative; margin-left: -60px" />`;
+        } else {
+          innerHtml += `<img src="./images/cards/back.png" style="width: 75px; position: relative;" />`;
+        }
       }
     }
 
-    innerHtml += `</div></div><p class="text-white">Score: ${players[i].score}</p><div class="btn-group" role="group" aria-label="Basic example"><button type="button" class="btn btn-dark" id="hit_${i + 1}">Hit</button><button type="button" class="btn btn-light" id="stand_${i + 1}">Stand</button></div></div>`;
+    innerHtml += `</div></div>`;
+
+    if (i == 0) {
+      innerHtml += `<div id="player-${i + 1}-info">`;
+    } else {
+      innerHtml += `<div id="player-${i + 1}-info" style="display: none">`;
+    }
+
+    innerHtml += `<p class="text-white mb-2 mt-2">Score: ${players[i].score} | Bet: ${players[i].bet}</p><div class="btn-group" role="group" aria-label="Basic example"><button type="button" class="btn btn-dark" onmouseup="playerHit()">Hit</button><button type="button" class="btn btn-light" onmouseup="playerStand()">Stand</button></div></div></div>`;
   }
 
   document.getElementById("list-of-players").innerHTML = innerHtml;
+};
+
+var playerHit = function () {
+  var dealtCard = dealCard(shuffledDeck);
+  players[turn - 1].card.push(dealtCard);
+  players[turn - 1].score += dealtCard.score;
+
+  if (checkBlackjack(players[turn - 1])) {
+    // user wins
+  } else {
+    if (checkUserScoreAbove21(players[turn - 1])) {
+      // user loses
+    } else {
+      // do nothing
+      // wait for user to hit or stand
+    }
+  }
+};
+
+var playerStand = function () {
+  turn++;
+  if (turn > players.length) {
+    // everyone has stand
+    // check dealer hands
+    if (checkBlackjack(dealer)) {
+      // dealer wins
+    } else {
+      // check if dealer needs to draw card
+      while (checkDealerNeedToDraw()) {
+        var dealtCard = dealCard(shuffledDeck);
+        dealer.card.push(dealtCard);
+        dealer.score += dealtCard.score;
+      }
+
+      if (checkBlackjack(dealer)) {
+        // dealer wins
+      } else {
+        compareUsers();
+      }
+    }
+  }
+};
+
+var checkDealerNeedToDraw = function () {
+  return dealer.score < 17;
 };
 
 // output user cards
@@ -115,16 +210,17 @@ var checkUserScoreAbove21 = function (user) {
 
 // Come into this function only after user selects "stand"
 var compareUsers = function () {
-  if (player.score > dealer.score) {
-    // player wins
-    return "You win.";
-  } else {
-    // player loses
-    return "You lose.";
+  for (var i = 0; i < players.length; i++) {
+    if (players[i].score > dealer.score) {
+      players[i].amount += players[i].bet;
+    } else {
+      players[i].amount -= players[i].bet;
+    }
+    players[i].bet = 0;
   }
 };
 
-var playerMakeTurn = function () {
+var giveAllPlayers1Card = function () {
   for (var i = 0; i < players.length; i++) {
     var dealtCard = dealCard(shuffledDeck);
     players[i].card.push(dealtCard);
@@ -139,7 +235,7 @@ var checkWhetherDealerHitsOrStands = function () {
 };
 
 var dealerMakeTurn = function () {
-  // since dealerMakeTurn is after playerMakeTurn, the shuffledDeck here is 1 less card
+  // since dealerMakeTurn is after giveAllPlayers1Card, the shuffledDeck here is 1 less card
   var dealtCard = dealCard(shuffledDeck);
   dealer.card.push(dealtCard);
   dealer.score += dealtCard.score;

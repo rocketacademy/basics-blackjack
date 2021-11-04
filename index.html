@@ -84,42 +84,42 @@
       }
 
       .slidecontainer {
-  width: 100%;
-}
+        width: 100%;
+      }
 
-.slider {
-  -webkit-appearance: none;
-  width: 100%;
-  height: 10px;
-  border-radius: 5px;
-  background: #d3d3d3;
-  outline: none;
-  opacity: 0.7;
-  -webkit-transition: .2s;
-  transition: opacity .2s;
-}
+      .slider {
+        -webkit-appearance: none;
+        width: 100%;
+        height: 10px;
+        border-radius: 5px;
+        background: #d3d3d3;
+        outline: none;
+        opacity: 0.7;
+        -webkit-transition: 0.2s;
+        transition: opacity 0.2s;
+      }
 
-.slider:hover {
-  opacity: 1;
-}
+      .slider:hover {
+        opacity: 1;
+      }
 
-.slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 23px;
-  height: 24px;
-  border: 0;
-  background: url('./images/dollar.png');
-  cursor: pointer;
-}
+      .slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 23px;
+        height: 24px;
+        border: 0;
+        background: url("./images/dollar.png");
+        cursor: pointer;
+      }
 
-.slider::-moz-range-thumb {
-  width: 23px;
-  height: 24px;
-  border: 0;
-  background: url('./images/dollar.png');
-  cursor: pointer;
-}
+      .slider::-moz-range-thumb {
+        width: 23px;
+        height: 24px;
+        border: 0;
+        background: url("./images/dollar.png");
+        cursor: pointer;
+      }
 
       @keyframes MoveUpDown {
         0%,
@@ -134,9 +134,62 @@
   </head>
 
   <body>
-    <div id="play-time">
-      <div class="container mt-5">
-        <div id="blackjack-table">
+    <div class="container mt-5">
+      <div id="blackjack-table">
+        <div id="welcome">
+          <div class="container mt-5">
+            <div class="row justify-content-center">
+              <img
+                src="https://media0.giphy.com/media/TOd09KJxxog65L0MwE/giphy.gif?cid=ecf05e47d58ihenbt6vi7fw81zhjdngen3lwg7srji95yauf&rid=giphy.gif&ct=g"
+                style="width: 480px"
+              />
+            </div>
+            <div class="row mt-4">
+              <div class="col-md-4 offset-md-4">
+                <div class="input-group mb-3 input-group-lg">
+                  <input
+                    type="number"
+                    min="1"
+                    max="6"
+                    id="no-of-players"
+                    class="form-control"
+                    placeholder="Enter number of people"
+                    aria-label="Enter number of people"
+                    aria-describedby="button-addon2"
+                    onkeyup="checkNoOfPeopleNotEmpty()"
+                    onmouseup="checkNoOfPeopleNotEmpty()"
+                  />
+                  <button
+                    class="btn btn-dark"
+                    type="button"
+                    id="place-bets-button"
+                    disabled
+                  >
+                    Place Bets
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="place-bets" style="display: none">
+          <div class="row justify-content-center">
+            <img
+              src="https://media2.giphy.com/media/PAqjdPkJLDsmBRSYUp/200w.webp?cid=dda24d50927274abecfde6e09286b776ac2411c064ce6501&rid=200w.webp&ct=g"
+              style="width: 480px"
+            />
+            <h3 class="text-center text-white">Place your bets</h3>
+          </div>
+          <div class="row justify-content-center" id="list-of-bets"></div>
+          <button
+            class="btn btn-dark text-center"
+            type="button"
+            id="start-round"
+          >
+            Start Round
+          </button>
+        </div>
+        <div id="play-time" style="display: none">
           <div class="row justify-content-center">
             <div class="col col-lg-4 text-center">
               <h5 style="color: white">Dealer</h5>
@@ -144,84 +197,11 @@
               <div class="row" id="dealer-cards"></div>
             </div>
           </div>
-          <div class="row justify-content-center" style="margin-top: 11rem">
-            <div class="col col-lg-2 text-center">
-              <img
-                src="./images/arrow.png"
-                style="transform: rotate(180deg)"
-                id="turn"
-              />
-              <div class="slidecontainer">
-                <input type="range" min="1" max="100" value="50" class="slider" id="myRange">
-                <p>Value: <span id="demo"></span></p>
-              </div>
-            </div>
-            <div class="col col-lg-2 text-center"></div>
-            <div class="col col-lg-2 text-center"></div>
-            <div class="col col-lg-2 text-center"></div>
-            <div class="col col-lg-2 text-center"></div>
-            <div class="col col-lg-2 text-center"></div>
-          </div>
-          <div class="row justify-content-center" id="list-of-players">
-            <!-- <div class="col col-lg-2 text-center">
-              <h5 style="color: white">Player 1</h5>
-              <img src="./images/players/0.png" style="width: 100px" />
-              <div class="row">
-                <div class="col-lg-12 mt-3" id="player-1-cards">
-                  <img
-                    src="./images/cards/9_of_diamonds.png"
-                    style="width: 75px; position: relative"
-                  />
-                  <img
-                    src="./images/cards/9_of_diamonds.png"
-                    style="width: 75px; position: relative; margin-left: -65px"
-                  />
-                  <img
-                    src="./images/cards/9_of_diamonds.png"
-                    style="width: 75px; position: relative; margin-left: -65px"
-                  />
-                </div>
-              </div>
-            </div> -->
-          </div>
-        </div>
-      </div>
-    </div>
-    <div id="welcome">
-      <div class="container mt-5">
-        <div class="row">
-          <div class="col-md-8 offset-md-2">
-            <img
-              src="https://media1.giphy.com/media/E2UlE5Of9zEjK/giphy.gif?cid=ecf05e47mpudj9iciymjia3q8e3o6lv07tws9jwjb4mt9lg9&rid=giphy.gif&ct=g"
-              style="width: 100%"
-            />
-          </div>
-        </div>
-        <div class="row mt-4">
-          <div class="col-md-4 offset-md-4">
-            <div class="input-group mb-3 input-group-lg">
-              <input
-                type="number"
-                min="1"
-                max="6"
-                id="no-of-players"
-                class="form-control"
-                placeholder="Enter number of people"
-                aria-label="Enter number of people"
-                aria-describedby="button-addon2"
-                onkeyup="checkNoOfPeopleNotEmpty()"
-                onmouseup="checkNoOfPeopleNotEmpty()"
-              />
-              <button
-                class="btn btn-dark"
-                type="button"
-                id="start-round"
-                disabled
-              >
-                Start Round
-              </button>
-            </div>
-          </div>
+          <div
+            class="row justify-content-center"
+            id="list-of-players"
+            style="margin-top: 5rem"
+          ></div>
         </div>
       </div>
     </div>
@@ -229,22 +209,27 @@
     <script src="script.js"></script>
     <!-- Define button click functionality -->
     <script>
-      var slider = document.getElementById("myRange");
-var output = document.getElementById("demo");
-output.innerHTML = slider.value;
+      // var slider = document.getElementById("myRange");
+      // // var output = document.getElementById("demo");
+      // // output.innerHTML = slider.value;
 
-slider.oninput = function() {
-  output.innerHTML = this.value;
-}
+      // // slider.oninput = function () {
+      // //   output.innerHTML = this.value;
+      // // };
       var checkNoOfPeopleNotEmpty = function () {
         if (document.getElementById("no-of-players").value.length !== 0) {
           if (document.getElementById("no-of-players").value <= 0) {
-            document.getElementById("start-round").disabled = true;
+            document.getElementById("place-bets-button").disabled = true;
           } else {
-            document.getElementById("start-round").disabled = false;
+            document.getElementById("place-bets-button").disabled = false;
           }
         }
       };
+
+      var placeBetsButton = document.querySelector("#place-bets-button");
+      placeBetsButton.addEventListener("click", function () {
+        placeBets(document.getElementById("no-of-players").value);
+      });
 
       var startRoundButton = document.querySelector("#start-round");
       startRoundButton.addEventListener("click", function () {
