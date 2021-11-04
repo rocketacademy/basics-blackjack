@@ -3,6 +3,19 @@ var dealerHand = [];
 var turnTracker = 1;
 var myOutputValue = "";
 
+if (user == null) {
+  var user = prompt("Hi Player. Please enter your name");
+}
+
+if (user != null) {
+  alert(
+    "Hi " +
+      user +
+      "!" +
+      " Welcome to Justin's BlackJack. Please click on Submit to start playing!"
+  );
+}
+
 // page loads
 // deck is created
 var makeDeck = function () {
@@ -146,6 +159,9 @@ var playerDraw = function () {
   console.log("Player drew a " + playerCard.name);
 
   playerHand.push(playerCard);
+  if ((playerCard.name = "ace")) {
+    playerCard.value = 1;
+  }
 
   playerSumCounter = 0;
   playerHandValue = 0;
