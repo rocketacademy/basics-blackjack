@@ -1,20 +1,20 @@
 var playerHand = [];
 var dealerHand = [];
-var turnTracker = 1;
+var turnTracker = 0;
 var myOutputValue = "";
 
-if (user == null) {
-  var user = prompt("Hi Player. Please enter your name");
-}
+// if (user == null) {
+//   var user = prompt("Hi Player. Please enter your name");
+// }
 
-if (user != null) {
-  alert(
-    "Hi " +
-      user +
-      "!" +
-      " Welcome to Justin's BlackJack. Please click on Submit to start playing!"
-  );
-}
+// if (user != null) {
+//   alert(
+//     "Hi " +
+//       user +
+//       "!" +
+//       " Welcome to Justin's BlackJack. Please click on Submit to start playing!"
+//   );
+// }
 
 // page loads
 // deck is created
@@ -136,7 +136,79 @@ var dealCards = function () {
   console.log("dealerHandValue");
   console.log(dealerHandValue);
 };
-
+var checkInstantWin = function () {
+  //PLAYER WINS. player opens with A-Face, dealer opens smaller
+  if (turnTracker == 0 && playerHandValue == 21 && dealerHandValue < 21) {
+    myOutputValue =
+      "Player hits Blackjack!<br> Player drew a " +
+      playerHand[0].name +
+      " of " +
+      playerHand[0].suit +
+      " and a " +
+      playerHand[1].name +
+      " of " +
+      playerHand[1].suit;
+  }
+  //PLAYER WINS. player opens with A-A, dealer opens smaller
+  else if (turnTracker == 0 && playerHandValue == 22 && dealerHandValue < 21) {
+    myOutputValue =
+      "Player hits Double Aces!<br> Player drew a " +
+      playerHand[0].name +
+      " of " +
+      playerHand[0].suit +
+      " and a " +
+      playerHand[1].name +
+      " of " +
+      playerHand[1].suit;
+  }
+  //DEALER WINS. dealer opens with A-Face, player opens smaller
+  else if (turnTracker == 0 && dealerHandValue == 21 && playerHandValue < 21) {
+    myOutputValue =
+      "Dealer hits Blackjack!<br> Dealer drew a " +
+      dealerHand[0].name +
+      " of " +
+      dealerHand[0].suit +
+      " and a " +
+      dealerHand[1].name +
+      " of " +
+      dealerHand[1].suit;
+  }
+  //DEALER WINS. dealer opens with A-Face, player opens smaller
+  else if (turnTracker == 0 && dealerHandValue == 22 && playerHandValue < 21) {
+    myOutputValue =
+      "Dealer hits Double Aces!<br> Dealer drew a " +
+      dealerHand[0].name +
+      " of " +
+      dealerHand[0].suit +
+      " and a " +
+      dealerHand[1].name +
+      " of " +
+      dealerHand[1].suit;
+  }
+  // Draw at the open, player and dealer opens A-Face or A-A together
+  else if (
+    (turnTracker == 0 && dealerHandValue == 21) ||
+    (dealerHandValue == 22 && dealerHandValue == playerHandValue)
+  ) {
+    myOutputValue =
+      "Its a draw! Dealer wins!<br> Dealer drew a " +
+      dealerHand[0].name +
+      " of " +
+      dealerHand[0].suit +
+      " and a " +
+      dealerHand[1].name +
+      " of " +
+      dealerHand[1].suit +
+      "<br> Player drew a " +
+      playerHand[0].name +
+      " of " +
+      playerHand[0].suit +
+      " and a " +
+      playerHand[1].name +
+      " of " +
+      playerHand[1].suit;
+  }
+};
 //sum up both player and dealer hand from scratch
 var sumHandFunction = function () {
   playerSumCounter = 0;
@@ -228,6 +300,8 @@ var main = function (input) {
         playerHandValue +
         ".<br>You can choose to Hit or Stay.<br>Please input Hit to draw another card or Stay to go to the Dealer turn ";
     } else myOutputValue = "Invalid";
+    checkInstantWin();
+    turnTracker = 1;
   }
 
   //if player has above 16 they can choose to stay or hit (by inputting Hit or Stay)
@@ -314,6 +388,21 @@ var main = function (input) {
       playerHandValue +
       ".";
   }
+  // player and dealer draw
+  else if (
+    turnTracker == 3 &&
+    playerHandValue <= 21 &&
+    dealerHandValue <= 21 &&
+    playerHandValue == dealerHandValue
+  ) {
+    myOutputValue =
+      "Its a Draw! Player has a hand value of " +
+      playerHandValue +
+      "<br>Dealer has a hand value of " +
+      dealerHandValue +
+      ".";
+  }
 
+  checkInstantWin();
   return myOutputValue;
 };
