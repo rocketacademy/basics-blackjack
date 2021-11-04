@@ -65,6 +65,7 @@ var main = function (input) {
       dealCards(noOfPlayers);
       // next game mode
       gameMode = 'blackJackCheck';
+      inputEl.placeholder = 'Click submit.';
       return `Cards have been dealt to the ${noOfPlayers} players again.`;
     }
   }
@@ -81,7 +82,7 @@ var main = function (input) {
       }
       gameMode = 'hit';
       // FIXME can i remove this return??
-      inputEl.placeholder = 'Follow instructions in the output.';
+      inputEl.placeholder = 'Click submit.';
       return `Player's cards will be revealed in order. (Player ${
         activePlayer + 1
       } of Player ${playerProfiles.length})`;
@@ -97,7 +98,7 @@ var main = function (input) {
   // dealer logic below
   // if dealer has blackjack, check if anyone else has blackjack and they won't lose the game.
   if (gameMode === 'dealerTurn') {
-    inputEl.placeholder = 'Follow instructions in the output.';
+    inputEl.placeholder = 'Click submit.';
     if (blackJackCheck(dealerCards)) {
       //  if dealer has blackjack, check if anyone else has blackjack, else everyone loses.
       let output = `Dealer has a blackjack.`;
@@ -180,7 +181,7 @@ var main = function (input) {
 /// MAIN FUNCTION
 /////////////////
 
-//
+// score instead of betting
 const outputScoreboardData = function () {
   let output = '';
   for (let [i, { playerName, win, loss, draw }] of playerProfiles.entries()) {
@@ -189,6 +190,7 @@ const outputScoreboardData = function () {
   return output;
 };
 
+// reset cards in players' and dealer's hands
 const resetCards = function () {
   dealerCards = [];
   for (let i = 0; i < playerProfiles.length; i++) {
@@ -255,7 +257,6 @@ const hitOrStand = function (input) {
       outputStr += `<br><br>Sum of cards: ${sumOfCurrCards}`;
       // add score into player object.
       playerProfiles[activePlayer].cardSum = sumOfCurrCards;
-
       return outputStr;
     }
     if (input === 'stand') {
@@ -267,7 +268,7 @@ const hitOrStand = function (input) {
         return `Dealer's turn.`;
       }
       gameMode = 'blackJackCheck';
-      inputEl.placeholder = 'Follow instructions in the output.';
+      inputEl.placeholder = 'Click submit.';
       return `Next player's turn.`;
     }
   }
@@ -391,7 +392,8 @@ const newGame = function () {
   roundsPlayed = 0;
   outputEl.textContent = '';
   scoreboardEl.textContent = 'Start playing! 🃏';
-  inputEl.placeholder = 'Press submit to start the game.';
+  inputEl.placeholder =
+    "Press submit to start the game. ('enter' key works too)";
 };
 
 // -----> BUG //
