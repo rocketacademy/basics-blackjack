@@ -1,8 +1,13 @@
 //Global Variables
 var computerCardArray = [];
 var playerCardArray = [];
+var playerCoins = 100;
+var playerWinnings = 0;
+var playerWager = 0;
 var deck = [];
 var shuffledDeck = "";
+var playerBlackjack = "";
+var computerBlackjack = "";
 var myOutputValue = "";
 
 //Game Mode
@@ -15,25 +20,37 @@ var gameMode = FIRSTDRAW;
 var main = function (input) {
   if (gameMode == FIRSTDRAW) {
     resetGame();
-    myOutputValue = `You watch as the dealer hands you two cards, faced down.<br><br>`;
+    playerWager = input;
+    myOutputValue = `You put ${playerWager} coins on the table. The dealer hands you two cards, faced down.<br><br>`;
     computerCardArray = drawCards(2, shuffledDeck, computerCardArray);
     playerCardArray = drawCards(2, shuffledDeck, playerCardArray);
     validateBlackjack(playerCardArray, computerCardArray);
-    // Display Computer & Player hands
+    return (myOutputValue += `<hr>Coins: ${playerCoins}, Wager: ${playerWager}<br><br>Your hand: ${displayCards(
+      playerCardArray,
+      0
+    )}<br>Computer's hand: ${displayCards(computerCardArray, 1)}`);
   } else if (gameMode == USERTURN) {
     myOutputValue = `You cast a glance at the dealer. The dealer has a blank, emotionless expression that gives no indication of its thoughts or intentions. Literally, a poker face.<br><br>`;
+    gameMode = COMPUTERTURN;
     if (input == "HIT") {
       playerCardArray = drawCards(1, shuffledDeck, playerCardArray);
+      if (computeSumCardsRanks(playerCardArray) > 21) {
+        gameMode = ENDGAME;
+      }
       myOutputValue += `You tap on the table twice, asking to draw another card.`;
     } else if (input == "STAND") {
       myOutputValue += `You shrug your shoulders and end your turn.`;
     } else {
+      gameMode = USERTURN;
       return `You hear a voice inside of your head saying: Please enter HIT or STAND only.`;
     }
-    gameMode = COMPUTERTURN;
     myOutputValue += `<br>[Press Submit to continue]`;
+    return (myOutputValue += `<hr>Coins: ${playerCoins}, Wager: ${playerWager}<br><br>Your hand: ${displayCards(
+      playerCardArray,
+      0
+    )}<br>Computer's hand: ${displayCards(computerCardArray, 1)}`);
   } else if (gameMode == COMPUTERTURN) {
-    if (computeComputerDraw(computerCardArray, 17)) {
+    if (computeIfComputerDraw(computerCardArray, 17)) {
       myOutputValue = `Without skipping a beat, you see the dealer extend its mechanical arm to draw cards.`;
       computerCardArray = drawCards(1, shuffledDeck, computerCardArray);
     } else {
@@ -41,12 +58,52 @@ var main = function (input) {
     }
     gameMode = ENDGAME;
     myOutputValue += "<br>[Press Submit to continue]";
+    return (myOutputValue += `<hr>Coins: ${playerCoins}, Wager: ${playerWager}<br><br>Your hand: ${displayCards(
+      playerCardArray,
+      0
+    )}<br>Computer's hand: ${displayCards(computerCardArray, 1)}`);
   } else if (gameMode == ENDGAME) {
-    return "You stopped here";
+    var computerFinalRanks = computeSumCardsRanks(computerCardArray);
+    var playerFinalRanks = computeSumCardsRanks(playerCardArray);
+    if (playerBlackjack && computerBlackjack) {
+      playerWinnings = 0;
+      myOutputValue = `"BLACKJA-", you stop halfway when you see the dealer reveals its hands. <br>It's a push.`;
+    } else if (playerBlackjack) {
+      playerWinnings = playerWager * 1.5;
+      myOutputValue = `"BLACKJACK!" You shout as you upper-cut the air.<br> The dealer automatically takes back your cards and pushes ${playerWinnings} coins to you.`;
+    } else if (computerBlackjack) {
+      playerWinnings = playerWager * -1.5;
+      myOutputValue = `Before you could even gesture, the dealer reveals its hands. "Blackjack," it beeps and sweeps ${Math.abs(
+        playerWinnings
+      )} coins away from you.`;
+    } else if (computerFinalRanks == playerFinalRanks) {
+      playerWinnings = 0;
+      myOutputValue = `While you are still doing the math for the dealer's cards, it takes back your cards and returns your initial bet. "Could've been worse," you muttered.`;
+    } else if (
+      (playerFinalRanks < computerFinalRanks && computerFinalRanks < 22) ||
+      playerFinalRanks > 21
+    ) {
+      playerWinnings = -playerWager;
+      myOutputValue = `"Loser," the dealer beeps and sweeps the ${Math.abs(
+        playerWinnings
+      )} coins away from you. `;
+    } else {
+      playerWinnings = playerWager;
+      myOutputValue = `While you are still doing the math for the dealer's cards, it takes back your cards and pushes ${playerWinnings} coins to you.`;
+    }
+    playerCoins += Number(playerWinnings);
+    if (playerCoins <= 0) {
+      return (myOutputValue += `<br><br>You got kicked out of the tavern because you have no more coins.<br>[END GAME]`);
+    } else {
+      gameMode = FIRSTDRAW;
+      myOutputValue += `<br><br> Almost too quickly, the dealer no longer seems to register your presence.<br>[To continue playing, input your bet and press Submit]`;
+    }
+    return (myOutputValue += `<hr>Coins: ${playerCoins}<br><br>Your hand: ${displayCards(
+      playerCardArray,
+      0
+    )}<br>Computer's hand: ${displayCards(computerCardArray, 0)}`);
+    s;
   }
-  return (myOutputValue += `<br><br>--<br><br>Player's hand: ${displayCards(
-    playerCardArray
-  )}<br>Computer's hand: ${displayCards(computerCardArray)}`);
 };
 
 var rollDice = function (max) {
@@ -78,22 +135,17 @@ var drawCards = function (numberOfDraws, cardDeck, cardArray) {
   }
   return cardArray;
 };
-var displayCards = function (cardArray) {
-  indexNumber = 0;
+var displayCards = function (cardArray, indexNumber) {
   myOutputValue = "";
-  var sumCardsRanks = 0;
   while (indexNumber < cardArray.length) {
-    sumCardsRanks = sumCardsRanks + cardArray[indexNumber].rank;
     myOutputValue += `Card ${indexNumber + 1} - ${
       cardArray[indexNumber].name
     } of ${cardArray[indexNumber].emoji}<br>`;
     indexNumber = indexNumber + 1;
   }
-  console.log("displayCards sumCardsRank: ", sumCardsRanks);
   return `<br>${myOutputValue}`;
 };
-var validateHand = function (cardArray, minRank) {
-  //Validate if sumCardsRanks < minRank i.e. flag = TRUE means did not hit minRank
+var computeSumCardsRanks = function (cardArray) {
   indexNumber = 0;
   sumCardsRanks = 0;
   var flagHaveAce = "";
@@ -104,37 +156,43 @@ var validateHand = function (cardArray, minRank) {
     sumCardsRanks = sumCardsRanks + cardArray[indexNumber].rank;
     indexNumber = indexNumber + 1;
   }
-  if (cardArray.length == 2 && sumCardsRanks == 11 && flagHaveAce) {
-    sumCardsRanks = 21; // sumCardsRanks = 21 if Ace == 1, 10, 11 in a two-card, Blackjack hand
+  if (sumCardsRanks == 2 && flagHaveAce) {
+    sumCardsRanks = 21; // sumCardsRanks = 21 if both are Aces
+  } else if (sumCardsRanks <= 11 && flagHaveAce) {
+    sumCardsRanks += 10; // Ace == 11 if sum of other cards <= 10 e.g. Ace, Nine, Ace
   }
+  console.log("validateHand sumCardsRanks: ", sumCardsRanks);
+  return sumCardsRanks;
+};
+var validateHand = function (cardArray, minRank) {
+  sumCardsRanks = computeSumCardsRanks(cardArray);
+  //Validate if sumCardsRanks < minRank i.e. flagMinRank = TRUE means did not hit minRank
   var flagMinRank = sumCardsRanks < minRank;
   return flagMinRank;
 };
-var validateBlackjack = function (playerCardArray, computerBlackjack) {
+var validateBlackjack = function (playerCardArray, computerCardArray) {
   // function validates if Blackjack end games automatically. Else, continue.
-  var playerBlackjack = !validateHand(playerCardArray, 21);
-  var computerBlackjack = !validateHand(computerCardArray, 21);
-  if (playerBlackjack || computerBlackjack) {
-    if (playerBlackjack && computerBlackjack) {
-      myOutputValue += `"BLACKJA-", you stop halfway when you see the dealer reveals its hands. <br>It's a push.`;
-    } else if (playerBlackjack) {
-      myOutputValue += `"BLACKJACK!" You shout as your upper-cut the air.<br> You have won.`;
-    } else {
-      myOutputValue += `But before you could even see your cards, the dealer reveals its hands.<br> You have lost.`;
-    }
-    gameMode = FIRSTDRAW;
-    return (myOutputValue += `<br>[Press Submit to restart the game.]`);
+  playerBlackjack = !validateHand(playerCardArray, 21);
+  computerBlackjack = !validateHand(computerCardArray, 21);
+  if (computerBlackjack) {
+    gameMode = ENDGAME;
+    return (myOutputValue += `You consider your options.<br>[Input HIT or STAND to continue]`);
+  }
+  if (playerBlackjack) {
+    gameMode = ENDGAME;
+    return (myOutputValue += `[Press Submit to continue the game.]`);
   } else {
     gameMode = USERTURN;
-    myOutputValue += `You consider your options as you review the cards.<br>[Input HIT or STAND to continue]`;
   }
+  myOutputValue += `You consider your options.<br>[Input HIT or STAND to continue]`;
 };
-var computeComputerDraw = function (cardArray, minRank) {
+var computeIfComputerDraw = function (cardArray, minRank) {
   flag = false;
   if (validateHand(cardArray, minRank)) {
     flag = true;
   } else {
-    var diceRollYes = rollDice(20);
+    // Fixed probability that Computer will draw additional card
+    var diceRollYes = rollDice(5);
     var diceRollDestiny = rollDice(20);
     console.log("diceRollYes: ", diceRollYes);
     console.log("diceRollDestiny: ", diceRollDestiny);
@@ -142,7 +200,7 @@ var computeComputerDraw = function (cardArray, minRank) {
       flag = true;
     }
   }
-  console.log("computeComputerDraw flag:", flag);
+  console.log("computeIfComputerDraw flag:", flag);
   return flag;
 };
 var makeDeck = function () {
