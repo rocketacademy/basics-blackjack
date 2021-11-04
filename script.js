@@ -9,10 +9,11 @@ let roundsPlayed = 0;
 const inputEl = document.querySelector('#input-field');
 const newGameBtn = document.querySelector('.new-game');
 const outputEl = document.querySelector('#output-div');
+const scoreboardEl = document.querySelector('#scoreboard-data');
+
 /* TODO
 add DOM elements for:
 1. New game button (done)
-3. Change submit button to match the player playing
 2. Track wins of each player
 */
 
@@ -29,11 +30,22 @@ inputEl.addEventListener('keydown', function (e) {
 
 // <--- DOM
 
+/*
+dynamic scoretable to track each player's win/loss
+1. scoretable is created when amt of players are input
+2. scoretable is updated at the end of each round
+
+scoretable to contain:
+<player name> = win: <>, draw: <>, loss: <>
+**can use spread operator
+*/
+
 /////////////////
 /// MAIN FUNCTION
 ////////
 var main = function (input) {
   if (gameMode === 'start') {
+    inputEl.placeholder = 'Follow instructions in the output.';
     // logic for 1st round of every game
     if (roundsPlayed === 0) {
       if (input >= 1) {
@@ -48,7 +60,6 @@ var main = function (input) {
       }
       // logic for every round after 1st round
     } else {
-      // DOING clear cards from existing hand
       activePlayer = 0;
       resetCards();
       dealCards(noOfPlayers);
@@ -58,6 +69,7 @@ var main = function (input) {
     }
   }
   if (gameMode === 'blackJackCheck') {
+    scoreboardEl.textContent = outputScoreboardData();
     // check if cards are blackjack for active player
     // if player's cards are blackjack, output if it is.
     if (activePlayer < playerProfiles.length) {
@@ -69,6 +81,7 @@ var main = function (input) {
       }
       gameMode = 'hit';
       // FIXME can i remove this return??
+      inputEl.placeholder = 'Follow instructions in the output.';
       return `Player's cards will be revealed in order. (Player ${
         activePlayer + 1
       } of Player ${playerProfiles.length})`;
@@ -84,6 +97,7 @@ var main = function (input) {
   // dealer logic below
   // if dealer has blackjack, check if anyone else has blackjack and they won't lose the game.
   if (gameMode === 'dealerTurn') {
+    inputEl.placeholder = 'Follow instructions in the output.';
     if (blackJackCheck(dealerCards)) {
       //  if dealer has blackjack, check if anyone else has blackjack, else everyone loses.
       let output = `Dealer has a blackjack.`;
@@ -109,6 +123,7 @@ var main = function (input) {
         } else {
           gameMode = 'checkResults';
           console.log(`Dealer's final hand is ${sum}`);
+          inputEl.placeholder = 'Click submit.';
           return `Dealer has finished his turn.`;
         }
       }
@@ -132,6 +147,7 @@ var main = function (input) {
         }
       }
       gameMode = 'start';
+      scoreboardEl.textContent = outputScoreboardData();
       return output;
     }
     // -- same => draw; > dealer => win; < dealer => lose
@@ -157,13 +173,22 @@ var main = function (input) {
     }
   }
   roundsPlayed += 1;
+  scoreboardEl.textContent = outputScoreboardData();
   return `Starting next round!`;
 };
 ////////
 /// MAIN FUNCTION
 /////////////////
 
-// reset cards for all players incl dealer DOING
+//
+const outputScoreboardData = function () {
+  let output = '';
+  for (let [i, { playerName, win, loss, draw }] of playerProfiles.entries()) {
+    output += `${playerName} -> win: ${win}, draw: ${draw}, loss: ${loss}.\r\n`;
+  }
+  return output;
+};
+
 const resetCards = function () {
   dealerCards = [];
   for (let i = 0; i < playerProfiles.length; i++) {
@@ -193,6 +218,7 @@ const sumOfEachPlayerCards = function () {
 // TODO refactor code in !input and input
 const hitOrStand = function (input) {
   // show cards for the active player
+  inputEl.placeholder = `Type 'Hit' or 'Stand' and submit.`;
   if (!input) {
     // give option to hit or stand
     let hand = playerProfiles[activePlayer].hand;
@@ -209,9 +235,8 @@ const hitOrStand = function (input) {
     return outputStr;
   }
   // if input is true, check for hit / stand
-  // TODO if cards are >2 and sum >21, end active player turn
-  if (input) {
-    input = input.toLowerCase();
+  input = input.toLowerCase();
+  if (typeof input === 'string') {
     if (input === 'hit') {
       // draw a new card
       playerProfiles[activePlayer].hand.push(deck.pop());
@@ -238,11 +263,17 @@ const hitOrStand = function (input) {
       activePlayer += 1;
       if (activePlayer === playerProfiles.length) {
         gameMode = 'dealerTurn';
+        inputEl.placeholder = 'Click submit.';
         return `Dealer's turn.`;
       }
       gameMode = 'blackJackCheck';
+      inputEl.placeholder = 'Follow instructions in the output.';
       return `Next player's turn.`;
     }
+  }
+  // prevent output from changing if input is not hit or stand
+  if (input !== 'hit' || input !== 'stand') {
+    return zzz;
   }
 };
 
@@ -359,6 +390,8 @@ const newGame = function () {
   gameMode = 'start';
   roundsPlayed = 0;
   outputEl.textContent = '';
+  scoreboardEl.textContent = 'Start playing! 🃏';
+  inputEl.placeholder = 'Press submit to start the game.';
 };
 
 // -----> BUG //
