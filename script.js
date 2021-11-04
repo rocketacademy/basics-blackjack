@@ -4,7 +4,9 @@ let dealerCards = [];
 let deck = [];
 let activePlayer = 0;
 let gameMode = 'start';
-let playerScores = [];
+let roundsPlayed = 0;
+
+const inputEl = document.querySelector('#input-field');
 
 /* TODO
 add DOM elements for:
@@ -13,20 +15,41 @@ add DOM elements for:
 2. Track wins of each player
 */
 
+// DOM --->
+// press 'enter' to submit
+inputEl.addEventListener('keydown', function (e) {
+  if (e.key === 'Enter') {
+    document.querySelector('#submit-button').click();
+  }
+});
+
+// <--- DOM
+
 /////////////////
 /// MAIN FUNCTION
 ////////
 var main = function (input) {
   if (gameMode === 'start') {
-    if (input >= 1) {
-      noOfPlayers = input;
-      newUserProfile(noOfPlayers);
+    // logic for 1st round of every game
+    if (roundsPlayed === 0) {
+      if (input >= 1) {
+        noOfPlayers = input;
+        newUserProfile(noOfPlayers);
+        dealCards(noOfPlayers);
+        // next game mode
+        gameMode = 'blackJackCheck';
+        return `Cards have been dealt to the ${noOfPlayers} players.`;
+      } else if (!noOfPlayers) {
+        return `Please enter the number of player(s) playing. (at least 1)`;
+      }
+      // logic for every round after 1st round
+    } else {
+      // DOING clear cards from existing hand
+      resetCards();
       dealCards(noOfPlayers);
       // next game mode
       gameMode = 'blackJackCheck';
-      return `Cards have been dealt to the ${noOfPlayers} players.`;
-    } else if (!noOfPlayers) {
-      return `Please enter the number of player(s) playing. (at least 1)`;
+      return `Cards have been dealt to the ${noOfPlayers} players again.`;
     }
   }
   if (gameMode === 'blackJackCheck') {
@@ -43,8 +66,9 @@ var main = function (input) {
       // FIXME can i remove this return??
       return `Player's cards will be revealed in order. (Player ${
         activePlayer + 1
-      } to Player ${playerProfiles.length})`;
+      } of Player ${playerProfiles.length})`;
     } else if (activePlayer === playerProfiles.length) {
+      gameMode = 'dealerTurn';
       return `Dealer's turn.`;
     }
   }
@@ -85,7 +109,7 @@ var main = function (input) {
     }
   }
   if (gameMode === 'checkResults') {
-    /* DOING
+    /*
   if no blackjack, compare dealer's cards with all.
     -- if dealer > 21, anyone > 21 draw, anyone < 21 win.
   */ sumOfEachPlayerCards();
@@ -101,34 +125,45 @@ var main = function (input) {
           playerProfiles[i].win += 1;
         }
       }
+      gameMode = 'start';
       return output;
     }
     // -- same => draw; > dealer => win; < dealer => lose
     else if (dealerCardSum <= 21) {
-      let output = '';
+      let output = `The sum of the dealer's cards are: ${dealerCardSum}.<br>`;
       for (const [i, { playerName, sumOfCards }] of playerProfiles.entries()) {
         if (dealerCardSum === sumOfCards) {
           output += `${playerName} has the same cards as the dealer.<br>`;
           playerProfiles[i].draw += 1;
         } else if (dealerCardSum > sumOfCards) {
-          output += `${playerName} lost to the dealer.<br>`;
+          output += `${playerName} lost to the dealer with ${sumOfCards}.<br>`;
           playerProfiles[i].loss += 1;
-        } else if (dealerCardSum < sumOfCards) {
-          output += `${playerName} won the dealer.<br>`;
-          playerProfiles[i].win += 1;
         } else if (sumOfCards > 21) {
           output += `${playerName} lost by going over 21.<br>`;
           playerProfiles[i].loss += 1;
+        } else if (dealerCardSum < sumOfCards && sumOfCards <= 21) {
+          output += `${playerName} won the dealer with ${sumOfCards}.<br>`;
+          playerProfiles[i].win += 1;
         }
       }
+      gameMode = 'start';
       return output;
     }
   }
+  roundsPlayed += 1;
+  return `Starting next round!`;
 };
-
 ////////
 /// MAIN FUNCTION
 /////////////////
+
+// reset cards for all players incl dealer DOING
+const resetCards = function () {
+  dealerCards = [];
+  for (let [i, { hand }] of playerProfiles.entries()) {
+    hand = [];
+  }
+};
 
 // check for blackJack
 // black jack = ace + 10/picture cards (max 2 cards)
