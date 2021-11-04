@@ -1,4 +1,3 @@
-// empty array - for pushing of card obj depending on no. of players
 let noOfPlayers = 0;
 let playerProfiles = [];
 let dealerCards = [];
@@ -57,38 +56,73 @@ var main = function (input) {
   // if dealer has blackjack, check if anyone else has blackjack and they won't lose the game.
   if (gameMode === 'dealerTurn') {
     if (blackJackCheck(dealerCards)) {
+      //  if dealer has blackjack, check if anyone else has blackjack, else everyone loses.
       let output = `Dealer has a blackjack.`;
-      for (const [i, { blackjack }] of playerProfiles.entries()) {
+      for (const [i, { playerName, blackjack }] of playerProfiles.entries()) {
         if (blackjack === 1) {
-          output += `<br>Player ${i} did not lose the game as player ${i} has a blackjack.`;
+          output += `<br>${playerName} did not lose the game as ${playerName} has a blackjack.`;
+        }
+        if (!blackjack) {
+          output += `<br>${playerName} lost the game as ${playerName} did not have a blackjack.`;
         }
       }
       return output;
     } else {
       // show dealer cards
-      // DOING if dealer cards are less than 17, dealer has to hit, max hand size = 5
+      // if dealer cards are less than 17, dealer has to hit, max hand size = 5
       let sum = sumOfCards(dealerCards);
       for (let i = 0; dealerCards.length <= 5; i++) {
         if (sum < 17) {
           dealerCards.push(deck.pop());
           sum = sumOfCards(dealerCards);
-          console.log(`After drawing, dealer hand is ${sum}`);
+          console.log(`After drawing, dealer's hand is ${sum}`);
         } else {
           gameMode = 'checkResults';
-          console.log(`W/o drawing, dealer hand is ${sum}`);
+          console.log(`Dealer's final hand is ${sum}`);
           return `Dealer has finished his turn.`;
         }
       }
     }
   }
   if (gameMode === 'checkResults') {
-    /*
-  if dealer has blackjack, check if anyone else has blackjack, else everyone loses.
+    /* DOING
   if no blackjack, compare dealer's cards with all.
     -- if dealer > 21, anyone > 21 draw, anyone < 21 win.
-    -- same => draw; > dealer => win; < dealer => lose
-  
-  */
+  */ sumOfEachPlayerCards();
+    let dealerCardSum = sumOfCards(dealerCards);
+    if (dealerCardSum > 21) {
+      let output = '';
+      for (const [i, { playerName, sumOfCards }] of playerProfiles.entries()) {
+        if (sumOfCards > 21) {
+          output += `${playerName} is safe.<br>`;
+          playerProfiles[i].draw += 1;
+        } else {
+          output += `${playerName} won!<br>`;
+          playerProfiles[i].win += 1;
+        }
+      }
+      return output;
+    }
+    // -- same => draw; > dealer => win; < dealer => lose
+    else if (dealerCardSum <= 21) {
+      let output = '';
+      for (const [i, { playerName, sumOfCards }] of playerProfiles.entries()) {
+        if (dealerCardSum === sumOfCards) {
+          output += `${playerName} has the same cards as the dealer.<br>`;
+          playerProfiles[i].draw += 1;
+        } else if (dealerCardSum > sumOfCards) {
+          output += `${playerName} lost to the dealer.<br>`;
+          playerProfiles[i].loss += 1;
+        } else if (dealerCardSum < sumOfCards) {
+          output += `${playerName} won the dealer.<br>`;
+          playerProfiles[i].win += 1;
+        } else if (sumOfCards > 21) {
+          output += `${playerName} lost by going over 21.<br>`;
+          playerProfiles[i].loss += 1;
+        }
+      }
+      return output;
+    }
   }
 };
 
@@ -103,6 +137,14 @@ const blackJackCheck = function (hand) {
     return true;
   } else {
     return false;
+  }
+};
+
+const sumOfEachPlayerCards = function () {
+  // loop through each player's hand, add new object sum for total
+  for (const [i, { hand }] of playerProfiles.entries()) {
+    let sum = sumOfCards(hand);
+    playerProfiles[i].sumOfCards = sum;
   }
 };
 
@@ -209,9 +251,12 @@ const dealCards = (players) => {
 const newUserProfile = function () {
   for (let i = 0; i < noOfPlayers; i++) {
     playerProfiles.push({
-      playerName: `player${i}`,
+      playerName: `Player ${i + 1}`,
       hand: [],
       blackjack: 0,
+      win: 0,
+      loss: 0,
+      draw: 0,
     });
   }
 };
