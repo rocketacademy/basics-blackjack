@@ -63,9 +63,9 @@ var isBlackJack = function (hand) {
 
 // to calculate total score of hand
 var calculateScore = function (hand) {
-  handIndex = 0;
-  handScore = 0;
-  numOfAces = 0;
+  var handIndex = 0;
+  var handScore = 0;
+  var numOfAces = 0;
   // this assumes all aces contribute to the score by 1
   while (handIndex < hand.length) {
     if (
