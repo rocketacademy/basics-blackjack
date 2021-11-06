@@ -33,7 +33,7 @@ var main = function (input) {
     playerScore = generateScore(playerHand);
     dealerScore = generateScore(dealerHand);
 
-    var showPlayerHand = showHand(playerHand);
+    var showPlayerHand = showHand(playerHand, "player");
     var showDealerFirstCard = showFirstCard(dealerHand);
 
     myOutputValue =
@@ -65,7 +65,7 @@ var main = function (input) {
         playerScore +
         "<br>" +
         "Player hand: <br><br>" +
-        showHand(playerHand) +
+        showHand(playerHand, "player") +
         "<br>" +
         "Dealer hand: <br><br>" +
         showFirstCard(dealerHand) +
@@ -99,18 +99,19 @@ var main = function (input) {
         playerScore +
         "<br>" +
         "Player hand: <br><br>" +
-        showHand(playerHand) +
+        showHand(playerHand, "player") +
         "<br>" +
         "Dealer score: " +
         dealerScore +
         "<br>" +
         "Player hand: <br><br>" +
-        showHand(dealerHand) +
-        "<br>Select start to restart game.";
+        showHand(dealerHand, "dealer") +
+        "<br>Select 'Start' or 'Restart' to restart the game.";
 
       gameMode = "gameStart";
     } else {
-      myOutputValue = "Please select 'Hit' or 'Stand' to continue.";
+      myOutputValue =
+        "Please select 'Hit' or 'Stand' to continue, or 'Restart' to restart the game";
     }
   }
   return myOutputValue;
@@ -174,12 +175,17 @@ var generateScore = function (hand) {
 
 // Show Hand
 
-var showHand = function (hand) {
+var showHand = function (hand, handType) {
   var myOutputValue = "";
   var currentIndex = 0;
   while (currentIndex < hand.length) {
     myOutputValue =
-      myOutputValue + "<img src ='" + String(hand[currentIndex].image) + "'/>";
+      myOutputValue +
+      "<img class='" +
+      handType +
+      "-hand' src ='" +
+      String(hand[currentIndex].image) +
+      "'/>";
     currentIndex++;
   }
   console.log(myOutputValue);
