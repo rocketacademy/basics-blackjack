@@ -4,14 +4,16 @@ There will be only two players. One human and one computer (for the Base solutio
 
 /*
 shuffle deck
-deal card to player, computer, player, computer
-for now - find winner
+deal card to players then computer
+check for blackjack
+for now - compute value
 */
 
 // GLOBAL VARIABLES
 var numberOfPlayers = 4;
 var numberOfDecks = 1;
 var myOutputValue = "";
+var currentIndex = 0;
 
 // GAME STATUS
 var deck = [];
@@ -19,8 +21,10 @@ var shuffledDeck = [];
 var players = [];
 
 // GAME MODE
+var mode = "init";
 var INIT = "init";
 var CHECK_FOR_BLACKJACK = "check for blackjack";
+var PLAY = "play";
 
 // create X standard 52-card deck
 var initialiseDeck = function () {
@@ -187,6 +191,21 @@ var showBlackjackMessage = function () {
   }
 };
 
+var gamePlayMessage = function () {};
+
+var gamePlay = function () {
+  // players vs dealer in blackjack
+  // show dealer hands & value
+  // show player hands & value
+  // ask player hit or stand
+  // use loop to cycle thru the players status
+  while (currentIndex < numberOfPlayers) {
+    // display hands status
+    myOutputValue = gamePlayMessage();
+    return myOutputValue;
+  }
+};
+
 var main = function (input) {
   // shuffle deck
   // deal cards to players
@@ -209,8 +228,11 @@ var main = function (input) {
       return myOutputValue;
     }
     // if no blackjack, move to next mode
-    myOutputValue = "no blackjack";
-    mode = INIT;
+    mode = PLAY;
+  }
+
+  if (mode == PLAY) {
+    gamePlay();
   }
 
   return myOutputValue;
