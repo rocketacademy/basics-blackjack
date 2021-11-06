@@ -1,5 +1,6 @@
 // created objects to store the player information
 var players = [];
+var tempBetsToAdd = [];
 var turn = 1;
 
 var dealer = {
@@ -56,6 +57,7 @@ var makePlayers = function (noOfPlayers) {
     newPerson.amount = 100;
 
     players.push(newPerson);
+    tempBetsToAdd.push(0);
   }
 };
 
@@ -88,7 +90,7 @@ var populatePlayersBets = function () {
       i + 1
     }</h5><div class="row"><div class="col-lg-12 mt-3" id="player-${
       i + 1
-    }-cards">`;
+    }">`;
 
     innerHtml += `<input type="number" class="form-control" id="player-${
       i + 1
@@ -100,6 +102,10 @@ var populatePlayersBets = function () {
   }
 
   document.getElementById("list-of-bets").innerHTML = innerHtml;
+};
+
+var populatePlayerOnTable = function () {
+  document.getElementById(`player-${turn}-cards`).innerHTML += `<img src="${players[turn-1].card[players[turn-1].card.length - 1].pic}" style="width: 75px; position: relative; margin-left: -60px" />`;
 };
 
 var populatePlayersOnTable = function () {
@@ -147,14 +153,15 @@ var playerHit = function () {
   players[turn - 1].card.push(dealtCard);
   players[turn - 1].score += dealtCard.score;
 
+  populatePlayerOnTable();
+
   if (checkBlackjack(players[turn - 1])) {
     // user wins
+    playerWins("blackjack");
   } else {
     if (checkUserScoreAbove21(players[turn - 1])) {
       // user loses
-    } else {
-      // do nothing
-      // wait for user to hit or stand
+      playerLoses();
     }
   }
 };
@@ -166,6 +173,18 @@ var playerStand = function () {
     // check dealer hands
     if (checkBlackjack(dealer)) {
       // dealer wins
+      // check whether other users got blackjack
+      // for users with blackjacks, users will not win or lose anything
+      // the rest loses
+      for (var i = 0; i < players.length; i++) {
+        if (players[i].score == 21) {
+          tempBetsToAdd[i] = 0;
+        } else {
+          tempBetsToAdd[i] = -players[i].bet;
+        }
+      }
+
+      payout();
     } else {
       // check if dealer needs to draw card
       while (checkDealerNeedToDraw()) {
@@ -181,6 +200,26 @@ var playerStand = function () {
       }
     }
   }
+};
+
+var payout = function () {
+  for (var i = 0; i < tempBetsToAdd; i++) {
+    players[i].amount += tempBetsToAdd[i];
+    players[i].bet = 0;
+    players[i].score = 0;
+  }
+};
+
+var playerWins = function (winType) {
+  if (winType == "blackjack") {
+    tempBetsToAdd[turn - 1] = players[turn - 1].bet * 1.5;
+  } else if (winType == "normal") {
+    tempBetsToAdd[turn - 1] = players[turn - 1].bet;
+  }
+};
+
+var playerLoses = function () {
+  tempBetsToAdd[turn - 1] = (-players[turn - 1].bet);
 };
 
 var checkDealerNeedToDraw = function () {
