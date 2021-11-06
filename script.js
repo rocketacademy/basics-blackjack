@@ -8,12 +8,16 @@ var dealerHand = [];
 var playerScore = 0;
 var dealerScore = 0;
 var currentIndex = 0;
+var playerTotalWins = 0;
+var dealerTotalWins = 0;
 
 var main = function (input) {
   var myOutputValue = "Error in states";
 
   if (input == "restart") {
     gameMode = "gameStart";
+    playerTotalWins = 0;
+    dealerTotalWins = 0;
   }
 
   if (gameMode == "gameStart") {
@@ -79,22 +83,30 @@ var main = function (input) {
     ) {
       var results = "";
       if (playerScore <= 21 && playerScore > dealerScore) {
-        results = "Player wins!<br>";
+        playerTotalWins += 1;
+        results = "Player wins! ";
       } else if (dealerScore <= 21 && dealerScore > playerScore) {
-        results = "Dealer wins!<br>";
+        dealerTotalWins += 1;
+        results = "Dealer wins! ";
       } else if (dealerScore == playerScore) {
-        results = "It's a tie!<br>";
+        results = "It's a tie! ";
       } else if (playerScore > 21 && dealerScore > 21) {
-        results = "You both went busts! It's a tie!<br>";
+        results = "You both went busts! It's a tie! ";
       } else if (playerScore > 21 && dealerScore <= 21) {
-        results = "You went busts! You lose!<br>";
+        dealerTotalWins += 1;
+        results = "You went busts! You lose! ";
       } else if (playerScore <= 21 && dealerScore > 21) {
-        results = "Dealer went busts! You win!<br>";
+        playerTotalWins += 1;
+        results = "Dealer went busts! You win! ";
       }
 
       myOutputValue =
         results +
-        "<br>" +
+        "Player : " +
+        playerTotalWins +
+        " | Dealer : " +
+        dealerTotalWins +
+        "<br><br>" +
         "Player score: " +
         playerScore +
         "<br>" +
