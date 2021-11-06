@@ -1,143 +1,14 @@
-var DEAL = "deal";
-var HIT = "hit";
-var STAY = "stay";
-var PLAY = "play";
-var RESULTS = "results";
-var BET = "bet";
+var YES = "yes";
+var NO = "no";
 
 //global variables
-var section = BET;
 var playerCards = [];
 var dealerCards = [];
 var playerValue = 0;
 var dealerValue = 0;
-var playerPoints = 100;
-var playerBet = 0;
+var end = NO;
 
-var main = function (input) {
-  var mydeck = generateDeck();
-  var shuffledDeck = shuffleDeck(mydeck);
-
-  if (section == BET) {
-    if (!input || isNaN(input)) {
-      return "Please input the number of points that you want to bet";
-    }
-
-    playerBet = Number(input);
-    section = DEAL;
-    return `Current Bet : ${playerBet}. <br> Remaining Points : ${playerPoints} <br> Press submit to start! `;
-  }
-
-  if (section == DEAL) {
-    var cardIndex = 0;
-    while (cardIndex < 2) {
-      playerCards[cardIndex] = shuffledDeck.pop();
-      console.log(playerCards);
-      dealerCards[cardIndex] = shuffledDeck.pop();
-      console.log(dealerCards);
-      cardIndex += 1;
-    }
-
-    var playerBlackjack = checkForBlackjack(playerCards);
-    var computerBlackjack = checkForBlackjack(dealerCards);
-    playerValue = playerCards[0].value + playerCards[1].value;
-    dealerValue = dealerCards[0].value + dealerCards[1].value;
-
-    if (playerBlackjack === true && computerBlackjack === true) {
-      return (
-        leaderboard(playerCards, playerValue, dealerCards) +
-        "<br><br> Both players have blackjacks!, Its a tie!"
-      );
-    } else if (playerBlackjack === true && computerBlackjack === false) {
-      playerPoints = playerPoints + playerBet;
-      return (
-        leaderboard(playerCards, playerValue, dealerCards) +
-        "<br><br> Player have blackjack!, You win!"
-      );
-    } else if (playerBlackjack === false && computerBlackjack === true) {
-      playerPoints = playerPoints - playerBet;
-      return (
-        leaderboard(playerCards, playerValue, dealerCards) +
-        "<br><br> Computer have blackjack!, You lose!"
-      );
-    }
-
-    section = PLAY;
-    return (
-      dealtBoard(playerCards, playerValue, dealerCards) +
-      "<br><br> Please input 'stay' or 'hit'"
-    );
-  }
-
-  if (section == PLAY) {
-    if (!input || !(input == STAY || input == HIT)) {
-      return "Please input 'stay' or 'hit'";
-    }
-
-    if (input == HIT) {
-      var newCard = shuffledDeck.pop();
-      playerCards.push(newCard);
-      console.log("New card", newCard.value);
-      playerValue = playerValue + newCard.value;
-      console.log("Player Value", playerValue);
-      playerValue = adjustForAces(playerCards, playerValue);
-
-      if (playerValue > 21 && dealerValue < 22) {
-        section = DEAL;
-        playerPoints = playerPoints - playerBet;
-        return (
-          dealtBoard(playerCards, playerValue, dealerCards) +
-          `<br><br> You Bust! You Lose <br> <br><br> Remaining points <br>  ${playerPoints} <br><br> Press Submit to start a new game`
-        );
-      }
-
-      return (
-        dealtBoard(playerCards, playerValue, dealerCards) +
-        "<br><br> Please input 'stay' or 'hit'"
-      );
-    }
-
-    if (input == STAY) {
-      while (dealerValue <= 15) {
-        newCard = shuffledDeck.pop();
-        dealerCards.push(newCard);
-        dealerValue = dealerValue + newCard.value;
-        dealerValue = adjustForAces(dealerCards, dealerValue);
-      }
-
-      if (playerValue > 21 && dealerValue < 22) {
-        playerPoints = playerPoints - playerBet;
-        myOutputValue = "<br><br> You Bust! You Lose";
-      } else if (playerValue < 22 && dealerValue > 21) {
-        playerPoints = playerPoints + playerBet;
-        myOutputValue = "<br><br> Computer Bust! You Win";
-      } else if (playerValue > 21 && dealerValue > 21) {
-        myOutputValue = "<br><br> Both Busts! Its a draw";
-      } else if (playerValue < dealerValue) {
-        playerPoints = playerPoints - playerBet;
-        myOutputValue = "<br><br> You Lose!";
-      } else if (playerValue > dealerValue) {
-        playerPoints = playerPoints + playerBet;
-        myOutputValue = "<br><br> You Win!";
-      } else if (playerValue == dealerValue) {
-        myOutputValue = "<br><br> Its a Draw!";
-      }
-
-      section = BET;
-      cardIndex = 0;
-      myOutputValue =
-        leaderboard(playerCards, playerValue, dealerCards, dealerValue) +
-        myOutputValue;
-      playerCards = [];
-      dealerCards = [];
-      return (
-        myOutputValue +
-        `<br><br> Remaining points : <br> ${playerPoints} <br><br> Press Submit to start a new game`
-      );
-    }
-  }
-};
-
+//Helper Functions
 //Generating the deck
 var generateDeck = function () {
   deck = [];
@@ -292,4 +163,137 @@ var adjustForAces = function (array, value) {
 
   console.log("Value", value);
   return value;
+};
+
+var onButton = function (btn, btn2) {
+  hitButton.disabled = false;
+  standButton.disabled = false;
+};
+
+var offButton = function (btn, btn2) {
+  hitButton.disabled = true;
+  standButton.disabled = true;
+};
+
+//Stand Button
+var standButton = document.createElement("BUTTON");
+standButton.innerHTML = "Stand";
+var dealButton = document.getElementById("submit-button");
+dealButton.insertAdjacentElement("afterend", standButton);
+standButton.addEventListener("click", function () {
+  var result = standFunction();
+  var output = document.querySelector("#output-div");
+  output.innerHTML = result;
+});
+
+//hit Button
+var hitButton = document.createElement("BUTTON");
+hitButton.innerHTML = "Hit";
+dealButton.insertAdjacentElement("afterend", hitButton);
+hitButton.addEventListener("click", function () {
+  var result = hitFunction();
+  var output = document.querySelector("#output-div");
+  output.innerHTML = result;
+});
+
+//Deck Functions
+var mydeck = generateDeck();
+var shuffledDeck = shuffleDeck(mydeck);
+
+//Buttons should start with being disabled
+hitButton.disabled = true;
+standButton.disabled = true;
+
+//Function for Deal
+var main = function () {
+  playerCards = [];
+  dealerCards = [];
+  mydeck = generateDeck();
+  shuffledDeck = shuffleDeck(mydeck);
+  var cardIndex = 0;
+  while (cardIndex < 2) {
+    playerCards[cardIndex] = shuffledDeck.pop();
+    console.log(playerCards);
+    dealerCards[cardIndex] = shuffledDeck.pop();
+    console.log(dealerCards);
+    cardIndex += 1;
+  }
+
+  var playerBlackjack = checkForBlackjack(playerCards);
+  var computerBlackjack = checkForBlackjack(dealerCards);
+  playerValue = playerCards[0].value + playerCards[1].value;
+  dealerValue = dealerCards[0].value + dealerCards[1].value;
+
+  if (playerBlackjack === true && computerBlackjack === true) {
+    return (
+      leaderboard(playerCards, playerValue, dealerCards) +
+      "<br><br> Both players have blackjacks!, Its a tie!"
+    );
+  } else if (playerBlackjack === true && computerBlackjack === false) {
+    return (
+      leaderboard(playerCards, playerValue, dealerCards) +
+      "<br><br> Player have blackjack!, You win!"
+    );
+  } else if (playerBlackjack === false && computerBlackjack === true) {
+    return (
+      leaderboard(playerCards, playerValue, dealerCards) +
+      "<br><br> Computer have blackjack!, You lose!"
+    );
+  }
+
+  onButton(hitButton, standButton);
+  return (
+    dealtBoard(playerCards, playerValue, dealerCards) +
+    "<br><br> Please press either 'stay' or 'hit'"
+  );
+};
+
+//Function for Hit
+var hitFunction = function () {
+  var newCard = shuffledDeck.pop();
+  playerCards.push(newCard);
+  playerValue = playerValue + newCard.value;
+  playerValue = adjustForAces(playerCards, playerValue);
+  var myOutputValue = dealtBoard(playerCards, playerValue, dealerCards);
+
+  if (playerValue > 21 && dealerValue < 22) {
+    offButton(hitButton, standButton);
+    return (
+      myOutputValue +
+      `<br><br> You Bust! You Lose <br><br> Press DEAL to start a new game`
+    );
+  }
+
+  return myOutputValue + "<br><br> Please press either 'stay' or 'hit'";
+};
+
+//Function for Stand
+var standFunction = function () {
+  while (dealerValue <= 15) {
+    newCard = shuffledDeck.pop();
+    dealerCards.push(newCard);
+    dealerValue = dealerValue + newCard.value;
+    dealerValue = adjustForAces(dealerCards, dealerValue);
+  }
+
+  if (playerValue > 21 && dealerValue < 22) {
+    myOutputValue = "<br><br> You Bust! You Lose";
+  } else if (playerValue < 22 && dealerValue > 21) {
+    myOutputValue = "<br><br> Computer Bust! You Win";
+  } else if (playerValue > 21 && dealerValue > 21) {
+    myOutputValue = "<br><br> Both Busts! Its a draw";
+  } else if (playerValue < dealerValue) {
+    myOutputValue = "<br><br> You Lose!";
+  } else if (playerValue > dealerValue) {
+    myOutputValue = "<br><br> You Win!";
+  } else if (playerValue == dealerValue) {
+    myOutputValue = "<br><br> Its a Draw!";
+  }
+
+  offButton(hitButton, standButton);
+  return (
+    leaderboard(playerCards, playerValue, dealerCards, dealerValue) +
+    myOutputValue +
+    `<br><br> Press Submit to start a new game`
+  );
 };
