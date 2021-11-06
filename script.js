@@ -1,16 +1,24 @@
-var YES = "yes";
-var NO = "no";
-
 //global variables
 var playerCards = [];
 var dealerCards = [];
 var playerValue = 0;
 var dealerValue = 0;
-var end = NO;
+
+var dealImage =
+  '<img src="https://c.tenor.com/NZB5RaiKFcAAAAAC/poker-face-poker.gif"/>';
+
+var loseImage =
+  '<img src="https://c.tenor.com/7VaYNM9vMCwAAAAC/oops-died.gif"/>';
+
+var hitImage =
+  '<img src="https://c.tenor.com/_82scURBBBAAAAAC/gambling-mac-miller.gif"/>';
+
+var winImage =
+  '<img src="https://c.tenor.com/QhyEXjZ1PcEAAAAC/win-brad-pitt.gif"/>';
 
 //Helper Functions
 //Generating the deck
-var generateDeck = function () {
+https: var generateDeck = function () {
   deck = [];
   var suits = ["hearts", "diamonds", "clubs", "spades"];
   var index = 0;
@@ -231,11 +239,13 @@ var main = function () {
     );
   } else if (playerBlackjack === true && computerBlackjack === false) {
     return (
+      winImage +
       leaderboard(playerCards, playerValue, dealerCards) +
       "<br><br> Player have blackjack!, You win!"
     );
   } else if (playerBlackjack === false && computerBlackjack === true) {
     return (
+      loseImage +
       leaderboard(playerCards, playerValue, dealerCards) +
       "<br><br> Computer have blackjack!, You lose!"
     );
@@ -243,6 +253,7 @@ var main = function () {
 
   onButton(hitButton, standButton);
   return (
+    dealImage +
     dealtBoard(playerCards, playerValue, dealerCards) +
     "<br><br> Please press either 'stay' or 'hit'"
   );
@@ -259,12 +270,15 @@ var hitFunction = function () {
   if (playerValue > 21 && dealerValue < 22) {
     offButton(hitButton, standButton);
     return (
+      loseImage +
       myOutputValue +
       `<br><br> You Bust! You Lose <br><br> Press DEAL to start a new game`
     );
   }
 
-  return myOutputValue + "<br><br> Please press either 'stay' or 'hit'";
+  return (
+    hitImage + myOutputValue + "<br><br> Please press either 'stay' or 'hit'"
+  );
 };
 
 //Function for Stand
@@ -279,13 +293,13 @@ var standFunction = function () {
   if (playerValue > 21 && dealerValue < 22) {
     myOutputValue = "<br><br> You Bust! You Lose";
   } else if (playerValue < 22 && dealerValue > 21) {
-    myOutputValue = "<br><br> Computer Bust! You Win";
+    myOutputValue = winImage + "<br><br> Computer Bust! You Win";
   } else if (playerValue > 21 && dealerValue > 21) {
     myOutputValue = "<br><br> Both Busts! Its a draw";
   } else if (playerValue < dealerValue) {
     myOutputValue = "<br><br> You Lose!";
   } else if (playerValue > dealerValue) {
-    myOutputValue = "<br><br> You Win!";
+    myOutputValue = winImage + "<br><br> You Win!";
   } else if (playerValue == dealerValue) {
     myOutputValue = "<br><br> Its a Draw!";
   }
