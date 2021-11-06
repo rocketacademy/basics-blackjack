@@ -9,7 +9,6 @@ for now - find winner
 */
 
 // GLOBAL VARIABLES
-var mode = "init";
 var numberOfPlayers = 4;
 var numberOfDecks = 1;
 var myOutputValue = "";
