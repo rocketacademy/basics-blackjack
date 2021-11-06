@@ -150,9 +150,7 @@ var checkInstantWin = function () {
       " of " +
       playerHand[1].suit +
       "<br> Click Submit to play a new hand";
-    turnTracker = 0;
-    playerHand = [];
-    dealerHand = [];
+    resetGame();
   }
   //PLAYER WINS. player opens with A-A, dealer opens smaller
   else if (turnTracker == 0 && playerHandValue == 22 && dealerHandValue < 21) {
@@ -166,9 +164,7 @@ var checkInstantWin = function () {
       " of " +
       playerHand[1].suit +
       "<br> Click Submit to play a new hand";
-    turnTracker = 0;
-    playerHand = [];
-    dealerHand = [];
+    resetGame();
   }
   //DEALER WINS. dealer opens with A-Face, player opens smaller
   else if (turnTracker == 0 && dealerHandValue == 21 && playerHandValue < 21) {
@@ -182,9 +178,7 @@ var checkInstantWin = function () {
       " of " +
       dealerHand[1].suit +
       "<br> Click Submit to play a new hand";
-    turnTracker = 0;
-    playerHand = [];
-    dealerHand = [];
+    resetGame();
   }
   //DEALER WINS. dealer opens with A-Face, player opens smaller
   else if (turnTracker == 0 && dealerHandValue == 22 && playerHandValue < 21) {
@@ -198,9 +192,7 @@ var checkInstantWin = function () {
       " of " +
       dealerHand[1].suit +
       "<br> Click Submit to play a new hand";
-    turnTracker = 0;
-    playerHand = [];
-    dealerHand = [];
+    resetGame();
   }
   // Draw at the open, player and dealer opens A-Face or A-A together
   else if (
@@ -225,9 +217,7 @@ var checkInstantWin = function () {
       " of " +
       playerHand[1].suit +
       "<br> Click Submit to play a new hand";
-    turnTracker = 0;
-    playerHand = [];
-    dealerHand = [];
+    resetGame();
   }
 };
 //sum up both player and dealer hand from scratch
@@ -246,12 +236,22 @@ var sumHandFunction = function () {
   }
 };
 
+// FUNCTION - RESET GAME
+var resetGame = function () {
+  turnTracker = 0;
+  playerHand = [];
+  dealerHand = [];
+  newDeck = makeDeck();
+  shuffledDeck = shuffleCards(newDeck);
+};
+
 // FUNCTION - player draws 1 card
 var playerDraw = function () {
   playerCard = shuffledDeck.pop();
   console.log("Player drew a " + playerCard.name);
 
   playerHand.push(playerCard);
+  //when person has 3 cards or above = ace is value 1
   if (playerCard.name == "ace") {
     playerCard.value = 1;
   }
@@ -276,6 +276,10 @@ var dealerDraw = function () {
   dealerCard = shuffledDeck.pop();
   console.log("Dealer drew a " + dealerCard.name);
   dealerHand.push(dealerCard);
+  //when person has 3 cards or above = ace is value 1
+  if (dealerCard.name == "ace") {
+    dealerCard.value = 1;
+  }
 
   dealerSumCounter = 0;
   dealerHandValue = 0;
@@ -292,22 +296,10 @@ var dealerDraw = function () {
   console.log(dealerHandValue);
 };
 
-//when player has 3 cards or above = ace is value 1
-
-//if player has 21 in the opening hand, they win 2x
-//if player has 22 in the opening hand, they win 3x
-
-//if dealer hand value is above 21 = dealer loses
-//if player hand value is above dealer hand value = player wins
-
-// show hand
-//if player hand value is below dealer hand value = dealer wins
-//(jack/queen/ king is 10) (ace is 1 or 11)
-
 var main = function (input) {
   //declare output value
 
-  //if no cards are in player of dealer Hands
+  //if no cards are in player or dealer Hands
   if (playerHand == "" || dealerHand == "") {
     dealCards();
     if (playerHand[0].value + playerHand[1].value < 16) {
@@ -370,9 +362,7 @@ var main = function (input) {
       "<br>Dealer has a hand value of " +
       dealerHandValue +
       ". <br> Click Submit to play a new hand";
-    turnTracker = 0;
-    playerHand = [];
-    dealerHand = [];
+    resetGame();
   } // PLAYER LOSES. no one goes bust. Player hand is smaller than dealer hand
   else if (
     turnTracker == 3 &&
@@ -386,9 +376,7 @@ var main = function (input) {
       "<br>Dealer has a hand value of " +
       dealerHandValue +
       ". <br> Click Submit to play a new hand";
-    turnTracker = 0;
-    playerHand = [];
-    dealerHand = [];
+    resetGame();
     // PLAYER WINS. no one goes bust. Player hand is larger than dealer hand
   } else if (
     turnTracker == 3 &&
@@ -402,9 +390,7 @@ var main = function (input) {
       "<br>Dealer has a hand value of " +
       dealerHandValue +
       ". <br> Click Submit to play a new hand";
-    turnTracker = 0;
-    playerHand = [];
-    dealerHand = [];
+    resetGame();
     // PLAYER WINS. player does not go bust, dealer goes bust
   } else if (
     turnTracker == 3 &&
@@ -417,9 +403,7 @@ var main = function (input) {
       "<br>Player does no exceed 21 with a hand value of " +
       playerHandValue +
       ". <br> Click Submit to play a new hand";
-    turnTracker = 0;
-    playerHand = [];
-    dealerHand = [];
+    resetGame();
   }
   // player and dealer draw
   else if (
@@ -434,9 +418,7 @@ var main = function (input) {
       "<br>Dealer has a hand value of " +
       dealerHandValue +
       ". <br> Click Submit to play a new hand";
-    turnTracker = 0;
-    playerHand = [];
-    dealerHand = [];
+    resetGame();
   }
 
   checkInstantWin();
