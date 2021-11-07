@@ -1,7 +1,3 @@
-var main = function (input) {
-  var myOutputValue = "hello world";
-  return myOutputValue;
-};
 var pokerCardDeck = [];
 var gameMode = "Prepare Deck";
 var myOutputValue = "";
@@ -126,7 +122,8 @@ var playerName1 = "player 1";
 var compareResults = function (
   playerName,
   playerNoTotalResults,
-  dealerTotalResults
+  dealerTotalResults,
+  playerNo
 ) {
   var myOutputValue = "";
   //Draw condition : both player and dealer busts
@@ -137,6 +134,10 @@ var compareResults = function (
     myOutputValue = `${playerName} has drawn with dealer!`;
     // player win condition : player did not bust, but dealer bust
   } else if (dealerTotalResults > 21 && playerNoTotalResults <= 21) {
+    //blackjack
+    if (playerNoTotalResults == 21 && playerNo.length == 2) {
+      myOutputValue = `${playerName} has won with a blackjack!!`;
+    }
     myOutputValue = `${playerName} has won against the dealer!`;
     // player win condition : player has more score than dealer, Note that this is placed after the else if where player did not bust, but dealer did
   } else if (playerNoTotalResults > 21 && dealerTotalResults <= 21) {
@@ -153,11 +154,26 @@ var compareResults = function (
 
 // Add score function
 var addScore = function (playerNo) {
+  var acesInHand = 0;
   var counter = 0;
   var totalScore = 0;
   while (counter < playerNo.length) {
     totalScore += playerNo[counter].score;
+    if (playerNo[counter].rank === 1) {
+      totalScore += 10;
+      acesInHand += 1;
+    }
     counter += 1;
+  }
+  if (totalScore > 21 && acesInHand > 0) {
+    var aceCounter = 0;
+    while (aceCounter < acesInHand) {
+      totalScore -= 10;
+      if (totalScore <= 21) {
+        break;
+      }
+      aceCounter += 1;
+    }
   }
   return totalScore;
 };
