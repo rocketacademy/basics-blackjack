@@ -96,7 +96,6 @@
         font-family: "Open Sans", sans-serif;
         margin-left: 30px;
         margin-right: 30px;
-        /* background-color: white; */
         color: black; /* sets the font color */
         background-image: url(""); /* The image used */
         background-position: center; /* Center the image */
@@ -146,9 +145,7 @@
         line-height: 33px;
         margin: 0 0 23px 0;
         padding: 0 6px;
-        /* border: solid; */
         background-color: yellow;
-        /* border-color: red; */
         color: red;
       }
 
@@ -168,18 +165,16 @@
         float: right;
       }
       label {
-        color: yellow;
-        /* background-color: red; */
-        /* text-align: center; */
+        color: red;
         padding: 10px;
         margin-right: 10px;
       }
       .bet {
-        background-color: red;
-        color: yellow;
+        background: radial-gradient(circle, white 25%, transparent 65%) black;
+        color: red;
         display: inline;
         border-radius: 60px;
-        border-color: white;
+        border: 5px dotted red;
         width: 60px;
         height: 60px;
       }
@@ -241,8 +236,8 @@
       >
       <div id="bet-block">
         <label>BETS </label>
-        <button class="bet" id="five">$5</button>
-        <button class="bet" id="ten">$10</button>
+        <button class="bet" id="five">5</button>
+        <button class="bet" id="ten">10</button>
         <!-- <p>Output:</p> -->
       </div>
 
