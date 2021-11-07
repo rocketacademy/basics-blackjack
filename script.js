@@ -43,7 +43,22 @@ var initialiseDeck = function () {
     "Queen",
     "King",
   ];
-  var values = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10];
+  var values = [
+    // Ace represents 2 values while other cards represent 1 value
+    [1, 11],
+    [2, 2],
+    [3, 3],
+    [4, 4],
+    [5, 5],
+    [6, 6],
+    [7, 7],
+    [8, 8],
+    [9, 9],
+    [10, 10],
+    [10, 10],
+    [10, 10],
+    [10, 10],
+  ];
   var ranks = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
   var suits = ["Spades", "Hearts", "Diamonds", "Clubs"];
 
@@ -128,8 +143,15 @@ var showHandMessage = function () {
       players[i].hands[0].name + " of " + players[i].hands[0].suit;
     var secondCard =
       players[i].hands[1].name + " of " + players[i].hands[1].suit;
-    var value = players[i].hands[0].value + players[i].hands[1].value;
-    myOutputValue += `${name}, your hands are ${firstCard} and ${secondCard} (Value: ${value}).<br>`;
+    var valueOne = players[i].hands[0].value[0] + players[i].hands[1].value[0];
+    var valueTwo = players[i].hands[0].value[1] + players[i].hands[1].value[1];
+
+    // if value one and value two are same, only display 1 value
+    if (valueOne == valueTwo) {
+      myOutputValue += `${name}, your hands are ${firstCard} and ${secondCard} (Value: ${valueOne}).<br>`;
+    } else {
+      myOutputValue += `${name}, your hands are ${firstCard} and ${secondCard} (Value: ${valueOne} or ${valueTwo}).<br>`;
+    }
   }
 };
 
@@ -144,8 +166,8 @@ var playersGotBlackjack = function () {
     var hasAce = checkForAce(firstCardName, SecondCardName);
 
     // check if got 10s
-    var firstCardValue = players[i].hands[0].value;
-    var SecondCardValue = players[i].hands[1].value;
+    var firstCardValue = players[i].hands[0].value[0];
+    var SecondCardValue = players[i].hands[1].value[0];
     var hasTen = checkForTen(firstCardValue, SecondCardValue);
 
     // check if got blackjack
@@ -228,10 +250,15 @@ var main = function (input) {
       return myOutputValue;
     }
     // if no blackjack, move to next mode
+    myOutputValue = `Nobody got blackjack.
+    <br>
+    Moving on to game.`;
     mode = PLAY;
+    return myOutputValue;
   }
 
   if (mode == PLAY) {
+    //
     gamePlay();
   }
 
