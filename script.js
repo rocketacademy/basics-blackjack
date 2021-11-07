@@ -2,17 +2,25 @@ var cardDeck;
 var playerHand = [];
 var playerScore = 0;
 var dealerHand = [];
+var playerWallet = 100;
+var playerBet = 0;
 var gameMode = "firstdeal"; // 'playerhitorstand' // 'dealerturn'
 
 var main = function (input) {
   if (gameMode == "firstdeal") {
+    if (Number.isNaN(Number(input)) || !input) {
+      return "Please input your bet";
+    }
+    playerBet = Number(input);
+    playerWallet -= playerBet;
     playerHand = [];
     playerScore = 0;
     dealerHand = [];
     //create a shuffled deck of 52 cards
     cardDeck = shuffleCards(makeDeck());
     //firstDealCards adds 2 cards to all players' hand and returns the result of the first deal and any possible blackjack scenarios
-    var myOutputValue = firstDealCards();
+    var myOutputValue = `Your bet is $${playerBet}<br>` + firstDealCards();
+    myOutputValue += `<br><br>You now have $${playerWallet}`;
     return myOutputValue;
   }
 
@@ -32,11 +40,10 @@ var main = function (input) {
       playerScore = findScoreOfHand(playerHand);
 
       if (playerScore > 21) {
-        //end the game if player busts by returning to initial game mode
-        gameMode = "firstdeal";
+        gameMode = "dealerturn";
         return (
           displayPlayerHands +
-          `<br>Your current score is ${playerScore}<br>I am sorry, you bust, click refresh to play another round`
+          `<br>Your current score is ${playerScore}<br>I am sorry, you bust, click Submit to pass the turn to the dealer`
         );
       }
       displayPlayerHands += `<br>Your current score is ${playerScore}<br>Do you want to hit (Type h) or stand (Type s)?`;
@@ -63,25 +70,42 @@ var main = function (input) {
     if (dealerScore > 21) {
       //end the game if dealer busts by returning to initial game mode
       gameMode = "firstdeal";
+      if (playerScore > 21) {
+        playerWallet += playerBet;
+        return (
+          displayDealerHands +
+          `<br>The dealer bust together with you with score of ${dealerScore}, place another bet and click refresh to play another round<br><br>You now have $${playerWallet}`
+        );
+      }
+      playerWallet += playerBet * 2;
       return (
         displayDealerHands +
-        `<br>The dealer bust with score of ${dealerScore}, click refresh to play another round`
+        `<br>The dealer bust with score of ${dealerScore}, place another bet and click refresh to play another round<br><br>You now have $${playerWallet}`
       );
     }
-    displayDealerHands += `<br>You scored ${playerScore}. The dealer scored ${dealerScore}<br>`;
+
     //Determine the winner
+    if (playerScore > 21) {
+      displayDealerHands += `The dealer won as you got bust just now! <br>Place another bet and click refresh to play another round<br><br>You now have $${playerWallet}`;
+      gameMode = "firstdeal";
+      return displayDealerHands;
+    }
+    displayDealerHands += `<br>You scored ${playerScore}. The dealer scored ${dealerScore}<br>`;
+
     if (dealerScore > playerScore) {
       displayDealerHands += "The dealer won!";
     }
     if (dealerScore == playerScore) {
+      playerWallet += playerBet;
       displayDealerHands += "You tied with the dealer";
     }
     if (dealerScore < playerScore) {
+      playerWallet += playerBet * 2;
       displayDealerHands += "You won!!";
     }
     //end the game by returning to initial game mode
     gameMode = "firstdeal";
-    return displayDealerHands + "<br>Click refresh to play another round";
+    return `${displayDealerHands}<br>Place another bet and click refresh to play another round<br><br>You now have $${playerWallet}`;
   }
 };
 
@@ -211,13 +235,13 @@ var firstDealCards = function () {
   //end the game if dealer gets blackjack or if both dealer and player blackjack
   if (isBlackjack(playerHand) && isBlackjack(dealerHand)) {
     gameMode = "firstdeal";
-    return (displayHands +=
-      "<br>Holy Moly, both of you got blackjack!<br>Click refresh to play another round");
+    playerWallet += playerBet;
+    return (displayHands += `<br>Holy Moly, both of you got blackjack!<br>Place another bet and click refresh to play another round`);
   }
   if (isBlackjack(dealerHand)) {
     gameMode = "firstdeal";
     return (displayHands +=
-      "<br>The dealer won by black jack!<br>Click refresh to play another round");
+      "<br>The dealer won by black jack!<br>Place another bet and click refresh to play another round");
   }
   playerScore = playerHand[0].rank + playerHand[1].rank;
   //increase the score by 10 if ace card is dealt
@@ -240,9 +264,9 @@ var firstDealCards = function () {
     suitImage(playerHand[1].suit);
   //end the game if player got black jack
   if (isBlackjack(playerHand)) {
+    playerWallet += playerBet * 2.5;
     gameMode = "firstdeal";
-    return (displayHands +=
-      "<br>You won by black jack!<br>Click refresh to play another round");
+    return (displayHands += `<br>You won by black jack!<br>Place another bet and click refresh to play another round`);
   }
 
   gameMode = "playerhitorstand";
