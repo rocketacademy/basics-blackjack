@@ -317,7 +317,7 @@ const dealHitStay = (input) => {
     const findFirstPlayer2HitOrStay = () => {
       for (let i = 0; i < players.length; i++) {
         if (players[i].playing === true) {
-          myOutputValue += `=== Hit or Stay ===<br>${intermittentCardValueDisplay()}Click Hit or Stay.`;
+          myOutputValue += `<br>=== Hit or Stay ===<br>${intermittentCardValueDisplay()}Click Hit or Stay.`;
           return myOutputValue;
         } else {
           myOutputValue = `===this round is over===`;
