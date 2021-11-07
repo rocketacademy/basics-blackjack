@@ -206,7 +206,7 @@ var rankPlayer = function (input) {
     } else if (playerDeckRank.name == "ace") {
       totalPlayerRank += 11;
       aceCounter += 1;
-      if (computerAce > 1) {
+      if (aceCounter > 1) {
         totalPlayerRank = totalPlayerRank - (aceCounter - 1) * 10;
       }
     } else {
@@ -303,7 +303,8 @@ var main = function (input) {
       else if (playerHasBlackJack == true && dealerHasBlackJack == false) {
         outputMessage =
           displayPlayerAndDealerHands(playerHand, computerHand) +
-          "<br>Player wins by Black Jack!";
+          "<br>Player wins by Black Jack!" +
+          playerBJ;
       }
       // Condition when only dealer has black jack
       else {
