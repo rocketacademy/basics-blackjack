@@ -89,7 +89,8 @@ var main = function (input) {
     myOutputValue = compareResults(
       playerName1,
       player1TotalScore,
-      computerTotalScore
+      computerTotalScore,
+      player1
     );
   }
   return myOutputValue;
