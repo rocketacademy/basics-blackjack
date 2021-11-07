@@ -149,8 +149,22 @@ var cardsMessage = function (playerHand, computerHand) {
 // function to sum cards' value
 var sumOfCardsVal = function (cardArray) {
   var cardsVal = 0;
+  // checking number of ace in hand
+  var aceCounter = 0;
   for (i = 0; i < cardArray.length; i += 1) {
+    var currCard = cardArray[i];
+    if (currCard.name == "ace") {
+      aceCounter += 1;
+    }
     cardsVal += cardArray[i].value;
+  }
+  // check for the ace in hand
+  // if total hand value > 21, reduce hand value by 10
+  for (i = 0; i < aceCounter; i += 1) {
+    if (cardsVal > 21) {
+      cardsVal = cardsVal - 10;
+      console.log(cardsVal);
+    }
   }
   return cardsVal;
 };
@@ -240,6 +254,13 @@ var main = function (input) {
       playerHandVal = sumOfCardsVal(playerHand);
       computerHandVal = sumOfCardsVal(computerHand);
 
+      // after player decides hit/stand, dealer to hit if its hand sum less than 17.
+      // loop such that if dealer hand sum => 17, no card will be drawn.
+      while (computerHandVal < 17) {
+        computerHand.push(shuffledDeck.pop());
+        console.log(computerHand);
+        computerHandVal = sumOfCardsVal(computerHand);
+      }
       // compare player and dealer cards to determine outcome
       outputMessage =
         cardsMessage(playerHand, computerHand) +
