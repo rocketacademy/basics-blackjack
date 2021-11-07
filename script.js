@@ -13,7 +13,7 @@ for now - compute value
 var numberOfPlayers = 4;
 var numberOfDecks = 1;
 var myOutputValue = "";
-var currentIndex = 0;
+var currentPlayer = 0;
 
 // GAME STATUS
 var deck = [];
@@ -25,6 +25,7 @@ var mode = "init";
 var INIT = "init";
 var CHECK_FOR_BLACKJACK = "check for blackjack";
 var PLAY = "play";
+var PROMPT = "prompt";
 
 // create X standard 52-card deck
 var initialiseDeck = function () {
@@ -216,16 +217,17 @@ var showBlackjackMessage = function () {
 var gamePlayMessage = function () {};
 
 var gamePlay = function () {
-  // players vs dealer in blackjack
-  // show dealer hands & value
-  // show player hands & value
-  // ask player hit or stand
-  // use loop to cycle thru the players status
-  while (currentIndex < numberOfPlayers) {
-    // display hands status
-    myOutputValue = gamePlayMessage();
-    return myOutputValue;
-  }
+  // display hands status
+  myOutputValue = gamePlayMessage();
+  return myOutputValue;
+};
+
+var promptPlayers = function () {
+  myOutputValue = "";
+  var dealerValueOne =
+    players[numberOfPlayers - 1].hands[0].value[0] +
+    players[numberOfPlayers - 1].hands[1].value[0];
+  myOutputValue = dealerValueOne;
 };
 
 var main = function (input) {
@@ -253,13 +255,31 @@ var main = function (input) {
     myOutputValue = `Nobody got blackjack.
     <br>
     Moving on to game.`;
-    mode = PLAY;
+    mode = PROMPT;
+    return myOutputValue;
+  }
+
+  if (mode == PROMPT) {
+    // display dealer hands
+    // display current player hands
+    // prompt to hit or stand
+    while (currentPlayer < numberOfPlayers) {
+      promptPlayers();
+      break;
+    }
     return myOutputValue;
   }
 
   if (mode == PLAY) {
-    //
-    gamePlay();
+    // players vs dealer in blackjack
+    // show dealer hands & value
+    // show player hands & value
+    // ask player hit or stand
+    // use loop to cycle thru the players status
+    var userInput = input; // hit or stand
+    while (currentPlayer < numberOfPlayers) {
+      gamePlay(userInput);
+    }
   }
 
   return myOutputValue;
