@@ -9,14 +9,15 @@ var main = function (input) {
     playerHand = [];
     playerScore = 0;
     dealerHand = [];
+    //create a shuffled deck of 52 cards
     cardDeck = shuffleCards(makeDeck());
-    //cardDeck = makeDeck();
-
+    //firstDealCards adds 2 cards to all players' hand and returns the result of the first deal and any possible blackjack scenarios
     var myOutputValue = firstDealCards();
     return myOutputValue;
   }
 
   if (gameMode == "playerhitorstand") {
+    //input validation for the player's hit or stand decision
     if (!(input == "h" || input == "s")) {
       return `Your current hand is<br>${displayHand(
         playerHand
@@ -24,12 +25,14 @@ var main = function (input) {
     }
     if (input == "h") {
       var newPlayerCard = cardDeck.pop();
+      //deal a new card into player hand
       playerHand.push(newPlayerCard);
       var displayPlayerHands = "You currently have these cards:<br>";
       displayPlayerHands += displayHand(playerHand);
       playerScore = findScoreOfHand(playerHand);
 
       if (playerScore > 21) {
+        //end the game if player busts by returning to initial game mode
         gameMode = "firstdeal";
         return (
           displayPlayerHands +
@@ -40,6 +43,7 @@ var main = function (input) {
       return displayPlayerHands;
     }
     if (input == "s") {
+      //show the player score and pass the turn to dealer
       gameMode = "dealerturn";
       return `You decided to stand. Your current score is ${playerScore}, click Submit to pass the turn to the dealer`;
     }
@@ -47,6 +51,7 @@ var main = function (input) {
 
   if (gameMode == "dealerturn") {
     var dealerScore = findScoreOfHand(dealerHand);
+    // dealer will keep drawing new card if it scores less than 17
     while (dealerScore < 17) {
       var newDealerCard = cardDeck.pop();
       dealerHand.push(newDealerCard);
@@ -56,6 +61,7 @@ var main = function (input) {
     displayDealerHands += displayHand(dealerHand);
 
     if (dealerScore > 21) {
+      //end the game if dealer busts by returning to initial game mode
       gameMode = "firstdeal";
       return (
         displayDealerHands +
@@ -63,7 +69,7 @@ var main = function (input) {
       );
     }
     displayDealerHands += `<br>You scored ${playerScore}. The dealer scored ${dealerScore}<br>`;
-
+    //Determine the winner
     if (dealerScore > playerScore) {
       displayDealerHands += "The dealer won!";
     }
@@ -73,7 +79,7 @@ var main = function (input) {
     if (dealerScore < playerScore) {
       displayDealerHands += "You won!!";
     }
-
+    //end the game by returning to initial game mode
     gameMode = "firstdeal";
     return displayDealerHands + "<br>Click refresh to play another round";
   }
@@ -160,7 +166,7 @@ var shuffleCards = function (cardDeck) {
   // Return the shuffled deck
   return cardDeck;
 };
-
+//converts suit name into its image emoji
 var suitImage = function (suitName) {
   if (suitName == "hearts") {
     image = "♥️";
@@ -178,16 +184,13 @@ var suitImage = function (suitName) {
 };
 
 var firstDealCards = function () {
-  //cardDeck = makeDeck();
+  //deal 2 cards to player
   playerHand[0] = cardDeck.pop();
   playerHand[1] = cardDeck.pop();
-  // playerHand[0] = cardDeck[0];
-  // playerHand[1] = cardDeck[10];
-
+  //deal 2 cards to dealer
   dealerHand[0] = cardDeck.pop();
   dealerHand[1] = cardDeck.pop();
-  // dealerHand[0] = cardDeck[0];
-  // dealerHand[1] = cardDeck[10];
+
   var displayHands =
     "Dealer has " +
     dealerHand[0].name +
@@ -205,7 +208,7 @@ var firstDealCards = function () {
     playerHand[1].name +
     " of " +
     suitImage(playerHand[1].suit);
-
+  //end the game if dealer gets blackjack or if both dealer and player blackjack
   if (isBlackjack(playerHand) && isBlackjack(dealerHand)) {
     gameMode = "firstdeal";
     return (displayHands +=
@@ -217,9 +220,11 @@ var firstDealCards = function () {
       "<br>The dealer won by black jack!<br>Click refresh to play another round");
   }
   playerScore = playerHand[0].rank + playerHand[1].rank;
+  //increase the score by 10 if ace card is dealt
   if (playerHand[0].rank == 1 || playerHand[1].rank == 1) {
     playerScore += 10;
   }
+  //change display to have 1 dealer card face down
   displayHands =
     "Dealer has " +
     dealerHand[0].name +
@@ -233,7 +238,7 @@ var firstDealCards = function () {
     playerHand[1].name +
     " of " +
     suitImage(playerHand[1].suit);
-
+  //end the game if player got black jack
   if (isBlackjack(playerHand)) {
     gameMode = "firstdeal";
     return (displayHands +=
@@ -248,11 +253,11 @@ var firstDealCards = function () {
 
   return displayHands;
 };
-
+// returns true if blackjack condition met for first 2 cards dealt
 var isBlackjack = function (hand) {
   if (
     (hand[0].rank == 1 && hand[1].rank == 10) ||
-    (hand[1].rank == 1 && handd[0].rank == 10)
+    (hand[1].rank == 1 && hand[0].rank == 10)
   ) {
     return true;
   } else {
@@ -260,6 +265,7 @@ var isBlackjack = function (hand) {
   }
 };
 
+//prints all the cards in a given hand
 var displayHand = function (hand) {
   var printHands = "";
   for (var cardCount = 0; cardCount < hand.length; cardCount++) {
@@ -269,9 +275,10 @@ var displayHand = function (hand) {
   }
   return printHands;
 };
-
+//finds the score of a given hand
 var findScoreOfHand = function (hand) {
   var score = 0;
+  //tracker for any ace card which got assigned higher value of 11
   var numLargeAce = 0;
 
   for (var cardCount = 0; cardCount < hand.length; cardCount++) {
@@ -282,7 +289,7 @@ var findScoreOfHand = function (hand) {
       numLargeAce = 1;
     }
     //Decrease any large Ace value by 10 to prevent bust
-    if (numLargeAce == 1 && playerScore > 21) {
+    if (numLargeAce == 1 && score > 21) {
       score -= 10;
       numLargeAce = 0;
     }
