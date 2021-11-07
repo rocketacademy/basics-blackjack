@@ -17,7 +17,12 @@ var main = function (input) {
   }
 
   if (gameMode == "playerhitorstand") {
-    if (input == "hit") {
+    if (!(input == "h" || input == "s")) {
+      return `Your current hand is<br>${displayHand(
+        playerHand
+      )}Please type h to hit or s to stand`;
+    }
+    if (input == "h") {
       var newPlayerCard = cardDeck.pop();
       playerHand.push(newPlayerCard);
       var displayPlayerHands = "You currently have these cards:<br>";
@@ -31,10 +36,10 @@ var main = function (input) {
           `<br>Your current score is ${playerScore}<br>I am sorry, you bust, click refresh to play another round`
         );
       }
-      displayPlayerHands += `<br>Your current score is ${playerScore}<br>Do you want to hit or stand?`;
+      displayPlayerHands += `<br>Your current score is ${playerScore}<br>Do you want to hit (Type h) or stand (Type s)?`;
       return displayPlayerHands;
     }
-    if (input == "stand") {
+    if (input == "s") {
       gameMode = "dealerturn";
       return `You decided to stand. Your current score is ${playerScore}, click Submit to pass the turn to the dealer`;
     }
@@ -173,16 +178,49 @@ var suitImage = function (suitName) {
 };
 
 var firstDealCards = function () {
+  //cardDeck = makeDeck();
   playerHand[0] = cardDeck.pop();
   playerHand[1] = cardDeck.pop();
+  // playerHand[0] = cardDeck[0];
+  // playerHand[1] = cardDeck[10];
 
   dealerHand[0] = cardDeck.pop();
   dealerHand[1] = cardDeck.pop();
+  // dealerHand[0] = cardDeck[0];
+  // dealerHand[1] = cardDeck[10];
+  var displayHands =
+    "Dealer has " +
+    dealerHand[0].name +
+    " of " +
+    suitImage(dealerHand[0].suit) +
+    " and " +
+    dealerHand[1].name +
+    " of " +
+    suitImage(dealerHand[1].suit) +
+    "<br>You have " +
+    playerHand[0].name +
+    " of " +
+    suitImage(playerHand[0].suit) +
+    " and " +
+    playerHand[1].name +
+    " of " +
+    suitImage(playerHand[1].suit);
+
+  if (isBlackjack(playerHand) && isBlackjack(dealerHand)) {
+    gameMode = "firstdeal";
+    return (displayHands +=
+      "<br>Holy Moly, both of you got blackjack!<br>Click refresh to play another round");
+  }
+  if (isBlackjack(dealerHand)) {
+    gameMode = "firstdeal";
+    return (displayHands +=
+      "<br>The dealer won by black jack!<br>Click refresh to play another round");
+  }
   playerScore = playerHand[0].rank + playerHand[1].rank;
   if (playerHand[0].rank == 1 || playerHand[1].rank == 1) {
     playerScore += 10;
   }
-  var displayHands =
+  displayHands =
     "Dealer has " +
     dealerHand[0].name +
     " of " +
@@ -196,22 +234,30 @@ var firstDealCards = function () {
     " of " +
     suitImage(playerHand[1].suit);
 
-  if (
-    (playerHand[0].rank == 1 && playerHand[1].rank == 10) ||
-    (playerHand[1].rank == 1 && playerHand[0].rank == 10)
-  ) {
+  if (isBlackjack(playerHand)) {
     gameMode = "firstdeal";
-    displayHands +=
-      "<br>You win by black jack!<br>Click refresh to play another round";
-  } else {
-    gameMode = "playerhitorstand";
-    displayHands +=
-      "<br>Your current score is " +
-      playerScore +
-      "<br>Do you want to hit or stand?";
+    return (displayHands +=
+      "<br>You won by black jack!<br>Click refresh to play another round");
   }
 
+  gameMode = "playerhitorstand";
+  displayHands +=
+    "<br>Your current score is " +
+    playerScore +
+    "<br>Do you want to hit (Type h) or stand (Type s)?";
+
   return displayHands;
+};
+
+var isBlackjack = function (hand) {
+  if (
+    (hand[0].rank == 1 && hand[1].rank == 10) ||
+    (hand[1].rank == 1 && handd[0].rank == 10)
+  ) {
+    return true;
+  } else {
+    return false;
+  }
 };
 
 var displayHand = function (hand) {
