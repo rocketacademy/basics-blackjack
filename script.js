@@ -25,6 +25,13 @@ var computerHandVal;
 var shuffledDeck;
 var outputMessage = "";
 
+// game modes
+var DEAL_CARDS = "deal cards";
+var HIT_OR_STAND = "choose hit or stand";
+
+// initialise game mode to start with deal cards
+var gameMode = DEAL_CARDS;
+
 var makeDeck = function () {
   // Initialise an empty deck array
   var cardDeck = [];
@@ -127,6 +134,18 @@ var printCards = function (cards) {
   return returnString;
 };
 
+// function to display default message for player and computer/dealer cards
+var cardsMessage = function (playerHand, computerHand) {
+  var playerHandVal = sumOfCardsVal(playerHand);
+  var computerHandVal = sumOfCardsVal(computerHand);
+  var message = `Player cards: ${printCards(
+    playerHand
+  )} <br> Total value: ${playerHandVal} <br><br> Dealer cards: ${printCards(
+    computerHand
+  )} <br> Total value: ${computerHandVal}`;
+  return message;
+};
+
 // function to sum cards' value
 var sumOfCardsVal = function (cardArray) {
   var cardsVal = 0;
@@ -165,45 +184,77 @@ var compareCards = function (playerHand, computerHand) {
 };
 
 var main = function (input) {
-  // shuffle deck and save it in a new variable shuffledDeck
-  var cardDeck = makeDeck();
-  shuffledDeck = shuffleCards(cardDeck);
-  // user clicks submit to deal cards
-  // computer gets 2 cards
-  // player gets 2 cards
-  playerHand = [shuffledDeck.pop(), shuffledDeck.pop()];
-  computerHand = [shuffledDeck.pop(), shuffledDeck.pop()];
+  if (gameMode == DEAL_CARDS) {
+    // shuffle deck and save it in a new variable shuffledDeck
+    var cardDeck = makeDeck();
+    shuffledDeck = shuffleCards(cardDeck);
+    // user clicks submit to deal cards
+    // computer gets 2 cards
+    // player gets 2 cards
+    playerHand = [shuffledDeck.pop(), shuffledDeck.pop()];
+    computerHand = [shuffledDeck.pop(), shuffledDeck.pop()];
 
-  ///this is for testing
-  // playerHand = [
-  //   { name: "queen", suit: "spades", rank: 12, value: 10 },
-  //   { name: "ace", suit: "diamonds", rank: 1, value: 11 },
-  // ];
-  console.log("player hand");
-  console.log(playerHand);
+    ///this is for testing
+    // playerHand = [
+    //   { name: "queen", suit: "spades", rank: 12, value: 10 },
+    //   { name: "ace", suit: "diamonds", rank: 1, value: 11 },
+    // ];
+    console.log("player hand");
+    console.log(playerHand);
 
-  // sum up cards' value for player and computer
-  playerHandVal = sumOfCardsVal(playerHand);
-  computerHandVal = sumOfCardsVal(computerHand);
+    // sum up cards' value for player and computer
+    outputMessage = cardsMessage(playerHand, computerHand);
+    // switch game mode to choose hit or stand
+    gameMode = HIT_OR_STAND;
 
-  outputMessage = `Player cards: ${printCards(
-    playerHand
-  )} <br> Total value: ${playerHandVal} <br><br> Dealer cards: ${printCards(
-    computerHand
-  )} <br> Total value: ${computerHandVal}`;
-
-  // if blackjack, determine winner
-
-  if (isBlackjack(playerHand) && !isBlackjack(computerHand)) {
-    return `${outputMessage} <br><br> Player won by Blackjack! <br><br> Click submit to play again!`;
+    // if blackjack, determine winner
+    // user clicks submit to restart game
+    if (isBlackjack(playerHand) && !isBlackjack(computerHand)) {
+      gameMode = DEAL_CARDS;
+      return `${outputMessage} <br><br> Player won by Blackjack! <br><br> Click submit to play again!`;
+    }
+    if (!isBlackjack(playerHand) && isBlackjack(computerHand)) {
+      gameMode = DEAL_CARDS;
+      return `${outputMessage} <br><br> Dealer won by Blackjack! <br><br> Click submit to play again!`;
+    }
+    if (isBlackjack(playerHand) && isBlackjack(computerHand)) {
+      gameMode = DEAL_CARDS;
+      return `${outputMessage} <br><br> It's a Blackjack tie! <br><br> Click submit to play again!`;
+    }
   }
-  if (!isBlackjack(playerHand) && isBlackjack(computerHand)) {
-    return `${outputMessage} <br><br> Dealer won by Blackjack! <br><br> Click submit to play again!`;
+  // if player sum less than 21, player to type hit OR stand and submit
+  if (gameMode == HIT_OR_STAND) {
+    var hitOrStandMsg = `Please input "hit" (to draw another card from deck) or "stand" (to not draw any card).`;
+    if (input == "") {
+      return `${outputMessage} <br> ${hitOrStandMsg}`;
+    }
+    if (input == "hit") {
+      playerHand.push(shuffledDeck.pop());
+      console.log(playerHand);
+      playerHandVal = sumOfCardsVal(playerHand);
+      console.log("player hand value: " + playerHandVal);
+      outputMessage = cardsMessage(playerHand, computerHand);
+      return `${outputMessage} <br> ${hitOrStandMsg}`;
+    }
+    if (input == "stand") {
+      playerHandVal = sumOfCardsVal(playerHand);
+      computerHandVal = sumOfCardsVal(computerHand);
+
+      // compare player and dealer cards to determine outcome
+      outputMessage =
+        cardsMessage(playerHand, computerHand) +
+        compareCards(playerHand, computerHand);
+      // switch game mode to restart game
+      gameMode = DEAL_CARDS;
+      return `${outputMessage} <br><br> Click submit to play again!`;
+    }
+    // input validation
+    else {
+      outputMessage = `Invalid input. Please input "hit" or "stand" only. <br><br> ${cardsMessage(
+        playerHand,
+        computerHand
+      )}`;
+    }
+    return outputMessage;
   }
-  if (isBlackjack(playerHand) && isBlackjack(computerHand)) {
-    return `${outputMessage} <br><br> It's a Blackjack tie! <br><br> Click submit to play again!`;
-  }
-  // if not blackjack, compare player and dealer cards to determine outcome
-  outputMessage = outputMessage + compareCards(playerHand, computerHand);
-  return `${outputMessage} <br><br> Click submit to play again!`;
 };
