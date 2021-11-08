@@ -65,7 +65,7 @@
 
     <style>
       body {
-        background-color: #218c74;
+        background-color: #ffc312;
       }
 
       #blackjack-table {
@@ -164,7 +164,7 @@
                   class="text-white normal"
                   style="font-size: 1rem; margin-bottom: 0.5rem"
                 >
-                  Welcome to WSC!
+                  Welcome to WSC Blackjack!
                 </p>
                 <p
                   class="text-white normal"
@@ -190,8 +190,8 @@
                     max="6"
                     id="no-of-players"
                     class="form-control normal"
-                    placeholder="Enter no. of people"
-                    aria-label="Enter no. of people"
+                    placeholder="No. of people. Max 6."
+                    aria-label="No. of people. Max 6."
                     aria-describedby="button-addon2"
                     onkeyup="checkNoOfPeopleNotEmpty()"
                     onmouseup="checkNoOfPeopleNotEmpty()"
@@ -220,7 +220,7 @@
                   class="text-white normal"
                   style="font-size: 1rem; margin-bottom: 0.5rem"
                 >
-                  Welcome to WSC!
+                  Welcome to WSC Blackjack!
                 </p>
                 <p
                   class="text-white normal"
@@ -286,7 +286,10 @@
       // // };
       var checkNoOfPeopleNotEmpty = function () {
         if (document.getElementById("no-of-players").value.length !== 0) {
-          if (document.getElementById("no-of-players").value <= 0) {
+          if (
+            document.getElementById("no-of-players").value <= 0 ||
+            document.getElementById("no-of-players").value > 6
+          ) {
             document.getElementById("place-bets-button").disabled = true;
           } else {
             document.getElementById("place-bets-button").disabled = false;

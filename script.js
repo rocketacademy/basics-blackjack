@@ -24,9 +24,11 @@ var startRound = function (noOfPlayers) {
   document.getElementById("play-time").style.display = "";
 
   for (var i = 0; i < players.length; i++) {
-    players[i].bet = parseInt(
-      document.getElementById(`player-${i + 1}-bet`).value
-    );
+    if (!players[i].eliminated) {
+      players[i].bet = parseInt(
+        document.getElementById(`player-${i + 1}-bet`).value
+      );
+    }
   }
 
   var deck = makeDeck();
@@ -62,6 +64,7 @@ var makePlayers = function (noOfPlayers) {
     newPerson.bet = 0;
     newPerson.amount = 100;
     newPerson.color = `#${Math.floor(Math.random() * 16777215).toString(16)}`;
+    newPerson.eliminated = false;
 
     players.push(newPerson);
     tempBetsToAdd.push(0);
@@ -96,40 +99,63 @@ var populatePlayersBets = function () {
   var innerHtml = "";
 
   for (var i = 0; i < players.length; i++) {
-    innerHtml += `<div class="col col-lg-2 text-center"><h5 class="bangers" style="color: ${
-      players[i].color
-    }">Player ${i + 1}</h5><p class="text-white mb-2 mt-2 normal">Amount: ${
-      players[i].amount
-    }</p><div class="row"><div class="col-lg-12 mt-3" id="player-${i + 1}">`;
+    if (players[i].amount !== 0) {
+      innerHtml += `<div class="col col-lg-2 text-center"><h5 class="bangers" style="color: ${
+        players[i].color
+      }">Player ${i + 1}</h5><p class="text-white mb-2 mt-2 normal">Amount: ${
+        players[i].amount
+      }</p><div class="row"><div class="col-lg-12 mt-3" id="player-${i + 1}">`;
 
-    innerHtml += `<input type="number" class="form-control normal" id="player-${
-      i + 1
-    }-bet" min="1" max="${players[i].amount}" placeholder="Player ${
-      i + 1
-    } bet amount." onkeyup="checkWhetherCanStartRound()" onmouseup="checkWhetherCanStartRound()"/>`;
+      innerHtml += `<input type="number" class="form-control normal" id="player-${
+        i + 1
+      }-bet" min="1" max="${players[i].amount}" placeholder="Player ${
+        i + 1
+      } bet amount." onkeyup="checkWhetherCanStartRound(this)" onmouseup="checkWhetherCanStartRound(this)"/>`;
 
-    innerHtml += `</div></div></div></div>`;
+      innerHtml += `</div></div></div></div>`;
+    } else {
+      innerHtml += `<div class="col col-lg-2 text-center"><div class="card" style="background: black; height: 100%;"><div class="card-body"><h5 class="bangers" style="color: ${
+        players[i].color
+      }; margin-top: 13px;">Player ${
+        i + 1
+      }</h5><h5 class="bangers text-white">💀 Eliminated 💀</h5></div></div></div>`;
+    }
   }
 
   document.getElementById("list-of-bets").innerHTML = innerHtml;
+  document.getElementById("start-round").disabled = true;
 };
 
 var resetRound = function () {
+  turn = -1;
   for (var i = 0; i < players.length; i++) {
     players[i].card = [];
     players[i].score = 0;
+    if (players[i].eliminated == false && turn == -1) {
+      turn = i + 1;
+    }
   }
   dealer.card = [];
   dealer.score = 0;
-  turn = 1;
 };
 
-var checkWhetherCanStartRound = function () {
+var checkWhetherCanStartRound = function (input) {
   // check whether i can enable the start round button
   // all players must have entered their bet amount
 
+  var playerId = input.id.split("-")[1];
+  var enteredValue = input.value;
+
+  if (enteredValue <= 0 || enteredValue > players[playerId - 1].amount) {
+    document.getElementById("start-round").disabled = true;
+    return;
+  }
+
   for (var i = 0; i < players.length; i++) {
-    if (document.getElementById(`player-${i + 1}-bet`).value.length == 0) {
+    if (
+      players[i].eliminated == false &&
+      document.getElementById(`player-${i + 1}-bet`).value.length == 0
+    ) {
       document.getElementById("start-round").disabled = true;
       return;
     }
@@ -149,17 +175,81 @@ var populatePlayerOnTable = function () {
 var populatePlayersOnTable = function () {
   var innerHtml = "";
 
-  if (turn !== players.length) {
+  if (turn <= players.length) {
     for (var i = 0; i < players.length; i++) {
-      innerHtml += `<div class="col col-lg-2 text-center"><h5 class="bangers" style="color: ${
-        players[i].color
-      }">Player ${
-        i + 1
-      }</h5><div class="row"><div class="col-lg-12 mt-3" id="player-${
-        i + 1
-      }-cards">`;
+      if (players[i].eliminated) {
+        innerHtml += `<div class="col col-lg-2 text-center"><div class="card" style="background: black; height: 100%;"><div class="card-body"><h5 class="bangers" style="color: ${
+          players[i].color
+        }; margin-top: 13px;">Player ${
+          i + 1
+        }</h5><h5 class="bangers text-white">💀 Eliminated 💀</h5></div></div></div>`;
+      } else {
+        innerHtml += `<div class="col col-lg-2 text-center"><h5 class="bangers" style="color: ${
+          players[i].color
+        }">Player ${
+          i + 1
+        }</h5><div class="row"><div class="col-lg-12 mt-3" id="player-${
+          i + 1
+        }-cards">`;
 
-      if (turn == players.length) {
+        if (turn == players.length) {
+          for (var j = 0; j < players[i].card.length; j++) {
+            if (j !== 0) {
+              innerHtml += `<img src="${players[i].card[j].pic}" style="width: 75px; position: relative; margin-left: -60px" />`;
+            } else {
+              innerHtml += `<img src="${players[i].card[j].pic}" style="width: 75px; position: relative;" />`;
+            }
+          }
+        } else {
+          for (var j = 0; j < players[i].card.length; j++) {
+            if (i + 1 == turn) {
+              if (j !== 0) {
+                innerHtml += `<img src="${players[i].card[j].pic}" style="width: 75px; position: relative; margin-left: -60px" />`;
+              } else {
+                innerHtml += `<img src="${players[i].card[j].pic}" style="width: 75px; position: relative;" />`;
+              }
+            } else {
+              if (j !== 0) {
+                innerHtml += `<img src="./images/cards/back.png" style="width: 75px; position: relative; margin-left: -60px" />`;
+              } else {
+                innerHtml += `<img src="./images/cards/back.png" style="width: 75px; position: relative;" />`;
+              }
+            }
+          }
+        }
+
+        innerHtml += `</div></div>`;
+
+        if (i == turn - 1) {
+          innerHtml += `<div id="player-${i + 1}-info">`;
+        } else {
+          innerHtml += `<div id="player-${i + 1}-info" style="display: none">`;
+        }
+
+        innerHtml += `<p class="text-white mb-2 mt-2 normal">Score: <span id="player-${
+          i + 1
+        }-score">${players[i].score}</span> | Bet: ${
+          players[i].bet
+        }</p><div class="btn-group" role="group" aria-label="Basic example"><button type="button" class="btn btn-dark btn-lg bangers" onmouseup="playerHit()">Hit</button><button type="button" class="btn btn-light btn-lg bangers" onmouseup="nextTurn()">Stand</button></div></div></div>`;
+      }
+    }
+  } else {
+    for (var i = 0; i < players.length; i++) {
+      if (players[i].eliminated) {
+        innerHtml += `<div class="col col-lg-2 text-center"><div class="card" style="background: black; height: 100%;"><div class="card-body"><h5 class="bangers" style="color: ${
+          players[i].color
+        }; margin-top: 13px;">Player ${
+          i + 1
+        }</h5><h5 class="bangers text-white">💀 Eliminated 💀</h5></div></div></div>`;
+      } else {
+        innerHtml += `<div class="col col-lg-2 text-center"><h5 class="bangers" style="color: ${
+          players[i].color
+        }">Player ${
+          i + 1
+        }</h5><div class="row"><div class="col-lg-12 mt-3" id="player-${
+          i + 1
+        }-cards">`;
+
         for (var j = 0; j < players[i].card.length; j++) {
           if (j !== 0) {
             innerHtml += `<img src="${players[i].card[j].pic}" style="width: 75px; position: relative; margin-left: -60px" />`;
@@ -167,71 +257,23 @@ var populatePlayersOnTable = function () {
             innerHtml += `<img src="${players[i].card[j].pic}" style="width: 75px; position: relative;" />`;
           }
         }
-      } else {
-        for (var j = 0; j < players[i].card.length; j++) {
-          if (i + 1 == turn) {
-            if (j !== 0) {
-              innerHtml += `<img src="${players[i].card[j].pic}" style="width: 75px; position: relative; margin-left: -60px" />`;
-            } else {
-              innerHtml += `<img src="${players[i].card[j].pic}" style="width: 75px; position: relative;" />`;
-            }
-          } else {
-            if (j !== 0) {
-              innerHtml += `<img src="./images/cards/back.png" style="width: 75px; position: relative; margin-left: -60px" />`;
-            } else {
-              innerHtml += `<img src="./images/cards/back.png" style="width: 75px; position: relative;" />`;
-            }
-          }
-        }
-      }
 
-      innerHtml += `</div></div>`;
-
-      if (i == 0) {
+        innerHtml += `</div></div>`;
         innerHtml += `<div id="player-${i + 1}-info">`;
-      } else {
-        innerHtml += `<div id="player-${i + 1}-info" style="display: none">`;
-      }
+        innerHtml += `<p class="text-white mb-2 mt-2 normal">Score: <span id="player-${
+          i + 1
+        }-score">${players[i].score}</span> | Bet: ${players[i].bet}</p>`;
 
-      innerHtml += `<p class="text-white mb-2 mt-2 normal">Score: <span id="player-${
-        i + 1
-      }-score">${players[i].score}</span> | Bet: ${
-        players[i].bet
-      }</p><div class="btn-group" role="group" aria-label="Basic example"><button type="button" class="btn btn-dark btn-lg bangers" onmouseup="playerHit()">Hit</button><button type="button" class="btn btn-light btn-lg bangers" onmouseup="nextTurn()">Stand</button></div></div></div>`;
-    }
-  } else {
-    for (var i = 0; i < players.length; i++) {
-      innerHtml += `<div class="col col-lg-2 text-center"><h5 class="bangers" style="color: ${
-        players[i].color
-      }">Player ${
-        i + 1
-      }</h5><div class="row"><div class="col-lg-12 mt-3" id="player-${
-        i + 1
-      }-cards">`;
-
-      for (var j = 0; j < players[i].card.length; j++) {
-        if (j !== 0) {
-          innerHtml += `<img src="${players[i].card[j].pic}" style="width: 75px; position: relative; margin-left: -60px" />`;
+        if (tempBetsToAdd[i] < 0) {
+          innerHtml += `<h5 class="mb-2 mt-2 bangers" style="color: #EA2027">🤕 LOSE 🤕</h5>`;
+        } else if (tempBetsToAdd[i] > 0) {
+          innerHtml += `<h5 class="mb-2 mt-2 bangers" style="color: #C4E538">🤑 WIN 🤑</h5>`;
         } else {
-          innerHtml += `<img src="${players[i].card[j].pic}" style="width: 75px; position: relative;" />`;
+          innerHtml += `<h5 class="mb-2 mt-2 bangers" style="color: #FFC312">😑 TIE 😑</h5>`;
         }
+
+        innerHtml += `</div></div>`;
       }
-
-      innerHtml += `</div></div>`;
-      innerHtml += `<div id="player-${i + 1}-info">`;
-      innerHtml += `<p class="text-white mb-2 mt-2 normal">Score: <span id="player-${
-        i + 1
-      }-score">${players[i].score}</span> | Bet: ${players[i].bet}</p>`;
-
-      if (tempBetsToAdd[i] < 0) {
-        innerHtml += `<h5 class="mb-2 mt-2 bangers" style="color: #EA2027">LOSE</h5>`;
-      } else if (tempBetsToAdd[i] > 0) {
-        innerHtml += `<h5 class="mb-2 mt-2 bangers" style="color: #006266">WIN</h5>`;
-      } else {
-        innerHtml += `<h5 class="mb-2 mt-2 bangers" style="color: #FFC312">TIE</h5>`;
-      }
-
-      innerHtml += `</div></div>`;
     }
 
     innerHtml += `<hr /><div class="row justify-content-center"><div class="text-center"><button class="btn btn-dark btn-lg bangers" type="button" onclick="populatePlayersBets()">Place Bets</button></div></div>`;
@@ -268,19 +310,22 @@ var nextTurn = function () {
   if (turn == players.length) {
     // all players have gone through their turns
     // show all cards
-    console.log("show all cards");
+    turn++;
     // show dealer cards
     // if dealer below 17 draw
     showDealerCards();
     populatePlayersOnTable();
+    checkIfPlayerEliminated();
   } else {
-    console.log("line 194");
-    console.log("nextTurn");
-
     // go to next player
+    // if next player is eliminated, go to next player
     hideCurrentPlayerCards();
     turn++;
     showCurrentPlayerCards();
+
+    if (players[turn - 1].eliminated) {
+      nextTurn();
+    }
   }
 };
 
@@ -309,35 +354,39 @@ var showDealerCards = function () {
 };
 
 var hideCurrentPlayerCards = function () {
-  var innerHtml = "";
-  for (var i = 0; i < players[turn - 1].card.length; i++) {
-    if (i !== 0) {
-      innerHtml += `<img src="./images/cards/back.png" style="width: 75px; position: relative; margin-left: -60px" />`;
-    } else {
-      innerHtml += `<img src="./images/cards/back.png" style="width: 75px; position: relative;" />`;
+  if (!players[turn - 1].eliminated) {
+    var innerHtml = "";
+    for (var i = 0; i < players[turn - 1].card.length; i++) {
+      if (i !== 0) {
+        innerHtml += `<img src="./images/cards/back.png" style="width: 75px; position: relative; margin-left: -60px" />`;
+      } else {
+        innerHtml += `<img src="./images/cards/back.png" style="width: 75px; position: relative;" />`;
+      }
     }
-  }
 
-  document.getElementById(`player-${turn}-cards`).innerHTML = innerHtml;
-  document.getElementById(`player-${turn}-info`).style.display = "none";
+    document.getElementById(`player-${turn}-cards`).innerHTML = innerHtml;
+    document.getElementById(`player-${turn}-info`).style.display = "none";
+  }
 };
 
 var showCurrentPlayerCards = function () {
-  var innerHtml = "";
-  for (var i = 0; i < players[turn - 1].card.length; i++) {
-    if (i !== 0) {
-      innerHtml += `<img src="${
-        players[turn - 1].card[i].pic
-      }" style="width: 75px; position: relative; margin-left: -60px" />`;
-    } else {
-      innerHtml += `<img src="${
-        players[turn - 1].card[i].pic
-      }" style="width: 75px; position: relative;" />`;
+  if (!players[turn - 1].eliminated) {
+    var innerHtml = "";
+    for (var i = 0; i < players[turn - 1].card.length; i++) {
+      if (i !== 0) {
+        innerHtml += `<img src="${
+          players[turn - 1].card[i].pic
+        }" style="width: 75px; position: relative; margin-left: -60px" />`;
+      } else {
+        innerHtml += `<img src="${
+          players[turn - 1].card[i].pic
+        }" style="width: 75px; position: relative;" />`;
+      }
     }
-  }
 
-  document.getElementById(`player-${turn}-cards`).innerHTML = innerHtml;
-  document.getElementById(`player-${turn}-info`).style.display = "";
+    document.getElementById(`player-${turn}-cards`).innerHTML = innerHtml;
+    document.getElementById(`player-${turn}-info`).style.display = "";
+  }
 };
 
 var playerWins = function (winType) {
@@ -401,48 +450,62 @@ var compareUsers = function () {
   // check if dealer score is 21
   if (dealer.score == 21) {
     for (var i = 0; i < players.length; i++) {
-      if (players[i].score == 21) {
-        tempBetsToAdd[i] = 0;
-      } else {
-        tempBetsToAdd[i] = -players[i].bet;
-      }
+      if (!players[i].eliminated) {
+        if (players[i].score == 21) {
+          tempBetsToAdd[i] = 0;
+        } else {
+          tempBetsToAdd[i] = -players[i].bet;
+        }
 
-      players[i].amount += tempBetsToAdd[i];
+        players[i].amount += tempBetsToAdd[i];
+      }
     }
   } else if (dealer.score > 21) {
     for (var i = 0; i < players.length; i++) {
-      if (players[i].score == 21) {
-        tempBetsToAdd[i] = players[i].bet * 1.5;
-      } else if (players[i].score > 21) {
-        tempBetsToAdd[i] = -players[i].bet;
-      } else {
-        tempBetsToAdd[i] = players[i].bet;
-      }
+      if (!players[i].eliminated) {
+        if (players[i].score == 21) {
+          tempBetsToAdd[i] = players[i].bet * 1.5;
+        } else if (players[i].score > 21) {
+          tempBetsToAdd[i] = -players[i].bet;
+        } else {
+          tempBetsToAdd[i] = players[i].bet;
+        }
 
-      players[i].amount += tempBetsToAdd[i];
+        players[i].amount += tempBetsToAdd[i];
+      }
     }
   } else {
     for (var i = 0; i < players.length; i++) {
-      if (players[i].score == 21) {
-        tempBetsToAdd[i] = players[i].bet * 1.5;
-      } else if (players[i].score > dealer.score && players[i].score < 21) {
-        tempBetsToAdd[i] = players[i].bet;
-      } else if (players[i].score == dealer.score) {
-        tempBetsToAdd[i] = 0;
-      } else {
-        tempBetsToAdd[i] = -players[i].bet;
-      }
+      if (!players[i].eliminated) {
+        if (players[i].score == 21) {
+          tempBetsToAdd[i] = players[i].bet * 1.5;
+        } else if (players[i].score > dealer.score && players[i].score < 21) {
+          tempBetsToAdd[i] = players[i].bet;
+        } else if (players[i].score == dealer.score) {
+          tempBetsToAdd[i] = 0;
+        } else {
+          tempBetsToAdd[i] = -players[i].bet;
+        }
 
-      players[i].amount += tempBetsToAdd[i];
+        players[i].amount += tempBetsToAdd[i];
+      }
     }
+  }
+};
+
+var checkIfPlayerEliminated = function () {
+  for (var i = 0; i < players.length; i++) {
+    players[i].eliminated = players[i].amount == 0;
   }
 };
 
 var giveAllPlayers1Card = function () {
   for (var i = 0; i < players.length; i++) {
-    var dealtCard = dealCard(shuffledDeck);
-    players[i].card.push(dealtCard);
-    players[i].score += dealtCard.score;
+    if (!players[i].eliminated) {
+      var dealtCard = dealCard(shuffledDeck);
+      players[i].card.push(dealtCard);
+      players[i].score += dealtCard.score;
+    }
   }
 };
 
