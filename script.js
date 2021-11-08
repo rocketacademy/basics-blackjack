@@ -23,6 +23,12 @@ var startRound = function (noOfPlayers) {
   document.getElementById("place-bets").style.display = "none";
   document.getElementById("play-time").style.display = "";
 
+  for (var i = 0; i < players.length; i++) {
+    players[i].bet = parseInt(
+      document.getElementById(`player-${i + 1}-bet`).value
+    );
+  }
+
   var deck = makeDeck();
   shuffledDeck = shuffleCards(deck);
 
@@ -55,6 +61,7 @@ var makePlayers = function (noOfPlayers) {
     newPerson.score = 0;
     newPerson.bet = 0;
     newPerson.amount = 100;
+    newPerson.color = `#${Math.floor(Math.random() * 16777215).toString(16)}`;
 
     players.push(newPerson);
     tempBetsToAdd.push(0);
@@ -82,21 +89,24 @@ var populateDealerOnTable = function () {
 };
 
 var populatePlayersBets = function () {
+  resetRound();
+  document.getElementById("play-time").style.display = "none";
+  document.getElementById("place-bets").style.display = "";
   // remove welcome screen
   var innerHtml = "";
 
   for (var i = 0; i < players.length; i++) {
-    innerHtml += `<div class="col col-lg-2 text-center"><h5 style="color: white">Player ${
-      i + 1
-    }</h5><div class="row"><div class="col-lg-12 mt-3" id="player-${
-      i + 1
-    }">`;
+    innerHtml += `<div class="col col-lg-2 text-center"><h5 style="color: ${
+      players[i].color
+    }">Player ${i + 1}</h5><p class="text-white mb-2 mt-2">Amount: ${
+      players[i].amount
+    }</p><div class="row"><div class="col-lg-12 mt-3" id="player-${i + 1}">`;
 
     innerHtml += `<input type="number" class="form-control" id="player-${
       i + 1
     }-bet" min="1" max="${players[i].amount}" placeholder="Player ${
       i + 1
-    } bet amount." />`;
+    } bet amount." onkeyup="checkWhetherCanStartRound()" onmouseup="checkWhetherCanStartRound()"/>`;
 
     innerHtml += `</div></div></div></div>`;
   }
@@ -104,45 +114,123 @@ var populatePlayersBets = function () {
   document.getElementById("list-of-bets").innerHTML = innerHtml;
 };
 
+var resetRound = function () {
+  for (var i = 0; i < players.length; i++) {
+    players[i].card = [];
+    players[i].score = 0;
+  }
+  dealer.card = [];
+  dealer.score = 0;
+  turn = 1;
+};
+
+var checkWhetherCanStartRound = function () {
+  // check whether i can enable the start round button
+  // all players must have entered their bet amount
+
+  for (var i = 0; i < players.length; i++) {
+    if (document.getElementById(`player-${i + 1}-bet`).value.length == 0) {
+      document.getElementById("start-round").disabled = true;
+      return;
+    }
+  }
+
+  document.getElementById("start-round").disabled = false;
+};
+
 var populatePlayerOnTable = function () {
-  document.getElementById(`player-${turn}-cards`).innerHTML += `<img src="${players[turn-1].card[players[turn-1].card.length - 1].pic}" style="width: 75px; position: relative; margin-left: -60px" />`;
+  document.getElementById(`player-${turn}-cards`).innerHTML += `<img src="${
+    players[turn - 1].card[players[turn - 1].card.length - 1].pic
+  }" style="width: 75px; position: relative; margin-left: -60px" />`;
+  document.getElementById(`player-${turn}-score`).innerHTML =
+    players[turn - 1].score;
 };
 
 var populatePlayersOnTable = function () {
   var innerHtml = "";
 
-  for (var i = 0; i < players.length; i++) {
-    innerHtml += `<div class="col col-lg-2 text-center"><h5 style="color: white">Player ${
-      i + 1
-    }</h5><div class="row"><div class="col-lg-12 mt-3" id="player-${
-      i + 1
-    }-cards">`;
+  if (turn !== players.length) {
+    for (var i = 0; i < players.length; i++) {
+      innerHtml += `<div class="col col-lg-2 text-center"><h5 style="color: white">Player ${
+        i + 1
+      }</h5><div class="row"><div class="col-lg-12 mt-3" id="player-${
+        i + 1
+      }-cards">`;
 
-    for (var j = 0; j < players[i].card.length; j++) {
+      if (turn == players.length) {
+        for (var j = 0; j < players[i].card.length; j++) {
+          if (j !== 0) {
+            innerHtml += `<img src="${players[i].card[j].pic}" style="width: 75px; position: relative; margin-left: -60px" />`;
+          } else {
+            innerHtml += `<img src="${players[i].card[j].pic}" style="width: 75px; position: relative;" />`;
+          }
+        }
+      } else {
+        for (var j = 0; j < players[i].card.length; j++) {
+          if (i + 1 == turn) {
+            if (j !== 0) {
+              innerHtml += `<img src="${players[i].card[j].pic}" style="width: 75px; position: relative; margin-left: -60px" />`;
+            } else {
+              innerHtml += `<img src="${players[i].card[j].pic}" style="width: 75px; position: relative;" />`;
+            }
+          } else {
+            if (j !== 0) {
+              innerHtml += `<img src="./images/cards/back.png" style="width: 75px; position: relative; margin-left: -60px" />`;
+            } else {
+              innerHtml += `<img src="./images/cards/back.png" style="width: 75px; position: relative;" />`;
+            }
+          }
+        }
+      }
+
+      innerHtml += `</div></div>`;
+
       if (i == 0) {
+        innerHtml += `<div id="player-${i + 1}-info">`;
+      } else {
+        innerHtml += `<div id="player-${i + 1}-info" style="display: none">`;
+      }
+
+      innerHtml += `<p class="text-white mb-2 mt-2">Score: <span id="player-${
+        i + 1
+      }-score">${players[i].score}</span> | Bet: ${
+        players[i].bet
+      }</p><div class="btn-group" role="group" aria-label="Basic example"><button type="button" class="btn btn-dark" onmouseup="playerHit()">Hit</button><button type="button" class="btn btn-light" onmouseup="nextTurn()">Stand</button></div></div></div>`;
+    }
+  } else {
+    for (var i = 0; i < players.length; i++) {
+      innerHtml += `<div class="col col-lg-2 text-center"><h5 style="color: white">Player ${
+        i + 1
+      }</h5><div class="row"><div class="col-lg-12 mt-3" id="player-${
+        i + 1
+      }-cards">`;
+
+      for (var j = 0; j < players[i].card.length; j++) {
         if (j !== 0) {
           innerHtml += `<img src="${players[i].card[j].pic}" style="width: 75px; position: relative; margin-left: -60px" />`;
         } else {
           innerHtml += `<img src="${players[i].card[j].pic}" style="width: 75px; position: relative;" />`;
         }
-      } else {
-        if (j !== 0) {
-          innerHtml += `<img src="./images/cards/back.png" style="width: 75px; position: relative; margin-left: -60px" />`;
-        } else {
-          innerHtml += `<img src="./images/cards/back.png" style="width: 75px; position: relative;" />`;
-        }
       }
-    }
 
-    innerHtml += `</div></div>`;
-
-    if (i == 0) {
+      innerHtml += `</div></div>`;
       innerHtml += `<div id="player-${i + 1}-info">`;
-    } else {
-      innerHtml += `<div id="player-${i + 1}-info" style="display: none">`;
+      innerHtml += `<p class="text-white mb-2 mt-2">Score: <span id="player-${
+        i + 1
+      }-score">${players[i].score}</span> | Bet: ${players[i].bet}</p>`;
+
+      if (tempBetsToAdd[i] < 0) {
+        innerHtml += `<p class="text-white mb-2 mt-2">Status: LOSS</p>`;
+      } else if (tempBetsToAdd[i] > 0) {
+        innerHtml += `<p class="text-white mb-2 mt-2">Status: WIN</p>`;
+      } else {
+        innerHtml += `<p class="text-white mb-2 mt-2">Status: TIE</p>`;
+      }
+
+      innerHtml += `</div></div>`;
     }
 
-    innerHtml += `<p class="text-white mb-2 mt-2">Score: ${players[i].score} | Bet: ${players[i].bet}</p><div class="btn-group" role="group" aria-label="Basic example"><button type="button" class="btn btn-dark" onmouseup="playerHit()">Hit</button><button type="button" class="btn btn-light" onmouseup="playerStand()">Stand</button></div></div></div>`;
+    innerHtml += `<hr /><div class="row justify-content-center"><div class="text-center"><button class="btn btn-dark" type="button" onclick="populatePlayersBets()">Place Bets</button></div></div>`;
   }
 
   document.getElementById("list-of-players").innerHTML = innerHtml;
@@ -151,63 +239,101 @@ var populatePlayersOnTable = function () {
 var playerHit = function () {
   var dealtCard = dealCard(shuffledDeck);
   players[turn - 1].card.push(dealtCard);
-  players[turn - 1].score += dealtCard.score;
+  players[turn - 1].score = players[turn - 1].score + dealtCard.score;
 
   populatePlayerOnTable();
 
   if (checkBlackjack(players[turn - 1])) {
     // user wins
     playerWins("blackjack");
+    nextTurn();
   } else {
     if (checkUserScoreAbove21(players[turn - 1])) {
+      console.log("line 177");
+      console.log("checkUserScoreAbove21");
       // user loses
       playerLoses();
+      // next turn
+      nextTurn();
+      return;
     }
   }
 };
 
-var playerStand = function () {
-  turn++;
-  if (turn > players.length) {
-    // everyone has stand
-    // check dealer hands
-    if (checkBlackjack(dealer)) {
-      // dealer wins
-      // check whether other users got blackjack
-      // for users with blackjacks, users will not win or lose anything
-      // the rest loses
-      for (var i = 0; i < players.length; i++) {
-        if (players[i].score == 21) {
-          tempBetsToAdd[i] = 0;
-        } else {
-          tempBetsToAdd[i] = -players[i].bet;
-        }
-      }
+var nextTurn = function () {
+  if (turn == players.length) {
+    // all players have gone through their turns
+    // show all cards
+    console.log("show all cards");
+    // show dealer cards
+    // if dealer below 17 draw
+    showDealerCards();
+    populatePlayersOnTable();
+  } else {
+    console.log("line 194");
+    console.log("nextTurn");
 
-      payout();
+    // go to next player
+    hideCurrentPlayerCards();
+    turn++;
+    showCurrentPlayerCards();
+  }
+};
+
+var showDealerCards = function () {
+  // check if dealer score is below 17
+  // if it is, draw card
+  while (checkDealerNeedToDraw()) {
+    var dealtCard = dealCard(shuffledDeck);
+    dealer.card.push(dealtCard);
+    dealer.score += dealtCard.score;
+  }
+
+  compareUsers();
+
+  var innerHtml = `<div class="col-lg-12 mt-3">`;
+  for (var i = 0; i < dealer.card.length; i++) {
+    if (i !== 0) {
+      innerHtml += `<img src="${dealer.card[i].pic}" style="width: 75px; position: relative; margin-left: -60px" />`;
     } else {
-      // check if dealer needs to draw card
-      while (checkDealerNeedToDraw()) {
-        var dealtCard = dealCard(shuffledDeck);
-        dealer.card.push(dealtCard);
-        dealer.score += dealtCard.score;
-      }
-
-      if (checkBlackjack(dealer)) {
-        // dealer wins
-      } else {
-        compareUsers();
-      }
+      innerHtml += `<img src="${dealer.card[i].pic}" style="width: 75px; position: relative;" />`;
     }
   }
+  innerHtml += `<p class="text-white mb-2 mt-2">Score: ${dealer.score}</p></div>`;
+
+  document.getElementById(`dealer-cards`).innerHTML = innerHtml;
 };
 
-var payout = function () {
-  for (var i = 0; i < tempBetsToAdd; i++) {
-    players[i].amount += tempBetsToAdd[i];
-    players[i].bet = 0;
-    players[i].score = 0;
+var hideCurrentPlayerCards = function () {
+  var innerHtml = "";
+  for (var i = 0; i < players[turn - 1].card.length; i++) {
+    if (i !== 0) {
+      innerHtml += `<img src="./images/cards/back.png" style="width: 75px; position: relative; margin-left: -60px" />`;
+    } else {
+      innerHtml += `<img src="./images/cards/back.png" style="width: 75px; position: relative;" />`;
+    }
   }
+
+  document.getElementById(`player-${turn}-cards`).innerHTML = innerHtml;
+  document.getElementById(`player-${turn}-info`).style.display = "none";
+};
+
+var showCurrentPlayerCards = function () {
+  var innerHtml = "";
+  for (var i = 0; i < players[turn - 1].card.length; i++) {
+    if (i !== 0) {
+      innerHtml += `<img src="${
+        players[turn - 1].card[i].pic
+      }" style="width: 75px; position: relative; margin-left: -60px" />`;
+    } else {
+      innerHtml += `<img src="${
+        players[turn - 1].card[i].pic
+      }" style="width: 75px; position: relative;" />`;
+    }
+  }
+
+  document.getElementById(`player-${turn}-cards`).innerHTML = innerHtml;
+  document.getElementById(`player-${turn}-info`).style.display = "";
 };
 
 var playerWins = function (winType) {
@@ -219,7 +345,7 @@ var playerWins = function (winType) {
 };
 
 var playerLoses = function () {
-  tempBetsToAdd[turn - 1] = (-players[turn - 1].bet);
+  tempBetsToAdd[turn - 1] = -players[turn - 1].bet;
 };
 
 var checkDealerNeedToDraw = function () {
@@ -241,21 +367,70 @@ var printUserCards = function (user) {
 // Come into this function everytime user selects "hit"
 var checkUserScoreAbove21 = function (user) {
   if (user.score > 21) {
-    return true;
+    // check if there are any aces in user's hand to switch from 11 to 1
+    for (var i = 0; i < players[turn - 1].card.length; i++) {
+      if (
+        players[turn - 1].card[i].name == "ace" &&
+        players[turn - 1].card[i].score == 11
+      ) {
+        players[turn - 1].card[i].score = 1;
+        user.score -= 10;
+      }
+    }
+
+    document.getElementById(`player-${turn}-score`).innerHTML =
+      players[turn - 1].score;
+
+    if (user.score > 21) {
+      return true;
+    } else {
+      return false;
+    }
   } else {
     return false;
   }
 };
 
 // Come into this function only after user selects "stand"
+// Only come in here if dealer does not get 21
 var compareUsers = function () {
-  for (var i = 0; i < players.length; i++) {
-    if (players[i].score > dealer.score) {
-      players[i].amount += players[i].bet;
-    } else {
-      players[i].amount -= players[i].bet;
+  // check if dealer score is 21
+  if (dealer.score == 21) {
+    for (var i = 0; i < players.length; i++) {
+      if (players[i].score == 21) {
+        tempBetsToAdd[i] = 0;
+      } else {
+        tempBetsToAdd[i] = -players[i].bet;
+      }
+
+      players[i].amount += tempBetsToAdd[i];
     }
-    players[i].bet = 0;
+  } else if (dealer.score > 21) {
+    for (var i = 0; i < players.length; i++) {
+      if (players[i].score == 21) {
+        tempBetsToAdd[i] = players[i].bet * 1.5;
+      } else if (players[i].score > 21) {
+        tempBetsToAdd[i] = -players[i].bet;
+      } else {
+        tempBetsToAdd[i] = players[i].bet;
+      }
+
+      players[i].amount += tempBetsToAdd[i];
+    }
+  } else {
+    for (var i = 0; i < players.length; i++) {
+      if (players[i].score == 21) {
+        tempBetsToAdd[i] = players[i].bet * 1.5;
+      } else if (players[i].score > dealer.score && players[i].score < 21) {
+        tempBetsToAdd[i] = players[i].bet;
+      } else if (players[i].score == dealer.score) {
+        tempBetsToAdd[i] = 0;
+      } else {
+        tempBetsToAdd[i] = -players[i].bet;
+      }
+
+      players[i].amount += tempBetsToAdd[i];
+    }
   }
 };
 
@@ -307,7 +482,7 @@ var makeDeck = function () {
       // If rank is 1, 11, 12, or 13, set cardName to the ace or face card's name
       if (cardName == 1) {
         cardName = "ace";
-        score = 1;
+        score = 11;
       } else if (cardName == 11) {
         cardName = "jack";
         score = 10;
