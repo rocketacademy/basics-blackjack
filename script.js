@@ -1,3 +1,13 @@
+var players = [
+  ["player1", {}, {}],
+  ["Dealer", {}, {}],
+];
+var tour = 1;
+var playerChoice = "";
+var playerValue = 1;
+var dealerValue = 1;
+
+//----------------------------------------------------------------------------------
 var makeDeck = function () {
   // Initialise an empty deck array
   var cardDeck = [];
@@ -94,6 +104,7 @@ var addIcone = function (object) {
 };
 
 var resultTour = function (resultPlayer, resultDealer) {
+  var resultValue = "";
   if (resultPlayer == 0 && resultDealer == 0) {
     resultValue = "It's a draw";
   } else if (resultPlayer > 21) {
@@ -113,17 +124,11 @@ var resultTour = function (resultPlayer, resultDealer) {
   return resultValue;
 };
 
-//----------------------------------------------------------------------------------
-var players = [
-  ["player1", {}, {}],
-  ["Dealer", {}, {}],
-];
-var tour = 1;
-var playerChoice = "";
-var playerValue = 1;
-var dealerValue = 1;
-
 var main = function (input) {
+  var totalPlayer = 0;
+  var totalDealer = 0;
+  var myOutputValue = "";
+
   if (tour == 1) {
     // 2 cards for each player
     players[0][playerValue] = shuffledDeck.pop();
