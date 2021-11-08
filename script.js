@@ -180,7 +180,7 @@ var populatePlayersOnTable = function () {
       if (players[i].eliminated) {
         innerHtml += `<div class="col col-lg-2 text-center"><div class="card" style="background: black; height: 100%;"><div class="card-body"><h5 class="bangers" style="color: ${
           players[i].color
-        }; margin-top: 13px;">Player ${
+        }; margin-top: 75px;">Player ${
           i + 1
         }</h5><h5 class="bangers text-white">💀 Eliminated 💀</h5></div></div></div>`;
       } else {
@@ -238,7 +238,7 @@ var populatePlayersOnTable = function () {
       if (players[i].eliminated) {
         innerHtml += `<div class="col col-lg-2 text-center"><div class="card" style="background: black; height: 100%;"><div class="card-body"><h5 class="bangers" style="color: ${
           players[i].color
-        }; margin-top: 13px;">Player ${
+        }; margin-top: 75px;">Player ${
           i + 1
         }</h5><h5 class="bangers text-white">💀 Eliminated 💀</h5></div></div></div>`;
       } else {
