@@ -7,21 +7,13 @@
 // The computer decides to hit or stand automatically based on game rules.
 // The game either ends or continue
 
-var main = function (input) {
-  var myOutputValue = `${playerDrawCards()} <br> ${computerDrawCards()} <br> ${compareHands()}`;
+// global variables
+var playerHand = [];
+var computerHand = [];
+var gameMode = "draw cards";
+var playerHitOrStandMode = false;
 
-  console.log("player total hand rank");
-  console.log(playerTotalHandRank());
-  console.log("computer total hand rank");
-  console.log(computerTotalHandRank());
-  return myOutputValue;
-};
-
-// Aim for a playable game. The essence of blackjack requires:
-// Two players - a player and a dealer (computer).
-// A deck of cards.
-// A starting hand of 2 cards for each player.
-
+// make deck
 var makeDeck = function () {
   // Initialise an empty deck array
   var cardDeck = [];
@@ -102,15 +94,9 @@ var shuffleCards = function (cardDeck) {
   return cardDeck;
 };
 
-// create deck and shuffle
+// create deck and shuffle deck
 var deck = makeDeck();
 var shuffledDeck = shuffleCards(deck);
-
-// global variables
-var playerHand = [];
-var computerHand = [];
-var playerHandRank = 0;
-var computerHandRank = 0;
 
 // player draw 2 cards
 var playerDrawCards = function () {
@@ -142,34 +128,160 @@ var computerDrawCards = function () {
 // A normal win. When neither draw Blackjack, the winner is decided by whomever has the higher hand total.
 
 // compute ranking
+var getHandSum = function (hand) {
+  var numAcesInHand = 0;
+  var sum = 0;
+  var counter = 0;
+  while (counter < hand.length) {
+    var currCard = hand[counter];
+    // If card is Ace, value is 11 by default
+    if (currCard.rank === 1) {
+      numAcesInHand += 1;
+      sum += 11;
+    } else {
+      sum += currCard.rank;
+    }
+    counter = counter + 1;
+  }
+  return sum;
+};
+
 var playerTotalHandRank = function () {
-  playerHandRank =
-    playerHand[playerHand.length - 2].rank +
-    playerHand[playerHand.length - 1].rank;
-  return playerHandRank;
+  var playerHandRankSum = getHandSum(playerHand);
+  console.log(`player total score: ${playerHandRankSum}`);
+  return playerHandRankSum;
 };
 
 var computerTotalHandRank = function () {
-  computerHandRank =
-    computerHand[computerHand.length - 2].rank +
-    computerHand[computerHand.length - 1].rank;
-  return computerHandRank;
+  var computerHandRankSum = getHandSum(computerHand);
+  console.log(`computer total score: ${computerHandRankSum}`);
+  return computerHandRankSum;
+};
+
+var playAgain = function () {
+  gameMode = "draw cards";
+  playerHand = [];
+  computerHand = [];
+  playerHitOrStandMode = false;
+  return `<br><br>Click submit to play again!`;
 };
 
 // compare hands
-var compareHands = function () {
-  // A tie
-  if (playerTotalHandRank() == computerTotalHandRank()) {
-    return `It is a tie between Player and Computer.`;
-    // A blackjack win: 21
-  } else if (playerTotalHandRank() == 21) {
-    return `Player wins with Blackjack (21)!`;
-  } else if (computerTotalHandRank() == 21) {
-    return `Computer wins with Blackjack (21)!`;
-    // A normal win: whoever has the higher hand total
-  } else if (playerTotalHandRank() > computerTotalHandRank()) {
-    return `Player wins!`;
-  } else if (playerTotalHandRank() < computerTotalHandRank()) {
-    return `Computer wins!`;
+var compareHands = function (input) {
+  while (gameMode == "draw cards") {
+    // computer blackjack
+    if (computerTotalHandRank() == 21) {
+      return `Computer wins with Blackjack ${computerTotalHandRank()}!. ${playAgain()}`;
+      // player blackjack
+    } else if (playerTotalHandRank() == 21) {
+      return `Player wins with Blackjack ${playerTotalHandRank()}!. ${playAgain()}`;
+      // player and computer bust
+    } else if (computerTotalHandRank() > 21 && playerTotalHandRank() > 21) {
+      return `It is a tie between Player and Computer.<br><br>Player score: ${playerTotalHandRank()} and Computer score: ${computerTotalHandRank()}. ${playAgain()}`;
+      // computer bust
+    } else if (computerTotalHandRank() > 21) {
+      return `Player wins! Computer busted with ${computerTotalHandRank()}.<br><br>Player score: ${playerTotalHandRank()} and Computer score: ${computerTotalHandRank()}. ${playAgain()}`;
+      // go to player hit or stand mode
+    } else gameMode = "player turn";
+    return `Player score: ${playerTotalHandRank()} and Computer score: ${computerTotalHandRank()}<br><br>hit or stand.`;
   }
+
+  while (gameMode == "player turn") {
+    // player blackjack
+    if (playerTotalHandRank() == 21) {
+      return `Player wins with Blackjack (21)!<br><br>Player score: ${playerTotalHandRank()} and Computer score: ${computerTotalHandRank()}. ${playAgain()}`;
+      // player stand
+    } else
+      return `Player score: ${playerTotalHandRank()} and Computer score: ${computerTotalHandRank()}<br><br>hit or stand.`;
+  }
+
+  while (gameMode == "computer turn") {
+    // player and computer above 21
+    if (computerTotalHandRank() > 21 && playerTotalHandRank() > 21) {
+      return `It is a tie between Player and Computer.<br><br>Player score: ${playerTotalHandRank()} and Computer score: ${computerTotalHandRank()}. ${playAgain()}`;
+      // computer bust > 21
+    } else if (computerTotalHandRank() > 21 && playerTotalHandRank() < 21) {
+      return `Player wins! Computer busted with ${computerTotalHandRank()}.<br><br>Player score: ${playerTotalHandRank()} and Computer score: ${computerTotalHandRank()}. ${playAgain()}`;
+      // player bust > 21 but computer < 21
+    } else if (computerTotalHandRank() < 21 && playerTotalHandRank() > 21) {
+      return `Computer wins! Player busted with ${playerTotalHandRank()}.<br><br>Player score: ${playerTotalHandRank()} and Computer score: ${computerTotalHandRank()}. ${playAgain()}`;
+      // player larger than computer
+    } else if (playerTotalHandRank() > computerTotalHandRank()) {
+      return `Player wins!<br><br>Player score: ${playerTotalHandRank()} and Computer score: ${computerTotalHandRank()}. ${playAgain()}`;
+      // player smaller than computer
+    } else if (playerTotalHandRank() < computerTotalHandRank()) {
+      return `Computer wins!<br><br>Player score: ${playerTotalHandRank()} and Computer score: ${computerTotalHandRank()}. ${playAgain()}`;
+      // player and computer tie
+    } else if (playerTotalHandRank() == computerTotalHandRank()) {
+      return `It is a tie between Player and Computer.<br><br>Player score: ${playerTotalHandRank()} and Computer score: ${computerTotalHandRank()}. ${playAgain()}`;
+      // computer blackjack
+    } else if (computerTotalHandRank() == 21) {
+      return `Computer wins with Blackjack (21)!<br><br>Player score: ${playerTotalHandRank()} and Computer score: ${computerTotalHandRank()}. ${playAgain()}`;
+    }
+  }
+};
+
+var playerHitOrStand = function (input) {
+  // player choose to hit
+  if (input == "hit" && gameMode == "player turn") {
+    var playerHitCard = shuffledDeck.pop();
+    playerHand.push(playerHitCard);
+    console.log("player hit hand");
+    console.log(playerHand);
+
+    return `Player hits: ${playerHitCard.name} of ${
+      playerHitCard.suit
+    }.<br><br> ${compareHands()}`;
+    // player choose to stand
+  } else if (input == "stand" && gameMode == "player turn") {
+    playerHitOrStandMode = true;
+    gameMode = "computer turn";
+
+    return `Player stands.<br><br>Player score: ${playerTotalHandRank()} and Computer score: ${computerTotalHandRank()}.<br><br>Click submit.`;
+    // if input is empty
+  } else if (input == "" && gameMode == "player turn") {
+    return `Please enter hit or stand.`;
+  }
+};
+
+var computerHitOrStand = function () {
+  //computer to hit if total score is below 16
+  if (
+    computerTotalHandRank() < 16 &&
+    playerHitOrStandMode == true &&
+    gameMode == "computer turn"
+  ) {
+    var computerHitCard = shuffledDeck.pop();
+    computerHand.push(computerHitCard);
+    console.log("computer hit hand");
+    console.log(computerHand);
+
+    return `Computer hits: ${computerHitCard.name} of ${
+      computerHitCard.suit
+    }.<br><br>Player score: ${playerTotalHandRank()} and Computer score: ${computerTotalHandRank()}.<br><br>Click submit.`;
+
+    // computer to proceed to compare hands if equals or above 16
+  } else if (
+    computerTotalHandRank() >= 16 &&
+    playerHitOrStandMode == true &&
+    gameMode == "computer turn"
+  ) {
+    return compareHands();
+  }
+};
+
+// main blackjack
+var main = function (input) {
+  var myOutputValue = "";
+  if (gameMode == "draw cards") {
+    myOutputValue = `${playerDrawCards()} <br> ${computerDrawCards()} <br> ${compareHands()}`;
+    console.log(`game mode: ${gameMode}`);
+  } else if (gameMode == "player turn") {
+    myOutputValue = playerHitOrStand(input);
+    console.log(`game mode: ${gameMode}`);
+  } else if (gameMode == "computer turn") {
+    myOutputValue = computerHitOrStand();
+    console.log(`game mode: ${gameMode}`);
+  }
+  return myOutputValue;
 };
