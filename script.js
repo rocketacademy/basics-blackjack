@@ -26,7 +26,7 @@ var main = function (input) {
     //create a shuffled deck of 52 cards
     cardDeck = shuffleCards(makeDeck());
     //firstDealCards adds 2 cards to all players' hand and returns the result of the first deal and any possible blackjack scenarios
-    var myOutputValue = `Your bet is $${playerBet}<br>` + firstDealCards();
+    var myOutputValue = `Your bet is $${playerBet}<br><br>` + firstDealCards();
     myOutputValue += `<br><br>You now have $${playerWallet}`;
     return myOutputValue;
   }
