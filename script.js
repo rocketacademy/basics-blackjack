@@ -288,8 +288,7 @@ var finalwinnerChecker = function () {
     playerScore <= 21 &&
     computerScore <= 21
   ) {
-    image =
-      '<img src="https://c.tenor.com/4eKR0YrybeUAAAAS/ok-boomer-the-office.gif"/>';
+    image = '<img src="https://c.tenor.com/vpJKtla333QAAAAS/ok-crying.gif"/>';
     result = `You win!`;
   } else if (computerScore == playerScore) {
     image =

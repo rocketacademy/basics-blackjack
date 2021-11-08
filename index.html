@@ -85,11 +85,15 @@
       href="https://fonts.googleapis.com/css?family=Open+Sans"
     />
 
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Trirong">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Sofia&effect=fire">
+
     <!-- CSS -->
     <style>
       * {
         box-sizing: border-box;
       }
+
 
       body {
         font-family: "Open Sans", sans-serif;
@@ -113,13 +117,9 @@
         font-size: 1.1rem;
         margin-bottom: 3rem;
         color: rgb(255, 253, 253);
+        font-family: "Trirong", serif;
       }
-       #greetings {
-        font-family: fantasy;
-         font-size: 35px;
-        text-align: center;
-        color: rgb(255, 253, 253);
-      }
+       
      
 
       #container {
@@ -127,10 +127,11 @@
         margin: 40px auto;
         max-width: 800px;
         padding: 38px 31px;
+        font-family: cursive;
       }
       
       #instructions {
-        font-family: cursive;
+        font-family:monospace ;
         text-align: left;
         color: rgb(255, 253, 253);
         background-color: rgb(74, 131, 88);
@@ -153,6 +154,12 @@
         margin: 0 0 23px 0;
         padding: 0 6px;
       }
+
+      button:disabled {
+    background: #F5F5F5;
+    color : #C3C3C3;
+}
+      
 
       #output-div {
         background-color: lightgrey;
@@ -193,16 +200,14 @@
         class="logo-img"
         src="https://m.media-amazon.com/images/S/aplus-media/sc/8496aff9-dfa2-4036-a667-e75b1cdf5ef8.__CR0,347,1000,309_PT0_SX970_V1___.jpg"
       />
-     ♣️ Play Blackjack with Michael  ♠️
+      <text class="font-effect-fire">♣️ Blackjack with Michael  ♠️
+     
       <img
         class="logo-img"
         src="https://m.media-amazon.com/images/S/aplus-media/sc/8496aff9-dfa2-4036-a667-e75b1cdf5ef8.__CR0,347,1000,309_PT0_SX970_V1___.jpg"
       />
     </h1>
-     <div id="greetings">
-
-      <p> Click submit to start the game!</p>
-      <p>
+     
       
     </div>
    
@@ -210,10 +215,13 @@
       <p>Input:</p>
       <input id="input-field" />
       <br />
-      <button id="submit-button">Submit</button>
+      <button id="submit-button">Start!</button>
+       <button id="hit-button">Hit</button>
+        <button id="stand-button">Stand</button>
+         <button id="refresh-button">Refresh</button>
       <p>Output:</p>
       <div id="output-div"></div>
-      <p>**All photos and fictional characters mentioned do not belong to me. Intended for educational purposes only. </p>
+      <p>***All photos and fictional characters mentioned do not belong to me. The creation of this website is intended for educational purposes only. </p>
     </div>
      <div id="instructions">
        <p>
@@ -225,9 +233,9 @@
       </p>
       3. You may decide whether you want to hit (draw a card) or stand (end your turn).
       </p>
-      4. Michael has to hit if his hand is below 17.
+      4. I have to hit if my hand is below 17.
       </p>
-      5. Your score is the total of your cards. Jacks/Queen👸/Kings🤴 are 10. Aces can be 1 or 11.      
+      5. Final score is the total of your cards. Jacks/Queen👸/Kings🤴 are 10. Aces can be 1 or 11.      
       </p>
       6. The player who is closer to, but not above 21 wins the hand.Good luck!🔮
       </p>
@@ -237,17 +245,59 @@
     <script src="script.js"></script>
     <!-- Define button click functionality -->
     <script>
-      var button = document.querySelector("#submit-button");
-      button.addEventListener("click", function () {
+      var submitbutton = document.querySelector("#submit-button");
+      submitbutton.addEventListener("click", function () {
         // Set result to input value
         var input = document.querySelector("#input-field");
         var result = main(input.value);
+document.getElementById("submit-button").disabled = true; //OR
+        // Display result in output element
+        var output = document.querySelector("#output-div") ;
+        output.innerHTML = result;
+       
 
+        // Reset input value
+        input.value = "";
+      });
+    </script>
+     <script>
+      var hitbutton = document.querySelector("#hit-button");
+      hitbutton.addEventListener("click", function () {
+        // Set result to input value
+        var input = document.querySelector("#input-field");
+        var result = main("hit");
+        
+document.getElementById("hit-button").disabled = true; //OR
+        // Display result in output element
+        var output = document.querySelector("#output-div") ;
+        output.innerHTML = result;
+       
+        // Reset input value
+        input.value = "";
+      });
+    </script>
+     <script>
+      var standbutton = document.querySelector("#stand-button");
+      standbutton.addEventListener("click", function () {
+        // Set result to input value
+        var input = document.querySelector("#input-field");
+        var result = main("stand");
+document.getElementById("stand-button").disabled = true; //OR
         // Display result in output element
         var output = document.querySelector("#output-div") ;
         output.innerHTML = result;
 
         // Reset input value
+        input.value = "";
+      });
+    </script>
+     <script>
+      var refbutton = document.querySelector("#refresh-button");
+      refbutton.addEventListener("click", function () {
+        // Set result to input value
+        var input = document.querySelector("#input-field");
+        var result = location.reload();
+
         input.value = "";
       });
     </script>
