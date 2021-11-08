@@ -80,79 +80,117 @@ var shuffleCards = function (cardDeck) {
 };
 
 //----------------------------------------------------------------------------------
-var players = [
-  ["player1", {}, {}],
-  ["Dealer", {}, {}],
-];
-
-//----------------------------------------------------------------------------------
 //Create the deck
 var deck = makeDeck();
 // Shuffle the deck and save it in a new variable shuffledDeck
 var shuffledDeck = shuffleCards(deck);
 
-//----------------------------------------------------------------------------------
-var resultPlayer = function (card1, card2) {
-  //blackjack
-  if (
-    ((card1.name == "10" ||
-      card1.name == "jack" ||
-      card1.name == "queen" ||
-      card1.name == "king") &&
-      card2.name == "ace") ||
-    ((card2.name == "10" ||
-      card2.name == "jack" ||
-      card2.name == "queen" ||
-      card2.name == "king") &&
-      card1.name == "ace")
-  ) {
-    return "Blackjack";
-  }
+//Find the icone for each choice
+var addIcone = function (object) {
+  if (object == "clubs") return `♣️`;
+  if (object == "spades") return `♠️`;
+  if (object == "diamonds") return `♦️`;
+  if (object == "hearts") return `♥️`;
+};
 
-  return card1.rank + card2.rank;
+var resultTour = function (resultPlayer, resultDealer) {
+  if (resultPlayer == 0 && resultDealer == 0) {
+    resultValue = "It's a draw";
+  } else if (resultPlayer > 21) {
+    resultValue = "Player has lost. Please refresh to play again.";
+  } else if (resultDealer > 21) {
+    resultValue = "Dealer has lost. Please refresh to play again.";
+  } else if (resultPlayer == 21) {
+    resultValue =
+      "Player has blackjack and wins. Please refresh to play again.";
+  } else if (resultDealer == 21) {
+    resultValue =
+      "Dealer has blackjack and wins. Please refresh to play again.";
+  } else {
+    resultValue = `Please enter "hit" or "stand", then press Submit`;
+    tour += 1;
+  }
+  return resultValue;
 };
 
 //----------------------------------------------------------------------------------
+var players = [
+  ["player1", {}, {}],
+  ["Dealer", {}, {}],
+];
+var tour = 1;
+var playerChoice = "";
+var playerValue = 1;
+var dealerValue = 1;
 
 var main = function (input) {
-  // 2 cards for each player
-  players[0][1] = shuffledDeck.pop();
-  players[0][2] = shuffledDeck.pop();
-  players[1][1] = shuffledDeck.pop();
-  players[1][2] = shuffledDeck.pop();
+  if (tour == 1) {
+    // 2 cards for each player
+    players[0][playerValue] = shuffledDeck.pop();
+    playerValue += 1;
+    players[0][playerValue] = shuffledDeck.pop();
+    players[1][dealerValue] = shuffledDeck.pop();
+    dealerValue += 1;
+    players[1][dealerValue] = shuffledDeck.pop();
 
-  totalPlayer = resultPlayer(players[0][1], players[0][2]);
-  totalDealer = resultPlayer(players[1][1] + players[1][2]);
+    totalPlayer = players[0][1].rank + players[0][2].rank;
+    totalDealer = players[1][1].rank + players[1][2].rank;
 
-  console.table(players);
-  console.log(total1);
+    console.table(players);
 
-  if (totalPlayer == "Blackjack" && totalDealer == "Blackjack") {
-    return "It's a draw";
+    myOutputValue = resultTour(totalPlayer, totalDealer);
+  } else {
+    playerChoice = input.toLowerCase();
+    if (playerChoice == "hit") {
+      playerValue += 1;
+      players[0][playerValue] = shuffledDeck.pop();
+      if (
+        players[0][playerValue].name == "Ace" &&
+        totalPlayer + players[0][playerValue].rank > 21
+      ) {
+        totalPlayer = totalPlayer + players[0][playerValue].rank - 10;
+      } else {
+        totalPlayer = totalPlayer + players[0][playerValue].rank;
+      }
+      console.table(players);
+      myOutputValue = resultTour(totalPlayer, totalDealer);
+    } else if (playerChoice == "stand") {
+      while (totalDealer < 17) {
+        dealerValue += 1;
+        players[1][dealerValue] = shuffledDeck.pop();
+        if (
+          players[1][dealerValue].name == "Ace" &&
+          totalDealer + players[1][dealerValue].rank > 21
+        ) {
+          totalDealer = totalDealer + players[1][dealerValue].rank - 10;
+        } else {
+          totalDealer = totalDealer + players[1][dealerValue].rank;
+        }
+      }
+      console.table(players);
+      myOutputValue = resultTour(totalPlayer, totalDealer);
+    }
   }
 
-  if (totalPlayer > 21) {
-    return "You lose";
-  }
-
-  var myOutputValue =
-    "Player hand : " +
+  return (
+    "Player has : " +
     players[0][1].name +
-    " of " +
-    +players[0][1].suit +
+    +addIcone(players[0][1].suit) +
     ", " +
     players[0][2].name +
-    " of " +
-    +players[0][2].suit +
+    +addIcone(players[0][2].suit) +
+    " with sum = " +
+    totalPlayer +
     "<br>" +
-    "Dealer hand : " +
+    "Dealer has : " +
     players[1][1].name +
-    " of " +
-    +players[1][1].suit +
+    +addIcone(players[1][1].suit) +
     ", " +
     players[1][2].name +
-    " of " +
-    +players[1][2].suit;
-
-  return myOutputValue;
+    +addIcone(players[1][2].suit) +
+    " with sum = " +
+    totalDealer +
+    "<br>" +
+    myOutputValue
+  );
 };
