@@ -42,8 +42,8 @@ var main = function (input) {
       var newPlayerCard = cardDeck.pop();
       //deal a new card into player hand
       playerHand.push(newPlayerCard);
-      var displayPlayerHands = "You currently have these cards:<br>";
-      displayPlayerHands += displayHand(playerHand);
+      var displayPlayerHands = `You currently have these cards:<br>
+      ${displayHand(playerHand)}`;
       playerScore = findScoreOfHand(playerHand);
       //scenario where player got bust
       if (playerScore > 21) {
@@ -72,8 +72,8 @@ var main = function (input) {
       dealerHand.push(newDealerCard);
       dealerScore = findScoreOfHand(dealerHand);
     }
-    var displayDealerHands = "The dealer has these cards:<br>";
-    displayDealerHands += displayHand(dealerHand);
+    var displayDealerHands = `The dealer has these cards:<br>
+    ${displayHand(dealerHand)}`;
 
     if (dealerScore > 21) {
       //end the game if dealer busts by returning to initial game mode
@@ -230,62 +230,33 @@ var firstDealCards = function () {
   var dealerScore = findScoreOfHand(dealerHand);
   playerScore = findScoreOfHand(playerHand);
 
-  var displayHands =
-    "Dealer has " +
-    dealerHand[0].name +
-    " of " +
-    suitImage(dealerHand[0].suit) +
-    " and " +
-    dealerHand[1].name +
-    " of " +
-    suitImage(dealerHand[1].suit) +
-    "<br>You have " +
-    playerHand[0].name +
-    " of " +
-    suitImage(playerHand[0].suit) +
-    " and " +
-    playerHand[1].name +
-    " of " +
-    suitImage(playerHand[1].suit);
+  var displayDealerHands = `Dealer has<br>${displayHand(dealerHand)}<br>`;
+
+  var displayDealerHandsOneFaceDown = `Dealer has<br>
+  ${displayHand([dealerHand[0]])}and one face down card<br><br>`;
+
+  var displayPlayerHands = `You have<br>${displayHand(playerHand)}`;
+
   //end the game if dealer gets blackjack or if both dealer and player blackjack
   if (playerScore == 21 && dealerScore == 21) {
     gameMode = "firstdeal";
     playerWallet += playerBet;
-    return (displayHands += `<br>Holy Moly, both of you got blackjack!${REPLAY_MSG}`);
+    return `${displayDealerHands}${displayPlayerHands}<br>Holy Moly, both of you got blackjack!${REPLAY_MSG}`;
   }
   if (dealerScore == 21) {
     gameMode = "firstdeal";
-    return (displayHands += `<br>The dealer won by black jack!${REPLAY_MSG}`);
+    return `${displayDealerHands}${displayPlayerHands}<br>The dealer won by black jack!${REPLAY_MSG}`;
   }
-
-  //change display to have 1 dealer card face down
-  displayHands =
-    "Dealer has " +
-    dealerHand[0].name +
-    " of " +
-    suitImage(dealerHand[0].suit) +
-    " and one face down card.<br>You have " +
-    playerHand[0].name +
-    " of " +
-    suitImage(playerHand[0].suit) +
-    " and " +
-    playerHand[1].name +
-    " of " +
-    suitImage(playerHand[1].suit);
   //end the game if player got black jack
   if (playerScore == 21) {
     playerWallet += playerBet * 2.5;
     gameMode = "firstdeal";
-    return (displayHands += `<br>You won by black jack!${REPLAY_MSG}`);
+    //return (displayHands += `<br>You won by black jack!${REPLAY_MSG}`);
+    return `${displayDealerHandsOneFaceDown}${displayPlayerHands}<br>You won by black jack!${REPLAY_MSG}`;
   }
 
   gameMode = "playerhitorstand";
-  displayHands +=
-    "<br>Your current score is " +
-    playerScore +
-    "<br>Do you want to hit (Type h) or stand (Type s)?";
-
-  return displayHands;
+  return `${displayDealerHandsOneFaceDown}${displayPlayerHands}<br>Your current score is ${playerScore}<br>Do you want to hit (Type h) or stand (Type s)?`;
 };
 //prints all the cards in a given hand
 var displayHand = function (hand) {
