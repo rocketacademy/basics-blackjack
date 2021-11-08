@@ -54,8 +54,10 @@ var main = function (input) {
         );
       }
       //if not bust, ask player if he wants to proceed with hit or stand
-      displayPlayerHands += `<br>Your current score is ${playerScore}<br>Do you want to hit (Type h) or stand (Type s)?`;
-      return displayPlayerHands;
+      return (
+        displayPlayerHands +
+        `<br>Your current score is ${playerScore}<br>Do you want to hit (Type h) or stand (Type s)?`
+      );
     }
     if (input == "s") {
       //show the player score and pass the turn to dealer
@@ -97,7 +99,10 @@ var main = function (input) {
     //scenario where only player bust
     if (playerScore > 21) {
       gameMode = "firstdeal";
-      return (displayDealerHands += `The dealer won as you got bust just now!${REPLAY_MSG_SHOW_WALLET}${playerWallet}`);
+      return (
+        displayDealerHands +
+        `<br>The dealer won as you got bust just now!${REPLAY_MSG_SHOW_WALLET}${playerWallet}`
+      );
     }
     //store both players' scores
     displayDealerHands += `<br>You scored ${playerScore}. The dealer scored ${dealerScore}<br>`;
