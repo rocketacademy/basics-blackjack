@@ -68,10 +68,16 @@ var computerHand = [];
 var sumPlayerHand = 0;
 var sumComputerHand = 0;
 
-//function to display messages
-var disPlayerHand = function (input) {
-  myOutputValue = `Your cards: ${playerCard1.name} of ${playerCard1.suit}, ${playerCard2.name} of ${playerCard2.suit}`;
-  return myOutputValue;
+//Function to sum up hand numbers
+var calcSumOfHand = function (array) {
+  var totalHandValue = 0;
+  var i = 0;
+  while (i < array.length) {
+    var currentCard = array[i];
+    totalHandValue = totalHandValue + currentCard.rank;
+    i += 1;
+  }
+  return totalHandValue;
 };
 
 var main = function (input) {
@@ -79,7 +85,7 @@ var main = function (input) {
 
   var cardDeck = makeDeck();
   var shuffledDeck = shuffleCards(cardDeck);
-
+  var myOutputValue = "";
   //gameMode = 0
   //first, distribute cards, push them into arrays
   if (gameMode == 0) {
