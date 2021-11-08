@@ -92,7 +92,7 @@ var main = function (input) {
       playerWallet += playerBet * 2;
       return (
         displayDealerHands +
-        `<br>The dealer bust with score of ${dealerScore}${REPLAY_MSG_SHOW_WALLET}${playerWallet}`
+        `<br>You won as the dealer bust with score of ${dealerScore}${REPLAY_MSG_SHOW_WALLET}${playerWallet}`
       );
     }
 
