@@ -11,7 +11,7 @@ var main = function (input) {
   //validation for betting amount
   if (gameMode == "firstdeal") {
     if (Number.isNaN(Number(input)) || !input || input < 0) {
-      return "Please input your bet";
+      return `Please input your bet, you have $${playerWallet}`;
     }
     if (input > playerWallet) {
       return `Oops, not enough moolah, you have $${playerWallet}`;
