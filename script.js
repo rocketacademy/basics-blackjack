@@ -7,11 +7,186 @@ var playerBet = 0;
 var REPLAY_MSG_SHOW_WALLET = `<br>Place another bet and click Submit to play another round<br><br>You now have $`;
 var gameMode = "firstdeal"; // 'playerhitorstand' // 'dealerturn'
 
+//create an ordered deck of 52 cards
+var makeDeck = function () {
+  // Initialise an empty deck array
+  var sampleCardDeck = [];
+  // Initialise an array of the 4 suits in our deck. We will loop over this array.
+  var suits = ["hearts", "diamonds", "clubs", "spades"];
+
+  // Loop over the suits array
+  var suitIndex = 0;
+  while (suitIndex < suits.length) {
+    // Store the current suit in a variable
+    var currentSuit = suits[suitIndex];
+
+    // Loop from 1 to 13 to create all cards for a given suit
+    // Notice rankCounter starts at 1 and not 0, and ends at 13 and not 12.
+    // This is an example of a loop without an array.
+    var rankCounter = 1;
+    while (rankCounter <= 13) {
+      // By default, the card name is the same as rankCounter
+      var cardName = rankCounter;
+      var points = rankCounter;
+      // If rank is 1, 11, 12, or 13, set cardName to the ace or face card's name
+      if (cardName == 1) {
+        cardName = "ace";
+      } else if (cardName == 11) {
+        cardName = "jack";
+        points = 10;
+      } else if (cardName == 12) {
+        cardName = "queen";
+        points = 10;
+      } else if (cardName == 13) {
+        cardName = "king";
+        points = 10;
+      }
+
+      // Create a new card with the current name, suit, and rank
+      var card = {
+        name: cardName,
+        suit: currentSuit,
+        rank: points,
+      };
+
+      // Add the new card to the deck
+      sampleCardDeck.push(card);
+
+      // Increment rankCounter to iterate over the next rank
+      rankCounter += 1;
+    }
+
+    // Increment the suit index to iterate over the next suit
+    suitIndex += 1;
+  }
+
+  // Return the completed card deck
+  return sampleCardDeck;
+};
+
+// Get a random index ranging from 0 (inclusive) to max (exclusive).
+var getRandomIndex = function (max) {
+  return Math.floor(Math.random() * max);
+};
+
+// Shuffle the elements in the cardDeck array
+var shuffleCards = function (sampleCardDeck) {
+  // Loop over the card deck array once
+  var currentIndex = 0;
+  while (currentIndex < sampleCardDeck.length) {
+    // Select a random index in the deck
+    var randomIndex = getRandomIndex(sampleCardDeck.length);
+    // Select the card that corresponds to randomIndex
+    var randomCard = sampleCardDeck[randomIndex];
+    // Select the card that corresponds to currentIndex
+    var currentCard = sampleCardDeck[currentIndex];
+    // Swap positions of randomCard and currentCard in the deck
+    sampleCardDeck[currentIndex] = randomCard;
+    sampleCardDeck[randomIndex] = currentCard;
+    // Increment currentIndex
+    currentIndex = currentIndex + 1;
+  }
+  // Return the shuffled deck
+  return sampleCardDeck;
+};
+//converts suit name into its image emoji
+var suitImage = function (suitName) {
+  if (suitName == "hearts") {
+    image = "♥️";
+  }
+  if (suitName == "diamonds") {
+    image = "♦️";
+  }
+  if (suitName == "clubs") {
+    image = "♣️";
+  }
+  if (suitName == "spades") {
+    image = "♠️";
+  }
+  return image;
+};
+
+//prints all the cards in a given hand
+var displayHand = function (hand) {
+  var printHands = "";
+  for (var cardCount = 0; cardCount < hand.length; cardCount += 1) {
+    printHands += `${hand[cardCount].name} of ${suitImage(
+      hand[cardCount].suit
+    )}<br>`;
+  }
+  return printHands;
+};
+//finds the score of a given hand
+var findScoreOfHand = function (hand) {
+  var score = 0;
+  //tracker for any ace card which got assigned higher value of 11
+  var numLargeAce = 0;
+
+  for (var cardCount = 0; cardCount < hand.length; cardCount += 1) {
+    score += hand[cardCount].rank;
+    //Increment the Ace value by 10 if it does not bust player's hand
+    if (hand[cardCount].rank == 1 && score + 10 <= 21) {
+      score += 10;
+      numLargeAce = 1;
+    }
+    //Decrease any large Ace value by 10 to prevent bust
+    if (numLargeAce == 1 && score > 21) {
+      score -= 10;
+      numLargeAce = 0;
+    }
+  }
+  return score;
+};
+//deal the cards for the first time and check for any black jack wins
+var firstDealCards = function () {
+  var REPLAY_MSG =
+    "<br>Place another bet and click Submit to play another round";
+  //deal 2 cards to player
+  playerHand[0] = cardDeck.pop();
+  playerHand[1] = cardDeck.pop();
+  //deal 2 cards to dealer
+  dealerHand[0] = cardDeck.pop();
+  dealerHand[1] = cardDeck.pop();
+  //tally the scores of each hand
+  var dealerScore = findScoreOfHand(dealerHand);
+  playerScore = findScoreOfHand(playerHand);
+  //store the output string of the hands
+  var displayDealerHands = `Dealer has<br>${displayHand(dealerHand)}<br>`;
+
+  var displayDealerHandsOneFaceDown = `Dealer has<br>
+  ${displayHand([dealerHand[0]])}and one face down card<br><br>`;
+
+  var displayPlayerHands = `You have<br>${displayHand(playerHand)}`;
+
+  //end the game if dealer gets blackjack or if both dealer and player blackjack
+  if (playerScore == 21 && dealerScore == 21) {
+    gameMode = "firstdeal";
+    playerWallet += playerBet;
+    return `${displayDealerHands}${displayPlayerHands}<br>Holy Moly, both of you got blackjack!${REPLAY_MSG}`;
+  }
+  if (dealerScore == 21) {
+    gameMode = "firstdeal";
+    return `${displayDealerHands}${displayPlayerHands}<br>The dealer won by black jack!${REPLAY_MSG}`;
+  }
+  //end the game if player got black jack
+  if (playerScore == 21) {
+    gameMode = "firstdeal";
+    playerWallet += playerBet * 2.5;
+    return `${displayDealerHandsOneFaceDown}${displayPlayerHands}<br>You won by black jack!${REPLAY_MSG}`;
+  }
+
+  gameMode = "playerhitorstand";
+  return `${displayDealerHandsOneFaceDown}${displayPlayerHands}<br>Your current score is ${playerScore}<br>Do you want to hit (Type h) or stand (Type s)?`;
+};
+
 var main = function (input) {
   //validation for betting amount
   if (gameMode == "firstdeal") {
-    if (Number.isNaN(Number(input)) || !input || input < 0) {
-      return `Please input your bet, you have $${playerWallet}`;
+    if (playerWallet < 1) {
+      return "Oops you are out of cash. Click refresh to print $100";
+    }
+    if (Number.isNaN(Number(input)) || !input || input < 1) {
+      return `Please input your bet of at least $1, you have $${playerWallet}`;
     }
     if (input > playerWallet) {
       return `Oops, not enough moolah, you have $${playerWallet}`;
@@ -122,175 +297,4 @@ var main = function (input) {
     gameMode = "firstdeal";
     return `${displayDealerHands}${REPLAY_MSG_SHOW_WALLET}${playerWallet}`;
   }
-};
-
-var makeDeck = function () {
-  // Initialise an empty deck array
-  var cardDeck = [];
-  // Initialise an array of the 4 suits in our deck. We will loop over this array.
-  var suits = ["hearts", "diamonds", "clubs", "spades"];
-
-  // Loop over the suits array
-  var suitIndex = 0;
-  while (suitIndex < suits.length) {
-    // Store the current suit in a variable
-    var currentSuit = suits[suitIndex];
-
-    // Loop from 1 to 13 to create all cards for a given suit
-    // Notice rankCounter starts at 1 and not 0, and ends at 13 and not 12.
-    // This is an example of a loop without an array.
-    var rankCounter = 1;
-    while (rankCounter <= 13) {
-      // By default, the card name is the same as rankCounter
-      var cardName = rankCounter;
-      var points = rankCounter;
-      // If rank is 1, 11, 12, or 13, set cardName to the ace or face card's name
-      if (cardName == 1) {
-        cardName = "ace";
-      } else if (cardName == 11) {
-        cardName = "jack";
-        points = 10;
-      } else if (cardName == 12) {
-        cardName = "queen";
-        points = 10;
-      } else if (cardName == 13) {
-        cardName = "king";
-        points = 10;
-      }
-
-      // Create a new card with the current name, suit, and rank
-      var card = {
-        name: cardName,
-        suit: currentSuit,
-        rank: points,
-      };
-
-      // Add the new card to the deck
-      cardDeck.push(card);
-
-      // Increment rankCounter to iterate over the next rank
-      rankCounter += 1;
-    }
-
-    // Increment the suit index to iterate over the next suit
-    suitIndex += 1;
-  }
-
-  // Return the completed card deck
-  return cardDeck;
-};
-
-// Get a random index ranging from 0 (inclusive) to max (exclusive).
-var getRandomIndex = function (max) {
-  return Math.floor(Math.random() * max);
-};
-
-// Shuffle the elements in the cardDeck array
-var shuffleCards = function (cardDeck) {
-  // Loop over the card deck array once
-  var currentIndex = 0;
-  while (currentIndex < cardDeck.length) {
-    // Select a random index in the deck
-    var randomIndex = getRandomIndex(cardDeck.length);
-    // Select the card that corresponds to randomIndex
-    var randomCard = cardDeck[randomIndex];
-    // Select the card that corresponds to currentIndex
-    var currentCard = cardDeck[currentIndex];
-    // Swap positions of randomCard and currentCard in the deck
-    cardDeck[currentIndex] = randomCard;
-    cardDeck[randomIndex] = currentCard;
-    // Increment currentIndex
-    currentIndex = currentIndex + 1;
-  }
-  // Return the shuffled deck
-  return cardDeck;
-};
-//converts suit name into its image emoji
-var suitImage = function (suitName) {
-  if (suitName == "hearts") {
-    image = "♥️";
-  }
-  if (suitName == "diamonds") {
-    image = "♦️";
-  }
-  if (suitName == "clubs") {
-    image = "♣️";
-  }
-  if (suitName == "spades") {
-    image = "♠️";
-  }
-  return image;
-};
-
-var firstDealCards = function () {
-  var REPLAY_MSG =
-    "<br>Place another bet and click Submit to play another round";
-  //deal 2 cards to player
-  playerHand[0] = cardDeck.pop();
-  playerHand[1] = cardDeck.pop();
-  //deal 2 cards to dealer
-  dealerHand[0] = cardDeck.pop();
-  dealerHand[1] = cardDeck.pop();
-
-  var dealerScore = findScoreOfHand(dealerHand);
-  playerScore = findScoreOfHand(playerHand);
-
-  var displayDealerHands = `Dealer has<br>${displayHand(dealerHand)}<br>`;
-
-  var displayDealerHandsOneFaceDown = `Dealer has<br>
-  ${displayHand([dealerHand[0]])}and one face down card<br><br>`;
-
-  var displayPlayerHands = `You have<br>${displayHand(playerHand)}`;
-
-  //end the game if dealer gets blackjack or if both dealer and player blackjack
-  if (playerScore == 21 && dealerScore == 21) {
-    gameMode = "firstdeal";
-    playerWallet += playerBet;
-    return `${displayDealerHands}${displayPlayerHands}<br>Holy Moly, both of you got blackjack!${REPLAY_MSG}`;
-  }
-  if (dealerScore == 21) {
-    gameMode = "firstdeal";
-    return `${displayDealerHands}${displayPlayerHands}<br>The dealer won by black jack!${REPLAY_MSG}`;
-  }
-  //end the game if player got black jack
-  if (playerScore == 21) {
-    playerWallet += playerBet * 2.5;
-    gameMode = "firstdeal";
-    //return (displayHands += `<br>You won by black jack!${REPLAY_MSG}`);
-    return `${displayDealerHandsOneFaceDown}${displayPlayerHands}<br>You won by black jack!${REPLAY_MSG}`;
-  }
-
-  gameMode = "playerhitorstand";
-  return `${displayDealerHandsOneFaceDown}${displayPlayerHands}<br>Your current score is ${playerScore}<br>Do you want to hit (Type h) or stand (Type s)?`;
-};
-//prints all the cards in a given hand
-var displayHand = function (hand) {
-  var printHands = "";
-  for (var cardCount = 0; cardCount < hand.length; cardCount++) {
-    printHands += `${hand[cardCount].name} of ${suitImage(
-      hand[cardCount].suit
-    )}<br>`;
-  }
-  return printHands;
-};
-//finds the score of a given hand
-var findScoreOfHand = function (hand) {
-  var score = 0;
-  //tracker for any ace card which got assigned higher value of 11
-  var numLargeAce = 0;
-
-  for (var cardCount = 0; cardCount < hand.length; cardCount++) {
-    score += hand[cardCount].rank;
-    //Increment the Ace value by 10 if it does not bust player's hand
-    if (hand[cardCount].rank == 1 && score + 10 <= 21) {
-      score += 10;
-      numLargeAce = 1;
-    }
-    //Decrease any large Ace value by 10 to prevent bust
-    if (numLargeAce == 1 && score > 21) {
-      score -= 10;
-      numLargeAce = 0;
-    }
-  }
-  return score;
 };
