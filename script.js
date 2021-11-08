@@ -24,6 +24,8 @@ var mode = INIT;
 var shuffledDeck = [];
 var playerHand = [];
 var computerHand = [];
+var playerSum = [];
+var computerSum = [];
 
 var getRandomIndex = function (max) {
   return Math.floor(Math.random() * max);
@@ -278,3 +280,9 @@ var main = function (input) {
 
   return "end";
 };
+
+/* TO DO 
+a function that evaluate hand value, taking into account ace logic
+computer game logic
+find winner
+*/
