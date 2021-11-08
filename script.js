@@ -96,13 +96,13 @@ var populatePlayersBets = function () {
   var innerHtml = "";
 
   for (var i = 0; i < players.length; i++) {
-    innerHtml += `<div class="col col-lg-2 text-center"><h5 style="color: ${
+    innerHtml += `<div class="col col-lg-2 text-center"><h5 class="bangers" style="color: ${
       players[i].color
-    }">Player ${i + 1}</h5><p class="text-white mb-2 mt-2">Amount: ${
+    }">Player ${i + 1}</h5><p class="text-white mb-2 mt-2 normal">Amount: ${
       players[i].amount
     }</p><div class="row"><div class="col-lg-12 mt-3" id="player-${i + 1}">`;
 
-    innerHtml += `<input type="number" class="form-control" id="player-${
+    innerHtml += `<input type="number" class="form-control normal" id="player-${
       i + 1
     }-bet" min="1" max="${players[i].amount}" placeholder="Player ${
       i + 1
@@ -151,7 +151,9 @@ var populatePlayersOnTable = function () {
 
   if (turn !== players.length) {
     for (var i = 0; i < players.length; i++) {
-      innerHtml += `<div class="col col-lg-2 text-center"><h5 style="color: white">Player ${
+      innerHtml += `<div class="col col-lg-2 text-center"><h5 class="bangers" style="color: ${
+        players[i].color
+      }">Player ${
         i + 1
       }</h5><div class="row"><div class="col-lg-12 mt-3" id="player-${
         i + 1
@@ -191,15 +193,17 @@ var populatePlayersOnTable = function () {
         innerHtml += `<div id="player-${i + 1}-info" style="display: none">`;
       }
 
-      innerHtml += `<p class="text-white mb-2 mt-2">Score: <span id="player-${
+      innerHtml += `<p class="text-white mb-2 mt-2 normal">Score: <span id="player-${
         i + 1
       }-score">${players[i].score}</span> | Bet: ${
         players[i].bet
-      }</p><div class="btn-group" role="group" aria-label="Basic example"><button type="button" class="btn btn-dark" onmouseup="playerHit()">Hit</button><button type="button" class="btn btn-light" onmouseup="nextTurn()">Stand</button></div></div></div>`;
+      }</p><div class="btn-group" role="group" aria-label="Basic example"><button type="button" class="btn btn-dark btn-lg bangers" onmouseup="playerHit()">Hit</button><button type="button" class="btn btn-light btn-lg bangers" onmouseup="nextTurn()">Stand</button></div></div></div>`;
     }
   } else {
     for (var i = 0; i < players.length; i++) {
-      innerHtml += `<div class="col col-lg-2 text-center"><h5 style="color: white">Player ${
+      innerHtml += `<div class="col col-lg-2 text-center"><h5 class="bangers" style="color: ${
+        players[i].color
+      }">Player ${
         i + 1
       }</h5><div class="row"><div class="col-lg-12 mt-3" id="player-${
         i + 1
@@ -215,22 +219,22 @@ var populatePlayersOnTable = function () {
 
       innerHtml += `</div></div>`;
       innerHtml += `<div id="player-${i + 1}-info">`;
-      innerHtml += `<p class="text-white mb-2 mt-2">Score: <span id="player-${
+      innerHtml += `<p class="text-white mb-2 mt-2 normal">Score: <span id="player-${
         i + 1
       }-score">${players[i].score}</span> | Bet: ${players[i].bet}</p>`;
 
       if (tempBetsToAdd[i] < 0) {
-        innerHtml += `<p class="text-white mb-2 mt-2">Status: LOSS</p>`;
+        innerHtml += `<h5 class="mb-2 mt-2 bangers" style="color: #EA2027">LOSE</h5>`;
       } else if (tempBetsToAdd[i] > 0) {
-        innerHtml += `<p class="text-white mb-2 mt-2">Status: WIN</p>`;
+        innerHtml += `<h5 class="mb-2 mt-2 bangers" style="color: #006266">WIN</h5>`;
       } else {
-        innerHtml += `<p class="text-white mb-2 mt-2">Status: TIE</p>`;
+        innerHtml += `<h5 class="mb-2 mt-2 bangers" style="color: #FFC312">TIE</h5>`;
       }
 
       innerHtml += `</div></div>`;
     }
 
-    innerHtml += `<hr /><div class="row justify-content-center"><div class="text-center"><button class="btn btn-dark" type="button" onclick="populatePlayersBets()">Place Bets</button></div></div>`;
+    innerHtml += `<hr /><div class="row justify-content-center"><div class="text-center"><button class="btn btn-dark btn-lg bangers" type="button" onclick="populatePlayersBets()">Place Bets</button></div></div>`;
   }
 
   document.getElementById("list-of-players").innerHTML = innerHtml;
@@ -299,7 +303,7 @@ var showDealerCards = function () {
       innerHtml += `<img src="${dealer.card[i].pic}" style="width: 75px; position: relative;" />`;
     }
   }
-  innerHtml += `<p class="text-white mb-2 mt-2">Score: ${dealer.score}</p></div>`;
+  innerHtml += `<p class="text-white mb-2 mt-2 normal">Score: ${dealer.score}</p></div>`;
 
   document.getElementById(`dealer-cards`).innerHTML = innerHtml;
 };

@@ -130,19 +130,56 @@
           bottom: 10px;
         }
       }
+
+      .bangers {
+        font-family: "Bangers", cursive;
+      }
+
+      .normal {
+        font-family: "Zen Kaku Gothic Antique", sans-serif;
+      }
     </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bangers&family=Dongle:wght@300&family=Zen+Kaku+Gothic+Antique:wght@300;400&display=swap"
+      rel="stylesheet"
+    />
   </head>
 
   <body>
     <div class="container mt-5">
+      <div class="text-center">
+        <img class="d-block mx-auto" src="./images/wsc.png" />
+      </div>
       <div id="blackjack-table">
         <div id="welcome">
           <div class="container mt-5">
             <div class="row justify-content-center">
-              <img
-                src="https://media0.giphy.com/media/TOd09KJxxog65L0MwE/giphy.gif?cid=ecf05e47d58ihenbt6vi7fw81zhjdngen3lwg7srji95yauf&rid=giphy.gif&ct=g"
-                style="width: 480px"
-              />
+              <div class="col-md-4">
+                <h4 class="bangers text-white">
+                  📜 <span style="text-decoration: underline">Rules</span> 📜
+                </h4>
+                <p
+                  class="text-white normal"
+                  style="font-size: 1rem; margin-bottom: 0.5rem"
+                >
+                  Welcome to WSC!
+                </p>
+                <p
+                  class="text-white normal"
+                  style="font-size: 1rem; margin-bottom: 0.5rem"
+                >
+                  Dealer must draw on 16 or less and stand on 17 and above.
+                </p>
+              </div>
+              <div class="col-md-4">
+                <img
+                  src="https://i.giphy.com/media/XGU1koyEKToquGKRpE/giphy.webp"
+                  style="width: 100%"
+                />
+              </div>
+              <div class="col-md-4"></div>
             </div>
             <div class="row mt-4">
               <div class="col-md-4 offset-md-4">
@@ -152,15 +189,15 @@
                     min="1"
                     max="6"
                     id="no-of-players"
-                    class="form-control"
-                    placeholder="Enter number of people"
-                    aria-label="Enter number of people"
+                    class="form-control normal"
+                    placeholder="Enter no. of people"
+                    aria-label="Enter no. of people"
                     aria-describedby="button-addon2"
                     onkeyup="checkNoOfPeopleNotEmpty()"
                     onmouseup="checkNoOfPeopleNotEmpty()"
                   />
                   <button
-                    class="btn btn-dark"
+                    class="btn btn-dark bangers"
                     type="button"
                     id="place-bets-button"
                     disabled
@@ -173,13 +210,36 @@
           </div>
         </div>
         <div id="place-bets" style="display: none">
-          <div class="row justify-content-center">
-            <img
-              src="https://i.giphy.com/media/ZWiIwPxJ9JGW4/giphy.webp"
-              style="width: 480px"
-            />
-
-            <h3 class="text-center text-white">Place your bets</h3>
+          <div class="container mt-5">
+            <div class="row justify-content-center">
+              <div class="col-md-4">
+                <h4 class="bangers text-white">
+                  📜 <span style="text-decoration: underline">Rules</span> 📜
+                </h4>
+                <p
+                  class="text-white normal"
+                  style="font-size: 1rem; margin-bottom: 0.5rem"
+                >
+                  Welcome to WSC!
+                </p>
+                <p
+                  class="text-white normal"
+                  style="font-size: 1rem; margin-bottom: 0.5rem"
+                >
+                  Dealer must draw on 16 or less and stand on 17 and above.
+                </p>
+              </div>
+              <div class="col-md-4">
+                <img
+                  src="https://i.giphy.com/media/ZWiIwPxJ9JGW4/giphy.webp"
+                  style="width: 100%"
+                />
+              </div>
+              <div class="col-md-4"></div>
+              <h3 class="text-center text-white bangers mt-4">
+                Place your bets
+              </h3>
+            </div>
           </div>
           <hr />
           <div class="row justify-content-center" id="list-of-bets"></div>
@@ -187,7 +247,7 @@
           <div class="row justify-content-center">
             <div class="text-center">
               <button
-                class="btn btn-dark"
+                class="btn btn-dark bangers btn-lg"
                 type="button"
                 id="start-round"
                 disabled
@@ -200,7 +260,7 @@
         <div id="play-time" style="display: none">
           <div class="row justify-content-center">
             <div class="col col-lg-4 text-center">
-              <h5 style="color: white">Dealer</h5>
+              <h5 class="bangers" style="color: white">Dealer</h5>
               <img src="./images/dealer.png" style="width: 100px" />
               <div class="row" id="dealer-cards"></div>
             </div>
