@@ -1,35 +1,59 @@
 /*Implement a simplified version of Blackjack. Our simplified rules are the following. Please read all the requirements before starting it!
 
-There will be only two players. One human and one computer (for the Base solution).The computer will always be the dealer.Each player gets dealt two cards to start.The player goes first, and decides if they want to hit (draw a card) or stand (end their turn).The dealer has to hit if their hand is below 17.Each players' score is the total of their card ranks. Jacks/Queen/Kings are 10. Aces can be 1 or 11.The player who is closer to, but not above 21 wins the hand.*/
+There will be only two players.
+One human and one computer (for the Base solution).
+The computer will always be the dealer.
+Each player gets dealt two cards to start.
+The player goes first, and decides if they want to hit (draw a card) or stand (end their turn).
+The dealer has to hit if their hand is below 17.Each players' score is the total of their card ranks. Jacks/Queen/Kings are 10. Aces can be 1 or 11.
+The player who is closer to, but not above 21 wins the hand.*/
 
-/*
-shuffle deck
-deal card to players then computer
-check for blackjack
-for now - compute value
-*/
+// VERSION 1 OF BLACKJACK
 
 // GLOBAL VARIABLES
-var numberOfPlayers = 4;
-var numberOfDecks = 1;
 var myOutputValue = "";
-var currentPlayer = 0;
-
-// GAME STATUS
-var deck = [];
-var shuffledDeck = [];
-var players = [];
 
 // GAME MODE
-var mode = "init";
 var INIT = "init";
 var CHECK_FOR_BLACKJACK = "check for blackjack";
-var PLAY = "play";
-var PROMPT = "prompt";
+var PLAYER_TURN = "player turn";
+var COMPUTER_TURN = "computer turn";
+var mode = INIT;
 
-// create X standard 52-card deck
-var initialiseDeck = function () {
-  var names = [
+// GAME STATUS
+var shuffledDeck = [];
+var playerHand = [];
+var computerHand = [];
+
+var getRandomIndex = function (max) {
+  return Math.floor(Math.random() * max);
+};
+
+var shuffleCards = function (cardDeck) {
+  // Loop over the card deck array once
+  var currentIndex = 0;
+  while (currentIndex < cardDeck.length) {
+    // Select a random index in the deck
+    var randomIndex = getRandomIndex(cardDeck.length);
+    // Select the card that corresponds to randomIndex
+    var randomCard = cardDeck[randomIndex];
+    // Select the card that corresponds to currentIndex
+    var currentCard = cardDeck[currentIndex];
+    // Swap positions of randomCard and currentCard in the deck
+    cardDeck[currentIndex] = randomCard;
+    cardDeck[randomIndex] = currentCard;
+    // Increment currentIndex to shuffle the next pair of cards
+    currentIndex += 1;
+  }
+  // Return the shuffled deck
+  return cardDeck;
+};
+
+// make a standard 52-card deck
+var makeDeck = function () {
+  var deck = [];
+  suits = ["Spades", "Hearts", "Diamonds", "Clubs"];
+  names = [
     "Ace",
     "2",
     "3",
@@ -44,243 +68,213 @@ var initialiseDeck = function () {
     "Queen",
     "King",
   ];
-  var values = [
-    // Ace represents 2 values while other cards represent 1 value
-    [1, 11],
-    [2, 2],
-    [3, 3],
-    [4, 4],
-    [5, 5],
-    [6, 6],
-    [7, 7],
-    [8, 8],
-    [9, 9],
-    [10, 10],
-    [10, 10],
-    [10, 10],
-    [10, 10],
-  ];
-  var ranks = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
-  var suits = ["Spades", "Hearts", "Diamonds", "Clubs"];
+  values = [11, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10];
 
   var index = 0;
-  // make X standard 52-card deck
-  for (var counter = 0; counter < numberOfDecks; counter += 1) {
-    // loop thru suits length = 4
-    for (var suit = 0; suit < suits.length; suit += 1) {
-      // nested loop thru names length = 13
-      for (var name = 0; name < names.length; name += 1) {
-        deck[index] = {
-          name: names[name],
-          value: values[name],
-          rank: ranks[name],
-          suit: suits[suit],
-        };
-        index += 1;
-      }
+  for (var suit = 0; suit < suits.length; suit += 1) {
+    for (var name = 0; name < names.length; name += 1) {
+      deck[index] = {
+        suit: suits[suit],
+        name: names[name],
+        value: values[name],
+      };
+      index += 1;
     }
   }
+  return deck;
 };
 
-// initialise computer and players
-var initialisePlayers = function () {
-  for (var i = 0; i < numberOfPlayers; i += 1) {
-    // last player to be computer/dealer
-    if (i == numberOfPlayers - 1) {
-      players[i] = { player: "Dealer", hands: [], blackjack: false };
-      continue;
-    }
-    // rest of the players
-    players[i] = { player: `Player ${i + 1}`, hands: [], blackjack: false };
+var showHandMessage = function (character, charHand) {
+  var handSize = charHand.length;
+  myOutputValue += `${character}: `;
+  var handSum = 0;
+
+  // loop and display
+  var counter = 0;
+  while (counter < handSize) {
+    handSum += charHand[counter].value;
+    var handName = charHand[counter].name + " of " + charHand[counter].suit;
+    myOutputValue += handName + ", ";
+    counter += 1;
   }
+  myOutputValue = myOutputValue.substring(0, myOutputValue.length - 2); // remove last comma
+  myOutputValue += ` (Value: ${handSum})`;
+  myOutputValue += "<br>";
+  return;
 };
 
-// Get a random index ranging from 0 (inclusive) to max (exclusive).
-var getRandomIndex = function (max) {
-  return Math.floor(Math.random() * max);
-};
+var isBlackjack = function (charHand) {
+  var firstCardName = charHand[0].name;
+  var secondCardName = charHand[1].name;
+  var hasAce = handGotAce(firstCardName, secondCardName);
 
-// Shuffle the elements in the cardDeck array
-var shuffleCards = function (cardDeck) {
-  // Loop over the card deck array once
-  var currentIndex = 0;
-  while (currentIndex < cardDeck.length) {
-    // Select a random index in the deck
-    var randomIndex = getRandomIndex(cardDeck.length);
-    // Select the card that corresponds to randomIndex
-    var randomCard = cardDeck[randomIndex];
-    // Select the card that corresponds to currentIndex
-    var currentCard = cardDeck[currentIndex];
-    // Swap positions of randomCard and currentCard in the deck
-    cardDeck[currentIndex] = randomCard;
-    cardDeck[randomIndex] = currentCard;
-    // Increment currentIndex
-    currentIndex = currentIndex + 1;
-  }
-  // Return the shuffled deck
-  return cardDeck;
-};
+  var firstCardValue = charHand[0].value;
+  var secondCardValue = charHand[1].value;
+  var hasTen = handGotTen(firstCardValue, secondCardValue);
 
-var dealStartingHand = function () {
-  // deal starting cards to players
-  var startingHandSize = 2;
-
-  // rounds of dealing
-  for (var round = 0; round < startingHandSize; round += 1) {
-    // deal player by player
-    for (var i = 0; i < numberOfPlayers; i += 1) {
-      var randomCard = shuffledDeck.pop();
-      players[i]["hands"].push(randomCard);
-    }
-  }
-};
-
-var showHandMessage = function () {
-  // use loop to display hand status
-  myOutputValue = "";
-  for (var i = 0; i < numberOfPlayers; i += 1) {
-    var name = players[i].player;
-    var firstCard =
-      players[i].hands[0].name + " of " + players[i].hands[0].suit;
-    var secondCard =
-      players[i].hands[1].name + " of " + players[i].hands[1].suit;
-    var valueOne = players[i].hands[0].value[0] + players[i].hands[1].value[0];
-    var valueTwo = players[i].hands[0].value[1] + players[i].hands[1].value[1];
-
-    // if value one and value two are same, only display 1 value
-    if (valueOne == valueTwo) {
-      myOutputValue += `${name}, your hands are ${firstCard} and ${secondCard} (Value: ${valueOne}).<br>`;
-    } else {
-      myOutputValue += `${name}, your hands are ${firstCard} and ${secondCard} (Value: ${valueOne} or ${valueTwo}).<br>`;
-    }
-  }
-};
-
-// return true if player(s) got blackjack
-var playersGotBlackjack = function () {
-  var anyBlackjack = false;
-  // use loop to check thru all players hands
-  for (var i = 0; i < numberOfPlayers; i += 1) {
-    // check if got ace
-    var firstCardName = players[i].hands[0].name;
-    var SecondCardName = players[i].hands[1].name;
-    var hasAce = checkForAce(firstCardName, SecondCardName);
-
-    // check if got 10s
-    var firstCardValue = players[i].hands[0].value[0];
-    var SecondCardValue = players[i].hands[1].value[0];
-    var hasTen = checkForTen(firstCardValue, SecondCardValue);
-
-    // check if got blackjack
-    if (hasAce == true && hasTen == true) {
-      players[i].blackjack = true;
-      anyBlackjack = true;
-    }
-    console.log("======== checking for blackjack ========");
-    console.log(players[i]);
-  }
-  console.log(`anyBlackjack: ${anyBlackjack}`);
-  return anyBlackjack;
-};
-
-var checkForAce = function (firstCardName, SecondCardName) {
-  if (firstCardName == "Ace" || SecondCardName == "Ace") {
+  if (hasAce && hasTen) {
     return true;
   }
   return false;
 };
 
-var checkForTen = function (firstCardValue, SecondCardValue) {
-  if (firstCardValue == 10 || SecondCardValue == 10) {
+var handGotAce = function (firstCardName, secondCardName) {
+  if (firstCardName == "Ace" || secondCardName == "Ace") {
     return true;
   }
   return false;
 };
 
-var showBlackjackMessage = function () {
-  // use loop to display hand status
-  myOutputValue = "Congratulations! <br>";
-  for (var i = 0; i < numberOfPlayers; i += 1) {
-    // if got blackjack, display winner
-    var isBlackjack = players[i].blackjack;
-    if (isBlackjack) {
-      var name = players[i].player;
-      var firstCard =
-        players[i].hands[0].name + " of " + players[i].hands[0].suit;
-      var secondCard =
-        players[i].hands[1].name + " of " + players[i].hands[1].suit;
-      myOutputValue += `${name}, your hands are ${firstCard} and ${secondCard}. You got a Blackjack! <br>`;
-    }
+var handGotTen = function (firstCardValue, secondCardValue) {
+  if (firstCardValue == 10 || secondCardValue == 10) {
+    return true;
   }
+  return false;
 };
 
-var gamePlayMessage = function () {};
+function isEmpty(str) {
+  return !str || str.length === 0;
+}
 
-var gamePlay = function () {
-  // display hands status
-  myOutputValue = gamePlayMessage();
-  return myOutputValue;
-};
+/* persuo code for blackjack
+make deck
+shuffle deck
+deal card to player and computer
 
-var promptPlayers = function () {
-  myOutputValue = "";
-  var dealerValueOne =
-    players[numberOfPlayers - 1].hands[0].value[0] +
-    players[numberOfPlayers - 1].hands[1].value[0];
-  myOutputValue = dealerValueOne;
-};
+check for blackjack; draw if both blackjack; move to game if no blackjack
+
+player hit or stand
+
+computer hit if value <= 16
+find winner
+*/
 
 var main = function (input) {
-  // shuffle deck
-  // deal cards to players
   if (mode == INIT) {
-    initialisePlayers();
-    initialiseDeck();
-    shuffledDeck = shuffleCards(deck);
-    dealStartingHand();
-    showHandMessage();
+    console.log("========== entering init ========");
+    // create a shuffled standard 52-card deck
+    shuffledDeck = shuffleCards(makeDeck());
+    console.log("========== shuffled deck ========");
+    console.log(shuffledDeck);
+
+    // clear hand
+    playerHand = [];
+    computerHand = [];
+
+    // deal starting hand
+    playerHand.push(shuffledDeck.pop());
+    computerHand.push(shuffledDeck.pop());
+    playerHand.push(shuffledDeck.pop());
+    computerHand.push(shuffledDeck.pop());
+    console.log("========== player hand ========");
+    console.log(playerHand);
+    console.log("========== computer hand ========");
+    console.log(computerHand);
+
+    // next mode
     mode = CHECK_FOR_BLACKJACK;
+
+    // display hand state
+    myOutputValue = "";
+    showHandMessage("Player", playerHand);
+    showHandMessage("Dealer", computerHand);
+    myOutputValue += "<br>Press Submit to continue";
+
+    console.log("========== exiting init ========");
     return myOutputValue;
   }
 
-  // check if any players have blackjack
   if (mode == CHECK_FOR_BLACKJACK) {
-    if (playersGotBlackjack()) {
-      // return true is any players got blackjack
-      showBlackjackMessage();
-      mode = INIT; // reset game
+    console.log("========== entering check for blackjack ========");
+    // playerHand = [
+    //   { suit: "Clubs", name: "Ace", value: 11 },
+    //   { suit: "Clubs", name: "King", value: 10 },
+    // ];
+    // computerHand = [
+    //   { suit: "Clubs", name: "Ace", value: 11 },
+    //   { suit: "Clubs", name: "King", value: 10 },
+    // ];
+
+    var isPlayerBlackjack = isBlackjack(playerHand);
+    var isComputerBlackjack = isBlackjack(computerHand);
+
+    if (isPlayerBlackjack && isComputerBlackjack) {
+      myOutputValue = `Player and Dealer got blackjack!
+      <br>
+      This is a draw!
+      <br>
+      Game reset`;
+      mode = INIT;
       return myOutputValue;
     }
-    // if no blackjack, move to next mode
-    myOutputValue = `Nobody got blackjack.
-    <br>
-    Moving on to game.`;
-    mode = PROMPT;
+    if (isPlayerBlackjack) {
+      myOutputValue = `Player got blackjack!
+      <br>
+      Player wins!
+      <br>
+      Game reset`;
+      mode = INIT;
+      return myOutputValue;
+    }
+    if (isComputerBlackjack) {
+      myOutputValue = `Dealer got blackjack!
+      <br>
+      Dealer wins!
+      <br>
+      Game reset`;
+      mode = INIT;
+      return myOutputValue;
+    }
+
+    // display hand state
+    myOutputValue = "No one got blackjack.<br><br>";
+    showHandMessage("Player", playerHand);
+    showHandMessage("Dealer", computerHand);
+    myOutputValue += "<br>Press Submit to continue to Player's turn.";
+
+    mode = PLAYER_TURN;
+    console.log("========== exiting check for blackjack ========");
     return myOutputValue;
   }
 
-  if (mode == PROMPT) {
-    // display dealer hands
-    // display current player hands
-    // prompt to hit or stand
-    while (currentPlayer < numberOfPlayers) {
-      promptPlayers();
-      break;
+  if (mode == PLAYER_TURN) {
+    console.log("========== entering player turn ========");
+    var userInput = input;
+
+    if (isEmpty(userInput)) {
+      // display hand state
+      myOutputValue = "";
+      showHandMessage("Player", playerHand);
+      showHandMessage("Dealer", computerHand);
+      myOutputValue += `<br>Player's turn<br>
+    Enter "hit" or "stand" for your action.`;
+      return myOutputValue;
+    } else if (userInput == "hit") {
+      playerHand.push(shuffledDeck.pop());
+      myOutputValue = "";
+      showHandMessage("Player", playerHand);
+      showHandMessage("Dealer", computerHand);
+      myOutputValue += `<br>Player's turn<br>
+    Enter "hit" or "stand" for your action.`;
+      return myOutputValue;
+    } else if (userInput == "stand") {
+      myOutputValue = "";
+      showHandMessage("Player", playerHand);
+      showHandMessage("Dealer", computerHand);
+      myOutputValue += `<br>Player's turn<br>
+    Enter "hit" or "stand" for your action.`;
+      mode = COMPUTER_TURN;
+      console.log("========== exiting player turn ========");
+      return myOutputValue;
+    } else {
+      myOutputValue = "Invalid input. Please try again.";
+      return myOutputValue;
     }
-    return myOutputValue;
   }
 
-  if (mode == PLAY) {
-    // players vs dealer in blackjack
-    // show dealer hands & value
-    // show player hands & value
-    // ask player hit or stand
-    // use loop to cycle thru the players status
-    var userInput = input; // hit or stand
-    while (currentPlayer < numberOfPlayers) {
-      gamePlay(userInput);
-    }
+  if (mode == COMPUTER_TURN) {
+    console.log("========== entering computer turn ========");
   }
 
-  return myOutputValue;
+  return "end";
 };
