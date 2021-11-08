@@ -1,279 +1,50 @@
-// shuufle deck function
-//innput nname
-//submit - deal 2 cards
-// game check  ace can be 1 or 11
-// dealer < gamer <21
-// above 21 bust
-// gamers decides first : hit / stand
-// dealer : auto hit <17
+var makeDeck = function () {
+  //Initialize empty deck array
+  var deck = [];
+  //initialize an array of the 4 suits in deck
+  var suits = [`hearts`, `diamonds`, `clubs`, `spades`];
+  var emoji = [`♥`, `♦️`, `♣`, `♠️`];
 
-// no of players
-// no. of decks
-//
+  //loop over suits array
+  for (var suitIndex = 0; suitIndex < suits.length; suitIndex++) {
+    var currentSuit = suits[suitIndex];
 
-// hard coded card deck
-var deck = [
-  {
-    name: "ace",
-    suit: "hearts",
-    rank: 1,
-  },
-  {
-    name: "2",
-    suit: "hearts",
-    rank: 2,
-  },
-  {
-    name: "3",
-    suit: "hearts",
-    rank: 3,
-  },
-  {
-    name: "4",
-    suit: "hearts",
-    rank: 4,
-  },
-  {
-    name: "5",
-    suit: "hearts",
-    rank: 5,
-  },
-  {
-    name: "6",
-    suit: "hearts",
-    rank: 6,
-  },
-  {
-    name: "7",
-    suit: "hearts",
-    rank: 7,
-  },
-  {
-    name: "8",
-    suit: "hearts",
-    rank: 8,
-  },
-  {
-    name: "9",
-    suit: "hearts",
-    rank: 9,
-  },
-  {
-    name: "10",
-    suit: "hearts",
-    rank: 10,
-  },
-  {
-    name: "jack",
-    suit: "hearts",
-    rank: 11,
-  },
-  {
-    name: "queen",
-    suit: "hearts",
-    rank: 12,
-  },
-  {
-    name: "king",
-    suit: "hearts",
-    rank: 13,
-  },
-  {
-    name: "ace",
-    suit: "diamonds",
-    rank: 1,
-  },
-  {
-    name: "2",
-    suit: "diamonds",
-    rank: 2,
-  },
-  {
-    name: "3",
-    suit: "diamonds",
-    rank: 3,
-  },
-  {
-    name: "4",
-    suit: "diamonds",
-    rank: 4,
-  },
-  {
-    name: "5",
-    suit: "diamonds",
-    rank: 5,
-  },
-  {
-    name: "6",
-    suit: "diamonds",
-    rank: 6,
-  },
-  {
-    name: "7",
-    suit: "diamonds",
-    rank: 7,
-  },
-  {
-    name: "8",
-    suit: "diamonds",
-    rank: 8,
-  },
-  {
-    name: "9",
-    suit: "diamonds",
-    rank: 9,
-  },
-  {
-    name: "10",
-    suit: "diamonds",
-    rank: 10,
-  },
-  {
-    name: "jack",
-    suit: "diamonds",
-    rank: 11,
-  },
-  {
-    name: "queen",
-    suit: "diamonds",
-    rank: 12,
-  },
-  {
-    name: "king",
-    suit: "diamonds",
-    rank: 13,
-  },
-  {
-    name: "ace",
-    suit: "clubs",
-    rank: 1,
-  },
-  {
-    name: "2",
-    suit: "clubs",
-    rank: 2,
-  },
-  {
-    name: "3",
-    suit: "clubs",
-    rank: 3,
-  },
-  {
-    name: "4",
-    suit: "clubs",
-    rank: 4,
-  },
-  {
-    name: "5",
-    suit: "clubs",
-    rank: 5,
-  },
-  {
-    name: "6",
-    suit: "clubs",
-    rank: 6,
-  },
-  {
-    name: "7",
-    suit: "clubs",
-    rank: 7,
-  },
-  {
-    name: "8",
-    suit: "clubs",
-    rank: 8,
-  },
-  {
-    name: "9",
-    suit: "clubs",
-    rank: 9,
-  },
-  {
-    name: "10",
-    suit: "clubs",
-    rank: 10,
-  },
-  {
-    name: "jack",
-    suit: "clubs",
-    rank: 11,
-  },
-  {
-    name: "queen",
-    suit: "clubs",
-    rank: 12,
-  },
-  {
-    name: "king",
-    suit: "clubs",
-    rank: 13,
-  },
-  {
-    name: "ace",
-    suit: "spades",
-    rank: 1,
-  },
-  {
-    name: "2",
-    suit: "spades",
-    rank: 2,
-  },
-  {
-    name: "3",
-    suit: "spades",
-    rank: 3,
-  },
-  {
-    name: "4",
-    suit: "spades",
-    rank: 4,
-  },
-  {
-    name: "5",
-    suit: "spades",
-    rank: 5,
-  },
-  {
-    name: "6",
-    suit: "spades",
-    rank: 6,
-  },
-  {
-    name: "7",
-    suit: "spades",
-    rank: 7,
-  },
-  {
-    name: "8",
-    suit: "spades",
-    rank: 8,
-  },
-  {
-    name: "9",
-    suit: "spades",
-    rank: 9,
-  },
-  {
-    name: "10",
-    suit: "spades",
-    rank: 10,
-  },
-  {
-    name: "jack",
-    suit: "spades",
-    rank: 11,
-  },
-  {
-    name: "queen",
-    suit: "spades",
-    rank: 12,
-  },
-  {
-    name: "king",
-    suit: "spades",
-    rank: 13,
-  },
-];
+    //loop from 1 to 13 to create all cards for a given suit
+    for (var rankCounter = 1; rankCounter <= 13; rankCounter++) {
+      var cardName = rankCounter;
+
+      //if rank is 1, 11, 12, 13, change card name to ace, jack, queen, king
+      if (cardName == 1) {
+        cardName = `Ace`;
+      } else if (cardName == 11) {
+        cardName = `Jack`;
+      } else if (cardName == 12) {
+        cardName = `Queen`;
+      } else if (cardName == 13) {
+        cardName = `King`;
+      }
+
+      //create a new card object with name, suit, rank
+      var card = {
+        name: cardName,
+        suit: currentSuit,
+        rank: rankCounter,
+        emoji: emoji[suitIndex],
+      };
+
+      //change jack, queen, king to rank 10
+      if (card.rank == 11 || card.rank == 12 || card.rank == 13) {
+        card.rank = 10;
+      }
+
+      //add card to the deck
+      deck.push(card);
+    }
+  }
+  return deck;
+};
+
+var deck = makeDeck();
 
 ///shuffle
 var getRandomIndex = function (max) {
@@ -303,9 +74,7 @@ while (counter < deck.length) {
   ) {
     deck[counter].rank = 10;
   }
-  if (deck[counter].name == "ace") {
-    deck[counter].rank == 11;
-  }
+
   counter = counter + 1;
 }
 
@@ -317,23 +86,45 @@ var gameMode = "inputName";
 var playerName = "";
 var yourBetAmount = 0;
 var playerScore = 0;
+var card1 = {};
+var card2 = {};
+var dealerCards = [];
+
+var printCard = function (card) {
+  cardPic = `<div id="blackcard">${card.name}<br><span class="emoji">${card.emoji}</span></div>`;
+
+  if (card.suit == "hearts" || card.suit == "diamonds") {
+    cardPic = `<div id="redcard">${card.name}<br><span class="emoji">${card.emoji}</span></div>`;
+  }
+
+  return cardPic;
+};
 
 // modes inputName , betAmount, deal2cards , decidehit/Stay , dealerMode 2card autohit
 var main = function (input) {
   if (gameMode == "inputName") {
     playerName = input;
     gameMode = "betAmount";
-    return "Hi " + playerName + ", type in, how much you want to bet ?";
+    return (
+      "🥂 Hi " +
+      playerName +
+      ", welcome to the 'No Limit Blackjack Table'" +
+      "<br>" +
+      "👉 Please type in your betting amount 💰💰💰 in the orange bar above !"
+    );
   }
   if (gameMode == "betAmount") {
     yourBetAmount = input;
     gameMode = "ace1/11";
     return (
+      "🥂 Great " +
       playerName +
-      "you have bet:" +
+      ", today seems to be your lucky day, 💰 you have bet: " +
       yourBetAmount +
       "<br>" +
-      "select ACE value 1 or 11 for this round "
+      "🤞 You can decide the Rank of Ace to be either 1 or 11" +
+      "<br>" +
+      "👉 Type in your choice: 1 or 11 in the orange bar above."
     );
   }
 
@@ -346,12 +137,20 @@ var main = function (input) {
       }
       counter = counter + 1;
     }
-    return " press submit for dealer to pull out two cards for you,from shuffled deck";
+    return (
+      "🃎 Ace will have Rank: " +
+      input +
+      " for this round" +
+      "<br>" +
+      "♣️♠️♦️❤️ So it's now the Blackjack time. 👍 Press the 'Submit' button now" +
+      "<br>" +
+      "🃏🃏 Dealer will shuffle the deck and pull out two cards for you."
+    );
   }
 
   if (gameMode == "dealCards") {
-    var card1 = shuffledDeck.pop();
-    var card2 = shuffledDeck.pop();
+    card1 = shuffledDeck.pop();
+    card2 = shuffledDeck.pop();
     playerScore = card1.rank + card2.rank;
     if (playerScore == 21) {
       gameMode = "endGame/newGame";
@@ -365,26 +164,20 @@ var main = function (input) {
     if (playerScore < 21) {
       gameMode = "hitStay";
       decision1 =
-        playerName +
-        ", you want to hit/stay ? '<br>'note:- hit: want one more card , stay : want Dealer to show his cards";
+        ". you want 'hit' or 'stay' ?" +
+        "<br>" +
+        "Type in your decision 'hit' or 'stay' in the orange bar above.";
     }
 
     return (
       playerName +
-      " you bet  " +
-      yourBetAmount +
-      "<br>" +
-      " you got " +
-      card1.suit +
-      " " +
-      card1.name +
-      " & " +
-      card2.suit +
-      card2.name +
-      " Your Score is :" +
+      ", your Score is : " +
       playerScore +
+      decision1 +
       "<br>" +
-      decision1
+      "<br>" +
+      printCard(card1) +
+      printCard(card2)
     );
   }
 
@@ -398,25 +191,37 @@ var main = function (input) {
       if (playerScore == 21) {
         gameMode = "endGame/newGame";
         decision2 =
-          "perfect Blackjack , congrats! you doubled your money to" +
+          ". Perfect Blackjack! you doubled your money to" +
           yourBetAmount * 2 +
           "<br>" +
-          "select end/continue ?";
+          "You want to 'end' or 'continue' the game? " +
+          "<br>" +
+          " Type in your decision 'end' or 'continue' in the orange bar above";
       }
       if (playerScore > 21) {
         gameMode = "endGame/newGame";
         decision2 =
-          "Bust, you lost your bet amount" +
+          ". Bust, you lost your bet amount" +
           yourBetAmount +
           "<br>" +
-          "select end/continue ?";
+          "You want to 'end' or 'continue' the game ? " +
+          "<br>" +
+          " Type in your decision 'end' or 'continue' in the orange bar above";
       }
       if (playerScore < 21) {
         decision2 =
-          playerName +
-          ", you want to hit/stay ? '<br>'note:- hit: want one more card , stay : want Dealer to show his cards";
+          ". You want 'hit' or 'stay' ?" +
+          "<br>" +
+          "Type in your decision 'hit' or 'stay' in the orange bar above.";
       }
-      return decision2;
+      return (
+        "Now your score is : " +
+        playerScore +
+        decision2 +
+        "<br>" +
+        "<br>" +
+        printCard(card3)
+      );
     }
 
     if (input == "stay") {
@@ -424,32 +229,43 @@ var main = function (input) {
       var dealerCard1 = shuffledDeck.pop();
       var dealerCard2 = shuffledDeck.pop();
       var dealerScore = dealerCard1.rank + dealerCard2.rank;
+
+      console.log(dealerCard1, dealerCard2);
+
       if (dealerScore < 17) {
         var dealerCard3 = shuffledDeck.pop();
         dealerScore = dealerScore + dealerCard3.rank;
+        console.log(dealerCard3);
+      }
+      if (dealerScore > playerScore) {
+        gameMode = "endGame/newGame";
+        decision3 =
+          "Dealer Won, " +
+          playerName +
+          ", you lost your bet amt : " +
+          yourBetAmount +
+          "<br>" +
+          "select end or continue ?";
       }
       if (dealerScore > 21) {
         gameMode = "endGame/newGame";
         decision3 =
           "Dealer Bust" +
           playerName +
-          " you doubled your money to" +
+          " you doubled your money to: " +
           yourBetAmount * 2 +
           "<br>" +
-          "select end/continue ?";
-      }
-      if (dealerScore > playerScore) {
-        gameMode = "endGame/newGame";
-        decision3 =
-          "Dealer Won" +
-          playerName +
-          " you lost your bet amt" +
-          yourBetAmount +
-          "<br>" +
-          "select end/continue ?";
+          "select end or continue ?";
       }
 
-      return decision3;
+      return (
+        "Dealer scored: " +
+        dealerScore +
+        " and you scored: " +
+        playerScore +
+        "<br>" +
+        decision3
+      );
     }
   }
   if (gameMode == "endGame/newGame") {
