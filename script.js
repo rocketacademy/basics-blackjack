@@ -96,9 +96,8 @@ var main = function (input) {
 
     //scenario where only player bust
     if (playerScore > 21) {
-      displayDealerHands += `The dealer won as you got bust just now!${REPLAY_MSG_SHOW_WALLET}${playerWallet}`;
       gameMode = "firstdeal";
-      return displayDealerHands;
+      return (displayDealerHands += `The dealer won as you got bust just now!${REPLAY_MSG_SHOW_WALLET}${playerWallet}`);
     }
     //store both players' scores
     displayDealerHands += `<br>You scored ${playerScore}. The dealer scored ${dealerScore}<br>`;
@@ -228,6 +227,9 @@ var firstDealCards = function () {
   dealerHand[0] = cardDeck.pop();
   dealerHand[1] = cardDeck.pop();
 
+  var dealerScore = findScoreOfHand(dealerHand);
+  playerScore = findScoreOfHand(playerHand);
+
   var displayHands =
     "Dealer has " +
     dealerHand[0].name +
@@ -246,20 +248,16 @@ var firstDealCards = function () {
     " of " +
     suitImage(playerHand[1].suit);
   //end the game if dealer gets blackjack or if both dealer and player blackjack
-  if (isBlackjack(playerHand) && isBlackjack(dealerHand)) {
+  if (playerScore == 21 && dealerScore == 21) {
     gameMode = "firstdeal";
     playerWallet += playerBet;
     return (displayHands += `<br>Holy Moly, both of you got blackjack!${REPLAY_MSG}`);
   }
-  if (isBlackjack(dealerHand)) {
+  if (dealerScore == 21) {
     gameMode = "firstdeal";
     return (displayHands += `<br>The dealer won by black jack!${REPLAY_MSG}`);
   }
-  playerScore = playerHand[0].rank + playerHand[1].rank;
-  //increase the score by 10 if ace card is dealt
-  if (playerHand[0].rank == 1 || playerHand[1].rank == 1) {
-    playerScore += 10;
-  }
+
   //change display to have 1 dealer card face down
   displayHands =
     "Dealer has " +
@@ -275,7 +273,7 @@ var firstDealCards = function () {
     " of " +
     suitImage(playerHand[1].suit);
   //end the game if player got black jack
-  if (isBlackjack(playerHand)) {
+  if (playerScore == 21) {
     playerWallet += playerBet * 2.5;
     gameMode = "firstdeal";
     return (displayHands += `<br>You won by black jack!${REPLAY_MSG}`);
@@ -289,18 +287,6 @@ var firstDealCards = function () {
 
   return displayHands;
 };
-// returns true if blackjack condition met for first 2 cards dealt
-var isBlackjack = function (hand) {
-  if (
-    (hand[0].rank == 1 && hand[1].rank == 10) ||
-    (hand[1].rank == 1 && hand[0].rank == 10)
-  ) {
-    return true;
-  } else {
-    return false;
-  }
-};
-
 //prints all the cards in a given hand
 var displayHand = function (hand) {
   var printHands = "";
