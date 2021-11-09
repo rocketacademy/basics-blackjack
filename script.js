@@ -12,12 +12,15 @@ The player who is closer to, but not above 21 wins the hand.*/
 
 // GLOBAL VARIABLES
 var myOutputValue = "";
+var TWENTY_ONE = 21;
+var SEVENTEEN = 17;
 
 // GAME MODE
 var INIT = "init";
 var CHECK_FOR_BLACKJACK = "check for blackjack";
 var PLAYER_TURN = "player turn";
 var COMPUTER_TURN = "computer turn";
+var FIND_WINNER = "find winner";
 var mode = INIT;
 
 // GAME STATUS
@@ -89,12 +92,11 @@ var makeDeck = function () {
 var showHandMessage = function (character, charHand) {
   var handSize = charHand.length;
   myOutputValue += `${character}: `;
-  var handSum = 0;
+  var handSum = getHandValue(charHand);
 
   // loop and display
   var counter = 0;
   while (counter < handSize) {
-    handSum += charHand[counter].value;
     var handName = charHand[counter].name + " of " + charHand[counter].suit;
     myOutputValue += handName + ", ";
     counter += 1;
@@ -242,6 +244,8 @@ var main = function (input) {
   if (mode == PLAYER_TURN) {
     console.log("========== entering player turn ========");
     var userInput = input;
+    playerSum = getHandValue(playerHand);
+    computerSum = getHandValue(computerHand);
 
     if (isEmpty(userInput)) {
       // display hand state
@@ -251,34 +255,126 @@ var main = function (input) {
       myOutputValue += `<br>Player's turn<br>
     Enter "hit" or "stand" for your action.`;
       return myOutputValue;
-    } else if (userInput == "hit") {
+    }
+
+    if (userInput == "hit") {
       playerHand.push(shuffledDeck.pop());
+      playerSum = getHandValue(playerHand);
       myOutputValue = "";
       showHandMessage("Player", playerHand);
       showHandMessage("Dealer", computerHand);
       myOutputValue += `<br>Player's turn<br>
     Enter "hit" or "stand" for your action.`;
       return myOutputValue;
-    } else if (userInput == "stand") {
+    }
+
+    if (userInput == "stand") {
       myOutputValue = "";
       showHandMessage("Player", playerHand);
       showHandMessage("Dealer", computerHand);
-      myOutputValue += `<br>Player's turn<br>
-    Enter "hit" or "stand" for your action.`;
+      myOutputValue += `<br>Dealer's turn<br>
+    Press Submit to continue.`;
       mode = COMPUTER_TURN;
       console.log("========== exiting player turn ========");
       return myOutputValue;
-    } else {
-      myOutputValue = "Invalid input. Please try again.";
-      return myOutputValue;
     }
+
+    myOutputValue = "Invalid input. Please try again.";
+    return myOutputValue;
   }
 
   if (mode == COMPUTER_TURN) {
     console.log("========== entering computer turn ========");
+
+    if (computerSum <= SEVENTEEN) {
+      computerHand.push(shuffledDeck.pop());
+      computerSum = getHandValue(computerHand);
+      myOutputValue = "Dealer draws a card. <br><br>";
+      showHandMessage("Player", playerHand);
+      showHandMessage("Dealer", computerHand);
+      myOutputValue += `<br>Dealer's turn<br>
+    Press Submit to continue.`;
+      return myOutputValue;
+    }
+
+    if (computerSum > SEVENTEEN) {
+      myOutputValue = "Dealer stand. <br><br>";
+      showHandMessage("Player", playerHand);
+      showHandMessage("Dealer", computerHand);
+      myOutputValue += `<br>Press Submit to continue.`;
+
+      mode = FIND_WINNER;
+      console.log("========== exiting computer turn ========");
+      return myOutputValue;
+    }
   }
 
-  return "end";
+  if (mode == FIND_WINNER) {
+    console.log("========== entering find winner ========");
+    var isPlayerBust = gotBust(playerSum);
+    var isComputerBust = gotBust(computerSum);
+
+    if (isPlayerBust && isComputerBust) {
+      myOutputValue = "Both busted.<br><br>";
+      showHandMessage("Player", playerHand);
+      showHandMessage("Dealer", computerHand);
+      myOutputValue += `<br>Game reset`;
+
+      mode = INIT;
+      return myOutputValue;
+    }
+
+    if (isPlayerBust) {
+      myOutputValue = "Player busted. Dealer wins!<br><br>";
+      showHandMessage("Player", playerHand);
+      showHandMessage("Dealer", computerHand);
+      myOutputValue += `<br>Game reset`;
+
+      mode = INIT;
+      return myOutputValue;
+    }
+
+    if (isComputerBust) {
+      myOutputValue = "Dealer busted. Player wins!<br><br>";
+      showHandMessage("Player", playerHand);
+      showHandMessage("Dealer", computerHand);
+      myOutputValue += `<br>Game reset`;
+
+      mode = INIT;
+      return myOutputValue;
+    }
+
+    if (playerSum > computerSum) {
+      myOutputValue = "Player wins!<br><br>";
+      showHandMessage("Player", playerHand);
+      showHandMessage("Dealer", computerHand);
+      myOutputValue += `<br>Game reset`;
+
+      mode = INIT;
+      return myOutputValue;
+    }
+
+    if (playerSum < computerSum) {
+      myOutputValue = "Dealer wins!<br><br>";
+      showHandMessage("Player", playerHand);
+      showHandMessage("Dealer", computerHand);
+      myOutputValue += `<br>Game reset`;
+
+      mode = INIT;
+      return myOutputValue;
+    }
+
+    if (playerSum == computerSum) {
+      myOutputValue = "Draw!<br><br>";
+      showHandMessage("Player", playerHand);
+      showHandMessage("Dealer", computerHand);
+      myOutputValue += `<br>Game reset`;
+
+      mode = INIT;
+      return myOutputValue;
+    }
+  }
+  return "end of main";
 };
 
 /* TO DO 
@@ -286,3 +382,41 @@ a function that evaluate hand value, taking into account ace logic
 computer game logic
 find winner
 */
+
+var getNumberOfAces = function (charHand) {
+  var numberOfAces = 0;
+
+  var counter = 0;
+  while (counter < charHand.length) {
+    var cardName = charHand[counter].name;
+
+    if (cardName == "Ace") {
+      numberOfAces += 1;
+    }
+    counter += 1;
+  }
+  return numberOfAces;
+};
+
+var getHandValue = function (charHand) {
+  var numberOfAces = getNumberOfAces(charHand);
+
+  var handSum = 0;
+  var counter = 0;
+  while (counter < charHand.length) {
+    var cardValue = charHand[counter].value;
+    handSum += cardValue;
+    counter += 1;
+  }
+  for (var a = 1; a < numberOfAces; a += 1) {
+    handSum -= 10;
+  }
+  return handSum;
+};
+
+var gotBust = function (charSum) {
+  if (charSum > TWENTY_ONE) {
+    return true;
+  }
+  return false;
+};
