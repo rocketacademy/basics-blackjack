@@ -2,21 +2,29 @@
 var gameMode = "start";
 var playerMode = "";
 var playerSum = 0;
-var computerSum = 0;
+var dealerSum = 0;
 var playerCard1 = {};
 var playerCard2 = {};
 var playerCard3 = {};
 var playerCard4 = {};
-var playerBustMessage = `BUST<br><br> YOUR HAND <br><br>`;
-var computerCard1 = {};
-var computerCard2 = {};
-var computerCard3 = {};
-var computerBustMessage = `BUST<br><br> COMPUTER HAND <br><br>`;
+var playerCard5 = {};
+var playerBustMessage = `BUST<br><br> PLAYER'S HAND <br><br>`;
+var dealerCard1 = {};
+var dealerCard2 = {};
+var dealerCard3 = {};
+var dealerCard4 = {};
+var dealerCard5 = {};
+var dealerBustMessage = `BUST<br><br> DEALER HAND <br><br>`;
+// Check whether player and dealer bust or not
+var playerBlackJack = false;
+var dealerBlackJack = false;
 var playerBust = false;
-var computerBust = false;
+var dealerBust = false;
+
+// Function to create deck
 var makeDeck = function () {
   var cardDeck = [];
-  var suits = ["Hearts ❤️", "Diamonds ♦️", "Clubs ♣️", "Spades ♠️"];
+  var suits = ["Hearts", "Diamonds", "Clubs", "Spades"];
 
   // Loop over the suits array
   var suitIndex = 0;
@@ -54,6 +62,7 @@ var makeDeck = function () {
   return cardDeck;
 };
 
+// Function to help with the shuffling of cards
 var getRandomIndex = function (max) {
   return Math.floor(Math.random() * max);
 };
@@ -70,141 +79,214 @@ var shuffleCards = function (cardDeck) {
   return cardDeck;
 };
 
-var main = function (input) {
-  var deckOfCards = makeDeck();
-  var shuffle = shuffleCards(deckOfCards);
-  // draw 2 when dealing
-  if (gameMode == "start") {
-    var counter = 0;
-    while (counter < 2) {
-      playerCard1 = shuffle.pop();
-      playerCard2 = shuffle.pop();
-      computerCard1 = shuffle.pop();
-      computerCard2 = shuffle.pop();
-      counter++;
-    }
-    playerSum = playerCard1.rank + playerCard2.rank;
-    if (
-      playerSum == 11 &&
-      (playerCard1.name == "Ace" || playerCard2.name == "Ace")
-    ) {
-      if (playerCard1.name == "Ace") {
-        playerCard1.rank = 11;
-        playerSum = playerCard1.rank + playerCard2.rank;
-      }
-      if (playerCard2.name == "Ace") {
-        playerCard2.rank = 11;
-        playerSum = playerCard1.rank + playerCard2.rank;
-      }
-    }
-    myOutputValue = `YOUR HAND <br><br> ${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}<br><br> Sum is ${playerSum} <br><br>
-    Type "hit" to draw another card or "stand" to end turn.`;
-    gameMode = "round1";
-  } else if (gameMode == "round1" && input == "hit") {
-    playerCard3 = shuffle.pop();
-    playerSum = playerCard1.rank + playerCard2.rank + playerCard3.rank;
-    console.log(playerCard3.name);
-    if (playerSum < 21 && playerCard3.name == "Ace") {
-      myOutputValue = "Would you like your ace to be 1 or 11?";
-      if (input == 11) {
-        playerCard3.rank = 11;
-        playerSum = playerCard1.rank + playerCard2.rank + playerCard3.rank;
-        myOutputValue = `YOUR HAND <br><br> ${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}<br>${playerCard3.name} of ${playerCard3.suit}<br><br> Sum is ${playerSum} <br><br>
-    Type "hit again" to draw another card or "stand" to end turn.`;
-        playerMode = "round2";
-      }
-    }
-    myOutputValue = `YOUR HAND <br><br> ${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}<br>${playerCard3.name} of ${playerCard3.suit}<br><br> Sum is ${playerSum} <br><br>
-    Type "hit again" to draw another card or "stand" to end turn.`;
-    playerMode = "round2";
+// FPlayer to draw 2 cards
+var playerDrawCards = function () {
+  var counter = 0;
+  while (counter < 2) {
+    playerCard1 = shuffle.pop();
+    playerCard2 = shuffle.pop();
+    counter++;
   }
-  if (gameMode == "round1" && playerSum > 21) {
+  playerSum = playerCard1.rank + playerCard2.rank;
+  // This is so that ace will be returned as 11 to make total sum be 21. This will check if player gets blackjack.
+  if (
+    playerSum == 11 &&
+    (playerCard1.name == "Ace" || playerCard2.name == "Ace")
+  ) {
+    if (playerCard1.name == "Ace") {
+      playerCard1.rank = 11;
+      playerSum = playerCard1.rank + playerCard2.rank;
+    }
+    if (playerCard2.name == "Ace") {
+      playerCard2.rank = 11;
+      playerSum = playerCard1.rank + playerCard2.rank;
+    }
+    myOutputValue = `PLAYER'S HAND <br><br> ${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}<br><br> Sum is ${playerSum} <br><br> PLAYER BLACKJACK`;
+    playerBlackJack = true;
+    gameMode = "results";
+  }
+  myOutputValue = `PLAYER'S HAND <br><br> ${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}<br><br> Sum is ${playerSum} <br><br>
+    Type "hit" to draw another card or "stand" to end turn.`;
+  gameMode = "round1";
+};
+
+// Function to run when player first hit (3rd card)
+var firstHit = function () {
+  playerCard3 = shuffle.pop();
+  playerSum = playerCard1.rank + playerCard2.rank + playerCard3.rank;
+  // Check if bust or not
+  if (playerSum > 21) {
+    // if bust, return true
     playerBust = true;
     myOutputValue = `${playerBustMessage} ${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}<br>${playerCard3.name} of ${playerCard3.suit}<br><br> Sum is ${playerSum}<br><br> Press DEAL to end turn.`;
-    gameMode = "end user turn";
-  } else if (playerMode == "round2" && input == "hit again") {
-    playerCard4 = shuffle.pop();
-    console.log(playerCard4.name);
-    playerSum =
-      playerCard1.rank + playerCard2.rank + playerCard3.rank + playerCard4.rank;
-    if (playerSum > 21) {
-      playerBust = true;
-      myOutputValue = `${playerBustMessage} ${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}<br>${playerCard3.name} of ${playerCard3.suit}<br>${playerCard4.name} of ${playerCard4.suit}<br><br> Sum is ${playerSum}<br><br> Press DEAL to end turn.`;
-      gameMode = "end user turn";
-    }
-    if (playerSum <= 21) {
-      myOutputValue = `YOUR HAND <br><br> ${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}<br>${playerCard3.name} of ${playerCard3.suit}<br>${playerCard4.name} of ${playerCard4.suit}<br><br> Sum is ${playerSum} <br><br>
-          Type "hit" to draw another card or "stand" to end turn.`;
-      gameMode = "end user";
-    }
-    if (playerSum < 21 && playerCard4.name == "Ace") {
-      myOutputValue = "Would you like your ace to be 1 or 11?";
-      if (input == 1) {
-        playerSum =
-          playerCard1.rank +
-          playerCard2.rank +
-          playerCard3.rank +
-          playerCard4.rank;
-        myOutputValue = `YOUR HAND <br><br> ${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}<br>${playerCard3.name} of ${playerCard3.suit}<br>${playerCard4.name} of ${playerCard4.suit}<br><br> Sum is ${playerSum} <br><br>
-    Type "hit" to draw another card or "stand" to end turn.`;
-      } else if (input == 11) {
-        playerCard4 = 11;
-        playerSum =
-          playerCard1.rank +
-          playerCard2.rank +
-          playerCard3.rank +
-          playerCard4.rank;
-        myOutputValue = `YOUR HAND <br><br> ${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}<br>${playerCard3.name} of ${playerCard3.suit}<br>${playerCard4.name} of ${playerCard4.suit}<br><br> Sum is ${playerSum} <br><br>
-    Type "hit" to draw another card or "stand" to end turn.`;
-      }
-    }
-  } else if (input == "stand" || gameMode == "end user turn") {
-    computerSum = computerCard1.rank + computerCard2.rank;
-    myOutputValue = `COMPUTER HAND <br><br> ${computerCard1.name} of ${computerCard1.suit} <br> ${computerCard2.name} of ${computerCard2.suit}<br><br> Sum is ${computerSum}<br><br> Press DEAL to reveal results.`;
-
-    if (computerSum < 17) {
-      computerCard3 = shuffle.pop();
-      computerSum =
-        computerCard1.rank + computerCard2.rank + computerCard3.rank;
-      myOutputValue = `COMPUTER HAND <br><br> ${computerCard1.name} of ${computerCard1.suit} <br> ${computerCard2.name} of ${computerCard2.suit}<br> ${computerCard3.name} of ${computerCard3.suit}<br><br> Sum is ${computerSum}<br><br> Press DEAL to reveal results.`;
-      if (computerSum < 17) {
-        computerCard4 = shuffle.pop();
-        computerSum =
-          computerCard1.rank +
-          computerCard2.rank +
-          computerCard3.rank +
-          computerCard4.rank;
-        if (computerSum < 21 && computerCard4.name == "Ace") {
-          computerCard4.rank = 11;
-        }
-        myOutputValue = `COMPUTER HAND <br><br> ${computerCard1.name} of ${computerCard1.suit} <br> ${computerCard2.name} of ${computerCard2.suit}<br> ${computerCard3.name} of ${computerCard3.suit}<br> ${computerCard4.name} of ${computerCard4.suit}<br><br> Sum is ${computerSum}<br><br> Press DEAL to reveal results.`;
-      }
-    }
-    if (computerSum > 21) {
-      computerBust = true;
-      myOutputValue = `${computerBustMessage} ${computerCard1.name} of ${computerCard1.suit} <br> ${computerCard2.name} of ${computerCard2.suit}<br> ${computerCard3.name} of ${computerCard3.suit}<br><br> Sum is ${computerSum} <br><br> Press DEAL to reveal results.`;
-    }
     gameMode = "results";
-  } else if (gameMode == "results") {
-    console.log(playerBust);
-    console.log(computerBust);
-    if (playerBust == true && computerBust == true) {
-      myOutputValue = `It's a draw. `;
-    } else if (playerSum == computerSum) {
-      myOutputValue = `It's a draw. `;
-    } else if (playerSum > computerSum && playerBust == false) {
-      myOutputValue = `Player wins.`;
-    } else if (computerBust == true && playerBust == false) {
-      myOutputValue = `Player wins.`;
-    } else if (computerSum > playerSum) {
-      myOutputValue = `Computer wins.`;
-    } else if (playerBust == true && computerBust == false) {
-      myOutputValue = `Computer wins.`;
-    } else if (playerSum < computerSum && computerBust == true) {
-      myOutputValue = `Player wins.`;
-    } else if (computerSum < playerSum && playerBust == true) {
-      myOutputValue = "Computer wins.";
+  }
+  if (playerSum <= 21) {
+    myOutputValue = `PLAYER'S HAND <br><br> ${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}<br>${playerCard3.name} of ${playerCard3.suit}<br><br> Sum is ${playerSum} <br><br>
+    Type "hit" to draw another card or "stand" to end turn.`;
+    console.log(playerSum);
+    gameMode = "round2";
+  }
+};
+
+// Function to run when player second hit (4th card)
+var secondHit = function () {
+  playerCard4 = shuffle.pop();
+  playerSum =
+    playerCard1.rank + playerCard2.rank + playerCard3.rank + playerCard4.rank;
+  // Check if bust or not
+  if (playerSum > 21) {
+    // If bust, return true
+    playerBust = true;
+    myOutputValue = `${playerBustMessage} ${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}<br>${playerCard3.name} of ${playerCard3.suit}<br>${playerCard4.name} of ${playerCard4.suit}<br><br> Sum is ${playerSum}<br><br> Press DEAL to end turn.`;
+    gameMode = "results";
+  }
+  if (playerSum <= 21) {
+    myOutputValue = `PLAYER'S HAND <br><br> ${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}<br>${playerCard3.name} of ${playerCard3.suit}<br>${playerCard4.name} of ${playerCard4.suit}<br><br> Sum is ${playerSum} <br><br>
+          Type "hit" to draw another card or "stand" to end turn.`;
+    gameMode = "round3";
+  }
+};
+
+// Function to run when player third hit (5th card)
+var thirdHit = function () {
+  playerCard5 = shuffle.pop();
+  playerSum =
+    playerCard1.rank +
+    playerCard2.rank +
+    playerCard3.rank +
+    playerCard4.rank +
+    playerCard5.rank;
+  if (playerSum > 21) {
+    playerBust = true;
+    myOutputValue = `${playerBustMessage} ${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}<br>${playerCard3.name} of ${playerCard3.suit}<br>${playerCard4.name} of ${playerCard4.suit}<br>${playerCard5.name} of ${playerCard5.suit}<br><br> Sum is ${playerSum}<br><br> Press DEAL to end turn.`;
+    gameMode = "results";
+  }
+  if (playerSum <= 21) {
+    myOutputValue = `PLAYER'S HAND <br><br> ${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}<br>${playerCard3.name} of ${playerCard3.suit}<br>${playerCard4.name} of ${playerCard4.suit}<br>${playerCard5.name} of ${playerCard5.suit}<br><br> Sum is ${playerSum} <br><br>
+          Type "hit" to draw another card or "stand" to end turn.`;
+    gameMode = "end user turn";
+  }
+};
+
+// Dealer draw cards
+var dealerDrawCards = function () {
+  var counter = 0;
+  while (counter < 2) {
+    dealerCard1 = shuffle.pop();
+    dealerCard2 = shuffle.pop();
+    counter++;
+  }
+  dealerSum = dealerCard1.rank + dealerCard2.rank;
+  // Checking if dealer gets blackjack or not
+  if (
+    dealerSum == 11 &&
+    (dealerCard1.name == "Ace" || dealerCard2.name == "Ace")
+  ) {
+    if (dealerCard1.name == "Ace") {
+      dealerCard1.rank = 11;
+      dealerSum = dealerCard1.rank + dealerCard2.rank;
     }
+    if (dealerCard2.name == "Ace") {
+      dealerCard2.rank = 11;
+      dealerSum = dealerCard1.rank + dealerCard2.rank;
+    }
+    myOutputValue = `DEALER HAND <br><br> ${dealerCard1.name} of ${dealerCard1.suit} <br> ${dealerCard2.name} of ${dealerCard2.suit}<br><br> Sum is ${dealerSum}<br><br> DEALER BLACKJACK`;
+    dealerBlackJack = true;
+    gameMode = "end user turn";
+  }
+
+  // Add mroe cards to dealer's hand if lesser than 17
+  if (dealerSum < 17) {
+    dealerCard3 = shuffle.pop();
+    dealerSum = dealerCard1.rank + dealerCard2.rank + dealerCard3.rank;
+    if (dealerSum > 21) {
+      dealerBust = true;
+      myOutputValue = `${dealerBustMessage} ${dealerCard1.name} of ${dealerCard1.suit} <br> ${dealerCard2.name} of ${dealerCard2.suit}<br> ${dealerCard3.name} of ${dealerCard3.suit}<br><br> Sum is ${dealerSum} <br><br> Press DEAL to reveal results.`;
+      gameMode = "results";
+    } else {
+      myOutputValue = `DEALER HAND <br><br> ${dealerCard1.name} of ${dealerCard1.suit} <br> ${dealerCard2.name} of ${dealerCard2.suit}<br> ${dealerCard3.name} of ${dealerCard3.suit}<br><br> Sum is ${dealerSum}<br><br> Press DEAL to reveal results.`;
+      gameMode = "results";
+    }
+  } // If more than 21, return bust
+  // Add one more if still less than 17
+  if (dealerSum < 17) {
+    dealerCard4 = shuffle.pop();
+    dealerSum =
+      dealerCard1.rank + dealerCard2.rank + dealerCard3.rank + dealerCard4.rank;
+    if (dealerSum > 21) {
+      dealerBust = true;
+      myOutputValue = `${dealerBustMessage} ${dealerCard1.name} of ${dealerCard1.suit} <br> ${dealerCard2.name} of ${dealerCard2.suit}<br> ${dealerCard3.name} of ${dealerCard3.suit}<br> ${dealerCard4.name} of ${dealerCard4.suit}<br><br> Sum is ${dealerSum} <br><br> Press DEAL to reveal results.`;
+      gameMode = "results";
+    } else {
+      myOutputValue = `DEALER HAND <br><br> ${dealerCard1.name} of ${dealerCard1.suit} <br> ${dealerCard2.name} of ${dealerCard2.suit}<br> ${dealerCard3.name} of ${dealerCard3.suit}<br> ${dealerCard4.name} of ${dealerCard4.suit}<br><br> Sum is ${dealerSum}<br><br> Press DEAL to reveal results.`;
+      gameMode = "results";
+    }
+  }
+
+  if (dealerSum < 17) {
+    dealerCard5 = shuffle.pop();
+    dealerSum =
+      dealerCard1.rank +
+      dealerCard2.rank +
+      dealerCard3.rank +
+      dealerCard4.rank +
+      dealerCard5.rank;
+    if (dealerSum > 21) {
+      dealerBust = true;
+      myOutputValue = `${dealerBustMessage} ${dealerCard1.name} of ${dealerCard1.suit} <br> ${dealerCard2.name} of ${dealerCard2.suit}<br> ${dealerCard3.name} of ${dealerCard3.suit}<br>${dealerCard4.name} of ${dealerCard4.suit}<br> ${dealerCard5.name} of ${dealerCard5.suit}<br><br> Sum is ${dealerSum} <br><br> Press DEAL to reveal results.`;
+      gameMode = "results";
+    } else {
+      myOutputValue = `DEALER HAND <br><br> ${dealerCard1.name} of ${dealerCard1.suit} <br> ${dealerCard2.name} of ${dealerCard2.suit}<br> ${dealerCard3.name} of ${dealerCard3.suit}<br> ${dealerCard4.name} of ${dealerCard4.suit}<br> ${dealerCard5.name} of ${dealerCard5.suit}<br><br> Sum is ${dealerSum}<br><br> Press DEAL to reveal results.`;
+      gameMode = "results";
+    }
+  }
+};
+
+// Tally all results here
+var finalResults = function () {
+  if (playerBlackJack == true) {
+    myOutputValue = `Player wins. `;
+  } else if (playerSum == dealerSum) {
+    myOutputValue = `It's a draw. `;
+  } else if (playerSum > dealerSum && playerBust == false) {
+    myOutputValue = `Player wins.`;
+  } else if (dealerBust == true) {
+    myOutputValue = `Player wins.`;
+  } else if (dealerSum > playerSum) {
+    myOutputValue = `Dealer wins.`;
+  } else if (playerBust == true) {
+    myOutputValue = `Dealer wins.`;
+  } else if (playerSum < dealerSum && dealerBust == true) {
+    myOutputValue = `Player wins.`;
+  }
+  gameMode = "start";
+};
+var deckOfCards = makeDeck();
+var shuffle = shuffleCards(deckOfCards);
+var main = function (input) {
+  // draw 2 when dealing
+  if (gameMode == "start") {
+    playerDrawCards();
+    // will run when type hit for first round
+  } else if (gameMode == "round1" && input == "hit") {
+    firstHit();
+    // will run when type hit for second round
+  } else if (playerMode == "round2" && input == "hit") {
+    secondHit();
+    // will run when type hit for third round
+  } else if (playerMode == "round3" && input == "hit") {
+    thirdHit();
+  } else if (
+    input == "stand" ||
+    gameMode == "end user turn" ||
+    gameMode == "round3" ||
+    gameMode == "round2" ||
+    gameMode == "round1"
+  ) {
+    dealerDrawCards();
+  } else if (gameMode == "results") {
+    finalResults();
     gameMode = "start";
   }
   return myOutputValue;
