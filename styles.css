@@ -1,0 +1,241 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Open Sans", sans-serif;
+  margin-left: 30px;
+  margin-right: 30px;
+  background-color: #a9a9a9;
+  color: black; /* sets the font color */
+}
+
+.header,
+.footer {
+  font-weight: bold;
+  text-align: center;
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+}
+
+#container {
+  background-color: #519977;
+  margin: auto;
+  max-width: 1000px;
+  padding: 30px;
+  border-radius: 24%;
+}
+
+input {
+  font-size: 21px;
+  line-height: 33px;
+  margin: 0 0 23px 0;
+  padding: 0 9px;
+  width: 100%;
+}
+
+button {
+  font-size: 21px;
+  line-height: 33px;
+  margin: 0;
+  padding: 0 6px;
+}
+
+.logo-img {
+  height: 49px;
+  position: relative;
+  top: 22px;
+}
+
+/* increase header font size on wider screens */
+@media screen and (min-width: 600px) {
+  .header,
+  .footer {
+    font-size: 2rem;
+  }
+}
+
+#dealer-ui {
+  display: flex;
+  align-items: center;
+}
+
+#rules {
+  flex: 2;
+  font-family: serif;
+  font-weight: bold;
+  text-align: center;
+}
+
+#detailed-rules {
+  cursor: pointer;
+  text-decoration: underline;
+  color: mediumblue;
+}
+
+#dealer {
+  text-align: center;
+  flex: 1;
+}
+
+#dealer-image {
+  display: block;
+  width: 100%;
+  margin: auto;
+}
+
+#dealer-cards {
+  font-size: 20px;
+}
+
+#output-div {
+  flex: 2;
+  font-size: 12px;
+  margin-left: 5px;
+}
+
+#num-player-input {
+  text-align: center;
+}
+
+#num-player {
+  width: 50%;
+  max-width: 200px;
+}
+
+#game {
+  display: none;
+  text-align: center;
+}
+
+#players-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.player {
+  width: 33%;
+  padding: 10px;
+  text-align: center;
+}
+
+.player-label {
+  margin: 0 0 5px 0;
+}
+
+.split-container {
+  display: none;
+}
+
+.wager {
+  margin: 0;
+  padding: 0;
+}
+
+.value-wager {
+  margin: 5px 0 0 0;
+}
+
+.chip-count {
+  margin: 0;
+}
+
+.win-loss-green {
+  color: #00ff00;
+  font-weight: bold;
+}
+
+.win-loss-red {
+  color: #dc143c;
+  font-weight: bold;
+}
+
+#hit-button,
+#stand-button,
+#split-button,
+#double-down-button,
+#surrender-button {
+  display: none;
+}
+
+#modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+#modal-content {
+  background-color: rgb(254, 254, 254);
+  margin: 1% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+  text-align: justify;
+  font-size: 11px;
+}
+
+#close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+#close:hover,
+#close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+@media (max-width: 800px) {
+  #dealer-ui {
+    justify-content: center;
+  }
+
+  #rules {
+    display: none;
+  }
+
+  #dealer-image {
+    width: 120px;
+  }
+
+  .player {
+    width: 50%;
+  }
+}
+
+@media (max-width: 550px) {
+  #dealer-ui {
+    justify-content: center;
+    flex-direction: column;
+  }
+
+  #rules {
+    display: none;
+  }
+
+  #dealer-image {
+    width: 120px;
+  }
+
+  .player {
+    width: 100%;
+  }
+
+  #output-div {
+    margin-top: 5px;
+  }
+
+  body {
+    overflow: visible;
+  }
+}

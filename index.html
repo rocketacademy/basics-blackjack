@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -8,148 +7,422 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <!-- Favicon configuration -->
-    <link rel="apple-touch-icon" sizes="180x180" href="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/favicons/apple-touch-icon.png?v=2">
-    <link rel="icon" type="image/png" sizes="32x32" href="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/favicons/favicon-32x32.png?v=2">
-    <link rel="icon" type="image/png" sizes="16x16" href="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/favicons/favicon-16x16.png?v=2">
-    <link rel="manifest" href="/site.webmanifest?v=2">
-    <link rel="mask-icon" href="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/favicons/safari-pinned-tab.svg?v=2" color="#e73c3e">
-    <link rel="shortcut icon" href="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/favicons/favicon.ico?v=2">
-    <meta name="apple-mobile-web-app-title" content="Rocket Academy">
-    <meta name="application-name" content="Rocket Academy">
-    <meta name="msapplication-TileColor" content="#2b5797">
-    <meta name="theme-color" content="#ffffff">
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/favicons/apple-touch-icon.png?v=2"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/favicons/favicon-32x32.png?v=2"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/favicons/favicon-16x16.png?v=2"
+    />
+    <link rel="manifest" href="/site.webmanifest?v=2" />
+    <link
+      rel="mask-icon"
+      href="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/favicons/safari-pinned-tab.svg?v=2"
+      color="#e73c3e"
+    />
+    <link
+      rel="shortcut icon"
+      href="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/favicons/favicon.ico?v=2"
+    />
+    <meta name="apple-mobile-web-app-title" content="Rocket Academy" />
+    <meta name="application-name" content="Rocket Academy" />
+    <meta name="msapplication-TileColor" content="#2b5797" />
+    <meta name="theme-color" content="#ffffff" />
 
     <!-- sharing configuration -->
     <!-- Primary Meta Tags -->
     <title>Blackjack - Basics - Rocket Academy</title>
-    <meta name="title" content="YOURNAME's BlackJack Game!">
-    <meta name="description" content="A fun card game I made myself! 😄💪🌈">
+    <meta name="title" content="Jia Hao's BlackJack Game!" />
+    <meta name="description" content="A fun card game I made myself! 😄💪🌈" />
 
     <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://rocketacademy.github.io/basics-blackjack/index.html">
-    <meta property="og:title" content="YOURNAME's BlackJack Game!">
-    <meta property="og:description" content="A fun card game I made myself! 😄💪🌈">
-    <meta property="og:image" content="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/basics/basics-blackjack-share-small.jpeg">
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:url"
+      content="https://lim-jiahao.github.io/basics-blackjack/"
+    />
+    <meta property="og:title" content="Jia Hao's BlackJack Game!" />
+    <meta
+      property="og:description"
+      content="A fun card game I made myself! 😄💪🌈"
+    />
+    <meta
+      property="og:image"
+      content="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/basics/basics-blackjack-share-small.jpeg"
+    />
 
     <!-- Twitter -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:url" content="https://rocketacademy.github.io/basics-blackjack/index.html">
-    <meta name="twitter:title" content="YOURNAME's BlackJack Game!">
-    <meta name="twitter:description" content="A fun card game I made myself! 😄💪🌈">
-    <meta name="twitter:image" content="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/basics/basics-blackjack-share-small.jpeg">
-    <meta name="twitter:site" content="@rocketacademyco">
-    <meta name="twitter:creator" content="@rocketacademyco">
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:url"
+      content="https://lim-jiahao.github.io/basics-blackjack/"
+    />
+    <meta name="twitter:title" content="Jia Hao's BlackJack Game!" />
+    <meta
+      name="twitter:description"
+      content="A fun card game I made myself! 😄💪🌈"
+    />
+    <meta
+      name="twitter:image"
+      content="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/basics/basics-blackjack-share-small.jpeg"
+    />
+    <meta name="twitter:site" content="@rocketacademyco" />
+    <meta name="twitter:creator" content="@rocketacademyco" />
 
     <!-- fonts -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans">
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=Open+Sans"
+    />
 
     <!-- CSS -->
-    <style>
-      * {
-        box-sizing: border-box;
-      }
-
-      body {
-        font-family: 'Open Sans', sans-serif;
-        margin-left: 30px;
-        margin-right: 30px;
-        background-color:white;
-        color: black; /* sets the font color */
-        background-image: url(""); /* The image used */
-        background-position: center; /* Center the image */
-        background-repeat: no-repeat; /* Do not repeat the image */
-        background-size: cover; /* Resize the background image to cover the entire container */
-      }
-
-      #output-div img{
-        display:block;
-        max-width:100%;
-        max-height:200px;
-      }
-      .header {
-        text-align: center;
-        font-size: 1.1rem;
-        margin-bottom: 3rem;
-      }
-
-      #container {
-        background-color: pink;
-        margin: 40px auto;
-        max-width: 800px;
-        padding: 38px 31px;
-      }
-
-      input {
-        font-size: 21px;
-        line-height: 33px;
-        margin: 0 0 23px 0;
-        padding: 0 9px;
-        width: 100%;
-      }
-
-      button {
-        font-size: 21px;
-        line-height: 33px;
-        margin: 0 0 23px 0;
-        padding: 0 6px;
-      }
-
-      #output-div {
-        background-color: lightgrey;
-        margin: 20px auto;
-        padding: 20px;
-        width: 100%;
-      }
-
-      .logo-img {
-        height: 49px;
-        position: relative;
-        top: 22px;
-      }
-
-      /* increase header font size on wider screens */
-      @media screen and (min-width: 600px) {
-        .header {
-          font-size: 2rem;
-        }
-      }
-    </style>
-
+    <link rel="stylesheet" href="styles.css" />
   </head>
 
   <body>
     <h1 class="header">
-      <img class="logo-img" src="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/brand/logo.png" />
+      <img
+        class="logo-img"
+        src="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/brand/logo.png"
+      />
       Rocket Academy
-      <img class="logo-img" src="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/brand/logo.png" />
+      <img
+        class="logo-img"
+        src="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/brand/logo.png"
+      />
     </h1>
-    <h1 class="header">♣️ Basics - Blackjack ♠️</h1>
     <div id="container">
-      <p>Input:</p>
-      <input id="input-field" />
-      <br />
-      <button id="submit-button">Submit</button>
-      <p>Output:</p>
-      <div id="output-div"></div>
+      <div id="dealer-ui">
+        <div id="rules">
+          BLACKJACK PAYS 3 TO 2<br /><br />
+          DEALER MUST DRAW ON 16 OR LESS AND STAND ON ALL 17S<br /><br />
+          SPLITTING ALLOWED, NO RE-SPLITTING<br /><br />
+          <span id="detailed-rules">Detailed Rules</span>
+        </div>
+        <div id="dealer">
+          <img id="dealer-image" src="dealer.png" />
+          <span id="dealer-cards"><br /></span>
+        </div>
+        <div id="output-div">
+          Welcome! To begin, please tell me how many players would like to play.
+        </div>
+      </div>
+      <hr />
+      <div id="num-player-input">
+        <p>Number of players (1-6):</p>
+        <input id="num-player" type="number" min="1" max="6" value="1" />
+        <button id="start-game-button">Start Game</button>
+      </div>
+      <div id="game">
+        <div id="players-container"></div>
+        <button id="new-hand-button">New Hand</button>
+        <button id="hit-button">Hit</button>
+        <button id="stand-button">Stand</button>
+        <button id="split-button">Split</button>
+        <button id="double-down-button">Double Down</button>
+        <button id="surrender-button">Surrender</button>
+      </div>
+
+      <div id="modal">
+        <div id="modal-content">
+          <span id="close">&times;</span>
+          <p>
+            Welcome to Blackjack! The version implemented here is one-deck
+            casino blackjack. Since there are so many rule variations out there,
+            the detailed rules are spelled out here.
+          </p>
+
+          <p>
+            To start, input the number of players. Each player starts with 100
+            chips. Use the slider to place your bets and click New Hand to deal.
+            The bet has to be an integer amount. If a player has less than 1
+            chip, he will be topped up with 100 chips. A player's chip count and
+            win/loss are tracked.
+          </p>
+
+          <p>
+            In Blackjack, the objective is to win by creating card totals higher
+            than those of the dealer's hand but not exceeding 21, or by stopping
+            at a total in the hope that dealer will bust. Number cards count as
+            their number, the jack, queen, and king ("face cards" or "pictures")
+            count as 10, and aces count as either 1 or 11 according to the
+            player's choice. A total of 21 on the first two cards is a "natural"
+            or "blackjack."
+          </p>
+
+          <p>
+            The players and dealer will be dealt two cards. All players will
+            receive their hands face-up. The dealer will receive the first card
+            face up and the second card face down. The dealer peeks at the
+            second card if the first card is an ace or ten-value card but only
+            reveals it if it makes the dealer's hand a blackjack.
+          </p>
+
+          <p><b>If the dealer has blackjack:</b></p>
+          <ul>
+            <li>
+              All players with blackjack tie with the dealer and their bets are
+              returned to them.
+            </li>
+            <li>All players without blackjack lose their bets.</li>
+            <li>
+              The hand is over, and players can place their bets again for the
+              new hand.
+            </li>
+          </ul>
+
+          <p><b>If the dealer doesn't have blackjack:</b></p>
+          <ul>
+            <li>
+              All players with blackjack win and receive a payout at 3:2 odds,
+              or 1.5 times their bet.
+            </li>
+            <li>
+              All players without blackjack will take turns, starting from the
+              player first dealt. On each turn, the options available are:<br /><br />
+              <ol>
+                <li>
+                  <b>Hit</b>. The player will receive a card from the top of the
+                  deck.
+                </li>
+                <li>
+                  <b>Stand</b>. The player ends their turn and play continues
+                  with the next player.
+                </li>
+                <li>
+                  <b>Split</b>. This option is only available when the player's
+                  hand has two cards and if the starting two cards have the same
+                  rank. The two cards will be separated into two hands and one
+                  card each will be dealt to them. Play proceeds as normal.
+                  Further rules on splitting below.
+                </li>
+                <li>
+                  <b>Double down</b>. The player doubles their bet, and receives
+                  a single card. This option is only available when the player's
+                  hand has two cards.
+                </li>
+                <li>
+                  <b>Surrender</b>. The player gives up half their bet and
+                  forfeits their hand. This option is only available when the
+                  player's hand has two cards.
+                </li>
+              </ol>
+            </li>
+            <br />
+            <li>
+              If a player busts upon hitting or doubling, the player loses his
+              bet.
+            </li>
+            <li>
+              Once all players have finished their turn, the dealer reveals his
+              face down card. If there are still remaining players, the dealer
+              draws cards if needed until the hand achieves a total of 17 or
+              higher. The dealer never doubles, splits, or surrenders. If the
+              dealer busts, all remaining player hands win. If the dealer does
+              not bust, each remaining bet wins if its hand is higher than the
+              dealer's, loses if it is lower, and ties if it is the same.
+            </li>
+            <li>
+              The hand is over, and players can place their bets again for the
+              new hand.
+            </li>
+          </ul>
+
+          <p><b>Rules on splitting:</b></p>
+          <ul>
+            <li>Re-splitting not allowed.</li>
+            <li>Hitting split aces allowed.</li>
+            <li>
+              A ten-value card dealt on a split ace (or vice versa) will not be
+              counted as a blackjack, but simply as 21 points.
+            </li>
+            <li>Double down and surrender after split allowed.</li>
+          </ul>
+        </div>
+      </div>
     </div>
+    <footer class="footer">♣️ Basics - Blackjack ♠️</footer>
     <!-- Import program logic -->
     <script src="script.js"></script>
     <!-- Define button click functionality -->
     <script>
-      var button = document.querySelector("#submit-button");
-      button.addEventListener("click", function () {
-        // Set result to input value
-        var input = document.querySelector("#input-field");
-        var result = main(input.value);
+      var numPlayers = document.querySelector("#num-player");
+      var start = document.querySelector("#start-game-button");
+      var newHand = document.querySelector("#new-hand-button");
+      var hit = document.querySelector("#hit-button");
+      var stand = document.querySelector("#stand-button");
+      var split = document.querySelector("#split-button");
+      var double = document.querySelector("#double-down-button");
+      var surrender = document.querySelector("#surrender-button");
+      var output = document.querySelector("#output-div");
 
-        // Display result in output element
-        var output = document.querySelector("#output-div");
-        output.innerHTML = result;
-
-        // Reset input value
-        input.value = "";
+      numPlayers.addEventListener("input", function () {
+        if (numPlayers.value >= 1 && numPlayers.value <= 6) {
+          start.disabled = false;
+        } else {
+          start.disabled = true;
+        }
       });
+
+      start.addEventListener("click", function () {
+        var numPlayerInput = document.querySelector("#num-player-input");
+        var game = document.querySelector("#game");
+        var playersContainer = document.querySelector("#players-container");
+
+        initialisePlayers(numPlayers.value);
+
+        // create ui for each player
+        for (var i = 0; i < numPlayers.value; i += 1) {
+          // player div
+          var player = document.createElement("div");
+          player.className = "player";
+          player.id = `player-${i}`;
+
+          // player label
+          var p = document.createElement("p");
+          var text = document.createTextNode(`Player ${i + 1}`);
+          p.className = "player-label";
+          p.appendChild(text);
+          player.appendChild(p);
+
+          var cardContainer = document.createElement("div");
+          var splitContainer = document.createElement("div");
+          cardContainer.id = `card-container-${i}-0`;
+          splitContainer.id = `card-container-${i}-1`;
+          splitContainer.className = "split-container";
+
+          // cards
+          var cards = document.createElement("span");
+          text = document.createTextNode("");
+          cards.id = `player-cards-${i}-0`;
+          cards.appendChild(text);
+          cardContainer.appendChild(cards);
+
+          // point value
+          var playerPoints = document.createElement("span");
+          text = document.createTextNode("");
+          playerPoints.id = `player-points-${i}-0`;
+          playerPoints.appendChild(text);
+          cardContainer.appendChild(playerPoints);
+
+          var split = document.createElement("span");
+          text = document.createTextNode("");
+          split.id = `player-cards-${i}-1`;
+          split.appendChild(text);
+          splitContainer.appendChild(split);
+
+          var splitPoints = document.createElement("span");
+          text = document.createTextNode("");
+          splitPoints.id = `player-points-${i}-1`;
+          splitPoints.appendChild(text);
+          splitContainer.appendChild(splitPoints);
+
+          player.appendChild(cardContainer);
+          player.appendChild(splitContainer);
+
+          // slider input for bet amount
+          var bet = document.createElement("input");
+          bet.className = "wager";
+          bet.id = `wager-${i}`;
+          bet.type = "range";
+          bet.min = "1";
+          bet.value = "1";
+          bet.addEventListener("input", function change() {
+            var target = `#value-${this.id}`;
+            document.querySelector(target).innerHTML = `Bet: ${this.value}`;
+          });
+          player.appendChild(bet);
+
+          // bet value that will update according to slider
+          var betValue = document.createElement("p");
+          betValue.className = "value-wager";
+          betValue.id = `value-wager-${i}`;
+          text = document.createTextNode("Bet: 1");
+          betValue.appendChild(text);
+          player.appendChild(betValue);
+
+          // chip count
+          var chipCount = document.createElement("p");
+          chipCount.className = "chip-count";
+          chipCount.id = `chip-count-${i}`;
+          text = document.createTextNode("Chip count: 100");
+          chipCount.appendChild(text);
+          player.appendChild(chipCount);
+
+          // win loss
+          var winLossLabel = document.createElement("span");
+          winLossLabel.className = "win-loss-label";
+          text = document.createTextNode("Total W/L: ");
+          winLossLabel.appendChild(text);
+          player.appendChild(winLossLabel);
+
+          var winLoss = document.createElement("span");
+          winLoss.id = `win-loss-${i}`;
+          text = document.createTextNode("0");
+          winLoss.appendChild(text);
+          player.appendChild(winLoss);
+
+          playersContainer.appendChild(player);
+        }
+
+        numPlayerInput.style.display = "none";
+        game.style.display = "block";
+        output.innerHTML = "Players, please place your bets.";
+      });
+
+      newHand.addEventListener("click", function () {
+        output.innerHTML = dealNewHand();
+      });
+
+      hit.addEventListener("click", function () {
+        output.innerHTML = onPlayerHitOrDoubleDown();
+      });
+
+      stand.addEventListener("click", function () {
+        output.innerHTML = onPlayerStand();
+      });
+
+      split.addEventListener("click", function () {
+        output.innerHTML = onPlayerSplit();
+      });
+
+      double.addEventListener("click", function () {
+        output.innerHTML = onPlayerHitOrDoubleDown(true);
+      });
+
+      surrender.addEventListener("click", function () {
+        output.innerHTML = onPlayerSurrender();
+      });
+
+      // For modal on detailed rules
+
+      var modal = document.querySelector("#modal");
+      var modalOpen = document.querySelector("#detailed-rules");
+      var span = document.querySelector("#close");
+
+      modalOpen.onclick = function () {
+        modal.style.display = "block";
+      };
+
+      span.onclick = function () {
+        modal.style.display = "none";
+      };
+
+      window.onclick = function (event) {
+        if (event.target == modal) {
+          modal.style.display = "none";
+        }
+      };
     </script>
   </body>
 </html>
