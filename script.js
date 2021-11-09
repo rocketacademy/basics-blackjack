@@ -270,14 +270,12 @@ const winLossChecker = function () {
   // find players when Hit --> lose, hence playing = false
   if (hitStay === true && activePlayer < players.length - 1) {
     console.log("was here 271");
-    // activePlayer += 1;
     if (cleanHuman > 21) {
       players[activePlayer].win = "lose";
       myOutputValue = `${players[activePlayer].name} loses.`;
       players[activePlayer].playing = false;
       activePlayer += 1;
       if (activePlayer == players.length - 1) {
-        // myOutputValue += `<br>Dealer's turn to roll`;
         playingContinue = true;
       }
     }
@@ -576,7 +574,7 @@ const main = function (input) {
     // Dealer picking cards as last player
     if (playingContinue && activePlayer >= players.length - 1) {
       dealerTurn = true;
-      myOutputValue += `<br/><br>===Dealer's turn.===<br>`;
+      myOutputValue += `===Dealer's turn.===<br>`;
       myOutputValue += dealerPickCard();
       dealHitStayMode = false; // turn off deal hit stay mode
       endGame = true; // turn on end game
