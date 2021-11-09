@@ -314,7 +314,7 @@ var nextTurn = function () {
     turn++;
     showCurrentPlayerHitStand();
 
-    if (players[turn - 1].eliminated) {
+    if (players[turn - 1].eliminated || checkBlackjack(players[turn - 1])) {
       nextTurn();
     }
   }
