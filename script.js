@@ -228,14 +228,14 @@ var main = function (input) {
 
   if (currentGameMode == cards_drawn) {
     // for testing purposes
-    playerHandArray = [
-      { name: "queen", suit: "clubs", rank: 12 },
-      { name: "7", suit: "diamonds", rank: 7 },
-    ];
-    dealerHandArray = [
-      { name: "king", suit: "clubs", rank: 13 },
-      { name: "7", suit: "spades", rank: 7 },
-    ];
+    // playerHandArray = [
+    //   { name: "queen", suit: "clubs", rank: 12 },
+    //   { name: "7", suit: "diamonds", rank: 7 },
+    // ];
+    // dealerHandArray = [
+    //   { name: "king", suit: "clubs", rank: 13 },
+    //   { name: "7", suit: "spades", rank: 7 },
+    // ];
 
     // check for blackjack
     var playerHasBlackjack = checkForBlackjack(playerHandArray);
