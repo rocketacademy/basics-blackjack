@@ -143,6 +143,16 @@
           background: radial-gradient(circle, red 15%, transparent 40%);
         }
       }
+      @-webkit-keyframes blink {
+        50% {
+          background: -webkit-radial-gradient(circle, red 15%, transparent 40%);
+        }
+      }
+      @-moz-keyframes blink {
+        50% {
+          background: -moz-radial-gradient(circle, red 15%, transparent 40%);
+        }
+      }
 
       button {
         width: 100px;
@@ -210,6 +220,8 @@
       }
       .hidden {
         animation: blink 1s infinite;
+        -moz-animation: blink 1s infinite;
+        -webkit-animation: blink 1s infinite;
       }
     </style>
   </head>
