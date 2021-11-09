@@ -14,6 +14,7 @@ The player who is closer to, but not above 21 wins the hand.*/
 var myOutputValue = "";
 var TWENTY_ONE = 21;
 var SEVENTEEN = 17;
+var HAND_SIZE_LIMIT = 5;
 
 // GAME MODE
 var INIT = "init";
@@ -296,8 +297,40 @@ var main = function (input) {
     }
 
     if (userInput == "hit") {
+      // playerHand = [
+      //   { suit: "Clubs", name: "Ace", value: 1 },
+      //   { suit: "Clubs", name: "King", value: 1 },
+      //   { suit: "Clubs", name: "Ace", value: 1 },
+      //   { suit: "Clubs", name: "Ace", value: 1 },
+      // ];
       playerHand.push(shuffledDeck.pop());
       playerSum = getHandValue(playerHand);
+      var handSize = playerHand.length;
+
+      // hand size logic
+      if (handSize >= HAND_SIZE_LIMIT) {
+        myOutputValue = "Player stand.<br><br>";
+        showHandMessage("Player", playerHand);
+        showHandMessage("Dealer", computerHand);
+        myOutputValue += `<br>Dealer's turn<br>
+  Press Submit to continue.`;
+        mode = COMPUTER_TURN;
+        console.log("========== exiting player turn ========");
+        return myOutputValue;
+      }
+
+      // player bust logic
+      if (playerSum > TWENTY_ONE) {
+        myOutputValue = "Player stand.<br><br>";
+        showHandMessage("Player", playerHand);
+        showHandMessage("Dealer", computerHand);
+        myOutputValue += `<br>Dealer's turn<br>
+  Press Submit to continue.`;
+        mode = COMPUTER_TURN;
+        console.log("========== exiting player turn ========");
+        return myOutputValue;
+      }
+
       myOutputValue = "";
       showHandMessage("Player", playerHand);
       showHandMessage("Dealer", computerHand);
@@ -324,7 +357,9 @@ var main = function (input) {
   if (mode == COMPUTER_TURN) {
     console.log("========== entering computer turn ========");
 
-    if (computerSum <= SEVENTEEN) {
+    // to include hand size limit
+
+    if (computerSum < SEVENTEEN) {
       computerHand.push(shuffledDeck.pop());
       computerSum = getHandValue(computerHand);
       myOutputValue = "Dealer draws a card. <br><br>";
@@ -335,7 +370,7 @@ var main = function (input) {
       return myOutputValue;
     }
 
-    if (computerSum > SEVENTEEN) {
+    if (computerSum >= SEVENTEEN) {
       myOutputValue = "Dealer stand. <br><br>";
       showHandMessage("Player", playerHand);
       showHandMessage("Dealer", computerHand);
@@ -414,8 +449,3 @@ var main = function (input) {
   }
   return "end of main";
 };
-
-/* TO DO
-include bust logic
-include hand size limit
-*/
