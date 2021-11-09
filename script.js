@@ -14,7 +14,6 @@ all players play against dealer
 allow betting*/
 
 // GLOBAL VARIABLES
-var numberOfPlayers = 0;
 var MIN_NUM_PLAYER = 1;
 var MAX_NUM_PLAYER = 4;
 var myOutputValue = "";
@@ -22,11 +21,15 @@ var myOutputValue = "";
 // GAME MODE
 var ASK_FOR_PLAYERS = "ask for players";
 var mode = ASK_FOR_PLAYERS;
-var INIT_GAME = "init game";
+var CREATE_PLAYERS = "create players";
+var ASK_FOR_BETS = "ask for bets";
+var DEAL_STARTING_HAND = "deal starting hand";
 
 // GAME STATUS
+var numberOfPlayers = 0;
 var players = [];
 var dealer = {};
+var currentBetIndex = 0;
 
 var initialisePlayers = function () {
   // create players
@@ -110,6 +113,21 @@ var shuffleCards = function (cardDeck) {
   return cardDeck;
 };
 
+function isEmpty(str) {
+  return !str || str.length === 0;
+}
+
+var showBetMessage = function () {
+  var name = players[currentBetIndex].name;
+  var wallet = players[currentBetIndex].wallet;
+
+  var message = `${name}, you have $${wallet}. Place your bet.
+  <br><br>
+  Press Submit to continue.`;
+
+  return message;
+};
+
 var dealStartingHand = function () {
   var startingHandSize = 2;
   // deal to players then dealer
@@ -151,11 +169,11 @@ var main = function (input) {
       numberOfPlayers = userInput;
       myOutputValue = `${numberOfPlayers} player(s) will be playing in this game of Blackjack.
       <br><br>
-      Dealing cards...
+      Player(s) place your bet.
       <br><br>
       Press Submit to continue.`;
 
-      mode = INIT_GAME;
+      mode = CREATE_PLAYERS;
 
       console.log("========== exiting ask for players ==========");
       return myOutputValue;
@@ -166,13 +184,80 @@ var main = function (input) {
     return myOutputValue;
   }
 
-  // start game
-  if (mode == INIT_GAME) {
-    console.log("========== entering init game ==========");
+  if (mode == CREATE_PLAYERS) {
+    console.log("========== entering create players ==========");
     initialisePlayers();
-    shuffledDeck = shuffleCards(initialiseDeck());
-    dealStartingHand();
+    mode = ASK_FOR_BETS;
+    console.log("========== exiting create players ==========");
   }
+
+  if (mode == ASK_FOR_BETS) {
+    console.log("========== entering ask for bets ==========");
+
+    var betAmount = Number(input);
+
+    /*
+    isEmpty function capturing NaN and empty string.
+    first case and invalid capatured therefore, not showing invalid response.
+    */
+
+    // check if input is empty and ask for bet
+    if (isEmpty(betAmount)) {
+      myOutputValue = showBetMessage();
+      return myOutputValue;
+    }
+
+    if (isNaN(betAmount)) {
+      myOutputValue = "You typed in an invalid bet.<br><br>" + showBetMessage();
+      return myOutputValue;
+    }
+
+    // start at 0
+    while (currentBetIndex < numberOfPlayers) {
+      var playerWallet = players[currentBetIndex].wallet;
+
+      // bet must be valid and less than what wallet has
+      if (betAmount > 0 && playerWallet >= betAmount) {
+        players[currentBetIndex].bet = betAmount;
+        console.log(players[currentBetIndex]);
+        currentBetIndex += 1;
+
+        // all players betted, exit while loop
+        if (currentBetIndex >= numberOfPlayers) {
+          currentBetIndex = 0;
+          mode = DEAL_STARTING_HAND;
+          console.log(
+            "========== exiting ask for bets & change mode =========="
+          );
+          break;
+        }
+
+        myOutputValue = showBetMessage();
+        break; // exit while loop
+      }
+      // invalid response
+      myOutputValue = "You typed in an invalid bet.<br><br>" + showBetMessage();
+      break;
+    }
+    console.log("========== exiting ask for bets ==========");
+    return myOutputValue;
+  }
+
+  if (mode == DEAL_STARTING_HAND) {
+  }
+
+  // shuffledDeck = shuffleCards(initialiseDeck());
+  // dealStartingHand();
 
   return "end of main";
 };
+
+// this function display the player wallet and record the bet amount
+// var getBetAmt = function(){
+//   myOutputValue = "";
+
+//   while (currentBetIndex < numberOfPlayers){
+
+//   }
+
+// };
