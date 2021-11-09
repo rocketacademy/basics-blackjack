@@ -306,12 +306,12 @@ var main = function (input) {
       myOutputValue =
         "Your hand value is " +
         playerHandValue +
-        ".<br>You have to Hit. <br>Please input Hit and click on Submit to draw another card";
+        ".<br>You have to Hit. <br>Please input 'hit' and click on Submit to draw another card";
     } else if (playerHand[0].value + playerHand[1].value >= 16) {
       myOutputValue =
         "Your hand value is " +
         playerHandValue +
-        ".<br>You can choose to Hit or Stay.<br>Please input Hit to draw another card or Stay to go to the Dealer turn ";
+        ".<br>You can choose to Hit or Stay.<br>Please input 'hit' to draw another card or 'stay' to go to the Dealer turn ";
     } else myOutputValue = "Invalid";
     checkInstantWin();
     turnTracker = 1;
@@ -323,7 +323,7 @@ var main = function (input) {
     playerDraw();
     myOutputValue =
       myOutputValue +
-      "<br>Please input Hit to draw another card or Stay to go to the Dealer turn.";
+      "<br>Please input 'hit' to draw another card or 'stay' to go to the Dealer turn.";
     console.log("output after drawing");
     console.log(myOutputValue);
     //if player hand value is 21 or above = they have to stay
