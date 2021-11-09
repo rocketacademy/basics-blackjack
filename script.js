@@ -28,10 +28,6 @@ var main = function (input) {
       cardCounter += 1;
     }
 
-    console.log(playerCard);
-    console.log(playerCard[0].rank);
-    console.log(playerCard[1].rank);
-
     // The cards are analysed for game winning conditions, e.g. Blackjack.
     if (
       (computerCard[0].rank == 1 && computerCard[1].rank > 9) ||
@@ -105,8 +101,6 @@ var main = function (input) {
       }
       i += 1;
     }
-    console.log("computer card values are: " + computerCardValues);
-    console.log("computer values are: " + computerValues);
 
     if (computerValues < 17) {
       computerCard.push(shuffledDeck.pop());
@@ -155,13 +149,14 @@ var main = function (input) {
         playerOutput += playerCard[i].name + playerCard[i].emoji + " ";
       } else {
         playerCardValues.push(Number(playerCard[i].rank));
-        playerValues += Number(computerCard[i].rank);
+        playerValues += Number(playerCard[i].rank);
         playerOutput += playerCard[i].name + playerCard[i].emoji + " ";
       }
       i += 1;
     }
 
     //count computer hands
+    computerValues = 0;
     var i = 0;
     while (i < computerCard.length) {
       if (Number(computerCard[i].rank) > 10) {
@@ -176,7 +171,13 @@ var main = function (input) {
       i += 1;
     }
 
+    console.log("player values are: " + playerValues);
+    console.log("computer values are: " + computerValues);
+
     if (playerValues > computerValues && playerValues < 21) {
+      console.log(
+        "Condition playerValues > computerValues && playerValues < 21"
+      );
       return (
         "Player WON!!!" +
         "<br><br>Player's Hand:<br>" +
@@ -185,8 +186,36 @@ var main = function (input) {
         computerOutput
       );
     } else if (playerValues < computerValues && computerValues < 21) {
+      console.log("playerValues < computerValues && computerValues < 21");
       return (
         "Computer WON!!!" +
+        "<br><br>Player's Hand:<br>" +
+        playerOutput +
+        "<br><br> Computer's Hand:<br>" +
+        computerOutput
+      );
+    } else if (playerValues == computerValues) {
+      console.log("playerValues == computerValues");
+      return (
+        "It's a tie!" +
+        "<br><br>Player's Hand:<br>" +
+        playerOutput +
+        "<br><br> Computer's Hand:<br>" +
+        computerOutput
+      );
+    } else if (playerValues > 21 && computerValues < 21) {
+      console.log("playerValues > 21 && computerValues < 21");
+      return (
+        "Computer WON!!!" +
+        "<br><br>Player's Hand:<br>" +
+        playerOutput +
+        "<br><br> Computer's Hand:<br>" +
+        computerOutput
+      );
+    } else {
+      console.log("the rest");
+      return (
+        "Player WON!!!" +
         "<br><br>Player's Hand:<br>" +
         playerOutput +
         "<br><br> Computer's Hand:<br>" +
