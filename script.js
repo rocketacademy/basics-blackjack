@@ -1,11 +1,16 @@
 // Blackjack - base
 
 // Declare game modes
+var place_bet = "place your bets";
 var game_start = "game start";
 var cards_drawn = "cards drawn";
 var hit_or_stand = "hit or stand";
 var game_results = "show game results";
-var currentGameMode = game_start;
+var currentGameMode = place_bet;
+
+// track player points and player bet
+var playerPoints = Number(100);
+var playerBet;
 
 // Declare variables to store player and dealer hands (use arrays to store multiple card objects)
 var playerHandArray = [];
@@ -183,6 +188,19 @@ var main = function (input) {
   if (gameEnd == true) {
     return `The game is over. Click refresh to play again.`;
   }
+  // start game mode with placing bets
+  if (currentGameMode == place_bet) {
+    if (input == "") {
+      return `You will start with 100 points. Please input the number of points you want to bet.`;
+    }
+    // else user inputs number to bet, then switch to game start mode
+    playerBet = Number(input);
+    currentGameMode = game_start;
+    // input validation: if input is not a number
+    if (Number.isNaN(playerBet)) {
+      return `Invalid input. Please input the number of points you want to bet.`;
+    }
+  }
 
   if (currentGameMode == game_start) {
     // create the game deck
@@ -210,14 +228,14 @@ var main = function (input) {
 
   if (currentGameMode == cards_drawn) {
     // for testing purposes
-    // playerHandArray = [
-    //   { name: "queen", suit: "clubs", rank: 12 },
-    //   { name: "7", suit: "diamonds", rank: 7 },
-    // ];
-    // dealerHandArray = [
-    //   { name: "king", suit: "clubs", rank: 13 },
-    //   { name: "7", suit: "spades", rank: 7 },
-    // ];
+    playerHandArray = [
+      { name: "queen", suit: "clubs", rank: 12 },
+      { name: "7", suit: "diamonds", rank: 7 },
+    ];
+    dealerHandArray = [
+      { name: "king", suit: "clubs", rank: 13 },
+      { name: "7", suit: "spades", rank: 7 },
+    ];
 
     // check for blackjack
     var playerHasBlackjack = checkForBlackjack(playerHandArray);
@@ -234,29 +252,32 @@ var main = function (input) {
       // both player and dealer has blackjack -> tie
       if (playerHasBlackjack == true && dealerHasBlackjack == true) {
         gameEnd = true;
+        playerPoints += playerBet;
         myOutputValue = `Hi player, your cards are: <br><br> ${cardsDrawn(
           playerHandArray
-        )} <br> Total value: ${playerHandTotalValue}<br><br> Dealer cards are: <br><br> ${cardsDrawn(
+        )} <br> Total value: ${playerHandTotalValue} <br><br> Dealer cards are: <br><br> ${cardsDrawn(
           dealerHandArray
-        )} <br> Total value: ${dealerHandTotalValue}<br><br> It's a blackjack tie! <br> Click refresh to play again.`;
+        )} <br> Total value: ${dealerHandTotalValue}<br><br> It's a blackjack tie! <br>Total points: ${playerPoints}<br> Click refresh to play again.`;
       }
       // only player has blackjack -> player wins
       else if (playerHasBlackjack == true && dealerHasBlackjack == false) {
         gameEnd = true;
+        playerPoints += playerBet;
         myOutputValue = `Hi player, your cards are: <br><br> ${cardsDrawn(
           playerHandArray
         )} <br> Total value: ${playerHandTotalValue}<br><br> Dealer cards are: <br><br> ${cardsDrawn(
           dealerHandArray
-        )} <br> Total value: ${dealerHandTotalValue}<br><br> Player wins by blackjack! <br> Click refresh to play again.`;
+        )} <br> Total value: ${dealerHandTotalValue}<br><br> Player wins by blackjack!<br>Total points: ${playerPoints}<br> Click refresh to play again.`;
       }
       // only dealer has blackjack -> dealer wins
       else if (playerHasBlackjack == false && dealerHasBlackjack == true) {
         gameEnd = true;
+        playerPoints -= playerBet;
         myOutputValue = `Hi player, your cards are: <br><br> ${cardsDrawn(
           playerHandArray
         )} <br> Total value: ${playerHandTotalValue}<br><br> Dealer cards are: <br><br> ${cardsDrawn(
           dealerHandArray
-        )} <br> Total value: ${dealerHandTotalValue}<br><br> Dealer wins by blackjack! <br> Click refresh to play again.`;
+        )} <br> Total value: ${dealerHandTotalValue}<br><br> Dealer wins by blackjack! <br>Total points: ${playerPoints}<br> Click refresh to play again.`;
       }
     } else {
       myOutputValue = `Hi player, your cards are: <br><br> ${cardsDrawn(
@@ -280,9 +301,7 @@ var main = function (input) {
       console.log("player hand:", playerHandArray);
       // calculate player hand value
       var playerHandTotalValue = calculateTotalHandValue(playerHandArray);
-
       console.log("player total hand value:", playerHandTotalValue);
-
       myOutputValue = `You have chosen to hit and drew another card. Your cards are: <br><br> ${cardsDrawn(
         playerHandArray
       )} <br> Total value: ${playerHandTotalValue} Please input "hit" or "stand".`;
@@ -318,43 +337,52 @@ var main = function (input) {
       playerHandTotalValue &&
       dealerHandTotalValue <= 21
     ) {
+      playerPoints;
       myOutputValue =
-        myOutputValue + `<br> It's a tie!<br>Click refresh to play again.`;
+        myOutputValue +
+        `<br> It's a tie!<br>Total points: ${playerPoints}<br>Click refresh to play again.`;
     }
 
     // if both > 21, busted
-    if (dealerHandTotalValue && playerHandTotalValue > 21) {
+    if (dealerHandTotalValue > 21 && playerHandTotalValue > 21) {
+      playerPoints -= playerBet;
       myOutputValue =
         myOutputValue +
-        `<br> Both you and the dealer have busted.<br> Click refresh to play again.`;
+        `<br> Both you and the dealer have busted.<br>Total points: ${playerPoints}<br> Click refresh to play again.`;
     }
     // if dealer > 21 and player <= 21, dealer busted & player wins
     if (dealerHandTotalValue > 21 && playerHandTotalValue <= 21) {
+      playerPoints += playerBet;
       myOutputValue =
         myOutputValue +
-        `<br> The dealer has busted. You win!<br>Click refresh to play again.`;
+        `<br> The dealer has busted. You win!<br>Total points: ${playerPoints}<br>Click refresh to play again.`;
     }
     // if player > 21 and dealer <= 21, player busted & dealer wins
     if (playerHandTotalValue > 21 && dealerHandTotalValue <= 21) {
+      playerPoints -= playerBet;
       myOutputValue =
         myOutputValue +
-        `<br> You have busted. Dealer wins!<br>Click refresh to play again.`;
+        `<br> You have busted. Dealer wins!<br>Total points: ${playerPoints}<br>Click refresh to play again.`;
     }
     // if player > dealer and both <= 21, player wins
     if (
       playerHandTotalValue > dealerHandTotalValue &&
       playerHandTotalValue <= 21
     ) {
+      playerPoints += playerBet;
       myOutputValue =
-        myOutputValue + `<br> Player wins!<br>Click refresh to play again.`;
+        myOutputValue +
+        `<br> Player wins!<br>Total points: ${playerPoints}<br>Click refresh to play again.`;
     }
     // if player < dealer and both <=21, dealer wins
     if (
       playerHandTotalValue < dealerHandTotalValue &&
       dealerHandTotalValue <= 21
     ) {
+      playerPoints -= playerBet;
       myOutputValue =
-        myOutputValue + `<br> Dealer wins!<br>Click refresh to play again.`;
+        myOutputValue +
+        `<br> Dealer wins!<br>Total points: ${playerPoints}<br>Click refresh to play again.`;
     }
     return myOutputValue;
   }
