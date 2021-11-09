@@ -11,6 +11,10 @@ var dealer = {
 
 var shuffledDeck = [];
 
+// this function is run directly after indicating the number of players
+// who are playing blackjack. it instantiates the players, the placeholders
+// for cards etc. then the site proceeds with displaying input boxes to
+// receive players' bets
 var placeBets = function (noOfPlayers) {
   document.getElementById("welcome").style.display = "none";
   document.getElementById("place-bets").style.display = "";
@@ -19,11 +23,15 @@ var placeBets = function (noOfPlayers) {
   populatePlayersBets();
 };
 
+// this function is run directly after all players have entered their bet
+// amount. it gives each player and the dealer 2 cards each.
 var startRound = function (noOfPlayers) {
   document.getElementById("place-bets").style.display = "none";
   document.getElementById("play-time").style.display = "";
 
   for (var i = 0; i < players.length; i++) {
+    // do not take into account players that have already been eliminated
+    // we do not want them betting because they have nothing
     if (!players[i].eliminated) {
       players[i].bet = parseInt(
         document.getElementById(`player-${i + 1}-bet`).value
@@ -35,18 +43,39 @@ var startRound = function (noOfPlayers) {
   shuffledDeck = shuffleCards(deck);
 
   giveAllPlayers1Card();
-  dealerMakeTurn();
+  giveDealer1Card();
 
   giveAllPlayers1Card();
-  dealerMakeTurn();
+  giveDealer1Card();
 
   populateDealerOnTable();
+
+  // check if any user has blackjack after first 2 cards
+  // if so, we do not want to give them the option of hit/stand
+  while (checkBlackjack(players[turn - 1])) {
+    nextTurn();
+  }
+
   populatePlayersOnTable();
 };
 
-// The user's cards are analysed for winning or losing conditions.
-// Come into this function everytime user selects "hit"
-// Also come into this function at first two rounds of giving cards
+// prevent place bets button to be clickable if there is no valid
+// number of players. number of players has to be 1 - 6.
+var checkNoOfPeopleNotEmpty = function () {
+  if (document.getElementById("no-of-players").value.length !== 0) {
+    if (
+      document.getElementById("no-of-players").value <= 0 ||
+      document.getElementById("no-of-players").value > 6
+    ) {
+      document.getElementById("place-bets-button").disabled = true;
+    } else {
+      document.getElementById("place-bets-button").disabled = false;
+    }
+  }
+};
+
+// come into this function everytime user selects "hit"
+// also come into this function at first two rounds of giving cards
 var checkBlackjack = function (user) {
   if (user.score == 21) {
     return true;
@@ -55,6 +84,8 @@ var checkBlackjack = function (user) {
   }
 };
 
+// initial function to instantiate players after number of
+// players are entered
 var makePlayers = function (noOfPlayers) {
   for (var i = 0; i < noOfPlayers; i++) {
     var newPerson = new Object();
@@ -71,6 +102,7 @@ var makePlayers = function (noOfPlayers) {
   }
 };
 
+// to display dealer cards on table. to hide the second card.
 var populateDealerOnTable = function () {
   var innerHtml = `<div class="col-lg-12 mt-3">`;
 
@@ -91,11 +123,15 @@ var populateDealerOnTable = function () {
   document.getElementById("dealer-cards").innerHTML = innerHtml;
 };
 
+// to show the window whereby players can place their bets.
+// to also check whether there are any players that have been eliminated.
+// eliminated players cannot bet.
 var populatePlayersBets = function () {
   resetRound();
+
   document.getElementById("play-time").style.display = "none";
   document.getElementById("place-bets").style.display = "";
-  // remove welcome screen
+
   var innerHtml = "";
 
   for (var i = 0; i < players.length; i++) {
@@ -126,6 +162,8 @@ var populatePlayersBets = function () {
   document.getElementById("start-round").disabled = true;
 };
 
+// reset round. to check whether there are any players that have been eliminated.
+// e.g. if player 1 has been eliminated, turn starts at player 2.
 var resetRound = function () {
   turn = -1;
   for (var i = 0; i < players.length; i++) {
@@ -139,10 +177,9 @@ var resetRound = function () {
   dealer.score = 0;
 };
 
+// check whether i can enable the start round button
+// all players must have entered their bet amount
 var checkWhetherCanStartRound = function (input) {
-  // check whether i can enable the start round button
-  // all players must have entered their bet amount
-
   var playerId = input.id.split("-")[1];
   var enteredValue = input.value;
 
@@ -164,6 +201,7 @@ var checkWhetherCanStartRound = function (input) {
   document.getElementById("start-round").disabled = false;
 };
 
+// to visually add a card to player's hands as he/she hits.
 var populatePlayerOnTable = function () {
   document.getElementById(`player-${turn}-cards`).innerHTML += `<img src="${
     players[turn - 1].card[players[turn - 1].card.length - 1].pic
@@ -172,98 +210,52 @@ var populatePlayerOnTable = function () {
     players[turn - 1].score;
 };
 
+// to visually add all players, their cards, their scores and bet amounts on the table.
 var populatePlayersOnTable = function () {
   var innerHtml = "";
 
-  if (turn <= players.length) {
-    for (var i = 0; i < players.length; i++) {
-      if (players[i].eliminated) {
-        innerHtml += `<div class="col col-lg-2 text-center"><div class="card" style="background: black; height: 100%;"><div class="card-body"><h5 class="bangers" style="color: ${
-          players[i].color
-        }; margin-top: 75px;">Player ${
-          i + 1
-        }</h5><h5 class="bangers text-white">💀 Eliminated 💀</h5></div></div></div>`;
-      } else {
-        innerHtml += `<div class="col col-lg-2 text-center"><h5 class="bangers" style="color: ${
-          players[i].color
-        }">Player ${
-          i + 1
-        }</h5><div class="row"><div class="col-lg-12 mt-3" id="player-${
-          i + 1
-        }-cards">`;
+  for (var i = 0; i < players.length; i++) {
+    if (players[i].eliminated) {
+      innerHtml += `<div class="col col-lg-2 text-center"><div class="card" style="background: black; height: 100%;"><div class="card-body"><h5 class="bangers" style="color: ${
+        players[i].color
+      }; margin-top: 75px;">Player ${
+        i + 1
+      }</h5><h5 class="bangers text-white">💀 Eliminated 💀</h5></div></div></div>`;
+    } else {
+      innerHtml += `<div class="col col-lg-2 text-center"><h5 class="bangers" style="color: ${
+        players[i].color
+      }">Player ${
+        i + 1
+      }</h5><div class="row"><div class="col-lg-12 mt-3" id="player-${
+        i + 1
+      }-cards">`;
 
-        if (turn == players.length) {
-          for (var j = 0; j < players[i].card.length; j++) {
-            if (j !== 0) {
-              innerHtml += `<img src="${players[i].card[j].pic}" style="width: 75px; position: relative; margin-left: -60px" />`;
-            } else {
-              innerHtml += `<img src="${players[i].card[j].pic}" style="width: 75px; position: relative;" />`;
-            }
-          }
+      for (var j = 0; j < players[i].card.length; j++) {
+        if (j !== 0) {
+          innerHtml += `<img src="${players[i].card[j].pic}" style="width: 75px; position: relative; margin-left: -60px" />`;
         } else {
-          for (var j = 0; j < players[i].card.length; j++) {
-            if (i + 1 == turn) {
-              if (j !== 0) {
-                innerHtml += `<img src="${players[i].card[j].pic}" style="width: 75px; position: relative; margin-left: -60px" />`;
-              } else {
-                innerHtml += `<img src="${players[i].card[j].pic}" style="width: 75px; position: relative;" />`;
-              }
-            } else {
-              if (j !== 0) {
-                innerHtml += `<img src="./images/cards/back.png" style="width: 75px; position: relative; margin-left: -60px" />`;
-              } else {
-                innerHtml += `<img src="./images/cards/back.png" style="width: 75px; position: relative;" />`;
-              }
-            }
-          }
+          innerHtml += `<img src="${players[i].card[j].pic}" style="width: 75px; position: relative;" />`;
         }
-
-        innerHtml += `</div></div>`;
-
-        if (i == turn - 1) {
-          innerHtml += `<div id="player-${i + 1}-info">`;
-        } else {
-          innerHtml += `<div id="player-${i + 1}-info" style="display: none">`;
-        }
-
-        innerHtml += `<p class="text-white mb-2 mt-2 normal">Score: <span id="player-${
-          i + 1
-        }-score">${players[i].score}</span> | Bet: ${
-          players[i].bet
-        }</p><div class="btn-group" role="group" aria-label="Basic example"><button type="button" class="btn btn-dark btn-lg bangers" onmouseup="playerHit()">Hit</button><button type="button" class="btn btn-light btn-lg bangers" onmouseup="nextTurn()">Stand</button></div></div></div>`;
       }
-    }
-  } else {
-    for (var i = 0; i < players.length; i++) {
-      if (players[i].eliminated) {
-        innerHtml += `<div class="col col-lg-2 text-center"><div class="card" style="background: black; height: 100%;"><div class="card-body"><h5 class="bangers" style="color: ${
-          players[i].color
-        }; margin-top: 75px;">Player ${
-          i + 1
-        }</h5><h5 class="bangers text-white">💀 Eliminated 💀</h5></div></div></div>`;
-      } else {
-        innerHtml += `<div class="col col-lg-2 text-center"><h5 class="bangers" style="color: ${
-          players[i].color
-        }">Player ${
-          i + 1
-        }</h5><div class="row"><div class="col-lg-12 mt-3" id="player-${
-          i + 1
-        }-cards">`;
 
-        for (var j = 0; j < players[i].card.length; j++) {
-          if (j !== 0) {
-            innerHtml += `<img src="${players[i].card[j].pic}" style="width: 75px; position: relative; margin-left: -60px" />`;
-          } else {
-            innerHtml += `<img src="${players[i].card[j].pic}" style="width: 75px; position: relative;" />`;
-          }
+      innerHtml += `</div></div>`;
+
+      innerHtml += `<div><p class="text-white mb-2 mt-2 normal">Score: <span id="player-${
+        i + 1
+      }-score">${players[i].score}</span> | Bet: ${players[i].bet}</p>`;
+
+      if (turn <= players.length) {
+        if (i == turn - 1) {
+          innerHtml += `<div id="player-${
+            i + 1
+          }-info" class="btn-group" role="group" aria-label="Basic example">`;
+        } else {
+          innerHtml += `<div id="player-${
+            i + 1
+          }-info" class="btn-group" role="group" aria-label="Basic example" style="display: none;">`;
         }
-
-        innerHtml += `</div></div>`;
-        innerHtml += `<div id="player-${i + 1}-info">`;
-        innerHtml += `<p class="text-white mb-2 mt-2 normal">Score: <span id="player-${
-          i + 1
-        }-score">${players[i].score}</span> | Bet: ${players[i].bet}</p>`;
-
+        innerHtml += `<button type="button" class="btn btn-dark btn-lg bangers" onmouseup="playerHit()">Hit</button><button type="button" class="btn btn-light btn-lg bangers" onmouseup="nextTurn()">Stand</button></div>`;
+      } else {
         if (tempBetsToAdd[i] < 0) {
           innerHtml += `<h5 class="mb-2 mt-2 bangers" style="color: #EA2027">🤕 LOSE 🤕</h5>`;
         } else if (tempBetsToAdd[i] > 0) {
@@ -271,11 +263,13 @@ var populatePlayersOnTable = function () {
         } else {
           innerHtml += `<h5 class="mb-2 mt-2 bangers" style="color: #FFC312">😑 TIE 😑</h5>`;
         }
-
-        innerHtml += `</div></div>`;
       }
-    }
 
+      innerHtml += `</div></div>`;
+    }
+  }
+
+  if (turn > players.length) {
     innerHtml += `<hr /><div class="row justify-content-center"><div class="text-center"><button class="btn btn-dark btn-lg bangers" type="button" onclick="populatePlayersBets()">Place Bets</button></div></div>`;
   }
 
@@ -290,16 +284,9 @@ var playerHit = function () {
   populatePlayerOnTable();
 
   if (checkBlackjack(players[turn - 1])) {
-    // user wins
-    playerWins("blackjack");
     nextTurn();
   } else {
     if (checkUserScoreAbove21(players[turn - 1])) {
-      console.log("line 177");
-      console.log("checkUserScoreAbove21");
-      // user loses
-      playerLoses();
-      // next turn
       nextTurn();
       return;
     }
@@ -319,9 +306,9 @@ var nextTurn = function () {
   } else {
     // go to next player
     // if next player is eliminated, go to next player
-    hideCurrentPlayerCards();
+    hideCurrentPlayerHitStand();
     turn++;
-    showCurrentPlayerCards();
+    showCurrentPlayerHitStand();
 
     if (players[turn - 1].eliminated) {
       nextTurn();
@@ -353,52 +340,16 @@ var showDealerCards = function () {
   document.getElementById(`dealer-cards`).innerHTML = innerHtml;
 };
 
-var hideCurrentPlayerCards = function () {
+var hideCurrentPlayerHitStand = function () {
   if (!players[turn - 1].eliminated) {
-    var innerHtml = "";
-    for (var i = 0; i < players[turn - 1].card.length; i++) {
-      if (i !== 0) {
-        innerHtml += `<img src="./images/cards/back.png" style="width: 75px; position: relative; margin-left: -60px" />`;
-      } else {
-        innerHtml += `<img src="./images/cards/back.png" style="width: 75px; position: relative;" />`;
-      }
-    }
-
-    document.getElementById(`player-${turn}-cards`).innerHTML = innerHtml;
     document.getElementById(`player-${turn}-info`).style.display = "none";
   }
 };
 
-var showCurrentPlayerCards = function () {
+var showCurrentPlayerHitStand = function () {
   if (!players[turn - 1].eliminated) {
-    var innerHtml = "";
-    for (var i = 0; i < players[turn - 1].card.length; i++) {
-      if (i !== 0) {
-        innerHtml += `<img src="${
-          players[turn - 1].card[i].pic
-        }" style="width: 75px; position: relative; margin-left: -60px" />`;
-      } else {
-        innerHtml += `<img src="${
-          players[turn - 1].card[i].pic
-        }" style="width: 75px; position: relative;" />`;
-      }
-    }
-
-    document.getElementById(`player-${turn}-cards`).innerHTML = innerHtml;
     document.getElementById(`player-${turn}-info`).style.display = "";
   }
-};
-
-var playerWins = function (winType) {
-  if (winType == "blackjack") {
-    tempBetsToAdd[turn - 1] = players[turn - 1].bet * 1.5;
-  } else if (winType == "normal") {
-    tempBetsToAdd[turn - 1] = players[turn - 1].bet;
-  }
-};
-
-var playerLoses = function () {
-  tempBetsToAdd[turn - 1] = -players[turn - 1].bet;
 };
 
 var checkDealerNeedToDraw = function () {
@@ -511,12 +462,12 @@ var giveAllPlayers1Card = function () {
 
 var checkWhetherDealerHitsOrStands = function () {
   if (dealer.score < 17) {
-    dealerMakeTurn();
+    giveDealer1Card();
   }
 };
 
-var dealerMakeTurn = function () {
-  // since dealerMakeTurn is after giveAllPlayers1Card, the shuffledDeck here is 1 less card
+var giveDealer1Card = function () {
+  // since giveDealer1Card is after giveAllPlayers1Card, the shuffledDeck here is 1 less card
   var dealtCard = dealCard(shuffledDeck);
   dealer.card.push(dealtCard);
   dealer.score += dealtCard.score;

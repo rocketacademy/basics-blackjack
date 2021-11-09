@@ -13,7 +13,7 @@
 
     <!-- sharing configuration -->
     <!-- Primary Meta Tags -->
-    <title>Blackjack - Basics - Casino Nino</title>
+    <title>Blackjack - Basics - Wall St Casino</title>
     <meta name="title" content="Shazwi's BlackJack Game!" />
     <meta name="description" content="A fun card game I made myself! 😄💪🌈" />
 
@@ -39,7 +39,7 @@
       name="twitter:url"
       content="https://rocketacademy.github.io/basics-blackjack/index.html"
     />
-    <meta name="twitter:title" content="YOURNAME's BlackJack Game!" />
+    <meta name="twitter:title" content="Shazwi's BlackJack Game!" />
     <meta
       name="twitter:description"
       content="A fun card game I made myself! 😄💪🌈"
@@ -170,7 +170,8 @@
                   class="text-white normal"
                   style="font-size: 1rem; margin-bottom: 0.5rem"
                 >
-                  Dealer must draw on 16 or less and stand on 17 and above.
+                  Dealer must draw on 16 or less and stand on 17 and above. Any
+                  player with no credits left will be eliminated.
                 </p>
               </div>
               <div class="col-md-4">
@@ -226,7 +227,8 @@
                   class="text-white normal"
                   style="font-size: 1rem; margin-bottom: 0.5rem"
                 >
-                  Dealer must draw on 16 or less and stand on 17 and above.
+                  Dealer must draw on 16 or less and stand on 17 and above. Any
+                  player with no credits left will be eliminated.
                 </p>
               </div>
               <div class="col-md-4">
@@ -258,18 +260,39 @@
           </div>
         </div>
         <div id="play-time" style="display: none">
-          <div class="row justify-content-center">
-            <div class="col col-lg-4 text-center">
-              <h5 class="bangers" style="color: white">Dealer</h5>
-              <img src="./images/dealer.png" style="width: 100px" />
-              <div class="row" id="dealer-cards"></div>
+          <div class="container mt-5">
+            <div class="row justify-content-center">
+              <div class="col-md-4">
+                <h4 class="bangers text-white">
+                  📜 <span style="text-decoration: underline">Rules</span> 📜
+                </h4>
+                <p
+                  class="text-white normal"
+                  style="font-size: 1rem; margin-bottom: 0.5rem"
+                >
+                  Welcome to WSC Blackjack!
+                </p>
+                <p
+                  class="text-white normal"
+                  style="font-size: 1rem; margin-bottom: 0.5rem"
+                >
+                  Dealer must draw on 16 or less and stand on 17 and above. Any
+                  player with no credits left will be eliminated.
+                </p>
+              </div>
+              <div class="col-md-4 text-center">
+                <h5 class="bangers" style="color: white">Dealer</h5>
+                <img src="./images/dealer.png" style="width: 100px" />
+                <div class="row" id="dealer-cards"></div>
+              </div>
+              <div class="col-md-4"></div>
             </div>
+            <div
+              class="row justify-content-center"
+              id="list-of-players"
+              style="margin-top: 5rem"
+            ></div>
           </div>
-          <div
-            class="row justify-content-center"
-            id="list-of-players"
-            style="margin-top: 5rem"
-          ></div>
         </div>
       </div>
     </div>
@@ -277,26 +300,6 @@
     <script src="script.js"></script>
     <!-- Define button click functionality -->
     <script>
-      // var slider = document.getElementById("myRange");
-      // // var output = document.getElementById("demo");
-      // // output.innerHTML = slider.value;
-
-      // // slider.oninput = function () {
-      // //   output.innerHTML = this.value;
-      // // };
-      var checkNoOfPeopleNotEmpty = function () {
-        if (document.getElementById("no-of-players").value.length !== 0) {
-          if (
-            document.getElementById("no-of-players").value <= 0 ||
-            document.getElementById("no-of-players").value > 6
-          ) {
-            document.getElementById("place-bets-button").disabled = true;
-          } else {
-            document.getElementById("place-bets-button").disabled = false;
-          }
-        }
-      };
-
       var placeBetsButton = document.querySelector("#place-bets-button");
       placeBetsButton.addEventListener("click", function () {
         placeBets(document.getElementById("no-of-players").value);
