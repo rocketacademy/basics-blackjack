@@ -15,8 +15,8 @@ allow betting*/
 
 // GLOBAL VARIABLES
 var numberOfPlayers = 0;
-var MIN_PLAYER = 1;
-var MAX_PLAYER = 4;
+var MIN_NUM_PLAYER = 1;
+var MAX_NUM_PLAYER = 4;
 var myOutputValue = "";
 
 // GAME MODE
@@ -49,6 +49,80 @@ var initialisePlayers = function () {
   };
 };
 
+var initialiseDeck = function () {
+  var deck = [];
+  var names = [
+    "Ace",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "10",
+    "Jack",
+    "Queen",
+    "King",
+  ];
+  var values = [11, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10];
+  var suits = ["Spades", "Hearts", "Diamonds", "Clubs"];
+
+  // make standard 52-card deck
+  var index = 0;
+  for (var suit = 0; suit < suits.length; suit += 1) {
+    for (var name = 0; name < names.length; name += 1) {
+      deck[index] = {
+        name: names[name],
+        value: values[name],
+        suit: suits[suit],
+      };
+      index += 1;
+    }
+  }
+  return deck;
+};
+
+// Get a random index ranging from 0 (inclusive) to max (exclusive).
+var getRandomIndex = function (max) {
+  return Math.floor(Math.random() * max);
+};
+
+// Shuffle the elements in the cardDeck array
+var shuffleCards = function (cardDeck) {
+  // Loop over the card deck array once
+  var currentIndex = 0;
+  while (currentIndex < cardDeck.length) {
+    // Select a random index in the deck
+    var randomIndex = getRandomIndex(cardDeck.length);
+    // Select the card that corresponds to randomIndex
+    var randomCard = cardDeck[randomIndex];
+    // Select the card that corresponds to currentIndex
+    var currentCard = cardDeck[currentIndex];
+    // Swap positions of randomCard and currentCard in the deck
+    cardDeck[currentIndex] = randomCard;
+    cardDeck[randomIndex] = currentCard;
+    // Increment currentIndex
+    currentIndex = currentIndex + 1;
+  }
+  // Return the shuffled deck
+  return cardDeck;
+};
+
+var dealStartingHand = function () {
+  var startingHandSize = 2;
+  // deal to players then dealer
+  for (var round = 0; round < startingHandSize; round += 1) {
+    for (var player = 0; player < numberOfPlayers; player += 1) {
+      var randomCard = shuffledDeck.pop();
+      players[player].hand.push(randomCard);
+    }
+    randomCard = shuffledDeck.pop();
+    dealer.hand.push(randomCard);
+  }
+};
+
 /* persuo code for blackjack - version 2
 create players
 make deck
@@ -73,11 +147,7 @@ var main = function (input) {
     var userInput = Number(input);
 
     // true when input is >= 1 && <= 4
-    if (
-      !isNaN(userInput) &&
-      userInput >= MIN_PLAYER &&
-      userInput <= MAX_PLAYER
-    ) {
+    if (userInput >= MIN_NUM_PLAYER && userInput <= MAX_NUM_PLAYER) {
       numberOfPlayers = userInput;
       myOutputValue = `${numberOfPlayers} player(s) will be playing in this game of Blackjack.
       <br><br>
@@ -100,6 +170,8 @@ var main = function (input) {
   if (mode == INIT_GAME) {
     console.log("========== entering init game ==========");
     initialisePlayers();
+    shuffledDeck = shuffleCards(initialiseDeck());
+    dealStartingHand();
   }
 
   return "end of main";
