@@ -276,6 +276,9 @@ var populatePlayersOnTable = function () {
   document.getElementById("list-of-players").innerHTML = innerHtml;
 };
 
+// function to hit a card. everytime player hits a card, we will check for blackjack.
+// if blackjack obtained, go to next player's turn. if not, player can still draw a card
+// till bust or stand.
 var playerHit = function () {
   var dealtCard = dealCard(shuffledDeck);
   players[turn - 1].card.push(dealtCard);
@@ -293,6 +296,7 @@ var playerHit = function () {
   }
 };
 
+// function that runs when player press stand, or goes above 21.
 var nextTurn = function () {
   if (turn == players.length) {
     // all players have gone through their turns
@@ -316,6 +320,8 @@ var nextTurn = function () {
   }
 };
 
+// once round ends, dealer to show his card.
+// we will also tabulate the bets won or lost.
 var showDealerCards = function () {
   // check if dealer score is below 17
   // if it is, draw card
@@ -340,18 +346,21 @@ var showDealerCards = function () {
   document.getElementById(`dealer-cards`).innerHTML = innerHtml;
 };
 
+// hide the hit/stand buttons
 var hideCurrentPlayerHitStand = function () {
   if (!players[turn - 1].eliminated) {
     document.getElementById(`player-${turn}-info`).style.display = "none";
   }
 };
 
+// show the hit/stand buttons
 var showCurrentPlayerHitStand = function () {
   if (!players[turn - 1].eliminated) {
     document.getElementById(`player-${turn}-info`).style.display = "";
   }
 };
 
+// to check whether dealer needs to draw at the end of the round
 var checkDealerNeedToDraw = function () {
   return dealer.score < 17;
 };
@@ -444,12 +453,14 @@ var compareUsers = function () {
   }
 };
 
+// to check at the end of each round whether player has lost all his money.
 var checkIfPlayerEliminated = function () {
   for (var i = 0; i < players.length; i++) {
     players[i].eliminated = players[i].amount == 0;
   }
 };
 
+// at the beginning of the round, to assign all players on the table 1 card.
 var giveAllPlayers1Card = function () {
   for (var i = 0; i < players.length; i++) {
     if (!players[i].eliminated) {
@@ -460,12 +471,7 @@ var giveAllPlayers1Card = function () {
   }
 };
 
-var checkWhetherDealerHitsOrStands = function () {
-  if (dealer.score < 17) {
-    giveDealer1Card();
-  }
-};
-
+// at the beginning of the round, to assign dealer 1 card.
 var giveDealer1Card = function () {
   // since giveDealer1Card is after giveAllPlayers1Card, the shuffledDeck here is 1 less card
   var dealtCard = dealCard(shuffledDeck);
