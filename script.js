@@ -1,5 +1,5 @@
 /* Things to add
-  + Ace/Ten = Blackjack
+  / Distable Hit and Stand once game completed
   + Enter number of players
   + Splits
   + Bets
@@ -24,6 +24,7 @@ var playerObject = {
   value: 0,
 };
 var gotBusted = false;
+var gameStatus = true;
 
 /*===========================================================================*/
 /*========================== ADDITIONAL FUNCTIONS ===========================*/
@@ -139,6 +140,7 @@ var reset = function () {
   shuffledDeck = [];
   turns = PLAYER_TURN;
   gotBusted = false;
+  gameStatus = true;
   shuffledDeck = [];
   dealerObject = {
     name: "Dealer",
@@ -165,6 +167,44 @@ var checkIfBusted = function (playerValue) {
   }
 };
 
+/*===== PRINT HAND =====*/
+var getCardsOnHand = function (currentHand) {
+  var myOutputValue = "";
+  for (
+    var cardCounter = 0;
+    cardCounter < currentHand.length;
+    cardCounter += 1
+  ) {
+    myOutputValue += `${currentHand[cardCounter].name} ${currentHand[cardCounter].suit} <br>`;
+  }
+  return myOutputValue;
+};
+
+/*===== CHECK FOR BLACKJACK AT START GAME =====*/
+var checkBlackjack = function (currentValue) {
+  if (currentValue == 21) {
+    gameStatus = false;
+    return `Dealer Hand: <br> 
+            ▮ <br>
+            ${dealerObject.hands[1].name} ${dealerObject.hands[1].suit} <br><br>
+            Player Hand: <br>
+            ${playerObject.hands[0].name} ${playerObject.hands[0].suit} <br>
+            ${playerObject.hands[1].name} ${playerObject.hands[1].suit} <br><br>
+            Player got Blackjack! <br>
+            Player Win!! <br>
+            Press 'Start Game' to play again!`;
+  } else {
+    return `Dealer Hand: <br> 
+            ▮ <br>
+            ${dealerObject.hands[1].name} ${dealerObject.hands[1].suit} <br><br>
+            Player Hand: <br>
+            ${playerObject.hands[0].name} ${playerObject.hands[0].suit} <br>
+            ${playerObject.hands[1].name} ${playerObject.hands[1].suit} <br>
+            Player Value: ${playerObject.value} <br><br>
+            Players Turn, click Hit or Stand!`;
+  }
+};
+
 /*===========================================================================*/
 /*============================= MAIN FUNCTIONS ==============================*/
 /*===========================================================================*/
@@ -186,91 +226,74 @@ var startGame = function () {
   playerObject.value = getValue(playerObject.hands);
   console.log(playerObject);
 
-  // var winnerOutput = getWinner(dealerObject.value, playerObject.value);
+  var blackjackOutput = checkBlackjack(playerObject.value);
 
-  var myOutputValue = `Dealer Hand: <br> 
-                      Unknown <br>
-                      ${dealerObject.hands[1].name} ${dealerObject.hands[1].suit} <br><br>
-                      Player Hand: <br>
-                      ${playerObject.hands[0].name} ${playerObject.hands[0].suit} <br>
-                      ${playerObject.hands[1].name} ${playerObject.hands[1].suit} <br>
-                      Player Value: ${playerObject.value}`;
-
-  return myOutputValue;
+  return blackjackOutput;
 };
 
 var hitHand = function () {
-  var myOutputValue = "Player Hand: <br>";
-  var bustOutput = "";
-  if (gotBusted == false) {
-    // Draw card
-    var playerDrawnCard = shuffledDeck.pop();
-    playerObject.hands.push(playerDrawnCard);
-    // Print hand
-    for (
-      var cardCounter = 0;
-      cardCounter < playerObject.hands.length;
-      cardCounter += 1
-    ) {
-      myOutputValue += `${playerObject.hands[cardCounter].name} ${playerObject.hands[cardCounter].suit} <br>`;
+  if (gameStatus == true) {
+    var bustOutput = "";
+    var cardsOnHand = "";
+    if (gotBusted == false) {
+      // Draw card
+      var playerDrawnCard = shuffledDeck.pop();
+      playerObject.hands.push(playerDrawnCard);
+      // Print hand
+      cardsOnHand = getCardsOnHand(playerObject.hands);
+      playerObject.value = getValue(playerObject.hands);
+      bustOutput = checkIfBusted(playerObject.value);
+      return `Dealer Hand: <br> 
+              ▮ <br>
+              ${dealerObject.hands[1].name} ${dealerObject.hands[1].suit} <br><br>
+              Player Hand: <br>
+              ${cardsOnHand} <br>
+              ${bustOutput} <br><br>
+              Players Turn, click Hit or Stand!`;
+    } else {
+      // Print hand
+      cardsOnHand = getCardsOnHand(playerObject.hands);
+      return `Dealer Hand: <br> 
+              ▮ <br>
+              ${dealerObject.hands[1].name} ${dealerObject.hands[1].suit} <br><br>
+              Player Hand: <br>
+              ${cardsOnHand} <br> 
+              Player Value: ${playerObject.value} <br>
+              Player Busted! <br>
+              Press 'Start Game' to play again!`;
     }
-    playerObject.value = getValue(playerObject.hands);
-    bustOutput = checkIfBusted(playerObject.value);
-    return `Dealer Hand: <br> 
-            Unknown <br>
-            ${dealerObject.hands[1].name} ${dealerObject.hands[1].suit} <br><br>
-            ${myOutputValue} <br>
-            ${bustOutput}`;
   } else {
-    // Print hand
-    for (
-      var cardCounter = 0;
-      cardCounter < playerObject.hands.length;
-      cardCounter += 1
-    ) {
-      myOutputValue += `${playerObject.hands[cardCounter].name} ${playerObject.hands[cardCounter].suit} <br>`;
-    }
-    return `Dealer Hand: <br> 
-            Unknown <br>
-            ${dealerObject.hands[1].name} ${dealerObject.hands[1].suit} <br><br>
-            ${myOutputValue} <br> Player Value: ${playerObject.value} <br>
-            Player Busted! <br>
-            Press 'Start Game' to play again!`;
+    return `Game ended. Click 'Start Game' to play again! `;
   }
 };
 
 var standHand = function () {
-  var dealerOutputValue = "Dealer Hand: <br>";
-  var playerOutputValue = "Player Hand: <br>";
+  var playerCardsOnHand = "";
+  var dealerCardsOnHand = "";
   var outcome = "";
+
   while (dealerObject.value < 17) {
     var dealerDrawnCard = shuffledDeck.pop();
     dealerObject.hands.push(dealerDrawnCard);
     dealerObject.value = getValue(dealerObject.hands);
   }
+
   // Print Dealer Hands
-  for (
-    var cardCounter = 0;
-    cardCounter < dealerObject.hands.length;
-    cardCounter += 1
-  ) {
-    dealerOutputValue += `${dealerObject.hands[cardCounter].name} ${dealerObject.hands[cardCounter].suit} <br>`;
-  }
+  dealerCardsOnHand = getCardsOnHand(dealerObject.hands);
   // Print Player Hands
-  for (
-    var cardCounter = 0;
-    cardCounter < playerObject.hands.length;
-    cardCounter += 1
-  ) {
-    playerOutputValue += `${playerObject.hands[cardCounter].name} ${playerObject.hands[cardCounter].suit} <br>`;
-  }
+  playerCardsOnHand = getCardsOnHand(playerObject.hands);
+
   if (dealerObject.value > 21) {
     outcome = `Dealer busted! Player Wins <br>
               Press 'Start Game' to play again!`;
   } else {
     outcome = getWinner(dealerObject.value, playerObject.value);
   }
-  return `${dealerOutputValue} Dealer value: ${dealerObject.value} <br><br>
-          ${playerOutputValue} Player value: ${playerObject.value} <br><br>
+  gameStatus = false;
+
+  return `Dealer Hand: <br>
+          ${dealerCardsOnHand} Dealer value: ${dealerObject.value} <br><br>
+          Player Hand: <br>
+          ${playerCardsOnHand} Player value: ${playerObject.value} <br><br>
           ${outcome}`;
 };
