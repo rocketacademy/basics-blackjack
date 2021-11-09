@@ -58,7 +58,7 @@ const makeDeck = function () {
   const deckCards = [];
   // console.log(deckCards);
   const suits = ["diamonds", "clubs", "hearts", "spades"];
-  const faces = [2, 3, 4, 5, 6, 7, 8, 9, 10, "jack", "queen", "king", "ace"];
+  let faces = [2, 3, 4, 5, 6, 7, 8, 9, 10, "jack", "queen", "king", "ace"];
   for (let suitsIndex = 0; suitsIndex < suits.length; suitsIndex += 1) {
     let suit = suits[suitsIndex];
 
@@ -168,7 +168,7 @@ const drawACardUpdateAndDisplay = function () {
   let cardSuit = cardAceCleared.suits;
   let cardFace = cardAceCleared.faces;
   let myOutputValue = "";
-  let currentPlayer = players[activePlayer].name;
+  // let currentPlayer = players[activePlayer].name;
 
   players[activePlayer].cardsHeld.push(cardAceCleared);
   players[activePlayer].totalCardValue += cardAceCleared.ranks;
@@ -176,9 +176,9 @@ const drawACardUpdateAndDisplay = function () {
     firstRound === false ||
     (firstRound === true && players[activePlayer].name !== "Dealer")
   ) {
-    myOutputValue = ` ${currentPlayer} drew ${cardFace} of ${cardSuit}.`;
+    myOutputValue = ` ${players[activePlayer].name} drew ${cardFace} of ${cardSuit}.`;
   } else {
-    myOutputValue = ` ${currentPlayer} drew "Hidden" of "Hidden.`;
+    myOutputValue = ` ${players[activePlayer].name} drew "Hidden" of "Hidden.`;
   }
   return myOutputValue;
 };
@@ -231,11 +231,13 @@ const playingLoopCheck = function () {
 const winLossChecker = function () {
   let myOutputValue = "";
   let cleanHuman = players[activePlayer].totalCardValue;
-  // let cleanHuman = 5;
+  // let cleanHuman = 10;
   let cleanDealer = players[players.length - 1].totalCardValue;
   // let cleanDealer = 21;
-  // round: find players/dealer with Blackjack --> playing = false
+
+  // find players/dealer with Blackjack --> playing = false
   if (hitStay === false) {
+    console.log("was here 239");
     //player BlackJack. Player Wins
     if (cleanHuman === 21 && cleanDealer !== 21) {
       myOutputValue = `${players[activePlayer].name} wins with Blackjack.<br>`;
@@ -248,19 +250,26 @@ const winLossChecker = function () {
       myOutputValue += `${players[activePlayer].name} has Blackjack, so does the Dealer. It is a tie of Blackjacks.`;
     } // Dealer Blackjack. Players with no BJ loses, playings stops. Game goes to payout.
     else if (cleanDealer === 21) {
-      myOutputValue += `${players[activePlayer].name} loses. Dealer has Blackjack.`;
-      players[players.length - 1].win = "win";
-      for (let i = 0; i < players.length; i++) {
-        players[i].playing = false;
-        if (players[i].totalCardValue !== 21) {
-          players[i].win = "lose";
+      if (players[activePlayer].name !== "Dealer") {
+        console.log("was here 253");
+        myOutputValue += `<br>Dealer has Blackjack.`;
+        players[players.length - 1].win = "win";
+        for (let i = 0; i < players.length; i++) {
+          players[i].playing = false;
+          if (players[i].totalCardValue !== 21) {
+            players[i].win = "lose";
+          }
         }
+        // myOutputValue += `<br>===Game ends proceed to payout===<br>`;
+        console.log(hitStay);
+        endGame = true;
       }
-      endGame = true;
     }
   }
+
   // find players when Hit --> lose, hence playing = false
   if (hitStay === true && activePlayer < players.length - 1) {
+    console.log("was here 271");
     // activePlayer += 1;
     if (cleanHuman > 21) {
       players[activePlayer].win = "lose";
@@ -292,41 +301,59 @@ const winLossChecker = function () {
       players[activePlayer].win = "tie";
     } // player loses
     else {
-      myOutputValue = `${players[activePlayer].name} loses. Dealer wins.`;
-      players[activePlayer].win = "lose";
-      players[activePlayer].playing = false;
+      if (players[activePlayer].name !== "Dealer") {
+        console.log("was here 298");
+        myOutputValue += `<br>${players[activePlayer].name} loses. Dealer wins.`;
+        players[activePlayer].win = "lose";
+        players[activePlayer].playing = false;
+      }
     }
   }
-
+  console.log(myOutputValue);
   return myOutputValue;
 };
 // all in one: deal, hit or stay
 const dealHitStay = (input) => {
   let playerStatus = players[activePlayer].playing;
-  let currentPlayer = players[activePlayer].name;
+  // let currentPlayer = players[activePlayer].name;
   let myOutputValue = "Error !. Invalid click. ";
   console.log(players[activePlayer].name);
   if (input === "d" && hitStay === false) {
     myOutputValue = "=== 1st round of deal cards === <br>";
     firstRound = true;
     myOutputValue += dealCardsOneRound();
+    console.log(myOutputValue);
     myOutputValue += "<br/> === 2nd round of deal cards ===<br>";
     firstRound = false;
+    console.log(hitStay, endGame);
     myOutputValue += dealCardsOneRound();
+    console.log(myOutputValue);
+    console.log(hitStay, endGame);
     myOutputValue += dealBlackjackCheckLoop();
+    console.log(hitStay, endGame);
     hitStay = true;
+    console.log(myOutputValue);
     const findFirstPlayer2HitOrStay = () => {
       for (let i = 0; i < players.length; i++) {
         if (players[i].playing === true) {
-          myOutputValue += `<br>=== Hit or Stay ===<br>${intermittentCardValueDisplay()}Click Hit or Stay.`;
+          console.log("was here 338");
+          myOutputValue = `<br>=== Hit or Stay ===<br>${intermittentCardValueDisplay()}Click Hit or Stay.`;
+          console.log(myOutputValue);
           return myOutputValue;
-        } else {
-          myOutputValue = `===this round is over===`;
+        } else if (players[i].playing === false) {
+          console.log(players[activePlayer].playing);
+          console.log("was here 344");
+          myOutputValue = `<br>===Dealing round is over===<br>`;
+          hitStay = false;
+          endGame = true;
+          return myOutputValue;
         }
       }
     };
     // find first player to begin hit or stay
-    myOutputValue = findFirstPlayer2HitOrStay();
+    myOutputValue += findFirstPlayer2HitOrStay();
+    console.log(myOutputValue);
+    console.log(hitStay, endGame);
   } // hit choice
   else if (input === "h" && hitStay === true && playerStatus === true) {
     console.log(playerStatus);
