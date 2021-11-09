@@ -155,6 +155,8 @@ var main = function (input) {
         gameMode = GAME_START;
         return myOutputValue;
       }
+    } else {
+      return `Type something correct la.`;
     }
   }
 };
