@@ -10,10 +10,10 @@ var dealerScore = 0;
 var currentIndex = 0;
 var playerTotalWins = 0;
 var dealerTotalWins = 0;
+var myOutputValue = "Error in states";
+let timerInterval; // for alert popup
 
 var main = function (input) {
-  var myOutputValue = "Error in states";
-
   if (input == "restart") {
     gameMode = "gameStart";
     playerTotalWins = 0;
@@ -86,19 +86,97 @@ var main = function (input) {
       var results = "";
       if (playerScore <= 21 && playerScore > dealerScore) {
         playerTotalWins += 1;
+        Swal.fire({
+          title: "Congratulations you won!",
+          timer: 3000,
+          width: 600,
+          padding: "3em",
+          background: "",
+          backdrop: `
+    rgba(0,0,0,0.4)
+    url(assets/youwin.gif)
+    center bottom 
+    no-repeat
+  `,
+        });
         results = "Player wins! ";
       } else if (dealerScore <= 21 && dealerScore > playerScore) {
         dealerTotalWins += 1;
+        Swal.fire({
+          title: "You lost! Better luck next time!",
+          timer: 3000,
+          width: 600,
+          padding: "3em",
+          background: "",
+          backdrop: `
+    rgba(0,0,0,0.4)
+    url(assets/youlose.gif)
+    center bottom 
+    no-repeat
+  `,
+        });
         results = "Dealer wins! ";
       } else if (dealerScore == playerScore) {
+        Swal.fire({
+          title: "It's a tie! You better watch out!",
+          timer: 3000,
+          width: 600,
+          padding: "3em",
+          background: "",
+          backdrop: `
+    rgba(0,0,0,0.4)
+    url(assets/draw.gif)
+    center bottom 
+    no-repeat
+  `,
+        });
         results = "It's a tie! ";
       } else if (playerScore > 21 && dealerScore > 21) {
+        Swal.fire({
+          title: "You both went busts! That was a close one!",
+          timer: 3000,
+          width: 600,
+          padding: "3em",
+          background: "",
+          backdrop: `
+    rgba(0,0,0,0.4)
+    url(assets/draw.gif)
+    center bottom 
+    no-repeat
+  `,
+        });
         results = "You both went busts! It's a tie! ";
       } else if (playerScore > 21 && dealerScore <= 21) {
         dealerTotalWins += 1;
+        Swal.fire({
+          title: "You went busts! Better luck next time!",
+          timer: 3000,
+          width: 600,
+          padding: "3em",
+          background: "",
+          backdrop: `
+    rgba(0,0,0,0.4)
+    url(assets/youlose.gif)
+    center bottom 
+    no-repeat
+  `,
+        });
         results = "You went busts! You lose! ";
       } else if (playerScore <= 21 && dealerScore > 21) {
         playerTotalWins += 1;
+        Swal.fire({
+          title: "You got lucky! Dealer went busts!",
+          timer: 3000,
+          width: 600,
+          padding: "3em",
+          background: "",
+          backdrop: `
+    rgba(0,0,0,0.4)
+    url(assets/youwin.gif)
+    center bottom 
+    no-repeat
+  `,
+        });
         results = "Dealer went busts! You win! ";
       }
 
@@ -124,8 +202,12 @@ var main = function (input) {
 
       gameMode = "gameStart";
     } else {
-      myOutputValue =
-        "Please select 'Hit' or 'Stand' to continue, or 'Restart' to restart the counter.";
+      Swal.fire({
+        title: "Error!",
+        text: "Please select 'Hit' or 'Stand' to continue.",
+        icon: "error",
+        confirmButtonText: "Continue",
+      });
     }
   }
   return myOutputValue;
