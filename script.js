@@ -24,7 +24,9 @@ var main = function (input) {
     playerHand = [];
     dealerHand = [];
 
-    cardDeck = shuffleCards(newCardDeck);
+    // deep clone of array
+    var copiedDeck = [...newCardDeck];
+    cardDeck = shuffleCards(copiedDeck);
     playerHand.push(cardDeck.pop());
     playerHand.push(cardDeck.pop());
 
@@ -118,12 +120,12 @@ var main = function (input) {
         "<br>" +
         "Player hand: <br><br>" +
         showHand(dealerHand, "dealer") +
-        "<br>Select 'Start' or 'Restart' to restart the game.";
+        "<br>Select 'Start' or 'Hit' to continue playing, or 'Restart' to restart the counter.";
 
       gameMode = "gameStart";
     } else {
       myOutputValue =
-        "Please select 'Hit' or 'Stand' to continue, or 'Restart' to restart the game";
+        "Please select 'Hit' or 'Stand' to continue, or 'Restart' to restart the counter.";
     }
   }
   return myOutputValue;
