@@ -36,7 +36,7 @@ var makeDeck = function () {
       var scoreCounter = rankCounter;
       if (cardName == 1) {
         cardName = "Ace";
-      }
+      } // return 10 because thats the value of the cards
       if (cardName == 11) {
         cardName = "Jack";
         scoreCounter = 10;
@@ -100,11 +100,11 @@ var playerDrawCards = function () {
     if (playerCard2.name == "Ace") {
       playerCard2.rank = 11;
       playerSum = playerCard1.rank + playerCard2.rank;
-    }
+    } // output that player has gotten blackjack and wins
     myOutputValue = `PLAYER'S HAND <br><br> ${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}<br><br> Sum is ${playerSum} <br><br> PLAYER BLACKJACK`;
     playerBlackJack = true;
     gameMode = "results";
-  }
+  } // shows the cards drawn and player can choose to continue or end turn
   myOutputValue = `PLAYER'S HAND <br><br> ${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}<br><br> Sum is ${playerSum} <br><br>
     Type "hit" to draw another card or "stand" to end turn.`;
   gameMode = "round1";
@@ -120,7 +120,7 @@ var firstHit = function () {
     playerBust = true;
     myOutputValue = `${playerBustMessage} ${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}<br>${playerCard3.name} of ${playerCard3.suit}<br><br> Sum is ${playerSum}<br><br> Press DEAL to end turn.`;
     gameMode = "results";
-  }
+  } // if less than or equal 21, player can choose to continue or end turn
   if (playerSum <= 21) {
     myOutputValue = `PLAYER'S HAND <br><br> ${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}<br>${playerCard3.name} of ${playerCard3.suit}<br><br> Sum is ${playerSum} <br><br>
     Type "hit" to draw another card or "stand" to end turn.`;
@@ -140,7 +140,7 @@ var secondHit = function () {
     playerBust = true;
     myOutputValue = `${playerBustMessage} ${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}<br>${playerCard3.name} of ${playerCard3.suit}<br>${playerCard4.name} of ${playerCard4.suit}<br><br> Sum is ${playerSum}<br><br> Press DEAL to end turn.`;
     gameMode = "results";
-  }
+  } // if less than equal to 21, player can choose to continue or end turn
   if (playerSum <= 21) {
     myOutputValue = `PLAYER'S HAND <br><br> ${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}<br>${playerCard3.name} of ${playerCard3.suit}<br>${playerCard4.name} of ${playerCard4.suit}<br><br> Sum is ${playerSum} <br><br>
           Type "hit" to draw another card or "stand" to end turn.`;
@@ -158,11 +158,13 @@ var thirdHit = function () {
     playerCard4.rank +
     playerCard5.rank;
   if (playerSum > 21) {
+    // if bust, output bust message
     playerBust = true;
     myOutputValue = `${playerBustMessage} ${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}<br>${playerCard3.name} of ${playerCard3.suit}<br>${playerCard4.name} of ${playerCard4.suit}<br>${playerCard5.name} of ${playerCard5.suit}<br><br> Sum is ${playerSum}<br><br> Press DEAL to end turn.`;
     gameMode = "results";
   }
   if (playerSum <= 21) {
+    //if less than or equal to 21, player can choose to contnue or end turn
     myOutputValue = `PLAYER'S HAND <br><br> ${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}<br>${playerCard3.name} of ${playerCard3.suit}<br>${playerCard4.name} of ${playerCard4.suit}<br>${playerCard5.name} of ${playerCard5.suit}<br><br> Sum is ${playerSum} <br><br>
           Type "hit" to draw another card or "stand" to end turn.`;
     gameMode = "end user turn";
@@ -190,7 +192,7 @@ var dealerDrawCards = function () {
     if (dealerCard2.name == "Ace") {
       dealerCard2.rank = 11;
       dealerSum = dealerCard1.rank + dealerCard2.rank;
-    }
+    } // if dealer gets blackjack, immediately wins
     myOutputValue = `DEALER HAND <br><br> ${dealerCard1.name} of ${dealerCard1.suit} <br> ${dealerCard2.name} of ${dealerCard2.suit}<br><br> Sum is ${dealerSum}<br><br> DEALER BLACKJACK`;
     dealerBlackJack = true;
     gameMode = "end user turn";
@@ -200,10 +202,12 @@ var dealerDrawCards = function () {
   if (dealerSum < 17) {
     dealerCard3 = shuffle.pop();
     dealerSum = dealerCard1.rank + dealerCard2.rank + dealerCard3.rank;
+    // check if bust
     if (dealerSum > 21) {
       dealerBust = true;
       myOutputValue = `${dealerBustMessage} ${dealerCard1.name} of ${dealerCard1.suit} <br> ${dealerCard2.name} of ${dealerCard2.suit}<br> ${dealerCard3.name} of ${dealerCard3.suit}<br><br> Sum is ${dealerSum} <br><br> Press DEAL to reveal results.`;
       gameMode = "results";
+      // if not bust, display the dealers hand
     } else {
       myOutputValue = `DEALER HAND <br><br> ${dealerCard1.name} of ${dealerCard1.suit} <br> ${dealerCard2.name} of ${dealerCard2.suit}<br> ${dealerCard3.name} of ${dealerCard3.suit}<br><br> Sum is ${dealerSum}<br><br> Press DEAL to reveal results.`;
       gameMode = "results";
@@ -223,7 +227,7 @@ var dealerDrawCards = function () {
       gameMode = "results";
     }
   }
-
+  // it will keep adding as long as below 17
   if (dealerSum < 17) {
     dealerCard5 = shuffle.pop();
     dealerSum =
@@ -278,6 +282,7 @@ var main = function (input) {
   } else if (playerMode == "round3" && input == "hit") {
     thirdHit();
   } else if (
+    // dealers turn to draw cards. must be above 17.
     input == "stand" ||
     gameMode == "end user turn" ||
     gameMode == "round3" ||
