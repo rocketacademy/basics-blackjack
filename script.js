@@ -1,7 +1,7 @@
 // make a deck of 52 cards
 var makeDeck = function () {
   var cardDeck = [];
-  var suits = ["hearts", "diamonds", "clubs", "spades"];
+  var suits = ["♥️", "♦️", "♣️", "♠️"];
 
   var suitIndex = 0;
   while (suitIndex < suits.length) {
@@ -93,8 +93,8 @@ var calculateScore = function (hand) {
   while (numOfAces >= 1) {
     if (handScore > 21) {
       handScore -= 10;
-      numOfAces -= 1;
     }
+    numOfAces -= 1;
   }
 
   return handScore;
@@ -113,20 +113,96 @@ var cardsDrawn = function (hand) {
   return cardsHand;
 };
 
+// return first card - for dealer
+var firstCard = function (hand) {
+  var dealerFirstCard = `${hand[0].name} of ${hand[0].suit}<br>`;
+  return dealerFirstCard;
+};
+
+// When player presses the "hit" button
+var buttonMode = "";
+var hit = function () {
+  console.log("THIS IS HIT!!!");
+  playerHand.push(cardDeck.pop());
+  myOutputValue =
+    myOutputValue +
+    "PLAYER: " +
+    calculateScore(playerHand) +
+    "<br>" +
+    cardsDrawn(playerHand) +
+    "<br> COMPUTER: <br>" +
+    firstCard(compHand) +
+    "<br> Please enter only hit or stand.";
+};
+
+// when player presses the "stand" button
+var stand = function () {
+  console.log("THIS IS STAND!!!");
+  currentGameMode = CALCULATE_SCORE;
+  myOutputValue =
+    myOutputValue +
+    cardsDrawn(playerHand) +
+    "<br> COMPUTER: <br>" +
+    firstCard(compHand) +
+    "<br> Press submit to calculate score.";
+};
+
+// amount left and current bet output
+var playerMoney = function () {
+  var playerMoneyTracker =
+    "Amt Left: $" +
+    playerPoints +
+    "<br> Current Bet: $" +
+    playerBet +
+    "<br><br>";
+  return playerMoneyTracker;
+};
+
 // setting various game modes
+var PLACE_BETS = "place bets";
 var DEAL_HAND = "deal hand";
 var CARDS_DRAWN = "cards drawn";
 var HIT_OR_STAND = "hit or stand";
 var CALCULATE_SCORE = "calculate score";
+var PLAYER_ENTERS_ROOM = "start";
 
 // set global variables for games
 var playerHand = [];
 var compHand = [];
 var cardDeck = [];
-var currentGameMode = DEAL_HAND;
+var currentGameMode = PLAYER_ENTERS_ROOM;
+var playerPoints = 100;
+var playerBet = 0;
+var myOutputValue = "";
 
 var main = function (input) {
-  var myOutputValue = "";
+  myOutputValue = playerMoney();
+
+  console.log("game mode:", currentGameMode);
+
+  if (currentGameMode == "start") {
+    myOutputValue = myOutputValue + "Please place your bet.";
+    console.log("player bet: ", playerBet);
+    console.log("player points:", playerPoints);
+    currentGameMode = PLACE_BETS;
+    return myOutputValue;
+  }
+
+  console.log("game mode:", currentGameMode);
+
+  if (currentGameMode == "place bets") {
+    playerBet = Number(input);
+    console.log(input);
+    playerPoints = playerPoints - playerBet;
+    console.log("game mode:", currentGameMode);
+    console.log("player bet: ", playerBet);
+    console.log("player points:", playerPoints);
+
+    myOutputValue = playerMoney() + "Press submit to deal hand.";
+    currentGameMode = DEAL_HAND;
+
+    return myOutputValue;
+  }
 
   if (currentGameMode == "deal hand") {
     console.log("game mode:", currentGameMode);
@@ -146,16 +222,23 @@ var main = function (input) {
     console.log("cardDeck: ", cardDeck);
 
     myOutputValue =
+      myOutputValue +
       "Cards has been dealt. <br> Press submit to calculate cards.";
     currentGameMode = CARDS_DRAWN;
 
     return myOutputValue;
   }
+  console.log("hereeee");
 
   if (currentGameMode == "cards drawn") {
     console.log("game mode:", currentGameMode);
-
-    myOutputValue = "PLAYER: <br>" + cardsDrawn(playerHand);
+    console.log("myOutputValue: ", myOutputValue);
+    myOutputValue =
+      myOutputValue +
+      "PLAYER: " +
+      calculateScore(playerHand) +
+      "<br>" +
+      cardsDrawn(playerHand);
 
     // a tie if both draws blackjack
     if (isBlackJack(playerHand) && isBlackJack(compHand)) {
@@ -164,6 +247,7 @@ var main = function (input) {
         "<br>COMPUTER: <br>" +
         cardsDrawn(compHand) +
         "<br> A blackjack tie!";
+      playerPoints += playerBet;
       myOutputValue = myOutputValue + "<br><br> Press submit to play again.";
 
       // reset mode & counters
@@ -172,7 +256,7 @@ var main = function (input) {
       cardDeck = [];
       currentGameMode = DEAL_HAND;
 
-      return myOutputValue;
+      //return myOutputValue;
     } // a blackjack win when either player or computer draws blackjack
     else if (isBlackJack(playerHand)) {
       myOutputValue =
@@ -180,47 +264,62 @@ var main = function (input) {
         "<br> COMPUTER: <br>" +
         cardsDrawn(compHand) +
         "<br> Blackjack, you win!";
+      playerPoints += 3 * playerBet;
       myOutputValue = myOutputValue + "<br><br> Press submit to play again.";
 
       // reset mode & counters
       playerHand = [];
       compHand = [];
       cardDeck = [];
-      currentGameMode = DEAL_HAND;
+      playerBet = 0;
+      currentGameMode = PLAYER_ENTERS_ROOM;
 
-      return myOutputValue;
+      //return myOutputValue;
     } else if (isBlackJack(compHand)) {
       myOutputValue =
         myOutputValue +
         "<br>COMPUTER: <br>" +
         cardsDrawn(compHand) +
         "<br> Blackjack, computer wins!";
+      playerPoints -= 0.5 * playerBet;
       myOutputValue = myOutputValue + "<br><br> Press submit to play again.";
 
       // reset mode & counters
       playerHand = [];
       compHand = [];
       cardDeck = [];
-      currentGameMode = DEAL_HAND;
+      playerBet = 0;
+      currentGameMode = PLAYER_ENTERS_ROOM;
 
-      return myOutputValue;
+      //return myOutputValue;
     } else {
-      myOutputValue = myOutputValue + "<br> Please choose hit or stand.";
+      //if no blackjack, game continues with 1 dealer card shown
+      myOutputValue =
+        myOutputValue +
+        "<br> COMPUTER: <br>" +
+        firstCard(compHand) +
+        "<br> Please choose hit or stand then press the submit button.";
     }
 
     currentGameMode = HIT_OR_STAND;
-    return myOutputValue;
+    //return myOutputValue;
   }
 
   if (currentGameMode == "hit or stand") {
     console.log("game mode:", currentGameMode);
-    myOutputValue = "PLAYER: <br>";
+    myOutputValue = "PLAYER: " + calculateScore(playerHand) + "<br>";
 
     if (input == "") {
       myOutputValue =
         myOutputValue +
         cardsDrawn(playerHand) +
-        "<br> Please enter only hit or stand.";
+        "<br> COMPUTER: <br>" +
+        firstCard(compHand) +
+        "<br> Please enter only hit or stand then press the submit button.";
+    }
+    /*
+    if (buttonMode == hit) {
+      return myOutputValue;
     }
 
     if (input == "hit") {
@@ -228,17 +327,23 @@ var main = function (input) {
       console.log("playerHand: ", playerHand);
       playerHand.push(cardDeck.pop());
       myOutputValue =
-        myOutputValue +
+        "PLAYER: " +
+        calculateScore(playerHand) +
+        "<br>" +
         cardsDrawn(playerHand) +
-        "<br> Please enter only hit or stand.";
+        "<br> COMPUTER: <br>" +
+        firstCard(compHand) +
+        "<br> Please enter only hit or stand then press the submit button.";
     } else if (input == "stand") {
       currentGameMode = CALCULATE_SCORE;
       myOutputValue =
         myOutputValue +
         cardsDrawn(playerHand) +
+        "<br> COMPUTER: <br>" +
+        firstCard(compHand) +
         "<br> Press submit to calculate score.";
-    }
-    return myOutputValue;
+    } */
+    //return myOutputValue;
   }
 
   if (currentGameMode == "calculate score") {
@@ -257,6 +362,7 @@ var main = function (input) {
 
     // output message for player's and computer's hand and score
     myOutputValue =
+      myOutputValue +
       "PLAYER: " +
       playerHandScore +
       "<br>" +
@@ -271,7 +377,12 @@ var main = function (input) {
       (playerHandScore > compHandScore && playerHandScore <= 21) ||
       (playerHandScore <= 21 && compHandScore > 21)
     ) {
-      myOutputValue = myOutputValue + "<br> Player Wins!";
+      playerPoints += 2 * playerBet;
+      console.log("amount left: ", playerPoints);
+      console.log("player bet: ", playerBet);
+      myOutputValue =
+        myOutputValue +
+        "<br> Player Wins! <br><br> Press submit to play again.";
     }
 
     // player loses if score is less than computer's score and not above 21
@@ -279,7 +390,18 @@ var main = function (input) {
       (playerHandScore < compHandScore && compHandScore <= 21) ||
       (compHandScore <= 21 && playerHandScore > 21)
     ) {
+      // playerPoints -= playerBet;
+      console.log("amount left: ", playerPoints);
+      console.log("player bet: ", playerBet);
       myOutputValue = myOutputValue + "<br> Computer Wins!";
+
+      if (playerPoints <= 0) {
+        myOutputValue =
+          myOutputValue +
+          "<br><br> GAME OVER!!! YOU HAVE LOST ALL YOUR MONEY💸💸💸";
+      } else {
+        myOutputValue + "<br><br> Press submit to play again.";
+      }
     }
 
     // A tie if player and computer have same hand or both have hands above 21
@@ -287,17 +409,22 @@ var main = function (input) {
       playerHandScore == compHandScore ||
       (playerHandScore > 21 && compHandScore > 21)
     ) {
-      myOutputValue = myOutputValue + "<br> A tie!";
+      console.log("amount left: ", playerPoints);
+      console.log("player bet: ", playerBet);
+      playerPoints += playerBet;
+      myOutputValue =
+        myOutputValue + "<br> A tie! <br><br> Press submit to play again.";
     }
-
-    myOutputValue = myOutputValue + "<br><br> Press submit to play again.";
 
     // reset mode & counters
     playerHand = [];
     compHand = [];
     cardDeck = [];
-    currentGameMode = DEAL_HAND;
-
-    return myOutputValue;
+    playerBet = 0;
+    currentGameMode = PLAYER_ENTERS_ROOM;
   }
+
+  console.log("amount left: ", playerPoints);
+  console.log("player bet: ", playerBet);
+  return myOutputValue;
 };
