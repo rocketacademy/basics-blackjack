@@ -13,9 +13,11 @@ allow more than 1 player
 all players play against dealer
 allow betting*/
 
-// GLOBAL VARIABLES
+// CONSTANT
 var MIN_NUM_PLAYER = 1;
 var MAX_NUM_PLAYER = 4;
+
+// GLOBAL VARIABLES
 var myOutputValue = "";
 
 // GAME MODE
@@ -164,7 +166,7 @@ var main = function (input) {
     console.log("========== entering ask for players ==========");
     var userInput = Number(input);
 
-    // true when input is >= 1 && <= 4
+    // true when input is between min and max number of players
     if (userInput >= MIN_NUM_PLAYER && userInput <= MAX_NUM_PLAYER) {
       numberOfPlayers = userInput;
       myOutputValue = `${numberOfPlayers} player(s) will be playing in this game of Blackjack.
