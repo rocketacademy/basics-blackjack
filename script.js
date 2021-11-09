@@ -1,29 +1,23 @@
-//---------------CODE TO MAKE DECK----------------------
+// Function to make deck
 var makeDeck = function () {
   var cardDeck = [];
   var suits = ["hearts", "diamonds", "clubs", "spades"];
-  var name = ["", "ace", 2, 3, 4, 5, 6, 7, 8, 9, 10, "jack", "queen", "king"];
   var suitIndex = 0;
   while (suitIndex < suits.length) {
     var currentSuit = suits[suitIndex];
     var rankCounter = 1;
-    while (rankCounter < name.length) {
-      var cardName = name[rankCounter];
-      var rankCounterValue = rankCounter;
-      if (cardName == "ace") {
-        rankCounterValue = 11;
-      } else if (cardName == "jack") {
-        rankCounterValue = 10;
-      } else if (cardName == "queen") {
-        rankCounterValue = 10;
-      } else if (cardName == "king") {
-        rankCounterValue = 10;
+    while (rankCounter <= 13) {
+      var cardName = rankCounter;
+      if (cardName == 1) {
+        cardName = "ace";
+      } else if (cardName == 11) {
+        cardName = "jack";
+      } else if (cardName == 12) {
+        cardName = "queen";
+      } else if (cardName == 13) {
+        cardName = "king";
       }
-      var card = {
-        name: cardName,
-        suit: currentSuit,
-        rank: rankCounterValue,
-      };
+      var card = { name: cardName, suit: currentSuit, rank: rankCounter };
       cardDeck.push(card);
       rankCounter += 1;
     }
@@ -58,142 +52,275 @@ var shuffleCards = function (cardDeck) {
   return cardDeck;
 };
 
-//--------- CODE STARTS HERE --------------------
+//--------------- ROUGH NOTES --------------------------
+
+// there are 2 players -- player and computer
+// each player draws 2 cards
+// each player decides to hit or stand
+// computer has to draw if the sum of its hand < 17
+// sum of cards' rules --> j/q/k = 10, ace = 1 or 11 (maybe 1st ace is 11, then second is 1?)
+// win scenarios:
+// if player > computer
+// if computer > player
+// if player or computer blackjack
+// if computer > 21
+
+// --------------- GLOBAL VARIABLES -------------------------
+
 var gameMode = 0;
-var numPlayerCards = 0;
-var numComputerCards = 0;
 var playerHand = [];
 var computerHand = [];
 
-var sumPlayerHand = 0;
-var sumComputerHand = 0;
+//---------------- HELPER FUNCTIONS??? ----------------------
 
-//Function to sum up hand numbers
-var calcSumOfHand = function (array) {
-  var totalHandValue = 0;
+//---------------- FUNCTION TO CALC SUM OF HAND -------------
+var calcSumOfHand = function (handArray) {
   var i = 0;
-  while (i < array.length) {
-    var currentCard = array[i];
-    totalHandValue = totalHandValue + currentCard.rank;
+  var totalSumOfHand = 0;
+  //create variable to track the number of aces. if there is one ace, then replace the value to 11
+  var totalNumOfAces = 0;
+
+  //ie if player holds 2 cards, sum will add the two cards over 2 loops in this while loop
+  while (i < handArray.length) {
+    var currentCard = handArray[i];
+    //+11 if there is ace
+    if (currentCard.name == "ace") {
+      totalSumOfHand = totalSumOfHand + 11;
+      totalNumOfAces += 1;
+    }
+    //+10 for j/q/k
+    else if (
+      currentCard.name == "king" ||
+      currentCard.name == "queen" ||
+      currentCard.name == "jack"
+    ) {
+      totalSumOfHand = totalSumOfHand + 10;
+    } else {
+      totalSumOfHand = totalSumOfHand + currentCard.rank;
+    }
     i += 1;
   }
-  return totalHandValue;
+  return totalSumOfHand;
 };
 
-var main = function (input) {
-  var myOutputValue = `hello world`;
+// --------------- FUNCTION TO CHECK BLACKJACK... which i didnt use in the end ----------------
 
+var gotBlackjack = function (sumOfHand) {
+  var blackjackTrueFalse = false;
+  if (sumOfHand == 21) {
+    blackjackTrueFalse = true;
+  }
+  return blackjackTrueFalse;
+};
+
+// --------------- FUNCTION to condense the display of cards in myOutputValue -------------
+
+var displayListOfCards = function (handArray) {
+  var listOfCards = "";
+  var i = 0;
+  while (i < handArray.length) {
+    var currentCard = handArray[i];
+    listOfCards = listOfCards + `${currentCard.name} of ${currentCard.suit}, `;
+    i += 1;
+  }
+  return listOfCards;
+};
+
+//---------------- CODE STARTS HERE ---------------------------
+var main = function (input) {
+  var myOutputValue = `Please type in either hit to draw one more card, or stand if your current sum is enough.`;
   var cardDeck = makeDeck();
   var shuffledDeck = shuffleCards(cardDeck);
-  var myOutputValue = "";
-  //gameMode = 0
-  //first, distribute cards, push them into arrays
+
+  // GAMEMODE = 0, DRAW CARDS FIRST
   if (gameMode == 0) {
+    console.log("game mode = 0, drawing cards for players");
     var playerCard1 = shuffledDeck.pop();
     var playerCard2 = shuffledDeck.pop();
     var computerCard1 = shuffledDeck.pop();
     var computerCard2 = shuffledDeck.pop();
+
+    // gameMode = 0, checking if cards were successfully drawn for each player
+    console.log("player card 1", playerCard1);
+    console.log("player card 2", playerCard2);
+    console.log("computer card 1", computerCard1);
+    console.log("computer card 2", computerCard2);
+
+    // gameMode = 0, push them into arrays to store them for later
     playerHand.push(playerCard1);
     playerHand.push(playerCard2);
     computerHand.push(computerCard1);
     computerHand.push(computerCard2);
-    numPlayerCards = 2;
-    numComputerCards = 2;
-    sumComputerHand = computerCard1.rank + computerCard2.rank;
-    console.log(sumComputerHand);
-    sumPlayerHand = playerCard1.rank + playerCard2.rank;
-    //if 2 cards, +10 to total sum if one of them is an ace (global var)
-    if (
-      numPlayerCards == 2 &&
-      (playerCard1.rank == 1 || playerCard2.rank == 1)
-    ) {
-      sumPlayerHand = sumPlayerHand + 10;
-      console.log(sumPlayerHand);
-    }
 
-    if (
-      numComputerCards == 2 &&
-      (computerCard1.rank == 1 || computerCard2.rank == 1)
-    ) {
-      sumComputerHand = sumComputerHand + 10;
-    }
+    // gameMode = 0, calc the sum of each hand --> then determine if there is blackjack
 
-    //check if theres any blackjacks
-    //one card = ace, second card = j/q/k
-    if (sumPlayerHand == 21) {
+    sumPlayerHand = calcSumOfHand(playerHand);
+    sumComputerHand = calcSumOfHand(computerHand);
+
+    // gameMode = 0, check if the calc of each hand is correct
+    console.log("gamemode = 0, sum of player's hand", sumPlayerHand);
+    console.log("gamemode = 0, sum of computer's hand", sumComputerHand);
+
+    // gameMode = 0, blackjack y/n?
+    // blackjack scenarios --> if sumPlayerHand = 21, or sumComputerHand = 21
+    // if player = 21, player wins
+    // if computer = 21, computer wins
+    // if both = 21, it's a tie
+    // if both less than 21, ask player if wanna hit / stand --> progress game mode
+
+    if (sumPlayerHand == 21 && sumComputerHand < 21) {
+      myOutputValue = `Player's Cards: ${displayListOfCards(
+        playerHand
+      )}<BR>PLAYER WINS.<BR><BR>Click submit to play again.`;
+
+      playerHand = [];
+      computerHand = [];
       gameMode = 0;
-      var numPlayerCards = 0;
-      var numComputerCards = 0;
-      return `Your cards: ${playerCard1.name} of ${playerCard1.suit}, ${playerCard2.name} of ${playerCard2.suit}<BR>You blackjacked! YOU WIN.<BR>Click submit to play again.`;
-    }
-    if (sumComputerHand == 21) {
+      return myOutputValue;
+    } else if (sumPlayerHand < 21 && sumComputerHand == 21) {
+      myOutputValue = `Player's Cards: ${displayListOfCards(
+        playerHand
+      )}<BR>Computer's Cards: ${displayListOfCards(
+        computerHand
+      )}<BR><BR>COMPUTER WINS.<BR>Click submit to play again.`;
+
+      playerHand = [];
+      computerHand = [];
       gameMode = 0;
-      var numPlayerCards = 0;
-      var numComputerCards = 0;
-      return `Your cards: ${playerCard1.name} of ${playerCard1.suit}, ${playerCard2.name} of ${playerCard2.suit}<BR><BR>Computer's cards: ${computerCard1.name} of ${computerCard1.suit}, ${computerCard2.name} of ${computerCard2.suit}<BR><BR>Computer blackjacked! Kua kua kua, you suay leh. Click submit to play again.`;
-    }
-    if (sumPlayerHand == 21 && sumComputerHand == 21) {
+      return myOutputValue;
+    } else if (sumPlayerHand == 21 && sumComputerHand == 21) {
+      myOutputValue = `Player's Cards: ${displayListOfCards(
+        playerHand
+      )}<BR>Computer's Cards: ${displayListOfCards(
+        computerHand
+      )}<BR><BR>YOU BOTH BLACKJACKED.<BR>Click submit to play again.`;
+
+      playerHand = [];
+      computerHand = [];
       gameMode = 0;
-      var numPlayerCards = 0;
-      var numComputerCards = 0;
-      return `What are the odds! You both blackjacked.<BR>Click submit to play again.`;
-    }
-    if (sumPlayerHand < 21) {
+      return myOutputValue;
+    } else if (sumPlayerHand < 21 && sumComputerHand < 21) {
       gameMode = 1;
-      return `Your cards: ${playerCard1.name} of ${playerCard1.suit}, ${playerCard2.name} of ${playerCard2.suit}<BR><BR>Type "hit" to draw another card, type "stand" to stop.`;
+      myOutputValue = `Player's Cards: ${displayListOfCards(
+        playerHand
+      )}<BR><BR>Type hit to draw one more card, or stand if your total sum is enough.`;
     }
   }
 
-  //gameMode = 1, if input = "hit"
+  // GAMEMODE = 1, create two scenarios, taking the player's hit or stand input
+
+  // GAMEMODE = 1, if player inputs "hit" --> draw another card
   if (gameMode == 1 && input == "hit") {
-    var newCard = shuffledDeck.pop();
-    numPlayerCards += 1;
-    playerHand.push(newCard);
-    sumPlayerHand = sumPlayerHand + newCard.rank;
-    //check if player got bao
-    if (sumPlayerHand > 21) {
-      gameMode = 0;
-      var numPlayerCards = 0;
-      var numComputerCards = 0;
-      return `Kua kua kua, you suay leh. Click submit to play again.`;
-    }
+    playerHand.push(shuffledDeck.pop());
+    // calc players' total sum again
+    sumPlayerHand = calcSumOfHand(playerHand);
+    console.log("gamemode = 1, sum of player's hand", sumPlayerHand);
+
+    //if players total sum < 21, ask if they wanna hit (so return to gameMode = 1) or stand (progress to another gameMode)
     if (sumPlayerHand < 21) {
-      gameMode = 1;
-      return `Your total sum = ${sumPlayerHand}<BR><BR>Enough or not? Type "hit" to draw another card, type "stand" to stop.`;
+      myOutputValue = `Player's Cards: ${displayListOfCards(
+        playerHand
+      )}<BR><BR>Type hit to draw one more card, or stand if your total sum is enough.`;
     }
+    // if players' total sum > 21, player lose --> reveal computers' cards in gameMode 2
+    else {
+      gameMode = 3;
+      myOutputValue = `Player's Cards: ${displayListOfCards(
+        playerHand
+      )}<BR><BR>Wa so suay. Click submit again to see computers' cards.`;
+    }
+
+    return myOutputValue;
   }
 
+  // GAMEMODE = 1, if player inputs "stand" --> progress game mode
   if (gameMode == 1 && input == "stand") {
     gameMode = 2;
-    return `Ok you sure enough ah. Click submit to see computer's cards. Good luck!`;
+    myOutputValue = `Sure ah, enough ah! Click submit again to reveal computers' cards.`;
+    return myOutputValue;
   }
 
-  //compare sum, and reveal computers' cards
-  if (gameMode == 2) {
-    if (sumComputerHand < 17) {
-      var newCard = shuffledDeck.pop();
-      numComputerCards += 1;
-      computerHand.push(newCard);
-      sumComputerHand = sumComputerHand + newCard.rank;
-      gameMode = 0;
-      var numPlayerCards = 0;
-      var numComputerCards = 0;
-    }
-    if (sumPlayerHand > sumComputerHand) {
-      return `you win! you got ${sumPlayerHand}, computer got ${sumComputerHand}. <BR>Click submit to play again.`;
-    }
-    if (sumPlayerHand < sumComputerHand) {
-      return `you lose! you got ${sumPlayerHand}, computer got ${sumComputerHand}<BR>Click submit to play again.`;
-    }
-    if ((sumPlayerHand = sumComputerHand)) {
-      return `you tie! you got ${sumPlayerHand}, computer got ${sumComputerHand}<BR>Click submit to play again.`;
-    }
-    if (sumPlayerHand > 21 && sumComputerHand > 21) {
-      return `you heng leh, computer also bao! you got ${sumPlayerHand}, computer got ${sumComputerHand}.<BR><BR>Click submit to play again.`;
-    }
-    //reset all variables
+  // GAMEMODE = 2, to show computers' cards
+  // if sumComputerHand < 17, create new game mode for computer to draw one more card
+  // if sumComputerHand > 17, immediately compare to CONCLUDE THE GAME!!!! :D (done)
+  // if sumComputerHand > sumPlayerHand --> computer wins (done)
+  // if sumComputerHand < sumPlayerHand --> player wins (done)
+  // if computer = player --> tie (done)
 
-    return `Your cards: ${playerCard1.name} of ${playerCard1.suit}, ${playerCard2.name} of ${playerCard2.suit}<BR><BR>Type "hit" to draw another card, type "stand" to stop.`;
+  if (gameMode == 2) {
+    if (sumComputerHand >= 17 && sumComputerHand <= 21) {
+      //does it work if there are so many if statements in an if statement lol
+      if (sumComputerHand > sumPlayerHand || sumPlayerHand > 21) {
+        myOutputValue = `GameMode 2<BR><BR>Player's Cards: ${displayListOfCards(
+          playerHand
+        )}<BR>Computer's Cards: ${displayListOfCards(
+          computerHand
+        )}<BR><BR>Wa so suay. Computer wins.`;
+      } else if (sumComputerHand < sumPlayerHand && sumPlayerHand <= 21) {
+        myOutputValue = `GameMode 2<BR><BR>Player's Cards: ${displayListOfCards(
+          playerHand
+        )}<BR>Computer's Cards: ${displayListOfCards(
+          computerHand
+        )}<BR><BR>You win.`;
+      } else if (sumComputerHand == sumPlayerHand) {
+        myOutputValue = `GameMode 2<BR><BR>Player's Cards: ${displayListOfCards(
+          playerHand
+        )}<BR>Computer's Cards: ${displayListOfCards(
+          computerHand
+        )}<BR><BR>You tied.`;
+      }
+    }
+    if (sumComputerHand < 17) {
+      gameMode = 3;
+      myOutputValue = `Game mode 2<BR><BR>Player's Cards: ${displayListOfCards(
+        playerHand
+      )}<BR>Computer's Cards: ${displayListOfCards(
+        computerHand
+      )}<BR><BR>Computer needs to draw more cards. Click to see if you suay or not.`;
+    }
+    return myOutputValue;
+  }
+
+  // GAMEMODE = 3, allow computer to draw more cards, and then compare again.
+
+  if (gameMode == 3) {
+    while (sumComputerHand < 17) {
+      var newComputerCard = shuffledDeck.pop();
+      computerHand.push(newComputerCard);
+      sumComputerHand = calcSumOfHand(computerHand);
+    }
+    if (sumComputerHand > sumPlayerHand && sumComputerHand <= 21) {
+      myOutputValue = `GameMode 3<BR><BR>Player's Cards: ${displayListOfCards(
+        playerHand
+      )}<BR>Computer's Cards: ${displayListOfCards(
+        computerHand
+      )}<BR><BR>Wa so suay. Computer wins.`;
+    } else if (sumComputerHand < sumPlayerHand && sumPlayerHand <= 21) {
+      myOutputValue = `GameMode 3<BR><BR>Player's Cards: ${displayListOfCards(
+        playerHand
+      )}<BR>Computer's Cards: ${displayListOfCards(
+        computerHand
+      )}<BR><BR>You win.`;
+    } else if (sumComputerHand == sumPlayerHand) {
+      myOutputValue = `GameMode 3<BR><BR>Player's Cards: ${displayListOfCards(
+        playerHand
+      )}<BR>Computer's Cards: ${displayListOfCards(
+        computerHand
+      )}<BR><BR>You tied.`;
+    } else if (sumComputerHand > 21) {
+      myOutputValue = `GameMode 3<BR><BR>Player's Cards: ${displayListOfCards(
+        playerHand
+      )}<BR>Computer's Cards: ${displayListOfCards(
+        computerHand
+      )}<BR><BR>Haha yall both more than 21. Both lose leh.`;
+    } else {
+      myOutputValue = `GameMode 3<BR><BR>Player's Cards: ${displayListOfCards(
+        playerHand
+      )}<BR>Computer's Cards: ${displayListOfCards(
+        computerHand
+      )}<BR><BR>Wa so suay. Computer wins.`;
+    }
+    return myOutputValue;
   }
 
   return myOutputValue;
