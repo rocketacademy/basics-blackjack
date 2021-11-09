@@ -11,25 +11,25 @@ var dealer = {
 };
 var shuffledDeck = [];
 var round = 1;
-​
+
 var confirmWinPlayer = {
   name: "confirmWinPlayer",
   card: [],
   score: 21,
 };
-​
+
 var main = function (input) {
   var deck = makeDeck();
   shuffledDeck = shuffleCards(deck);
   var myOutputValue = "";
-​
+
   if (round == 1) {
     // 1st round
     playerMakeTurn();
     dealerMakeTurn();
     round = round + 1;
   }
-​
+
   if (round == 2) {
     // 2nd round
     playerMakeTurn();
@@ -42,14 +42,14 @@ var main = function (input) {
       return myOutputValue;
     }
   }
-​
+
   myOutputValue = printUserCards(player);
-​
+
   // process the input = either hit or stand
   if (input == "hit") {
     playerMakeTurn();
     var playerWins = checkBlackjack(player);
-​
+
     if (playerWins) {
       myOutputValue = printUserCards(player);
       myOutputValue += "You win.";
@@ -76,11 +76,11 @@ var main = function (input) {
     myOutputValue += comparisonResult;
     return myOutputValue;
   }
-​
+
   round = round + 1;
   return myOutputValue;
 };
-​
+
 // The user's cards are analysed for winning or losing conditions.
 // Come into this function everytime user selects "hit"
 // Also come into this function at first two rounds of giving cards
@@ -91,19 +91,19 @@ var checkBlackjack = function (user) {
     return false;
   }
 };
-​
+
 // output user cards
 var printUserCards = function (user) {
   myOutputValue = `${user.name} cards are: `;
-​
+
   for (var i = 0; i < user.card.length; i++) {
     var myCard = user.card[i];
     myOutputValue += myCard.name + " " + myCard.suit + " ";
   }
-​
+
   return myOutputValue;
 };
-​
+
 // Come into this function everytime user selects "hit"
 var checkUserScoreAbove21 = function (user) {
   if (user.score > 21) {
@@ -112,7 +112,7 @@ var checkUserScoreAbove21 = function (user) {
     return false;
   }
 };
-​
+
 // Come into this function only after user selects "stand"
 var compareUsers = function () {
   if (player.score > dealer.score) {
@@ -123,42 +123,42 @@ var compareUsers = function () {
     return "You lose.";
   }
 };
-​
+
 var playerMakeTurn = function () {
   var dealtCard = dealCard(shuffledDeck);
   player.card.push(dealtCard);
   player.score += dealtCard.score;
 };
-​
+
 var checkWhetherDealerHitsOrStands = function () {
   if (dealer.score < 17) {
     dealerMakeTurn();
   }
 };
-​
+
 var dealerMakeTurn = function () {
   // since dealerMakeTurn is after playerMakeTurn, the shuffledDeck here is 1 less card
   var dealtCard = dealCard(shuffledDeck);
   dealer.card.push(dealtCard);
   dealer.score += dealtCard.score;
 };
-​
+
 var dealCard = function (deck) {
   return deck.pop();
 };
-​
+
 var makeDeck = function () {
   // Initialise an empty deck array
   var cardDeck = [];
   // Initialise an array of the 4 suits in our deck. We will loop over this array.
   var suits = ["hearts", "diamonds", "clubs", "spades"];
-​
+
   // Loop over the suits array
   var suitIndex = 0;
   while (suitIndex < suits.length) {
     // Store the current suit in a variable
     var currentSuit = suits[suitIndex];
-​
+
     // Loop from 1 to 13 to create all cards for a given suit
     // Notice rankCounter starts at 1 and not 0, and ends at 13 and not 12.
     // This is an example of a loop without an array.
@@ -183,7 +183,7 @@ var makeDeck = function () {
       } else {
         score = cardName;
       }
-​
+
       // Create a new card with the current name, suit, and rank
       var card = {
         name: cardName,
@@ -191,27 +191,27 @@ var makeDeck = function () {
         rank: rankCounter,
         score: score,
       };
-​
+
       // Add the new card to the deck
       cardDeck.push(card);
-​
+
       // Increment rankCounter to iterate over the next rank
       rankCounter += 1;
     }
-​
+
     // Increment the suit index to iterate over the next suit
     suitIndex += 1;
   }
-​
+
   // Return the completed card deck
   return cardDeck;
 };
-​
+
 // Get a random index ranging from 0 (inclusive) to max (exclusive).
 var getRandomIndex = function (max) {
   return Math.floor(Math.random() * max);
 };
-​
+
 // Shuffle the elements in the cardDeck array
 var shuffleCards = function (cardDeck) {
   // Loop over the card deck array once
