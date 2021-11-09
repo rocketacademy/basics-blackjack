@@ -134,25 +134,56 @@ var drawCardComputer = function () {
 };
 
 // Function that displays the player and dealers hand in a message
-var displayPlayerAndDealerHands = function (playerHandArray, dealerHandArray) {
+var displayPlayerAndDealerHands = function (
+  playerHandArray,
+  dealerHandArray,
+  number
+) {
   var playerMessage = "Player hand:<br>";
   var index = 0;
-  while (index < playerHandArray.length) {
-    playerMessage =
-      playerMessage +
-      "- " +
-      playerHandArray[index].name +
-      " of " +
-      playerHandArray[index].suit +
-      playerHandArray[index].emoji +
-      "<br>";
+  if (number == 1) {
+    while (index < playerHandArray.length) {
+      playerMessage =
+        playerMessage +
+        "- " +
+        playerHandArray[index].name +
+        " of " +
+        playerHandArray[index].suit +
+        playerHandArray[index].emoji +
+        "<br>";
 
-    index = index + 1;
-  }
+      index = index + 1;
+    }
 
-  index = 0;
-  var dealerMessage = "Dealer hand:<br>";
-  while (index < dealerHandArray.length) {
+    index = 0;
+    var dealerMessage = "Dealer hand:<br>";
+    while (index < dealerHandArray.length) {
+      dealerMessage =
+        dealerMessage +
+        "- " +
+        dealerHandArray[index].name +
+        " of " +
+        dealerHandArray[index].suit +
+        dealerHandArray[index].emoji +
+        "<br>";
+      index = index + 1;
+    }
+  } else if (number == 2) {
+    while (index < playerHandArray.length) {
+      playerMessage =
+        playerMessage +
+        "- " +
+        playerHandArray[index].name +
+        " of " +
+        playerHandArray[index].suit +
+        playerHandArray[index].emoji +
+        "<br>";
+
+      index = index + 1;
+    }
+
+    index = 0;
+    var dealerMessage = "One of Dealer hand is:<br>";
     dealerMessage =
       dealerMessage +
       "- " +
@@ -161,7 +192,6 @@ var displayPlayerAndDealerHands = function (playerHandArray, dealerHandArray) {
       dealerHandArray[index].suit +
       dealerHandArray[index].emoji +
       "<br>";
-    index = index + 1;
   }
 
   return playerMessage + "<br>" + dealerMessage;
@@ -304,20 +334,20 @@ var main = function (input) {
       // Condition where both have black jack
       if (playerHasBlackJack == true && dealerHasBlackJack == true) {
         outputMessage =
-          displayPlayerAndDealerHands(playerHand, computerHand) +
+          displayPlayerAndDealerHands(playerHand, computerHand, 2) +
           "<br>Its a Black Jack Tie!";
       }
       // Condition when only player has black jack
       else if (playerHasBlackJack == true && dealerHasBlackJack == false) {
         outputMessage =
-          displayPlayerAndDealerHands(playerHand, computerHand) +
+          displayPlayerAndDealerHands(playerHand, computerHand, 2) +
           "<br>Player wins by Black Jack!" +
           playerBJ;
       }
       // Condition when only dealer has black jack
       else {
         outputMessage =
-          displayPlayerAndDealerHands(playerHand, computerHand) +
+          displayPlayerAndDealerHands(playerHand, computerHand, 1) +
           "<br>Dealer wins by Black Jack!" +
           dealerBlackjack;
       }
@@ -328,7 +358,7 @@ var main = function (input) {
       console.log(rankComputer(computerHand));
       console.log(rankPlayer(playerHand));
       outputMessage =
-        displayPlayerAndDealerHands(playerHand, computerHand) +
+        displayPlayerAndDealerHands(playerHand, computerHand, 2) +
         '<br> There are no Black Jacks. <br>Please input "hit" or "stand".';
 
       // update gameMode
@@ -356,7 +386,7 @@ var main = function (input) {
           outputMessage = "You have busted! Hit refresh to restart the game";
         } else
           outputMessage =
-            displayPlayerAndDealerHands(playerHand, computerHand) +
+            displayPlayerAndDealerHands(playerHand, computerHand, 2) +
             '<br>Please input "hit" or "stand".';
       }
     }
@@ -376,7 +406,7 @@ var main = function (input) {
         (playerTotalHandRank > 21 && dealerTotalHandRank > 21)
       ) {
         outputMessage =
-          displayPlayerAndDealerHands(playerHand, computerHand) +
+          displayPlayerAndDealerHands(playerHand, computerHand, 1) +
           "<br>Its a Tie!" +
           displayHandTotalValues(playerTotalHandRank, dealerTotalHandRank) +
           tieImage;
@@ -388,7 +418,7 @@ var main = function (input) {
         (playerTotalHandRank <= 21 && dealerTotalHandRank > 21)
       ) {
         outputMessage =
-          displayPlayerAndDealerHands(playerHand, computerHand) +
+          displayPlayerAndDealerHands(playerHand, computerHand, 1) +
           "<br>Player wins!" +
           displayHandTotalValues(playerTotalHandRank, dealerTotalHandRank) +
           winImage;
@@ -396,7 +426,7 @@ var main = function (input) {
       // Dealer wins when above two conditions are not met
       else {
         outputMessage =
-          displayPlayerAndDealerHands(playerHand, computerHand) +
+          displayPlayerAndDealerHands(playerHand, computerHand, 1) +
           "<br>Dealer wins!" +
           displayHandTotalValues(playerTotalHandRank, dealerTotalHandRank) +
           loseImage;
@@ -404,7 +434,7 @@ var main = function (input) {
     } else {
       outputMessage =
         "Please input either hit or stand.<br><br>" +
-        displayPlayerAndDealerHands(playerHand, computerHand);
+        displayPlayerAndDealerHands(playerHand, computerHand, 2);
     }
   }
   return outputMessage;
