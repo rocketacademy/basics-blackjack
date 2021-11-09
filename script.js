@@ -154,9 +154,18 @@ var initiatePlayersArray = function (input) {
 // Players take turns to place bets
 var placeBet = function (input) {
   tabulateChips();
+
+  if (input == NaN || input > players[currPlayer].purse) {
+    return `Invalid option. Player ${
+      currPlayer + 1
+    }, please enter a chip amount between 1 and ${players[currPlayer].purse}.`;
+  }
+
   while (currPlayer < numOfPlayers) {
     players[currPlayer].bet = input;
-    gameOutput = `Player ${currPlayer + 1} has wagered ${input} chips.<br>`;
+    gameOutput = `Player ${currPlayer + 1} has wagered ${
+      players[currPlayer].bet
+    } chips.<br>`;
 
     currPlayer += 1;
 
@@ -178,13 +187,13 @@ var dealCards = function (input) {
   // Reset global variables
   resetHand();
   // 2 cards are dealt to each player and dealer
-  for (i = 0; i < numOfPlayers; i += 1) {
-    players[i].hand.push(shuffledDeck.pop());
-    players[i].hand.push(shuffledDeck.pop());
+  for (i = 0; i < 2; i += 1) {
+    for (j = 0; j < numOfPlayers; j += 1) {
+      players[j].hand.push(shuffledDeck.pop());
+    }
+    dealerHand.push(shuffledDeck.pop());
   }
 
-  dealerHand.push(shuffledDeck.pop());
-  dealerHand.push(shuffledDeck.pop());
   // Players' and dealer's cards are added together to have value and output
   while (currPlayer < numOfPlayers) {
     for (i = 0; i < players[currPlayer].hand.length; i += 1) {
@@ -258,8 +267,8 @@ var dealCards = function (input) {
   // Player is made known his hand and one of computer's cards
   var gameOutput = `The dealer has: ${dealerHandOutput}<br>`;
 
-  for (indexA = 0; indexA < numOfPlayers; indexA += 1) {
-    gameOutput += `Player ${indexA + 1} has: ${players[indexA].output}<br>`;
+  for (i = 0; i < numOfPlayers; i += 1) {
+    gameOutput += `Player ${i + 1} has: ${players[i].output}<br>`;
   }
 
   var blackJackReply = "";
@@ -276,8 +285,8 @@ var dealCards = function (input) {
         addReply3 += `Players ${playersGotBlackjack[0]} and ${playersGotBlackjack[1]} also have blackjack!<br>`;
       } else if (playersGotBlackjack.length > 2) {
         addReply3 += `Players ${playersGotBlackjack[0]}`;
-        for (indexL = 1; indexL < playersGotBlackjack.length - 1; indexL += 1) {
-          addReply3 += `, ${playersGotBlackjack[indexL]}`;
+        for (i = 1; i < playersGotBlackjack.length - 1; i += 1) {
+          addReply3 += `, ${playersGotBlackjack[i]}`;
         }
         addReply3 += `and ${
           playersGotBlackjack[playersGotBlackjack.length - 1]
@@ -303,8 +312,8 @@ var dealCards = function (input) {
         addReply3 += `Players ${playersGotBlackjack[0]} and ${playersGotBlackjack[1]} have blackjack!<br>`;
       } else if (playersGotBlackjack.length > 2) {
         addReply3 += `Players ${playersGotBlackjack[0]}`;
-        for (indexL = 1; indexL < playersGotBlackjack.length - 1; indexL += 1) {
-          addReply3 += `, ${playersGotBlackjack[indexL]}`;
+        for (j = 1; j < playersGotBlackjack.length - 1; j += 1) {
+          addReply3 += `, ${playersGotBlackjack[j]}`;
         }
         addReply3 += ` and ${
           playersGotBlackjack[playersGotBlackjack.length - 1]
@@ -434,29 +443,39 @@ var hitOrStand = function (userInput) {
     }
 
     if (userInput == "stand") {
-      gameOutput = `The dealer has: ${dealerHandOutput}<br>`;
-      for (i = 0; i < numOfPlayers; i += 1) {
-        gameOutput += `Player ${i + 1} has: ${players[i].output}<br>`;
-      }
-      addReply2 = `<br>Player ${currPlayer + 1}, you chose to stand.<br><br>`;
+      if (players[currPlayer].value < 16) {
+        gameOutput = `The dealer has: ${dealerHandOutput}<br>`;
+        for (i = 0; i < numOfPlayers; i += 1) {
+          gameOutput += `Player ${i + 1} has: ${players[i].output}<br>`;
+        }
 
-      // Loop to select next player whose hand is still alive to 'hit' or 'stand'
-      for (i = currPlayer; i < numOfPlayers; i += 1) {
-        currPlayer += 1;
+        addReply2 = `<br>Sorry Player ${
+          currPlayer + 1
+        }. Your hand has less than 16 points. You have to hit.`;
+      } else {
+        gameOutput = `The dealer has: ${dealerHandOutput}<br>`;
+        for (i = 0; i < numOfPlayers; i += 1) {
+          gameOutput += `Player ${i + 1} has: ${players[i].output}<br>`;
+        }
+        addReply2 = `<br>Player ${currPlayer + 1}, you chose to stand.<br><br>`;
 
-        if (currPlayer == numOfPlayers) {
-          gameMode = "dealerDraws";
-          addReply2 +=
-            "All players had their turns. It's the dealer's turn to draw.<br>Click Submit to continue.";
-        } else if (players[currPlayer].outcome == PLAYING) {
-          addReply2 += `Player ${
-            currPlayer + 1
-          }, it's your turn. Type 'hit' or 'stand' and then click submit.`;
-          tabulateChips();
-          return gameOutput + addReply2;
+        // Loop to select next player whose hand is still alive to 'hit' or 'stand'
+        for (i = currPlayer; i < numOfPlayers; i += 1) {
+          currPlayer += 1;
+
+          if (currPlayer == numOfPlayers) {
+            gameMode = "dealerDraws";
+            addReply2 +=
+              "All players had their turns. It's the dealer's turn to draw.<br>Click Submit to continue.";
+          } else if (players[currPlayer].outcome == PLAYING) {
+            addReply2 += `Player ${
+              currPlayer + 1
+            }, it's your turn. Type 'hit' or 'stand' and then click submit.`;
+            tabulateChips();
+            return gameOutput + addReply2;
+          }
         }
       }
-
       tabulateChips();
       return gameOutput + addReply2;
     }
