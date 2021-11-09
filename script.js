@@ -8,7 +8,7 @@
 
 // Deck is shuffled.
 // User clicks Submit to deal cards.
-// The cards are analysed for game winning conditions, e.g. Blac"Jaack.
+// The cards are analysed for game winning conditions, e.g. BlackJack.
 // The cards are displayed to the user.
 // The user decides whether to hit or stand, using the submit button to submit their choice.
 // The user's cards are analysed for winning or losing conditions.
@@ -19,25 +19,25 @@ var deck = [];
 var playerCardsArray = [];
 // var playerCardsArray = [
 //   {
-//     name: "Ace",
+//     name: "King",
 //     suit: "hearts",
-//     rank: 1,
+//     rank: 10,
 //   },
 //   {
 //     name: "Queen",
 //     suit: "hearts",
 //     rank: 10,
 //   },
-//   {
-//     name: "2",
-//     suit: "hearts",
-//     rank: 2,
-//   },
-//   {
-//     name: "2",
-//     suit: "diamond",
-//     rank: 2,
-//   },
+//   // {
+//   //   name: "2",
+//   //   suit: "hearts",
+//   //   rank: 2,
+//   // },
+//   // {
+//   //   name: "2",
+//   //   suit: "diamond",
+//   //   rank: 2,
+//   // },
 // ];
 var computerCardsArray = [];
 var playerFinalScore = 0;
@@ -65,7 +65,7 @@ var deckFunction = function () {
       if (currentCardRank == 1) {
         currentCardRank = "Ace";
       } else if (currentCardRank == 11) {
-        currentCardRank = "Jaack";
+        currentCardRank = "Jack";
       } else if (currentCardRank == 12) {
         currentCardRank = "Queen";
       } else if (currentCardRank == 13) {
@@ -160,6 +160,42 @@ var resetGame = function () {
   computerHasBust = "no";
 };
 
+// function hide() {
+//   var div = document.getElementyById("start-button");
+//   div.style.display = "none";
+// }
+
+// get a cross-browser function for adding events, place this in [global] or somewhere you can access it
+// var on = (function () {
+//   if (window.addEventListener) {
+//     return function (target, type, listener) {
+//       target.addEventListener(type, listener, false);
+//     };
+//   } else {
+//     return function (object, sEvent, fpNotify) {
+//       object.attachEvent("on" + sEvent, fpNotify);
+//     };
+//   }
+// })();
+
+// // find the element
+// var el = document.getElementById("start-button");
+
+// // add the first listener
+// // on(el, "click", function () {
+// //   alert("foo");
+// // });
+
+// // add the second listener
+// on(el, "click",  getCards(playerCardsArray, 2)) {
+//   return (playerCardsArray);
+// }
+
+var startGame = function () {
+  getCards(playerCardsArray, 2);
+  return playerCardsArray;
+};
+
 var main = function (input) {
   // deckFunction();
   // getRandomNumber(deck.length);
@@ -187,7 +223,7 @@ var main = function (input) {
        ${createFirstMessage(playerCardsArray)}Your current score is
        ${playerFinalScore}.<br> Computer drew: <br> ${createFirstMessage(
         computerCardsArray
-      )} <br> You have drawn below 16. <br> Please enter hit to draw more cards.`;
+      )} You have drawn below 16. <br> Please enter hit to draw more cards.`;
       playerGameMode = "player has drawn";
     }
     console.log(playerGameMode);
@@ -218,7 +254,7 @@ var main = function (input) {
         playerCardsArray
       )} Your current score is ${playerFinalScore}. Computer drew: <br> ${createFirstMessage(
         computerCardsArray
-      )} <br> Type hit if you want to draw one more card or stand to end your turn.`;
+      )} Type hit if you want to draw one more card or stand to end your turn.`;
     }
     if (input == "stand") {
       //If stand, show him that he has chosen stand and his final score
@@ -269,11 +305,11 @@ var main = function (input) {
     playerGameMode = "start game";
     if (blackjack(playerCardsArray, playerFinalScore)) {
       resetGame();
-      return `Player has won blac"Jaack. ${finalMessage}`;
+      return `Player has won blackJack. ${finalMessage}`;
     }
     if (blackjack(computerCardsArray, computerFinalScore)) {
       resetGame();
-      return `Computer has won blac"Jaack. ${finalMessage}`;
+      return `Computer has won blackJack. ${finalMessage}`;
     }
     // Compare both hands and determine a winner.
     if (playerHasBust == "yes" && computerHasBust == "yes") {
