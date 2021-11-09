@@ -13,8 +13,6 @@
 /* ================ GLOBAL VARIABLES ================ */
 /* ================================================== */
 
-var playerHand = [];
-var computerHand = [];
 var currentGameMode = "start game";
 var cardsDrawn = "cards drawn";
 var gameHitOrStand = "Hit/stand";
@@ -22,7 +20,7 @@ var winImage = `<img src="https://c.tenor.com/Z_IV0-4w2vEAAAAC/yes-winning.gif"/
 var loseImage = `<img src="https://media.giphy.com/media/d2lcHJTG5Tscg/giphy.gif"/>`;
 var tieImage = `<img src="https://media.giphy.com/media/3orifeagG1UwX4DeO4/giphy.gif"/>`;
 var dealerBlackjack = `<img src="https://media.giphy.com/media/l2SpMVOjXhleZzggE/giphy.gif"/>`;
-var playerBJ = `<img src = "https://media.giphy.com/media/l1IXY77djUsHH6S8o/giphy.gif">`;
+var playerWinBlackJack = `<img src = "https://media.giphy.com/media/l1IXY77djUsHH6S8o/giphy.gif">`;
 
 /* ================================================== */
 /* =========== DECK CREATION FUNCTIONS ============== */
@@ -301,13 +299,15 @@ var displayHandTotalValues = function (playerHandValue, dealerHandValue) {
 /* ================================================= */
 /* ================= MAIN FUNCTION ================ */
 /* ================================================ */
-
+var playerHand = [];
+var computerHand = [];
 var main = function (input) {
   var outputMessage = "";
 
   // FIRST MODE
   if (currentGameMode == "start game") {
     // deal 2 cards to player and dealer
+
     playerHand.push(drawCardPlayer());
     computerHand.push(drawCardComputer());
     playerHand.push(drawCardPlayer());
@@ -336,13 +336,15 @@ var main = function (input) {
         outputMessage =
           displayPlayerAndDealerHands(playerHand, computerHand, 2) +
           "<br>Its a Black Jack Tie!";
+        currentGameMode == "start game";
       }
       // Condition when only player has black jack
       else if (playerHasBlackJack == true && dealerHasBlackJack == false) {
         outputMessage =
           displayPlayerAndDealerHands(playerHand, computerHand, 2) +
           "<br>Player wins by Black Jack!" +
-          playerBJ;
+          playerWinBlackJack;
+        currentGameMode == "start game";
       }
       // Condition when only dealer has black jack
       else {
@@ -350,6 +352,7 @@ var main = function (input) {
           displayPlayerAndDealerHands(playerHand, computerHand, 1) +
           "<br>Dealer wins by Black Jack!" +
           dealerBlackjack;
+        currentGameMode == "start game";
       }
     }
     // Condition where neither player nor dealer has black jack
@@ -377,6 +380,7 @@ var main = function (input) {
       //check to see if the total is more than 21
       if (playerTotalHandRank > 21) {
         outputMessage = "You have busted! Hit refresh to restart the game";
+        currentGameMode == "start game";
       } else {
         playerHand.push(drawCardPlayer());
         console.log(drawCardPlayer());
@@ -384,10 +388,13 @@ var main = function (input) {
         //check to see if total is more than 21
         if (playerTotalHandRank > 21) {
           outputMessage = "You have busted! Hit refresh to restart the game";
-        } else
+          currentGameMode == "start game";
+        } else {
           outputMessage =
             displayPlayerAndDealerHands(playerHand, computerHand, 2) +
             '<br>Please input "hit" or "stand".';
+          currentGameMode == "start game";
+        }
       }
     }
     //Player stand
