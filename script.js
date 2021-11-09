@@ -1,3 +1,7 @@
+var DEAL_FIRST_CARDS = "firstdeal";
+var PLAYER_HIT_OR_STAND = "playerhitorstand";
+var DEALER_TURN = "dealerturn";
+
 var cardDeck;
 var playerHand = [];
 var playerScore = 0;
@@ -5,7 +9,7 @@ var dealerHand = [];
 var playerWallet = 100;
 var playerBet = 0;
 var REPLAY_MSG_SHOW_WALLET = `<br>Place another bet and click Submit to play another round<br><br>You now have $`;
-var gameMode = "firstdeal"; // 'playerhitorstand' // 'dealerturn'
+var gameMode = DEAL_FIRST_CARDS; // 'playerhitorstand' // 'dealerturn'
 
 //create an ordered deck of 52 cards
 var makeDeck = function () {
@@ -160,141 +164,159 @@ var firstDealCards = function () {
 
   //end the game if dealer gets blackjack or if both dealer and player blackjack
   if (playerScore == 21 && dealerScore == 21) {
-    gameMode = "firstdeal";
+    gameMode = DEAL_FIRST_CARDS;
     playerWallet += playerBet;
     return `${displayDealerHands}${displayPlayerHands}<br>Holy Moly, both of you got blackjack!${REPLAY_MSG}`;
   }
   if (dealerScore == 21) {
-    gameMode = "firstdeal";
+    gameMode = DEAL_FIRST_CARDS;
     return `${displayDealerHands}${displayPlayerHands}<br>The dealer won by black jack!${REPLAY_MSG}`;
   }
   //end the game if player got black jack
   if (playerScore == 21) {
-    gameMode = "firstdeal";
+    gameMode = DEAL_FIRST_CARDS;
     playerWallet += playerBet * 2.5;
     return `${displayDealerHandsOneFaceDown}${displayPlayerHands}<br>You won by black jack!${REPLAY_MSG}`;
   }
 
-  gameMode = "playerhitorstand";
+  gameMode = PLAYER_HIT_OR_STAND;
   return `${displayDealerHandsOneFaceDown}${displayPlayerHands}<br>Your current score is ${playerScore}<br>Do you want to hit (Type h) or stand (Type s)?`;
 };
 
-var main = function (input) {
+var storeBetAndDealFirstHands = function (input) {
   //validation for betting amount
-  if (gameMode == "firstdeal") {
-    if (playerWallet < 1) {
-      return "Oops you are out of cash. Click refresh to print $100";
-    }
-    if (Number.isNaN(Number(input)) || !input || input < 1) {
-      return `Please input your bet of at least $1, you have $${playerWallet}`;
-    }
-    if (input > playerWallet) {
-      return `Oops, not enough moolah, you have $${playerWallet}`;
-    }
-    //store the bet amount and decrease wallet by that
-    playerBet = Number(input);
-    playerWallet -= playerBet;
-    //initialise game round with empty hands and zero score
-    playerHand = [];
-    playerScore = 0;
-    dealerHand = [];
-    //create a shuffled deck of 52 cards
-    cardDeck = shuffleCards(makeDeck());
-    //firstDealCards adds 2 cards to all players' hand and returns the result of the first deal and any possible blackjack scenarios
-    var myOutputValue = `Your bet is $${playerBet}<br><br>` + firstDealCards();
-    myOutputValue += `<br><br>You now have $${playerWallet}`;
-    return myOutputValue;
+  if (playerWallet < 1) {
+    return "Oops you are out of cash. Click refresh to print $100";
+  }
+  if (Number.isNaN(Number(input)) || !input || input < 1) {
+    return `Please input your bet of at least $1, you have $${playerWallet}`;
+  }
+  if (input > playerWallet) {
+    return `Oops, not enough moolah, you have $${playerWallet}`;
   }
 
-  if (gameMode == "playerhitorstand") {
-    //input validation for the player's hit or stand decision
-    if (!(input == "h" || input == "s")) {
-      return `Your current hand is<br>${displayHand(
-        playerHand
-      )}Please type h to hit or s to stand`;
-    }
-    if (input == "h") {
-      var newPlayerCard = cardDeck.pop();
-      //deal a new card into player hand
-      playerHand.push(newPlayerCard);
-      var displayPlayerHands = `You currently have these cards:<br>
+  //store the bet amount and decrease wallet by that
+  playerBet = Number(input);
+  playerWallet -= playerBet;
+  //initialise game round with empty hands and zero score
+  playerHand = [];
+  playerScore = 0;
+  dealerHand = [];
+  //create a shuffled deck of 52 cards
+  cardDeck = shuffleCards(makeDeck());
+  //firstDealCards adds 2 cards to all players' hand and returns the result of the first deal and any possible blackjack scenarios
+  var myOutputValue = `Your bet is $${playerBet}<br><br>` + firstDealCards();
+  myOutputValue += `<br><br>You now have $${playerWallet}`;
+  return myOutputValue;
+};
+
+var executePlayerDecision = function (input) {
+  //input validation for the player's hit or stand decision
+  if (!(input == "h" || input == "s")) {
+    return `Your current hand is<br>${displayHand(
+      playerHand
+    )}Please type h to hit or s to stand`;
+  }
+  if (input == "h") {
+    var newPlayerCard = cardDeck.pop();
+    //deal a new card into player hand
+    playerHand.push(newPlayerCard);
+    var displayPlayerHands = `You currently have these cards:<br>
       ${displayHand(playerHand)}`;
-      playerScore = findScoreOfHand(playerHand);
-      //scenario where player got bust
-      if (playerScore > 21) {
-        gameMode = "dealerturn";
-        return (
-          displayPlayerHands +
-          `<br>Your current score is ${playerScore}<br>I am sorry, you bust, click Submit to pass the turn to the dealer`
-        );
-      }
-      //if not bust, ask player if he wants to proceed with hit or stand
+    playerScore = findScoreOfHand(playerHand);
+    //scenario where player got bust
+    if (playerScore > 21) {
+      gameMode = DEALER_TURN;
       return (
         displayPlayerHands +
-        `<br>Your current score is ${playerScore}<br>Do you want to hit (Type h) or stand (Type s)?`
+        `<br>Your current score is ${playerScore}<br>I am sorry, you bust, click Submit to pass the turn to the dealer`
       );
     }
-    if (input == "s") {
-      //show the player score and pass the turn to dealer
-      gameMode = "dealerturn";
-      return `You decided to stand. Your current score is ${playerScore}, click Submit to pass the turn to the dealer`;
-    }
+    //if not bust, ask player if he wants to proceed with hit or stand
+    return (
+      displayPlayerHands +
+      `<br>Your current score is ${playerScore}<br>Do you want to hit (Type h) or stand (Type s)?`
+    );
   }
+  if (input == "s") {
+    //show the player score and pass the turn to dealer
+    gameMode = DEALER_TURN;
+    return `You decided to stand. Your current score is ${playerScore}, click Submit to pass the turn to the dealer`;
+  }
+};
 
-  if (gameMode == "dealerturn") {
-    var dealerScore = findScoreOfHand(dealerHand);
-    // dealer will keep drawing new card if it scores less than 17
-    while (dealerScore < 17) {
-      var newDealerCard = cardDeck.pop();
-      dealerHand.push(newDealerCard);
-      dealerScore = findScoreOfHand(dealerHand);
-    }
-    var displayDealerHands = `The dealer has these cards:<br>
+var executeDealerTurn = function () {
+  var dealerScore = findScoreOfHand(dealerHand);
+  // dealer will keep drawing new card if it scores less than 17
+  while (dealerScore < 17) {
+    var newDealerCard = cardDeck.pop();
+    dealerHand.push(newDealerCard);
+    dealerScore = findScoreOfHand(dealerHand);
+  }
+  return dealerScore;
+};
+
+var outputResultsAndPayout = function (dealerScore) {
+  var displayDealerHands = `The dealer has these cards:<br>
     ${displayHand(dealerHand)}`;
 
-    if (dealerScore > 21) {
-      //end the game if dealer busts by returning to initial game mode
-      gameMode = "firstdeal";
-      //tie scenario where dealer bust with player
-      if (playerScore > 21) {
-        playerWallet += playerBet;
-        return (
-          displayDealerHands +
-          `<br>The dealer bust together with you with score of ${dealerScore}${REPLAY_MSG_SHOW_WALLET}${playerWallet}`
-        );
-      }
-      //scenario where only dealer bust and player wins the bet
-      playerWallet += playerBet * 2;
-      return (
-        displayDealerHands +
-        `<br>You won as the dealer bust with score of ${dealerScore}${REPLAY_MSG_SHOW_WALLET}${playerWallet}`
-      );
-    }
-
-    //scenario where only player bust
+  if (dealerScore > 21) {
+    //end the game if dealer busts by returning to initial game mode
+    gameMode = DEAL_FIRST_CARDS;
+    //tie scenario where dealer bust with player
     if (playerScore > 21) {
-      gameMode = "firstdeal";
+      playerWallet += playerBet;
       return (
         displayDealerHands +
-        `<br>The dealer won as you got bust just now!${REPLAY_MSG_SHOW_WALLET}${playerWallet}`
+        `<br>The dealer bust together with you with score of ${dealerScore}${REPLAY_MSG_SHOW_WALLET}${playerWallet}`
       );
     }
-    //store both players' scores
-    displayDealerHands += `<br>You scored ${playerScore}. The dealer scored ${dealerScore}<br>`;
-    //various non-bust scenarios
-    if (dealerScore > playerScore) {
-      displayDealerHands += "The dealer won!";
-    }
-    if (dealerScore == playerScore) {
-      playerWallet += playerBet;
-      displayDealerHands += "You tied with the dealer";
-    }
-    if (dealerScore < playerScore) {
-      playerWallet += playerBet * 2;
-      displayDealerHands += "You won!!";
-    }
-    //end the game by returning to initial game mode
-    gameMode = "firstdeal";
-    return `${displayDealerHands}${REPLAY_MSG_SHOW_WALLET}${playerWallet}`;
+    //scenario where only dealer bust and player wins the bet
+    playerWallet += playerBet * 2;
+    return (
+      displayDealerHands +
+      `<br>You won as the dealer bust with score of ${dealerScore}${REPLAY_MSG_SHOW_WALLET}${playerWallet}`
+    );
+  }
+
+  //scenario where only player bust
+  if (playerScore > 21) {
+    gameMode = DEAL_FIRST_CARDS;
+    return (
+      displayDealerHands +
+      `<br>The dealer won as you got bust just now!${REPLAY_MSG_SHOW_WALLET}${playerWallet}`
+    );
+  }
+  //store both players' scores
+  displayDealerHands += `<br>You scored ${playerScore}. The dealer scored ${dealerScore}<br>`;
+  //various non-bust scenarios
+  if (dealerScore > playerScore) {
+    displayDealerHands += "The dealer won!";
+  }
+  if (dealerScore == playerScore) {
+    playerWallet += playerBet;
+    displayDealerHands += "You tied with the dealer";
+  }
+  if (dealerScore < playerScore) {
+    playerWallet += playerBet * 2;
+    displayDealerHands += "You won!!";
+  }
+  //end the game by returning to initial game mode
+  gameMode = DEAL_FIRST_CARDS;
+  return `${displayDealerHands}${REPLAY_MSG_SHOW_WALLET}${playerWallet}`;
+};
+
+var main = function (input) {
+  if (gameMode == DEAL_FIRST_CARDS) {
+    return storeBetAndDealFirstHands(input);
+  }
+
+  if (gameMode == PLAYER_HIT_OR_STAND) {
+    return executePlayerDecision(input);
+  }
+
+  if (gameMode == DEALER_TURN) {
+    var dealerScore = executeDealerTurn();
+    return outputResultsAndPayout(dealerScore);
   }
 };
