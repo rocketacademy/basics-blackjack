@@ -123,7 +123,7 @@ var checkBlackjack = function (hand) {
   return blackjack;
 };
 
-function main(input) {
+var main = function (input) {
   if (state == "awaiting player name") {
     // if input is blank, prompt player 1 to enter a name
     if (input == "") {
@@ -226,4 +226,4 @@ function main(input) {
       }
     }
   }
-}
+};
