@@ -420,6 +420,16 @@ var main = function (input) {
       ". <br> Click Submit to play a new hand";
     resetGame();
   }
+  // player and dealer both explode
+  else if (turnTracker == 3 && playerHandValue > 21 && dealerHandValue > 21) {
+    myOutputValue =
+      "Its a Draw, both players exploded! Player has a hand value of " +
+      playerHandValue +
+      "<br>Dealer has a hand value of " +
+      dealerHandValue +
+      ". <br> Click Submit to play a new hand";
+    resetGame();
+  }
 
   checkInstantWin();
   return myOutputValue;
