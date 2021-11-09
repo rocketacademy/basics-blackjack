@@ -140,6 +140,44 @@ function isEmpty(str) {
   return !str || str.length === 0;
 }
 
+var getNumberOfAces = function (charHand) {
+  var numberOfAces = 0;
+
+  var counter = 0;
+  while (counter < charHand.length) {
+    var cardName = charHand[counter].name;
+
+    if (cardName == "Ace") {
+      numberOfAces += 1;
+    }
+    counter += 1;
+  }
+  return numberOfAces;
+};
+
+var getHandValue = function (charHand) {
+  var numberOfAces = getNumberOfAces(charHand);
+
+  var handSum = 0;
+  var counter = 0;
+  while (counter < charHand.length) {
+    var cardValue = charHand[counter].value;
+    handSum += cardValue;
+    counter += 1;
+  }
+  for (var a = 1; a < numberOfAces; a += 1) {
+    handSum -= 10;
+  }
+  return handSum;
+};
+
+var gotBust = function (charSum) {
+  if (charSum > TWENTY_ONE) {
+    return true;
+  }
+  return false;
+};
+
 /* persuo code for blackjack
 make deck
 shuffle deck
@@ -377,46 +415,7 @@ var main = function (input) {
   return "end of main";
 };
 
-/* TO DO 
-a function that evaluate hand value, taking into account ace logic
-computer game logic
-find winner
+/* TO DO
+include bust logic
+include hand size limit
 */
-
-var getNumberOfAces = function (charHand) {
-  var numberOfAces = 0;
-
-  var counter = 0;
-  while (counter < charHand.length) {
-    var cardName = charHand[counter].name;
-
-    if (cardName == "Ace") {
-      numberOfAces += 1;
-    }
-    counter += 1;
-  }
-  return numberOfAces;
-};
-
-var getHandValue = function (charHand) {
-  var numberOfAces = getNumberOfAces(charHand);
-
-  var handSum = 0;
-  var counter = 0;
-  while (counter < charHand.length) {
-    var cardValue = charHand[counter].value;
-    handSum += cardValue;
-    counter += 1;
-  }
-  for (var a = 1; a < numberOfAces; a += 1) {
-    handSum -= 10;
-  }
-  return handSum;
-};
-
-var gotBust = function (charSum) {
-  if (charSum > TWENTY_ONE) {
-    return true;
-  }
-  return false;
-};
