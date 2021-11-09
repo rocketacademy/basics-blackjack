@@ -12,6 +12,7 @@ var playerHand = [];
 var computerHand = [];
 var gameMode = "draw cards";
 var playerHitOrStandMode = false;
+var twentyOne = 21;
 
 // make deck
 var makeDeck = function () {
@@ -134,6 +135,16 @@ var getHandSum = function (hand) {
   var counter = 0;
   while (counter < hand.length) {
     var currCard = hand[counter];
+
+    // if card is jack, queen and king is 10 by default
+    if (
+      currCard.name == "jack" ||
+      currCard.name == "queen" ||
+      currCard.name == "king"
+    ) {
+      currCard.rank = 10;
+    }
+
     // If card is Ace, value is 11 by default
     if (currCard.rank === 1) {
       numAcesInHand += 1;
@@ -141,7 +152,22 @@ var getHandSum = function (hand) {
     } else {
       sum += currCard.rank;
     }
+
     counter = counter + 1;
+  }
+  // If sum is greater than sum limit and hand contains Aces, convert Aces from value of 11
+  // to value of 1, until sum is less than or equal to sum limit or there are no more Aces.
+  if (sum > twentyOne && numAcesInHand > 0) {
+    var aceCounter = 0;
+    while (aceCounter < numAcesInHand) {
+      sum -= 10;
+      // If the sum is less than TWENTY_ONE before converting all Ace values from
+      // 11 to 1, break out of the loop and return the current sum.
+      if (sum <= twentyOne) {
+        break; // break keyword causes the loop to finish
+      }
+      aceCounter = aceCounter + 1;
+    }
   }
   return sum;
 };
