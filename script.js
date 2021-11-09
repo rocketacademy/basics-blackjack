@@ -35,6 +35,9 @@ var checkSum = function (array) {
   }
   return sum;
 };
+var myWinImage = `<img src="https://en.pimg.jp/057/689/170/1/57689170.jpg"/>`;
+var myImage =
+  '<img src="https://cdn5.vectorstock.com/i/1000x1000/94/09/loser-hand-sign-vector-25169409.jpg"/>';
 
 var main = function (input) {
   var myOutputValue = "";
@@ -51,7 +54,7 @@ var main = function (input) {
 
     gameMode = FIRST_DRAW;
 
-    myOutputValue = `2 cards drawn each, click submit to check results.`;
+    myOutputValue = `你抽了两张卡。请提交查看。`;
     return myOutputValue;
   }
 
@@ -80,7 +83,7 @@ var main = function (input) {
       console.log(playerHand);
       var compSum = checkSum(compHand);
       console.log(compSum);
-      myOutputValue = `You drew<br>${playerHand[0].name} of ${playerHand[0].suit}<br>${playerHand[1].name} of ${playerHand[1].suit}<br>Your total sum is ${playerSum}<br>Computer drew<br>${compHand[0].name} of ${compHand[0].suit}<br>${compHand[1].name} of ${compHand[1].suit}<br>Computer's total sum is ${compSum}<br>Decide on Hit or Stand.`;
+      myOutputValue = `你抽了<br>${playerHand[0].name} of ${playerHand[0].suit}<br>${playerHand[1].name} of ${playerHand[1].suit}<br>总数是 ${playerSum}<br>电脑先生抽了<br>${compHand[0].name} of ${compHand[0].suit}<br>${compHand[1].name} of ${compHand[1].suit}<br>它的总数是 ${compSum}<br>要 Hit 或 Stand？`;
       gameMode = HIT_STAND;
       return myOutputValue;
     }
@@ -95,7 +98,7 @@ var main = function (input) {
       console.log(playerSum);
       //if player breaks 21
       if (Number(playerSum) > 21) {
-        myOutputValue = `You drew<br>${playerHand[0].name} of ${playerHand[0].suit}<br>${playerHand[1].name} of ${playerHand[1].suit}<br>${playerHand[2].name} of ${playerHand[2].suit}<br>Your total sum is ${playerSum}<br>You Lost...`;
+        myOutputValue = `你抽了<br>${playerHand[0].name} of ${playerHand[0].suit}<br>${playerHand[1].name} of ${playerHand[1].suit}<br>${playerHand[2].name} of ${playerHand[2].suit}<br>总数是 ${playerSum}<br>你输了。。。<br>${myImage}`;
         gameMode = GAME_START;
         return myOutputValue;
       } //if player dont break 21
@@ -109,19 +112,19 @@ var main = function (input) {
         }
         //player wins or comp breaks 21
         if (Number(compSum) < Number(playerSum) || Number(compSum) >= 21) {
-          myOutputValue = `You drew<br>${playerHand[0].name} of ${playerHand[0].suit}<br>${playerHand[1].name} of ${playerHand[1].suit}<br>${playerHand[2].name} of ${playerHand[2].suit}<br>Your total sum is ${playerSum}<br>Computer drew<br>${compHand[0].name} of ${compHand[0].suit}<br>${compHand[1].name} of ${compHand[1].suit}<br>${kacangPuteh}Computer's total sum is ${compSum}<br>You win. Click Submit to play again.`;
+          myOutputValue = `你抽了<br>${playerHand[0].name} of ${playerHand[0].suit}<br>${playerHand[1].name} of ${playerHand[1].suit}<br>${playerHand[2].name} of ${playerHand[2].suit}<br>总数是 ${playerSum}<br>电脑先生抽了<br>${compHand[0].name} of ${compHand[0].suit}<br>${compHand[1].name} of ${compHand[1].suit}<br>${kacangPuteh}它的总数是 ${compSum}<br>你赢了！点击“提交”，再来一轮吧！<br>${myWinImage}`;
           gameMode = GAME_START;
           return myOutputValue;
         }
         //player lose
         else if (Number(compSum) > Number(playerSum) && Number(compSum) <= 21) {
-          myOutputValue = `You drew<br>${playerHand[0].name} of ${playerHand[0].suit}<br>${playerHand[1].name} of ${playerHand[1].suit}<br>${playerHand[2].name} of ${playerHand[2].suit}<br>Your total sum is ${playerSum}<br>Computer drew<br>${compHand[0].name} of ${compHand[0].suit}<br>${compHand[1].name} of ${compHand[1].suit}<br>${kacangPuteh}Computer's total sum is ${compSum}<br>You lose. Click Submit to play again.`;
+          myOutputValue = `你抽了<br>${playerHand[0].name} of ${playerHand[0].suit}<br>${playerHand[1].name} of ${playerHand[1].suit}<br>${playerHand[2].name} of ${playerHand[2].suit}<br>总数是 ${playerSum}<br>电脑先生抽了<br>${compHand[0].name} of ${compHand[0].suit}<br>${compHand[1].name} of ${compHand[1].suit}<br>${kacangPuteh}总数是 ${compSum}<br>你输了。点击“提交”，再来一轮吧。<br>${myImage}`;
           gameMode = GAME_START;
           return myOutputValue;
         }
         //else if comp = player
         else {
-          myOutputValue = `You drew<br>${playerHand[0].name} of ${playerHand[0].suit}<br>${playerHand[1].name} of ${playerHand[1].suit}<br>${playerHand[2].name} of ${playerHand[2].suit}<br>Your total sum is ${playerSum}<br>Computer drew<br>${compHand[0].name} of ${compHand[0].suit}<br>${compHand[1].name} of ${compHand[1].suit}<br>${kacangPuteh}Computer's total sum is ${compSum}<br>You tie. Click Submit to play again.`;
+          myOutputValue = `你抽了<br>${playerHand[0].name} of ${playerHand[0].suit}<br>${playerHand[1].name} of ${playerHand[1].suit}<br>${playerHand[2].name} of ${playerHand[2].suit}<br>总数是 ${playerSum}<br>电脑先生抽了<br>${compHand[0].name} of ${compHand[0].suit}<br>${compHand[1].name} of ${compHand[1].suit}<br>${kacangPuteh}它的总数是 ${compSum}<br>平手！点击“提交”，再来一轮吧。`;
           gameMode = GAME_START;
           return myOutputValue;
         }
@@ -139,24 +142,24 @@ var main = function (input) {
       }
       //player wins or comp breaks 21
       if (Number(compSum) < Number(playerSum) || Number(compSum) > 21) {
-        myOutputValue = `You drew<br>${playerHand[0].name} of ${playerHand[0].suit}<br>${playerHand[1].name} of ${playerHand[1].suit}<br>Your total sum is ${playerSum}<br>Computer drew<br>${compHand[0].name} of ${compHand[0].suit}<br>${compHand[1].name} of ${compHand[1].suit}<br>${kacangPuteh}Computer's total sum is ${compSum}<br>You win. Click Submit to play again.`;
+        myOutputValue = `你抽了<br>${playerHand[0].name} of ${playerHand[0].suit}<br>${playerHand[1].name} of ${playerHand[1].suit}<br>你的总数是 ${playerSum}<br>电脑先生抽了<br>${compHand[0].name} of ${compHand[0].suit}<br>${compHand[1].name} of ${compHand[1].suit}<br>${kacangPuteh}它的总数是 ${compSum}<br>你赢了。点击“提交”再来一轮吧<br>${myWinImage}`;
         gameMode = GAME_START;
         return myOutputValue;
       }
       //player lose
       else if (Number(compSum) > Number(playerSum) && Number(compSum) <= 21) {
-        myOutputValue = `You drew<br>${playerHand[0].name} of ${playerHand[0].suit}<br>${playerHand[1].name} of ${playerHand[1].suit}<br>Your total sum is ${playerSum}<br>Computer drew<br>${compHand[0].name} of ${compHand[0].suit}<br>${compHand[1].name} of ${compHand[1].suit}<br>${kacangPuteh}Computer's total sum is ${compSum}<br>You lose. Click Submit to play again.`;
+        myOutputValue = `你抽了<br>${playerHand[0].name} of ${playerHand[0].suit}<br>${playerHand[1].name} of ${playerHand[1].suit}<br>总数是 ${playerSum}<br>电脑先生抽了<br>${compHand[0].name} of ${compHand[0].suit}<br>${compHand[1].name} of ${compHand[1].suit}<br>${kacangPuteh}它的总数是 ${compSum}<br>你输了。点击“提交”再来一轮吧。<br>${myImage}`;
         gameMode = GAME_START;
         return myOutputValue;
       }
       //else if comp = player
       else {
-        myOutputValue = `You drew<br>${playerHand[0].name} of ${playerHand[0].suit}<br>${playerHand[1].name} of ${playerHand[1].suit}<br>Your total sum is ${playerSum}<br>Computer drew<br>${compHand[0].name} of ${compHand[0].suit}<br>${compHand[1].name} of ${compHand[1].suit}<br>${kacangPuteh}Computer's total sum is ${compSum}<br>You tie. Click Submit to play again.`;
+        myOutputValue = `你抽了<br>${playerHand[0].name} of ${playerHand[0].suit}<br>${playerHand[1].name} of ${playerHand[1].suit}<br>总数是 ${playerSum}<br>电脑先生抽了<br>${compHand[0].name} of ${compHand[0].suit}<br>${compHand[1].name} of ${compHand[1].suit}<br>${kacangPuteh}它的总数是${compSum}<br>平手。点击“提交”再来一轮吧。`;
         gameMode = GAME_START;
         return myOutputValue;
       }
     } else {
-      return `Type something correct la.`;
+      return `别乱输入废话。`;
     }
   }
 };
