@@ -138,6 +138,11 @@
         background: rgb(255, 0, 0);
         color: white;
       }
+      @keyframes blink {
+        50% {
+          background: radial-gradient(circle, red 15%, transparent 40%);
+        }
+      }
 
       button {
         width: 100px;
@@ -203,6 +208,9 @@
           background-color: yellow;
         }
       }
+      .hidden {
+        animation: blink 1s infinite;
+      }
     </style>
   </head>
 
@@ -221,15 +229,20 @@
     <h1 class="header">♣️ Basics - Blackjack ♠️</h1>
     <div id="container">
       <p>Input:</p>
-      <input id="input-field" placeholder="G'day, click Submit to begin" />
+      <input
+        id="input-field"
+        class="btn"
+        placeholder="G'day, click Submit to begin"
+      />
       <br />
-      <button id="submit-button">Submit</button>
-      <button id="deal-button">Deal</button>
-      <button id="stay-button">Stay</button>
-      <button id="hit-button">Hit</button>
+      <button id="submit-button" class="btn">Submit</button>
+      <button id="deal-button" class="btn">Deal</button>
+      <button id="stay-button" class="btn">Stay</button>
+      <button id="hit-button" class="btn">Hit</button>
       <span
         ><button
           id="restart-button"
+          class="btn"
           style="background-color: rgba(165, 42, 42, 0.644); color: white"
         >
           Restart
@@ -237,8 +250,8 @@
       >
       <div id="bet-block">
         <label>BETS </label>
-        <button class="bet" id="five">5</button>
-        <button class="bet" id="ten">10</button>
+        <button class="bet btn" id="five">5</button>
+        <button class="bet btn" id="ten">10</button>
         <!-- <p>Output:</p> -->
       </div>
 

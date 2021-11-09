@@ -19,6 +19,7 @@ const hitBtn = document.querySelector("#hit-button");
 const restartBtn = document.querySelector("#restart-button");
 const bet5Btn = document.querySelector("#five");
 const bet10Btn = document.querySelector("#ten");
+const BUTTONS = document.querySelectorAll(".btn");
 
 // bet button for $5
 bet5Btn.addEventListener("click", function () {
@@ -499,6 +500,9 @@ const main = function (input) {
   // start game by clicking "submit"
   // introduction
   if (input === "") {
+    BUTTONS.forEach((BUTTONS) => {
+      BUTTONS.classList.remove("hidden");
+    });
     initGame();
     myOutputValue = `Welcome to...<br><br> sure2Lose## Blackjack Gaming Den ##sure2Lose.<br><br> To begin, please input number of players`;
     multiPlayerMode = true;
@@ -557,6 +561,9 @@ const main = function (input) {
     myOutputValue += "<br>===End game winners and losers===<br>";
     myOutputValue += `${endGameWinLossLoopCheck()}${payOut()}`;
     myOutputValue += `<br>===Restart by clicking Restart or Submit===<br>===To continue with the same players, type "C"===`;
+    BUTTONS.forEach((BUTTONS) => {
+      BUTTONS.classList.add("hidden");
+    });
     endGame = false; // turn off end game mode
     CONTINUE = true; // turn on continue with exist players cash retained mode
     return myOutputValue;
@@ -566,6 +573,9 @@ const main = function (input) {
     if (input === "C") {
       //extracts cash from players[], restarts game and push cash back to "new" players[]
       myOutputValue = noNewPlayersInitGame();
+      BUTTONS.forEach((BUTTONS) => {
+        BUTTONS.classList.remove("hidden");
+      });
     } else {
       myOutputValue = `Please only click "C" in capitals to continue game with current players or click restart for new players`;
     }
