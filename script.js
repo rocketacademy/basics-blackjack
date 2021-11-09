@@ -22,7 +22,7 @@ var winImage = `<img src="https://c.tenor.com/Z_IV0-4w2vEAAAAC/yes-winning.gif"/
 var loseImage = `<img src="https://media.giphy.com/media/d2lcHJTG5Tscg/giphy.gif"/>`;
 var tieImage = `<img src="https://media.giphy.com/media/3orifeagG1UwX4DeO4/giphy.gif"/>`;
 var dealerBlackjack = `<img src="https://media.giphy.com/media/l2SpMVOjXhleZzggE/giphy.gif"/>`;
-var playerBJ = `https://media.giphy.com/media/l1IXY77djUsHH6S8o/giphy.gif`;
+var playerBJ = `<img src = "https://media.giphy.com/media/l1IXY77djUsHH6S8o/giphy.gif">`;
 
 /* ================================================== */
 /* =========== DECK CREATION FUNCTIONS ============== */
@@ -206,7 +206,15 @@ var rankPlayer = function (input) {
     } else if (playerDeckRank.name == "ace") {
       totalPlayerRank += 11;
       aceCounter += 1;
-      if (aceCounter > 1) {
+
+      if (
+        playerDeckRank.name == "jack" ||
+        playerDeckRank.name == "queen" ||
+        playerDeckRank.name == "king"
+      ) {
+        totalPlayerRank = totalPlayerRank - aceCounter * 10;
+        //if there is more than 1 ace, other aces will remain as one
+      } else if (aceCounter > 1) {
         totalPlayerRank = totalPlayerRank - (aceCounter - 1) * 10;
       }
     } else {
@@ -335,17 +343,27 @@ var main = function (input) {
   //Player hit
   if (currentGameMode == gameHitOrStand) {
     if (input == "hit") {
-      playerHand.push(drawCardPlayer());
-      console.log(drawCardPlayer());
-
-      outputMessage =
-        displayPlayerAndDealerHands(playerHand, computerHand) +
-        '<br>Please input "hit" or "stand".';
-
-      //Player stand
-    } else if (input == "stand") {
-      //caculate rank
       var playerTotalHandRank = rankPlayer(playerHand);
+      //check to see if the total is more than 21
+      if (playerTotalHandRank > 21) {
+        outputMessage = "You have busted! Hit refresh to restart the game";
+      } else {
+        playerHand.push(drawCardPlayer());
+        console.log(drawCardPlayer());
+        playerTotalHandRank = rankPlayer(playerHand);
+        //check to see if total is more than 21
+        if (playerTotalHandRank > 21) {
+          outputMessage = "You have busted! Hit refresh to restart the game";
+        } else
+          outputMessage =
+            displayPlayerAndDealerHands(playerHand, computerHand) +
+            '<br>Please input "hit" or "stand".';
+      }
+    }
+    //Player stand
+    else if (input == "stand") {
+      //caculate rank
+      playerTotalHandRank = rankPlayer(playerHand);
       var dealerTotalHandRank = rankComputer(computerHand);
 
       while (dealerTotalHandRank < 17) {
