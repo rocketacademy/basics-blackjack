@@ -141,6 +141,9 @@ var dealStartingHand = function () {
 
 /* persuo code for blackjack - version 2
 create players
+
+ask for bet
+
 make deck
 shuffle deck
 deal card to players and computer
@@ -213,7 +216,7 @@ var main = function (input) {
         Dealing cards...
         <br><br>
         Press Submit to continue.`;
-        console.log("========== exiting ask for bets & change mode ==========");
+        console.log("========== exiting ask for bets ==========");
         return myOutputValue;
       }
       // prompt next player bet
@@ -226,10 +229,31 @@ var main = function (input) {
   }
 
   if (mode == DEAL_STARTING_HAND) {
+    console.log("========== entering deal starting hand ==========");
     shuffledDeck = shuffleCards(initialiseDeck());
     dealStartingHand();
-    return "to display hand";
+    myOutputValue = showStartingHand();
+    console.log("========== exiting deal starting hand ==========");
+    return myOutputValue;
   }
 
   return "end of main";
+};
+
+var showStartingHand = function () {
+  var dealerName = dealer.name;
+  var dealerFirstCard = `${dealer.hand[0].name} of ${dealer.hand[0].suit}`;
+  var dealerSecondCard = `${dealer.hand[1].name} of ${dealer.hand[1].suit}`;
+
+  var message = `${dealerName}: ${dealerFirstCard} and ${dealerSecondCard} <br><br>`;
+
+  for (var i = 0; i < numberOfPlayers; i += 1) {
+    var name = players[i].name;
+    var firstCard = `${players[i].hand[0].name} of ${players[i].hand[0].suit}`;
+    var secondCard = `${players[i].hand[1].name} of ${players[i].hand[1].suit}`;
+
+    message += `${name}: ${firstCard} and ${secondCard} <br><br>`;
+  }
+
+  return message;
 };
