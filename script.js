@@ -80,7 +80,7 @@ var shuffleCards = function (cardDeck) {
 };
 
 // FPlayer to draw 2 cards
-var playerDrawCards = function () {
+var playerDrawCards = function (input) {
   var counter = 0;
   //loop will run until 2 cards are drawn for the player
   while (counter < 1) {
@@ -117,6 +117,7 @@ var playerDrawCards = function () {
       // change game mode to results straight
       gameMode = "results";
     }
+<<<<<<< HEAD
   }
   if (
     (playerCard1.name == "Ace" || playerCard2.name == "Ace") &&
@@ -132,18 +133,40 @@ var aceChoice = function (input) {
     Would you like your ace to be 11?`;
   console.log(gameMode);
   if (input == "yes" && playerCard1.name == "Ace") {
+=======
+  } // Give the player a choice to let Ace be 1 or 11
+  if (
+    (playerCard1.name == "Ace" || playerCard2.name == "Ace") &&
+    playerSum != 21
+  ) {
+    myOutputValue = `PLAYER'S HAND <br><br> ${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}<br><br> Sum is ${playerSum} <br><br>
+    Would you like your ace to be 11?`;
+  if (gameMode == "ace choice" && playerCard1.name == "Ace") {
+>>>>>>> origin
     playerCard1.rank = 11;
     playerSum = playerCard1.rank + playerCard2.rank;
     myOutputValue = `PLAYER'S HAND <br><br> ${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}<br><br> Sum is ${playerSum} <br><br>
     Type "hit" to draw another card or "stand" to end turn.`;
     gameMode = "round1";
   }
+<<<<<<< HEAD
   if (input == "yes" && playerCard2.name == "Ace") {
+=======
+  if (gameMode == "ace choice" && playerCard2.name == "Ace") {
+>>>>>>> origin
     playerCard2.rank = 11;
     playerSum = playerCard1.rank + playerCard2.rank;
     myOutputValue = `PLAYER'S HAND <br><br> ${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}<br><br> Sum is ${playerSum} <br><br>
     Type "hit" to draw another card or "stand" to end turn.`;
     gameMode = "round1";
+<<<<<<< HEAD
+=======
+  } else if (playerCard1.name != "Ace" && playerCard2.name != "Ace") {
+    // shows the cards drawn and player can choose to continue or end turn
+    myOutputValue = `PLAYER'S HAND <br><br> ${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}<br><br> Sum is ${playerSum} <br><br>
+    Type "hit" to draw another card or "stand" to end turn.`;
+    gameMode = "round1";
+>>>>>>> origin
   }
 };
 
@@ -231,7 +254,7 @@ var dealerDrawCards = function () {
     } // if dealer gets blackjack, immediately wins
     myOutputValue = `DEALER HAND <br><br> ${dealerCard1.name} of ${dealerCard1.suit} <br> ${dealerCard2.name} of ${dealerCard2.suit}<br><br> Sum is ${dealerSum}<br><br> DEALER BLACKJACK`;
     dealerBlackJack = true;
-    gameMode = "end user turn";
+    gameMode = "results";
   }
 
   // Add mroe cards to dealer's hand if lesser than 17
@@ -308,6 +331,8 @@ var finalResults = function () {
   }
   gameMode = "start";
 };
+
+// Main function
 var deckOfCards = makeDeck();
 var shuffle = shuffleCards(deckOfCards);
 var main = function (input) {
