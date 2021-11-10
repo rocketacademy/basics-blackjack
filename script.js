@@ -316,24 +316,25 @@ var finalResults = function () {
   if (playerBlackJack == true) {
     wagerPoints = wagerPoints * 2;
     playerScore += wagerPoints;
-    myOutputValue = `${blackjackImage}Player wins. <br><br> PLAYER POINTS : ${playerScore}<br><br> Press DEAL to restart the round.`;
+    myOutputValue = `${blackjackImage}Player wins. <br><br> PLAYER POINTS : ${playerScore}<br><br> Input amount to wager for next round. `;
   } else if (dealerBlackJack == true) {
-    myOutputValue = ` ${loseImage}Dealer wins. <br><br> PLAYER POINTS : ${playerScore}<br><br> Press DEAL to restart the round.`;
+    // At the start, points have already been deducted so even if dealer wins, no need for further deduction.
+    myOutputValue = ` ${loseImage}Dealer wins. <br><br> PLAYER POINTS : ${playerScore}pts<br><br> Input amount to wager for next round. `;
   } else if (playerSum == dealerSum) {
     playerScore += wagerPoints;
-    myOutputValue = `${drawImage}<br><br>It's a draw. <br><br> PLAYER POINTS : ${playerScore}<br><br> Press DEAL to restart the round.`;
+    myOutputValue = `${drawImage}<br><br>It's a draw. <br><br> PLAYER POINTS : ${playerScore}pts<br><br> Input amount to wager for next round.`;
   } else if (playerSum > dealerSum && playerBust == false) {
     wagerPoints = wagerPoints * 2;
     playerScore += wagerPoints;
-    myOutputValue = `${winImage}<br><br>Player wins. <br><br> PLAYER POINTS : ${playerScore}<br><br> Press DEAL to restart the round.`;
+    myOutputValue = `${winImage}<br><br>Player wins. <br><br> PLAYER POINTS : ${playerScore}pts<br><br> Input amount to wager for next round. `;
   } else if (dealerBust == true) {
     wagerPoints = wagerPoints * 2;
     playerScore += wagerPoints;
-    myOutputValue = `${winImage}<br><br>Player wins. <br><br> PLAYER POINTS : ${playerScore}<br><br> Press DEAL to restart the round.`;
+    myOutputValue = `${winImage}<br><br>Player wins. <br><br> PLAYER POINTS : ${playerScore}pts<br><br> Input amount to wager for next round. `;
   } else if (dealerSum > playerSum) {
-    myOutputValue = `${loseImage}<br><br>Dealer wins. <br><br> PLAYER POINTS : ${playerScore}<br><br> Press DEAL to restart the round.`;
+    myOutputValue = `${loseImage}<br><br>Dealer wins. <br><br> PLAYER POINTS : ${playerScore}pts<br><br> Input amount to wager for next round.`;
   } else if (playerBust == true) {
-    myOutputValue = `${loseImage}<br><br>Dealer wins. <br><br> PLAYER POINTS : ${playerScore}<br><br> Press DEAL to restart the round.`;
+    myOutputValue = `${loseImage}<br><br>Dealer wins. <br><br> PLAYER POINTS : ${playerScore}pts<br><br> Input amount to wager for next round.`;
   } else if (
     playerSum < dealerSum &&
     dealerBust == true &&
@@ -341,7 +342,7 @@ var finalResults = function () {
   ) {
     wagerPoints = wagerPoints * 2;
     playerScore += wagerPoints;
-    myOutputValue = `${winImage}<br><br>Player wins. <br><br> PLAYER POINTS : ${playerScore}<br><br> Press DEAL to restart the round.`;
+    myOutputValue = `${winImage}<br><br>Player wins. <br><br> PLAYER POINTS : ${playerScore}pts<br><br> Input amount to wager for next round. `;
   }
   gameMode = "wager";
 };
