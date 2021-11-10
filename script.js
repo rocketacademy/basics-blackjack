@@ -127,6 +127,7 @@ var playerDrawCards = function () {
     (playerCard1.name == "Ace" || playerCard2.name == "Ace") &&
     playerSum < 11
   ) {
+    myOutputValue = `PLAYER'S HAND <br><br> ${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}<br><br> Sum is ${playerSum} <br><br> Seems like your Ace can either be 1 or 11. Press DEAL now to decide. `;
     gameMode = "ace choice";
   }
 };
@@ -134,7 +135,7 @@ var playerDrawCards = function () {
 // Player will choose whether they want the value of Ace to be 1 or 11
 var aceChoice = function (input) {
   myOutputValue = `PLAYER'S HAND <br><br> ${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}<br><br> Sum is ${playerSum} <br><br>
-    Would you like your ace to be 11?`;
+    Would you like your Ace to be 11 instead? (yes / no)`;
   console.log(gameMode);
   if (input == "yes" && playerCard1.name == "Ace") {
     playerCard1.rank = 11;
@@ -145,6 +146,12 @@ var aceChoice = function (input) {
   }
   if (input == "yes" && playerCard2.name == "Ace") {
     playerCard2.rank = 11;
+    playerSum = playerCard1.rank + playerCard2.rank;
+    myOutputValue = `PLAYER'S HAND <br><br> ${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}<br><br> Sum is ${playerSum} <br><br>
+    Type "hit" to draw another card or "stand" to end turn.`;
+    gameMode = "round1";
+  }
+  if (input == "no") {
     playerSum = playerCard1.rank + playerCard2.rank;
     myOutputValue = `PLAYER'S HAND <br><br> ${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}<br><br> Sum is ${playerSum} <br><br>
     Type "hit" to draw another card or "stand" to end turn.`;
@@ -332,6 +339,7 @@ var main = function (input) {
     thirdHit();
   } else if (
     // dealers turn to draw cards. must be above 17.
+    // will only run if "stand" is input
     input == "stand" &&
     (gameMode == "end user turn" ||
       gameMode == "round3" ||
@@ -345,6 +353,7 @@ var main = function (input) {
     console.log(playerBust);
     console.log(dealerBust);
     finalResults();
+    // bring it back to the start of the game
     gameMode = "start";
   }
   return myOutputValue;
