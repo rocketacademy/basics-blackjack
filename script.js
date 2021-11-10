@@ -115,17 +115,13 @@ var shuffleCards = function (cardDeck) {
   return cardDeck;
 };
 
-function isEmpty(str) {
-  return !str || str.length === 0;
-}
-
 var showBetMessage = function () {
   var name = players[currentBetIndex].name;
   var wallet = players[currentBetIndex].wallet;
 
-  var message = `${name}, you have $${wallet}. Place your bet.
+  var message = `${name}, you have $${wallet}.
   <br><br>
-  Press Submit to continue.`;
+  Place your bet in the textbox and press Submit to continue.`;
 
   return message;
 };
@@ -206,30 +202,34 @@ var main = function (input) {
     // bet must be valid and less than what wallet has
     if (betAmount > 0 && playerWallet >= betAmount) {
       players[currentBetIndex].bet = betAmount;
-      console.log(players[currentBetIndex].bet);
+      console.log(players[currentBetIndex].name, players[currentBetIndex].bet);
       currentBetIndex += 1;
 
       // all players betted, exit mode
       if (currentBetIndex >= numberOfPlayers) {
         currentBetIndex = 0;
         mode = DEAL_STARTING_HAND;
+        myOutputValue = `All player(s) have betted.<br><br>
+        Dealing cards...
+        <br><br>
+        Press Submit to continue.`;
         console.log("========== exiting ask for bets & change mode ==========");
-        return "mode = dealing starting hand";
+        return myOutputValue;
       }
       // prompt next player bet
       myOutputValue = showBetMessage();
       return myOutputValue;
     }
-    // invalid response
+    // catch invalid response
     myOutputValue = "You typed in an invalid bet.<br><br>" + showBetMessage();
     return myOutputValue;
   }
 
   if (mode == DEAL_STARTING_HAND) {
+    shuffledDeck = shuffleCards(initialiseDeck());
+    dealStartingHand();
+    return "to display hand";
   }
-
-  // shuffledDeck = shuffleCards(initialiseDeck());
-  // dealStartingHand();
 
   return "end of main";
 };
