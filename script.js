@@ -171,6 +171,8 @@ var main = function (input) {
       numberOfPlayers = userInput;
       myOutputValue = `${numberOfPlayers} player(s) will be playing in this game of Blackjack.
       <br><br>
+      Creating player(s)...
+      <br><br>
       Player(s) place your bet.
       <br><br>
       Press Submit to continue.`;
@@ -190,58 +192,36 @@ var main = function (input) {
     console.log("========== entering create players ==========");
     initialisePlayers();
     mode = ASK_FOR_BETS;
+    myOutputValue = showBetMessage();
     console.log("========== exiting create players ==========");
+    return myOutputValue;
   }
 
   if (mode == ASK_FOR_BETS) {
     console.log("========== entering ask for bets ==========");
 
     var betAmount = Number(input);
+    var playerWallet = players[currentBetIndex].wallet;
 
-    /*
-    isEmpty function capturing NaN and empty string.
-    first case and invalid capatured therefore, not showing invalid response.
-    */
+    // bet must be valid and less than what wallet has
+    if (betAmount > 0 && playerWallet >= betAmount) {
+      players[currentBetIndex].bet = betAmount;
+      console.log(players[currentBetIndex].bet);
+      currentBetIndex += 1;
 
-    // check if input is empty and ask for bet
-    if (isEmpty(betAmount)) {
+      // all players betted, exit mode
+      if (currentBetIndex >= numberOfPlayers) {
+        currentBetIndex = 0;
+        mode = DEAL_STARTING_HAND;
+        console.log("========== exiting ask for bets & change mode ==========");
+        return "mode = dealing starting hand";
+      }
+      // prompt next player bet
       myOutputValue = showBetMessage();
       return myOutputValue;
     }
-
-    if (isNaN(betAmount)) {
-      myOutputValue = "You typed in an invalid bet.<br><br>" + showBetMessage();
-      return myOutputValue;
-    }
-
-    // start at 0
-    while (currentBetIndex < numberOfPlayers) {
-      var playerWallet = players[currentBetIndex].wallet;
-
-      // bet must be valid and less than what wallet has
-      if (betAmount > 0 && playerWallet >= betAmount) {
-        players[currentBetIndex].bet = betAmount;
-        console.log(players[currentBetIndex]);
-        currentBetIndex += 1;
-
-        // all players betted, exit while loop
-        if (currentBetIndex >= numberOfPlayers) {
-          currentBetIndex = 0;
-          mode = DEAL_STARTING_HAND;
-          console.log(
-            "========== exiting ask for bets & change mode =========="
-          );
-          break;
-        }
-
-        myOutputValue = showBetMessage();
-        break; // exit while loop
-      }
-      // invalid response
-      myOutputValue = "You typed in an invalid bet.<br><br>" + showBetMessage();
-      break;
-    }
-    console.log("========== exiting ask for bets ==========");
+    // invalid response
+    myOutputValue = "You typed in an invalid bet.<br><br>" + showBetMessage();
     return myOutputValue;
   }
 
@@ -253,13 +233,3 @@ var main = function (input) {
 
   return "end of main";
 };
-
-// this function display the player wallet and record the bet amount
-// var getBetAmt = function(){
-//   myOutputValue = "";
-
-//   while (currentBetIndex < numberOfPlayers){
-
-//   }
-
-// };
