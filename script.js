@@ -2,7 +2,10 @@
 var playerName = "";
 var state = "awaiting player name";
 
-// make deck function
+// store player's cards and computer's cards in arrays
+var playerHand = [];
+var computerHand = [];
+
 var makeDeck = function () {
   // Initialise an empty deck array
   var cardDeck = [];
@@ -18,24 +21,25 @@ var makeDeck = function () {
     // Loop from 1 to 13 to create all cards for a given suit
     // Notice rankCounter starts at 1 and not 0, and ends at 13 and not 12.
     // This is an example of a loop without an array.
-    var rankCounter = 1;
-    while (rankCounter <= 13) {
+    var counter = 1;
+    while (counter <= 13) {
       // By default, the card name is the same as rankCounter
+      var rankCounter = counter;
       var cardName = rankCounter;
 
       // If rank is 1, 11, 12, or 13, set cardName to the ace or face card's name
-      // face cards are rank 10 for Blackjack
+      // For J, Q, K, set rank to 10
       if (cardName == 1) {
         cardName = "ace";
       } else if (cardName == 11) {
-        rankCounter = 10;
         cardName = "jack";
+        rankCounter = 10;
       } else if (cardName == 12) {
-        rankCounter = 10;
         cardName = "queen";
-      } else if (cardName == 13) {
         rankCounter = 10;
+      } else if (cardName == 13) {
         cardName = "king";
+        rankCounter = 10;
       }
 
       // Create a new card with the current name, suit, and rank
@@ -49,7 +53,7 @@ var makeDeck = function () {
       cardDeck.push(card);
 
       // Increment rankCounter to iterate over the next rank
-      rankCounter += 1;
+      counter += 1;
     }
 
     // Increment the suit index to iterate over the next suit
@@ -89,10 +93,6 @@ var shuffleCards = function (cardDeck) {
 var cardDeck = makeDeck();
 var shuffledDeck = shuffleCards(cardDeck);
 
-// store player's cards and computer's cards in arrays
-var playerHand = [];
-var computerHand = [];
-
 // deal card function
 var dealCard = function (hand) {
   hand.push(shuffledDeck.pop());
@@ -115,8 +115,8 @@ var checkBlackjack = function (hand) {
   var playerCard1 = hand[0];
   var playerCard2 = hand[1];
   if (
-    (playerCard1.name == "ace" && playerCard2.rank == 10) ||
-    (playerCard2.name == "ace" && playerCard1.rank == 10)
+    (playerCard1.rank == 1 && playerCard2.rank >= 10) ||
+    (playerCard2.rank == 1 && playerCard1.rank >= 10)
   ) {
     var blackjack = true;
   }
@@ -156,20 +156,20 @@ var main = function (input) {
 
     // if computer gets blackjack and player doesn't, player loses
     if (computerBlackjack == true && playerBlackjack != true) {
-      state == "game over";
+      state = "game over";
       return `${playerName}'s' hand: ${playerCard1.name} of ${playerCard1.suit}, ${playerCard2.name} of ${playerCard2.suit} <br><br> Dealer's hand: ${computerCard1.name} of ${computerCard1.suit}, ${computerCard2.name} of ${computerCard2.suit} <br><br> Dealer got Blackjack! You lose! Please refresh to play again.`;
     }
     // if player gets blackjack and computer doesn't, player wins
     else if (playerBlackjack == true && computerBlackjack != true) {
-      state == "game over";
+      state = "game over";
       return `${playerName}'s' hand: ${playerCard1.name} of ${playerCard1.suit}, ${playerCard2.name} of ${playerCard2.suit} <br><br> Dealer's hand: ${computerCard1.name} of ${computerCard1.suit}, ${computerCard2.name} of ${computerCard2.suit} <br><br> You got Blackjack! You win! Please refresh to play again.`;
     }
     // both blackjack
     else if (playerBlackjack == true && computerBlackjack == true) {
-      state == "game over";
+      state = "game over";
       return `${playerName}'s' hand: ${playerCard1.name} of ${playerCard1.suit}, ${playerCard2.name} of ${playerCard2.suit} <br><br> Dealer's hand: ${computerCard1.name} of ${computerCard1.suit}, ${computerCard2.name} of ${computerCard2.suit} <br><br> You both got Blackjack! It's a tie! Please refresh to play again.`;
     } else if (playerBlackjack != true && computerBlackjack != true) {
-      state == "hit or stand";
+      state = "hit or stand";
       return `${playerName}'s' hand: ${playerCard1.name} of ${playerCard1.suit}, ${playerCard2.name} of ${playerCard2.suit} <br><br> Enter "hit" to draw a card, or "stand" to keep your current hand.`;
     }
   }
@@ -189,41 +189,55 @@ var main = function (input) {
       var playerHandSum = checkSum(playerHand);
       // if sum of player's cards exceed 21, player loses
       if (playerHandSum > 21) {
-        state == "game over";
+        state = "game over";
         return `You've busted! You lose! Please refresh to play again.`;
+      } else if (playerHandSum <= 21) {
+        return `Sum of your current hand: ${playerHandSum} <br><br> Enter "hit" to draw a card, or "stand" to keep your current hand.`;
       }
     }
 
     //player decides to stand
     if (input == "stand") {
-      state == "dealer's turn";
-      var playerHandSum = checkSum(playerHand);
-      var computerHandSum = checkSum(computerHand);
-      if (computerHandSum <= 16) {
-        dealCard(computerHand);
-        // get new sum
-        computerHand = checkSum(computerHand);
-        // if sum of computer's cards exceed 21, player wins
-        if (computerHandSum > 21) {
-          state == "game over";
-          return `The dealer has busted! You win! Please refresh to play again.`;
-        }
-      }
-      if (computerHandSum > 16 && computerHandSum <= 21) {
-        state == "game over";
-        // if player number higher, player wins
-        if (playerHandSum > computerHandSum) {
-          return `Your hand: ${playerHandSum} <br><br> Dealer's hand: ${computerHandSum} <br><br>You win! Please refresh to play again.`;
-        }
-        // if computer number higher, player loses
-        else if (playerHandSum < computerHandSum) {
-          return `Your hand: ${playerHandSum} <br><br> Dealer's hand: ${computerHandSum} <br><br>You lose! Please refresh to play again.`;
-        }
-        // if player number = computer number, it's a tie
-        else if (playerHandSum == computerHandSum) {
-          return `Your hand: ${playerHandSum} <br><br> Dealer's hand: ${computerHandSum} <br><br>It's a tie! Please refresh to play again.`;
-        }
+      state = "dealer's turn";
+      return `It's the dealer's turn to draw! Click submit to continue.`;
+    }
+  }
+
+  if (state == "dealer's turn" && input == "") {
+    var playerHandSum = checkSum(playerHand);
+    var computerHandSum = checkSum(computerHand);
+    if (computerHandSum <= 16) {
+      dealCard(computerHand);
+      // get new sum
+      computerHandSum = checkSum(computerHand);
+      // if sum of computer bust, player wins
+      if (computerHandSum > 21) {
+        state = "game over";
+        return `The dealer has busted! You win! Please refresh to play again.`;
+      } else if (computerHandSum <= 16) {
+        return `The dealer drew a card! Click submit to continue. `;
       }
     }
+
+    // if both player and computer did not bust
+    if (computerHandSum > 16 && computerHandSum <= 21) {
+      state = "game over";
+      // if player number higher, player wins
+      if (playerHandSum > computerHandSum) {
+        return `Your hand: ${playerHandSum} <br><br> Dealer's hand: ${computerHandSum} <br><br>You win! Please refresh to play again.`;
+      }
+      // if computer number higher, player loses
+      else if (playerHandSum < computerHandSum) {
+        return `Your hand: ${playerHandSum} <br><br> Dealer's hand: ${computerHandSum} <br><br>You lose! Please refresh to play again.`;
+      }
+
+      // if player number = computer number, it's a tie
+      else if (playerHandSum == computerHandSum) {
+        return `Your hand: ${playerHandSum} <br><br> Dealer's hand: ${computerHandSum} <br><br>It's a tie! Please refresh to play again.`;
+      }
+    }
+  }
+  if (state == "game over") {
+    return `Game over! Please refresh to play again.`;
   }
 };
