@@ -472,7 +472,7 @@ const endGameWinLossLoopCheck = function () {
 };
 // pay out of win and loss
 const payOut = function () {
-  let myOutputValue = "<br>=== payout round ===<br>";
+  let myOutputValue = "<br>=== Payout round ===<br>";
   for (let i = 0; i < players.length - 1; i++) {
     let betAmt = Number(players[i].bet);
     let player = players[i].name;
