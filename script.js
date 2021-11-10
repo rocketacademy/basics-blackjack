@@ -82,13 +82,20 @@ var shuffleCards = function (cardDeck) {
 // FPlayer to draw 2 cards
 var playerDrawCards = function () {
   var counter = 0;
-  while (counter < 2) {
+  //loop will run until 2 cards are drawn for the player
+  while (counter < 1) {
     playerCard1 = shuffle.pop();
     playerCard2 = shuffle.pop();
+    console.log(playerCard1);
+    console.log(playerCard2);
     counter++;
   }
   playerSum = playerCard1.rank + playerCard2.rank;
+  myOutputValue = `PLAYER'S HAND <br><br> ${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}<br><br> Sum is ${playerSum} <br><br>
+    Type "hit" to draw another card or "stand" to end turn.`;
+  gameMode = "round1";
   // This is so that ace will be returned as 11 to make total sum be 21. This will check if player gets blackjack.
+  // Blackjack checker when player draw first two cards
   if (
     playerSum == 11 &&
     (playerCard1.name == "Ace" || playerCard2.name == "Ace")
@@ -96,18 +103,48 @@ var playerDrawCards = function () {
     if (playerCard1.name == "Ace") {
       playerCard1.rank = 11;
       playerSum = playerCard1.rank + playerCard2.rank;
+      // output that player has gotten blackjack and wins
+      myOutputValue = `PLAYER'S HAND <br><br> ${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}<br><br> Sum is ${playerSum} <br><br> PLAYER BLACKJACK`;
+      playerBlackJack = true;
+      gameMode = "results";
     }
     if (playerCard2.name == "Ace") {
       playerCard2.rank = 11;
       playerSum = playerCard1.rank + playerCard2.rank;
-    } // output that player has gotten blackjack and wins
-    myOutputValue = `PLAYER'S HAND <br><br> ${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}<br><br> Sum is ${playerSum} <br><br> PLAYER BLACKJACK`;
-    playerBlackJack = true;
-    gameMode = "results";
-  } // shows the cards drawn and player can choose to continue or end turn
+      // output that player has gotten blackjack and wins
+      myOutputValue = `PLAYER'S HAND <br><br> ${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}<br><br> Sum is ${playerSum} <br><br> PLAYER BLACKJACK`;
+      playerBlackJack = true;
+      // change game mode to results straight
+      gameMode = "results";
+    }
+  }
+  if (
+    (playerCard1.name == "Ace" || playerCard2.name == "Ace") &&
+    playerSum < 11
+  ) {
+    gameMode = "ace choice";
+  }
+};
+
+//
+var aceChoice = function (input) {
   myOutputValue = `PLAYER'S HAND <br><br> ${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}<br><br> Sum is ${playerSum} <br><br>
+    Would you like your ace to be 11?`;
+  console.log(gameMode);
+  if (input == "yes" && playerCard1.name == "Ace") {
+    playerCard1.rank = 11;
+    playerSum = playerCard1.rank + playerCard2.rank;
+    myOutputValue = `PLAYER'S HAND <br><br> ${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}<br><br> Sum is ${playerSum} <br><br>
     Type "hit" to draw another card or "stand" to end turn.`;
-  gameMode = "round1";
+    gameMode = "round1";
+  }
+  if (input == "yes" && playerCard2.name == "Ace") {
+    playerCard2.rank = 11;
+    playerSum = playerCard1.rank + playerCard2.rank;
+    myOutputValue = `PLAYER'S HAND <br><br> ${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}<br><br> Sum is ${playerSum} <br><br>
+    Type "hit" to draw another card or "stand" to end turn.`;
+    gameMode = "round1";
+  }
 };
 
 // Function to run when player first hit (3rd card)
@@ -124,7 +161,6 @@ var firstHit = function () {
   if (playerSum <= 21) {
     myOutputValue = `PLAYER'S HAND <br><br> ${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}<br>${playerCard3.name} of ${playerCard3.suit}<br><br> Sum is ${playerSum} <br><br>
     Type "hit" to draw another card or "stand" to end turn.`;
-    console.log(playerSum);
     gameMode = "round2";
   }
 };
@@ -251,6 +287,8 @@ var dealerDrawCards = function () {
 var finalResults = function () {
   if (playerBlackJack == true) {
     myOutputValue = `Player wins. `;
+  } else if (dealerBlackJack == true) {
+    myOutputValue = `Dealer wins`;
   } else if (playerSum == dealerSum) {
     myOutputValue = `It's a draw. `;
   } else if (playerSum > dealerSum && playerBust == false) {
@@ -261,7 +299,11 @@ var finalResults = function () {
     myOutputValue = `Dealer wins.`;
   } else if (playerBust == true) {
     myOutputValue = `Dealer wins.`;
-  } else if (playerSum < dealerSum && dealerBust == true) {
+  } else if (
+    playerSum < dealerSum &&
+    dealerBust == true &&
+    playerBust == false
+  ) {
     myOutputValue = `Player wins.`;
   }
   gameMode = "start";
@@ -272,25 +314,31 @@ var main = function (input) {
   // draw 2 when dealing
   if (gameMode == "start") {
     playerDrawCards();
+  } else if (gameMode == "ace choice") {
+    aceChoice(input);
     // will run when type hit for first round
   } else if (gameMode == "round1" && input == "hit") {
     firstHit();
     // will run when type hit for second round
-  } else if (playerMode == "round2" && input == "hit") {
+  } else if (gameMode == "round2" && input == "hit") {
     secondHit();
     // will run when type hit for third round
-  } else if (playerMode == "round3" && input == "hit") {
+  } else if (gameMode == "round3" && input == "hit") {
     thirdHit();
   } else if (
     // dealers turn to draw cards. must be above 17.
-    input == "stand" ||
-    gameMode == "end user turn" ||
-    gameMode == "round3" ||
-    gameMode == "round2" ||
-    gameMode == "round1"
+    input == "stand" &&
+    (gameMode == "end user turn" ||
+      gameMode == "round3" ||
+      gameMode == "round2" ||
+      gameMode == "round1")
   ) {
     dealerDrawCards();
   } else if (gameMode == "results") {
+    console.log(playerSum);
+    console.log(dealerSum);
+    console.log(playerBust);
+    console.log(dealerBust);
     finalResults();
     gameMode = "start";
   }
