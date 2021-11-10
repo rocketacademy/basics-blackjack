@@ -80,11 +80,14 @@ var shuffleCards = function (cardDeck) {
 };
 
 // FPlayer to draw 2 cards
-var playerDrawCards = function () {
+var playerDrawCards = function (input) {
   var counter = 0;
-  while (counter < 2) {
+  //loop will run until 2 cards are drawn for the player
+  while (counter < 1) {
     playerCard1 = shuffle.pop();
     playerCard2 = shuffle.pop();
+    console.log(playerCard1);
+    console.log(playerCard2);
     counter++;
   }
   playerSum = playerCard1.rank + playerCard2.rank;
@@ -96,18 +99,47 @@ var playerDrawCards = function () {
     if (playerCard1.name == "Ace") {
       playerCard1.rank = 11;
       playerSum = playerCard1.rank + playerCard2.rank;
+      // output that player has gotten blackjack and wins
+      myOutputValue = `PLAYER'S HAND <br><br> ${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}<br><br> Sum is ${playerSum} <br><br> PLAYER BLACKJACK`;
+      playerBlackJack = true;
+      gameMode = "results";
     }
     if (playerCard2.name == "Ace") {
-      playerCard2.rank = 11;
+      playerCard2.rank = 21;
       playerSum = playerCard1.rank + playerCard2.rank;
-    } // output that player has gotten blackjack and wins
-    myOutputValue = `PLAYER'S HAND <br><br> ${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}<br><br> Sum is ${playerSum} <br><br> PLAYER BLACKJACK`;
-    playerBlackJack = true;
-    gameMode = "results";
-  } // shows the cards drawn and player can choose to continue or end turn
-  myOutputValue = `PLAYER'S HAND <br><br> ${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}<br><br> Sum is ${playerSum} <br><br>
+      // output that player has gotten blackjack and wins
+      myOutputValue = `PLAYER'S HAND <br><br> ${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}<br><br> Sum is ${playerSum} <br><br> PLAYER BLACKJACK`;
+      playerBlackJack = true;
+      gameMode = "results";
+    }
+  } // Give the player a choice to let Ace be 1 or 11
+  if (
+    (playerCard1.name == "Ace" || playerCard2.name == "Ace") &&
+    playerSum != 21
+  ) {
+    myOutputValue = `PLAYER'S HAND <br><br> ${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}<br><br> Sum is ${playerSum} <br><br>
+    Would you like your ace to be 11?`;
+    gameMode = "ace choice";
+  }
+  if (playerCard1.name == "Ace" && input == "yes" && gameMode == "ace choice") {
+    playerCard1.rank == 21;
+    playerSum = playerCard1.rank + playerCard2.rank;
+    myOutputValue = `PLAYER'S HAND <br><br> ${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}<br><br> Sum is ${playerSum} <br><br>
     Type "hit" to draw another card or "stand" to end turn.`;
-  gameMode = "round1";
+    gameMode = "round1";
+  }
+  if (playerCard2.name == "Ace" && input == "yes" && gameMode == "ace choice") {
+    playerCard2.rank == 21;
+    playerSum = playerCard1.rank + playerCard2.rank;
+    myOutputValue = `PLAYER'S HAND <br><br> ${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}<br><br> Sum is ${playerSum} <br><br>
+    Type "hit" to draw another card or "stand" to end turn.`;
+    gameMode = "round1";
+  } else if (playerCard1.name != "Ace" && playerCard2.name != "Ace") {
+    // shows the cards drawn and player can choose to continue or end turn
+    myOutputValue = `PLAYER'S HAND <br><br> ${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}<br><br> Sum is ${playerSum} <br><br>
+    Type "hit" to draw another card or "stand" to end turn.`;
+    gameMode = "round1";
+  }
 };
 
 // Function to run when player first hit (3rd card)
@@ -251,6 +283,8 @@ var dealerDrawCards = function () {
 var finalResults = function () {
   if (playerBlackJack == true) {
     myOutputValue = `Player wins. `;
+  } else if (dealerBlackJack == true) {
+    myOutputValue = `Dealer wins`;
   } else if (playerSum == dealerSum) {
     myOutputValue = `It's a draw. `;
   } else if (playerSum > dealerSum && playerBust == false) {
@@ -291,6 +325,10 @@ var main = function (input) {
   ) {
     dealerDrawCards();
   } else if (gameMode == "results") {
+    console.log(playerSum);
+    console.log(dealerSum);
+    console.log(playerBust);
+    console.log(dealerBust);
     finalResults();
     gameMode = "start";
   }
