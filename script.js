@@ -115,8 +115,8 @@ var checkBlackjack = function (hand) {
   var playerCard1 = hand[0];
   var playerCard2 = hand[1];
   if (
-    (playerCard1.rank == 1 && playerCard2.rank >= 10) ||
-    (playerCard2.rank == 1 && playerCard1.rank >= 10)
+    (playerCard1.name == "ace" && playerCard2.rank >= 10) ||
+    (playerCard2.name == "ace" && playerCard1.rank >= 10)
   ) {
     var blackjack = true;
   }
