@@ -100,6 +100,7 @@ let recordParticipants = {}
 let mode = "start mode"
 const playBlackJack = function () {
   if (mode === "start mode") {
+    
     // shuffle card
     let shuffledDeck = shuffleCards(deck)
     // initialise object for their cards and their score
@@ -115,6 +116,7 @@ const playBlackJack = function () {
 
     // initialise array for each player to hold their cards
     let cardsOfPlayer = []
+    mode = "distrbute cards"
     // store score of every player
     for (let playerIndex = 0; playerIndex <= totalPlayers-1 ; playerIndex ++) {
     
@@ -178,7 +180,7 @@ const playBlackJack = function () {
       if((cardsOfDealer[0].value ===10 && cardsOfDealer[1].name === 'ace') ||
          (cardsOfDealer[1].value === 10 && cardsOfDealer[0].name === 'ace')){
           mode = "start mode"
-           return "player won blackjack." 
+           return "Dealer won blackjack." 
       }else if(sumOfDealer >= 17){
         if(sumOfDealer>sumOfHandPlayer){
           mode = "start mode"
