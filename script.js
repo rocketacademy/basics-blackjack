@@ -232,7 +232,8 @@ var main = function (input) {
     console.log("========== entering deal starting hand ==========");
     shuffledDeck = shuffleCards(initialiseDeck());
     dealStartingHand();
-    myOutputValue = showStartingHand();
+    // get hand sum
+    myOutputValue = showHandState();
     console.log("========== exiting deal starting hand ==========");
     return myOutputValue;
   }
@@ -240,20 +241,62 @@ var main = function (input) {
   return "end of main";
 };
 
-var showStartingHand = function () {
+var showHandState = function () {
+  // dealer = {
+  //   name: "Dealer",
+  //   hand: [
+  //     { name: "4", value: 4, suit: "Clubs" },
+  //     { name: "9", value: 9, suit: "Diamonds" },
+  //     { name: "4", value: 4, suit: "Hearts" },
+  //     { name: "9", value: 9, suit: "Hearts" },
+  //   ],
+  //   blackjack: false,
+  //   handValue: 0,
+  // };
+  // players[0] = {
+  //   name: `Player 1`,
+  //   hand: [
+  //     { name: "4", value: 4, suit: "Clubs" },
+  //     { name: "9", value: 9, suit: "Diamonds" },
+  //     { name: "4", value: 4, suit: "Hearts" },
+  //     { name: "9", value: 9, suit: "Hearts" },
+  //   ],
+  //   blackjack: false,
+  //   handValue: 0,
+  //   wallet: 100,
+  //   bet: 0,
+  // };
+
+  var message = "";
   var dealerName = dealer.name;
-  var dealerFirstCard = `${dealer.hand[0].name} of ${dealer.hand[0].suit}`;
-  var dealerSecondCard = `${dealer.hand[1].name} of ${dealer.hand[1].suit}`;
+  var dealerHandSize = dealer.hand.length;
 
-  var message = `${dealerName}: ${dealerFirstCard} and ${dealerSecondCard} <br><br>`;
-
-  for (var i = 0; i < numberOfPlayers; i += 1) {
-    var name = players[i].name;
-    var firstCard = `${players[i].hand[0].name} of ${players[i].hand[0].suit}`;
-    var secondCard = `${players[i].hand[1].name} of ${players[i].hand[1].suit}`;
-
-    message += `${name}: ${firstCard} and ${secondCard} <br><br>`;
+  message = `${dealerName}: `;
+  var counter = 0;
+  while (counter < dealerHandSize) {
+    var cardName = `${dealer.hand[counter].name} of ${dealer.hand[counter].suit}`;
+    message += `${cardName}, `;
+    counter += 1;
   }
+  message = message.substring(0, message.length - 2);
+  message += `<br><br>`;
 
+  var index = 0;
+  counter = 0;
+  while (index < numberOfPlayers) {
+    var playerName = players[index].name;
+    var playerHandSize = players[index].hand.length;
+
+    message += `${playerName}: `;
+    while (counter < playerHandSize) {
+      cardName = `${players[index].hand[counter].name} of ${players[index].hand[counter].suit}`;
+      message += `${cardName}, `;
+      counter += 1;
+    }
+    counter = 0;
+    index += 1;
+    message = message.substring(0, message.length - 2);
+    message += `<br><br>`;
+  }
   return message;
 };
