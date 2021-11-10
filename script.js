@@ -165,7 +165,7 @@ var comparePlayerAndComputer = function (hands1, hands2) {
 var main = function (input) {
   var shuffledDeck = shuffleCards(makeDeck());
 
-  var message2 = `<br><br> Player input 'hit' (draw another card) or 'stand' (dealer's turn) !`;
+  var message2 = `<br><br> Player input 'hit' (draw another card) or 'stand' (good for now) !`;
 
   // ~~~~~~~~~~~~~~~ Drawing Cards Mode ~~~~~~~~~~~~~~~
   // === both players and computer will draw cards
@@ -237,16 +237,16 @@ var main = function (input) {
 
     // player with Blackjack
     if (playerBlackJack == true && computerBlackJack == false) {
-      return message1 + "Player wins with Blackjack!" + message2;
+      return message1 + "<br>Player wins with Blackjack!";
     } else if (playerBlackJack == true && computerBlackJack == true) {
-      return message1 + "Its a Blackjack tie!" + message2;
+      return message1 + "<br>Its a Blackjack tie!";
     }
 
     // computer with Blackjack
     if (computerBlackJack == true && playerBlackJack == false) {
-      return message1 + "Dealer wins with Blackjack!" + message2;
+      return message1 + "<br>Dealer wins with Blackjack!";
     } else if (computerBlackJack == true && playerBlackJack == true) {
-      return message1 + "Its a Blackjack tie!" + message2;
+      return message1 + "<br>Its a Blackjack tie!";
     }
 
     // ~~~~ check for non-Blackjack conditions ~~~~~
@@ -257,18 +257,18 @@ var main = function (input) {
       console.log(`playerHands: ${playerHands}`);
       computerHands = getCombineHandValues(computerCardsArray);
       console.log(`computerHands: ${computerHands}`);
-      myOutputValue =
-        message1 +
-        // comparePlayerAndComputer(playerHands, computerHands) +
-        message2;
+      myOutputValue = message1 + message2;
     }
     return myOutputValue;
   }
 
   // ~~~~~~~~~~~~~~~ Player Hit or Stand Mode ~~~~~~~~~~~~~~~
 
+  // Allow player to choose Hit or Stand
   if (currentGameMode == "Player Choose Mode") {
-    // Allow player to choose Hit or Stand
+    // Switch mode to Computer choose mode
+    currentGameMode = "Dealer Choose Mode";
+    console.log(currentGameMode);
 
     // if player choose Hit
     if (input == "hit") {
@@ -278,9 +278,32 @@ var main = function (input) {
       playerHands = getCombineHandValues(playerCardsArray);
       console.log(`playerhands: ${playerHands}`);
       console.log(`computerHands: ${computerHands}`);
-      myOutputValue = `${message1}<br> Player chose another card: ${
-        playerCard3.name
-      } of ${playerCard3.suit}<br>${comparePlayerAndComputer(
+      myOutputValue = `${message1}<br> Player chose another card: ${playerCard3.name} of ${playerCard3.suit}<br><br>Dealer input 'hit' (draw another card) or 'stand'!`;
+    }
+    // if player choose Stand
+    else if (input == "stand") {
+      console.log(`playerhands: ${playerHands}`);
+      console.log(`computerHands: ${computerHands}`);
+      myOutputValue = `${message1}<br><br>Dealer input 'hit' (draw another card) or 'stand'!`;
+    }
+    return myOutputValue;
+  }
+
+  // ~~~~~~~~~~~~~~~ Dealer Hit or Stand Mode ~~~~~~~~~~~~~~~
+
+  if (currentGameMode == "Dealer Choose Mode") {
+    // Allow dealer to choose Hit or Stand
+    // if dealer choose Hit
+    if (input == "hit") {
+      var computerCard3 = shuffledDeck.pop();
+      console.log(`computerCard3: ${computerCard3.name}`);
+      computerCardsArray.push(computerCard3);
+      computerHands = getCombineHandValues(computerCardsArray);
+      console.log(`playerhands: ${playerHands}`);
+      console.log(`computerHands: ${computerHands}`);
+      myOutputValue = `${message1}<br> Dealer chose another card: ${
+        computerCard3.name
+      } of ${computerCard3.suit}<br>${comparePlayerAndComputer(
         playerHands,
         computerHands
       )}`;
