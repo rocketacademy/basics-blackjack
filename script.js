@@ -115,7 +115,7 @@ var cardsDrawn = function (hand) {
 
 // return first card - for dealer
 var firstCard = function (hand) {
-  var dealerFirstCard = `${hand[0].name} of ${hand[0].suit}<br>`;
+  var dealerFirstCard = `${hand[0].name} of ${hand[0].suit}<br>`; // CHECK FOR ERROR!!!
   return dealerFirstCard;
 };
 
@@ -174,6 +174,7 @@ var currentGameMode = PLAYER_ENTERS_ROOM;
 var playerPoints = 100;
 var playerBet = 0;
 var myOutputValue = "";
+var compFirstCard = "";
 
 var main = function (input) {
   myOutputValue = playerMoney();
@@ -294,10 +295,11 @@ var main = function (input) {
       //return myOutputValue;
     } else {
       //if no blackjack, game continues with 1 dealer card shown
+      compFirstCard = firstCard(compHand);
       myOutputValue =
         myOutputValue +
         "<br> COMPUTER: <br>" +
-        firstCard(compHand) +
+        compFirstCard +
         "<br> Please choose hit or stand then press the submit button.";
     }
 
@@ -314,7 +316,7 @@ var main = function (input) {
         myOutputValue +
         cardsDrawn(playerHand) +
         "<br> COMPUTER: <br>" +
-        firstCard(compHand) +
+        compFirstCard +
         "<br> Please enter only hit or stand then press the submit button.";
     }
     /*
@@ -400,7 +402,7 @@ var main = function (input) {
           myOutputValue +
           "<br><br> GAME OVER!!! YOU HAVE LOST ALL YOUR MONEY💸💸💸";
       } else {
-        myOutputValue + "<br><br> Press submit to play again.";
+        myOutputValue = myOutputValue + "<br><br> Press submit to play again.";
       }
     }
 
@@ -422,6 +424,7 @@ var main = function (input) {
     cardDeck = [];
     playerBet = 0;
     currentGameMode = PLAYER_ENTERS_ROOM;
+    compFirstCard = "";
   }
 
   console.log("amount left: ", playerPoints);
