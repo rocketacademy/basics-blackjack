@@ -16,6 +16,8 @@ allow betting*/
 // CONSTANT
 var MIN_NUM_PLAYER = 1;
 var MAX_NUM_PLAYER = 4;
+var TWENTY_ONE = 21;
+var SEVENTEEN = 17;
 
 // GLOBAL VARIABLES
 var myOutputValue = "";
@@ -26,6 +28,7 @@ var mode = ASK_FOR_PLAYERS;
 var CREATE_PLAYERS = "create players";
 var ASK_FOR_BETS = "ask for bets";
 var DEAL_STARTING_HAND = "deal starting hand";
+var CHECK_FOR_BLACKJACK = "check for blackjack";
 
 // GAME STATUS
 var numberOfPlayers = 0;
@@ -139,6 +142,140 @@ var dealStartingHand = function () {
   }
 };
 
+var showHandState = function () {
+  // dealer = {
+  //   name: "Dealer",
+  //   hand: [
+  //     { name: "4", value: 4, suit: "Clubs" },
+  //     { name: "9", value: 9, suit: "Diamonds" },
+  //     { name: "4", value: 4, suit: "Hearts" },
+  //     { name: "9", value: 9, suit: "Hearts" },
+  //   ],
+  //   blackjack: false,
+  //   handValue: 0,
+  // };
+  // players[0] = {
+  //   name: `Player 1`,
+  //   hand: [
+  //     { name: "4", value: 4, suit: "Clubs" },
+  //     { name: "9", value: 9, suit: "Diamonds" },
+  //     { name: "4", value: 4, suit: "Hearts" },
+  //     { name: "9", value: 9, suit: "Hearts" },
+  //   ],
+  //   blackjack: false,
+  //   handValue: 0,
+  //   wallet: 100,
+  //   bet: 0,
+  // };
+
+  var message = "";
+  var dealerName = dealer.name;
+  var dealerHandSize = dealer.hand.length;
+  var dealerValue = dealer.handValue;
+
+  message = `${dealerName}: `;
+  var counter = 0;
+  while (counter < dealerHandSize) {
+    var cardName = `${dealer.hand[counter].name} of ${dealer.hand[counter].suit}`;
+    message += `${cardName}, `;
+    counter += 1;
+  }
+  message = message.substring(0, message.length - 2);
+  message += ` (Value: ${dealerValue})`;
+  message += `<br><br>`;
+
+  var index = 0;
+  counter = 0;
+  while (index < numberOfPlayers) {
+    var playerName = players[index].name;
+    var playerHandSize = players[index].hand.length;
+    var playerValue = players[index].handValue;
+
+    message += `${playerName}: `;
+    while (counter < playerHandSize) {
+      cardName = `${players[index].hand[counter].name} of ${players[index].hand[counter].suit}`;
+      message += `${cardName}, `;
+      counter += 1;
+    }
+    counter = 0;
+    index += 1;
+    message = message.substring(0, message.length - 2);
+    message += ` (Value: ${playerValue})`;
+    message += `<br><br>`;
+    message += `Press Submit to continue.`;
+  }
+  return message;
+};
+
+// calculate hand value and store into object
+var calcHandValue = function () {
+  // dealer
+  var dealerCountAces = getNumberOfAces(dealer.hand);
+  var dealerHandSize = dealer.hand.length;
+
+  var sum = 0;
+  var counter = 0;
+  while (counter < dealerHandSize) {
+    var cardValue = dealer.hand[counter].value;
+    sum += cardValue;
+    counter += 1;
+  }
+  if (sum > TWENTY_ONE && dealerCountAces > 0) {
+    var aceCounter = 0;
+    while (aceCounter < dealerCountAces) {
+      sum -= 10;
+      if (sum <= TWENTY_ONE) {
+        break;
+      }
+      aceCounter += 1;
+    }
+  }
+  dealer.handValue = sum;
+
+  // players
+  var index = 0;
+  while (index < numberOfPlayers) {
+    var player = players[index];
+    var playerCountAces = getNumberOfAces(player.hand);
+    var playerHandSize = player.hand.length;
+
+    sum = 0;
+    counter = 0;
+    while (counter < playerHandSize) {
+      cardValue = player.hand[counter].value;
+      sum += cardValue;
+      counter += 1;
+    }
+    if (sum > TWENTY_ONE && playerCountAces > 0) {
+      aceCounter = 0;
+      while (aceCounter < playerCountAces) {
+        sum -= 10;
+        if (sum <= TWENTY_ONE) {
+          break;
+        }
+        aceCounter += 1;
+      }
+    }
+    player.handValue = sum;
+    index += 1;
+  }
+};
+
+var getNumberOfAces = function (hand) {
+  var numberOfAces = 0;
+
+  var counter = 0;
+  while (counter < hand.length) {
+    var cardName = hand[counter].name;
+
+    if (cardName == "Ace") {
+      numberOfAces += 1;
+    }
+    counter += 1;
+  }
+  return numberOfAces;
+};
+
 /* persuo code for blackjack - version 2
 create players
 
@@ -232,71 +369,35 @@ var main = function (input) {
     console.log("========== entering deal starting hand ==========");
     shuffledDeck = shuffleCards(initialiseDeck());
     dealStartingHand();
-    // get hand sum
+    calcHandValue();
     myOutputValue = showHandState();
+    mode = CHECK_FOR_BLACKJACK;
     console.log("========== exiting deal starting hand ==========");
     return myOutputValue;
   }
 
+  if (mode == CHECK_FOR_BLACKJACK) {
+    console.log("========== entering check for blackjack ==========");
+
+    console.log("========== exiting check for blackjack ==========");
+  }
+
+  /*
+  check for blackjack, if dealer blackjack, dealer win, game end
+  blackjack winner bet * 2
+
+  those no blackjack, continue game
+  hit or stand
+  auto stand > 21 or hand > 5
+
+  dealer stand >= 17
+
+  evluate game
+
+  give winning
+
+  empty hand and bet, next game
+  */
+
   return "end of main";
-};
-
-var showHandState = function () {
-  // dealer = {
-  //   name: "Dealer",
-  //   hand: [
-  //     { name: "4", value: 4, suit: "Clubs" },
-  //     { name: "9", value: 9, suit: "Diamonds" },
-  //     { name: "4", value: 4, suit: "Hearts" },
-  //     { name: "9", value: 9, suit: "Hearts" },
-  //   ],
-  //   blackjack: false,
-  //   handValue: 0,
-  // };
-  // players[0] = {
-  //   name: `Player 1`,
-  //   hand: [
-  //     { name: "4", value: 4, suit: "Clubs" },
-  //     { name: "9", value: 9, suit: "Diamonds" },
-  //     { name: "4", value: 4, suit: "Hearts" },
-  //     { name: "9", value: 9, suit: "Hearts" },
-  //   ],
-  //   blackjack: false,
-  //   handValue: 0,
-  //   wallet: 100,
-  //   bet: 0,
-  // };
-
-  var message = "";
-  var dealerName = dealer.name;
-  var dealerHandSize = dealer.hand.length;
-
-  message = `${dealerName}: `;
-  var counter = 0;
-  while (counter < dealerHandSize) {
-    var cardName = `${dealer.hand[counter].name} of ${dealer.hand[counter].suit}`;
-    message += `${cardName}, `;
-    counter += 1;
-  }
-  message = message.substring(0, message.length - 2);
-  message += `<br><br>`;
-
-  var index = 0;
-  counter = 0;
-  while (index < numberOfPlayers) {
-    var playerName = players[index].name;
-    var playerHandSize = players[index].hand.length;
-
-    message += `${playerName}: `;
-    while (counter < playerHandSize) {
-      cardName = `${players[index].hand[counter].name} of ${players[index].hand[counter].suit}`;
-      message += `${cardName}, `;
-      counter += 1;
-    }
-    counter = 0;
-    index += 1;
-    message = message.substring(0, message.length - 2);
-    message += `<br><br>`;
-  }
-  return message;
 };
