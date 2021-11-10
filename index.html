@@ -53,95 +53,73 @@
 
     <!-- CSS -->
     <style>
-      * {
-        box-sizing: border-box;
-      }
-
       body {
         font-family: 'Open Sans', sans-serif;
-        margin-left: 30px;
-        margin-right: 30px;
-        background-color:white;
-        color: black; /* sets the font color */
-        background-image: url(""); /* The image used */
-        background-position: center; /* Center the image */
-        background-repeat: no-repeat; /* Do not repeat the image */
-        background-size: cover; /* Resize the background image to cover the entire container */
       }
 
-      #output-div img{
-        display:block;
-        max-width:100%;
-        max-height:200px;
-      }
-      .header {
-        text-align: center;
-        font-size: 1.1rem;
-        margin-bottom: 3rem;
+      .bg-dealer-hand {
+        background-color: seagreen;
       }
 
-      #container {
-        background-color: pink;
-        margin: 40px auto;
-        max-width: 800px;
-        padding: 38px 31px;
+      .bg-player-hand {
+        background-color: darkseagreen;
       }
 
-      input {
-        font-size: 21px;
-        line-height: 33px;
-        margin: 0 0 23px 0;
-        padding: 0 9px;
-        width: 100%;
-      }
-
-      button {
-        font-size: 21px;
-        line-height: 33px;
-        margin: 0 0 23px 0;
-        padding: 0 6px;
-      }
-
-      #output-div {
-        background-color: lightgrey;
-        margin: 20px auto;
-        padding: 20px;
-        width: 100%;
-      }
 
       .logo-img {
         height: 49px;
-        position: relative;
-        top: 22px;
       }
 
-      /* increase header font size on wider screens */
-      @media screen and (min-width: 600px) {
-        .header {
-          font-size: 2rem;
-        }
+      .uk-background-rocketacademy {
+        background-color: sienna;
+      }
+
+      .text-white {
+        color: white;
       }
     </style>
 
   </head>
 
   <body>
-    <h1 class="header">
-      <img class="logo-img" src="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/brand/logo.png" />
-      Rocket Academy
-      <img class="logo-img" src="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/brand/logo.png" />
-    </h1>
-    <h1 class="header">♣️ Basics - Blackjack ♠️</h1>
-    <div id="container">
-      <p>Input:</p>
-      <input id="input-field" />
-      <br />
-      <button id="submit-button">Submit</button>
-      <button id="hit">Hit</button>
-      <button id="stand">Stand</button>
-      <button id="split">Split</button>
-      <p>Your Hand:</p>
-      <div class="uk-grid uk-flex-center" id="output-div"></div>
+    <div class="uk-padding">
+      <div class="uk-flex uk-flex-center uk-flex-middle uk-margin-top uk-margin-bottom">
+        <img class="logo-img" src="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/brand/logo.png" />  
+        <h1 class="uk-margin-remove uk-text-center">Rocket Academy</h1>
+        <img class="logo-img" src="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/brand/logo.png" />
+      </div>
+      <h2 class="uk-text-center uk-margin-small">♣️ Basics - Blackjack ♠️</h2>
+    </div>
+    <div class="uk-container uk-background-rocketacademy">
+      <h4 class="uk-margin-medium-top uk-margin text-white">Dealer's Hand:</h4>
+      <div class="bg-dealer-hand uk-grid uk-flex-center uk-height-medium uk-margin-auto uk-flex-middle" id="div-dealer-hand"></div>
+      <h4 class="text-white">Your Hand:</h4>
+      <div class="bg-player-hand uk-grid uk-flex-center uk-height-medium uk-margin-auto uk-flex-middle" id="div-player-hand"></div>
+      <div class="uk-grid uk-flex-center uk-padding uk-margin-small">
+        <div>
+          <button class="uk-button uk-button-primary" id="input-new-round" disabled>New Round</button>
+        </div>
+        <div>
+          <button class="uk-button uk-button-primary" id="input-hit" disabled>👆&nbsp;Hit</button>
+        </div>
+        <div>
+          <button class="uk-button uk-button-primary" id="input-stand" disabled>🤚&nbsp;Stand</button>
+        </div>
+        <div>
+          <!-- <button class="uk-button uk-button-primary" id="split">Split</button> -->
+        </div>
+      </div>
+    </div>
+    <div id="modal-name" uk-modal="esc-close: false; bg-close: false;">
+      <div class="uk-modal-dialog uk-modal-body">
+        <h2 class="uk-modal-title">Welcome to Blackjack!</h2>
+        <p>What is your name?</p>
+        <input id="input-player-name" class="uk-input" type="text" placeholder="Austin Powers">
+        <h6 id="input-player-name-error" class="uk-text-danger uk-margin-small" hidden>Please enter your name</h6>
+        <p class="uk-text-right">
+          <button id="input-start-game" class="uk-button uk-button-primary" type="button">Start game</button>
+        </p>
+      </div>
     </div>
     <!-- Import program logic -->
     <script src="index.js"></script>
