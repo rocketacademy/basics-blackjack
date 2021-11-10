@@ -22,12 +22,20 @@
 //       Global Variables
 //------------------------------------
 
-var playerCard1 = [];
-var playerCard2 = [];
-var computerCard1 = [];
-var computerCard2 = [];
-var shuffledDeck = [];
+var playerCardsArray = [];
+var playerCard1 = playerCardsArray[0];
+var playerCard2 = playerCardsArray[1];
+var playerCard3 = playerCardsArray[2];
+var playerHands = [];
+var computerCard1 = {};
+var computerCard2 = {};
+var computerHands = [];
+var computerCardsArray = [];
+var shuffledDeck = {};
 var currentGameMode = "Drawing Cards";
+var message1 = "";
+
+// var message2 = `<br><br> Player please click submit to choose either Hit or Stand!`;
 
 //-----------------------------------
 //       Helper Functions
@@ -101,38 +109,90 @@ var checkBlackJack = function (card1, card2) {
   return result;
 };
 
-// === combineHands function
-getCombinehandValues = function (card1, card2) {
-  var combinedCardRank = card1.rank + card2.rank;
-  if (combinedCardRank <= 21) {
-    return combinedCardRank;
-  } else {
-    return "Bust!!";
+//  === combineHands function
+var getCombineHandValues = function (cardArrays) {
+  var combineHandValues = 0;
+
+  // create loops to loop over all the cards in the array
+  var index = 0;
+  while (index < cardArrays.length) {
+    currentCard = cardArrays[index];
+    if (
+      currentCard.name == "jack" ||
+      currentCard.name == "queen" ||
+      currentCard.name == "king"
+    ) {
+      combineHandValues = combineHandValues + 10;
+    } else {
+      combineHandValues = combineHandValues + currentCard.rank;
+    }
+    index += 1;
+  }
+  return combineHandValues;
+};
+
+//  === compare Player and Computer function
+
+var comparePlayerAndComputer = function (hands1, hands2) {
+  // hands1 not bust
+  if (hands1 <= 21) {
+    if (hands1 > hands2) {
+      return "Player wins!!";
+    } else if (hands1 < hands2) {
+      return "Dealer wins!!";
+    } else if (hands1 == hands2) {
+      return "Tie Game!!";
+    }
+  } else if (hands1 > 21) {
+    return "Player Bust!";
   }
 };
+
+// if (combineHandValues <= 21) {
+//   return combinedCardRank;
+// } else {
+//   return "Bust!!";
+// }
 
 //-----------------------------------
 //       Main Functions
 //-----------------------------------
 
+// ====================================================
+// Version 1: Compare Initial Hands to Determine Winner
+// ====================================================
+
 var main = function (input) {
   var shuffledDeck = shuffleCards(makeDeck());
 
-  // Drawing Cards GameMode
+  var message2 = `<br><br> Player input 'hit' (draw another card) or 'stand' (dealer's turn) !`;
+
+  // ~~~~~~~~~~~~~~~ Drawing Cards Mode ~~~~~~~~~~~~~~~
   // === both players and computer will draw cards
   // === switch mode once both have draw the cards
   // === return message to switch GameMode
 
   if (currentGameMode == "Drawing Cards") {
-    // console.log(shuffledDeck);
-
+    // Switch GameMode to Comparing Mode
+    currentGameMode = "Comparing Mode";
+    console.log(currentGameMode);
     var playerCard1 = shuffledDeck.pop();
     var playerCard2 = shuffledDeck.pop();
+    playerCardsArray.push(playerCard1);
+    playerCardsArray.push(playerCard2);
+
+    // console logs for checkings
+    console.log(playerCardsArray);
     console.log(`playerCard1: ${playerCard1.name} of ${playerCard1.suit} `);
     console.log(`playerCard2: ${playerCard2.name} of ${playerCard2.suit} `);
 
     var computerCard1 = shuffledDeck.pop();
     var computerCard2 = shuffledDeck.pop();
+    computerCardsArray.push(computerCard1);
+    computerCardsArray.push(computerCard2);
+
+    // console logs for checkings
+    console.log(computerCardsArray);
     console.log(
       `computerCard1: ${computerCard1.name} of ${computerCard1.suit}`
     );
@@ -140,17 +200,14 @@ var main = function (input) {
       `computerCard2: ${computerCard2.name} of ${computerCard2.suit}`
     );
 
-    var message = `Player hand: ${playerCard1.name} of ${playerCard1.suit}, ${playerCard2.name} of ${playerCard2.suit} <br>  Dealer hand: ${computerCard1.name} of ${computerCard1.suit}, ${computerCard2.name} of ${computerCard2.suit} <br>`;
+    message1 = `Player hand: ${playerCard1.name} of ${playerCard1.suit}, ${playerCard2.name} of ${playerCard2.suit} <br>  Dealer hand: ${computerCard1.name} of ${computerCard1.suit}, ${computerCard2.name} of ${computerCard2.suit}`;
 
-    // Switch GameMode to Comparing Mode
-    currentGameMode = "Comparing Mode";
-    console.log(currentGameMode);
-
-    myOutputValue = `Click submit to compare the cards!`;
-    console.log(myOutputValue);
+    // myOutputValue = `Click submit to compare the cards!`;
+    // console.log(myOutputValue);
   }
 
-  // Comparing Mode
+  // ~~~~~~~~~~~~~~~ Comparing Mode ~~~~~~~~~~~~~~~
+
   // == check for blackjack conditions
   // == formation of blackjacks
   // == ace + 10 , J , Q, K
@@ -161,9 +218,13 @@ var main = function (input) {
   // == if computer hands are bigger > computer wins
 
   if (currentGameMode == "Comparing Mode") {
-    // === check for Blackjack conditions first
+    // Switch GameMode to Player Hit OR Stand Mode
+    currentGameMode = "Player Choose Mode";
+    console.log(currentGameMode);
 
-    // ~~~~~~~~~~~~~~~ Testing Conditions ~~~~~~~~~~~~~~~
+    // ~~~~ check for Blackjack conditions first ~~~~
+
+    // === Testing Conditions for BlackJack ===
     // playerCard1.name = "ace";
     // playerCard2.rank = 10;
     // computerCard1.name = "ace";
@@ -176,39 +237,73 @@ var main = function (input) {
 
     // player with Blackjack
     if (playerBlackJack == true && computerBlackJack == false) {
-      return message + "Player wins with Blackjack!";
+      return message1 + "Player wins with Blackjack!" + message2;
     } else if (playerBlackJack == true && computerBlackJack == true) {
-      return message + "Its a Blackjack tie!";
+      return message1 + "Its a Blackjack tie!" + message2;
     }
 
     // computer with Blackjack
     if (computerBlackJack == true && playerBlackJack == false) {
-      return message + "Dealer wins with Blackjack!";
+      return message1 + "Dealer wins with Blackjack!" + message2;
     } else if (computerBlackJack == true && playerBlackJack == true) {
-      return message + "Its a Blackjack tie!";
+      return message1 + "Its a Blackjack tie!" + message2;
     }
+
+    // ~~~~ check for non-Blackjack conditions ~~~~~
 
     // either computer or player has no Blackjack
-
     if (playerBlackJack == false && computerBlackJack == false) {
-      var playerHands = getCombinehandValues(playerCard1, playerCard2);
+      playerHands = getCombineHandValues(playerCardsArray);
       console.log(`playerHands: ${playerHands}`);
-      var computerHands = getCombinehandValues(computerCard1, computerCard2);
+      computerHands = getCombineHandValues(computerCardsArray);
       console.log(`computerHands: ${computerHands}`);
-
-      if (playerHands > computerHands && playerHands !== "Bust!!") {
-        return message + "Player wins!!";
-      } else if (playerHands < computerHands && computerHands !== "Bust!!") {
-        return message + "Dealer wins!!";
-      } else if (
-        playerHands == computerHands &&
-        playerHands !== "Bust!!" &&
-        computerHands !== "Bust!!"
-      ) {
-        return message + "Tie Game!!";
-      }
+      myOutputValue =
+        message1 +
+        // comparePlayerAndComputer(playerHands, computerHands) +
+        message2;
     }
+    return myOutputValue;
+  }
 
-    // Switch GameMode to Result Mode
+  // ~~~~~~~~~~~~~~~ Player Hit or Stand Mode ~~~~~~~~~~~~~~~
+
+  if (currentGameMode == "Player Choose Mode") {
+    // Allow player to choose Hit or Stand
+
+    // if player choose Hit
+    if (input == "hit") {
+      var playerCard3 = shuffledDeck.pop();
+      console.log(`playerCard3: ${playerCard3.name}`);
+      playerCardsArray.push(playerCard3);
+      playerHands = getCombineHandValues(playerCardsArray);
+      console.log(`playerhands: ${playerHands}`);
+      console.log(`computerHands: ${computerHands}`);
+      myOutputValue = `${message1}<br> Player chose another card: ${
+        playerCard3.name
+      } of ${playerCard3.suit}<br>${comparePlayerAndComputer(
+        playerHands,
+        computerHands
+      )}`;
+    }
+    // if player choose Stand
+    else if (input == "stand") {
+      console.log(`playerhands: ${playerHands}`);
+      console.log(`computerHands: ${computerHands}`);
+      myOutputValue = `${message1}<br> ${comparePlayerAndComputer(
+        playerHands,
+        computerHands
+      )}`;
+    }
+    return myOutputValue;
   }
 };
+
+// ==================================
+// Version 2: Add Player Hit or Stand
+// ==================================
+
+// Switch to Player Hit or Stand GameMode
+// Player choose either to hit (add) or stand (not add) first
+//   == add the logic when the player busts (>21)
+// Re-evaluate the game-winning condition
+// == player should not lose immediately even if he busts, i.e both player and dealer might bust
