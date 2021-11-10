@@ -20,6 +20,11 @@ var playerBlackJack = false;
 var dealerBlackJack = false;
 var playerBust = false;
 var dealerBust = false;
+var loseImage = `<img src="https://c.tenor.com/MHwsB9o1eS4AAAAM/bh187-marvel.gif"/>`;
+var bustImage = `<img src = "https://c.tenor.com/GoZ7JND7Fq0AAAAM/deadpool-x-men.gif"/>`;
+var winImage = `<img src = "https://c.tenor.com/hJO8I8b8_38AAAAM/groot-dancing.gif" />`;
+var blackjackImage = `<img src="https://c.tenor.com/p6f6aCbN7p0AAAAM/thor-thor-odinson.gif"/>`;
+var drawImage = `<img src="https://c.tenor.com/Jft_4K8MU2IAAAAC/soso-notbad.gif" />`;
 
 // Function to create deck
 var makeDeck = function () {
@@ -155,7 +160,7 @@ var firstHit = function () {
   if (playerSum > 21) {
     // if bust, return true
     playerBust = true;
-    myOutputValue = `${playerBustMessage} ${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}<br>${playerCard3.name} of ${playerCard3.suit}<br><br> Sum is ${playerSum}<br><br> Press DEAL to end turn.`;
+    myOutputValue = `${bustImage} <br><br>${playerBustMessage} ${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}<br>${playerCard3.name} of ${playerCard3.suit}<br><br> Sum is ${playerSum}<br><br> Press DEAL to end turn.`;
     gameMode = "results";
   } // if less than or equal 21, player can choose to continue or end turn
   if (playerSum <= 21) {
@@ -174,7 +179,7 @@ var secondHit = function () {
   if (playerSum > 21) {
     // If bust, return true
     playerBust = true;
-    myOutputValue = `${playerBustMessage} ${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}<br>${playerCard3.name} of ${playerCard3.suit}<br>${playerCard4.name} of ${playerCard4.suit}<br><br> Sum is ${playerSum}<br><br> Press DEAL to end turn.`;
+    myOutputValue = `${bustImage} <br><br>${playerBustMessage} ${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}<br>${playerCard3.name} of ${playerCard3.suit}<br>${playerCard4.name} of ${playerCard4.suit}<br><br> Sum is ${playerSum}<br><br> Press DEAL to end turn.`;
     gameMode = "results";
   } // if less than equal to 21, player can choose to continue or end turn
   if (playerSum <= 21) {
@@ -196,7 +201,7 @@ var thirdHit = function () {
   if (playerSum > 21) {
     // if bust, output bust message
     playerBust = true;
-    myOutputValue = `${playerBustMessage} ${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}<br>${playerCard3.name} of ${playerCard3.suit}<br>${playerCard4.name} of ${playerCard4.suit}<br>${playerCard5.name} of ${playerCard5.suit}<br><br> Sum is ${playerSum}<br><br> Press DEAL to end turn.`;
+    myOutputValue = `${bustImage} <br><br>${playerBustMessage} ${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}<br>${playerCard3.name} of ${playerCard3.suit}<br>${playerCard4.name} of ${playerCard4.suit}<br>${playerCard5.name} of ${playerCard5.suit}<br><br> Sum is ${playerSum}<br><br> Press DEAL to end turn.`;
     gameMode = "results";
   }
   if (playerSum <= 21) {
@@ -286,25 +291,25 @@ var dealerDrawCards = function () {
 // Tally all results here
 var finalResults = function () {
   if (playerBlackJack == true) {
-    myOutputValue = `Player wins. `;
+    myOutputValue = `${blackjackImage}Player wins.`;
   } else if (dealerBlackJack == true) {
-    myOutputValue = `Dealer wins`;
+    myOutputValue = ` ${loseImage}Dealer wins`;
   } else if (playerSum == dealerSum) {
-    myOutputValue = `It's a draw. `;
+    myOutputValue = `${drawImage}<br><br>It's a draw.`;
   } else if (playerSum > dealerSum && playerBust == false) {
-    myOutputValue = `Player wins.`;
+    myOutputValue = `${winImage}<br><br>Player wins.`;
   } else if (dealerBust == true) {
-    myOutputValue = `Player wins.`;
+    myOutputValue = `${winImage}<br><br>Player wins.`;
   } else if (dealerSum > playerSum) {
-    myOutputValue = `Dealer wins.`;
+    myOutputValue = `${loseImage}<br><br>Dealer wins.`;
   } else if (playerBust == true) {
-    myOutputValue = `Dealer wins.`;
+    myOutputValue = `${loseImage}<br><br>Dealer wins.`;
   } else if (
     playerSum < dealerSum &&
     dealerBust == true &&
     playerBust == false
   ) {
-    myOutputValue = `Player wins.`;
+    myOutputValue = `${winImage}<br><br>Player wins.`;
   }
   gameMode = "start";
 };
