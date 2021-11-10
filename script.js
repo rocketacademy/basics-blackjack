@@ -1,20 +1,28 @@
 // global variables
-var gameMode = "start";
-var playerMode = "";
+var gameMode = "wager";
+var wagerPoints = 0;
+
+// All player related variables
 var playerSum = 0;
-var dealerSum = 0;
 var playerCard1 = {};
 var playerCard2 = {};
 var playerCard3 = {};
 var playerCard4 = {};
 var playerCard5 = {};
+var playerScore = 100;
+var playerWin = false;
+var playerDraw = false;
 var playerBustMessage = `BUST<br><br> PLAYER'S HAND <br><br>`;
+
+// All dealer related variables
+var dealerSum = 0;
 var dealerCard1 = {};
 var dealerCard2 = {};
 var dealerCard3 = {};
 var dealerCard4 = {};
 var dealerCard5 = {};
 var dealerBustMessage = `BUST<br><br> DEALER HAND <br><br>`;
+
 // Check whether player and dealer bust or not
 var playerBlackJack = false;
 var dealerBlackJack = false;
@@ -84,7 +92,19 @@ var shuffleCards = function (cardDeck) {
   return cardDeck;
 };
 
-// FPlayer to draw 2 cards
+// Wager points before start of round
+var pointsWager = function (input) {
+  if (input == "") {
+    myOutputValue = `Please input numbers from 0-100 to wager your points.`;
+  } else {
+    wagerPoints = Number(input);
+    playerScore -= wagerPoints;
+    myOutputValue = `You now have ${playerScore} points. <br><br> Press DEAL to begin drawing your cards.`;
+    gameMode = "start";
+  }
+};
+
+// Player to draw 2 cards
 var playerDrawCards = function () {
   var counter = 0;
   //loop will run until 2 cards are drawn for the player
@@ -294,33 +314,46 @@ var dealerDrawCards = function () {
 // Tally all results here
 var finalResults = function () {
   if (playerBlackJack == true) {
-    myOutputValue = `${blackjackImage}Player wins.`;
+    wagerPoints = wagerPoints * 2;
+    playerScore += wagerPoints;
+    myOutputValue = `${blackjackImage}Player wins. <br><br> PLAYER POINTS : ${playerScore}<br><br> Press DEAL to restart the round.`;
   } else if (dealerBlackJack == true) {
-    myOutputValue = ` ${loseImage}Dealer wins`;
+    myOutputValue = ` ${loseImage}Dealer wins. <br><br> PLAYER POINTS : ${playerScore}<br><br> Press DEAL to restart the round.`;
   } else if (playerSum == dealerSum) {
-    myOutputValue = `${drawImage}<br><br>It's a draw.`;
+    playerScore += wagerPoints;
+    myOutputValue = `${drawImage}<br><br>It's a draw. <br><br> PLAYER POINTS : ${playerScore}<br><br> Press DEAL to restart the round.`;
   } else if (playerSum > dealerSum && playerBust == false) {
-    myOutputValue = `${winImage}<br><br>Player wins.`;
+    wagerPoints = wagerPoints * 2;
+    playerScore += wagerPoints;
+    myOutputValue = `${winImage}<br><br>Player wins. <br><br> PLAYER POINTS : ${playerScore}<br><br> Press DEAL to restart the round.`;
   } else if (dealerBust == true) {
-    myOutputValue = `${winImage}<br><br>Player wins.`;
+    wagerPoints = wagerPoints * 2;
+    playerScore += wagerPoints;
+    myOutputValue = `${winImage}<br><br>Player wins. <br><br> PLAYER POINTS : ${playerScore}<br><br> Press DEAL to restart the round.`;
   } else if (dealerSum > playerSum) {
-    myOutputValue = `${loseImage}<br><br>Dealer wins.`;
+    myOutputValue = `${loseImage}<br><br>Dealer wins. <br><br> PLAYER POINTS : ${playerScore}<br><br> Press DEAL to restart the round.`;
   } else if (playerBust == true) {
-    myOutputValue = `${loseImage}<br><br>Dealer wins.`;
+    myOutputValue = `${loseImage}<br><br>Dealer wins. <br><br> PLAYER POINTS : ${playerScore}<br><br> Press DEAL to restart the round.`;
   } else if (
     playerSum < dealerSum &&
     dealerBust == true &&
     playerBust == false
   ) {
-    myOutputValue = `${winImage}<br><br>Player wins.`;
+    wagerPoints = wagerPoints * 2;
+    playerScore += wagerPoints;
+    myOutputValue = `${winImage}<br><br>Player wins. <br><br> PLAYER POINTS : ${playerScore}<br><br> Press DEAL to restart the round.`;
   }
-  gameMode = "start";
+  gameMode = "wager";
 };
 var deckOfCards = makeDeck();
 var shuffle = shuffleCards(deckOfCards);
 var main = function (input) {
+  // Wager points before drawing cards
+  if (gameMode == "wager") {
+    pointsWager(input);
+  }
   // draw 2 when dealing
-  if (gameMode == "start") {
+  else if (gameMode == "start") {
     playerDrawCards();
   } else if (gameMode == "ace choice") {
     aceChoice(input);
@@ -344,13 +377,7 @@ var main = function (input) {
   ) {
     dealerDrawCards();
   } else if (gameMode == "results") {
-    console.log(playerSum);
-    console.log(dealerSum);
-    console.log(playerBust);
-    console.log(dealerBust);
     finalResults();
-    // bring it back to the start of the game
-    gameMode = "start";
   }
   return myOutputValue;
 };
