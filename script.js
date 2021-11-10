@@ -29,7 +29,7 @@ var drawImage = `<img src="https://c.tenor.com/Jft_4K8MU2IAAAAC/soso-notbad.gif"
 // Function to create deck
 var makeDeck = function () {
   var cardDeck = [];
-  var suits = ["Hearts", "Diamonds", "Clubs", "Spades"];
+  var suits = ["❤️", "♦️", "♣️", "♠️"];
 
   // Loop over the suits array
   var suitIndex = 0;
@@ -91,8 +91,6 @@ var playerDrawCards = function () {
   while (counter < 1) {
     playerCard1 = shuffle.pop();
     playerCard2 = shuffle.pop();
-    console.log(playerCard1);
-    console.log(playerCard2);
     counter++;
   }
   playerSum = playerCard1.rank + playerCard2.rank;
@@ -190,8 +188,7 @@ var secondHit = function () {
     gameMode = "results";
   } // if less than equal to 21, player can choose to continue or end turn
   if (playerSum <= 21) {
-    myOutputValue = `PLAYER'S HAND <br><br> ${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}<br>${playerCard3.name} of ${playerCard3.suit}<br>${playerCard4.name} of ${playerCard4.suit}<br><br> Sum is ${playerSum} <br><br>
-          Type "hit" to draw another card or "stand" to end turn.`;
+    myOutputValue = `PLAYER'S HAND <br><br> ${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}<br>${playerCard3.name} of ${playerCard3.suit}<br>${playerCard4.name} of ${playerCard4.suit}<br><br> Sum is ${playerSum} <br><br>Type "hit" to draw another card or "stand" to end turn.`;
     gameMode = "round3";
   }
 };
@@ -213,8 +210,7 @@ var thirdHit = function () {
   }
   if (playerSum <= 21) {
     //if less than or equal to 21, player can choose to contnue or end turn
-    myOutputValue = `PLAYER'S HAND <br><br> ${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}<br>${playerCard3.name} of ${playerCard3.suit}<br>${playerCard4.name} of ${playerCard4.suit}<br>${playerCard5.name} of ${playerCard5.suit}<br><br> Sum is ${playerSum} <br><br>
-          Type "hit" to draw another card or "stand" to end turn.`;
+    myOutputValue = `PLAYER'S HAND <br><br> ${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}<br>${playerCard3.name} of ${playerCard3.suit}<br>${playerCard4.name} of ${playerCard4.suit}<br>${playerCard5.name} of ${playerCard5.suit}<br><br> Sum is ${playerSum} <br><br>Type "hit" to draw another card or "stand" to end turn.`;
     gameMode = "end user turn";
   }
 };
