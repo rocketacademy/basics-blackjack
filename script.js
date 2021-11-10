@@ -272,7 +272,7 @@ const winLossChecker = function () {
     console.log("was here 271");
     if (cleanHuman > 21) {
       players[activePlayer].win = "lose";
-      myOutputValue = `${players[activePlayer].name} loses.`;
+      myOutputValue = `${players[activePlayer].name} loses.<br><br>`;
       players[activePlayer].playing = false;
       activePlayer += 1;
       if (activePlayer == players.length - 1) {
