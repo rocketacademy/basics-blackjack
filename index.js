@@ -5,7 +5,7 @@ class App {
   #payoutRate = 1.5;
   #betAmount = -1;
   // #currentTurnIndex = -1;
-  #dealerStands = false;
+  #playerStands = false;
   #currentDeck = null;
   #dealerIndex = -1;
 
@@ -61,7 +61,7 @@ class App {
     document.getElementById("input-hit").disabled = false;
     document.getElementById("input-stand").disabled = false;
 
-    this.#dealerStands = false;
+    this.#playerStands = false;
 
     this.state = GameState.Playing;
 
@@ -82,7 +82,6 @@ class App {
       dealer.addCardToHand(this.#currentDeck.draw());
       this.calculateHand(dealer);
     }
-    this.#dealerStands = true;
 
     this.#players.forEach((player, index) => {
       let delay = (index + 1) * 500;
@@ -103,8 +102,6 @@ class App {
         });
       });
     });
-
-    // this.#currentTurnIndex = 0;
 
     this.calculateScore();
   }
@@ -127,9 +124,18 @@ class App {
             this.endTurn(true);
             this.state = GameState.End;
           }
-        } else if (player.handValue > dealer.handValue && this.#dealerStands) {
-          this.endTurn(true);
-          this.state = GameState.End;
+        } else if (this.#playerStands) {
+          if (player.handValue > dealer.handValue) {
+            this.endTurn(true);
+            this.state = GameState.End;
+          } else if (player.handValue === dealer.handValue) {
+            this.endTurn(false);
+            player.addScore(this.#betAmount);
+            this.state = GameState.End;
+          } else {
+            this.endTurn(false);
+            this.state = GameState.End;
+          }
         }
       }
     }
@@ -201,6 +207,8 @@ class App {
     // const card = this.#currentDeck.draw();
 
     // dealer.addCardToHand(card);
+
+    this.#playerStands = true;
 
     this.calculateHand(dealer);
     this.calculateHand(player);
