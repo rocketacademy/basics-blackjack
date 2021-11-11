@@ -1,8 +1,9 @@
 const main = function () {
-  myOutputValue = playBlackJack();
+  myOutputValue = playBlackJack() + myImage;;
   return myOutputValue;
 };
 
+var myImage = '<img src="/banner.png"/>';
 const makeDeck = function () {
   // Initialise an empty deck array
   let cardDeck = [];
@@ -112,9 +113,10 @@ const isBlackJack = function (arrayHand) {
 
 let mode = "start mode";
 let numberPlayers = 1;
-const playBlackJack = function (aDeck) {
+let playDeck = aNewDeck();
+const playBlackJack = function (input) {
   mode = "start mode";
-  let playDeck = aNewDeck();
+
   let cardsOfPlayers = [];
   let sumOfPlayer = 0;
   let players = {};
@@ -158,38 +160,96 @@ const playBlackJack = function (aDeck) {
   let gameRecord = { players, dealer };
   console.log(`gameRecord is `, gameRecord);
   console.log(`Remaining Deck now has`, playDeck.length, `cards.`);
+  mode = "compare cards";
 
-  // Compare results
-
-  for (let i = 1; i <= numberPlayers; i++) {
-    // tie
-    let playerIndex = "player" + i;
-    if (gameRecord.players[playerIndex].sumPlayer === dealer.sumDealer) {
-      message = `Its a tie. <br><br>`;
+  if (mode === "compare cards") {
+    // Compare results
+    for (let i = 1; i <= numberPlayers; i++) {
+      // tie
+      let playerIndex = "player" + i;
+      if (gameRecord.players[playerIndex].sumPlayer === dealer.sumDealer) {
+        message = `Its a tie. <br><br>`;
+      }
+      // black jack cases
+      else if (
+        isBlackJack(gameRecord.players[playerIndex].cardsPlayer) === true
+      ) {
+        message = `Player wins blackjack <br><br>`;
+      } else if (isBlackJack(gameRecord.dealer.cardsDealer) === true) {
+        message = `Dealer wins blackjack <br><br>`;
+      } else if (
+        isBlackJack(gameRecord.players[playerIndex].cardsPlayer) === true &&
+        isBlackJack(gameRecord.dealer.cardsDealer) === true
+      ) {
+        message = `Both player and dealer win by blackjack <br><br>`;
+      }
+      // normal win
+      else if (gameRecord.players[playerIndex].sumPlayer > dealer.sumDealer) {
+        message = `Player wins <br><br>`;
+      } else {
+        message = `Dealer wins <br><br>`;
+      }
     }
-    // black jack cases
-    else if (isBlackJack(gameRecord.players[playerIndex].cardsPlayer)) {
-      message = `Player wins blackjack <br><br>`;
-    } else if (isBlackJack(gameRecord.dealer.cardsDealer)) {
-      message = `Dealer wins blackjack <br><br>`;
-    } // normal win
-    else if (gameRecord.players[playerIndex].sumPlayer > dealer.sumDealer) {
-      message = `Player wins <br><br>`;
-    } else {
-      message = `Dealer wins <br><br>`;
-    }
+    mode = "hit or stand";
+    return (
+      message +
+      declare(gameRecord) +
+      ` <br><br>Player, pls decide hit or stand.`
+    );
   }
-  return message + declare(gameRecord);
+  console.log(`mode before decide hit or stand is `, mode);
+
+  if (mode === "hit or stand") {
+    for (let i = 1; i <= numberPlayers; i++) {
+      let playerIndex = "player" + i;
+      if (input === "hit") {
+        console.log(`wereadfdfzdfasdfgdrsts`);
+        let addPlayerCard = playDeck.pop();
+        gameRecord.players[playerIndex].cardsOfPlayers.push(addPlayerCard);
+        console.log(
+          `cards of player${i}`,
+          gameRecord.players[playerIndex].cardsOfPlayers
+        );
+        message =
+          declare(gameRecord) +
+          '<br> You drew another card. <br>Please input "hit" or "stand" to continue.';
+      } else if (input === "stand") {
+        while (gameRecord.dealer.sumDealer < 17) {
+          let addDealerCard = playDeck.pop();
+          gameRecord.dealer.cardsDealer.push(addDealerCard);
+        }
+        mode = "compare cards";
+      }
+    }
+    console.log(`playDeck now has `, playDeck.length, `cards.`);
+  }
+  mode = "start mode";
 };
 
 // declare results
+let innerMessagePlayers = "";
+let innerMessageDealer = "";
+let messagePlayers = "";
+let messageDealer = "";
 const declare = function (gameRecord) {
   for (let i = 1; i <= numberPlayers; i++) {
     let playerIndex = "player" + i;
-    let messagePlayers = `Player ${i} hand: <br> ${gameRecord.players[playerIndex].cardsPlayer[0].name} of ${gameRecord.players[playerIndex].cardsPlayer[0].suit}, <br> ${gameRecord.players[playerIndex].cardsPlayer[1].name} of ${gameRecord.players[playerIndex].cardsPlayer[1].suit}, <br><br>`;
-    messageAllPlayers = messagePlayers;
+    for (
+      let e = 0;
+      e < gameRecord.players[playerIndex].cardsPlayer.length;
+      e++
+    ) {
+      console.log(`i `, i);
+      console.log(`player e `, e);
+      innerMessagePlayers += `<br> ${gameRecord.players[playerIndex].cardsPlayer[e].name} of ${gameRecord.players[playerIndex].cardsPlayer[e].suit}, `;
+    }
+    messagePlayers = `Player ${i} hand: ` + innerMessagePlayers;
   }
-  let messageDealer = `Dealer hand: <br> ${gameRecord.dealer.cardsDealer[0].name} of ${gameRecord.dealer.cardsDealer[0].suit}, <br> ${gameRecord.dealer.cardsDealer[1].name} of ${gameRecord.dealer.cardsDealer[1].suit},`;
 
-  return messageAllPlayers + messageDealer;
+  for (let e = 0; e < gameRecord.dealer.cardsDealer.length; e++) {
+    console.log(`dealer e `, e);
+    innerMessageDealer += `<br> ${gameRecord.dealer.cardsDealer[e].name} of ${gameRecord.dealer.cardsDealer[e].suit},`;
+    messageDealer = `<br><br> Dealer hand: ` + innerMessageDealer;
+  }
+  return messagePlayers + messageDealer;
 };
