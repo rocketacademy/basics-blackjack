@@ -2,7 +2,10 @@ class App {
   state = GameState.Start;
   previousState = -1;
   #players = [];
-  #currentTurnIndex = 0;
+  #payoutRate = 1.5;
+  #betAmount = -1;
+  // #currentTurnIndex = -1;
+  #dealerStands = false;
   #currentDeck = null;
   #dealerIndex = -1;
 
@@ -18,9 +21,13 @@ class App {
       document.getElementById("input-player-name-error").hidden = true;
 
       this.#players = [new Player(playerName), new Player("Dealer")];
-      this.#dealerIndex = 1;
+      this.#dealerIndex = this.#players.length - 1;
 
-      this.newRound();
+      UIkit.modal("#modal-name").hide();
+
+      this.displayBank(this.#players[0]);
+
+      document.getElementById("input-new-round").disabled = false;
     } else {
       document.getElementById("input-player-name").classList.add("uk-animation-shake");
       document.getElementById("input-player-name-error").hidden = false;
@@ -28,19 +35,54 @@ class App {
   }
 
   newRound() {
+    UIkit.modal("#modal-bet").show();
+
+    this.clearCards(DisplayArea.Dealer);
+    this.clearCards(DisplayArea.Player);
+    this.state = GameState.NewRound;
+  }
+
+  placeBet() {
+    const betAmount = document.querySelector("#input-player-bet").value;
+    if (betAmount.length > 0 && betAmount != 0) {
+
+      UIkit.modal("#modal-bet").hide();
+
+      this.#betAmount = parseInt(betAmount);
+      this.#players[0].subtractScore(this.#betAmount);
+
+      this.displayBank(this.#players[0]);
+      this.deal();
+    }
+  }
+
+  deal() {
+    document.getElementById("input-new-round").disabled = true;
     document.getElementById("input-hit").disabled = false;
     document.getElementById("input-stand").disabled = false;
 
-    UIkit.modal("#modal-name").hide();
+    this.#dealerStands = false;
+
+    this.state = GameState.Playing;
 
     this.#currentDeck = new Deck();
     this.#currentDeck.shuffle();
 
     this.#players.forEach((player, index) => {
       player.discardHand();
+
       player.addCardToHand(this.#currentDeck.draw());
       player.addCardToHand(this.#currentDeck.draw());
+
+      this.calculateHand(player);
     });
+
+    const dealer = this.#players[this.#dealerIndex];
+    while (dealer.handValue < 17) {
+      dealer.addCardToHand(this.#currentDeck.draw());
+      this.calculateHand(dealer);
+    }
+    this.#dealerStands = true;
 
     this.#players.forEach((player, index) => {
       let delay = (index + 1) * 500;
@@ -52,13 +94,144 @@ class App {
           } else {
             this.displayCard(card, DisplayArea.Player);
           }
+
+          if (index === this.#dealerIndex) {
+            this.displayScore(player.handValue, DisplayArea.Dealer);
+          } else {
+            this.displayScore(player.handValue, DisplayArea.Player);
+          }
         });
       });
     });
+
+    // this.#currentTurnIndex = 0;
+
+    this.calculateScore();
+  }
+
+  calculateScore() {
+    const dealer = this.#players[this.#dealerIndex];
+    for (let i = 0; i < this.#players.length; i++) {
+      let player = this.#players[i];
+      if (i === this.#dealerIndex) {
+        if (player.handValue > 21) {
+          this.endTurn(true);
+          this.state = GameState.End;
+        } 
+      } else {
+        if (player.handValue > 21) {
+          this.endTurn(false);
+          this.state = GameState.End;
+        } else if (player.handValue === 21) {
+          if (dealer.handValue !== 21) {
+            this.endTurn(true);
+            this.state = GameState.End;
+          }
+        } else if (player.handValue > dealer.handValue && this.#dealerStands) {
+          this.endTurn(true);
+          this.state = GameState.End;
+        }
+      }
+    }
+  };
+
+  endTurn(playerWins) {
+    console.log("playerWins? " + playerWins);
+    const player = this.#players[0];
+
+    if (playerWins) {
+      player.addScore(this.#betAmount * this.#payoutRate);
+    }
+
+    document.getElementById("input-new-round").disabled = false;
+    document.getElementById("input-hit").disabled = true;
+    document.getElementById("input-stand").disabled = true;
+
+    this.displayBank(player);
+  }
+
+  calculateHand(player) {
+    player.handValue = 0;
+    player.getHand().forEach((card) => {
+      switch (card.getValue()) {
+        case "A": {
+          if ((player.handValue + 11) > 21) {
+            player.handValue += 1;
+          } else {
+            player.handValue += 11;
+          }
+        }
+          break;
+        case "J":
+        case "Q":
+        case "K":
+          {
+            player.handValue += 10;
+          }
+          break;
+        default:
+          {
+            player.handValue += parseInt(card.getValue());
+          }
+          break;
+      }
+    });
+  }
+
+  hit() {
+    console.log("hit");
+
+    const player = this.#players[0];
+    const card = this.#currentDeck.draw();
+
+    player.addCardToHand(card);
+
+    this.calculateHand(player);
+    this.calculateScore();
+
+    this.displayCard(card, DisplayArea.Player);
+    this.displayScore(player.handValue, DisplayArea.Player);
+  }
+
+  stand() {
+    console.log("stand");
+
+    const player = this.#players[0];
+    const dealer = this.#players[1];
+    // const card = this.#currentDeck.draw();
+
+    // dealer.addCardToHand(card);
+
+    this.calculateHand(dealer);
+    this.calculateHand(player);
+    this.calculateScore();
+
+    // this.displayCard(dealer, DisplayArea.Dealer);
+    // this.displayScore(dealer.handValue, DisplayArea.Dealer);
+  }
+
+  displayBank(player) {
+    const outputElement = document.querySelector("#bank-player");
+    outputElement.innerHTML = `\$${player.getScore()}`;
+  }
+
+  displayScore(score, displayArea) {
+    let outputElement = null;
+    if (displayArea === DisplayArea.Dealer) {
+      outputElement = document.querySelector("#score-dealer");
+    } else {
+      outputElement = document.querySelector("#score-player");
+    }
+    outputElement.innerHTML = isNaN(score) ? "" : score;
+  }
+
+  clearScores() {
+    this.displayScore(null, DisplayArea.Dealer);
+    this.displayScore(null, DisplayArea.Player);
   }
 
   displayCard(card, displayArea) {
-    var outputElement = null;
+    let outputElement = null;
     if (displayArea === DisplayArea.Dealer) {
       outputElement = document.querySelector("#div-dealer-hand");
     } else {
@@ -66,14 +239,13 @@ class App {
     }
 
     outputElement.innerHTML +=
-        '<div class="uk-padding-small">' +
-          '<div class="uk-card uk-card-default uk-animation-slide-bottom">' +
-            '<div class="uk-card-media-top flip-card-front">' +
-              `<img src="${card.getImage()}" class="uk-height-small uk-height-max-small">` +
-            '</div>' + 
-          // '<div class="uk-card-body flip-card-back"></div>' +
-        '</div>'
-      '</div>';
+      `<div class="uk-padding-small">
+        <div class="uk-card uk-card-default uk-animation-slide-bottom">
+          <div class="uk-card-media-top flip-card-front">
+            <img src="${card.getImage()}" class="uk-height-small uk-height-max-small">
+          </div>
+        </div>
+      </div>`;
   }
 
   clearCards(displayArea) {
@@ -89,10 +261,24 @@ class App {
   }
 
   initButtons() {
+    // Modals
     const startGameButton = document.querySelector("#input-start-game");
     startGameButton.addEventListener("click", this.startGame.bind(this));
+
+    const placeBetButton = document.querySelector("#input-place-bet");
+    placeBetButton.addEventListener("click", this.placeBet.bind(this));
+
+    // Player input
+    const newRoundButton = document.querySelector("#input-new-round");
+    newRoundButton.addEventListener("click", this.newRound.bind(this));
+
+    const hitButton = document.querySelector("#input-hit");
+    hitButton.addEventListener("click", this.hit.bind(this));
+
+    const standButton = document.querySelector("#input-stand");
+    standButton.addEventListener("click", this.stand.bind(this));
   }
-  
+
   delay(time) {
     return new Promise(resolve => setTimeout(resolve, time));
   }
@@ -133,9 +319,9 @@ class Card {
   #suit = "";
 
   constructor(cardString) {
-    let codeString = cardString.split();
+    let codeString = cardString.split("");
     this.#suit = codeString.pop();
-    this.#value = codeString.join();
+    this.#value = codeString.join("");
   }
 
   getValue() {
@@ -155,6 +341,7 @@ class Player {
   #name = "Player Unknown";
   #score = 100;
   #hand = [];
+  handValue = 0;
 
   constructor(name) {
     this.#name = name;
@@ -174,6 +361,7 @@ class Player {
 
   discardHand() {
     this.#hand = [];
+    this.handValue = 0;
   }
 
   getScore() {

@@ -77,6 +77,10 @@
       .text-white {
         color: white;
       }
+
+      .text-yellow {
+        color: yellow;
+      }
     </style>
 
   </head>
@@ -91,10 +95,20 @@
       <h2 class="uk-text-center uk-margin-small">♣️ Basics - Blackjack ♠️</h2>
     </div>
     <div class="uk-container uk-background-rocketacademy">
-      <h4 class="uk-margin-medium-top uk-margin text-white">Dealer's Hand:</h4>
+      <span class="uk-flex-inline">
+        <h4 class="uk-margin-medium-top uk-margin text-white">Dealer's Hand:&nbsp;</h4>
+        <h4 id="score-dealer" class="uk-text-bolder text-yellow"></h4>
+      </span>
       <div class="bg-dealer-hand uk-grid uk-flex-center uk-height-medium uk-margin-auto uk-flex-middle" id="div-dealer-hand"></div>
-      <h4 class="text-white">Your Hand:</h4>
+      <span class="uk-flex-inline">
+        <h4 class="uk-margin-medium-top uk-margin text-white">Your Hand:&nbsp;</h4>
+        <h4 id="score-player" class="uk-text-bolder text-yellow"></h4>
+      </span>
       <div class="bg-player-hand uk-grid uk-flex-center uk-height-medium uk-margin-auto uk-flex-middle" id="div-player-hand"></div>
+      <span class="uk-flex uk-flex-center uk-flex-middle">
+        <h4 class="uk-margin-small uk-margin-small-top text-white">Your Bank:&nbsp;</h4>
+        <h4 class="uk-margin-small uk-text-bolder text-yellow" id="bank-player"></h4>
+      </span>
       <div class="uk-grid uk-flex-center uk-padding uk-margin-small">
         <div>
           <button class="uk-button uk-button-primary" id="input-new-round" disabled>New Round</button>
@@ -118,6 +132,17 @@
         <h6 id="input-player-name-error" class="uk-text-danger uk-margin-small" hidden>Please enter your name</h6>
         <p class="uk-text-right">
           <button id="input-start-game" class="uk-button uk-button-primary" type="button">Start game</button>
+        </p>
+      </div>
+    </div>
+    <div id="modal-bet" uk-modal="esc-close: false; bg-close: false;">
+      <div class="uk-modal-dialog uk-modal-body">
+        <h2 class="uk-modal-title">Place your bets!</h2>
+        <p>How much do you want to bet?</p>
+        <input id="input-player-bet" class="uk-input" type="number" placeholder="10">
+        <h6 id="input-player-bet-error" class="uk-text-danger uk-margin-small" hidden>Enter a bet amount</h6>
+        <p class="uk-text-right">
+          <button id="input-place-bet" class="uk-button uk-button-primary" type="button">Place bet</button>
         </p>
       </div>
     </div>
