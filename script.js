@@ -14,7 +14,8 @@ const scoreboardEl = document.querySelector('#scoreboard-data');
 /* TODO
 add DOM elements for:
 1. New game button (done)
-2. Track wins of each player
+2. Track wins of each player (done)
+3. Reshuffle deck when current deck is empty
 */
 
 // DOM --->
