@@ -21,7 +21,7 @@ var makeDeck = function () {
   // Initialise an empty deck array
 
   // Initialise an array of the 4 suits in our deck. We will loop over this array.
-  var suits = ["hearts", "diamonds", "clubs", "spades"];
+  var suits = ["♥️", "♦️", "♣️", "♠️"];
 
   // Loop over the suits array
   var suitIndex = 0;
@@ -228,16 +228,30 @@ var showHands = function () {
 
   var showComputerHand = "Computer has drawn ";
   var index = 0;
-  // Loop to add each card in the hand to the text output
-  while (index < computerHand.length) {
-    showComputerHand =
-      showComputerHand +
-      computerHand[index].name +
-      " of " +
-      computerHand[index].suit +
-      " | ";
 
-    index = index + 1;
+  // Show only Computer's first card unless player has chosen to stand or computer gets blackjack
+  if (
+    (gameMode == "hit" || gameMode == "") &&
+    computerScore1 !== 21 &&
+    computerScore2 != 21
+  ) {
+    console.log("game mode:", gameMode, computerScore1, computerScore2, result);
+    showComputerHand =
+      showComputerHand + computerHand[1].name + " of " + computerHand[1].suit;
+  }
+  // If player has chosen to stand or if computer gets blackjack, show Computer's full hand
+  else {
+    // Loop to add each card in the hand to the text output
+    console.log("game mode:", gameMode, computerScore1, computerScore2, result);
+    while (index < computerHand.length) {
+      showComputerHand =
+        showComputerHand +
+        computerHand[index].name +
+        " of " +
+        computerHand[index].suit +
+        " | ";
+      index = index + 1;
+    }
   }
   // Combine player and computer hands in a string
   myOutputValue = showPlayerHand + "<br><br>" + showComputerHand;
@@ -258,10 +272,10 @@ var main = function (input) {
     playerHand = [cardDeck.pop(), cardDeck.pop()];
     computerHand = [cardDeck.pop(), cardDeck.pop()];
 
-    // Prints player and computer hands
-    showHands();
     // Compare player and computer scores
     compareScores();
+    // Prints player and computer hands
+    showHands();
     // Add results of score comparison to the output
     myOutputValue = myOutputValue + "<br><br>" + result;
   }
@@ -271,10 +285,10 @@ var main = function (input) {
     myOutputValue = "";
     playerHand.push(cardDeck.pop());
 
-    // Prints player and computer hands
-    showHands();
     // Compare player and computer scores
     compareScores();
+    // Prints player and computer hands
+    showHands();
     // Add results of score comparison to the output
     myOutputValue = myOutputValue + "<br><br>" + result;
   }
@@ -304,8 +318,8 @@ var main = function (input) {
       }
     }
 
-    showHands();
     compareScores();
+    showHands();
     myOutputValue = myOutputValue + "<br><br>" + result;
   }
 
