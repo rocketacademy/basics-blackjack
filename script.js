@@ -18,6 +18,7 @@ var MIN_NUM_PLAYER = 1;
 var MAX_NUM_PLAYER = 4;
 var TWENTY_ONE = 21;
 var SEVENTEEN = 17;
+var HAND_SIZE_LIMIT = 5;
 
 // GLOBAL VARIABLES
 var myOutputValue = "";
@@ -29,12 +30,14 @@ var CREATE_PLAYERS = "create players";
 var ASK_FOR_BETS = "ask for bets";
 var DEAL_STARTING_HAND = "deal starting hand";
 var CHECK_FOR_BLACKJACK = "check for blackjack";
+var PLAYERS_TURN = "players turn";
 
 // GAME STATUS
 var numberOfPlayers = 0;
 var players = [];
 var dealer = {};
 var currentBetIndex = 0;
+var currentPlayerIndex = 0;
 
 var initialisePlayers = function () {
   // create players
@@ -391,13 +394,38 @@ var main = function (input) {
     }
 
     // game continue
-    myOutputValue = showHandState();
-    myOutputValue += console.log(
-      "========== exiting check for blackjack =========="
-    );
-    return "end check for blackjack";
+    mode = PLAYERS_TURN;
+    console.log("========== exiting check for blackjack ==========");
   }
 
+  if (mode == PLAYERS_TURN) {
+    // handsize > 5
+    // handvalue > 21
+    // hit or stand
+
+    var userInput = input;
+
+    // force player to stand
+    if (handSize > HAND_SIZE_LIMIT || player.handValue > TWENTY_ONE) {
+      userInput = "stand";
+    }
+
+    if (userInput == "hit") {
+      var player = players[currentPlayerIndex];
+      player.hand.push(shuffledDeck.pop());
+      calcHandValue();
+      var handSize = player.hand.length;
+
+      return "player hit";
+    }
+
+    if (userInput == "stand") {
+      return "auto stand";
+    }
+
+    myOutputValue = "invalid";
+    return myOutputValue;
+  }
   /*
   check for blackjack, if dealer blackjack, dealer win, game end
   blackjack winner bet * 2
@@ -461,15 +489,15 @@ var gameReset = function () {
 };
 
 var inspectBlackjack = function () {
-  dealer = {
-    name: "Dealer",
-    hand: [
-      { name: "Ace", value: 11, suit: "Clubs" },
-      { name: "King", value: 10, suit: "Diamonds" },
-    ],
-    blackjack: false,
-    handValue: 21,
-  };
+  // dealer = {
+  //   name: "Dealer",
+  //   hand: [
+  //     { name: "Ace", value: 11, suit: "Clubs" },
+  //     { name: "King", value: 10, suit: "Diamonds" },
+  //   ],
+  //   blackjack: false,
+  //   handValue: 21,
+  // };
   // players[0] = {
   //   name: `Player 1`,
   //   hand: [
