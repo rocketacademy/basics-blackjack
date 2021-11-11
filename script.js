@@ -1,5 +1,5 @@
-const main = function () {
-  myOutputValue = playBlackJack() + myImage;;
+const main = function (input) {
+  myOutputValue = playBlackJack(input) + myImage;
   return myOutputValue;
 };
 
@@ -9,7 +9,7 @@ const makeDeck = function () {
   // Initialise an empty deck array
   let cardDeck = [];
   // Initialise an array of the 4 suits in our deck. We will loop over this array.
-  let suits = ["hearts", "diamonds", "clubs", "spades"];
+  let suits = ['hearts', 'diamonds', 'clubs', 'spades'];
 
   // Loop over the suits array
   let suitIndex = 0;
@@ -27,24 +27,24 @@ const makeDeck = function () {
 
       // If rank is 1, 11, 12, or 13, set cardName to the ace or face card's name
       if (cardName === 1) {
-        cardName = "ace";
+        cardName = 'ace';
       } else if (cardName === 11) {
-        cardName = "jack";
+        cardName = 'jack';
       } else if (cardName === 12) {
-        cardName = "queen";
+        cardName = 'queen';
       } else if (cardName === 13) {
-        cardName = "king";
+        cardName = 'king';
       }
 
       // assign value
 
       let cardValue = rankCounter;
-      if (cardName === "ace") {
+      if (cardName === 'ace') {
         cardValue = 1;
       } else if (
-        cardName === "jack" ||
-        cardName === "queen" ||
-        cardName === "king"
+        cardName === 'jack' ||
+        cardName === 'queen' ||
+        cardName === 'king'
       ) {
         cardValue = 10;
       }
@@ -102,9 +102,9 @@ const aNewDeck = function () {
 
 const isBlackJack = function (arrayHand) {
   if (
-    (arrayHand[0].cardValue === 10 && arrayHand[1].Name === `ace`) ||
-    (arrayHand[1].cardValue === 10 && arrayHand[0].Name === `ace`) ||
-    (arrayHand[0].Name === `ace` && arrayHand[1].Name === `ace`)
+    (arrayHand[0].value === 10 && arrayHand[1].name === `ace`) ||
+    (arrayHand[1].value === 10 && arrayHand[0].name === `ace`) ||
+    (arrayHand[0].name === `ace` && arrayHand[1].name === `ace`)
   ) {
     return true;
   } else {
@@ -112,129 +112,137 @@ const isBlackJack = function (arrayHand) {
   }
 };
 
-let mode = "start mode";
+let mode = 'start mode';
 let numberPlayers = 1;
 let playDeck = aNewDeck();
+let gameRecord = {};
 const playBlackJack = function (input) {
-  mode = "start mode";
-
-  let cardsOfPlayers = [];
-  let sumOfPlayer = 0;
-  let players = {};
-  for (let i = 1; i <= numberPlayers; i++) {
-    // player draws 2 cards
-    let playerCard1 = playDeck.pop();
-    cardsOfPlayers.push(playerCard1);
-    let playerCard2 = playDeck.pop();
-    cardsOfPlayers.push(playerCard2);
-    // sum of player hands
-    sumOfPlayer =
-      cardsOfPlayers[(i - 1) * 2].value + cardsOfPlayers[(i - 1) * 2 + 1].value;
-
-    players["player" + i] = {
-      cardsPlayer: [
-        cardsOfPlayers[(i - 1) * 2],
-        cardsOfPlayers[(i - 1) * 2 + 1],
-      ],
-      sumPlayer: sumOfPlayer,
-    };
-  }
-
-  console.log(players);
-  mode = "dealer mode";
-  // dealer draws 2 cards
-  let cardsOfDealer = [];
-  let dealerCard1 = playDeck.pop();
-  cardsOfDealer.push(dealerCard1);
-  let dealerCard2 = playDeck.pop();
-  cardsOfDealer.push(dealerCard2);
-  // sum of dealer hands
-  sumOfDealer = cardsOfDealer[0].value + cardsOfDealer[1].value;
-
-  let dealer = {
-    cardsDealer: cardsOfDealer,
-    sumDealer: sumOfDealer,
-  };
-
-  // nested object of players and dealer cards and their sum in hand
-  //  gameRecord = {}
-  let gameRecord = { players, dealer };
-  console.log(`gameRecord is `, gameRecord);
-  console.log(`Remaining Deck now has`, playDeck.length, `cards.`);
-  mode = "compare cards";
-
-  if (mode === "compare cards") {
-    // Compare results
+  if (mode === 'start mode') {
+    let cardsOfPlayers = [];
+    let sumOfPlayer = 0;
+    let players = {};
     for (let i = 1; i <= numberPlayers; i++) {
-      // tie
-      let playerIndex = "player" + i;
-      if (gameRecord.players[playerIndex].sumPlayer === dealer.sumDealer) {
-        message = `Its a tie. <br><br>`;
-      }
-      // black jack cases
-      else if (
-        isBlackJack(gameRecord.players[playerIndex].cardsPlayer) === true
-      ) {
-        message = `Player wins blackjack <br><br>`;
-      } else if (isBlackJack(gameRecord.dealer.cardsDealer) === true) {
-        message = `Dealer wins blackjack <br><br>`;
-      } else if (
-        isBlackJack(gameRecord.players[playerIndex].cardsPlayer) === true &&
-        isBlackJack(gameRecord.dealer.cardsDealer) === true
-      ) {
-        message = `Both player and dealer win by blackjack <br><br>`;
-      }
-      // normal win
-      else if (gameRecord.players[playerIndex].sumPlayer > dealer.sumDealer) {
-        message = `Player wins <br><br>`;
-      } else {
-        message = `Dealer wins <br><br>`;
-      }
+      // player draws 2 cards
+      let playerCard1 = playDeck.pop();
+      cardsOfPlayers.push(playerCard1);
+      let playerCard2 = playDeck.pop();
+      cardsOfPlayers.push(playerCard2);
+      // sum of player hands
+      sumOfPlayer =
+        cardsOfPlayers[(i - 1) * 2].value +
+        cardsOfPlayers[(i - 1) * 2 + 1].value;
+
+      players['player' + i] = {
+        cardsPlayer: [
+          cardsOfPlayers[(i - 1) * 2],
+          cardsOfPlayers[(i - 1) * 2 + 1],
+        ],
+        sumPlayer: sumOfPlayer,
+      };
     }
-    mode = "hit or stand";
-    return (
-      message +
-      declare(gameRecord) +
-      ` <br><br>Player, pls decide hit or stand.`
-    );
-  }
-  console.log(`mode before decide hit or stand is `, mode);
 
-  if (mode === "hit or stand") {
+    console.log(players);
+    mode = 'dealer mode';
+    // dealer draws 2 cards
+    let cardsOfDealer = [];
+    let dealerCard1 = playDeck.pop();
+    cardsOfDealer.push(dealerCard1);
+    let dealerCard2 = playDeck.pop();
+    cardsOfDealer.push(dealerCard2);
+    // sum of dealer hands
+    sumOfDealer = cardsOfDealer[0].value + cardsOfDealer[1].value;
+
+    let dealer = {
+      cardsDealer: cardsOfDealer,
+      sumDealer: sumOfDealer,
+    };
+
+    // nested object of players and dealer cards and their sum in hand
+
+    gameRecord = { players, dealer };
+    console.log(`gameRecord is `, gameRecord);
+    console.log(`Remaining Deck now has`, playDeck.length, `cards.`);
+    mode = 'compare cards';
+
+    if (mode === 'compare cards') {
+      // Compare results
+      for (let i = 1; i <= numberPlayers; i++) {
+        // tie
+        let playerIndex = 'player' + i;
+        console.log(
+          `1bj`,
+          isBlackJack(gameRecord.players[playerIndex].cardsPlayer)
+        );
+        console.log(`2bj`, isBlackJack(gameRecord.dealer.cardsDealer));
+        if (gameRecord.players[playerIndex].sumPlayer === dealer.sumDealer) {
+          message = `Its a tie. <br><br>`;
+        }
+        // black jack cases
+        else if (
+          isBlackJack(gameRecord.players[playerIndex].cardsPlayer) === true
+        ) {
+          message = `Player wins blackjack <br><br>`;
+        } else if (isBlackJack(gameRecord.dealer.cardsDealer) === true) {
+          message = `Dealer wins blackjack <br><br>`;
+        } else if (
+          isBlackJack(gameRecord.players[playerIndex].cardsPlayer) === true &&
+          isBlackJack(gameRecord.dealer.cardsDealer) === true
+        ) {
+          message = `Both player and dealer win by blackjack <br><br>`;
+        }
+        // normal win
+        else if (gameRecord.players[playerIndex].sumPlayer > dealer.sumDealer) {
+          message = `Player wins <br><br>`;
+        } else {
+          message = `Dealer wins <br><br>`;
+        }
+      }
+      mode = 'hit or stand';
+      return (
+        message +
+        declare(gameRecord) +
+        ` <br><br>Player, pls decide hit or stand.`
+      );
+    }
+  }
+  // console.log(`mode before decide hit or stand is `, mode);
+  else if (mode === 'hit or stand') {
+    console.log(`enter into hit or stand`);
     for (let i = 1; i <= numberPlayers; i++) {
-      let playerIndex = "player" + i;
-      if (input === "hit") {
+      let playerIndex = 'player' + i;
+      if (input === 'hit') {
         console.log(`wereadfdfzdfasdfgdrsts`);
         let addPlayerCard = playDeck.pop();
-        gameRecord.players[playerIndex].cardsOfPlayers.push(addPlayerCard);
+        gameRecord.players[playerIndex].cardsPlayer.push(addPlayerCard);
         console.log(
           `cards of player${i}`,
-          gameRecord.players[playerIndex].cardsOfPlayers
+          gameRecord.players[playerIndex].cardsPlayers
         );
         message =
           declare(gameRecord) +
           '<br> You drew another card. <br>Please input "hit" or "stand" to continue.';
-      } else if (input === "stand") {
+        return message;
+      } else if (input === 'stand') {
         while (gameRecord.dealer.sumDealer < 17) {
           let addDealerCard = playDeck.pop();
           gameRecord.dealer.cardsDealer.push(addDealerCard);
         }
-        mode = "compare cards";
+        mode = 'compare cards';
       }
     }
     console.log(`playDeck now has `, playDeck.length, `cards.`);
   }
-  mode = "start mode";
+  // mode = "start mode";
 };
 
 // declare results
-let innerMessagePlayers = "";
-let innerMessageDealer = "";
-let messagePlayers = "";
-let messageDealer = "";
+let innerMessagePlayers = '';
+let innerMessageDealer = '';
+let messagePlayers = '';
+let messageDealer = '';
 const declare = function (gameRecord) {
   for (let i = 1; i <= numberPlayers; i++) {
-    let playerIndex = "player" + i;
+    let playerIndex = 'player' + i;
     for (
       let e = 0;
       e < gameRecord.players[playerIndex].cardsPlayer.length;
