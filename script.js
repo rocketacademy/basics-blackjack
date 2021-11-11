@@ -3,7 +3,8 @@ const main = function () {
   return myOutputValue;
 };
 
-var myImage = '<img src="/banner.png"/>';
+var myImage =
+  '<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRUuGvyf_o1FSReTWGfz7z-H19NnLDadMKLU2FRPWO4MA2gJkRVpdaTYm8wg3KXO6LxuYw&usqp=CAU"/>';
 const makeDeck = function () {
   // Initialise an empty deck array
   let cardDeck = [];
