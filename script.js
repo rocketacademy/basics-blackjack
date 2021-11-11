@@ -46,6 +46,8 @@ var initialisePlayers = function () {
       handValue: 0,
       wallet: 100,
       bet: 0,
+      draw: false,
+      stand: false,
     };
   }
   // create dealer
@@ -202,8 +204,8 @@ var showHandState = function () {
     message = message.substring(0, message.length - 2);
     message += ` (Value: ${playerValue})`;
     message += `<br><br>`;
-    message += `Press Submit to continue.`;
   }
+  message += `Press Submit to continue.`;
   return message;
 };
 
@@ -378,8 +380,22 @@ var main = function (input) {
 
   if (mode == CHECK_FOR_BLACKJACK) {
     console.log("========== entering check for blackjack ==========");
+    // check hand for blackjack
+    inspectBlackjack();
 
-    console.log("========== exiting check for blackjack ==========");
+    // if dealer blackjack, round end
+    if (dealer.blackjack) {
+      myOutputValue = evalRoundDealerBlackjack();
+      gameReset();
+      return myOutputValue;
+    }
+
+    // game continue
+    myOutputValue = showHandState();
+    myOutputValue += console.log(
+      "========== exiting check for blackjack =========="
+    );
+    return "end check for blackjack";
   }
 
   /*
@@ -400,4 +416,129 @@ var main = function (input) {
   */
 
   return "end of main";
+};
+
+// dealer = {
+//   name: "Dealer",
+//   hand: [
+//     { name: "4", value: 4, suit: "Clubs" },
+//     { name: "9", value: 9, suit: "Diamonds" },
+//     { name: "4", value: 4, suit: "Hearts" },
+//     { name: "9", value: 9, suit: "Hearts" },
+//   ],
+//   blackjack: false,
+//   handValue: 0,
+// };
+// players[0] = {
+//   name: `Player 1`,
+//   hand: [
+//     { name: "4", value: 4, suit: "Clubs" },
+//     { name: "9", value: 9, suit: "Diamonds" },
+//     { name: "4", value: 4, suit: "Hearts" },
+//     { name: "9", value: 9, suit: "Hearts" },
+//   ],
+//   blackjack: false,
+//   handValue: 0,
+//   wallet: 100,
+//   bet: 0,
+// };
+
+var gameReset = function () {
+  mode = ASK_FOR_BETS;
+  dealer.hand = [];
+  dealer.blackjack = false;
+  dealer.handValue = 0;
+
+  var counter = 0;
+  while (counter < numberOfPlayers) {
+    var player = players[counter];
+    player.hand = [];
+    player.blackjack = false;
+    player.handValue = 0;
+    player.bet = 0;
+    counter += 1;
+  }
+};
+
+var inspectBlackjack = function () {
+  dealer = {
+    name: "Dealer",
+    hand: [
+      { name: "Ace", value: 11, suit: "Clubs" },
+      { name: "King", value: 10, suit: "Diamonds" },
+    ],
+    blackjack: false,
+    handValue: 21,
+  };
+  // players[0] = {
+  //   name: `Player 1`,
+  //   hand: [
+  //     { name: "Ace", value: 11, suit: "Clubs" },
+  //     { name: "King", value: 10, suit: "Diamonds" },
+  //   ],
+  //   blackjack: false,
+  //   handValue: 21,
+  //   wallet: 100,
+  //   bet: 0,
+  // };
+  // players[1] = {
+  //   name: `Player 2`,
+  //   hand: [
+  //     { name: "Ace", value: 11, suit: "Clubs" },
+  //     { name: "King", value: 10, suit: "Diamonds" },
+  //   ],
+  //   blackjack: false,
+  //   handValue: 21,
+  //   wallet: 100,
+  //   bet: 0,
+  // };
+
+  if (dealer.handValue == TWENTY_ONE) {
+    dealer.blackjack = true;
+  }
+
+  for (var i = 0; i < numberOfPlayers; i += 1) {
+    if (players[i].handValue == TWENTY_ONE) {
+      players[i].blackjack = true;
+    }
+  }
+};
+
+var evalRoundDealerBlackjack = function () {
+  // dealer got blackjack
+  // check which players got blackjack
+  // count winning
+  // round end, reset
+
+  var counter = 0;
+  while (counter < numberOfPlayers) {
+    var player = players[counter];
+
+    if (player.blackjack) {
+      player.draw = true;
+    }
+    counter += 1;
+  }
+
+  var message = `Dealer has Blackjack!<br><br>`;
+
+  counter = 0;
+  while (counter < numberOfPlayers) {
+    player = players[counter];
+
+    if (player.draw) {
+      message += `${player.name} has Blackjack! It is a draw!<br><br>`;
+      counter += 1;
+      continue;
+    }
+
+    player.wallet -= player.bet * 2;
+
+    message += `${player.name} betted $${player.bet}. (-$${
+      player.bet * 2
+    })<br><br>`;
+    counter += 1;
+  }
+  message += `Round end. Preparing for next round...<br><br>Press Submit to continue.`;
+  return message;
 };
