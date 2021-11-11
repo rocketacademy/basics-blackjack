@@ -226,6 +226,8 @@ var main = function (input) {
       hitOrStandImage;
 
     if (userPoints == 21 || dealerPoints == 21) {
+      document.body.style.backgroundImage =
+        "url('https://c.tenor.com/CMvlbBuFtH4AAAAC/pepe-meme.gif')";
       myOutputValue = `You drew: <br> ${userCards[0].rankEmoji} of  ${userCards[0].emoji} <br> ${userCards[1].rankEmoji} of  ${userCards[1].emoji} <br> You have ${userPoints} points. <br><br> Pepe drew: ${dealerHands}  Pepe has ${dealerPoints} points. <br><br> ${outcome}`;
       gameMode = "Deck is shuffled";
       return myOutputValue;
