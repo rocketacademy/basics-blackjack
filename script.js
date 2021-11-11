@@ -31,6 +31,9 @@ var ASK_FOR_BETS = "ask for bets";
 var DEAL_STARTING_HAND = "deal starting hand";
 var CHECK_FOR_BLACKJACK = "check for blackjack";
 var PLAYERS_TURN = "players turn";
+var COMPUTER_TURN = "computer turn";
+var EVALUATE = "evaluate";
+var SHOW_RESULT = "show result";
 
 // GAME STATUS
 var numberOfPlayers = 0;
@@ -50,7 +53,7 @@ var initialisePlayers = function () {
       wallet: 100,
       bet: 0,
       draw: false,
-      stand: false,
+      win: false,
     };
   }
   // create dealer
@@ -281,6 +284,171 @@ var getNumberOfAces = function (hand) {
   return numberOfAces;
 };
 
+var gameReset = function () {
+  mode = ASK_FOR_BETS;
+  dealer.hand = [];
+  dealer.blackjack = false;
+  dealer.handValue = 0;
+
+  var counter = 0;
+  while (counter < numberOfPlayers) {
+    var player = players[counter];
+    player.hand = [];
+    player.blackjack = false;
+    player.handValue = 0;
+    player.bet = 0;
+    counter += 1;
+  }
+};
+
+var inspectBlackjack = function () {
+  // dealer = {
+  //   name: "Dealer",
+  //   hand: [
+  //     { name: "Ace", value: 11, suit: "Clubs" },
+  //     { name: "King", value: 10, suit: "Diamonds" },
+  //   ],
+  //   blackjack: false,
+  //   handValue: 21,
+  // };
+  // players[0] = {
+  //   name: `Player 1`,
+  //   hand: [
+  //     { name: "Ace", value: 11, suit: "Clubs" },
+  //     { name: "King", value: 10, suit: "Diamonds" },
+  //   ],
+  //   blackjack: false,
+  //   handValue: 21,
+  //   wallet: 100,
+  //   bet: 0,
+  // };
+  // players[1] = {
+  //   name: `Player 2`,
+  //   hand: [
+  //     { name: "Ace", value: 11, suit: "Clubs" },
+  //     { name: "King", value: 10, suit: "Diamonds" },
+  //   ],
+  //   blackjack: false,
+  //   handValue: 21,
+  //   wallet: 100,
+  //   bet: 0,
+  // };
+
+  if (dealer.handValue == TWENTY_ONE) {
+    dealer.blackjack = true;
+  }
+
+  for (var i = 0; i < numberOfPlayers; i += 1) {
+    if (players[i].handValue == TWENTY_ONE) {
+      players[i].blackjack = true;
+    }
+  }
+};
+
+var evalRoundDealerBlackjack = function () {
+  // dealer got blackjack
+  // check which players got blackjack
+  // count winning
+  // round end, reset
+
+  var counter = 0;
+  while (counter < numberOfPlayers) {
+    var player = players[counter];
+
+    if (player.blackjack) {
+      player.draw = true;
+    }
+    counter += 1;
+  }
+
+  var message = `Dealer has Blackjack!<br><br>`;
+
+  counter = 0;
+  while (counter < numberOfPlayers) {
+    player = players[counter];
+
+    if (player.draw) {
+      message += `${player.name} has Blackjack! It is a draw!<br><br>`;
+      counter += 1;
+      continue;
+    }
+
+    player.wallet -= player.bet * 2;
+
+    message += `${player.name} betted $${player.bet}. (-$${
+      player.bet * 2
+    })<br><br>`;
+    counter += 1;
+  }
+  message += `Round end. Preparing for next round...<br><br>Press Submit to continue.`;
+  return message;
+};
+
+var showGameState = function () {
+  // dealer = {
+  //   name: "Dealer",
+  //   hand: [
+  //     { name: "4", value: 4, suit: "Clubs" },
+  //     { name: "9", value: 9, suit: "Diamonds" },
+  //     { name: "4", value: 4, suit: "Hearts" },
+  //     { name: "9", value: 9, suit: "Hearts" },
+  //   ],
+  //   blackjack: false,
+  //   handValue: 0,
+  // };
+  // players[0] = {
+  //   name: `Player 1`,
+  //   hand: [
+  //     { name: "4", value: 4, suit: "Clubs" },
+  //     { name: "9", value: 9, suit: "Diamonds" },
+  //     { name: "4", value: 4, suit: "Hearts" },
+  //     { name: "9", value: 9, suit: "Hearts" },
+  //   ],
+  //   blackjack: false,
+  //   handValue: 0,
+  //   wallet: 100,
+  //   bet: 0,
+  // };
+
+  var message = "";
+  var dealerName = dealer.name;
+  var dealerHandSize = dealer.hand.length;
+  var dealerValue = dealer.handValue;
+
+  message = `${dealerName}: `;
+  var counter = 0;
+  while (counter < dealerHandSize) {
+    var cardName = `${dealer.hand[counter].name} of ${dealer.hand[counter].suit}`;
+    message += `${cardName}, `;
+    counter += 1;
+  }
+  message = message.substring(0, message.length - 2);
+  message += ` (Value: ${dealerValue})`;
+  message += `<br><br>`;
+
+  var index = 0;
+  counter = 0;
+  while (index < numberOfPlayers) {
+    var playerName = players[index].name;
+    var playerHandSize = players[index].hand.length;
+    var playerValue = players[index].handValue;
+
+    message += `${playerName}: `;
+    while (counter < playerHandSize) {
+      cardName = `${players[index].hand[counter].name} of ${players[index].hand[counter].suit}`;
+      message += `${cardName}, `;
+      counter += 1;
+    }
+    counter = 0;
+    index += 1;
+    message = message.substring(0, message.length - 2);
+    message += ` (Value: ${playerValue})`;
+    message += `<br><br>`;
+  }
+  message += `${playerName}, enter "hit" or "stand" to continue.`;
+  return message;
+};
+
 /* persuo code for blackjack - version 2
 create players
 
@@ -395,15 +563,20 @@ var main = function (input) {
 
     // game continue
     mode = PLAYERS_TURN;
+    myOutputValue = `No blackjack, player 1 your turn. Enter "hit" or "stand".`;
     console.log("========== exiting check for blackjack ==========");
+    return myOutputValue;
   }
 
   if (mode == PLAYERS_TURN) {
+    console.log("========== entering players turn ==========");
     // handsize > 5
     // handvalue > 21
     // hit or stand
 
     var userInput = input;
+    var player = players[currentPlayerIndex];
+    var handSize = player.hand.length;
 
     // force player to stand
     if (handSize > HAND_SIZE_LIMIT || player.handValue > TWENTY_ONE) {
@@ -411,162 +584,149 @@ var main = function (input) {
     }
 
     if (userInput == "hit") {
-      var player = players[currentPlayerIndex];
       player.hand.push(shuffledDeck.pop());
       calcHandValue();
-      var handSize = player.hand.length;
-
-      return "player hit";
+      myOutputValue = showHandState();
+      return `${myOutputValue} <br><br> Enter "hit" or "stand" to continue.`;
     }
 
     if (userInput == "stand") {
-      return "auto stand";
+      currentPlayerIndex += 1;
+
+      if (currentPlayerIndex >= numberOfPlayers) {
+        // exit players turn
+        mode = COMPUTER_TURN;
+        currentPlayerIndex = 0;
+        myOutputValue = "All player(s) has betted.<br><br>Dealer's turn now.";
+        console.log("========== exiting players turn ==========");
+        return myOutputValue;
+      }
+
+      myOutputValue = `Player has stand. Next player`;
+      return myOutputValue;
     }
 
     myOutputValue = "invalid";
     return myOutputValue;
   }
-  /*
-  check for blackjack, if dealer blackjack, dealer win, game end
-  blackjack winner bet * 2
 
-  those no blackjack, continue game
-  hit or stand
-  auto stand > 21 or hand > 5
+  if (mode == COMPUTER_TURN) {
+    console.log("========== entering computer turn ==========");
+    calcHandValue();
+    var handSize = dealer.hand.length;
 
-  dealer stand >= 17
+    if (dealer.handValue > TWENTY_ONE || handSize > HAND_SIZE_LIMIT) {
+      mode = EVALUATE;
+      return "dealer bust. change mode";
+    }
 
-  evluate game
+    if (dealer.handValue < SEVENTEEN) {
+      dealer.hand.push(shuffledDeck.pop());
+      calcHandValue();
+      return "dealer draw";
+    }
 
-  give winning
+    if (dealer.handValue <= TWENTY_ONE) {
+      mode = EVALUATE;
+      return "dealer stand. change mode";
+    }
+  }
 
-  empty hand and bet, next game
-  */
+  if (mode == EVALUATE) {
+    console.log("========== entering evaluate ==========");
+    var index = 0;
+    while (index < numberOfPlayers) {
+      var player = players[index];
+      var playerValue = players[index].handValue;
+      var dealerValue = dealer.handValue;
+
+      if (playerValue > TWENTY_ONE && dealerValue > TWENTY_ONE) {
+        player.draw = true;
+        index += 1;
+        continue;
+      }
+
+      if (playerValue <= TWENTY_ONE && dealerValue > TWENTY_ONE) {
+        player.win = true;
+        player.wallet += player.bet;
+        index += 1;
+        continue;
+      }
+
+      if (playerValue > TWENTY_ONE && dealerValue <= TWENTY_ONE) {
+        player.win = false;
+        player.wallet -= player.bet;
+        index += 1;
+        continue;
+      }
+
+      if (playerValue == dealerValue) {
+        player.draw = true;
+        index += 1;
+        continue;
+      }
+
+      if (playerValue > dealerValue) {
+        player.win = true;
+        player.wallet += player.bet;
+        index += 1;
+        continue;
+      }
+
+      if (playerValue < dealerValue) {
+        player.win = false;
+        player.wallet -= player.bet;
+        index += 1;
+        continue;
+      }
+      // catch invalid response
+      return "error at evaluate";
+    }
+    mode = SHOW_RESULT;
+    console.log("========== exiting evaluate ==========");
+  }
+
+  if (mode == SHOW_RESULT) {
+    var counter = 0;
+    var message = "";
+    while (counter < numberOfPlayers) {
+      var name = players[counter].name;
+      var bet = players[counter].bet;
+      var win = players[counter].win;
+      var draw = players[counter].draw;
+
+      if (draw) {
+        message += `${name} draw!<br><br>`;
+        counter += 1;
+        continue;
+      }
+
+      if (win) {
+        message += `${name} win! ${name} betted ${bet}. (+$${bet})<br><br>`;
+        counter += 1;
+        continue;
+      }
+
+      message += `${name} lose! ${name} betted ${bet}. (-$${bet})<br><br>`;
+      counter += 1;
+    }
+    gameReset();
+    message += "This round end. Starting next round.";
+    return message;
+  }
 
   return "end of main";
 };
 
-// dealer = {
-//   name: "Dealer",
-//   hand: [
-//     { name: "4", value: 4, suit: "Clubs" },
-//     { name: "9", value: 9, suit: "Diamonds" },
-//     { name: "4", value: 4, suit: "Hearts" },
-//     { name: "9", value: 9, suit: "Hearts" },
-//   ],
-//   blackjack: false,
-//   handValue: 0,
-// };
-// players[0] = {
-//   name: `Player 1`,
-//   hand: [
-//     { name: "4", value: 4, suit: "Clubs" },
-//     { name: "9", value: 9, suit: "Diamonds" },
-//     { name: "4", value: 4, suit: "Hearts" },
-//     { name: "9", value: 9, suit: "Hearts" },
-//   ],
-//   blackjack: false,
-//   handValue: 0,
-//   wallet: 100,
-//   bet: 0,
-// };
+/*
+TO DO
 
-var gameReset = function () {
-  mode = ASK_FOR_BETS;
-  dealer.hand = [];
-  dealer.blackjack = false;
-  dealer.handValue = 0;
+player blackjack logic
 
-  var counter = 0;
-  while (counter < numberOfPlayers) {
-    var player = players[counter];
-    player.hand = [];
-    player.blackjack = false;
-    player.handValue = 0;
-    player.bet = 0;
-    counter += 1;
-  }
-};
+output display
 
-var inspectBlackjack = function () {
-  // dealer = {
-  //   name: "Dealer",
-  //   hand: [
-  //     { name: "Ace", value: 11, suit: "Clubs" },
-  //     { name: "King", value: 10, suit: "Diamonds" },
-  //   ],
-  //   blackjack: false,
-  //   handValue: 21,
-  // };
-  // players[0] = {
-  //   name: `Player 1`,
-  //   hand: [
-  //     { name: "Ace", value: 11, suit: "Clubs" },
-  //     { name: "King", value: 10, suit: "Diamonds" },
-  //   ],
-  //   blackjack: false,
-  //   handValue: 21,
-  //   wallet: 100,
-  //   bet: 0,
-  // };
-  // players[1] = {
-  //   name: `Player 2`,
-  //   hand: [
-  //     { name: "Ace", value: 11, suit: "Clubs" },
-  //     { name: "King", value: 10, suit: "Diamonds" },
-  //   ],
-  //   blackjack: false,
-  //   handValue: 21,
-  //   wallet: 100,
-  //   bet: 0,
-  // };
+player 1 bet prompt
 
-  if (dealer.handValue == TWENTY_ONE) {
-    dealer.blackjack = true;
-  }
+hit and stand display
 
-  for (var i = 0; i < numberOfPlayers; i += 1) {
-    if (players[i].handValue == TWENTY_ONE) {
-      players[i].blackjack = true;
-    }
-  }
-};
-
-var evalRoundDealerBlackjack = function () {
-  // dealer got blackjack
-  // check which players got blackjack
-  // count winning
-  // round end, reset
-
-  var counter = 0;
-  while (counter < numberOfPlayers) {
-    var player = players[counter];
-
-    if (player.blackjack) {
-      player.draw = true;
-    }
-    counter += 1;
-  }
-
-  var message = `Dealer has Blackjack!<br><br>`;
-
-  counter = 0;
-  while (counter < numberOfPlayers) {
-    player = players[counter];
-
-    if (player.draw) {
-      message += `${player.name} has Blackjack! It is a draw!<br><br>`;
-      counter += 1;
-      continue;
-    }
-
-    player.wallet -= player.bet * 2;
-
-    message += `${player.name} betted $${player.bet}. (-$${
-      player.bet * 2
-    })<br><br>`;
-    counter += 1;
-  }
-  message += `Round end. Preparing for next round...<br><br>Press Submit to continue.`;
-  return message;
-};
+*/
