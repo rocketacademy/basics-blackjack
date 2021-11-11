@@ -56,6 +56,14 @@ var shuffleCards = function (cardDeck) {
   return cardDeck;
 };
 
+var numOfPlayers = 4; // Inclusive of dealer
+var dealer = numOfPlayers; // Dealer is always the last to play
+var allCardsDealt = []; // Holds array of card object arrays
+var playersBlackjackValue = []; // Holds array of final numbers
+var playerTurn = 1; // Default start with player 1
+var gameMode = "draw cards"; // 4 phases - "draw cards", "game", "choice", "results"
+var newDeck = shuffleCards(makeDeck());
+
 var reset = function () {
   newDeck = shuffleCards(makeDeck());
   allCardsDealt = [];
@@ -63,14 +71,6 @@ var reset = function () {
   playerTurn = 1;
   gameMode = "draw cards";
 };
-
-var newDeck = shuffleCards(makeDeck());
-var numOfPlayers = 2; // Inclusive of dealer
-var dealer = numOfPlayers; // Dealer is always the last to play
-var allCardsDealt = []; // Holds array of card object arrays
-var playersBlackjackValue = []; // Holds array of final numbers
-var playerTurn = 1; // Default start with player 1
-var gameMode = "draw cards"; // 4 phases - "draw cards", "game", "choice", "results"
 
 // ===== MAIN FUNCTION ===== //
 
@@ -182,7 +182,7 @@ var main = function (input) {
   //PHASE 3: CHOICE
   else if (gameMode == "choice") {
     if (input == "hit") {
-      // hit message
+      // Hit message
       allCardsDealt[playerTurn - 1].push(newDeck.pop());
       myOutputValue += `<b><u>Player ${playerTurn}</b></u><br>`;
       myOutputValue += `Your cards are:`;
@@ -239,7 +239,7 @@ var main = function (input) {
       }
       myOutputValue += `<br><br>Your total card value is <b>${
         playersBlackjackValue[playerTurn - 1]
-      }</b>`;
+      }</b><br><i>(p.s. You must have at least 17 to stand)</i>`;
     }
   }
   //PHASE 4: RESULTS
