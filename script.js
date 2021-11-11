@@ -13,6 +13,21 @@ var makeDeck = function () {
   // Initialise an array of the 4 suits in our deck. We will loop over this array.
   var suits = ["hearts", "diamonds", "clubs", "spades"];
   var suitsEmoji = ["♥", "♦", "♣", "♠"];
+  var nameEmoji = [
+    "🅰",
+    "2️⃣",
+    "3️⃣",
+    "4️⃣",
+    "5️⃣",
+    "6️⃣",
+    "7️⃣",
+    "8️⃣",
+    "9️⃣",
+    "🔟",
+    "🧑",
+    "👸",
+    "🤴",
+  ];
   // Loop over the suits array
   var suitIndex = 0;
   while (suitIndex < suits.length) {
@@ -38,12 +53,18 @@ var makeDeck = function () {
         cardName = "king";
       }
 
+      var cardValue = rankCounter;
+      if (rankCounter == 11 || rankCounter == 12 || rankCounter == 13) {
+        cardValue = 10;
+      }
       // Create a new card with the current name, suit, and rank
       var card = {
         name: cardName,
         suit: currentSuit,
         rank: rankCounter,
         emoji: currentSuitEmoji,
+        value: cardValue,
+        rankEmoji: nameEmoji[rankCounter - 1],
       };
 
       // Add the new card to the deck
@@ -88,314 +109,59 @@ var shuffleCards = function (cardDeck) {
 // compute points, if hand < 2 cards, ace = rank 11.
 var checkPoints = function (hands) {
   var points = 0;
-  // if hands only have 2 cards
-  if (hands.length == 2) {
-    // if there first card is an ace, second ace will be equivalent to 10 points.
-    if (hands[0].name == "ace") {
-      points += 11;
-      if (
-        hands[1].name == "ace" ||
-        hands[1].name == "jack" ||
-        hands[1].name == "queen" ||
-        hands[1].name == "king"
-      ) {
-        points += 10;
-      } else {
-        points += hands[1].rank;
-      }
-      // if first card is not an ace, second ace will be equivalent to 11 points.
-    } else if (
-      hands[0].name == "jack" ||
-      hands[0].name == "queen" ||
-      hands[0].name == "king"
-    ) {
-      points += 10;
-      if (hands[1].name == "ace") {
-        points += 11;
-      } else if (
-        hands[1].name == "jack" ||
-        hands[1].name == "queen" ||
-        hands[1].name == "king"
-      ) {
-        points += 10;
-      } else {
-        points += hands[1].rank;
-      }
-    } else {
-      points += hands[0].rank;
-      if (hands[1].name == "ace") {
-        points += 11;
-      } else if (
-        hands[1].name == "jack" ||
-        hands[1].name == "queen" ||
-        hands[1].name == "king"
-      ) {
-        points += 10;
-      } else {
-        points += hands[1].rank;
-      }
+  var aceCounter = 0;
+  var counter = 0;
+  while (counter < hands.length) {
+    points += hands[counter].value;
+    if (hands[counter].name == "ace") {
+      aceCounter += 1;
     }
-    return points;
+    counter++;
   }
-
-  if (hands.length == 3) {
-    // if there first card is an ace, second ace will be equivalent to 10 points.
-    if (hands[0].name == "ace") {
-      points += 11;
-      if (
-        hands[1].name == "jack" ||
-        hands[1].name == "queen" ||
-        hands[1].name == "king" ||
-        hands[1].name == 10
-      ) {
-        points += 10;
-        if (
-          hands[2].name == "jack" ||
-          hands[2].name == "queen" ||
-          hands[2].name == "king" ||
-          hands[2].name == 10
-        ) {
-          // first ace will be 1 point instead of 11 [A 10 10]
-          points += 0;
-          return points;
-        } else if (hands[2].name == "ace") {
-          // first and third ace will be 1 point each [A 10 A]
-          points -= 9;
-          return points;
-        } else {
-          // first ace will be 1 point instead of 11 [A 10 C]
-          points -= 10;
-          points += hands[2].rank;
-          return points;
-        }
-      } else if (hands[1].name == "ace") {
-        points += 1;
-        if (
-          hands[2].name == "jack" ||
-          hands[2].name == "queen" ||
-          hands[2].name == "king" ||
-          hands[2].name == 10
-        ) {
-          // [A A 10]
-          points += 0;
-          return points;
-        } else if (hands[2].name == "ace") {
-          // [A A A]
-          points += 1;
-          return points;
-        } else {
-          // [A A C]
-          points += hands[2].rank;
-          return points;
-        }
-      } else {
-        points += hands[1].rank;
-        if (
-          hands[2].name == "jack" ||
-          hands[2].name == "queen" ||
-          hands[2].name == "king" ||
-          hands[2].name == 10
-        ) {
-          // [A C 10]
-          points += 0;
-          return points;
-        } else if (hands[2].name == "ace") {
-          // [A C A]
-          points += 1;
-          return points;
-        } else {
-          // [A C C]
-          points += hands[2].rank;
-          if (points > 21) {
-            points -= 10;
-            return points;
-          }
-          return points;
-        }
-      }
-      // if first card is not an ace, second ace will be equivalent to 11 points.
-    } else if (
-      hands[0].name == "jack" ||
-      hands[0].name == "queen" ||
-      hands[0].name == "king" ||
-      hands[0].name == 10
-    ) {
-      points += 10;
-      if (hands[1].name == "ace") {
-        points += 1;
-        if (
-          hands[2].name == "jack" ||
-          hands[2].name == "queen" ||
-          hands[2].name == "king" ||
-          hands[2].name == 10
-        ) {
-          // [10 A 10]
-          points += 10;
-          return points;
-        } else if (hands[2].name == "ace") {
-          // [10 A A]
-          points += 1;
-          return points;
-        } else {
-          // [10 A C]
-          points += hands[2].rank;
-          return points;
-        }
-      } else if (
-        hands[1].name == "jack" ||
-        hands[1].name == "queen" ||
-        hands[1].name == "king" ||
-        hands[1].name == 10
-      ) {
-        points += 10;
-        if (
-          hands[2].name == "jack" ||
-          hands[2].name == "queen" ||
-          hands[2].name == "king" ||
-          hands[2].name == 10
-        ) {
-          // [10 10 10]
-          points += 10;
-          return points;
-        } else if (hands[2].name == "ace") {
-          // [10 10 A]
-          points += 1;
-          return points;
-        } else {
-          // [10 10 C]
-          points += hands[2].rank;
-          return points;
-        }
-      } else {
-        points += hands[1].rank;
-        if (
-          hands[2].name == "jack" ||
-          hands[2].name == "queen" ||
-          hands[2].name == "king" ||
-          hands[2].name == 10
-        ) {
-          // [10 C 10]
-          points += 10;
-          return points;
-        } else if (hands[2].name == "ace") {
-          // [10 C A]
-          points += 1;
-          return points;
-        } else {
-          // [10 C C]
-          points += hands[2].rank;
-          return points;
-        }
-      }
-    } else {
-      points += hands[0].rank;
-      if (hands[1].name == "ace") {
-        points += 11;
-        if (
-          hands[2].name == "jack" ||
-          hands[2].name == "queen" ||
-          hands[2].name == "king" ||
-          hands[2].name == 10
-        ) {
-          // [C A 10]
-          points += 0;
-          return points;
-        } else if (hands[2].name == "ace") {
-          // [C A A]
-          points += 1;
-          return points;
-        } else {
-          // [C A C]
-          points += hands[2].rank;
-          return points;
-        }
-      } else if (
-        hands[1].name == "jack" ||
-        hands[1].name == "queen" ||
-        hands[1].name == "king"
-      ) {
-        points += 10;
-        if (
-          hands[2].name == "jack" ||
-          hands[2].name == "queen" ||
-          hands[2].name == "king" ||
-          hands[2].name == 10
-        ) {
-          // [C 10 10]
-          points += 10;
-          return points;
-        } else if (hands[2].name == "ace") {
-          // [C 10 A]
-          points += 1;
-          return points;
-        } else {
-          // [C 10 C]
-          points += hands[2].rank;
-          return points;
-        }
-      } else {
-        points += hands[1].rank;
-        if (
-          hands[2].name == "jack" ||
-          hands[2].name == "queen" ||
-          hands[2].name == "king" ||
-          hands[2].name == 10
-        ) {
-          // [C C 10]
-          points += 10;
-          return points;
-        } else if (hands[2].name == "ace") {
-          // [C C A]
-          points += 11;
-          if (points > 21) {
-            points -= 10;
-            return points;
-          }
-          return points;
-        } else {
-          // [C C C]
-          points += hands[2].rank;
-          return points;
-        }
-      }
-    }
+  if (aceCounter >= 1 && points <= 11) {
+    points += 10;
   }
-
   return points;
 };
 
 var decideWinner = function (userPoints, dealerPoints) {
+  var loseImage =
+    '<img src = "https://c.tenor.com/1nevoLbzV0UAAAAi/run-pepe-sad-pepe.gif"/>';
+  var winImage =
+    '<img src = "https://c.tenor.com/B0BbyOHgHt4AAAAi/pepe-the-frog-dance.gif"/>';
+  var tieImage =
+    '<img src = "https://c.tenor.com/J91J3WdKk_8AAAAi/feel-weird-man-pepe.gif"/>';
   if (userPoints > 21) {
     if (dealerPoints > 21) {
-      return `It's a tie!`;
+      return `Both bust! It's a tie!` + tieImage;
     } else {
-      return `You bust, dealer wins!`;
+      return `You bust, pepe wins!` + winImage;
     }
   }
 
   if (dealerPoints > 21) {
     if (userPoints > 21) {
-      return `It's a tie!`;
+      return `Both bust! It's a tie!` + tieImage;
     } else {
-      return `Dealer busts, you win!`;
+      return `Pepe busts, you win!` + loseImage;
     }
   }
 
   if (userPoints > dealerPoints) {
     if (userPoints == 21) {
-      return "You win with a blackjack!";
+      return "You win with a blackjack!" + loseImage;
     }
-    return "You win!";
+    return "You win!" + loseImage;
   } else if (userPoints < dealerPoints) {
     if (dealerPoints == 21) {
-      return "Dealer wins with a blackjack!";
+      return "Pepe wins with a blackjack!" + winImage;
     }
-    return "Dealer wins!";
+    return "Pepe wins!" + winImage;
   } else if (userPoints == dealerPoints) {
     if (userPoints == 21) {
-      return "It is a tie with both players getting blackjacks!";
+      return "It is a tie with both players getting blackjacks!" + tieImage;
     }
-    return "It is a tie!";
+    return "It is a tie!" + tieImage;
   }
 };
 
@@ -408,12 +174,18 @@ var userPoints = 0;
 var dealerPoints = 0;
 var userHands = "";
 var dealerHands = "";
+var playerCounter = 0;
+var dealerCounter = 0;
 var main = function (input) {
   // game mode (deck is shuffled is skipped), if I utilised else if, game mode does not change, game flow will not move
   if (gameMode == "Deck is shuffled") {
+    document.body.style.backgroundImage =
+      "url('https://c.tenor.com/GB3x5UMmH24AAAAC/pepe-meme.gif')";
     shuffledDeck = shuffleCards(makeDeck());
     userCards = [];
     dealerCards = [];
+    playerCounter = 0;
+    dealerCounter = 0;
     console.log(gameMode);
     gameMode = "Cards are dealt";
     myOutputValue = "Click submit to deal cards.";
@@ -424,9 +196,13 @@ var main = function (input) {
     // deal cards
 
     userCards.push(shuffledDeck.pop());
+
     dealerCards.push(shuffledDeck.pop());
+
     userCards.push(shuffledDeck.pop());
+    playerCounter++;
     dealerCards.push(shuffledDeck.pop());
+    dealerCounter++;
 
     // check hands
     console.log(userCards);
@@ -440,13 +216,17 @@ var main = function (input) {
     // decide winner
     var outcome = decideWinner(userPoints, dealerPoints);
     // display message for hands
-    userHands = `<br> ${userCards[0].name} of ${userCards[0].suit} ${userCards[0].emoji} <br> ${userCards[1].name} of ${userCards[1].suit} ${userCards[1].emoji} <br>`;
-    dealerHands = `<br> ${dealerCards[0].name} of ${dealerCards[0].suit} ${dealerCards[0].emoji} <br> ${dealerCards[1].name} of ${dealerCards[1].suit} ${dealerCards[1].emoji}. <br>`;
+    userHands = `<br> ${userCards[0].rankEmoji} of ${userCards[0].emoji} <br> ${userCards[1].rankEmoji} of ${userCards[1].emoji} <br>`;
+    dealerHands = `<br> ${dealerCards[0].rankEmoji} of ${dealerCards[0].emoji} <br> ${dealerCards[1].rankEmoji} of ${dealerCards[1].emoji}. <br>`;
     // setting message
-    myOutputValue = `You drew: ${userHands} You have ${userPoints} points. Do you want to hit or stand? (hit/stand)`;
+    var hitOrStandImage =
+      '<img src ="https://c.tenor.com/pcw4xMVjup0AAAAi/pepeblue-pepebluesky.gif"/>';
+    myOutputValue =
+      `You drew: ${userHands} You have ${userPoints} points. Do you want to hit or stand? (hit/stand)` +
+      hitOrStandImage;
 
     if (userPoints == 21 || dealerPoints == 21) {
-      myOutputValue = `You drew: <br> ${userCards[0].name} of ${userCards[0].suit} ${userCards[0].emoji} <br> ${userCards[1].name} of ${userCards[1].suit} ${userCards[1].emoji} <br> You have ${userPoints} points. <br><br> Dealer drew: ${dealerHands}  Dealer has ${dealerPoints} points. <br><br> ${outcome}`;
+      myOutputValue = `You drew: <br> ${userCards[0].rankEmoji} of  ${userCards[0].emoji} <br> ${userCards[1].rankEmoji} of  ${userCards[1].emoji} <br> You have ${userPoints} points. <br><br> Pepe drew: ${dealerHands}  Pepe has ${dealerPoints} points. <br><br> ${outcome}`;
       gameMode = "Deck is shuffled";
       return myOutputValue;
     }
@@ -462,19 +242,38 @@ var main = function (input) {
 
   if (gameMode == "Player hit or stand") {
     console.log("player hit or stand");
-
+    var hitOrStandImage =
+      '<img src ="https://c.tenor.com/pcw4xMVjup0AAAAi/pepeblue-pepebluesky.gif"/>';
+    var annoyedImage =
+      '<img src ="https://c.tenor.com/17bXXRTAZwgAAAAi/wut-rage.gif"/>';
     if (input == "" || (input != "hit" && input != "stand")) {
-      myOutputValue = `You drew: ${userHands} You have ${userPoints} points. Do you want to hit or stand? (hit/stand)<br><br> Please enter a valid input (hit/stand).`;
+      myOutputValue =
+        `You drew: ${userHands} You have ${userPoints} points. Do you want to hit or stand? (hit/stand)<br><br> Please enter a valid input (hit/stand).` +
+        annoyedImage;
       return myOutputValue;
     } else if (input == "hit") {
       userCards.push(shuffledDeck.pop());
+      playerCounter++;
       userPoints = checkPoints(userCards);
-      userHands += `${userCards[2].name} of ${userCards[2].suit} ${userCards[2].emoji} <br>`;
-      myOutputValue = `You have chose to hit. <br> You drew: ${userHands}  You have ${userPoints} points. <br><br> Click submit for dealer's turn.`;
-      gameMode = "Dealer hit or stand";
+      userHands += `${userCards[playerCounter].rankEmoji} of ${userCards[playerCounter].emoji} <br>`;
+      if (userPoints < 22) {
+        myOutputValue =
+          `You have chose to hit. <br> You drew: ${userHands}  You have ${userPoints} points. <br><br> Do you want to hit or stand? (hit/stand)` +
+          hitOrStandImage;
+        return myOutputValue;
+      } else if (userPoints > 21) {
+        var hehePepe =
+          '<img src ="https://c.tenor.com/eSzdZd6_b_0AAAAC/pepe.gif"/>';
+        myOutputValue =
+          `You have chose to hit. <br> You drew: ${userHands}  You have ${userPoints} points. <br><br> You bust, click submit for pepe's turn. ` +
+          hehePepe;
+        gameMode = "Dealer hit or stand";
+        return myOutputValue;
+      }
+      counter++;
       return myOutputValue;
     } else if (input == "stand") {
-      myOutputValue = `You have chose to stand. <br> You drew: ${userHands} You have ${userPoints} points. <br><br> Click submit for dealer's turn.`;
+      myOutputValue = `You have chose to stand. <br> You drew: ${userHands} You have ${userPoints} points. <br><br> Click submit for pepe's turn.`;
       gameMode = "Dealer hit or stand";
       return myOutputValue;
     }
@@ -483,21 +282,37 @@ var main = function (input) {
   if (gameMode == "Dealer hit or stand") {
     console.log("Dealer hit or stand");
     dealerPoints = checkPoints(dealerCards);
-    if (dealerPoints < 18) {
+
+    if (dealerPoints < 17) {
       dealerCards.push(shuffledDeck.pop());
+      dealerCounter++;
       userPoints = checkPoints(userCards);
       dealerPoints = checkPoints(dealerCards);
-      dealerHands += `${dealerCards[2].name} of ${dealerCards[2].suit} ${dealerCards[2].emoji}. <br>`;
+      dealerHands += `${dealerCards[dealerCounter].rankEmoji} of ${dealerCards[dealerCounter].emoji}. <br>`;
       outcome = decideWinner(userPoints, dealerPoints);
-      myOutputValue = `Dealer hits. <br><br> You drew: ${userHands} You have ${userPoints} points. 
-      <br><br> Dealer drew: ${dealerHands}  Dealer has ${dealerPoints} points. <br><br> ${outcome} `;
+
+      if (dealerPoints < 17) {
+        var anxiousPepe =
+          '<img src="https://c.tenor.com/IMKlr0dPXh0AAAAi/pepeblue-pepebluesky.gif"/>';
+        myOutputValue =
+          `Pepe hits. <br><br> You drew: ${userHands} You have ${userPoints} points. 
+      <br><br> Pepe drew: ${dealerHands}  Pepe has ${dealerPoints} points and will need to draw again. <br><br> Click submit for pepe to hit.` +
+          anxiousPepe;
+        return myOutputValue;
+      }
+      document.body.style.backgroundImage =
+        "url('https://c.tenor.com/CMvlbBuFtH4AAAAC/pepe-meme.gif')";
+      myOutputValue = `Pepe hits. <br><br> You drew: ${userHands} You have ${userPoints} points. 
+      <br><br> Pepe drew: ${dealerHands}  Pepe has ${dealerPoints} points. <br><br> ${outcome} `;
       gameMode = "Deck is shuffled";
       return myOutputValue;
     } else {
+      document.body.style.backgroundImage =
+        "url('https://c.tenor.com/CMvlbBuFtH4AAAAC/pepe-meme.gif')";
       userPoints = checkPoints(userCards);
       dealerPoints = checkPoints(dealerCards);
       var outcome = decideWinner(userPoints, dealerPoints);
-      myOutputValue = `Dealer stands. <br><br> You drew: ${userHands} You have ${userPoints} points. <br><br> Dealer drew: ${dealerHands} Dealer has ${dealerPoints} points. <br><br> ${outcome} `;
+      myOutputValue = `Pepe stands. <br><br> You drew: ${userHands} You have ${userPoints} points. <br><br> Pepe drew: ${dealerHands} Pepe has ${dealerPoints} points. <br><br> ${outcome} `;
       gameMode = "Deck is shuffled";
       return myOutputValue;
     }
