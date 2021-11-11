@@ -2,12 +2,24 @@
 var playerScores = [];
 var computerScores = [];
 var mode = "first 2 cards";
+var winningImage =
+  '<iframe src="https://giphy.com/embed/dBf0OpOH96MTM6hYqr" width="480" height="270" frameBorder="0" class="giphy-embed" allowFullScreen></iframe>';
+var losingImage =
+  '<img src="https://static.mothership.sg/1/2016/10/Screen-Shot-2016-10-11-at-12.12.15-PM.png"/>';
+var ahGongTieImage =
+  '<img src="https://pbs.twimg.com/media/E0sqrY5UcAQqYtO.jpg"/>';
+
+var tieImage =
+  '<img src="http://thumbs.gfycat.com/AnnualPinkJavalina-size_restricted.gif"/>';
+
+var playerBlackjack = false;
+var computerBlackjack = false;
 
 var makeDeck = function () {
   // Initialise an empty deck array
   var cardDeck = [];
   // Initialise an array of the 4 suits in our deck. We will loop over this array.
-  var suits = ["Hearts", "Diamonds", "Clubs", "Spades"];
+  var suits = ["Hearts ♥️", "Diamonds ♦️", "Clubs ♣️", "Spades ♠️"];
 
   // Loop over the suits array
   var suitIndex = 0;
@@ -44,6 +56,8 @@ var makeDeck = function () {
         valueofCards = 10;
       } else if (rankCounter == 13) {
         valueofCards = 10;
+      } else if (rankCounter == 1) {
+        valueofCards = 11;
       }
 
       // Create a new card with the current name, suit, and rank
@@ -96,6 +110,35 @@ var shuffleCards = function (cardDeck) {
 };
 var playerHand = [];
 var computerHand = [];
+
+var showCards = function (player) {
+  var string = "";
+  var counter = 0;
+  while (counter < player.length) {
+    if (player.length > 2 && player[counter].name == "Ace") {
+      player[counter].valueofCards = 1;
+    }
+    string += `${player[counter].name} of ${player[counter].suit}<br>`;
+    counter = counter + 1;
+  }
+  return string;
+};
+var DealerShowCards = function () {
+  var computerHandScores = 0;
+  var computerCounter = 0;
+  while (computerCounter < computerHand.length) {
+    if (
+      computerHand.length > 2 &&
+      computerHand[computerCounter].name == "Ace"
+    ) {
+      computerHand[computerCounter].valueofCards = 1;
+    }
+    computerHandScores += computerHand[computerCounter].valueofCards;
+    computerCounter = computerCounter + 1;
+  }
+  return computerHandScores;
+};
+
 var main = function (input) {
   var shuffledDeck = shuffleCards(cardDeck);
 
@@ -107,66 +150,35 @@ var main = function (input) {
       playerHand.push(playerCard);
       currentIndex = currentIndex + 1;
     }
-    mode = "hit or stand";
 
-    myOutputValue = `You drew ${playerHand[0].name} of ${
-      playerHand[0].suit
-    } and ${playerHand[1].name} of ${
-      playerHand[1].suit
-    }, <br><br>Your total score now is: <br> ${
+    var displayPlayerHandandMessage = `${showCards(
+      playerHand
+    )}<br>Your total score now is: <br> ${
       playerHand[0].valueofCards + playerHand[1].valueofCards
-    } Points.<br><br>Input <b>"hit me daddy"</b> to take another card or <b>"can liao"</b> to stand`;
+    } Points.<br><br>`;
+    // //Force Blackjack
+    // playerHand = [
+    //   { name: "Ace", valueofCards: 11 },
+    //   { name: "King", valueofCards: 10 }];
+    if (
+      (playerHand[0].name == "Ace" && playerHand[1].valueofCards >= 10) ||
+      (playerHand[1].name == "Ace" && playerHand[0].valueofCards >= 10)
+    ) {
+      myOutputValue = `You got a BlackJack!<br> ${displayPlayerHandandMessage}`;
+      mode = "computer first 2 cards";
+      playerBlackjack = true;
+    } else {
+      myOutputValue = `${displayPlayerHandandMessage}<br>Input <b>"hit me daddy"</b> to take another card or <b>"can liao"</b> to stand`;
+      mode = "hit or stand";
+    }
   } else if (mode == "hit or stand") {
-    if (input == "hit me daddy" && playerHand.length == 2) {
+    if (input == "hit me daddy") {
       var playerCard = shuffledDeck.pop();
       playerHand.push(playerCard);
 
-      myOutputValue = `You drew ${playerHand[2].name} of ${
-        playerHand[2].suit
-      } on top of <br>${playerHand[0].name} of ${playerHand[0].suit} and ${
-        playerHand[1].name
-      } of ${
-        playerHand[1].suit
-      }, <br><br>You have 3 cards.<br>Your total score now is: <br> ${
-        playerHand[0].valueofCards +
-        playerHand[1].valueofCards +
-        playerHand[2].valueofCards
-      } Points.<br><br>Input <b>"hit me daddy"</b> to take another card or <b>"can liao"</b> to stand`;
-    } else if (input == "hit me daddy" && playerHand.length == 3) {
-      var playerCard = shuffledDeck.pop();
-      playerHand.push(playerCard);
-
-      myOutputValue = `You drew ${playerHand[3].name} of ${
-        playerHand[3].suit
-      } on top of <br>${playerHand[0].name} of ${playerHand[0].suit}, ${
-        playerHand[1].name
-      } of ${playerHand[1].suit} and ${playerHand[2].name} of ${
-        playerHand[2].suit
-      }, <br><br>You have 4 cards.<br>Your total score now is: <br> ${
-        playerHand[0].valueofCards +
-        playerHand[1].valueofCards +
-        playerHand[2].valueofCards +
-        playerHand[3].valueofCards
-      } Points.<br><br>Input <b>"hit me daddy"</b> to take another card or <b>"can liao"</b> to stand`;
-    } else if (input == "hit me daddy" && playerHand.length == 4) {
-      var playerCard = shuffledDeck.pop();
-      playerHand.push(playerCard);
-
-      myOutputValue = `You drew ${playerHand[4].name} of ${
-        playerHand[4].suit
-      } on top of <br>${playerHand[0].name} of ${playerHand[0].suit}, ${
-        playerHand[1].name
-      } of ${playerHand[1].suit}, ${playerHand[2].name} of ${
-        playerHand[2].suit
-      }  ${playerHand[3].name} of ${
-        playerHand[3].suit
-      }, <br><br>You have 5 cards.<br>Your total score now is: <br> ${
-        playerHand[0].valueofCards +
-        playerHand[1].valueofCards +
-        playerHand[2].valueofCards +
-        playerHand[3].valueofCards +
-        playerHand[4].valueofCards
-      } Points.<br><br>Input <b>"hit me daddy"</b> to take another card or <b>"can liao"</b> to stand`;
+      myOutputValue = `${showCards(
+        playerHand
+      )}<br>Input <b>"hit me daddy"</b> to take another card or <b>"can liao"</b> to stand`;
     } else if (input == "can liao") {
       var sumOfPlayerHand = 0;
       var playerHandCounter = 0;
@@ -175,9 +187,13 @@ var main = function (input) {
           sumOfPlayerHand + playerHand[playerHandCounter].valueofCards;
         playerHandCounter = playerHandCounter + 1;
       }
+      if (sumOfPlayerHand <= 16) {
+        myOutputValue = `Not enough la, hit some more please. Please input "hit me daddy"!`;
+      } else {
+        myOutputValue = `Okay, player is done, player has ${sumOfPlayerHand}.<br>It's now the Computer's turn`;
 
-      myOutputValue = `Okay, player is done, player has ${sumOfPlayerHand}, it's now the Computer's turn`;
-      mode = "computer first 2 cards";
+        mode = "computer first 2 cards";
+      }
     }
   } else if (mode == "computer first 2 cards") {
     while (currentIndex < 2) {
@@ -185,120 +201,70 @@ var main = function (input) {
       computerHand.push(computerCard);
       currentIndex = currentIndex + 1;
     }
-    myOutputValue = `Computer drew ${computerHand[0].name} of ${
-      computerHand[0].suit
-    } and ${computerHand[1].name} of ${
-      computerHand[1].suit
-    }, <br><br>Computer's total score now is: <br> ${
+    var displayComputerHandandMessage = `${showCards(
+      computerHand
+    )}<br>Your total score now is: <br> ${
       computerHand[0].valueofCards + computerHand[1].valueofCards
     } Points.<br><br>`;
-
+    // //Force Blackjack
+    // computerHand = [
+    //   { name: "Ace", valueofCards: 11 },
+    //   { name: "King", valueofCards: 10 }];
     if (
-      computerHand[0].valueofCards + computerHand[1].valueofCards < 16 &&
-      computerHand.length == 2
+      (computerHand[0].name == "Ace" && computerHand[1].valueofCards >= 10) ||
+      (computerHand[1].name == "Ace" && computerHand[0].valueofCards >= 10)
     ) {
-      mode = "computer less than 16";
+      myOutputValue = `Computer got a BlackJack!<br> ${displayComputerHandandMessage}`;
+      computerBlackjack = true;
+    } else {
+      while (DealerShowCards() <= 16) {
+        var computerCard = shuffledDeck.pop();
+        computerHand.push(computerCard);
+        myOutputValue = showCards(computerHand);
+      }
     }
-  } else if (mode == "computer less than 16") {
-    var computerCard = shuffledDeck.pop();
-    computerHand.push(computerCard);
-    myOutputValue = `Computer drew again, and got ${computerHand[2].name} of ${
-      computerHand[2].suit
-    } on top of <br>${computerHand[0].name} of ${computerHand[0].suit} and ${
-      computerHand[1].name
-    } of ${
-      computerHand[1].suit
-    }, <br><br>Computer now has 3 cards.<br>Your total score now is: <br> ${
-      computerHand[0].valueofCards +
-      computerHand[1].valueofCards +
-      computerHand[2].valueofCards
-    }`;
-    //y u no go to computer still less than 16 mode???
-  } else if (
-    computerHand[0].valueofCards +
-      computerHand[1].valueofCards +
-      computerHand[2].valueofCards <
-      16 &&
-    computerHand.length == 3
-  ) {
-    mode = "computer still less than 16";
-  } else if (mode == "computer still less than 16") {
-    var computerCard = shuffledDeck.pop();
-    computerHand.push(computerCard);
-    myOutputValue = `Computer drew again, and got ${computerHand[3].name} of ${
-      computerHand[3].suit
-    } on top of <br>${computerHand[0].name} of ${computerHand[0].suit}, ${
-      computerHand[1].name
-    } of ${computerHand[1].suit} and ${computerHand[2].name} of ${
-      computerHand[2].suit
-    }, <br><br>Computer now has 4 cards.<br>Your total score now is: <br> ${
-      computerHand[0].valueofCards +
-      computerHand[1].valueofCards +
-      computerHand[2].valueofCards +
-      computerHand[3].valueofCards
-    }`;
+    // to sum the computer hand
+    var sumOfComputerHand = 0;
+    var computerHandCounter = 0;
+    while (computerHandCounter < computerHand.length) {
+      sumOfComputerHand =
+        sumOfComputerHand + computerHand[computerHandCounter].valueofCards;
+      computerHandCounter = computerHandCounter + 1;
+    }
+    myOutputValue += `The computer's total score is ${sumOfComputerHand}`;
+    mode = "dictating a winner";
+  } else if (mode == "dictating a winner") {
+    var sumOfPlayerHand = 0;
+    var playerHandCounter = 0;
+    while (playerHandCounter < playerHand.length) {
+      sumOfPlayerHand =
+        sumOfPlayerHand + playerHand[playerHandCounter].valueofCards;
+      playerHandCounter = playerHandCounter + 1;
+    }
+    if (
+      (sumOfPlayerHand > DealerShowCards() && sumOfPlayerHand < 22) ||
+      (DealerShowCards() > 21 && sumOfPlayerHand < 22) ||
+      (playerBlackjack == true && computerBlackjack == false)
+    ) {
+      myOutputValue = `YOU WIN, YAY!<br><br>You got ${sumOfPlayerHand} and the Computer got ${DealerShowCards()}<br> ${winningImage}`;
+    } else if (
+      (sumOfPlayerHand < DealerShowCards() && DealerShowCards() < 22) ||
+      (DealerShowCards() < 22 && sumOfPlayerHand > 21) ||
+      (playerBlackjack == false && computerBlackjack == true)
+    ) {
+      myOutputValue = `YOU LOSE, LOSER! BOO! <br><br>You got ${sumOfPlayerHand} and the Computer got ${DealerShowCards()}<br>${losingImage}You can try one more time! Promise this is the last time.`;
+    } else if (sumOfPlayerHand > 21 && DealerShowCards() > 21) {
+      myOutputValue = `IT'S AN AHGONG TIE, YOU BOTH WENT TOO FAR, BOOM.<br><br>You got ${sumOfPlayerHand} and the Computer got ${DealerShowCards()}<br>${ahGongTieImage}`;
+    } else if (
+      (sumOfPlayerHand < 22 &&
+        DealerShowCards() < 22 &&
+        sumOfPlayerHand == DealerShowCards()) ||
+      (playerBlackjack == true && computerBlackjack == true)
+    ) {
+      myOutputValue = `IT'S A TIE, BORING<br><br>You got ${sumOfPlayerHand} and the Computer got ${DealerShowCards()}<br>${tieImage}`;
+    }
   }
 
-  // // to sum the computer hand
-  // var sumOfComputerHand = 0;
-  // var computerHandCounter = 0;
-  // while (computerHandCounter < computerHand.length) {
-  //   sumOfComputerHand =
-  //     sumOfComputerHand + computerHand[computerHandCounter].valueofCards;
-  //   computerHandCounter = computerHandCounter + 1;
-  // }
-
-  // //to compare the computer hand with player hand
-  // //ps i missed out if playerhand <16
-  //mode = "dictating a winner"
-  // if (
-  //   mode == "dictating a winner" &&
-  //   sumOfPlayerHand > sumOfComputerHand &&
-  //   sumOfPlayerHand < 22
-  // ) {
-  //   myOutputValue = `YOU WIN, YAY!<br><br>You got ${sumOfPlayerHand} and the Computer got ${sumOfComputerHand}`;
-  // } else if (
-  //   mode == "dictating a winner" &&
-  //   sumOfPlayerHand < sumOfComputerHand &&
-  //   sumOfPlayerHand < 22
-  // ) {
-  //   myOutputValue = `YOU LOSE, LOSER!<br><br>You got ${sumOfPlayerHand} and the Computer got ${sumOfComputerHand}`;
-  // } else if (
-  //   mode == "dictating a winner" &&
-  //   sumOfPlayerHand > sumOfComputerHand &&
-  //   sumOfPlayerHand < 22
-  // ) {
-  //   myOutputValue = `YOU BOTH HAVE A DRAW, ZAO!<br><br>You got ${sumOfPlayerHand} and the Computer got ${sumOfComputerHand}`;
-  // }
-
-  // playerHand.sort((a, b) => {
-  //   return a.rank - b.rank;
-  // });
-
-  // var playerCards = "";
-  // var cardIndex = 0;
-  // while (cardIndex < input) {
-  //   playerCards =
-  //     playerCards +
-  //     `${playerHand[cardIndex].name} of ${playerHand[cardIndex].suit}!<br>`;
-  //   cardIndex = cardIndex + 1;
-  // }
-  // console.log(playerHand[0]);
-
-  //   var myOutputValue = "";
-  //   if (
-  //     (computerCard.rank < playerHand[0].rank || computerCard.rank == 12) &&
-  //     playerCard.rank != 12
-  //   ) {
-  //     myOutputValue = `Computer wins! The computer drew <br>${computerCard.name} of ${computerCard.suit}! <br><br>You drew <br>${playerCards}`;
-  //   } else if (
-  //     (playerHand[0].rank < computerCard.rank || playerCard.rank == 12) &&
-  //     computerCard.rank != 12
-  //   ) {
-  //     myOutputValue = `You win! The computer drew <br>${computerCard.name} of ${computerCard.suit}! <br><br>You drew <br>${playerCards}`;
-  //   } else if (computerCard.rank == playerHand[0].rank) {
-  //     myOutputValue = `You both have a draw! The computer drew <br>${computerCard.name} of ${computerCard.suit}! <br><br>You drew <br>${playerCards}`;
-  //   }
   return myOutputValue;
 };
 
