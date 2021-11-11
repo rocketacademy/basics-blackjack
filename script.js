@@ -11,8 +11,10 @@
 var playerHand = [];
 var computerHand = [];
 var gameMode = "draw cards";
-var playerHitOrStandMode = false;
+var playerStandMode = false;
 var twentyOne = 21;
+var hitButtonClicked = false;
+var standButtonClicked = false;
 
 // make deck
 var makeDeck = function () {
@@ -205,12 +207,12 @@ var playAgain = function () {
   gameMode = "draw cards";
   playerHand = [];
   computerHand = [];
-  playerHitOrStandMode = false;
+  playerStandMode = false;
   return `<br><br>Click submit to play again!`;
 };
 
 // compare hands
-var compareHands = function (input) {
+var compareHands = function () {
   while (gameMode == "draw cards") {
     // computer blackjack
     if (computerTotalHandRank() == 21) {
@@ -226,72 +228,68 @@ var compareHands = function (input) {
       return `Pl🦄yer wins 🏆! Rob🤖t busted with ${computerTotalHandRank()}.<br><br>Pl🦄yer score: ${playerTotalHandRank()} and Rob🤖t score: ${computerTotalHandRank()}. ${playAgain()}`;
       // go to player hit or stand mode
     } else gameMode = "player turn";
-    return `<br><br>Pl🦄yer current score is ${playerTotalHandRank()}<br><br>Enter "h" to hit or "s" to stand`;
+    return `<br><br>Pl🦄yer current score is ${playerTotalHandRank()}<br><br>Click "Hit" or "Stand"`;
   }
 
   while (gameMode == "player turn") {
     // player blackjack
     if (playerTotalHandRank() == 21) {
-      return `Pl🦄yer wins with Blackjack 🔥!<br><br>Pl🦄yer score is ${playerTotalHandRank()} and Rob🤖t score is ${computerTotalHandRank()}. ${playAgain()}`;
+      return `Pl🦄yer wins 🔥!<br><br>Pl🦄yer score is ${playerTotalHandRank()} and Rob🤖t score is ${computerTotalHandRank()}. ${playAgain()}`;
       // player stand
     } else
-      return `Pl🦄yer current score is ${playerTotalHandRank()} <br> Rob🤖t current score is ${computerTotalHandRank()}<br><br>"h" hit or "s" stand.`;
+      return `Pl🦄yer current score is ${playerTotalHandRank()} <br> Rob🤖t current score is ${computerTotalHandRank()}<br><br>Click "Hit" or "Stand"`;
   }
 
   while (gameMode == "computer turn") {
     // player and computer above 21
     if (computerTotalHandRank() > 21 && playerTotalHandRank() > 21) {
-      return `Both busted 😱! It is a t👔e between Pl🦄yer and Rob🤖t.<br><br>Pl🦄yer score: ${playerTotalHandRank()} and Rob🤖t score: ${computerTotalHandRank()}. ${playAgain()}`;
+      return `Both busted 😱! It is a t👔e between Pl🦄yer and Rob🤖t.<br><br>Pl🦄yer score is ${playerTotalHandRank()} and Rob🤖t score is ${computerTotalHandRank()}. ${playAgain()}`;
       // computer bust > 21
     } else if (computerTotalHandRank() > 21 && playerTotalHandRank() < 21) {
-      return `Pl🦄yer wins 🏆! Rob🤖t busted with ${computerTotalHandRank()}.<br><br>Pl🦄yer score: ${playerTotalHandRank()} and Rob🤖t score: ${computerTotalHandRank()}. ${playAgain()}`;
+      return `Pl🦄yer wins 🏆! Rob🤖t busted with ${computerTotalHandRank()}.<br><br>Pl🦄yer score is ${playerTotalHandRank()} and Rob🤖t score is ${computerTotalHandRank()}. ${playAgain()}`;
       // player bust > 21 but computer < 21
     } else if (computerTotalHandRank() < 21 && playerTotalHandRank() > 21) {
-      return `Rob🤖t wins 🏆! Pl🦄yer busted with ${playerTotalHandRank()}.<br><br>Pl🦄yer score: ${playerTotalHandRank()} and Rob🤖t score: ${computerTotalHandRank()}. ${playAgain()}`;
+      return `Rob🤖t wins 🏆! Pl🦄yer busted with ${playerTotalHandRank()}.<br><br>Pl🦄yer score is ${playerTotalHandRank()} and Rob🤖t score is ${computerTotalHandRank()}. ${playAgain()}`;
       // player larger than computer
     } else if (playerTotalHandRank() > computerTotalHandRank()) {
-      return `Pl🦄yer wins 🙌 with a larger score!<br><br>Pl🦄yer score: ${playerTotalHandRank()} and Rob🤖t score: ${computerTotalHandRank()}. ${playAgain()}`;
+      return `Pl🦄yer wins 🙌 with a larger score!<br><br>Pl🦄yer score is ${playerTotalHandRank()} and Rob🤖t score is ${computerTotalHandRank()}. ${playAgain()}`;
       // player smaller than computer
     } else if (playerTotalHandRank() < computerTotalHandRank()) {
-      return `Rob🤖t wins 🥲 with a larger score!<br><br>Rob🤖t score: ${playerTotalHandRank()} and Rob🤖t score: ${computerTotalHandRank()}. ${playAgain()}`;
+      return `Rob🤖t wins 🥲 with a larger score!<br><br>Pl🦄yer score is ${playerTotalHandRank()} and Rob🤖t score is ${computerTotalHandRank()}. ${playAgain()}`;
       // player and computer tie
     } else if (playerTotalHandRank() == computerTotalHandRank()) {
-      return `It is a t👔e between Pl🦄yer and Rob🤖t.<br><br>Pl🦄yer score: ${playerTotalHandRank()} and Rob🤖t score: ${computerTotalHandRank()}. ${playAgain()}`;
+      return `It is a t👔e between Pl🦄yer and Rob🤖t.<br><br>Pl🦄yer score is ${playerTotalHandRank()} and Rob🤖t score is ${computerTotalHandRank()}. ${playAgain()}`;
       // computer blackjack
     } else if (computerTotalHandRank() == 21) {
-      return `Rob🤖t wins with Blackjack 🔥!<br><br>Pl🦄yer score: ${playerTotalHandRank()} and Rob🤖t score: ${computerTotalHandRank()}. ${playAgain()}`;
+      return `Rob🤖t wins with Blackjack 🔥!<br><br>Pl🦄yer score is ${playerTotalHandRank()} and Rob🤖t score is ${computerTotalHandRank()}. ${playAgain()}`;
     }
   }
 };
+var playerHitCard = 0;
 
-var playerHitOrStand = function (input) {
-  // player choose to hit
-  if (input == "h" && gameMode == "player turn") {
-    var playerHitCard = shuffledDeck.pop();
-    playerHand.push(playerHitCard);
-    console.log("player hit hand");
-    console.log(playerHand);
+var playerHit = function () {
+  playerHitCard = shuffledDeck.pop();
+  playerHand.push(playerHitCard);
+  console.log("player hit hand");
+  console.log(playerHand);
+  hitButtonClicked = false;
+  return `Pl🦄yer hits and draws ${playerHitCard.emoji} of ${
+    playerHitCard.suit
+  }<br><br> ${compareHands()}`;
+};
 
-    return `Pl🦄yer hits and draws ${playerHitCard.emoji} of ${
-      playerHitCard.suit
-    }<br><br> ${compareHands()}`;
-    // player choose to stand
-  } else if (input == "s" && gameMode == "player turn") {
-    playerHitOrStandMode = true;
-    gameMode = "computer turn";
-
-    return `Pl🦄yer stands firm 💪!<br><br>Pl🦄yer score is ${playerTotalHandRank()} and Rob🤖t score is ${computerTotalHandRank()}.<br><br>Click submit ✔️`;
-    // if input is empty
-  } else if (input == "" && gameMode == "player turn") {
-    return `Opps, please enter "h" to hit or "s" to stand.`;
-  }
+var playerStand = function () {
+  playerStandMode = true;
+  gameMode = "computer turn";
+  standButtonClicked = false;
+  return `Pl🦄yer stands firm 💪!<br><br>Pl🦄yer score is ${playerTotalHandRank()} and Rob🤖t score is ${computerTotalHandRank()}.<br><br>Click submit ✔️`;
 };
 
 var computerHitOrStand = function () {
   //computer to hit if total score is below 16
   if (
     computerTotalHandRank() < 16 &&
-    playerHitOrStandMode == true &&
+    playerStandMode == true &&
     gameMode == "computer turn"
   ) {
     var computerHitCard = shuffledDeck.pop();
@@ -306,7 +304,7 @@ var computerHitOrStand = function () {
     // computer to proceed to compare hands if equals or above 16
   } else if (
     computerTotalHandRank() >= 16 &&
-    playerHitOrStandMode == true &&
+    playerStandMode == true &&
     gameMode == "computer turn"
   ) {
     return compareHands();
@@ -314,14 +312,20 @@ var computerHitOrStand = function () {
 };
 
 // main blackjack
-var main = function (input) {
+var main = function () {
   var myOutputValue = "";
   if (gameMode == "draw cards") {
-    myOutputValue = `${playerDrawCards()} <br> ${computerDrawCards()} <br> ${compareHands()}`;
+    myOutputValue = `${playerDrawCards()} <br> ${computerDrawCards()} <br><br> ${compareHands()}`;
     console.log(`game mode: ${gameMode}`);
   } else if (gameMode == "player turn") {
-    myOutputValue = playerHitOrStand(input);
+    if (hitButtonClicked == true) {
+      myOutputValue = playerHit();
+    } else if (standButtonClicked == true) {
+      myOutputValue = playerStand();
+    }
     console.log(`game mode: ${gameMode}`);
+    console.log(`hit button clicked: ${hitButtonClicked}`);
+    console.log(`stand button clicked: ${standButtonClicked}`);
   } else if (gameMode == "computer turn") {
     myOutputValue = computerHitOrStand();
     console.log(`game mode: ${gameMode}`);

@@ -176,6 +176,8 @@
       <input id="input-field" />
       <br />
       <button id="submit-button">Submit</button>
+      <button id="hit-button">Hit</button>
+      <button id="stand-button">Stand</button>
       <p>Output:</p>
       <div id="output-div"></div>
     </div>
@@ -184,6 +186,9 @@
     <!-- Define button click functionality -->
     <script>
       var button = document.querySelector("#submit-button");
+      var hitButton = document.querySelector("#hit-button");
+      var standButton = document.querySelector("#stand-button");
+
       button.addEventListener("click", function () {
         // Set result to input value
         var input = document.querySelector("#input-field");
@@ -195,6 +200,22 @@
 
         // Reset input value
         input.value = "";
+      });
+
+      hitButton.addEventListener("click", function () {
+        hitButtonClicked = true;
+        playerHit;
+        var result = main();
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
+      });
+
+      standButton.addEventListener("click", function () {
+        standButtonClicked = true;
+        playerStand;
+        var result = main();
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
       });
     </script>
   </body>
