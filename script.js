@@ -211,7 +211,6 @@ var showHandState = function () {
     message += ` (Value: ${playerValue})`;
     message += `<br><br>`;
   }
-  message += `Press Submit to continue.`;
   return message;
 };
 
@@ -380,7 +379,8 @@ var evalRoundDealerBlackjack = function () {
     })<br><br>`;
     counter += 1;
   }
-  message += `Round end. Preparing for next round...<br><br>Press Submit to continue.`;
+  message +=
+    "This round end. Starting next round.<br><br>Player 1, place your bet.";
   return message;
 };
 
@@ -544,6 +544,7 @@ var main = function (input) {
     dealStartingHand();
     calcHandValue();
     myOutputValue = showHandState();
+    myOutputValue += `Press Submit to continue.`;
     mode = CHECK_FOR_BLACKJACK;
     console.log("========== exiting deal starting hand ==========");
     return myOutputValue;
@@ -563,9 +564,12 @@ var main = function (input) {
 
     // game continue
     mode = PLAYERS_TURN;
-    myOutputValue = `No blackjack, player 1 your turn. Enter "hit" or "stand".`;
+    var sectionMessage = `Dealer do not have blackjack.<br><br>===========================================<br><br>`;
+    myOutputValue = showHandState();
+    sectionMessage += myOutputValue;
+    sectionMessage += `===========================================<br><br>Player 1, it is your turn. Enter "hit" or "stand" to continue.`;
     console.log("========== exiting check for blackjack ==========");
-    return myOutputValue;
+    return sectionMessage;
   }
 
   if (mode == PLAYERS_TURN) {
@@ -578,16 +582,32 @@ var main = function (input) {
     var player = players[currentPlayerIndex];
     var handSize = player.hand.length;
 
+    if (player.blackjack) {
+      currentPlayerIndex += 1;
+      var sectionMessage = `${player.name} has blackjack.<br><br>===========================================<br><br>`;
+      myOutputValue = showHandState();
+      sectionMessage += myOutputValue;
+      sectionMessage += `===========================================<br><br>${
+        players[currentPlayerIndex + 1]
+      }, it is your turn. Enter "hit" or "stand" to continue.`;
+      return sectionMessage;
+    }
+
     // force player to stand
     if (handSize > HAND_SIZE_LIMIT || player.handValue > TWENTY_ONE) {
       userInput = "stand";
     }
 
     if (userInput == "hit") {
-      player.hand.push(shuffledDeck.pop());
+      var drawnCard = shuffledDeck.pop();
+      var drawnCardName = `${drawnCard.name} of ${drawnCard.suit}`;
+      player.hand.push(drawnCard);
       calcHandValue();
+      var sectionMessage = `${player.name} hit and drew ${drawnCardName}.<br><br>===========================================<br><br>`;
       myOutputValue = showHandState();
-      return `${myOutputValue} <br><br> Enter "hit" or "stand" to continue.`;
+      sectionMessage += myOutputValue;
+      sectionMessage += `===========================================<br><br>${player.name}, it is your turn. Enter "hit" or "stand" to continue.`;
+      return sectionMessage;
     }
 
     if (userInput == "stand") {
@@ -597,17 +617,26 @@ var main = function (input) {
         // exit players turn
         mode = COMPUTER_TURN;
         currentPlayerIndex = 0;
-        myOutputValue = "All player(s) has betted.<br><br>Dealer's turn now.";
+        myOutputValue =
+          "All player(s) has betted.<br><br>Dealer's turn now.<br><br>Press Submit to continue.";
         console.log("========== exiting players turn ==========");
         return myOutputValue;
       }
 
-      myOutputValue = `Player has stand. Next player`;
-      return myOutputValue;
+      var sectionMessage = `${
+        players[currentPlayerIndex - 1].name
+      } stand.<br><br>===========================================<br><br>`;
+      myOutputValue = showHandState();
+      sectionMessage += myOutputValue;
+      sectionMessage += `===========================================<br><br>${players[currentPlayerIndex].name}, it is your turn. Enter "hit" or "stand" to continue.`;
+      return sectionMessage;
     }
 
-    myOutputValue = "invalid";
-    return myOutputValue;
+    var sectionMessage = `${player.name} typed in an invalid reponse.<br><br>===========================================<br><br>`;
+    myOutputValue = showHandState();
+    sectionMessage += myOutputValue;
+    sectionMessage += `===========================================<br><br>${player.name}, it is your turn. Enter "hit" or "stand" to continue.`;
+    return sectionMessage;
   }
 
   if (mode == COMPUTER_TURN) {
@@ -617,18 +646,32 @@ var main = function (input) {
 
     if (dealer.handValue > TWENTY_ONE || handSize > HAND_SIZE_LIMIT) {
       mode = EVALUATE;
-      return "dealer bust. change mode";
+      var sectionMessage = `Dealer stand.<br><br>===========================================<br><br>`;
+      myOutputValue = showHandState();
+      sectionMessage += myOutputValue;
+      sectionMessage += `===========================================<br><br>Press Submit to continue.`;
+      return sectionMessage;
     }
 
     if (dealer.handValue < SEVENTEEN) {
-      dealer.hand.push(shuffledDeck.pop());
+      var drawnCard = shuffledDeck.pop();
+      var drawnCardName = `${drawnCard.name} of ${drawnCard.suit}`;
+      dealer.hand.push(drawnCard);
       calcHandValue();
-      return "dealer draw";
+      var sectionMessage = `Dealer hit and drew ${drawnCardName}.<br><br>===========================================<br><br>`;
+      myOutputValue = showHandState();
+      sectionMessage += myOutputValue;
+      sectionMessage += `===========================================<br><br>Press Submit to continue.`;
+      return sectionMessage;
     }
 
     if (dealer.handValue <= TWENTY_ONE) {
       mode = EVALUATE;
-      return "dealer stand. change mode";
+      var sectionMessage = `Dealer stand.<br><br>===========================================<br><br>`;
+      myOutputValue = showHandState();
+      sectionMessage += myOutputValue;
+      sectionMessage += `===========================================<br><br>Press Submit to continue.`;
+      return sectionMessage;
     }
   }
 
@@ -639,6 +682,12 @@ var main = function (input) {
       var player = players[index];
       var playerValue = players[index].handValue;
       var dealerValue = dealer.handValue;
+
+      if (player.blackjack) {
+        player.wallet += player.bet * 2;
+        index += 1;
+        continue;
+      }
 
       if (playerValue > TWENTY_ONE && dealerValue > TWENTY_ONE) {
         player.draw = true;
@@ -694,6 +743,15 @@ var main = function (input) {
       var bet = players[counter].bet;
       var win = players[counter].win;
       var draw = players[counter].draw;
+      var blackjack = players[counter].blackjack;
+
+      if (blackjack) {
+        message += `${name} has blackjack! ${name} betted ${bet}. (+$${
+          bet * 2
+        })<br><br>`;
+        counter += 1;
+        continue;
+      }
 
       if (draw) {
         message += `${name} draw!<br><br>`;
@@ -711,7 +769,8 @@ var main = function (input) {
       counter += 1;
     }
     gameReset();
-    message += "This round end. Starting next round.";
+    message +=
+      "This round end. Starting next round.<br><br>Player 1, place your bet.";
     return message;
   }
 
