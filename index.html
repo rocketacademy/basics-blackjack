@@ -51,7 +51,7 @@
       property="og:url"
       content="https://rocketacademy.github.io/basics-blackjack/index.html"
     />
-    <meta property="og:title" content="YOURNAME's BlackJack Game!" />
+    <meta property="og:title" content="MY BlackJack Game!" />
     <meta
       property="og:description"
       content="A fun card game I made myself! 😄💪🌈"
@@ -67,7 +67,7 @@
       name="twitter:url"
       content="https://rocketacademy.github.io/basics-blackjack/index.html"
     />
-    <meta name="twitter:title" content="YOURNAME's BlackJack Game!" />
+    <meta name="twitter:title" content="MYs BlackJack Game!" />
     <meta
       name="twitter:description"
       content="A fun card game I made myself! 😄💪🌈"
@@ -82,7 +82,7 @@
     <!-- fonts -->
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css?family=Open+Sans"
+      href="https://fonts.googleapis.com/css?family=Unica One"
     />
 
     <!-- CSS -->
@@ -92,12 +92,12 @@
       }
 
       body {
-        font-family: "Open Sans", sans-serif;
+        font-family: "Unica One";
         margin-left: 30px;
         margin-right: 30px;
         background-color: white;
         color: black; /* sets the font color */
-        background-image: url(""); /* The image used */
+        background-image: url("https://lumiere-a.akamaihd.net/v1/images/sa_pixar_virtualbg_insideout_16x9_cbaa0517.jpeg"); /* The image used */
         background-position: center; /* Center the image */
         background-repeat: no-repeat; /* Do not repeat the image */
         background-size: cover; /* Resize the background image to cover the entire container */
@@ -105,45 +105,50 @@
 
       #output-div img {
         display: block;
+        margin: auto;
         max-width: 100%;
         max-height: 200px;
       }
       .header {
         text-align: center;
         font-size: 1.1rem;
-        margin-bottom: 3rem;
+        margin-top: 1rem;
+        margin-bottom: 0rem;
       }
 
       #container {
-        background-image: url("https://lumiere-a.akamaihd.net/v1/images/sa_pixar_virtualbg_insideout_16x9_cbaa0517.jpeg");
-        color: white;
-        margin: 40px auto;
+        background-color: rgba(56, 9, 87, 0);
+        font-size: 21px;
+        margin: 10px auto;
         max-width: 800px;
         padding: 38px 31px;
       }
 
       input {
+        font-family: "Unica One";
         font-size: 21px;
         color: black;
         background-color: lightgray;
-        line-height: 33px;
-        margin: 0 0 23px 0;
+        line-height: 30px;
+        margin: 0 0 10px 0;
         padding: 0 9px;
         width: 100%;
       }
 
       button {
+        font-family: "Unica One";
         font-size: 21px;
-        line-height: 33px;
-        margin: 0 0 23px 0;
+        line-height: 30px;
+        margin: 0 0 0px 0;
         padding: 0 6px;
       }
 
       #output-div {
         background-color:lightgray;
         color: black;
-        margin: 20px auto;
-        padding: 20px;
+        text-align: center;
+        margin: 10px auto;
+        padding: 10px;
         width: 100%;
       }
 
@@ -183,13 +188,14 @@
       <span style="color: lack">♠️</span>
     </h1>
     <div id="container">
-      <p>Input:</p>
+      <p><span style="color:white">Input:</span></p>
+      
       <input id="input-field" />
       <br />
       <button id="submit-button">Submit</button>
-      <p>Output:</p>
+      <p><span style="color:white">Output:</span></p>
       <div id="output-div">
-        Welcome to the Game of BlackJack! <div> Click"submit" to start the game. <div>
+        Welcome to the Game of BlackJack! <div> Click "submit" to begin. <div>
           <img class = "img"
           src = https://c.tenor.com/UuxfrhK2g70AAAAC/yay-inside-out.gif/>
       </div>
