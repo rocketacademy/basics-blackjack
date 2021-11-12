@@ -119,9 +119,12 @@ var main = function (input) {
       playerScore = playerScore + playerCards[playerIndex].score;
       playerIndex = playerIndex + 1;
     }
-    // if (playerCards[0].score == 10 && playerCards[1].name == "ace") {
-    //   playerScore = 21;
-    // }
+    if (playerCards[0].score == 10 && playerCards[1].name == "ace") {
+      playerScore = 21;
+    }
+    if (playerCards[1].score == 10 && playerCards[0].name == "ace") {
+      playerScore = 21;
+    }
     return playerScore;
   };
 
@@ -131,6 +134,12 @@ var main = function (input) {
     while (computerIndex < computerCards.length) {
       computerScore = computerScore + computerCards[computerIndex].score;
       computerIndex = computerIndex + 1;
+    }
+    if (computerCards[0].score == 10 && computerCards[1].name == "ace") {
+      computerScore = 21;
+    }
+    if (computerCards[1].score == 10 && computerCards[0].name == "ace") {
+      computerScore = 21;
     }
     return computerScore;
   };
@@ -147,6 +156,8 @@ var main = function (input) {
     // calculate total score for each player
     playerScore = calculatePlayerScore();
     computerScore = calculateComputerScore();
+    console.log("playerScore: " + playerScore);
+    console.log("computerScore: " + computerScore);
 
     myOutputValue =
       "You drew a " +
@@ -190,6 +201,10 @@ var main = function (input) {
       computerScore = calculateComputerScore();
       playerScore = calculatePlayerScore();
       myOutputValue = endGame(playerScore, computerScore);
+
+      currentGameMode = "draw card";
+      playerCards = [];
+      computerCards = [];
     }
     // If player chooses to hit
     if (input == "hit") {
@@ -225,13 +240,6 @@ var main = function (input) {
         playerCards = [];
         computerCards = [];
       }
-
-      // If player chooses to stand
-      if (input == "stand") {
-        computerScore = calculateComputerScore();
-        playerScore = calculatePlayerScore();
-        myOutputValue = endGame(playerScore, computerScore);
-      }
     }
   } else if ((currentGameMode = "computer draws")) {
     computerCards.push(computerDeck.pop());
@@ -241,18 +249,29 @@ var main = function (input) {
 
     var newComputerIndex = computerCards.length - 1;
 
-    myOutputValue =
-      "Computer drew " +
-      computerCards[newComputerIndex].name +
-      ". Your score = " +
-      playerScore +
-      ". Computer score = " +
-      computerScore +
-      "<br><br> Your turn. Enter 'hit' to draw another card, or 'stand' to end your turn.";
+    if (computerScore < 17) {
+      myOutputValue =
+        "Computer drew " +
+        computerCards[newComputerIndex].name +
+        ". Your score = " +
+        playerScore +
+        ". Computer score = " +
+        computerScore +
+        ". <br><br> Computer has to draw again. Click submit to continue.";
 
-    currentGameMode = "hit or stand";
+      currentGameMode = "computer draws";
+    } else if (computerScore >= 17 && computerScore <= 21) {
+      myOutputValue =
+        "Computer drew " +
+        computerCards[newComputerIndex].name +
+        ". Your score = " +
+        playerScore +
+        ". Computer score = " +
+        computerScore +
+        "<br><br> Your turn. Enter 'hit' to draw another card, or 'stand' to end your turn.";
 
-    if (computerScore > 21) {
+      currentGameMode = "hit or stand";
+    } else if (computerScore > 21) {
       myOutputValue =
         "Computer drew " +
         computerCards[newComputerIndex].name +
@@ -275,6 +294,13 @@ var main = function (input) {
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
 // CREATE END GAME FUNCTION
 //
 //
@@ -285,35 +311,28 @@ var endGame = function (playerScore, computerScore) {
   if (playerScore < computerScore && computerScore <= 21) {
     scoreDifference = computerScore - playerScore;
     myOutputValue =
-      "Your score: " +
+      "Ops, better luck next time! Computer wins by " +
+      scoreDifference +
+      " points more than you. <br><br> Your score: " +
       playerScore +
       " |  Computer score = " +
       computerScore +
-      "<br><br> Ops, better luck next time! Computer wins by " +
-      scoreDifference +
-      " points more than you.";
+      "<br><br> Click submit to play again.";
   }
-  // // Computer exceeds 21 points
-  // if (computerScore > 21 && playerScore < 21) {
-  //   myOutputValue = "You win! Computer's score exceeded 21.";
-  // }
+
   // Player wins by points
   if (playerScore > computerScore && playerScore <= 21) {
     scoreDifference = playerScore - computerScore;
     myOutputValue =
-      "Your score: " +
+      "Nice one! You won by " +
+      scoreDifference +
+      " points more than computer! <br><br> Your score: " +
       playerScore +
       " |  Computer score = " +
       computerScore +
-      "<br><br> Nice one! You won by " +
-      scoreDifference +
-      " points more than computer!";
+      "<br><br> Click submit to play again.";
   }
-  // // Player exceeds 21 points
-  // if (playerScore > 21 && computerScore < 21) {
-  //   myOutputValue =
-  //     "Yikes! You lost, your score exceeded 21. Better luck next time!";
-  // }
+
   // Its a draw
   if (playerScore == computerScore) {
     myOutputValue =
