@@ -10,11 +10,35 @@
 // global variables
 var playerHand = [];
 var computerHand = [];
-var gameMode = "draw cards";
+var playerWallet = 100;
+var playerBet = [];
+var gameMode = "bet";
 var playerStandMode = false;
 var twentyOne = 21;
 var hitButtonClicked = false;
 var standButtonClicked = false;
+
+var getBetAmount = function (input) {
+  if (isNaN(input) == true || !Number(input) > 0) {
+    return `Please enter your bet.`;
+  } else playerBet.push(input);
+  gameMode = "draw cards";
+  return `You bet $${playerBet[playerBet.length - 1]}.`;
+};
+
+var calcBetWin = function () {
+  var winAmount = parseInt(playerBet.pop());
+  var totalCurrentWallet = (playerWallet += winAmount);
+  console.log(`wallet amount: ${totalCurrentWallet}`);
+  return `You won $${winAmount}<br>Current wallet size: $${totalCurrentWallet}`;
+};
+
+var calcBetLoss = function () {
+  var lossAmount = parseInt(playerBet.pop());
+  var totalCurrentWallet = (playerWallet -= lossAmount);
+  console.log(`wallet amount: ${totalCurrentWallet}`);
+  return `You loss $${lossAmount}<br>Current wallet size: $${totalCurrentWallet}`;
+};
 
 // make deck
 var makeDeck = function () {
@@ -204,7 +228,7 @@ var computerTotalHandRank = function () {
 };
 
 var playAgain = function () {
-  gameMode = "draw cards";
+  gameMode = "bet";
   playerHand = [];
   computerHand = [];
   playerStandMode = false;
@@ -212,20 +236,20 @@ var playAgain = function () {
 };
 
 // compare hands
-var compareHands = function () {
+var compareHands = function (playerBet) {
   while (gameMode == "draw cards") {
     // computer blackjack
     if (computerTotalHandRank() == 21) {
-      return `Rob🤖t wins with Blackjack 🔥 ${computerTotalHandRank()}!. ${playAgain()}`;
+      return `Rob🤖t wins with Blackjack 🔥 ${computerTotalHandRank()}!.${playAgain()}<br><br>${calcBetLoss()}`;
       // player blackjack
     } else if (playerTotalHandRank() == 21) {
-      return `Pl🦄yer wins with Blackjack 🔥 ${playerTotalHandRank()}!. ${playAgain()}`;
+      return `Pl🦄yer wins with Blackjack 🔥 ${playerTotalHandRank()}!.${playAgain()}<br><br>${calcBetWin()}`;
       // player and computer bust
     } else if (computerTotalHandRank() > 21 && playerTotalHandRank() > 21) {
-      return `Both busted 😱! It is a t👔e between Pl🦄yer and Rob🤖t.<br><br>Pl🦄yer score: ${playerTotalHandRank()} and Rob🤖t score: ${computerTotalHandRank()}. ${playAgain()}`;
+      return `Both busted 😱! It is a t👔e between Pl🦄yer and Rob🤖t.<br><br>Pl🦄yer score: ${playerTotalHandRank()} and Rob🤖t score: ${computerTotalHandRank()}.${playAgain()}<br><br>Current wallet amount ${playerWallet}`;
       // computer bust
     } else if (computerTotalHandRank() > 21) {
-      return `Pl🦄yer wins 🏆! Rob🤖t busted with ${computerTotalHandRank()}.<br><br>Pl🦄yer score: ${playerTotalHandRank()} and Rob🤖t score: ${computerTotalHandRank()}. ${playAgain()}`;
+      return `Pl🦄yer wins 🏆! Rob🤖t busted with ${computerTotalHandRank()}.<br><br>Pl🦄yer score: ${playerTotalHandRank()} and Rob🤖t score: ${computerTotalHandRank()}.${playAgain()}<br><br>${calcBetLoss()}`;
       // go to player hit or stand mode
     } else gameMode = "player turn";
     return `<br><br>Pl🦄yer current score is ${playerTotalHandRank()}<br><br>Click "Hit" or "Stand"`;
@@ -234,34 +258,34 @@ var compareHands = function () {
   while (gameMode == "player turn") {
     // player blackjack
     if (playerTotalHandRank() == 21) {
-      return `Pl🦄yer wins 🔥!<br><br>Pl🦄yer score is ${playerTotalHandRank()} and Rob🤖t score is ${computerTotalHandRank()}. ${playAgain()}`;
+      return `Pl🦄yer wins 🔥!<br><br>Pl🦄yer score is ${playerTotalHandRank()} and Rob🤖t score is ${computerTotalHandRank()}.${playAgain()}<br><br>${calcBetWin()}`;
       // player stand
     } else
-      return `Pl🦄yer current score is ${playerTotalHandRank()} <br> Rob🤖t current score is ${computerTotalHandRank()}<br><br>Click "Hit" or "Stand"`;
+      return `Pl🦄yer current score is ${playerTotalHandRank()}<br><br>Click "Hit" or "Stand"`;
   }
 
   while (gameMode == "computer turn") {
     // player and computer above 21
     if (computerTotalHandRank() > 21 && playerTotalHandRank() > 21) {
-      return `Both busted 😱! It is a t👔e between Pl🦄yer and Rob🤖t.<br><br>Pl🦄yer score is ${playerTotalHandRank()} and Rob🤖t score is ${computerTotalHandRank()}. ${playAgain()}`;
+      return `Both busted 😱! It is a t👔e between Pl🦄yer and Rob🤖t.<br><br>Pl🦄yer score is ${playerTotalHandRank()} and Rob🤖t score is ${computerTotalHandRank()}.${playAgain()}<br><br>Current wallet amount ${playerWallet}`;
       // computer bust > 21
     } else if (computerTotalHandRank() > 21 && playerTotalHandRank() < 21) {
-      return `Pl🦄yer wins 🏆! Rob🤖t busted with ${computerTotalHandRank()}.<br><br>Pl🦄yer score is ${playerTotalHandRank()} and Rob🤖t score is ${computerTotalHandRank()}. ${playAgain()}`;
+      return `Pl🦄yer wins 🏆! Rob🤖t busted with ${computerTotalHandRank()}.<br><br>Pl🦄yer score is ${playerTotalHandRank()} and Rob🤖t score is ${computerTotalHandRank()}.${playAgain()}<br><br>${calcBetWin()}`;
       // player bust > 21 but computer < 21
     } else if (computerTotalHandRank() < 21 && playerTotalHandRank() > 21) {
-      return `Rob🤖t wins 🏆! Pl🦄yer busted with ${playerTotalHandRank()}.<br><br>Pl🦄yer score is ${playerTotalHandRank()} and Rob🤖t score is ${computerTotalHandRank()}. ${playAgain()}`;
+      return `Rob🤖t wins 🏆! Pl🦄yer busted with ${playerTotalHandRank()}.<br><br>Pl🦄yer score is ${playerTotalHandRank()} and Rob🤖t score is ${computerTotalHandRank()}.${playAgain()}<br><br>${calcBetLoss()}`;
       // player larger than computer
     } else if (playerTotalHandRank() > computerTotalHandRank()) {
-      return `Pl🦄yer wins 🙌 with a larger score!<br><br>Pl🦄yer score is ${playerTotalHandRank()} and Rob🤖t score is ${computerTotalHandRank()}. ${playAgain()}`;
+      return `Pl🦄yer wins 🙌 with a larger score!<br><br>Pl🦄yer score is ${playerTotalHandRank()} and Rob🤖t score is ${computerTotalHandRank()}.${playAgain()}<br><br>${calcBetWin()}`;
       // player smaller than computer
     } else if (playerTotalHandRank() < computerTotalHandRank()) {
-      return `Rob🤖t wins 🥲 with a larger score!<br><br>Pl🦄yer score is ${playerTotalHandRank()} and Rob🤖t score is ${computerTotalHandRank()}. ${playAgain()}`;
+      return `Rob🤖t wins 🥲 with a larger score!<br><br>Pl🦄yer score is ${playerTotalHandRank()} and Rob🤖t score is ${computerTotalHandRank()}.${playAgain()}<br><br>${calcBetLoss()}`;
       // player and computer tie
     } else if (playerTotalHandRank() == computerTotalHandRank()) {
-      return `It is a t👔e between Pl🦄yer and Rob🤖t.<br><br>Pl🦄yer score is ${playerTotalHandRank()} and Rob🤖t score is ${computerTotalHandRank()}. ${playAgain()}`;
+      return `It is a t👔e between Pl🦄yer and Rob🤖t.<br><br>Pl🦄yer score is ${playerTotalHandRank()} and Rob🤖t score is ${computerTotalHandRank()}.${playAgain()}<br><br>Current wallet amount ${playerWallet}`;
       // computer blackjack
     } else if (computerTotalHandRank() == 21) {
-      return `Rob🤖t wins with Blackjack 🔥!<br><br>Pl🦄yer score is ${playerTotalHandRank()} and Rob🤖t score is ${computerTotalHandRank()}. ${playAgain()}`;
+      return `Rob🤖t wins with Blackjack 🔥!<br><br>Pl🦄yer score is ${playerTotalHandRank()} and Rob🤖t score is ${computerTotalHandRank()}.${playAgain()}<br><br>${calcBetLoss()}`;
     }
   }
 };
@@ -282,7 +306,7 @@ var playerStand = function () {
   playerStandMode = true;
   gameMode = "computer turn";
   standButtonClicked = false;
-  return `Pl🦄yer stands firm 💪!<br><br>Pl🦄yer score is ${playerTotalHandRank()} and Rob🤖t score is ${computerTotalHandRank()}.<br><br>Click submit ✔️`;
+  return `Pl🦄yer stands firm 💪!<br><br>Pl🦄yer score is ${playerTotalHandRank()}.<br><br>Click submit ✔️`;
 };
 
 var computerHitOrStand = function () {
@@ -312,10 +336,13 @@ var computerHitOrStand = function () {
 };
 
 // main blackjack
-var main = function () {
+var main = function (input) {
   var myOutputValue = "";
-  if (gameMode == "draw cards") {
-    myOutputValue = `${playerDrawCards()} <br> ${computerDrawCards()} <br><br> ${compareHands()}`;
+  if (gameMode == "bet") {
+    myOutputValue = getBetAmount(input);
+    console.log("bet amount: " + playerBet);
+  } else if (gameMode == "draw cards") {
+    myOutputValue = `${playerDrawCards()} <br> ${computerDrawCards()} <br> ${compareHands()}`;
     console.log(`game mode: ${gameMode}`);
   } else if (gameMode == "player turn") {
     if (hitButtonClicked == true) {
