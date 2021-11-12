@@ -23,9 +23,9 @@
 //------------------------------------
 
 var playerCardsArray = [];
-var playerCard1 = playerCardsArray[0];
-var playerCard2 = playerCardsArray[1];
-var playerCard3 = playerCardsArray[2];
+var playerCard1 = {};
+var playerCard2 = {};
+var playerCard3 = {};
 var playerHands = [];
 var computerCard1 = {};
 var computerCard2 = {};
@@ -34,6 +34,7 @@ var computerCardsArray = [];
 var shuffledDeck = {};
 var currentGameMode = "Drawing Cards";
 var message1 = "";
+var message3 = "";
 
 // var message2 = `<br><br> Player please click submit to choose either Hit or Stand!`;
 
@@ -179,8 +180,6 @@ var comparePlayerAndComputer = function (hands1, hands2) {
 var main = function (input) {
   var shuffledDeck = shuffleCards(makeDeck());
 
-  var message2 = `<br><br> Player input 'hit' (draw another card) or 'stand' (good for now) !`;
-
   // ~~~~~~~~~~~~~~~ Drawing Cards Mode ~~~~~~~~~~~~~~~
   // === both players and computer will draw cards
   // === switch mode once both have draw the cards
@@ -214,7 +213,7 @@ var main = function (input) {
       `computerCard2: ${computerCard2.name} of ${computerCard2.suit}`
     );
 
-    message1 = `Player hand:<br> ${playerCard1.name} of ${playerCard1.suit},<br> ${playerCard2.name} of ${playerCard2.suit}<br><br>  Dealer hand:<br> ${computerCard1.name} of ${computerCard1.suit},<br> ${computerCard2.name} of ${computerCard2.suit}`;
+    message1 = `Player hand:<br> ${playerCard1.name} of ${playerCard1.suit} ${playerCard1.emoji},<br> ${playerCard2.name} of ${playerCard2.suit} ${playerCard2.emoji}<br><br>  Dealer hand:<br> ${computerCard1.name} of ${computerCard1.suit} ${computerCard1.emoji},<br> ${computerCard2.name} of ${computerCard2.suit} ${computerCard2.emoji}`;
   }
 
   // ~~~~~~~~~~~~~~~ Comparing Mode ~~~~~~~~~~~~~~~
@@ -268,6 +267,7 @@ var main = function (input) {
       console.log(`playerHands: ${playerHands}`);
       computerHands = getCombineHandValues(computerCardsArray);
       console.log(`computerHands: ${computerHands}`);
+      var message2 = `<br><br> Wow, you're at ${playerHands} right now! Do you want to hit or stand? Type h for hit or s for stand!`;
       myOutputValue = message1 + message2;
     }
     return myOutputValue;
@@ -287,17 +287,26 @@ var main = function (input) {
     console.log(currentGameMode);
 
     // if player choose Hit
-    if (input == "hit") {
+    if (input == "h") {
       var playerCard3 = shuffledDeck.pop();
       console.log(`playerCard3: ${playerCard3.name}`);
       playerCardsArray.push(playerCard3);
       playerHands = getCombineHandValues(playerCardsArray);
       console.log(`playerhands: ${playerHands}`);
       console.log(`computerHands: ${computerHands}`);
-      myOutputValue = `${message1}<br><br> Player chose another card: ${playerCard3.name} of ${playerCard3.suit}<br><br>Dealer's turn!`;
+
+      //== unsure why is it not possible to use the stored object playerCard1 and playerCard2
+      // playerCard1 = playerCardsArray[0];
+      // console.log(`playerCard1: ${playerCard1.name}`);
+      // playerCard2 = playerCardsArray[1];
+      // console.log(`playerCard2: ${playerCard2.name}`);
+
+      // message3 = `Player hand:<br> ${playerCard1.name} of ${playerCard1.suit},<br> ${playerCard2.name} of ${playerCard2.suit}<br> ${playerCard3.name} of ${playerCard3.suit} <br><br>  Dealer hand:<br> ${computerCard1.name} of ${computerCard1.suit},<br> ${computerCard2.name} of ${computerCard2.suit}`;
+
+      myOutputValue = `${message1}<br><br> Player chose another card: ${playerCard3.name} of ${playerCard3.suit} ${playerCard3.emoji}<br><br>Dealer's turn!`;
     }
     // if player choose Stand
-    else if (input == "stand") {
+    else if (input == "s") {
       console.log(`playerhands: ${playerHands}`);
       console.log(`computerHands: ${computerHands}`);
       myOutputValue = `${message1}<br><br>Dealer's turn!`;
@@ -317,9 +326,12 @@ var main = function (input) {
       computerHands = getCombineHandValues(computerCardsArray);
       console.log(`playerhands: ${playerHands}`);
       console.log(`computerHands: ${computerHands}`);
-      myOutputValue = `${message1}<br> Dealer chose another card: ${
+      // message3 = `Player hand:<br> ${playerCard1.name} of ${playerCard1.suit},<br> ${playerCard2.name} of ${playerCard2.suit}<br> ${playerCard3.name} of ${playerCard2.suit}    <br><br>  Dealer hand:<br> ${computerCard1.name} of ${computerCard1.suit},<br> ${computerCard2.name} of ${computerCard2.suit}`;
+      myOutputValue = `${message1}<br><br> Dealer chose another card: ${
         computerCard3.name
-      } of ${computerCard3.suit}<br>${comparePlayerAndComputer(
+      } of ${computerCard3.suit} ${
+        computerCard3.emoji
+      }<br><br> Combined Player Hands: ${playerHands}<br>Combined Computer Hands: ${computerHands}<br> ${comparePlayerAndComputer(
         playerHands,
         computerHands
       )}`;
@@ -328,11 +340,14 @@ var main = function (input) {
     else if (computerHands >= 17) {
       console.log(`playerhands: ${playerHands}`);
       console.log(`computerHands: ${computerHands}`);
-      myOutputValue = `${message1}<br> ${comparePlayerAndComputer(
+      myOutputValue = `${message1}<br><br> Combined Player Hands: ${playerHands}<br>Combined Computer Hands:${computerHands}<br> ${comparePlayerAndComputer(
         playerHands,
         computerHands
       )}`;
     }
+    var myImage =
+      '<img src="https://c.tenor.com/CMFvpGzhzo0AAAAM/money-rain-money.gif"/>';
+    myOutputValue = myOutputValue + myImage + myImage + myImage; // will display an image in the grey box
     return myOutputValue;
   }
 };
