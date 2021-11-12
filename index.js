@@ -112,28 +112,27 @@ class App {
       let player = this.#players[i];
       if (i === this.#dealerIndex) {
         if (player.handValue > 21) {
-          this.endTurn(true);
+          this.endTurn(GameRoundState.Win);
           this.state = GameState.End;
         } 
       } else {
         if (player.handValue > 21) {
-          this.endTurn(false);
+          this.endTurn(GameRoundState.Lose);
           this.state = GameState.End;
         } else if (player.handValue === 21) {
           if (dealer.handValue !== 21) {
-            this.endTurn(true);
+            this.endTurn(GameRoundState.Win);
             this.state = GameState.End;
           }
         } else if (this.#playerStands) {
           if (player.handValue > dealer.handValue) {
-            this.endTurn(true);
+            this.endTurn(GameRoundState.Win);
             this.state = GameState.End;
           } else if (player.handValue === dealer.handValue) {
-            this.endTurn(false);
-            player.addScore(this.#betAmount);
+            this.endTurn(GameRoundState.Push);
             this.state = GameState.End;
           } else {
-            this.endTurn(false);
+            this.endTurn(GameRoundState.Lose);
             this.state = GameState.End;
           }
         }
@@ -145,8 +144,19 @@ class App {
     console.log("playerWins? " + playerWins);
     const player = this.#players[0];
 
-    if (playerWins) {
-      player.addScore(this.#betAmount * this.#payoutRate);
+    let winnings = this.#betAmount;
+    switch (playerWins) {
+      case GameRoundState.Win:
+        winnings = this.#betAmount * this.#payoutRate;
+        player.addScore(winnings);
+        break;
+      case GameRoundState.Lose:
+        winnings = this.#betAmount;
+        break;
+      case GameRoundState.Push:
+        winnings = this.#betAmount;
+        player.addScore(winnings);
+        break;
     }
 
     document.getElementById("input-new-round").disabled = false;
@@ -154,6 +164,7 @@ class App {
     document.getElementById("input-stand").disabled = true;
 
     this.displayBank(player);
+    this.displayEndRound(playerWins, winnings);
   }
 
   calculateHand(player) {
@@ -216,6 +227,31 @@ class App {
 
     // this.displayCard(dealer, DisplayArea.Dealer);
     // this.displayScore(dealer.handValue, DisplayArea.Dealer);
+  }
+
+  displayEndRound(playerWins, winnings) {
+    const title = document.querySelector("#end-round-title");
+    const body = document.querySelector("#end-round-body");
+
+    switch (playerWins) {
+      case GameRoundState.Win:
+        title.innerHTML = "You Win!";
+        body.innerHTML = `<img class="uk-align-center" src="https://c.tenor.com/E8LtQl2x9xYAAAAC/money-we-getting-money.gif"/>`;
+        body.innerHTML += `<h3 class="uk-text-center">You've won \$${winnings}</h3>`;
+        break;
+      case GameRoundState.Lose:
+        title.innerHTML = "You Lose!";
+        body.innerHTML = `<img class="uk-align-center" src="https://c.tenor.com/3MYmU_ShnpUAAAAd/tommy-wiseau-tearing-me-apart.gif"/>`;
+        body.innerHTML += `<h3 class="uk-text-center">You've lost \$${winnings}</h3>`;
+        break;
+      case GameRoundState.Push:
+        title.innerHTML = "Push!";
+        body.innerHTML = `<img class="uk-align-center" src="https://c.tenor.com/FA4RkpLbpAQAAAAd/leon-s-kennedy-leon.gif"/>`;
+        body.innerHTML += `<h3 class="uk-text-center">You've got back \$${winnings}</h3>`;
+        break;
+    }
+
+    UIkit.modal("#modal-end-round").show();
   }
 
   displayBank(player) {
@@ -397,4 +433,10 @@ const DisplayArea = Object.freeze({
   Dealer: 1
 });
 
-const temp = new App();
+const GameRoundState = Object.freeze({
+  Lose: -1,
+  Push: 0,
+  Win: 1
+});
+
+new App();
