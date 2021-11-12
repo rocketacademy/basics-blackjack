@@ -187,13 +187,17 @@
           >RULES OF THE GAME</a
         >
       </p>
-      <p>Input:</p>
       <input id="input-field" />
       <br />
+      <button id="wager-button">WAGER</button>
+      <button id="decide-button">DECIDE</button>
+      <button id="results-button">RESULTS</button>
+      <button id="end-button">END</button>
+      <button id="one-button">1</button>
+      <button id="eleven-button">11</button>
       <button id="deal-button">DEAL</button>
       <button id="hit-button">HIT</button>
       <button id="stand-button">STAND</button>
-      <p>Output:</p>
       <div id="output-div">INPUT AMOUNT TO WAGER</div>
     </div>
     <!-- Import program logic -->
@@ -212,6 +216,54 @@
 
         // Reset input value
         input.value = "";
+      });
+      var wagerButton = document.querySelector("#wager-button");
+      wagerButton.addEventListener("click", function () {
+        // set result to value from function firstHIt
+        var input = document.querySelector("#input-field");
+        var result = main(input.value);
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
+      });
+      var decideButton = document.querySelector("#decide-button");
+      decideButton.addEventListener("click", function () {
+        // set result to value from function firstHIt
+        gameMode = "ace choice";
+        var result = main(gameMode);
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
+      });
+      var resultsButton = document.querySelector("#results-button");
+      resultsButton.addEventListener("click", function () {
+        // set result to value from function firstHIt
+        gameMode = "results";
+        var result = main(gameMode);
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
+      });
+      var endButton = document.querySelector("#end-button");
+      endButton.addEventListener("click", function () {
+        // set result to value from function firstHIt
+        var gameMode = "wager";
+        var result = main(gameMode);
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
+      });
+      var oneButton = document.querySelector("#one-button");
+      oneButton.addEventListener("click", function () {
+        // set result to value from function firstHIt
+        var input = "no";
+        var result = main(input);
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
+      });
+      var elevenButton = document.querySelector("#eleven-button");
+      elevenButton.addEventListener("click", function () {
+        // set result to value from function firstHIt
+        var input = "yes";
+        var result = main(input);
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
       });
       var hitButton = document.querySelector("#hit-button");
       hitButton.addEventListener("click", function () {
