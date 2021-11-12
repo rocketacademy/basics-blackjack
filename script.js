@@ -126,6 +126,14 @@ var displayListOfCards = function (handArray) {
   return listOfCards;
 };
 
+// ---------------- CODE FOR IMAGES ---------------------------
+
+var winPic = '<img src="LINK HERE"/>';
+var losePic = '<img src="LINK HERE"/>';
+var tiePic = '<img src="LINK HERE"/>';
+var playerBlackjackPic =
+  '<img src="https://c.tenor.com/hppcHIyK0kQAAAAC/oh-yeah-parks-and-recreation.gif"/>';
+
 //---------------- CODE STARTS HERE ---------------------------
 var main = function (input) {
   var myOutputValue = `Please type in either hit to draw one more card, or stand if your current sum is enough.`;
@@ -169,9 +177,11 @@ var main = function (input) {
     // if both less than 21, ask player if wanna hit / stand --> progress game mode
 
     if (sumPlayerHand == 21 && sumComputerHand < 21) {
-      myOutputValue = `Player's Cards: ${displayListOfCards(
-        playerHand
-      )}<BR>PLAYER WINS.<BR><BR>Click submit to play again.`;
+      myOutputValue =
+        playerBlackjackPic +
+        `Player's Cards: ${displayListOfCards(
+          playerHand
+        )}<BR>PLAYER WINS.<BR><BR>Click submit to play again.`;
 
       playerHand = [];
       computerHand = [];
