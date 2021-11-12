@@ -46,7 +46,8 @@ var playerGameMode = "start game";
 var playerHasBust = "no";
 var computerHasBust = "no";
 var secondMessage = "";
-var currentPlayer = "player";
+var playerWinCount = 0;
+var computerWinCount = 0;
 
 var getRandomNumber = function (max) {
   return Math.floor(Math.random() * max);
@@ -160,40 +161,37 @@ var resetGame = function () {
   computerHasBust = "no";
 };
 
-// function hide() {
-//   var div = document.getElementyById("start-button");
-//   div.style.display = "none";
-// }
-
-// get a cross-browser function for adding events, place this in [global] or somewhere you can access it
-// var on = (function () {
-//   if (window.addEventListener) {
-//     return function (target, type, listener) {
-//       target.addEventListener(type, listener, false);
-//     };
-//   } else {
-//     return function (object, sEvent, fpNotify) {
-//       object.attachEvent("on" + sEvent, fpNotify);
-//     };
-//   }
-// })();
-
-// // find the element
-// var el = document.getElementById("start-button");
-
-// // add the first listener
-// // on(el, "click", function () {
-// //   alert("foo");
-// // });
-
-// // add the second listener
-// on(el, "click",  getCards(playerCardsArray, 2)) {
-//   return (playerCardsArray);
-// }
-
 var startGame = function () {
   getCards(playerCardsArray, 2);
   return playerCardsArray;
+};
+
+var winCount = function () {
+  if (playerWinCount >= computerWinCount) {
+    return `🏆 Leaderboard 🏆 : <br> 🧏🏼‍♀️ Player win count: ${playerWinCount}/${
+      playerWinCount + computerWinCount
+    }<br> 💻 Computer win count: ${computerWinCount}/${
+      playerWinCount + computerWinCount
+    } `;
+  } else {
+    return `🏆 Leaderboard 🏆 <br> 🧏🏼‍♀️ Player win count: ${playerWinCount}/${
+      playerWinCount + computerWinCount
+    }<br> 💻 Computer win count: ${computerWinCount}/${
+      playerWinCount + computerWinCount
+    } `;
+  }
+};
+
+var hitButtonClicked = function () {
+  getCards(playerCardsArray, 1);
+  playerFinalScore = getScore(playerCardsArray);
+};
+
+var standButtonClicked = function () {
+  playerGameMode = "player has chosen to stand";
+  playerFinalScore = getScore(playerCardsArray);
+  return `You have chosen to stand. Your final score is ${playerFinalScore}. <br> It is the computer's turn. <br>Press submit for the computer to draw their cards.`;
+  // return secondMessage;
 };
 
 var main = function (input) {
@@ -214,14 +212,14 @@ var main = function (input) {
     if (playerFinalScore > 16) {
       message = `Hi Player. <br> You drew: <br>
        ${createFirstMessage(playerCardsArray)} Your current score is
-       ${playerFinalScore}. <br> Computer drew: <br> ${createFirstMessage(
+       ${playerFinalScore}. <br> One of Computer's cards is:  <br> ${createFirstMessage(
         computerCardsArray
-      )} br> Type hit or stand please.`;
+      )} <br> Type hit or stand please.`;
       playerGameMode = "player has drawn";
     } else if (playerFinalScore <= 16) {
       message = `Hi Player. <br> You drew:<br>
        ${createFirstMessage(playerCardsArray)}Your current score is
-       ${playerFinalScore}.<br> Computer drew: <br> ${createFirstMessage(
+       ${playerFinalScore}.<br> One of Computer's cards is: <br> ${createFirstMessage(
         computerCardsArray
       )} You have drawn below 16. <br> Please enter hit to draw more cards.`;
       playerGameMode = "player has drawn";
@@ -234,42 +232,39 @@ var main = function (input) {
   if (playerGameMode == "player has drawn") {
     console.log(playerGameMode);
     //If hit, draw one more card, add it to his final score, and shoe him his draw and final score
-    if (input != "hit" || input != "stand") {
-      secondMessage = `Please type either hit or stand`;
-    }
-    if (input == "hit") {
-      var newCard = getCards(playerCardsArray, 1);
-      playerFinalScore = getScore(playerCardsArray);
-      //If he has bust, change game mode to player bust
-      if (playerFinalScore > 21) {
-        playerHasBust = "yes";
-        console.log(playerFinalScore);
-      }
+    // if (input != "hit" || input != "stand") {
+    //   secondMessage = `Please type either hit or stand`;
+    // }
 
-      secondMessage = `You drew ${
-        playerCardsArray[playerCardsArray.length - 1].name
-      } of ${
-        playerCardsArray[playerCardsArray.length - 1].suit
-      }. <br> Your current hand is: <br> ${createFirstMessage(
-        playerCardsArray
-      )} Your current score is ${playerFinalScore}. Computer drew: <br> ${createFirstMessage(
-        computerCardsArray
-      )} Type hit if you want to draw one more card or stand to end your turn.`;
-    }
-    if (input == "stand") {
-      //If stand, show him that he has chosen stand and his final score
-      playerFinalScore = getScore(playerCardsArray);
-      console.log(playerGameMode);
+    // if (input == "hit") {
+    //   var newCard = getCards(playerCardsArray, 1);
+    //   playerFinalScore = getScore(playerCardsArray);
+    //   //If he has bust, change game mode to player bust
+    if (playerFinalScore > 21) {
+      playerHasBust = "yes";
       console.log(playerFinalScore);
-
-      currentPlayer = "computer";
-      playerGameMode = "computer initial draw";
-      secondMessage = `Your final score is ${playerFinalScore}. <br> It is the computer's turn. <br>Press submit for the computer to draw their cards.`;
     }
-    return secondMessage;
-  }
 
-  if (playerGameMode == "computer initial draw") {
+    return `You drew ${playerCardsArray[playerCardsArray.length - 1].name} of ${
+      playerCardsArray[playerCardsArray.length - 1].suit
+    }. <br> Your current hand is: <br> ${createFirstMessage(
+      playerCardsArray
+    )} Your current score is ${playerFinalScore}. Computer drew: <br> ${createFirstMessage(
+      computerCardsArray
+    )} Click hit or stand`;
+  }
+  //  if (playerGameMode == "player has chosen to stand") {
+  // //   //If stand, show him that he has chosen stand and his final score
+  // //   playerFinalScore = getScore(playerCardsArray);
+  // //   console.log(playerGameMode);
+  // //   console.log(playerFinalScore);
+
+  // //   currentPlayer = "computer";
+  // //   playerGameMode = "computer initial draw";
+  // //   secondMessage = `Your final score is ${playerFinalScore}. <br> It is the computer's turn. <br>Press submit for the computer to draw their cards.`;
+  // // }
+
+  if (playerGameMode == "player has chosen to stand") {
     getCards(computerCardsArray, 1);
     computerFinalScore = getScore(computerCardsArray);
 
@@ -299,37 +294,46 @@ var main = function (input) {
     playerCardsArray
   )} and a final score of ${playerFinalScore}. <br> Computer had a hand of ${createFirstMessage(
     computerCardsArray
-  )} and a final score of ${computerFinalScore}.`;
+  )} and a final score of ${computerFinalScore}.<br> `;
 
   if (playerGameMode == "calculate result") {
     playerGameMode = "start game";
     if (blackjack(playerCardsArray, playerFinalScore)) {
       resetGame();
-      return `Player has won blackJack. ${finalMessage}`;
+      playerWinCount += 1;
+      return `Player has won blackJack. ${finalMessage}${winCount()}`;
     }
     if (blackjack(computerCardsArray, computerFinalScore)) {
       resetGame();
-      return `Computer has won blackJack. ${finalMessage}`;
+      computerWinCount += 1;
+      return `Computer has won blackJack. ${finalMessage}${winCount()}`;
     }
     // Compare both hands and determine a winner.
     if (playerHasBust == "yes" && computerHasBust == "yes") {
       resetGame();
-      return `Player lost. Both the player and computer has bust. <br> ${finalMessage} <br> Press submit to begin the game again.`;
+      computerWinCount += 1;
+      return `Player lost. Both the player and computer has bust. <br> ${finalMessage} ${winCount()} <br> Press submit to begin the game again.`;
     } else if (playerHasBust == "yes" && computerHasBust == "no") {
       resetGame();
-      return `Player has bust and lost. <br> ${finalMessage} <br> Press submit to begin the game again.`;
+      computerWinCount += 1;
+      return `Player has bust and lost. <br> ${finalMessage} ${winCount()}<br> Press submit to begin the game again.`;
     } else if (playerHasBust == "no" && computerHasBust == "yes") {
       resetGame();
-      return `Computer has bust and lost. <br> ${finalMessage} <br> Press submit to begin the game again.`;
+      playerWinCount += 1;
+      return `Computer has bust and lost. <br> ${finalMessage}  ${winCount()} Press submit to begin the game again.`;
     } else if (playerFinalScore > computerFinalScore) {
       resetGame();
-      return `Player has won. <br> ${finalMessage}<br> Press submit to begin the game again.`;
+      playerWinCount += 1;
+      return `Player has won. <br> ${finalMessage} ${winCount()}<br> Press submit to begin the game again.`;
     } else if (playerFinalScore < computerFinalScore) {
       resetGame();
-      return `Computer has won. <br> ${finalMessage}<br> Press submit to begin the game again.`;
+      computerWinCount += 1;
+
+      return `Computer has won. <br> ${finalMessage} ${winCount()}
+      }<br> Press submit to begin the game again.`;
     } else if (playerFinalScore == computerFinalScore) {
       resetGame();
-      return `It's a tie. <br>${finalMessage}<br> Press submit to begin the game again.`;
+      return `It's a tie. <br>${finalMessage} ${winCount()}<br> Press submit to begin the game again.`;
     }
   }
 };
