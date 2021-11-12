@@ -29,6 +29,7 @@ var main = function (input) {
   var myOutput;
   // When player click submit to start the game
   if (gameMode == start_game) {
+  //console.log ('kk');
   //Assign cards to the players
   var playerCard = deck.pop();
   var compCard = deck.pop();
@@ -36,84 +37,127 @@ var main = function (input) {
   // console.log(compCard.rank);
   player.push(playerCard.rank);
   comp.push(compCard.rank);
-  console.log(`player array: ${player}`);
-  console.log(`comp array: ${comp}`);
+  // console.log(`player array: ${player}`);
+  // console.log(`comp array: ${comp}`);
   //Sum up both player card
   totalPlayerSum = sumCard (player);
   totalCompSum = sumCard (comp);
-  console.log (`total player sum ${totalPlayerSum}`);
-  console.log (`total comp sum: ${totalCompSum}`); 
+  // console.log (`total player sum ${totalPlayerSum}`);
+  // console.log (`total comp sum: ${totalCompSum}`); 
   playerDisplay.push(playerCard.cardName);
   playerDisplay.push(playerCard.suit);
-  console.log(`player display ${playerDisplay}`);
+  // console.log(`player display ${playerDisplay}`);
   compDisplay.push(compCard.cardName);
   compDisplay.push(compCard.suit);
-  console.log(`comp display ${compDisplay}`);
-  console.log("index" + index);
-  if (totalPlayerSum == '21'){
-    return 'Player Win';
-  }
-  if (totalCompSum == '21'){
-    return 'Comp Win';
+  // console.log(`comp display ${compDisplay}`);
+  // console.log("index" + index);  }
+  if (index == 0){
+     myOutput = `Player cards: ${playerDisplay}<br>Player sum: ${totalPlayerSum}<br><br> Comp cards: ${compDisplay}<br> Comp sum: ${totalCompSum}<br><br> Please click submit again.`;
   }
   if (index == 1){
     gameMode = hit_or_stand;
+      myOutput = `Player cards: ${playerDisplay}<br>Player sum: ${totalPlayerSum}<br><br> Comp cards: ${compDisplay}<br> Comp sum: ${totalCompSum}<br><br> Please enter 'hit' or 'stand'.`;
     //console.log(`hi`);
-    return `Player cards: ${playerDisplay}<br>Player sum: ${totalPlayerSum}<br><br> Comp cards: ${compDisplay}<br> Comp sum: ${totalCompSum}<br><br> Please enter 'hit' or 'stand'`;
   }
+  
   index = index + 1;
-  myOutput = `Player cards: ${playerDisplay}<br>Player sum: ${totalPlayerSum}<br><br> Comp cards: ${compDisplay}<br> Comp sum: ${totalCompSum}<br><br> Please click submit again.`
+  return myOutput;
   }
-  if (gameMode == hit_or_stand){
-    if ((input == 'hit') && (totalCompSum < '17' )){
+  if (gameMode === hit_or_stand){
+    //console.log('gg');
+      
+    if (input == 'hit'){
       //Assign cards to the players
       var playerCard = deck.pop();
-      var compCard = deck.pop();
       // console.log(playerCard.rank);
-      // console.log(compCard.rank);
       player.push(playerCard.rank);
-      comp.push(compCard.rank);
       // console.log(`player array: ${player}`);
-      // console.log(`comp array: ${comp}`);
       //Sum up both player card
       totalPlayerSum = sumCard(player);
-      totalCompSum = sumCard(comp);
       // console.log(`total player sum ${totalPlayerSum}`);
-      // console.log(`total comp sum: ${totalCompSum}`);
       playerDisplay.push(playerCard.cardName);
       playerDisplay.push(playerCard.suit);
       //console.log(`player display ${playerDisplay}`);
-      compDisplay.push(compCard.cardName);
-      compDisplay.push(compCard.suit);
-      // console.log(`comp display ${compDisplay}`);
       // console.log("index" + index);
       //console.log(`hi`);
-      if (totalPlayerSum == "21") {
-        return "Player Win";
+      //1.Comp have to hit if total sum is less than 17
+    if (totalCompSum <'18' || totalCompSum < '22'){
+      var compCard = deck.pop();
+      comp.push(compCard.rank); totalCompSum = sumCard(comp);
+      compDisplay.push(compCard.cardName);
+      compDisplay.push(compCard.suit);
+      if (totalCompSum == '21'){
+        return `Player got ${totalPlayerSum}<br> Computer got ${totalCompSum}<br><br>Computer win!<br>Player Lose!<br><br>Please refresh the page to restart the game!`;
+      } else{
+      return `Player cards: ${playerDisplay}<br>Player sum: ${totalPlayerSum}<br><br> Comp cards: ${compDisplay}<br> Comp sum: ${totalCompSum}<br><br> Please enter 'hit' or 'stand'.`;
       }
-      if (totalCompSum == "21") {
-        return "Comp Win";
       }
-      myOutput = `Player cards: ${playerDisplay}<br>Player sum: ${totalPlayerSum}<br><br> Comp cards: ${compDisplay}<br> Comp sum: ${totalCompSum}<br><br> Please click submit again.`;
+      // Condition in 'hit' mode:
+        //1. If comp or player sum more than 21, input = 'stand'.
+      // if (totalPlayerSum > '22' || totalCompSum > '22'){
+        
+      //   return `Player got ${totalPlayerSum}<br> Computer got ${totalCompSum}<br> Please enter 'stand`;
+      // }
+      gameMode == hit_or_stand;
+      return `Player cards: ${playerDisplay}<br>Player sum: ${totalPlayerSum}<br><br> Comp cards: ${compDisplay}<br> Comp sum: ${totalCompSum}<br><br> Please enter 'hit' or 'stand'.`;
     }
+  
     if (input == 'stand'){
-      if ((totalPlayerSum < '17') || (totalCompSum < '17')){
-        console.log('q');
-        gameMode = hit_or_stand;
-        return `total value of card too low`;
+      //console.log ('hihi');
+      // Conditions where player sum less than 21
+      // 1. player sum is more than comp sum, player win
+      //2. Player got 21, player win
+      //3. Comp sum more than 21, player win
+      //4. player sum equal to comp sum, it's a tie.
+      if (totalPlayerSum < "22") {
+        if (
+          totalPlayerSum == "21" ||
+          totalPlayerSum > totalCompSum ||
+          totalCompSum > "21"
+        ) {
+          //index == 0;
+          //gameMode == start_game;
+          return `Player got ${totalPlayerSum}<br> Computer got ${totalCompSum}<br><br>Player win!<br>Computer Lose!<br><br>Please refresh the page to restart the game!`;
+        } else if (totalCompSum == totalPlayerSum) {
+          //index == 0;
+          //gameMode == start_game;
+          return `Player got ${totalPlayerSum}<br> Computer got ${totalCompSum}<br> It's a tie!<br><br>Please refresh the page to restart the game!`;
+        }
       }
-      if ((totalPlayerSum > "21") || (totalCompSum > totalPlayerSum)) {
-        console.log("h");
-        return "player lose";
-      } else if ((totalCompSum > "21") || (totalPlayerSum > totalCompSum)) {
-        console.log("g");
-        return "comp lose";
+      //index == 0;
+      //gameMode === start_game;
+      //Condition where computer sum is less than 21
+      //1. Comp sum more than player sum, comp Win
+      //2.comp got 21, comp win
+      //3. Player sum more than 21, comp win
+      //4. Player sum equal to comp sum, it's a tie
+      if (totalCompSum < '22'){
+        if (totalCompSum == '21' || totalCompSum > totalPlayerSum || totalPlayerSum > '21'){
+          //index == 0;
+          //gameMode == start_game;
+          return `Player got ${totalPlayerSum}<br> Computer got ${totalCompSum}<br><br>Computer win!<br>Player Lose!<br><br>Please refresh the page to restart the game!`;
+        }
+        else if (totalCompSum == totalPlayerSum) {
+          //index == 0;
+          //gameMode == start_game;
+          return `Player got ${totalPlayerSum}<br> Computer got ${totalCompSum}<br> It's a tie!<br><br>Please refresh the page to restart the game!`;
       }
     }
+      if (totalCompSum > '21' && totalPlayerSum > '21'){
+        return `Player got ${totalPlayerSum}<br> Computer got ${totalCompSum}<br> It's a tie!<br><br>Please refresh the page to restart the game!`;
+      }
+    return;
     //console.log (`bye`);
+      //myOutput = `Player cards: ${playerDisplay}<br>Player sum: ${totalPlayerSum}<br><br> Comp cards: ${compDisplay}<br> Comp sum: ${totalCompSum}<br><br> Please enter 'hit' or 'stand'.`;
+      //return `Please enter 'hit or 'stand`;
   }
-  return myOutput;
+  return;
   }
+  //tried to make it a loop but does't work
+  // index == 0;
+  // gameMode === start_game;
+  return;
+};
   //prompt user to select hit or stand
   //condition to decide comp newed to draw card
   //return
@@ -181,7 +225,7 @@ var shuffleCard = function(cards){
     shuffleIndex += 1;
   }
 return deck;
-};
+}
 
 //redefine deck
 var deck = shuffleCard(cardDeck());
