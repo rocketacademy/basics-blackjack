@@ -8,8 +8,10 @@ var playerScore = 0;
 var dealerHand = [];
 var playerWallet = 100;
 var playerBet = 0;
-var REPLAY_MSG_SHOW_WALLET = `<br>Place another bet and click Submit to play another round<br><br>You now have $`;
+var REPLAY_MSG_SHOW_WALLET = `<br>Place another bet to play another round<br><br>You now have $`;
 var gameMode = DEAL_FIRST_CARDS; // 'playerhitorstand' // 'dealerturn'
+
+var playerDecision = "nil";
 
 //create an ordered deck of 52 cards
 var makeDeck = function () {
@@ -143,8 +145,7 @@ var findScoreOfHand = function (hand) {
 };
 //deal the cards for the first time and check for any black jack wins
 var firstDealCards = function () {
-  var REPLAY_MSG =
-    "<br>Place another bet and click Submit to play another round";
+  var REPLAY_MSG = "<br>Place another bet to play another round";
   //deal 2 cards to player
   playerHand[0] = cardDeck.pop();
   playerHand[1] = cardDeck.pop();
@@ -166,21 +167,62 @@ var firstDealCards = function () {
   if (playerScore == 21 && dealerScore == 21) {
     gameMode = DEAL_FIRST_CARDS;
     playerWallet += playerBet;
-    return `${displayDealerHands}${displayPlayerHands}<br>Holy Moly, both of you got blackjack!${REPLAY_MSG}`;
+    var myImage =
+      '<img src="https://c.tenor.com/Kmo46PLzc7UAAAAC/eye-roll-ugh.gif"/>';
+    return (
+      `${displayDealerHands}${displayPlayerHands}<br>Holy Moly, both of you got blackjack!${REPLAY_MSG}` +
+      myImage
+    );
   }
   if (dealerScore == 21) {
     gameMode = DEAL_FIRST_CARDS;
-    return `${displayDealerHands}${displayPlayerHands}<br>The dealer won by black jack!${REPLAY_MSG}`;
+    var myImage =
+      '<img src="https://c.tenor.com/Kmo46PLzc7UAAAAC/eye-roll-ugh.gif"/>';
+    return (
+      `${displayDealerHands}${displayPlayerHands}<br>The dealer won by black jack!${REPLAY_MSG}` +
+      myImage
+    );
   }
   //end the game if player got black jack
   if (playerScore == 21) {
     gameMode = DEAL_FIRST_CARDS;
     playerWallet += playerBet * 2.5;
-    return `${displayDealerHandsOneFaceDown}${displayPlayerHands}<br>You won by black jack!${REPLAY_MSG}`;
+    var myImage =
+      '<img src="https://c.tenor.com/OJN5X4xaNMEAAAAC/win-happy.gif"/>';
+
+    return (
+      `${displayDealerHandsOneFaceDown}${displayPlayerHands}<br>You won by black jack!${REPLAY_MSG}` +
+      myImage
+    );
   }
 
   gameMode = PLAYER_HIT_OR_STAND;
-  return `${displayDealerHandsOneFaceDown}${displayPlayerHands}<br>Your current score is ${playerScore}<br>Do you want to hit (Type h) or stand (Type s)?`;
+
+  document.getElementById("submit-button").style.display = "none";
+  document.getElementById("input-field").style.display = "none";
+
+  var hitButton = document.createElement("button");
+  hitButton.id = "hit-button";
+  hitButton.innerText = "Hit";
+  document.querySelector("#container").appendChild(hitButton);
+  var standButton = document.createElement("button");
+  standButton.innerText = "Stand";
+  standButton.id = "stand-button";
+  document.querySelector("#container").appendChild(standButton);
+
+  standButton.addEventListener("click", function () {
+    var output = document.querySelector("#output-div");
+    playerDecision = "s";
+    output.innerHTML = main();
+  });
+
+  hitButton.addEventListener("click", function () {
+    var output = document.querySelector("#output-div");
+    playerDecision = "h";
+    output.innerHTML = main();
+  });
+
+  return `${displayDealerHandsOneFaceDown}${displayPlayerHands}<br>Your current score is ${playerScore}<br>Do you want to hit or stand?`;
 };
 
 var storeBetAndDealFirstHands = function (input) {
@@ -211,13 +253,7 @@ var storeBetAndDealFirstHands = function (input) {
 };
 
 var executePlayerDecision = function (input) {
-  //input validation for the player's hit or stand decision
-  if (!(input == "h" || input == "s")) {
-    return `Your current hand is<br>${displayHand(
-      playerHand
-    )}Please type h to hit or s to stand`;
-  }
-  if (input == "h") {
+  if (playerDecision == "h") {
     var newPlayerCard = cardDeck.pop();
     //deal a new card into player hand
     playerHand.push(newPlayerCard);
@@ -227,21 +263,44 @@ var executePlayerDecision = function (input) {
     //scenario where player got bust
     if (playerScore > 21) {
       gameMode = DEALER_TURN;
+      document.getElementById("submit-button").style.display = "block";
+
+      document.getElementById("submit-button").innerText =
+        "Pass Turn to Dealer";
+      document.getElementById("hit-button").remove();
+      document.getElementById("stand-button").remove();
+      var myImage =
+        '<img src="https://c.tenor.com/U5RwBfkG6t8AAAAC/elmo-flames.gif"/>';
       return (
         displayPlayerHands +
-        `<br>Your current score is ${playerScore}<br>I am sorry, you bust, click Submit to pass the turn to the dealer`
+        `<br>Your current score is ${playerScore}<br>I am sorry, you bust, click to pass the turn to the dealer` +
+        myImage
       );
     }
     //if not bust, ask player if he wants to proceed with hit or stand
+    var myImage =
+      '<img src="https://c.tenor.com/2ER74Ee4Ou0AAAAC/hmmnotbad-hmm.gif"/>';
     return (
       displayPlayerHands +
-      `<br>Your current score is ${playerScore}<br>Do you want to hit (Type h) or stand (Type s)?`
+      `<br>Your current score is ${playerScore}<br>Do you want to hit or stand?` +
+      myImage
     );
   }
-  if (input == "s") {
+  if (playerDecision == "s") {
     //show the player score and pass the turn to dealer
     gameMode = DEALER_TURN;
-    return `You decided to stand. Your current score is ${playerScore}, click Submit to pass the turn to the dealer`;
+    document.getElementById("submit-button").style.display = "block";
+
+    document.getElementById("submit-button").innerText = "Pass Turn to Dealer";
+    document.getElementById("hit-button").remove();
+    document.getElementById("stand-button").remove();
+    var myImage =
+      '<img src="https://c.tenor.com/TX04b7YAOl8AAAAd/please-please-god.gif"/>';
+
+    return (
+      `You decided to stand. Your current score is ${playerScore}, click to pass the turn to the dealer` +
+      myImage
+    );
   }
 };
 
@@ -266,25 +325,34 @@ var outputResultsAndPayout = function (dealerScore) {
     //tie scenario where dealer bust with player
     if (playerScore > 21) {
       playerWallet += playerBet;
+      var myImage =
+        '<img src="https://c.tenor.com/Kmo46PLzc7UAAAAC/eye-roll-ugh.gif"/>';
       return (
         displayDealerHands +
-        `<br>The dealer bust together with you with score of ${dealerScore}${REPLAY_MSG_SHOW_WALLET}${playerWallet}`
+        `<br>The dealer bust together with you with score of ${dealerScore}${REPLAY_MSG_SHOW_WALLET}${playerWallet}` +
+        myImage
       );
     }
     //scenario where only dealer bust and player wins the bet
     playerWallet += playerBet * 2;
+    var myImage =
+      '<img src="https://c.tenor.com/FBe6asKNEPAAAAAC/lotto-winner-winning-money.gif"/>';
     return (
       displayDealerHands +
-      `<br>You won as the dealer bust with score of ${dealerScore}${REPLAY_MSG_SHOW_WALLET}${playerWallet}`
+      `<br>You won as the dealer bust with score of ${dealerScore}${REPLAY_MSG_SHOW_WALLET}${playerWallet}` +
+      myImage
     );
   }
 
   //scenario where only player bust
   if (playerScore > 21) {
     gameMode = DEAL_FIRST_CARDS;
+    var myImage =
+      '<img src="https://c.tenor.com/us6zO1kU3Y8AAAAC/tears-sad.gif"/>';
     return (
       displayDealerHands +
-      `<br>The dealer won as you got bust just now!${REPLAY_MSG_SHOW_WALLET}${playerWallet}`
+      `<br>The dealer won as you got bust just now!${REPLAY_MSG_SHOW_WALLET}${playerWallet}` +
+      myImage
     );
   }
   //store both players' scores
@@ -292,18 +360,26 @@ var outputResultsAndPayout = function (dealerScore) {
   //various non-bust scenarios
   if (dealerScore > playerScore) {
     displayDealerHands += "The dealer won!";
+    var myImage =
+      '<img src="https://c.tenor.com/us6zO1kU3Y8AAAAC/tears-sad.gif"/>';
   }
   if (dealerScore == playerScore) {
     playerWallet += playerBet;
     displayDealerHands += "You tied with the dealer";
+    var myImage =
+      '<img src="https://c.tenor.com/Kmo46PLzc7UAAAAC/eye-roll-ugh.gif"/>';
   }
   if (dealerScore < playerScore) {
+    var myImage =
+      '<img src="https://c.tenor.com/FBe6asKNEPAAAAAC/lotto-winner-winning-money.gif"/>';
     playerWallet += playerBet * 2;
     displayDealerHands += "You won!!";
   }
   //end the game by returning to initial game mode
   gameMode = DEAL_FIRST_CARDS;
-  return `${displayDealerHands}${REPLAY_MSG_SHOW_WALLET}${playerWallet}`;
+  return (
+    `${displayDealerHands}${REPLAY_MSG_SHOW_WALLET}${playerWallet}` + myImage
+  );
 };
 
 var main = function (input) {
@@ -317,6 +393,10 @@ var main = function (input) {
 
   if (gameMode == DEALER_TURN) {
     var dealerScore = executeDealerTurn();
+    document.getElementById("submit-button").innerText =
+      "Place Bet and Deal Cards";
+    document.getElementById("submit-button").style.display = "block";
+    document.getElementById("input-field").style.display = "block";
     return outputResultsAndPayout(dealerScore);
   }
 };
