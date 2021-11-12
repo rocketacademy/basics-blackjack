@@ -175,33 +175,37 @@
     </h1>
     <h1 class="header">♣️ Basics - Blackjack ♠️</h1>
     <div id="container">
-      <p>Input:</p>
-      <input id="input-field" />
+      <img
+        src="https://c.tenor.com/Kf1gPBDdlJIAAAAC/skullx-skullx666.gif"
+        alt="blackjack-gif"
+      />
       <br />
+      <p>Bet Amount:</p>
+      <input id="input-field" type="number" min="10" step="10" />
       <button id="hit-button">Hit</button>
       <button id="stand-button">Stand</button>
       <button id="start-button">Start Game</button>
-      <p>Output:</p>
       <div id="output-div">
         Welcome to Blackjack! Click the Start Game button to get started!
+        <br /><br />
+        Balance: $1000
       </div>
     </div>
     <!-- Import program logic -->
     <script src="script.js"></script>
     <!-- Define button click functionality -->
     <script>
+      document.getElementById("hit-button").disabled = true;
+      document.getElementById("stand-button").disabled = true;
+
       var hitButton = document.querySelector("#hit-button");
       hitButton.addEventListener("click", function () {
         // Set result to input value
-        var input = document.querySelector("#input-field");
-        var result = hitHand(input.value);
+        var result = hitHand();
 
         // Display result in output element
         var output = document.querySelector("#output-div");
         output.innerHTML = result;
-
-        // Reset input value
-        input.value = "";
       });
 
       var standButton = document.querySelector("#stand-button");
@@ -216,12 +220,20 @@
 
       var startButton = document.querySelector("#start-button");
       startButton.addEventListener("click", function () {
+        document.getElementById("hit-button").disabled = false;
+        document.getElementById("stand-button").disabled = false;
+        document.getElementById("start-button").disabled = true;
+        document.getElementById("input-field").disabled = true;
+
+        var input = document.querySelector("#input-field");
+
         // Set result to input value
-        var result = startGame();
+        var result = startGame(input.value);
 
         // Display result in output element
         var output = document.querySelector("#output-div");
         output.innerHTML = result;
+        input.value = "0";
       });
     </script>
   </body>
