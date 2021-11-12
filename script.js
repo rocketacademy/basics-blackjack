@@ -28,6 +28,8 @@ var playerBlackJack = false;
 var dealerBlackJack = false;
 var playerBust = false;
 var dealerBust = false;
+
+// All images src
 var loseImage = `<img src="https://c.tenor.com/MHwsB9o1eS4AAAAM/bh187-marvel.gif"class = "center" /> `;
 var bustImage = `<img src = "https://c.tenor.com/GoZ7JND7Fq0AAAAM/deadpool-x-men.gif" class = "center" />`;
 var winImage = `<img src = "https://c.tenor.com/hJO8I8b8_38AAAAM/groot-dancing.gif"class = "center"  />`;
@@ -105,7 +107,7 @@ var pointsWager = function (input) {
     document.getElementById("input-field").style.display = "none";
     wagerPoints = Number(input);
     playerScore -= wagerPoints;
-    myOutputValue = `You now have ${playerScore} points.`;
+    myOutputValue = `You have wagered ${wagerPoints} points. <br><br>You now have a balance of ${playerScore} points.`;
     gameMode = "start";
   }
 };
@@ -328,7 +330,7 @@ var dealerDrawCards = function () {
       document.getElementById("hit-button").style.display = "none";
       document.getElementById("stand-button").style.display = "none";
       dealerBust = true;
-      myOutputValue = `${dealerBustMessage} ${dealerCard1.name} of ${dealerCard1.suit} <br> ${dealerCard2.name} of ${dealerCard2.suit}<br> ${dealerCard3.name} of ${dealerCard3.suit}<br><br> Sum is ${dealerSum}`;
+      myOutputValue = `${blackjackImage} <br><br>${dealerBustMessage} ${dealerCard1.name} of ${dealerCard1.suit} <br> ${dealerCard2.name} of ${dealerCard2.suit}<br> ${dealerCard3.name} of ${dealerCard3.suit}<br><br> Sum is ${dealerSum}`;
       gameMode = "results";
       // if not bust, display the dealers hand
     } else {
