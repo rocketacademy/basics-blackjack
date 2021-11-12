@@ -239,7 +239,6 @@ var noOfPlayers = 0;
 var COM = true;
 var allCardDrawn = ""; // Will be used to update the profile and scores of players
 var indexCounter = 1; // this indexCounter is used to check who wants to draw a card
-var playerTurn = 0;
 var remarksCOM = "";
 // Generate deck and shuffle
 var deck = "";
@@ -368,7 +367,16 @@ var main = function (input) {
 
   if (gameMode == cardsDrawn) {
     msg = winningCondition(allCardDrawn);
+    gameMode = "reset";
     return msg;
+  }
+
+  if (gameMode == "reset") {
+    for (let i = 0; i < allCardDrawn; i++) {
+      allCardDrawn[i][0].remarks = [];
+    }
+    gameMode = "Blackjack";
+    ResetGame();
   }
 
   return msg;
