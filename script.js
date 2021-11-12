@@ -2,9 +2,6 @@
 var gameMode = "wager";
 var wagerPoints = 0;
 
-//Button variables
-var firstHitButton = document.getElementById("hit-button");
-
 // All player related variables
 var playerSum = 0;
 var playerCard1 = {};
