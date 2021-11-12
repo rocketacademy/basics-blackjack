@@ -65,8 +65,6 @@ var dealCard = function (cardDeck) {
   return card;
 };
 
-console.log(shufflingCards(getDeckOfCards()));
-
 var checkBlackjack = function (card1, card2) {
   var gotBlackjack = false;
   if (card1.name == "Ace" || card2.name == "Ace") {
@@ -79,82 +77,78 @@ var checkBlackjack = function (card1, card2) {
 };
 
 var calculatePoints = function (cardHandArray) {
-  var outputString = "";
-  var pointsIfAceEqualsTo1 = 0;
-  var pointsIfAceEqualsTo11 = 0;
+  var outputNumber = 0;
+  var totalPoints = 0;
+  var aceCounter = 0;
   for (var cardIndex = 0; cardIndex < cardHandArray.length; cardIndex += 1) {
     if (cardHandArray[cardIndex].rank >= 10) {
-      pointsIfAceEqualsTo1 += 10;
-      pointsIfAceEqualsTo11 += 10;
+      totalPoints += 10;
     } else if (cardHandArray[cardIndex].rank == 1) {
-      pointsIfAceEqualsTo1 += 1;
-      pointsIfAceEqualsTo11 += 11;
+      aceCounter += 1;
+      if (aceCounter > 1) {
+        totalPoints += 1;
+      }
+      totalPoints += 11;
     } else {
-      pointsIfAceEqualsTo1 += cardHandArray[cardIndex].rank;
-      pointsIfAceEqualsTo11 += cardHandArray[cardIndex].rank;
+      totalPoints += cardHandArray[cardIndex].rank;
     }
   }
 
-  if (pointsIfAceEqualsTo1 == pointsIfAceEqualsTo11) {
-    outputString = `${pointsIfAceEqualsTo11}`;
-  } else if (
-    (pointsIfAceEqualsTo11 > 21 && pointsIfAceEqualsTo1 <= 21) ||
-    (pointsIfAceEqualsTo11 > 21 && pointsIfAceEqualsTo1 > 21)
-  ) {
-    outputString = `${pointsIfAceEqualsTo1}`;
-  } else {
-    outputString = `${pointsIfAceEqualsTo1} / ${pointsIfAceEqualsTo11}`;
+  var acePointsDiff = 11 - 1;
+
+  // If total points above 21 & has only 1 Ace card
+  if (totalPoints > 21 && aceCounter == 1) {
+    totalPoints -= aceCounter * acePointsDiff;
   }
 
-  return outputString;
+  outputNumber = totalPoints;
+
+  // if (pointsIfAceEqualsTo1 == pointsIfAceEqualsTo11) {
+  //   outputString = `${pointsIfAceEqualsTo11}`;
+  // } else if (
+  //   (pointsIfAceEqualsTo11 > 21 && pointsIfAceEqualsTo1 <= 21) ||
+  //   (pointsIfAceEqualsTo11 > 21 && pointsIfAceEqualsTo1 > 21)
+  // ) {
+  //   outputString = `${pointsIfAceEqualsTo1}`;
+  // } else {
+  //   outputString = `${pointsIfAceEqualsTo1} / ${pointsIfAceEqualsTo11}`;
+  // }
+
+  return outputNumber;
 };
 
-var getPointsFeedback = function (pointsString) {
+var getPointsFeedback = function (pointsNumber) {
   var pointsFeedback = "";
 
-  if (pointsString.indexOf("/") != -1) {
-    var pointsArray = pointsString.split(" / ");
-    var pointsIfAceEqualsTo1 = 0;
-    var pointsIfAceEqualsTo11 = 0;
-    pointsIfAceEqualsTo1 = Number(pointsArray[0]);
-    pointsIfAceEqualsTo11 = Number(pointsArray[1]);
+  // if (pointsString.indexOf("/") != -1) {
+  //   var pointsArray = pointsString.split(" / ");
+  //   var pointsIfAceEqualsTo1 = 0;
+  //   var pointsIfAceEqualsTo11 = 0;
+  //   pointsIfAceEqualsTo1 = Number(pointsArray[0]);
+  //   pointsIfAceEqualsTo11 = Number(pointsArray[1]);
 
-    if (pointsIfAceEqualsTo1 > 21 && pointsIfAceEqualsTo11 > 21) {
-      pointsFeedback = "bust";
-    } else if (
-      (pointsIfAceEqualsTo11 > 16 && pointsIfAceEqualsTo11 <= 21) ||
-      (pointsIfAceEqualsTo1 > 16 && pointsIfAceEqualsTo1 <= 21)
-    ) {
-      pointsFeedback = "17-21";
-    } else {
-      pointsFeedback = "below 17";
-    }
+  if (pointsNumber > 21) {
+    pointsFeedback = "bust";
+  } else if (pointsNumber > 16 && pointsNumber <= 21) {
+    pointsFeedback = "17-21";
   } else {
-    var currentpoints = Number(pointsString);
-
-    if (currentpoints > 21) {
-      pointsFeedback = "bust";
-    } else if (currentpoints > 16 && currentpoints <= 21) {
-      pointsFeedback = "17-21";
-    } else {
-      pointsFeedback = "below 17";
-    }
+    pointsFeedback = "below 17";
   }
 
   return pointsFeedback;
 };
 
-a = "cds";
-
-var getOutcomeMsg = function (playerPointsString, ComputerPointsString) {
+var getOutcomeMsg = function (playerPointsNumber, ComputerPointsNumber) {
   var outputMsg = "";
-  var playerPointsArray = playerPointsString.split(" / ");
-  var computerPointsArray = ComputerPointsString.split(" / ");
+  // var playerPointsArray = playerPointsNumber.split(" / ");
+  // var computerPointsArray = ComputerPointsNumber.split(" / ");
+  // var playerPoints = Number(playerPointsArray[playerPointsArray.length - 1]);
+  // var computerPoints = Number(
+  //   computerPointsArray[computerPointsArray.length - 1]
+  // );
 
-  var playerPoints = Number(playerPointsArray[playerPointsArray.length - 1]);
-  var computerPoints = Number(
-    computerPointsArray[computerPointsArray.length - 1]
-  );
+  var playerPoints = playerPointsNumber;
+  var computerPoints = ComputerPointsNumber;
 
   if (playerPoints > computerPoints) {
     outputMsg = "Player wins! 🥳";
@@ -164,15 +158,18 @@ var getOutcomeMsg = function (playerPointsString, ComputerPointsString) {
     outputMsg = "It's a draw 😬";
   }
 
+  outputMsg = `${outputMsg}<br>Click the "Submit" button to start a new round.`;
+
   return outputMsg;
 };
 
-var getFinalPoints = function (pointsString) {
-  var pointsArray = pointsString.split(" / ");
-  var finalPoints = pointsArray[pointsArray.length - 1];
+// var getFinalPoints = function (pointsString) {
+//   var pointsArray = pointsString.split(" / ");
+//   var finalPoints = pointsArray[pointsArray.length - 1];
 
-  return finalPoints;
-};
+//   return finalPoints;
+// };
+
 // console.log(
 //   checkBlackjack(
 //     { rank: 1, suit: "Spades", name: "King" },
@@ -257,7 +254,7 @@ var main = function (input) {
 
       if (computerPointsFeedback == "17-21") {
         var outcomeMsg = getOutcomeMsg(playerFinalPoints, computerPoints);
-        var computerFinalPoints = getFinalPoints(computerPoints);
+        var computerFinalPoints = computerPoints;
 
         myOutputValue = `${myOutputValue}<br>
         Computer has ${computerFinalPoints} points.<br><br>
@@ -271,8 +268,14 @@ var main = function (input) {
       }
     } else if (playerPointsFeedback == "bust") {
       myOutputValue = `${myOutputValue}<br>
-      Player busts, you lose 😢`;
+      Player busts, you lose 😢<br>
+      Click the "Submit" button to start a new round.`;
       currentGameMode = "Deal cards";
+    } else if (playerPoints == 21) {
+      myOutputValue = `${myOutputValue}<br>
+      Nice! Player reaches 21 points<br>
+      it's the computer's turn, click the "Submit" button to continue.`;
+      currentGameMode = "Computer action";
     } else {
       myOutputValue = `${myOutputValue}<br>
       Please input 'Hit' / 'Stand' to continue the game.`;
@@ -313,7 +316,7 @@ var main = function (input) {
       Computer will draw to 16 & stand on 17.`;
     } else if (computerPointsFeedback == "17-21") {
       var outcomeMsg = getOutcomeMsg(playerFinalPoints, computerPoints);
-      var computerFinalPoints = getFinalPoints(computerPoints);
+      var computerFinalPoints = computerPoints;
 
       myOutputValue = `${myOutputValue}<br>
       Computer has ${computerFinalPoints} points.<br><br>
@@ -321,11 +324,12 @@ var main = function (input) {
       currentGameMode = "Deal cards";
     } else {
       var outcomeMsg = getOutcomeMsg(playerFinalPoints, computerPoints);
-      var computerFinalPoints = getFinalPoints(computerPoints);
+      var computerFinalPoints = computerPoints;
 
       myOutputValue = `${myOutputValue}<br>
       Computer has ${computerPoints} points.<br><br>
-      Computer busts, player wins! 🥳`;
+      Computer busts, player wins! 🥳<br>
+      Click the "Submit" button to start a new round.`;
       currentGameMode = "Deal cards";
     }
 
