@@ -83,19 +83,20 @@ var drawCard = function () {
 
 // initiate global variables
 var gameMode = "setup";
+var isNewGame;
 var players = [];
 var totalPlayers = 0;
 var activePlayerIndex = 1; // used to cycle through all players
 
 // initialise players incl dealer, and draw the first 2 cards
-var initPlayers = function (totalPlayers, newGame) {
+var initPlayers = function (nPlayers) {
   // if this is a new game, initialise the full array of players; dealer is players[0]
-  if (newGame) {
-    for (var i = 0; i < totalPlayers; i += 1) {
+  if (isNewGame) {
+    for (var i = 0; i < nPlayers; i += 1) {
       players[i] = { cards: [], score: 0, hasBlackjack: false, wins: 0 };
     }
   } // if this is a new round, flush players' hand
-  else if (!newGame) {
+  else if (!isNewGame) {
     for (var i = 0; i < players.length; i += 1) {
       players[i].cards = [];
       players[i].score = 0;
@@ -114,12 +115,10 @@ var initPlayers = function (totalPlayers, newGame) {
   return players;
 };
 
-// sets up the game for 1 to 4 human players
-var setupGame = function (input, newGame = true) {
-  n = parseInt(input);
-  if (n >= 1 && n <= 4) {
-    totalPlayers = n + 1;
-    players = initPlayers(totalPlayers, newGame);
+// sets up the game for (n = 1 to 4) human players + dealer
+var setupGame = function (nHuman) {
+  if (nHuman >= 1 && nHuman <= 4) {
+    players = initPlayers(nHuman + 1);
     gameMode = "check for blackjack";
     return `Game setup for ${
       players.length - 1
@@ -201,8 +200,8 @@ var dealerHitOrStand = function (dealerObj) {
 // includes optional parameter to hide first card (used only for dealer)
 var printPlayerCards = function (playerObj, hideFirstCard = false) {
   var cards = playerObj.cards;
+  var returnString = "";
   if (!hideFirstCard) {
-    var returnString = "";
     // Iterate until cards.length - 1 to avoid the extra comma at the end of return string
     for (var i = 0; i < cards.length - 1; i += 1) {
       var currCard = cards[i];
@@ -211,7 +210,7 @@ var printPlayerCards = function (playerObj, hideFirstCard = false) {
     var lastCard = cards[cards.length - 1];
     returnString += `${lastCard.name} of ${lastCard.emoji}`;
   } else if (hideFirstCard) {
-    var returnString = "[first card hidden], ";
+    returnString = "[first card hidden], ";
     // Start from second card then iterate until cards.length - 1 to avoid the extra comma at the end of return string
     for (var i = 1; i < cards.length - 1; i += 1) {
       var currCard = cards[i];
@@ -367,7 +366,7 @@ var main = function (input) {
       // re-initialise global variables
       deck = shuffleCards(makeDeck());
       activePlayerIndex = 1; // used to cycle through all players
-      return setupGame(totalPlayers - 1, (newGame = false));
+      return setupGame(players.length - 1);
     }
     return `Game over. Type 'a' for another round.`;
   }
@@ -376,7 +375,9 @@ var main = function (input) {
   // setup game: based on number of players, deal 2 cards
   if (gameMode == "setup") {
     console.log(gameMode);
-    mainOutputMsg = setupGame(input, (newGame = true));
+    isNewGame = true;
+    mainOutputMsg = setupGame(parseInt(input));
+    isNewGame = false;
     return mainOutputMsg;
   }
 
@@ -431,7 +432,7 @@ var main = function (input) {
   }
 
   if (gameMode == "show results") {
-    mainOutputMsg += reportScores((finalTally = true));
+    mainOutputMsg += reportScores(true);
     mainOutputMsg += reportRoundResults();
     var img1 =
       '<img src = "https://c.tenor.com/eDrlV9otYw0AAAAC/neil-patrick-harris-thumbs-up.gif">';
