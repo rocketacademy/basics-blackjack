@@ -1,11 +1,16 @@
-// To do: refactor and optimize code by using generic get win lose message
-// implement Aces logic
-// improve presentation
-// shift dealer draw up to "calculating winner" state and list what dealer drew in a while loop
-var state = "BUILD DECK";
+// To do:
+// implement betting
+// calculate multiplayer winning variable
+// properly deal cards defeind to each player
+// htmL
+
+var state = "GET NUMBER OF PLAYERS";
+var numberOfPlayers = 0;
 var numOfPlayer1Wins = 0;
 var numOfDealerWins = 0;
 var cardDeck = [];
+var playerCurrency = [];
+var playerBets = [];
 var playerCards = [];
 var dealerCards = [];
 var playerValue = 0;
@@ -65,6 +70,14 @@ var cardGame = function (input) {
     }
   };
 
+  var currentLeaderboard = function () {
+    let message = "";
+    for (let i = 0; i < playerCurrency.length; i++) {
+      message += `Player${i + 1}'s coins: ${playerCurrency[i]} <br>`;
+    }
+    return `${message}`;
+  };
+
   var gameOver = function () {
     var playerHand = playerValue;
     var dealerHand = dealerValue;
@@ -80,18 +93,40 @@ var cardGame = function (input) {
     total value of dealer cards is :${dealerHand}<br>
     Dealer has won ${dealerWins} times<br>
     Player has won ${playerWins} times<br>
-    click Submit to play again<br>`;
+    click Submit to play again<br>
+    ${currentLeaderboard()}<br>`;
   };
 
-
-  if (state == "BUILD DECK") {
+  if (state === "GET NUMBER OF PLAYERS") {
+    numberOfPlayers = Number(input);
+    state = "BUILD DECK";
+    return `there are now ${numberOfPlayers} players. Click Submit to build the deck!`;
+  } else if (state === "BUILD DECK") {
     makeDeck();
     shuffleCards(cardDeck);
+    for (let i = 0; i < numberOfPlayers; i++) {
+      playerCurrency.push(100);
+    }
+    state = "PLACE BETS";
+    return `Please input how much Player 1 would like to bet!`;
+  } else if (state === "PLACE BETS") {
+    let playerIndex = 1;
+    let bet = 0;
+
+      bet = Number(input);
+      playerCurrency[playerIndex] -= bet;
+      playerBets.push(bet);
+      console.log(bet);
+      console.log(playerIndex);
+      playerIndex += 1;
+      // return `Please input how much player ${playerIndex} would like to bet!`;
+    
     state = "START";
-    return `Click Submit to deal cards`;
-  } else if (state == "START") {
-    while (playerCards.length < 2 && dealerCards.length < 2) {
-      playerCards.push(cardDeck.pop());
+  } else if (state === "START") {
+    while (dealerCards.length < 2) {
+      playerCards.push[cardDeck.pop()];
+      dealerCards.push(cardDeck.pop());
+      playerCards[2].push[cardDeck.pop()];
       dealerCards.push(cardDeck.pop());
     }
     state = "OPTION";
@@ -101,7 +136,8 @@ var cardGame = function (input) {
     the dealer drew ${JSON.stringify(dealerCards)}<br>
     total value of player cards is: ${playerValue}<br>
     total value of dealer cards is :${dealerValue}<br>
-    Enter HIT or STAY`;
+    Enter HIT or STAY<br>
+    ${currentLeaderboard()}`;
   } else if (state == "OPTION") {
     if (input !== "HIT" && input !== "STAY") {
       return `Please type "HIT" or "STAY" and click Submit to continue`;
@@ -130,7 +166,7 @@ var cardGame = function (input) {
       dealerValue += Number(dealerCards[dealerCards.length - 1].value);
     }
     if (dealerValue > 21 || playerValue > dealerValue) {
-      numOfPlayer1Wins += 1
+      numOfPlayer1Wins += 1;
       return `You win!<br>
       ${gameOver()}
       
