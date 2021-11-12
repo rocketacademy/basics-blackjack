@@ -2,11 +2,25 @@ var currentDeck = [];
 var playerHand = [];
 var computerHand = [];
 
-var mode = "drawPhase";
+var mode = "";
 var hitOrStand = "";
 
+document.getElementById("restart-button").disabled = true;
+
 var main = function (input) {
-  if (mode == "drawPhase") {
+  if (input == "restart") {
+    currentDeck = [];
+    playerHand = [];
+    computerHand = [];
+    output = document.querySelector("#output-div");
+    output.innerHTML = "Welcome! Press continue to draw the cards!";
+    document.getElementById("restart-button").disabled = true;
+    document.getElementById("continue-button").disabled = false;
+  }
+
+  if (input == "drawPhase") {
+    document.getElementById("continue-button").disabled = true;
+
     //make deck
     currentDeck = makeDeck();
 
@@ -25,15 +39,13 @@ var main = function (input) {
 
   if (mode == "normal") {
     mode = "playerHit";
-    return `Your cards are:  ${playerHand[0].name} ${playerHand[0].suits} and ${
-      playerHand[1].name
-    } ${playerHand[1].suits} for a total value of: ${determineValue(
+    return `Your cards: ${displayCards(playerHand)}(${determineValue(
       playerHand
-    )} <br>
-     One of the Computer's card: ${computerHand[0].name} ${
+    )}) <br>
+        Computer's 1st card: ${computerHand[0].value}${
       computerHand[0].suits
-    } <br>
-     Enter 'hit' or 'stand' to proceed:`;
+    }  <br>
+        Click 'hit' or 'stand' to proceed`;
   } else if (mode == "playerBlackjack") {
     return `Congratulations! You've hit blackjack! <br> 
       Your cards are:          ${playerHand[0].name} ${playerHand[0].suits} and ${playerHand[1].name} ${playerHand[1].suits} <br>
@@ -55,51 +67,42 @@ var main = function (input) {
     if (input == "hit") {
       playerHand.push(currentDeck.pop());
       if (determineValue(playerHand) > 21) {
-        mode = "playerBust";
-      } else
-        return `Your cards are: ${displayCards(
+        mode = "determineWinner";
+      } else {
+        return `Your cards: ${displayCards(playerHand)}(${determineValue(
           playerHand
-        )} which is a total of ${determineValue(playerHand)} <br>
-         One of the Computer's card: ${computerHand[0].name} ${
-          computerHand[0].suits
-        } <br>
-     Enter 'hit' or 'stand' to proceed:`;
+        )}) <br>
+        Computer's 1st card: ${displayCards(computerHand[0])} <br>
+        Click 'hit' or 'stand' to proceed`;
+      }
     }
     if (input == "stand") {
       mode = "determineWinner";
     }
   }
 
-  if (mode == "playerBust") {
-    return `Player lose`;
-  }
-
   if ((mode = "determineWinner")) {
+    var winStatus = "";
+    if (determineValue(playerHand) > 21) {
+      winStatus = `You lost as you bust!`;
+    }
     while (determineValue(computerHand) < 17) {
       computerHand.push(currentDeck.pop());
     }
-    if (determineValue(computerHand) > 21) {
-      string = `You Won as the dealer bust with a value of \n
-      ${determineValue(computerHand)}`;
-    } else if (determineValue(computerHand) > determineValue(playerHand)) {
-      string = `I\'m sorry but you lost, as the \n
-      computer's total of ${determineValue(playerHand)} \n
-      beats your total of ${determineValue(computerHand)} `;
-    } else {
-      string = `Congratulations! You Won!\n <br>
-      Your total of ${determineValue(computerHand)} beats\n
-      Computer's total of ${determineValue(playerHand)} \n
-       `;
+    if (determineValue(playerHand) > determineValue(computerHand)) {
+      winStatus = `You win as you have a higher hand!`;
     }
-    return `Your cards are: ${displayCards(playerHand)} \n 
-    for a value of ${determineValue(playerHand)}   <br>
+    if (determineValue(playerHand) < determineValue(computerHand)) {
+      winStatus = `You lost as the computer has a higher hand`;
+    }
+    var conclusionString = `Your hand: ${displayCards(playerHand)} <br>
+    Computer's hand: ${displayCards(computerHand)} <br>
+    ${winStatus}`;
 
-    Computer's card are: ${displayCards(computerHand)}  \n
-    for a value of   ${determineValue(computerHand)} <br>
-
-    ${string}`;
+    return conclusionString;
   }
 };
+
 //returns array of cards{rank:1-13, suits:spades|hearts|clubs|diamonds, name:Ace-10,jack,king,queen }
 var makeDeck = function () {
   var deck = [];

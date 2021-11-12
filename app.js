@@ -1,27 +1,27 @@
 var continueButton = document.querySelector("#continue-button");
 continueButton.addEventListener("click", function () {
-  // Set result to input value
-  var input = document.querySelector("#input-field");
-  var result = main("");
-
-  // Display result in output element
+  var result = main("drawPhase");
   var output = document.querySelector("#output-div");
   output.innerHTML = result;
-
-  // Reset input value
-  input.value = "";
 });
 
-var continueButton = document.querySelector("#hit-button");
-continueButton.addEventListener("click", function () {
-  // Set result to input value
-  var input = document.querySelector("#input-field");
+var hitButton = document.querySelector("#hit-button");
+hitButton.addEventListener("click", function () {
   var result = main("hit");
-
-  // Display result in output element
   var output = document.querySelector("#output-div");
   output.innerHTML = result;
+});
 
-  // Reset input value
-  input.value = "";
+var standButton = document.querySelector("#stand-button");
+standButton.addEventListener("click", function () {
+  var result = main("stand");
+  var output = document.querySelector("#output-div");
+  output.innerHTML = result;
+});
+
+var restartButton = document.querySelector("#restart-button");
+restartButton.addEventListener("click", function () {
+  var result = main("restart");
+  var output = document.querySelector("#output-div");
+  output.innerHTML = result;
 });
