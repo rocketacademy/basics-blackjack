@@ -6,9 +6,12 @@ var mode = "";
 var hitOrStand = "";
 
 document.getElementById("restart-button").disabled = true;
+document.getElementById("hit-button").disabled = true;
+document.getElementById("stand-button").disabled = true;
 
 var main = function (input) {
   if (input == "restart") {
+    mode = "drawPhase";
     currentDeck = [];
     playerHand = [];
     computerHand = [];
@@ -16,10 +19,13 @@ var main = function (input) {
     output.innerHTML = "Welcome! Press continue to draw the cards!";
     document.getElementById("restart-button").disabled = true;
     document.getElementById("continue-button").disabled = false;
+    return "Welcome! Press continue to draw the cards!";
   }
 
   if (input == "drawPhase") {
     document.getElementById("continue-button").disabled = true;
+    document.getElementById("hit-button").disabled = false;
+    document.getElementById("stand-button").disabled = false;
 
     //make deck
     currentDeck = makeDeck();
@@ -45,20 +51,29 @@ var main = function (input) {
     }  <br>
         Click 'hit' or 'stand' to proceed`;
   } else if (mode == "playerBlackjack") {
+    document.getElementById("restart-button").disabled = false;
+    document.getElementById("hit-button").disabled = true;
+    document.getElementById("stand-button").disabled = true;
     return `Congratulations! You've hit blackjack! <br> 
       Your cards are:          ${playerHand[0].name} ${playerHand[0].suits} and ${playerHand[1].name} ${playerHand[1].suits} <br>
       Computers's cards are:   ${computerHand[0].name} ${computerHand[0].suits} and  ${computerHand[1].name} ${computerHand[1].suits}<br>
-      Refresh the page to play again!    `;
+      Click restart to play again!    `;
   } else if (mode == "computerBlackjack") {
+    document.getElementById("restart-button").disabled = false;
+    document.getElementById("hit-button").disabled = true;
+    document.getElementById("stand-button").disabled = true;
     return `Oh No! The computer hit blackjack! <br>
       Your cards were:       ${playerHand[0].name} ${playerHand[0].suits} and ${playerHand[1].name} ${playerHand[1].suits} <br>
       Computer's card were:  ${computerHand[0].name} ${computerHand[0].suits} and  ${computerHand[1].name} ${computerHand[1].suits} <br>
-      Refresh the page to play again! `;
+      Click restart to play again! `;
   } else if (mode == "bothBlackjack") {
-    return `Errr.... You both hit blackjack...<br>
+    document.getElementById("restart-button").disabled = false;
+    document.getElementById("hit-button").disabled = false;
+    document.getElementById("stand-button").disabled = false;
+    return `What are the chances!.... You both hit blackjack...<br>
       Your hand:              ${playerHand[0].name} ${playerHand[0].suits} and ${playerHand[1].name} ${playerHand[1].suits} <br>
       The computers's hand:   ${computerHand[0].name} ${computerHand[0].suits} and ${computerHand[1].name} ${computerHand[1].suits}<br>
-      Refresh the page to play again!    `;
+      Click restart to play again!    `;
   }
 
   if (mode == "playerHit") {
@@ -79,14 +94,20 @@ var main = function (input) {
   }
 
   if ((mode = "determineWinner")) {
+    document.getElementById("restart-button").disabled = false;
+    document.getElementById("hit-button").disabled = true;
+    document.getElementById("stand-button").disabled = true;
     let winStatus = "";
-    let conclusionString =function() {return `Your hand: ${displayCards(playerHand)} <br>
+    let conclusionString = function () {
+      return `Your hand: ${displayCards(playerHand)} <br>
     Computer's hand: ${displayCards(computerHand)} <br>
     ${winStatus} <br>
-    Click restart to try again!`}
+    Click restart to try again!`;
+    };
     if (determineValue(playerHand) > 21) {
-      var picture = '<img src="https://media3.giphy.com/media/3orieOcdXbjDKzaAgM/giphy.gif"/>'
-      winStatus = `You bust! You lost!`+ picture;
+      var picture =
+        '<img src="https://media3.giphy.com/media/3orieOcdXbjDKzaAgM/giphy.gif"/>';
+      winStatus = `You bust! You lost!` + picture;
       return conclusionString();
     }
     while (determineValue(computerHand) < 17) {
@@ -106,10 +127,11 @@ var main = function (input) {
       winStatus = `The computer has a higher hand, the computer wins!`;
       return conclusionString();
     }
-    if (determineValue(playerHand) == determineValue(computerHand)){
-      return `Draw game!`
+    if (determineValue(playerHand) == determineValue(computerHand)) {
+      return `Draw game! <br>
+      Your hand: ${displayCards(playerHand)} <br>
+      Computer's hand: ${displayCards(computerHand)}`;
     }
-
   }
 };
 
@@ -210,14 +232,14 @@ var determineValue = function (arrayTest) {
       sum += arrayTest[i].value;
     }
   }
-  while (noOfAces > 0 && sum >21) {
-      sum -= 10;
-      noOfAces -= 1;
+  while (noOfAces > 0 && sum > 21) {
+    sum -= 10;
+    noOfAces -= 1;
     if (sum < 22) {
       break;
     }
   }
-  console.log(sum)
+  console.log(sum);
   return sum;
 };
 
@@ -227,6 +249,6 @@ var displayCards = function (stack) {
   for (i in stack) {
     arr.push(stack[i].name, stack[i].suits);
   }
-  arr.push('('+determineValue(stack)+')')
+  arr.push("(" + determineValue(stack) + ")");
   return arr.join(" ");
 };
