@@ -19,7 +19,7 @@ var main = function (input) {
     output.innerHTML = "Welcome! Press continue to draw the cards!";
     document.getElementById("restart-button").disabled = true;
     document.getElementById("continue-button").disabled = false;
-    return "Welcome! Press continue to draw the cards!";
+    return "Welcome! Press continue to  the cards!";
   }
 
   if (input == "drawPhase") {
