@@ -84,13 +84,23 @@ var drawCard = function () {
 // initiate global variables
 var gameMode = "setup";
 var players = [];
+var totalPlayers = 0;
 var activePlayerIndex = 1; // used to cycle through all players
 
 // initialise players incl dealer, and draw the first 2 cards
-var initPlayers = function (totalPlayers) {
-  // initialise the full array of players; dealer is players[0]
-  for (var i = 0; i < totalPlayers; i += 1) {
-    players[i] = { cards: [], lastMove: "", score: 0, hasBlackjack: false };
+var initPlayers = function (totalPlayers, newGame) {
+  // if this is a new game, initialise the full array of players; dealer is players[0]
+  if (newGame) {
+    for (var i = 0; i < totalPlayers; i += 1) {
+      players[i] = { cards: [], score: 0, hasBlackjack: false, wins: 0 };
+    }
+  } // if this is a new round, flush players' hand
+  else if (!newGame) {
+    for (var i = 0; i < players.length; i += 1) {
+      players[i].cards = [];
+      players[i].score = 0;
+      players[i].hasBlackjack = false;
+    }
   }
   // then, have non-dealer player(s) each draw 2 cards first
   for (var i = 1; i < players.length; i += 1) {
@@ -105,17 +115,17 @@ var initPlayers = function (totalPlayers) {
 };
 
 // sets up the game for 1 to 4 human players
-var setupGame = function (input) {
+var setupGame = function (input, newGame = true) {
   n = parseInt(input);
   if (n >= 1 && n <= 4) {
     totalPlayers = n + 1;
-    players = initPlayers(totalPlayers);
+    players = initPlayers(totalPlayers, newGame);
     gameMode = "check for blackjack";
     return `Game setup for ${
       players.length - 1
     } human player(s) plus dealer. 2 cards dealt for each. <br>Press submit to continue.`;
   } else {
-    return `Invalid. Input 1 to 4 players only`;
+    return `Please specify 1 to 4 players only.`;
   }
 };
 
@@ -171,14 +181,16 @@ var dealerHitOrStand = function (dealerObj) {
   var dealerCurrScore = computeScore(dealerObj);
   // if dealer's hand is below 17, dealer draws
   var myOutputValue = `Dealer's move.<br>`;
-  if (dealerCurrScore < 17) {
+  while (dealerCurrScore < 17) {
     var newCard = drawCard();
     dealerObj.cards.push(newCard);
-    myOutputValue += `Dealer draws a ${newCard.name} of ${newCard.suit}. Press submit to continue.`;
-  } else {
-    myOutputValue += `Dealer stands. Press submit to continue.<br>`;
+    dealerCurrScore = computeScore(dealerObj);
+    myOutputValue += `Dealer draws a ${newCard.name} of ${newCard.suit}. `;
   }
-  return myOutputValue;
+  if (dealerCurrScore >= 17) {
+    myOutputValue += `Dealer stands. `;
+  }
+  return myOutputValue + `Press submit to continue.`;
 };
 
 /* ============================================= */
@@ -243,9 +255,9 @@ var computeScore = function (playerObj) {
 };
 
 // returns scores in string format
-// finalTally parameter reveals the dealer's hidden card and dealer's score
+// finalTally parameter, if true, reveals the dealer's hidden card and score
 var reportScores = function (finalTally = false) {
-  var returnString = "";
+  var returnString = "SCOREBOARD:<br>";
   // report current scoreboard for players
   for (var i = 1; i < players.length; i += 1) {
     var playerHand = printPlayerCards(players[i]);
@@ -262,12 +274,11 @@ var reportScores = function (finalTally = false) {
     var dealerScore = computeScore(players[0]);
     returnString += `Dealer's cards are ${dealerHand}. Dealer score is ${dealerScore}.<br> `;
   }
-
-  return returnString;
+  return returnString + "<br><br>";
 };
 
 // returns results in string format
-var reportResults = function () {
+var reportRoundResults = function () {
   var returnString = "";
   var anyBlackjacks = false;
   var winnerCount = 0;
@@ -284,11 +295,13 @@ var reportResults = function () {
     if (winnerCount == 1) {
       // dealer has blackjack
       if (players[0].hasBlackjack) {
+        players[0].wins += 1;
         returnString += `Dealer has blackjack.<br>`;
       }
       // player(s) have blackjack
       for (var i = 1; i < players.length; i += 1) {
         if (players[i].hasBlackjack) {
+          players[i].wins += 1;
           returnString += `Player ${i} has blackjack.<br>`;
         }
       }
@@ -313,20 +326,32 @@ var reportResults = function () {
     for (var i = 1; i < players.length; i += 1) {
       if (players[i].score == highestScore) {
         winnerCount += 1;
+        players[i].wins += 1;
         returnString += `Player ${i} achieved highest score.<br>`;
       }
     }
     // declare if dealer wins
     if (players[0].score == highestScore) {
       winnerCount += 1;
+      players[0].wins += 1;
       returnString += `Dealer achieved highest score.<br>`;
     }
     if (winnerCount == 1) {
       returnString += `They win!`;
     } else if (winnerCount > 1) {
-      returnString += `They tie!`;
+      returnString += `They all win!`;
     }
   }
+  return returnString + "<br>";
+};
+
+var reportWins = function () {
+  var returnString = "";
+  // loops thru all players
+  for (var i = 1; i < players.length; i += 1) {
+    returnString += `Player ${i} has won ${players[i].wins} times.<br>`;
+  }
+  returnString += `Dealer has won ${players[0].wins} times.<br>`;
   return returnString;
 };
 
@@ -338,23 +363,20 @@ var reportResults = function () {
 var main = function (input) {
   // error message if game has been completed
   if (gameMode == "game over") {
-    if (input == "restart") {
+    if (input == "a") {
       // re-initialise global variables
       deck = shuffleCards(makeDeck());
-      gameMode = "setup";
-      players = [];
       activePlayerIndex = 1; // used to cycle through all players
-      return `Restarting game... Input number of players.`;
+      return setupGame(totalPlayers - 1, (newGame = false));
     }
-    return `Game over. Type 'restart' for new game.`;
+    return `Game over. Type 'a' for another round.`;
   }
 
   var mainOutputMsg = "";
   // setup game: based on number of players, deal 2 cards
   if (gameMode == "setup") {
     console.log(gameMode);
-    //input = 2; // fix at two players for now
-    mainOutputMsg = setupGame(input);
+    mainOutputMsg = setupGame(input, (newGame = true));
     return mainOutputMsg;
   }
 
@@ -386,7 +408,7 @@ var main = function (input) {
     } else {
       // no one has blackjack, so report scores and ask for active player to decide on move
       mainOutputMsg = `${reportScores()}`;
-      mainOutputMsg += `<br>Now, player(s) will choose whether to hit/stand. Press submit to continue`;
+      mainOutputMsg += `Now, player(s) will choose whether to hit/stand. Press submit to continue.`;
       gameMode = "hit or stand";
       return mainOutputMsg;
     }
@@ -395,13 +417,13 @@ var main = function (input) {
   // for players and dealer to decide on hit or stand
   if (gameMode == "hit or stand") {
     console.log(gameMode);
-
+    mainOutputMsg = `${reportScores()}`;
     // only if all human players have moved, it is dealer's move
     if (activePlayerIndex == players.length) {
       mainOutputMsg += dealerHitOrStand(players[0]);
       gameMode = "show results";
     }
-    // start with player 1 then increment (dealer goes last)
+    // start with player 1 then loop thru human players
     if (activePlayerIndex < players.length) {
       mainOutputMsg += activePlayerHitOrStand(input, activePlayerIndex);
     }
@@ -410,11 +432,12 @@ var main = function (input) {
 
   if (gameMode == "show results") {
     mainOutputMsg += reportScores((finalTally = true));
-    mainOutputMsg += "<br><br>";
-    mainOutputMsg += reportResults();
-    gameMode = "game over";
+    mainOutputMsg += reportRoundResults();
     var img1 =
       '<img src = "https://c.tenor.com/eDrlV9otYw0AAAAC/neil-patrick-harris-thumbs-up.gif">';
-    return mainOutputMsg + img1;
+    mainOutputMsg += img1 + "<br>";
+    mainOutputMsg += `Overall wins: <br>${reportWins()}`;
+    gameMode = "game over";
+    return mainOutputMsg;
   }
 };
