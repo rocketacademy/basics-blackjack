@@ -8,6 +8,7 @@
 var makeDeck = function () {
   var cardDeck = []; // initialise empty cardDeck array
   var suits = ["clubs", "diamonds", "hearts", "spades"];
+  var emojis = ["♣", "♦", "♥", "♠"];
   // loop thru the four suits
   for (var i = 0; i < suits.length; i += 1) {
     var currentSuit = suits[i];
@@ -32,6 +33,7 @@ var makeDeck = function () {
         name: cardName,
         suit: currentSuit,
         rank: cardRank,
+        emoji: emojis[i],
       };
       // add current card to cardDeck array
       cardDeck.push(card);
@@ -85,12 +87,12 @@ var players = [];
 var activePlayerIndex = 1; // used to cycle through all players
 
 // initialise players incl dealer, and draw the first 2 cards
-var initPlayers = function (nPlayers) {
+var initPlayers = function (totalPlayers) {
   // initialise the full array of players; dealer is players[0]
-  for (var i = 0; i < nPlayers; i += 1) {
+  for (var i = 0; i < totalPlayers; i += 1) {
     players[i] = { cards: [], lastMove: "", score: 0, hasBlackjack: false };
   }
-  // then, have player(s) each draw 2 cards first
+  // then, have non-dealer player(s) each draw 2 cards first
   for (var i = 1; i < players.length; i += 1) {
     players[i].cards.push(drawCard());
     players[i].cards.push(drawCard());
@@ -100,6 +102,21 @@ var initPlayers = function (nPlayers) {
   players[0].cards.push(drawCard());
 
   return players;
+};
+
+// sets up the game for 1 to 4 human players
+var setupGame = function (input) {
+  n = parseInt(input);
+  if (n >= 1 && n <= 4) {
+    totalPlayers = n + 1;
+    players = initPlayers(totalPlayers);
+    gameMode = "check for blackjack";
+    return `Game setup for ${
+      players.length - 1
+    } human player(s) plus dealer. 2 cards dealt for each. <br>Press submit to continue.`;
+  } else {
+    return `Invalid. Input 1 to 4 players only`;
+  }
 };
 
 // checks for blackjack, returns boolean
@@ -123,7 +140,7 @@ var hasBlackjack = function (playerObj) {
 var activePlayerHitOrStand = function (input, index) {
   // input validation
   if (!(input == "hit" || input == "stand")) {
-    return `Player ${index} has given invalid input. Specify hit or stand.`;
+    return `Player ${activePlayerIndex}'s turn: Please specify hit or stand.`;
   }
   // following code only runs if input is valid
   var myOutputValue = "";
@@ -153,12 +170,13 @@ var activePlayerHitOrStand = function (input, index) {
 var dealerHitOrStand = function (dealerObj) {
   var dealerCurrScore = computeScore(dealerObj);
   // if dealer's hand is below 17, dealer draws
+  var myOutputValue = `Dealer's move.<br>`;
   if (dealerCurrScore < 17) {
     var newCard = drawCard();
     dealerObj.cards.push(newCard);
-    myOutputValue = `Dealer draws a ${newCard.name} of ${newCard.suit}. Press submit to continue.`;
+    myOutputValue += `Dealer draws a ${newCard.name} of ${newCard.suit}. Press submit to continue.`;
   } else {
-    myOutputValue = `Dealer stands. Press submit to continue.<br>`;
+    myOutputValue += `Dealer stands. Press submit to continue.<br>`;
   }
   return myOutputValue;
 };
@@ -168,31 +186,28 @@ var dealerHitOrStand = function (dealerObj) {
 /* ============================================= */
 
 // returns the cards in a player's hand as a string
-var printPlayerCards = function (playerObj) {
+// includes optional parameter to hide first card (used only for dealer)
+var printPlayerCards = function (playerObj, hideFirstCard = false) {
   var cards = playerObj.cards;
-  var returnString = "";
-  // Iterate until cards.length - 1 to avoid the extra comma at the end of return string
-  for (var i = 0; i < cards.length - 1; i += 1) {
-    var currCard = cards[i];
-    returnString += `${currCard.name} of ${currCard.suit}, `;
+  if (!hideFirstCard) {
+    var returnString = "";
+    // Iterate until cards.length - 1 to avoid the extra comma at the end of return string
+    for (var i = 0; i < cards.length - 1; i += 1) {
+      var currCard = cards[i];
+      returnString += `${currCard.name} of ${currCard.emoji}, `;
+    }
+    var lastCard = cards[cards.length - 1];
+    returnString += `${lastCard.name} of ${lastCard.emoji}`;
+  } else if (hideFirstCard) {
+    var returnString = "[first card hidden], ";
+    // Start from second card then iterate until cards.length - 1 to avoid the extra comma at the end of return string
+    for (var i = 1; i < cards.length - 1; i += 1) {
+      var currCard = cards[i];
+      returnString += `${currCard.name} of ${currCard.emoji}, `;
+    }
+    var lastCard = cards[cards.length - 1];
+    returnString += `${lastCard.name} of ${lastCard.emoji}`;
   }
-  var lastCard = cards[cards.length - 1];
-  returnString += `${lastCard.name} of ${lastCard.suit}`;
-  return returnString;
-};
-
-// returns the cards in the dealers's hand as a string
-// TODO: Hide dealer's first card
-var printDealerCards = function (dealerObj) {
-  var cards = dealerObj.cards;
-  var returnString = "";
-  // Iterate until cards.length - 1 to avoid the extra comma at the end of return string
-  for (var i = 0; i < cards.length - 1; i += 1) {
-    var currCard = cards[i];
-    returnString += `${currCard.name} of ${currCard.suit}, `;
-  }
-  var lastCard = cards[cards.length - 1];
-  returnString += `${lastCard.name} of ${lastCard.suit}`;
   return returnString;
 };
 
@@ -228,7 +243,8 @@ var computeScore = function (playerObj) {
 };
 
 // returns scores in string format
-var reportScores = function () {
+// finalTally parameter reveals the dealer's hidden card and dealer's score
+var reportScores = function (finalTally = false) {
   var returnString = "";
   // report current scoreboard for players
   for (var i = 1; i < players.length; i += 1) {
@@ -236,10 +252,17 @@ var reportScores = function () {
     var playerScore = computeScore(players[i]);
     returnString += `Player ${i}: Your cards are ${playerHand}. Your score is ${playerScore}.<br> `;
   }
-  // report current scoreboard for dealer
-  var dealerHand = printDealerCards(players[0]);
-  var dealerScore = computeScore(players[0]);
-  returnString += `Dealer's cards are ${dealerHand}. Dealer score is ${dealerScore}.<br> `;
+  if (!finalTally) {
+    // hide dealer's first card and score
+    var dealerHand = printPlayerCards(players[0], (hideFirstCard = true));
+    returnString += `Dealer's cards are ${dealerHand}.`;
+  } else if (finalTally) {
+    // show dealer's first card and score
+    var dealerHand = printPlayerCards(players[0], (hideFirstCard = false));
+    var dealerScore = computeScore(players[0]);
+    returnString += `Dealer's cards are ${dealerHand}. Dealer score is ${dealerScore}.<br> `;
+  }
+
   return returnString;
 };
 
@@ -321,21 +344,17 @@ var main = function (input) {
       gameMode = "setup";
       players = [];
       activePlayerIndex = 1; // used to cycle through all players
-      return `Game restarting. Input number of players.`;
+      return `Restarting game... Input number of players.`;
     }
-
     return `Game over. Type 'restart' for new game.`;
   }
+
   var mainOutputMsg = "";
   // setup game: based on number of players, deal 2 cards
   if (gameMode == "setup") {
     console.log(gameMode);
-    input = 2; // fix at two players for now
-    players = initPlayers(input);
-    gameMode = "check for blackjack";
-    mainOutputMsg = `Game setup for ${
-      input - 1
-    } human player(s) plus dealer. 2 cards dealt for each. <br>Press submit to continue.`;
+    //input = 2; // fix at two players for now
+    mainOutputMsg = setupGame(input);
     return mainOutputMsg;
   }
 
@@ -361,13 +380,13 @@ var main = function (input) {
     }
     // if someone has blackjack, skip hit/stand and proceed to show results
     if (anyPlayersWithBlackjack) {
+      mainOutputMsg = "Someone has a blackjack! Click submit to view results.";
       gameMode = "show results";
-      mainOutputMsg += "Someone has a blackjack! Click submit to view results.";
       return mainOutputMsg;
     } else {
       // no one has blackjack, so report scores and ask for active player to decide on move
-      mainOutputMsg += `${reportScores()}`;
-      mainOutputMsg += `<br>Player ${activePlayerIndex}'s turn: Do you hit or stand?`;
+      mainOutputMsg = `${reportScores()}`;
+      mainOutputMsg += `<br>Now, player(s) will choose whether to hit/stand. Press submit to continue`;
       gameMode = "hit or stand";
       return mainOutputMsg;
     }
@@ -376,20 +395,21 @@ var main = function (input) {
   // for players and dealer to decide on hit or stand
   if (gameMode == "hit or stand") {
     console.log(gameMode);
-    // if all human players have moved, it is dealer's move
+
+    // only if all human players have moved, it is dealer's move
     if (activePlayerIndex == players.length) {
       mainOutputMsg += dealerHitOrStand(players[0]);
       gameMode = "show results";
     }
     // start with player 1 then increment (dealer goes last)
     if (activePlayerIndex < players.length) {
-      mainOutputMsg = activePlayerHitOrStand(input, activePlayerIndex);
+      mainOutputMsg += activePlayerHitOrStand(input, activePlayerIndex);
     }
     return mainOutputMsg;
   }
 
   if (gameMode == "show results") {
-    mainOutputMsg += reportScores();
+    mainOutputMsg += reportScores((finalTally = true));
     mainOutputMsg += "<br><br>";
     mainOutputMsg += reportResults();
     gameMode = "game over";
