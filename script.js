@@ -98,21 +98,24 @@ var shuffleCards = function (cardDeck) {
 // Wager points before start of round
 var pointsWager = function (input) {
   if (input == "") {
+    // wager button to be displayed
     document.getElementById("wager-button").style.display = "";
     myOutputValue = `Please input numbers from 0-100 to wager your points.`;
   } else {
+    // next step is to deal so only deal button is shown and the rest hidden
     document.getElementById("deal-button").style.display = "";
     document.getElementById("wager-button").style.display = "none";
     document.getElementById("input-field").style.display = "none";
     wagerPoints = Number(input);
     playerScore -= wagerPoints;
-    myOutputValue = `You now have ${playerScore} points. <br><br> Press DEAL to begin drawing your cards.`;
+    myOutputValue = `You now have ${playerScore} points.`;
     gameMode = "start";
   }
 };
 
 // Player to draw 2 cards
 var playerDrawCards = function () {
+  // deal button remove from previous function and show hit and stand button
   document.getElementById("deal-button").style.display = "none";
   document.getElementById("hit-button").style.display = "";
   document.getElementById("stand-button").style.display = "";
@@ -133,6 +136,7 @@ var playerDrawCards = function () {
     (playerCard1.name == "Ace" || playerCard2.name == "Ace")
   ) {
     if (playerCard1.name == "Ace") {
+      // results button only shown to bring to results function straight
       document.getElementById("results-button").style.display = "";
       document.getElementById("hit-button").style.display = "none";
       document.getElementById("stand-button").style.display = "none";
@@ -143,6 +147,7 @@ var playerDrawCards = function () {
       playerBlackJack = true;
     }
     if (playerCard2.name == "Ace") {
+      // results button only shown to bring to results function straight
       document.getElementById("results-button").style.display = "";
       document.getElementById("hit-button").style.display = "none";
       document.getElementById("stand-button").style.display = "none";
@@ -167,6 +172,7 @@ var playerDrawCards = function () {
 
 // Player will choose whether they want the value of Ace to be 1 or 11
 var aceChoice = function (input) {
+  // remove decide button from previous function and show 1 and 11 button
   document.getElementById("decide-button").style.display = "none";
   document.getElementById("one-button").style.display = "";
   document.getElementById("eleven-button").style.display = "";
@@ -174,6 +180,7 @@ var aceChoice = function (input) {
     Would you like your Ace to be 11 instead?`;
   console.log(gameMode);
   if (input == "yes" && playerCard1.name == "Ace") {
+    // remove 1 and 11 button because choice already given by user. now hit and stand button will be shown
     document.getElementById("one-button").style.display = "none";
     document.getElementById("eleven-button").style.display = "none";
     document.getElementById("hit-button").style.display = "";
@@ -184,6 +191,7 @@ var aceChoice = function (input) {
     gameMode = "round1";
   }
   if (input == "yes" && playerCard2.name == "Ace") {
+    // remove 1 and 11 button because choice already given by user. now hit and stand button will be shown
     document.getElementById("one-button").style.display = "none";
     document.getElementById("eleven-button").style.display = "none";
     document.getElementById("hit-button").style.display = "";
@@ -194,6 +202,7 @@ var aceChoice = function (input) {
     gameMode = "round1";
   }
   if (input == "no") {
+    // remove 1 and 11 button because choice already given by user. now hit and stand button will be shown
     document.getElementById("one-button").style.display = "none";
     document.getElementById("eleven-button").style.display = "none";
     document.getElementById("hit-button").style.display = "";
@@ -210,13 +219,15 @@ var firstHit = function () {
   playerSum = playerCard1.rank + playerCard2.rank + playerCard3.rank;
   // Check if bust or not
   if (playerSum > 21) {
+    // if bust immediately go straight to results page using results button
     document.getElementById("hit-button").style.display = "none";
     document.getElementById("stand-button").style.display = "none";
     document.getElementById("results-button").style.display = "";
-    // if bust, return true
+    // if bust, return playerbust true
     playerBust = true;
     myOutputValue = `${bustImage} <br><br>${playerBustMessage} ${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}<br>${playerCard3.name} of ${playerCard3.suit}<br><br> Sum is ${playerSum}`;
   } // if less than or equal 21, player can choose to continue or end turn
+  // hit and stand button will be shown to give user the choice to continue or end
   if (playerSum <= 21) {
     document.getElementById("hit-button").style.display = "";
     document.getElementById("stand-button").style.display = "";
@@ -232,6 +243,7 @@ var secondHit = function () {
     playerCard1.rank + playerCard2.rank + playerCard3.rank + playerCard4.rank;
   // Check if bust or not
   if (playerSum > 21) {
+    // if bust immediately go straight to results page using results button
     document.getElementById("hit-button").style.display = "none";
     document.getElementById("stand-button").style.display = "none";
     document.getElementById("results-button").style.display = "";
@@ -240,6 +252,7 @@ var secondHit = function () {
     myOutputValue = `${bustImage} <br><br>${playerBustMessage} ${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}<br>${playerCard3.name} of ${playerCard3.suit}<br>${playerCard4.name} of ${playerCard4.suit}<br><br> Sum is ${playerSum}`;
   } // if less than equal to 21, player can choose to continue or end turn
   if (playerSum <= 21) {
+    // hit and stand button will be shown to give user the choice to continue or end
     document.getElementById("hit-button").style.display = "";
     document.getElementById("stand-button").style.display = "";
     myOutputValue = `PLAYER'S HAND <br><br> ${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}<br>${playerCard3.name} of ${playerCard3.suit}<br>${playerCard4.name} of ${playerCard4.suit}<br><br> Sum is ${playerSum}`;
@@ -257,16 +270,17 @@ var thirdHit = function () {
     playerCard4.rank +
     playerCard5.rank;
   if (playerSum > 21) {
+    // since bust, hit and stand button needs to be hidden and need to show the results page
     document.getElementById("hit-button").style.display = "none";
     document.getElementById("stand-button").style.display = "none";
     document.getElementById("results-button").style.display = "";
-    document.getElementById("results-button").style.display = "";
-    // if bust, output bust message
+    // if bust, output bust message and return playerbust true
     playerBust = true;
     myOutputValue = `${bustImage} <br><br>${playerBustMessage} ${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}<br>${playerCard3.name} of ${playerCard3.suit}<br>${playerCard4.name} of ${playerCard4.suit}<br>${playerCard5.name} of ${playerCard5.suit}<br><br> Sum is ${playerSum}<br><br> Press DEAL to end turn.`;
     gameMode = "results";
   }
   if (playerSum <= 21) {
+    // hit and stand button will be shown to give user the choice to continue or end
     document.getElementById("hit-button").style.display = "";
     document.getElementById("stand-button").style.display = "";
     //if less than or equal to 21, player can choose to contnue or end turn
@@ -291,14 +305,18 @@ var dealerDrawCards = function () {
   ) {
     if (dealerCard1.name == "Ace") {
       dealerCard1.rank = 11;
+      // Update the playersum
       dealerSum = dealerCard1.rank + dealerCard2.rank;
     }
     if (dealerCard2.name == "Ace") {
       dealerCard2.rank = 11;
+      // update the playersum
       dealerSum = dealerCard1.rank + dealerCard2.rank;
     } // if dealer gets blackjack, immediately wins
+    // results button will bring it to the results page
     document.getElementById("results-button").style.display = "";
     myOutputValue = `DEALER HAND <br><br> ${dealerCard1.name} of ${dealerCard1.suit} <br> ${dealerCard2.name} of ${dealerCard2.suit}<br><br> Sum is ${dealerSum}<br><br> DEALER BLACKJACK`;
+    // returning dealerblackjack true to help with the final results tally.
     dealerBlackJack = true;
     gameMode = "results";
   }
@@ -364,6 +382,8 @@ var dealerDrawCards = function () {
 
 // Tally all results here
 var finalResults = function () {
+  // From previous helper functions, RESULTS button is shown. This will hide it.
+  // Showing the input field and wager button so user knows to start putting bets for next round.
   document.getElementById("results-button").style.display = "none";
   document.getElementById("input-field").style.display = "";
   document.getElementById("wager-button").style.display = "";
@@ -371,10 +391,12 @@ var finalResults = function () {
     wagerPoints = wagerPoints * 2;
     playerScore += wagerPoints;
     myOutputValue = `${blackjackImage}PLAYER WINS <br><br> PLAYER POINTS : ${playerScore}<br><br> Input amount to wager for next round. `;
+    /// Once message is shown, need to return false or else the next round, playerblackjack will be true
     playerBlackJack = false;
   } else if (dealerBlackJack == true) {
     // At the start, points have already been deducted so even if dealer wins, no need for further deduction.
     myOutputValue = ` ${loseImage}DEALER WINS <br><br> PLAYER POINTS : ${playerScore}pts<br><br> Input amount to wager for next round. `;
+    // Once message is shown, need to return false or else the next round, dealerblackjack will be true
     dealerBlackJack = false;
   } else if (playerSum == dealerSum) {
     playerScore += wagerPoints;
@@ -387,11 +409,13 @@ var finalResults = function () {
     wagerPoints = wagerPoints * 2;
     playerScore += wagerPoints;
     myOutputValue = `${winImage}<br><br>PLAYER WINS <br><br> PLAYER POINTS : ${playerScore}pts<br><br> Input amount to wager for next round. `;
+    /// Once message is shown, need to return false or else the next round, dealerbust will be true
     dealerBust = false;
   } else if (dealerSum > playerSum) {
     myOutputValue = `${loseImage}<br><br>DEALER WINS <br><br> PLAYER POINTS : ${playerScore}pts<br><br> Input amount to wager for next round.`;
   } else if (playerBust == true) {
     myOutputValue = `${loseImage}<br><br>DEALER WINS <br><br> PLAYER POINTS : ${playerScore}pts<br><br> Input amount to wager for next round.`;
+    /// Once message is shown, need to return false or else the next round, playerbust will be true
     playerBust = false;
   } else if (
     playerSum < dealerSum &&
@@ -401,12 +425,14 @@ var finalResults = function () {
     wagerPoints = wagerPoints * 2;
     playerScore += wagerPoints;
     myOutputValue = `${winImage}<br><br>PLAYER WINS <br><br> PLAYER POINTS : ${playerScore}pts<br><br> Input amount to wager for next round. `;
+    /// Once message is shown, need to return false or else the next round, dealerbust will be true
     dealerbust = false;
   }
   gameMode = "wager";
 };
 var deckOfCards = makeDeck();
 var shuffle = shuffleCards(deckOfCards);
+// Added a bunch of button in the html so these block is to decide which one should be shown and which should be hidden
 document.getElementById("input-field").style.display = "";
 document.getElementById("decide-button").style.display = "none";
 document.getElementById("deal-button").style.display = "none";
@@ -448,6 +474,7 @@ var main = function (input) {
   } else if (gameMode == "results") {
     finalResults();
   }
+  // when returning back to start of game, this removes the END button
   document.getElementById("end-button").style.display = "none";
   return myOutputValue;
 };
