@@ -436,7 +436,7 @@ var main = function (input) {
     mainOutputMsg += reportRoundResults();
     var img1 =
       '<img src = "https://c.tenor.com/eDrlV9otYw0AAAAC/neil-patrick-harris-thumbs-up.gif">';
-    mainOutputMsg += img1 + "<br>";
+    mainOutputMsg += "<br>" + img1 + "<br>";
     mainOutputMsg += `Overall wins: <br>${reportWins()}`;
     gameMode = "game over";
     return mainOutputMsg;
