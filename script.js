@@ -86,9 +86,8 @@ var gameMode = "inputName";
 var playerName = "";
 var yourBetAmount = 0;
 var playerScore = 0;
-var card1 = {};
-var card2 = {};
-var dealerCards = [];
+var yourCardDeck = [];
+var dealerDeck = [];
 
 var printCard = function (card) {
   cardPic = `<div id="blackcard">${card.name}<br><span class="emoji">${card.emoji}</span></div>`;
@@ -100,31 +99,60 @@ var printCard = function (card) {
   return cardPic;
 };
 
+var printDeck = function (yourCardDeck) {
+  var count = 0;
+  var printYourDeck = [];
+  while (count < yourCardDeck.length) {
+    printYourDeck.push(printCard(yourCardDeck[count]));
+    count = count + 1;
+  }
+  myOutput = printYourDeck.toString();
+  return myOutput;
+};
+
 // modes inputName , betAmount, deal2cards , decidehit/Stay , dealerMode 2card autohit
 var main = function (input) {
+  if (input == "end") {
+    gameMode = "inputName";
+    playerName = "";
+    yourBetAmount = 0;
+    playerScore = 0;
+    yourCardDeck = [];
+    dealerDeck = [];
+    deck = makeDeck();
+    shuffledDeck = shuffleCards(deck);
+
+    console.log(shuffledDeck.length);
+
+    return "<br>input your name and press 🟢 submit to start a new game<br><br>";
+  }
   if (gameMode == "inputName") {
     playerName = input;
+
     gameMode = "betAmount";
     return (
+      "<br/><br/><br/>" +
       "🥂 Hi " +
       playerName +
       ", welcome to the 'No Limit Blackjack Table'" +
-      "<br>" +
-      "👉 Please type in your betting amount 💰💰💰 in the orange bar above !"
+      "<br><br/>" +
+      "👉  Please type in your betting amount 💰💰💰 in the orange bar above and press 🟢 Submit" +
+      "<br/><br/><br/><br/>"
     );
   }
   if (gameMode == "betAmount") {
     yourBetAmount = input;
     gameMode = "ace1/11";
     return (
-      "🥂 Great " +
+      "<br/><br/>" +
+      "Hi " +
       playerName +
-      ", today seems to be your lucky day, 💰 you have bet: " +
-      yourBetAmount +
-      "<br>" +
-      "🤞 You can decide the Rank of Ace to be either 1 or 11" +
-      "<br>" +
-      "👉 Type in your choice: 1 or 11 in the orange bar above."
+      ", you can decide the Rank of Ace to be either '1' or '11'" +
+      "<br/>" +
+      "👉 Type in your choice: 1 or 11 in the orange bar above and press 🟢 Submit" +
+      "<br/><br/><br/>" +
+      "Note : 👑 King, 👸🏻 Queen and 👨‍🎨 Jack , have the Rank 10 " +
+      "<br/><br/><br/>"
     );
   }
 
@@ -138,35 +166,46 @@ var main = function (input) {
       counter = counter + 1;
     }
     return (
-      "🃎 Ace will have Rank: " +
-      input +
-      " for this round" +
       "<br>" +
-      "♣️♠️♦️❤️ So it's now the Blackjack time. 👍 Press the 'Submit' button now" +
       "<br>" +
-      "🃏🃏 Dealer will shuffle the deck and pull out two cards for you."
+      "<br>" +
+      "♠️♣️♦️❤️ Press the 🟢 Submit button now ❤️♦️♣️♠️ " +
+      "<br>" +
+      "🤞 Dealer will shuffle the deck and pull out two cards for you." +
+      "<br>" +
+      "<br>" +
+      "<br>" +
+      "<br>"
     );
   }
 
   if (gameMode == "dealCards") {
-    card1 = shuffledDeck.pop();
-    card2 = shuffledDeck.pop();
+    var card1 = shuffledDeck.pop();
+    var card2 = shuffledDeck.pop();
     playerScore = card1.rank + card2.rank;
+    yourCardDeck = [];
+    yourCardDeck.push(card1, card2);
+    console.log(yourCardDeck);
+
     if (playerScore == 21) {
       gameMode = "endGame/newGame";
       decision1 =
-        "perfect Blackjack , congrats" + "<br>" + "select end/continue ?";
+        ". WOW you got Perfect Blackjack, you have doubled your money." +
+        "<br>" +
+        "<br>";
+      ("🔴 end  or  🟣 continue ?");
     }
     if (playerScore > 21) {
       gameMode = "endGame/newGame";
-      decision1 = "Bust, you lost your bet" + "<br>" + "select end/continue ?";
+      decision1 =
+        ". Bad Luck! You got Busted" +
+        "<br>" +
+        "<br>" +
+        "🔴  end or  🟣 continue ?";
     }
     if (playerScore < 21) {
-      gameMode = "hitStay";
-      decision1 =
-        ". you want 'hit' or 'stay' ?" +
-        "<br>" +
-        "Type in your decision 'hit' or 'stay' in the orange bar above.";
+      gameMode = "hitStand";
+      decision1 = "<br>" + "<br>" + " 🟡 hit   or   🔵 stand ?";
     }
 
     return (
@@ -176,55 +215,46 @@ var main = function (input) {
       decision1 +
       "<br>" +
       "<br>" +
-      printCard(card1) +
-      printCard(card2)
+      printDeck(yourCardDeck)
     );
   }
 
-  if (gameMode == "hitStay") {
+  if (gameMode == "hitStand") {
     if (input == "hit") {
-      var card3 = shuffledDeck.pop();
-      playerScore = playerScore + card3.rank;
+      var cardN = shuffledDeck.pop();
+      playerScore = playerScore + cardN.rank;
+      yourCardDeck.push(cardN);
 
-      console.log(card3.rank, playerScore);
+      console.log(cardN.rank, playerScore);
 
       if (playerScore == 21) {
         gameMode = "endGame/newGame";
         decision2 =
-          ". Perfect Blackjack! you doubled your money to" +
+          ". Perfect Blackjack ! you doubled your money to : " +
           yourBetAmount * 2 +
           "<br>" +
-          "You want to 'end' or 'continue' the game? " +
-          "<br>" +
-          " Type in your decision 'end' or 'continue' in the orange bar above";
+          "🔴 end or 🟣 continue ? ";
       }
       if (playerScore > 21) {
         gameMode = "endGame/newGame";
         decision2 =
-          ". Bust, you lost your bet amount" +
-          yourBetAmount +
-          "<br>" +
-          "You want to 'end' or 'continue' the game ? " +
-          "<br>" +
-          " Type in your decision 'end' or 'continue' in the orange bar above";
+          ". Bad Luck ! you got busted" + "<br>" + "🔴 end or 🟣 continue ? ";
       }
       if (playerScore < 21) {
-        decision2 =
-          ". You want 'hit' or 'stay' ?" +
-          "<br>" +
-          "Type in your decision 'hit' or 'stay' in the orange bar above.";
+        decision2 = "<br>" + "🟡 hit  or  🔵 stand ? ";
       }
+
       return (
         "Now your score is : " +
         playerScore +
         decision2 +
         "<br>" +
         "<br>" +
-        printCard(card3)
+        printDeck(yourCardDeck)
       );
     }
 
-    if (input == "stay") {
+    if (input == "stand") {
       gameMode = "dealer";
       var dealerCard1 = shuffledDeck.pop();
       var dealerCard2 = shuffledDeck.pop();
@@ -232,11 +262,22 @@ var main = function (input) {
 
       console.log(dealerCard1, dealerCard2);
 
+      dealerDeck.push(dealerCard1, dealerCard2);
+      console.log(dealerDeck);
+
       if (dealerScore < 17) {
         var dealerCard3 = shuffledDeck.pop();
         dealerScore = dealerScore + dealerCard3.rank;
         console.log(dealerCard3);
+        dealerDeck.push(dealerCard3);
+        console.log(dealerDeck);
       }
+
+      if (dealerScore == playerScore) {
+        gameMode = "endGame/newGame";
+        decision3 = " It's a Draw. " + "<br>" + "🔴 end or 🟣 continue ? ";
+      }
+
       if (dealerScore > playerScore) {
         gameMode = "endGame/newGame";
         decision3 =
@@ -245,38 +286,54 @@ var main = function (input) {
           ", you lost your bet amt : " +
           yourBetAmount +
           "<br>" +
-          "select end or continue ?";
+          "🔴 end or 🟣 continue ? ";
+      }
+
+      if (dealerScore < playerScore) {
+        gameMode = "endGame/newGame";
+        decision3 =
+          "WOW! " +
+          playerName +
+          ", you won,  you doubled your money to: " +
+          yourBetAmount +
+          "<br>" +
+          "🔴 end or 🟣 continue ? ";
       }
       if (dealerScore > 21) {
         gameMode = "endGame/newGame";
         decision3 =
-          "Dealer Bust" +
+          "Dealer got Busted ! " +
           playerName +
-          " you doubled your money to: " +
+          ", you doubled your money to: " +
           yourBetAmount * 2 +
           "<br>" +
-          "select end or continue ?";
+          "🔴 end or 🟣 continue ? ";
       }
 
       return (
-        "Dealer scored: " +
-        dealerScore +
-        " and you scored: " +
-        playerScore +
+        decision3 +
         "<br>" +
-        decision3
+        "<br>" +
+        printDeck(dealerDeck) +
+        "   Dealer scored: " +
+        dealerScore +
+        "<br>" +
+        printDeck(yourCardDeck) +
+        "     You scored: " +
+        playerScore
       );
     }
   }
   if (gameMode == "endGame/newGame") {
-    if (input == "end") {
-      gameMode = "inputName";
-      return "input your name and press submit to start a new game";
-    }
     if (input == "continue") {
       gameMode = "betAmount";
-      playerScore = 0;
       yourBetAmount = 0;
+      playerScore = 0;
+      yourCardDeck = [];
+      dealerDeck = [];
+
+      console.log(shuffledDeck.length);
+
       return "Hi " + playerName + ", type in, how much you want to bet ?";
     }
   }

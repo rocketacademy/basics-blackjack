@@ -95,8 +95,10 @@
         font-family: "Open Sans", sans-serif;
         font-size: 20px;
         font-weight: bolder;
-        margin-left: 30px;
-        margin-right: 30px;
+        margin-left: 40px;
+        margin-right: 0px;
+        margin-top: 0px;
+        margin: bottom 400px;
         background-color: black;
         color: black;
         word-wrap: break-word;
@@ -121,7 +123,9 @@
         text-align: center;
         font-weight: bolder;
         font-size: 10px;
-        margin-bottom: 1px;
+        margin-bottom: 0px;
+        margin-left: 0px;
+        margin: 0px;
       }
 
       #blackjack {
@@ -130,9 +134,9 @@
         color: black;
         background-image: url("https://media0.giphy.com/media/1DEJwfwdknKZq/giphy.gif?cid=ecf05e47qzhnyhcb9ohopybilvxnen1bkctz5vlijddim8ly&rid=giphy.gif&ct=g");
         background-size: cover;
-        width: 1000px;
+        width: 1200px;
         height: 100vh;
-        padding: 10px 20px;
+        padding: 0px 40px;
       }
 
       #container {
@@ -140,10 +144,10 @@
         color: white;
         background-size: inherit;
         background-image: url("https://i.pinimg.com/736x/5a/d0/b7/5ad0b7e4a7777bf7fed34d78319300b2.jpg");
-        height: 60vh;
+        height: 50vh;
         width: auto;
         width: relative;
-        padding: 0.001px 100px;
+        padding: 0.001px 10px;
         border-radius: 30px;
         word-wrap: break-word;
       }
@@ -155,29 +159,53 @@
         border-radius: 100px;
         background-color: orange;
         text-align: center;
-        margin: 20px 10px;
+        margin: 10px 220px;
         padding: 20px;
-        width: 100%;
+        width: 700px;
         max-height: 200px;
-        box-shadow: -10px 10px black, -9px 9px black, -8px 8px black;
+        box-shadow: -12px 12px black, -11px 11px black, -10px 10px black;
         border: 1px solid orange;
       }
 
       button {
-        font-size: 18px;
-        text-align: justify;
+        font-size: 14px;
         background-color: blue;
         color: white;
-        border-width: 100px;
-        height: 100px;
-        width: 100px;
+        border-width: 80px;
+        height: 80px;
+        width: 80px;
+        margin: 5px 10px;
         border-radius: 50%;
         box-shadow: -12px 12px black, -11px 11px black, -10px 10px black;
-        border: 1px solid orange;
+        border: 1px solid black;
         line-height: 33px;
-        margin: auto;
-        display: grid;
-        padding: 32px 17px;
+        padding: 10px;
+      }
+
+      .blue {
+        background-color: #35c1f8;
+        color: black;
+        display: block;
+      }
+
+      .green {
+        background-color: #15d615;
+        color: black;
+      }
+
+      .red {
+        background-color: #b80c0c;
+        color: white;
+      }
+
+      .yellow {
+        background-color: #ecd719;
+        color: black;
+      }
+
+      .maroon {
+        background-color: #9d23e4;
+        color: white;
       }
 
       #output-div {
@@ -185,9 +213,10 @@
         text-align: center;
         color: white;
         font-size: 16px;
-        margin: 10px 10px;
-        padding: 25px 25px;
+        margin: 10px 100px;
+        padding: 10px;
         border-radius: 30px;
+        width: 900px;
       }
 
       .logo-img {
@@ -254,37 +283,37 @@
           src="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/brand/logo.png"
         />
       </p>
-      <br />
+
       <div id="container">
         <input
           id="input-field"
           type="text"
           onfocus="this.value='' "
-          value="➡ Enter your name here and press the Submit button to start the game.
-          
-"
+          value="➡ Enter your name here and press 🟢 Submit to start the game."
           id="input-field"
         />
 
-        <button id="submit-button">Submit</button>
-        <br />
-        <br />
-        <br />
-        <br />
+        <button id="hit-button" class="yellow">Hit</button>
+        <button id="submit-button" class="green">Submit</button>
+
+        <button id="stand-button" class="blue">Stand</button>
+        <button id="continue-button" class="maroon">Continue</button>
+        <button id="end-button" class="red">End</button>
+
         <br />
         <br />
 
         <div id="output-div">
-          👑 King, 👸🏻 Queen and 💂🏻‍♀️Jack have Rank 10 <br />
-          🅰️ Ace, you can select Rank 1 or 11. <br />
-          🏆 Perfect 21 score wins BlackJack <br />🏆 Score higher than the
-          dealer but less than 21, wins BlackJack<br />😭 Score above 21 - you
-          go bust <br />
-          👉 Hit or Stand ? ◼️ Hit: Draw another card ◼️ Stand: Ask dealer to
-          show his cards<br />
-          👉 End or Continue ? ◼️ End the game now ◼️ Continue: play another
-          round
-          <br />
+          ♣️♠️♦️❤️ Welcome to Blackjack, No Limit Table ❤️♦️♠️♣️<br /><br />🏆
+          Perfect 21 score wins BlackJack<br />😭 Score above 21 - you get
+          busted <br />🏆 Score higher than the dealer but less than 21, wins
+          BlackJack <br /><br />
+          🟢 Submit : Name ➡ Betting amount ➡ Rank for Ace '1' or '11' <br />
+          🟡 hit : Draw another card, there is no limit to how many time you can
+          say hit<br />
+          🔵 stand : Ask dealer to show his cards<br />
+          🟣 continue : play another round of Blackjack <br />
+          🔴 end : exit the game
         </div>
       </div>
     </div>
@@ -292,11 +321,27 @@
     <script src="script.js"></script>
     <!-- Define button click functionality -->
     <script>
+      var hit = document.querySelector("#hit-button");
+      var stand = document.querySelector("#stand-button");
+      var end = document.querySelector("#end-button");
       var button = document.querySelector("#submit-button");
+      var continu = document.querySelector("#continue-button");
+
       button.addEventListener("click", function () {
         // Set result to input value
         var input = document.querySelector("#input-field");
-        var result = main(input.value);
+        if (
+          input.value ==
+          "➡ Enter your name here and press 🟢 Submit to start the game."
+        ) {
+          var result =
+            "<br><br> Blank is not a valid input.<br>Please input your name correctly and press 🟢 submit<br><br>";
+        } else if (
+          input.value !==
+          "➡ Enter your name here and press 🟢 Submit to start the game."
+        ) {
+          result = main(input.value);
+        }
 
         // Display result in output element
         var output = document.querySelector("#output-div");
@@ -304,6 +349,57 @@
 
         // Reset input value
         input.value = "";
+      });
+
+      hit.addEventListener("click", function () {
+        var result =
+          " Wrong button pressed <br><b> Press the correct button or press 🔴 end to exit";
+        // Set result to input value
+        if (gameMode == "hitStand") {
+          var result = main("hit");
+        }
+
+        // Display result in output element
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
+      });
+
+      stand.addEventListener("click", function () {
+        // Set result to input value
+
+        var result =
+          " Wrong button pressed <br><b> Press the correct button or press 🔴 end to exit";
+        // Set result to input value
+        if (gameMode == "hitStand") {
+          var result = main("stand");
+        }
+        // Display result in output element
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
+        // Reset input value
+      });
+      end.addEventListener("click", function () {
+        // Set result to input value
+        var input = document.querySelector("#input-field");
+        var result = main("end");
+
+        // Display result in output element
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
+        // Reset input value
+      });
+      continu.addEventListener("click", function () {
+        // Set result to input value
+        var result =
+          " Wrong button pressed <br><b> Press the correct button or press 🔴 end to exit";
+        if (gameMode == "endGame/newGame") {
+          var result = main("continue");
+        }
+
+        // Display result in output element
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
+        // Reset input value
       });
     </script>
   </body>
