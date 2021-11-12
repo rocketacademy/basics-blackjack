@@ -29,8 +29,16 @@ var outputMessage = "";
 var DEAL_CARDS = "deal cards";
 var HIT_OR_STAND = "choose hit or stand";
 
-// initialise game mode to start with deal cards
-var gameMode = DEAL_CARDS;
+// mode for placing bet
+var PLACE_BET = "place bet";
+// track player points (start from 100) and player bet
+var playerPts = Number(100);
+var playerBet;
+
+// initialise game mode to start with place bet
+var gameMode = PLACE_BET;
+// default message for hit/stand
+var hitOrStandMsg = `Please input "hit" (to draw another card from deck) or "stand" (to not draw any card).`;
 
 var makeDeck = function () {
   // Initialise an empty deck array
@@ -121,16 +129,38 @@ var shuffleCards = function (cardDeck) {
   return cardDeck;
 };
 
+// Convert the word representation of a suit to the suit's emoji
+var convertSuitWordToEmoji = function (suitWord) {
+  if (suitWord == "spades") {
+    return "♠️";
+  }
+  if (suitWord == "hearts") {
+    return "♥️";
+  }
+  if (suitWord == "clubs") {
+    return "♣️";
+  }
+  if (suitWord == "diamonds") {
+    return "♦️";
+  }
+  // If we reach here, we entered an invalid suit
+  return "Invalid Suit!";
+};
+
 // to return a string of ranks and suits of cards in the input cards array
 var printCards = function (cards) {
   var returnString = "";
   // Iterate until cards.length - 1 to avoid the extra comma at the end of return string
   for (var i = 0; i < cards.length - 1; i += 1) {
     var currCard = cards[i];
-    returnString += `${currCard.name} of ${currCard.suit}, `;
+    returnString += `${currCard.name} of ${convertSuitWordToEmoji(
+      currCard.suit
+    )} | `;
   }
   var lastCard = cards[cards.length - 1];
-  returnString += `${lastCard.name} of ${lastCard.suit}`;
+  returnString += `${lastCard.name} of ${convertSuitWordToEmoji(
+    lastCard.suit
+  )}`;
   return returnString;
 };
 
@@ -185,19 +215,38 @@ var compareCards = function (playerHand, computerHand) {
     (playerHandVal <= 21 && playerHandVal > computerHandVal) ||
     (playerHandVal <= 21 && computerHandVal > 21)
   ) {
-    return `<br><br> Player won!`;
+    playerPts += playerBet;
+    return `<br><br> Player won! Total points: ${playerPts}`;
   } // if player and computer hands have same sum/blackjack/bust, it's a tie
   if (
     playerHandVal == computerHandVal ||
     (isBlackjack(playerHand) && isBlackjack(computerHand)) ||
     (playerHandVal > 21 && computerHandVal > 21)
   ) {
-    return `<br><br> It's a tie!`;
+    return `<br><br> It's a tie! Total points: ${playerPts}`;
   } // if not win/tie, player lost
-  return `<br><br> Player lost!`;
+  playerPts -= playerBet;
+  return `<br><br> Player lost! Total points: ${playerPts}`;
 };
 
 var main = function (input) {
+  // game mode for placing bet
+  if (gameMode == PLACE_BET) {
+    if (input == "") {
+      return `Please input a number of points to bet.`;
+    }
+    //else user inputs number to bet
+    playerBet = Number(input);
+    console.log(`player bet: ${playerBet}`);
+
+    // input validation: if input is not number
+    if (Number.isNaN(playerBet)) {
+      return `Invalid input. Please input a number to bet.`;
+    }
+    //if player bet is number input, then switch to deal cards mode
+    gameMode = DEAL_CARDS;
+  }
+
   if (gameMode == DEAL_CARDS) {
     // shuffle deck and save it in a new variable shuffledDeck
     var cardDeck = makeDeck();
@@ -216,39 +265,46 @@ var main = function (input) {
     console.log("player hand");
     console.log(playerHand);
 
-    // sum up cards' value for player and computer
+    // sum up and display cards' value for player and computer
     outputMessage = cardsMessage(playerHand, computerHand);
+
     // switch game mode to choose hit or stand
     gameMode = HIT_OR_STAND;
 
     // if blackjack, determine winner
     // user clicks submit to restart game
     if (isBlackjack(playerHand) && !isBlackjack(computerHand)) {
-      gameMode = DEAL_CARDS;
-      return `${outputMessage} <br><br> Player won by Blackjack! <br><br> Click submit to play again!`;
+      gameMode = PLACE_BET;
+      playerPts += playerBet;
+      return `${outputMessage} <br><br> Player won by Blackjack! Total points: ${playerPts} <br><br> Click submit to play again!`;
     }
     if (!isBlackjack(playerHand) && isBlackjack(computerHand)) {
-      gameMode = DEAL_CARDS;
-      return `${outputMessage} <br><br> Dealer won by Blackjack! <br><br> Click submit to play again!`;
+      gameMode = PLACE_BET;
+      playerPts -= playerBet;
+      return `${outputMessage} <br><br> Dealer won by Blackjack! Total points: ${playerPts} <br><br> Click submit to play again!`;
     }
     if (isBlackjack(playerHand) && isBlackjack(computerHand)) {
-      gameMode = DEAL_CARDS;
-      return `${outputMessage} <br><br> It's a Blackjack tie! <br><br> Click submit to play again!`;
+      gameMode = PLACE_BET;
+      return `${outputMessage} <br><br> It's a Blackjack tie! Total points: ${playerPts} <br><br> Click submit to play again!`;
     }
+    return `${outputMessage} <br><br> ${hitOrStandMsg}`;
   }
+
   // if player sum less than 21, player to type hit OR stand and submit
   if (gameMode == HIT_OR_STAND) {
-    var hitOrStandMsg = `Please input "hit" (to draw another card from deck) or "stand" (to not draw any card).`;
     if (input == "") {
-      return `${outputMessage} <br> ${hitOrStandMsg}`;
+      return `${outputMessage} <br><br> ${hitOrStandMsg}`;
     }
     if (input == "hit") {
       playerHand.push(shuffledDeck.pop());
       console.log(playerHand);
       playerHandVal = sumOfCardsVal(playerHand);
       console.log("player hand value: " + playerHandVal);
-      outputMessage = cardsMessage(playerHand, computerHand);
-      return `${outputMessage} <br> ${hitOrStandMsg}`;
+      outputMessage = `${cardsMessage(
+        playerHand,
+        computerHand
+      )} <br><br> ${hitOrStandMsg}`;
+      return outputMessage;
     }
     if (input == "stand") {
       playerHandVal = sumOfCardsVal(playerHand);
@@ -266,15 +322,17 @@ var main = function (input) {
         cardsMessage(playerHand, computerHand) +
         compareCards(playerHand, computerHand);
       // switch game mode to restart game
-      gameMode = DEAL_CARDS;
+      gameMode = PLACE_BET;
+      console.log(`game mode: ${gameMode}`);
+      console.log(`player bet: ${playerBet}`);
       return `${outputMessage} <br><br> Click submit to play again!`;
     }
     // input validation
-    else {
-      outputMessage = `Invalid input. Please input "hit" or "stand" only. <br><br> ${cardsMessage(
+    else if (input != "hit" && input != "stand") {
+      outputMessage = `${cardsMessage(
         playerHand,
         computerHand
-      )}`;
+      )} <br><br> Invalid input. Please input "hit" or "stand" only.`;
     }
     return outputMessage;
   }
