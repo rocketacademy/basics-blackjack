@@ -17,6 +17,12 @@ var playerStandMode = false;
 var twentyOne = 21;
 var hitButtonClicked = false;
 var standButtonClicked = false;
+var winImage =
+  '<img src="https://media2.giphy.com/media/LCdPNT81vlv3y/giphy.gif?cid=ecf05e47w20ihs4qbu8cetydzam5waeimxx77zkjyh9ncbc2&rid=giphy.gif&ct=g"/>';
+var lossImage =
+  '<img src="https://media2.giphy.com/media/1BXa2alBjrCXC/giphy.gif?cid=ecf05e47x0x0icxer36pa743cdroy3ne9x5sz5rqq5zwpwbq&rid=giphy.gif&ct=g"/>';
+var tieImage =
+  '<img src="https://media0.giphy.com/media/5QW76Ww9bquHdg1fTv/giphy.gif?cid=ecf05e47efismdrzkwr3unkcm7gixcav2ibhd0ciebl3xvq4&rid=giphy.gif&ct=g">';
 
 var getBetAmount = function (input) {
   if (isNaN(input) == true || !Number(input) > 0) {
@@ -30,14 +36,14 @@ var calcBetWin = function () {
   var winAmount = parseInt(playerBet.pop());
   var totalCurrentWallet = (playerWallet += winAmount);
   console.log(`wallet amount: ${totalCurrentWallet}`);
-  return `You won $${winAmount}<br>Current wallet size: $${totalCurrentWallet}`;
+  return `You won $${winAmount}<br>Current wallet size: $${totalCurrentWallet}<br><br>${winImage}`;
 };
 
 var calcBetLoss = function () {
   var lossAmount = parseInt(playerBet.pop());
   var totalCurrentWallet = (playerWallet -= lossAmount);
   console.log(`wallet amount: ${totalCurrentWallet}`);
-  return `You loss $${lossAmount}<br>Current wallet size: $${totalCurrentWallet}`;
+  return `You loss $${lossAmount}<br>Current wallet size: $${totalCurrentWallet}<br><br>${lossImage}`;
 };
 
 // make deck
@@ -267,7 +273,7 @@ var compareHands = function (playerBet) {
   while (gameMode == "computer turn") {
     // player and computer above 21
     if (computerTotalHandRank() > 21 && playerTotalHandRank() > 21) {
-      return `Both busted 😱! It is a t👔e between Pl🦄yer and Rob🤖t.<br><br>Pl🦄yer score is ${playerTotalHandRank()} and Rob🤖t score is ${computerTotalHandRank()}.${playAgain()}<br><br>Current wallet amount ${playerWallet}`;
+      return `Both busted 😱! It is a t👔e between Pl🦄yer and Rob🤖t.<br><br>Pl🦄yer score is ${playerTotalHandRank()} and Rob🤖t score is ${computerTotalHandRank()}.${playAgain()}<br><br>Current wallet amount ${playerWallet}<br><br>${tieImage}`;
       // computer bust > 21
     } else if (computerTotalHandRank() > 21 && playerTotalHandRank() < 21) {
       return `Pl🦄yer wins 🏆! Rob🤖t busted with ${computerTotalHandRank()}.<br><br>Pl🦄yer score is ${playerTotalHandRank()} and Rob🤖t score is ${computerTotalHandRank()}.${playAgain()}<br><br>${calcBetWin()}`;
@@ -282,7 +288,7 @@ var compareHands = function (playerBet) {
       return `Rob🤖t wins 🥲 with a larger score!<br><br>Pl🦄yer score is ${playerTotalHandRank()} and Rob🤖t score is ${computerTotalHandRank()}.${playAgain()}<br><br>${calcBetLoss()}`;
       // player and computer tie
     } else if (playerTotalHandRank() == computerTotalHandRank()) {
-      return `It is a t👔e between Pl🦄yer and Rob🤖t.<br><br>Pl🦄yer score is ${playerTotalHandRank()} and Rob🤖t score is ${computerTotalHandRank()}.${playAgain()}<br><br>Current wallet amount ${playerWallet}`;
+      return `It is a t👔e between Pl🦄yer and Rob🤖t.<br><br>Pl🦄yer score is ${playerTotalHandRank()} and Rob🤖t score is ${computerTotalHandRank()}.${playAgain()}<br><br>Current wallet amount ${playerWallet}<br><br>${tieImage}`;
       // computer blackjack
     } else if (computerTotalHandRank() == 21) {
       return `Rob🤖t wins with Blackjack 🔥!<br><br>Pl🦄yer score is ${playerTotalHandRank()} and Rob🤖t score is ${computerTotalHandRank()}.${playAgain()}<br><br>${calcBetLoss()}`;
