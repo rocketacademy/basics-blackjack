@@ -190,7 +190,9 @@
       <p>Input:</p>
       <input id="input-field" />
       <br />
-      <button id="submit-button">DEAL</button>
+      <button id="deal-button">DEAL</button>
+      <button id="hit-button">HIT</button>
+      <button id="stand-button">STAND</button>
       <p>Output:</p>
       <div id="output-div">INPUT AMOUNT TO WAGER</div>
     </div>
@@ -198,8 +200,8 @@
     <script src="script.js"></script>
     <!-- Define button click functionality -->
     <script>
-      var button = document.querySelector("#submit-button");
-      button.addEventListener("click", function () {
+      var dealButton = document.querySelector("#deal-button");
+      dealButton.addEventListener("click", function () {
         // Set result to input value
         var input = document.querySelector("#input-field");
         var result = main(input.value);
@@ -210,6 +212,23 @@
 
         // Reset input value
         input.value = "";
+      });
+      var hitButton = document.querySelector("#hit-button");
+      hitButton.addEventListener("click", function () {
+        // set result to value from function firstHIt
+        var input = "hit";
+        var result = main(input);
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
+        input.value = "";
+      });
+      var standButton = document.querySelector("#stand-button");
+      standButton.addEventListener("click", function () {
+        // set result to value from function firstHIt
+        var input = "stand";
+        var result = main(input);
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
       });
     </script>
   </body>

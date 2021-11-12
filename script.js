@@ -2,6 +2,9 @@
 var gameMode = "wager";
 var wagerPoints = 0;
 
+//Button variables
+var firstHitButton = document.getElementById("hit-button");
+
 // All player related variables
 var playerSum = 0;
 var playerCard1 = {};
@@ -115,7 +118,7 @@ var playerDrawCards = function () {
   }
   playerSum = playerCard1.rank + playerCard2.rank;
   myOutputValue = `PLAYER'S HAND <br><br> ${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}<br><br> Sum is ${playerSum} <br><br>
-    Type "hit" to draw another card or "stand" to end turn.`;
+    Type  "hit":  Draw another card. <br><br> Type  "stand":  End turn. `;
   gameMode = "round1";
   // This is so that ace will be returned as 11 to make total sum be 21. This will check if player gets blackjack.
   // Blackjack checker when player draw first two cards
@@ -159,20 +162,20 @@ var aceChoice = function (input) {
     playerCard1.rank = 11;
     playerSum = playerCard1.rank + playerCard2.rank;
     myOutputValue = `PLAYER'S HAND <br><br> ${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}<br><br> Sum is ${playerSum} <br><br>
-    Type "hit" to draw another card or "stand" to end turn.`;
+    Type  "hit":  Draw another card. <br><br> Type  "stand":  End turn. `;
     gameMode = "round1";
   }
   if (input == "yes" && playerCard2.name == "Ace") {
     playerCard2.rank = 11;
     playerSum = playerCard1.rank + playerCard2.rank;
     myOutputValue = `PLAYER'S HAND <br><br> ${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}<br><br> Sum is ${playerSum} <br><br>
-    Type "hit" to draw another card or "stand" to end turn.`;
+    Type  "hit":  Draw another card. <br><br> Type  "stand":  End turn. `;
     gameMode = "round1";
   }
   if (input == "no") {
     playerSum = playerCard1.rank + playerCard2.rank;
     myOutputValue = `PLAYER'S HAND <br><br> ${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}<br><br> Sum is ${playerSum} <br><br>
-    Type "hit" to draw another card or "stand" to end turn.`;
+    Type  "hit":  Draw another card. <br><br> Type  "stand":  End turn. `;
     gameMode = "round1";
   }
 };
@@ -190,7 +193,7 @@ var firstHit = function () {
   } // if less than or equal 21, player can choose to continue or end turn
   if (playerSum <= 21) {
     myOutputValue = `PLAYER'S HAND <br><br> ${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}<br>${playerCard3.name} of ${playerCard3.suit}<br><br> Sum is ${playerSum} <br><br>
-    Type "hit" to draw another card or "stand" to end turn.`;
+    Type  "hit":  Draw another card. <br><br> Type  "stand":  End turn. `;
     gameMode = "round2";
   }
 };
@@ -208,7 +211,7 @@ var secondHit = function () {
     gameMode = "results";
   } // if less than equal to 21, player can choose to continue or end turn
   if (playerSum <= 21) {
-    myOutputValue = `PLAYER'S HAND <br><br> ${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}<br>${playerCard3.name} of ${playerCard3.suit}<br>${playerCard4.name} of ${playerCard4.suit}<br><br> Sum is ${playerSum} <br><br>Type "hit" to draw another card or "stand" to end turn.`;
+    myOutputValue = `PLAYER'S HAND <br><br> ${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}<br>${playerCard3.name} of ${playerCard3.suit}<br>${playerCard4.name} of ${playerCard4.suit}<br><br> Sum is ${playerSum} <br><br>Type  "hit":  Draw another card. <br><br> Type  "stand":  End turn. `;
     gameMode = "round3";
   }
 };
@@ -230,7 +233,7 @@ var thirdHit = function () {
   }
   if (playerSum <= 21) {
     //if less than or equal to 21, player can choose to contnue or end turn
-    myOutputValue = `PLAYER'S HAND <br><br> ${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}<br>${playerCard3.name} of ${playerCard3.suit}<br>${playerCard4.name} of ${playerCard4.suit}<br>${playerCard5.name} of ${playerCard5.suit}<br><br> Sum is ${playerSum} <br><br>Type "hit" to draw another card or "stand" to end turn.`;
+    myOutputValue = `PLAYER'S HAND <br><br> ${playerCard1.name} of ${playerCard1.suit} <br> ${playerCard2.name} of ${playerCard2.suit}<br>${playerCard3.name} of ${playerCard3.suit}<br>${playerCard4.name} of ${playerCard4.suit}<br>${playerCard5.name} of ${playerCard5.suit}<br><br> Sum is ${playerSum} <br><br>Type  "hit":  Draw another card. <br><br> Type  "stand":  End turn. `;
     gameMode = "end user turn";
   }
 };
@@ -316,25 +319,25 @@ var finalResults = function () {
   if (playerBlackJack == true) {
     wagerPoints = wagerPoints * 2;
     playerScore += wagerPoints;
-    myOutputValue = `${blackjackImage}Player wins. <br><br> PLAYER POINTS : ${playerScore}<br><br> Input amount to wager for next round. `;
+    myOutputValue = `${blackjackImage}PLAYER WINS <br><br> PLAYER POINTS : ${playerScore}<br><br> Input amount to wager for next round. `;
   } else if (dealerBlackJack == true) {
     // At the start, points have already been deducted so even if dealer wins, no need for further deduction.
-    myOutputValue = ` ${loseImage}Dealer wins. <br><br> PLAYER POINTS : ${playerScore}pts<br><br> Input amount to wager for next round. `;
+    myOutputValue = ` ${loseImage}DEALER WINS <br><br> PLAYER POINTS : ${playerScore}pts<br><br> Input amount to wager for next round. `;
   } else if (playerSum == dealerSum) {
     playerScore += wagerPoints;
-    myOutputValue = `${drawImage}<br><br>It's a draw. <br><br> PLAYER POINTS : ${playerScore}pts<br><br> Input amount to wager for next round.`;
+    myOutputValue = `${drawImage}<br><br>IT'S A DRAW <br><br> PLAYER POINTS : ${playerScore}pts<br><br> Input amount to wager for next round.`;
   } else if (playerSum > dealerSum && playerBust == false) {
     wagerPoints = wagerPoints * 2;
     playerScore += wagerPoints;
-    myOutputValue = `${winImage}<br><br>Player wins. <br><br> PLAYER POINTS : ${playerScore}pts<br><br> Input amount to wager for next round. `;
+    myOutputValue = `${winImage}<br><br>PLAYER WINS <br><br> PLAYER POINTS : ${playerScore}pts<br><br> Input amount to wager for next round. `;
   } else if (dealerBust == true) {
     wagerPoints = wagerPoints * 2;
     playerScore += wagerPoints;
-    myOutputValue = `${winImage}<br><br>Player wins. <br><br> PLAYER POINTS : ${playerScore}pts<br><br> Input amount to wager for next round. `;
+    myOutputValue = `${winImage}<br><br>PLAYER WINS <br><br> PLAYER POINTS : ${playerScore}pts<br><br> Input amount to wager for next round. `;
   } else if (dealerSum > playerSum) {
-    myOutputValue = `${loseImage}<br><br>Dealer wins. <br><br> PLAYER POINTS : ${playerScore}pts<br><br> Input amount to wager for next round.`;
+    myOutputValue = `${loseImage}<br><br>DEALER WINS <br><br> PLAYER POINTS : ${playerScore}pts<br><br> Input amount to wager for next round.`;
   } else if (playerBust == true) {
-    myOutputValue = `${loseImage}<br><br>Dealer wins. <br><br> PLAYER POINTS : ${playerScore}pts<br><br> Input amount to wager for next round.`;
+    myOutputValue = `${loseImage}<br><br>DEALER WINS <br><br> PLAYER POINTS : ${playerScore}pts<br><br> Input amount to wager for next round.`;
   } else if (
     playerSum < dealerSum &&
     dealerBust == true &&
@@ -342,7 +345,7 @@ var finalResults = function () {
   ) {
     wagerPoints = wagerPoints * 2;
     playerScore += wagerPoints;
-    myOutputValue = `${winImage}<br><br>Player wins. <br><br> PLAYER POINTS : ${playerScore}pts<br><br> Input amount to wager for next round. `;
+    myOutputValue = `${winImage}<br><br>PLAYER WINS <br><br> PLAYER POINTS : ${playerScore}pts<br><br> Input amount to wager for next round. `;
   }
   gameMode = "wager";
 };
