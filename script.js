@@ -39,9 +39,7 @@ var main = function (input) {
 
   if (mode == "normal") {
     mode = "playerHit";
-    return `Your cards: ${displayCards(playerHand)}(${determineValue(
-      playerHand
-    )}) <br>
+    return `Your cards: ${displayCards(playerHand)}<br>
         Computer's 1st card: ${computerHand[0].value}${
       computerHand[0].suits
     }  <br>
@@ -69,10 +67,9 @@ var main = function (input) {
       if (determineValue(playerHand) > 21) {
         mode = "determineWinner";
       } else {
-        return `Your cards: ${displayCards(playerHand)}(${determineValue(
-          playerHand
-        )}) <br>
-        Computer's 1st card: ${displayCards(computerHand[0])} <br>
+        return `Your cards: ${displayCards(playerHand)}<br>
+        Computer's 1st card:  ${computerHand[0].value}
+        ${computerHand[0].suits} <br>
         Click 'hit' or 'stand' to proceed`;
       }
     }
@@ -82,24 +79,34 @@ var main = function (input) {
   }
 
   if ((mode = "determineWinner")) {
-    var winStatus = "";
+    let winStatus = "";
+    let conclusionString =function() {return `Your hand: ${displayCards(playerHand)} <br>
+    Computer's hand: ${displayCards(computerHand)} <br>
+    ${winStatus}`}
     if (determineValue(playerHand) > 21) {
-      winStatus = `You lost as you bust!`;
+      winStatus = `You bust! You lost!`;
+      return conclusionString();
     }
     while (determineValue(computerHand) < 17) {
       computerHand.push(currentDeck.pop());
     }
+    if (determineValue(computerHand) > 21) {
+      winStatus = `The computer busts! You win!`;
+      return conclusionString();
+    }
+
     if (determineValue(playerHand) > determineValue(computerHand)) {
-      winStatus = `You win as you have a higher hand!`;
+      winStatus = `You have a higher hand, you win!`;
+      return conclusionString();
     }
     if (determineValue(playerHand) < determineValue(computerHand)) {
-      winStatus = `You lost as the computer has a higher hand`;
+      winStatus = `The computer has a higher hand, the computer wins!`;
+      return conclusionString();
     }
-    var conclusionString = `Your hand: ${displayCards(playerHand)} <br>
-    Computer's hand: ${displayCards(computerHand)} <br>
-    ${winStatus}`;
+    if (determineValue(playerHand) == determineValue(computerHand)){
+      return `Draw game!`
+    }
 
-    return conclusionString;
   }
 };
 
@@ -200,15 +207,14 @@ var determineValue = function (arrayTest) {
       sum += arrayTest[i].value;
     }
   }
-  while (noOfAces > 0) {
-    while (sum > 21) {
+  while (noOfAces > 0 && sum >21) {
       sum -= 10;
       noOfAces -= 1;
-    }
     if (sum < 22) {
       break;
     }
   }
+  console.log(sum)
   return sum;
 };
 
@@ -218,5 +224,6 @@ var displayCards = function (stack) {
   for (i in stack) {
     arr.push(stack[i].name, stack[i].suits);
   }
+  arr.push('('+determineValue(stack)+')')
   return arr.join(" ");
 };
