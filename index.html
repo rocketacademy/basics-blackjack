@@ -42,7 +42,7 @@
     <!-- sharing configuration -->
     <!-- Primary Meta Tags -->
     <title>Blackjack - Basics - Rocket Academy</title>
-    <meta name="title" content="YOURNAME's BlackJack Game!" />
+    <meta name="title" content="Tian Hao's BlackJack Game!" />
     <meta name="description" content="A fun card game I made myself! 😄💪🌈" />
 
     <!-- Open Graph / Facebook -->
@@ -117,7 +117,7 @@
       }
 
       #container {
-        background-color: pink;
+        background-color: white;
         margin: 40px auto;
         max-width: 800px;
         padding: 38px 31px;
@@ -129,20 +129,51 @@
         margin: 0 0 23px 0;
         padding: 0 9px;
         width: 100%;
+        
       }
 
       button {
+        font-color: 000000;
         font-size: 21px;
         line-height: 33px;
         margin: 0 0 23px 0;
         padding: 0 6px;
+        
       }
+
+      #buttons-div {
+        margin: auto;
+        width: 50%;
+      }
+
+      .float-container {
+        border: 3px solid #fff;
+        padding: 20px;
+      }
+
+      .float-child {
+        width: 46%;
+        float: left;
+        padding: 20px;
+        border: 10px brown;
+        background-image: url("https://images.unsplash.com/photo-1535483452389-518d1dd36121?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1074&q=80"); /* The image used */
+        background-size: cover;
+        background-attachment: fixed;
+        background-position: center; /* Center the image */
+        background-repeat: no-repeat; /* Do not repeat the image */
+        background-size: cover; /* Resize the background image to cover the entire container */
+        border-radius: 15px;
+        margin-right: 20px;
+
+      }
+    
 
       #output-div {
         background-color: lightgrey;
         margin: 20px auto;
         padding: 20px;
         width: 100%;
+        margin-top:100px;
       }
 
       .logo-img {
@@ -174,11 +205,23 @@
     </h1>
     <h1 class="header">♣️ Basics - Blackjack ♠️</h1>
     <div id="container">
-      <button id="continue-button">Continue</button>
-      <button id="hit-button">Hit</button>
-      <button id="stand-button">Stand</button>
-      <button id="restart-button">Restart</button>
-      <p>Output:</p>
+      <div id="buttons-div">
+        <button id="continue-button">Continue</button>
+        <button id="hit-button">Hit</button>
+        <button id="stand-button">Stand</button>
+        <button id="restart-button">Restart</button>
+      </div>
+      <div class="float-container">
+        <div class="float-child">
+          <div class = "green"> 
+            <h4>Your Hand:</h4>
+          </div>
+        </div>
+        <div class="float-child">
+          <div class="blue"><h4>Computer's Hand:</h4></div>
+        </div>
+      </div>
+      <break>
       <div id="output-div">Welcome! Press continue to draw the cards!</div>
     </div>
     <!-- Import program logic -->
