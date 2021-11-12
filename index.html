@@ -1,5 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+  <audio controls id="music">
+    <source src="Know.wav" type="audio/mpeg">
+    </audio>
+    }
+    </script> 
   <head>
     <!-- Page setup configurations -->
     <meta charset="utf-8" />
@@ -95,9 +100,9 @@
         font-family: "Open Sans", sans-serif;
         margin-left: 30px;
         margin-right: 30px;
-        background-color: white;
+        background-color: rgb(6, 122, 6);
         color: black; /* sets the font color */
-        background-image: url(""); /* The image used */
+        background-image: url("https://www.telegraph.co.uk/content/dam/betting/Better-Collective/blackjack-table-dealing-xlarge.jpg"); /* The image used */
         background-position: center; /* Center the image */
         background-repeat: no-repeat; /* Do not repeat the image */
         background-size: cover; /* Resize the background image to cover the entire container */
@@ -115,7 +120,7 @@
       }
 
       #container {
-        background-color: pink;
+        background-color: rgb(233, 64, 64);
         margin: 40px auto;
         max-width: 800px;
         padding: 38px 31px;
@@ -167,15 +172,17 @@
       <h1 class="header">
         <img
           class="logo-img"
-          src="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/brand/logo.png"
+          src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/13e07075-bfb7-444d-aa54-70c8dc286131/dbzyehp-9c3b0464-bc1f-420b-a087-22ed4832e233.gif?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzEzZTA3MDc1LWJmYjctNDQ0ZC1hYTU0LTcwYzhkYzI4NjEzMVwvZGJ6eWVocC05YzNiMDQ2NC1iYzFmLTQyMGItYTA4Ny0yMmVkNDgzMmUyMzMuZ2lmIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.y-rMWSh30kHuJEFRl1PRpL2l4JRBWt5NK1-W15Ct_V4"
+
         />
-        Rocket Academy
+        Cheok's Casino
         <img
           class="logo-img"
-          src="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/brand/logo.png"
+          src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/13e07075-bfb7-444d-aa54-70c8dc286131/dbzyehp-9c3b0464-bc1f-420b-a087-22ed4832e233.gif?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzEzZTA3MDc1LWJmYjctNDQ0ZC1hYTU0LTcwYzhkYzI4NjEzMVwvZGJ6eWVocC05YzNiMDQ2NC1iYzFmLTQyMGItYTA4Ny0yMmVkNDgzMmUyMzMuZ2lmIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.y-rMWSh30kHuJEFRl1PRpL2l4JRBWt5NK1-W15Ct_V4 "
+
         />
       </h1>
-      <h1 class="header">♣️ Basics - Blackjack ♠️</h1>
+      <h1 class="header">♣️ The Blackjack Table ♠️</h1>
     </header>
 
     <div id="container">
@@ -188,7 +195,7 @@
         <button id="stay-button">Stay</button>
       </div>
       <div class="output-div">
-        <p>Output:</p>
+        <p>Results  :</p>
         <div id="output-div">Enter the number of players and click submit!</div>
       </div>
     </div>
@@ -212,6 +219,8 @@
       button = document.querySelector("#hit-button");
       button.addEventListener("click", function () {
         // Set result to input value
+        var audio = new Audio('knock.wav');
+        audio.play()
         var input = "HIT";
         var result = main(input);
 
