@@ -82,14 +82,17 @@ var main = function (input) {
     let winStatus = "";
     let conclusionString =function() {return `Your hand: ${displayCards(playerHand)} <br>
     Computer's hand: ${displayCards(computerHand)} <br>
-    ${winStatus}`}
+    ${winStatus} <br>
+    Click restart to try again!`}
     if (determineValue(playerHand) > 21) {
-      winStatus = `You bust! You lost!`;
+      var picture = '<img src="https://media3.giphy.com/media/3orieOcdXbjDKzaAgM/giphy.gif"/>'
+      winStatus = `You bust! You lost!`+ picture;
       return conclusionString();
     }
     while (determineValue(computerHand) < 17) {
       computerHand.push(currentDeck.pop());
     }
+
     if (determineValue(computerHand) > 21) {
       winStatus = `The computer busts! You win!`;
       return conclusionString();
