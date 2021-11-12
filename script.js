@@ -39,7 +39,8 @@ var drawImage = `<img src="https://c.tenor.com/Jft_4K8MU2IAAAAC/soso-notbad.gif"
 // Function to create deck
 var makeDeck = function () {
   var cardDeck = [];
-  var suits = ["❤️", "♦️", "♣️", "♠️"];
+  var suits = ["Hearts", "Diamonds", "Clubs", "Spades"];
+  var emoji = [`♥`, `♦️`, `♣`, `♠️`];
 
   // Loop over the suits array
   var suitIndex = 0;
@@ -68,6 +69,7 @@ var makeDeck = function () {
         name: cardName,
         suit: currentSuit,
         rank: scoreCounter,
+        emoji: emoji[suitIndex],
       };
       cardDeck.push(card);
       rankCounter += 1;
