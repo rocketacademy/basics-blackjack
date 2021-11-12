@@ -176,6 +176,7 @@ var userHands = "";
 var dealerHands = "";
 var playerCounter = 0;
 var dealerCounter = 0;
+var partialDealerHands = "";
 var main = function (input) {
   // game mode (deck is shuffled is skipped), if I utilised else if, game mode does not change, game flow will not move
   if (gameMode == "Deck is shuffled") {
@@ -188,7 +189,9 @@ var main = function (input) {
     dealerCounter = 0;
     console.log(gameMode);
     gameMode = "Cards are dealt";
-    myOutputValue = "Click submit to deal cards.";
+    var excitedPepe =
+      '<img src ="https://c.tenor.com/YQYglnnhg0YAAAAi/pepe-excited.gif"/>';
+    https: myOutputValue = "Click on dancing pepe to deal cards." + excitedPepe;
     return myOutputValue;
   }
 
@@ -196,9 +199,7 @@ var main = function (input) {
     // deal cards
 
     userCards.push(shuffledDeck.pop());
-
     dealerCards.push(shuffledDeck.pop());
-
     userCards.push(shuffledDeck.pop());
     playerCounter++;
     dealerCards.push(shuffledDeck.pop());
@@ -218,11 +219,12 @@ var main = function (input) {
     // display message for hands
     userHands = `<br> ${userCards[0].rankEmoji} of ${userCards[0].emoji} <br> ${userCards[1].rankEmoji} of ${userCards[1].emoji} <br>`;
     dealerHands = `<br> ${dealerCards[0].rankEmoji} of ${dealerCards[0].emoji} <br> ${dealerCards[1].rankEmoji} of ${dealerCards[1].emoji}. <br>`;
+    partialDealerHands = `<br> ${dealerCards[0].rankEmoji} of ${dealerCards[0].emoji}`;
     // setting message
     var hitOrStandImage =
       '<img src ="https://c.tenor.com/pcw4xMVjup0AAAAi/pepeblue-pepebluesky.gif"/>';
     myOutputValue =
-      `You drew: ${userHands} You have ${userPoints} points. Do you want to hit or stand? (hit/stand)` +
+      `You drew: ${userHands} You have ${userPoints} points. <br><br> Pepe drew: ${partialDealerHands} <br><br> Do you want to hit or stand? (hit/stand)` +
       hitOrStandImage;
 
     if (userPoints == 21 || dealerPoints == 21) {
@@ -232,12 +234,6 @@ var main = function (input) {
       gameMode = "Deck is shuffled";
       return myOutputValue;
     }
-
-    // myOutputValue += `<br><br>
-    // Dealer drew: <br> ${dealerCards[0].name} of ${dealerCards[0].suit} ${dealerCards[0].emoji} <br> ${dealerCards[1].name} of ${dealerCards[1].suit} ${dealerCards[1].emoji}. <br> Dealer has ${dealerPoints} points. <br><br> ${outcome} `;
-
-    // return points, give the user a choice to hit or stand
-
     gameMode = "Player hit or stand";
     return myOutputValue;
   }
@@ -248,34 +244,41 @@ var main = function (input) {
       '<img src ="https://c.tenor.com/pcw4xMVjup0AAAAi/pepeblue-pepebluesky.gif"/>';
     var annoyedImage =
       '<img src ="https://c.tenor.com/17bXXRTAZwgAAAAi/wut-rage.gif"/>';
-    if (input == "" || (input != "hit" && input != "stand")) {
+    if (
+      input == "" ||
+      (input != "hit" && input != "stand" && input != "Hit" && input != "Stand")
+    ) {
       myOutputValue =
-        `You drew: ${userHands} You have ${userPoints} points. Do you want to hit or stand? (hit/stand)<br><br> Please enter a valid input (hit/stand).` +
+        `You drew: ${userHands} You have ${userPoints} points. <br><br> Pepe drew: ${partialDealerHands} <br><br> Do you want to hit or stand? (hit/stand)<br> Please enter a valid input (hit/stand).` +
         annoyedImage;
       return myOutputValue;
-    } else if (input == "hit") {
+    } else if (input == "hit" || input == "Hit") {
       userCards.push(shuffledDeck.pop());
       playerCounter++;
       userPoints = checkPoints(userCards);
       userHands += `${userCards[playerCounter].rankEmoji} of ${userCards[playerCounter].emoji} <br>`;
       if (userPoints < 22) {
         myOutputValue =
-          `You have chose to hit. <br> You drew: ${userHands}  You have ${userPoints} points. <br><br> Do you want to hit or stand? (hit/stand)` +
+          `You have chose to hit. <br> You drew: ${userHands}  You have ${userPoints} points.  <br><br> Pepe drew: ${partialDealerHands} <br><br> <br><br> Do you want to hit or stand? (hit/stand)` +
           hitOrStandImage;
         return myOutputValue;
       } else if (userPoints > 21) {
         var hehePepe =
           '<img src ="https://c.tenor.com/eSzdZd6_b_0AAAAC/pepe.gif"/>';
         myOutputValue =
-          `You have chose to hit. <br> You drew: ${userHands}  You have ${userPoints} points. <br><br> You bust, click submit for pepe's turn. ` +
+          `You have chose to hit. <br> You drew: ${userHands}  You have ${userPoints} points. <br><br> Pepe drew: ${partialDealerHands} <br><br> You bust, click on dancing pepe for pepe's turn. ` +
           hehePepe;
         gameMode = "Dealer hit or stand";
         return myOutputValue;
       }
       counter++;
       return myOutputValue;
-    } else if (input == "stand") {
-      myOutputValue = `You have chose to stand. <br> You drew: ${userHands} You have ${userPoints} points. <br><br> Click submit for pepe's turn.`;
+    } else if (input == "stand" || input == "Stand") {
+      var anxiousPepe =
+        '<img src ="https://c.tenor.com/GNiV7ZWl4OMAAAAi/monka-spin-pepe-frog.gif"/>';
+      https: myOutputValue =
+        `You have chose to stand. <br> You drew: ${userHands} You have ${userPoints} points. <br><br> Pepe drew: ${partialDealerHands} <br><br> Click on dancing pepe for pepe's turn.` +
+        anxiousPepe;
       gameMode = "Dealer hit or stand";
       return myOutputValue;
     }
@@ -298,7 +301,7 @@ var main = function (input) {
           '<img src="https://c.tenor.com/IMKlr0dPXh0AAAAi/pepeblue-pepebluesky.gif"/>';
         myOutputValue =
           `Pepe hits. <br><br> You drew: ${userHands} You have ${userPoints} points. 
-      <br><br> Pepe drew: ${dealerHands}  Pepe has ${dealerPoints} points and will need to draw again. <br><br> Click submit for pepe to hit.` +
+      <br><br> Pepe drew: ${dealerHands}  Pepe has ${dealerPoints} points and will need to draw again. <br><br> Click on dancing pepe for pepe to hit.` +
           anxiousPepe;
         return myOutputValue;
       }
