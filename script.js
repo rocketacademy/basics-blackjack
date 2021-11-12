@@ -28,11 +28,11 @@ var playerBlackJack = false;
 var dealerBlackJack = false;
 var playerBust = false;
 var dealerBust = false;
-var loseImage = `<img src="https://c.tenor.com/MHwsB9o1eS4AAAAM/bh187-marvel.gif"/>`;
-var bustImage = `<img src = "https://c.tenor.com/GoZ7JND7Fq0AAAAM/deadpool-x-men.gif"/>`;
-var winImage = `<img src = "https://c.tenor.com/hJO8I8b8_38AAAAM/groot-dancing.gif" />`;
-var blackjackImage = `<img src="https://c.tenor.com/p6f6aCbN7p0AAAAM/thor-thor-odinson.gif"/>`;
-var drawImage = `<img src="https://c.tenor.com/Jft_4K8MU2IAAAAC/soso-notbad.gif" />`;
+var loseImage = `<img src="https://c.tenor.com/MHwsB9o1eS4AAAAM/bh187-marvel.gif"class = "center" /> `;
+var bustImage = `<img src = "https://c.tenor.com/GoZ7JND7Fq0AAAAM/deadpool-x-men.gif" class = "center" />`;
+var winImage = `<img src = "https://c.tenor.com/hJO8I8b8_38AAAAM/groot-dancing.gif"class = "center"  />`;
+var blackjackImage = `<img src="https://c.tenor.com/p6f6aCbN7p0AAAAM/thor-thor-odinson.gif"class = "center" />`;
+var drawImage = `<img src="https://c.tenor.com/Jft_4K8MU2IAAAAC/soso-notbad.gif" class = "center" />`;
 
 // Function to create deck
 var makeDeck = function () {
