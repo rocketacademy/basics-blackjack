@@ -12,6 +12,7 @@ var computerHand = [];
 var computerHandSum = 0;
 
 // Standard Messages
+
 var playerHandMessage = "<br> Your Current Hand:  ";
 var playerSumMessage = "<br><br> Your score: ";
 var computerHandMessage = "<br><br> Dealer's Hand: ";
@@ -30,6 +31,7 @@ var playerLoseImage =
 
 var playerBlackjackImage =
   '<img src="https://c.tenor.com/taYZlTZwB-MAAAAM/bitcoin-btc.gif">';
+
 // == CREATE DECK == //
 
 // create standard deck
@@ -111,8 +113,6 @@ var shuffleCards = function (cards) {
   return cards;
 };
 
-// Create deck for BlackJack - 1. Standard Deck 2. Shuffle standard deck
-
 var gameDeck = shuffleCards(makeDeck());
 
 // Create player list/array
@@ -123,8 +123,6 @@ var createListOfPlayers = function (playerName) {
     name: playerName,
     hand: [],
     sum: 0,
-    bet: 0,
-    score: 100,
     playerHandMessage: "<br>" + playerName + "'s hand: ",
     playerSumMessage: "<br> Sum of " + playerName + "'s hand: ",
   });
@@ -132,7 +130,7 @@ var createListOfPlayers = function (playerName) {
 
 // == HELPER FUNCTIONS == //
 
-// Helper function to sum hand
+// SUM HAND
 
 var sumHand = function (hand) {
   var numOfAces = 0;
@@ -162,10 +160,9 @@ var sumHand = function (hand) {
   return sum;
 };
 
-// helper function to output cards in hand for messages
+// DISPLAY CARDS IN HAND
 
 var displayCards = function (hand) {
-  console.log("enter display card function");
   var cards = "";
   var handCounter = 0;
 
@@ -182,12 +179,10 @@ var displayCards = function (hand) {
       " .";
     handCounter = handCounter + 1;
   }
-
-  console.log("hand counter: " + handCounter + ". hand: " + cards);
   return cards;
 };
 
-//Helper function to determine winners
+// DETERMINE WINNER FROM CONDITIONS
 
 var determineWinner = function () {
   computerHandMessage = computerHandMessage + displayCards(computerHand);
@@ -279,7 +274,8 @@ var determineWinner = function () {
         computerHandSum +
         ", greater than 21." +
         winningMessage;
-    // is player or computer hand = 21? either wins
+
+    // is player & computer hand = 21? BOTH win
   } else if (
     currentPlayer.sum == BLACKJACK_LIMIT &&
     computerHandSum == BLACKJACK_LIMIT
@@ -294,13 +290,17 @@ var determineWinner = function () {
         fullStandardMessage +
         "BLACKJACK! Both you and the computer won. Click submit for next player's turn." +
         playerLoseImage;
+
+    //player blackjack
   } else if (currentPlayer.sum == BLACKJACK_LIMIT) {
     if (currentPlayer.id == playersArray.length) {
       gameResultMessage =
         fullStandardMessage + "BLACKJACK! " + winningLastPlayerMessage;
     } else
       gameResultMessage = fullStandardMessage + "BLACKJACK! " + winningMessage;
-  } else if (computerHandSum == BLACKJACK_LIMIT) {
+  }
+  //computer blackjack
+  else if (computerHandSum == BLACKJACK_LIMIT) {
     if (currentPlayer.id == playersArray.length) {
       gameResultMessage =
         fullStandardMessage + " COMPUTER BLACKJACK! " + losingLastPlayerMessage;
@@ -332,7 +332,7 @@ var determineWinner = function () {
   return gameResultMessage;
 };
 
-// function to deal first two cards to players and computer
+// DEAL FIRST TWO CARDS TO PLAYER AND COMPUTER
 
 var firstHandDealt = function () {
   console.log("enter first hand dealt");
@@ -372,12 +372,10 @@ var firstHandDealt = function () {
   );
 };
 
+// TRANSITION FUNCTION
+
 var changeToNextPlayerOrEndGame = function (main) {
   computerHand = [];
-  console.log("enter change to next player function");
-  console.log("current player num = " + currentPlayerNum);
-  console.log("array length " + playersArray.length);
-
   currentPlayerNum = currentPlayerNum + 1;
   currentPlayer = playersArray[currentPlayerNum];
   gameMode = FIRST_HAND_MODE;
@@ -394,7 +392,7 @@ var changeToNextPlayerOrEndGame = function (main) {
     );
 };
 
-// main function
+// MAIN FUNCTION
 
 var ENTER_PLAYER_NUM_MODE = "ENTER NUMBER OF PLAYERS";
 var ENTER_PLAYER_NAME_MODE = "ENTER PLAYER NAME";
@@ -405,14 +403,10 @@ var TRANSITION_TO_NEXT_PLAYER = "TRANSITION TO NEXT PLAYER";
 var gameMode = ENTER_PLAYER_NUM_MODE;
 
 var main = function (input) {
-  // start mode - ensure player hand has nothing inside
   currentPlayer = playersArray[currentPlayerNum];
 
   var myOutputValue =
     "Did you enter 'hit' or 'stand' correctly? <br> Or if the round has ended, press refresh to start a new game.";
-
-  console.log("game start");
-  console.log("game mode: " + gameMode);
 
   // ENTER NUMBER OF PLAYERS
 
@@ -438,7 +432,6 @@ var main = function (input) {
   if (gameMode == ENTER_PLAYER_NAME_MODE) {
     var playerName = input;
     createListOfPlayers(playerName);
-    console.log(playersArray);
 
     var myOutputValue =
       "Welcome! " +
@@ -459,10 +452,7 @@ var main = function (input) {
   // DEAL FIRST TWO CARDS TO PLAYERS AND COMPUTER
 
   if (gameMode == FIRST_HAND_MODE) {
-    console.log("enter game mode 2");
     gameMode = CHOOSE_HIT_OR_STAND;
-    console.log("test 2");
-    //console.log(firstHandDealt());
     return firstHandDealt();
   }
 
@@ -471,10 +461,6 @@ var main = function (input) {
   // player inputs "hit" (draw another card), or "stand" (end game at current results)
 
   if (gameMode == CHOOSE_HIT_OR_STAND) {
-    console.log("enter hit stand mode");
-    console.log("current player is player " + currentPlayer.id);
-    console.log("current player hand is " + displayCards(currentPlayer.hand));
-
     myOutputValue =
       currentPlayer.playerHandMessage +
       displayCards(currentPlayer.hand) +
@@ -503,10 +489,6 @@ var main = function (input) {
   if (gameMode == HITTING_OR_STANDING) {
     // computer to "hit" if sum of computer hand is < 17
     if (computerHandSum < COMPUTER_LIMIT) {
-      console.log(
-        "computer hits again as computer first hand is " +
-          displayCards(computerHand)
-      );
       computerHand.push(gameDeck.pop());
       computerHandSum = sumHand(computerHand);
     }
@@ -516,7 +498,6 @@ var main = function (input) {
     // If total is still less than 21, offer the option to hit/stand again
 
     if (input.toLowerCase() == "hit") {
-      console.log("player chooses to hit");
       currentPlayer.hand.push(gameDeck.pop());
       currentPlayer.sum = sumHand(currentPlayer.hand);
 
