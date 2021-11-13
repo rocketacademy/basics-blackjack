@@ -37,7 +37,7 @@ var makeDeck = function () {
   var cardDeck = [];
   // Initialise an array of the 4 suits in our deck. We will loop over this array.
   var suits = ["hearts", "diamonds", "clubs", "spades"];
-  var emoji = ["♥️", "♦️", "♣️", "♠️"];
+  var emoji = ["❤️", "🔶", "♣️", "♠️"];
 
   // Loop over the suits array
   var suitIndex = 0;
@@ -56,13 +56,13 @@ var makeDeck = function () {
 
       // If rank is 1, 11, 12, or 13, set cardName to the ace or face card's name
       if (cardName == 1) {
-        cardName = "ace";
+        cardName = "🂡";
       } else if (cardName == 11) {
-        cardName = "jack";
+        cardName = "🃏";
       } else if (cardName == 12) {
-        cardName = "queen";
+        cardName = "👸";
       } else if (cardName == 13) {
-        cardName = "king";
+        cardName = "👑";
       }
 
       // Create a new card with the current name, suit, and rank
@@ -152,8 +152,6 @@ var displayPlayerAndDealerHands = function (
         "- " +
         playerHandArray[index].name +
         " of " +
-        playerHandArray[index].suit +
-        "<br>" +
         playerHandArray[index].emoji +
         "<br>";
 
@@ -168,8 +166,6 @@ var displayPlayerAndDealerHands = function (
         "- " +
         dealerHandArray[index].name +
         " of " +
-        dealerHandArray[index].suit +
-        "<br>" +
         dealerHandArray[index].emoji +
         "<br>";
       index = index + 1;
@@ -181,8 +177,6 @@ var displayPlayerAndDealerHands = function (
         "- " +
         playerHandArray[index].name +
         " of " +
-        playerHandArray[index].suit +
-        "<br>" +
         playerHandArray[index].emoji +
         "<br>";
 
@@ -196,8 +190,6 @@ var displayPlayerAndDealerHands = function (
       "- " +
       dealerHandArray[index].name +
       " of " +
-      dealerHandArray[index].suit +
-      "<br>" +
       dealerHandArray[index].emoji +
       "<br>";
   }
@@ -236,19 +228,20 @@ var rankPlayer = function (input) {
     var playerDeckRank = input[index];
 
     if (
-      playerDeckRank.name == "jack" ||
-      playerDeckRank.name == "queen" ||
-      playerDeckRank.name == "king"
+      playerDeckRank.name == "🃏" ||
+      playerDeckRank.name == "👸" ||
+      playerDeckRank.name == "👑"
     ) {
       totalPlayerRank += 10;
-    } else if (playerDeckRank.name == "ace") {
+      console.log(totalPlayerRank);
+    } else if (playerDeckRank.name == "🂡") {
       totalPlayerRank += 11;
       aceCounter += 1;
 
       if (
-        playerDeckRank.name == "jack" ||
-        playerDeckRank.name == "queen" ||
-        playerDeckRank.name == "king"
+        playerDeckRank.name == "🃏" ||
+        playerDeckRank.name == "👸" ||
+        playerDeckRank.name == "👑"
       ) {
         totalPlayerRank = totalPlayerRank - aceCounter * 10;
         //if there is more than 1 ace, other aces will remain as one
@@ -273,12 +266,12 @@ var rankComputer = function (input) {
   while (i < computerLength) {
     var dealerDeckRank = input[i];
     if (
-      dealerDeckRank.name == "jack" ||
-      dealerDeckRank.name == "queen" ||
-      dealerDeckRank.name == "king"
+      dealerDeckRank.name == "🃏" ||
+      dealerDeckRank.name == "👸" ||
+      dealerDeckRank.name == "👑"
     ) {
       totalComputerRank += 10;
-    } else if (dealerDeckRank.name == "ace") {
+    } else if (dealerDeckRank.name == "🂡") {
       totalComputerRank += 11;
       aceCounter += 1;
     } else {
@@ -325,14 +318,15 @@ var main = function (input) {
     // update gameMode and score
     if (totalPlayerBet <= 0 || dealerBet <= 0) {
       if (totalPlayerBet > 0 && dealerBet <= 0) {
-        outputMessage = "Player win. Please click refresh to play a new game";
+        outputMessage =
+          "You won all of the rounds! Please click refresh to play a new game";
       } else if (totalPlayerBet <= 0 && dealerBet > 0) {
-        outputMessage = "Dealer win. Please click refresh to play a new game";
+        outputMessage = "Dealer wins! Please click refresh to play a new game";
       }
     } else {
       currentGameMode = cardsDrawn;
       // reassign output message
-      outputMessage = `Everyone has been dealt a card. </br></br> Please type the betting amount and click the submit button to calculate cards! </br></br> Your bet amount is ${totalPlayerBet} ${placeBet}`;
+      outputMessage = `Everyone has been dealt a card. </br></br> Place your bet amount and click the submit button to calculate cards! </br></br> Your bet amount is ${totalPlayerBet} ${placeBet}`;
     }
     // return message
     return outputMessage;
@@ -409,7 +403,7 @@ var main = function (input) {
       var playerTotalHandRank = rankPlayer(playerHand);
       //check to see if the total is more than 21
       if (playerTotalHandRank > 21) {
-        outputMessage = "You have busted! Hit refresh to restart the game";
+        outputMessage = "You have busted! Press submit to restart the game";
         totalPlayerBet = totalPlayerBet - betPlaced;
         dealerBet = Number(dealerBet + betPlacedDealer);
         console.log(totalPlayerBet);
@@ -421,7 +415,7 @@ var main = function (input) {
         playerTotalHandRank = rankPlayer(playerHand);
         //check to see if total is more than 21
         if (playerTotalHandRank > 21) {
-          outputMessage = "You have busted! Hit refresh to restart the game";
+          outputMessage = "You have busted! Press submit to restart the game";
           totalPlayerBet = totalPlayerBet - betPlaced;
           dealerBet = Number(dealerBet + betPlacedDealer);
           console.log(totalPlayerBet);
@@ -454,7 +448,8 @@ var main = function (input) {
           displayPlayerAndDealerHands(playerHand, computerHand, 1) +
           "<br>Its a Tie!" +
           displayHandTotalValues(playerTotalHandRank, dealerTotalHandRank) +
-          tieImage;
+          tieImage +
+          "</br> Please press the submit button to play again";
         currentGameMode = "end game";
       }
       // Conditions for player win
@@ -467,7 +462,8 @@ var main = function (input) {
           displayPlayerAndDealerHands(playerHand, computerHand, 1) +
           "<br>Player wins!" +
           displayHandTotalValues(playerTotalHandRank, dealerTotalHandRank) +
-          winImage;
+          winImage +
+          "</br> Please press the submit button to play again";
         totalPlayerBet = totalPlayerBet + betPlaced;
         dealerBet = Number(dealerBet - betPlacedDealer);
         currentGameMode = "end game";
@@ -478,7 +474,8 @@ var main = function (input) {
           displayPlayerAndDealerHands(playerHand, computerHand, 1) +
           "<br>Dealer wins!" +
           displayHandTotalValues(playerTotalHandRank, dealerTotalHandRank) +
-          loseImage;
+          loseImage +
+          "</br> Please press the submit button to play again";
         totalPlayerBet = totalPlayerBet - betPlaced;
         dealerBet = Number(dealerBet + betPlacedDealer);
         currentGameMode = "end game";
