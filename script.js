@@ -148,21 +148,20 @@ var hasBlackjack = function (playerObj) {
 
 var activePlayerHitOrStand = function (input, index) {
   // input validation
-  if (!(input == "hit" || input == "stand")) {
-    return `Player ${activePlayerIndex}'s turn: Please specify hit or stand.`;
+  if (!(input == "h" || input == "s")) {
+    return `Player ${activePlayerIndex}'s turn: Please specify hit ('h') or stand ('s').`;
   }
   // following code only runs if input is valid
   var myOutputValue = "";
-  if (input == "hit") {
+  if (input == "h") {
     var newCard = drawCard();
     players[index].cards.push(newCard);
     myOutputValue = `Player ${index} draws a ${newCard.name} of ${newCard.emoji}`;
     gameMode = "hit or stand";
     return `${myOutputValue}. Your updated score is now ${computeScore(
       players[index]
-    )}.<br><br> Please input whether to hit (again) or stand.`;
-  } else if (input == "stand") {
-    players[index].lastMove = "stand";
+    )}.<br><br> Please input whether to hit again ('h') or stand ('s').`;
+  } else if (input == "s") {
     gameMode = "hit or stand";
     myOutputValue = `Player ${index} stands`;
     activePlayerIndex += 1; // only proceed to next player if the active player stands
