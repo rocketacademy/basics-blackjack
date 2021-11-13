@@ -180,6 +180,9 @@
       <input id="input-field" />
       <br />
       <button id="submit-button">Submit</button>
+      <button id="hit-button">Hit</button>
+      <button id="stand-button">Stand</button>
+      <button id="split-button">Split</button>
       <p>Output:</p>
       <div id="output-div"></div>
     </div>
@@ -188,6 +191,10 @@
     <!-- Define button click functionality -->
     <script>
       var button = document.querySelector("#submit-button");
+      var hitButton = document.querySelector("#hit-button");
+      var standButton = document.querySelector("#stand-button");
+      var splitButton = document.querySelector("#split-button");
+
       button.addEventListener("click", function () {
         // Set result to input value
         var input = document.querySelector("#input-field");
@@ -199,6 +206,24 @@
 
         // Reset input value
         input.value = "";
+      });
+
+      hitButton.addEventListener("click", function () {
+        var result = playerHits();
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
+      });
+
+      standButton.addEventListener("click", function () {
+        var result = playerStands();
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
+      });
+
+      splitButton.addEventListener("click", function () {
+        var result = playerSplits();
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
       });
     </script>
   </body>

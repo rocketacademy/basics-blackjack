@@ -1,3 +1,7 @@
+document.querySelector("#hit-button").disabled = true;
+document.querySelector("#stand-button").disabled = true;
+document.querySelector("#split-button").disabled = true;
+
 // Global variables for blackjack game
 var gameMode = "numOfPlayers";
 var players = [];
@@ -141,6 +145,7 @@ var initiatePlayersArray = function (input) {
         value: 0,
         outcome: PLAYING,
         awaitnewhand: false,
+        split: false,
       });
     }
     // Game mode switches to placeBet after players array is generated
@@ -155,7 +160,7 @@ var initiatePlayersArray = function (input) {
 var placeBet = function (input) {
   tabulateChips();
 
-  if (input == NaN || input > players[currPlayer].purse) {
+  if (input == NaN || input > players[currPlayer].purse || input == "") {
     return `Invalid option. Player ${
       currPlayer + 1
     }, please enter a chip amount between 1 and ${players[currPlayer].purse}.`;
@@ -333,14 +338,285 @@ var dealCards = function (input) {
     gameMode = "playerDraws";
     blackJackReply += `<br>Player ${
       currPlayer + 1
-    }, it's your turn. Type 'hit' or 'stand' and click Submit.`;
+    }, it's your turn. Choose 'hit' or 'stand'.`;
+    document.querySelector("#submit-button").disabled = true;
+    document.querySelector("#hit-button").disabled = false;
+    if (players[currPlayer].value < 16) {
+      document.querySelector("#stand-button").disabled = true;
+    } else {
+      document.querySelector("#stand-button").disabled = false;
+    }
+    if (players[currPlayer].hand[0].name == players[currPlayer].hand[1].name) {
+      document.querySelector("#split-button").disabled = false;
+    }
   }
 
   tabulateChips();
   return gameOutput + blackJackReply;
 };
 
-// Players decide whether to Hit or Stand
+var playerHits = function () {
+  players[currPlayer].hand.push(shuffledDeck.pop());
+
+  players[currPlayer].output = "";
+  players[currPlayer].value = 0;
+
+  for (i = 0; i < players[currPlayer].hand.length; i += 1) {
+    players[
+      currPlayer
+    ].output += ` ${players[currPlayer].hand[i].name}${players[currPlayer].hand[i].emoji}`;
+
+    players[currPlayer].value += Number(players[currPlayer].hand[i].value);
+  }
+
+  for (j = 0; j < players[currPlayer].hand.length; j += 1) {
+    if (
+      players[currPlayer].value < 12 &&
+      players[currPlayer].hand[j].name == "A" &&
+      players[currPlayer].hand[j].value == 1
+    ) {
+      players[currPlayer].hand[j].value = 11;
+      players[currPlayer].value += 10;
+    }
+    if (
+      players[currPlayer].value > 21 &&
+      players[currPlayer].hand[j].value == 11
+    ) {
+      players[currPlayer].hand[j].value = 1;
+      players[currPlayer].value -= 10;
+    }
+  }
+
+  document.querySelector("#submit-button").disabled = true;
+  document.querySelector("#hit-button").disabled = false;
+  if (players[currPlayer].value < 16) {
+    document.querySelector("#stand-button").disabled = true;
+  } else {
+    document.querySelector("#stand-button").disabled = false;
+  }
+  if (players[currPlayer].hand[0].name == players[currPlayer].hand[1].name) {
+    document.querySelector("#split-button").disabled = false;
+  }
+
+  gameOutput = `The dealer has: ${dealerHandOutput}<br>`;
+  for (i = 0; i < numOfPlayers; i += 1) {
+    gameOutput += `Player ${i + 1} has: ${players[i].output}<br>`;
+  }
+
+  if (players[currPlayer].value <= 21) {
+    var addReply2 = `<br>Player ${
+      currPlayer + 1
+    }, type 'hit' or 'stand' and click Submit.`;
+  }
+  if (players[currPlayer].value > 21) {
+    players[currPlayer].outcome = LOSE;
+    addReply2 = `<br>Player ${currPlayer + 1}, you went bust with ${
+      players[currPlayer].value
+    } points, sorry. You ${players[currPlayer].outcome}.<br><br>`;
+
+    // Loop to select next player whose hand is still alive to 'hit' or 'stand'
+    for (k = currPlayer; k < numOfPlayers; k += 1) {
+      if (players[currPlayer].outcome == PLAYING) {
+        addReply2 += `Player ${
+          currPlayer + 1
+        }, it's your turn. Choose 'hit' or 'stand'.`;
+        if (players[currPlayer].value < 16) {
+          document.querySelector("#stand-button").disabled = true;
+        } else {
+          document.querySelector("#stand-button").disabled = false;
+        }
+        tabulateChips();
+        return gameOutput + addReply2;
+      } else {
+        currPlayer += 1;
+        tabulateChips();
+      }
+    }
+
+    if (currPlayer == numOfPlayers) {
+      document.querySelector("#submit-button").disabled = false;
+      document.querySelector("#hit-button").disabled = true;
+      document.querySelector("#stand-button").disabled = true;
+      var skipDealerDraws = true;
+      for (j = 0; j < numOfPlayers; j += 1) {
+        if (players[j].outcome == PLAYING) {
+          skipDealerDraws = false;
+        }
+      }
+
+      if (skipDealerDraws) {
+        gameMode = "deal";
+        addReply2 += "End of round. Click Submit to play a new hand.";
+      } else {
+        gameMode = "dealerDraws";
+        addReply2 +=
+          "All players had their turns. It's the dealer's turn to draw.<br>Click Submit to continue.";
+      }
+    }
+  }
+  return gameOutput + addReply2;
+};
+
+var playerStands = function () {
+  if (players[currPlayer].value < 16) {
+    gameOutput = `The dealer has: ${dealerHandOutput}<br>`;
+    for (i = 0; i < numOfPlayers; i += 1) {
+      gameOutput += `Player ${i + 1} has: ${players[i].output}<br>`;
+    }
+
+    addReply2 = `<br>Sorry Player ${
+      currPlayer + 1
+    }. Your hand has less than 16 points. You have to hit.`;
+  } else {
+    gameOutput = `The dealer has: ${dealerHandOutput}<br>`;
+    for (i = 0; i < numOfPlayers; i += 1) {
+      gameOutput += `Player ${i + 1} has: ${players[i].output}<br>`;
+    }
+    addReply2 = `<br>Player ${currPlayer + 1}, you chose to stand.<br><br>`;
+
+    // Loop to select next player whose hand is still alive to 'hit' or 'stand'
+    for (i = currPlayer; i < numOfPlayers; i += 1) {
+      currPlayer += 1;
+
+      if (currPlayer == numOfPlayers) {
+        gameMode = "dealerDraws";
+        addReply2 +=
+          "All players had their turns. It's the dealer's turn to draw.<br>Click Submit to continue.";
+        document.querySelector("#submit-button").disabled = false;
+        document.querySelector("#hit-button").disabled = true;
+        document.querySelector("#stand-button").disabled = true;
+      } else if (players[currPlayer].outcome == PLAYING) {
+        addReply2 += `Player ${
+          currPlayer + 1
+        }, it's your turn. Type 'hit' or 'stand' and then click submit.`;
+        if (players[currPlayer].value < 16) {
+          document.querySelector("#stand-button").disabled = true;
+        } else {
+          document.querySelector("#stand-button").disabled = false;
+        }
+        if (
+          players[currPlayer].hand[0].name == players[currPlayer].hand[1].name
+        ) {
+          document.querySelector("#split-button").disabled = false;
+        }
+        tabulateChips();
+        return gameOutput + addReply2;
+      }
+    }
+  }
+  tabulateChips();
+  return gameOutput + addReply2;
+};
+
+var playerSplits = function () {
+  document.querySelector("#split-button").disabled = true;
+  players[currPlayer].hand2 = [];
+  players[currPlayer].value2 = 0;
+  players[currPlayer].outcome2 = PLAYING;
+  players[currPlayer].split = true;
+
+  players[currPlayer].hand2.push(players[currPlayer].hand.pop());
+
+  players[currPlayer].hand.push(shuffledDeck.pop());
+  players[currPlayer].hand2.push(shuffledDeck.pop());
+
+  //Calculate output and value of each of player's hand
+  players[currPlayer].output = "";
+  players[currPlayer].output2 = "";
+  players[currPlayer].value = 0;
+
+  for (i = 0; i < players[currPlayer].hand.length; i += 1) {
+    players[
+      currPlayer
+    ].output += ` ${players[currPlayer].hand[i].name}${players[currPlayer].hand[i].emoji}`;
+    players[
+      currPlayer
+    ].output2 += ` ${players[currPlayer].hand2[i].name}${players[currPlayer].hand2[i].emoji}`;
+
+    players[currPlayer].value += Number(players[currPlayer].hand[i].value);
+    players[currPlayer].value2 += Number(players[currPlayer].hand2[i].value);
+  }
+
+  for (j = 0; j < players[currPlayer].hand.length; j += 1) {
+    if (
+      players[currPlayer].value < 12 &&
+      players[currPlayer].hand[j].name == "A" &&
+      players[currPlayer].hand[j].value == 1
+    ) {
+      players[currPlayer].hand[j].value = 11;
+      players[currPlayer].value += 10;
+    }
+    if (
+      players[currPlayer].value > 21 &&
+      players[currPlayer].hand[j].value == 11
+    ) {
+      players[currPlayer].hand[j].value = 1;
+      players[currPlayer].value -= 10;
+    }
+  }
+  for (j = 0; j < players[currPlayer].hand2.length; j += 1) {
+    if (
+      players[currPlayer].value2 < 12 &&
+      players[currPlayer].hand2[j].name == "A" &&
+      players[currPlayer].hand2[j].value == 1
+    ) {
+      players[currPlayer].hand2[j].value = 11;
+      players[currPlayer].value2 += 10;
+    }
+    if (
+      players[currPlayer].value2 > 21 &&
+      players[currPlayer].hand2[j].value == 11
+    ) {
+      players[currPlayer].hand2[j].value = 1;
+      players[currPlayer].value2 -= 10;
+    }
+  }
+
+  gameOutput = `The dealer has: ${dealerHandOutput}<br>`;
+  for (i = 0; i < numOfPlayers; i += 1) {
+    gameOutput += `Player ${i + 1} has: ${players[i].output}<br>`;
+    if (players[i].split == true) {
+      gameOutput += `Player ${i + 1}'s second hand has: ${
+        players[i].output2
+      }<br>`;
+    }
+  }
+  addReply2 = `<br>Player ${currPlayer + 1}, you chose to split.<br>`;
+
+  if (players[currPlayer].hand[0].name == "A") {
+    addReply2 += `No further cards can be drawn by Player ${
+      currPlayer + 1
+    }.<br><br>`;
+  }
+
+  for (i = currPlayer; i < numOfPlayers; i += 1) {
+    currPlayer += 1;
+
+    if (currPlayer == numOfPlayers) {
+      gameMode = "dealerDraws";
+      addReply2 +=
+        "All players had their turns. It's the dealer's turn to draw.<br>Click Submit to continue.";
+      document.querySelector("#submit-button").disabled = false;
+      document.querySelector("#hit-button").disabled = true;
+      document.querySelector("#stand-button").disabled = true;
+    } else if (players[currPlayer].outcome == PLAYING) {
+      addReply2 += `Player ${
+        currPlayer + 1
+      }, it's your turn. Click 'hit' or 'stand'.`;
+      if (players[currPlayer].value < 16) {
+        document.querySelector("#stand-button").disabled = true;
+      } else {
+        document.querySelector("#stand-button").disabled = false;
+      }
+      tabulateChips();
+      return gameOutput + addReply2;
+    }
+  }
+  tabulateChips();
+  return gameOutput + addReply2;
+};
+
+// Players decide whether to Hit or Stand (function is now unnecessary and can be deleted)
 var hitOrStand = function (userInput) {
   if (currPlayer == numOfPlayers) {
     gameMode = "dealerDraws";
@@ -567,7 +843,9 @@ var dealerDraws = function (input) {
     }
     currPlayer += 1;
   }
-  gameOutput = gameOutput + "<br><br>Click Submit to play again.";
+  gameOutput =
+    gameOutput +
+    `<br><br>Click Submit to play again.<br><img src="https://media.giphy.com/media/3NtY188QaxDdC/giphy.gif" class="center">`;
   gameMode = "deal";
   tabulateChips();
 
@@ -611,10 +889,10 @@ var main = function (input) {
       myOutputValue = dealCards(input);
       return myOutputValue + standings;
     }
-    if (gameMode == "playerDraws") {
-      myOutputValue = hitOrStand(input);
-      return myOutputValue + standings;
-    }
+    // if (gameMode == "playerDraws") {
+    //   myOutputValue = hitOrStand(input);
+    //   return myOutputValue + standings;
+    // }
     if (gameMode == "dealerDraws") {
       myOutputValue = dealerDraws(input);
       return myOutputValue + standings;
