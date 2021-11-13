@@ -50,18 +50,27 @@ var main = function (input) {
     document.getElementById("restart-button").disabled = false;
     document.getElementById("hit-button").disabled = true;
     document.getElementById("stand-button").disabled = true;
+    var result3 = displayCards(computerHand);
+    var output3 = document.querySelector("#blue");
+    output3.innerHTML = "Computer's Hand:    " + result3;
     return `Congratulations! You've hit blackjack! <br> 
       Click restart to play again!    `;
   } else if (mode == "computerBlackjack") {
     document.getElementById("restart-button").disabled = false;
     document.getElementById("hit-button").disabled = true;
     document.getElementById("stand-button").disabled = true;
+    var result3 = displayCards(computerHand);
+    var output3 = document.querySelector("#blue");
+    output3.innerHTML = "Computer's Hand:    " + result3;
     return `Oh No! The computer hit blackjack! <br>
       Click restart to play again! `;
   } else if (mode == "bothBlackjack") {
     document.getElementById("restart-button").disabled = false;
     document.getElementById("hit-button").disabled = false;
     document.getElementById("stand-button").disabled = false;
+    var result3 = displayCards(computerHand);
+    var output3 = document.querySelector("#blue");
+    output3.innerHTML = "Computer's Hand:    " + result3;
     return `What are the chances!.... You both hit blackjack...<br>
       Click restart to play again!    `;
   }
@@ -84,9 +93,11 @@ var main = function (input) {
     document.getElementById("restart-button").disabled = false;
     document.getElementById("hit-button").disabled = true;
     document.getElementById("stand-button").disabled = true;
+
     var result3 = displayCards(computerHand);
     var output3 = document.querySelector("#blue");
     output3.innerHTML = "Computer's Hand:    " + result3;
+
     let winStatus = "";
     let conclusionString = function () {
       return `${winStatus} <br>
