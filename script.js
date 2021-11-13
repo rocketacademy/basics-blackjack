@@ -191,7 +191,9 @@ var main = function (input) {
   // start game mode with placing bets
   if (currentGameMode == place_bet) {
     if (input == "") {
-      return `You will start with 100 points. Please input the number of points you want to bet.`;
+      var myImage =
+        '<img src="https://c.tenor.com/bV604YJsMTIAAAAC/spongebob-squarepants-patrick-star.gif"/>';
+      return `You will start with 100 points. Please input the number of points you want to bet. <br><br> ${myImage}`;
     }
     // else user inputs number to bet, then switch to game start mode
     playerBet = Number(input);
@@ -307,7 +309,9 @@ var main = function (input) {
       )} <br> Total value: ${playerHandTotalValue} Please input "hit" or "stand".`;
     } else if (input == "stand") {
       currentGameMode = game_results;
-      myOutputValue = `You have chosen to stand. Click submit to show the game results.`;
+      var myImage =
+        '<img src="https://c.tenor.com/hcjiQIlb7UAAAAAi/flanaato-bt21baby.gif"/>';
+      myOutputValue = `You have chosen to stand. Click submit to show the game results.<br><br> ${myImage}`;
     }
     return myOutputValue;
   }
@@ -355,7 +359,7 @@ var main = function (input) {
       playerPoints += playerBet;
       myOutputValue =
         myOutputValue +
-        `<br> The dealer has busted. You win!<br>Total points: ${playerPoints}<br>Click refresh to play again.`;
+        `<br> The dealer has busted. You win!<br> ${myImagePlayerWin}<br> Total points: ${playerPoints}<br>Click refresh to play again.`;
     }
     // if player > 21 and dealer <= 21, player busted & dealer wins
     if (playerHandTotalValue > 21 && dealerHandTotalValue <= 21) {
