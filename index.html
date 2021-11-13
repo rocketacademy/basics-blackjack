@@ -97,7 +97,7 @@
         margin-right: 30px;
         background-color: white;
         color: black; /* sets the font color */
-        background-image: url(""); /* The image used */
+        background-image: url("https://media.karousell.com/media/photos/products/2021/2/8/quby_waterproof_stickers_40_pi_1612778601_e1fa4c58_progressive.jpg"); /* The image used */
         background-position: center; /* Center the image */
         background-repeat: no-repeat; /* Do not repeat the image */
         background-size: cover; /* Resize the background image to cover the entire container */
@@ -115,10 +115,17 @@
       }
 
       #container {
-        background-color: pink;
+        background-color: lightslategray;
         margin: 40px auto;
         max-width: 800px;
         padding: 38px 31px;
+      }
+
+      #container1 {
+        background-color: lightslategray;
+        margin: 20px auto;
+        max-width: 450px;
+        padding: 2px 2px;
       }
 
       input {
@@ -137,7 +144,7 @@
       }
 
       #output-div {
-        background-color: skyblue;
+        background-color: lightgrey;
         margin: 20px auto;
         padding: 20px;
         width: 100%;
@@ -159,25 +166,33 @@
   </head>
 
   <body>
-    <h1 class="header">
-      <img
-        class="logo-img"
-        src="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/brand/logo.png"
-      />
-      Rocket Academy
-      <img
-        class="logo-img"
-        src="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/brand/logo.png"
-      />
-    </h1>
-    <h1 class="header">♣️ Basics - Blackjack ♠️</h1>
+    <div id="container1">
+      <h1 class="header">
+        <img
+          class="logo-img"
+          src="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/brand/logo.png"
+        />
+        Rocket Academy
+        <img
+          class="logo-img"
+          src="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/brand/logo.png"
+        />
+      </h1>
+      <h1 class="header">🐒 Tabby's Blackjack 🌈</h1>
+    </div>
     <div id="container">
       <p>Input:</p>
       <input id="input-field" />
       <br />
       <button id="submit-button">Submit</button>
       <p>Output:</p>
-      <div id="output-div"></div>
+      <div id="output-div">
+        Welcome to <b>Tabby's Cards</b>! Click the <b>submit</b> button to get
+        started! <br /><br />
+        <img
+          src="https://c.tenor.com/gzvf7TxLFuYAAAAi/pentol-danc-pentol-cute.gif"
+        />
+      </div>
     </div>
     <!-- Import program logic -->
     <script src="script.js"></script>
