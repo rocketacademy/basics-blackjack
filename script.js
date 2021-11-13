@@ -247,17 +247,24 @@ var compareCards = function (playerHand, computerHand) {
     (playerHandVal <= 21 && computerHandVal > 21)
   ) {
     playerPts += playerBet;
-    return `<br><br> Player won! Total points: ${playerPts}`;
+    return `<br><br> Player won! Total points: ${playerPts} <br> ${myImages.win}`;
   } // if player and computer hands have same sum/blackjack/bust, it's a tie
   if (
     playerHandVal == computerHandVal ||
     (isBlackjack(playerHand) && isBlackjack(computerHand)) ||
     (playerHandVal > 21 && computerHandVal > 21)
   ) {
-    return `<br><br> It's a tie! Total points: ${playerPts}`;
+    return `<br><br> It's a tie! Total points: ${playerPts} <br> ${myImages.tie}`;
   } // if not win/tie, player lost
   playerPts -= playerBet;
-  return `<br><br> Player lost! Total points: ${playerPts}`;
+  return `<br><br> Player lost! Total points: ${playerPts} <br> ${myImages.lose}`;
+};
+
+// images for player outcomes
+var myImages = {
+  win: '<img src = "https://c.tenor.com/_ocNArtc8fEAAAAi/tonton-tonton-sticker.gif"/>',
+  lose: '<img src = "https://c.tenor.com/vu1ynnzr-HUAAAAi/tonton-tonton-friends.gif"/>',
+  tie: '<img src = "https://c.tenor.com/PYgi29VLYtYAAAAi/tonton-tonton-friends.gif"/>',
 };
 
 var main = function (input) {
@@ -308,18 +315,18 @@ var main = function (input) {
       gameMode = PLACE_BET;
       outputMessage = cardsMessage(playerHand, computerHand);
       playerPts += playerBet;
-      return `${outputMessage} <br><br> Player won by Blackjack! Total points: ${playerPts} <br><br> Click submit to play again!`;
+      return `${outputMessage} <br><br> Player won by Blackjack! Total points: ${playerPts} <br> ${myImages.win}<br> Click submit to play again!`;
     }
     if (!isBlackjack(playerHand) && isBlackjack(computerHand)) {
       gameMode = PLACE_BET;
       outputMessage = cardsMessage(playerHand, computerHand);
       playerPts -= playerBet;
-      return `${outputMessage} <br><br> Dealer won by Blackjack! Total points: ${playerPts} <br><br> Click submit to play again!`;
+      return `${outputMessage} <br><br> Dealer won by Blackjack! Total points: ${playerPts} <br> ${myImages.lose}<br> Click submit to play again!`;
     }
     if (isBlackjack(playerHand) && isBlackjack(computerHand)) {
       gameMode = PLACE_BET;
       outputMessage = cardsMessage(playerHand, computerHand);
-      return `${outputMessage} <br><br> It's a Blackjack tie! Total points: ${playerPts} <br><br> Click submit to play again!`;
+      return `${outputMessage} <br><br> It's a Blackjack tie! Total points: ${playerPts} <br> ${myImages.tie}<br> Click submit to play again!`;
     }
     return `${outputMessage} <br><br> ${hitOrStandMsg} <br><br>${givePlayerHints(
       playerHand
@@ -364,7 +371,7 @@ var main = function (input) {
         compareCards(playerHand, computerHand);
       // switch game mode to restart game
       gameMode = PLACE_BET;
-      return `${outputMessage} <br><br> Click submit to play again!`;
+      return `${outputMessage} <br> Click submit to play again!`;
     }
     // input validation
     else if (input != "hit" && input != "stand") {
