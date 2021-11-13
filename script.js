@@ -19,19 +19,24 @@ var main = function (input) {
   var shuffleCardDeck = shuffleCards (DrawCardDeck);   
 
   if (gameOver == true) {
-    return 'The game is over. Please refresh to play again.';
+    currentStage = startStage;
+    gameOver = false; 
+    playerCards = [];
+    computerCards = [];
+    playerCardsScore = 0;
+    computerCardsScore = 0;
+    return 'The game is over. Please submit to draw cards again.';
   }
 
   // Starting stage where cards are distributed
-  if (currentStage == startStage) {
-    var playerCard1 = shuffleCardDeck.pop();
-    console.log (playerCard1);
-    var computerCard1 = shuffleCardDeck.pop();
-    console.log (computerCard1);
-    var playerCard2 = shuffleCardDeck.pop();
-    console.log (playerCard2);
+  if (currentStage == startStage) {    
+    var DrawCardDeck = totalCardDeck ();
+    var shuffleCardDeck = shuffleCards (DrawCardDeck);    
+
+    var playerCard1 = shuffleCardDeck.pop();    
+    var computerCard1 = shuffleCardDeck.pop();    
+    var playerCard2 = shuffleCardDeck.pop();    
     var computerCard2 = shuffleCardDeck.pop();    
-    console.log (computerCard2);
     playerCards.push (playerCard1);
     playerCards.push (playerCard2);
     computerCards.push (computerCard1);
@@ -87,41 +92,45 @@ var main = function (input) {
     // Displays a summary of card stats before moving to next stage
     currentStage = playerStage;
     return `Hi player, your cards are ${playerCard1.name} of ${playerCard1.suit} 
-    and ${playerCard2.name} of ${playerCard2.suit}.
+    and ${playerCard2.name} of ${playerCard2.suit}, total card score is ${playerCardsScore}.
     <br><br>Computer cards are ${computerCard1.name} of ${computerCard1.suit} 
-    and ${computerCard2.name} of ${playerCard2.suit}.
-    <br><br>Please type "hit" or "stand" for your hand.`
+    and ${computerCard2.name} of ${playerCard2.suit}, total card score is ${computerCardsScore}.
+    <br><br>Player, please type "hit" or "stand" for your hand.`
   }   
 
   // Stage where player starts to "hit" or "stand"
   if (currentStage == playerStage) {        
-    if (input == 'hit') {      
+    if (input == 'hit' || input == 'h') {      
       playerDrawCard = shuffleCardDeck.pop();
       playerCards.push (playerDrawCard);
-      playerDrawCardCount += 1;            
-      if (playerCards.length == 3) {
-        playerCardsScore - 10;
-        playerCardsScore += playerDrawCard.score;
-        //return playerCardsScore;
-      }
+      console.log (playerCards);
+      playerCardsScore += playerDrawCard.score;
+      console.log (playerCardsScore);
+      console.log (playerCards.length);
+      playerDrawCardCount += 1;
+
+      // if (playerCards.length == 3) {
+      //   playerCardsScore - 10;
+      //   playerCardsScore += playerDrawCard.score;
+      // }
       
       if (playerCardsScore > 21) {
         gameOver = true;
-        return `Player draw ${playerDrawCard.name} of ${playerDrawCard.suit}.
+        return `Player draw ${playerDrawCard.name} of ${playerDrawCard.suit}, total card score is ${playerCardsScore}.
         <br><br>Player burst, game over, please click refresh button to play again.`;
       }
       if (playerCardsScore <= 21) {                
         if (playerDrawCardCount == 3) {
           gameOver = true;
-          return `Player have 5 cards without bursting, player won!
+          return `Player have 5 cards without bursting, total card score ${playerCardsScore}, player won!
           <br><br>Please click refresh button to play again.`;
         }   
         currentStage = playerStage;
         return `Player card score is ${playerCardsScore}. Do you want to "hit" or "stand"?`;
-      }                       
+      }       
       return `Player draw card ${playerDrawCard.name} of ${playerDrawCard.suit}.`;      
     }
-    else if (input == 'stand') {
+    else if (input == 'stand' || input == 's') {
       currentStage = computerStage;
       return `Player card score is ${playerCardsScore}.
       <br><br>Computer card score is ${computerCardsScore}.
@@ -130,38 +139,40 @@ var main = function (input) {
     else {      
       currentStage = playerStage;
       return `Player card score is ${playerCardsScore}. Do you want to "hit" or "stand"?`;
-    }   
-    //return currentStage;        
+    }              
   }    
 
   // Stage where computer starts to "hit" or "stand"
   if (currentStage == computerStage) {
-    if (computerCardsScore <= 17) {
-      var computerDrawCard = shuffleCardDeck.pop();
+        
+    while (computerCardsScore < 15) {      
+      computerDrawCard = shuffleCardDeck.pop();
       computerCards.push (computerDrawCard);
-      computerDrawCardCount += 1;            
-      if (computerCards.length == 3) {
-        computerCardsScore - 10;
-        computerCardsScore += computerDrawCard.score;
-        //return computerCardsScore;
-      }
+      computerCardsScore += computerDrawCard.score;
+      computerDrawCardCount += 1;
+      // if (computerCards.length == 3) {
+      //   computerCardsScore - 10;
+      //   computerCardsScore += computerDrawCard.score;
+      //   //return computerCardsScore;
+      // }    
       
-      if (computerCardsScore > 17 && computerCardsScore <= 21) {
+      if (computerCardsScore >= 15 && computerCardsScore <= 21) {
         if (computerDrawCardCount == 3) {
           gameOver = true;
-          return `Computer have 5 cards without bursting, computer won!
+          return `Computer have 5 cards without bursting, total card score ${computerCardsScore}, computer won!
           <br><br>Please click refresh button to play again.`;
         } 
         currentStage == finalStage;
-        return `Computer card score is ${computerCardsScore}. 
+        return `Computer draws ${computerDrawCard.name} of ${computerDrawCard.suit}, card score is ${computerCardsScore}. 
         <br><br>Click "Submit" to continue.`
       }  
-      else if (computerCardsScore > 21) {
+      if (computerCardsScore > 21) {
         gameOver = true;
-        return `Computer draw ${computerDrawCard.name} of ${computerDrawCard.suit}.
+        return `Computer draw ${computerDrawCard.name} of ${computerDrawCard.suit}, total card score is ${computerCardsScore}.
         <br><br>Computer burst, player win! please click refresh button to play again.`;
-      }          
-    }
+      } 
+    }        
+    
     // else {
     //   currentStage = finalStage;      
     //   return `Computer card score is ${computerCardsScore}.
@@ -177,20 +188,23 @@ var main = function (input) {
     console.log (computerCardsScore);
     console.log (playerCardsScore);
     if (computerCardsScore > playerCardsScore) {      
+      gameOver = true;
       return `Computer card score is ${computerCardsScore}.
       <br><br>Player card score is ${playerCardsScore}.
       <br><br>Computer wins!`
     }
     else if (computerCardsScore < playerCardsScore) {      
+      gameOver = true;
       return `Computer card score is ${computerCardsScore}.
       <br><br>Player card score is ${playerCardsScore}.
       <br><br>Player wins!`
     }
     else {      
+      gameOver = true;
       return `Computer card score is ${computerCardsScore}.
       <br><br>Player card score is ${playerCardsScore}.
       <br><br>It is a draw!`
-    }      
+    }          
   }  
 };
 
