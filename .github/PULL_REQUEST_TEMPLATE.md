@@ -15,4 +15,8 @@ Completeness Level (1-5):
 What did you think of this deliverable?
 I think I did pretty well
 Is there anything in this code that you feel pleased about?
+<<<<<<< HEAD
 I came up with all the logic entirely on my own without referencing the walkthrough/reference solutions
+=======
+I came up with all the logic entirely on my own without referencing the walkthrough/reference solutions
+>>>>>>> 6c1b0fb09f59793181ad0e40639d16a0a318c7ee
