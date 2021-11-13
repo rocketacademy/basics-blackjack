@@ -161,6 +161,10 @@ var printCards = function (cards) {
   returnString += `${lastCard.name} of ${convertSuitWordToEmoji(
     lastCard.suit
   )}`;
+  // notify that player and/or dealer total card value has busted
+  if (sumOfCardsVal(cards) > 21) {
+    returnString += " Busted!";
+  }
   return returnString;
 };
 
@@ -173,6 +177,17 @@ var cardsMessage = function (playerHand, computerHand) {
   )} <br> Total value: ${playerHandVal} <br><br> Dealer cards: ${printCards(
     computerHand
   )} <br> Total value: ${computerHandVal}`;
+  return message;
+};
+
+// function to display 1 card for dealer
+var cardsMsgPartial = function (playerHand, computerHand) {
+  var playerHandVal = sumOfCardsVal(playerHand);
+  var message = `Player cards: ${printCards(
+    playerHand
+  )} <br> Total value: ${playerHandVal} <br><br> Dealer cards: ${
+    computerHand[0].name
+  } of ${convertSuitWordToEmoji(computerHand[0].suit)} | Covered`;
   return message;
 };
 
@@ -197,6 +212,22 @@ var sumOfCardsVal = function (cardArray) {
     }
   }
   return cardsVal;
+};
+
+// display hints for hit/stand to player
+var givePlayerHints = function (playerHand) {
+  var hint = "";
+  playerHandVal = sumOfCardsVal(playerHand);
+  if (playerHandVal <= 16) {
+    hint = `Try your luck by submitting "hit"!`;
+  } else if (playerHandVal > 16 && playerHandVal < 21) {
+    hint = `You are close to 21. Consider to "stand"`;
+  } else if (playerHandVal == 21) {
+    hint = `Your hand value is 21! Submit "stand" to see result!`;
+  } else if (playerHandVal > 21) {
+    hint = `Oops, you have busted. Submit "stand" to see result!`;
+  }
+  return hint;
 };
 
 // check if cards are blackjack
@@ -265,8 +296,8 @@ var main = function (input) {
     console.log("player hand");
     console.log(playerHand);
 
-    // sum up and display cards' value for player and computer
-    outputMessage = cardsMessage(playerHand, computerHand);
+    // sum up and display cards' value for player and 1 card for computer
+    outputMessage = cardsMsgPartial(playerHand, computerHand);
 
     // switch game mode to choose hit or stand
     gameMode = HIT_OR_STAND;
@@ -275,36 +306,46 @@ var main = function (input) {
     // user clicks submit to restart game
     if (isBlackjack(playerHand) && !isBlackjack(computerHand)) {
       gameMode = PLACE_BET;
+      outputMessage = cardsMessage(playerHand, computerHand);
       playerPts += playerBet;
       return `${outputMessage} <br><br> Player won by Blackjack! Total points: ${playerPts} <br><br> Click submit to play again!`;
     }
     if (!isBlackjack(playerHand) && isBlackjack(computerHand)) {
       gameMode = PLACE_BET;
+      outputMessage = cardsMessage(playerHand, computerHand);
       playerPts -= playerBet;
       return `${outputMessage} <br><br> Dealer won by Blackjack! Total points: ${playerPts} <br><br> Click submit to play again!`;
     }
     if (isBlackjack(playerHand) && isBlackjack(computerHand)) {
       gameMode = PLACE_BET;
+      outputMessage = cardsMessage(playerHand, computerHand);
       return `${outputMessage} <br><br> It's a Blackjack tie! Total points: ${playerPts} <br><br> Click submit to play again!`;
     }
-    return `${outputMessage} <br><br> ${hitOrStandMsg}`;
+    return `${outputMessage} <br><br> ${hitOrStandMsg} <br><br>${givePlayerHints(
+      playerHand
+    )}`;
   }
 
   // if player sum less than 21, player to type hit OR stand and submit
   if (gameMode == HIT_OR_STAND) {
     if (input == "") {
-      return `${outputMessage} <br><br> ${hitOrStandMsg}`;
+      return `${outputMessage} <br><br> ${hitOrStandMsg} <br><br> ${givePlayerHints(
+        playerHand
+      )}`;
     }
     if (input == "hit") {
+      // if playerHandVal is 21 or more, do not draw new card
+      if (playerHandVal == 21 || playerHandVal > 21) {
+        return `${outputMessage} <br><br> You should submit "stand" to see result.`;
+      } // else if playerHandVal not yet 21, allow drawing of new card
       playerHand.push(shuffledDeck.pop());
       console.log(playerHand);
       playerHandVal = sumOfCardsVal(playerHand);
       console.log("player hand value: " + playerHandVal);
-      outputMessage = `${cardsMessage(
-        playerHand,
-        computerHand
-      )} <br><br> ${hitOrStandMsg}`;
-      return outputMessage;
+      outputMessage = cardsMsgPartial(playerHand, computerHand);
+      return `${outputMessage} <br><br> ${hitOrStandMsg} <br><br> ${givePlayerHints(
+        playerHand
+      )}`;
     }
     if (input == "stand") {
       playerHandVal = sumOfCardsVal(playerHand);
@@ -323,13 +364,11 @@ var main = function (input) {
         compareCards(playerHand, computerHand);
       // switch game mode to restart game
       gameMode = PLACE_BET;
-      console.log(`game mode: ${gameMode}`);
-      console.log(`player bet: ${playerBet}`);
       return `${outputMessage} <br><br> Click submit to play again!`;
     }
     // input validation
     else if (input != "hit" && input != "stand") {
-      outputMessage = `${cardsMessage(
+      outputMessage = `${cardsMsgPartial(
         playerHand,
         computerHand
       )} <br><br> Invalid input. Please input "hit" or "stand" only.`;
