@@ -156,11 +156,9 @@ var activePlayerHitOrStand = function (input, index) {
   if (input == "hit") {
     var newCard = drawCard();
     players[index].cards.push(newCard);
-    myOutputValue = `Player ${index} draws a ${newCard.name} of ${newCard.suit}`;
+    myOutputValue = `Player ${index} draws a ${newCard.name} of ${newCard.emoji}`;
     gameMode = "hit or stand";
-    return `${myOutputValue}. <br>Hand comprises ${printPlayerCards(
-      players[index]
-    )}, for score of ${computeScore(
+    return `${myOutputValue}. Your updated score is now ${computeScore(
       players[index]
     )}.<br><br> Please input whether to hit (again) or stand.`;
   } else if (input == "stand") {
@@ -168,11 +166,7 @@ var activePlayerHitOrStand = function (input, index) {
     gameMode = "hit or stand";
     myOutputValue = `Player ${index} stands`;
     activePlayerIndex += 1; // only proceed to next player if the active player stands
-    return `${myOutputValue}. <br>Hand comprises ${printPlayerCards(
-      players[index]
-    )}, for score of ${computeScore(
-      players[index]
-    )}. <br> Press submit to continue.`;
+    return `${myOutputValue}. <br><br> Press submit to continue.`;
   }
 };
 
@@ -273,7 +267,7 @@ var reportScores = function (finalTally = false) {
     var dealerScore = computeScore(players[0]);
     returnString += `Dealer's cards are ${dealerHand}. Dealer score is ${dealerScore}.<br> `;
   }
-  return returnString + "<br><br>";
+  return returnString + "<br>====================<br><br>";
 };
 
 // returns results in string format
@@ -368,7 +362,7 @@ var main = function (input) {
       activePlayerIndex = 1; // used to cycle through all players
       return setupGame(players.length - 1);
     }
-    return `Game over. Type 'a' for another round.`;
+    return `Game over. Type 'a' for another round with the same players, or refresh for a new game.`;
   }
 
   var mainOutputMsg = "";
