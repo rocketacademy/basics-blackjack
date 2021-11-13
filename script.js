@@ -88,16 +88,32 @@ var shuffleCards = function (cardDeck) {
   return cardDeck;
 };
 
+var shuffleDeckOfCard = shuffleCards(makeDeck());
+
+var arrayForCurrentCardRank = [];
+
+var blackJackPlayer;
+
+var reducerFn = function (previousRank, currentRank) {
+  return previousRank + currentRank;
+};
+
 var main = function (playerInput) {
   var myOutputValue = `Player, the cards you drew are: <br>`;
 
   //shuffle the 52 cards, player will get 2 cards from the deck when click "submit"
   if (currentGameMode == "Player Draw Cards") {
     console.log(currentGameMode);
-    var shuffleDeckOfCard = shuffleCards(makeDeck());
-    var arrayForCurrentCardRank = [];
+    // shuffleDeckOfCard = shuffleCards(makeDeck());
+
+    // arrayForCurrentCardRank = [];
     for (let counter = 0; counter < 2; counter += 1) {
       var currentCardDrew = shuffleDeckOfCard.pop();
+      // var currentCardDrew = {
+      //   name: "4",
+      //   suit: "hearts",
+      //   rank: 4,
+      // };
 
       myOutputValue =
         myOutputValue +
@@ -109,8 +125,9 @@ var main = function (playerInput) {
     //Show player the total rank of 2 cards drawn
     totalplayerCardRank =
       arrayForCurrentCardRank[0] + arrayForCurrentCardRank[1];
+
     if (arrayForCurrentCardRank[0] + arrayForCurrentCardRank[1] == 21) {
-      var blackJackPlayer = true;
+      blackJackPlayer = true;
     }
     myOutputValue =
       myOutputValue + `<br>Your total points is ${totalplayerCardRank} <br>`;
@@ -133,10 +150,47 @@ var main = function (playerInput) {
   //In this game mode, add the card rank of the new card drawn to the current card rank
   if (currentGameMode == "Player hit or stand" && playerInput == 1) {
     console.log(currentGameMode);
-    var shuffleDeckOfCard = shuffleCards(makeDeck());
+    // shuffleDeckOfCard = shuffleCards(makeDeck());
+
     var additionalCardDrew = shuffleDeckOfCard.pop();
-    totalplayerCardRank += additionalCardDrew.rank;
+    // var additionalCardDrew = {
+    //   name: "ace",
+    //   suit: "hearts",
+    //   rank: 11,
+    // };
+    // totalplayerCardRank += additionalCardDrew.rank;
+    arrayForCurrentCardRank.push(additionalCardDrew.rank);
+    // add loop to go thru arrayForCurrentCardRank
+    // if arrayItem[index] == 11, then aceCounter +=1
+    var aceCounter = 0;
+    for (var i = 0; i < arrayForCurrentCardRank.length; i++) {
+      console.log("RUNNING");
+      if (arrayForCurrentCardRank[i] == 11) {
+        aceCounter += 1;
+        console.log("IF statement is running");
+      }
+    }
+    console.log(aceCounter);
+    // if aceCounter > 1, then totalplayerCardRank - 10
+    // if totalplayerCardRank > 21, then minus aceCounter*10
+    var sumWithAces = arrayForCurrentCardRank.reduce(reducerFn, 0);
+    if (aceCounter > 0) {
+      console.log("sum before subtracting 10s: ", sumWithAces);
+      sumWithAces -= aceCounter * 10;
+      console.log("sum after subtracting: ", sumWithAces);
+      if (sumWithAces <= 11) {
+        console.log("Sum is less than 11 so we add 10");
+        sumWithAces += 10;
+        console.log("current sum: ", sumWithAces);
+      }
+    }
+    // 4 + A + 3 + A + A + 2
+    // 4 + 11 + 3 + 11 + 11 + 2 (42)
+
+    totalplayerCardRank = sumWithAces;
+
     previousCards += `${additionalCardDrew.name} of ${additionalCardDrew.suit} <br> `;
+
     myOutputValue =
       previousCards +
       `<br> Your new total points is: ${totalplayerCardRank}. <br><br> Choose 1 to "hit" or 2 to "stand".`;
@@ -157,7 +211,7 @@ var main = function (playerInput) {
   if (currentGameMode == "Result") {
     console.log(currentGameMode);
     myOutputValue = "Computer drew the following cards:<br>";
-    var shuffleDeckOfCard = shuffleCards(makeDeck());
+    // shuffleDeckOfCard = shuffleCards(makeDeck());
     var arrayForComputerCardRank = [];
     for (let computerCounter = 0; computerCounter < 2; computerCounter += 1) {
       var computerCardDrew = shuffleDeckOfCard.pop();
@@ -177,7 +231,7 @@ var main = function (playerInput) {
       condition < 17;
       condition += additionalComputerCard.rank
     ) {
-      var shuffleDeckOfCard = shuffleCards(makeDeck());
+      shuffleDeckOfCard = shuffleCards(makeDeck());
       var additionalComputerCard = shuffleDeckOfCard.pop();
       totalComputerCardRank += additionalComputerCard.rank;
       myOutputValue =
