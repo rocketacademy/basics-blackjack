@@ -1,345 +1,221 @@
-// Declare Game modes
-var gameStart = "Game start";
-var drawGameCards = "Cards are drawn";
-var showGameResults = "Results shown";
-var gameHitOrStand = "Hit or stand";
-var currentGameMode = gameStart;
+// pseudo-code
+// Deck is shuffled. using shuffle helper function
 
-// Declare variable to store human and computer hands
-// We use arrays as each hand will be holding multiple card objects
-var humanHand = [];
-var computerHand = [];
+var currentGameMode = "Waiting for players..";
+console.log(currentGameMode);
 
-// Declare an empty variable to hold deck of cards
-var gameDeck = [];
+// keeping track of each player's hands of cards
+var humanHands = [];
+var computerHands = [];
 
-/* =========== DECK CREATION FUNCTIONS ============== */
+// keeping track of each player's chosen card with suit and rank
+var humanCard;
+var computerCard;
 
-// Function that creates a deck of cards, used by createNewDeck function
-var createDeck = function () {
-  // deck array
-  var deck = [];
-  // for 'while loop' to create suits for cards
-  var suits = ["diamonds", "clubs", "hearts", "spades"];
-  var indexSuits = 0;
-  while (indexSuits < suits.length) {
-    var currSuit = suits[indexSuits];
-    // 13 ranks... ace to king - rank to define "card positions"
-    var indexRanks = 1;
-    while (indexRanks <= 13) {
-      var cardName = indexRanks;
-      // define card value - differentiate from rank: 'ace' = 1 / 11, 'jack' & 'queen' & 'king' = 10
+var makeDeck = function () {
+  // Initialise an empty deck array
+  var cardDeck = [];
+  // Initialise an array of the 4 suits in our deck. We will loop over this array.
+  var suits = ["hearts", "diamonds", "clubs", "spades"];
+
+  // Loop over the suits array
+  var suitIndex = 0;
+  while (suitIndex < suits.length) {
+    // Store the current suit in a variable
+    var currentSuit = suits[suitIndex];
+
+    // Loop from 1 to 13 to create all cards for a given suit
+    // Notice rankCounter starts at 1 and not 0, and ends at 13 and not 12.
+    // This is an example of a loop without an array.
+    var rankCounter = 1;
+    while (rankCounter <= 13) {
+      // By default, the card name is the same as rankCounter
+      var cardName = rankCounter;
+
+      // If rank is 1, 11, 12, or 13, set cardName to the ace or face card's name
       if (cardName == 1) {
         cardName = "ace";
-        // define ace value as 11 all the way. if handValue > 10, -11 to total value
-        // vs. coding a function to redefine the value for ace
-      }
-      if (cardName == 11) {
+      } else if (cardName == 11) {
         cardName = "jack";
-      }
-      if (cardName == 12) {
+      } else if (cardName == 12) {
         cardName = "queen";
-      }
-      if (cardName == 13) {
+      } else if (cardName == 13) {
         cardName = "king";
       }
+
+      // Create a new card with the current name, suit, and rank
       var card = {
         name: cardName,
-        suit: currSuit,
-        rank: indexRanks,
+        suit: currentSuit,
+        rank: rankCounter,
       };
-      deck.push(card);
-      indexRanks = indexRanks + 1;
+
+      // Add the new card to the deck
+      cardDeck.push(card);
+
+      // Increment rankCounter to iterate over the next rank
+      rankCounter += 1;
     }
-    indexSuits = indexSuits + 1;
-  }
-  return deck;
-};
 
-// Function that generates a random number, used by shuffle deck function
-var getRandomIndex = function (size) {
-  return Math.floor(Math.random() * size);
-};
-
-// Function that shuffles a deck, used by createNewDeck function
-var shuffleDeck = function (cards) {
-  var index = 0;
-  while (index < cards.length) {
-    var randomIndex = getRandomIndex(cards.length);
-    var currentItem = cards[index];
-    var randomItem = cards[randomIndex];
-    cards[index] = randomItem;
-    cards[randomIndex] = currentItem;
-    index = index + 1;
-  }
-  return cards;
-};
-
-// Function that creates and shuffles a deck
-var createNewDeck = function () {
-  var newDeck = createDeck();
-  var shuffledDeck = shuffleDeck(newDeck);
-  return shuffledDeck;
-};
-
-/* ================ GAME FUNCTIONS ================ */
-
-// Function that checks a hand for black jack
-var checkForBlackJack = function (handArray) {
-  // Loop through human hand
-  // if there is a blackjack return true
-  // else return false
-  var humanCardOne = handArray[0];
-  var humanCardTwo = handArray[1];
-  var isBlackJack = false;
-
-  // Possible black jack scenerios
-  // First card is Ace +  Second card is 10 or suits
-  // Second card is Ace +  First card is 10 or suits
-  if (
-    (humanCardOne.name == "ace" && humanCardTwo.rank >= 10) ||
-    (humanCardTwo.name == "ace" && humanCardOne.rank >= 10)
-  ) {
-    isBlackJack = true;
+    // Increment the suit index to iterate over the next suit
+    suitIndex += 1;
   }
 
-  return isBlackJack;
+  // Return the completed card deck
+  return cardDeck;
 };
 
-// Function that calculates a hand
-var calculateTotalHandValue = function (handArray) {
-  var totalHandValue = 0;
-  // Counter to keep track of the number of aces found within the given hand
-  var aceCounter = 0;
-
-  // Loop through human or computers hand and add up the ranks
-  var index = 0;
-  while (index < handArray.length) {
-    var currCard = handArray[index];
-
-    // In blackjack, the value of king, queen, and jack are counted as 10 by default
-    if (
-      currCard.name == "king" ||
-      currCard.name == "queen" ||
-      currCard.name == "jack"
-    ) {
-      totalHandValue = totalHandValue + 10;
-    }
-    // We count the value of ace as 11 by default
-    else if (currCard.name == "ace") {
-      totalHandValue = totalHandValue + 11;
-      aceCounter = aceCounter + 1;
-      // Else, all other numbered cards are valued by their ranks
-    } else {
-      totalHandValue = totalHandValue + currCard.rank;
-    }
-    index = index + 1;
-  }
-
-  // Reset index for ace counter
-  index = 0;
-  // Loop for the number of aces found and only deduct 10 from total hand value
-  // when totalHandValue is more than 21.
-  while (index < aceCounter) {
-    if (totalHandValue > 21) {
-      totalHandValue = totalHandValue - 10;
-    }
-    index = index + 1;
-  }
-
-  return totalHandValue;
+// Get a random index ranging from 0 (inclusive) to max (exclusive).
+var getRandomIndex = function (max) {
+  return Math.floor(Math.random() * max);
 };
 
-// Function that displays the human and computers hand in a message
-var displayHumanAndComputerHands = function (
-  humanHandArray,
-  computerHandArray
-) {
-  var humanMessage = "Human hand ✋ <br>";
-  var index = 0;
-  while (index < humanHandArray.length) {
-    humanMessage =
-      humanMessage +
-      "- " +
-      humanHandArray[index].name +
-      " of " +
-      humanHandArray[index].suit +
-      "<br>";
-    index = index + 1;
+// Shuffle the elements in the cardDeck array
+var shuffleCards = function (cardDeck) {
+  // Loop over the card deck array once
+  var currentIndex = 0;
+  while (currentIndex < cardDeck.length) {
+    // Select a random index in the deck
+    var randomIndex = getRandomIndex(cardDeck.length);
+    // Select the card that corresponds to randomIndex
+    var randomCard = cardDeck[randomIndex];
+    // Select the card that corresponds to currentIndex
+    var currentCard = cardDeck[currentIndex];
+    // Swap positions of randomCard and currentCard in the deck
+    cardDeck[currentIndex] = randomCard;
+    cardDeck[randomIndex] = currentCard;
+    // Increment currentIndex
+    currentIndex = currentIndex + 1;
   }
-
-  index = 0;
-  var computerMessage = "Computer hand 💻 <br>";
-  while (index < computerHandArray.length) {
-    computerMessage =
-      computerMessage +
-      "- " +
-      computerHandArray[index].name +
-      " of " +
-      computerHandArray[index].suit +
-      "<br>";
-    index = index + 1;
-  }
-
-  return humanMessage + "<br>" + computerMessage;
+  // Return the shuffled deck
+  return cardDeck;
 };
 
-// Function that displays the total hand values of the human and the computer in a message
-var displayHandTotalValues = function (humanHandValue, computerHandValue) {
-  var totalHandValueMessage =
-    "<br>Human ✋ total hand value: " +
-    humanHandValue +
-    "<br>Computer 💻 total hand value: " +
-    computerHandValue;
-  return totalHandValueMessage;
+var displaySingleCard = function () {
+  var deck = makeDeck();
+  var shuffledDeck = shuffleCards(deck);
+  var drawnCard = shuffledDeck.pop();
+  return ` ${drawnCard.name} of ${drawnCard.suit}`;
 };
 
-/* ================= MAIN FUNCTION ================ */
+// There will be only two players. One human and one computer, need to assign variable, input will represent human
+// The computer will always be the dealer. Reference dice roll solution
 
 var main = function (input) {
-  var myOutputValue = "";
+  // Each player gets dealt two cards to start. Human player will click Submit to deal/draw the two cards, at the same time dealer will show his two cards. Use console.log
+  // Put human player and computer's two cards value in an array
 
-  // FIRST CLICK
-  if (currentGameMode == gameStart) {
-    // create a deck of cards
-    gameDeck = createNewDeck();
+  computerStartingCards = [displaySingleCard(), displaySingleCard()];
+  console.log("starting 2 cards for computer", computerStartingCards);
 
-    // deal 2 cards to human and computer
-    humanHand.push(gameDeck.pop());
-    humanHand.push(gameDeck.pop());
-    computerHand.push(gameDeck.pop());
-    computerHand.push(gameDeck.pop());
+  humanStartingCards = [displaySingleCard(), displaySingleCard()];
+  console.log("starting 2 cards for human player", humanStartingCards);
 
-    // check human and computer cards
-    console.log("Human Hand ==>");
-    console.log(humanHand);
-    console.log("Computer Hand ==>");
-    console.log(computerHand);
+  currentGameMode = "Round to decide on hit or stand";
+  console.log("Human player decide to hit or stand", currentGameMode);
 
-    // update gameMode
-    currentGameMode = drawGameCards;
+  var concatenateToNumbers = function (num1, num2) {
+    return Number(String(num1) + String(num2));
+  };
 
-    // reassign output message
-    myOutputValue =
-      "Both human ✋ and computer 💻 have 2 cards now. Click 'Get lucky!' to calculate cards!";
+  // Concatenate human player and computer's values. Reference beatThat solution
+  var humanCurrRank = concatenateToNumbers(
+    humanStartingCards[0],
+    humanStartingCards[1]
+  );
 
-    // return message
-    return myOutputValue;
+  var computerCurrRank = concatenateToNumbers(
+    computerStartingCards[0],
+    computerStartingCards[1]
+  );
+
+  // Show the arrays in output e.g. 'Human has cards [x, y] with total value/rank of (x+y), computer has cards [a,b] with total value/rank of (a+b)'
+  var myOutputValue = `Human has drawn ${humanStartingCards} with total value/rank of ${humanCurrRank}. Computer has drawn ${computerStartingCards} with total value/rank of ${computerCurrRank}`;
+
+  // Put in conditions for blackjack - ace king, ace queen, ace jack, ace ten, else just show arrays in output
+  if (
+    (humanStartingCards[0] == "ace" && humanStartingCards[1] == "jack") ||
+    (humanStartingCards[0] == "ace" && humanStartingCards[1] == "queen") ||
+    (humanStartingCards[0] == "ace" && humanStartingCards[1] == "king") ||
+    (humanStartingCards[0] == "ace" && humanStartingCards[1] == 10) ||
+    (humanStartingCards[1] == "ace" && humanStartingCards[0] == "jack") ||
+    (humanStartingCards[1] == "ace" && humanStartingCards[0] == "queen") ||
+    (humanStartingCards[1] == "ace" && humanStartingCards[0] == "king") ||
+    (humanStartingCards[1] == "ace" && humanStartingCards[0] == 10)
+  ) {
+    console.log("blackjack for human!", displaySingleCard);
+    return "Blackjack! You've won the game";
+  }
+  if (
+    (computerStartingCards[0] == "ace" && computerStartingCards[1] == "jack") ||
+    (computerStartingCards[0] == "ace" &&
+      computerStartingCards[1] == "queen") ||
+    (computerStartingCards[0] == "ace" && computerStartingCards[1] == "king") ||
+    (computerStartingCards[0] == "ace" && computerStartingCards[1] == 10) ||
+    (computerStartingCards[1] == "ace" && computerStartingCards[0] == "jack") ||
+    (computerStartingCards[1] == "ace" &&
+      computerStartingCards[0] == "queen") ||
+    (computerStartingCards[1] == "ace" && computerStartingCards[0] == "king") ||
+    (computerStartingCards[1] == "ace" && computerStartingCards[0] == 10)
+  ) {
+    // If either human player and computer's two cards are blackjack, immediately show output that the player won.
+    console.log("blackjack for computer!", displaySingleCard);
+    return "Blackjack! You've won the game";
   }
 
-  // SECOND CLICK
-  if (currentGameMode == drawGameCards) {
-    // check for blackjack
-    var humanHasBlackJack = checkForBlackJack(humanHand);
-    var computerHasBlackJack = checkForBlackJack(computerHand);
+  // Human player decides if they want to hit (draw a card) or stand (end their turn). There is a game mode here, where input 'hit' or 'stand' can determine next step or turn.
 
-    console.log("Does human have Black Jack? ==>", humanHasBlackJack);
-    console.log("Does computer have Black Jack? ==>", computerHasBlackJack);
+  // Consider input validation if human player doesn't input 'hit' or 'stand', show 'please input 'hit' to draw a card or 'stand' to pass
 
-    // Condition when either human or computer has black jack
-    if (humanHasBlackJack == true || computerHasBlackJack == true) {
-      // Condition where both have black jack
-      if (humanHasBlackJack == true && computerHasBlackJack == true) {
-        outputMessage =
-          displayHumanAndComputerHands(humanHand, computerHand) +
-          "<br>it's a blackjack tie! 👔👔👔";
-      }
+  // If hit, go game mode 'draw a card'. Console.log to differentiate from computer game mode.
 
-      // Condition when only human has black jack
-      else if (humanHasBlackJack == true && computerHasBlackJack == false) {
-        outputMessage =
-          displayHumanAndComputerHands(humanHand, computerHand) +
-          "<br>blackjack! human ✋ wins!";
-      }
-      // Condition when only computer has black jack
-      else {
-        outputMessage =
-          displayHumanAndComputerHands(humanHand, computerHand) +
-          "<br>blackjack! computer 💻 wins!";
-      }
-    }
+  if (currentGameMode == "Round to decide on hit or stand" && input == "hit") {
+    // At this 'draw a card' game mode, draw card from deck and show the new card in output value and push the newest card to the array using .push and then add the values.
+    humanStartingCards = [displaySingleCard(), displaySingleCard()];
+    console.log("starting 2 cards for human player", humanStartingCards);
+    humanStartingCards.push(displaySingleCard());
+    humanHands = humanStartingCards;
 
-    // Condition where neither human nor computer has black jack
-    // ask human to input 'hit' or 'stand'
-    else {
-      outputMessage =
-        displayHumanAndComputerHands(humanHand, computerHand) +
-        '<br> There are no blackjacks. <br>Please input "hit" or "stand".';
+    currentGameMode = "Player hit and drew a card";
+    console.log("Human decided to hit and draw a card", currentGameMode);
 
-      // update gameMode
-      currentGameMode = gameHitOrStand;
-    }
-
-    // return message
-    return myOutputValue;
+    if (humanCurrRank > 21) {
+      // Show the output after the new card is added and the latest value/rank
+      return `Busted! Human has ${humanHands} with a total value/rank of ${humanCurrRank} and is more than 21! Let's wait... you still have a chance for a tie if the computer also gets busted!'`;
+    } else currentGameMode = "Player stand and pass the round";
+    console.log("Nice save! Now computer's turn to draw", currentGameMode);
+    return `Phew! Human has ${humanHands} with a total value/rank of ${humanCurrRank}.`;
   }
 
-  // THIRD CLICK
-  if (currentGameMode == gameHitOrStand) {
-    // Condition where human inputs 'hit'
-    if (input == "hit") {
-      humanHand.push(gameDeck.pop());
-      myOutputValue =
-        displayHumanAndComputerHands(humanHand, computerHand) +
-        '<br> You drew another card. <br>Please input "hit" or "stand".';
-    }
+  if (
+    currentGameMode == "Round to decide on hit or stand" &&
+    input == "stand"
+  ) {
+    humanStartingCards = [displaySingleCard(), displaySingleCard()];
+    console.log("starting 2 cards for human player", humanStartingCards);
+    humanHands = humanStartingCards;
 
-    // Condition where human inputs 'stand'
-    else if (input == "stand") {
-      // Calculate hands
-      var humanHandTotalValue = calculateTotalHandValue(humanHand);
-      var computerHandTotalValue = calculateTotalHandValue(computerHand);
+    currentGameMode = "Player stand and pass the turn";
+    console.log("Human decided to stand and pass the card", currentGameMode);
 
-      // computer's hit or stand logic
-      while (computerHandTotalValue < 17) {
-        computerHand.push(gameDeck.pop());
-        computerHandTotalValue = calculateTotalHandValue(computerHand);
-      }
-
-      // Conditions for tied game
-      if (
-        humanHandTotalValue == computerHandTotalValue ||
-        (humanHandTotalValue > 21 && computerHandTotalValue > 21)
-      ) {
-        myOutputValue =
-          displayHumanAndComputerHands(humanHand, computerHand) +
-          "<br>Its a Tie! 👔" +
-          displayHandTotalValues(humanHandTotalValue, computerHandTotalValue);
-      }
-
-      // Conditions for human win
-      else if (
-        (humanHandTotalValue > computerHandTotalValue &&
-          humanHandTotalValue <= 21) ||
-        (humanHandTotalValue <= 21 && computerHandTotalValue > 21)
-      ) {
-        myOutputValue =
-          displayHumanAndComputerHands(humanHand, computerHand) +
-          "<br>Human ✋ is the final winner!" +
-          displayHandTotalValues(humanHandTotalValue, computerHandTotalValue);
-      }
-
-      // Computer wins when above two conditions are not met
-      else {
-        myOutputValue =
-          displayHumanAndComputerHands(humanHand, computerHand) +
-          "<br>Computer 💻 is the final winner!" +
-          displayHandTotalValues(humanHandTotalValue, computerHandTotalValue);
-      }
-      // update game mode - GAME_RESULTS_SHOWN is not used in this base example
-      // However, you may wish to implement your own game modes for further functionality
-      // i.e. going back to GAME_START to loop the game
-      currentGameMode = showGameResults;
-    }
-
-    // Input validation when human inputs anything outside of 'hit' or 'stand'
-    else {
-      myOutputValue =
-        'Please only input "hit" or "stand".<br><br>' +
-        displayHumanAndComputerHands(humanHand, computerHand);
-    }
-
-    // return output message
-    return myOutputValue;
+    return `Human has ${humanHands} with a total value/rank of ${humanCurrRank}.`;
   }
+
+  return myOutputValue;
 };
+
+// Show the output after the new card is added and the latest value/rank
+// If total value > 21, shows the output 'Busted! Let's wait... you still have a chance if the computer also gets busted!'
+// If total value > 21 then also switch to 'pass, dealer's next' game mode
+// If total value < 21, can still draw and input 'hit'. If total value is still < 21, shows normal output 'Human has cards [x, y, z, w] with total value of (x+y+z+w). Can still put 'hit' or 'stand to continue.
+
+// If stand, go game mode 'pass'. Console.log to differentiate from computer game mode like 'dealer's next'. Once at 'pass' game mode, dealer's turn to click Submit for the next card.
+// If dealer's current card value/rank is < 17, when he clicks Submit, immediately draw a card.
+// If dealer's current card rank (in an array) is > 17, there is a game mode here, where input 'hit' or 'stand' can determine next step or turn.
+// If hit, go game mode 'draw a card'. Console.log to differentiate from human game mode. At this game mode, another card drawn. Show the new card in output value and push the newest card to the array using .push and then add the values.
+// Show the output after the new card is added and the latest value/rank for computer, at the same time shows the final conclusion together without the need to click submit button
+// If computer total value/rank > 21, shows the output 'Busted! Computer and human player both loses'
+// If computer total rank/value > human player rank, shows output, 'Computer wins'
+// If computer total rank/value < human player rank, shows output, 'Human wins'
+// If computer total rank/value = human player rank, shows output, 'It's a tie'
+// Game ends.
