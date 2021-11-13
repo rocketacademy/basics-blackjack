@@ -177,25 +177,11 @@ var main = function (input) {
     }
   }
 
-  return (
-    "Player has : " +
-    players[0][1].name +
-    +addIcone(players[0][1].suit) +
-    ", " +
-    players[0][2].name +
-    +addIcone(players[0][2].suit) +
-    " with sum = " +
-    totalPlayer +
-    "<br>" +
-    "Dealer has : " +
-    players[1][1].name +
-    +addIcone(players[1][1].suit) +
-    ", " +
-    players[1][2].name +
-    +addIcone(players[1][2].suit) +
-    " with sum = " +
-    totalDealer +
-    "<br>" +
-    myOutputValue
-  );
+  var myImage = '<img src="Image/image1.gif" /"/>';
+  return `Player has: ${players[0][1].name} ${addIcone(players[0][1].suit)}, 
+    ${players[0][2].name} ${addIcone(players[0][2].suit)} <br>
+    With sum = ${totalPlayer} <br> 
+    Dealer has: ${players[1][1].name} ${addIcone(players[1][1].suit)}, 
+    ${players[1][2].name}${addIcone(players[1][2].suit)} <br>
+    With sum = ${totalDealer} <br> ${myOutputValue} <br> ${myImage}`;
 };
