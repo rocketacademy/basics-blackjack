@@ -115,7 +115,7 @@
       }
 
       #container {
-        background-color: pink;
+        background-color: #add8e6;
         margin: 40px auto;
         max-width: 800px;
         padding: 38px 31px;
@@ -137,7 +137,7 @@
       }
 
       #output-div {
-        background-color: lightgrey;
+        background-color: #b0c4de;
         margin: 20px auto;
         padding: 20px;
         width: 100%;
@@ -172,10 +172,17 @@
     </h1>
     <h1 class="header">♣️ Basics - Blackjack ♠️</h1>
     <div id="container">
+      <p>
+        Hello! Welcome to Blackjack! Input your name and click submit to start
+        the game.
+      </p>
+      <p>The player with the highest card rank wins! Good luck!</p>
       <p>Input:</p>
       <input id="input-field" />
       <br />
       <button id="submit-button">Submit</button>
+      <button onclick="playerDraw()">Hit</button>
+      <button onclick="playerStand()">Stand</button>
       <p>Output:</p>
       <div id="output-div">Please input your name.</div>
     </div>

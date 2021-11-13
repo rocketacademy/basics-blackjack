@@ -58,7 +58,6 @@ var makeDeck = function () {
       // Increment rankCounter to iterate over the next rank
       rankCounter += 1;
     }
-
     // Increment the suit index to iterate over the next suit
     suitIndex += 1;
   }
@@ -104,9 +103,20 @@ deck = shuffleCards(makeDeck());
 var checkBlackjack = function (playerDeck) {
   var playerCard1 = playerDeck[0];
   var playerCard2 = playerDeck[1];
+  var indexCounter = 0;
+  while (indexCounter < playerDeck.length) {
+    if (
+      playerDeck[indexCounter].name == "jack" ||
+      playerDeck[indexCounter].name == "queen" ||
+      playerDeck[indexCounter].name == "king"
+    ) {
+      playerDeck[indexCounter].rank = 10;
+    }
+    indexCounter = indexCounter + 1;
+  }
   if (
-    (playerCard1.name == "ace" && playerCard2.rank >= 10) ||
-    (playerCard2.name == "ace" && playerCard1.rank >= 10)
+    (playerCard1.name == "ace" && playerCard2.rank == 10) ||
+    (playerCard2.name == "ace" && playerCard1.rank == 10)
   ) {
     var blackjack = true;
   }
@@ -114,34 +124,176 @@ var checkBlackjack = function (playerDeck) {
 };
 
 var checkSum = function (playerDeck) {
+  var totalSum = 0;
   var indexCounter = 0;
-  if (playerDeck.length == 2) {
-    while (indexCounter < playerDeck.length) {
-      var playerCard = playerDeck[indexCounter];
-      var cardName = playerCard.name;
-      if (cardName == "queen" || cardName == "king" || cardName == "jack") {
-        playerDeck[indexCounter].rank = 10;
-      }
-      indexCounter = indexCounter + 1;
+  while (indexCounter < playerDeck.length) {
+    var playerCard = playerDeck[indexCounter];
+    var cardRank = playerDeck[indexCounter].rank;
+    if (
+      playerCard.name == "jack" ||
+      playerCard.name == "queen" ||
+      playerCard.name == "king"
+    ) {
+      cardRank = 10;
     }
-    var playerSum = playerDeck[0].rank + playerDeck[1].rank;
-    console.log(playerSum, "playerSum");
+
+    totalSum = totalSum + cardRank;
+    indexCounter = indexCounter + 1;
+  }
+  return totalSum;
+};
+
+var checkWinner = function (playerDeck, computerDeck) {
+  playerSum = checkSum(playerDeck);
+  computerSum = checkSum(computerDeck);
+  // nobody burst, playerSum > computerSum, player wins
+  if (playerSum > computerSum && playerSum <= 21 && computerSum <= 21) {
+    myOutputValue = `Your card rank: ${playerSum}<br> Dealer's card rank: ${computerSum} <br><br> Congratulations! The winner is ${playerName}! You win!`;
+  }
+  // nobody burst, playerSum < computerSum, computer wins
+  else if (playerSum < computerSum && playerSum <= 21 && computerSum <= 21) {
+    myOutputValue = `Your card rank: ${playerSum}<br> Dealer's card rank: ${computerSum} <br><br> The winner is the Dealer! You lose!`;
+  }
+  // player burst
+  else if (playerSum > 21 && computerSum <= 21) {
+    myOutputValue = `Your card rank: ${playerSum}<br> Dealer's card rank: ${computerSum} <br><br> You burst. The winner is the Dealer! You lose!`;
+  }
+  //computer burst
+  else if (playerSum <= 21 && computerSum > 21) {
+    myOutputValue = `Your card rank: ${playerSum}<br> Dealer's card rank: ${computerSum} <br><br> Dealer burst. Congratulations! The winner is ${playerName}! You win!`;
+  }
+  //both burst
+  else if (playerSum > 21 && computerSum > 21) {
+    myOutputValue = `Your card rank: ${playerSum}<br> Dealer's card rank: ${computerSum} <br><br> Everyone burst. It's a tie!`;
+  }
+  // same rank
+  else if (playerSum == computerSum && playerSum > 21 && computerSum <= 21) {
+    myOutputValue = `Your card rank: ${playerSum}<br> Dealer's card rank: ${computerSum} <br><br> It's a tie!`;
+  }
+  return myOutputValue;
+};
+
+//display msg -- first card of dealer deck is not shown
+var displayHand = function (playerDeck, computerDeck) {
+  var playerOutput = `${playerName}'s Hand: <br>`;
+  var indexCounter = 0;
+  while (indexCounter < playerDeck.length) {
+    playerOutput =
+      playerOutput +
+      playerDeck[indexCounter].name +
+      " of " +
+      playerDeck[indexCounter].suit +
+      "<br>";
+    indexCounter = indexCounter + 1;
   }
 
-  if (playerDeck.length == 3) {
-    while (indexCounter < playerDeck.length) {
-      var playerCard = playerDeck[indexCounter];
-      var cardName = playerCard.name;
-      if (cardName == "queen" || cardName == "king" || cardName == "jack") {
-        playerDeck[indexCounter].rank = 10;
-      }
-      indexCounter = indexCounter + 1;
-    }
-    var playerSum =
-      playerDeck[0].rank + playerDeck[1].rank + playerDeck[2].rank;
-    console.log(playerSum, "playerSum");
+  var computerOutput = `Dealer's Hand: <br>  Hidden Card <br> ${computerDeck[1].rank} of ${computerDeck[1].suit}`;
+  var myOutputValue = playerOutput + "<br>" + computerOutput;
+  return myOutputValue;
+};
+
+//display msg -- end of round where both cards of dealer deck are shown
+var displayHandEnd = function (playerDeck, computerDeck) {
+  var playerOutput = `${playerName}'s Hand: <br>`;
+  var indexCounter = 0;
+  while (indexCounter < playerDeck.length) {
+    playerOutput =
+      playerOutput +
+      playerDeck[indexCounter].name +
+      " of " +
+      playerDeck[indexCounter].suit +
+      "<br>";
+    indexCounter = indexCounter + 1;
   }
-  return playerSum;
+
+  var computerOutput = `Dealer's Hand: <br>`;
+  var indexCounter = 0;
+  while (indexCounter < computerDeck.length) {
+    computerOutput =
+      computerOutput +
+      computerDeck[indexCounter].name +
+      " of " +
+      computerDeck[indexCounter].suit +
+      "<br>";
+    indexCounter = indexCounter + 1;
+  }
+  var myOutputValue = playerOutput + "<br>" + computerOutput;
+  return myOutputValue;
+};
+
+//display msg -- blackjack scenario, both cards from both players are shown
+var displayBlackjackHand = function (playerDeck, computerDeck) {
+  var playerOutput = `${playerName}'s Hand: <br>`;
+  var indexCounter = 0;
+  while (indexCounter < playerDeck.length) {
+    playerOutput =
+      playerOutput +
+      playerDeck[indexCounter].name +
+      " of " +
+      playerDeck[indexCounter].suit +
+      "<br>";
+    indexCounter = indexCounter + 1;
+  }
+
+  var computerOutput = `Dealer's Hand: <br>`;
+  var indexCounter = 0;
+  while (indexCounter < computerDeck.length) {
+    computerOutput =
+      computerOutput +
+      computerDeck[indexCounter].name +
+      " of " +
+      computerDeck[indexCounter].suit +
+      "<br>";
+    indexCounter = indexCounter + 1;
+  }
+  var myOutputValue = playerOutput + "<br>" + computerOutput;
+  return myOutputValue;
+};
+
+var playerDraw = function () {
+  playerCard = deck.pop();
+  playerDeck.push(playerCard);
+  var playerDrawMessage =
+    `You have chosen to hit. You have drawn ` +
+    playerCard.name +
+    " of " +
+    playerCard.suit +
+    ".<br>";
+  console.log(playerDeck, "playerDeck");
+  var playerSum = checkSum(playerDeck);
+  var displayMessage =
+    playerDrawMessage + "<br>" + displayHand(playerDeck, computerDeck);
+  myOutputValue =
+    displayMessage +
+    `<br><br> Your card rank: ${playerSum}<br><br> Please decide to hit or stand.`;
+  document.getElementById("output-div").innerHTML = myOutputValue;
+  return myOutputValue;
+};
+
+var playerStand = function () {
+  var displayMessage = displayHand(playerDeck, computerDeck);
+  var playerSum = checkSum(playerDeck);
+  myOutputValue =
+    `You have chosen to stand. <br><br>` +
+    displayMessage +
+    `<br><br> Your card rank: ${playerSum}<br><br> It's Dealer's turn. Press submit to continue.`;
+  document.getElementById("output-div").innerHTML = myOutputValue;
+  console.log("playerstand", myOutputValue);
+  currentGameMode = "Dealer turn";
+  return myOutputValue;
+};
+
+var computerDraw = function () {
+  computerCard = deck.pop();
+  computerDeck.push(computerCard);
+  computerSum = checkSum(computerDeck);
+  var myOutputValue =
+    `The Dealer has chosen to hit. Dealer has drawn ` +
+    computerCard.name +
+    " of " +
+    computerCard.suit +
+    ".<br>";
+  return myOutputValue;
 };
 
 var main = function (input) {
@@ -149,151 +301,117 @@ var main = function (input) {
   // player name input
   if (currentGameMode == "player name input" && input != "") {
     playerName = input;
-    myOutputValue = `Welcome ${playerName}, please press submit to draw 2 cards.`;
     currentGameMode = "draw cards";
+    return (myOutputValue = `Welcome ${playerName}, please press submit to draw 2 cards.`);
   } else if (currentGameMode == "player name input" && input == "") {
-    myOutputValue = "Please input your name.";
     currentGameMode = "player name input";
+    return (myOutputValue = "Please input your name.");
   }
 
   // game starts
-  if (currentGameMode == "draw cards") {
+  if (currentGameMode == "draw cards" && input == "") {
     // Initialise the shuffled card deck before the game starts.
     // 1. player and computer draw 2 cards from shuffled deck
     var playerCard1 = deck.pop();
     var playerCard2 = deck.pop();
-    // playerCard1.name = "ace";
-    // playerCard2.rank = 10;
     playerDeck.push(playerCard1, playerCard2);
     console.log("playerDeck", playerDeck);
     console.log("playerCard1", playerCard1);
     console.log("playerCard2", playerCard2);
     var computerCard1 = deck.pop();
     var computerCard2 = deck.pop();
-    // computerCard1.name = "ace";
-    // computerCard2.rank = 10;
     computerDeck.push(computerCard1, computerCard2);
     console.log("computerDeck", computerDeck);
     console.log("computerCard1", computerCard1);
     console.log("computerCard2", computerCard2);
-    myOutputValue = `${playerName}'s hand: ${playerCard1.name} of ${playerCard1.suit}, ${playerCard2.name} of ${playerCard2.suit} <br> Dealer's hand: ${computerCard1.name} of ${computerCard1.suit}, ${computerCard2.name} of ${computerCard2.suit}<br> ${playerName}, please choose hit or stand.`;
-    currentGameMode = "check blackjack";
-  }
-  // 1a. blackjack scenario
-  if (currentGameMode == "check blackjack") {
+    var displayMessage = displayHand(playerDeck, computerDeck);
+    var computerSum = checkSum(computerDeck);
+    var playerSum = checkSum(playerDeck);
+    myOutputValue =
+      displayMessage +
+      `<br><br> Your card rank: ${playerSum}<br><br> ${playerName}, Please decide to hit or stand.`;
+    console.log("myOutputValue", myOutputValue);
+    currentGameMode = "Player choice";
+    // check blackjack
     var playerBlackjack = checkBlackjack(playerDeck);
     var computerBlackjack = checkBlackjack(computerDeck);
-    //player blackjack
+    // player blackjack
     if (playerBlackjack == true && computerBlackjack != true) {
-      playerScore = playerScore + 1;
-      computerScore = computerScore + 0;
-      myOutputValue = `${playerName}'s hand: ${playerCard1.name} of ${playerCard1.suit}, ${playerCard2.name} of ${playerCard2.suit} <br> Dealer's hand: ${computerCard1.name} of ${computerCard1.suit}, ${computerCard2.name} of ${computerCard2.suit} <br><br> ${playerName} wins! <br><br> ${playerName}'s Score: ${playerScore}<br> Dealer's score: ${computerScore}`;
+      displayMessage = displayBlackjackHand(playerDeck, computerDeck);
+      myOutputValue =
+        displayMessage +
+        `<br> Congratulations, ${playerName} wins by blackjack!`;
     }
     // computer blackjack
     else if (computerBlackjack == true && playerBlackjack != true) {
-      playerScore = playerScore + 0;
-      computerScore = computerScore + 1;
-      myOutputValue = `${playerName}'s hand: ${playerCard1.name} of ${playerCard1.suit}, ${playerCard2.name} of ${playerCard2.suit} <br> Dealer's hand: ${computerCard1.name} of ${computerCard1.suit}, ${computerCard2.name} of ${computerCard2.suit} <br><br> Dealer wins! <br><br> ${playerName}'s Score: ${playerScore}<br> Dealer's score: ${computerScore}`;
+      displayMessage = displayBlackjackHand(playerDeck, computerDeck);
+      myOutputValue =
+        displayMessage + `<br> Congratulations, the Dealer wins by blackjack!`;
     }
     // both blackjack
     else if (playerBlackjack == true && computerBlackjack == true) {
-      playerScore = playerScore + 0;
-      computerScore = computerScore + 0;
-      myOutputValue = `${playerName}'s hand: ${playerCard1.name} of ${playerCard1.suit}, ${playerCard2.name} of ${playerCard2.suit} <br> Dealer's hand: ${computerCard1.name} of ${computerCard1.suit}, ${computerCard2.name} of ${computerCard2.suit} <br><br> It's a tie. <br><br> ${playerName}'s Score: ${playerScore}<br> Dealer's score: ${computerScore}`;
-    } else if (playerBlackjack != true && computerBlackjack != true) {
-      currentGameMode = "player draws";
+      displayMessage = displayBlackjackHand(playerDeck, computerDeck);
+      myOutputValue =
+        displayMessage +
+        `<br> Congratulations, both sides hold blackjack! It's a draw!`;
     }
+  } else if (currentGameMode == "draw cards" && input != "") {
+    myOutputValue = "Please press submit to draw 2 cards.";
   }
+
   // 2. player decides to hit or stand
-  // 2a. player hit
-  if (currentGameMode == "player draws" && input == "hit") {
-    var playerCard3 = deck.pop();
-    playerDeck.push(playerCard3);
-    myOutputValue = `You drew : ${playerDeck[2].name} of ${playerDeck[2].suit} <br><br> ${playerName}'s hand: ${playerDeck[0].name} of ${playerDeck[0].suit}, ${playerDeck[1].name} of ${playerDeck[1].suit}, ${playerDeck[2].name} of ${playerDeck[2].suit}<br> Dealer's hand: ${computerDeck[0].name} of ${computerDeck[0].suit}, ${computerDeck[1].name} of ${computerDeck[1].suit}<br><br> It's dealer's turn.`;
-    console.log("myOutputValue after hit", myOutputValue);
-    currentGameMode = "dealer turn";
-    //2b. player stand
-  } else if (currentGameMode == "player draws" && input == "stand") {
-    myOutputValue = `${playerName}'s hand: ${playerDeck[0].name} of ${playerDeck[0].suit}, ${playerDeck[1].name} of ${playerDeck[1].suit} <br> Dealer's hand: ${computerDeck[0].name} of ${computerDeck[0].suit}, ${computerDeck[1].name} of ${computerDeck[1].suit} <br><br> It's dealer's turn.`;
-    currentGameMode = "dealer turn";
-    //2c. player input neither hit nor stand
-  } else if (
-    currentGameMode == "player draws" &&
-    input != "hit" &&
-    input != "stand"
-  ) {
-    myOutputValue = `${playerName}'s hand: ${playerDeck[0].name} of ${playerDeck[0].suit}, ${playerDeck[1].name} of ${playerDeck[1].suit} <br> Dealer's hand: ${computerDeck[0].name} of ${computerDeck[0].suit}, ${computerDeck[1].name} of ${computerDeck[1].suit} <br><br> Please input "hit" or "stand".`;
-  }
-
-  // dealer draws if hand < 17
-  if (currentGameMode == "dealer turn" && input == "") {
-    var computerSum = checkSum(computerDeck);
-    console.log(computerSum, "computersum");
-    if (computerSum < 17) {
-      //dealer draws
-      var computerCard3 = deck.pop();
-      computerDeck.push(computerCard3);
-      console.log(computerCard3, "computerCard3");
-      // compare the sum of cards to see who wins
+  else if (currentGameMode == "Player choice") {
+    if (playerDraw == true) {
+      // var playerDrawMessage = playerDraw();
+      // var computerSum = checkSum(computerDeck);
+      // var playerSum = checkSum(playerDeck);
+      // displayMessage =
+      //   playerDrawMessage + "<br>" + displayHand(playerDeck, computerDeck);
+      // myOutputValue =
+      //   displayMessage +
+      //   `<br><br> Your card rank: ${playerSum}<br><br> Please decide to hit or stand.`;
+      // console.log(displayMessage, "displayerMessage");
+    } else if (playerStand == true) {
+      // displayMessage = displayHand(playerDeck, computerDeck);
+      // var computerSum = checkSum(computerDeck);
+      // var playerSum = checkSum(playerDeck);
+      // myOutputValue =
+      //   `You have chosen to stand. <br><br>` +
+      //   displayMessage +
+      //   `<br><br> Your card rank: ${playerSum}<br><br> It's Dealer's turn. Press submit to continue.`;
+      // currentGameMode = "Dealer turn";
+    } else if (input != "stand" && input != "hit") {
+      var computerSum = checkSum(computerDeck);
       var playerSum = checkSum(playerDeck);
-      computerSum = checkSum(computerDeck);
-      console.log(playerSum, "playersum");
-      console.log(computerSum, "computersum");
-      //player lose scenarios : burst / < computer sum
-      if ((playerSum > 21 && computerSum < 21) || playerSum < computerSum) {
-        playerScore = playerScore + 0;
-        computerScore = computerScore + 1;
-        myOutputValue = `Dealer drew: ${computerDeck[2].name} of ${computerDeck[2].suit}<br><br> ${playerName}'s Hand: ${playerSum}<br>Dealer's Hand: ${computerSum}<br><br> ${playerName}, you lost.<br><br> ${playerName}'s Score: ${playerScore}<br> Dealer's score: ${computerScore}`;
-      }
-      //computer lose scenarios
-      else if (
-        (computerSum > 21 && playerSum < 21) ||
-        computerSum < playerSum
-      ) {
-        playerScore = playerScore + 1;
-        computerScore = computerScore + 0;
-        myOutputValue = `Dealer drew: ${computerDeck[2].name} of ${computerDeck[2].suit}<br><br> ${playerName}'s Hand: ${playerSum}<br>Dealer's Hand: ${computerSum}<br><br> Computer lost. <br><br> ${playerName}'s Score: ${playerScore}<br> Dealer's score: ${computerScore}`;
-      }
-      // tie scenarios, both burst, or
-      else if (
-        (playerSum > 21 && computerSum > 21) ||
-        playerSum == computerSum
-      ) {
-        playerScore = playerScore + 0;
-        computerScore = computerScore + 0;
-        myOutputValue = `Dealer drew: ${computerDeck[2].name} of ${computerDeck[2].suit}<br><br> ${playerName}'s Hand: ${playerSum}<br>Dealer's Hand: ${computerSum}<br><br> It's a tie. <br><br> ${playerName}'s Score: ${playerScore}<br> Dealer's score: ${computerScore}`;
-      }
-    }
-    // if computer > 17, no draw
-    else if (computerSum > 17) {
-      playerSum = checkSum(playerDeck);
-      computerSum = checkSum(computerDeck);
-      // player lose scenarios
-      if ((playerSum > 21 && computerSum < 21) || playerSum < computerSum) {
-        playerScore = playerScore + 0;
-        computerScore = computerScore + 1;
-        myOutputValue = `${playerName}'s Hand: ${playerSum}<br>Dealer's Hand: ${computerSum}<br><br> ${playerName}, you lost. <br><br> ${playerName}'s Score: ${playerScore}<br> Dealer's score: ${computerScore}`;
-      }
-      //computer lose scenarios
-      else if (
-        (computerSum > 21 && playerSum < 21) ||
-        computerSum < playerSum
-      ) {
-        playerScore = playerScore + 1;
-        computerScore = computerScore + 0;
-        myOutputValue = `${playerName}'s Hand: ${playerSum}<br>Dealer's Hand: ${computerSum}<br><br> Computer lost. <br><br> ${playerName}'s Score: ${playerScore}<br> Dealer's score: ${computerScore}`;
-      }
-      // tie scenarios, both burst, or
-      else if (
-        (playerSum > 21 && computerSum > 21) ||
-        playerSum == computerSum
-      ) {
-        playerScore = playerScore + 0;
-        computerScore = computerScore + 0;
-        myOutputValue = `${playerName}'s Hand: ${playerSum}<br>Dealer's Hand: ${computerSum}<br><br> It's a tie. <br><br> ${playerName}'s Score: ${playerScore}<br> Dealer's score: ${computerScore}`;
-      }
+      displayMessage = displayHand(playerDeck, computerDeck);
+      myOutputValue =
+        "You have not select any of the choice. Please decide to hit or stand. <br><br>" +
+        displayMessage +
+        `<br><br> Your card rank: ${playerSum}`;
     }
   }
 
+  // dealer's turn
+  // dealer draw if total sum less than 17
+  else if ((currentGameMode = "Dealer turn")) {
+    computerSum = checkSum(computerDeck);
+    if (computerSum < 17) {
+      var computerDrawMessage = computerDraw();
+      displayMessage =
+        computerDrawMessage + "<br>" + displayHandEnd(playerDeck, computerDeck);
+      computerSum = checkSum(computerDeck);
+      playerSum = checkSum(playerDeck);
+      myOutputValue =
+        displayMessage +
+        `<br><br> Your card rank: ${playerSum}<br>Dealer's card rank: ${computerSum}<br><br> Please press submit to continue.`;
+    } else if (computerSum >= 17) {
+      displayMessage =
+        `The Dealer decides to stand.<br><br>` +
+        displayHandEnd(playerDeck, computerDeck);
+      var winnerMessage = checkWinner(playerDeck, computerDeck);
+      myOutputValue = displayMessage + "<br>" + winnerMessage;
+      console.log(myOutputValue, "myoutputValue");
+    }
+  }
   return myOutputValue;
 };
