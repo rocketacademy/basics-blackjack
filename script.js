@@ -2,6 +2,10 @@ var currDeck = [];
 var player = [];
 var dealer = [];
 
+var waitImage = `<img class="play-img" src="https://c.tenor.com/vl4uk8RxoYIAAAAM/poker-pokerchip.gif">`
+var winImage = `<img class="play-img" src="https://c.tenor.com/WZ3ZVyUZmgYAAAAM/proud-%C3%B6rvend.gif">`
+var loseImage = `<img class="play-img" src="https://c.tenor.com/egKFSJft2m4AAAAC/tony-g-poker-face.gif">`
+
 var gameOver = false;
 
 var getRandomIndex = function (max) {
@@ -97,7 +101,6 @@ var getSumOnHand = function (onHand) {
       }
     }
   }
-
   return sum;
 };
 
@@ -124,13 +127,10 @@ var getGenericMessage = function () {
 };
 
 var main = function (input) {
-  if (gameOver == false) {
+  if (gameOver == false) {  
     if (currDeck.length == 0) {
       currDeck = shuffleCards(makeDeck());
     }
-
-    //Console Log
-    //console.log(currDeck);
 
     if (player.length == 0) {
       drawCard(player);
@@ -141,15 +141,14 @@ var main = function (input) {
 
       if (blackJack(player)) {
         gameOver = true;
-        return `<strong>Player 1 has BlackJack and <u>Won</u>.</strong><br>Please refresh to start new game. <br><br>${getGenericMessage()}`;
+        return `${winImage}<strong>Player 1 has BlackJack and <u>Won</u>.</strong><br>Please refresh to start new game. <br><br>${getGenericMessage()}`;
       }
 
       if (blackJack(dealer)) {
         gameOver = true;
-        return `<strong>Dealer has BlackJack and <u>Won</u>.</strong><br>Please refresh to start new game. <br><br>${getGenericMessage()}`;
+        return `${loseImage}<strong>Dealer has BlackJack and <u>Won</u>.</strong><br>Please refresh to start new game. <br><br>${getGenericMessage()}`;
       }
-
-      return `${getGenericMessage()}<br><br>Player 1. Please enter "hit" or "stand" and Submit`;
+      return `${waitImage}${getGenericMessage()}<br><br>Player 1. Please enter "hit" or "stand" and Submit`;
     }
 
     var input = input.toLowerCase();
@@ -157,26 +156,27 @@ var main = function (input) {
       drawCard(player);
       if (getSumOnHand(player) > 21) {
         gameOver = true;
-        return `<strong>Dealer has <u>Won</u>!<br>Player 1 has bust.</strong><br>Please refresh to start new game<br><br>${getGenericMessage()}`;
+        return `${loseImage}<strong>Dealer has <u>Won</u>!<br>Player 1 has bust.</strong><br>Please refresh to start new game<br><br>${getGenericMessage()}`;
       } else {
-        return `${getGenericMessage()}<br><br>Player 1. Please enter "hit" or "stand" and Submit`;
+        return `${waitImage}${getGenericMessage()}<br><br>Player 1. Please enter "hit" or "stand" and Submit`;
       }
     }
+    
     if (input == `stand`) {
       while (getSumOnHand(dealer) < 17) {
         drawCard(dealer);
         if (getSumOnHand(dealer) > 21) {
           gameOver = true;
-          return `<strong>Player 1 has <u>Won</u>!<br>Dealer has bust.</strong><br>Please refresh to start new game.<br><br>${getGenericMessage()}`;
+          return `${winImage}<strong>Player 1 has <u>Won</u>!<br>Dealer has bust.</strong><br>Please refresh to start new game.<br><br>${getGenericMessage()}`;
         }
       }
       if (getSumOnHand(player) > getSumOnHand(dealer)) {
         gameOver = true;
-        return `<strong>Player 1 has <u>Won</u>.</strong><br>Please refresh to start new game. <br><br>${getGenericMessage()}`;
+        return `${winImage}<strong>Player 1 has <u>Won</u>.</strong><br>Please refresh to start new game. <br><br>${getGenericMessage()}`;
       }
       if (getSumOnHand(dealer) > getSumOnHand(player)) {
         gameOver = true;
-        return `<strong>Dealer has <u>Won</u>.</strong><br>Please refresh to start new game. <br><br>${getGenericMessage()}`;
+        return `${loseImage}<strong>Dealer has <u>Won</u>.</strong><br>Please refresh to start new game. <br><br>${getGenericMessage()}`;
       }
       if (getSumOnHand(dealer) = getSumOnHand(player)) {
         gameOver = true;
