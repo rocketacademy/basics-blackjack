@@ -155,7 +155,7 @@ var displayHumanAndComputerHands = function (
   humanHandArray,
   computerHandArray
 ) {
-  var humanMessage = "Human hand:<br>";
+  var humanMessage = "Human hand ✋ <br>";
   var index = 0;
   while (index < humanHandArray.length) {
     humanMessage =
@@ -169,7 +169,7 @@ var displayHumanAndComputerHands = function (
   }
 
   index = 0;
-  var computerMessage = "Computer hand:<br>";
+  var computerMessage = "Computer hand 💻 <br>";
   while (index < computerHandArray.length) {
     computerMessage =
       computerMessage +
@@ -187,9 +187,9 @@ var displayHumanAndComputerHands = function (
 // Function that displays the total hand values of the human and the computer in a message
 var displayHandTotalValues = function (humanHandValue, computerHandValue) {
   var totalHandValueMessage =
-    "<br>Human total hand value: " +
+    "<br>Human ✋ total hand value: " +
     humanHandValue +
-    "<br>Computer total hand value: " +
+    "<br>Computer 💻 total hand value: " +
     computerHandValue;
   return totalHandValueMessage;
 };
@@ -221,7 +221,7 @@ var main = function (input) {
 
     // reassign output message
     myOutputValue =
-      "Both human and computer have 2 cards now. Click button to calculate cards!";
+      "Both human ✋ and computer 💻 have 2 cards now. Click 'Get lucky!' to calculate cards!";
 
     // return message
     return myOutputValue;
@@ -242,19 +242,20 @@ var main = function (input) {
       if (humanHasBlackJack == true && computerHasBlackJack == true) {
         outputMessage =
           displayHumanAndComputerHands(humanHand, computerHand) +
-          "<br>it's a blackjack tie!";
+          "<br>it's a blackjack tie! 👔👔👔";
       }
+
       // Condition when only human has black jack
       else if (humanHasBlackJack == true && computerHasBlackJack == false) {
         outputMessage =
           displayHumanAndComputerHands(humanHand, computerHand) +
-          "<br>blackjack! human wins!";
+          "<br>blackjack! human ✋ wins!";
       }
       // Condition when only computer has black jack
       else {
         outputMessage =
           displayHumanAndComputerHands(humanHand, computerHand) +
-          "<br>blackjack! computer wins!";
+          "<br>blackjack! computer 💻 wins!";
       }
     }
 
@@ -302,7 +303,7 @@ var main = function (input) {
       ) {
         myOutputValue =
           displayHumanAndComputerHands(humanHand, computerHand) +
-          "<br>Its a Tie!" +
+          "<br>Its a Tie! 👔" +
           displayHandTotalValues(humanHandTotalValue, computerHandTotalValue);
       }
 
@@ -314,7 +315,7 @@ var main = function (input) {
       ) {
         myOutputValue =
           displayHumanAndComputerHands(humanHand, computerHand) +
-          "<br>Human wins!" +
+          "<br>Human ✋ is the final winner!" +
           displayHandTotalValues(humanHandTotalValue, computerHandTotalValue);
       }
 
@@ -322,7 +323,7 @@ var main = function (input) {
       else {
         myOutputValue =
           displayHumanAndComputerHands(humanHand, computerHand) +
-          "<br>Computer wins!" +
+          "<br>Computer 💻 is the final winner!" +
           displayHandTotalValues(humanHandTotalValue, computerHandTotalValue);
       }
       // update game mode - GAME_RESULTS_SHOWN is not used in this base example
