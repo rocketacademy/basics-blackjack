@@ -280,7 +280,7 @@ var main = function (input) {
     //   1: {
     //     decks: [
     //       { name: "ace", blackjackValue: 1, emoji: "♥︎" },
-    //       { name: "ace", blackjackValue: 1, emoji: "♣︎" },
+    //       { name: "king", blackjackValue: 10, emoji: "♣︎" },
     //     ],
     //     blackjackValues: [],
     //     playerPoints: 100,
@@ -339,8 +339,8 @@ var main = function (input) {
         var currentTotal = currentValue(playerTurn);
         if (currentTotal == 21) {
           myOutputValue += `<br><br>WOW! You got a <b>Blackjack</b> ✨! Press '<b>Submit</b>' to continue to next player...`;
+          master[playerTurn].blackjackValues.push("Blackjack");
           playerTurn += 1;
-          master[playerTurn].blackjackValues[0] = "Blackjack";
         } else if (
           master[playerTurn].decks[0].name ==
             master[playerTurn].decks[1].name &&
@@ -400,6 +400,7 @@ var main = function (input) {
           gameMode = "game";
           if (splitTurn == 2) {
             playerTurn += 1;
+            splitTurn = 1;
             splitMode = false;
             splitQnAsked = false;
           } else {
