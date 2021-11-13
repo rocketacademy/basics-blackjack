@@ -245,8 +245,8 @@ var deck = "";
 var shuffledDeck = "";
 
 // DELETE LTR //
-var gameMode = "Blackjack";
-var noOfPlayers = 2;
+// var gameMode = "Blackjack";
+// var noOfPlayers = 2;
 //////////////////
 
 var main = function (input) {
