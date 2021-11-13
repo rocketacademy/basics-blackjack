@@ -1,5 +1,3 @@
-// To do:
-// htmL
 var state = "GET NUMBER OF PLAYERS";
 var numberOfPlayers = 0;
 var playerNames = [];
