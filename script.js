@@ -141,10 +141,7 @@ var cardGame = function (input) {
     }
     state = "PLACE BETS";
     return `Please input how much ${playerNames[0]} would like to bet!`;
-  }
-  // else if (state === "PLACE BETS" && input == 1) {
-  //   return `Please input a bet in a numerical format.`;}
-  else if (state === "PLACE BETS") {
+  } else if (state === "PLACE BETS") {
     let bet = 0;
     if (playerIndex < numberOfPlayers) {
       bet = Number(input);
@@ -195,8 +192,8 @@ var cardGame = function (input) {
         if (playerValue[playerIndex] > 21) {
           for (let i = 0; i < playerCards[playerIndex].length; i++) {
             if (playerCards[playerIndex][i].name === "A") {
-              playerValue[i] -= 10;
-            }
+              playerValue[playerIndex] -= 10;
+            } 
           }
         }
         state = "OPTION";
@@ -219,13 +216,15 @@ var cardGame = function (input) {
         state = "OPTION";
         playerIndex += 1;
         if (playerIndex < numberOfPlayers) {
-          return `Player${[playerIndex]} choose HIT or STAY<br>
+          return `${playerNames[playerIndex]} choose HIT or STAY<br>
           ${displayCards()}
           `;
         }
       } else if (playerValue[playerIndex] > 21) {
         playerIndex += 1;
-        return `Player${playerIndex} Busts. Next player Choose Hit or Stay.<br>
+        return `${
+          playerNames[playerIndex-1]
+        } Busts. Next player Choose Hit or Stay.<br>
         ${displayCards()}
         `;
       }
