@@ -198,12 +198,13 @@ var checkBlackjack = function (allPlayersArray) {
 };
 var checkIfDrawUpdateArray = function (indexPlayers, allPlayersArray) {
   for (let i = 1; i < indexPlayers; i++) {
-    if (
-      allPlayersArray[i].blackjack == false &&
-      computeIfDraw(allPlayersArray[i].rank, 17)
-    ) {
-      allPlayersArray[i].cards = drawCards(1, deck, allPlayersArray[i].cards);
-      allPlayersArray[i].rank = computeSumCardsRanks(allPlayersArray[i].cards);
+    if (allPlayersArray[i].blackjack == false) {
+      while (computeIfDraw(allPlayersArray[i].rank, 17)) {
+        allPlayersArray[i].cards = drawCards(1, deck, allPlayersArray[i].cards);
+        allPlayersArray[i].rank = computeSumCardsRanks(
+          allPlayersArray[i].cards
+        );
+      }
     }
   }
 };
@@ -215,8 +216,9 @@ var indexUser = 0;
 var indexDealer = "";
 var allPlayersArray = []; //each player has: Name, Cards, Blackjack, SumRank, Wins
 var playerCoins = 100;
-var playerWager = "";
+var playerWager = 0;
 var playerWinnings = 0;
+var playCount = 0;
 var myOutputValue = "";
 
 //Game Mode
@@ -232,11 +234,11 @@ var main = function (input) {
   if (gameMode == FIRSTDRAW) {
     resetGame();
     if (inputIsNan(input) == true || input > playerCoins) {
-      //[KIV] myOutputValue = messageTemplate[gameMode].error; NOTE: KIV TO USE MESSAGETEMPLATE
       return storyBoard[gameMode].ending;
     } else {
       // User's wager is accepted
       playerWager = input;
+      playCount += 1;
 
       // Dealer deals two cards to all players, then itself. Check if anybody has Blackjack.
       drawTwoCardsUpdateArray(numberOfPlayers, allPlayersArray);
@@ -255,14 +257,22 @@ var main = function (input) {
       allPlayersArray[indexUser].rank = computeSumCardsRanks(
         allPlayersArray[indexUser].cards
       );
-    } else if (input == "STAND") {
+      // Give User option to redraw if total points are under 22
+      if (allPlayersArray[indexUser].rank < 22) {
+        gameMode = USERTURN;
+      } else {
+        gameMode = DEALERTURN;
+      }
+    } else if (input == "STAND" && allPlayersArray[indexUser].rank < 17) {
+      return storyBoard[gameMode].error2;
+    } else if (input == "STAND" && allPlayersArray[indexUser].rank > 16) {
+      gameMode = DEALERTURN;
     } else {
       gameMode = USERTURN;
       return storyBoard[gameMode].error;
     }
     myOutputValue += storyBoard[gameMode].outcome[input];
     console.log("allPlayersArray USERTURN:", allPlayersArray);
-    gameMode = DEALERTURN;
   } else if (gameMode == DEALERTURN) {
     myOutputValue = storyBoard[gameMode].opening;
     checkIfDrawUpdateArray(numberOfPlayers, allPlayersArray);
@@ -281,6 +291,7 @@ var main = function (input) {
         myOutputValue = `"BLACKJA-", you stop halfway when you see the dealer reveals its hands too. <br>It's a push. `;
       } else if (allPlayersArray[indexUser].blackjack) {
         playerWinnings = playerWager * 1.5;
+        allPlayersArray[indexUser].wins += 1;
         myOutputValue = `"BLACKJACK!" you upper-cut the air while the dealer takes back your cards and pushes ${playerWinnings} coins to you. `;
       } else if (allPlayersArray[indexDealer].blackjack) {
         playerWinnings = playerWager * -1.5;
@@ -306,6 +317,7 @@ var main = function (input) {
         )} coins away from you. `;
       } else {
         playerWinnings = playerWager * 1;
+        allPlayersArray[indexUser].wins += 1;
         myOutputValue = `"Win," the dealer beeps as it takes back your cards and pushes ${playerWinnings} coins to you. `;
       }
     }
@@ -346,7 +358,9 @@ var main = function (input) {
   myOutputValue += storyBoard[gameMode].ending;
   //During game, display only one of Dealer's cards. Else, display both.
   if (gameMode == FIRSTDRAW) {
-    myOutputValue += `<hr>Coins: ${playerCoins}, Wager: ${playerWager}<br><br>Your hand: ${displayCards(
+    myOutputValue += `<hr>Coins: ${playerCoins}, Wager: ${playerWager}<br>Round: ${playCount}, Wins: ${
+      allPlayersArray[indexUser].wins
+    }<br><br>Your hand: ${displayCards(
       allPlayersArray[0].cards,
       0
     )}<br>Computer's hand: ${displayCards(
@@ -354,7 +368,9 @@ var main = function (input) {
       0
     )}`;
   } else {
-    myOutputValue += `<hr>Coins: ${playerCoins}, Wager: ${playerWager}<br><br>Your hand: ${displayCards(
+    myOutputValue += `<hr>Coins: ${playerCoins}, Wager: ${playerWager}<br>Round: ${playCount}, Wins: ${
+      allPlayersArray[indexUser].wins
+    }<br><br>Your hand: ${displayCards(
       allPlayersArray[0].cards,
       0
     )}<br>Computer's hand: ${displayCards(
@@ -389,6 +405,7 @@ var storyBoard = {
     },
     ending: `<br>[Input HIT or STAND to continue]`,
     error: `You hear a voice inside of your head saying: Please enter HIT or STAND only.`,
+    error2: `You hear a voice inside of your head saying: You have insufficient points, you must HIT!`,
   },
   dealerturn: {
     opening: `You stare hard at your cards while the game progresses.`,
