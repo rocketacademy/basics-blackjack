@@ -72,10 +72,7 @@ var main = function (input) {
       if (determineValue(playerHand) > 21) {
         mode = "determineWinner";
       } else {
-        return `Your cards: ${displayCards(playerHand)}<br>
-        Computer's 1st card:  ${computerHand[0].value}
-        ${computerHand[0].suits} <br>
-        Click 'hit' or 'stand' to proceed`;
+        return `Click 'hit' or 'stand' to proceed`;
       }
     }
     if (input == "stand") {
@@ -87,11 +84,12 @@ var main = function (input) {
     document.getElementById("restart-button").disabled = false;
     document.getElementById("hit-button").disabled = true;
     document.getElementById("stand-button").disabled = true;
+    var result3 = displayCards(computerHand);
+    var output3 = document.querySelector("#blue");
+    output3.innerHTML = "Computer's Hand:    " + result3;
     let winStatus = "";
     let conclusionString = function () {
-      return `Your hand: ${displayCards(playerHand)} <br>
-    Computer's hand: ${displayCards(computerHand)} <br>
-    ${winStatus} <br>
+      return `${winStatus} <br>
     Click restart to try again!`;
     };
     if (determineValue(playerHand) > 21) {
