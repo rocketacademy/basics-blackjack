@@ -84,6 +84,11 @@ var displayCards = function (player) {
   return message;
 };
 
+var displayOneDealerCard = function () {
+  var message = `<br><br>❗️One of the Dealer's Cards is ${master["dealer"].decks[0].name} of ${master["dealer"].decks[0].emoji}❗️`;
+  return message;
+};
+
 var displaySplitCards = function (player) {
   var message = "";
   master[player].blackjackValues = [];
@@ -354,8 +359,7 @@ var main = function (input) {
           master[playerTurn].blackjackValues.push(currentTotal);
         }
 
-        myOutputValue += `<br><br>❗️One of the Dealer's Cards is ${master["dealer"].decks[0].name} of ${master["dealer"].decks[0].emoji}❗️
-      `;
+        myOutputValue += displayOneDealerCard();
       }
     }
   }
@@ -381,7 +385,7 @@ var main = function (input) {
       myOutputValue += `Error! Please enter '<b>yes</b>' or '<b>no</b>' to splitting your cards...`;
       myOutputValue += `<br><br><b><u>Player ${playerTurn}</b></u><br>Your cards are:`;
       myOutputValue += displayCards(playerTurn);
-      myOutputValue += `<br><br>❗️One of the Dealer's Cards is ${master["dealer"].decks[0].name} of ${master["dealer"].decks[0].emoji}❗️`;
+      myOutputValue += displayOneDealerCard();
     }
   }
   //PHASE 5: CHOICE
@@ -404,8 +408,7 @@ var main = function (input) {
         } else {
           myOutputValue += `<br>For <b>Hand ${splitTurn}</b>, do you want to '<b>hit</b>' 💥 or '<b>stand</b>' ✋🏼?<br><i>(p.s. You must have at least 17 to stand)</i>`;
         }
-        myOutputValue += `<br><br>❗️One of the Dealer's Cards is ${master["dealer"].decks[0].name} of ${master["dealer"].decks[0].emoji}❗️
-      `;
+        myOutputValue += displayOneDealerCard();
       } else if (input == "stand") {
         if (master[playerTurn].blackjackValues[splitTurn - 1] <= 16) {
           return `The minimum value to '<b>stand</b>' ✋🏼 is 17 and you have <b>${
@@ -447,8 +450,7 @@ var main = function (input) {
       } else {
         myOutputValue += `<br>Do you want to '<b>hit</b>' 💥 or '<b>stand</b>' ✋🏼?<br><i>(p.s. You must have at least 17 to stand)</i>`;
       }
-      myOutputValue += `<br><br>❗️One of the Dealer's Cards is ${master["dealer"].decks[0].name} of ${master["dealer"].decks[0].emoji}❗️
-      `;
+      myOutputValue += displayOneDealerCard();
     } else if (input == "stand") {
       // Stand message
       if (master[playerTurn].blackjackValues[0] <= 16) {
