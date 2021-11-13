@@ -45,34 +45,24 @@ var main = function (input) {
 
   if (mode == "normal") {
     mode = "playerHit";
-    return `Your cards: ${displayCards(playerHand)}<br>
-        Computer's 1st card: ${computerHand[0].value}${
-      computerHand[0].suits
-    }  <br>
-        Click 'hit' or 'stand' to proceed`;
+    return `Click 'hit' or 'stand' to proceed`;
   } else if (mode == "playerBlackjack") {
     document.getElementById("restart-button").disabled = false;
     document.getElementById("hit-button").disabled = true;
     document.getElementById("stand-button").disabled = true;
     return `Congratulations! You've hit blackjack! <br> 
-      Your cards are:          ${playerHand[0].name} ${playerHand[0].suits} and ${playerHand[1].name} ${playerHand[1].suits} <br>
-      Computers's cards are:   ${computerHand[0].name} ${computerHand[0].suits} and  ${computerHand[1].name} ${computerHand[1].suits}<br>
       Click restart to play again!    `;
   } else if (mode == "computerBlackjack") {
     document.getElementById("restart-button").disabled = false;
     document.getElementById("hit-button").disabled = true;
     document.getElementById("stand-button").disabled = true;
     return `Oh No! The computer hit blackjack! <br>
-      Your cards were:       ${playerHand[0].name} ${playerHand[0].suits} and ${playerHand[1].name} ${playerHand[1].suits} <br>
-      Computer's card were:  ${computerHand[0].name} ${computerHand[0].suits} and  ${computerHand[1].name} ${computerHand[1].suits} <br>
       Click restart to play again! `;
   } else if (mode == "bothBlackjack") {
     document.getElementById("restart-button").disabled = false;
     document.getElementById("hit-button").disabled = false;
     document.getElementById("stand-button").disabled = false;
     return `What are the chances!.... You both hit blackjack...<br>
-      Your hand:              ${playerHand[0].name} ${playerHand[0].suits} and ${playerHand[1].name} ${playerHand[1].suits} <br>
-      The computers's hand:   ${computerHand[0].name} ${computerHand[0].suits} and ${computerHand[1].name} ${computerHand[1].suits}<br>
       Click restart to play again!    `;
   }
 
