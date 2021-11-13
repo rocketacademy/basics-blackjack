@@ -252,9 +252,9 @@ var cardGame = function (input) {
     ${displayDealerCards()}<br>
     Click submit to Calculate winnings`;
   } else if (state === "CALCULATE WINNINGS" && dealerValue > 21) {
-    state = "BUILD Deck";
+    state = "BUILD DECK";
     for (let i = 0; i < playerCurrency.length; i++) {
-      if (playerValue < 22) {
+      if (playerValue[i] < 22) {
         playerCurrency[i] = playerCurrency[i] + playerBets[i] + playerBets[i];
       }
     }
