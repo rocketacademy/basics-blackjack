@@ -11,6 +11,7 @@ var myOutputValue = "";
 var playerHitOrStand = "hit";
 var playerTotalPoints = 100;
 var playersBet = 0;
+
 var makeDeck = function () {
   // Initialise an empty deck array
   var cardDeck = [];
@@ -246,8 +247,9 @@ var cardDealMode = function () {
     myOutputValue =
       myOutputMessage +
       "<br>" +
-      "Game is over. Please refresh to start a new game!!";
+      "Game is over 😎. Please refresh(🔃) to start a new game!!";
     gameMode = "gameEnded";
+    disableButtons();
   } else {
     myOutputValue =
       myOutputMessage +
@@ -256,6 +258,13 @@ var cardDealMode = function () {
       "<br>" +
       "press 'hit' button or 'stand' button";
     gameMode = "hitOrStandMode";
+    hitButton.disabled = false;
+    hitButton.style.opacity = 1;
+    standButton.disabled = false;
+    standButton.style.opacity = 1;
+
+    submitButton.innerText = "Submit";
+    submitButton.style.fontWeight = "bold";
   }
 }; // end of card deal mode
 
@@ -285,6 +294,8 @@ var hit = function () {
 
     extraMessage = "click submit to see dealers next move";
     playerHitOrStand = "stand";
+    hitButton.disabled = true;
+    hitButton.style.opacity = "0.7";
   } else {
     extraMessage =
       "Please enter 'hit' or 'stand', then press Submit or " +
@@ -331,7 +342,9 @@ var stand = function () {
       dealerBusted = true;
 
       gameMode = "gameEnded";
-      extraMessage = "Game is over. Please refresh to start a new game!!";
+      extraMessage =
+        "Game is over 😎. Please refresh(🔃) to start a new game!!";
+      disableButtons();
     }
     if (playerBusted && dealerBusted) {
       playerTotalPoints = playerTotalPoints + playersBet;
@@ -340,7 +353,9 @@ var stand = function () {
         myOutputMessage + formatOutput("Dealer", dealerCards, dealerTotalSum);
       resultOutput = "Player and dealer got busted!!";
       gameMode = "gameEnded";
-      extraMessage = "Game is over. Please refresh to start a new game!!";
+      extraMessage =
+        "Game is over 😎. Please refresh(🔃) to start a new game!!";
+      disableButtons();
     }
   }
 
@@ -351,23 +366,41 @@ var stand = function () {
       myOutputMessage =
         myOutputMessage + formatOutput("Dealer", dealerCards, dealerTotalSum);
       resultOutput = "🏆 Its a tie!! 🏆";
+      gameMode = "gameEnded";
+      extraMessage =
+        "Game is over 😎. Please refresh(🔃) to start a new game!!";
+      disableButtons();
     } else if (playerTotalSum > dealerTotalSum) {
       playerTotalPoints = playerTotalPoints + 2 * playersBet;
       myOutputMessage = formatOutput("Player", playerCards, playerTotalSum);
       myOutputMessage =
         myOutputMessage + formatOutput("Dealer", dealerCards, dealerTotalSum);
       resultOutput = "🏆 Player wins!! 🏆";
+      gameMode = "gameEnded";
+      extraMessage =
+        "Game is over 😎. Please refresh(🔃) to start a new game!!";
+      disableButtons();
     } else if (dealerTotalSum > playerTotalSum) {
       resultOutput = "🏆 Dealer wins!! 🏆";
+      gameMode = "gameEnded";
+      extraMessage =
+        "Game is over 😎. Please refresh(🔃) to start a new game!!";
+      disableButtons();
     }
   } else if (playerBusted && !dealerBusted) {
     resultOutput = "🏆 Player got busted. Dealer wins!! 🏆";
+    gameMode = "gameEnded";
+    extraMessage = "Game is over 😎. Please refresh(🔃) to start a new game!!";
+    disableButtons();
   } else if (dealerBusted && !playerBusted) {
     playerTotalPoints = playerTotalPoints + 2 * playersBet;
     myOutputMessage = formatOutput("Player", playerCards, playerTotalSum);
     myOutputMessage =
       myOutputMessage + formatOutput("Dealer", dealerCards, dealerTotalSum);
     resultOutput = "🏆 Dealer got busted. Player wins!! 🏆";
+    gameMode = "gameEnded";
+    extraMessage = "Game is over 😎. Please refresh(🔃) to start a new game!!";
+    disableButtons();
   }
 
   myOutputMessage =
@@ -383,12 +416,23 @@ var stand = function () {
 
   myOutputValue = myOutputMessage + "<br>" + extraMessage;
   return myOutputValue;
+}; // end of stand
+
+var disableButtons = function () {
+  submitButton.disabled = true;
+  submitButton.style.opacity = "0.7";
+  hitButton.disabled = true;
+  hitButton.style.opacity = "0.7";
+  standButton.disabled = true;
+  standButton.style.opacity = "0.7";
 };
 var main = function (input) {
   if (gameMode == "CardDealMode") {
     cardDealMode();
   } else if (gameMode == "hitOrStandMode") {
     hitOrStandMode(input);
+  } else if (gameMode == "gameEnded") {
+    disableButtons();
   }
   return myOutputValue;
 };

@@ -187,7 +187,7 @@
 
       <input id="input-field" />
       <br />
-      <button style="width: 200px" id="submit-button"><b>Submit</b></button>
+      <button style="width: 200px" id="submit-button"><b>Deal</b></button>
       <button style="margin-left: 50px; width: 200px" id="hit-button">
         <b>Hit</b>
       </button>
@@ -197,7 +197,7 @@
 
       <p style="color: whitesmoke; font-size: 20px"><b>Output:</b></p>
       <div id="output-div">
-        Welcome to Blackjack! Click the submit button to get started!
+        Welcome to Blackjack!😃 Click the 'Deal' button to get started!👍
       </div>
     </div>
     <!-- Import program logic -->
@@ -219,6 +219,8 @@
       });
 
       var hitButton = document.querySelector("#hit-button");
+      hitButton.disabled = true;
+      hitButton.style.opacity = "0.7";
       hitButton.addEventListener("click", function () {
         // Set result to input value
 
@@ -230,6 +232,8 @@
       });
 
       var standButton = document.querySelector("#stand-button");
+      standButton.disabled = true;
+      standButton.style.opacity = "0.7";
       standButton.addEventListener("click", function () {
         // Set result to input value
 
