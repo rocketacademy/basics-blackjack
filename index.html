@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -7,148 +6,308 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <!-- Favicon configuration -->
-    <link rel="apple-touch-icon" sizes="180x180" href="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/favicons/apple-touch-icon.png?v=2">
-    <link rel="icon" type="image/png" sizes="32x32" href="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/favicons/favicon-32x32.png?v=2">
-    <link rel="icon" type="image/png" sizes="16x16" href="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/favicons/favicon-16x16.png?v=2">
-    <link rel="manifest" href="/site.webmanifest?v=2">
-    <link rel="mask-icon" href="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/favicons/safari-pinned-tab.svg?v=2" color="#e73c3e">
-    <link rel="shortcut icon" href="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/favicons/favicon.ico?v=2">
-    <meta name="apple-mobile-web-app-title" content="Rocket Academy">
-    <meta name="application-name" content="Rocket Academy">
-    <meta name="msapplication-TileColor" content="#2b5797">
-    <meta name="theme-color" content="#ffffff">
+    <meta name="apple-mobile-web-app-title" content="Casino Nino" />
+    <meta name="application-name" content="Casino Nino" />
+    <meta name="msapplication-TileColor" content="#2b5797" />
+    <meta name="theme-color" content="#ffffff" />
 
     <!-- sharing configuration -->
     <!-- Primary Meta Tags -->
-    <title>Blackjack - Basics - Rocket Academy</title>
-    <meta name="title" content="YOURNAME's BlackJack Game!">
-    <meta name="description" content="A fun card game I made myself! 😄💪🌈">
+    <title>Blackjack - Basics - Wall St Casino</title>
+    <meta name="title" content="Shazwi's BlackJack Game!" />
+    <meta name="description" content="A fun card game I made myself! 😄💪🌈" />
 
     <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://rocketacademy.github.io/basics-blackjack/index.html">
-    <meta property="og:title" content="YOURNAME's BlackJack Game!">
-    <meta property="og:description" content="A fun card game I made myself! 😄💪🌈">
-    <meta property="og:image" content="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/basics/basics-blackjack-share-small.jpeg">
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:url"
+      content="https://rocketacademy.github.io/basics-blackjack/index.html"
+    />
+    <meta property="og:title" content="Shazwi's BlackJack Game!" />
+    <meta
+      property="og:description"
+      content="A fun card game I made myself! 😄💪🌈"
+    />
+    <meta
+      property="og:image"
+      content="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/basics/basics-blackjack-share-small.jpeg"
+    />
 
     <!-- Twitter -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:url" content="https://rocketacademy.github.io/basics-blackjack/index.html">
-    <meta name="twitter:title" content="YOURNAME's BlackJack Game!">
-    <meta name="twitter:description" content="A fun card game I made myself! 😄💪🌈">
-    <meta name="twitter:image" content="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/basics/basics-blackjack-share-small.jpeg">
-    <meta name="twitter:site" content="@rocketacademyco">
-    <meta name="twitter:creator" content="@rocketacademyco">
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:url"
+      content="https://rocketacademy.github.io/basics-blackjack/index.html"
+    />
+    <meta name="twitter:title" content="Shazwi's BlackJack Game!" />
+    <meta
+      name="twitter:description"
+      content="A fun card game I made myself! 😄💪🌈"
+    />
+    <meta
+      name="twitter:image"
+      content="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/basics/basics-blackjack-share-small.jpeg"
+    />
+    <meta name="twitter:site" content="@rocketacademyco" />
+    <meta name="twitter:creator" content="@rocketacademyco" />
 
     <!-- fonts -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans">
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=Open+Sans"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
+      crossorigin="anonymous"
+    />
 
-    <!-- CSS -->
     <style>
-      * {
-        box-sizing: border-box;
-      }
-
       body {
-        font-family: 'Open Sans', sans-serif;
-        margin-left: 30px;
-        margin-right: 30px;
-        background-color:white;
-        color: black; /* sets the font color */
-        background-image: url(""); /* The image used */
-        background-position: center; /* Center the image */
-        background-repeat: no-repeat; /* Do not repeat the image */
-        background-size: cover; /* Resize the background image to cover the entire container */
+        background-color: #ffc312;
       }
 
-      #output-div img{
-        display:block;
-        max-width:100%;
-        max-height:200px;
-      }
-      .header {
-        text-align: center;
-        font-size: 1.1rem;
-        margin-bottom: 3rem;
-      }
-
-      #container {
-        background-color: pink;
-        margin: 40px auto;
-        max-width: 800px;
-        padding: 38px 31px;
-      }
-
-      input {
-        font-size: 21px;
-        line-height: 33px;
-        margin: 0 0 23px 0;
-        padding: 0 9px;
+      #blackjack-table {
         width: 100%;
+        background-color: #004e00;
+        border: 10px solid black;
+        border-radius: 50px;
+        padding: 2.5rem;
       }
 
-      button {
-        font-size: 21px;
-        line-height: 33px;
-        margin: 0 0 23px 0;
-        padding: 0 6px;
-      }
-
-      #output-div {
-        background-color: lightgrey;
-        margin: 20px auto;
-        padding: 20px;
-        width: 100%;
-      }
-
-      .logo-img {
-        height: 49px;
+      #turn {
+        animation: MoveUpDown 1.5s linear infinite;
         position: relative;
-        top: 22px;
+        left: 0;
+        bottom: 0;
       }
 
-      /* increase header font size on wider screens */
-      @media screen and (min-width: 600px) {
-        .header {
-          font-size: 2rem;
+      .slidecontainer {
+        width: 100%;
+      }
+
+      .slider {
+        -webkit-appearance: none;
+        width: 100%;
+        height: 10px;
+        border-radius: 5px;
+        background: #d3d3d3;
+        outline: none;
+        opacity: 0.7;
+        -webkit-transition: 0.2s;
+        transition: opacity 0.2s;
+      }
+
+      .slider:hover {
+        opacity: 1;
+      }
+
+      .slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 23px;
+        height: 24px;
+        border: 0;
+        background: url("./images/dollar.png");
+        cursor: pointer;
+      }
+
+      .slider::-moz-range-thumb {
+        width: 23px;
+        height: 24px;
+        border: 0;
+        background: url("./images/dollar.png");
+        cursor: pointer;
+      }
+
+      @keyframes MoveUpDown {
+        0%,
+        100% {
+          bottom: 0;
+        }
+        50% {
+          bottom: 10px;
         }
       }
-    </style>
 
+      .bangers {
+        font-family: "Bangers", cursive;
+      }
+
+      .normal {
+        font-family: "Zen Kaku Gothic Antique", sans-serif;
+      }
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bangers&family=Dongle:wght@300&family=Zen+Kaku+Gothic+Antique:wght@300;400&display=swap"
+      rel="stylesheet"
+    />
   </head>
 
   <body>
-    <h1 class="header">
-      <img class="logo-img" src="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/brand/logo.png" />
-      Rocket Academy
-      <img class="logo-img" src="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/brand/logo.png" />
-    </h1>
-    <h1 class="header">♣️ Basics - Blackjack ♠️</h1>
-    <div id="container">
-      <p>Input:</p>
-      <input id="input-field" />
-      <br />
-      <button id="submit-button">Submit</button>
-      <p>Output:</p>
-      <div id="output-div"></div>
+    <div class="container mt-5">
+      <div class="text-center">
+        <img class="d-block mx-auto" src="./images/wsc.png" />
+      </div>
+      <div id="blackjack-table">
+        <div id="welcome">
+          <div class="container mt-5">
+            <div class="row justify-content-center">
+              <div class="col-md-4">
+                <h4 class="bangers text-white">
+                  📜 <span style="text-decoration: underline">Rules</span> 📜
+                </h4>
+                <p
+                  class="text-white normal"
+                  style="font-size: 1rem; margin-bottom: 0.5rem"
+                >
+                  Welcome to WSC Blackjack!
+                </p>
+                <p
+                  class="text-white normal"
+                  style="font-size: 1rem; margin-bottom: 0.5rem"
+                >
+                  Dealer must draw on 16 or less and stand on 17 and above. Any
+                  player with no credits left will be eliminated.
+                </p>
+              </div>
+              <div class="col-md-4">
+                <img
+                  src="https://i.giphy.com/media/XGU1koyEKToquGKRpE/giphy.webp"
+                  style="width: 100%"
+                />
+              </div>
+              <div class="col-md-4"></div>
+            </div>
+            <div class="row mt-4">
+              <div class="col-md-4 offset-md-4">
+                <div class="input-group mb-3 input-group-lg">
+                  <input
+                    type="number"
+                    min="1"
+                    max="6"
+                    id="no-of-players"
+                    class="form-control normal"
+                    placeholder="No. of people. Max 6."
+                    aria-label="No. of people. Max 6."
+                    aria-describedby="button-addon2"
+                    onkeyup="checkNoOfPeopleNotEmpty()"
+                    onmouseup="checkNoOfPeopleNotEmpty()"
+                  />
+                  <button
+                    class="btn btn-dark bangers"
+                    type="button"
+                    id="place-bets-button"
+                    disabled
+                  >
+                    Place Bets
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="place-bets" style="display: none">
+          <div class="container mt-5">
+            <div class="row justify-content-center">
+              <div class="col-md-4">
+                <h4 class="bangers text-white">
+                  📜 <span style="text-decoration: underline">Rules</span> 📜
+                </h4>
+                <p
+                  class="text-white normal"
+                  style="font-size: 1rem; margin-bottom: 0.5rem"
+                >
+                  Welcome to WSC Blackjack!
+                </p>
+                <p
+                  class="text-white normal"
+                  style="font-size: 1rem; margin-bottom: 0.5rem"
+                >
+                  Dealer must draw on 16 or less and stand on 17 and above. Any
+                  player with no credits left will be eliminated.
+                </p>
+              </div>
+              <div class="col-md-4">
+                <img
+                  src="https://i.giphy.com/media/ZWiIwPxJ9JGW4/giphy.webp"
+                  style="width: 100%"
+                />
+              </div>
+              <div class="col-md-4"></div>
+              <h3 class="text-center text-white bangers mt-4">
+                Place your bets
+              </h3>
+            </div>
+          </div>
+          <hr />
+          <div class="row justify-content-center" id="list-of-bets"></div>
+          <hr />
+          <div class="row justify-content-center">
+            <div class="text-center">
+              <button
+                class="btn btn-dark bangers btn-lg"
+                type="button"
+                id="start-round"
+                disabled
+              >
+                Start Round
+              </button>
+            </div>
+          </div>
+        </div>
+        <div id="play-time" style="display: none">
+          <div class="container mt-5">
+            <div class="row justify-content-center">
+              <div class="col-md-4">
+                <h4 class="bangers text-white">
+                  📜 <span style="text-decoration: underline">Rules</span> 📜
+                </h4>
+                <p
+                  class="text-white normal"
+                  style="font-size: 1rem; margin-bottom: 0.5rem"
+                >
+                  Welcome to WSC Blackjack!
+                </p>
+                <p
+                  class="text-white normal"
+                  style="font-size: 1rem; margin-bottom: 0.5rem"
+                >
+                  Dealer must draw on 16 or less and stand on 17 and above. Any
+                  player with no credits left will be eliminated.
+                </p>
+              </div>
+              <div class="col-md-4 text-center">
+                <h5 class="bangers" style="color: white">Dealer</h5>
+                <img src="./images/dealer.png" style="width: 100px" />
+                <div class="row" id="dealer-cards"></div>
+              </div>
+              <div class="col-md-4"></div>
+            </div>
+            <div
+              class="row justify-content-center"
+              id="list-of-players"
+              style="margin-top: 5rem"
+            ></div>
+          </div>
+        </div>
+      </div>
     </div>
     <!-- Import program logic -->
     <script src="script.js"></script>
     <!-- Define button click functionality -->
     <script>
-      var button = document.querySelector("#submit-button");
-      button.addEventListener("click", function () {
-        // Set result to input value
-        var input = document.querySelector("#input-field");
-        var result = main(input.value);
+      var placeBetsButton = document.querySelector("#place-bets-button");
+      placeBetsButton.addEventListener("click", function () {
+        placeBets(document.getElementById("no-of-players").value);
+      });
 
-        // Display result in output element
-        var output = document.querySelector("#output-div");
-        output.innerHTML = result;
-
-        // Reset input value
-        input.value = "";
+      var startRoundButton = document.querySelector("#start-round");
+      startRoundButton.addEventListener("click", function () {
+        startRound(document.getElementById("no-of-players").value);
       });
     </script>
   </body>
