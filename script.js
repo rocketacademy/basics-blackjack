@@ -275,10 +275,10 @@ var compareHands = function (playerBet) {
     if (computerTotalHandRank() > 21 && playerTotalHandRank() > 21) {
       return `Both busted 😱! It is a t👔e between Pl🦄yer and Rob🤖t.<br><br>Pl🦄yer score is ${playerTotalHandRank()} and Rob🤖t score is ${computerTotalHandRank()}.${playAgain()}<br><br>Current wallet amount ${playerWallet}<br><br>${tieImage}`;
       // computer bust > 21
-    } else if (computerTotalHandRank() > 21 && playerTotalHandRank() < 21) {
+    } else if (computerTotalHandRank() > 21 && playerTotalHandRank() <= 21) {
       return `Pl🦄yer wins 🏆! Rob🤖t busted with ${computerTotalHandRank()}.<br><br>Pl🦄yer score is ${playerTotalHandRank()} and Rob🤖t score is ${computerTotalHandRank()}.${playAgain()}<br><br>${calcBetWin()}`;
       // player bust > 21 but computer < 21
-    } else if (computerTotalHandRank() < 21 && playerTotalHandRank() > 21) {
+    } else if (computerTotalHandRank() <= 21 && playerTotalHandRank() > 21) {
       return `Rob🤖t wins 🏆! Pl🦄yer busted with ${playerTotalHandRank()}.<br><br>Pl🦄yer score is ${playerTotalHandRank()} and Rob🤖t score is ${computerTotalHandRank()}.${playAgain()}<br><br>${calcBetLoss()}`;
       // player larger than computer
     } else if (playerTotalHandRank() > computerTotalHandRank()) {
