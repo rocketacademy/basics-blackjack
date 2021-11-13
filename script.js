@@ -91,7 +91,6 @@ var computerScore = 0;
 var playerScore = 0;
 var listofplayerCards = [];
 var listofcomputerCards = [];
-var remindertoRefresh = `Refresh to play again!`;
 
 // ================================================= MAIN DECK STARTS HERE ===================================================================
 
@@ -162,6 +161,7 @@ var acecardArray = function (input) {
 var blackjackChecker = function () {
   listofcomputerCards = cardlistGenerator(computerCards);
   listofplayerCards = cardlistGenerator(playerCards);
+  var computercardsRevealed = listofcomputerCards.splice(1, 1);
   var computerAce = acecardArray(computerCards);
   var playerAce = acecardArray(playerCards);
   if (
@@ -179,8 +179,7 @@ var blackjackChecker = function () {
     playerAce.includes(true) == false
   ) {
     computerScore = 21;
-    image =
-      '<img src="https://c.tenor.com/JEuupMZB5HwAAAAC/michael-scott-flip.gif"/>';
+    image = '<img src="https://c.tenor.com/Ld3M7VTJgFEAAAAd/smack-slap.gif"/>';
     result = `Michael wins! Blackjack!`;
   } else if (
     playerAce.includes(true) == true &&
@@ -200,7 +199,7 @@ var blackjackChecker = function () {
     result = `Your turn. Hit or stand?`;
   }
   return (
-    `${result} <br><br> Player cards: ${listofplayerCards} = ${playerScore} <br><br> Michael's cards: ${listofcomputerCards} = ${computerScore} <br><br>` +
+    `${result} <br><br> Your cards: ${listofplayerCards} = ${playerScore} <br><br> Michael's cards: ${computercardsRevealed} + ❓  = ❓  <br><br>` +
     image
   );
 };
@@ -208,8 +207,28 @@ var blackjackChecker = function () {
 var playerHit = function () {
   playerCards.push(shuffledDeck.pop());
   computerResult = computervalueChecker();
-  var msg = finalwinnerChecker();
-  return `You chose to hit. <br><br> ${computerResult} <br><br> ${msg}`;
+  listofcomputerCards = cardlistGenerator(computerCards);
+  listofplayerCards = cardlistGenerator(playerCards);
+  var spliceValue = computerCards.length - 1;
+  console.log(`splice value is`);
+  console.log(spliceValue);
+  var computercardsRevealed = listofcomputerCards.splice(1, spliceValue);
+  playerScore = scoreCalculator(playerCards);
+  console.log(`player score is`);
+  console.log(playerScore);
+  computerScore = scoreCalculator(computerCards);
+  console.log(`computer score is`);
+  console.log(computerScore);
+  if (playerScore < 21 && computerScore < 21) {
+    var image =
+      '<img src="https://c.tenor.com/sZ8zYU7hT1wAAAAd/dance-party.gif"/>';
+    var msg =
+      `Your turn again. Hit or stand? <br><br>Your cards: ${listofplayerCards} = ${playerScore} <br><br> Michael's cards: ${computercardsRevealed} + ❓  = ❓  <br><br>` +
+      image;
+  } else {
+    msg = finalwinnerChecker();
+  }
+  return `You chose to hit. <br><br> ${computerResult} <br><br> ${msg} <br><br> `;
 };
 
 var playerStand = function () {
@@ -273,7 +292,8 @@ var finalwinnerChecker = function () {
     '<img src="https://c.tenor.com/S_wekPtfKm4AAAAS/nice-finger-gone.gif"/>';
   var result = `Michael wins!`;
   if (playerScore > 21 && computerScore <= 21) {
-    image = '<img src="https://c.tenor.com/Ld3M7VTJgFEAAAAd/smack-slap.gif"/>';
+    image =
+      '<img src="https://c.tenor.com/JEuupMZB5HwAAAAC/michael-scott-flip.gif"/>';
     result = `You bust. Michael wins!`;
   } else if (computerScore > 21 && playerScore <= 21) {
     image =
@@ -301,7 +321,6 @@ var finalwinnerChecker = function () {
 
   return (
     `${result} <br><br> Your cards: ${listofplayerCards} = ${playerScore} <br><br> Michael's cards: ${listofcomputerCards} = ${computerScore}` +
-    image +
-    remindertoRefresh
+    image
   );
 };
