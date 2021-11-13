@@ -207,7 +207,17 @@ var main = function (input) {
         var dealerCardCounter = 2;
         var dealerCardMsg =`${dealerHand[0].name} of ${dealerHand[0].suit}<br>
                             ${dealerHand[1].name} of ${dealerHand[1].suit}<br>`;
-      while (dealerPoints < 17){ //computer keeps drawing card if the points is lesser than 17
+        var playerMsgIndex = 0;
+        var playerCardMsg ='';
+        var playerPoints = 0;
+                          
+        while (playerMsgIndex < playerHand.length){ 
+        playerCardMsg = playerCardMsg + `${playerHand[playerMsgIndex].name} of ${playerHand[playerMsgIndex].suit}<br>`;
+        playerPoints += Number(playerHand[playerMsgIndex].point)
+        playerMsgIndex += 1;
+        }
+      
+        while (dealerPoints < 17){ //computer keeps drawing card if the points is lesser than 17
         dealerHand.push(cardDeck.pop());
         dealerCardMsg = dealerCardMsg + `${dealerHand[dealerCardCounter].name} of ${dealerHand[dealerCardCounter].suit}<br>`;
         dealerPoints += Number(dealerHand[dealerCardCounter].point)
@@ -219,6 +229,7 @@ var main = function (input) {
         }
         dealerCardCount += 1;
       }
+    
         
       //compare points and show results
       if (dealerPoints > winningPoints){
