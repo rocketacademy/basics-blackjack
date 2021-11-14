@@ -90,13 +90,9 @@ class App {
         this.delay(delay).then(() => {
           if (index === this.#dealerIndex) {
             this.displayCard(card, DisplayArea.Dealer);
-          } else {
-            this.displayCard(card, DisplayArea.Player);
-          }
-
-          if (index === this.#dealerIndex) {
             this.displayScore(player.handValue, DisplayArea.Dealer);
           } else {
+            this.displayCard(card, DisplayArea.Player);
             this.displayScore(player.handValue, DisplayArea.Player);
           }
         });
@@ -112,35 +108,30 @@ class App {
       let player = this.#players[i];
       if (i === this.#dealerIndex) {
         if (player.handValue > 21) {
-          this.endTurn(GameRoundState.Win);
-          this.state = GameState.End;
+          this.endGame(GameRoundState.Win);
         } 
       } else {
         if (player.handValue > 21) {
-          this.endTurn(GameRoundState.Lose);
-          this.state = GameState.End;
+          this.endGame(GameRoundState.Lose);
         } else if (player.handValue === 21) {
           if (dealer.handValue !== 21) {
-            this.endTurn(GameRoundState.Win);
-            this.state = GameState.End;
+            this.endGame(GameRoundState.Win);
           }
         } else if (this.#playerStands) {
           if (player.handValue > dealer.handValue) {
-            this.endTurn(GameRoundState.Win);
-            this.state = GameState.End;
+            this.endGame(GameRoundState.Win);
           } else if (player.handValue === dealer.handValue) {
-            this.endTurn(GameRoundState.Push);
-            this.state = GameState.End;
+            this.endGame(GameRoundState.Push);
           } else {
-            this.endTurn(GameRoundState.Lose);
-            this.state = GameState.End;
+            this.endGame(GameRoundState.Lose);
           }
         }
       }
     }
   };
 
-  endTurn(playerWins) {
+  endGame(playerWins) {
+    this.state = GameState.End;
     console.log("playerWins? " + playerWins);
     const player = this.#players[0];
 
