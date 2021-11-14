@@ -78,10 +78,6 @@ class App {
     });
 
     const dealer = this.#players[this.#dealerIndex];
-    while (dealer.handValue < 17) {
-      dealer.addCardToHand(this.#currentDeck.draw());
-      this.calculateHand(dealer);
-    }
 
     this.#players.forEach((player, index) => {
       let delay = (index + 1) * 500;
@@ -89,7 +85,7 @@ class App {
         delay += (cardIndex + 1) * 500;
         this.delay(delay).then(() => {
           if (index === this.#dealerIndex) {
-            this.displayCard(card, DisplayArea.Dealer);
+            this.displayCard(card, DisplayArea.Dealer, cardIndex == 1);
             this.displayScore(player.handValue, DisplayArea.Dealer);
           } else {
             this.displayCard(card, DisplayArea.Player);
@@ -203,21 +199,27 @@ class App {
 
   stand() {
     console.log("stand");
-
     const player = this.#players[0];
     const dealer = this.#players[1];
-    // const card = this.#currentDeck.draw();
-
-    // dealer.addCardToHand(card);
-
     this.#playerStands = true;
+
+    if (dealer.handValue < 17) {
+        let index = 0;
+        while (dealer.handValue < 17) {
+        let delay = (index + 1) * 500;
+        const card = this.#currentDeck.draw();
+        dealer.addCardToHand(card);
+        this.calculateHand(dealer);
+        this.delay(delay).then(() => {
+          this.displayCard(card, DisplayArea.Dealer);
+          this.displayScore(dealer.handValue, DisplayArea.Dealer);
+        });
+      }
+    }
 
     this.calculateHand(dealer);
     this.calculateHand(player);
     this.calculateScore();
-
-    // this.displayCard(dealer, DisplayArea.Dealer);
-    // this.displayScore(dealer.handValue, DisplayArea.Dealer);
   }
 
   displayEndRound(playerWins, winnings) {
@@ -265,7 +267,10 @@ class App {
     this.displayScore(null, DisplayArea.Player);
   }
 
-  displayCard(card, displayArea) {
+  displayCard(card, displayArea, visible) {
+    const cardBack = "https://richardschneider.github.io/cardsJS/cards/Blue_Back.svg";
+    const cardId = `card-${displayArea}-${card.getCodeString()}`;
+
     let outputElement = null;
     if (displayArea === DisplayArea.Dealer) {
       outputElement = document.querySelector("#div-dealer-hand");
@@ -275,15 +280,29 @@ class App {
 
     outputElement.innerHTML +=
       `<div class="uk-padding-small">
-        <div class="uk-card uk-card-default uk-animation-slide-bottom">
-          <div class="uk-card-media-top flip-card-front">
+        <div class="uk-card uk-card-default" tabindex="0">
+          <div class="uk-card-media-top">
             <img src="${card.getImage()}" class="uk-height-small uk-height-max-small">
+            <!-- <img id="${cardId}" src="${cardBack}" class="uk-height-small uk-height-max-small uk-animation-fade uk-position-cover"> -->
           </div>
         </div>
       </div>`;
+
+      let cardObject = document.querySelector(`#${cardId}`);
+      cardObject.addEventListener("click", this.flipCard.bind(this));
+  }
+
+  flipCard(e) {
+    console.log(e);
   }
 
   clearCards(displayArea) {
+    const cards = document.querySelectorAll('[id^="#card-"]');
+    
+    cards.forEach(function(card) {
+      document.removeEventListener("click", this.flipCard.bind(this));
+    });
+
     if (displayArea === DisplayArea.Dealer) {
       document.querySelector("#div-dealer-hand").innerHTML = "";
     } else {
@@ -357,6 +376,10 @@ class Card {
     let codeString = cardString.split("");
     this.#suit = codeString.pop();
     this.#value = codeString.join("");
+  }
+
+  getCodeString() {
+    return this.#value + this.#suit;
   }
 
   getValue() {
