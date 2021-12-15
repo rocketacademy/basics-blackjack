@@ -4,19 +4,22 @@
 // 3) Once hands are dealt, the player may choose to hit or stand. Dealer has to hit if hand is below 17
 // The hand closes to 21 wins. Any hand larger than 21 goes bust.
 
-// Make Deck Card generation code from 10.2 - var cardValue implemented (JQK = 10)
-// + Initialise an empty deck array as global Var so shuffle cards can refer
+// Make Deck Card generation code from 10.2 -
+//var cardValue implemented (JQK = 10)
+// cardDeck an empty deck array as global Var so shuffle cards can refer
 var cardDeck = [];
+var playerHand = [];
+var dealerHand = [];
+var playerValue = 0;
+var dealerValue = 0;
 var makeDeck = function () {
   // Initialise an array of the 4 suits in our deck. We will loop over this array.
   var suits = ["hearts", "diamonds", "clubs", "spades"];
-
   // Loop over the suits array
   var suitIndex = 0;
   while (suitIndex < suits.length) {
     // Store the current suit in a variable
     var currentSuit = suits[suitIndex];
-
     // Loop from 1 to 13 to create all cards for a given suit
     // Notice rankCounter starts at 1 and not 0, and ends at 13 and not 12.
     // This is an example of a loop without an array.
@@ -24,7 +27,6 @@ var makeDeck = function () {
     while (rankCounter <= 13) {
       // By default, the card name is the same as rankCounter
       var cardName = rankCounter;
-
       // If rank is 1, 11, 12, or 13, set cardName to the ace or face card's name
       if (cardName == 1) {
         cardName = "ace";
@@ -35,9 +37,7 @@ var makeDeck = function () {
       } else if (cardName == 13) {
         cardName = "king";
       }
-
       var cardValue = rankCounter;
-
       if (cardName == "jack") {
         cardValue = 10;
       } else if (cardName == "queen") {
@@ -45,7 +45,6 @@ var makeDeck = function () {
       } else if (cardName == "king") {
         cardValue = 10;
       }
-
       // Create a new card with the current name, suit, rank and value
       var card = {
         name: cardName,
@@ -53,32 +52,25 @@ var makeDeck = function () {
         rank: rankCounter,
         value: cardValue,
       };
-
       // Add the new card to the deck
       cardDeck.push(card);
-
       // Increment rankCounter to iterate over the next rank
       rankCounter += 1;
     }
-
     // Increment the suit index to iterate over the next suit
     suitIndex += 1;
   }
-
   // Return the completed card deck
   return cardDeck;
 };
-
 // Get a random index ranging from 0 (inclusive) to max (exclusive).
 var getRandomIndex = function (max) {
   return Math.floor(Math.random() * max);
 };
-
-// Shuffle the elements in the cardDeck array (why is cardDeck in the parantheses?)
+// Shuffle the elements in the cardDeck array
 var shuffleCards = function () {
   // Loop over the card deck array once
   var currentIndex = 0;
-
   while (currentIndex < cardDeck.length) {
     // Select a random index in the deck
     var randomIndex = getRandomIndex(cardDeck.length);
@@ -95,160 +87,175 @@ var shuffleCards = function () {
   // Return the shuffled deck
   return cardDeck;
 };
-
 //  At this point we have a shuffled deck with an assigned face value. Except A is still 1. Work on this later. Now we will let each player draw a card until each player has two cards.
-playerHand = [];
-dealerHand = [];
+//Two arrays represent the starting hands of player and dealer
 
-dealCards = function () {
-  var startingDeal = 0;
-  playerSHand = [];
-  dealerSHand = [];
-  while (startingDeal < 2) {
-    deal = cardDeck.pop();
-    deal2 = cardDeck.pop();
-    playerSHand.push(deal);
-    console.log("PlayerSHand" + JSON.stringify(playerSHand));
-    dealerSHand.push(deal2);
-    console.log("DealerSHand" + JSON.stringify(dealerSHand));
-    console.log(cardDeck);
-    console.log(playerSHand);
-    console.log(dealerSHand);
-    startingDeal = startingDeal + 1;
-  }
-  if ((startingDeal = 2)) {
-    startingDeal - 2;
-  }
-
-  // Sum value of initial hands
-  sumStartPV = playerSHand[0].value + playerSHand[1].value;
-  sumStartDV = dealerSHand[0].value + dealerSHand[1].value;
-
-  sumOfSPV = sumStartPV;
-  sumOfSDV = sumStartDV;
-
-  playerHand = playerSHand;
-  dealerHand = dealerSHand;
-};
-
-// // Global Var for sumvalue of initial hands?
-// var Globaltest = function () {
-//   if (sumOfSDV < sumOfSPV) return "Dealer loses";
-//   else if (sumOfSDV > sumOfSPV) return "Dealer Wins";
-//   else return "Draw";
-// };
-
-// At this point, player and dealer are dealt two cards and their values are retrieved. Note that the make deck function makes 1 more deck every time it is called. Now Attempt to let a player hit or stand
-var hitMe = function () {
+// Deal cards into hands(arrays)
+function dealCards() {
+  makeDeck();
+  shuffleCards();
+  playerHand = [];
+  dealerHand = [];
   deal = cardDeck.pop();
-  // used unshift instead of push here so index 0 can be read as the new card.
-  playerHand.unshift(deal);
-  sumPlayerHand =
-    playerHand[0].value + playerHand[1].value + playerHand[2].value;
-  myOutputValue =
-    "You drew" +
-    playerHand[0].name +
-    playerHand[0].suit +
-    " your hand value is " +
-    sumPlayerHand;
-  return myOutputValue;
-};
+  deal2 = cardDeck.pop();
+  deal3 = cardDeck.pop();
+  deal4 = cardDeck.pop();
+  playerHand[0] = deal;
+  playerHand[1] = deal2;
+  dealerHand[0] = deal3;
+  dealerHand[1] = deal4;
+}
+// Arrays are populated with 2 cards in each hand. Now a function when player needs more cards
+// Removes a card from card Deck and pushes into playerHand Array
+function hitMe() {
+  hit = cardDeck.pop();
+  playerHand.push(hit);
+}
 
-// In event user needs to hit again?
-var hitMe2 = function () {
-  deal = cardDeck.pop();
-  // used unshift instead of push here so index 0 can be read as the new card.
-  playerHand.unshift(deal);
-  sumPlayerHand =
-    playerHand[0].value +
-    playerHand[1].value +
-    playerHand[2].value +
-    playerHand[3].value;
-  myOutputValue =
-    "You drew " +
-    playerHand[0].name +
-    playerHand[0].suit +
-    "your hand value is " +
-    sumPlayerHand;
-  return myOutputValue;
-};
+//Function to sum all value in hand
+//Loop over each element in array, take the value property and sums into a variable named playerValue
+function sumPlayerHand() {
+  playerValue = 0;
+  playerHand.forEach((element) => (playerValue += element.value));
+}
+//Dealer needs to draw card from the deck as well, dealer draws until a number more than 17. Stands on 17 aceFinder function determines aces in hand and modifies the value in hand
+function dealerPlay() {
+  dealerValue = 0;
+  aceFinder(dealerHand, "dealer", dealerValue);
+  dealerHand.forEach((element) => (dealerValue += element.value));
 
-// Dealer Hits or stands. Hit if <17
-var dealerCheck = function () {
-  sumDealerHand = dealerHand[0].value + dealerHand[1].value;
-  while (sumOfSDV < 17) {
-    deal = cardDeck.pop();
-    dealerHand.unshift(deal);
-    sumDealerHand =
-      dealerHand[0].value + dealerHand[1].value + dealerHand[2].value;
-    return sumDealerHand;
+  while (dealerValue < 17) {
+    aceFinder(dealerHand, "dealer", dealerValue);
+    deal5 = cardDeck.pop();
+    dealerHand.push(deal5);
+    dealerValue = 0;
+    dealerHand.forEach((element) => (dealerValue += element.value));
   }
-};
-pHandCheck = sumPlayerHand;
-dHandCheck = sumDealerHand;
+}
+
+function sumDealerHand() {
+  dealerValue = 0;
+  dealerHand.forEach((element) => (dealerValue += element.value));
+}
+
+// Results of match
+
+function play() {
+  results = 0;
+  if (playerValue > 21 && dealerValue <= 21) {
+    results = `Player goes bust! Player gets ${playerValue} and dealer gets ${dealerValue} Dealer Wins!`;
+  } else if (dealerValue > 21 && playerValue <= 21) {
+    results = `Dealer goes bust! Player gets ${playerValue} and dealer gets ${dealerValue} Player Wins!`;
+  } else if (dealerValue > 21 && playerValue > 21) {
+    results = `Both goes bust! It's a draw! Dealer gets ${dealerValue} and player gets ${playerValue}`;
+  } else if (dealerValue > playerValue) {
+    results = `Dealer has ${dealerValue} while player has ${playerValue} dealer wins!`;
+  } else if (playerValue > dealerValue) {
+    results = `Dealer has ${dealerValue} while player has ${playerValue} Player wins!`;
+  } else if ((playerValue = dealerValue)) {
+    results = `Dealer has ${dealerValue} while player has ${playerValue},it's a draw!`;
+  }
+  gameState = "initialiseGame";
+}
+
+// Previous aceFinder did not account for multiple aces
+// .filter to create an aceSort array. Use length of array to determine logic for Ace.
+function aceFinder(arr, player, handValue) {
+  const aceSort = arr.filter((element) => element.value == 1);
+  if (aceSort.length == 1 && handValue == 11) {
+    handValue = 21;
+  } else if (aceSort.length == 2 && handValue == 2) {
+    handValue = 21;
+  } else if (aceSort.length > 0 && handValue < 21) {
+    handValue += 10;
+  }
+  if (player == "player") {
+    playerValue = handValue;
+  } else {
+    dealerValue = handValue;
+  }
+}
+
+var gameState = "initialiseGame";
+
+// Strings card for output
+function showHand() {
+  let output = "";
+  playerHand.forEach((element) => {
+    output += `${element.name} `;
+  });
+  return output;
+}
+function submitButtonOn() {
+  var submitButton = document.getElementById("submit-button");
+  submitButton.disabled = false;
+}
+
+function submitButtonOff() {
+  var submitButton = document.getElementById("submit-button");
+  submitButton.disabled = true;
+}
+var hitButton = document.getElementById("hit-button");
+hitButton.disabled = true;
+
+var playButton = document.getElementById("play-button");
+playButton.disabled = true;
+
+function hitButtonOn() {
+  var hitButton = document.getElementById("hit-button");
+  hitButton.disabled = false;
+}
+
+function hitButtonOff() {
+  var hitButton = document.getElementById("hit-button");
+  hitButton.disabled = true;
+}
+
+function playButtonOn() {
+  var playButton = document.getElementById("play-button");
+  playButton.disabled = false;
+}
+
+function playButtonOff() {
+  var playButton = document.getElementById("play-button");
+  playButton.disabled = true;
+}
+
+// Main function that plays when submit is clicked.
 var main = function (input) {
-  if (input == "") {
-    makeDeck();
-    shuffleCards();
+  myOutputValue = `Cards have been dealt! Your cards are: ${showHand()} `;
+  if (input == "" && gameState == "initialiseGame") {
+    playerHand = [];
+    dealerHand = [];
+    cardDeck = [];
     dealCards();
-    var myOutputValue =
-      " Dealer starting hand is " +
-      sumOfSDV +
-      " Player Starting Hand is " +
-      sumOfSPV;
-    return (
-      myOutputValue +
-      " Type 'Hit me' for player to get another card or 'Stand' to play against the dealer's hand"
-    );
+    sumPlayerHand();
+    sumDealerHand();
+    aceFinder(playerHand, "player", playerValue);
+    aceFinder(dealerHand, "dealer", dealerValue);
+    gameState = "cardsDealt";
+    if (playerValue == 21 && dealerValue == 21) {
+      gameState = "initialiseGame";
+      myOutputValue = `Both get blackjack! Draw!`;
+    } else if (playerValue == 21) {
+      gameState = "initialiseGame";
+      myOutputValue = `Player gets ${playerValue}! BlackJack! Player wins.`;
+    } else if (dealerValue == 21) {
+      gameState = "initialiseGame";
+      myOutputValue = `Dealer gets ${dealerValue}! BlackJack! Dealer wins.`;
+    } else {
+      myOutputValue = `Cards have been dealt! your hand is ${playerValue} type Hit! to draw a card or Play! to see the results.`;
+    }
+
+    return myOutputValue;
+  } else if (input == "Hit!" && gameState == "cardsDealt") {
+    hitMe();
+    sumPlayerHand();
+    myOutputValue = `Your hand is ${playerValue}. Type Hit! to draw a card or Play! to see results`;
+  } else if (input == "Play!" && gameState == "cardsDealt") {
+    dealerPlay();
+    play();
+    myOutputValue = result;
   }
-  if (sumOfSDV == 21) {
-    return "Blackjack! Dealer wins";
-  }
-  if (sumOfSPV == 21) {
-    return "Blackjack! Player wins";
-  }
-  if (sumOfSDV && sumOfSPV == 21)
-    return "Both dealer and player got a Blackjack! Draw.";
-  else if (input == "Hit me") {
-    var hitPlayer = hitMe();
-    hitPlayer;
-    console.log(hitPlayer);
-    sumPlayerHand =
-      playerHand[0].value + playerHand[1].value + playerHand[2].value;
-    return (
-      hitPlayer +
-      " Type 'Hit me again!' for player to get another card 'Stand' to play against the dealer's hand"
-    );
-  } else if (input == "Hit me again!") {
-    var hitPlayer2 = hitMe2();
-    hitPlayer2;
-    console.log(hitPlayer2);
-    sumPlayerHand =
-      playerHand[0].value +
-      playerHand[1].value +
-      playerHand[2].value +
-      playerHand[3].value;
-    return hitPlayer2;
-  } else if (input == "Stand") {
-    checkDealer = dealerCheck();
-    checkDealer;
-    console.log(checkDealer);
-    if (sumPlayerHand < sumDealerHand);
-    return (
-      "Dealer Wins! Dealer's hand is " +
-      sumDealerHand +
-      "while player's hand is " +
-      sumPlayerHand
-    );
-  } else if (sumDealerHand < sumPlayerHand)
-    return (
-      "Player Wins! Dealer's hand is " +
-      sumDealerHand +
-      "while player's hand is " +
-      sumPlayerHand
-    );
-  else if (sumDealerHand === sumPlayerHand)
-    return (
-      "Draw! Player has " + sumPlayerHand + "and dealer has " + sumDealerHand
-    );
+  return myOutputValue;
 };
