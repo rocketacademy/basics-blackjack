@@ -111,36 +111,65 @@ var shuffleCards = function (cardDeck) {
   // Return the shuffled deck
   return cardDeck;
 };
-//To get a deck of shuffled decks
-var deckOfCards = makeDeck();
-var shuffledDeck = shuffleCards(deckOfCards);
 
-// to assign value to deck of cards from 2 to j,q,k
-var assignValueToCards = function (rankOfCards) {
+// to assign new key-value pair to the object in array - such that it will loop through the whole array and assign 10 to queen, jack and king
+var assignValueToCards = function (newDeck) {
   var valueOfCard = 0;
-  //face value of cards
-  if (rankOfCards >= 2 && rankOfCards <= 10) {
-    valueOfCard = rankOfCards;
+  for (let i = 0; i < newDeck.length; i += 1) {
+    if (newDeck[i].rank >= 11 && newDeck[i].rank <= 13) {
+      valueOfCard = 10;
+      newDeck[i].valueOfCard = 10;
+    }
+    if (newDeck[i].rank >= 2 && newDeck[i].rank <= 10) {
+      valueOfCard = newDeck[i].rank;
+      newDeck[i].valueOfCard = newDeck[i].rank;
+    }
+    if (newDeck[i].rank == 1) {
+      newDeck[i].valueOfCard = 11;
+    }
   }
-  if (rankOfCards >= 11 && rankOfCards <= 13) {
-    valueOfCard = 10;
-  }
-  return valueOfCard;
+  return newDeck;
 };
 
-var toCheckIfBlackJack = function (playersHand, computersHand) {
+//To get a deck of shuffled decks
+var cardsDeck = makeDeck();
+var deckOfCards = assignValueToCards(cardsDeck);
+var shuffledDeck = shuffleCards(deckOfCards);
+
+//to define game modes as global variable
+var normalMode = "no blackJack";
+var gameEnd = "blackjack is present or player decides not to draw another card";
+var gameMode = normalMode;
+
+var findSumOfHand = function (cards) {
+  var index = 0;
+  var sum = 0;
+  for (let i = 0; i < cards.length; i += 1) {
+    sum += cards[i].valueOfCard;
+  }
+  return sum;
+};
+
+const gameStart = function (playersHand, computersHand) {
   var outputMsg = `Player's Hand is ${playersHand[0].name} of ${playersHand[0].suit} and ${playersHand[1].name} of ${playersHand[1].suit} . Dealer's Hand is ${computersHand[0].name} of ${computersHand[0].suit} and ${computersHand[1].name} of ${computersHand[1].suit}`;
-  if (
-    playersHand[0].rank + playersHand[1].rank == 21 &&
-    computersHand[0].rank + computersHand[1].rank == 21
-  ) {
-    return `BlackJack!! ${outputMsg}`;
-  }
-  if (playersHand[0].rank + playersHand[1].rank == 21) {
-    return `Player has BlackJack!! Player wins. ${outputMsg}`;
-  }
-  if (computersHand[0].rank + computersHand[1].rank == 21) {
-    return `Dealer has BlackJack!! Dealer wins. ${outputMsg}`;
+  const sumOfPlayerHand = findSumOfHand(playersHand);
+  const sumOfComputersHand = findSumOfHand(computersHand);
+  console.log("p" + outputMsg);
+
+  if (sumOfComputersHand == 21 || sumOfPlayerHand == 21) {
+    gameMode = gameEnd;
+    if (sumOfPlayerHand == 21 && sumOfComputersHand == 21) {
+      return `BlackJack!! ${outputMsg}`;
+    }
+    if (sumOfPlayerHand == 21) {
+      return `Player has BlackJack!! Player wins. ${outputMsg}`;
+    }
+    if (sumOfComputersHand == 21) {
+      return `Dealer has BlackJack!! Dealer wins. ${outputMsg}`;
+    }
+  } else {
+    gameMode = normalMode;
+    return `${outputMsg}. Enter hit or stand`;
   }
 };
 
@@ -149,10 +178,9 @@ var main = function (input) {
   var playerCards = deckOfCards.splice(0, 2);
   var computerCards = deckOfCards.splice(0, 2);
 
-  console.log(playerCards);
-  console.log(computerCards);
-
-  return toCheckIfBlackJack(playerCards, computerCards);
+  if (gameMode == normalMode) {
+    return gameStart(playerCards, computerCards);
+  }
 };
 
 //test
