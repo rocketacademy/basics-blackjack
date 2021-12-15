@@ -22,7 +22,9 @@
 const pendingNumOfPlayers = "pending number of players";
 const pendingPlayersNames = "pending players' names";
 const pendingPlayersCash = "pending cash from players";
-const blackjackTime = "blackjack time";
+const pendingBets = "pending players to place bets";
+const dealingCards = "dealer dealing cards after bets are placed";
+const hitStandSplit = "";
 let shuffledDeck;
 let deck = [];
 let playersArray = [];
@@ -128,6 +130,7 @@ const createPlayer = (name) => {
     cash: 0,
     cards: [],
     cardPoints: 0,
+    bets: 0,
   };
 };
 
@@ -138,6 +141,23 @@ const initializePlayersArray = (totalNumOfPlayers) => {
     playersArray.push(createPlayer(i + 1));
   }
   console.log(playersArray);
+};
+
+//function to place bets
+const placeBets = function (input) {
+  if (isNaN(input) || input == "") {
+    return `Hello ${playersArray[playersArrayIndex].name}, please place your bets.`;
+  }
+  if (playersArrayIndex + 1 == playersArray.length) {
+    playersArray[playersArrayIndex].bets = Number(input.trim());
+    playersArrayIndex = 0;
+    gameStatus = dealingCards;
+    return "Please press submit button to deal the cards.";
+  } else {
+    playersArray[playersArrayIndex].bets = Number(input.trim());
+    playersArrayIndex += 1;
+    return `Hi ${playersArray[playersArrayIndex].name}, please place your bets.`;
+  }
 };
 
 //creating deal function
@@ -165,6 +185,19 @@ const countCardPoints = function (playersArray) {
         }
         playersArray[i].cardPoints += playersArray[i].cards[j].point;
       }
+    }
+  }
+  dealer.cardPoints = 0;
+  for (k = 0; k < dealer.cards.length; k += 1) {
+    dealer.cardPoints += dealer.cards[k].point;
+  }
+  if (dealer.cardPoints > 21) {
+    dealer.cardPoints = 0;
+    for (k = 0; k < dealer.cards.length; k += 1) {
+      if (dealer.cards[k].name == "ace") {
+        dealer.cards[k].point = 1;
+      }
+      dealer.cardPoints += dealer.cards[k].point;
     }
   }
 };
@@ -204,7 +237,7 @@ var main = function (input) {
     }
     if (playersArrayIndex + 1 == playersArray.length) {
       playersArray[playersArrayIndex].cash = Number(input);
-      gameStatus = blackjackTime;
+      gameStatus = pendingBets;
       playersArrayIndex = 0;
       return `Press submit to start placing your bets.`;
     } else {
@@ -214,8 +247,14 @@ var main = function (input) {
       return `Hi player ${playersArray[playersArrayIndex].name}, may I have your name please?`;
     }
   }
+  if (gameStatus == pendingBets) {
+    placeBets(input);
+  }
 
-  if (gameStatus == blackjackTime) {
+  if (gameStatus == dealingCards) {
+    if (input == "") {
+      return "Please press submit to deal the cards.";
+    }
     dealCards(shuffledDeck);
     countCardPoints(playersArray);
   }
