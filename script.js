@@ -2,21 +2,23 @@
 //1. create a card deck object and shuffle it and store it at global state
 //2. ask how many players are playing (max. 4) and initilize the number of player object
 //3. ask each player name and betting amount and store in the player object
-//4. once all players are initialize, can begin to play. Deal 2 cards to each players followed by the dealer.
+//4. once all players are initialize, can begin to play. Deal 2 cards to each players and the dealer.
 //    a. one of dealer card is not shown
 //5. beginning from player 1 adds up the sum at hand and store it
 //    a. use global states to control which player is playing at the moment (for DOM control)
 //    b. jack/queen/king is 10 and aces is 1 or 11.
-//    c. if player has blackjack and dealer is not a blackjack, player win automatically, get paid 3:2 and player will reset and wait for next round.
-//    d. else, allow the player to choose hit or stand or /split (if in pairs)/ or double or quit (lose the bet and stop playing)
-//    f. if hit and bust, lose the bet and wait for next round
-//    g. else save the score and move to next player and repat a-f.
-//6. dealer see if total card score is equal or above 17, if not draw until it is above 17 and stop
+//6. begining from player 1, display hand and score
+//    a. if player has blackjack and dealer is not a blackjack, player win automatically, get paid 3:2 and player will reset and wait for next round.
+//    b. else, allow the player to choose hit or stand or /split (if in pairs)/ or double or quit (lose the bet and stop playing)
+//      i. if hit and bust, lose the bet and wait for next round
+//      ii. else hit until player stands and wait for next round
+//    g. else save the score and move to next player and repat a-b.
+//7. dealer see if total card score is equal or above 17, if not draw until it is above 17 and stop
 //    a. if bust, award bet to non busted players
 //    b. else, compare score and award bet to non busted players with higher score
 //    c. else,
-//7. restart hand and repeat step 4 - 6 until deck.length is less than 26 and reshuffle and repeat step 4-6.
-//8. include quit function to restart the whole game
+//8. restart hand and repeat step 4 - 6 until deck.length is less than 26 and reshuffle and repeat step 4-6.
+//9. include quit function to restart the whole game
 
 //initializing global variables & setting up initial game status & arrays
 const pendingNumOfPlayers = "pending number of players";
@@ -24,7 +26,7 @@ const pendingPlayersNames = "pending players' names";
 const pendingPlayersCash = "pending cash from players";
 const pendingBets = "pending players to place bets";
 const dealingCards = "dealer dealing cards after bets are placed";
-const hitStandSplit = "";
+const hitStandSplit = "players to choose hit, stand or split";
 let shuffledDeck;
 let deck = [];
 let playersArray = [];
@@ -32,12 +34,13 @@ let playersArrayIndex = 0;
 let totalNumOfPlayers;
 let gameStatus = pendingNumOfPlayers;
 let dealer = { cards: [], cardPoints: 0 };
+let hitStandSplitMsgPart1 = ``;
 
 const makeDeck = function () {
   // Initialise an empty deck array
   var cardDeck = [];
   // Initialise an array of the 4 suits in our deck. We will loop over this array.
-  var suits = ["hearts", "diamonds", "clubs", "spades"];
+  var suits = ["♥️", "♦️", "♣️", "♠️"];
 
   // Loop over the suits array
   var suitIndex = 0;
@@ -202,6 +205,25 @@ const countCardPoints = function (playersArray) {
   }
 };
 
+//creating display player/dealer hand function
+const displayHandmsg = function (playerObject) {
+  let msg = ``;
+  for (i = 0; i < playerObject.cards.length; i += 1) {
+    msg += `${playerObject.cards[i].name} of ${playerObject.cards[i].suit}<br>`;
+  }
+  msg += `<b>Points: ${playerObject.cardPoints}</b>`;
+  return msg;
+};
+
+//creating display dealer partial hand function
+const displayDealerHandmsg = function (dealerObject) {
+  let msg = `Facedown Card<br>`;
+  for (i = 1; i < dealerObject.cards.length; i += 1) {
+    msg += `${dealerObject.cards[i].name} of ${dealerObject.cards[i].suit}<br>`;
+  }
+  return msg;
+};
+
 deck = makeDeck();
 shuffledDeck = shuffleCards(deck);
 
@@ -239,7 +261,7 @@ var main = function (input) {
       playersArray[playersArrayIndex].cash = Number(input);
       gameStatus = pendingBets;
       playersArrayIndex = 0;
-      return `Press submit to start placing your bets.`;
+      return `Hi ${playersArray[playersArrayIndex].name} Press start placing your bets.`;
     } else {
       playersArray[playersArrayIndex].cash = Number(input.trim());
       playersArrayIndex += 1;
@@ -248,14 +270,24 @@ var main = function (input) {
     }
   }
   if (gameStatus == pendingBets) {
-    placeBets(input);
+    return placeBets(input);
   }
 
   if (gameStatus == dealingCards) {
-    if (input == "") {
+    if (input != "") {
       return "Please press submit to deal the cards.";
     }
     dealCards(shuffledDeck);
     countCardPoints(playersArray);
+    gameStatus = hitStandSplit;
+  }
+
+  if (gameStatus == hitStandSplit) {
+    console.log(playersArray[playersArrayIndex]);
+    return `<b>${
+      playersArray[playersArrayIndex].name
+    }'s hand</b><br>${displayHandmsg(
+      playersArray[playersArrayIndex]
+    )}<br><br><b>Dealer's hand</b><br>${displayDealerHandmsg(dealer)}`;
   }
 };
