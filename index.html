@@ -130,6 +130,8 @@
       <input id="input-field" />
       <br />
       <button id="submit-button">Submit</button>
+      <button id="hit-button">Hit!</button>
+      <button id="play-button">Play!</button>
       <p>Output:</p>
       <div id="output-div"></div>
     </div>
@@ -141,6 +143,7 @@
       button.addEventListener("click", function () {
         // Set result to input value
         var input = document.querySelector("#input-field");
+        submitButtonOff() + hitButtonOn() + playButtonOn();
         var result = main(input.value);
 
         // Display result in output element
@@ -150,6 +153,41 @@
         // Reset input value
         input.value = "";
       });
+      var button = document.querySelector("#hit-button");
+      button.addEventListener("click", function () {
+        // Set result to input value
+        var input = document.querySelector("#input-field");
+        var result = hitMe() + sumPlayerHand() + hitButtonOn() + playButtonOn();
+
+        // Display result in output element
+        var output = document.querySelector("#output-div");
+        output.innerHTML = `Your hand is ${playerValue}. Type Hit! to draw a card or Play! to see results`;
+
+        // Reset input value
+        input.value = "";
+      });
+      var button = document.querySelector("#play-button");
+      button.addEventListener("click", function () {
+        // Set result to input value
+        var input = document.querySelector("#input-field");
+        var result =
+          dealerPlay() +
+          play() +
+          submitButtonOn() +
+          hitButtonOff() +
+          playButtonOff();
+
+        // Display result in output element
+        var output = document.querySelector("#output-div");
+        output.innerHTML = `${results}`;
+
+        // Reset input value
+        input.value = "";
+      });
+      // var testCard = document.createElement("img");
+      // testCard.src =
+      //   "https://www.google.com/url?sa=i&url=https%3A%2F%2Funsplash.com%2Fs%2Fphotos%2Fplaying-card&psig=AOvVaw1CdokNXXQjM26Q9VsWBJ1I&ust=1639541369658000&source=images&cd=vfe&ved=0CAgQjRxqFwoTCOiPkdm14vQCFQAAAAAdAAAAABAD";
+      // document.body.appendChild(testCard);
     </script>
   </body>
 </html>
