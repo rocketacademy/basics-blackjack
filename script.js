@@ -126,15 +126,6 @@ var assignValueToCards = function (newDeck) {
   return newDeck;
 };
 
-var findSumOfHand = function (cards) {
-  var index = 0;
-  var sum = 0;
-  for (let i = 0; i < cards.length; i += 1) {
-    sum += cards[i].valueOfCard;
-  }
-  return sum;
-};
-
 //first make a deck of cards
 var cardsDeck = [];
 var shuffledDeck = [];
@@ -150,9 +141,14 @@ var computerCards = [];
 var sumOfPlayer = 0;
 var sumOfComputer = 0;
 
-//1. to deal 2 cards to dealer and player
-//2. see whether there is a blackjack. if either there is a blackjack, game ends, display results
-//3. else game continues, can continue to take card.
+var findSumOfHand = function (cards) {
+  var sum = 0;
+  for (let i = 0; i < cards.length; i += 1) {
+    sum += cards[i].valueOfCard;
+  }
+  return sum;
+};
+
 var checkSumOfInitialHand = function (cards) {
   for (let i = 0; i < cards.length; i += 1) {
     if (cards[i].name == "ace") {
@@ -172,6 +168,24 @@ var drawCard = function () {
   return cardDrawn;
 };
 
+var checkIfComputerShouldDraw = function () {
+  var totalSumOfComputerCards = findSumOfHand(computerCards);
+  console.log(totalSumOfComputerCards);
+  if (totalSumOfComputerCards < 17) {
+    var computerNextCard = drawCard();
+    computerCards.push(computerNextCard);
+  }
+  return computerCards;
+};
+
+var craftOutputMessage = function (hand) {
+  var message = ``;
+  for (let i = 0; i < hand.length; i += 1) {
+    message += `card ${i + 1}: ${hand[i].name} of ${hand[i].suit} <br>`;
+  }
+  return message;
+};
+var newComputerMsg = "";
 var main = function (input) {
   if (input == "") {
     if (gameMode == gameStart) {
@@ -181,18 +195,15 @@ var main = function (input) {
       playerCards = deckOfCards.splice(0, 2);
       computerCards = deckOfCards.splice(0, 2);
 
-      var outputMsg = `Player's hand is ${playerCards[1].name} of ${playerCards[1].suit} and ${playerCards[0].name} of ${playerCards[0].suit} <br> Computer's hand is ${computerCards[1].name} of ${computerCards[1].suit} and ${computerCards[0].name} of ${computerCards[1].suit}.`;
+      var outputMsg = `Player's hand: <br> ${craftOutputMessage(
+        playerCards
+      )} <br>Dealer's hand: <br>${craftOutputMessage(computerCards)}`;
 
       console.log(playerCards);
       console.log(computerCards);
 
       sumOfPlayer = checkSumOfInitialHand(playerCards);
       sumOfComputer = checkSumOfInitialHand(computerCards);
-
-      if (sumOfComputer < 17) {
-        var computerNextCard = drawCard();
-        computerCards.push(computerNextCard);
-      }
 
       if (gameMode == blackJackMode) {
         gameMode = gameStart;
@@ -205,22 +216,32 @@ var main = function (input) {
         if (sumOfPlayer == 21) {
           return `Player has won!${outputMsg} BlackJack!`;
         }
-      } else
-        return `${outputMsg} Player enter "hit" to continue drawing another card or "stand" to stop.`;
+      } else {
+        var computerFinalCards = checkIfComputerShouldDraw();
+        newComputerMsg = craftOutputMessage(computerFinalCards);
+        outputMsg = `Player's hand: <br> ${craftOutputMessage(
+          playerCards
+        )} <br>Dealer's hand: <br>${newComputerMsg} <br>`;
+        return `${outputMsg} <br>Player enter "hit" to continue drawing another card or "stand" to stop.`;
+      }
     }
   }
+
   if (input == "hit") {
     gameMode = drawAnotherCard;
     var playerNextCard = drawCard();
+    console.log(playerNextCard);
     playerCards.push(playerNextCard);
+    var newMsg = craftOutputMessage(playerCards);
+    return `Player's card:<br> ${newMsg}<br> Dealer's card: <br> ${newComputerMsg}`;
   }
 };
-
 //test
 console.log(main(""));
-console.log(main("hit"));
+
 console.log(drawCard());
 
+console.log(checkIfComputerShouldDraw());
 /* second part (after scenario 4)
 1. need to set a game logic for computer to determine whether draw one more card 
 if sum of number <= 16 -> draw 
