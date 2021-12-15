@@ -34,7 +34,7 @@ let playersArrayIndex = 0;
 let totalNumOfPlayers;
 let gameStatus = pendingNumOfPlayers;
 let dealer = { cards: [], cardPoints: 0 };
-let hitStandSplitMsgPart1 = ``;
+let hitStandDoubleInputArray = ['hit', 'stand', 'double','split'];
 
 const makeDeck = function () {
   // Initialise an empty deck array
@@ -217,12 +217,55 @@ const displayHandmsg = function (playerObject) {
 
 //creating display dealer partial hand function
 const displayDealerHandmsg = function (dealerObject) {
-  let msg = `Facedown Card<br>`;
-  for (i = 1; i < dealerObject.cards.length; i += 1) {
-    msg += `${dealerObject.cards[i].name} of ${dealerObject.cards[i].suit}<br>`;
+  let msg = ``;
+  if (dealer.cardPoints == 21) {
+    for (i = 0; i < dealerObject.cards.length; i += 1) {
+      msg += `${dealerObject.cards[i].name} of ${dealerObject.cards[i].suit}<br>`;
+    }
+  } else {
+    msg = `Facedown Card<br>`;
+    for (i = 1; i < dealerObject.cards.length; i += 1) {
+      msg += `${dealerObject.cards[i].name} of ${dealerObject.cards[i].suit}<br>`;
+    }
   }
   return msg;
 };
+
+//compare dealer-player hand for blackjack function
+const blackjackCheck = function () {
+  let msg = "";
+  if (
+    playersArray[playersArrayIndex].cardPoints == 21 &&
+    dealer.cardPoints == 21
+  ) {
+    playersArray[playersArrayIndex].bets = 0;
+    msg = "It is a push!";
+    playersArrayIndex += 1;
+  } else if (
+    playersArray[playersArrayIndex].cardPoints == 21 &&
+    dealer.cardPoints < 21
+  ) {
+    playersArray[playersArrayIndex].cash +=
+      (playersArray[playersArrayIndex].bets * 3) / 2;
+    msg = `It is a blackjack! ${playersArray[playersArrayIndex].name} wins $${
+      (playersArray[playersArrayIndex].bets * 3) / 2
+    }.`;
+    playersArray[playersArrayIndex].bets = 0;
+    playersArrayIndex += 1;
+  } else if (
+    playersArray[playersArrayIndex].cardPoints < 21 &&
+    dealer.cardPoints == 21
+  ) {
+    playersArray[playersArrayIndex].cash -=
+      playersArray[playersArrayIndex].bets;
+    msg = `Dealer has a blackjack. ${playersArray[playersArrayIndex].name} loses $${playersArray[playersArrayIndex].bets}.`;
+    playersArray[playersArrayIndex].bets = 0;
+    playersArrayIndex += 1;
+  }
+  return msg;
+};
+
+
 
 deck = makeDeck();
 shuffledDeck = shuffleCards(deck);
@@ -283,11 +326,14 @@ var main = function (input) {
   }
 
   if (gameStatus == hitStandSplit) {
-    console.log(playersArray[playersArrayIndex]);
+    if (playersArrayIndex + 1 == playersArray.length) {
+    }
     return `<b>${
       playersArray[playersArrayIndex].name
     }'s hand</b><br>${displayHandmsg(
       playersArray[playersArrayIndex]
-    )}<br><br><b>Dealer's hand</b><br>${displayDealerHandmsg(dealer)}`;
+    )}<br><br><b>Dealer's hand</b><br>${displayDealerHandmsg(
+      dealer
+    )}<br>${blackjackCheck()} `;
   }
 };
