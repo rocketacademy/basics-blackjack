@@ -29,7 +29,7 @@ let playersArray = [];
 let playersArrayIndex = 0;
 let totalNumOfPlayers;
 let gameStatus = pendingNumOfPlayers;
-let dealer = { cards: [], cardCount: 0 };
+let dealer = { cards: [], cardPoints: 0 };
 
 const makeDeck = function () {
   // Initialise an empty deck array
@@ -50,7 +50,7 @@ const makeDeck = function () {
     while (rankCounter <= 13) {
       // By default, the card name is the same as rankCounter
       var cardName = rankCounter;
-
+      var point = rankCounter;
       // If rank is 1, 11, 12, or 13, set cardName to the ace or face card's name
       if (cardName == 1) {
         cardName = "ace";
@@ -62,11 +62,22 @@ const makeDeck = function () {
         cardName = "king";
       }
 
+      if (cardName == "jack") {
+        point = 10;
+      } else if (cardName == "queen") {
+        point = 10;
+      } else if (cardName == "king") {
+        point = 10;
+      } else if (cardName == "ace") {
+        point = 11;
+      }
+
       // Create a new card with the current name, suit, and rank
       var card = {
         name: cardName,
         suit: currentSuit,
         rank: rankCounter,
+        point: point,
       };
 
       // Add the new card to the deck
@@ -116,7 +127,7 @@ const createPlayer = (name) => {
     name: name,
     cash: 0,
     cards: [],
-    cardCount: 0,
+    cardPoints: 0,
   };
 };
 
@@ -136,6 +147,25 @@ const dealCards = function () {
       playersArray[j].cards.push(shuffledDeck.pop());
     }
     dealer.cards.push(shuffledDeck.pop());
+  }
+};
+
+//creating function to read the hand cards and store the points in player's object (deciding if i should count everyone at one go or individual players)
+const countCardPoints = function (playersArray) {
+  for (i = 0; i < playersArray.length; i += 1) {
+    playersArray[i].cardPoints = 0;
+    for (j = 0; j < playersArray[i].cards.length; j += 1) {
+      playersArray[i].cardPoints += playersArray[i].cards[j].point;
+    }
+    if (playersArray[i].cardPoints > 21) {
+      playersArray[i].cardPoints = 0;
+      for (j = 0; j < playersArray[i].cards.length; j += 1) {
+        if (playersArray[i].cards[j].name == "ace") {
+          playersArray[i].cards[j].point = 1;
+        }
+        playersArray[i].cardPoints += playersArray[i].cards[j].point;
+      }
+    }
   }
 };
 
@@ -187,7 +217,6 @@ var main = function (input) {
 
   if (gameStatus == blackjackTime) {
     dealCards(shuffledDeck);
-    console.log(playersArray);
-    console.log(dealer);
+    countCardPoints(playersArray);
   }
 };
