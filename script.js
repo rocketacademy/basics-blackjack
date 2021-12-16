@@ -385,6 +385,22 @@ const allPlayerPlayedCheck = function () {
   return counter == playersArray.length ? true : false;
 };
 
+//creating function to start new round and place bets again
+const newRound = function () {
+  for (const player of playersArray) {
+    player.cards = [];
+    player.cardPoints = 0;
+    player.bets = 0;
+    player.status = PENDING;
+  }
+  dealer.cards = [];
+  dealer.cardPoints = 0;
+  shuffledDeck = shuffleCards(deck);
+  playersArrayIndex = 0;
+  gameStatus = pendingBets;
+  return `Hi ${playersArray[playersArrayIndex].name} Please start placing your bets.`;
+};
+
 deck = makeDeck();
 shuffledDeck = shuffleCards(deck);
 
@@ -452,6 +468,8 @@ var main = function (input) {
   }
 
   if (gameStatus == dealerTurn) {
-    return `dealer turn`;
+    if (allPlayerPlayedCheck() == true) {
+      return newRound();
+    }
   }
 };
