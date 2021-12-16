@@ -27,6 +27,10 @@ const pendingPlayersCash = "pending cash from players";
 const pendingBets = "pending players to place bets";
 const dealingCards = "dealer dealing cards after bets are placed";
 const hitStandSplit = "players to choose hit, stand or split";
+const dealerTurn = "dealer to play";
+const HIT = "hit";
+const STAND = "stand";
+const DOUBLE = "double";
 let shuffledDeck;
 let deck = [];
 let playersArray = [];
@@ -34,7 +38,10 @@ let playersArrayIndex = 0;
 let totalNumOfPlayers;
 let gameStatus = pendingNumOfPlayers;
 let dealer = { cards: [], cardPoints: 0 };
-let hitStandDoubleInputArray = ['hit', 'stand', 'double','split'];
+let hitStandDoubleInputArray = [HIT, STAND, DOUBLE];
+let hitStandInputArray = [HIT, STAND];
+let hitFlag = false;
+let nextPlayerTurnFlag = false;
 
 const makeDeck = function () {
   // Initialise an empty deck array
@@ -174,7 +181,7 @@ const dealCards = function () {
 };
 
 //creating function to read the hand cards and store the points in player's object (deciding if i should count everyone at one go or individual players)
-const countCardPoints = function (playersArray) {
+const countCardPoints = function () {
   for (i = 0; i < playersArray.length; i += 1) {
     playersArray[i].cardPoints = 0;
     for (j = 0; j < playersArray[i].cards.length; j += 1) {
@@ -231,15 +238,25 @@ const displayDealerHandmsg = function (dealerObject) {
   return msg;
 };
 
+//creating template message to display hand cards
+const generateHandCardsMsg = function () {
+  let msg = `<b>${
+    playersArray[playersArrayIndex].name
+  }'s hand</b><br>${displayHandmsg(
+    playersArray[playersArrayIndex]
+  )}<br><br><b>Dealer's hand</b><br>${displayDealerHandmsg(dealer)}`;
+  return msg;
+};
+
 //compare dealer-player hand for blackjack function
 const blackjackCheck = function () {
-  let msg = "";
+  let msg = `Hi ${playersArray[playersArrayIndex].name}, would you like to "Hit", "Stand" or "Double"?`;
   if (
     playersArray[playersArrayIndex].cardPoints == 21 &&
     dealer.cardPoints == 21
   ) {
     playersArray[playersArrayIndex].bets = 0;
-    msg = "It is a push!";
+    msg = "It is a push!<br><br>Press submit for next player turn.";
     playersArrayIndex += 1;
   } else if (
     playersArray[playersArrayIndex].cardPoints == 21 &&
@@ -249,23 +266,105 @@ const blackjackCheck = function () {
       (playersArray[playersArrayIndex].bets * 3) / 2;
     msg = `It is a blackjack! ${playersArray[playersArrayIndex].name} wins $${
       (playersArray[playersArrayIndex].bets * 3) / 2
-    }.`;
+    }.<br><br>Press submit for next player turn.`;
     playersArray[playersArrayIndex].bets = 0;
     playersArrayIndex += 1;
+    nextPlayerTurnFlag = true;
   } else if (
     playersArray[playersArrayIndex].cardPoints < 21 &&
     dealer.cardPoints == 21
   ) {
     playersArray[playersArrayIndex].cash -=
       playersArray[playersArrayIndex].bets;
-    msg = `Dealer has a blackjack. ${playersArray[playersArrayIndex].name} loses $${playersArray[playersArrayIndex].bets}.`;
+    msg = `Dealer has a blackjack. ${playersArray[playersArrayIndex].name} loses $${playersArray[playersArrayIndex].bets}.<br><br>Press submit for next player turn.`;
     playersArray[playersArrayIndex].bets = 0;
     playersArrayIndex += 1;
+    nextPlayerTurnFlag = true;
   }
   return msg;
 };
 
+//creating function to run BJ
+const runPlayerTurn = function (input) {
+  //input validation
+  if (nextPlayerTurnFlag == true) {
+    return `Please press Submit for next player turn.`;
+  } else if (
+    hitFlag == false &&
+    hitStandDoubleInputArray.indexOf(input.trim().toLowerCase()) == -1
+  ) {
+    return `${generateHandCardsMsg()}<br><br>Please type "hit", "stand" or "double".`;
+  } else if (
+    hitFlag == true &&
+    hitStandInputArray.indexOf(input.trim().toLowerCase()) == -1
+  ) {
+    return `${generateHandCardsMsg()}<br><br>Please type "hit" or "stand".`;
+  }
+  let msg = "";
+  if (input.trim().toLowerCase() == HIT) {
+    hitFlag = true;
+    playersArray[playersArrayIndex].cards.push(shuffledDeck.pop());
+    countCardPoints();
+    msg = `${generateHandCardsMsg()}<br><br>Hi ${
+      playersArray[playersArrayIndex].name
+    }, would you like to "Hit" or "Stand"?`;
+    if (playersArray[playersArrayIndex].cardPoints > 21) {
+      msg = `${generateHandCardsMsg()}<br><br>BUST!<br><br>${
+        playersArray[playersArrayIndex].name
+      } loses $${
+        playersArray[playersArrayIndex].bets
+      }.<br><br>Press Submit for the next turn.`;
+      nextPlayerTurnFlag = true;  
+      playersArray[playersArrayIndex].cash -=
+        playersArray[playersArrayIndex].bets;
+      playersArray[playersArrayIndex].bets = 0;
+      if (playersArrayIndex + 1 == playersArray.length) {
+        playersArrayIndex = 0;
+        gameStatus = dealerTurn;
+      } else {
+        playersArrayIndex += 1;
+      }
+    }
+  }
+  if (input.trim().toLowerCase() == STAND) {
+    hitFlag = false;
+    if (playersArrayIndex + 1 == playersArray.length) {
+      playersArrayIndex = 0;
+      gameStatus = dealerTurn;
+      return main("");
+    } else {
+      playersArrayIndex += 1;
+      return main("");
+    }
+  }
 
+  if (input.trim().toLowerCase() == DOUBLE) {
+    playersArray[playersArrayIndex].bets *= 2;
+    playersArray[playersArrayIndex].cards.push(shuffledDeck.pop());
+    countCardPoints();
+    msg = `${generateHandCardsMsg()}<br><br>Hi ${
+      playersArray[playersArrayIndex].name
+    }, press Submit for next player turn.`;
+    nextPlayerTurnFlag = true;
+    if (playersArray[playersArrayIndex].cardPoints > 21) {
+      msg = `${generateHandCardsMsg()}<br><br>BUST!<br><br>${
+        playersArray[playersArrayIndex].name
+      } loses $${
+        playersArray[playersArrayIndex].bets
+      }.<br><br>Press Submit for the next turn.`;
+      playersArray[playersArrayIndex].cash -=
+        playersArray[playersArrayIndex].bets;
+      playersArray[playersArrayIndex].bets = 0;
+    }
+    if (playersArrayIndex + 1 == playersArray.length) {
+      playersArrayIndex = 0;
+      gameStatus = dealerTurn;
+    } else {
+      playersArrayIndex += 1;
+    }
+  }
+  return msg;
+};
 
 deck = makeDeck();
 shuffledDeck = shuffleCards(deck);
@@ -304,7 +403,7 @@ var main = function (input) {
       playersArray[playersArrayIndex].cash = Number(input);
       gameStatus = pendingBets;
       playersArrayIndex = 0;
-      return `Hi ${playersArray[playersArrayIndex].name} Press start placing your bets.`;
+      return `Hi ${playersArray[playersArrayIndex].name} Please start placing your bets.`;
     } else {
       playersArray[playersArrayIndex].cash = Number(input.trim());
       playersArrayIndex += 1;
@@ -321,19 +420,19 @@ var main = function (input) {
       return "Please press submit to deal the cards.";
     }
     dealCards(shuffledDeck);
-    countCardPoints(playersArray);
+    countCardPoints();
     gameStatus = hitStandSplit;
   }
 
   if (gameStatus == hitStandSplit) {
-    if (playersArrayIndex + 1 == playersArray.length) {
+    if (input == "") {
+      nextPlayerTurnFlag = false;
+      return `${generateHandCardsMsg()}<br>${blackjackCheck()} `;
     }
-    return `<b>${
-      playersArray[playersArrayIndex].name
-    }'s hand</b><br>${displayHandmsg(
-      playersArray[playersArrayIndex]
-    )}<br><br><b>Dealer's hand</b><br>${displayDealerHandmsg(
-      dealer
-    )}<br>${blackjackCheck()} `;
+    return runPlayerTurn(input);
+  }
+
+  if (gameStatus == dealerTurn) {
+    return `dealer turn`;
   }
 };
