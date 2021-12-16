@@ -31,6 +31,8 @@ const dealerTurn = "dealer to play";
 const HIT = "hit";
 const STAND = "stand";
 const DOUBLE = "double";
+const PLAYED = "player status - played";
+const PENDING = "player status - pending";
 let shuffledDeck;
 let deck = [];
 let playersArray = [];
@@ -141,6 +143,7 @@ const createPlayer = (name) => {
     cards: [],
     cardPoints: 0,
     bets: 0,
+    status: PENDING,
   };
 };
 
@@ -257,6 +260,7 @@ const blackjackCheck = function () {
   ) {
     playersArray[playersArrayIndex].bets = 0;
     msg = "It is a push!<br><br>Press submit for next player turn.";
+    playersArray[playersArrayIndex].status = PLAYED;
     playersArrayIndex += 1;
   } else if (
     playersArray[playersArrayIndex].cardPoints == 21 &&
@@ -268,6 +272,7 @@ const blackjackCheck = function () {
       (playersArray[playersArrayIndex].bets * 3) / 2
     }.<br><br>Press submit for next player turn.`;
     playersArray[playersArrayIndex].bets = 0;
+    playersArray[playersArrayIndex].status = PLAYED;
     playersArrayIndex += 1;
     nextPlayerTurnFlag = true;
   } else if (
@@ -278,6 +283,7 @@ const blackjackCheck = function () {
       playersArray[playersArrayIndex].bets;
     msg = `Dealer has a blackjack. ${playersArray[playersArrayIndex].name} loses $${playersArray[playersArrayIndex].bets}.<br><br>Press submit for next player turn.`;
     playersArray[playersArrayIndex].bets = 0;
+    playersArray[playersArrayIndex].status = PLAYED;
     playersArrayIndex += 1;
     nextPlayerTurnFlag = true;
   }
@@ -314,10 +320,11 @@ const runPlayerTurn = function (input) {
       } loses $${
         playersArray[playersArrayIndex].bets
       }.<br><br>Press Submit for the next turn.`;
-      nextPlayerTurnFlag = true;  
+      nextPlayerTurnFlag = true;
       playersArray[playersArrayIndex].cash -=
         playersArray[playersArrayIndex].bets;
       playersArray[playersArrayIndex].bets = 0;
+      playersArray[playersArrayIndex].status = PLAYED;
       if (playersArrayIndex + 1 == playersArray.length) {
         playersArrayIndex = 0;
         gameStatus = dealerTurn;
@@ -355,6 +362,7 @@ const runPlayerTurn = function (input) {
       playersArray[playersArrayIndex].cash -=
         playersArray[playersArrayIndex].bets;
       playersArray[playersArrayIndex].bets = 0;
+      playersArray[playersArrayIndex].status = PLAYED;
     }
     if (playersArrayIndex + 1 == playersArray.length) {
       playersArrayIndex = 0;
@@ -364,6 +372,17 @@ const runPlayerTurn = function (input) {
     }
   }
   return msg;
+};
+
+//creating function to check if all players done playing the current round of BJ before dealer turn
+const allPlayerPlayedCheck = function () {
+  let counter = 0;
+  for (const player of playersArray) {
+    if (player.status == PLAYED) {
+      counter += 1;
+    }
+  }
+  return counter == playersArray.length ? true : false;
 };
 
 deck = makeDeck();
