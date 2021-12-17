@@ -18,23 +18,27 @@ var makeDeck = function () {
     while (rankCounter <= 13) {
       // By default, the card name is the same as rankCounter
       var cardName = rankCounter;
+      var blackJackRank = rankCounter;
 
       // If rank is 1, 11, 12, or 13, set cardName to the ace or face card's name
       if (cardName == 1) {
         cardName = "ace";
       } else if (cardName == 11) {
         cardName = "jack";
+        blackJackRank = 10;
       } else if (cardName == 12) {
         cardName = "queen";
+        blackJackRank = 10;
       } else if (cardName == 13) {
         cardName = "king";
+        blackJackRank = 10;
       }
 
       // Create a new card with the current name, suit, and rank
       var card = {
         name: cardName,
         suit: currentSuit,
-        rank: rankCounter,
+        rank: blackJackRank,
       };
 
       // Add the new card to the deck
