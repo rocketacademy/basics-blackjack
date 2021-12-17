@@ -189,16 +189,16 @@ const dealCards = function () {
 const countCardPoints = function () {
   for (i = 0; i < playersArray.length; i += 1) {
     playersArray[i].cardPoints = 0;
+    let aceCounter = 0;
     for (j = 0; j < playersArray[i].cards.length; j += 1) {
+      if (playersArray[i].cards[j].name == "ace") {
+        aceCounter += 1;
+      }
       playersArray[i].cardPoints += playersArray[i].cards[j].point;
     }
-    if (playersArray[i].cardPoints > 21) {
-      playersArray[i].cardPoints = 0;
-      for (j = 0; j < playersArray[i].cards.length; j += 1) {
-        if (playersArray[i].cards[j].name == "ace") {
-          playersArray[i].cards[j].point = 1;
-        }
-        playersArray[i].cardPoints += playersArray[i].cards[j].point;
+    for (k = 0; k < aceCounter; k += 1) {
+      if (playersArray[i].cardPoints > 21) {
+        playersArray[i].cardPoints -= 10;
       }
     }
   }
