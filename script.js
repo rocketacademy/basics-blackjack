@@ -532,11 +532,13 @@ var main = function (input) {
   if (playersArray.length == 0) {
     dealer.cards = [];
     dealer.cardPoints = 0;
+    playersArrayIndex = 0;
+    shuffledDeck = shuffleCards(deck);
     gameStatus = pendingNumOfPlayers;
   }
 
   if (gameStatus == pendingNumOfPlayers) {
-    if (isNaN(input) || input == "") {
+    if (isNaN(input) || input == "" || Number(input) > 4) {
       return "Hello user, please kindly input a number for the number of players.";
     }
     totalNumOfPlayers = Number(input);
