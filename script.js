@@ -109,11 +109,30 @@ var sumRankCardsOnHand = function (playerOrComputer) {
   return totalRank;
 };
 
+// function for the phase one, dealing two cards
+var getTwoCards = function () {
+  playerCards = dealCards();
+  computerCards = dealCards();
+  console.log(playerCards);
+  console.log(computerCards);
+  dealingPhase = false;
+  playerCardsString = toDisplayCardsOnHand(playerCards);
+  computerCardsString = toDisplayCardsOnHand(computerCards);
+  playerCardsSum = sumRankCardsOnHand(playerCards);
+  computerCardSum = sumRankCardsOnHand(computerCards);
+  return `${playerHandMessage}: ${playerCardsString} total point = ${playerCardsSum}<br>${computerHandMessage}: ${computerCardsString} with sum = ${computerCardSum}<br><br>${hitOrStandMessage}`;
+};
+
 // function to hit or stand for player
-var toHitOrStand = function (playerCards) {
-  var dealtCards = shuffledDeck.pop();
+var toHitOrStand = function (dealtCards) {
+  dealtCards = shuffledDeck.pop();
   console.log(dealtCards);
-  return dealtCards;
+  playerCards.push(dealtCards);
+  playerCardsString = toDisplayCardsOnHand(playerCards);
+  computerCardsString = toDisplayCardsOnHand(computerCards);
+  playerCardsSum = sumRankCardsOnHand(playerCards);
+  computerCardSum = sumRankCardsOnHand(computerCards);
+  return `${playerHandMessage}: ${playerCardsString} total point = ${playerCardsSum}<br>${computerHandMessage}: ${computerCardsString} with sum = ${computerCardSum}<br><br>${hitOrStandMessage}`;
 };
 
 // There will be only two players. One human and one computer (for the Base solution).
@@ -134,38 +153,30 @@ var toHitOrStand = function (playerCards) {
 
 // winning condition: closest to 21 and not the same sum with dealer
 
-var gamePhase = function () {};
 // global variables
-
 var dealingPhase = true;
 var hitOrStandPhase = true;
 var playerHandMessage = `Player's cards`;
 var computerHandMessage = `Computer's cards`;
 var hitOrStandMessage = `Would you like to hit or stand?`;
+var playerCards = [];
+var computerCards = [];
+var playerCardsString = "";
+var computerCardsString = "";
+var playerCardsSum = 0;
+var computerCardSum = 0;
 
 var main = function (input) {
-  // phase one = dealing phase
-  var playerCards = dealCards();
-  var computerCards = dealCards();
-  console.log(playerCards);
-  console.log(computerCards);
-  var playerCardsString = toDisplayCardsOnHand(playerCards);
-  var computerCardsString = toDisplayCardsOnHand(computerCards);
-  var playerCardsSum = sumRankCardsOnHand(playerCards);
-  var computerCardSum = sumRankCardsOnHand(computerCards);
-  // var playerTotalRank = ;
-  // var computerTotalRank = 0;
+  var myOutputValue = "";
 
   if (dealingPhase == true) {
-    dealingPhase = false;
-    return `${playerHandMessage}: ${playerCardsString} total point = ${playerCardsSum}<br>${computerHandMessage}: ${computerCardsString} with sum = ${computerCardSum}<br><br>${hitOrStandMessage}`;
+    myOutputValue = getTwoCards();
+    // phase two = hit or stand phase
+  } else if ((hitOrStandPhase = true)) {
+    myOutputValue = "";
+    if (input == "hit") {
+      myOutputValue = toHitOrStand();
+    }
   }
-  // phase two = hit or stand phase
-  if (input == "hit") {
-    var hitCard = toHitOrStand();
-    playerCards.push(hitCard);
-    playerCardsString = toDisplayCardsOnHand(playerCards);
-    playerCardsSum = sumRankCardsOnHand(playerCards);
-    return `${playerHandMessage}: ${playerCardsString} total point = ${playerCardsSum}<br>${computerHandMessage}: ${computerCardsString} with sum = ${computerCardSum}<br><br>${hitOrStandMessage}`;
-  }
+  return myOutputValue;
 };
