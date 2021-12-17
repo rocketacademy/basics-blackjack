@@ -5,7 +5,6 @@
 //  a. User to input number of players playing.
 //  b. Generate the number of players according to the input number.
 //  c. Players have attributes: Player Number, Chips.
-// Player clicks Submit to enter game.
 // Players to determine how much chip to bet for that round.
 // Player clicks Draw Hand to receive 2 cards each.
 // The cards are analysed for game winning conditions, e.g. Blackjack.
@@ -111,29 +110,59 @@ var playerOutput = function (cardsArray) {
 
 const ENTER_NUM_PLAYER = "enter number of players";
 const ENTER_BET = "enter number of chips to bet";
+const DEAL_CARD = "deal cards to players";
 let gameMode = ENTER_NUM_PLAYER;
-
+var totalNumOfPlayersPlaying = [];
+var playerCounter = 0;
 var main = function (input) {
   var myOutputValue = "";
-
-  var playerLimit = ["1", "2", "3", "4"];
-  var numOfPlayersPlaying = [];
-  // Multiplayer can play.
-  if (playerLimit.includes(input)) {
-    for (i = 1; i <= input; i += 1) {
-      var player = {
-        number: i,
-        chips: 100,
-      };
-      numOfPlayersPlaying.push(player);
+  if (gameMode == ENTER_NUM_PLAYER) {
+    var playerLimit = ["1", "2", "3", "4"];
+    // Multiplayer can play.
+    //  a. User to input number of players playing.
+    //  b. Generate the number of players according to the input number.
+    //  c. Players have attributes: Player Number, Chips.
+    if (playerLimit.includes(input)) {
+      for (i = 1; i <= input; i += 1) {
+        var player = {
+          number: i,
+          chips: 100,
+          bet: 0,
+        };
+        totalNumOfPlayersPlaying.push(player);
+      }
+      gameMode = ENTER_BET;
+      input = null;
+      return (myOutputValue = `Time to place your bet! Each player has 100 chips to play. <br> Player 1, please submit your bet amount.`);
+    } else {
+      myOutputValue =
+        "Please enter the number of players playing (max. 4 players).";
     }
-    gameMode = ENTER_BET;
-    return numOfPlayersPlaying;
-  } else {
-    return (myOutputValue =
-      "Please enter the number of players playing (max. 4 players).");
   }
-  //  a. User to input number of players playing.
-  //  b. Generate the number of players according to the input number.
-  //  c. Players have attributes: Player Number, Chips.
+
+  // Players to determine how much chip to bet for that round.
+  //  a. Enter bet mode to take in player bets.
+  if (gameMode == ENTER_BET) {
+    //  b. Num of players unknown so will need to determine if the player counter meets the length of total number of player array.
+    //  c. For each player in the array, replace the bet value with the input value the user entered.
+    //    i. Need to convert each player's input into number.
+    //    ii. Validate user input.
+    //  d. Once done, enter draw card mode.
+    if (input != "" && playerCounter + 1 == totalNumOfPlayersPlaying.length) {
+      totalNumOfPlayersPlaying[playerCounter].bet = Number(input);
+      playerCounter = 0;
+      gameMode = DEAL_CARD;
+    } else if (
+      Number(input) > 0 &&
+      Number(input) < totalNumOfPlayersPlaying[playerCounter].chips
+    ) {
+      totalNumOfPlayersPlaying[playerCounter].bet = Number(input);
+      playerCounter += 1;
+      myOutputValue = `Player ${totalNumOfPlayersPlaying[playerCounter].number}, it is your turn to place bet.`;
+    } else {
+      myOutputValue = `Player ${totalNumOfPlayersPlaying[playerCounter].number}, you have ${totalNumOfPlayersPlaying[playerCounter].chips} chips. Please place bet within your limit.`;
+    }
+  }
+
+  return myOutputValue;
 };
