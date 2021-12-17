@@ -23,6 +23,7 @@ var makeDeck = function () {
       // If rank is 1, 11, 12, or 13, set cardName to the ace or face card's name
       if (cardName == 1) {
         cardName = "ace";
+        blackJackRank = 11;
       } else if (cardName == 11) {
         cardName = "jack";
         blackJackRank = 10;
@@ -119,11 +120,19 @@ var getTwoCards = function () {
   computerCards = dealCards();
   console.log(playerCards);
   console.log(computerCards);
-  dealingPhase = false;
   playerCardsString = toDisplayCardsOnHand(playerCards);
   computerCardsString = toDisplayCardsOnHand(computerCards);
   playerCardsSum = sumRankCardsOnHand(playerCards);
   computerCardSum = sumRankCardsOnHand(computerCards);
+  if (computerCardSum == 21) {
+    return `You lose! Computer gets 21. Click "submit" to replay.<br><br>${playerHandMessage}: ${playerCardsString} total point = ${playerCardsSum}<br>${computerHandMessage}: ${computerCardsString} with sum = ${computerCardSum}`;
+  }
+  if (playerCardsSum == 21) {
+    dealingPhase = false;
+    hitOrStandPhase = false;
+    return `You get 21!! You haven't won yet, it is now computer's turn. Please click 'submit' to continue.<br><br>${playerHandMessage}: ${playerCardsString} total point = ${playerCardsSum}<br>${computerHandMessage}: ${computerCardsString} with sum = ${computerCardSum}`;
+  }
+  dealingPhase = false;
   return `${playerHandMessage}: ${playerCardsString} total point = ${playerCardsSum}<br>${computerHandMessage}: ${computerCardsString} with sum = ${computerCardSum}<br><br>${hitOrStandMessage}`;
 };
 
@@ -190,6 +199,7 @@ var main = function (input) {
 
   if (dealingPhase == true) {
     myOutputValue = getTwoCards();
+    //if dealer gets 21 from the start, player lose straight away
     // phase two = hit or stand phase
   } else if (hitOrStandPhase == true) {
     myOutputValue = "Please enter 'hit' or 'stand'";
