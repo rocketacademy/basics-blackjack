@@ -6,7 +6,7 @@
 //  b. Generate the number of players according to the input number.
 //  c. Players have attributes: Player Number, Chips.
 // Players to determine how much chip to bet for that round.
-// Player clicks Draw Hand to receive 2 cards each.
+// Player clicks Submit to receive 2 cards each.
 // The cards are analysed for game winning conditions, e.g. Blackjack.
 // The cards are displayed to the user.
 // Each player is able to choose to Hit, Stand or Split by clicking the respective buttons.
@@ -111,6 +111,8 @@ var playerOutput = function (cardsArray) {
 const ENTER_NUM_PLAYER = "enter number of players";
 const ENTER_BET = "enter number of chips to bet";
 const DEAL_CARD = "deal cards to players";
+const PLAY_GAME = "players take turn to play Blackjack";
+const DEALER_HAND = [];
 let gameMode = ENTER_NUM_PLAYER;
 var totalNumOfPlayersPlaying = [];
 var playerCounter = 0;
@@ -128,6 +130,7 @@ var main = function (input) {
           number: i,
           chips: 100,
           bet: 0,
+          hand: [],
         };
         totalNumOfPlayersPlaying.push(player);
       }
@@ -151,6 +154,7 @@ var main = function (input) {
     if (input != "" && playerCounter + 1 == totalNumOfPlayersPlaying.length) {
       totalNumOfPlayersPlaying[playerCounter].bet = Number(input);
       playerCounter = 0;
+      myOutputValue = "Cards Dealed!";
       gameMode = DEAL_CARD;
     } else if (
       Number(input) > 0 &&
@@ -164,5 +168,20 @@ var main = function (input) {
     }
   }
 
+  // Player auto receive 2 cards each.
+  if (gameMode == DEAL_CARD) {
+    // Each player to draw 2 cards before Dealer.
+    //  a. Cards are stored in the player's attribute and be cleared after each round.
+    while (playerCounter < totalNumOfPlayersPlaying.length) {
+      totalNumOfPlayersPlaying[playerCounter].hand.push(shuffledDeck.pop());
+      totalNumOfPlayersPlaying[playerCounter].hand.push(shuffledDeck.pop());
+      playerCounter += 1;
+    }
+    // Dealer to draw 2 cards.
+    DEALER_HAND.push(shuffledDeck.pop());
+    DEALER_HAND.push(shuffledDeck.pop());
+    playerCounter = 0;
+    gameMode = PLAY_GAME;
+  }
   return myOutputValue;
 };
