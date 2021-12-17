@@ -271,24 +271,43 @@ const blackjackCheck = function () {
   ) {
     playersArray[playersArrayIndex].cash +=
       (playersArray[playersArrayIndex].bets * 3) / 2;
+    nextPlayerTurnFlag = true;
     msg = `It is a blackjack! ${playersArray[playersArrayIndex].name} wins $${
       (playersArray[playersArrayIndex].bets * 3) / 2
     }.<br><br>Press submit for next player turn.`;
     playersArray[playersArrayIndex].bets = 0;
     playersArray[playersArrayIndex].status = PLAYED;
+    if (playersArrayIndex + 1 == playersArray.length) {
+      playersArrayIndex = 0;
+      gameStatus = dealerTurn;
+    }
     playersArrayIndex += 1;
-    nextPlayerTurnFlag = true;
   } else if (
     playersArray[playersArrayIndex].cardPoints < 21 &&
     dealer.cardPoints == 21
   ) {
-    playersArray[playersArrayIndex].cash -=
-      playersArray[playersArrayIndex].bets;
-    msg = `Dealer has a blackjack. ${playersArray[playersArrayIndex].name} loses $${playersArray[playersArrayIndex].bets}.<br><br>Press submit for next player turn.`;
-    playersArray[playersArrayIndex].bets = 0;
-    playersArray[playersArrayIndex].status = PLAYED;
-    playersArrayIndex += 1;
-    nextPlayerTurnFlag = true;
+    outer_block: {
+      msg = `Dealer has a blackjack. ${playersArray[playersArrayIndex].name} loses $${playersArray[playersArrayIndex].bets}.<br><br>Press submit for next player turn.`;
+      playersArray[playersArrayIndex].cash -=
+        playersArray[playersArrayIndex].bets;
+      nextPlayerTurnFlag = true;
+      if (playersArray[playersArrayIndex].cash <= 0) {
+        msg += `<br><br>${playersArray[playersArrayIndex].name} has ran out of cash and left the table.`;
+        if (playersArrayIndex + 1 == playersArray.length) {
+          playersArray.splice(playersArrayIndex, 1);
+          playersArrayIndex = 0;
+          gameStatus = dealerTurn;
+        }
+        break outer_block;
+      }
+      playersArray[playersArrayIndex].bets = 0;
+      playersArray[playersArrayIndex].status = PLAYED;
+      if (playersArrayIndex + 1 == playersArray.length) {
+        playersArrayIndex = 0;
+        gameStatus = dealerTurn;
+      }
+      playersArrayIndex += 1;
+    }
   }
   return msg;
 };
@@ -317,22 +336,33 @@ const runPlayerTurn = function (input) {
     msg = `${generateHandCardsMsg()}<br><br>Hi ${
       playersArray[playersArrayIndex].name
     }, would you like to "Hit" or "Stand"?`;
-    if (playersArray[playersArrayIndex].cardPoints > 21) {
-      msg = `${generateHandCardsMsg()}<br><br>BUST!<br><br>${
-        playersArray[playersArrayIndex].name
-      } loses $${
-        playersArray[playersArrayIndex].bets
-      }.<br><br>Press Submit for the next turn.`;
-      nextPlayerTurnFlag = true;
-      playersArray[playersArrayIndex].cash -=
-        playersArray[playersArrayIndex].bets;
-      playersArray[playersArrayIndex].bets = 0;
-      playersArray[playersArrayIndex].status = PLAYED;
-      if (playersArrayIndex + 1 == playersArray.length) {
-        playersArrayIndex = 0;
-        gameStatus = dealerTurn;
-      } else {
-        playersArrayIndex += 1;
+    bust_block: {
+      if (playersArray[playersArrayIndex].cardPoints > 21) {
+        msg = `${generateHandCardsMsg()}<br><br>BUST!<br><br>${
+          playersArray[playersArrayIndex].name
+        } loses $${
+          playersArray[playersArrayIndex].bets
+        }.<br><br>Press Submit for the next turn.`;
+        nextPlayerTurnFlag = true;
+        playersArray[playersArrayIndex].cash -=
+          playersArray[playersArrayIndex].bets;
+        if (playersArray[playersArrayIndex].cash <= 0) {
+          msg += `<br><br>${playersArray[playersArrayIndex].name} has ran out of cash and left the table.`;
+          if (playersArrayIndex + 1 == playersArray.length) {
+            playersArray.splice(playersArrayIndex, 1);
+            playersArrayIndex = 0;
+            gameStatus = dealerTurn;
+          }
+          break bust_block;
+        }
+        playersArray[playersArrayIndex].bets = 0;
+        playersArray[playersArrayIndex].status = PLAYED;
+        if (playersArrayIndex + 1 == playersArray.length) {
+          playersArrayIndex = 0;
+          gameStatus = dealerTurn;
+        } else {
+          playersArrayIndex += 1;
+        }
       }
     }
   }
@@ -348,30 +378,41 @@ const runPlayerTurn = function (input) {
     }
   }
 
-  if (input.trim().toLowerCase() == DOUBLE) {
-    playersArray[playersArrayIndex].bets *= 2;
-    playersArray[playersArrayIndex].cards.push(shuffledDeck.pop());
-    countCardPoints();
-    msg = `${generateHandCardsMsg()}<br><br>Hi ${
-      playersArray[playersArrayIndex].name
-    }, press Submit for next player turn.`;
-    nextPlayerTurnFlag = true;
-    if (playersArray[playersArrayIndex].cardPoints > 21) {
-      msg = `${generateHandCardsMsg()}<br><br>BUST!<br><br>${
+  double_block: {
+    if (input.trim().toLowerCase() == DOUBLE) {
+      playersArray[playersArrayIndex].bets *= 2;
+      playersArray[playersArrayIndex].cards.push(shuffledDeck.pop());
+      countCardPoints();
+      msg = `${generateHandCardsMsg()}<br><br>Hi ${
         playersArray[playersArrayIndex].name
-      } loses $${
-        playersArray[playersArrayIndex].bets
-      }.<br><br>Press Submit for the next turn.`;
-      playersArray[playersArrayIndex].cash -=
-        playersArray[playersArrayIndex].bets;
-      playersArray[playersArrayIndex].bets = 0;
-      playersArray[playersArrayIndex].status = PLAYED;
-    }
-    if (playersArrayIndex + 1 == playersArray.length) {
-      playersArrayIndex = 0;
-      gameStatus = dealerTurn;
-    } else {
-      playersArrayIndex += 1;
+      }, press Submit for next player turn.`;
+      nextPlayerTurnFlag = true;
+      if (playersArray[playersArrayIndex].cardPoints > 21) {
+        msg = `${generateHandCardsMsg()}<br><br>BUST!<br><br>${
+          playersArray[playersArrayIndex].name
+        } loses $${
+          playersArray[playersArrayIndex].bets
+        }.<br><br>Press Submit for the next turn.`;
+        playersArray[playersArrayIndex].cash -=
+          playersArray[playersArrayIndex].bets;
+        if (playersArray[playersArrayIndex].cash <= 0) {
+          msg += `<br><br>${playersArray[playersArrayIndex].name} has ran out of cash and left the table.`;
+          if (playersArrayIndex + 1 == playersArray.length) {
+            playersArray.splice(playersArrayIndex, 1);
+            playersArrayIndex = 0;
+            gameStatus = dealerTurn;
+          }
+          break double_block;
+        }
+        playersArray[playersArrayIndex].bets = 0;
+        playersArray[playersArrayIndex].status = PLAYED;
+      }
+      if (playersArrayIndex + 1 == playersArray.length) {
+        playersArrayIndex = 0;
+        gameStatus = dealerTurn;
+      } else {
+        playersArrayIndex += 1;
+      }
     }
   }
   return msg;
@@ -456,19 +497,30 @@ const runDealerTurn = function () {
     playersArray[playersArrayIndex].status = PLAYED;
     playersArrayIndex += 1;
   } else {
-    while (playersArray[playersArrayIndex].status == PLAYED) {
+    bust_block2: {
+      while (playersArray[playersArrayIndex].status == PLAYED) {
+        playersArrayIndex += 1;
+      }
+      msg = `${generateHandCardsMsg()}<br><br>You lose!<br><br>${
+        playersArray[playersArrayIndex].name
+      } lose $${
+        playersArray[playersArrayIndex].bets
+      }.<br><br>Press Submit for the next turn.`;
+      playersArray[playersArrayIndex].cash -=
+        playersArray[playersArrayIndex].bets;
+      if (playersArray[playersArrayIndex].cash <= 0) {
+        msg += `<br><br>${playersArray[playersArrayIndex].name} has ran out of cash and left the table.`;
+        if (playersArrayIndex + 1 == playersArray.length) {
+          playersArray.splice(playersArrayIndex, 1);
+          playersArrayIndex = 0;
+          gameStatus = dealerTurn;
+        }
+        break bust_block2;
+      }
+      playersArray[playersArrayIndex].bets = 0;
+      playersArray[playersArrayIndex].status = PLAYED;
       playersArrayIndex += 1;
     }
-    msg = `${generateHandCardsMsg()}<br><br>You lose!<br><br>${
-      playersArray[playersArrayIndex].name
-    } lose $${
-      playersArray[playersArrayIndex].bets
-    }.<br><br>Press Submit for the next turn.`;
-    playersArray[playersArrayIndex].cash -=
-      playersArray[playersArrayIndex].bets;
-    playersArray[playersArrayIndex].bets = 0;
-    playersArray[playersArrayIndex].status = PLAYED;
-    playersArrayIndex += 1;
   }
   return msg;
 };
@@ -477,6 +529,12 @@ deck = makeDeck();
 shuffledDeck = shuffleCards(deck);
 
 var main = function (input) {
+  if (playersArray.length == 0) {
+    dealer.cards = [];
+    dealer.cardPoints = 0;
+    gameStatus = pendingNumOfPlayers;
+  }
+
   if (gameStatus == pendingNumOfPlayers) {
     if (isNaN(input) || input == "") {
       return "Hello user, please kindly input a number for the number of players.";
