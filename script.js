@@ -124,15 +124,29 @@ var getTwoCards = function () {
 };
 
 // function to hit or stand for player
-var toHitOrStand = function (dealtCards) {
+var toHitInPlayerPhase = function (dealtCards) {
   dealtCards = shuffledDeck.pop();
   console.log(dealtCards);
   playerCards.push(dealtCards);
   playerCardsString = toDisplayCardsOnHand(playerCards);
-  computerCardsString = toDisplayCardsOnHand(computerCards);
   playerCardsSum = sumRankCardsOnHand(playerCards);
-  computerCardSum = sumRankCardsOnHand(computerCards);
   return `${playerHandMessage}: ${playerCardsString} total point = ${playerCardsSum}<br>${computerHandMessage}: ${computerCardsString} with sum = ${computerCardSum}<br><br>${hitOrStandMessage}`;
+};
+
+var toHitInComputerPhase = function (dealtCards) {
+  if (computerCardSum >= 17) {
+    return `Computer chose 'stand'.<br><br>${playerHandMessage}: ${playerCardsString} total point = ${playerCardsSum}<br>${computerHandMessage}: ${computerCardsString} with sum = ${computerCardSum}<br><br>${hitOrStandMessage}`;
+  }
+  while (computerCardSum <= 17) {
+    dealtCards = shuffledDeck.pop();
+    console.log(dealtCards);
+    computerCards.push(dealtCards);
+    computerCardsString = toDisplayCardsOnHand(computerCards);
+    computerCardSum = sumRankCardsOnHand(computerCards);
+  }
+  return `Computer drew ${
+    computerCards.length - 2
+  } card(s).<br><br>${playerHandMessage}: ${playerCardsString} total point = ${playerCardsSum}<br>${computerHandMessage}: ${computerCardsString} with sum = ${computerCardSum}<br><br>${hitOrStandMessage}`;
 };
 
 // There will be only two players. One human and one computer (for the Base solution).
@@ -156,6 +170,7 @@ var toHitOrStand = function (dealtCards) {
 // global variables
 var dealingPhase = true;
 var hitOrStandPhase = true;
+var dealerPhase = true;
 var playerHandMessage = `Player's cards`;
 var computerHandMessage = `Computer's cards`;
 var hitOrStandMessage = `Would you like to hit or stand?`;
@@ -172,11 +187,18 @@ var main = function (input) {
   if (dealingPhase == true) {
     myOutputValue = getTwoCards();
     // phase two = hit or stand phase
-  } else if ((hitOrStandPhase = true)) {
-    myOutputValue = "";
+  } else if (hitOrStandPhase == true) {
+    myOutputValue = "Please enter 'hit' or 'stand'";
     if (input == "hit") {
-      myOutputValue = toHitOrStand();
+      myOutputValue = toHitInPlayerPhase();
     }
+    if (input == "stand") {
+      hitOrStandPhase = false;
+      myOutputValue =
+        "You have decided to stand, it is now dealer's turn. Please click 'submit' to continue.";
+    }
+  } else if (dealerPhase == true) {
+    myOutputValue = toHitInComputerPhase();
   }
   return myOutputValue;
 };
