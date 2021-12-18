@@ -5,6 +5,25 @@
 // ui.js
 // The DOM nodes and elements to represent POJO.
 
+/**
+ *
+ * @param {UiComponent} ui
+ * @param {string} property
+ * @param {string} value
+ */
+const setUiStyle = (ui, property, value) => {
+  ui.getRoot().style[property] = value;
+};
+
+/**
+ *
+ * @param {UiComponent} ui
+ * @param {string} value
+ */
+const setUiTextContent = (ui, value) => {
+  ui.getRoot().textContent = value;
+};
+
 class UiComponent {
   /**
    *
@@ -15,6 +34,12 @@ class UiComponent {
   }
 
   getRoot = () => this._root;
+
+  /**
+   * @param {UiComponent}
+   *
+   */
+  appendChildUi = (ui) => this._root.appendChild(ui.getRoot());
 }
 class UiButton extends UiComponent {
   constructor() {
@@ -98,12 +123,15 @@ class UiActor extends UiComponent {
   constructor(actor) {
     super(document.createElement("div"));
     this._actor = actor;
+    /** @private @const {UiName} */
     this._uiName = new UiName(this._actor.getName());
-
-    /** @private @constant {UiHand[]} */
+    /** @private @const {UiHand[]} */
     this._uiHands = actor.getHands().map((hand) => newUiHand(hand));
-    /** @private @constant {Ui[]} */
+    /** @private @const {Ui[]} */
     this._uiCredit = newUiCredit(this._actor.getCredit());
+
+    // IMPORTANT FOR REFERENCE
+    this._id = actor.id();
 
     this.initComponent();
   }
@@ -113,7 +141,14 @@ class UiActor extends UiComponent {
    */
   getUiName = () => this._uiName;
   initComponent = () => {
-    this._root.appendChild(this._uiName.getRoot());
+    this.appendChildUi(this._uiName);
+  };
+
+  setNameColor = (val) => {
+    if (!val) {
+      return;
+    }
+    setUiStyle(this.getUiName(), "color", val);
   };
 }
 class UiPlayer extends UiActor {
@@ -122,8 +157,7 @@ class UiPlayer extends UiActor {
    */
   constructor(player) {
     super(player);
-    // IMPORTANT FOR REFERENCE
-    this._id = player.id();
+
     // this._buttonChangePlayer = new UiButtonChangePlayer();
     this._buttonChangePlayer = new UiButton();
 
@@ -132,13 +166,9 @@ class UiPlayer extends UiActor {
 
   id = () => this._id;
   initComponent = () => {
-    this.setNameColor();
-    this._root.appendChild(this._buttonChangePlayer.getRoot());
+    this.setNameColor("red");
+    this.appendChildUi(this._buttonChangePlayer);
   };
-  setNameColor = (color = `red`) => {
-    this.getUiName().getRoot().style.color = color;
-  };
-
   setOnClickButtonChangePlayer = (cb) =>
     this._buttonChangePlayer.setOnClick(cb);
 }
@@ -153,10 +183,6 @@ class UiDealer extends UiActor {
 
   initComponent = () => {
     this.setNameColor();
-  };
-
-  setNameColor = (color = `blue`) => {
-    this.getUiName().getRoot().style.color = color;
   };
 }
 
@@ -193,7 +219,7 @@ class UiRound extends UiTree {
     /** @private @const {UiPhaseDisplay} */
     this._uiPhaseDisplay = null;
 
-    /** @private @constant {UiButton} */
+    /** @private @const {UiButton} */
     this._uiButtonDummy = null;
   }
 
@@ -213,7 +239,8 @@ class UiRound extends UiTree {
 
   initializeButtonDummy = () => {
     this._uiButtonDummy = new UiButton();
-    this._uiButtonDummy.getRoot().textContent = "round dummy button";
+
+    setUiTextContent(this._uiButtonDummy, "round dummy button");
   };
 
   initializeUiDealer = () => {
