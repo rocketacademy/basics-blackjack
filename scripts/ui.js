@@ -34,6 +34,10 @@ class UiComponent {
   }
 
   getRoot = () => this._root;
+  replaceChildrenUi = (...uiS) => {
+    const nodeOfUis = uiS.map((ui) => ui.getRoot());
+    this._root.replaceChildren(...nodeOfUis);
+  };
 
   /**
    * @param {UiComponent}
@@ -158,8 +162,7 @@ class UiPlayer extends UiActor {
   constructor(player) {
     super(player);
 
-    // this._buttonChangePlayer = new UiButtonChangePlayer();
-    this._buttonChangePlayer = new UiButton();
+    this._buttonPass = new UiButtonStand();
 
     this.initComponent();
   }
@@ -167,10 +170,15 @@ class UiPlayer extends UiActor {
   id = () => this._id;
   initComponent = () => {
     this.setNameColor("red");
-    this.appendChildUi(this._buttonChangePlayer);
   };
-  setOnClickButtonChangePlayer = (cb) =>
-    this._buttonChangePlayer.setOnClick(cb);
+
+  renderModeAudience = () => {
+    this.replaceChildrenUi(this.getUiName());
+  };
+  renderModeActive = () => {
+    this.replaceChildrenUi(this.getUiName(), this._buttonPass);
+  };
+  setOnClickButtonPass = (cb) => this._buttonPass.setOnClick(cb);
 }
 class UiDealer extends UiActor {
   /**
@@ -226,7 +234,7 @@ class UiRound extends UiTree {
   getUiPlayers = () => this._uiPlayers;
   getUiDealer = () => this._uiDealer;
 
-  refreshDisplayPhase = () => {
+  _refreshDisplayPhase = () => {
     this._uiPhaseDisplay.setTextContent(
       "ROUND STATUS: " + this._round.getPhase()?.desc()
     );
@@ -234,7 +242,7 @@ class UiRound extends UiTree {
 
   initializeUiDisplayPhase = () => {
     this._uiPhaseDisplay = new UiPhaseDisplay();
-    this.refreshDisplayPhase();
+    this._refreshDisplayPhase();
   };
 
   initializeButtonDummy = () => {
@@ -247,10 +255,6 @@ class UiRound extends UiTree {
     this._uiDealer = newUiDealer(this._round.getDealer());
   };
 
-  replaceChildrenUi = (uiS) => {
-    const nodeOfUis = uiS.map((ui) => ui.getRoot());
-    this._root.replaceChildren(...nodeOfUis);
-  };
   /**
    *
    * @param {RoundPhase} phase
@@ -270,7 +274,7 @@ class UiRound extends UiTree {
 
     this._uiPlayers.forEach((uIP) => {
       this.unfocusUiPlayer(uIP);
-      // uIP.setOnClickButtonChangePlayer(onClickChangePlayerHandler);
+      uIP.setOnClickButtonPass(this.onClickStandHandler);
     });
     this._uiPlayersRef = this._uiPlayers.reduce((refs, thisUiP) => {
       const id = thisUiP.id();
@@ -286,6 +290,10 @@ class UiRound extends UiTree {
   };
 
   changeFocusUiPlayer = (unfocusPlayer, focusPlayer) => {
+    console.group("changeFocusUiPlayer");
+    console.log(unfocusPlayer);
+    console.log(focusPlayer);
+    console.groupEnd();
     this.unfocusUiPlayer(unfocusPlayer);
     this.focusUiPlayer(focusPlayer);
   };
@@ -297,15 +305,21 @@ class UiRound extends UiTree {
     if (!uiPlayer) {
       return;
     }
+    uiPlayer.renderModeActive();
     const root = uiPlayer.getRoot();
     root.style.border = "1px solid turquoise";
     root.style.borderRadius = "7px";
   };
-
+  /**
+   *
+   * @param {UiPlayer} uiPlayer
+   * @returns
+   */
   unfocusUiPlayer = (uiPlayer) => {
     if (!uiPlayer) {
       return;
     }
+    uiPlayer.renderModeAudience();
     const root = uiPlayer.getRoot();
     root.style.border = "1px solid grey";
     root.style.borderRadius = "7px";
@@ -323,15 +337,15 @@ class UiRound extends UiTree {
       return;
     }
     if (thisPhase === RoundPhase.SIT) {
-      this.refreshDisplayPhase();
+      this._refreshDisplayPhase();
       const id = this._round.getCurrentPlayer().id();
       this.focusUiPlayerById(id);
-      this.replaceChildrenUi([
+      this.replaceChildrenUi(
         this._uiPhaseDisplay,
         this._uiDealer,
         ...this._uiPlayers,
-        this._uiButtonDummy,
-      ]);
+        this._uiButtonDummy
+      );
     }
   };
   focusUiPlayerById = (id) => {
@@ -349,6 +363,18 @@ class UiRound extends UiTree {
   };
   onClickStartHandler = () => {
     this._changePhase(RoundPhase.SIT);
+  };
+
+  _refreshFocusPlayerDisplay = () => {
+    const prevId = this._round.getCurrentPlayer()?.id();
+    this._round.changePlayer();
+    const currentId = this._round.getCurrentPlayer()?.id();
+    this.changeFocusUiPlayerById(prevId, currentId);
+  };
+
+  onClickStandHandler = () => {
+    console.log("stand!");
+    this._refreshFocusPlayerDisplay();
   };
 }
 

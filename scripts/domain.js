@@ -543,6 +543,10 @@ class Round {
   setCurrentPlayer = (player) => {
     this._currentPlayer = player;
   };
+  /**
+   *
+   * @returns {Player}
+   */
   getCurrentPlayer = () => this._currentPlayer;
   getRoundPhase = () => this._phase;
   // dealer head on, with plain rules.
