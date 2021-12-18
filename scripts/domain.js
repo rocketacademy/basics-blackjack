@@ -277,6 +277,15 @@ class Player extends Actor {
   constructor(participant) {
     super(participant);
   }
+
+  getPlayableCredit = () => {
+    const inBid = this.getHands().reduce((sum, hand) => {
+      const bet = hand.getBet() || 0;
+      return bet + sum;
+    }, 0);
+
+    return this.getCredit - inBid;
+  };
 }
 /**
  *

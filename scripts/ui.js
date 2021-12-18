@@ -182,7 +182,7 @@ class UiSlider extends UiComponent {
   };
 }
 const newBetControl = (player, round, hand) => {
-  const credit = player.getCredit();
+  const credit = player.getPlayableCredit();
 
   const initBetValue = 0;
   const _uiButtonBet__ = new UiButtonBet();
