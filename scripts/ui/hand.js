@@ -70,7 +70,7 @@ class UiHand extends Ui_Component {
     );
 
     switch (phase) {
-      case RoundPhase.BET:
+      case RoundPhase.INITIAL_BET:
         this.replaceChildrenUi(this._uiCount, this._uiCardsHolder);
         break;
       case RoundPhase.IN_PLAY_PLAYERS:
@@ -85,8 +85,8 @@ class UiHand extends Ui_Component {
     );
 
     switch (phase) {
-      case RoundPhase.BET:
-        const [_uIContainerBet__, _uiSlider__] = this._newBetControl(
+      case RoundPhase.INITIAL_BET:
+        const [_uIContainerBet__, _uiSlider__] = this._newMainBetControl(
           player,
           round,
           this._hand
@@ -139,17 +139,17 @@ class UiHand extends Ui_Component {
     return _uiButtonStand__;
   };
 
-  _newBetControl = (player, round, hand) => {
+  _newMainBetControl = (player, round, hand) => {
     const credit = player.getPlayableCredit();
 
-    const initBetValue = 0;
+    const initMainBetValue = 0;
     const _uIContainerBet__ = new UiContainerMainBet();
     _uIContainerBet__.setButtonOnMouseClick((betValue) => {
       round.requestMainBet(player, hand, betValue);
     });
     const _uiSlider__ = new UiSlider();
     _uiSlider__.setMax(credit);
-    _uiSlider__.setValue(initBetValue);
+    _uiSlider__.setValue(initMainBetValue);
 
     _uiSlider__.setOnRangeChange((e) => {
       const v = e.target.value;

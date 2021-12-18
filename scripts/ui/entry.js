@@ -79,7 +79,7 @@ class UiRound extends UiTree {
       this._refreshDisplayPhase(phase);
       console.log(`Ui Hook[setOnSetPhase] ${phase}`);
       switch (phase) {
-        case RoundPhase.BET:
+        case RoundPhase.INITIAL_BET:
           this.replaceChildrenUi(
             this._uiPhaseDisplay,
             this._uiDealer,

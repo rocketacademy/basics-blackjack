@@ -15,7 +15,7 @@ const test_Main_HeadsUp = () => {
   );
   round.requestInitSitPhase(); // [_NULL] --> SIT --> [BET]
 
-  expectedPhase = RoundPhase.BET;
+  expectedPhase = RoundPhase.INITIAL_BET;
   actualPhase = round.getPhase();
   LOG_ASSERT(
     expectedPhase === actualPhase,
@@ -70,7 +70,7 @@ const test_Main_Ui_Til_BET = () => {
   );
   round.requestInitSitPhase(); // [_NULL] --> SIT --> [BET]
 
-  expectedPhase = RoundPhase.BET;
+  expectedPhase = RoundPhase.INITIAL_BET;
   actualPhase = round.getPhase();
   LOG_ASSERT(
     expectedPhase === actualPhase,

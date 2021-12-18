@@ -15,8 +15,8 @@ const transferCredit = (actor1, amt, actor2) => {
 class RoundPhase {
   static _NULL = new RoundPhase(null);
   static SIT = new RoundPhase("SIT");
-  static BET = new RoundPhase("BETTING");
-  static DEAL = new RoundPhase("DEALING");
+  static INITIAL_BET = new RoundPhase("INITIAL BET");
+  static INITIAL_DEAL = new RoundPhase("INITIAL DEAL");
   static IN_PLAY_PLAYERS = new RoundPhase("PLAY_PLAYERS");
   static IN_PLAY_DEALER = new RoundPhase("PLAY_DEALER");
   static END = new RoundPhase("END");
@@ -129,11 +129,11 @@ class Round {
     this._setPhase(RoundPhase.SIT);
     console.groupEnd();
 
-    this.requestInitBetPhase();
+    this.requestInitInitialBetPhase();
   };
-  _initBet = () => {
-    console.group("_initBet");
-    this._setPhase(RoundPhase.BET);
+  _initInitialBet = () => {
+    console.group("_initInitialBet");
+    this._setPhase(RoundPhase.INITIAL_BET);
     this._autoCreateHands();
 
     console.groupEnd();
@@ -142,7 +142,7 @@ class Round {
     this._changeBetTurn();
   };
   _initDeal = () => {
-    this._setPhase(RoundPhase.DEAL);
+    this._setPhase(RoundPhase.INITIAL_DEAL);
     this._autoDeal();
     this.requestInitInPlayPhase();
   };
@@ -173,8 +173,8 @@ class Round {
     }
     this._initSit();
   };
-  requestInitBetPhase = () => {
-    const proposedPhase = RoundPhase.BET;
+  requestInitInitialBetPhase = () => {
+    const proposedPhase = RoundPhase.INITIAL_BET;
     const suceedingPhase = this._nextPhase(this._phase);
     let reject = false;
     if (proposedPhase !== suceedingPhase) {
@@ -186,10 +186,10 @@ class Round {
     if (reject) {
       return;
     }
-    this._initBet();
+    this._initInitialBet();
   };
   requestInitDealPhase = () => {
-    const proposedPhase = RoundPhase.DEAL;
+    const proposedPhase = RoundPhase.INITIAL_DEAL;
     const suceedingPhase = this._nextPhase(this._phase);
     if (proposedPhase !== suceedingPhase) {
       console.warn(
@@ -422,10 +422,10 @@ class Round {
       case RoundPhase._NULL:
         return RoundPhase.SIT;
       case RoundPhase.SIT:
-        return RoundPhase.BET;
-      case RoundPhase.BET:
-        return RoundPhase.DEAL;
-      case RoundPhase.DEAL:
+        return RoundPhase.INITIAL_BET;
+      case RoundPhase.INITIAL_BET:
+        return RoundPhase.INITIAL_DEAL;
+      case RoundPhase.INITIAL_DEAL:
         return RoundPhase.IN_PLAY_PLAYERS;
       case RoundPhase.IN_PLAY_PLAYERS:
         return RoundPhase.IN_PLAY_DEALER;
