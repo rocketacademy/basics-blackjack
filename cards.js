@@ -244,7 +244,7 @@ shouldTwoCardsBeDealtToThreeParticipantsFromStartDeck = () => {
 const ROUND_PHASE_BET = "bet";
 const ROUND_PHASE_DEAL = "deal";
 const ROUND_PHASE_IN_PLAY = "in play";
-const ROUND_PHASE_IN_END = "in play";
+const ROUND_PHASE_IN_END = "end";
 
 /**
  * @typedef {Object} Round
