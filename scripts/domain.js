@@ -503,12 +503,19 @@ class Round {
     /** @private @const {Player} */
     this._currentPlayer = null;
 
-    this._nextPlayer = ((players) => {
-      let index = 0;
-      let length = players.length;
-      return () => (index < length ? players[index++] : null);
-    })(this.getPlayers());
+    this._nextPlayer = null;
   }
+
+  _nextPlayerGenerator = (players) => {
+    let index = 0;
+    let length = players.length;
+
+    return () => (index < length ? players[index++] : null);
+  };
+
+  _resetTurn = () => {
+    this._nextPlayer = this._nextPlayerGenerator(this.getPlayers());
+  };
   /**
    *
    * @returns {RoundPhase}
@@ -523,26 +530,60 @@ class Round {
   deckSize = () => this._deck.length;
   setHands = () => createHands(this.allActors());
   getDealerHands = () => this._dealer.getHands();
-  changePhase = (phase) => {
-    this._phase = phase;
-    if (this._phase === RoundPhase.SIT) {
-      this.changePlayer();
-    }
-  };
 
   changePlayer = () => {
     const nextPlayer = this._nextPlayer();
+    console.group();
     console.log(
       !!nextPlayer
         ? "player changed to " + nextPlayer.getName()
         : `no next player`
     );
+    console.groupEnd();
     this.setCurrentPlayer(nextPlayer);
-    return this.getCurrentPlayer();
+    if (!nextPlayer) {
+      this._changeNextPhase();
+    }
+  };
+
+  changePhase = (phase) => {
+    console.group("Change Phase");
+    console.log("want to change to: " + phase.desc());
+    if (this._phase === phase) {
+      return;
+    }
+    this._phase = phase;
+    console.log("changed round phase: " + this._phase.desc());
+    if (this._phase === RoundPhase.SIT) {
+    } else if (this._phase === RoundPhase.BID) {
+      this._resetTurn();
+      this.changePlayer();
+    } else if (this._phase === RoundPhase.DEAL) {
+      this._resetTurn();
+      this.changePlayer();
+    } else if (this._phase === RoundPhase.IN_PLAY_PLAYERS) {
+      this._resetTurn();
+      this.changePlayer();
+    }
+
+    console.groupEnd();
+  };
+
+  _nextPhase = () => {
+    switch (this._phase) {
+      case RoundPhase.BID:
+        return RoundPhase.IN_PLAY_PLAYERS;
+      case RoundPhase.IN_PLAY_PLAYERS:
+        return RoundPhase.IN_PLAY_DEALER;
+    }
+  };
+  _changeNextPhase = () => {
+    this.changePhase(this._nextPhase());
   };
   setCurrentPlayer = (player) => {
     this._currentPlayer = player;
   };
+
   /**
    *
    * @returns {Player}

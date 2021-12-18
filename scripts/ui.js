@@ -229,12 +229,17 @@ class UiRound extends UiTree {
 
     /** @private @const {UiButton} */
     this._uiButtonDummy = null;
+
+    /** @private @const {RoundPhase} */
+    this._phaseUi = this._round.getPhase();
   }
 
   getUiPlayers = () => this._uiPlayers;
   getUiDealer = () => this._uiDealer;
 
   _refreshDisplayPhase = () => {
+    console.log("refresh");
+    console.log(this._round.getPhase());
     this._uiPhaseDisplay.setTextContent(
       "ROUND STATUS: " + this._round.getPhase()?.desc()
     );
@@ -290,10 +295,6 @@ class UiRound extends UiTree {
   };
 
   changeFocusUiPlayer = (unfocusPlayer, focusPlayer) => {
-    console.group("changeFocusUiPlayer");
-    console.log(unfocusPlayer);
-    console.log(focusPlayer);
-    console.groupEnd();
     this.unfocusUiPlayer(unfocusPlayer);
     this.focusUiPlayer(focusPlayer);
   };
@@ -328,24 +329,32 @@ class UiRound extends UiTree {
    * Called when intent is to change round phase
    * @param {RoundPhase} phase
    */
-  _changePhase = (phase) => {
-    const prevPhase = this._round.getPhase();
+  _changeRoundPhase = (phase) => {
     this._round.changePhase(phase);
-    const thisPhase = this._round.getPhase();
 
-    if (prevPhase === phase) {
+    const prevPhase = this._phaseUi;
+
+    const thisPhase = this._round.getPhase();
+    if (prevPhase === thisPhase) {
       return;
     }
+    this._phaseUi = thisPhase;
+
+    console.log(
+      "Ui: phase was changed " + prevPhase?.desc() + " -> " + thisPhase.desc()
+    );
+    this._refreshDisplayPhase();
+
     if (thisPhase === RoundPhase.SIT) {
-      this._refreshDisplayPhase();
-      const id = this._round.getCurrentPlayer().id();
-      this.focusUiPlayerById(id);
       this.replaceChildrenUi(
         this._uiPhaseDisplay,
         this._uiDealer,
         ...this._uiPlayers,
         this._uiButtonDummy
       );
+    } else if (thisPhase === RoundPhase.IN_PLAY_PLAYERS) {
+      const id = this._round.getCurrentPlayer().id();
+      this.focusUiPlayerById(id);
     }
   };
   focusUiPlayerById = (id) => {
@@ -361,20 +370,20 @@ class UiRound extends UiTree {
   getUiPlayerById = (id) => {
     return this._uiPlayersRef[id];
   };
-  onClickStartHandler = () => {
-    this._changePhase(RoundPhase.SIT);
+
+  onClickSitHandler = () => {
+    this._changeRoundPhase(RoundPhase.SIT);
+  };
+  onClickPlayPlayersHandler = () => {
+    this._changeRoundPhase(RoundPhase.IN_PLAY_PLAYERS);
   };
 
-  _refreshFocusPlayerDisplay = () => {
+  onClickStandHandler = () => {
     const prevId = this._round.getCurrentPlayer()?.id();
     this._round.changePlayer();
     const currentId = this._round.getCurrentPlayer()?.id();
     this.changeFocusUiPlayerById(prevId, currentId);
-  };
-
-  onClickStandHandler = () => {
-    console.log("stand!");
-    this._refreshFocusPlayerDisplay();
+    this._changeRoundPhase(this._round.getPhase());
   };
 }
 
@@ -418,7 +427,7 @@ const test_HeadsUp_UiRound_ChangeRoundPhase_Start_Render = () => {
   const round = new Round(table);
 
   const uIRound = newUiRound(round);
-  uIRound.onClickStartHandler();
+  uIRound.onClickSitHandler();
   const uiPlayers = uIRound.getUiPlayers();
 
   const uiDealer = uIRound.getUiDealer();
@@ -459,7 +468,8 @@ const main = () => {
   const table = newTableTwoPlayers();
   const round = new Round(table);
   const uiRound = newUiRound(round);
-  uiRound.onClickStartHandler();
+  uiRound.onClickSitHandler();
+  uiRound.onClickPlayPlayersHandler();
 };
 
 main();
