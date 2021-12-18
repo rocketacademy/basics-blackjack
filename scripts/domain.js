@@ -566,19 +566,22 @@ class Round {
     };
   };
 
-  setPhase = (phase) => {
+  _onSetPhase = (phase) => {};
+
+  setOnSetPhase = (fn) => (this._onSetPhase = fn);
+  _setPhase = (phase) => {
     this._phase = phase;
   };
   _initSit = () => {
     console.group("_initSit");
     console.log(this._phase.desc());
-    this.setPhase(RoundPhase.SIT);
+    this._setPhase(RoundPhase.SIT);
     this.requestInitBetPhase();
     console.groupEnd();
   };
   _initBet = () => {
     console.group("_initBet");
-    this.setPhase(RoundPhase.BET);
+    this._setPhase(RoundPhase.BET);
     this._autoCreateHands();
     this._resetBetTurn();
     console.log("this._resetBetTurn();");
@@ -586,23 +589,23 @@ class Round {
     console.groupEnd();
   };
   _initDeal = () => {
-    this.setPhase(RoundPhase.DEAL);
+    this._setPhase(RoundPhase.DEAL);
     this._autoDeal();
     this.requestInitInPlayPhase();
   };
   _initInPlayDealer = () => {
-    this.setPhase(RoundPhase.IN_PLAY_DEALER);
+    this._setPhase(RoundPhase.IN_PLAY_DEALER);
     //TODO - Reconcilliation
     this.requestInitEndPhase();
   };
   _initInPlayPlayers = () => {
-    this.setPhase(RoundPhase.IN_PLAY_PLAYERS);
+    this._setPhase(RoundPhase.IN_PLAY_PLAYERS);
     this._resetInPlayPlayerTurn();
     this._changeInPlayPlayerTurn();
   };
 
   _initEnd = () => {
-    this.setPhase(RoundPhase.END);
+    this._setPhase(RoundPhase.END);
   };
   requestInitInPlayDealerPhase = () => {
     const proposedPhase = RoundPhase.IN_PLAY_DEALER;

@@ -284,7 +284,6 @@ class UiDealer extends UiActor {
         this.replaceChildrenUi(this.getUiName(), ...this._uiHands());
         break;
     }
-
     console.groupEnd();
   };
 
@@ -304,7 +303,7 @@ class UiTree extends UiComponent {
     super(document.createElement("div"));
   }
 
-  attachGlobalRoot = () => UiTree.UI_ROOT.replaceChildren(this.getRoot());
+  _attachGlobalRoot = () => UiTree.UI_ROOT.replaceChildren(this.getRoot());
 }
 
 class UiRound extends UiTree {
@@ -348,23 +347,23 @@ class UiRound extends UiTree {
   getUiPlayerById = (id) => {
     return this._uiPlayersRef[id];
   };
-  initializeUiDisplayPhase = () => {
+  _initializeUiDisplayPhase = () => {
     this._uiPhaseDisplay = new UiPhaseDisplay();
     this._refreshDisplayPhase();
   };
 
-  initializeButtonDummy = () => {
+  _initializeButtonDummy = () => {
     this._uiButtonDummy = new UiButton();
     setUiTextContent(this._uiButtonDummy, "round dummy button");
   };
 
-  initializeUiDealer = () => {
+  _initializeUiDealer = () => {
     this._uiDealer = newUiDealer(this._round.getDealer());
     this._uiDealer.setOnNewHand((hand) => {
       this._uiDealer._addUiHand(hand);
     });
   };
-  initializeUiPlayers = () => {
+  _initializeUiPlayers = () => {
     this._uiPlayers = newUiPlayers(this._round.getPlayers());
 
     this._uiPlayers.forEach((uIP) => {
@@ -379,13 +378,11 @@ class UiRound extends UiTree {
     }, {});
   };
   initialize = () => {
-    this.initializeUiDisplayPhase();
-
-    this.initializeUiPlayers();
-    this.initializeButtonDummy();
-    this.initializeUiDealer();
-
-    this.attachGlobalRoot();
+    this._initializeUiDisplayPhase();
+    this._initializeUiPlayers();
+    this._initializeButtonDummy();
+    this._initializeUiDealer();
+    this._attachGlobalRoot();
   };
 
   _refreshDisplayPhase = () => {
