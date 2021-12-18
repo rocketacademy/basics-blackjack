@@ -55,16 +55,22 @@ class UiButtonBet extends UiButton {
   constructor() {
     super();
     this.uIDesc = new UiText();
-    this.uIDesc.setTextContent("BET");
+    this.uIDesc.setTextContent("BET ");
     this.uIBetValue = new UiText();
+    this._betValue = null;
     this._root.style.fontSize = "11px";
     this._root.style.display = "flex";
     this.replaceChildrenUi(this.uIDesc, this.uIBetValue);
   }
 
   setBetValue = (v) => {
-    this.uIBetValue.setTextContent(v);
+    this._betValue = v;
+    this.uIBetValue.setTextContent(this._betValue);
   };
+
+  getButtonValue = () => this._betValue;
+
+  setOnMouseClick = (cb) => (this._root.onclick = () => cb(this._betValue));
 }
 
 class UiButtonchangeTurn extends UiButton {
@@ -135,10 +141,14 @@ class UiHand extends UiComponent {
     }
     console.groupEnd();
   };
-  focus = (phase, player) => {
+  focus = (phase, player, round) => {
     console.group(`Phase [${phase.desc()}] focus ui hand [${this.id()}]`);
     if (phase === RoundPhase.BET) {
-      const [_uiButtonBet__, _uiSlider__] = newBetControl(player);
+      const [_uiButtonBet__, _uiSlider__] = newBetControl(
+        player,
+        round,
+        this._hand
+      );
       this.replaceChildrenUi(this._uiCount, _uiButtonBet__, _uiSlider__);
     }
     console.groupEnd();
@@ -166,13 +176,20 @@ class UiSlider extends UiComponent {
     this._root.oninput = fn;
   };
 }
-const newBetControl = (player) => {
+const newBetControl = (player, round, hand) => {
   const credit = player.getCredit();
-  const _uiButtonBet__ = new UiButtonBet();
 
+  const initBetValue = 0;
+  const _uiButtonBet__ = new UiButtonBet();
+  _uiButtonBet__.setOnMouseClick((betValue) => {
+    console.log("clicked??");
+
+    console.log(player, round, betValue);
+    round.requestBet(player, hand, betValue);
+  });
   const _uiSlider__ = new UiSlider();
   _uiSlider__.setMax(credit);
-  _uiSlider__.setValue(0);
+  _uiSlider__.setValue(initBetValue);
 
   _uiSlider__.setOnRangeChange((e) => {
     const v = e.target.value;
@@ -288,12 +305,12 @@ class UiPlayer extends UiActor {
     uiHand.unfocus(phase);
   };
 
-  focusHandById = (handId, phase, player) => {
+  focusHandById = (handId, phase, round) => {
     if (!handId) {
       return;
     }
     const uiHand = this._uiHandsRef[handId];
-    uiHand.focus(phase, this._actor);
+    uiHand.focus(phase, this._actor, round);
   };
 
   unfocus = (phase) => {
@@ -533,7 +550,7 @@ class UiRound extends UiTree {
       this.getUiPlayerById(newPlayerId),
     ];
     prevUiPlayer?.unfocusHandById(prevHandId, phase);
-    newUiPlayer?.focusHandById(newHandId, phase);
+    newUiPlayer?.focusHandById(newHandId, phase, this._round);
   };
   /**
    *
