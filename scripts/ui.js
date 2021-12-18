@@ -12,7 +12,11 @@ class UiButton {
   getRoot = () => this._root;
 
   setOnClick = (onClick) => {
-    onClick = onClick || console.log("UiButtonChangePlayer no clicks found");
+    onClick =
+      onClick ||
+      (() => {
+        console.log("UiButtonChangePlayer no clicks found");
+      });
     this._root.addEventListener("click", onClick);
   };
 }
@@ -181,8 +185,13 @@ class UiRound extends UiTree {
     /** @private @const {Object.<id:string,uiPlayer:UiPlayer>}} */
     this._uiPlayersRef = null;
 
+    /** @private @const {UiDealer[]} */
+    this._uiDealer = null;
+
+    /** @private @const {UiPhaseDisplay} */
     this._uiPhaseDisplay = null;
 
+    /** @private @constant {UiButton} */
     this._uiButtonDummy = null;
   }
 
@@ -197,10 +206,20 @@ class UiRound extends UiTree {
 
   initializeUiDisplayPhase = () => {
     this._uiPhaseDisplay = new UiPhaseDisplay();
+    this.refreshDisplayPhase();
   };
 
   initializeButtonDummy = () => {
     this._uiButtonDummy = new UiButton();
+  };
+
+  initializeUiDealer = () => {
+    this._uiDealer = newUiDealer(this._round.getDealer());
+  };
+
+  replaceChildrenUi = (uiS) => {
+    const nodeOfUis = uiS.map((ui) => ui.getRoot());
+    this._root.replaceChildren(...nodeOfUis);
   };
   /**
    *
@@ -211,17 +230,7 @@ class UiRound extends UiTree {
 
     this.initializeUiPlayers();
     this.initializeButtonDummy();
-
-    /** @private @const {UiDealer[]} */
-    this._uiDealer = newUiDealer(this._round.getDealer());
-
-    this._root.appendChild(this._uiPhaseDisplay.getRoot());
-    this._root.appendChild(this._uiDealer.getRoot());
-    for (const uiP of this._uiPlayers) {
-      this._root.appendChild(uiP.getRoot());
-    }
-    this._root.appendChild(this._uiButtonDummy.getRoot());
-    this.refreshDisplayPhase();
+    this.initializeUiDealer();
 
     this.attachGlobalRoot();
   };
@@ -277,15 +286,21 @@ class UiRound extends UiTree {
    */
   _changePhase = (phase) => {
     const prevPhase = this._round.getPhase();
+    this._round.changePhase(phase);
+    const thisPhase = this._round.getPhase();
+
     if (prevPhase === phase) {
       return;
     }
-    this._round.changePhase(phase);
-    const thisPhase = this._round.getPhase();
     if (thisPhase === RoundPhase.START) {
       const id = this._round.getCurrentPlayer().id();
-
       this.focusUiPlayerById(id);
+      this.replaceChildrenUi([
+        this._uiPhaseDisplay,
+        this._uiDealer,
+        ...this._uiPlayers,
+        this._uiButtonDummy,
+      ]);
     }
   };
   focusUiPlayerById = (id) => {
@@ -301,12 +316,8 @@ class UiRound extends UiTree {
   getUiPlayerById = (id) => {
     return this._uiPlayersRef[id];
   };
-  start = () => {
+  onClickStartHandler = () => {
     this._changePhase(RoundPhase.START);
-  };
-
-  bet = () => {
-    this._changePhase(RoundPhase.BID);
   };
 }
 
@@ -350,7 +361,7 @@ const test_HeadsUp_UiRound_ChangeRoundPhase_Start_Render = () => {
   const round = new Round(table);
 
   const uIRound = newUiRound(round);
-  uIRound.start();
+  uIRound.onClickStartHandler();
   const uiPlayers = uIRound.getUiPlayers();
 
   const uiDealer = uIRound.getUiDealer();
@@ -391,7 +402,7 @@ const main = () => {
   const table = newTableTwoPlayers();
   const round = new Round(table);
   const uiRound = newUiRound(round);
-  uiRound.start();
+  uiRound.onClickStartHandler();
 };
 
 main();
