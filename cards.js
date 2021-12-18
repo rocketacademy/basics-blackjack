@@ -232,7 +232,8 @@ class Actor {
     return newHand;
   };
   getParticipant = () => this._participant;
-  getName = () => this._participant;
+  getName = () => this._participant.getName();
+  getCredit = () => this._participant.getCredit();
 }
 
 /**
@@ -267,9 +268,7 @@ class Dealer extends Actor {
   }
 }
 
-const newDealer = (participant) => {
-  return new Dealer(participant);
-};
+const newDealer = (participant) => new Dealer(participant);
 
 /**
  * Creates a new hand for the actor, then deal two cards from the deck to the hand.
@@ -431,45 +430,129 @@ class Round {
    */
   constructor(table) {
     /** @private @const {!Player[]} */
-    this._players = table.getPlayers().map((p) => newPlayer(p));
+    this._players = table.getPlayers().map(
+      /**
+       *
+       * @param {Participant} p
+       * @returns {Player}
+       */
+      (p) => newPlayer(p)
+    );
     /** @private @const {!Dealer} */
     this._dealer = newDealer(table.getDealer());
-
-    this._phase = ROUND_PHASE_BET;
+    this.initialize();
   }
+
+  initialize = () => {
+    this._phase = ROUND_PHASE_BET;
+  };
 
   getPhase = () => this._phase;
   getPlayers = () => this._players;
+  getDealer = () => this._dealer;
 }
 
-class HtmlPlayer {
+class HtmlButton {
+  constructor() {
+    this._html = null;
+  }
+}
+
+class HtmlButtonHit extends HtmlButton {
+  constructor() {
+    super();
+  }
+}
+
+class HtmlButtonStand extends HtmlButton {
+  constructor() {
+    super();
+  }
+}
+
+class HtmlHand {
+  /**
+   *
+   * @param {Hand} hand
+   */
+  constructor(hand) {
+    this._html = document.createElement("div");
+    this._html.setAttribute("count", hand.count());
+  }
+}
+
+class HtmlActor {
+  /**
+   *
+   * @param {Actor} actor
+   */
+  constructor(actor) {
+    this._htmlName = document.createElement("div");
+    this._htmlName.innerHTML = actor.getName();
+    /** @private @constant {HtmlHand[]} */
+    this._htmlHands = actor.getHands().map((hand) => newHtmlHand(hand));
+    /** @private @constant {Html[]} */
+    this._htmlCredit = newHtmlCredit(actor.getCredit());
+  }
+  /**
+   *
+   * @returns {HTMLDivElement}
+   */
+  getHtmlName = () => this._htmlName;
+}
+
+class HtmlPlayer extends HtmlActor {
   /**
    * @param {Player} player
    */
   constructor(player) {
-    this._html = document.createAttribute("div");
-    this._html.innerHTML = player.getName();
+    super(player);
   }
-
-  getHTML = () => this._html;
-  getHTMLNodeName = () => this._html.nodeName;
 }
 
+class HtmlDealer extends HtmlActor {
+  /**
+   * @param {Dealer} dealer
+   */
+  constructor(dealer) {
+    super(dealer);
+  }
+}
+
+class HtmlCredit {
+  /**
+   * @param {number} credit
+   *
+   */
+  constructor(credit) {
+    this._html = document.createElement("div");
+    this.setValue(credit);
+  }
+
+  setValue = (credit) => this._html.setAttribute("value", credit);
+}
 /**
  * @param {Player} player
+ * @returns {HtmlPlayer}
  */
-const newHtmlPlayer = (player) => {
-  return new HtmlPlayer(player);
-};
+const newHtmlPlayer = (player) => new HtmlPlayer(player);
+
+/**
+ *
+ * @param {Dealer} dealer
+ * @returns {HtmlDealer}
+ */
+const newHtmlDealer = (dealer) => new HtmlDealer(dealer);
 
 /**
  *
  * @param {Player[]} players
  * @returns {HtmlPlayer} html representation of the players
  */
-const newHtmlPlayers = (players) => {
-  return players.map((player) => newHtmlPlayer(player));
-};
+const newHtmlPlayers = (players) =>
+  players.map((player) => newHtmlPlayer(player));
+
+const newHtmlCredit = (credit) => new HtmlCredit(credit);
 
 class HTMLRound {
   /**
@@ -480,9 +563,11 @@ class HTMLRound {
     this._round = round;
 
     this._htmlPlayers = newHtmlPlayers(this._round.getPlayers());
+    this._htmlDealer = newHtmlDealer(this._round.getDealer());
   }
 
   getHtmlPlayers = () => this._htmlPlayers;
+  getHtmlDealer = () => this._htmlDealer;
 }
 
 const testHeadsUpTableInitialization = () => {
@@ -520,7 +605,7 @@ const testHeadsUpRoundInitialization = () => {
   console.groupEnd();
 };
 
-const testHeadsUpRoundPlayerHtml = () => {
+const testHeadsUpRoundActorsNameHtml = () => {
   console.group();
   console.log("testHeadsUpRoundPlayerHtml");
   const table = newTableHeadsUp();
@@ -530,15 +615,29 @@ const testHeadsUpRoundPlayerHtml = () => {
 
   const htmlPlayers = htmlRound.getHtmlPlayers();
 
+  const htmlDealer = htmlRound.getHtmlDealer();
+
   const htmlHeadsUpPlayer = htmlPlayers[0];
 
-  logAssert(
-    htmlHeadsUpPlayer.getHTMLNodeName().toLowerCase() === "div",
+  const isHtmlForPlayerNameExist = [
+    htmlHeadsUpPlayer.getHtmlName().nodeName.toLowerCase() === "div",
     undefined,
-    "underlying type of htmlHeadsUpPlayer is not a html div"
-  );
+    "isHtmlForPlayerName NOT Exist",
+  ];
+
+  const isHtmlForDealerNameExist = [
+    htmlDealer.getHtmlName().nodeName.toLowerCase() === "div",
+    undefined,
+    "isHtmlForDealerName NOT Exist",
+  ];
+
+  logAssert(...isHtmlForPlayerNameExist);
+
+  logAssert(...isHtmlForDealerNameExist);
+
   console.groupEnd();
 };
+
 // CARDS
 testIfTopCardTransferredFromDeck();
 
@@ -554,5 +653,4 @@ testHeadsUpTableInitialization();
 testHeadsUpRoundInitialization();
 
 // HTML ROUND
-
-testHeadsUpRoundPlayerHtml();
+testHeadsUpRoundActorsNameHtml();
