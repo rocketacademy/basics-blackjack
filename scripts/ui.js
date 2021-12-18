@@ -88,15 +88,59 @@ class UiRound {
   constructor(round) {
     /** @private @const {Round} */
     this._round = round;
-    /** @private @const {UiPlayer[]} */
-    this._uiPlayers = newUiPlayers(this._round.getPlayers());
-    /** @private @const {UiDealer[]} */
-    this._uiDealer = newUiDealer(this._round.getDealer());
   }
+  /**
+   * @param {RoundPhase} phase
+   */
+  _setRoundPhase = (phase) => {
+    this._round.setPhase(phase);
+  };
 
+  _getRoundPhase = () => this._round.getPhase();
   getUiPlayers = () => this._uiPlayers;
   getUiDealer = () => this._uiDealer;
+  /**
+   *
+   * @param {RoundPhase} phase
+   */
+  initialize = () => {
+    this.bet();
+  };
+  /**
+   * Called when intent is to change round phase
+   * @param {RoundPhase} phase
+   */
+  _changePhase = (phase) => {
+    const prevPhase = this._getRoundPhase();
+    if (prevPhase === phase) {
+      return;
+    }
+    this._setRoundPhase(phase);
+    const thisPhase = this._getRoundPhase();
+    if (thisPhase === RoundPhase.START) {
+      /** @private @const {UiPlayer[]} */
+      this._uiPlayers = newUiPlayers(this._round.getPlayers());
+      /** @private @const {UiDealer[]} */
+      this._uiDealer = newUiDealer(this._round.getDealer());
+    }
+  };
+
+  start = () => {
+    this._changePhase(RoundPhase.START);
+  };
+
+  bet = () => {
+    this._changePhase(RoundPhase.BID);
+  };
 }
+
+const newUiRound = (round) => {
+  const uiRound = new UiRound(round);
+  uiRound.initialize();
+
+  return uiRound;
+};
+
 /**
  * @param {Player} player
  * @returns {UiPlayer}
@@ -118,14 +162,14 @@ const newUiDealer = (dealer) => new UiDealer(dealer);
 
 const newUiCredit = (credit) => new UiCredit(credit);
 
-const testHeadsUpRoundActorsNameUi = () => {
+const test_HeadsUp_UiRound_ChangeRoundPhase_Start_Render = () => {
   console.group();
   console.log("testHeadsUpRoundActorsNameUi");
   const table = newTableHeadsUp();
   const round = new Round(table);
 
-  const uIRound = new UiRound(round);
-
+  const uIRound = newUiRound(round);
+  uIRound.start();
   const uiPlayers = uIRound.getUiPlayers();
 
   const uiDealer = uIRound.getUiDealer();
@@ -150,5 +194,5 @@ const testHeadsUpRoundActorsNameUi = () => {
   console.groupEnd();
 };
 
-// HTML ROUND
-testHeadsUpRoundActorsNameUi();
+// Ui ROUND
+test_HeadsUp_UiRound_ChangeRoundPhase_Start_Render();

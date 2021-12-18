@@ -432,8 +432,9 @@ const newTableHeadsUp = (p1, dealer) => {
 // Round Phase
 
 class RoundPhase {
-  static BET = new RoundPhase("bet");
+  static BID = new RoundPhase("bet");
   static DEAL = new RoundPhase("deal");
+  static START = new RoundPhase("start");
   static IN_PLAY_PLAYERS = new RoundPhase("players");
   static IN_PLAY_DEALER = new RoundPhase("dealer");
   static END = new RoundPhase("end");
@@ -487,7 +488,10 @@ class Round {
   deckSize = () => this._deck.length;
   setHands = () => createHands(this._allActors());
   getDealerHands = () => this._dealer.getHands();
-
+  setPhase = (phase) => {
+    this._phase = phase;
+  };
+  getRoundPhase = () => this._phase;
   // dealer head on, with plain rules.
   concileAllPlayerHandsOnFaceValue = () => {
     const dealer = this.getDealer();

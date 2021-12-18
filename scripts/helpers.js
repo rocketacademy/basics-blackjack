@@ -7,7 +7,7 @@ const LOG_ASSERT = (predicate, trueExpr, falseExpr) => {
     }
   } else if (predicate === false) {
     if (falseExpr) {
-      console.log(falseExpr);
+      console.warn(falseExpr);
     }
   } else {
     console.warn("assertion is not truthy");
