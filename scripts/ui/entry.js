@@ -60,6 +60,12 @@ class UiPlayersHolder extends Ui_Component {
   };
 }
 
+class UiPhaseDisplay extends Ui_Text {
+  constructor() {
+    super(document.createElement("div"));
+  }
+}
+
 /**
  *
  * @param {Player[]} players

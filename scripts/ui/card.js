@@ -16,6 +16,7 @@ class UiCard extends Ui_Component {
    * @param {Card} card
    * @returns {string}
    */
+
   static getUrl = (card) =>
     `img/cards/${card
       .getFaceValue()
@@ -24,14 +25,24 @@ class UiCard extends Ui_Component {
 
   constructor(card) {
     super(document.createElement("div"));
+
+    // Domain
     this._card = card;
+
+    // Root Configuration
+
     this._id = card.getString();
 
-    const url = UiCard.getUrl(card);
-    this._uiImgFace = new UiImgCard(url);
+    // Children
+    const urlFaceImg = UiCard.getUrl(card);
+    this._uiImgFace = new UiImgCard(urlFaceImg);
     this._uiImgBack = new UiImgCard(`img/cards/JOKER-RED.png`);
-    this._toggle(this._card.isFaceUp());
+
+    // Hooks
     this._card.setOnFlip(this._toggle);
+
+    // First Render
+    this._toggle(this._card.isFaceUp());
   }
 
   id = () => this._id;
@@ -46,8 +57,12 @@ class UiCard extends Ui_Component {
 class UiCardsHolder extends Ui_Component {
   constructor() {
     super();
+
+    // Root Configuration
+
     this._root.className += "blackjack-card-holder";
     this._root.style.height = "fit-content";
+    // Children
 
     this._uiCards = [];
     this._cardsRef = {};

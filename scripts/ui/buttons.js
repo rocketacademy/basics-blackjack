@@ -1,14 +1,20 @@
 class UiButtonBet extends Ui_Button {
   constructor() {
     super();
-    this.uIDesc = new Ui_Text();
-    this.uIDesc.setTextContent("BET");
-    this.uIBetValue = new Ui_Text();
-    this._betValue = null;
-
+    // RootConfiguration
     this._root.className += "blackjack-button-bet";
     this._root.style.fontSize = "11px";
 
+    // Properties
+
+    this._betValue = null;
+
+    // Children
+    this.uIDesc = new Ui_Text();
+    this.uIDesc.setTextContent("BET");
+    this.uIBetValue = new Ui_Text();
+
+    // First Render
     this.replaceChildrenUi(this.uIDesc, this.uIBetValue);
   }
 

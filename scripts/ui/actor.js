@@ -1,9 +1,3 @@
-class UiPhaseDisplay extends Ui_Text {
-  constructor() {
-    super(document.createElement("div"));
-  }
-}
-
 class UiCredit extends Ui_Component {
   /**
    * @param {number} credit
@@ -20,12 +14,15 @@ class UiName extends Ui_Component {
   /** @param {!string} name */
   constructor(name) {
     super(document.createElement("div"));
+    this._style();
+  }
 
+  _style = () => {
     this._root.style.justifyContent = "center";
     this._root.style.marginTop = "10px";
     this._root.style.marginBottom = "10px";
     this._root.textContent = name;
-  }
+  };
 }
 
 class Ui_Actor extends Ui_Component {
@@ -35,19 +32,22 @@ class Ui_Actor extends Ui_Component {
    */
   constructor(actor) {
     super(document.createElement("div"));
-    this._style();
+    // Domain
     this._actor = actor;
+    // Root Configuration
+    this._id = actor.id();
+    this._style();
+
+    // Children
+
     /** @private @const {UiName} */
     this._uiName = new UiName(this._actor.getName());
-
+    /** @private @const {UiHandsHolder} */
     this._uiHandsHolder = newUiHandsHolder(this._actor.getHands());
-
     /** @private @const {Ui[]} */
     this._uiCredit = newUiCredit(this._actor.getCredit());
 
-    // IMPORTANT FOR REFERENCE
-    this._id = actor.id();
-
+    // Hooks
     this._actor.setOnNewHand((hand) => {
       console.group(`_addUiHands`);
       console.log(`adding ui hand`);
@@ -61,12 +61,10 @@ class Ui_Actor extends Ui_Component {
     this._root.style.flexDirection = "column";
   };
   id = () => this._id;
-  /**
-   *
-   * @returns {HTMLDivElement}
-   */
+  /** @returns {HTMLDivElement}*/
   getUiName = () => this._uiName;
-  setNameColor = (val) => {
+
+  _setNameColor = (val) => {
     if (!val) {
       return;
     }
@@ -85,9 +83,10 @@ class UiPlayer extends Ui_Actor {
    */
   constructor(player) {
     super(player);
-    this._root.className += " blackjack-player";
 
-    this.setNameColor("red");
+    // Root Configuration
+    this._root.className += " blackjack-player";
+    this._setNameColor("red");
   }
 
   unfocusHandById = (handId, phase) => {
@@ -157,12 +156,15 @@ class UiDealer extends Ui_Actor {
    */
   constructor(dealer) {
     super(dealer);
-    this._root.style.alignItems = "center";
-    this._root.style.marginBottom = "25px";
 
     this._root.className += " blackjack-ui-dealer";
-  }
 
+    this._style();
+  }
+  _style = () => {
+    this._root.style.alignItems = "center";
+    this._root.style.marginBottom = "25px";
+  };
   /**
    *
    * @param {RoundPhase} phase

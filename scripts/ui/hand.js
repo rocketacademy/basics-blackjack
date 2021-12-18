@@ -6,16 +6,38 @@ class UiHand extends Ui_Component {
   constructor(hand) {
     super(document.createElement("div"));
     /** @private @const {Hand} */
+
+    // Domain
     this._hand = hand;
 
-    this._uiCount = new Ui_Component();
-
-    this._uiCardsHolder = newUiCardsHolder(this._hand.getCards());
-
-    this._id = this._hand.id();
+    // Root Configuration
+    this._style();
     this._root.setAttribute("id", this._id);
     this._root.className += " blackjack-hand";
 
+    // Children
+    this._uiCount = new Ui_Component();
+    this._uiCardsHolder = newUiCardsHolder(this._hand.getCards());
+    this._uiBetAmount = new Ui_Text();
+
+    this._id = this._hand.id();
+
+    // Hooks
+    this._hand.setOnAddCard((card) => {
+      console.log(`card transferred ${card.getString()}`);
+      const uiCard = new UiCard(card);
+      this._uiCardsHolder.addUiCard(uiCard);
+      this._refreshUiCardsCount();
+    });
+
+    this._hand.setOnSetBet((betValue) => {
+      this._uiBetAmount.setTextContent(`Bet Value [${betValue}]`);
+    });
+
+    // First Render
+    this._refreshUiCardsCount();
+  }
+  _style = () => {
     this._root.style.width = "250px";
     this._root.style.height = "300px";
     this._root.style.padding = "10px 10px 10px 10px";
@@ -24,17 +46,9 @@ class UiHand extends Ui_Component {
     this._root.style.marginTop = "10px";
     this._root.style.marginRight = "10px";
     this._root.style.flexDirection = "column";
+    this._root.style.justifyContent = "space-around";
     this._root.style.alignItems = "center";
-    this._hand.setOnAddCard((card) => {
-      console.log(`card transferred ${card.getString()}`);
-      const uiCard = new UiCard(card);
-      this._uiCardsHolder.addUiCard(uiCard);
-      this._refreshUiCardsCount();
-    });
-
-    this._uiBetAmount = new Ui_Text();
-    this._refreshUiCardsCount();
-  }
+  };
   id = () => this._id;
 
   _refreshUiCardsCount = () => {
@@ -42,7 +56,6 @@ class UiHand extends Ui_Component {
   };
   unfocusThisHand = (phase, upCardOnly) => {
     console.group(`Phase [${phase.desc()}] unfocus ui hand [${this.id()}]`);
-    this._uiCardsHolder.unfocusCards(phase, upCardOnly);
     if (phase === RoundPhase.BET) {
       this.replaceChildrenUi(
         this._uiCount,
@@ -62,20 +75,15 @@ class UiHand extends Ui_Component {
     if (!round) {
       throw `no round?`;
     }
-
     if (!player) {
       throw `no player?`;
     }
     console.group(
       `focusThisHand Phase [${phase.desc()}] focus ui hand [${this.id()}]`
     );
-
     switch (phase) {
       case RoundPhase.BET:
-        this._hand.setOnSetBet((betValue) => {
-          this._uiBetAmount.setTextContent(`Bet Value [${betValue}]`);
-        });
-        const [_uiButtonBet__, _uiSlider__] = newBetControl(
+        const [_uiButtonBet__, _uiSlider__] = this._newBetControl(
           player,
           round,
           this._hand
@@ -90,11 +98,43 @@ class UiHand extends Ui_Component {
       case RoundPhase.IN_PLAY_PLAYERS:
         const children = [this._uiCount, this._uiCardsHolder];
 
-        const _uiButtonStand__ = newStandControl(player, round, this._hand);
+        const _uiButtonStand__ = this._newStandControl(
+          player,
+          round,
+          this._hand
+        );
         children.push(_uiButtonStand__);
         this.replaceChildrenUi(...children, this._uiBetAmount);
     }
     console.groupEnd();
+  };
+  _newStandControl = (player, round, hand) => {
+    const _uiButtonStand__ = new UiButtonStand();
+
+    _uiButtonStand__.setOnMouseClick(() => {
+      round.requestStand(hand);
+    });
+    return _uiButtonStand__;
+  };
+
+  _newBetControl = (player, round, hand) => {
+    const credit = player.getPlayableCredit();
+
+    const initBetValue = 0;
+    const _uiButtonBet__ = new UiButtonBet();
+    _uiButtonBet__.setOnMouseClick((betValue) => {
+      round.requestBet(player, hand, betValue);
+    });
+    const _uiSlider__ = new UiSlider();
+    _uiSlider__.setMax(credit);
+    _uiSlider__.setValue(initBetValue);
+
+    _uiSlider__.setOnRangeChange((e) => {
+      const v = e.target.value;
+      _uiSlider__.value = v;
+      _uiButtonBet__.setBetValue(v);
+    });
+    return [_uiButtonBet__, _uiSlider__];
   };
 }
 class UiHandsHolder extends Ui_Component {
@@ -131,11 +171,15 @@ class UiHandsHolder extends Ui_Component {
 class UiSlider extends Ui_Component {
   constructor() {
     super(document.createElement("input"));
+    this._style();
+  }
+
+  _style = () => {
     this._root.className += " black-jack-bet-slider";
     this._root.type = "range";
     this._root.step = 1;
     this._root.style.display = "block";
-  }
+  };
 
   setMin = (num = 0) => {
     this._root.min = num;
@@ -150,34 +194,7 @@ class UiSlider extends Ui_Component {
     this._root.oninput = fn;
   };
 }
-const newBetControl = (player, round, hand) => {
-  const credit = player.getPlayableCredit();
 
-  const initBetValue = 0;
-  const _uiButtonBet__ = new UiButtonBet();
-  _uiButtonBet__.setOnMouseClick((betValue) => {
-    round.requestBet(player, hand, betValue);
-  });
-  const _uiSlider__ = new UiSlider();
-  _uiSlider__.setMax(credit);
-  _uiSlider__.setValue(initBetValue);
-
-  _uiSlider__.setOnRangeChange((e) => {
-    const v = e.target.value;
-    _uiSlider__.value = v;
-    _uiButtonBet__.setBetValue(v);
-  });
-  return [_uiButtonBet__, _uiSlider__];
-};
-
-const newStandControl = (player, round, hand) => {
-  const _uiButtonStand__ = new UiButtonStand();
-
-  _uiButtonStand__.setOnMouseClick(() => {
-    round.requestStand(hand);
-  });
-  return _uiButtonStand__;
-};
 /**
  *
  * @param {Hands[]} hands
