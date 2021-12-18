@@ -54,11 +54,11 @@ const transferTopCard = (sourceCardStack, destCardStack) => {
   destCardStack.push(card);
 };
 
-const dealToPerson = (deck, PersonHand) => {
-  transferTopCard(deck, PersonHand);
-  transferTopCard(deck, PersonHand);
+const dealToParticipant = (deck, participantHand) => {
+  transferTopCard(deck, participantHand);
+  transferTopCard(deck, participantHand);
 
-  return { deck, PersonHand };
+  return { deck, participantHand };
 };
 
 const testIfTopCardTransferredFromDeck = () => {
@@ -83,27 +83,40 @@ const testIfTopCardTransferredFromDeck = () => {
 
 const newPerson = (name, startCredit = 100) => {
   const _name = name;
-  const _hand = [];
   let _credit = startCredit;
   return {
     getName: () => _name,
-    getHand: () => _hand,
     getCredit: () => _credit,
   };
 };
 
-const shouldInitializedPersonEmptyHanded = () => {
+const newParticipant = (person) => {
+  const _person = person;
+  const _hands = [[]];
+
+  return {
+    getPersonality: () => _person,
+    getName: () => _person.getName(),
+    getHands: () => _hands,
+    getCredit: () => _person.getCredit(),
+  };
+};
+
+const shouldInitializedPersonCreditHundred = () => {
   console.group();
-  console.log("shouldInitializedPersonEmptyHanded");
+  console.log("shouldInitializedPersonCreditHundred");
   const person1 = newPerson("p1");
-  console.log(person1.getHand().length === 0);
+  const defaultCredit = 100;
+  console.log(person1.getCredit() === defaultCredit);
   console.groupEnd();
 };
 
-const dealCards = (persons, deck) => {
-  persons.forEach((person) => {
-    const personHand = person.getHand();
-    dealToPerson(deck, personHand);
+const dealCards = (participants, deck) => {
+  participants.forEach((participant) => {
+    const participantHands = participant.getHands();
+    participantHands.forEach((participantHand) =>
+      dealToParticipant(deck, participantHand)
+    );
   });
 };
 
@@ -112,34 +125,53 @@ shouldCardsOfPersonBeReference = () => {
   console.log("shouldCardsBeReference");
 
   // checking if we can assign variable to object property , then operate on the variable
-  const Person = newPerson();
+  const participant = newParticipant(newPerson());
   const deck = generateDeck();
-  const PersonHand = Person.getHand();
-  transferTopCard(deck, PersonHand);
+  const participantHands = participant.getHands();
 
-  console.log(Person.getHand().length == 1);
+  const startHandsCount = 1;
+  console.log(participantHands.length === startHandsCount);
+
+  const participantHand = participantHands[0];
+  transferTopCard(deck, participantHand);
+
+  const handCardsCount = 1;
+  console.log(participantHand.length == handCardsCount);
   console.groupEnd();
 };
 
-shouldTwoCardsBeDealtToThreePersonsFromStartDeck = () => {
+shouldTwoCardsBeDealtToThreeParticipantsFromStartDeck = () => {
   console.group();
-  console.log("shouldTwoCardsBeDealtToThreePersonsFromStartDeck");
-  const persons = [newPerson("1"), newPerson("2"), newPerson("3")];
+  console.log("shouldTwoCardsBeDealtToThreeParticipantsFromStartDeck");
+
+  const players = [newPerson(), newPerson(), newPerson()];
+
+  const participants = [];
+  for (const player of players) {
+    participants.push(newParticipant(player));
+  }
+
   const deck = generateDeck();
-  dealCards(persons, deck);
+  dealCards(participants, deck);
 
   const startDeckSize = 52;
-  const cardsDealtPerPerson = 2;
-  const expectDeckSize = startDeckSize - persons.length * cardsDealtPerPerson;
+  const cardsDealtPerParticipant = 2;
+
+  const expectDeckSize =
+    startDeckSize - participants.length * cardsDealtPerParticipant;
   console.log(expectDeckSize === deck.length);
-  persons.forEach((p) => {
-    console.log(p.getHand().length === cardsDealtPerPerson);
+
+  participants.forEach((participant) => {
+    participant.getHands().forEach((hand) => {
+      hand.length === cardsDealtPerParticipant;
+    });
   });
   console.groupEnd();
 };
 
 // ROUND
 
+const ROUND_PHASE_BET = "bet";
 const ROUND_PHASE_DEAL = "deal";
 const ROUND_PHASE_IN_PLAY = "in play";
 const ROUND_PHASE_IN_END = "in play";
@@ -147,17 +179,19 @@ const ROUND_PHASE_IN_END = "in play";
 const newRound = (players, dealer) => {
   const _players = players;
   const _dealer = dealer;
+  let _phase = ROUND_PHASE_BET;
   return {
     getPlayers: () => _players,
     getDealer: () => _dealer,
+    getPhase: () => _phase,
   };
 };
 
 const newDefaultRound = () => {
-  const person1 = newPerson();
-  const person2 = newPerson("max", 10000);
-  const players = [person1];
-  const dealer = person2;
+  const p1 = newParticipant(newPerson());
+  const p2 = newParticipant(newPerson("", 10000));
+  const players = [p1];
+  const dealer = p2;
 
   return newRound(players, dealer);
 };
@@ -171,15 +205,16 @@ const testDefaultRoundIsHeadsUp = () => {
   console.log(
     defaultRound.getDealer().getCredit() === expectedDealerStartCredit
   );
+
   console.groupEnd();
 };
 // CARDS
 testIfTopCardTransferredFromDeck();
 
 // PERSONS
-shouldInitializedPersonEmptyHanded();
+shouldInitializedPersonCreditHundred();
 shouldCardsOfPersonBeReference();
-shouldTwoCardsBeDealtToThreePersonsFromStartDeck();
+shouldTwoCardsBeDealtToThreeParticipantsFromStartDeck();
 
 // GAME
 testDefaultRoundIsHeadsUp();
