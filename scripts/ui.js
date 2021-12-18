@@ -55,7 +55,7 @@ class UiButtonBet extends UiButton {
   constructor() {
     super();
     this.uIDesc = new UiText();
-    this.uIDesc.setTextContent("BET ");
+    this.uIDesc.setTextContent("BET");
     this.uIBetValue = new UiText();
     this._betValue = null;
     this._root.style.fontSize = "11px";
@@ -65,7 +65,7 @@ class UiButtonBet extends UiButton {
 
   setBetValue = (v) => {
     this._betValue = v;
-    this.uIBetValue.setTextContent(this._betValue);
+    this.uIBetValue.setTextContent(`: ${this._betValue}`);
   };
 
   getButtonValue = () => this._betValue;
@@ -115,7 +115,6 @@ class UiHand extends UiComponent {
     this._hand = hand;
 
     this._uiCount = new UiComponent();
-    this._uiButtonBet = new UiButton();
 
     this._id = hand.id();
     this._root.setAttribute("id", this._id);
@@ -127,6 +126,9 @@ class UiHand extends UiComponent {
       console.log(`card transferred ${card.getString()}`);
       this._refreshUiCards();
     });
+
+    this._uiBetAmount = new UiText();
+
     this._refreshUiCards();
   }
   id = () => this._id;
@@ -137,13 +139,16 @@ class UiHand extends UiComponent {
   unfocus = (phase, player) => {
     console.group(`Phase [${phase.desc()}] unfocus ui hand [${this.id()}]`);
     if (phase === RoundPhase.BET) {
-      this.replaceChildrenUi(this._uiCount, this._uiButtonBet);
+      this.replaceChildrenUi(this._uiCount, this._uiBetAmount);
     }
     console.groupEnd();
   };
   focus = (phase, player, round) => {
     console.group(`Phase [${phase.desc()}] focus ui hand [${this.id()}]`);
     if (phase === RoundPhase.BET) {
+      this._hand.setOnSetBet((betValue) => {
+        this._uiBetAmount.setTextContent(`Bet Value${betValue}`);
+      });
       const [_uiButtonBet__, _uiSlider__] = newBetControl(
         player,
         round,

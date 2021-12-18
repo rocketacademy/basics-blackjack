@@ -153,8 +153,11 @@ class Hand {
     this._status = HandStatus.IN_PLAY;
     this._id = uuidv4();
   }
-  setBet = (amt) => (this._bet = amt);
-  addBet = (amt) => (this._bet += amt);
+  setBet = (amt) => {
+    this._bet = amt;
+    this._onSetBet(this._bet);
+  };
+  addBet = (amt) => this.setBet(this._bet + amt);
   setSponsor = (player) => (this._sponsor = player);
 
   getBet = () => this._bet;
@@ -164,7 +167,7 @@ class Hand {
    */
   addCard = (card) => {
     this._cards.push(card);
-    this.onTransfer(card);
+    this._onAddCard(card);
   };
   count = () => this._cards.length;
   getFaceValue = () => {
@@ -172,9 +175,12 @@ class Hand {
       return (sum += currentCard.getFaceValue());
     }, 0);
   };
-  onTransfer = () => {};
-  setOnAddCard = (cb) => (this.onTransfer = cb);
-
+  _onAddCard = (card) => {};
+  setOnAddCard = (cb) => (this._onAddCard = cb);
+  _onSetBet = (bet) => {};
+  setOnSetBet = (cb) => {
+    this._onSetBet = cb;
+  };
   desc = () => `${this._cards.forEach((c) => `(${c.getString()})`)}`;
   id = () => this._id;
 }
