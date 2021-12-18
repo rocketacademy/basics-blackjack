@@ -137,7 +137,7 @@ const newPerson = (name, startCredit = 100) => {
  */
 
 /**
- *
+ * newHand
  * @returns {Hand}
  */
 const newHand = () => {
@@ -163,7 +163,6 @@ const newHand = () => {
 const newParticipant = (person) => {
   const _person = person;
   const _hands = [newHand()];
-
   return {
     getPersonality: () => _person,
     getName: () => _person.getName(),
@@ -190,14 +189,14 @@ const dealCards = (participants, deck) => {
   });
 };
 
-shouldCardsOfPersonBeReference = () => {
+shouldCardsOfParticipantsBeReference = () => {
   console.group();
   console.log("shouldCardsBeReference");
 
   // checking if we can assign variable to object property , then operate on the variable
   const participant = newParticipant(newPerson());
   const deck = generateStandardDeck();
-  const participantHands = participant.getHands();
+  const participantHands = participant.getHands(); // this.
 
   const startHandsCount = 1;
   console.log(participantHands.length === startHandsCount);
@@ -239,55 +238,55 @@ shouldTwoCardsBeDealtToThreeParticipantsFromStartDeck = () => {
   console.groupEnd();
 };
 
-// ROUND
+// TABLE
 
-const ROUND_PHASE_BET = "bet";
-const ROUND_PHASE_DEAL = "deal";
-const ROUND_PHASE_IN_PLAY = "in play";
-const ROUND_PHASE_IN_END = "end";
+class Table {
+  /**
+   *
+   * @param {Person[]} players
+   * @param {Person} dealer
+   */
+  constructor(players, dealer) {
+    /** @private @const {!Partipants[]} */
+    this._players = players.map((player) => newParticipant(player));
 
-/**
- * @typedef {Object} Round
- * @property {function() => Partipants[]} getPlayers
- * @property {function() => Participant} getDealer
- * @property {function() => *} getPhase
- */
+    /** @private @const {!Partipants} */
+    this._dealer = newParticipant(dealer);
+  }
+
+  getPlayers = () => this._players;
+  getDealer = () => this._dealer;
+  getPhase = () => this._phase;
+}
 
 /**
  *
- * @param {Participant[]} players
- * @param {Participant} dealer
- * @returns {Round}
+ * @param {Person[]} players
+ * @param {Person} dealer
+ * @returns {Table}
  */
-const newRound = (players, dealer) => {
-  const _players = players;
-  const _dealer = dealer;
-  let _phase = ROUND_PHASE_BET;
-  return {
-    getPlayers: () => _players,
-    getDealer: () => _dealer,
-    getPhase: () => _phase,
-  };
+const newTable = (players, dealer) => {
+  return new Table(players, dealer);
 };
 
 /**
  *
- * @param {Participant} p1
- * @param {Participant} dealer
+ * @param {Person} p1
+ * @param {Person} dealer
  * @returns
  */
-const newRoundHeadsUp = (p1, dealer) => {
-  p1 = p1 || newParticipant(newPerson());
+const newTableHeadsUp = (p1, dealer) => {
+  p1 = p1 || newPerson();
   const players = [p1];
-  dealer = dealer || newParticipant(newPerson("", 10000));
+  dealer = dealer || newPerson("", 10000);
 
-  return newRound(players, dealer);
+  return newTable(players, dealer);
 };
 
-const testRoundIsHeadsUp = () => {
+const testTableHeadsUp = () => {
   console.group();
-  console.log("testRoundIsHeadsUp");
-  const defaultRound = newRoundHeadsUp();
+  console.log("testTableHeadsUp");
+  const defaultRound = newTableHeadsUp();
   console.log(defaultRound.getPlayers().length === 1);
   const expectedDealerStartCredit = 10000;
   console.log(
@@ -296,13 +295,20 @@ const testRoundIsHeadsUp = () => {
 
   console.groupEnd();
 };
+
+// Round Phase
+const ROUND_PHASE_BET = "bet";
+const ROUND_PHASE_DEAL = "deal";
+const ROUND_PHASE_IN_PLAY = "in play";
+const ROUND_PHASE_IN_END = "end";
+
 // CARDS
 testIfTopCardTransferredFromDeck();
 
 // PERSONS
 shouldInitializedPersonCreditHundred();
-shouldCardsOfPersonBeReference();
+shouldCardsOfParticipantsBeReference();
 shouldTwoCardsBeDealtToThreeParticipantsFromStartDeck();
 
-// GAME
-testRoundIsHeadsUp();
+// TABLE
+testTableHeadsUp();
