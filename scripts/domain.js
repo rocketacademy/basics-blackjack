@@ -225,6 +225,7 @@ class Actor {
 
     /** @private @const {Hand[]} */
     this._hands = [];
+    this._id = uuidv4();
   }
 
   getHands = () => this._hands;
@@ -238,6 +239,7 @@ class Actor {
   getCredit = () => this._participant.getCredit();
   decreaseCredit = (amt) => this._participant.decreaseCredit(amt);
   increaseCredit = (amt) => this._participant.increaseCredit(amt);
+  id = () => this._id;
 }
 
 /**
@@ -470,12 +472,23 @@ class Round {
     );
     /** @private @const {!Dealer} */
     this._dealer = newDealer(table.getDealer());
-    this.initialize();
-  }
-
-  initialize = () => {
+    /** @private @const {Card[]} */
     this._deck = shuffleDeck(generateStandardDeck());
-  };
+    /** @private {RoundPhase} */
+    this._phase = null;
+    /** @private @const {number} */
+    this._actorsCount = this.allActors().length;
+    /** @private @const {number} */
+    this._playersCount = this.getPlayers().length;
+    /** @private @const {Player} */
+    this._currentPlayer = null;
+
+    this._nextPlayer = ((players) => {
+      let index = 0;
+      let length = players.length;
+      return () => (index < length ? players[index++] : null);
+    })(this.getPlayers());
+  }
 
   getPhase = () => this._phase;
   getPlayers = () => this._players;
@@ -487,9 +500,14 @@ class Round {
   deckSize = () => this._deck.length;
   setHands = () => createHands(this.allActors());
   getDealerHands = () => this._dealer.getHands();
-  setPhase = (phase) => {
+  changePhase = (phase) => {
     this._phase = phase;
+    if (this._phase === RoundPhase.START) {
+      this._currentPlayer = this._nextPlayer();
+    }
   };
+
+  getCurrentPlayer = () => this._currentPlayer;
   getRoundPhase = () => this._phase;
   // dealer head on, with plain rules.
   concileAllPlayerHandsOnFaceValue = () => {

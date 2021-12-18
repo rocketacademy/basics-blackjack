@@ -87,8 +87,13 @@ class UiPlayer extends UiActor {
    */
   constructor(player) {
     super(player);
+
+    // IMPORTANT FOR REFERENCE
+    this._id = player.id();
     this.initComponent();
   }
+
+  id = () => this._id;
   initComponent = () => {
     this.setNameColor();
   };
@@ -135,14 +140,7 @@ class UiRound extends UiTree {
     /** @private @const {Round} */
     this._round = round;
   }
-  /**
-   * @param {RoundPhase} phase
-   */
-  _setRoundPhase = (phase) => {
-    this._round.setPhase(phase);
-  };
 
-  _getRoundPhase = () => this._round.getPhase();
   getUiPlayers = () => this._uiPlayers;
   getUiDealer = () => this._uiDealer;
   /**
@@ -152,6 +150,10 @@ class UiRound extends UiTree {
   initialize = () => {
     /** @private @const {UiPlayer[]} */
     this._uiPlayers = newUiPlayers(this._round.getPlayers());
+    this._uiPlayersRef = this._uiPlayers.reduce((refs, thisUiP) => {
+      const id = thisUiP.id();
+      return { ...refs, [id]: thisUiP };
+    }, {});
     /** @private @const {UiDealer[]} */
     this._uiDealer = newUiDealer(this._round.getDealer());
 
@@ -161,21 +163,42 @@ class UiRound extends UiTree {
     this._root.appendChild(this._uiDealer.getRoot());
     this.attachGlobalRoot();
   };
+
+  /**
+   *
+   * @param {UiPlayer} uiPlayer
+   */
+  focusUiPlayer = (uiPlayer) => {
+    const root = uiPlayer.getRoot();
+    root.style.border = "1px solid turquoise";
+    root.style.borderRadius = "7px";
+  };
+
+  unfocusUiPlayer = (uiPlayer) => {
+    const root = uiPlayer.getRoot();
+    root.style.border = "1px solid grey";
+    root.style.borderRadius = "7px";
+  };
   /**
    * Called when intent is to change round phase
    * @param {RoundPhase} phase
    */
   _changePhase = (phase) => {
-    const prevPhase = this._getRoundPhase();
+    const prevPhase = this._round.getPhase();
     if (prevPhase === phase) {
       return;
     }
-    this._setRoundPhase(phase);
-    const thisPhase = this._getRoundPhase();
+    this._round.changePhase(phase);
+    const thisPhase = this._round.getPhase();
     if (thisPhase === RoundPhase.START) {
+      const id = this._round.getCurrentPlayer().id();
+      const thisUiPlayer = this.getUiPlayerById(id);
+      this.focusUiPlayer(thisUiPlayer);
     }
   };
-
+  getUiPlayerById = (id) => {
+    return this._uiPlayersRef[id];
+  };
   start = () => {
     this._changePhase(RoundPhase.START);
   };
