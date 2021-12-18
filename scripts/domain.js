@@ -450,9 +450,9 @@ const newTableTwoPlayers = (p1, p2, dealer) => {
 class RoundPhase {
   static SIT = new RoundPhase("SIT");
   static BID = new RoundPhase("bet");
-  static DEAL = new RoundPhase("deal");
-  static IN_PLAY_PLAYERS = new RoundPhase("players");
-  static IN_PLAY_DEALER = new RoundPhase("dealer");
+  static DEAL = new RoundPhase("dealing");
+  static IN_PLAY_PLAYERS = new RoundPhase("players' turn");
+  static IN_PLAY_DEALER = new RoundPhase("dealer turn");
   static END = new RoundPhase("end");
 
   constructor(desc) {
@@ -533,46 +533,62 @@ class Round {
 
   changePlayer = () => {
     const nextPlayer = this._nextPlayer();
-    console.group();
-    console.log(
-      !!nextPlayer
-        ? "player changed to " + nextPlayer.getName()
-        : `no next player`
+    console.group(
+      `Changing Player... ${
+        !!nextPlayer
+          ? "Player changed to " + nextPlayer.getName()
+          : `No next player`
+      }`
     );
-    console.groupEnd();
     this.setCurrentPlayer(nextPlayer);
     if (!nextPlayer) {
+      console.log(`All players iterated`);
+      console.groupEnd();
+
       this._changeNextPhase();
     }
+    console.groupEnd();
   };
 
   changePhase = (phase) => {
-    console.group("Change Phase");
-    console.log("want to change to: " + phase.desc());
     if (this._phase === phase) {
       return;
     }
+    const prevPhase = this._phase;
     this._phase = phase;
-    console.log("changed round phase: " + this._phase.desc());
+    const currentPhase = this._phase;
+    console.group(
+      "changePhase() " + prevPhase?.desc() + "->" + currentPhase?.desc()
+    );
     if (this._phase === RoundPhase.SIT) {
     } else if (this._phase === RoundPhase.BID) {
       this._resetTurn();
       this.changePlayer();
     } else if (this._phase === RoundPhase.DEAL) {
       this._resetTurn();
-      this.changePlayer();
+      this.autoDeal();
+      this.changePhase(this._nextPhase());
     } else if (this._phase === RoundPhase.IN_PLAY_PLAYERS) {
       this._resetTurn();
       this.changePlayer();
     }
-
     console.groupEnd();
   };
-
+  autoDeal = () => {
+    console.log("auto dealing");
+    const dealPlayersOrder = this._nextPlayerGenerator(this.getPlayers());
+    let player = dealPlayersOrder();
+    while (player) {
+      console.log("deal to " + player.getName());
+      player = dealPlayersOrder();
+    }
+  };
   _nextPhase = () => {
     switch (this._phase) {
       case RoundPhase.BID:
         return RoundPhase.DEAL;
+      case RoundPhase.DEAL:
+        return RoundPhase.IN_PLAY_PLAYERS;
       case RoundPhase.IN_PLAY_PLAYERS:
         return RoundPhase.IN_PLAY_DEALER;
     }

@@ -189,19 +189,21 @@ class UiPlayer extends UiActor {
    * @returns
    */
   renderModeActive = (phase) => {
-    console.log("mode active " + phase.desc());
-
+    console.group(
+      `Render:Active Phase:${phase.desc()} Player:${this._actor.getName()}`
+    );
     switch (phase) {
       case RoundPhase.IN_PLAY_PLAYERS:
         this.replaceChildrenUi(this.getUiName(), this._buttonPass);
-        return;
+        break;
       case RoundPhase.BID:
         this.replaceChildrenUi(this.getUiName(), this._buttonBid);
-        return;
+        break;
       default:
         this.replaceChildrenUi(this.getUiName());
-        return;
+        break;
     }
+    console.groupEnd();
   };
   setOnClickButtonPass = (cb) => this._buttonPass.setOnClick(cb);
   setOnClickButtonBid = (cb) => this._buttonBid.setOnClick(cb);
@@ -264,8 +266,6 @@ class UiRound extends UiTree {
   getUiDealer = () => this._uiDealer;
 
   _refreshDisplayPhase = () => {
-    console.log("refresh");
-    console.log(this._round.getPhase());
     this._uiPhaseDisplay.setTextContent(
       "ROUND STATUS: " + this._round.getPhase()?.desc()
     );
@@ -383,10 +383,10 @@ class UiRound extends UiTree {
         this._uiButtonDummy
       );
       this._changeRoundPhase(RoundPhase.BID);
-    } else if (thisPhase === RoundPhase.IN_PLAY_PLAYERS) {
+    } else if (thisPhase === RoundPhase.BID) {
       const id = this._round.getCurrentPlayer().id();
       this.focusUiPlayerById(id, thisPhase);
-    } else if (thisPhase === RoundPhase.BID) {
+    } else if (thisPhase === RoundPhase.IN_PLAY_PLAYERS) {
       const id = this._round.getCurrentPlayer().id();
       this.focusUiPlayerById(id, thisPhase);
     }
@@ -516,4 +516,5 @@ const main = () => {
   uiRound.onClickSitHandler();
 };
 
+console.log(`---MAIN---`);
 main();
