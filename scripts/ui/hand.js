@@ -11,6 +11,8 @@ class UiHand extends Ui_Component {
     this._hand = hand;
 
     // Root Configuration
+    this._id = this._hand.id();
+
     this._style();
     this._root.setAttribute("id", this._id);
     this._root.className += " blackjack-hand";
@@ -19,8 +21,6 @@ class UiHand extends Ui_Component {
     this._uiCount = new Ui_Component();
     this._uiCardsHolder = newUiCardsHolder(this._hand.getCards());
     this._uiBetAmount = new Ui_Text();
-
-    this._id = this._hand.id();
 
     // Hooks
     this._hand.setOnAddCard((card) => {
@@ -34,7 +34,13 @@ class UiHand extends Ui_Component {
       this._uiBetAmount.setTextContent(`Bet Value [${betValue}]`);
     });
 
-    this._hand.setOnUnfocusHand((phase) => {
+    this._hand.setOnActiveSignal((isActive, phase, player, round) => {
+      if (isActive === true) {
+        this._hand.renderActiveDisplay(isActive, phase, player, round);
+      }
+    });
+
+    this._hand.setOnActiveSignal((phase) => {
       this.replaceChildrenUi(this._uiCount, this._uiCardsHolder);
     });
 
@@ -43,34 +49,8 @@ class UiHand extends Ui_Component {
 
     this.replaceChildrenUi(this._uiCount, this._uiCardsHolder);
   }
-  _style = () => {
-    this._root.style.width = "250px";
-    this._root.style.height = "300px";
-    this._root.style.padding = "10px 10px 10px 10px";
-    this._root.style.border = "1px solid black";
-    this._root.style.marginLeft = "10px";
-    this._root.style.marginTop = "10px";
-    this._root.style.marginRight = "10px";
-    this._root.style.flexDirection = "column";
-    this._root.style.justifyContent = "space-around";
-    this._root.style.alignItems = "center";
-  };
-  id = () => this._id;
 
-  _refreshUiCardsCount = () => {
-    setUiTextContent(this._uiCount, `[${this._hand.count()}]`);
-  };
-  unfocusThisHand = (phase, upCardOnly) => {};
-  focusThisHand = (phase, player, round) => {
-    if (!round) {
-      throw `no round?`;
-    }
-    if (!player) {
-      throw `no player?`;
-    }
-    console.group(
-      `focusThisHand Phase [${phase.desc()}] focus ui hand [${this.id()}]`
-    );
+  renderActiveDisplay = (phase, player, round) => {
     switch (phase) {
       case RoundPhase.BET:
         const [_uiButtonBet__, _uiSlider__] = this._newBetControl(
@@ -87,17 +67,35 @@ class UiHand extends Ui_Component {
         break;
       case RoundPhase.IN_PLAY_PLAYERS:
         const children = [this._uiCount, this._uiCardsHolder];
-
         const _uiButtonStand__ = this._newStandControl(
           player,
           round,
           this._hand
         );
         children.push(_uiButtonStand__);
-        this.replaceChildrenUi(...children, this._uiBetAmount);
+        this.replaceChildrenUi(...children);
+        break;
     }
-    console.groupEnd();
   };
+  _style = () => {
+    this._root.style.width = "100px";
+    this._root.style.height = "100px";
+    this._root.style.padding = "10px 10px 10px 10px";
+    this._root.style.border = "1px solid black";
+    this._root.style.marginLeft = "10px";
+    this._root.style.marginTop = "10px";
+    this._root.style.marginRight = "10px";
+    this._root.style.flexDirection = "column";
+    this._root.style.justifyContent = "space-around";
+    this._root.style.alignItems = "center";
+  };
+  id = () => this._id;
+
+  _refreshUiCardsCount = () => {
+    setUiTextContent(this._uiCount, `[${this._hand.count()}]`);
+  };
+
+  /** Control Options */
   _newStandControl = (player, round, hand) => {
     const _uiButtonStand__ = new UiButtonStand();
 
@@ -141,21 +139,6 @@ class UiHandsHolder extends Ui_Component {
     this._uiHandsRef = { [uiHand.id()]: uiHand, ...this._uiHandsRef };
     this.appendChildUi(uiHand);
   };
-
-  unfocusHands = (phase, upCardOnly) => {
-    console.group(`UNFOCUSING HANDS upcard only ? ${upCardOnly}`);
-    for (const [id, uiH] of Object.entries(this._uiHandsRef)) {
-      uiH.unfocusThisHand(phase, upCardOnly);
-    }
-    console.groupEnd();
-  };
-
-  focusHandById = (id, phase, player, round) => {
-    this._uiHandsRef[id].focusThisHand(phase, player, round);
-  };
-  unfocusHandById = (id, phase) => {
-    this._uiHandsRef[id].unfocusThisHand(phase, true);
-  };
   count = () => this._uiHands.length;
 }
 class UiSlider extends Ui_Component {
@@ -170,7 +153,6 @@ class UiSlider extends Ui_Component {
     this._root.step = 1;
     this._root.style.display = "block";
   };
-
   setMin = (num = 0) => {
     this._root.min = num;
   };
@@ -184,20 +166,6 @@ class UiSlider extends Ui_Component {
     this._root.oninput = fn;
   };
 }
-
-/**
- *
- * @param {Hands[]} hands
- * @returns {UiHandsHolder}
- */
-const newUiHandsHolder = (hands) => {
-  const uiHandsHolder = new UiHandsHolder();
-  for (const h of hands) {
-    const uiH = new UiHand(h);
-    uiHandsHolder.addUiHand(uiH);
-  }
-  return uiHandsHolder;
-};
 
 const newUiHand = (hand) => {
   return new UiHand(hand);

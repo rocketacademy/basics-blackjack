@@ -51,8 +51,15 @@ class Hand {
   setOnSetBet = (cb) => {
     this._onSetBet = cb;
   };
-  _onUnfocusHand = (phase) => {};
-  setOnUnfocusHand = (cb) => (this._onUnfocusHand = cb);
+
+  signalActive = (isActive) => {
+    if (isActive === null || isActive === undefined) {
+      throw "Error! please send me signal.";
+    }
+    this._onActiveSignal(isActive);
+  };
+  _onActiveSignal = (phase) => {};
+  setOnActiveSignal = (cb) => (this._onActiveSignal = cb);
 }
 
 // Domain

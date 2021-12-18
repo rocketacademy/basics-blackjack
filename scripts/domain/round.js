@@ -455,5 +455,5 @@ class Round {
     currentHandId,
     phase
   ) => {};
-  setOnSetCurrentHand = (fn) => (this._onSetCurrentHand = fn);
+  addOnSetCurrentHand = (fn) => (this._onSetCurrentHand = fn);
 }

@@ -4,13 +4,17 @@ class Actor {
    * @param {Participant} participant
    */
   constructor(participant) {
+    this._id = uuidv4();
+
     /** @private @const {Participant} */
     this._participant = participant;
 
     /** @private @const {Hand[]} */
     this._hands = [];
-    this._id = uuidv4();
   }
+
+  id = () => this._id;
+
   /**
    * @returns {Hand[]}
    */
@@ -18,19 +22,20 @@ class Actor {
   createNewHand = () => {
     const newHand = new Hand();
     this._hands.push(newHand);
-    this.onNewHand(newHand);
+    this._onNewHand(newHand);
     return newHand;
   };
-  onNewHand = (hand) => {};
-  setOnNewHand = (cb) => {
-    this.onNewHand = cb;
-  };
+
   getParticipant = () => this._participant;
   getName = () => this._participant.getName();
   getCredit = () => this._participant.getCredit();
   decreaseCredit = (amt) => this._participant.decreaseCredit(amt);
   increaseCredit = (amt) => this._participant.increaseCredit(amt);
-  id = () => this._id;
+
+  _onNewHand = (hand) => {};
+  setOnNewHand = (cb) => {
+    this._onNewHand = cb;
+  };
 }
 
 /**

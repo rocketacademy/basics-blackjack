@@ -76,13 +76,6 @@ class UiCardsHolder extends Ui_Component {
     this._uiCardsRef = { [uiCard.id()]: uiCard, ...this._uiCardsRef };
     this.appendChildUi(uiCard);
   };
-
-  unfocusCards = (phase, upCardOnly) => {
-    if (upCardOnly === undefined || upCardOnly === null) {
-      throw `upCardOnly not specified`;
-    }
-    console.groupEnd();
-  };
 }
 
 /**
