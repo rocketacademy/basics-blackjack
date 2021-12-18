@@ -156,7 +156,6 @@ class Round {
   _initInPlayDealer = () => {
     this._setPhase(RoundPhase.IN_PLAY_DEALER);
     //TODO - Reconcilliation
-    this.requestInitEndPhase();
   };
   _initEnd = () => {
     this._setPhase(RoundPhase.END);
@@ -221,6 +220,8 @@ class Round {
       return;
     }
     this._initInPlayDealer();
+
+    this._onSetPhaseCompleted(this._phase, this);
   };
   requestInitEndPhase = () => {
     const proposedPhase = RoundPhase.END;
@@ -446,4 +447,6 @@ class Round {
 
   _onSetPhase = (phase) => {};
   setOnSetPhase = (fn) => (this._onSetPhase = fn);
+  _onSetPhaseCompleted = (phase, round) => {};
+  setOnSetPhaseCompleted = (cb) => (this._onSetPhaseCompleted = cb);
 }

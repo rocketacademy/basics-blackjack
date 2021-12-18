@@ -77,11 +77,33 @@ class UiRound extends UiTree {
     // Hooks
     this._round.setOnSetPhase((phase) => {
       this._refreshDisplayPhase(phase);
+      console.log(`Ui Hook[setOnSetPhase] ${phase}`);
       switch (phase) {
         case RoundPhase.BET:
-          console.log(`on phase change refresh for round phase bet`);
           this.replaceChildrenUi(
             this._uiPhaseDisplay,
+            this._uiDealer,
+            this._uiPlayersHolder
+          );
+          return;
+
+        case RoundPhase.END:
+          this.replaceChildrenUi(
+            this._uiPhaseDisplay,
+            this._uiDealer,
+            this._uiPlayersHolder
+          );
+          return;
+      }
+    });
+    this._round.setOnSetPhaseCompleted((phase, round) => {
+      console.log(`Ui Hook[setOnSetPhaseCompleted]  ${phase}`);
+      switch (phase) {
+        case RoundPhase.IN_PLAY_DEALER:
+          const endGameButton = this._newEndGameControl(round);
+          this.replaceChildrenUi(
+            this._uiPhaseDisplay,
+            endGameButton,
             this._uiDealer,
             this._uiPlayersHolder
           );
@@ -90,7 +112,11 @@ class UiRound extends UiTree {
     });
     this._attachGlobalRoot();
   }
-
+  _newEndGameControl = (round) => {
+    const button = new UiButtonEndGame();
+    button.setOnMouseClick(() => round.requestInitEndPhase());
+    return button;
+  };
   getUiPlayersHolder = () => this._uiPlayersHolder;
   getUiDealer = () => this._uiDealer;
 

@@ -62,7 +62,9 @@ class Ui_Actor extends Ui_Component {
   _style = () => {
     this._root.style.flexDirection = "column";
     this._root.style.height = "300px";
-    this._root.style.width = "400px";
+    this._root.style.width = "fit-content";
+    this._root.style.minWidth = "250px";
+
     this._root.style.border = "1px solid black";
     this._root.style.alignItems = "center";
   };

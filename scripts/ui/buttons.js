@@ -1,3 +1,15 @@
+class UiButtonEndGame extends Ui_Button {
+  constructor() {
+    super();
+
+    this._root.style.width = "44px";
+    this._root.style.height = "44px";
+    this._root.textContent = "END";
+    this._root.className += " blackjack-button-end-game";
+  }
+  setOnMouseClick = (cb) => (this._root.onclick = () => cb());
+}
+
 class UiImgChip extends Ui_Img {
   constructor(url) {
     super();
@@ -33,7 +45,7 @@ class UiContainerBet extends Ui_Component {
 class UiButtonBet extends Ui_Button {
   constructor() {
     super();
-    // RootConfiguration
+    // Root Configuration
     this._root.className += "blackjack-button-bet";
     this._root.style.fontSize = "11px";
     this._root.style.position = "absolute";
