@@ -448,8 +448,8 @@ const newTableTwoPlayers = (p1, p2, dealer) => {
 // Round Phase
 
 class RoundPhase {
-  static BID = new RoundPhase("bet");
   static SIT = new RoundPhase("SIT");
+  static BID = new RoundPhase("bet");
   static DEAL = new RoundPhase("deal");
   static IN_PLAY_PLAYERS = new RoundPhase("players");
   static IN_PLAY_DEALER = new RoundPhase("dealer");
@@ -594,11 +594,12 @@ const testHeadsUpRoundInitialization = () => {
   console.log("testHeadsUpRoundInitialization");
   const table = newTableHeadsUp();
   const round = new Round(table);
-  const expectedInitialPhase = RoundPhase.BET;
+  const expectedInitialPhase = null;
+  const gotPhase = round.getPhase();
   LOG_ASSERT(
-    round.getPhase() === expectedInitialPhase,
+    gotPhase === expectedInitialPhase,
     undefined,
-    `Expected initial phase: ${expectedInitialPhase}`
+    `Expected initial phase: ${expectedInitialPhase} got: ${gotPhase}`
   );
   console.groupEnd();
 };
