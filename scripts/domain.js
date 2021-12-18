@@ -288,10 +288,8 @@ const newDealer = (participant) => new Dealer(participant);
  */
 const dealToHandsOfActor = (actor, deck) => {
   const hands = actor.getHands();
-  console.log(hands.length === 0 ? `No hands of ${actor}` : `got hand`);
   for (const hand of hands) {
     dealToHand(deck, hand);
-    console.log(hand);
   }
 };
 

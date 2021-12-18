@@ -72,17 +72,17 @@ class UiButtonHit extends UiButton {
   }
 }
 
-class UiButtonBet extends UiButton {
+class UiButtonBetAll extends UiButton {
   constructor() {
     super();
-    this._root.textContent = "Bet";
+    this._root.textContent = "Bet All";
   }
 }
 
-class UiButtonStand extends UiButton {
+class UiButtonStandAll extends UiButton {
   constructor() {
     super();
-    this._root.textContent = "Stand";
+    this._root.textContent = "Stand All";
   }
 }
 class UiPhaseDisplay extends UiComponent {
@@ -166,6 +166,10 @@ class UiActor extends UiComponent {
   _addUiHand = (hand) => {
     this._uiHands.push(newUiHand(hand));
   };
+
+  getUiHands = () => {
+    return this._uiHands;
+  };
 }
 
 const newUiHand = (hand) => {
@@ -186,8 +190,8 @@ class UiPlayer extends UiActor {
   constructor(player) {
     super(player);
 
-    this._uIButtonStand = new UiButtonStand();
-    this._uiButtonBet = new UiButtonBet();
+    this._uIButtonStandAll = new UiButtonStandAll();
+    this._uiButtonBetAll = new UiButtonBetAll();
     /** @private {UiHand[]} */
     this._uiHands = newUiHands(this._actor);
     this.initComponent();
@@ -205,8 +209,47 @@ class UiPlayer extends UiActor {
       this.replaceChildrenUi(this.getUiName(), ...this.getUiHands());
     }
   };
-  getUiHands = () => {
-    return this._uiHands;
+
+  /**
+   *
+   * @param {RoundPhase} phase
+   * @returns
+   */
+  renderModeActive = (phase) => {
+    console.group(
+      `Render:Active Phase:${phase.desc()} Player:${this._actor.getName()}`
+    );
+    switch (phase) {
+      case RoundPhase.IN_PLAY_PLAYERS:
+        this.replaceChildrenUi(this.getUiName(), this._uIButtonStandAll);
+        break;
+      case RoundPhase.BET:
+        this.replaceChildrenUi(
+          this.getUiName(),
+          this._uiButtonBetAll,
+          ...this.getUiHands()
+        );
+        break;
+      default:
+        this.replaceChildrenUi(this.getUiName());
+        break;
+    }
+    console.groupEnd();
+  };
+  setOnClickButtonStandAll = (cb) => this._uIButtonStandAll.setOnClick(cb);
+  setOnClickButtonBetAll = (cb) => this._uiButtonBetAll.setOnClick(cb);
+}
+class UiDealer extends UiActor {
+  /**
+   * @param {Dealer} dealer
+   */
+  constructor(dealer) {
+    super(dealer);
+    this.initComponent();
+  }
+
+  initComponent = () => {
+    this.setNameColor();
   };
 
   /**
@@ -220,35 +263,25 @@ class UiPlayer extends UiActor {
     );
     switch (phase) {
       case RoundPhase.IN_PLAY_PLAYERS:
-        this.replaceChildrenUi(this.getUiName(), this._uIButtonStand);
+        this.replaceChildrenUi(this.getUiName(), ...this._uiHands());
         break;
       case RoundPhase.BET:
-        this.replaceChildrenUi(
-          this.getUiName(),
-          this._uiButtonBet,
-          ...this.getUiHands()
-        );
+        this.replaceChildrenUi(this.getUiName(), ...this._uiHands());
         break;
       default:
-        this.replaceChildrenUi(this.getUiName());
+        this.replaceChildrenUi(this.getUiName(), ...this._uiHands());
         break;
     }
+
     console.groupEnd();
   };
-  setOnClickButtonStandAll = (cb) => this._uIButtonStand.setOnClick(cb);
-  setOnClickButtonBet = (cb) => this._uiButtonBet.setOnClick(cb);
-}
-class UiDealer extends UiActor {
-  /**
-   * @param {Dealer} dealer
-   */
-  constructor(dealer) {
-    super(dealer);
-    this.initComponent();
-  }
 
-  initComponent = () => {
-    this.setNameColor();
+  renderModeAudience = (phase) => {
+    if (phase === RoundPhase.BET) {
+      this.replaceChildrenUi(this.getUiName(), ...this.getUiHands());
+    } else {
+      this.replaceChildrenUi(this.getUiName(), ...this.getUiHands());
+    }
   };
 }
 
@@ -307,7 +340,6 @@ class UiRound extends UiTree {
 
   initializeUiDealer = () => {
     this._uiDealer = newUiDealer(this._round.getDealer());
-
     this._uiDealer.setOnNewHand((hand) => {
       this._uiDealer._addUiHand(hand);
     });
@@ -317,7 +349,7 @@ class UiRound extends UiTree {
 
     this._uiPlayers.forEach((uIP) => {
       uIP.setOnClickButtonStandAll(this.onClickStandAllHandler);
-      uIP.setOnClickButtonBet(this.onClickBetHandler);
+      uIP.setOnClickButtonBetAll(this.onClickBetAllHandler);
       uIP.setOnNewHand((hand) => {
         uIP._addUiHand(hand);
       });
@@ -390,6 +422,10 @@ class UiRound extends UiTree {
     root.style.borderRadius = "7px";
   };
 
+  displayUiDealer = (phase) => {
+    this._uiDealer.renderModeAudience(phase);
+  };
+
   /**
    * Called when intent is to change round phase in tandem with round phase
    * @param {RoundPhase} phase
@@ -413,6 +449,7 @@ class UiRound extends UiTree {
     );
     this._refreshDisplayPhase();
     this._refreshUiPlayers();
+    this.displayUiDealer();
     if (thisPhase === RoundPhase.SIT) {
       this.replaceChildrenUi(
         this._uiPhaseDisplay,
@@ -461,7 +498,7 @@ class UiRound extends UiTree {
     this._changeRoundPhase(thisPhase);
   };
 
-  onClickBetHandler = () => {
+  onClickBetAllHandler = () => {
     const prevId = this._round.getCurrentPlayer()?.id();
     this._round.changePlayer();
     const currentId = this._round.getCurrentPlayer()?.id();
