@@ -8,7 +8,7 @@ class UiTree extends Ui_Component {
   _attachGlobalRoot = () => UiTree.UI_ROOT.replaceChildren(this.getRoot());
 }
 
-class UiPlayersHolder extends Ui_Component {
+class UiPlayersHolder extends Ui_Aggregate {
   constructor() {
     super();
     // Root Configuration

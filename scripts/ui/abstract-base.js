@@ -72,3 +72,9 @@ class Ui_Img extends Ui_Component {
     super(document.createElement("img"));
   }
 }
+
+class Ui_Aggregate extends Ui_Component {
+  constructor() {
+    super();
+  }
+}

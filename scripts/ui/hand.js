@@ -125,7 +125,7 @@ class UiHand extends Ui_Component {
     return [_uiButtonBet__, _uiSlider__];
   };
 }
-class UiHandsHolder extends Ui_Component {
+class UiHandsHolder extends Ui_Aggregate {
   constructor() {
     super();
 
