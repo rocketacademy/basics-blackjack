@@ -148,13 +148,15 @@ class Hand {
     /** @private @const {Card[]} */
     this._cards = [];
     /** @private @const {number} */
-    this._bet = 0;
+    this._bet = null;
+    this._sponsor = null;
     this._status = HandStatus.IN_PLAY;
     this._id = uuidv4();
   }
-
   setBet = (amt) => (this._bet = amt);
   addBet = (amt) => (this._bet += amt);
+  setSponsor = (player) => (this._sponsor = player);
+
   getBet = () => this._bet;
   /**
    *
@@ -686,7 +688,8 @@ class Round {
       `_bet Player [${player.getName()}] Hand [${hand.id()}] Bet [${bet}]`
     );
 
-    //TODO change the action
+    //TODO add the action
+
     this._changeBetTurn();
 
     if (!this._currentHand) {
@@ -696,6 +699,13 @@ class Round {
     console.groupEnd();
   };
 
+  /**
+   *
+   * @param {Player} better
+   * @param {Hand} hand
+   * @param {number} amt
+   * @returns
+   */
   requestBet = (better, hand, amt) => {
     console.group("Bet requested");
 
@@ -712,7 +722,8 @@ class Round {
       console.warn(`Invalid request Need a better, an amount and a hand.`);
       reject = true;
     }
-
+    hand.setSponsor(better);
+    hand.setBet(amt);
     if (reject) {
       console.groupEnd();
       return;
@@ -720,10 +731,12 @@ class Round {
     this._bet(better, hand, amt);
     console.groupEnd();
   };
+
   _stand = (hand) => {
     console.group(`_stand Hand [${hand.id()}] STAND`);
 
-    //TODO change the action
+    //TODO add the action
+
     this._changeInPlayPlayerTurn();
 
     if (!this._currentHand) {
