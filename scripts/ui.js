@@ -340,6 +340,14 @@ class UiRound extends UiTree {
   getUiPlayers = () => this._uiPlayers;
   getUiDealer = () => this._uiDealer;
 
+  /**
+   *
+   * @param {number} id
+   * @returns {UiPlayer}
+   */
+  getUiPlayerById = (id) => {
+    return this._uiPlayersRef[id];
+  };
   initializeUiDisplayPhase = () => {
     this._uiPhaseDisplay = new UiPhaseDisplay();
     this._refreshDisplayPhase();
@@ -432,96 +440,6 @@ class UiRound extends UiTree {
     root.style.border = "1px solid grey";
     root.style.borderRadius = "7px";
   };
-
-  displayUiDealer = (phase) => {
-    this._uiDealer.renderModeAudience(phase);
-  };
-
-  /**
-   * Called when intent is to change round phase in tandem with round phase
-   * @param {RoundPhase} phase
-   */
-  _changeRoundPhase = (phase) => {
-    this._round._changePhase(phase);
-
-    const prevThisPhase = this._phaseUi;
-
-    const thisPhase = this._round.getPhase();
-    if (prevThisPhase === thisPhase) {
-      return;
-    }
-    this._phaseUi = thisPhase;
-
-    console.group(
-      "Ui: round phase was changed " +
-        prevThisPhase?.desc() +
-        " -> " +
-        thisPhase.desc()
-    );
-    this._refreshDisplayPhase();
-    this._refreshUiPlayers();
-    this.displayUiDealer();
-    if (thisPhase === RoundPhase.SIT) {
-      this.replaceChildrenUi(
-        this._uiPhaseDisplay,
-        this._uiDealer,
-        ...this._uiPlayers,
-        this._uiButtonDummy
-      );
-      this._changeRoundPhase(RoundPhase.BET);
-    } else if (thisPhase === RoundPhase.BET) {
-      const id = this._round.getCurrentPlayer().id();
-      this.focusUiPlayerById(id, thisPhase);
-    } else if (thisPhase === RoundPhase.IN_PLAY_PLAYERS) {
-      const id = this._round.getCurrentPlayer().id();
-      this.focusUiPlayerById(id, thisPhase);
-    }
-
-    console.groupEnd();
-  };
-  focusUiPlayerById = (id, phase) => {
-    const thisUiPlayer = this.getUiPlayerById(id);
-    this.focusUiPlayer(thisUiPlayer, phase);
-  };
-
-  /**
-   *
-   * @param {number} id
-   * @returns {UiPlayer}
-   */
-  getUiPlayerById = (id) => {
-    return this._uiPlayersRef[id];
-  };
-
-  onClickSitHandler = () => {
-    this._round.requestInitBetPhase();
-  };
-  onClickPlayPlayersHandler = () => {
-    this._changeRoundPhase(RoundPhase.IN_PLAY_PLAYERS);
-  };
-  onClickStandAllHandler = () => {
-    const prevId = this._round.getCurrentPlayer()?.id();
-    this._round.changeTurn();
-    const currentId = this._round.getCurrentPlayer()?.id();
-
-    const thisPhase = this._round.getPhase();
-    this.changeFocusUiPlayerById(prevId, currentId, thisPhase);
-    this._changeRoundPhase(thisPhase);
-  };
-
-  onClickBetAllHandler = () => {
-    const prevId = this._round.getCurrentPlayer()?.id();
-    this._round.changeTurn();
-    const currentId = this._round.getCurrentPlayer()?.id();
-
-    const thisPhase = this._round.getPhase();
-    this.changeFocusUiPlayerById(prevId, currentId, thisPhase);
-    this._changeRoundPhase(thisPhase);
-  };
-
-  generateOnBetHandler = (hand) => (amt) => {
-    this._round.requestBet(hand, amt);
-  };
 }
 
 /**
@@ -556,50 +474,6 @@ const newUiPlayers = (players) => players.map((player) => newUiPlayer(player));
 const newUiDealer = (dealer) => new UiDealer(dealer);
 
 const newUiCredit = (credit) => new UiCredit(credit);
-
-const test_HeadsUp_UiRound_ChangeRoundPhase_Start_Render = () => {
-  console.group();
-  console.log("testHeadsUpRoundActorsNameUi");
-  const table = newTableHeadsUp();
-  const round = new Round(table);
-
-  const uIRound = newUiRound(round);
-  uIRound.onClickSitHandler();
-  const uiPlayers = uIRound.getUiPlayers();
-
-  const uiDealer = uIRound.getUiDealer();
-
-  const uiHeadsUpPlayer = uiPlayers[0];
-
-  const isUiForPlayerNameExist = [
-    uiHeadsUpPlayer.getUiName().getRoot().nodeName.toLowerCase() === "div",
-    undefined,
-    "isUiForPlayerName NOT Exist",
-  ];
-
-  const isUiForDealerNameExist = [
-    uiDealer.getUiName().getRoot().nodeName.toLowerCase() === "div",
-    undefined,
-    "isUiForDealerName NOT Exist",
-  ];
-
-  const expectedDefaultDealerName = `D`;
-  const actualDealerName = uiDealer.getUiName().getRoot().textContent;
-  const isUiForDealerNameDefault = [
-    actualDealerName === expectedDefaultDealerName,
-    undefined,
-    `isUiForDealerNameDefault name got ${actualDealerName} want ${expectedDefaultDealerName}`,
-  ];
-
-  LOG_ASSERT(...isUiForPlayerNameExist);
-  LOG_ASSERT(...isUiForDealerNameExist);
-  LOG_ASSERT(...isUiForDealerNameDefault);
-
-  console.groupEnd();
-};
-
-// Ui ROUND
-test_HeadsUp_UiRound_ChangeRoundPhase_Start_Render();
 
 const test_Main_HeadsUp = () => {
   const table = newTableTwoPlayers();
