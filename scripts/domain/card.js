@@ -84,9 +84,19 @@ const transferTopCardToHand = (sourceCards, hand) => {
  * @param {Hand} hand insert card to hand
  * @returns
  */
-const dealToHand = (deck, hand) => {
+const dealToHandTwoOpen = (deck, hand) => {
   transferTopCardToHand(deck, hand).flip(true);
   transferTopCardToHand(deck, hand).flip(true);
+  return { deck, hand };
+};
+
+const dealToHandOneOpen = (deck, hand) => {
+  transferTopCardToHand(deck, hand).flip(true);
+  return { deck, hand };
+};
+
+const dealToHandOneClose = (deck, hand) => {
+  transferTopCardToHand(deck, hand).flip(false);
   return { deck, hand };
 };
 

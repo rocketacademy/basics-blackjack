@@ -370,32 +370,48 @@ class Round {
     console.groupEnd("auto create hand");
   };
   _autoDeal = () => {
-    console.group("auto dealing");
-    const nextPlayerHand = this._nextHandGenerator(this.getPlayers());
-    let { hand: playerHand, actor: player } = nextPlayerHand();
-    while (playerHand) {
-      console.log(
-        `Dealing to Actor [${player.getName()}] Hand [${playerHand.id()}]`
+    console.group("[_autoDeal]");
+
+    let i = 1;
+    const dealerHoldCardIndex = 2;
+
+    for (; i <= 2; i++) {
+      console.group(
+        `Dealing ${i === 1 ? `once` : i === 2 ? `twice` : `???????`}`
       );
-      this.setCurrentHandAndPlayer(playerHand, player);
+      const nextPlayerHand = this._nextHandGenerator(this.getPlayers());
+      let { hand: playerHand, actor: player } = nextPlayerHand();
+      while (playerHand) {
+        console.log(
+          `Dealing to Actor [${player.getName()}] Hand [${playerHand.id()}]`
+        );
+        this.setCurrentHandAndPlayer(playerHand, player);
 
-      dealToHand(this._deck, playerHand);
-      const newHand = nextPlayerHand();
-      playerHand = newHand.hand;
-      player = newHand.actor;
+        dealToHandOneOpen(this._deck, playerHand);
+        const newHand = nextPlayerHand();
+        playerHand = newHand.hand;
+        player = newHand.actor;
+      }
+
+      const nextDealerHand = this._nextHandGenerator([this.getDealer()]);
+      let { hand: dealerHand, actor: dealer } = nextDealerHand();
+
+      while (dealerHand) {
+        this.setCurrentHandAndPlayer(dealerHand, dealer);
+        if (dealerHoldCardIndex === i) {
+          dealToHandOneClose(this._deck, dealerHand);
+        } else {
+          dealToHandOneOpen(this._deck, dealerHand);
+        }
+        const nextHand = nextDealerHand();
+        dealerHand = nextHand.hand;
+        dealer = nextHand.actor;
+      }
+      console.groupEnd();
     }
 
-    const nextDealerHand = this._nextHandGenerator([this.getDealer()]);
-    let { hand: dealerHand, actor: dealer } = nextDealerHand();
+    console.log(`Auto Deal Completed ${i} dealt to each actor.`);
 
-    while (dealerHand) {
-      this.setCurrentHandAndPlayer(dealerHand, dealer);
-      dealToDealerHand(this._deck, dealerHand);
-      const newHand = nextDealerHand();
-      dealerHand = newHand.hand;
-      dealer = newHand.actor;
-    }
-    console.log("Auto Deal Completed");
     console.groupEnd();
   };
   _nextPhase = (_phase) => {

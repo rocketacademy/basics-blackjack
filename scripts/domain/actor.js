@@ -88,7 +88,7 @@ const newDealer = (participant) => new Dealer(participant);
 const dealToHandsOfActor = (actor, deck) => {
   const hands = actor.getHands();
   for (const hand of hands) {
-    dealToHand(deck, hand);
+    dealToHandTwoOpen(deck, hand);
   }
 };
 
