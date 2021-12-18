@@ -33,8 +33,9 @@ class Ui_Hand extends Ui_Component {
   _refreshUiCardsCount = () => {
     setUiTextContent(this._uiCount, `[${this._hand.count()}]`);
   };
-  unfocus = (phase) => {
+  unfocusThisHand = (phase, upCardOnly) => {
     console.group(`Phase [${phase.desc()}] unfocus ui hand [${this.id()}]`);
+    this._uiCardsHolder.unfocusCards(phase, upCardOnly);
     if (phase === RoundPhase.BET) {
       this.replaceChildrenUi(
         this._uiCount,
@@ -44,7 +45,7 @@ class Ui_Hand extends Ui_Component {
     }
     console.groupEnd();
   };
-  focus = (phase, player, round) => {
+  focusThisHand = (phase, player, round) => {
     if (!round) {
       throw `no round?`;
     }
@@ -87,17 +88,19 @@ class UiHandsHolder extends Ui_Component {
     this._uiHandsRef = { [uiHand.id()]: uiHand, ...this._uiHandsRef };
   };
 
-  unfocusAll = (phase) => {
+  unfocusHands = (phase, upCardOnly) => {
+    console.group(`UNFOCUSING HANDS upcard only ? ${upCardOnly}`);
     for (const [id, uiH] of Object.entries(this._uiHandsRef)) {
-      uiH.unfocus(phase);
+      uiH.unfocusThisHand(phase, upCardOnly);
     }
+    console.groupEnd();
   };
 
   focusHandById = (id, phase, player, round) => {
-    this._uiHandsRef[id].focus(phase, player, round);
+    this._uiHandsRef[id].focusThisHand(phase, player, round);
   };
   unfocusHandById = (id, phase) => {
-    this._uiHandsRef[id].unfocus(phase);
+    this._uiHandsRef[id].unfocusThisHand(phase, true);
   };
   count = () => this._uiHands.length;
 }

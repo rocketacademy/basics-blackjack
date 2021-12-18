@@ -89,7 +89,7 @@ class UiPlayer extends Ui_Actor {
     if (!handId) {
       return;
     }
-    this._uiHandsHolder.unfocusHandById(handId, phase);
+    this._uiHandsHolder.unfocusHandById(handId, phase, true);
   };
 
   focusHandById = (handId, phase, round) => {
@@ -105,10 +105,11 @@ class UiPlayer extends Ui_Actor {
     );
     switch (phase) {
       case RoundPhase.IN_PLAY_PLAYERS:
+        this._uiHandsHolder.unfocusHands(phase, false);
         this.replaceChildrenUi(this.getUiName(), this._uiHandsHolder);
         break;
       case RoundPhase.BET:
-        this._uiHandsHolder.unfocusAll(phase);
+        this._uiHandsHolder.unfocusHands(phase, false);
         this._root.style.border = "1px solid black";
         this._root.style.borderRadius = "7px";
         this.replaceChildrenUi(this.getUiName(), this._uiHandsHolder);
@@ -181,7 +182,13 @@ class UiDealer extends Ui_Actor {
       console.log(
         `Phase ${phase.desc()} Render:Active Dealer with no of hands:  ${this.getUiHandsCount()}`
       );
-      this._uiHandsHolder.unfocusAll(phase);
+      this._uiHandsHolder.unfocusHands(phase, true);
+      this.replaceChildrenUi(this.getUiName(), this._uiHandsHolder);
+    } else if (phase === RoundPhase.IN_PLAY_PLAYERS) {
+      console.log(
+        `Phase ${phase.desc()} Render:Active Dealer with no of hands:  ${this.getUiHandsCount()}`
+      );
+      this._uiHandsHolder.unfocusHands(phase, true);
       this.replaceChildrenUi(this.getUiName(), this._uiHandsHolder);
     }
   };

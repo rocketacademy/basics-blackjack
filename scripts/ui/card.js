@@ -31,6 +31,10 @@ class UiCard extends Ui_Component {
   }
 
   id = () => this._id;
+
+  reveal = () => {
+    this.replaceChildrenUi(this._uiImgFace);
+  };
 }
 
 /**
@@ -53,6 +57,20 @@ class UiCardsHolder extends Ui_Component {
     this._uiCards.push(uiCard);
     this._uiCardsRef = { [uiCard.id()]: uiCard, ...this._uiCardsRef };
     this.appendChildUi(uiCard);
+  };
+
+  unfocusCards = (phase, upCardOnly) => {
+    if (upCardOnly === undefined || upCardOnly === null) {
+      throw `upCardOnly not specified`;
+    }
+    console.group(`unfocusCards upCardOnly ? ${upCardOnly}`);
+    for (let i = 0; i < this._uiCards.length; i++) {
+      if (i == 0 && upCardOnly) {
+        continue;
+      }
+      this._uiCards[i].reveal();
+    }
+    console.groupEnd();
   };
 }
 

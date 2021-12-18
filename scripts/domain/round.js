@@ -143,17 +143,20 @@ class Round {
     this._autoDeal();
     this.requestInitInPlayPhase();
   };
+
+  _initInPlayPlayers = () => {
+    this._setPhase(RoundPhase.IN_PLAY_PLAYERS);
+    this._resetInPlayPlayerTurn();
+
+    this._onSetPhaseCompleted(this._phase);
+
+    this._changeInPlayPlayerTurn();
+  };
   _initInPlayDealer = () => {
     this._setPhase(RoundPhase.IN_PLAY_DEALER);
     //TODO - Reconcilliation
     this.requestInitEndPhase();
   };
-  _initInPlayPlayers = () => {
-    this._setPhase(RoundPhase.IN_PLAY_PLAYERS);
-    this._resetInPlayPlayerTurn();
-    this._changeInPlayPlayerTurn();
-  };
-
   _initEnd = () => {
     this._setPhase(RoundPhase.END);
   };
