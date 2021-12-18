@@ -105,9 +105,11 @@ var shuffleCards = function (cardDeck) {
 
 // Create a deck of cards
 var deck = makeDeck();
+
 // Shuffled deck of cards
-var shuffledDeck = shuffleCards(deck);
 // Output message of player card
+var shuffledDeck = shuffleCards(deck);
+
 var playerOutput = function (cardsArray) {
   var message = "";
   for (i = 0; i < cardsArray.length; i += 1) {
@@ -116,7 +118,7 @@ var playerOutput = function (cardsArray) {
   return message;
 };
 
-// Creat players objects function
+// Create players objects function
 var createPlayers = function (input) {
   //  a. User to input number of players playing.
   //  b. Generate the number of players according to the input number.
@@ -130,6 +132,25 @@ var createPlayers = function (input) {
       handvalue: 0,
     };
     totalNumOfPlayersPlaying.push(player);
+  }
+};
+
+// Receive player bet value and update player objects
+const playerBets = function (input) {
+  if (input != "" && playerCounter + 1 == totalNumOfPlayersPlaying.length) {
+    totalNumOfPlayersPlaying[playerCounter].bet = Number(input);
+    playerCounter = 0;
+    gameMode = DEAL_CARD;
+    return "Cards Dealed!";
+  } else if (
+    Number(input) > 0 &&
+    Number(input) < totalNumOfPlayersPlaying[playerCounter].chips
+  ) {
+    totalNumOfPlayersPlaying[playerCounter].bet = Number(input);
+    playerCounter += 1;
+    return `Player ${totalNumOfPlayersPlaying[playerCounter].number}, it is your turn to place bet.`;
+  } else {
+    return `Player ${totalNumOfPlayersPlaying[playerCounter].number}, you have ${totalNumOfPlayersPlaying[playerCounter].chips} chips. Please place bet within your limit.`;
   }
 };
 
@@ -156,22 +177,8 @@ var main = function (input) {
     //  c. For each player in the array, replace the bet value with the input value the user entered.
     //    i. Need to convert each player's input into number.
     //    ii. Validate user input.
-    //  d. Once done, enter draw card mode.
-    gameMode = DEAL_CARD;
-    if (input != "" && playerCounter + 1 == totalNumOfPlayersPlaying.length) {
-      totalNumOfPlayersPlaying[playerCounter].bet = Number(input);
-      playerCounter = 0;
-      return (myOutputValue = "Cards Dealed!");
-    } else if (
-      Number(input) > 0 &&
-      Number(input) < totalNumOfPlayersPlaying[playerCounter].chips
-    ) {
-      totalNumOfPlayersPlaying[playerCounter].bet = Number(input);
-      playerCounter += 1;
-      myOutputValue = `Player ${totalNumOfPlayersPlaying[playerCounter].number}, it is your turn to place bet.`;
-    } else {
-      myOutputValue = `Player ${totalNumOfPlayersPlaying[playerCounter].number}, you have ${totalNumOfPlayersPlaying[playerCounter].chips} chips. Please place bet within your limit.`;
-    }
+    //  d. Once done, enter deal card mode.
+    myOutputValue = playerBets(input);
   }
 
   // Player auto receive 2 cards each.
