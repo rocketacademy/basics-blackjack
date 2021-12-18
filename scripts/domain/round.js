@@ -373,22 +373,23 @@ class Round {
     const nextPlayerHand = this._nextHandGenerator(this.getPlayers());
     let { hand: playerHand, actor: player } = nextPlayerHand();
     while (playerHand) {
-      console.log(`Dealing to Actor [${player.getName()}] Hand [${playerHand.id()}]`);
-      this.setCurrentHandAndPlayer(playerHand,player)
+      console.log(
+        `Dealing to Actor [${player.getName()}] Hand [${playerHand.id()}]`
+      );
+      this.setCurrentHandAndPlayer(playerHand, player);
 
       dealToHand(this._deck, playerHand);
       const newHand = nextPlayerHand();
       playerHand = newHand.hand;
       player = newHand.actor;
-
     }
 
-    const nextDealerHand = this._nextHandGenerator([this.getDealer()])
-    let {hand:dealerHand,actor:dealer} = nextDealerHand()
+    const nextDealerHand = this._nextHandGenerator([this.getDealer()]);
+    let { hand: dealerHand, actor: dealer } = nextDealerHand();
 
-    while(dealerHand) {
-      this.setCurrentHandAndPlayer(dealerHand,dealer)
-      dealToDealerHand(this._deck,dealerHand)
+    while (dealerHand) {
+      this.setCurrentHandAndPlayer(dealerHand, dealer);
+      dealToDealerHand(this._deck, dealerHand);
       const newHand = nextDealerHand();
       dealerHand = newHand.hand;
       dealer = newHand.actor;

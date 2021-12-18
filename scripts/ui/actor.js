@@ -50,7 +50,6 @@ class Ui_Actor extends Ui_Component {
       this._uiHandsHolder.addUiHand(uiHand);
       console.groupEnd();
     });
-
   }
   id = () => this._id;
   /**

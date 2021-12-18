@@ -27,15 +27,14 @@ class UiCard extends Ui_Component {
     const url = UiCard.getUrl(card);
     this._uiImgFace = new UiImgCard(url);
     this._uiImgBack = new UiImgCard(`img/cards/JOKER-RED.png`);
-    this._toggle(this._card.isFaceUp())
-    this._card.setOnFlip(this._toggle)
+    this._toggle(this._card.isFaceUp());
+    this._card.setOnFlip(this._toggle);
   }
 
   id = () => this._id;
 
-  _toggle = (isFaceUp) => this.replaceChildrenUi(isFaceUp ? this._uiImgFace : this._uiImgBack)
-  
- 
+  _toggle = (isFaceUp) =>
+    this.replaceChildrenUi(isFaceUp ? this._uiImgFace : this._uiImgBack);
 }
 
 /**
