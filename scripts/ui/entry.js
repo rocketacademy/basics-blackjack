@@ -11,13 +11,20 @@ class UiTree extends Ui_Component {
 class UiPlayersHolder extends Ui_Component {
   constructor() {
     super();
-    this._root.style.flexDirection = "row";
-    this._root.style.justifyContent = "space-around";
+    // Root Configuration
+    this._style();
+
+    // Children
     /** @private @const {UiPlayer[]}} */
     this._uIPlayers = [];
     /** @private @const {Object.<string,UiPlayer>}} */
     this._uiPlayersRef = {};
   }
+
+  _style = () => {
+    this._root.style.flexDirection = "row";
+    this._root.style.justifyContent = "space-around";
+  };
 
   addUiPlayer = (uiPlayer) => {
     this._uIPlayers.push(uiPlayer);
