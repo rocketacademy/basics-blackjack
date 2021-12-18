@@ -171,15 +171,11 @@ const newParticipant = (person) => {
   };
 };
 
-const shouldInitializedPersonCreditHundred = () => {
-  console.group();
-  console.log("shouldInitializedPersonCreditHundred");
-  const person1 = newPerson("p1");
-  const defaultCredit = 100;
-  console.log(person1.getCredit() === defaultCredit);
-  console.groupEnd();
-};
-
+/**
+ *
+ * @param {Participants[]} participants
+ * @param {Card[]} deck
+ */
 const dealCards = (participants, deck) => {
   participants.forEach((participant) => {
     const participantHands = participant.getHands();
@@ -187,6 +183,15 @@ const dealCards = (participants, deck) => {
       dealToHand(deck, participantHand)
     );
   });
+};
+
+const shouldInitializedPersonCreditHundred = () => {
+  console.group();
+  console.log("shouldInitializedPersonCreditHundred");
+  const person1 = newPerson("p1");
+  const defaultCredit = 100;
+  console.log(person1.getCredit() === defaultCredit);
+  console.groupEnd();
 };
 
 shouldCardsOfParticipantsBeReference = () => {
@@ -296,11 +301,15 @@ const testTableHeadsUp = () => {
   console.groupEnd();
 };
 
+// ROUND
+
 // Round Phase
 const ROUND_PHASE_BET = "bet";
 const ROUND_PHASE_DEAL = "deal";
 const ROUND_PHASE_IN_PLAY = "in play";
 const ROUND_PHASE_IN_END = "end";
+
+const initiateRound = (table) => {};
 
 // CARDS
 testIfTopCardTransferredFromDeck();
