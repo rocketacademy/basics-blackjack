@@ -5,12 +5,21 @@
 // ui.js
 // The DOM nodes and elements to represent POJO.
 
-class UiButton {
-  constructor() {
-    this._root = document.createElement("button");
+class UiComponent {
+  /**
+   *
+   * @param {HTMLElement} element
+   */
+  constructor(element) {
+    this._root = element;
   }
-  getRoot = () => this._root;
 
+  getRoot = () => this._root;
+}
+class UiButton extends UiComponent {
+  constructor() {
+    super(document.createElement("button"));
+  }
   setOnClick = (onClick) => {
     onClick =
       onClick ||
@@ -24,61 +33,60 @@ class UiButton {
 class UiButtonChangePlayer extends UiButton {
   constructor(args) {
     super();
-
     this._root.textContent = "Change Player";
   }
 }
 class UiButtonHit extends UiButton {
   constructor() {
     super();
+    this._root.textContent = "Hit";
   }
 }
 
 class UiButtonStand extends UiButton {
   constructor() {
     super();
+    this._root.textContent = "Stand";
   }
 }
-class UiHand {
+
+class UiHand extends UiComponent {
   /**
    *
    * @param {Hand} hand
    */
   constructor(hand) {
-    this._ui = document.createElement("div");
-    this._ui.setAttribute("count", hand.count());
+    super(document.createElement("div"));
+    this._root.setAttribute("count", hand.count());
+    this._root.textContent(count + hand.count());
   }
 }
 
-class UiTree {
+class UiTree extends UiComponent {
   static UI_ROOT = document.getElementById("root-ui-blackjack");
 
   constructor() {
-    this._root = document.createElement("div");
+    super(document.createElement("div"));
   }
-
-  getRoot = () => this._root;
 
   attachGlobalRoot = () => UiTree.UI_ROOT.replaceChildren(this.getRoot());
 }
 
-class UiName {
+class UiName extends UiComponent {
   /** @param {!string} name */
   constructor(name) {
-    this._root = document.createElement("div");
+    super(document.createElement("div"));
     this._root.textContent = name;
   }
-
-  getRoot = () => this._root;
 }
-class UiActor {
+class UiActor extends UiComponent {
   /**
    *
    * @param {Actor} actor
    */
   constructor(actor) {
+    super(document.createElement("div"));
     this._actor = actor;
-    this._root = document.createElement("div");
     this._uiName = new UiName(this._actor.getName());
 
     /** @private @constant {UiHand[]} */
@@ -93,7 +101,6 @@ class UiActor {
    * @returns {HTMLDivElement}
    */
   getUiName = () => this._uiName;
-  getRoot = () => this._root;
   initComponent = () => {
     this._root.appendChild(this._uiName.getRoot());
   };
@@ -104,7 +111,6 @@ class UiPlayer extends UiActor {
    */
   constructor(player) {
     super(player);
-
     // IMPORTANT FOR REFERENCE
     this._id = player.id();
     // this._buttonChangePlayer = new UiButtonChangePlayer();
@@ -142,29 +148,25 @@ class UiDealer extends UiActor {
     this.getUiName().getRoot().style.color = color;
   };
 }
-class UiCredit {
+class UiCredit extends UiComponent {
   /**
    * @param {number} credit
    *
    */
   constructor(credit) {
-    this._ui = document.createElement("div");
+    super(document.createElement("div"));
     this.setValue(credit);
   }
-  setValue = (credit) => this._ui.setAttribute("value", credit);
+  setValue = (credit) => this._root.setAttribute("value", credit);
 }
 
-class UiPhaseDisplay {
+class UiPhaseDisplay extends UiComponent {
   constructor() {
-    this._root = document.createElement("div");
+    super(document.createElement("div"));
   }
 
   setTextContent = (text) => {
     this._root.textContent = text;
-  };
-
-  getRoot = () => {
-    return this._root;
   };
 }
 
