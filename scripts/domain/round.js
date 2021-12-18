@@ -428,6 +428,9 @@ class Round {
           const playerHandVal = playerHand.getFaceValue();
           const dealerHandVal = dealerHand.getFaceValue();
           const bet = playerHand.getBet();
+          if (bet === null || bet === undefined || bet < 0) {
+            throw `Invalid bet from player: ${bet}`;
+          }
           if (playerHandVal > dealerHandVal) {
             transferCredit(player, bet, dealer);
           } else if (playerHandVal < dealerHandVal) {
@@ -444,16 +447,4 @@ class Round {
 
   _onSetPhase = (phase) => {};
   setOnSetPhase = (fn) => (this._onSetPhase = fn);
-
-  _onSetPhaseCompleted = (phase) => {};
-  setOnSetPhaseCompleted = (fn) => (this._onSetPhaseCompleted = fn);
-
-  _onSetCurrentHand = (
-    prevPlayerId,
-    prevHandId,
-    currentPlayerId,
-    currentHandId,
-    phase
-  ) => {};
-  addOnSetCurrentHand = (fn) => (this._onSetCurrentHand = fn);
 }
