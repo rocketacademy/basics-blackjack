@@ -418,10 +418,16 @@ const newTableHeadsUp = (p1, dealer) => {
 // ROUND
 
 // Round Phase
-const ROUND_PHASE_BET = "bet";
-const ROUND_PHASE_DEAL = "deal";
-const ROUND_PHASE_IN_PLAY = "in play";
-const ROUND_PHASE_IN_END = "end";
+
+class RoundPhase {
+  static BET = new RoundPhase("bet");
+
+  static DEAL = new RoundPhase("deal");
+  static IN_PLAY = new RoundPhase("in play");
+  static END = new RoundPhase("end");
+
+  constructor() {}
+}
 
 class Round {
   /**
@@ -444,7 +450,7 @@ class Round {
   }
 
   initialize = () => {
-    this._phase = ROUND_PHASE_BET;
+    this._phase = RoundPhase.BET;
   };
 
   getPhase = () => this._phase;
@@ -528,7 +534,6 @@ class HtmlCredit {
     this._html = document.createElement("div");
     this.setValue(credit);
   }
-
   setValue = (credit) => this._html.setAttribute("value", credit);
 }
 /**
