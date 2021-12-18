@@ -1,7 +1,7 @@
 // logs
 
 const logCards = (cards) => {
-  cards.forEach((card) => console.log(card.getSuit() + card.getFaceVal()));
+  cards.forEach((card) => console.log(card.getSuit() + card.getFaceValue()));
 };
 
 const logAssert = (predicate, trueExpr, falseExpr) => {
@@ -31,7 +31,7 @@ const SUITS = [SUIT_CLUBS, SUIT_DIAMONDS, SUIT_HEARTS, SUIT_SPADES];
 /**
  * @typedef {Object} Card
  * @property {function} getSuit get suit of card
- * @property {function} getFaceVal get face value of card
+ * @property {function} getFaceValue get face value of card
  */
 
 /**
@@ -48,7 +48,7 @@ const createNewCard = (suit, faceVal) => {
     suit,
     faceVal,
     getSuit: () => _suit,
-    getFaceVal: () => _faceVal,
+    getFaceValue: () => _faceVal,
   };
 };
 
@@ -70,18 +70,13 @@ const generateStandardDeck = () => {
  * Swap card positions in the deck
  * @param {Card[]} deck
  */
-const swapCardsPosition = (deck, i, j) => {
-  [deck[i], deck[j]] = [deck[j], deck[i]];
-};
-const shuffleDeck = (cards) => {
-  const cardsLength = cards.length;
-  for (let i = 0; i < cardsLength; i++) {
-    const shuffleLength = cardsLength - i;
-    const swapSourceIndex = i;
-    const swapTargetIndex = Math.floor(Math.random() * shuffleLength) + i;
-    swapCardsPosition(cards, swapSourceIndex, swapTargetIndex);
+const shuffleDeck = (deck) => {
+  const length = deck.length;
+  for (let i = 0; i < length; i += 1) {
+    const j = Math.floor(Math.random() * (length - i)) + i;
+    [deck[i], deck[j]] = [deck[j], deck[i]];
   }
-  return cards;
+  return deck;
 };
 
 /**
@@ -90,8 +85,7 @@ const shuffleDeck = (cards) => {
  * @param {Hand} destCards
  */
 const transferTopCardToHand = (sourceCards, hand) => {
-  const card = sourceCards.pop();
-  hand.addCard(card);
+  hand.addCard(sourceCards.pop());
 };
 
 /**
@@ -103,7 +97,6 @@ const transferTopCardToHand = (sourceCards, hand) => {
 const dealToHand = (deck, hand) => {
   transferTopCardToHand(deck, hand);
   transferTopCardToHand(deck, hand);
-
   return { deck, hand };
 };
 
@@ -156,10 +149,18 @@ const newPerson = (name, startCredit = 100) => {
   return {
     getName: () => _name,
     getCredit: () => _credit,
+    decreaseCredit: (amt) => (_credit -= amt),
+    increaseCredit: (amt) => (_credit += amt),
   };
 };
 
 // HAND
+
+class HandStatus {
+  static IN_PLAY = new HandStatus();
+  static SETTLED = new HandStatus();
+  constructor() {}
+}
 
 class Hand {
   constructor() {
@@ -167,6 +168,7 @@ class Hand {
     this._cards = [];
     /** @private @const {number} */
     this._bet = 0;
+    this._status = HandStatus.IN_PLAY;
   }
 
   setBet = (amt) => (this._bet = amt);
@@ -176,8 +178,15 @@ class Hand {
    *
    * @param {Card} card
    */
-  addCard = (card) => this._cards.push(card);
+  addCard = (card) => {
+    this._cards.push(card);
+  };
   count = () => this._cards.length;
+  getFaceValue = () => {
+    return this._cards.reduce((sum, currentCard, _) => {
+      return (sum += currentCard.getFaceValue());
+    }, 0);
+  };
 }
 /**
  * newHand
@@ -185,6 +194,16 @@ class Hand {
  */
 const newHand = () => {
   return new Hand();
+};
+
+/**
+ *
+ * @param {Actor} actors
+ */
+const createHands = (actors) => {
+  for (const actor of actors) {
+    actor.createNewHand();
+  }
 };
 
 // PARTICIPANT
@@ -210,6 +229,8 @@ const newParticipant = (person) => {
     getPersonality: () => _person,
     getName: () => _person.getName(),
     getCredit: () => _person.getCredit(),
+    decreaseCredit: (amt) => _person.decreaseCredit(amt),
+    increaseCredit: (amt) => _person.increaseCredit(amt),
   };
 };
 
@@ -219,6 +240,7 @@ class Actor {
    * @param {Participant} participant
    */
   constructor(participant) {
+    /** @private @const {Participant} */
     this._participant = participant;
 
     /** @private @const {Hand[]} */
@@ -234,6 +256,8 @@ class Actor {
   getParticipant = () => this._participant;
   getName = () => this._participant.getName();
   getCredit = () => this._participant.getCredit();
+  decreaseCredit = (amt) => this._participant.decreaseCredit(amt);
+  increaseCredit = (amt) => this._participant.increaseCredit(amt);
 }
 
 /**
@@ -271,18 +295,20 @@ class Dealer extends Actor {
 const newDealer = (participant) => new Dealer(participant);
 
 /**
- * Creates a new hand for the actor, then deal two cards from the deck to the hand.
+ * Deal two cards from the deck to hands of actor.
  * @param {Actor} actor
  * @param {Card[]} deck
  */
-const dealNewHandToPlayer = (actor, deck) => {
-  const hand = actor.createNewHand();
-  dealToHand(deck, hand);
+const dealToHandsOfActor = (actor, deck) => {
+  const hands = actor.getHands();
+  for (const hand of hands) {
+    dealToHand(deck, hand);
+  }
 };
 
-const dealnewHandsToPlayers = (actors, deck) => {
+const dealToHandsOfActors = (actors, deck) => {
   for (const actor of actors) {
-    dealNewHandToPlayer(actor, deck);
+    dealToHandsOfActor(actor, deck);
   }
 };
 
@@ -307,7 +333,11 @@ shouldCardsOfParticipantsBeReferenceInARound = () => {
   // checking if we can assign variable to object property , then operate on the variable
   const player = newPlayer(newParticipant(newPerson()));
   const deck = generateStandardDeck();
-  dealNewHandToPlayer(player, deck);
+
+  player.createNewHand();
+
+  dealToHandsOfActor(player, deck);
+
   const hands = player.getHands(); // this.
 
   const startHandsCount = 1;
@@ -337,11 +367,13 @@ shouldTwoCardsBeDealtToThreePlayersFromStartDeck = () => {
 
   const players = [];
   for (const person of persons) {
-    players.push(newPlayer(newParticipant(person)));
+    const player = newPlayer(newParticipant(person));
+    player.createNewHand();
+    players.push(player);
   }
 
   const deck = generateStandardDeck();
-  dealnewHandsToPlayers(players, deck);
+  dealToHandsOfActors(players, deck);
 
   const startDeckSize = 52;
   const cardsDealtPerPlayer = 2;
@@ -352,7 +384,7 @@ shouldTwoCardsBeDealtToThreePlayersFromStartDeck = () => {
   logAssert(
     expectDeckSizeAfterDealing === deck.length,
     undefined,
-    `Actual deck size after deal ${expectDeckSizeAfterDealing}. Expected ${deck.length}`
+    `Actual deck size after deal ${deck.length}. Expected ${expectDeckSizeAfterDealing}`
   );
 
   players.forEach((player) => {
@@ -421,13 +453,23 @@ const newTableHeadsUp = (p1, dealer) => {
 
 class RoundPhase {
   static BET = new RoundPhase("bet");
-
   static DEAL = new RoundPhase("deal");
   static IN_PLAY = new RoundPhase("in play");
   static END = new RoundPhase("end");
 
   constructor() {}
 }
+
+/**
+ *
+ * @param {Actor} actor1
+ * @param {number} amt
+ * @param {Actor} actor2
+ */
+const transferCredit = (actor1, amt, actor2) => {
+  actor1.decreaseCredit(amt);
+  actor2.increaseCredit(amt);
+};
 
 class Round {
   /**
@@ -451,11 +493,41 @@ class Round {
 
   initialize = () => {
     this._phase = RoundPhase.BET;
+    this._deck = shuffleDeck(generateStandardDeck());
   };
 
   getPhase = () => this._phase;
   getPlayers = () => this._players;
   getDealer = () => this._dealer;
+  _allActors = () => [...this.getPlayers(), this.getDealer()];
+  dealCards = () => {
+    dealToHandsOfActors(this._allActors(), this._deck);
+  };
+  deckSize = () => this._deck.length;
+  setHands = () => createHands(this._allActors());
+  getDealerHands = () => this._dealer.getHands();
+
+  // dealer head on, with plain rules.
+  concileAllPlayerHandsOnFaceValue = () => {
+    const dealer = this.getDealer();
+    const players = this.getPlayers();
+    const dealerHands = this.getDealerHands();
+    for (const player of players) {
+      const playerHands = player.getHands();
+      for (const playerHand of playerHands) {
+        for (const dealerHand of dealerHands) {
+          const playerHandVal = playerHand.getFaceValue();
+          const dealerHandVal = dealerHand.getFaceValue();
+          const bet = playerHand.getBet();
+          if (playerHandVal > dealerHandVal) {
+            transferCredit(player, bet, dealer);
+          } else if (playerHandVal < dealerHandVal) {
+            transferCredit(dealer, bet, player);
+          }
+        }
+      }
+    }
+  };
 }
 
 class HtmlButton {
@@ -601,7 +673,7 @@ const testHeadsUpRoundInitialization = () => {
   console.log("testHeadsUpRoundInitialization");
   const table = newTableHeadsUp();
   const round = new Round(table);
-  const expectedInitialPhase = ROUND_PHASE_BET;
+  const expectedInitialPhase = RoundPhase.BET;
   logAssert(
     round.getPhase() === expectedInitialPhase,
     undefined,
@@ -643,6 +715,66 @@ const testHeadsUpRoundActorsNameHtml = () => {
   console.groupEnd();
 };
 
+const testHeadsUpDealRoundPhase = () => {
+  console.group();
+  console.log("testDealRoundPhaseHtml");
+  const table = newTableHeadsUp();
+  const round = new Round(table);
+  round.setHands();
+  round.dealCards();
+
+  const startingDeckSize = 52;
+  const cardsDealtPerActor = 2;
+  const playerCount = 1;
+  const dealerCount = 1;
+
+  const expectedDeckSize =
+    startingDeckSize - cardsDealtPerActor * (playerCount + dealerCount);
+  const actualRemainingDeckSize = round.deckSize();
+
+  const isRemainingDeckAfterDealCards = [
+    expectedDeckSize === actualRemainingDeckSize,
+    undefined,
+    `isRemainingDeckAfterDealCards expected ${expectedDeckSize} got ${actualRemainingDeckSize}`,
+  ];
+  logAssert(...isRemainingDeckAfterDealCards);
+
+  console.groupEnd();
+};
+
+const testHeadsUpDrawlessFaceValueConcilliationExpectedLLN = () => {
+  console.group();
+  console.log("testHeadsUpDrawlessFaceValueConcilliationExpectedLLN");
+  const roundCount = 10000;
+  const startingCredit = 100;
+  const typicalBetSize = 1;
+
+  const lowerMargin = startingCredit - 5;
+  const upperMargin = startingCredit + 5;
+  for (let i = 0; i < 1; i++) {
+    // fair and uniform play
+    const table = newTableHeadsUp();
+    for (let j = 0; j < roundCount; j++) {
+      const round = new Round(table);
+      const player = round.getPlayers()[0];
+
+      round.setHands();
+      player.getHands()[0].setBet(typicalBetSize);
+      round.dealCards();
+      round.concileAllPlayerHandsOnFaceValue();
+      console.log(table.getPlayers()[0].getCredit());
+    }
+    const afterCredit = table.getPlayers()[0].getCredit();
+    const isNearStartingCredit = [
+      lowerMargin <= afterCredit && afterCredit <= upperMargin,
+      undefined,
+      `After credit ${afterCredit}. Not near starting credit after ${roundCount}`,
+    ];
+    logAssert(...isNearStartingCredit);
+  }
+  console.groupEnd();
+};
+
 // CARDS
 testIfTopCardTransferredFromDeck();
 
@@ -659,3 +791,8 @@ testHeadsUpRoundInitialization();
 
 // HTML ROUND
 testHeadsUpRoundActorsNameHtml();
+
+// PHASES
+
+testHeadsUpDealRoundPhase();
+// testHeadsUpDrawlessFaceValueConcilliationExpectedLLN();
