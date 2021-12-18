@@ -449,13 +449,17 @@ const newTableTwoPlayers = (p1, p2, dealer) => {
 
 class RoundPhase {
   static BID = new RoundPhase("bet");
+  static SIT = new RoundPhase("SIT");
   static DEAL = new RoundPhase("deal");
-  static START = new RoundPhase("start");
   static IN_PLAY_PLAYERS = new RoundPhase("players");
   static IN_PLAY_DEALER = new RoundPhase("dealer");
   static END = new RoundPhase("end");
 
-  constructor() {}
+  constructor(desc) {
+    this._desc = desc;
+  }
+
+  desc = () => this._desc;
 }
 
 /**
@@ -521,7 +525,7 @@ class Round {
   getDealerHands = () => this._dealer.getHands();
   changePhase = (phase) => {
     this._phase = phase;
-    if (this._phase === RoundPhase.START) {
+    if (this._phase === RoundPhase.SIT) {
       this.changePlayer();
     }
   };

@@ -200,7 +200,7 @@ class UiRound extends UiTree {
 
   refreshDisplayPhase = () => {
     this._uiPhaseDisplay.setTextContent(
-      "rount status" + this._round.getPhase()
+      "ROUND STATUS: " + this._round.getPhase()?.desc()
     );
   };
 
@@ -211,6 +211,7 @@ class UiRound extends UiTree {
 
   initializeButtonDummy = () => {
     this._uiButtonDummy = new UiButton();
+    this._uiButtonDummy.getRoot().textContent = "round dummy button";
   };
 
   initializeUiDealer = () => {
@@ -292,7 +293,8 @@ class UiRound extends UiTree {
     if (prevPhase === phase) {
       return;
     }
-    if (thisPhase === RoundPhase.START) {
+    if (thisPhase === RoundPhase.SIT) {
+      this.refreshDisplayPhase();
       const id = this._round.getCurrentPlayer().id();
       this.focusUiPlayerById(id);
       this.replaceChildrenUi([
@@ -317,7 +319,7 @@ class UiRound extends UiTree {
     return this._uiPlayersRef[id];
   };
   onClickStartHandler = () => {
-    this._changePhase(RoundPhase.START);
+    this._changePhase(RoundPhase.SIT);
   };
 }
 
