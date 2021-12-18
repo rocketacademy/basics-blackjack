@@ -214,6 +214,10 @@ const newParticipant = (person) => {
 };
 
 class Actor {
+  /**
+   *
+   * @param {Participant} participant
+   */
   constructor(participant) {
     this._participant = participant;
 
@@ -228,6 +232,7 @@ class Actor {
     return newHand;
   };
   getParticipant = () => this._participant;
+  getName = () => this._participant;
 }
 
 /**
@@ -434,6 +439,7 @@ class Round {
   }
 
   getPhase = () => this._phase;
+  getPlayers = () => this._players;
 }
 
 class HtmlPlayer {
@@ -442,7 +448,11 @@ class HtmlPlayer {
    */
   constructor(player) {
     this._html = document.createAttribute("div");
+    this._html.innerHTML = player.getName();
   }
+
+  getHTML = () => this._html;
+  getHTMLNodeName = () => this._html.nodeName;
 }
 
 /**
@@ -455,9 +465,10 @@ const newHtmlPlayer = (player) => {
 /**
  *
  * @param {Player[]} players
+ * @returns {HtmlPlayer} html representation of the players
  */
 const newHtmlPlayers = (players) => {
-  const htmlPlayers = players.map((player) => newHtmlPlayer(player));
+  return players.map((player) => newHtmlPlayer(player));
 };
 
 class HTMLRound {
@@ -470,6 +481,8 @@ class HTMLRound {
 
     this._htmlPlayers = newHtmlPlayers(this._round.getPlayers());
   }
+
+  getHtmlPlayers = () => this._htmlPlayers;
 }
 
 const testHeadsUpTableInitialization = () => {
@@ -507,6 +520,25 @@ const testHeadsUpRoundInitialization = () => {
   console.groupEnd();
 };
 
+const testHeadsUpRoundPlayerHtml = () => {
+  console.group();
+  console.log("testHeadsUpRoundPlayerHtml");
+  const table = newTableHeadsUp();
+  const round = new Round(table);
+
+  const htmlRound = new HTMLRound(round);
+
+  const htmlPlayers = htmlRound.getHtmlPlayers();
+
+  const htmlHeadsUpPlayer = htmlPlayers[0];
+
+  logAssert(
+    htmlHeadsUpPlayer.getHTMLNodeName().toLowerCase() === "div",
+    undefined,
+    "underlying type of htmlHeadsUpPlayer is not a html div"
+  );
+  console.groupEnd();
+};
 // CARDS
 testIfTopCardTransferredFromDeck();
 
@@ -520,3 +552,7 @@ testHeadsUpTableInitialization();
 
 // ROUND
 testHeadsUpRoundInitialization();
+
+// HTML ROUND
+
+testHeadsUpRoundPlayerHtml();
