@@ -150,6 +150,7 @@ class Hand {
     /** @private @const {number} */
     this._bet = 0;
     this._status = HandStatus.IN_PLAY;
+    this._id = uuidv4();
   }
 
   setBet = (amt) => (this._bet = amt);
@@ -171,6 +172,9 @@ class Hand {
   };
   onTransfer = () => {};
   setOnAddCard = (cb) => (this.onTransfer = cb);
+
+  desc = () => `${this._cards.forEach((c) => `(${c.getString()})`)}`;
+  id = () => this._id;
 }
 /**
  * newHand
@@ -345,7 +349,7 @@ shouldCardsOfParticipantsBeReferenceInARound = () => {
   LOG_ASSERT(
     gotHandCardsCount === expectedHandCardsCount,
     undefined,
-    `${hand} actual no. of cards${gotHandCardsCount} expected no. of cards${expectedHandCardsCount}`
+    `${hand.id()} actual no. of cards${gotHandCardsCount} expected no. of cards${expectedHandCardsCount}`
   );
   console.groupEnd();
 };
@@ -457,12 +461,13 @@ const newTableTwoPlayers = (p1, p2, dealer) => {
 // Round Phase
 
 class RoundPhase {
+  static _NULL = new RoundPhase(null);
   static SIT = new RoundPhase("SIT");
-  static BET = new RoundPhase("bet");
-  static DEAL = new RoundPhase("dealing");
-  static IN_PLAY_PLAYERS = new RoundPhase("players' turn");
-  static IN_PLAY_DEALER = new RoundPhase("dealer turn");
-  static END = new RoundPhase("end");
+  static BET = new RoundPhase("BETTING");
+  static DEAL = new RoundPhase("DEALING");
+  static IN_PLAY_PLAYERS = new RoundPhase("PLAY_PLAYERS");
+  static IN_PLAY_DEALER = new RoundPhase("PLAY_DEALER");
+  static END = new RoundPhase("END");
 
   constructor(desc) {
     this._desc = desc;
@@ -504,27 +509,171 @@ class Round {
     /** @private @const {Card[]} */
     this._deck = shuffleDeck(generateStandardDeck());
     /** @private {RoundPhase} */
-    this._phase = null;
+    this._phase = RoundPhase._NULL;
+
     /** @private @const {number} */
-    this._actorsCount = this.allActors().length;
+    this._actorsCount = this.getActors().length;
     /** @private @const {number} */
     this._playersCount = this.getPlayers().length;
     /** @private @const {Player} */
     this._currentPlayer = null;
+    this._currentHand = null;
 
-    this._nextPlayer = null;
+    this._nextTurn = null;
   }
 
-  _nextActorGenerator = (players) => {
+  _nextActorGenerator = (actors) => {
     let index = 0;
-    let length = players.length;
-
-    return () => (index < length ? players[index++] : null);
+    let length = actors.length;
+    return () => (index < length ? actors[index++] : null);
   };
 
-  _resetTurn = () => {
-    this._nextPlayer = this._nextActorGenerator(this.getPlayers());
+  _nextHandGenerator = (actors) => {
+    console.group("_nextHandGenerator");
+    const nextActor = this._nextActorGenerator(actors);
+
+    let currentHand = {};
+    currentHand.hand = null;
+    currentHand.actor = null;
+    let nextHand = () => {
+      return null;
+    };
+    console.groupEnd();
+
+    // If no hand, switch player then get hand
+    return () => {
+      console.group("Next hand is ...");
+
+      currentHand.hand = nextHand();
+      if (!currentHand.hand) {
+        currentHand.actor = nextActor();
+        nextHand = ((player) => {
+          if (!player) {
+            return () => null;
+          }
+          let index = 0;
+          let hands = player.getHands();
+          let length = hands.length;
+          return () => (index < length ? hands[index++] : null);
+        })(currentHand.actor);
+        currentHand.hand = nextHand();
+      }
+      console.log(
+        `Yield: Hand [${currentHand.hand?.id()}] Player [${currentHand.actor?.getName()}]`
+      );
+      console.groupEnd();
+      return { hand: currentHand.hand, actor: currentHand.actor };
+    };
   };
+
+  setPhase = (phase) => {
+    this._phase = phase;
+  };
+  _initSit = () => {
+    console.group("_initSit");
+    this.setPhase(RoundPhase.SIT);
+    console.groupEnd();
+  };
+  _initBet = () => {
+    console.group("_initBet");
+    this.setPhase(RoundPhase.BET);
+    this._autoCreateHands();
+    this._resetBetTurn();
+    this._changeBetTurn();
+    console.groupEnd();
+  };
+  _initDeal = () => {
+    this._autoDeal();
+    this._changePhase(this._nextPhase(this._phase));
+  };
+  _initInPlayPlayers = () => {
+    this._resetInPlayPlayerTurn();
+    this._changeInPlayPlayerTurn();
+  };
+  requestInitSitPhase = () => {
+    const proposedPhase = RoundPhase.SIT;
+    const suceedingPhase = this._nextPhase(this._phase);
+    if (proposedPhase !== suceedingPhase) {
+      console.warn(
+        `Current Phase: ${this._phase.desc()}. Requested ${proposedPhase.desc()}. Next phase should be ${suceedingPhase.desc()}.`
+      );
+      return;
+    }
+    this._initSit();
+  };
+
+  requestInitBetPhase = () => {
+    const proposedPhase = RoundPhase.BET;
+    const suceedingPhase = this._nextPhase(this._phase);
+    let reject = false;
+    if (proposedPhase !== suceedingPhase) {
+      console.warn(
+        `Current Phase: ${this._phase.desc()}. Requested ${proposedPhase.desc()}. Next phase should be ${suceedingPhase.desc()}.`
+      );
+      reject = true;
+    }
+    if (reject) {
+      return;
+    }
+    this._initBet();
+  };
+
+  _bet = (player, hand, bet) => {
+    console.group(
+      `_bet Player [${player.getName()}] Hand [${hand.id()}] Bet [${bet}]`
+    );
+
+    //TODO change the action
+    this._changeBetTurn();
+
+    if (!this._currentHand) {
+      console.log("All bets should be placed...");
+      this._changeNextPhase();
+    }
+    console.groupEnd();
+  };
+
+  requestBet = (better, hand, amt) => {
+    console.group("Bet requested");
+
+    let reject = false;
+    if (hand !== this._currentHand) {
+      console.warn(
+        `Error betting on hand. Current ${
+          this._currentHand
+        }, Requestee ${hand.id()}`
+      );
+      reject = true;
+    }
+    if (!better || !hand || !amt) {
+      console.warn(`Invalid request Need a better, an amount and a hand.`);
+      reject = true;
+    }
+
+    if (reject) return;
+    this._bet(better, hand, amt);
+  };
+
+  _resetBetTurn = () => {
+    this._nextTurn = this._nextHandGenerator(this.getPlayers());
+  };
+
+  _changeBetTurn = () => {
+    const { hand, player } = this._nextTurn();
+    console.log(`Betting Turn for ${player?.getName()} on ${hand?.id()}`);
+    this.setCurrentHand(hand);
+    this.setCurrentPlayer(player);
+  };
+  _resetInPlayPlayerTurn = () => {
+    this._nextTurn = this._nextHandGenerator(this.getPlayers());
+  };
+  _changeInPlayPlayerTurn = () => {
+    const { hand, actor: player } = this._nextTurn();
+    console.log(`Playing Turn for ${player?.getName()} on ${hand?.id()}`);
+    this.setCurrentHand(hand);
+    this.setCurrentPlayer(player);
+  };
+
   /**
    *
    * @returns {RoundPhase}
@@ -532,34 +681,24 @@ class Round {
   getPhase = () => this._phase;
   getPlayers = () => this._players;
   getDealer = () => this._dealer;
-  allActors = () => [...this.getPlayers(), this.getDealer()];
+  getActors = () => [...this.getPlayers(), this.getDealer()];
   dealCards = () => {
-    dealToHandsOfActors(this.allActors(), this._deck);
+    dealToHandsOfActors(this.getActors(), this._deck);
   };
   deckSize = () => this._deck.length;
-  setHands = () => createHands(this.allActors());
+  setHands = () => createHands(this.getActors());
   getDealerHands = () => this._dealer.getHands();
-
-  changePlayer = () => {
-    const nextPlayer = this._nextPlayer();
-    console.group(
-      `Changing Player... ${
-        !!nextPlayer
-          ? "Player changed to " + nextPlayer.getName()
-          : `No next player`
-      }`
-    );
-    this.setCurrentPlayer(nextPlayer);
-    if (!nextPlayer) {
-      console.log(`All players iterated`);
-      console.groupEnd();
-
-      this._changeNextPhase();
-    }
-    console.groupEnd();
+  setCurrentPlayer = (player) => {
+    this._currentPlayer = player;
   };
-
-  changePhase = (phase) => {
+  setCurrentHand = (hand) => {
+    this._currentHand = hand;
+  };
+  /**
+   * @private
+   * @param {RoundPhase} phase
+   */
+  _changePhase = (phase) => {
     if (this._phase === phase) {
       return;
     }
@@ -567,27 +706,20 @@ class Round {
     this._phase = phase;
     const currentPhase = this._phase;
     console.group(
-      "changePhase() " + prevPhase?.desc() + "->" + currentPhase?.desc()
+      "Changing phase... " + prevPhase?.desc() + " -> " + currentPhase?.desc()
     );
     if (this._phase === RoundPhase.SIT) {
-    } else if (this._phase === RoundPhase.BET) {
-      this._autoCreateHands();
-      this._resetTurn();
-      this.changePlayer();
     } else if (this._phase === RoundPhase.DEAL) {
-      this._resetTurn();
-      this._autoDeal();
-      this.changePhase(this._nextPhase());
+      this._initDeal();
     } else if (this._phase === RoundPhase.IN_PLAY_PLAYERS) {
-      this._resetTurn();
-      this.changePlayer();
+      this._initInPlayPlayers();
     }
     console.groupEnd();
   };
 
   _autoCreateHands = () => {
     console.group("auto create hand");
-    const dealPlayersOrder = this._nextActorGenerator(this.allActors());
+    const dealPlayersOrder = this._nextActorGenerator(this.getActors());
     let actor = dealPlayersOrder();
     while (actor) {
       console.log("create new hand for " + actor.getName());
@@ -598,17 +730,25 @@ class Round {
   };
   _autoDeal = () => {
     console.group("auto dealing");
-    const dealPlayersOrder = this._nextActorGenerator(this.allActors());
-    let actor = dealPlayersOrder();
-    while (actor) {
-      console.log("deal to " + actor.getName() + " hands");
-      dealToHandsOfActor(actor, this._deck);
-      actor = dealPlayersOrder();
+    const nextHand = this._nextHandGenerator(this.getActors());
+    let { hand, actor } = nextHand();
+    while (hand) {
+      console.log(`Dealing to Actor [${actor.getName()}] Hand [${hand.id()}]`);
+      dealToHand(this._deck, hand);
+      const newHand = nextHand();
+      hand = newHand.hand;
+      actor = newHand.actor;
     }
+    console.log("Auto Deal Completed");
     console.groupEnd();
   };
-  _nextPhase = () => {
-    switch (this._phase) {
+  _nextPhase = (_phase) => {
+    const phase = _phase || this._phase;
+    switch (phase) {
+      case RoundPhase._NULL:
+        return RoundPhase.SIT;
+      case RoundPhase.SIT:
+        return RoundPhase.BET;
       case RoundPhase.BET:
         return RoundPhase.DEAL;
       case RoundPhase.DEAL:
@@ -618,12 +758,8 @@ class Round {
     }
   };
   _changeNextPhase = () => {
-    this.changePhase(this._nextPhase());
+    this._changePhase(this._nextPhase(this._phase));
   };
-  setCurrentPlayer = (player) => {
-    this._currentPlayer = player;
-  };
-
   /**
    *
    * @returns {Player}
@@ -679,7 +815,7 @@ const testHeadsUpRoundInitialization = () => {
   console.log("testHeadsUpRoundInitialization");
   const table = newTableHeadsUp();
   const round = new Round(table);
-  const expectedInitialPhase = null;
+  const expectedInitialPhase = RoundPhase._NULL;
   const gotPhase = round.getPhase();
   LOG_ASSERT(
     gotPhase === expectedInitialPhase,

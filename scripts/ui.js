@@ -53,13 +53,13 @@ class UiButton extends UiComponent {
     onClick =
       onClick ||
       (() => {
-        console.log("UiButtonChangePlayer no clicks found");
+        console.log("UiButtonchangeTurn no clicks found");
       });
     this._root.addEventListener("click", onClick);
   };
 }
 
-class UiButtonChangePlayer extends UiButton {
+class UiButtonchangeTurn extends UiButton {
   constructor(args) {
     super();
     this._root.textContent = "Change Player";
@@ -69,13 +69,6 @@ class UiButtonHit extends UiButton {
   constructor() {
     super();
     this._root.textContent = "Hit";
-  }
-}
-
-class UiButtonBetAll extends UiButton {
-  constructor() {
-    super();
-    this._root.textContent = "Bet All";
   }
 }
 
@@ -211,7 +204,6 @@ class UiPlayer extends UiActor {
     super(player);
 
     this._uIButtonStandAll = new UiButtonStandAll();
-    this._uiButtonBetAll = new UiButtonBetAll();
     /** @private {UiHand[]} */
     this._uiHands = newUiHands(this._actor);
     this.initComponent();
@@ -249,11 +241,7 @@ class UiPlayer extends UiActor {
         );
         break;
       case RoundPhase.BET:
-        this.replaceChildrenUi(
-          this.getUiName(),
-          this._uiButtonBetAll,
-          ...this.getUiHands()
-        );
+        this.replaceChildrenUi(this.getUiName(), ...this.getUiHands());
         break;
       default:
         this.replaceChildrenUi(this.getUiName());
@@ -262,7 +250,6 @@ class UiPlayer extends UiActor {
     console.groupEnd();
   };
   setOnClickButtonStandAll = (cb) => this._uIButtonStandAll.setOnClick(cb);
-  setOnClickButtonBetAll = (cb) => this._uiButtonBetAll.setOnClick(cb);
 }
 class UiDealer extends UiActor {
   /**
@@ -374,7 +361,6 @@ class UiRound extends UiTree {
 
     this._uiPlayers.forEach((uIP) => {
       uIP.setOnClickButtonStandAll(this.onClickStandAllHandler);
-      uIP.setOnClickButtonBetAll(this.onClickBetAllHandler);
       uIP.setOnNewHand((hand) => {
         uIP._addUiHand(hand);
       });
@@ -456,7 +442,7 @@ class UiRound extends UiTree {
    * @param {RoundPhase} phase
    */
   _changeRoundPhase = (phase) => {
-    this._round.changePhase(phase);
+    this._round._changePhase(phase);
 
     const prevThisPhase = this._phaseUi;
 
@@ -508,14 +494,14 @@ class UiRound extends UiTree {
   };
 
   onClickSitHandler = () => {
-    this._changeRoundPhase(RoundPhase.SIT);
+    this._round.requestInitBetPhase();
   };
   onClickPlayPlayersHandler = () => {
     this._changeRoundPhase(RoundPhase.IN_PLAY_PLAYERS);
   };
   onClickStandAllHandler = () => {
     const prevId = this._round.getCurrentPlayer()?.id();
-    this._round.changePlayer();
+    this._round.changeTurn();
     const currentId = this._round.getCurrentPlayer()?.id();
 
     const thisPhase = this._round.getPhase();
@@ -525,12 +511,16 @@ class UiRound extends UiTree {
 
   onClickBetAllHandler = () => {
     const prevId = this._round.getCurrentPlayer()?.id();
-    this._round.changePlayer();
+    this._round.changeTurn();
     const currentId = this._round.getCurrentPlayer()?.id();
 
     const thisPhase = this._round.getPhase();
     this.changeFocusUiPlayerById(prevId, currentId, thisPhase);
     this._changeRoundPhase(thisPhase);
+  };
+
+  generateOnBetHandler = (hand) => (amt) => {
+    this._round.requestBet(hand, amt);
   };
 }
 
@@ -611,12 +601,20 @@ const test_HeadsUp_UiRound_ChangeRoundPhase_Start_Render = () => {
 // Ui ROUND
 test_HeadsUp_UiRound_ChangeRoundPhase_Start_Render();
 
-const main = () => {
+const test_Main_HeadsUp = () => {
   const table = newTableTwoPlayers();
   const round = new Round(table);
-  const uiRound = newUiRound(round);
-  uiRound.onClickSitHandler();
+  const player1 = round.getPlayers()[0];
+  const player2 = round.getPlayers()[1];
+  round.requestInitSitPhase();
+  round.requestInitBetPhase();
+
+  const handPlayer1_1 = player1.getHands()[0];
+  LOG_ASSERT(!!!handPlayer1_1, undefined, `handPlayer1_1 missing`);
+  round.requestBet(player1, handPlayer1_1, 1);
+  const handPlayer2_1 = player2.getHands()[0];
+  round.requestBet(player2, handPlayer2_1, 1);
 };
 
-console.log(`---MAIN---`);
-main();
+console.log(`---MAIN TEST---`);
+test_Main_HeadsUp();
