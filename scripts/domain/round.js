@@ -107,9 +107,6 @@ class Round {
     };
   };
 
-  _onSetPhase = (phase) => {};
-
-  setOnSetPhase = (fn) => (this._onSetPhase = fn);
   _setPhase = (phase) => {
     const prevPhase = this._phase;
     this._phase = phase;
@@ -117,8 +114,6 @@ class Round {
     this._onSetPhase(this._phase);
   };
 
-  _onSetPhaseCompleted = (phase) => {};
-  setOnSetPhaseCompleted = (fn) => (this._onSetPhaseCompleted = fn);
   _initSit = () => {
     console.log(this._phase.desc());
     this._setPhase(RoundPhase.SIT);
@@ -284,11 +279,8 @@ class Round {
 
   _stand = (hand) => {
     console.group(`_stand Hand [${hand.id()}] STAND`);
-
     //TODO add the action
-
     this._changeInPlayPlayerTurn();
-
     if (!this._currentHand) {
       console.log("All hands should be played out...");
       this.requestInitInPlayDealerPhase();
@@ -311,21 +303,7 @@ class Round {
     console.log(
       `Betting Turn on hand [${hand?.id()}] of Player [${player?.getName()}] `
     );
-    this.setCurrentHand(hand);
-    this.setCurrentPlayer(player);
-
-    const [afterPlayer, afterHand] = [
-      this.getCurrentPlayer(),
-      this.getCurrentHand(),
-    ];
-
-    this._onChangeBetTurn(
-      beforePlayer,
-      beforeHand,
-      afterPlayer,
-      afterHand,
-      this._phase
-    );
+    this.setCurrentHandAndPlayer(hand, player);
   };
   _resetInPlayPlayerTurn = () => {
     this._nextTurn = this._nextHandGenerator(this.getPlayers());
@@ -333,8 +311,7 @@ class Round {
   _changeInPlayPlayerTurn = () => {
     const { hand, actor: player } = this._nextTurn();
     console.log(`Playing Turn for ${player?.getName()} on ${hand?.id()}`);
-    this.setCurrentHand(hand);
-    this.setCurrentPlayer(player);
+    this.setCurrentHandAndPlayer(hand, player);
   };
 
   /**
@@ -353,10 +330,31 @@ class Round {
   getDealerHands = () => this._dealer.getHands();
 
   setCurrentPlayer = (player) => {
+    const prevPlayer = this.getCurrentPlayer();
     this._currentPlayer = player;
+    const nextPlayer = this.getCurrentPlayer();
+    this._onSetCurrentPlayer(prevPlayer?.id(), nextPlayer?.id());
   };
-  setCurrentHand = (hand) => {
+
+  setCurrentHandAndPlayer = (hand, player) => {
+    const [prevPlayerId, prevHandId] = [
+      this.getCurrentPlayer()?.id(),
+      this.getCurrentHand()?.id(),
+    ];
     this._currentHand = hand;
+    this._currentPlayer = player;
+    const [nextPlayer, nextHand] = [
+      this.getCurrentPlayer()?.id(),
+      this.getCurrentHand()?.id(),
+    ];
+    this._onSetCurrentPlayer(prevPlayerId, prevHandId, this._phase);
+    this._onSetCurrentHand(
+      prevPlayerId,
+      prevHandId,
+      nextPlayer,
+      nextHand,
+      this._phase
+    );
   };
 
   _autoCreateHands = () => {
@@ -438,6 +436,17 @@ class Round {
   _onSetPhase = (phase) => {};
   setOnSetPhase = (fn) => (this._onSetPhase = fn);
 
-  _onChangeBetTurn = (prevPlayer, prevHand, newPlayer, newHand, phase) => {};
-  setOnChangeBetTurn = (fn) => (this._onChangeBetTurn = fn);
+  _onSetPhaseCompleted = (phase) => {};
+  setOnSetPhaseCompleted = (fn) => (this._onSetPhaseCompleted = fn);
+
+  _onSetCurrentPlayer = (prevPlayerId, currentPlayerId, phase) => {};
+  setOnSetCurrentPlayer = (fn) => (this._onSetCurrentPlayer = fn);
+  _onSetCurrentHand = (
+    prevPlayerId,
+    prevHandId,
+    currentPlayerId,
+    currentHandId,
+    phase
+  ) => {};
+  setOnSetCurrentHand = (fn) => (this._onSetCurrentHand = fn);
 }

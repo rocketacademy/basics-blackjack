@@ -8,6 +8,70 @@ class UiTree extends Ui_Component {
   _attachGlobalRoot = () => UiTree.UI_ROOT.replaceChildren(this.getRoot());
 }
 
+class UiPlayersHolder extends Ui_Component {
+  constructor() {
+    super();
+    /** @private @const {UiPlayer[]}} */
+    this._uIPlayers = [];
+    /** @private @const {Object.<id:string,UiPlayer:UiPlayer>}} */
+    this._uiPlayersRef = {};
+  }
+
+  addUiPlayer = (uiPlayer) => {
+    this._uIPlayers.push(uiPlayer);
+    this._uiPlayersRef = { [uiPlayer.id()]: uiPlayer, ...this._uiPlayersRef };
+    this.appendChildUi(uiPlayer);
+  };
+  unfocusUiPlayers = (phase) => {
+    for (const uiP of this._uIPlayers) {
+      uiP.unfocusThisPlayer(phase);
+    }
+  };
+
+  changeFocusUiPlayerById = (
+    uiPlayerIdToBeUnfocused,
+    uiPlayerIdToBeFocused,
+    phase
+  ) => {
+    const [uiPlayerToBeUnfocused, uiPlayerToBeFocused] = [
+      this._uiPlayersRef[uiPlayerIdToBeUnfocused],
+      this._uiPlayersRef[uiPlayerIdToBeFocused],
+    ];
+    uiPlayerToBeUnfocused?.unfocusThisPlayer(phase);
+    uiPlayerToBeFocused?.focusThisPlayer(phase);
+  };
+
+  changeFocusUiHandById = (
+    prevPlayerId,
+    prevHandId,
+    newPlayerId,
+    newHandId,
+    phase,
+    round
+  ) => {
+    const [prevUiPlayer, newUiPlayer] = [
+      this._uiPlayersRef[prevPlayerId],
+      this._uiPlayersRef[newPlayerId],
+    ];
+    prevUiPlayer?.unfocusHandById(prevHandId, phase);
+    newUiPlayer?.focusHandById(newHandId, phase, round);
+  };
+}
+
+/**
+ *
+ * @param {Player[]} players
+ * @returns {UiPlayersHolder}
+ */
+const newUiPlayersHolder = (players) => {
+  const newUiPlayersHolder = new UiPlayersHolder();
+  for (p of players) {
+    const uiP = new UiPlayer(p);
+    newUiPlayersHolder.addUiPlayer(uiP);
+  }
+  return newUiPlayersHolder;
+};
+
 class UiRound extends UiTree {
   /**
    *
@@ -19,23 +83,20 @@ class UiRound extends UiTree {
     this._round = round;
     this._root.style.border = "1px dotted black";
 
-    /** @private @const {UiPlayer[]} */
-    this._uiPlayers = null;
-
-    /** @private @const {Object.<id:string,uiPlayer:UiPlayer>}} */
-    this._uiPlayersRef = null;
+    /** @private @const {UiPlayersHolder} */
+    this._uiPlayersHolder = newUiPlayersHolder(this._round.getPlayers());
 
     /** @private @const {UiDealer} */
-    this._uiDealer = null;
+    this._uiDealer = newUiDealer(this._round.getDealer());
 
     /** @private @const {UiPhaseDisplay} */
-    this._uiPhaseDisplay = null;
+    this._uiPhaseDisplay = new UiPhaseDisplay();
 
     /** @private @const {RoundPhase} */
     this._phaseUi = this._round.getPhase();
   }
 
-  getUiPlayers = () => this._uiPlayers;
+  getUiPlayersHolder = () => this._uiPlayersHolder;
   getUiDealer = () => this._uiDealer;
 
   /**
@@ -50,44 +111,34 @@ class UiRound extends UiTree {
   getUiPhaseDisplay = () => {
     return this._uiPhaseDisplay;
   };
-  _initializeUiDisplayPhase = () => {
-    this._uiPhaseDisplay = new UiPhaseDisplay();
-  };
 
-  _initializeUiDealer = () => {
-    this._uiDealer = newUiDealer(this._round.getDealer());
-  };
-  _initializeUiPlayers = () => {
-    this._uiPlayers = newUiPlayers(this._round.getPlayers());
+  _initializeUiDealer = () => {};
 
-    this._uiPlayersRef = this._uiPlayers.reduce((refs, thisUiP) => {
-      const id = thisUiP.id();
-      return { ...refs, [id]: thisUiP };
-    }, {});
-  };
-  initializeComponents = () => {
-    this._initializeUiDisplayPhase();
-    this._initializeUiPlayers();
-    this._initializeUiDealer();
-  };
+  initializeComponents = () => {};
 
   initializeRenderCallbacks = () => {
-    this._round.setOnChangeBetTurn(
-      (prevPlayer, prevHand, newPlayer, newHand, phase) => {
-        const [prevPlayerId, newPlayerId] = [prevPlayer?.id(), newPlayer?.id()];
-        this.changeFocusUiPlayerById(prevPlayerId, newPlayerId, phase);
-        const [prevHandId, newHandId] = [prevHand?.id(), newHand?.id()];
-
-        this.changeFocusUiHandbyId(
+    this._round.setOnSetCurrentPlayer(
+      (prevPlayerId, currentPlayerId, phase) => {
+        this._uiPlayersHolder.changeFocusUiPlayerById(
           prevPlayerId,
-          prevHandId,
-          newPlayerId,
-          newHandId,
+          currentPlayerId,
           phase
         );
       }
     );
 
+    this._round.setOnSetCurrentHand(
+      (prevPlayerId, prevHandId, newPlayerId, newHandId, phase) => {
+        this._uiPlayersHolder.changeFocusUiHandById(
+          prevPlayerId,
+          prevHandId,
+          newPlayerId,
+          newHandId,
+          phase,
+          this._round
+        );
+      }
+    );
     this._round.setOnSetPhase((phase) => {
       this._refreshDisplayPhase();
       switch (phase) {
@@ -96,7 +147,7 @@ class UiRound extends UiTree {
           this.replaceChildrenUi(
             this._uiPhaseDisplay,
             this._uiDealer,
-            ...this.getUiPlayers()
+            this._uiPlayersHolder
           );
           break;
       }
@@ -105,9 +156,7 @@ class UiRound extends UiTree {
     this._round.setOnSetPhaseCompleted((phase) => {
       console.log("setOnSetPhaseCompleted");
       this._uiDealer.unfocusThisDealer(phase);
-      for (const uIP of this.getUiPlayers()) {
-        uIP.unfocusThisPlayer(phase);
-      }
+      this._uiPlayersHolder.unfocusUiPlayers(phase);
     });
   };
 
@@ -122,38 +171,6 @@ class UiRound extends UiTree {
     this._uiPhaseDisplay.setTextContent(text);
   };
 
-  changeFocusUiPlayerById = (unfocusPlayerId, focusPlayerId, phase) => {
-    const [unfocusUiPlayer, focusUiPlayer] = [
-      this.getUiPlayerById(unfocusPlayerId),
-      this.getUiPlayerById(focusPlayerId),
-    ];
-    this.changeFocusUiPlayer(unfocusUiPlayer, focusUiPlayer, phase);
-  };
-
-  changeFocusUiHandbyId = (
-    prevPlayerId,
-    prevHandId,
-    newPlayerId,
-    newHandId,
-    phase
-  ) => {
-    const [prevUiPlayer, newUiPlayer] = [
-      this.getUiPlayerById(prevPlayerId),
-      this.getUiPlayerById(newPlayerId),
-    ];
-    prevUiPlayer?.unfocusHandById(prevHandId, phase);
-    newUiPlayer?.focusHandById(newHandId, phase, this._round);
-  };
-  /**
-   *
-   * @param {UiPlayer} unfocusUiPlayer
-   * @param {UiPlayer} focusUiPlayer
-   * @param {RoundPhase} phase
-   */
-  changeFocusUiPlayer = (unfocusUiPlayer, focusUiPlayer, phase) => {
-    this.unfocusUiPlayer(unfocusUiPlayer, phase);
-    this.focusUiPlayer(focusUiPlayer, phase);
-  };
   /**
    *
    * @param {UiPlayer} uiPlayer
@@ -183,7 +200,7 @@ class UiRound extends UiTree {
  * @param {Round} round
  * @returns {UiRound}
  */
-const newUiRound = (round) => {
+const NEW_UI_ROUND = (round) => {
   const uiRound = new UiRound(round);
   uiRound.initializeComponents();
   uiRound.initializeRenderCallbacks();

@@ -1,4 +1,4 @@
-class Ui_Hand extends Ui_Component {
+class UiHand extends Ui_Component {
   /**
    *
    * @param {Hand} hand
@@ -42,6 +42,12 @@ class Ui_Hand extends Ui_Component {
         this._uiCardsHolder,
         this._uiBetAmount
       );
+    } else if (phase === RoundPhase.IN_PLAY_PLAYERS) {
+      this.replaceChildrenUi(
+        this._uiCount,
+        this._uiCardsHolder,
+        this._uiBetAmount
+      );
     }
     console.groupEnd();
   };
@@ -53,22 +59,33 @@ class Ui_Hand extends Ui_Component {
     if (!player) {
       throw `no player?`;
     }
-    console.group(`Phase [${phase.desc()}] focus ui hand [${this.id()}]`);
-    if (phase === RoundPhase.BET) {
-      this._hand.setOnSetBet((betValue) => {
-        this._uiBetAmount.setTextContent(`Bet Value [${betValue}]`);
-      });
-      const [_uiButtonBet__, _uiSlider__] = newBetControl(
-        player,
-        round,
-        this._hand
-      );
-      this.replaceChildrenUi(
-        this._uiCount,
-        this._uiCardsHolder,
-        _uiButtonBet__,
-        _uiSlider__
-      );
+    console.group(
+      `focusThisHand Phase [${phase.desc()}] focus ui hand [${this.id()}]`
+    );
+
+    switch (phase) {
+      case RoundPhase.BET:
+        this._hand.setOnSetBet((betValue) => {
+          this._uiBetAmount.setTextContent(`Bet Value [${betValue}]`);
+        });
+        const [_uiButtonBet__, _uiSlider__] = newBetControl(
+          player,
+          round,
+          this._hand
+        );
+        this.replaceChildrenUi(
+          this._uiCount,
+          this._uiCardsHolder,
+          _uiButtonBet__,
+          _uiSlider__
+        );
+        break;
+      case RoundPhase.IN_PLAY_PLAYERS:
+        const children = [this._uiCount, this._uiCardsHolder];
+
+        const _uiButtonStand__ = newStandControl(player, round, this._hand);
+        children.push(_uiButtonStand__);
+        this.replaceChildrenUi(...children);
     }
     console.groupEnd();
   };
@@ -79,13 +96,13 @@ class UiHandsHolder extends Ui_Component {
 
     this._uiHands = [];
 
-    /** @private { Object.<string,Ui_Hand>} */
+    /** @private { Object.<string,UiHand>} */
     this._uiHandsRef = {};
   }
   addUiHand = (uiHand) => {
-    this.appendChildUi(uiHand);
     this._uiHands.push(uiHand);
     this._uiHandsRef = { [uiHand.id()]: uiHand, ...this._uiHandsRef };
+    this.appendChildUi(uiHand);
   };
 
   unfocusHands = (phase, upCardOnly) => {
@@ -131,9 +148,6 @@ const newBetControl = (player, round, hand) => {
   const initBetValue = 0;
   const _uiButtonBet__ = new UiButtonBet();
   _uiButtonBet__.setOnMouseClick((betValue) => {
-    console.log("clicked??");
-
-    console.log(player, round, betValue);
     round.requestBet(player, hand, betValue);
   });
   const _uiSlider__ = new UiSlider();
@@ -148,6 +162,14 @@ const newBetControl = (player, round, hand) => {
   return [_uiButtonBet__, _uiSlider__];
 };
 
+const newStandControl = (player, round, hand) => {
+  const _uiButtonStand__ = new UiButtonStand();
+
+  _uiButtonStand__.setOnMouseClick(() => {
+    round.requestStand(hand);
+  });
+  return _uiButtonStand__;
+};
 /**
  *
  * @param {Hands[]} hands
@@ -156,12 +178,12 @@ const newBetControl = (player, round, hand) => {
 const newUiHandsHolder = (hands) => {
   const uiHandsHolder = new UiHandsHolder();
   for (const h of hands) {
-    const uiH = new Ui_Hand(h);
+    const uiH = new UiHand(h);
     uiHandsHolder.addUiHand(uiH);
   }
   return uiHandsHolder;
 };
 
 const newUiHand = (hand) => {
-  return new Ui_Hand(hand);
+  return new UiHand(hand);
 };
