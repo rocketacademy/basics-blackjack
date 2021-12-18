@@ -8,6 +8,18 @@ const FACE_VALUES = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
 
 const SUITS = [SUIT_CLUBS, SUIT_DIAMONDS, SUIT_HEARTS, SUIT_SPADES];
 
+/**
+ * @typedef {Object} Card
+ * @property {function} getSuit get suit of card
+ * @property {function} getFaceVal get face value of card
+ */
+
+/**
+ * Creates a new card
+ * @param {*} suit
+ * @param {*} faceVal
+ * @returns {Card}
+ */
 const createNewCard = (suit, faceVal) => {
   let _suit = suit;
   let _faceVal = faceVal;
@@ -19,14 +31,18 @@ const createNewCard = (suit, faceVal) => {
     getFaceVal: () => _faceVal,
   };
 };
-const generateDeck = () => {
+
+/**
+ * Generates a standard deck of cards
+ * @returns {Card[]}
+ */
+const generateStandardDeck = () => {
   const deck = [];
   for (let suit of SUITS) {
     for (let faceValue of FACE_VALUES) {
       deck.push(createNewCard(suit, faceValue));
     }
   }
-
   return deck;
 };
 
@@ -34,7 +50,11 @@ const logCards = (cards) => {
   cards.forEach((card) => console.log(card.getSuit() + card.getFaceVal()));
 };
 
-const swapDeckPosition = (cards, i, j) => {
+/**
+ * Swap card positions in the deck
+ * @param {Card[]} cards
+ */
+const swapCardsPosition = (cards, i, j) => {
   [cards[i], cards[j]] = [cards[j], cards[i]];
 };
 const shuffleDeck = (cards) => {
@@ -43,28 +63,38 @@ const shuffleDeck = (cards) => {
     const shuffleLength = cardsLength - i;
     const swapSourceIndex = i;
     const swapTargetIndex = Math.floor(Math.random() * shuffleLength) + i;
-    swapDeckPosition(cards, swapSourceIndex, swapTargetIndex);
+    swapCardsPosition(cards, swapSourceIndex, swapTargetIndex);
   }
-
   return cards;
 };
 
-const transferTopCard = (sourceCardStack, destCardStack) => {
-  const card = sourceCardStack.pop();
-  destCardStack.push(card);
+/**
+ * Transfer one card from source to destination
+ * @param {Card[]} sourceCards
+ * @param {Card[]} destCards
+ */
+const transferTopCard = (sourceCards, destCards) => {
+  const card = sourceCards.pop();
+  destCards.push(card);
 };
 
-const dealToParticipant = (deck, participantHand) => {
-  transferTopCard(deck, participantHand);
-  transferTopCard(deck, participantHand);
+/**
+ * Deals two cards to hand
+ * @param {Card[]} deck the deck to draw from
+ * @param {Card[]} hand insert card to hand
+ * @returns
+ */
+const dealToHand = (deck, hand) => {
+  transferTopCard(deck, hand);
+  transferTopCard(deck, hand);
 
-  return { deck, participantHand };
+  return { deck, hand };
 };
 
 const testIfTopCardTransferredFromDeck = () => {
   console.group();
   console.log("testIfTopCardTransferredFromDeck");
-  const deck = generateDeck();
+  const deck = generateStandardDeck();
   let expectedStartingDeckSize = 52;
   console.log(deck.length === expectedStartingDeckSize);
   const PersonHand = [];
@@ -81,6 +111,16 @@ const testIfTopCardTransferredFromDeck = () => {
 
 //PERSON
 
+/**
+ * @typedef {Object} Person
+ * @property {function() => string} getName Get name of person
+ * @property {function() => number} getCredit Get credit of person
+ */
+
+/**
+ *
+ * @returns {Person}
+ */
 const newPerson = (name, startCredit = 100) => {
   const _name = name;
   let _credit = startCredit;
@@ -90,9 +130,39 @@ const newPerson = (name, startCredit = 100) => {
   };
 };
 
+// HAND
+
+/**
+ * @typedef {Card[]} Hand
+ */
+
+/**
+ *
+ * @returns {Hand}
+ */
+const newHand = () => {
+  return [];
+};
+
+// PARTICIPANT
+
+/**
+ *
+ * @typedef {Object} Participant
+ * @property {function() => Person} getPersonality
+ * @property {function() => string} getName
+ * @property {function() => Hand[]} getHands
+ * @property {function() => number} getCredit
+ */
+
+/**
+ *
+ * @param {Person} person
+ * @returns {Participant}
+ */
 const newParticipant = (person) => {
   const _person = person;
-  const _hands = [[]];
+  const _hands = [newHand()];
 
   return {
     getPersonality: () => _person,
@@ -115,7 +185,7 @@ const dealCards = (participants, deck) => {
   participants.forEach((participant) => {
     const participantHands = participant.getHands();
     participantHands.forEach((participantHand) =>
-      dealToParticipant(deck, participantHand)
+      dealToHand(deck, participantHand)
     );
   });
 };
@@ -126,7 +196,7 @@ shouldCardsOfPersonBeReference = () => {
 
   // checking if we can assign variable to object property , then operate on the variable
   const participant = newParticipant(newPerson());
-  const deck = generateDeck();
+  const deck = generateStandardDeck();
   const participantHands = participant.getHands();
 
   const startHandsCount = 1;
@@ -151,7 +221,7 @@ shouldTwoCardsBeDealtToThreeParticipantsFromStartDeck = () => {
     participants.push(newParticipant(player));
   }
 
-  const deck = generateDeck();
+  const deck = generateStandardDeck();
   dealCards(participants, deck);
 
   const startDeckSize = 52;
@@ -176,6 +246,19 @@ const ROUND_PHASE_DEAL = "deal";
 const ROUND_PHASE_IN_PLAY = "in play";
 const ROUND_PHASE_IN_END = "in play";
 
+/**
+ * @typedef {Object} Round
+ * @property {function() => Partipants[]} getPlayers
+ * @property {function() => Participant} getDealer
+ * @property {*} getPhase
+ */
+
+/**
+ *
+ * @param {Participant[]} players
+ * @param {Participant} dealer
+ * @returns {Round}
+ */
 const newRound = (players, dealer) => {
   const _players = players;
   const _dealer = dealer;
@@ -187,11 +270,16 @@ const newRound = (players, dealer) => {
   };
 };
 
-const newRoundHeadsUp = () => {
-  const p1 = newParticipant(newPerson());
-  const p2 = newParticipant(newPerson("", 10000));
+/**
+ *
+ * @param {Participant} p1
+ * @param {Participant} dealer
+ * @returns
+ */
+const newRoundHeadsUp = (p1, dealer) => {
+  p1 = p1 || newParticipant(newPerson());
   const players = [p1];
-  const dealer = p2;
+  dealer = dealer || newParticipant(newPerson("", 10000));
 
   return newRound(players, dealer);
 };
