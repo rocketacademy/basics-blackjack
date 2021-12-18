@@ -127,7 +127,6 @@ class Round {
   _initSit = () => {
     console.log(this._phase.desc());
     this._setPhase(RoundPhase.SIT);
-    this._onSetPhaseCompleted(this._phase);
     console.groupEnd();
 
     this.requestInitBetPhase();
@@ -137,7 +136,6 @@ class Round {
     this._setPhase(RoundPhase.BET);
     this._autoCreateHands();
 
-    this._onSetPhaseCompleted(this._phase);
     console.groupEnd();
 
     this._resetBetTurn();
@@ -152,8 +150,6 @@ class Round {
   _initInPlayPlayers = () => {
     this._setPhase(RoundPhase.IN_PLAY_PLAYERS);
     this._resetInPlayPlayerTurn();
-
-    this._onSetPhaseCompleted(this._phase);
 
     this._changeInPlayPlayerTurn();
   };
@@ -339,15 +335,26 @@ class Round {
   setHands_tt = () => createHands(this.getActors());
   getDealerHands = () => this._dealer.getHands();
 
+  /**
+   *
+   * @param {Hand} hand
+   * @param {Player} player
+   */
   setCurrentHandAndPlayer = (hand, player) => {
     const prevPlayer = this.getCurrentPlayer();
     const prevHand = this.getCurrentHand();
 
     this._currentPlayer = player;
-    
+
     this._currentHand = hand;
-    prevHand.signalActive(false) 
-    this._currentHand.signalActive(false) 
+    prevHand?.signalActive(false, this._phase, prevPlayer, this);
+
+    this._currentHand?.signalActive(
+      true,
+      this._phase,
+      this._currentPlayer,
+      this
+    );
   };
 
   _autoCreateHands = () => {

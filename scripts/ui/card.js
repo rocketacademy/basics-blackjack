@@ -5,8 +5,9 @@ class UiImgCard extends Ui_Img {
     this._root.alt = url;
     this._root.style.width = "auto";
     this._root.style.height = "auto";
-    this._root.style.maxWidth = "120px";
-    this._root.style.maxHeight = "120px";
+    this._root.style.maxWidth = "90px";
+    this._root.style.maxHeight = "90px";
+    this._root.className += ` blackjack-card-img`;
   }
 }
 
@@ -30,9 +31,8 @@ class UiCard extends Ui_Component {
     this._card = card;
 
     // Root Configuration
-
     this._id = card.getString();
-
+    this._root.className += `blackjack-card`;
     // Children
     const urlFaceImg = UiCard.getUrl(card);
     this._uiImgFace = new UiImgCard(urlFaceImg);

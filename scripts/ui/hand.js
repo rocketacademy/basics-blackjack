@@ -1,6 +1,19 @@
 class UiHand extends Ui_Component {
   /**
    *
+   * @param {Card[]} cards
+   */
+  _newUiCardsHolder = (cards) => {
+    const uiCardHolder = new UiCardsHolder();
+    for (const c of cards) {
+      const uiC = new UiCard(c);
+      uiCardHolder.addUiCard(uiC);
+    }
+    return uiCardHolder;
+  };
+
+  /**
+   *
    * @param {Hand} hand
    */
   constructor(hand) {
@@ -19,7 +32,7 @@ class UiHand extends Ui_Component {
 
     // Children
     this._uiCount = new Ui_Component();
-    this._uiCardsHolder = newUiCardsHolder(this._hand.getCards());
+    this._uiCardsHolder = this._newUiCardsHolder(this._hand.getCards());
     this._uiBetAmount = new Ui_Text();
 
     // Hooks
@@ -35,19 +48,42 @@ class UiHand extends Ui_Component {
     });
 
     this._hand.setOnActiveSignal((isActive, phase, player, round) => {
+      console.group(
+        `Ui Hook[onActiveSignal] active[${isActive}] phase[${phase}] player[${player}] round[${round}]`
+      );
       if (isActive === true) {
-        this._hand.renderActiveDisplay(isActive, phase, player, round);
+        this._renderActiveDisplay(phase, player, round);
+      } else {
+        this._renderInactiveDisplay(phase, player, round);
       }
+      console.groupEnd();
     });
-
 
     // First Render
     this._refreshUiCardsCount();
-
     this.replaceChildrenUi(this._uiCount, this._uiCardsHolder);
   }
 
-  renderActiveDisplay = (phase, player, round) => {
+  _renderInactiveDisplay = (phase, player, round) => {
+    console.group(
+      `Ui Hook[onInActiveHand] phase[${phase}] player[${player.getName()}]`
+    );
+
+    switch (phase) {
+      case RoundPhase.BET:
+        this.replaceChildrenUi(this._uiCount, this._uiCardsHolder);
+        break;
+      case RoundPhase.IN_PLAY_PLAYERS:
+        this.replaceChildrenUi(this._uiCount, this._uiCardsHolder);
+        break;
+    }
+    console.groupEnd();
+  };
+  _renderActiveDisplay = (phase, player, round) => {
+    console.group(
+      `Ui Hook[onActiveHand] phase[${phase}] player[${player.getName()}]`
+    );
+
     switch (phase) {
       case RoundPhase.BET:
         const [_uiButtonBet__, _uiSlider__] = this._newBetControl(
@@ -73,10 +109,11 @@ class UiHand extends Ui_Component {
         this.replaceChildrenUi(...children);
         break;
     }
+    console.groupEnd();
   };
   _style = () => {
-    this._root.style.width = "100px";
-    this._root.style.height = "100px";
+    this._root.style.width = "fit-content";
+    this._root.style.height = "fit-content";
     this._root.style.padding = "10px 10px 10px 10px";
     this._root.style.border = "1px solid black";
     this._root.style.marginLeft = "10px";
@@ -148,7 +185,8 @@ class UiSlider extends Ui_Component {
     this._root.className += " black-jack-bet-slider";
     this._root.type = "range";
     this._root.step = 1;
-    this._root.style.display = "block";
+    this._root.style.display = "flex";
+    this._root.style.width = "80px";
   };
   setMin = (num = 0) => {
     this._root.min = num;

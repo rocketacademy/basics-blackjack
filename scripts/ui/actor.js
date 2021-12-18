@@ -53,7 +53,7 @@ class Ui_Actor extends Ui_Component {
 
     // Hooks
     this._actor.setOnNewHand((hand) => {
-      console.group(`Ui Hook : Hand`);
+      console.group(`Ui Hook[On New Hand]`);
       const uiHand = new UiHand(hand);
       this._uiHandsHolder.addUiHand(uiHand);
       console.groupEnd();

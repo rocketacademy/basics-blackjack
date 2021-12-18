@@ -53,12 +53,18 @@ class Hand {
   };
 
   signalActive = (isActive, phase, player, round) => {
-    if (isActive === null || isActive === undefined) {
-      throw "Error! please send me signal.";
+    const anyNUll = [isActive, phase, player, round].some(
+      (o) => o === undefined || o === null
+    );
+    if (anyNUll) {
+      throw `Ui Hook[onActiveSignal] active[${isActive}] phase[${phase.desc()}] player[${player}] round[${round}]`;
     }
+
     this._onActiveSignal(isActive, phase, player, round);
   };
-  _onActiveSignal = (isActive, phase, player, round) => {};
+  _onActiveSignal = (isActive, phase, player, round) => {
+    throw `No Default [_onActiveSignal]`;
+  };
   setOnActiveSignal = (cb) => (this._onActiveSignal = cb);
 }
 
