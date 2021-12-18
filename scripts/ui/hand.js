@@ -1,4 +1,4 @@
-class UiHand extends Ui_Component {
+class Ui_Hand extends Ui_Component {
   /**
    *
    * @param {Hand} hand
@@ -76,30 +76,30 @@ class UiHandsHolder extends Ui_Component {
   constructor() {
     super();
 
-    this._hands = [];
+    this._uiHands = [];
 
-    /** @private { Object.<string,UiHand>} */
-    this._handsRef = {};
+    /** @private { Object.<string,Ui_Hand>} */
+    this._uiHandsRef = {};
   }
   addUiHand = (uiHand) => {
     this.appendChildUi(uiHand);
-    this._hands.push(uiHand);
-    this._handsRef = { [uiHand.id()]: uiHand, ...this._handsRef };
+    this._uiHands.push(uiHand);
+    this._uiHandsRef = { [uiHand.id()]: uiHand, ...this._uiHandsRef };
   };
 
   unfocusAll = (phase) => {
-    for (const [id, uiH] of Object.entries(this._handsRef)) {
+    for (const [id, uiH] of Object.entries(this._uiHandsRef)) {
       uiH.unfocus(phase);
     }
   };
 
   focusHandById = (id, phase, player, round) => {
-    this._handsRef[id].focus(phase, player, round);
+    this._uiHandsRef[id].focus(phase, player, round);
   };
   unfocusHandById = (id, phase) => {
-    this._handsRef[id].unfocus(phase);
+    this._uiHandsRef[id].unfocus(phase);
   };
-  count = () => this._hands.length;
+  count = () => this._uiHands.length;
 }
 class UiSlider extends Ui_Component {
   constructor() {
@@ -153,12 +153,12 @@ const newBetControl = (player, round, hand) => {
 const newUiHandsHolder = (hands) => {
   const uiHandsHolder = new UiHandsHolder();
   for (const h of hands) {
-    const uiH = new UiHand(h);
+    const uiH = new Ui_Hand(h);
     uiHandsHolder.addUiHand(uiH);
   }
   return uiHandsHolder;
 };
 
 const newUiHand = (hand) => {
-  return new UiHand(hand);
+  return new Ui_Hand(hand);
 };

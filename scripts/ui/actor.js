@@ -47,7 +47,7 @@ class Ui_Actor extends Ui_Component {
       console.group(`_addUiHands`);
       console.log(`adding ui hand`);
 
-      const uiHand = new UiHand(hand);
+      const uiHand = new Ui_Hand(hand);
       this._uiHandsHolder.addUiHand(uiHand);
       console.groupEnd();
     });
