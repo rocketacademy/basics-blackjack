@@ -250,7 +250,7 @@ const ROUND_PHASE_IN_END = "end";
  * @typedef {Object} Round
  * @property {function() => Partipants[]} getPlayers
  * @property {function() => Participant} getDealer
- * @property {*} getPhase
+ * @property {function() => *} getPhase
  */
 
 /**
