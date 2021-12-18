@@ -72,10 +72,10 @@ class UiButtonHit extends UiButton {
   }
 }
 
-class UiButtonBid extends UiButton {
+class UiButtonBet extends UiButton {
   constructor() {
     super();
-    this._root.textContent = "Bid";
+    this._root.textContent = "Bet";
   }
 }
 
@@ -103,7 +103,7 @@ class UiHand extends UiComponent {
   constructor(hand) {
     super(document.createElement("div"));
     this._root.setAttribute("count", hand.count());
-    this._root.textContent(count + hand.count());
+    this._root.textContent = `[${hand.count()}]`;
   }
 }
 
@@ -161,7 +161,24 @@ class UiActor extends UiComponent {
     }
     setUiStyle(this.getUiName(), "color", val);
   };
+  setOnNewHand = (cb) => this._actor.setOnNewHand(cb);
+
+  _addUiHand = (hand) => {
+    this._uiHands.push(newUiHand(hand));
+  };
 }
+
+const newUiHand = (hand) => {
+  return new UiHand(hand);
+};
+/**
+ *
+ * @param {Actor} actor
+ * @returns
+ */
+const newUiHands = (actor) => {
+  return actor.getHands().map((hand) => newUiHand(hand));
+};
 class UiPlayer extends UiActor {
   /**
    * @param {Player} player
@@ -169,8 +186,10 @@ class UiPlayer extends UiActor {
   constructor(player) {
     super(player);
 
-    this._buttonPass = new UiButtonStand();
-    this._buttonBid = new UiButtonBid();
+    this._uIButtonStand = new UiButtonStand();
+    this._uiButtonBet = new UiButtonBet();
+    /** @private {UiHand[]} */
+    this._uiHands = newUiHands(this._actor);
     this.initComponent();
   }
 
@@ -179,8 +198,15 @@ class UiPlayer extends UiActor {
     this.setNameColor("red");
   };
 
-  renderModeAudience = () => {
-    this.replaceChildrenUi(this.getUiName());
+  renderModeAudience = (phase) => {
+    if (phase === RoundPhase.BET) {
+      this.replaceChildrenUi(this.getUiName(), ...this.getUiHands());
+    } else {
+      this.replaceChildrenUi(this.getUiName(), ...this.getUiHands());
+    }
+  };
+  getUiHands = () => {
+    return this._uiHands;
   };
 
   /**
@@ -194,10 +220,14 @@ class UiPlayer extends UiActor {
     );
     switch (phase) {
       case RoundPhase.IN_PLAY_PLAYERS:
-        this.replaceChildrenUi(this.getUiName(), this._buttonPass);
+        this.replaceChildrenUi(this.getUiName(), this._uIButtonStand);
         break;
-      case RoundPhase.BID:
-        this.replaceChildrenUi(this.getUiName(), this._buttonBid);
+      case RoundPhase.BET:
+        this.replaceChildrenUi(
+          this.getUiName(),
+          this._uiButtonBet,
+          ...this.getUiHands()
+        );
         break;
       default:
         this.replaceChildrenUi(this.getUiName());
@@ -205,8 +235,8 @@ class UiPlayer extends UiActor {
     }
     console.groupEnd();
   };
-  setOnClickButtonPass = (cb) => this._buttonPass.setOnClick(cb);
-  setOnClickButtonBid = (cb) => this._buttonBid.setOnClick(cb);
+  setOnClickButtonStandAll = (cb) => this._uIButtonStand.setOnClick(cb);
+  setOnClickButtonBet = (cb) => this._uiButtonBet.setOnClick(cb);
 }
 class UiDealer extends UiActor {
   /**
@@ -265,12 +295,6 @@ class UiRound extends UiTree {
   getUiPlayers = () => this._uiPlayers;
   getUiDealer = () => this._uiDealer;
 
-  _refreshDisplayPhase = () => {
-    this._uiPhaseDisplay.setTextContent(
-      "ROUND STATUS: " + this._round.getPhase()?.desc()
-    );
-  };
-
   initializeUiDisplayPhase = () => {
     this._uiPhaseDisplay = new UiPhaseDisplay();
     this._refreshDisplayPhase();
@@ -283,12 +307,26 @@ class UiRound extends UiTree {
 
   initializeUiDealer = () => {
     this._uiDealer = newUiDealer(this._round.getDealer());
-  };
 
-  /**
-   *
-   * @param {RoundPhase} phase
-   */
+    this._uiDealer.setOnNewHand((hand) => {
+      this._uiDealer._addUiHand(hand);
+    });
+  };
+  initializeUiPlayers = () => {
+    this._uiPlayers = newUiPlayers(this._round.getPlayers());
+
+    this._uiPlayers.forEach((uIP) => {
+      uIP.setOnClickButtonStandAll(this.onClickStandAllHandler);
+      uIP.setOnClickButtonBet(this.onClickBetHandler);
+      uIP.setOnNewHand((hand) => {
+        uIP._addUiHand(hand);
+      });
+    });
+    this._uiPlayersRef = this._uiPlayers.reduce((refs, thisUiP) => {
+      const id = thisUiP.id();
+      return { ...refs, [id]: thisUiP };
+    }, {});
+  };
   initialize = () => {
     this.initializeUiDisplayPhase();
 
@@ -299,18 +337,17 @@ class UiRound extends UiTree {
     this.attachGlobalRoot();
   };
 
-  initializeUiPlayers = () => {
-    this._uiPlayers = newUiPlayers(this._round.getPlayers());
+  _refreshDisplayPhase = () => {
+    this._uiPhaseDisplay.setTextContent(
+      "ROUND STATUS: " + this._round.getPhase()?.desc()
+    );
+  };
 
+  _refreshUiPlayers = () => {
+    const phase = this._phaseUi;
     this._uiPlayers.forEach((uIP) => {
-      this.unfocusUiPlayer(uIP);
-      uIP.setOnClickButtonPass(this.onClickStandHandler);
-      uIP.setOnClickButtonBid(this.onClickBidHandler);
+      this.unfocusUiPlayer(uIP, phase);
     });
-    this._uiPlayersRef = this._uiPlayers.reduce((refs, thisUiP) => {
-      const id = thisUiP.id();
-      return { ...refs, [id]: thisUiP };
-    }, {});
   };
   changeFocusUiPlayerById = (unfocusPlayerId, focusPlayerId, phase) => {
     const [unfocusUiPlayer, focusUiPlayer] = [
@@ -343,15 +380,16 @@ class UiRound extends UiTree {
    * @param {UiPlayer} uiPlayer
    * @returns
    */
-  unfocusUiPlayer = (uiPlayer) => {
+  unfocusUiPlayer = (uiPlayer, phase) => {
     if (!uiPlayer) {
       return;
     }
-    uiPlayer.renderModeAudience();
+    uiPlayer.renderModeAudience(phase);
     const root = uiPlayer.getRoot();
     root.style.border = "1px solid grey";
     root.style.borderRadius = "7px";
   };
+
   /**
    * Called when intent is to change round phase in tandem with round phase
    * @param {RoundPhase} phase
@@ -367,14 +405,14 @@ class UiRound extends UiTree {
     }
     this._phaseUi = thisPhase;
 
-    console.log(
-      "Ui: phase was changed " +
+    console.group(
+      "Ui: round phase was changed " +
         prevThisPhase?.desc() +
         " -> " +
         thisPhase.desc()
     );
     this._refreshDisplayPhase();
-
+    this._refreshUiPlayers();
     if (thisPhase === RoundPhase.SIT) {
       this.replaceChildrenUi(
         this._uiPhaseDisplay,
@@ -382,14 +420,16 @@ class UiRound extends UiTree {
         ...this._uiPlayers,
         this._uiButtonDummy
       );
-      this._changeRoundPhase(RoundPhase.BID);
-    } else if (thisPhase === RoundPhase.BID) {
+      this._changeRoundPhase(RoundPhase.BET);
+    } else if (thisPhase === RoundPhase.BET) {
       const id = this._round.getCurrentPlayer().id();
       this.focusUiPlayerById(id, thisPhase);
     } else if (thisPhase === RoundPhase.IN_PLAY_PLAYERS) {
       const id = this._round.getCurrentPlayer().id();
       this.focusUiPlayerById(id, thisPhase);
     }
+
+    console.groupEnd();
   };
   focusUiPlayerById = (id, phase) => {
     const thisUiPlayer = this.getUiPlayerById(id);
@@ -411,7 +451,7 @@ class UiRound extends UiTree {
   onClickPlayPlayersHandler = () => {
     this._changeRoundPhase(RoundPhase.IN_PLAY_PLAYERS);
   };
-  onClickStandHandler = () => {
+  onClickStandAllHandler = () => {
     const prevId = this._round.getCurrentPlayer()?.id();
     this._round.changePlayer();
     const currentId = this._round.getCurrentPlayer()?.id();
@@ -421,7 +461,7 @@ class UiRound extends UiTree {
     this._changeRoundPhase(thisPhase);
   };
 
-  onClickBidHandler = () => {
+  onClickBetHandler = () => {
     const prevId = this._round.getCurrentPlayer()?.id();
     this._round.changePlayer();
     const currentId = this._round.getCurrentPlayer()?.id();
