@@ -155,28 +155,7 @@ class Round {
   _initEnd = () => {
     this._setPhase(RoundPhase.END);
   };
-  requestInitInPlayDealerPhase = () => {
-    const proposedPhase = RoundPhase.IN_PLAY_DEALER;
-    const suceedingPhase = this._nextPhase(this._phase);
-    if (proposedPhase !== suceedingPhase) {
-      console.warn(
-        `Current Phase: ${this._phase.desc()}. Requested ${proposedPhase.desc()}. Next phase should be ${suceedingPhase.desc()}.`
-      );
-      return;
-    }
-    this._initInPlayDealer();
-  };
-  requestInitDealPhase = () => {
-    const proposedPhase = RoundPhase.DEAL;
-    const suceedingPhase = this._nextPhase(this._phase);
-    if (proposedPhase !== suceedingPhase) {
-      console.warn(
-        `Current Phase: ${this._phase.desc()}. Requested ${proposedPhase.desc()}. Next phase should be ${suceedingPhase.desc()}.`
-      );
-      return;
-    }
-    this._initDeal();
-  };
+
   requestInitSitPhase = () => {
     const proposedPhase = RoundPhase.SIT;
     const suceedingPhase = this._nextPhase(this._phase);
@@ -187,30 +166,6 @@ class Round {
       return;
     }
     this._initSit();
-  };
-
-  requestInitEndPhase = () => {
-    const proposedPhase = RoundPhase.END;
-    const suceedingPhase = this._nextPhase(this._phase);
-    if (proposedPhase !== suceedingPhase) {
-      console.warn(
-        `Current Phase: ${this._phase.desc()}. Requested ${proposedPhase.desc()}. Next phase should be ${suceedingPhase.desc()}.`
-      );
-      return;
-    }
-    this._initEnd();
-  };
-
-  requestInitInPlayPhase = () => {
-    const proposedPhase = RoundPhase.IN_PLAY_PLAYERS;
-    const suceedingPhase = this._nextPhase(this._phase);
-    if (proposedPhase !== suceedingPhase) {
-      console.warn(
-        `Current Phase: ${this._phase.desc()}. Requested ${proposedPhase.desc()}. Next phase should be ${suceedingPhase.desc()}.`
-      );
-      return;
-    }
-    this._initInPlayPlayers();
   };
   requestInitBetPhase = () => {
     const proposedPhase = RoundPhase.BET;
@@ -226,6 +181,50 @@ class Round {
       return;
     }
     this._initBet();
+  };
+  requestInitDealPhase = () => {
+    const proposedPhase = RoundPhase.DEAL;
+    const suceedingPhase = this._nextPhase(this._phase);
+    if (proposedPhase !== suceedingPhase) {
+      console.warn(
+        `Current Phase: ${this._phase.desc()}. Requested ${proposedPhase.desc()}. Next phase should be ${suceedingPhase.desc()}.`
+      );
+      return;
+    }
+    this._initDeal();
+  };
+  requestInitInPlayPhase = () => {
+    const proposedPhase = RoundPhase.IN_PLAY_PLAYERS;
+    const suceedingPhase = this._nextPhase(this._phase);
+    if (proposedPhase !== suceedingPhase) {
+      console.warn(
+        `Current Phase: ${this._phase.desc()}. Requested ${proposedPhase.desc()}. Next phase should be ${suceedingPhase.desc()}.`
+      );
+      return;
+    }
+    this._initInPlayPlayers();
+  };
+  requestInitInPlayDealerPhase = () => {
+    const proposedPhase = RoundPhase.IN_PLAY_DEALER;
+    const suceedingPhase = this._nextPhase(this._phase);
+    if (proposedPhase !== suceedingPhase) {
+      console.warn(
+        `Current Phase: ${this._phase.desc()}. Requested ${proposedPhase.desc()}. Next phase should be ${suceedingPhase.desc()}.`
+      );
+      return;
+    }
+    this._initInPlayDealer();
+  };
+  requestInitEndPhase = () => {
+    const proposedPhase = RoundPhase.END;
+    const suceedingPhase = this._nextPhase(this._phase);
+    if (proposedPhase !== suceedingPhase) {
+      console.warn(
+        `Current Phase: ${this._phase.desc()}. Requested ${proposedPhase.desc()}. Next phase should be ${suceedingPhase.desc()}.`
+      );
+      return;
+    }
+    this._initEnd();
   };
 
   _bet = (player, hand, bet) => {
