@@ -179,25 +179,7 @@
       <p>Output:</p>
       <div id="output-div"></div>
     </div>
-    <!-- Import program logic -->
     <script src="scripts/domain.js"></script>
-    <!-- Define button click functionality -->
-    <script>
-      var button = document.querySelector("#submit-button");
-      button.addEventListener("click", function () {
-        // Set result to input value
-        var input = document.querySelector("#input-field");
-        var result = main(input.value);
-
-        // Display result in output element
-        var output = document.querySelector("#output-div");
-        output.innerHTML = result;
-
-        // Reset input value
-        input.value = "";
-      });
-    </script>
-
-    <script src="cards.js"></script>
+    <script src="scripts/ui.js"></script>
   </body>
 </html>
