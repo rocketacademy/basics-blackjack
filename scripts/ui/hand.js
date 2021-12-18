@@ -86,7 +86,7 @@ class UiHand extends Ui_Component {
 
     switch (phase) {
       case RoundPhase.BET:
-        const [_uiButtonBet__, _uiSlider__] = this._newBetControl(
+        const [_uIContainerBet__, _uiSlider__] = this._newBetControl(
           player,
           round,
           this._hand
@@ -94,7 +94,7 @@ class UiHand extends Ui_Component {
         this.replaceChildrenUi(
           this._uiCount,
           this._uiCardsHolder,
-          _uiButtonBet__,
+          _uIContainerBet__,
           _uiSlider__
         );
         break;
@@ -143,8 +143,8 @@ class UiHand extends Ui_Component {
     const credit = player.getPlayableCredit();
 
     const initBetValue = 0;
-    const _uiButtonBet__ = new UiButtonBet();
-    _uiButtonBet__.setOnMouseClick((betValue) => {
+    const _uIContainerBet__ = new UiContainerBet();
+    _uIContainerBet__.setButtonOnMouseClick((betValue) => {
       round.requestBet(player, hand, betValue);
     });
     const _uiSlider__ = new UiSlider();
@@ -154,9 +154,9 @@ class UiHand extends Ui_Component {
     _uiSlider__.setOnRangeChange((e) => {
       const v = e.target.value;
       _uiSlider__.value = v;
-      _uiButtonBet__.setBetValue(v);
+      _uIContainerBet__.setButtonValue(v);
     });
-    return [_uiButtonBet__, _uiSlider__];
+    return [_uIContainerBet__, _uiSlider__];
   };
 }
 class UiHandsHolder extends Ui_Aggregate {

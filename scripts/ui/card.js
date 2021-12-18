@@ -77,16 +77,3 @@ class UiCardsHolder extends Ui_Aggregate {
     this.appendChildUi(uiCard);
   };
 }
-
-/**
- *
- * @param {Card[]} cards
- */
-const newUiCardsHolder = (cards) => {
-  const uiCardHolder = new UiCardsHolder();
-  for (const c of cards) {
-    const uiC = new UiCard(c);
-    uiCardHolder.addUiCard(uiC);
-  }
-  return uiCardHolder;
-};
