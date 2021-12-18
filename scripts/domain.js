@@ -571,7 +571,9 @@ class Round {
   };
   _initSit = () => {
     console.group("_initSit");
+    console.log(this._phase.desc());
     this.setPhase(RoundPhase.SIT);
+    this.requestInitBetPhase();
     console.groupEnd();
   };
   _initBet = () => {
@@ -579,16 +581,50 @@ class Round {
     this.setPhase(RoundPhase.BET);
     this._autoCreateHands();
     this._resetBetTurn();
+    console.log("this._resetBetTurn();");
     this._changeBetTurn();
     console.groupEnd();
   };
   _initDeal = () => {
+    this.setPhase(RoundPhase.DEAL);
     this._autoDeal();
-    this._changePhase(this._nextPhase(this._phase));
+    this.requestInitInPlayPhase();
+  };
+  _initInPlayDealer = () => {
+    this.setPhase(RoundPhase.IN_PLAY_DEALER);
+    //TODO - Reconcilliation
+    this.requestInitEndPhase();
   };
   _initInPlayPlayers = () => {
+    this.setPhase(RoundPhase.IN_PLAY_PLAYERS);
     this._resetInPlayPlayerTurn();
     this._changeInPlayPlayerTurn();
+  };
+
+  _initEnd = () => {
+    this.setPhase(RoundPhase.END);
+  };
+  requestInitInPlayDealerPhase = () => {
+    const proposedPhase = RoundPhase.IN_PLAY_DEALER;
+    const suceedingPhase = this._nextPhase(this._phase);
+    if (proposedPhase !== suceedingPhase) {
+      console.warn(
+        `Current Phase: ${this._phase.desc()}. Requested ${proposedPhase.desc()}. Next phase should be ${suceedingPhase.desc()}.`
+      );
+      return;
+    }
+    this._initInPlayDealer();
+  };
+  requestInitDealPhase = () => {
+    const proposedPhase = RoundPhase.DEAL;
+    const suceedingPhase = this._nextPhase(this._phase);
+    if (proposedPhase !== suceedingPhase) {
+      console.warn(
+        `Current Phase: ${this._phase.desc()}. Requested ${proposedPhase.desc()}. Next phase should be ${suceedingPhase.desc()}.`
+      );
+      return;
+    }
+    this._initDeal();
   };
   requestInitSitPhase = () => {
     const proposedPhase = RoundPhase.SIT;
@@ -602,6 +638,29 @@ class Round {
     this._initSit();
   };
 
+  requestInitEndPhase = () => {
+    const proposedPhase = RoundPhase.END;
+    const suceedingPhase = this._nextPhase(this._phase);
+    if (proposedPhase !== suceedingPhase) {
+      console.warn(
+        `Current Phase: ${this._phase.desc()}. Requested ${proposedPhase.desc()}. Next phase should be ${suceedingPhase.desc()}.`
+      );
+      return;
+    }
+    this._initEnd();
+  };
+
+  requestInitInPlayPhase = () => {
+    const proposedPhase = RoundPhase.IN_PLAY_PLAYERS;
+    const suceedingPhase = this._nextPhase(this._phase);
+    if (proposedPhase !== suceedingPhase) {
+      console.warn(
+        `Current Phase: ${this._phase.desc()}. Requested ${proposedPhase.desc()}. Next phase should be ${suceedingPhase.desc()}.`
+      );
+      return;
+    }
+    this._initInPlayPlayers();
+  };
   requestInitBetPhase = () => {
     const proposedPhase = RoundPhase.BET;
     const suceedingPhase = this._nextPhase(this._phase);
@@ -628,7 +687,7 @@ class Round {
 
     if (!this._currentHand) {
       console.log("All bets should be placed...");
-      this._changeNextPhase();
+      this.requestInitDealPhase();
     }
     console.groupEnd();
   };
@@ -650,8 +709,27 @@ class Round {
       reject = true;
     }
 
-    if (reject) return;
+    if (reject) {
+      console.groupEnd();
+      return;
+    }
     this._bet(better, hand, amt);
+    console.groupEnd();
+  };
+  _stand = (hand) => {
+    console.group(`_stand Hand [${hand.id()}] STAND`);
+
+    //TODO change the action
+    this._changeInPlayPlayerTurn();
+
+    if (!this._currentHand) {
+      console.log("All hands should be played out...");
+      this.requestInitInPlayDealerPhase();
+    }
+    console.groupEnd();
+  };
+  requestStand = (hand) => {
+    this._stand(hand);
   };
 
   _resetBetTurn = () => {
@@ -659,8 +737,10 @@ class Round {
   };
 
   _changeBetTurn = () => {
-    const { hand, player } = this._nextTurn();
-    console.log(`Betting Turn for ${player?.getName()} on ${hand?.id()}`);
+    const { hand, actor: player } = this._nextTurn();
+    console.log(
+      `Betting Turn on hand [${hand?.id()}] of Player [${player?.getName()}] `
+    );
     this.setCurrentHand(hand);
     this.setCurrentPlayer(player);
   };
@@ -693,28 +773,6 @@ class Round {
   };
   setCurrentHand = (hand) => {
     this._currentHand = hand;
-  };
-  /**
-   * @private
-   * @param {RoundPhase} phase
-   */
-  _changePhase = (phase) => {
-    if (this._phase === phase) {
-      return;
-    }
-    const prevPhase = this._phase;
-    this._phase = phase;
-    const currentPhase = this._phase;
-    console.group(
-      "Changing phase... " + prevPhase?.desc() + " -> " + currentPhase?.desc()
-    );
-    if (this._phase === RoundPhase.SIT) {
-    } else if (this._phase === RoundPhase.DEAL) {
-      this._initDeal();
-    } else if (this._phase === RoundPhase.IN_PLAY_PLAYERS) {
-      this._initInPlayPlayers();
-    }
-    console.groupEnd();
   };
 
   _autoCreateHands = () => {
@@ -755,11 +813,11 @@ class Round {
         return RoundPhase.IN_PLAY_PLAYERS;
       case RoundPhase.IN_PLAY_PLAYERS:
         return RoundPhase.IN_PLAY_DEALER;
+      case RoundPhase.IN_PLAY_DEALER:
+        return RoundPhase.END;
     }
   };
-  _changeNextPhase = () => {
-    this._changePhase(this._nextPhase(this._phase));
-  };
+
   /**
    *
    * @returns {Player}

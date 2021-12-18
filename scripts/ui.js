@@ -606,14 +606,48 @@ const test_Main_HeadsUp = () => {
   const round = new Round(table);
   const player1 = round.getPlayers()[0];
   const player2 = round.getPlayers()[1];
-  round.requestInitSitPhase();
-  round.requestInitBetPhase();
 
+  let expectedPhase = RoundPhase._NULL;
+  let actualPhase = round.getPhase();
+
+  LOG_ASSERT(
+    expectedPhase === actualPhase,
+    `Phase 00001 DONE`,
+    `? Phase 00001`
+  );
+  round.requestInitSitPhase(); // [_NULL] --> SIT --> [BET]
+
+  expectedPhase = RoundPhase.BET;
+  actualPhase = round.getPhase();
+  LOG_ASSERT(
+    expectedPhase === actualPhase,
+    `Phase 00002 DONE`,
+    `? Phase 00002 ${expectedPhase.desc()} ${actualPhase.desc()}`
+  );
   const handPlayer1_1 = player1.getHands()[0];
-  LOG_ASSERT(!!!handPlayer1_1, undefined, `handPlayer1_1 missing`);
+  LOG_ASSERT(!!handPlayer1_1, undefined, `handPlayer1_1 missing`);
   round.requestBet(player1, handPlayer1_1, 1);
   const handPlayer2_1 = player2.getHands()[0];
   round.requestBet(player2, handPlayer2_1, 1);
+
+  expectedPhase = RoundPhase.IN_PLAY_PLAYERS;
+  actualPhase = round.getPhase();
+  LOG_ASSERT(
+    expectedPhase === actualPhase,
+    `Phase 00003 DONE`,
+    `? Phase 00003 ${expectedPhase.desc()} ${actualPhase.desc()}`
+  );
+
+  round.requestStand(handPlayer1_1);
+  round.requestStand(handPlayer2_1);
+
+  expectedPhase = RoundPhase.END;
+  actualPhase = round.getPhase();
+  LOG_ASSERT(
+    expectedPhase === actualPhase,
+    `Phase 00004 END DONE`,
+    `? Phase 00004 Expects ${expectedPhase.desc()} Got ${actualPhase.desc()}`
+  );
 };
 
 console.log(`---MAIN TEST---`);
