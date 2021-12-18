@@ -14,6 +14,14 @@
 // Hide dealer's first card
 // The computer decides to hit or stand automatically based on game rules.
 // The game either ends or continues
+const ENTER_NUM_PLAYER = "enter number of players";
+const ENTER_BET = "enter number of chips to bet";
+const DEAL_CARD = "deal cards to players";
+const PLAY_GAME = "players take turn to play Blackjack";
+const DEALER_HAND = [];
+let gameMode = ENTER_NUM_PLAYER;
+var totalNumOfPlayersPlaying = [];
+let playerCounter = 0;
 
 // Function to creat a deck of cards
 var makeDeck = function () {
@@ -108,35 +116,33 @@ var playerOutput = function (cardsArray) {
   return message;
 };
 
-const ENTER_NUM_PLAYER = "enter number of players";
-const ENTER_BET = "enter number of chips to bet";
-const DEAL_CARD = "deal cards to players";
-const PLAY_GAME = "players take turn to play Blackjack";
-const DEALER_HAND = [];
-let gameMode = ENTER_NUM_PLAYER;
-var totalNumOfPlayersPlaying = [];
-var playerCounter = 0;
+// Creat players objects function
+var createPlayers = function (input) {
+  //  a. User to input number of players playing.
+  //  b. Generate the number of players according to the input number.
+  //  c. Players have attributes: Player Number, Chips.
+  for (i = 1; i <= input; i += 1) {
+    var player = {
+      number: i,
+      chips: 100,
+      bet: 0,
+      hand: [],
+      handvalue: 0,
+    };
+    totalNumOfPlayersPlaying.push(player);
+  }
+};
+
 var main = function (input) {
   var myOutputValue = "";
   if (gameMode == ENTER_NUM_PLAYER) {
-    var playerLimit = ["1", "2", "3", "4"];
-    // Multiplayer can play.
-    //  a. User to input number of players playing.
-    //  b. Generate the number of players according to the input number.
-    //  c. Players have attributes: Player Number, Chips.
+    let playerLimit = ["1", "2", "3", "4"];
     if (playerLimit.includes(input)) {
-      for (i = 1; i <= input; i += 1) {
-        var player = {
-          number: i,
-          chips: 100,
-          bet: 0,
-          hand: [],
-        };
-        totalNumOfPlayersPlaying.push(player);
-      }
-      gameMode = ENTER_BET;
+      createPlayers(input);
       input = null;
-      return (myOutputValue = `Time to place your bet! Each player has 100 chips to play. <br> Player 1, please submit your bet amount.`);
+      gameMode = ENTER_BET;
+      return (myOutputValue =
+        "Time to place your bet! Each player has 100 chips to play. <br> Player 1, please submit your bet amount.");
     } else {
       myOutputValue =
         "Please enter the number of players playing (max. 4 players).";
@@ -151,11 +157,11 @@ var main = function (input) {
     //    i. Need to convert each player's input into number.
     //    ii. Validate user input.
     //  d. Once done, enter draw card mode.
+    gameMode = DEAL_CARD;
     if (input != "" && playerCounter + 1 == totalNumOfPlayersPlaying.length) {
       totalNumOfPlayersPlaying[playerCounter].bet = Number(input);
       playerCounter = 0;
-      myOutputValue = "Cards Dealed!";
-      gameMode = DEAL_CARD;
+      return (myOutputValue = "Cards Dealed!");
     } else if (
       Number(input) > 0 &&
       Number(input) < totalNumOfPlayersPlaying[playerCounter].chips
@@ -181,7 +187,16 @@ var main = function (input) {
     DEALER_HAND.push(shuffledDeck.pop());
     DEALER_HAND.push(shuffledDeck.pop());
     playerCounter = 0;
+    myOutputValue = `Player ${totalNumOfPlayersPlaying[playerCounter].number} hand: ${totalNumOfPlayersPlaying[playerCounter].hand[0].name}${totalNumOfPlayersPlaying[playerCounter].hand[0].suit} ${totalNumOfPlayersPlaying[playerCounter].hand[1].name}${totalNumOfPlayersPlaying[playerCounter].hand[1].suit} `;
     gameMode = PLAY_GAME;
   }
+  // The cards are analysed for game winning conditions, e.g. Blackjack.
+  // The cards are displayed to the user.
+  //  a. Player card will be displayed during their own turn.
+  // Each player is able to choose to Hit, Stand or Split by clicking the respective buttons.
+  if (gameMode == PLAY_GAME) {
+    const playerchoice = ["hit", "stand", "split"];
+  }
+
   return myOutputValue;
 };
