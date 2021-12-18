@@ -108,9 +108,9 @@ const newHtmlDealer = (dealer) => new UiDealer(dealer);
 
 const newHtmlCredit = (credit) => new UiCredit(credit);
 
-const testHeadsUpRoundActorsNameHtml = () => {
+const testHeadsUpRoundActorsNameUi = () => {
   console.group();
-  console.log("testHeadsUpRoundPlayerHtml");
+  console.log("testHeadsUpRoundActorsNameUi");
   const table = newTableHeadsUp();
   const round = new Round(table);
 
@@ -142,4 +142,4 @@ const testHeadsUpRoundActorsNameHtml = () => {
 };
 
 // HTML ROUND
-testHeadsUpRoundActorsNameHtml();
+testHeadsUpRoundActorsNameUi();

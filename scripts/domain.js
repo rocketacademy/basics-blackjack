@@ -567,7 +567,7 @@ const testHeadsUpRoundInitialization = () => {
 
 const testHeadsUpDealRoundPhase = () => {
   console.group();
-  console.log("testDealRoundPhaseHtml");
+  console.log("testHeadsUpDealRoundPhase");
   const table = newTableHeadsUp();
   const round = new Round(table);
   round.setHands();
