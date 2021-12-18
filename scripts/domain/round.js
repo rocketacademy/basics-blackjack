@@ -155,7 +155,7 @@ class Round {
   };
   _initInPlayDealer = () => {
     this._setPhase(RoundPhase.IN_PLAY_DEALER);
-    //TODO - Reconcilliation
+    this._dealer.flipHoleCard();
   };
   _initEnd = () => {
     this._setPhase(RoundPhase.END);
@@ -372,12 +372,14 @@ class Round {
   _autoDeal = () => {
     console.group("[_autoDeal]");
 
-    let i = 1;
-    const dealerHoldCardIndex = 2;
+    let cardPosition = Actor.FIRST_CARD;
+    const dealerHoldCardIndex = Dealer.HOLE_CARD_POSITION;
 
-    for (; i <= 2; i++) {
+    for (; cardPosition <= Actor.SECOND_CARD; cardPosition++) {
       console.group(
-        `Dealing ${i === 1 ? `once` : i === 2 ? `twice` : `???????`}`
+        `Dealing ${
+          cardPosition === 1 ? `once` : cardPosition === 2 ? `twice` : `???????`
+        }`
       );
       const nextPlayerHand = this._nextHandGenerator(this.getPlayers());
       let { hand: playerHand, actor: player } = nextPlayerHand();
@@ -398,7 +400,7 @@ class Round {
 
       while (dealerHand) {
         this.setCurrentHandAndPlayer(dealerHand, dealer);
-        if (dealerHoldCardIndex === i) {
+        if (dealerHoldCardIndex === cardPosition) {
           dealToHandOneClose(this._deck, dealerHand);
         } else {
           dealToHandOneOpen(this._deck, dealerHand);
@@ -410,7 +412,7 @@ class Round {
       console.groupEnd();
     }
 
-    console.log(`Auto Deal Completed ${i} dealt to each actor.`);
+    console.log(`Auto Deal Completed ${cardPosition} dealt to each actor.`);
 
     console.groupEnd();
   };

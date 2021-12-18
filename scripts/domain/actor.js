@@ -1,4 +1,10 @@
 class Actor {
+  static FIRST_CARD = 0;
+  static SECOND_CARD = 1;
+  static THIRD_CARD = 2;
+  static FOURTH_CARD = 3;
+  static FIFTH_CARD = 4;
+
   /**
    *
    * @param {Participant} participant
@@ -70,12 +76,27 @@ const newPlayer = (participant) => {
 };
 
 class Dealer extends Actor {
+  static HOLE_CARD_POSITION = Actor.SECOND_CARD; // 2, as in second card
   /**
    * @param {Participant} participant
    */
   constructor(participant) {
     super(participant);
   }
+
+  flipHoleCard = () => {
+    const hands = this.getHands();
+
+    const expectsNoOfHand = 1;
+    if (hands.length !== expectsNoOfHand) {
+      throw new Error(
+        `Breaking! Expecting ${expectsNoOfHand}, or the logic will need reworks.`
+      );
+    }
+
+    const hand = hands[0];
+    hand.flipPosition(Dealer.HOLE_CARD_POSITION);
+  };
 }
 
 const newDealer = (participant) => new Dealer(participant);

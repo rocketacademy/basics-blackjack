@@ -51,7 +51,16 @@ class Hand {
   setOnSetBet = (cb) => {
     this._onSetBet = cb;
   };
+  flipPosition = (position) => {
+    const card = this._cards[position];
+    if (card === null || card === undefined) {
+      throw new Error(
+        `Breaking, please check logic. No card to flip on position ${position}`
+      );
+    }
 
+    card.flip(true);
+  };
   signalActive = (isActive, phase, player, round) => {
     const anyNUll = [isActive, phase, player, round].some(
       (o) => o === undefined || o === null
