@@ -46,11 +46,11 @@ class Ui_Actor extends Ui_Component {
     this._actor.setOnNewHand((hand) => {
       console.group(`_addUiHands`);
       console.log(`adding ui hand`);
-
       const uiHand = new UiHand(hand);
       this._uiHandsHolder.addUiHand(uiHand);
       console.groupEnd();
     });
+
   }
   id = () => this._id;
   /**
@@ -97,7 +97,7 @@ class UiPlayer extends Ui_Actor {
 
   unfocusThisPlayer = (phase) => {
     console.group(
-      `Render:Unfocus, Component:Player [${this._actor.getName()}], Phase:${phase.desc()} `
+      `unfocusThisPlayer Render:Unfocus, Component:Player [${this._actor.getName()}], Phase:${phase.desc()} `
     );
     switch (phase) {
       case RoundPhase.IN_PLAY_PLAYERS:

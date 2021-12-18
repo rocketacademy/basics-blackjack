@@ -27,14 +27,15 @@ class UiCard extends Ui_Component {
     const url = UiCard.getUrl(card);
     this._uiImgFace = new UiImgCard(url);
     this._uiImgBack = new UiImgCard(`img/cards/JOKER-RED.png`);
-    this.replaceChildrenUi(this._uiImgBack);
+    this._toggle(this._card.isFaceUp())
+    this._card.setOnFlip(this._toggle)
   }
 
   id = () => this._id;
 
-  reveal = () => {
-    this.replaceChildrenUi(this._uiImgFace);
-  };
+  _toggle = (isFaceUp) => this.replaceChildrenUi(isFaceUp ? this._uiImgFace : this._uiImgBack)
+  
+ 
 }
 
 /**
@@ -62,13 +63,6 @@ class UiCardsHolder extends Ui_Component {
   unfocusCards = (phase, upCardOnly) => {
     if (upCardOnly === undefined || upCardOnly === null) {
       throw `upCardOnly not specified`;
-    }
-    console.group(`unfocusCards upCardOnly ? ${upCardOnly}`);
-    for (let i = 0; i < this._uiCards.length; i++) {
-      if (i == 1 && upCardOnly) {
-        continue;
-      }
-      this._uiCards[i].reveal();
     }
     console.groupEnd();
   };

@@ -370,14 +370,28 @@ class Round {
   };
   _autoDeal = () => {
     console.group("auto dealing");
-    const nextHand = this._nextHandGenerator(this.getActors());
-    let { hand, actor } = nextHand();
-    while (hand) {
-      console.log(`Dealing to Actor [${actor.getName()}] Hand [${hand.id()}]`);
-      dealToHand(this._deck, hand);
-      const newHand = nextHand();
-      hand = newHand.hand;
-      actor = newHand.actor;
+    const nextPlayerHand = this._nextHandGenerator(this.getPlayers());
+    let { hand: playerHand, actor: player } = nextPlayerHand();
+    while (playerHand) {
+      console.log(`Dealing to Actor [${player.getName()}] Hand [${playerHand.id()}]`);
+      this.setCurrentHandAndPlayer(playerHand,player)
+
+      dealToHand(this._deck, playerHand);
+      const newHand = nextPlayerHand();
+      playerHand = newHand.hand;
+      player = newHand.actor;
+
+    }
+
+    const nextDealerHand = this._nextHandGenerator([this.getDealer()])
+    let {hand:dealerHand,actor:dealer} = nextDealerHand()
+
+    while(dealerHand) {
+      this.setCurrentHandAndPlayer(dealerHand,dealer)
+      dealToDealerHand(this._deck,dealerHand)
+      const newHand = nextDealerHand();
+      dealerHand = newHand.hand;
+      dealer = newHand.actor;
     }
     console.log("Auto Deal Completed");
     console.groupEnd();
