@@ -1,3 +1,12 @@
+// This file relies on the fact that the following declarations have been made
+// in runtime:
+//            domain.js
+
+// ui.js
+// The DOM nodes and elements to represent POJO.
+
+const UI_ROOT = document.getElementById("root-ui-blackjack");
+
 class UiButton {
   constructor() {
     this._ui = null;
@@ -77,9 +86,11 @@ class UiRound {
    * @param {Round} round
    */
   constructor(round) {
+    /** @private @const {Round} */
     this._round = round;
-
+    /** @private @const {UiPlayer[]} */
     this._uiPlayers = newUiPlayers(this._round.getPlayers());
+    /** @private @const {UiDealer[]} */
     this._uiDealer = newUiDealer(this._round.getDealer());
   }
 
@@ -134,7 +145,6 @@ const testHeadsUpRoundActorsNameUi = () => {
   ];
 
   logAssert(...isUiForPlayerNameExist);
-
   logAssert(...isUiForDealerNameExist);
 
   console.groupEnd();
