@@ -65,7 +65,7 @@ class UiCardsHolder extends Ui_Component {
     }
     console.group(`unfocusCards upCardOnly ? ${upCardOnly}`);
     for (let i = 0; i < this._uiCards.length; i++) {
-      if (i == 0 && upCardOnly) {
+      if (i == 1 && upCardOnly) {
         continue;
       }
       this._uiCards[i].reveal();
