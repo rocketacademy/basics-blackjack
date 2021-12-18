@@ -429,6 +429,20 @@ const newTableHeadsUp = (p1, dealer) => {
   return newTable(players, dealer);
 };
 
+/**
+ *
+ * @param {Person} p1
+ * @param {Person} dealer
+ * @returns
+ */
+const newTableTwoPlayers = (p1, p2, dealer) => {
+  p1 = p1 || newPerson(`p1`);
+  p2 = p2 || newPerson(`p2`);
+  const players = [p1, p2];
+  dealer = dealer || newPerson("D_AgainstTwoPlayers", 10000);
+  return newTable(players, dealer);
+};
+
 // ROUND
 
 // Round Phase

@@ -163,7 +163,14 @@ class UiRound extends UiTree {
     this._root.appendChild(this._uiDealer.getRoot());
     this.attachGlobalRoot();
   };
-
+  changeFocusUiPlayer = (() => {
+    let uiPlayer = null;
+    return (nextUiPlayer) => {
+      this.unfocusUiPlayer(uiPlayer);
+      uiPlayer = nextUiPlayer;
+      this.focusUiPlayer(uiPlayer);
+    };
+  })();
   /**
    *
    * @param {UiPlayer} uiPlayer
@@ -175,6 +182,9 @@ class UiRound extends UiTree {
   };
 
   unfocusUiPlayer = (uiPlayer) => {
+    if (!uiPlayer) {
+      return;
+    }
     const root = uiPlayer.getRoot();
     root.style.border = "1px solid grey";
     root.style.borderRadius = "7px";
@@ -193,7 +203,7 @@ class UiRound extends UiTree {
     if (thisPhase === RoundPhase.START) {
       const id = this._round.getCurrentPlayer().id();
       const thisUiPlayer = this.getUiPlayerById(id);
-      this.focusUiPlayer(thisUiPlayer);
+      this.changeFocusUiPlayer(thisUiPlayer);
     }
   };
   getUiPlayerById = (id) => {
@@ -208,6 +218,11 @@ class UiRound extends UiTree {
   };
 }
 
+/**
+ *
+ * @param {Round} round
+ * @returns {UiRound}
+ */
 const newUiRound = (round) => {
   const uiRound = new UiRound(round);
   uiRound.initialize();
@@ -279,3 +294,12 @@ const test_HeadsUp_UiRound_ChangeRoundPhase_Start_Render = () => {
 
 // Ui ROUND
 test_HeadsUp_UiRound_ChangeRoundPhase_Start_Render();
+
+const main = () => {
+  const table = newTableTwoPlayers();
+  const round = new Round(table);
+  const uiRound = newUiRound(round);
+  uiRound.start();
+};
+
+main();
