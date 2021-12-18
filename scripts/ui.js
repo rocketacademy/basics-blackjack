@@ -10,12 +10,12 @@ class HtmlButtonHit extends HtmlButton {
   }
 }
 
-class HtmlButtonStand extends HtmlButton {
+class UiButtonStand extends HtmlButton {
   constructor() {
     super();
   }
 }
-class HtmlHand {
+class UiHand {
   /**
    *
    * @param {Hand} hand
@@ -25,7 +25,7 @@ class HtmlHand {
     this._html.setAttribute("count", hand.count());
   }
 }
-class HtmlActor {
+class UiActor {
   /**
    *
    * @param {Actor} actor
@@ -44,7 +44,7 @@ class HtmlActor {
    */
   getHtmlName = () => this._htmlName;
 }
-class HtmlPlayer extends HtmlActor {
+class UiPlayer extends UiActor {
   /**
    * @param {Player} player
    */
@@ -52,7 +52,7 @@ class HtmlPlayer extends HtmlActor {
     super(player);
   }
 }
-class HtmlDealer extends HtmlActor {
+class UiDealer extends UiActor {
   /**
    * @param {Dealer} dealer
    */
@@ -60,7 +60,7 @@ class HtmlDealer extends HtmlActor {
     super(dealer);
   }
 }
-class HtmlCredit {
+class UiCredit {
   /**
    * @param {number} credit
    *
@@ -71,7 +71,7 @@ class HtmlCredit {
   }
   setValue = (credit) => this._html.setAttribute("value", credit);
 }
-class HTMLRound {
+class UiRound {
   /**
    *
    * @param {Round} round
@@ -88,13 +88,13 @@ class HTMLRound {
 }
 /**
  * @param {Player} player
- * @returns {HtmlPlayer}
+ * @returns {UiPlayer}
  */
-const newHtmlPlayer = (player) => new HtmlPlayer(player);
+const newHtmlPlayer = (player) => new UiPlayer(player);
 /**
  *
  * @param {Player[]} players
- * @returns {HtmlPlayer} html representation of the players
+ * @returns {UiPlayer} html representation of the players
  */
 const newHtmlPlayers = (players) =>
   players.map((player) => newHtmlPlayer(player));
@@ -102,11 +102,11 @@ const newHtmlPlayers = (players) =>
 /**
  *
  * @param {Dealer} dealer
- * @returns {HtmlDealer}
+ * @returns {UiDealer}
  */
-const newHtmlDealer = (dealer) => new HtmlDealer(dealer);
+const newHtmlDealer = (dealer) => new UiDealer(dealer);
 
-const newHtmlCredit = (credit) => new HtmlCredit(credit);
+const newHtmlCredit = (credit) => new UiCredit(credit);
 
 const testHeadsUpRoundActorsNameHtml = () => {
   console.group();
@@ -114,7 +114,7 @@ const testHeadsUpRoundActorsNameHtml = () => {
   const table = newTableHeadsUp();
   const round = new Round(table);
 
-  const htmlRound = new HTMLRound(round);
+  const htmlRound = new UiRound(round);
 
   const htmlPlayers = htmlRound.getHtmlPlayers();
 
