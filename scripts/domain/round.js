@@ -14,7 +14,8 @@ const transferCredit = (actor1, amt, actor2) => {
 
 class RoundPhase {
   static _NULL = new RoundPhase(null);
-  static SIT = new RoundPhase("SIT");
+  // CRA-V6-1.24
+  static SIT = new RoundPhase("PLACE YOUR BETS, PLEASE");
   static INITIAL_BET = new RoundPhase("INITIAL BET");
   static INITIAL_DEAL = new RoundPhase("INITIAL DEAL");
   static IN_PLAY_PLAYERS = new RoundPhase("PLAY_PLAYERS");
