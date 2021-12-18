@@ -107,7 +107,6 @@ class UiPlayer extends Ui_Actor {
     this._root.className += " blackjack-player";
     this._root.style.border = "1px solid blue";
     this._root.style.borderRadius = "7px";
-    this._setNameColor("red");
 
     this.replaceChildrenUi(this.getUiName(), this._uiHandsHolder);
   }
