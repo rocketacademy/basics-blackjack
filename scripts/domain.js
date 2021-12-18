@@ -1,23 +1,3 @@
-// logs
-
-const logCards = (cards) => {
-  cards.forEach((card) => console.log(card.getSuit() + card.getFaceValue()));
-};
-
-const logAssert = (predicate, trueExpr, falseExpr) => {
-  if (predicate === true) {
-    if (trueExpr) {
-      console.log(trueExpr);
-    }
-  } else if (predicate === false) {
-    if (falseExpr) {
-      console.log(falseExpr);
-    }
-  } else {
-    console.warn("assertion is not truthy");
-  }
-};
-
 //CARD
 const SUIT_CLUBS = "clubs";
 const SUIT_DIAMONDS = "diamonds";
@@ -105,7 +85,7 @@ const testIfTopCardTransferredFromDeck = () => {
   console.log("testIfTopCardTransferredFromDeck");
   const deck = generateStandardDeck();
   let expectedStartingDeckSize = 52;
-  logAssert(
+  LOG_ASSERT(
     deck.length === expectedStartingDeckSize,
     undefined,
     `actual start size ${deck.length}. Expected ${expectedStartingDeckSize}`
@@ -118,12 +98,12 @@ const testIfTopCardTransferredFromDeck = () => {
 
   actualHandSize = hand.count();
   expectedHandSize = 1;
-  logAssert(
+  LOG_ASSERT(
     deck.length === expectedDeckSizeAfterOneTransfer,
     undefined,
     `Actual ${deck.length}. Expected${expectedDeckSizeAfterOneTransfer}`
   );
-  logAssert(
+  LOG_ASSERT(
     actualHandSize === expectedHandSize,
     undefined,
     `Actual hand size ${actualHandSize}. Expected${expectedHandSize}`
@@ -318,7 +298,7 @@ const shouldInitializedPersonCreditHundred = () => {
   const person1 = newPerson("p1");
   const expectedCredit = 100;
 
-  logAssert(
+  LOG_ASSERT(
     person1.getCredit() === expectedCredit,
     undefined,
     `startCredit ${expectedCredit}`
@@ -342,7 +322,7 @@ shouldCardsOfParticipantsBeReferenceInARound = () => {
 
   const startHandsCount = 1;
 
-  logAssert(
+  LOG_ASSERT(
     hands.length === startHandsCount,
     undefined,
     `actual no. of hands ${hands.length} expected hands count ${startHandsCount}`
@@ -351,7 +331,7 @@ shouldCardsOfParticipantsBeReferenceInARound = () => {
 
   const expectedHandCardsCount = 2;
   const gotHandCardsCount = hand.count();
-  logAssert(
+  LOG_ASSERT(
     gotHandCardsCount === expectedHandCardsCount,
     undefined,
     `${hand} actual no. of cards${gotHandCardsCount} expected no. of cards${expectedHandCardsCount}`
@@ -381,7 +361,7 @@ shouldTwoCardsBeDealtToThreePlayersFromStartDeck = () => {
   const expectDeckSizeAfterDealing =
     startDeckSize - players.length * cardsDealtPerPlayer;
 
-  logAssert(
+  LOG_ASSERT(
     expectDeckSizeAfterDealing === deck.length,
     undefined,
     `Actual deck size after deal ${deck.length}. Expected ${expectDeckSizeAfterDealing}`
@@ -391,7 +371,7 @@ shouldTwoCardsBeDealtToThreePlayersFromStartDeck = () => {
     player.getHands().forEach((hand) => {
       const gotLength = hand.count();
 
-      logAssert(
+      LOG_ASSERT(
         gotLength === cardsDealtPerPlayer,
         undefined,
         `got hand.length ${gotLength} expected cardsDealtPerPlayer ${cardsDealtPerPlayer}`
@@ -536,14 +516,14 @@ const testHeadsUpTableInitialization = () => {
   const table = newTableHeadsUp();
 
   const expectedActorsCount = 2;
-  logAssert(
+  LOG_ASSERT(
     table.getActorsCount() === expectedActorsCount,
     undefined,
     `Expected no. of actors ${expectedActorsCount}`
   );
   const expectedDealerStartCredit = 10000;
   const actualDealerStartCredit = table.getDealer().getCredit();
-  logAssert(
+  LOG_ASSERT(
     actualDealerStartCredit === expectedDealerStartCredit,
     undefined,
     `actual start credit: ${actualDealerStartCredit}. Expected ${expectedDealerStartCredit}`
@@ -557,7 +537,7 @@ const testHeadsUpRoundInitialization = () => {
   const table = newTableHeadsUp();
   const round = new Round(table);
   const expectedInitialPhase = RoundPhase.BET;
-  logAssert(
+  LOG_ASSERT(
     round.getPhase() === expectedInitialPhase,
     undefined,
     `Expected initial phase: ${expectedInitialPhase}`
@@ -587,7 +567,7 @@ const testHeadsUpDealRoundPhase = () => {
     undefined,
     `isRemainingDeckAfterDealCards expected ${expectedDeckSize} got ${actualRemainingDeckSize}`,
   ];
-  logAssert(...isRemainingDeckAfterDealCards);
+  LOG_ASSERT(...isRemainingDeckAfterDealCards);
 
   console.groupEnd();
 };
@@ -620,7 +600,7 @@ const testHeadsUpDrawlessFaceValueConcilliationExpectedLLN = () => {
       undefined,
       `After credit ${afterCredit}. Not near starting credit after ${roundCount}`,
     ];
-    logAssert(...isNearStartingCredit);
+    LOG_ASSERT(...isNearStartingCredit);
   }
   console.groupEnd();
 };

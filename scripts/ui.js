@@ -144,8 +144,8 @@ const testHeadsUpRoundActorsNameUi = () => {
     "isUiForDealerName NOT Exist",
   ];
 
-  logAssert(...isUiForPlayerNameExist);
-  logAssert(...isUiForDealerNameExist);
+  LOG_ASSERT(...isUiForPlayerNameExist);
+  LOG_ASSERT(...isUiForDealerNameExist);
 
   console.groupEnd();
 };
