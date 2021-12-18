@@ -53,7 +53,7 @@ class UiActor {
   constructor(actor) {
     this._root = document.createElement("div");
     this._uiName = document.createElement("div");
-    this._uiName.innerHTML = actor.getName();
+    this._uiName.textContent = actor.getName();
     /** @private @constant {UiHand[]} */
     this._uiHands = actor.getHands().map((hand) => newUiHand(hand));
     /** @private @constant {Ui[]} */
