@@ -30,7 +30,7 @@ class UiComponent {
    * @param {HTMLElement} element
    */
   constructor(element) {
-    this._root = element;
+    this._root = element ? element : document.createElement("div");
   }
 
   getRoot = () => this._root;
@@ -102,9 +102,29 @@ class UiHand extends UiComponent {
    */
   constructor(hand) {
     super(document.createElement("div"));
-    this._root.setAttribute("count", hand.count());
-    this._root.textContent = `[${hand.count()}]`;
+    this._hand = hand;
+
+    this._uiCount = new UiComponent();
+    this._uiButtonBet = new UiButton();
+
+    this._hand.setOnAddCard((card) => {
+      console.log(`card transferred ${card.getString()}`);
+      this._refreshUiCards();
+    });
+    this._refreshUiCards();
   }
+
+  _refreshUiCards = () => {
+    this._uiCount.getRoot().textContent = `[${this._hand.count()}]`;
+  };
+
+  render = (phase) => {
+    console.group(`rendering ui hand on ${phase.desc()}`);
+    if (phase === RoundPhase.BET) {
+      this.replaceChildrenUi(this._uiCount, this._uiButtonBet);
+    }
+    console.groupEnd();
+  };
 }
 
 class UiCredit extends UiComponent {
@@ -203,6 +223,7 @@ class UiPlayer extends UiActor {
   };
 
   renderModeAudience = (phase) => {
+    this.getUiHands().forEach((uiHand) => uiHand.render(phase));
     if (phase === RoundPhase.BET) {
       this.replaceChildrenUi(this.getUiName(), ...this.getUiHands());
     } else {
@@ -221,7 +242,11 @@ class UiPlayer extends UiActor {
     );
     switch (phase) {
       case RoundPhase.IN_PLAY_PLAYERS:
-        this.replaceChildrenUi(this.getUiName(), this._uIButtonStandAll);
+        this.replaceChildrenUi(
+          this.getUiName(),
+          this._uIButtonStandAll,
+          ...this.getUiHands()
+        );
         break;
       case RoundPhase.BET:
         this.replaceChildrenUi(

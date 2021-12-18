@@ -29,6 +29,7 @@ const createNewCard = (suit, faceVal) => {
     faceVal,
     getSuit: () => _suit,
     getFaceValue: () => _faceVal,
+    getString: () => `${_suit}${_faceVal}`,
   };
 };
 
@@ -160,6 +161,7 @@ class Hand {
    */
   addCard = (card) => {
     this._cards.push(card);
+    this.onTransfer(card);
   };
   count = () => this._cards.length;
   getFaceValue = () => {
@@ -167,6 +169,8 @@ class Hand {
       return (sum += currentCard.getFaceValue());
     }, 0);
   };
+  onTransfer = () => {};
+  setOnAddCard = (cb) => (this.onTransfer = cb);
 }
 /**
  * newHand
@@ -593,7 +597,7 @@ class Round {
     console.groupEnd("auto create hand");
   };
   _autoDeal = () => {
-    console.log("auto dealing");
+    console.group("auto dealing");
     const dealPlayersOrder = this._nextActorGenerator(this.allActors());
     let actor = dealPlayersOrder();
     while (actor) {
@@ -601,6 +605,7 @@ class Round {
       dealToHandsOfActor(actor, this._deck);
       actor = dealPlayersOrder();
     }
+    console.groupEnd();
   };
   _nextPhase = () => {
     switch (this._phase) {
