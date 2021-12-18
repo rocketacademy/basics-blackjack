@@ -105,6 +105,84 @@ class UiPhaseDisplay extends UiText {
   }
 }
 
+class UiImg extends UiComponent {
+  constructor() {
+    super(document.createElement("img"));
+  }
+}
+
+class UiImgCard extends UiImg {
+  constructor(url) {
+    super();
+    this._root.src = url;
+    this._root.alt = url;
+    this._root.style.width = "40px";
+    this._root.style.height = "40px";
+  }
+}
+
+class UiCard extends UiComponent {
+  /**
+   *
+   * @param {Card} card
+   * @returns {string}
+   */
+  static getUrl = (card) =>
+    `img/cards/${card
+      .getFaceValue()
+      .toString()
+      .padStart(2, "0")}-${card.getSuit()}.png`;
+
+  constructor(card) {
+    super(document.createElement("div"));
+    this._card = card;
+    this._id = card.getString();
+    const url = UiCard.getUrl(card);
+    this._uiImgFace = new UiImgCard(url);
+    this._uiImgBack = new UiImgCard(`img/cards/JOKER-RED.png`);
+    this.replaceChildrenUi(this._uiImgBack);
+  }
+
+  id = () => this._id;
+}
+
+/**
+ * "Controlled" Component
+ */
+class UiCardsHolder extends UiComponent {
+  constructor() {
+    super();
+    this._root.className += "blackjack-card-holder";
+    this._root.style.height = "50px";
+
+    this._uiCards = [];
+    this._cardsRef = {};
+  }
+  /**
+   *
+   * @param {UiCard} uiCard
+   */
+  addUiCard = (uiCard) => {
+    this._uiCards.push(uiCard);
+    this._uiCardsRef = { [uiCard.id()]: uiCard, ...this._uiCardsRef };
+    this.appendChildUi(uiCard);
+  };
+}
+
+/**
+ *
+ * @param {Card[]} cards
+ */
+const newUiCardsHolder = (cards) => {
+  const uiCardHolder = new UiCardsHolder();
+  for (const c of cards) {
+    const uiC = new UiCard(c);
+    uiCardHolder.addUiCard(uiC);
+  }
+
+  return uiCardHolder;
+};
+
 class UiHand extends UiComponent {
   /**
    *
@@ -112,11 +190,14 @@ class UiHand extends UiComponent {
    */
   constructor(hand) {
     super(document.createElement("div"));
+    /** @private @const {Hand} */
     this._hand = hand;
 
     this._uiCount = new UiComponent();
 
-    this._id = hand.id();
+    this._uiCardsHolder = newUiCardsHolder(this._hand.getCards());
+
+    this._id = this._hand.id();
     this._root.setAttribute("id", this._id);
     this._root.setAttribute("class", "blackjack-hand");
     this._root.style.width = "100px";
@@ -124,37 +205,54 @@ class UiHand extends UiComponent {
     this._root.style.border = "1px solid black";
     this._hand.setOnAddCard((card) => {
       console.log(`card transferred ${card.getString()}`);
-      this._refreshUiCards();
+      const uiCard = new UiCard(card);
+      this._uiCardsHolder.addUiCard(uiCard);
+      this._refreshUiCardsCount();
     });
 
     this._uiBetAmount = new UiText();
-
-    this._refreshUiCards();
+    this._refreshUiCardsCount();
   }
   id = () => this._id;
 
-  _refreshUiCards = () => {
-    this._uiCount.getRoot().textContent = `[${this._hand.count()}]`;
+  _refreshUiCardsCount = () => {
+    setUiTextContent(this._uiCount, `[${this._hand.count()}]`);
   };
   unfocus = (phase) => {
     console.group(`Phase [${phase.desc()}] unfocus ui hand [${this.id()}]`);
     if (phase === RoundPhase.BET) {
-      this.replaceChildrenUi(this._uiCount, this._uiBetAmount);
+      this.replaceChildrenUi(
+        this._uiCount,
+        this._uiCardsHolder,
+        this._uiBetAmount
+      );
     }
     console.groupEnd();
   };
   focus = (phase, player, round) => {
+    if (!round) {
+      throw `no round?`;
+    }
+
+    if (!player) {
+      throw `no player?`;
+    }
     console.group(`Phase [${phase.desc()}] focus ui hand [${this.id()}]`);
     if (phase === RoundPhase.BET) {
       this._hand.setOnSetBet((betValue) => {
-        this._uiBetAmount.setTextContent(`Bet Value${betValue}`);
+        this._uiBetAmount.setTextContent(`Bet Value [${betValue}]`);
       });
       const [_uiButtonBet__, _uiSlider__] = newBetControl(
         player,
         round,
         this._hand
       );
-      this.replaceChildrenUi(this._uiCount, _uiButtonBet__, _uiSlider__);
+      this.replaceChildrenUi(
+        this._uiCount,
+        this._uiCardsHolder,
+        _uiButtonBet__,
+        _uiSlider__
+      );
     }
     console.groupEnd();
   };
@@ -222,6 +320,50 @@ class UiName extends UiComponent {
     this._root.textContent = name;
   }
 }
+
+class UiHandsHolder extends UiComponent {
+  constructor() {
+    super();
+
+    this._hands = [];
+
+    /** @private { Object.<string,UiHand>} */
+    this._handsRef = {};
+  }
+  addUiHand = (uiHand) => {
+    this.appendChildUi(uiHand);
+    this._hands.push(uiHand);
+    this._handsRef = { [uiHand.id()]: uiHand, ...this._handsRef };
+  };
+
+  unfocusAll = (phase) => {
+    for (const [id, uiH] of Object.entries(this._handsRef)) {
+      uiH.unfocus(phase);
+    }
+  };
+
+  focusHandById = (id, phase, player, round) => {
+    this._handsRef[id].focus(phase, player, round);
+  };
+  unfocusHandById = (id, phase) => {
+    this._handsRef[id].unfocus(phase);
+  };
+  count = () => this._hands.length;
+}
+
+/**
+ *
+ * @param {Hands[]} hands
+ * @returns {UiHandsHolder}
+ */
+const newUiHandsHolder = (hands) => {
+  const uiHandsHolder = new UiHandsHolder();
+  for (const h of hands) {
+    const uiH = new UiHand(h);
+    uiHandsHolder.addUiHand(uiH);
+  }
+  return uiHandsHolder;
+};
 class UiActor extends UiComponent {
   /**
    *
@@ -232,19 +374,23 @@ class UiActor extends UiComponent {
     this._actor = actor;
     /** @private @const {UiName} */
     this._uiName = new UiName(this._actor.getName());
-    /** @private @const {UiHand[]} */
-    this._uiHands = actor.getHands().map((hand) => newUiHand(hand));
 
-    this._uiHandsRef = this._uiHands.reduce((refs, thisUiP) => {
-      const id = thisUiP.id();
-      return { ...refs, [id]: thisUiP };
-    }, {});
+    this._uiHandsHolder = newUiHandsHolder(this._actor.getHands());
 
     /** @private @const {Ui[]} */
     this._uiCredit = newUiCredit(this._actor.getCredit());
 
     // IMPORTANT FOR REFERENCE
     this._id = actor.id();
+
+    this._actor.setOnNewHand((hand) => {
+      console.group(`_addUiHands`);
+      console.log(`adding ui hand`);
+
+      const uiHand = new UiHand(hand);
+      this._uiHandsHolder.addUiHand(uiHand);
+      console.groupEnd();
+    });
   }
   /**
    *
@@ -257,35 +403,17 @@ class UiActor extends UiComponent {
     }
     setUiStyle(this.getUiName(), "color", val);
   };
-  setOnNewHand = (cb) => this._actor.setOnNewHand(cb);
 
-  _addUiHand = (hand) => {
-    console.group(`_addUiHands`);
-    console.log(`adding ui hand`);
-    const uiHand = newUiHand(hand);
-    this._uiHands.push(uiHand);
-    this._uiHandsRef = { [hand.id()]: uiHand, ...this._uiHandsRef };
-    console.log(`replace children of uiActor`);
-    this.replaceChildrenUi(this._uiName, ...this.getUiHands());
-    console.groupEnd();
-  };
-
-  getUiHands = () => {
-    return this._uiHands;
+  getUiHandById = (id) => this._uiHandsHolder.getHandById(id);
+  getUiHandsCount = () => {
+    return this._uiHandsHolder.count();
   };
 }
 
 const newUiHand = (hand) => {
   return new UiHand(hand);
 };
-/**
- *
- * @param {Actor} actor
- * @returns
- */
-const newUiHands = (actor) => {
-  return actor.getHands().map((hand) => newUiHand(hand));
-};
+
 class UiPlayer extends UiActor {
   /**
    * @param {Player} player
@@ -305,16 +433,14 @@ class UiPlayer extends UiActor {
     if (!handId) {
       return;
     }
-    const uiHand = this._uiHandsRef[handId];
-    uiHand.unfocus(phase);
+    this._uiHandsHolder.unfocusHandById(handId, phase);
   };
 
   focusHandById = (handId, phase, round) => {
     if (!handId) {
       return;
     }
-    const uiHand = this._uiHandsRef[handId];
-    uiHand.focus(phase, this._actor, round);
+    this._uiHandsHolder.focusHandById(handId, phase, this._actor, round);
   };
 
   unfocusThisPlayer = (phase) => {
@@ -323,15 +449,13 @@ class UiPlayer extends UiActor {
     );
     switch (phase) {
       case RoundPhase.IN_PLAY_PLAYERS:
-        this.replaceChildrenUi(this.getUiName(), ...this.getUiHands());
+        this.replaceChildrenUi(this.getUiName(), this._uiHandsHolder);
         break;
       case RoundPhase.BET:
-        for (const uiH of this.getUiHands()) {
-          uiH.unfocus(phase);
-        }
+        this._uiHandsHolder.unfocusAll(phase);
         this._root.style.border = "1px solid black";
         this._root.style.borderRadius = "7px";
-        this.replaceChildrenUi(this.getUiName(), ...this.getUiHands());
+        this.replaceChildrenUi(this.getUiName(), this._uiHandsHolder);
         break;
       default:
         this.replaceChildrenUi(this.getUiName());
@@ -345,18 +469,18 @@ class UiPlayer extends UiActor {
    * @param {RoundPhase} phase
    * @returns
    */
-  focus = (phase) => {
+  focusThisPlayer = (phase) => {
     console.group(
       `Render:Focus, Component:Player [${this._actor.getName()}], Phase:${phase.desc()} `
     );
     switch (phase) {
       case RoundPhase.IN_PLAY_PLAYERS:
-        this.replaceChildrenUi(this.getUiName(), ...this.getUiHands());
+        this.replaceChildrenUi(this.getUiName(), this._uiHandsHolder);
         break;
       case RoundPhase.BET:
         this._root.style.border = "1px solid turquoise";
         this._root.style.borderRadius = "7px";
-        this.replaceChildrenUi(this.getUiName(), ...this.getUiHands());
+        this.replaceChildrenUi(this.getUiName(), this._uiHandsHolder);
         break;
       default:
         this.replaceChildrenUi(this.getUiName());
@@ -371,31 +495,26 @@ class UiDealer extends UiActor {
    */
   constructor(dealer) {
     super(dealer);
-    this._initComponent();
   }
-
-  _initComponent = () => {
-    this.setNameColor();
-  };
 
   /**
    *
    * @param {RoundPhase} phase
    * @returns
    */
-  focus = (phase) => {
+  focusThisDealer = (phase) => {
     console.group(
       `Render:Active Phase:${phase.desc()} Player:${this._actor.getName()}`
     );
     switch (phase) {
       case RoundPhase.IN_PLAY_PLAYERS:
-        this.replaceChildrenUi(this.getUiName(), ...this._uiHands());
+        this.replaceChildrenUi(this.getUiName(), this._uiHandsHolder);
         break;
       case RoundPhase.BET:
-        this.replaceChildrenUi(this.getUiName(), ...this._uiHands());
+        this.replaceChildrenUi(this.getUiName(), this._uiHandsHolder);
         break;
       default:
-        this.replaceChildrenUi(this.getUiName(), ...this._uiHands());
+        this.replaceChildrenUi(this.getUiName(), this._uiHandsHolder);
         break;
     }
     console.groupEnd();
@@ -404,14 +523,10 @@ class UiDealer extends UiActor {
   unfocusThisDealer = (phase) => {
     if (phase === RoundPhase.BET) {
       console.log(
-        `Phase ${phase.desc()} Render:Active Dealer with no of hands:  ${
-          this.getUiHands().length
-        }`
+        `Phase ${phase.desc()} Render:Active Dealer with no of hands:  ${this.getUiHandsCount()}`
       );
-      for (const uiH of this.getUiHands()) {
-        uiH.unfocus(phase);
-      }
-      this.replaceChildrenUi(this.getUiName(), ...this.getUiHands());
+      this._uiHandsHolder.unfocusAll(phase);
+      this.replaceChildrenUi(this.getUiName(), this._uiHandsHolder);
     }
   };
 }
@@ -478,11 +593,6 @@ class UiRound extends UiTree {
   _initializeUiPlayers = () => {
     this._uiPlayers = newUiPlayers(this._round.getPlayers());
 
-    this._uiPlayers.forEach((uIP) => {
-      uIP.setOnNewHand((hand) => {
-        uIP._addUiHand(hand);
-      });
-    });
     this._uiPlayersRef = this._uiPlayers.reduce((refs, thisUiP) => {
       const id = thisUiP.id();
       return { ...refs, [id]: thisUiP };
@@ -495,10 +605,6 @@ class UiRound extends UiTree {
   };
 
   initializeRenderCallbacks = () => {
-    this._uiDealer.setOnNewHand((hand) => {
-      this._uiDealer._addUiHand(hand);
-    });
-
     this._round.setOnChangeBetTurn(
       (prevPlayer, prevHand, newPlayer, newHand, phase) => {
         const [prevPlayerId, newPlayerId] = [prevPlayer?.id(), newPlayer?.id()];
@@ -520,7 +626,6 @@ class UiRound extends UiTree {
       switch (phase) {
         case RoundPhase.BET:
           console.log(`on phase change refresh for round phase bet`);
-
           this.replaceChildrenUi(
             this._uiPhaseDisplay,
             this._uiDealer,
@@ -591,7 +696,7 @@ class UiRound extends UiTree {
     if (!uiPlayer) {
       return;
     }
-    uiPlayer.focus(phase);
+    uiPlayer.focusThisPlayer(phase);
   };
   /**
    *
@@ -728,7 +833,7 @@ const test_Main_Ui_Til_BET = () => {
     `expected ${expectPhaseDisplayValue} got ${gotPhaseDisplayValue}`
   );
 
-  const gotDealerUiHandsLength = uiRound.getUiDealer().getUiHands().length;
+  const gotDealerUiHandsLength = uiRound.getUiDealer().getUiHandsCount();
   const gotDealerHandsLength = round.getDealer().getHands().length;
   LOG_ASSERT(1 === gotDealerHandsLength, ``, `Dealer should have one hand`);
   LOG_ASSERT(

@@ -1,8 +1,8 @@
 //CARD
-const SUIT_CLUBS = "clubs";
-const SUIT_DIAMONDS = "diamonds";
-const SUIT_HEARTS = "hearts";
-const SUIT_SPADES = "spades";
+const SUIT_CLUBS = "CLUBS";
+const SUIT_DIAMONDS = "DIAMONDS";
+const SUIT_HEARTS = "HEARTS";
+const SUIT_SPADES = "SPADES";
 
 const FACE_VALUES = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
 
@@ -10,18 +10,20 @@ const SUITS = [SUIT_CLUBS, SUIT_DIAMONDS, SUIT_HEARTS, SUIT_SPADES];
 
 /**
  * @typedef {Object} Card
- * @property {function} getSuit get suit of card
- * @property {function} getFaceValue get face value of card
+ * @property {number} getSuit get suit of card
+ * @property {number} getFaceValue get face value of card
  */
 
 /**
  * Creates a new card
- * @param {*} suit
- * @param {*} faceVal
+ * @param {string} suit
+ * @param {number} faceVal
  * @returns {Card}
  */
 const createNewCard = (suit, faceVal) => {
+  /** @private @const {string} */
   let _suit = suit;
+  /** @private @const {number} */
   let _faceVal = faceVal;
 
   return {
@@ -169,6 +171,8 @@ class Hand {
     this._cards.push(card);
     this._onAddCard(card);
   };
+
+  getCards = () => this._cards;
   count = () => this._cards.length;
   getFaceValue = () => {
     return this._cards.reduce((sum, currentCard, _) => {
@@ -243,7 +247,9 @@ class Actor {
     this._hands = [];
     this._id = uuidv4();
   }
-
+  /**
+   * @returns {Hand[]}
+   */
   getHands = () => this._hands;
   createNewHand = () => {
     const newHand = new Hand();
