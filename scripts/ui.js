@@ -86,6 +86,10 @@ class UiPhaseDisplay extends UiComponent {
   setTextContent = (text) => {
     this._root.textContent = text;
   };
+
+  getTextContent = () => {
+    return this._root.textContent;
+  };
 }
 
 class UiHand extends UiComponent {
@@ -100,6 +104,12 @@ class UiHand extends UiComponent {
     this._uiCount = new UiComponent();
     this._uiButtonBet = new UiButton();
 
+    this._id = hand.id();
+    this._root.setAttribute("id", this._id);
+    this._root.setAttribute("class", "blackjack-hand");
+    this._root.style.width = "100px";
+    this._root.style.height = "50px";
+    this._root.style.border = "1px solid black";
     this._hand.setOnAddCard((card) => {
       console.log(`card transferred ${card.getString()}`);
       this._refreshUiCards();
@@ -156,17 +166,12 @@ class UiActor extends UiComponent {
 
     // IMPORTANT FOR REFERENCE
     this._id = actor.id();
-
-    this.initComponent();
   }
   /**
    *
    * @returns {HTMLDivElement}
    */
   getUiName = () => this._uiName;
-  initComponent = () => {
-    this.appendChildUi(this._uiName);
-  };
 
   setNameColor = (val) => {
     if (!val) {
@@ -177,7 +182,12 @@ class UiActor extends UiComponent {
   setOnNewHand = (cb) => this._actor.setOnNewHand(cb);
 
   _addUiHand = (hand) => {
+    console.group(`_addUiHands`);
+    console.log(`adding ui hand`);
     this._uiHands.push(newUiHand(hand));
+    console.log(`replace children of uiActor`);
+    this.replaceChildrenUi(this._uiName, ...this.getUiHands());
+    console.groupEnd();
   };
 
   getUiHands = () => {
@@ -203,53 +213,15 @@ class UiPlayer extends UiActor {
   constructor(player) {
     super(player);
 
-    this._uIButtonStandAll = new UiButtonStandAll();
     /** @private {UiHand[]} */
     this._uiHands = newUiHands(this._actor);
-    this.initComponent();
+    this._initComponent();
   }
 
   id = () => this._id;
-  initComponent = () => {
+  _initComponent = () => {
     this.setNameColor("red");
   };
-
-  renderModeAudience = (phase) => {
-    this.getUiHands().forEach((uiHand) => uiHand.render(phase));
-    if (phase === RoundPhase.BET) {
-      this.replaceChildrenUi(this.getUiName(), ...this.getUiHands());
-    } else {
-      this.replaceChildrenUi(this.getUiName(), ...this.getUiHands());
-    }
-  };
-
-  /**
-   *
-   * @param {RoundPhase} phase
-   * @returns
-   */
-  renderModeActive = (phase) => {
-    console.group(
-      `Render:Active Phase:${phase.desc()} Player:${this._actor.getName()}`
-    );
-    switch (phase) {
-      case RoundPhase.IN_PLAY_PLAYERS:
-        this.replaceChildrenUi(
-          this.getUiName(),
-          this._uIButtonStandAll,
-          ...this.getUiHands()
-        );
-        break;
-      case RoundPhase.BET:
-        this.replaceChildrenUi(this.getUiName(), ...this.getUiHands());
-        break;
-      default:
-        this.replaceChildrenUi(this.getUiName());
-        break;
-    }
-    console.groupEnd();
-  };
-  setOnClickButtonStandAll = (cb) => this._uIButtonStandAll.setOnClick(cb);
 }
 class UiDealer extends UiActor {
   /**
@@ -257,10 +229,10 @@ class UiDealer extends UiActor {
    */
   constructor(dealer) {
     super(dealer);
-    this.initComponent();
+    this._initComponent();
   }
 
-  initComponent = () => {
+  _initComponent = () => {
     this.setNameColor();
   };
 
@@ -289,6 +261,9 @@ class UiDealer extends UiActor {
 
   renderModeAudience = (phase) => {
     if (phase === RoundPhase.BET) {
+      console.log(
+        "rendering dealer with no of hands:" + this.getUiHands().length
+      );
       this.replaceChildrenUi(this.getUiName(), ...this.getUiHands());
     } else {
       this.replaceChildrenUi(this.getUiName(), ...this.getUiHands());
@@ -323,7 +298,7 @@ class UiRound extends UiTree {
     /** @private @const {Object.<id:string,uiPlayer:UiPlayer>}} */
     this._uiPlayersRef = null;
 
-    /** @private @const {UiDealer[]} */
+    /** @private @const {UiDealer} */
     this._uiDealer = null;
 
     /** @private @const {UiPhaseDisplay} */
@@ -347,9 +322,12 @@ class UiRound extends UiTree {
   getUiPlayerById = (id) => {
     return this._uiPlayersRef[id];
   };
+
+  getUiPhaseDisplay = () => {
+    return this._uiPhaseDisplay;
+  };
   _initializeUiDisplayPhase = () => {
     this._uiPhaseDisplay = new UiPhaseDisplay();
-    this._refreshDisplayPhase();
   };
 
   _initializeButtonDummy = () => {
@@ -359,15 +337,11 @@ class UiRound extends UiTree {
 
   _initializeUiDealer = () => {
     this._uiDealer = newUiDealer(this._round.getDealer());
-    this._uiDealer.setOnNewHand((hand) => {
-      this._uiDealer._addUiHand(hand);
-    });
   };
   _initializeUiPlayers = () => {
     this._uiPlayers = newUiPlayers(this._round.getPlayers());
 
     this._uiPlayers.forEach((uIP) => {
-      uIP.setOnClickButtonStandAll(this.onClickStandAllHandler);
       uIP.setOnNewHand((hand) => {
         uIP._addUiHand(hand);
       });
@@ -377,18 +351,42 @@ class UiRound extends UiTree {
       return { ...refs, [id]: thisUiP };
     }, {});
   };
-  initialize = () => {
+  initializeComponents = () => {
     this._initializeUiDisplayPhase();
     this._initializeUiPlayers();
     this._initializeButtonDummy();
     this._initializeUiDealer();
+  };
+
+  initializeRenderCallbacks = () => {
+    this._uiDealer.setOnNewHand((hand) => {
+      this._uiDealer._addUiHand(hand);
+    });
+
+    this._round.setOnSetPhase((phase) => {
+      this._refreshDisplayPhase();
+      switch (phase) {
+        case RoundPhase.BET:
+          console.log(`on phase change refresh for round phase bet`);
+          this.replaceChildrenUi(
+            this._uiPhaseDisplay,
+            this._uiDealer,
+            ...this.getUiPlayers()
+          );
+          break;
+      }
+    });
+  };
+
+  attachToGlobalRoot = () => {
+    console.log("Attaching to global root");
     this._attachGlobalRoot();
   };
 
   _refreshDisplayPhase = () => {
-    this._uiPhaseDisplay.setTextContent(
-      "ROUND STATUS: " + this._round.getPhase()?.desc()
-    );
+    const text = "ROUND STATUS: " + this._round.getPhase()?.desc();
+    console.warn(`REPROP PHASE DISPLAY ${text}`);
+    this._uiPhaseDisplay.setTextContent(text);
   };
 
   _refreshUiPlayers = () => {
@@ -446,8 +444,9 @@ class UiRound extends UiTree {
  */
 const newUiRound = (round) => {
   const uiRound = new UiRound(round);
-  uiRound.initialize();
-
+  uiRound.initializeComponents();
+  uiRound.initializeRenderCallbacks();
+  uiRound.attachToGlobalRoot();
   return uiRound;
 };
 
@@ -475,6 +474,7 @@ const newUiCredit = (credit) => new UiCredit(credit);
 const test_Main_HeadsUp = () => {
   const table = newTableTwoPlayers();
   const round = new Round(table);
+  const uiRound = newUiRound(round);
   const player1 = round.getPlayers()[0];
   const player2 = round.getPlayers()[1];
 
@@ -499,7 +499,7 @@ const test_Main_HeadsUp = () => {
   LOG_ASSERT(!!handPlayer1_1, undefined, `handPlayer1_1 missing`);
   round.requestBet(player1, handPlayer1_1, 1);
   const handPlayer2_1 = player2.getHands()[0];
-  round.requestBet(player2, handPlayer2_1, 1);
+  round.requestBet(player2, handPlayer2_1, 1); // End of bets, // [BET] --> DEAL --> [IN_PLAY_PLAYER]
 
   expectedPhase = RoundPhase.IN_PLAY_PLAYERS;
   actualPhase = round.getPhase();
@@ -510,7 +510,7 @@ const test_Main_HeadsUp = () => {
   );
 
   round.requestStand(handPlayer1_1);
-  round.requestStand(handPlayer2_1);
+  round.requestStand(handPlayer2_1); // End of players, // [IN_PLAY_PLAYER] --> IN_PLAY_DEALER --> [END]
 
   expectedPhase = RoundPhase.END;
   actualPhase = round.getPhase();
@@ -523,3 +523,50 @@ const test_Main_HeadsUp = () => {
 
 console.log(`---MAIN TEST---`);
 test_Main_HeadsUp();
+
+const test_Main_Ui_Til_BET = () => {
+  console.group("test_Main_Ui_Til_BET");
+  const table = newTableTwoPlayers();
+  const round = new Round(table);
+  const uiRound = newUiRound(round);
+  const player1 = round.getPlayers()[0];
+  const player2 = round.getPlayers()[1];
+
+  let expectedPhase = RoundPhase._NULL;
+  let actualPhase = round.getPhase();
+
+  LOG_ASSERT(
+    expectedPhase === actualPhase,
+    `Phase 00001 DONE`,
+    `? Phase 00001`
+  );
+  round.requestInitSitPhase(); // [_NULL] --> SIT --> [BET]
+
+  expectedPhase = RoundPhase.BET;
+  actualPhase = round.getPhase();
+  LOG_ASSERT(
+    expectedPhase === actualPhase,
+    `Phase 00002 DONE`,
+    `? Phase 00002 ${expectedPhase.desc()} ${actualPhase.desc()}`
+  );
+
+  const expectPhaseDisplayValue = `ROUND STATUS: BETTING`;
+  const gotPhaseDisplayValue = uiRound.getUiPhaseDisplay().getTextContent();
+  LOG_ASSERT(
+    expectPhaseDisplayValue === gotPhaseDisplayValue,
+    ``,
+    `expected ${expectPhaseDisplayValue} got ${gotPhaseDisplayValue}`
+  );
+
+  const gotDealerUiHandsLength = uiRound.getUiDealer().getUiHands().length;
+  const gotDealerHandsLength = round.getDealer().getHands().length;
+  LOG_ASSERT(1 === gotDealerHandsLength, ``, `Dealer should have one hand`);
+  LOG_ASSERT(
+    gotDealerUiHandsLength === gotDealerHandsLength,
+    ``,
+    `Ui Dealer does not reflect actual no. of hands`
+  );
+  console.groupEnd();
+};
+
+test_Main_Ui_Til_BET();

@@ -52,3 +52,35 @@ TEST;
 
 // Ui ROUND
 // test_HeadsUp_UiRound_ChangeRoundPhase_Start_Render();
+
+renderModeAudience = (phase) => {
+  this.getUiHands().forEach((uiHand) => uiHand.render(phase));
+  if (phase === RoundPhase.BET) {
+    this.replaceChildrenUi(this.getUiName(), ...this.getUiHands());
+  } else {
+    this.replaceChildrenUi(this.getUiName(), ...this.getUiHands());
+  }
+};
+
+/**
+ *
+ * @param {RoundPhase} phase
+ * @returns
+ */
+renderModeActive = (phase) => {
+  console.group(
+    `Render:Active Phase:${phase.desc()} Player:${this._actor.getName()}`
+  );
+  switch (phase) {
+    case RoundPhase.IN_PLAY_PLAYERS:
+      this.replaceChildrenUi(this.getUiName(), ...this.getUiHands());
+      break;
+    case RoundPhase.BET:
+      this.replaceChildrenUi(this.getUiName(), ...this.getUiHands());
+      break;
+    default:
+      this.replaceChildrenUi(this.getUiName());
+      break;
+  }
+  console.groupEnd();
+};
