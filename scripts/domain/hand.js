@@ -16,6 +16,9 @@ class Hand {
     this._status = HandStatus.IN_PLAY;
     this._id = uuidv4();
   }
+  desc = () => `${this._cards.forEach((c) => `(${c.getString()})`)}`;
+  id = () => this._id;
+
   setBet = (amt) => {
     this._bet = amt;
     this._onSetBet(this._bet);
@@ -40,6 +43,8 @@ class Hand {
       return (sum += currentCard.getFaceValue());
     }, 0);
   };
+
+  // Hooks
   _onAddCard = (card) => {};
   setOnAddCard = (cb) => (this._onAddCard = cb);
   _onSetBet = (bet) => {};
@@ -48,9 +53,12 @@ class Hand {
   };
   _onUnfocusHand = (phase) => {};
   setOnUnfocusHand = (cb) => (this._onUnfocusHand = cb);
-  desc = () => `${this._cards.forEach((c) => `(${c.getString()})`)}`;
-  id = () => this._id;
 }
+
+// Domain
+// Root Configuration
+// Children
+
 /**
  * newHand
  * @returns {Hand}
