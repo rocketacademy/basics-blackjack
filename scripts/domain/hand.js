@@ -46,6 +46,8 @@ class Hand {
   setOnSetBet = (cb) => {
     this._onSetBet = cb;
   };
+  _onUnfocusHand = (phase) => {};
+  setOnUnfocusHand = (cb) => (this._onUnfocusHand = cb);
   desc = () => `${this._cards.forEach((c) => `(${c.getString()})`)}`;
   id = () => this._id;
 }

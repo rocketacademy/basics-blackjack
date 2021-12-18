@@ -34,8 +34,14 @@ class UiHand extends Ui_Component {
       this._uiBetAmount.setTextContent(`Bet Value [${betValue}]`);
     });
 
+    this._hand.setOnUnfocusHand((phase) => {
+      this.replaceChildrenUi(this._uiCount, this._uiCardsHolder);
+    });
+
     // First Render
     this._refreshUiCardsCount();
+
+    this.replaceChildrenUi(this._uiCount, this._uiCardsHolder);
   }
   _style = () => {
     this._root.style.width = "250px";
@@ -54,23 +60,7 @@ class UiHand extends Ui_Component {
   _refreshUiCardsCount = () => {
     setUiTextContent(this._uiCount, `[${this._hand.count()}]`);
   };
-  unfocusThisHand = (phase, upCardOnly) => {
-    console.group(`Phase [${phase.desc()}] unfocus ui hand [${this.id()}]`);
-    if (phase === RoundPhase.BET) {
-      this.replaceChildrenUi(
-        this._uiCount,
-        this._uiCardsHolder,
-        this._uiBetAmount
-      );
-    } else if (phase === RoundPhase.IN_PLAY_PLAYERS) {
-      this.replaceChildrenUi(
-        this._uiCount,
-        this._uiCardsHolder,
-        this._uiBetAmount
-      );
-    }
-    console.groupEnd();
-  };
+  unfocusThisHand = (phase, upCardOnly) => {};
   focusThisHand = (phase, player, round) => {
     if (!round) {
       throw `no round?`;
