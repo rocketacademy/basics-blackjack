@@ -583,19 +583,27 @@ class Round {
     console.warn(`Changing Phase ${prevPhase.desc()} -> ${this._phase.desc()}`);
     this._onSetPhase(this._phase);
   };
+
+  _onSetPhaseCompleted = (phase) => {};
+  setOnSetPhaseCompleted = (fn) => (this._onSetPhaseCompleted = fn);
   _initSit = () => {
     console.log(this._phase.desc());
     this._setPhase(RoundPhase.SIT);
-    this.requestInitBetPhase();
+    this._onSetPhaseCompleted(this._phase);
     console.groupEnd();
+
+    this.requestInitBetPhase();
   };
   _initBet = () => {
     console.group("_initBet");
     this._setPhase(RoundPhase.BET);
     this._autoCreateHands();
+
+    this._onSetPhaseCompleted(this._phase);
+    console.groupEnd();
+
     this._resetBetTurn();
     this._changeBetTurn();
-    console.groupEnd();
   };
   _initDeal = () => {
     this._setPhase(RoundPhase.DEAL);

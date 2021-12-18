@@ -136,7 +136,7 @@ class UiHand extends UiComponent {
   _refreshUiCards = () => {
     this._uiCount.getRoot().textContent = `[${this._hand.count()}]`;
   };
-  unfocus = (phase, player) => {
+  unfocus = (phase) => {
     console.group(`Phase [${phase.desc()}] unfocus ui hand [${this.id()}]`);
     if (phase === RoundPhase.BET) {
       this.replaceChildrenUi(this._uiCount, this._uiBetAmount);
@@ -251,7 +251,6 @@ class UiActor extends UiComponent {
    * @returns {HTMLDivElement}
    */
   getUiName = () => this._uiName;
-
   setNameColor = (val) => {
     if (!val) {
       return;
@@ -318,7 +317,7 @@ class UiPlayer extends UiActor {
     uiHand.focus(phase, this._actor, round);
   };
 
-  unfocus = (phase) => {
+  unfocusThisPlayer = (phase) => {
     console.group(
       `Render:Unfocus, Component:Player [${this._actor.getName()}], Phase:${phase.desc()} `
     );
@@ -327,6 +326,9 @@ class UiPlayer extends UiActor {
         this.replaceChildrenUi(this.getUiName(), ...this.getUiHands());
         break;
       case RoundPhase.BET:
+        for (const uiH of this.getUiHands()) {
+          uiH.unfocus(phase);
+        }
         this._root.style.border = "1px solid black";
         this._root.style.borderRadius = "7px";
         this.replaceChildrenUi(this.getUiName(), ...this.getUiHands());
@@ -335,6 +337,7 @@ class UiPlayer extends UiActor {
         this.replaceChildrenUi(this.getUiName());
         break;
     }
+    console.groupEnd();
   };
 
   /**
@@ -398,13 +401,16 @@ class UiDealer extends UiActor {
     console.groupEnd();
   };
 
-  unfocus = (phase) => {
+  unfocusThisDealer = (phase) => {
     if (phase === RoundPhase.BET) {
       console.log(
-        "rendering dealer with no of hands:" + this.getUiHands().length
+        `Phase ${phase.desc()} Render:Active Dealer with no of hands:  ${
+          this.getUiHands().length
+        }`
       );
-      this.replaceChildrenUi(this.getUiName(), ...this.getUiHands());
-    } else {
+      for (const uiH of this.getUiHands()) {
+        uiH.unfocus(phase);
+      }
       this.replaceChildrenUi(this.getUiName(), ...this.getUiHands());
     }
   };
@@ -514,12 +520,21 @@ class UiRound extends UiTree {
       switch (phase) {
         case RoundPhase.BET:
           console.log(`on phase change refresh for round phase bet`);
+
           this.replaceChildrenUi(
             this._uiPhaseDisplay,
             this._uiDealer,
             ...this.getUiPlayers()
           );
           break;
+      }
+    });
+
+    this._round.setOnSetPhaseCompleted((phase) => {
+      console.log("setOnSetPhaseCompleted");
+      this._uiDealer.unfocusThisDealer(phase);
+      for (const uIP of this.getUiPlayers()) {
+        uIP.unfocusThisPlayer(phase);
       }
     });
   };
@@ -587,7 +602,7 @@ class UiRound extends UiTree {
     if (!uiPlayer) {
       return;
     }
-    uiPlayer.unfocus(phase);
+    uiPlayer.unfocusThisPlayer(phase);
   };
 }
 
