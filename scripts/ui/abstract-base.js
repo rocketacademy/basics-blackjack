@@ -27,6 +27,7 @@ class Ui_Component {
    */
   constructor(element) {
     this._root = element ? element : document.createElement("div");
+    this._root.style.display = "flex";
   }
 
   getRoot = () => this._root;
@@ -45,6 +46,10 @@ class Ui_Component {
 class Ui_Button extends Ui_Component {
   constructor() {
     super(document.createElement("button"));
+
+    this._root.style.display = "block";
+    this._root.style.height = "fit-content";
+    this._root.style.width = "fit-content";
   }
 }
 

@@ -14,10 +14,17 @@ class UiHand extends Ui_Component {
 
     this._id = this._hand.id();
     this._root.setAttribute("id", this._id);
-    this._root.setAttribute("class", "blackjack-hand");
-    this._root.style.width = "100px";
-    this._root.style.height = "200px";
+    this._root.className += " blackjack-hand";
+
+    this._root.style.width = "250px";
+    this._root.style.height = "300px";
+    this._root.style.padding = "10px 10px 10px 10px";
     this._root.style.border = "1px solid black";
+    this._root.style.marginLeft = "10px";
+    this._root.style.marginTop = "10px";
+    this._root.style.marginRight = "10px";
+    this._root.style.flexDirection = "column";
+    this._root.style.alignItems = "center";
     this._hand.setOnAddCard((card) => {
       console.log(`card transferred ${card.getString()}`);
       const uiCard = new UiCard(card);
@@ -85,7 +92,7 @@ class UiHand extends Ui_Component {
 
         const _uiButtonStand__ = newStandControl(player, round, this._hand);
         children.push(_uiButtonStand__);
-        this.replaceChildrenUi(...children);
+        this.replaceChildrenUi(...children, this._uiBetAmount);
     }
     console.groupEnd();
   };
@@ -127,6 +134,7 @@ class UiSlider extends Ui_Component {
     this._root.className += " black-jack-bet-slider";
     this._root.type = "range";
     this._root.step = 1;
+    this._root.style.display = "block";
   }
 
   setMin = (num = 0) => {

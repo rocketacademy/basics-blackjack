@@ -20,6 +20,10 @@ class UiName extends Ui_Component {
   /** @param {!string} name */
   constructor(name) {
     super(document.createElement("div"));
+
+    this._root.style.justifyContent = "center";
+    this._root.style.marginTop = "10px";
+    this._root.style.marginBottom = "10px";
     this._root.textContent = name;
   }
 }
@@ -31,6 +35,7 @@ class Ui_Actor extends Ui_Component {
    */
   constructor(actor) {
     super(document.createElement("div"));
+    this._style();
     this._actor = actor;
     /** @private @const {UiName} */
     this._uiName = new UiName(this._actor.getName());
@@ -51,6 +56,10 @@ class Ui_Actor extends Ui_Component {
       console.groupEnd();
     });
   }
+
+  _style = () => {
+    this._root.style.flexDirection = "column";
+  };
   id = () => this._id;
   /**
    *
@@ -76,6 +85,7 @@ class UiPlayer extends Ui_Actor {
    */
   constructor(player) {
     super(player);
+    this._root.className += " blackjack-player";
 
     this.setNameColor("red");
   }
@@ -101,13 +111,13 @@ class UiPlayer extends Ui_Actor {
     switch (phase) {
       case RoundPhase.IN_PLAY_PLAYERS:
         this._uiHandsHolder.unfocusHands(phase, false);
-        this.replaceChildrenUi(this.getUiName(), this._uiHandsHolder);
+        this.replaceChildrenUi(this._uiHandsHolder, this.getUiName());
         break;
       case RoundPhase.BET:
         this._uiHandsHolder.unfocusHands(phase, false);
         this._root.style.border = "1px solid black";
         this._root.style.borderRadius = "7px";
-        this.replaceChildrenUi(this.getUiName(), this._uiHandsHolder);
+        this.replaceChildrenUi(this._uiHandsHolder, this.getUiName());
         break;
       default:
         this.replaceChildrenUi(this.getUiName());
@@ -127,12 +137,12 @@ class UiPlayer extends Ui_Actor {
     );
     switch (phase) {
       case RoundPhase.IN_PLAY_PLAYERS:
-        this.replaceChildrenUi(this.getUiName(), this._uiHandsHolder);
+        this.replaceChildrenUi(this._uiHandsHolder, this.getUiName());
         break;
       case RoundPhase.BET:
         this._root.style.border = "1px solid turquoise";
         this._root.style.borderRadius = "7px";
-        this.replaceChildrenUi(this.getUiName(), this._uiHandsHolder);
+        this.replaceChildrenUi(this._uiHandsHolder, this.getUiName());
         break;
       default:
         this.replaceChildrenUi(this.getUiName());
@@ -147,6 +157,10 @@ class UiDealer extends Ui_Actor {
    */
   constructor(dealer) {
     super(dealer);
+    this._root.style.alignItems = "center";
+    this._root.style.marginBottom = "25px";
+
+    this._root.className += " blackjack-ui-dealer";
   }
 
   /**

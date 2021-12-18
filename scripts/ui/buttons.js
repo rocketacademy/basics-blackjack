@@ -5,8 +5,10 @@ class UiButtonBet extends Ui_Button {
     this.uIDesc.setTextContent("BET");
     this.uIBetValue = new Ui_Text();
     this._betValue = null;
+
+    this._root.className += "blackjack-button-bet";
     this._root.style.fontSize = "11px";
-    this._root.style.display = "flex";
+
     this.replaceChildrenUi(this.uIDesc, this.uIBetValue);
   }
 

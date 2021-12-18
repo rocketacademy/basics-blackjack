@@ -11,9 +11,11 @@ class UiTree extends Ui_Component {
 class UiPlayersHolder extends Ui_Component {
   constructor() {
     super();
+    this._root.style.flexDirection = "row";
+    this._root.style.justifyContent = "space-around";
     /** @private @const {UiPlayer[]}} */
     this._uIPlayers = [];
-    /** @private @const {Object.<id:string,UiPlayer:UiPlayer>}} */
+    /** @private @const {Object.<string,UiPlayer>}} */
     this._uiPlayersRef = {};
   }
 
@@ -82,6 +84,7 @@ class UiRound extends UiTree {
     /** @private @const {Round} */
     this._round = round;
     this._root.style.border = "1px dotted black";
+    this._root.style.flexDirection = "column";
 
     /** @private @const {UiPlayersHolder} */
     this._uiPlayersHolder = newUiPlayersHolder(this._round.getPlayers());

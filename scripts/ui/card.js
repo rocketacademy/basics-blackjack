@@ -3,8 +3,10 @@ class UiImgCard extends Ui_Img {
     super();
     this._root.src = url;
     this._root.alt = url;
-    this._root.style.width = "40px";
-    this._root.style.height = "40px";
+    this._root.style.width = "auto";
+    this._root.style.height = "auto";
+    this._root.style.maxWidth = "120px";
+    this._root.style.maxHeight = "120px";
   }
 }
 
@@ -24,6 +26,7 @@ class UiCard extends Ui_Component {
     super(document.createElement("div"));
     this._card = card;
     this._id = card.getString();
+
     const url = UiCard.getUrl(card);
     this._uiImgFace = new UiImgCard(url);
     this._uiImgBack = new UiImgCard(`img/cards/JOKER-RED.png`);
@@ -44,7 +47,7 @@ class UiCardsHolder extends Ui_Component {
   constructor() {
     super();
     this._root.className += "blackjack-card-holder";
-    this._root.style.height = "50px";
+    this._root.style.height = "fit-content";
 
     this._uiCards = [];
     this._cardsRef = {};
@@ -77,6 +80,5 @@ const newUiCardsHolder = (cards) => {
     const uiC = new UiCard(c);
     uiCardHolder.addUiCard(uiC);
   }
-
   return uiCardHolder;
 };
