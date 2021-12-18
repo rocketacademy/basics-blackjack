@@ -1,3 +1,89 @@
+const shouldInitializedPersonCreditHundred = () => {
+  console.group();
+  console.log("shouldInitializedPersonCreditHundred");
+  const person1 = newPerson("p1");
+  const expectedCredit = 100;
+
+  LOG_ASSERT(
+    person1.getCredit() === expectedCredit,
+    undefined,
+    `startCredit ${expectedCredit}`
+  );
+  console.groupEnd();
+};
+shouldCardsOfParticipantsBeReferenceInARound = () => {
+  console.group();
+  console.log("shouldCardsBeReference");
+
+  // checking if we can assign variable to object property , then operate on the variable
+  const player = newPlayer(newParticipant(newPerson(`p1`)));
+  const deck = generateStandardDeck();
+
+  player.createNewHand();
+
+  dealToHandsOfActor(player, deck);
+
+  const hands = player.getHands(); // this.
+
+  const startHandsCount = 1;
+
+  LOG_ASSERT(
+    hands.length === startHandsCount,
+    undefined,
+    `actual no. of hands ${hands.length} expected hands count ${startHandsCount}`
+  );
+  const hand = hands[0];
+
+  const expectedHandCardsCount = 2;
+  const gotHandCardsCount = hand.count();
+  LOG_ASSERT(
+    gotHandCardsCount === expectedHandCardsCount,
+    undefined,
+    `${hand.id()} actual no. of cards${gotHandCardsCount} expected no. of cards${expectedHandCardsCount}`
+  );
+  console.groupEnd();
+};
+shouldTwoCardsBeDealtToThreePlayersFromStartDeck = () => {
+  console.group();
+  console.log("shouldTwoCardsBeDealtToThreePlayersFromStartDeck");
+
+  const persons = [newPerson(`1`), newPerson(`2`), newPerson(`3`)];
+
+  const players = [];
+  for (const person of persons) {
+    const player = newPlayer(newParticipant(person));
+    player.createNewHand();
+    players.push(player);
+  }
+
+  const deck = generateStandardDeck();
+  dealToHandsOfActors(players, deck);
+
+  const startDeckSize = 52;
+  const cardsDealtPerPlayer = 2;
+
+  const expectDeckSizeAfterDealing =
+    startDeckSize - players.length * cardsDealtPerPlayer;
+
+  LOG_ASSERT(
+    expectDeckSizeAfterDealing === deck.length,
+    undefined,
+    `Actual deck size after deal ${deck.length}. Expected ${expectDeckSizeAfterDealing}`
+  );
+
+  players.forEach((player) => {
+    player.getHands().forEach((hand) => {
+      const gotLength = hand.count();
+
+      LOG_ASSERT(
+        gotLength === cardsDealtPerPlayer,
+        undefined,
+        `got hand.length ${gotLength} expected cardsDealtPerPlayer ${cardsDealtPerPlayer}`
+      );
+    });
+  });
+  console.groupEnd();
+};
 const testHeadsUpTableInitialization = () => {
   console.group();
   console.log("testHeadsUpTableInitialization");
