@@ -482,7 +482,9 @@ class Round {
        * @param {Participant} p
        * @returns {Player}
        */
-      (p) => newPlayer(p)
+      (p) => {
+        return newPlayer(p);
+      }
     );
     /** @private @const {!Dealer} */
     this._dealer = newDealer(table.getDealer());
@@ -517,10 +519,23 @@ class Round {
   changePhase = (phase) => {
     this._phase = phase;
     if (this._phase === RoundPhase.START) {
-      this._currentPlayer = this._nextPlayer();
+      this.changePlayer();
     }
   };
 
+  changePlayer = () => {
+    const nextPlayer = this._nextPlayer();
+    console.log(
+      !!nextPlayer
+        ? "player changed to " + nextPlayer.getName()
+        : `no next player`
+    );
+    this.setCurrentPlayer(nextPlayer);
+    return this.getCurrentPlayer();
+  };
+  setCurrentPlayer = (player) => {
+    this._currentPlayer = player;
+  };
   getCurrentPlayer = () => this._currentPlayer;
   getRoundPhase = () => this._phase;
   // dealer head on, with plain rules.

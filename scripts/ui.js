@@ -7,10 +7,23 @@
 
 class UiButton {
   constructor() {
-    this._ui = null;
+    this._root = document.createElement("button");
   }
+  getRoot = () => this._root;
+
+  setOnClick = (onClick) => {
+    onClick = onClick || console.log("UiButtonChangePlayer no clicks found");
+    this._root.addEventListener("click", onClick);
+  };
 }
 
+class UiButtonChangePlayer extends UiButton {
+  constructor(args) {
+    super();
+
+    this._root.textContent = "Change Player";
+  }
+}
 class UiButtonHit extends UiButton {
   constructor() {
     super();
@@ -90,16 +103,23 @@ class UiPlayer extends UiActor {
 
     // IMPORTANT FOR REFERENCE
     this._id = player.id();
+    // this._buttonChangePlayer = new UiButtonChangePlayer();
+    this._buttonChangePlayer = new UiButton();
+
     this.initComponent();
   }
 
   id = () => this._id;
   initComponent = () => {
     this.setNameColor();
+    this._root.appendChild(this._buttonChangePlayer.getRoot());
   };
   setNameColor = (color = `red`) => {
     this.getUiName().getRoot().style.color = color;
   };
+
+  setOnClickButtonChangePlayer = (cb) =>
+    this._buttonChangePlayer.setOnClick(cb);
 }
 class UiDealer extends UiActor {
   /**
@@ -149,11 +169,13 @@ class UiRound extends UiTree {
    */
   initialize = () => {
     /** @private @const {UiPlayer[]} */
-    this._uiPlayers = newUiPlayers(this._round.getPlayers());
-    this._uiPlayersRef = this._uiPlayers.reduce((refs, thisUiP) => {
-      const id = thisUiP.id();
-      return { ...refs, [id]: thisUiP };
-    }, {});
+    this._uiPlayers = null;
+
+    /** @private @const {Object.<id:string,uiPlayer:UiPlayer>}} */
+    this._uiPlayersRef = null;
+
+    this.initializeUiPlayers();
+
     /** @private @const {UiDealer[]} */
     this._uiDealer = newUiDealer(this._round.getDealer());
 
@@ -161,21 +183,53 @@ class UiRound extends UiTree {
       this._root.appendChild(uiP.getRoot());
     }
     this._root.appendChild(this._uiDealer.getRoot());
+
+    // this._buttonChangePlayer = new UiButtonChangePlayer();
+    this._buttonChangePlayer = new UiButton();
+    // this._buttonChangePlayer.setOnClick(onClickChangePlayerHandler);
+
+    this._root.appendChild(this._buttonChangePlayer.getRoot());
+
     this.attachGlobalRoot();
   };
-  changeFocusUiPlayer = (() => {
-    let uiPlayer = null;
-    return (nextUiPlayer) => {
-      this.unfocusUiPlayer(uiPlayer);
-      uiPlayer = nextUiPlayer;
-      this.focusUiPlayer(uiPlayer);
+
+  initializeUiPlayers = () => {
+    this._uiPlayers = newUiPlayers(this._round.getPlayers());
+    const onClickChangePlayerHandler = () => {
+      const thisPlayerId = this._round.getCurrentPlayer()?.id();
+      this._round.changePlayer();
+      const thatPlayerId = this._round.getCurrentPlayer()?.id();
+      this.changeFocusUiPlayerById(thisPlayerId, thatPlayerId);
     };
-  })();
+    this._uiPlayers.forEach((uIP) => {
+      this.unfocusUiPlayer(uIP);
+      // uIP.setOnClickButtonChangePlayer(onClickChangePlayerHandler);
+    });
+    this._uiPlayersRef = this._uiPlayers.reduce((refs, thisUiP) => {
+      const id = thisUiP.id();
+      return { ...refs, [id]: thisUiP };
+    }, {});
+  };
+  changeFocusUiPlayerById = (unfocusPlayerId, focusPlayerId) => {
+    const [unfocusUiPlayer, focusUiPlayer] = [
+      this.getUiPlayerById(unfocusPlayerId),
+      this.getUiPlayerById(focusPlayerId),
+    ];
+    this.changeFocusUiPlayer(unfocusUiPlayer, focusUiPlayer);
+  };
+
+  changeFocusUiPlayer = (unfocusPlayer, focusPlayer) => {
+    this.unfocusUiPlayer(unfocusPlayer);
+    this.focusUiPlayer(focusPlayer);
+  };
   /**
    *
    * @param {UiPlayer} uiPlayer
    */
   focusUiPlayer = (uiPlayer) => {
+    if (!uiPlayer) {
+      return;
+    }
     const root = uiPlayer.getRoot();
     root.style.border = "1px solid turquoise";
     root.style.borderRadius = "7px";
@@ -202,10 +256,20 @@ class UiRound extends UiTree {
     const thisPhase = this._round.getPhase();
     if (thisPhase === RoundPhase.START) {
       const id = this._round.getCurrentPlayer().id();
-      const thisUiPlayer = this.getUiPlayerById(id);
-      this.changeFocusUiPlayer(thisUiPlayer);
+
+      this.focusUiPlayerById(id);
     }
   };
+  focusUiPlayerById = (id) => {
+    const thisUiPlayer = this.getUiPlayerById(id);
+    this.focusUiPlayer(thisUiPlayer);
+  };
+
+  /**
+   *
+   * @param {number} id
+   * @returns {UiPlayer}
+   */
   getUiPlayerById = (id) => {
     return this._uiPlayersRef[id];
   };
@@ -238,7 +302,7 @@ const newUiPlayer = (player) => new UiPlayer(player);
 /**
  *
  * @param {Player[]} players
- * @returns {UiPlayer} tree representation of the players
+ * @returns {UiPlayer[]} tree representation of the players
  */
 const newUiPlayers = (players) => players.map((player) => newUiPlayer(player));
 
