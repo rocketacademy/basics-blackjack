@@ -52,13 +52,13 @@ class Hand {
     this._onSetBet = cb;
   };
 
-  signalActive = (isActive) => {
+  signalActive = (isActive, phase, player, round) => {
     if (isActive === null || isActive === undefined) {
       throw "Error! please send me signal.";
     }
-    this._onActiveSignal(isActive);
+    this._onActiveSignal(isActive, phase, player, round);
   };
-  _onActiveSignal = (phase) => {};
+  _onActiveSignal = (isActive, phase, player, round) => {};
   setOnActiveSignal = (cb) => (this._onActiveSignal = cb);
 }
 

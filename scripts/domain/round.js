@@ -56,6 +56,7 @@ class Round {
 
     /** @private {Player} */
     this._currentPlayer = null;
+    /** @private {Hand} */
     this._currentHand = null;
 
     this._nextTurn = null;
@@ -339,23 +340,14 @@ class Round {
   getDealerHands = () => this._dealer.getHands();
 
   setCurrentHandAndPlayer = (hand, player) => {
-    const [prevPlayerId, prevHandId] = [
-      this.getCurrentPlayer()?.id(),
-      this.getCurrentHand()?.id(),
-    ];
-    this._currentHand = hand;
+    const prevPlayer = this.getCurrentPlayer();
+    const prevHand = this.getCurrentHand();
+
     this._currentPlayer = player;
-    const [nextPlayer, nextHand] = [
-      this.getCurrentPlayer()?.id(),
-      this.getCurrentHand()?.id(),
-    ];
-    this._onSetCurrentHand(
-      prevPlayerId,
-      prevHandId,
-      nextPlayer,
-      nextHand,
-      this._phase
-    );
+    
+    this._currentHand = hand;
+    prevHand.signalActive(false) 
+    this._currentHand.signalActive(false) 
   };
 
   _autoCreateHands = () => {

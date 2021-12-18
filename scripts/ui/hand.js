@@ -40,9 +40,6 @@ class UiHand extends Ui_Component {
       }
     });
 
-    this._hand.setOnActiveSignal((phase) => {
-      this.replaceChildrenUi(this._uiCount, this._uiCardsHolder);
-    });
 
     // First Render
     this._refreshUiCardsCount();
