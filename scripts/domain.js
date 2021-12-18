@@ -434,7 +434,8 @@ const newTableHeadsUp = (p1, dealer) => {
 class RoundPhase {
   static BET = new RoundPhase("bet");
   static DEAL = new RoundPhase("deal");
-  static IN_PLAY = new RoundPhase("in play");
+  static IN_PLAY_PLAYERS = new RoundPhase("players");
+  static IN_PLAY_DEALER = new RoundPhase("dealer");
   static END = new RoundPhase("end");
 
   constructor() {}
