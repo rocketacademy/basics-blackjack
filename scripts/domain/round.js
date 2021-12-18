@@ -1,12 +1,10 @@
-
-
 /**
  *
  * @param {Actor} actor1
  * @param {number} amt
  * @param {Actor} actor2
  */
- const transferCredit = (actor1, amt, actor2) => {
+const transferCredit = (actor1, amt, actor2) => {
   actor1.decreaseCredit(amt);
   actor2.increaseCredit(amt);
 };
@@ -29,8 +27,6 @@ class RoundPhase {
 
   desc = () => this._desc;
 }
-
-
 
 class Round {
   /**

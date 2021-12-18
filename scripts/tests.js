@@ -199,8 +199,6 @@ testHeadsUpRoundInitialization();
 testHeadsUpDealRoundPhase();
 // testHeadsUpDrawlessFaceValueConcilliationExpectedLLN();
 
-
-
 const testIfTopCardTransferredFromDeck = () => {
   console.group();
   console.log("testIfTopCardTransferredFromDeck");
