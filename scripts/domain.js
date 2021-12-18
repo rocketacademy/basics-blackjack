@@ -123,7 +123,7 @@ const testIfTopCardTransferredFromDeck = () => {
  *
  * @returns {Person}
  */
-const newPerson = (name, startCredit = 100) => {
+const newPerson = (name = "nameless homie", startCredit = 100) => {
   const _name = name;
   let _credit = startCredit;
   return {
@@ -311,7 +311,7 @@ shouldCardsOfParticipantsBeReferenceInARound = () => {
   console.log("shouldCardsBeReference");
 
   // checking if we can assign variable to object property , then operate on the variable
-  const player = newPlayer(newParticipant(newPerson()));
+  const player = newPlayer(newParticipant(newPerson(`p1`)));
   const deck = generateStandardDeck();
 
   player.createNewHand();
@@ -343,7 +343,7 @@ shouldTwoCardsBeDealtToThreePlayersFromStartDeck = () => {
   console.group();
   console.log("shouldTwoCardsBeDealtToThreePlayersFromStartDeck");
 
-  const persons = [newPerson(), newPerson(), newPerson()];
+  const persons = [newPerson(`1`), newPerson(`2`), newPerson(`3`)];
 
   const players = [];
   for (const person of persons) {
@@ -420,9 +420,9 @@ const newTable = (players, dealer) => {
  * @returns
  */
 const newTableHeadsUp = (p1, dealer) => {
-  p1 = p1 || newPerson();
+  p1 = p1 || newPerson(`p1`);
   const players = [p1];
-  dealer = dealer || newPerson("", 10000);
+  dealer = dealer || newPerson("D", 10000);
 
   return newTable(players, dealer);
 };
@@ -474,7 +474,6 @@ class Round {
   }
 
   initialize = () => {
-    this._phase = RoundPhase.BET;
     this._deck = shuffleDeck(generateStandardDeck());
   };
 

@@ -32,24 +32,44 @@ class UiHand {
     this._ui.setAttribute("count", hand.count());
   }
 }
+
+class UiTree {
+  static UI_ROOT = document.getElementById("root-ui-blackjack");
+
+  constructor() {
+    this._root = document.createElement("div");
+  }
+
+  getRoot = () => this._root;
+
+  attachGlobalRoot = () => UiTree.UI_ROOT.replaceChildren(this.getRoot());
+}
+
 class UiActor {
   /**
    *
    * @param {Actor} actor
    */
   constructor(actor) {
+    this._root = document.createElement("div");
     this._uiName = document.createElement("div");
     this._uiName.innerHTML = actor.getName();
     /** @private @constant {UiHand[]} */
     this._uiHands = actor.getHands().map((hand) => newUiHand(hand));
     /** @private @constant {Ui[]} */
     this._uiCredit = newUiCredit(actor.getCredit());
+
+    this.formComponent();
   }
   /**
    *
    * @returns {HTMLDivElement}
    */
   getUiName = () => this._uiName;
+  getRoot = () => this._root;
+  formComponent = () => {
+    this._root.appendChild(this._uiName);
+  };
 }
 class UiPlayer extends UiActor {
   /**
@@ -79,17 +99,6 @@ class UiCredit {
   setValue = (credit) => this._ui.setAttribute("value", credit);
 }
 
-class UiTree {
-  static UI_ROOT = document.getElementById("root-ui-blackjack");
-
-  constructor() {
-    this._root = document.createElement("div");
-  }
-
-  getRoot = () => this._root;
-
-  attachRoot = () => UiTree.UI_ROOT.replaceChildren(this.getRoot());
-}
 class UiRound extends UiTree {
   /**
    *
@@ -115,7 +124,17 @@ class UiRound extends UiTree {
    * @param {RoundPhase} phase
    */
   initialize = () => {
-    this.bet();
+    /** @private @const {UiPlayer[]} */
+    this._uiPlayers = newUiPlayers(this._round.getPlayers());
+    /** @private @const {UiDealer[]} */
+    this._uiDealer = newUiDealer(this._round.getDealer());
+
+    console.log(this._uiDealer.getRoot());
+    for (const uiP of this._uiPlayers) {
+      this._root.appendChild(uiP.getRoot());
+    }
+    this._root.appendChild(this._uiDealer.getRoot());
+    this.attachGlobalRoot();
   };
   /**
    * Called when intent is to change round phase
@@ -129,12 +148,6 @@ class UiRound extends UiTree {
     this._setRoundPhase(phase);
     const thisPhase = this._getRoundPhase();
     if (thisPhase === RoundPhase.START) {
-      /** @private @const {UiPlayer[]} */
-      this._uiPlayers = newUiPlayers(this._round.getPlayers());
-      /** @private @const {UiDealer[]} */
-      this._uiDealer = newUiDealer(this._round.getDealer());
-
-      this.attachRoot();
     }
   };
 
