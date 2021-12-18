@@ -49,7 +49,7 @@ const makeDeck = function () {
   // Initialise an empty deck array
   var cardDeck = [];
   // Initialise an array of the 4 suits in our deck. We will loop over this array.
-  var suits = ["♥️", "♦️", "♣️", "♠️"];
+  var suits = ["hearts", "diamonds", "clubs", "spades"];
 
   // Loop over the suits array
   var suitIndex = 0;
@@ -85,13 +85,14 @@ const makeDeck = function () {
       } else if (cardName == "ace") {
         point = 11;
       }
-
+      var img_src = `"./svg-cards/${cardName}_of_${currentSuit}.svg"`;
       // Create a new card with the current name, suit, and rank
       var card = {
         name: cardName,
         suit: currentSuit,
         rank: rankCounter,
         point: point,
+        img: `<img src=${img_src}/>`,
       };
 
       // Add the new card to the deck
@@ -221,7 +222,7 @@ const countCardPoints = function () {
 const displayHandmsg = function (playerObject) {
   let msg = ``;
   for (i = 0; i < playerObject.cards.length; i += 1) {
-    msg += `[${playerObject.cards[i].name}${playerObject.cards[i].suit}]<br>`;
+    msg += `${playerObject.cards[i].img}`;
   }
   msg += `<b>Points: ${playerObject.cardPoints}</b>`;
   return msg;
@@ -232,13 +233,14 @@ const displayDealerHandmsg = function (dealerObject) {
   let msg = ``;
   if (dealer.cardPoints == 21 || gameStatus == dealerTurn) {
     for (i = 0; i < dealerObject.cards.length; i += 1) {
-      msg += `[${dealerObject.cards[i].name}${dealerObject.cards[i].suit}]<br>`;
+      msg += `${dealerObject.cards[i].img}<br>`;
     }
     msg += `<b>Points: ${dealer.cardPoints}</b>`;
   } else {
-    msg = `[?]<br>`;
+    var img_src = `"./svg-cards/2B.svg"`;
+    msg = `<img src=${img_src}/>`;
     for (i = 1; i < dealerObject.cards.length; i += 1) {
-      msg += `[${dealerObject.cards[i].name}${dealerObject.cards[i].suit}]<br>`;
+      msg += `${dealerObject.cards[i].img}<br>`;
     }
   }
   return msg;
@@ -439,6 +441,7 @@ const newRound = function () {
   }
   dealer.cards = [];
   dealer.cardPoints = 0;
+  deck = makeDeck();
   shuffledDeck = shuffleCards(deck);
   playersArrayIndex = 0;
   gameStatus = pendingBets;
@@ -451,11 +454,11 @@ const runDealerTurn = function () {
     dealer.cards.push(shuffledDeck.pop());
     countCardPoints();
   }
+  while (playersArray[playersArrayIndex].status == PLAYED) {
+    playersArrayIndex += 1;
+  }
   let msg = "";
   if (dealer.cardPoints > 21) {
-    while (playersArray[playersArrayIndex].status == PLAYED) {
-      playersArrayIndex += 1;
-    }
     msg = `${generateHandCardsMsg()}<br><br>Dealer Busted, you win!<br><br>${
       playersArray[playersArrayIndex].name
     } wins $${
@@ -470,9 +473,6 @@ const runDealerTurn = function () {
     dealer.cardPoints <= 21 &&
     playersArray[playersArrayIndex].cardPoints == dealer.cardPoints
   ) {
-    while (playersArray[playersArrayIndex].status == PLAYED) {
-      playersArrayIndex += 1;
-    }
     msg = `${generateHandCardsMsg()}<br><br>Hi ${
       playersArray[playersArrayIndex].name
     }. It is a push.<br><br>Press Submit for the next turn.`;
@@ -483,9 +483,6 @@ const runDealerTurn = function () {
     dealer.cardPoints <= 21 &&
     playersArray[playersArrayIndex].cardPoints > dealer.cardPoints
   ) {
-    while (playersArray[playersArrayIndex].status == PLAYED) {
-      playersArrayIndex += 1;
-    }
     msg = `${generateHandCardsMsg()}<br><br>You win!<br><br>${
       playersArray[playersArrayIndex].name
     } wins $${
@@ -498,9 +495,6 @@ const runDealerTurn = function () {
     playersArrayIndex += 1;
   } else {
     bust_block2: {
-      while (playersArray[playersArrayIndex].status == PLAYED) {
-        playersArrayIndex += 1;
-      }
       msg = `${generateHandCardsMsg()}<br><br>You lose!<br><br>${
         playersArray[playersArrayIndex].name
       } lose $${
