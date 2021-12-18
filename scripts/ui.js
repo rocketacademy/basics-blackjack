@@ -54,10 +54,17 @@ class UiButton extends UiComponent {
 class UiButtonBet extends UiButton {
   constructor() {
     super();
-    this._root.textContent = "BET";
+    this.uIDesc = new UiText();
+    this.uIDesc.setTextContent("BET");
+    this.uIBetValue = new UiText();
     this._root.style.fontSize = "11px";
     this._root.style.display = "flex";
+    this.replaceChildrenUi(this.uIDesc, this.uIBetValue);
   }
+
+  setBetValue = (v) => {
+    this.uIBetValue.setTextContent(v);
+  };
 }
 
 class UiButtonchangeTurn extends UiButton {
@@ -73,15 +80,9 @@ class UiButtonHit extends UiButton {
   }
 }
 
-class UiButtonStandAll extends UiButton {
-  constructor() {
-    super();
-    this._root.textContent = "Stand All";
-  }
-}
-class UiPhaseDisplay extends UiComponent {
-  constructor() {
-    super(document.createElement("div"));
+class UiText extends UiComponent {
+  constructor(element) {
+    super(element);
   }
 
   setTextContent = (text) => {
@@ -91,6 +92,11 @@ class UiPhaseDisplay extends UiComponent {
   getTextContent = () => {
     return this._root.textContent;
   };
+}
+class UiPhaseDisplay extends UiText {
+  constructor() {
+    super(document.createElement("div"));
+  }
 }
 
 class UiHand extends UiComponent {
@@ -132,13 +138,49 @@ class UiHand extends UiComponent {
   focus = (phase, player) => {
     console.group(`Phase [${phase.desc()}] focus ui hand [${this.id()}]`);
     if (phase === RoundPhase.BET) {
-      const _uiButtonBet__ = new UiButtonBet();
-      this.replaceChildrenUi(this._uiCount, _uiButtonBet__);
+      const [_uiButtonBet__, _uiSlider__] = newBetControl(player);
+      this.replaceChildrenUi(this._uiCount, _uiButtonBet__, _uiSlider__);
     }
     console.groupEnd();
   };
 }
 
+class UiSlider extends UiComponent {
+  constructor() {
+    super(document.createElement("input"));
+    this._root.className += " black-jack-bet-slider";
+    this._root.type = "range";
+    this._root.step = 1;
+  }
+
+  setMin = (num = 0) => {
+    this._root.min = num;
+  };
+  setMax = (num) => {
+    this._root.max = num;
+  };
+  setValue = (val) => {
+    this._root.value = val;
+  };
+  setOnRangeChange = (fn) => {
+    this._root.oninput = fn;
+  };
+}
+const newBetControl = (player) => {
+  const credit = player.getCredit();
+  const _uiButtonBet__ = new UiButtonBet();
+
+  const _uiSlider__ = new UiSlider();
+  _uiSlider__.setMax(credit);
+  _uiSlider__.setValue(0);
+
+  _uiSlider__.setOnRangeChange((e) => {
+    const v = e.target.value;
+    _uiSlider__.value = v;
+    _uiButtonBet__.setBetValue(v);
+  });
+  return [_uiButtonBet__, _uiSlider__];
+};
 class UiCredit extends UiComponent {
   /**
    * @param {number} credit
@@ -246,12 +288,12 @@ class UiPlayer extends UiActor {
     uiHand.unfocus(phase);
   };
 
-  focusHandById = (handId, phase) => {
+  focusHandById = (handId, phase, player) => {
     if (!handId) {
       return;
     }
     const uiHand = this._uiHandsRef[handId];
-    uiHand.focus(phase);
+    uiHand.focus(phase, this._actor);
   };
 
   unfocus = (phase) => {
