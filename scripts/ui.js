@@ -379,9 +379,6 @@ class UiRound extends UiTree {
     /** @private @const {UiPhaseDisplay} */
     this._uiPhaseDisplay = null;
 
-    /** @private @const {UiButton} */
-    this._uiButtonDummy = null;
-
     /** @private @const {RoundPhase} */
     this._phaseUi = this._round.getPhase();
   }
@@ -405,11 +402,6 @@ class UiRound extends UiTree {
     this._uiPhaseDisplay = new UiPhaseDisplay();
   };
 
-  _initializeButtonDummy = () => {
-    this._uiButtonDummy = new UiButton();
-    setUiTextContent(this._uiButtonDummy, "round dummy button");
-  };
-
   _initializeUiDealer = () => {
     this._uiDealer = newUiDealer(this._round.getDealer());
   };
@@ -429,7 +421,6 @@ class UiRound extends UiTree {
   initializeComponents = () => {
     this._initializeUiDisplayPhase();
     this._initializeUiPlayers();
-    this._initializeButtonDummy();
     this._initializeUiDealer();
   };
 
