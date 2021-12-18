@@ -198,3 +198,36 @@ testHeadsUpRoundInitialization();
 
 testHeadsUpDealRoundPhase();
 // testHeadsUpDrawlessFaceValueConcilliationExpectedLLN();
+
+
+
+const testIfTopCardTransferredFromDeck = () => {
+  console.group();
+  console.log("testIfTopCardTransferredFromDeck");
+  const deck = generateStandardDeck();
+  let expectedStartingDeckSize = 52;
+  LOG_ASSERT(
+    deck.length === expectedStartingDeckSize,
+    undefined,
+    `actual start size ${deck.length}. Expected ${expectedStartingDeckSize}`
+  );
+  const hand = newHand();
+
+  transferTopCardToHand(deck, hand);
+
+  const expectedDeckSizeAfterOneTransfer = expectedStartingDeckSize - 1;
+
+  actualHandSize = hand.count();
+  expectedHandSize = 1;
+  LOG_ASSERT(
+    deck.length === expectedDeckSizeAfterOneTransfer,
+    undefined,
+    `Actual ${deck.length}. Expected${expectedDeckSizeAfterOneTransfer}`
+  );
+  LOG_ASSERT(
+    actualHandSize === expectedHandSize,
+    undefined,
+    `Actual hand size ${actualHandSize}. Expected${expectedHandSize}`
+  );
+  console.groupEnd();
+};
