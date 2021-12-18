@@ -5,8 +5,6 @@
 // ui.js
 // The DOM nodes and elements to represent POJO.
 
-const UI_ROOT = document.getElementById("root-ui-blackjack");
-
 class UiButton {
   constructor() {
     this._ui = null;
@@ -80,12 +78,25 @@ class UiCredit {
   }
   setValue = (credit) => this._ui.setAttribute("value", credit);
 }
-class UiRound {
+
+class UiTree {
+  static UI_ROOT = document.getElementById("root-ui-blackjack");
+
+  constructor() {
+    this._root = document.createElement("div");
+  }
+
+  getRoot = () => this._root;
+
+  attachRoot = () => UiTree.UI_ROOT.replaceChildren(this.getRoot());
+}
+class UiRound extends UiTree {
   /**
    *
    * @param {Round} round
    */
   constructor(round) {
+    super();
     /** @private @const {Round} */
     this._round = round;
   }
@@ -122,6 +133,8 @@ class UiRound {
       this._uiPlayers = newUiPlayers(this._round.getPlayers());
       /** @private @const {UiDealer[]} */
       this._uiDealer = newUiDealer(this._round.getDealer());
+
+      this.attachRoot();
     }
   };
 

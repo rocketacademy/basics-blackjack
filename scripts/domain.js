@@ -481,12 +481,12 @@ class Round {
   getPhase = () => this._phase;
   getPlayers = () => this._players;
   getDealer = () => this._dealer;
-  _allActors = () => [...this.getPlayers(), this.getDealer()];
+  allActors = () => [...this.getPlayers(), this.getDealer()];
   dealCards = () => {
-    dealToHandsOfActors(this._allActors(), this._deck);
+    dealToHandsOfActors(this.allActors(), this._deck);
   };
   deckSize = () => this._deck.length;
-  setHands = () => createHands(this._allActors());
+  setHands = () => createHands(this.allActors());
   getDealerHands = () => this._dealer.getHands();
   setPhase = (phase) => {
     this._phase = phase;
