@@ -572,7 +572,7 @@ class Round {
   _nextPhase = () => {
     switch (this._phase) {
       case RoundPhase.BID:
-        return RoundPhase.IN_PLAY_PLAYERS;
+        return RoundPhase.DEAL;
       case RoundPhase.IN_PLAY_PLAYERS:
         return RoundPhase.IN_PLAY_DEALER;
     }
