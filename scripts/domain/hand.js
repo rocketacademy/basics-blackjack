@@ -11,7 +11,7 @@ class Hand {
     /** @private @const {Card[]} */
     this._cards = [];
     /** @private @const {number} */
-    this._bet = null;
+    this._mainBet = null;
     this._sponsor = null;
     this._status = HandStatus.IN_PLAY;
     this._id = uuidv4();
@@ -20,13 +20,13 @@ class Hand {
   id = () => this._id;
 
   setBet = (amt) => {
-    this._bet = amt;
-    this._onSetBet(this._bet);
+    this._mainBet = amt;
+    this._onSetBet(this._mainBet);
   };
-  addBet = (amt) => this.setBet(this._bet + amt);
+  addBet = (amt) => this.setBet(this._mainBet + amt);
   setSponsor = (player) => (this._sponsor = player);
 
-  getBet = () => this._bet;
+  getBet = () => this._mainBet;
   /**
    *
    * @param {Card} card

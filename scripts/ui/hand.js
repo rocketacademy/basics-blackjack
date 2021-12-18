@@ -143,9 +143,9 @@ class UiHand extends Ui_Component {
     const credit = player.getPlayableCredit();
 
     const initBetValue = 0;
-    const _uIContainerBet__ = new UiContainerBet();
+    const _uIContainerBet__ = new UiContainerMainBet();
     _uIContainerBet__.setButtonOnMouseClick((betValue) => {
-      round.requestBet(player, hand, betValue);
+      round.requestMainBet(player, hand, betValue);
     });
     const _uiSlider__ = new UiSlider();
     _uiSlider__.setMax(credit);

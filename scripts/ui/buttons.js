@@ -23,7 +23,7 @@ class UiImgChip extends Ui_Img {
   }
 }
 
-class UiContainerBet extends Ui_Component {
+class UiContainerMainBet extends Ui_Component {
   constructor() {
     super();
 
@@ -32,7 +32,7 @@ class UiContainerBet extends Ui_Component {
     this._root.style.alignItems = "center";
 
     this._uIImg = new UiImgChip("img/buttons/chip.png");
-    this._uiButton = new UiButtonBet();
+    this._uiButton = new UiButtonMainBet();
 
     this.replaceChildrenUi(this._uIImg, this._uiButton);
   }
@@ -42,7 +42,7 @@ class UiContainerBet extends Ui_Component {
   setButtonOnMouseClick = (cb) => this._uiButton.setOnMouseClick(cb);
 }
 
-class UiButtonBet extends Ui_Button {
+class UiButtonMainBet extends Ui_Button {
   constructor() {
     super();
     // Root Configuration

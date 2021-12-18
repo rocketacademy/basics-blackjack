@@ -24,9 +24,9 @@ const test_Main_HeadsUp = () => {
   );
   const handPlayer1_1 = player1.getHands()[0];
   LOG_ASSERT(!!handPlayer1_1, undefined, `handPlayer1_1 missing`);
-  round.requestBet(player1, handPlayer1_1, 1);
+  round.requestMainBet(player1, handPlayer1_1, 1);
   const handPlayer2_1 = player2.getHands()[0];
-  round.requestBet(player2, handPlayer2_1, 1); // End of bets, // [BET] --> DEAL --> [IN_PLAY_PLAYER]
+  round.requestMainBet(player2, handPlayer2_1, 1); // End of bets, // [BET] --> DEAL --> [IN_PLAY_PLAYER]
 
   expectedPhase = RoundPhase.IN_PLAY_PLAYERS;
   actualPhase = round.getPhase();

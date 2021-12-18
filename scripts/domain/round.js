@@ -236,9 +236,9 @@ class Round {
   };
 
   // Game Activities
-  _bet = (player, hand, bet) => {
+  _mainBet = (player, hand, bet) => {
     console.group(
-      `_bet Player [${player.getName()}] Hand [${hand.id()}] Bet [${bet}]`
+      `_mainBet Player [${player.getName()}] Hand [${hand.id()}] Bet [${bet}]`
     );
 
     hand.setSponsor(player);
@@ -273,7 +273,7 @@ class Round {
    * @param {number} amt
    * @returns
    */
-  requestBet = (better, hand, amt) => {
+  requestMainBet = (better, hand, amt) => {
     console.group("Bet requested");
 
     let reject = false;
@@ -294,7 +294,7 @@ class Round {
       console.groupEnd();
       return;
     }
-    this._bet(better, hand, amt);
+    this._mainBet(better, hand, amt);
     console.groupEnd();
   };
 
