@@ -49,14 +49,15 @@ class UiButton extends UiComponent {
   constructor() {
     super(document.createElement("button"));
   }
-  setOnClick = (onClick) => {
-    onClick =
-      onClick ||
-      (() => {
-        console.log("UiButtonchangeTurn no clicks found");
-      });
-    this._root.addEventListener("click", onClick);
-  };
+}
+
+class UiButtonBet extends UiButton {
+  constructor() {
+    super();
+    this._root.textContent = "BET";
+    this._root.style.fontSize = "11px";
+    this._root.style.display = "flex";
+  }
 }
 
 class UiButtonchangeTurn extends UiButton {
@@ -108,7 +109,7 @@ class UiHand extends UiComponent {
     this._root.setAttribute("id", this._id);
     this._root.setAttribute("class", "blackjack-hand");
     this._root.style.width = "100px";
-    this._root.style.height = "50px";
+    this._root.style.height = "200px";
     this._root.style.border = "1px solid black";
     this._hand.setOnAddCard((card) => {
       console.log(`card transferred ${card.getString()}`);
@@ -116,15 +117,23 @@ class UiHand extends UiComponent {
     });
     this._refreshUiCards();
   }
+  id = () => this._id;
 
   _refreshUiCards = () => {
     this._uiCount.getRoot().textContent = `[${this._hand.count()}]`;
   };
-
-  render = (phase) => {
-    console.group(`rendering ui hand on ${phase.desc()}`);
+  unfocus = (phase, player) => {
+    console.group(`Phase [${phase.desc()}] unfocus ui hand [${this.id()}]`);
     if (phase === RoundPhase.BET) {
       this.replaceChildrenUi(this._uiCount, this._uiButtonBet);
+    }
+    console.groupEnd();
+  };
+  focus = (phase, player) => {
+    console.group(`Phase [${phase.desc()}] focus ui hand [${this.id()}]`);
+    if (phase === RoundPhase.BET) {
+      const _uiButtonBet__ = new UiButtonBet();
+      this.replaceChildrenUi(this._uiCount, _uiButtonBet__);
     }
     console.groupEnd();
   };
@@ -161,6 +170,12 @@ class UiActor extends UiComponent {
     this._uiName = new UiName(this._actor.getName());
     /** @private @const {UiHand[]} */
     this._uiHands = actor.getHands().map((hand) => newUiHand(hand));
+
+    this._uiHandsRef = this._uiHands.reduce((refs, thisUiP) => {
+      const id = thisUiP.id();
+      return { ...refs, [id]: thisUiP };
+    }, {});
+
     /** @private @const {Ui[]} */
     this._uiCredit = newUiCredit(this._actor.getCredit());
 
@@ -184,7 +199,9 @@ class UiActor extends UiComponent {
   _addUiHand = (hand) => {
     console.group(`_addUiHands`);
     console.log(`adding ui hand`);
-    this._uiHands.push(newUiHand(hand));
+    const uiHand = newUiHand(hand);
+    this._uiHands.push(uiHand);
+    this._uiHandsRef = { [hand.id()]: uiHand, ...this._uiHandsRef };
     console.log(`replace children of uiActor`);
     this.replaceChildrenUi(this._uiName, ...this.getUiHands());
     console.groupEnd();
@@ -213,14 +230,72 @@ class UiPlayer extends UiActor {
   constructor(player) {
     super(player);
 
-    /** @private {UiHand[]} */
-    this._uiHands = newUiHands(this._actor);
     this._initComponent();
   }
 
   id = () => this._id;
   _initComponent = () => {
     this.setNameColor("red");
+  };
+
+  unfocusHandById = (handId, phase) => {
+    if (!handId) {
+      return;
+    }
+    const uiHand = this._uiHandsRef[handId];
+    uiHand.unfocus(phase);
+  };
+
+  focusHandById = (handId, phase) => {
+    if (!handId) {
+      return;
+    }
+    const uiHand = this._uiHandsRef[handId];
+    uiHand.focus(phase);
+  };
+
+  unfocus = (phase) => {
+    console.group(
+      `Render:Unfocus, Component:Player [${this._actor.getName()}], Phase:${phase.desc()} `
+    );
+    switch (phase) {
+      case RoundPhase.IN_PLAY_PLAYERS:
+        this.replaceChildrenUi(this.getUiName(), ...this.getUiHands());
+        break;
+      case RoundPhase.BET:
+        this._root.style.border = "1px solid black";
+        this._root.style.borderRadius = "7px";
+        this.replaceChildrenUi(this.getUiName(), ...this.getUiHands());
+        break;
+      default:
+        this.replaceChildrenUi(this.getUiName());
+        break;
+    }
+  };
+
+  /**
+   *
+   * @param {RoundPhase} phase
+   * @returns
+   */
+  focus = (phase) => {
+    console.group(
+      `Render:Focus, Component:Player [${this._actor.getName()}], Phase:${phase.desc()} `
+    );
+    switch (phase) {
+      case RoundPhase.IN_PLAY_PLAYERS:
+        this.replaceChildrenUi(this.getUiName(), ...this.getUiHands());
+        break;
+      case RoundPhase.BET:
+        this._root.style.border = "1px solid turquoise";
+        this._root.style.borderRadius = "7px";
+        this.replaceChildrenUi(this.getUiName(), ...this.getUiHands());
+        break;
+      default:
+        this.replaceChildrenUi(this.getUiName());
+        break;
+    }
+    console.groupEnd();
   };
 }
 class UiDealer extends UiActor {
@@ -241,7 +316,7 @@ class UiDealer extends UiActor {
    * @param {RoundPhase} phase
    * @returns
    */
-  renderModeActive = (phase) => {
+  focus = (phase) => {
     console.group(
       `Render:Active Phase:${phase.desc()} Player:${this._actor.getName()}`
     );
@@ -259,7 +334,7 @@ class UiDealer extends UiActor {
     console.groupEnd();
   };
 
-  renderModeAudience = (phase) => {
+  unfocus = (phase) => {
     if (phase === RoundPhase.BET) {
       console.log(
         "rendering dealer with no of hands:" + this.getUiHands().length
@@ -363,6 +438,22 @@ class UiRound extends UiTree {
       this._uiDealer._addUiHand(hand);
     });
 
+    this._round.setOnChangeBetTurn(
+      (prevPlayer, prevHand, newPlayer, newHand, phase) => {
+        const [prevPlayerId, newPlayerId] = [prevPlayer?.id(), newPlayer?.id()];
+        this.changeFocusUiPlayerById(prevPlayerId, newPlayerId, phase);
+        const [prevHandId, newHandId] = [prevHand?.id(), newHand?.id()];
+
+        this.changeFocusUiHandbyId(
+          prevPlayerId,
+          prevHandId,
+          newPlayerId,
+          newHandId,
+          phase
+        );
+      }
+    );
+
     this._round.setOnSetPhase((phase) => {
       this._refreshDisplayPhase();
       switch (phase) {
@@ -389,12 +480,6 @@ class UiRound extends UiTree {
     this._uiPhaseDisplay.setTextContent(text);
   };
 
-  _refreshUiPlayers = () => {
-    const phase = this._phaseUi;
-    this._uiPlayers.forEach((uIP) => {
-      this.unfocusUiPlayer(uIP, phase);
-    });
-  };
   changeFocusUiPlayerById = (unfocusPlayerId, focusPlayerId, phase) => {
     const [unfocusUiPlayer, focusUiPlayer] = [
       this.getUiPlayerById(unfocusPlayerId),
@@ -403,9 +488,29 @@ class UiRound extends UiTree {
     this.changeFocusUiPlayer(unfocusUiPlayer, focusUiPlayer, phase);
   };
 
-  changeFocusUiPlayer = (unfocusPlayer, focusPlayer, phase) => {
-    this.unfocusUiPlayer(unfocusPlayer, phase);
-    this.focusUiPlayer(focusPlayer, phase);
+  changeFocusUiHandbyId = (
+    prevPlayerId,
+    prevHandId,
+    newPlayerId,
+    newHandId,
+    phase
+  ) => {
+    const [prevUiPlayer, newUiPlayer] = [
+      this.getUiPlayerById(prevPlayerId),
+      this.getUiPlayerById(newPlayerId),
+    ];
+    prevUiPlayer?.unfocusHandById(prevHandId, phase);
+    newUiPlayer?.focusHandById(newHandId, phase);
+  };
+  /**
+   *
+   * @param {UiPlayer} unfocusUiPlayer
+   * @param {UiPlayer} focusUiPlayer
+   * @param {RoundPhase} phase
+   */
+  changeFocusUiPlayer = (unfocusUiPlayer, focusUiPlayer, phase) => {
+    this.unfocusUiPlayer(unfocusUiPlayer, phase);
+    this.focusUiPlayer(focusUiPlayer, phase);
   };
   /**
    *
@@ -416,10 +521,7 @@ class UiRound extends UiTree {
     if (!uiPlayer) {
       return;
     }
-    uiPlayer.renderModeActive(phase);
-    const root = uiPlayer.getRoot();
-    root.style.border = "1px solid turquoise";
-    root.style.borderRadius = "7px";
+    uiPlayer.focus(phase);
   };
   /**
    *
@@ -430,10 +532,7 @@ class UiRound extends UiTree {
     if (!uiPlayer) {
       return;
     }
-    uiPlayer.renderModeAudience(phase);
-    const root = uiPlayer.getRoot();
-    root.style.border = "1px solid grey";
-    root.style.borderRadius = "7px";
+    uiPlayer.unfocus(phase);
   };
 }
 
@@ -523,6 +622,7 @@ const test_Main_HeadsUp = () => {
 
 console.log(`---MAIN TEST---`);
 test_Main_HeadsUp();
+console.log(`---test_Main_Ui_Til_BET TEST---`);
 
 const test_Main_Ui_Til_BET = () => {
   console.group("test_Main_Ui_Til_BET");

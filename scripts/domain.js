@@ -742,12 +742,27 @@ class Round {
   };
 
   _changeBetTurn = () => {
+    const beforePlayer = this.getCurrentPlayer();
+    const beforeHand = this.getCurrentHand();
     const { hand, actor: player } = this._nextTurn();
     console.log(
       `Betting Turn on hand [${hand?.id()}] of Player [${player?.getName()}] `
     );
     this.setCurrentHand(hand);
     this.setCurrentPlayer(player);
+
+    const [afterPlayer, afterHand] = [
+      this.getCurrentPlayer(),
+      this.getCurrentHand(),
+    ];
+
+    this._onChangeBetTurn(
+      beforePlayer,
+      beforeHand,
+      afterPlayer,
+      afterHand,
+      this._phase
+    );
   };
   _resetInPlayPlayerTurn = () => {
     this._nextTurn = this._nextHandGenerator(this.getPlayers());
@@ -829,6 +844,7 @@ class Round {
    * @returns {Player}
    */
   getCurrentPlayer = () => this._currentPlayer;
+  getCurrentHand = () => this._currentHand;
   getRoundPhase = () => this._phase;
   // dealer head on, with plain rules.
   concileAllPlayerHandsOnFaceValue = () => {
@@ -858,4 +874,7 @@ class Round {
 
   _onSetPhase = (phase) => {};
   setOnSetPhase = (fn) => (this._onSetPhase = fn);
+
+  _onChangeBetTurn = (prevPlayer, prevHand, newPlayer, newHand, phase) => {};
+  setOnChangeBetTurn = (fn) => (this._onChangeBetTurn = fn);
 }
