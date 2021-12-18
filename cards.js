@@ -52,10 +52,10 @@ const logCards = (cards) => {
 
 /**
  * Swap card positions in the deck
- * @param {Card[]} cards
+ * @param {Card[]} deck
  */
-const swapCardsPosition = (cards, i, j) => {
-  [cards[i], cards[j]] = [cards[j], cards[i]];
+const swapCardsPosition = (deck, i, j) => {
+  [deck[i], deck[j]] = [deck[j], deck[i]];
 };
 const shuffleDeck = (cards) => {
   const cardsLength = cards.length;
@@ -71,22 +71,22 @@ const shuffleDeck = (cards) => {
 /**
  * Transfer one card from source to destination
  * @param {Card[]} sourceCards
- * @param {Card[]} destCards
+ * @param {Hand} destCards
  */
-const transferTopCard = (sourceCards, destCards) => {
+const transferTopCardToHand = (sourceCards, hand) => {
   const card = sourceCards.pop();
-  destCards.push(card);
+  hand.addCard(card);
 };
 
 /**
  * Deals two cards to hand
  * @param {Card[]} deck the deck to draw from
- * @param {Card[]} hand insert card to hand
+ * @param {Hand} hand insert card to hand
  * @returns
  */
 const dealToHand = (deck, hand) => {
-  transferTopCard(deck, hand);
-  transferTopCard(deck, hand);
+  transferTopCardToHand(deck, hand);
+  transferTopCardToHand(deck, hand);
 
   return { deck, hand };
 };
@@ -101,9 +101,9 @@ const testIfTopCardTransferredFromDeck = () => {
       ? ``
       : `actual start size ${deck.length}. Expected ${expectedStartingDeckSize}`
   );
-  const hand = [];
+  const hand = newHand();
 
-  transferTopCard(deck, hand);
+  transferTopCardToHand(deck, hand);
 
   const expectedDeckSizeAfterOneTransfer = expectedStartingDeckSize - 1;
   expectedHandSize = 1;
@@ -144,16 +144,30 @@ const newPerson = (name, startCredit = 100) => {
 
 // HAND
 
-/**
- * @typedef {Card[]} Hand
- */
+class Hand {
+  constructor() {
+    /** @private @const {Card[]} */
+    this._cards = [];
+    /** @private @const {number} */
+    this._bet = 0;
+  }
 
+  setBet = (amt) => (this._bet = amt);
+  addBet = (amt) => (this._bet += amt);
+  getBet = () => this._bet;
+  /**
+   *
+   * @param {Card} card
+   */
+  addCard = (card) => this._cards.push(card);
+  count = () => this._cards.length;
+}
 /**
  * newHand
  * @returns {Hand}
  */
 const newHand = () => {
-  return [];
+  return new Hand();
 };
 
 // PARTICIPANT
@@ -192,7 +206,7 @@ class Actor {
 
   getHands = () => this._hands;
   createNewHand = () => {
-    const newHand = [];
+    const newHand = new Hand();
     this._hands.push(newHand);
     return newHand;
   };
@@ -282,11 +296,12 @@ shouldCardsOfParticipantsBeReferenceInARound = () => {
   );
   const hand = hands[0];
 
-  const handCardsCount = 2;
+  const expectedHandCardsCount = 2;
+  const gotHandCardsCount = hand.count();
   console.log(
-    hand.length === handCardsCount
+    gotHandCardsCount === expectedHandCardsCount
       ? ``
-      : `${hand} actual no. of cards${hand.length} expected no. of cards${handCardsCount}`
+      : `${hand} actual no. of cards${gotHandCardsCount} expected no. of cards${expectedHandCardsCount}`
   );
   console.groupEnd();
 };
@@ -318,8 +333,7 @@ shouldTwoCardsBeDealtToThreePlayersFromStartDeck = () => {
 
   players.forEach((player) => {
     player.getHands().forEach((hand) => {
-      const gotLength = hand.length;
-
+      const gotLength = hand.count();
       console.log(
         gotLength === cardsDealtPerPlayer
           ? ``
