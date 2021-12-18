@@ -39,7 +39,7 @@ const testHeadsUpDealRoundPhase = () => {
   console.log("testHeadsUpDealRoundPhase");
   const table = newTableHeadsUp();
   const round = new Round(table);
-  round.setHands();
+  round.setHands_tt();
   round.dealCards();
 
   const startingDeckSize = 52;
@@ -77,7 +77,7 @@ const testHeadsUpDrawlessFaceValueConcilliationExpectedLLN = () => {
       const round = new Round(table);
       const player = round.getPlayers()[0];
 
-      round.setHands();
+      round.setHands_tt();
       player.getHands()[0].setBet(typicalBetSize);
       round.dealCards();
       round.concileAllPlayerHandsOnFaceValue();
