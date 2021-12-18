@@ -505,7 +505,10 @@ class Round {
       return () => (index < length ? players[index++] : null);
     })(this.getPlayers());
   }
-
+  /**
+   *
+   * @returns {RoundPhase}
+   */
   getPhase = () => this._phase;
   getPlayers = () => this._players;
   getDealer = () => this._dealer;

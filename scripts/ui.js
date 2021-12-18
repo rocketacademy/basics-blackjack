@@ -150,6 +150,20 @@ class UiCredit {
   setValue = (credit) => this._ui.setAttribute("value", credit);
 }
 
+class UiPhaseDisplay {
+  constructor() {
+    this._root = document.createElement("div");
+  }
+
+  setTextContent = (text) => {
+    this._root.textContent = text;
+  };
+
+  getRoot = () => {
+    return this._root;
+  };
+}
+
 class UiRound extends UiTree {
   /**
    *
@@ -159,48 +173,62 @@ class UiRound extends UiTree {
     super();
     /** @private @const {Round} */
     this._round = round;
-  }
+    this._root.style.border = "1px dotted black";
 
-  getUiPlayers = () => this._uiPlayers;
-  getUiDealer = () => this._uiDealer;
-  /**
-   *
-   * @param {RoundPhase} phase
-   */
-  initialize = () => {
     /** @private @const {UiPlayer[]} */
     this._uiPlayers = null;
 
     /** @private @const {Object.<id:string,uiPlayer:UiPlayer>}} */
     this._uiPlayersRef = null;
 
+    this._uiPhaseDisplay = null;
+
+    this._uiButtonDummy = null;
+  }
+
+  getUiPlayers = () => this._uiPlayers;
+  getUiDealer = () => this._uiDealer;
+
+  refreshDisplayPhase = () => {
+    this._uiPhaseDisplay.setTextContent(
+      "rount status" + this._round.getPhase()
+    );
+  };
+
+  initializeUiDisplayPhase = () => {
+    this._uiPhaseDisplay = new UiPhaseDisplay();
+  };
+
+  initializeButtonDummy = () => {
+    this._uiButtonDummy = new UiButton();
+  };
+  /**
+   *
+   * @param {RoundPhase} phase
+   */
+  initialize = () => {
+    this.initializeUiDisplayPhase();
+
     this.initializeUiPlayers();
+    this.initializeButtonDummy();
 
     /** @private @const {UiDealer[]} */
     this._uiDealer = newUiDealer(this._round.getDealer());
 
+    this._root.appendChild(this._uiPhaseDisplay.getRoot());
+    this._root.appendChild(this._uiDealer.getRoot());
     for (const uiP of this._uiPlayers) {
       this._root.appendChild(uiP.getRoot());
     }
-    this._root.appendChild(this._uiDealer.getRoot());
-
-    // this._buttonChangePlayer = new UiButtonChangePlayer();
-    this._buttonChangePlayer = new UiButton();
-    // this._buttonChangePlayer.setOnClick(onClickChangePlayerHandler);
-
-    this._root.appendChild(this._buttonChangePlayer.getRoot());
+    this._root.appendChild(this._uiButtonDummy.getRoot());
+    this.refreshDisplayPhase();
 
     this.attachGlobalRoot();
   };
 
   initializeUiPlayers = () => {
     this._uiPlayers = newUiPlayers(this._round.getPlayers());
-    const onClickChangePlayerHandler = () => {
-      const thisPlayerId = this._round.getCurrentPlayer()?.id();
-      this._round.changePlayer();
-      const thatPlayerId = this._round.getCurrentPlayer()?.id();
-      this.changeFocusUiPlayerById(thisPlayerId, thatPlayerId);
-    };
+
     this._uiPlayers.forEach((uIP) => {
       this.unfocusUiPlayer(uIP);
       // uIP.setOnClickButtonChangePlayer(onClickChangePlayerHandler);
