@@ -96,16 +96,28 @@ const testIfTopCardTransferredFromDeck = () => {
   console.log("testIfTopCardTransferredFromDeck");
   const deck = generateStandardDeck();
   let expectedStartingDeckSize = 52;
-  console.log(deck.length === expectedStartingDeckSize);
-  const PersonHand = [];
+  console.log(
+    deck.length === expectedStartingDeckSize
+      ? ``
+      : `actual start size ${deck.length}. Expected ${expectedStartingDeckSize}`
+  );
+  const hand = [];
 
-  transferTopCard(deck, PersonHand);
+  transferTopCard(deck, hand);
 
-  expectedStartingDeckSize -= 1;
-  expectedPersonHandSize = 1;
-  console.log(deck.length === expectedStartingDeckSize);
-  console.log(PersonHand.length === expectedPersonHandSize);
+  const expectedDeckSizeAfterOneTransfer = expectedStartingDeckSize - 1;
+  expectedHandSize = 1;
+  console.log(
+    deck.length === expectedDeckSizeAfterOneTransfer
+      ? ``
+      : `Actual ${deck.length}. Expected${expectedDeckSizeAfterOneTransfer}`
+  );
 
+  console.log(
+    hand.length === expectedHandSize
+      ? ``
+      : `Actual hand size ${hand.length}. Expected${expectedHandSize}`
+  );
   console.groupEnd();
 };
 
@@ -162,82 +174,157 @@ const newHand = () => {
  */
 const newParticipant = (person) => {
   const _person = person;
-  const _hands = [newHand()];
+
   return {
     getPersonality: () => _person,
     getName: () => _person.getName(),
-    getHands: () => _hands,
     getCredit: () => _person.getCredit(),
   };
 };
 
+class Actor {
+  constructor(participant) {
+    this._participant = participant;
+
+    /** @private @const {Hand[]} */
+    this._hands = [];
+  }
+
+  getHands = () => this._hands;
+  createNewHand = () => {
+    const newHand = [];
+    this._hands.push(newHand);
+    return newHand;
+  };
+  getParticipant = () => this._participant;
+}
+
 /**
  *
- * @param {Participants[]} participants
+ * @param {*} participant
+ * @returns
+ */
+
+class Player extends Actor {
+  /**
+   *
+   * @param {Participant} participant
+   */
+  constructor(participant) {
+    super(participant);
+  }
+}
+/**
+ *
+ * @param {Participant} participant
+ */
+const newPlayer = (participant) => {
+  return new Player(participant);
+};
+
+class Dealer extends Actor {
+  /**
+   * @param {Participant} participant
+   */
+  constructor(participant) {
+    super(participant);
+  }
+}
+
+const newDealer = (participant) => {
+  return new Dealer(participant);
+};
+
+/**
+ * Creates a new hand for the actor, then deal two cards from the deck to the hand.
+ * @param {Actor} actor
  * @param {Card[]} deck
  */
-const dealCards = (participants, deck) => {
-  participants.forEach((participant) => {
-    const participantHands = participant.getHands();
-    participantHands.forEach((participantHand) =>
-      dealToHand(deck, participantHand)
-    );
-  });
+const dealNewHandToPlayer = (actor, deck) => {
+  const hand = actor.createNewHand();
+  dealToHand(deck, hand);
+};
+
+const dealnewHandsToPlayers = (actors, deck) => {
+  for (const actor of actors) {
+    dealNewHandToPlayer(actor, deck);
+  }
 };
 
 const shouldInitializedPersonCreditHundred = () => {
   console.group();
   console.log("shouldInitializedPersonCreditHundred");
   const person1 = newPerson("p1");
-  const defaultCredit = 100;
-  console.log(person1.getCredit() === defaultCredit);
+  const expectedCredit = 100;
+  console.log(
+    person1.getCredit() === expectedCredit
+      ? ``
+      : `startCredit ${expectedCredit}`
+  );
   console.groupEnd();
 };
 
-shouldCardsOfParticipantsBeReference = () => {
+shouldCardsOfParticipantsBeReferenceInARound = () => {
   console.group();
   console.log("shouldCardsBeReference");
 
   // checking if we can assign variable to object property , then operate on the variable
-  const participant = newParticipant(newPerson());
+  const player = newPlayer(newParticipant(newPerson()));
   const deck = generateStandardDeck();
-  const participantHands = participant.getHands(); // this.
+  dealNewHandToPlayer(player, deck);
+  const hands = player.getHands(); // this.
 
   const startHandsCount = 1;
-  console.log(participantHands.length === startHandsCount);
+  console.log(
+    hands.length === startHandsCount
+      ? ``
+      : `actual no. of hands ${hands.length} expected hands count ${startHandsCount}`
+  );
+  const hand = hands[0];
 
-  const participantHand = participantHands[0];
-  transferTopCard(deck, participantHand);
-
-  const handCardsCount = 1;
-  console.log(participantHand.length == handCardsCount);
+  const handCardsCount = 2;
+  console.log(
+    hand.length === handCardsCount
+      ? ``
+      : `${hand} actual no. of cards${hand.length} expected no. of cards${handCardsCount}`
+  );
   console.groupEnd();
 };
 
-shouldTwoCardsBeDealtToThreeParticipantsFromStartDeck = () => {
+shouldTwoCardsBeDealtToThreePlayersFromStartDeck = () => {
   console.group();
-  console.log("shouldTwoCardsBeDealtToThreeParticipantsFromStartDeck");
+  console.log("shouldTwoCardsBeDealtToThreePlayersFromStartDeck");
 
-  const players = [newPerson(), newPerson(), newPerson()];
+  const persons = [newPerson(), newPerson(), newPerson()];
 
-  const participants = [];
-  for (const player of players) {
-    participants.push(newParticipant(player));
+  const players = [];
+  for (const person of persons) {
+    players.push(newPlayer(newParticipant(person)));
   }
 
   const deck = generateStandardDeck();
-  dealCards(participants, deck);
+  dealnewHandsToPlayers(players, deck);
 
   const startDeckSize = 52;
-  const cardsDealtPerParticipant = 2;
+  const cardsDealtPerPlayer = 2;
 
-  const expectDeckSize =
-    startDeckSize - participants.length * cardsDealtPerParticipant;
-  console.log(expectDeckSize === deck.length);
+  const expectDeckSizeAfterDealing =
+    startDeckSize - players.length * cardsDealtPerPlayer;
+  console.log(
+    expectDeckSizeAfterDealing === deck.length
+      ? ``
+      : `Actual deck size after deal ${expectDeckSizeAfterDealing}. Expected ${deck.length}`
+  );
 
-  participants.forEach((participant) => {
-    participant.getHands().forEach((hand) => {
-      hand.length === cardsDealtPerParticipant;
+  players.forEach((player) => {
+    player.getHands().forEach((hand) => {
+      const gotLength = hand.length;
+
+      console.log(
+        gotLength === cardsDealtPerPlayer
+          ? ``
+          : `got hand.length ${gotLength} expected cardsDealtPerPlayer ${cardsDealtPerPlayer}`
+      );
     });
   });
   console.groupEnd();
@@ -262,6 +349,7 @@ class Table {
   getPlayers = () => this._players;
   getDealer = () => this._dealer;
   getPhase = () => this._phase;
+  getActorsCount = () => this.getPlayers().length + (!!this.getDealer ? 1 : 0);
 }
 
 /**
@@ -288,19 +376,6 @@ const newTableHeadsUp = (p1, dealer) => {
   return newTable(players, dealer);
 };
 
-const testTableHeadsUp = () => {
-  console.group();
-  console.log("testTableHeadsUp");
-  const defaultRound = newTableHeadsUp();
-  console.log(defaultRound.getPlayers().length === 1);
-  const expectedDealerStartCredit = 10000;
-  console.log(
-    defaultRound.getDealer().getCredit() === expectedDealerStartCredit
-  );
-
-  console.groupEnd();
-};
-
 // ROUND
 
 // Round Phase
@@ -309,15 +384,68 @@ const ROUND_PHASE_DEAL = "deal";
 const ROUND_PHASE_IN_PLAY = "in play";
 const ROUND_PHASE_IN_END = "end";
 
-const initiateRound = (table) => {};
+class Round {
+  /**
+   *
+   * @param {Table} table
+   */
+  constructor(table) {
+    /** @private @const {!Player[]} */
+    this._players = table.getPlayers().map((p) => newPlayer(p));
+    /** @private @const {!Dealer} */
+    this._dealer = newDealer(table.getDealer());
+
+    this._phase = ROUND_PHASE_BET;
+  }
+
+  getPhase = () => this._phase;
+}
+
+const testHeadsUpTableInitialization = () => {
+  console.group();
+  console.log("testHeadsUpTableInitialization");
+  const table = newTableHeadsUp();
+
+  const expectedActorsCount = 2;
+  console.log(
+    table.getActorsCount() === expectedActorsCount
+      ? ``
+      : `Expected no. of actors ${expectedActorsCount}`
+  );
+  const expectedDealerStartCredit = 10000;
+  const actualDealerStartCredit = table.getDealer().getCredit();
+  console.log(
+    actualDealerStartCredit === expectedDealerStartCredit
+      ? ``
+      : `actual start credit: ${actualDealerStartCredit}. Expected ${expectedDealerStartCredit}`
+  );
+  console.groupEnd();
+};
+
+const testHeadsUpRoundInitialization = () => {
+  console.group();
+  console.log("testHeadsUpRoundInitialization");
+  const table = newTableHeadsUp();
+  const round = new Round(table);
+  const expectedInitialPhase = ROUND_PHASE_BET;
+  console.log(
+    round.getPhase() === expectedInitialPhase
+      ? ``
+      : `Expected initial phase: ${expectedInitialPhase}`
+  );
+  console.groupEnd();
+};
 
 // CARDS
 testIfTopCardTransferredFromDeck();
 
 // PERSONS
 shouldInitializedPersonCreditHundred();
-shouldCardsOfParticipantsBeReference();
-shouldTwoCardsBeDealtToThreeParticipantsFromStartDeck();
+shouldCardsOfParticipantsBeReferenceInARound();
+shouldTwoCardsBeDealtToThreePlayersFromStartDeck();
 
 // TABLE
-testTableHeadsUp();
+testHeadsUpTableInitialization();
+
+// ROUND
+testHeadsUpRoundInitialization();
