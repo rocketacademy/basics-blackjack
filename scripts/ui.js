@@ -49,6 +49,15 @@ class UiButtonStand extends UiButton {
     this._root.textContent = "Stand";
   }
 }
+class UiPhaseDisplay extends UiComponent {
+  constructor() {
+    super(document.createElement("div"));
+  }
+
+  setTextContent = (text) => {
+    this._root.textContent = text;
+  };
+}
 
 class UiHand extends UiComponent {
   /**
@@ -62,14 +71,16 @@ class UiHand extends UiComponent {
   }
 }
 
-class UiTree extends UiComponent {
-  static UI_ROOT = document.getElementById("root-ui-blackjack");
-
-  constructor() {
+class UiCredit extends UiComponent {
+  /**
+   * @param {number} credit
+   *
+   */
+  constructor(credit) {
     super(document.createElement("div"));
+    this.setValue(credit);
   }
-
-  attachGlobalRoot = () => UiTree.UI_ROOT.replaceChildren(this.getRoot());
+  setValue = (credit) => this._root.setAttribute("value", credit);
 }
 
 class UiName extends UiComponent {
@@ -148,26 +159,15 @@ class UiDealer extends UiActor {
     this.getUiName().getRoot().style.color = color;
   };
 }
-class UiCredit extends UiComponent {
-  /**
-   * @param {number} credit
-   *
-   */
-  constructor(credit) {
-    super(document.createElement("div"));
-    this.setValue(credit);
-  }
-  setValue = (credit) => this._root.setAttribute("value", credit);
-}
 
-class UiPhaseDisplay extends UiComponent {
+class UiTree extends UiComponent {
+  static UI_ROOT = document.getElementById("root-ui-blackjack");
+
   constructor() {
     super(document.createElement("div"));
   }
 
-  setTextContent = (text) => {
-    this._root.textContent = text;
-  };
+  attachGlobalRoot = () => UiTree.UI_ROOT.replaceChildren(this.getRoot());
 }
 
 class UiRound extends UiTree {
