@@ -1,16 +1,16 @@
-class HtmlButton {
+class UiButton {
   constructor() {
-    this._html = null;
+    this._ui = null;
   }
 }
 
-class HtmlButtonHit extends HtmlButton {
+class UiButtonHit extends UiButton {
   constructor() {
     super();
   }
 }
 
-class UiButtonStand extends HtmlButton {
+class UiButtonStand extends UiButton {
   constructor() {
     super();
   }
@@ -21,8 +21,8 @@ class UiHand {
    * @param {Hand} hand
    */
   constructor(hand) {
-    this._html = document.createElement("div");
-    this._html.setAttribute("count", hand.count());
+    this._ui = document.createElement("div");
+    this._ui.setAttribute("count", hand.count());
   }
 }
 class UiActor {
@@ -31,18 +31,18 @@ class UiActor {
    * @param {Actor} actor
    */
   constructor(actor) {
-    this._htmlName = document.createElement("div");
-    this._htmlName.innerHTML = actor.getName();
-    /** @private @constant {HtmlHand[]} */
-    this._htmlHands = actor.getHands().map((hand) => newHtmlHand(hand));
-    /** @private @constant {Html[]} */
-    this._htmlCredit = newHtmlCredit(actor.getCredit());
+    this._uiName = document.createElement("div");
+    this._uiName.innerHTML = actor.getName();
+    /** @private @constant {UiHand[]} */
+    this._uiHands = actor.getHands().map((hand) => newUiHand(hand));
+    /** @private @constant {Ui[]} */
+    this._uiCredit = newUiCredit(actor.getCredit());
   }
   /**
    *
    * @returns {HTMLDivElement}
    */
-  getHtmlName = () => this._htmlName;
+  getUiName = () => this._uiName;
 }
 class UiPlayer extends UiActor {
   /**
@@ -66,10 +66,10 @@ class UiCredit {
    *
    */
   constructor(credit) {
-    this._html = document.createElement("div");
+    this._ui = document.createElement("div");
     this.setValue(credit);
   }
-  setValue = (credit) => this._html.setAttribute("value", credit);
+  setValue = (credit) => this._ui.setAttribute("value", credit);
 }
 class UiRound {
   /**
@@ -79,34 +79,33 @@ class UiRound {
   constructor(round) {
     this._round = round;
 
-    this._htmlPlayers = newHtmlPlayers(this._round.getPlayers());
-    this._htmlDealer = newHtmlDealer(this._round.getDealer());
+    this._uiPlayers = newUiPlayers(this._round.getPlayers());
+    this._uiDealer = newUiDealer(this._round.getDealer());
   }
 
-  getHtmlPlayers = () => this._htmlPlayers;
-  getHtmlDealer = () => this._htmlDealer;
+  getUiPlayers = () => this._uiPlayers;
+  getUiDealer = () => this._uiDealer;
 }
 /**
  * @param {Player} player
  * @returns {UiPlayer}
  */
-const newHtmlPlayer = (player) => new UiPlayer(player);
+const newUiPlayer = (player) => new UiPlayer(player);
 /**
  *
  * @param {Player[]} players
- * @returns {UiPlayer} html representation of the players
+ * @returns {UiPlayer} tree representation of the players
  */
-const newHtmlPlayers = (players) =>
-  players.map((player) => newHtmlPlayer(player));
+const newUiPlayers = (players) => players.map((player) => newUiPlayer(player));
 
 /**
  *
  * @param {Dealer} dealer
  * @returns {UiDealer}
  */
-const newHtmlDealer = (dealer) => new UiDealer(dealer);
+const newUiDealer = (dealer) => new UiDealer(dealer);
 
-const newHtmlCredit = (credit) => new UiCredit(credit);
+const newUiCredit = (credit) => new UiCredit(credit);
 
 const testHeadsUpRoundActorsNameUi = () => {
   console.group();
@@ -114,29 +113,29 @@ const testHeadsUpRoundActorsNameUi = () => {
   const table = newTableHeadsUp();
   const round = new Round(table);
 
-  const htmlRound = new UiRound(round);
+  const uIRound = new UiRound(round);
 
-  const htmlPlayers = htmlRound.getHtmlPlayers();
+  const uiPlayers = uIRound.getUiPlayers();
 
-  const htmlDealer = htmlRound.getHtmlDealer();
+  const uiDealer = uIRound.getUiDealer();
 
-  const htmlHeadsUpPlayer = htmlPlayers[0];
+  const uiHeadsUpPlayer = uiPlayers[0];
 
-  const isHtmlForPlayerNameExist = [
-    htmlHeadsUpPlayer.getHtmlName().nodeName.toLowerCase() === "div",
+  const isUiForPlayerNameExist = [
+    uiHeadsUpPlayer.getUiName().nodeName.toLowerCase() === "div",
     undefined,
-    "isHtmlForPlayerName NOT Exist",
+    "isUiForPlayerName NOT Exist",
   ];
 
-  const isHtmlForDealerNameExist = [
-    htmlDealer.getHtmlName().nodeName.toLowerCase() === "div",
+  const isUiForDealerNameExist = [
+    uiDealer.getUiName().nodeName.toLowerCase() === "div",
     undefined,
-    "isHtmlForDealerName NOT Exist",
+    "isUiForDealerName NOT Exist",
   ];
 
-  logAssert(...isHtmlForPlayerNameExist);
+  logAssert(...isUiForPlayerNameExist);
 
-  logAssert(...isHtmlForDealerNameExist);
+  logAssert(...isUiForDealerNameExist);
 
   console.groupEnd();
 };
