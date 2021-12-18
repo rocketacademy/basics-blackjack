@@ -1,3 +1,23 @@
+// logs
+
+const logCards = (cards) => {
+  cards.forEach((card) => console.log(card.getSuit() + card.getFaceVal()));
+};
+
+const logAssert = (predicate, trueExpr, falseExpr) => {
+  if (predicate === true) {
+    if (trueExpr) {
+      console.log(trueExpr);
+    }
+  } else if (predicate === false) {
+    if (falseExpr) {
+      console.log(falseExpr);
+    }
+  } else {
+    console.warn("assertion is not truthy");
+  }
+};
+
 //CARD
 const SUIT_CLUBS = "clubs";
 const SUIT_DIAMONDS = "diamonds";
@@ -46,10 +66,6 @@ const generateStandardDeck = () => {
   return deck;
 };
 
-const logCards = (cards) => {
-  cards.forEach((card) => console.log(card.getSuit() + card.getFaceVal()));
-};
-
 /**
  * Swap card positions in the deck
  * @param {Card[]} deck
@@ -96,27 +112,28 @@ const testIfTopCardTransferredFromDeck = () => {
   console.log("testIfTopCardTransferredFromDeck");
   const deck = generateStandardDeck();
   let expectedStartingDeckSize = 52;
-  console.log(
-    deck.length === expectedStartingDeckSize
-      ? ``
-      : `actual start size ${deck.length}. Expected ${expectedStartingDeckSize}`
+  logAssert(
+    deck.length === expectedStartingDeckSize,
+    undefined,
+    `actual start size ${deck.length}. Expected ${expectedStartingDeckSize}`
   );
   const hand = newHand();
 
   transferTopCardToHand(deck, hand);
 
   const expectedDeckSizeAfterOneTransfer = expectedStartingDeckSize - 1;
-  expectedHandSize = 1;
-  console.log(
-    deck.length === expectedDeckSizeAfterOneTransfer
-      ? ``
-      : `Actual ${deck.length}. Expected${expectedDeckSizeAfterOneTransfer}`
-  );
 
-  console.log(
-    hand.length === expectedHandSize
-      ? ``
-      : `Actual hand size ${hand.length}. Expected${expectedHandSize}`
+  actualHandSize = hand.count();
+  expectedHandSize = 1;
+  logAssert(
+    deck.length === expectedDeckSizeAfterOneTransfer,
+    undefined,
+    `Actual ${deck.length}. Expected${expectedDeckSizeAfterOneTransfer}`
+  );
+  logAssert(
+    actualHandSize === expectedHandSize,
+    undefined,
+    `Actual hand size ${actualHandSize}. Expected${expectedHandSize}`
   );
   console.groupEnd();
 };
@@ -270,10 +287,11 @@ const shouldInitializedPersonCreditHundred = () => {
   console.log("shouldInitializedPersonCreditHundred");
   const person1 = newPerson("p1");
   const expectedCredit = 100;
-  console.log(
-    person1.getCredit() === expectedCredit
-      ? ``
-      : `startCredit ${expectedCredit}`
+
+  logAssert(
+    person1.getCredit() === expectedCredit,
+    undefined,
+    `startCredit ${expectedCredit}`
   );
   console.groupEnd();
 };
@@ -289,19 +307,20 @@ shouldCardsOfParticipantsBeReferenceInARound = () => {
   const hands = player.getHands(); // this.
 
   const startHandsCount = 1;
-  console.log(
-    hands.length === startHandsCount
-      ? ``
-      : `actual no. of hands ${hands.length} expected hands count ${startHandsCount}`
+
+  logAssert(
+    hands.length === startHandsCount,
+    undefined,
+    `actual no. of hands ${hands.length} expected hands count ${startHandsCount}`
   );
   const hand = hands[0];
 
   const expectedHandCardsCount = 2;
   const gotHandCardsCount = hand.count();
-  console.log(
-    gotHandCardsCount === expectedHandCardsCount
-      ? ``
-      : `${hand} actual no. of cards${gotHandCardsCount} expected no. of cards${expectedHandCardsCount}`
+  logAssert(
+    gotHandCardsCount === expectedHandCardsCount,
+    undefined,
+    `${hand} actual no. of cards${gotHandCardsCount} expected no. of cards${expectedHandCardsCount}`
   );
   console.groupEnd();
 };
@@ -325,19 +344,21 @@ shouldTwoCardsBeDealtToThreePlayersFromStartDeck = () => {
 
   const expectDeckSizeAfterDealing =
     startDeckSize - players.length * cardsDealtPerPlayer;
-  console.log(
-    expectDeckSizeAfterDealing === deck.length
-      ? ``
-      : `Actual deck size after deal ${expectDeckSizeAfterDealing}. Expected ${deck.length}`
+
+  logAssert(
+    expectDeckSizeAfterDealing === deck.length,
+    undefined,
+    `Actual deck size after deal ${expectDeckSizeAfterDealing}. Expected ${deck.length}`
   );
 
   players.forEach((player) => {
     player.getHands().forEach((hand) => {
       const gotLength = hand.count();
-      console.log(
-        gotLength === cardsDealtPerPlayer
-          ? ``
-          : `got hand.length ${gotLength} expected cardsDealtPerPlayer ${cardsDealtPerPlayer}`
+
+      logAssert(
+        gotLength === cardsDealtPerPlayer,
+        undefined,
+        `got hand.length ${gotLength} expected cardsDealtPerPlayer ${cardsDealtPerPlayer}`
       );
     });
   });
@@ -415,23 +436,59 @@ class Round {
   getPhase = () => this._phase;
 }
 
+class HtmlPlayer {
+  /**
+   * @param {Player} player
+   */
+  constructor(player) {
+    this._html = document.createAttribute("div");
+  }
+}
+
+/**
+ * @param {Player} player
+ */
+const newHtmlPlayer = (player) => {
+  return new HtmlPlayer(player);
+};
+
+/**
+ *
+ * @param {Player[]} players
+ */
+const newHtmlPlayers = (players) => {
+  const htmlPlayers = players.map((player) => newHtmlPlayer(player));
+};
+
+class HTMLRound {
+  /**
+   *
+   * @param {Round} round
+   */
+  constructor(round) {
+    this._round = round;
+
+    this._htmlPlayers = newHtmlPlayers(this._round.getPlayers());
+  }
+}
+
 const testHeadsUpTableInitialization = () => {
   console.group();
   console.log("testHeadsUpTableInitialization");
   const table = newTableHeadsUp();
 
   const expectedActorsCount = 2;
-  console.log(
-    table.getActorsCount() === expectedActorsCount
-      ? ``
-      : `Expected no. of actors ${expectedActorsCount}`
+  logAssert(
+    table.getActorsCount() === expectedActorsCount,
+    undefined,
+    `Expected no. of actors ${expectedActorsCount}`
   );
   const expectedDealerStartCredit = 10000;
   const actualDealerStartCredit = table.getDealer().getCredit();
-  console.log(
-    actualDealerStartCredit === expectedDealerStartCredit
-      ? ``
-      : `actual start credit: ${actualDealerStartCredit}. Expected ${expectedDealerStartCredit}`
+  logAssert(
+    actualDealerStartCredit === expectedDealerStartCredit,
+    undefined,
+    `actual start credit: ${actualDealerStartCredit}. Expected ${expectedDealerStartCredit}`
   );
   console.groupEnd();
 };
@@ -442,10 +499,10 @@ const testHeadsUpRoundInitialization = () => {
   const table = newTableHeadsUp();
   const round = new Round(table);
   const expectedInitialPhase = ROUND_PHASE_BET;
-  console.log(
-    round.getPhase() === expectedInitialPhase
-      ? ``
-      : `Expected initial phase: ${expectedInitialPhase}`
+  logAssert(
+    round.getPhase() === expectedInitialPhase,
+    undefined,
+    `Expected initial phase: ${expectedInitialPhase}`
   );
   console.groupEnd();
 };
