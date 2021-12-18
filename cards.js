@@ -187,7 +187,7 @@ const newRound = (players, dealer) => {
   };
 };
 
-const newDefaultRound = () => {
+const newRoundHeadsUp = () => {
   const p1 = newParticipant(newPerson());
   const p2 = newParticipant(newPerson("", 10000));
   const players = [p1];
@@ -196,10 +196,10 @@ const newDefaultRound = () => {
   return newRound(players, dealer);
 };
 
-const testDefaultRoundIsHeadsUp = () => {
+const testRoundIsHeadsUp = () => {
   console.group();
-  console.log("testDefaultRoundIsHeadsUp");
-  const defaultRound = newDefaultRound();
+  console.log("testRoundIsHeadsUp");
+  const defaultRound = newRoundHeadsUp();
   console.log(defaultRound.getPlayers().length === 1);
   const expectedDealerStartCredit = 10000;
   console.log(
@@ -217,4 +217,4 @@ shouldCardsOfPersonBeReference();
 shouldTwoCardsBeDealtToThreeParticipantsFromStartDeck();
 
 // GAME
-testDefaultRoundIsHeadsUp();
+testRoundIsHeadsUp();
