@@ -34,17 +34,12 @@ class Round {
    * @param {Table} table
    */
   constructor(table) {
+    // Domain
+
     /** @private @const {!Player[]} */
-    this._players = table.getPlayers().map(
-      /**
-       *
-       * @param {Participant} p
-       * @returns {Player}
-       */
-      (p) => {
-        return newPlayer(p);
-      }
-    );
+    this._players = table.getPlayers().map((p) => {
+      return newPlayer(p);
+    });
     /** @private @const {!Dealer} */
     this._dealer = newDealer(table.getDealer());
     /** @private @const {Card[]} */
@@ -56,19 +51,39 @@ class Round {
     this._actorsCount = this.getActors().length;
     /** @private @const {number} */
     this._playersCount = this.getPlayers().length;
-    /** @private @const {Player} */
+
+    // Properties
+
+    /** @private {Player} */
     this._currentPlayer = null;
     this._currentHand = null;
 
     this._nextTurn = null;
   }
+  /**
+   *
+   * @returns {Player}
+   */
+  getCurrentPlayer = () => this._currentPlayer;
+  getCurrentHand = () => this._currentHand;
+  getRoundPhase = () => this._phase;
 
+  _setPhase = (phase) => {
+    const prevPhase = this._phase;
+    this._phase = phase;
+    console.group(
+      `Changing Phase ${prevPhase.desc()} -> ${this._phase.desc()}`
+    );
+    console.groupEnd();
+    this._onSetPhase(this._phase);
+  };
+
+  /** Generators */
   _nextActorGenerator = (actors) => {
     let index = 0;
     let length = actors.length;
     return () => (index < length ? actors[index++] : null);
   };
-
   _nextHandGenerator = (actors) => {
     console.group("_nextHandGenerator");
     const nextActor = this._nextActorGenerator(actors);
@@ -107,13 +122,7 @@ class Round {
     };
   };
 
-  _setPhase = (phase) => {
-    const prevPhase = this._phase;
-    this._phase = phase;
-    console.warn(`Changing Phase ${prevPhase.desc()} -> ${this._phase.desc()}`);
-    this._onSetPhase(this._phase);
-  };
-
+  // Phase Initiation
   _initSit = () => {
     console.log(this._phase.desc());
     this._setPhase(RoundPhase.SIT);
@@ -156,6 +165,7 @@ class Round {
     this._setPhase(RoundPhase.END);
   };
 
+  // Phase Initialzation - Request Validation
   requestInitSitPhase = () => {
     const proposedPhase = RoundPhase.SIT;
     const suceedingPhase = this._nextPhase(this._phase);
@@ -227,10 +237,14 @@ class Round {
     this._initEnd();
   };
 
+  // Game Activities
   _bet = (player, hand, bet) => {
     console.group(
       `_bet Player [${player.getName()}] Hand [${hand.id()}] Bet [${bet}]`
     );
+
+    hand.setSponsor(player);
+    hand.setBet(bet);
 
     //TODO add the action
 
@@ -239,6 +253,17 @@ class Round {
     if (!this._currentHand) {
       console.log("All bets should be placed...");
       this.requestInitDealPhase();
+    }
+    console.groupEnd();
+  };
+
+  _stand = (hand) => {
+    console.group(`_stand Hand [${hand.id()}] STAND`);
+    //TODO add the action
+    this._changeInPlayPlayerTurn();
+    if (!this._currentHand) {
+      console.log("All hands should be played out...");
+      this.requestInitInPlayDealerPhase();
     }
     console.groupEnd();
   };
@@ -266,8 +291,7 @@ class Round {
       console.warn(`Invalid request Need a better, an amount and a hand.`);
       reject = true;
     }
-    hand.setSponsor(better);
-    hand.setBet(amt);
+
     if (reject) {
       console.groupEnd();
       return;
@@ -276,16 +300,6 @@ class Round {
     console.groupEnd();
   };
 
-  _stand = (hand) => {
-    console.group(`_stand Hand [${hand.id()}] STAND`);
-    //TODO add the action
-    this._changeInPlayPlayerTurn();
-    if (!this._currentHand) {
-      console.log("All hands should be played out...");
-      this.requestInitInPlayDealerPhase();
-    }
-    console.groupEnd();
-  };
   requestStand = (hand) => {
     this._stand(hand);
   };
@@ -313,10 +327,6 @@ class Round {
     this.setCurrentHandAndPlayer(hand, player);
   };
 
-  /**
-   *
-   * @returns {RoundPhase}
-   */
   getPhase = () => this._phase;
   getPlayers = () => this._players;
   getDealer = () => this._dealer;
@@ -327,13 +337,6 @@ class Round {
   deckSize = () => this._deck.length;
   setHands_tt = () => createHands(this.getActors());
   getDealerHands = () => this._dealer.getHands();
-
-  setCurrentPlayer = (player) => {
-    const prevPlayer = this.getCurrentPlayer();
-    this._currentPlayer = player;
-    const nextPlayer = this.getCurrentPlayer();
-    this._onSetCurrentPlayer(prevPlayer?.id(), nextPlayer?.id());
-  };
 
   setCurrentHandAndPlayer = (hand, player) => {
     const [prevPlayerId, prevHandId] = [
@@ -346,7 +349,6 @@ class Round {
       this.getCurrentPlayer()?.id(),
       this.getCurrentHand()?.id(),
     ];
-    this._onSetCurrentPlayer(prevPlayerId, prevHandId, this._phase);
     this._onSetCurrentHand(
       prevPlayerId,
       prevHandId,
@@ -358,12 +360,12 @@ class Round {
 
   _autoCreateHands = () => {
     console.group("auto create hand");
-    const dealPlayersOrder = this._nextActorGenerator(this.getActors());
-    let actor = dealPlayersOrder();
+    const nextActor = this._nextActorGenerator(this.getActors());
+    let actor = nextActor();
     while (actor) {
       console.log("create new hand for " + actor.getName());
       actor.createNewHand();
-      actor = dealPlayersOrder();
+      actor = nextActor();
     }
     console.groupEnd("auto create hand");
   };
@@ -414,13 +416,6 @@ class Round {
     }
   };
 
-  /**
-   *
-   * @returns {Player}
-   */
-  getCurrentPlayer = () => this._currentPlayer;
-  getCurrentHand = () => this._currentHand;
-  getRoundPhase = () => this._phase;
   // dealer head on, with plain rules.
   concileAllPlayerHandsOnFaceValue = () => {
     const dealer = this.getDealer();
@@ -453,8 +448,6 @@ class Round {
   _onSetPhaseCompleted = (phase) => {};
   setOnSetPhaseCompleted = (fn) => (this._onSetPhaseCompleted = fn);
 
-  _onSetCurrentPlayer = (prevPlayerId, currentPlayerId, phase) => {};
-  setOnSetCurrentPlayer = (fn) => (this._onSetCurrentPlayer = fn);
   _onSetCurrentHand = (
     prevPlayerId,
     prevHandId,

@@ -42,11 +42,13 @@ const createNewCard = (suit, faceVal) => {
  * Generates a standard deck of cards
  * @returns {Card[]}
  */
-const generateStandardDeck = () => {
+const generateStandardDeck = (stack = 2) => {
   const deck = [];
-  for (let suit of SUITS) {
-    for (let faceValue of FACE_VALUES) {
-      deck.push(createNewCard(suit, faceValue));
+  while (stack-- > 0) {
+    for (let suit of SUITS) {
+      for (let faceValue of FACE_VALUES) {
+        deck.push(createNewCard(suit, faceValue));
+      }
     }
   }
   return deck;

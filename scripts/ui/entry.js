@@ -133,16 +133,6 @@ class UiRound extends UiTree {
   initializeComponents = () => {};
 
   initializeRenderCallbacks = () => {
-    this._round.setOnSetCurrentPlayer(
-      (prevPlayerId, currentPlayerId, phase) => {
-        this._uiPlayersHolder.changeFocusUiPlayerById(
-          prevPlayerId,
-          currentPlayerId,
-          phase
-        );
-      }
-    );
-
     this._round.setOnSetCurrentHand(
       (prevPlayerId, prevHandId, newPlayerId, newHandId, phase) => {
         this._uiPlayersHolder.changeFocusUiHandById(
