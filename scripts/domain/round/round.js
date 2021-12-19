@@ -25,12 +25,20 @@ class Round {
    * @param {Lounge} lounge
    */
   constructor(lounge) {
-    this._lounge = null;
-    this._deck = null;
+    /** @private {Lounge} */
+    this._lounge = lounge;
 
     this._phase = RoundPhase._NULL;
     this._rootQueueSeat = new Vertex(null);
     this._currentVertexSeat = this._rootQueueSeat;
+
+    const players = lounge.getPlayers();
+    let thisVertexPlayer = this._rootQueueSeat;
+    for (const player of players) {
+      const vertexPlayer = new Vertex(new Seat(new Player(player)));
+      thisVertexPlayer.setNext(vertexPlayer);
+      thisVertexPlayer = vertexPlayer;
+    }
   }
 
   getCurrentSeat = () => this._currentVertexSeat.getElement();

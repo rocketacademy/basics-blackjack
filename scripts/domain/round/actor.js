@@ -3,21 +3,8 @@ class Actor {
    *
    * @param {Participant} participant
    */
-  constructor(participant) {}
-}
-
-/**
- *
- * @param {*} participant
- * @returns
- */
-class Player extends Actor {
-  /**
-   *
-   * @param {Participant} participant
-   */
   constructor(participant) {
-    super(participant);
+    this._participant = participant;
   }
 }
 

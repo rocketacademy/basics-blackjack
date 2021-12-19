@@ -37,7 +37,7 @@ newTestCollection.addTest(`test_Lounge_TwoPlayersLounge`, () => {
 //TODO
 
 newTestCollection.addTest(`test_Round_Init`, () => {
-  const round = new Round();
+  const round = new Round(new Lounge());
 
   const expectedPhase = RoundPhase._NULL;
   LOG_ASSERT(
@@ -51,6 +51,35 @@ newTestCollection.addTest(`test_Round_Init`, () => {
     expectedRootSeat === round.getCurrentSeat(),
     ``,
     `Expected Root Seat ${expectedRootSeat}`
+  );
+});
+
+//TODO
+
+newTestCollection.addTest(`test_Round_TwoPlayers_Init`, () => {
+  const lounge = Sample.getSampleTwoPlayersLounge();
+  const round = new Round(lounge);
+
+  const expectedPhase = RoundPhase._NULL;
+  LOG_ASSERT(
+    expectedPhase === round.getPhase(),
+    ``,
+    `Expected Phase ${expectedPhase}`
+  );
+
+  const expectedRootSeat = null;
+  LOG_ASSERT(
+    expectedRootSeat === round.getCurrentSeat(),
+    ``,
+    `Expected Root Seat ${expectedRootSeat}`
+  );
+
+  const expectedNextPlayerName = `Player 1`;
+  const actualNextPlayerName = round.peekNextSeat().getChair().getName();
+  LOG_ASSERT(
+    expectedNextPlayerName === actualNextPlayerName,
+    ``,
+    `First Player Name expected ${expectedNextPlayerName} got ${actualNextPlayerName}`
   );
 });
 
