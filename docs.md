@@ -8,6 +8,7 @@ Where applicable, compliance are indicated in comments as `CRA-V6-#S` \
 
 where #S is the (sub)section of the Reference Document
 
-# Todos
+# Comments
 
-Are marked as //TODO
+TODOs Are marked as //TODO
+Temporary comment out code as //TEMP

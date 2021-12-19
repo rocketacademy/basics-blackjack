@@ -1,11 +1,11 @@
 class UiTree extends Ui_Component {
-  static UI_ROOT = document.getElementById("root-ui-blackjack");
+  static UI_ROOT = ROOT_BLACKJACK_ELEMENT;
 
   constructor() {
     super(document.createElement("div"));
   }
 
-  _attachGlobalRoot = () => UiTree.UI_ROOT.replaceChildren(this.getRoot());
+  attachGlobalRoot = () => UiTree.UI_ROOT.replaceChildren(this.getRoot());
 }
 
 class UiPlayersHolder extends Ui_Aggregate {
@@ -51,99 +51,37 @@ class UiRound extends UiTree {
 
     return uiPH;
   };
+
+  _style = () => {
+    this._root.style.border = "1px dotted black";
+    this._root.style.flexDirection = "column";
+  };
   /**
    *
    * @param {Round} round
    */
   constructor(round) {
     super();
+    // Domain
     /** @private @const {Round} */
     this._round = round;
-    this._root.style.border = "1px dotted black";
-    this._root.style.flexDirection = "column";
+
+    this._style();
 
     /** @private @const {UiPlayersHolder} */
-    this._uiPlayersHolder = this.__newUiPlayerHolders(this._round.getPlayers());
+    //TEMP this._uiPlayersHolder = this.__newUiPlayerHolders(this._round.getPlayers());
 
     /** @private @const {UiDealer} */
-    this._uiDealer = newUiDealer(this._round.getDealer());
+    //TEMP this._uiDealer = newUiDealer(this._round.getDealer());
 
     /** @private @const {UiPhaseDisplay} */
-    this._uiPhaseDisplay = new UiPhaseDisplay();
-
-    /** @private @const {RoundPhase} */
-    this._phaseUi = this._round.getPhase();
-
-    // Hooks
-    this._round.setOnSetPhase((phase) => {
-      this._refreshDisplayPhase(phase);
-      console.log(`Ui Hook[setOnSetPhase] ${phase}`);
-      switch (phase) {
-        case RoundPhase.INITIAL_BET:
-          this.replaceChildrenUi(
-            this._uiPhaseDisplay,
-            this._uiDealer,
-            this._uiPlayersHolder
-          );
-          return;
-
-        case RoundPhase.END:
-          this.replaceChildrenUi(
-            this._uiPhaseDisplay,
-            this._uiDealer,
-            this._uiPlayersHolder
-          );
-          return;
-      }
-    });
-    this._round.setOnSetPhaseCompleted((phase, round) => {
-      console.log(`Ui Hook[setOnSetPhaseCompleted]  ${phase}`);
-      switch (phase) {
-        case RoundPhase.IN_PLAY_DEALER:
-          const endGameButton = this._newEndGameControl(round);
-          this.replaceChildrenUi(
-            this._uiPhaseDisplay,
-            endGameButton,
-            this._uiDealer,
-            this._uiPlayersHolder
-          );
-          break;
-      }
-    });
-    this._attachGlobalRoot();
+    // this._uiPhaseDisplay = new UiPhaseDisplay();
   }
-  _newEndGameControl = (round) => {
-    const button = new UiButtonEndGame();
-    button.setOnMouseClick(() => round.requestInitEndPhase());
-    return button;
-  };
+
   getUiPlayersHolder = () => this._uiPlayersHolder;
   getUiDealer = () => this._uiDealer;
 
-  /**
-   *
-   * @param {number} id
-   * @returns {UiPlayer}
-   */
-  getUiPlayerById = (id) => {
-    return this._uiPlayersRef[id];
-  };
-
-  getUiPhaseDisplay = () => {
-    return this._uiPhaseDisplay;
-  };
-
-  _initializeUiDealer = () => {};
-
-  initializeRenderCallbacks = () => {};
-
-  attachToGlobalRoot = () => {
-    console.log("Attaching to global root");
-  };
-
-  _refreshDisplayPhase = (phase) => {
-    const text = "ROUND STATUS: " + phase.desc();
-    console.warn(`REPROP PHASE DISPLAY ${text}`);
-    this._uiPhaseDisplay.setTextContent(text);
+  render = () => {
+    this.attachGlobalRoot();
   };
 }

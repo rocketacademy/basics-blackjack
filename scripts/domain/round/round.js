@@ -44,4 +44,7 @@ class Round {
   getCurrentSeat = () => this._currentVertexSeat.getElement();
   peekNextSeat = () => this._currentVertexSeat.peekNextElement();
   getPhase = () => this._phase;
+
+  getPlayers = () => this._lounge.getPlayers();
+  getDealer = () => this._lounge.getDealer();
 }

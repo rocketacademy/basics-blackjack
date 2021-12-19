@@ -83,4 +83,31 @@ newTestCollection.addTest(`test_Round_TwoPlayers_Init`, () => {
   );
 });
 
+const RENDER_ROUND = (lounge) => {
+  const round = new Round(lounge);
+  const uiRound = new UiRound(round);
+  uiRound.render();
+  return uiRound;
+};
+
+newTestCollection.addTest(`test_ROUND_Render`, () => {
+  const lounge = Sample.getSampleTwoPlayersLounge();
+  const uiRound = RENDER_ROUND(lounge);
+
+  const expectedChildrenOf_ROOT_BLACKJACK_ELEMENT = uiRound.getRoot();
+  const actualChildrenOf_ROOT_BLACKJACK_ELEMENT =
+    ROOT_BLACKJACK_ELEMENT.children[0];
+  LOG_ASSERT(
+    expectedChildrenOf_ROOT_BLACKJACK_ELEMENT ===
+      actualChildrenOf_ROOT_BLACKJACK_ELEMENT,
+    ``,
+    `FAIL! ui not attached`
+  );
+  LOG_ASSERT(
+    1 === ROOT_BLACKJACK_ELEMENT.children.length,
+    ``,
+    `Should have one and only one tree root`
+  );
+});
+
 newTestCollection.run();
