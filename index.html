@@ -84,6 +84,8 @@
     <link
       rel="stylesheet"
       href="https://fonts.googleapis.com/css?family=Open+Sans"
+      href="https://fonts.googleapis.com/css2?family=Asap:wght@400;600;700&family=Bebas+Neue&family=Roboto&display=swap"
+      rel="stylesheet"
     />
 
     <!-- CSS -->
@@ -93,10 +95,9 @@
       }
 
       body {
-        font-family: "Open Sans", sans-serif;
         margin-left: 30px;
         margin-right: 30px;
-        background-color: white;
+        background-color: #eaeaea;
         color: black; /* sets the font color */
         background-image: url(""); /* The image used */
         background-position: center; /* Center the image */
@@ -104,10 +105,16 @@
         background-size: cover; /* Resize the background image to cover the entire container */
       }
 
+      #basicHeader {
+        font-family: "Bebas Neue", cursive;
+        font-size: 50px;
+      }
+
       #output-div img {
-        display: block;
+        display: inline;
         max-width: 100%;
-        max-height: 200px;
+        max-height: 250px;
+        margin-left: 5px;
       }
       .header {
         text-align: center;
@@ -116,32 +123,90 @@
       }
 
       #container {
-        background-color: pink;
+        border-width: medium;
+        border-style: outset;
+        border-color: white;
+        border-radius: 10px;
+        background-color: #cce2cb;
         margin: 40px auto;
         max-width: 800px;
         padding: 38px 31px;
       }
 
-      input {
-        font-size: 21px;
-        line-height: 33px;
-        margin: 0 0 23px 0;
-        padding: 0 9px;
+      #instructions {
+        font-family: "Bebas Neue", cursive;
+        border-style: dotted;
+        border-color: #b7cfb7;
+        color: black;
+        text-align: center;
+        font-size: 30px;
+        line-height: 10px;
+        margin: 0 0 19px 0;
+        padding-top: 20px;
+
         width: 100%;
       }
-
-      button {
-        font-size: 21px;
-        line-height: 33px;
-        margin: 0 0 23px 0;
-        padding: 0 6px;
+      #results {
+        margin: 20px;
+        font-family: "Bebas Neue", cursive;
+        color: #2b3a32;
+        text-align: center;
+        font-size: 30px;
+        border-style: dotted;
+        border-color: #b7cfb7;
       }
 
+      #rules {
+        font-family: "Roboto", sans-serif;
+        font-size: 15px;
+        line-height: 1.2;
+      }
+
+      #buttons {
+      max-width: 100%;
+        
+      }
+      button {
+        transition-duration: 0.4s;
+        margin-right: 80px;
+        margin-left: 80px;
+        font-size: 21px;
+        line-height: 33px;
+        padding: 0 30px;
+        font-family: "Bebas Neue", cursive;
+        font-size: 30px;
+        color: #97c1a9;
+        border: #b7cfb7;
+        border-style: outset;
+        float: center;
+        margin-left: 50px;
+      }
+
+      button:hover {
+        background-color: #91c1a9;
+        color: white;
+      }
+      #submit-button {
+         background-color: white;
+         color: black;
+         border: 2px solid #97c1a9; 
+         font-size:12px;
+         margin:auto;
+         padding: 1px 10px;
+         line-height: 18px;
+      }
+      #submit-button:hover {
+   background-color: #91c1a9;
+        color: white;
+}
+
       #output-div {
-        background-color: lightgrey;
+        background-color: #eaeaea;
+        font-family: "Roboto", sans-serif;
         margin: 20px auto;
         padding: 20px;
         width: 100%;
+        text-align: center;
       }
 
       .logo-img {
@@ -171,32 +236,83 @@
         src="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/brand/logo.png"
       />
     </h1>
-    <h1 class="header">♣️ Basics - Blackjack ♠️</h1>
+    <h1 class="header" id="basicHeader">♣️ BASICS-BLACKJACK ♠️</h1>
     <div id="container">
-      <p>Input:</p>
-      <input id="input-field" />
-      <br />
+      <div id="instructions">
+        Game Instructions
+        <p id="rules">
+          <b> The rules of the game:</b><br />If you or the dealer gets a
+          blackJack, either party wins the game right away.<br />
+
+          Click<b> "Play"</b> when you want to start or restart the game <br />
+          Click <b>"Hit"</b> if you want to take another card. <br />Click
+          <b>"Stand</b> if you think it is enough.<br />
+          Be careful! Do not be too greedy, if you get over 21, you are bust!
+        </p>
+      </div>
+      <div id="buttons">
+        <button id="play-button">Play</button>
+        <button id="hit-button">Hit</button>
+        <button id="stand-button">Stand</button>
+      </div>
+
+      <p id="results">RESULTS</p>
+      <div id="bet" style="font-family: Bebas Neue, cursive"> Bet(at
+      least $1):
+      <input id="input-field" type = "number" min="1" max="100"/>
       <button id="submit-button">Submit</button>
-      <p>Output:</p>
-      <div id="output-div"></div>
+      <div id="betting-results"></div>
     </div>
+      <div id="output-div">
+        
+      <div id="pictures" style="display: flex; justify-content: center"></div>
+    <p></p>
+        <img
+          src="https://c.tenor.com/xtp2N6fg2SwAAAAC/stickergiant-game-time.gif"
+          ;
+          alt="start game"
+          style="border-radius: 10px; margin: auto; display: inline"
+        />
+        <p style="font-family: Bebas Neue, cursive; font-size: 20px">
+          Please place your bet & hit the play button to start the game
+        </p>
+      </div>
+    
+
     <!-- Import program logic -->
     <script src="script.js"></script>
     <!-- Define button click functionality -->
     <script>
-      var button = document.querySelector("#submit-button");
-      button.addEventListener("click", function () {
+      var playButton = document.querySelector("#play-button");
+      playButton.addEventListener("click", function () {
         // Set result to input value
-        var input = document.querySelector("#input-field");
-        var result = main(input.value);
-
-        // Display result in output element
         var output = document.querySelector("#output-div");
-        output.innerHTML = result;
-
-        // Reset input value
-        input.value = "";
+        output.innerHTML = play();
       });
+      var hitButton = document.querySelector("#hit-button");
+      hitButton.addEventListener("click", function () {
+        var output1 = document.querySelector("#output-div");
+        output1.innerHTML = hit();
+      });
+      var standButton = document.querySelector("#stand-button");
+      standButton.addEventListener("click", function () {
+        var output2 = document.querySelector("#output-div");
+        output2.innerHTML = stand();
+      });
+
+      var bet = document.querySelector("#submit-button")
+      bet.addEventListener("click", function(){
+        var input = document.querySelector("#input-field")
+        console.log(input)
+        //store output of showPoints in a variable
+        var bettingResult = showBet(input.value)
+        console.log(bettingResult)
+     
+        //display the result 
+        var betResultOutput = document.getElementById("output-div")
+        betResultOutput.innerHTML = bettingResult
+        input.value = ""
+      })
     </script>
   </body>
 </html>
