@@ -114,7 +114,7 @@
         margin-bottom: 3rem;
       }
 
-      #container {
+      #blackJackTable {
         background-color: pink;
         margin: 40px auto;
         max-width: 800px;
@@ -143,10 +143,23 @@
         width: 100%;
       }
 
+      #playerinfo {
+        background-color: lightgrey;
+        margin: 20px auto;
+        padding: 20px;
+        width: 100%;
+      }
+
       .logo-img {
         height: 49px;
         position: relative;
         top: 22px;
+      }
+
+      .carddisplay::after {
+        content: "";
+        clear: both;
+        display: table;
       }
 
       /* increase header font size on wider screens */
@@ -170,16 +183,30 @@
         src="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/brand/logo.png"
       />
     </h1>
-    <h1 class="header">♣️ Basics - Blackjack ♠️</h1>
-    <div id="container">
-      <p>Input:</p>
-      <input id="input-field" />
-      <br />
-      <button id="submit-button">Submit</button>
-      <p>Output:</p>
-      <div id="output-div">
-        Welcome to Xianglong's Blackjack Game. Please enter the number of
-        players. Up to 4 players are allowed to play.
+    <h1 class="header">♣️ Fortune Favours The Bold Casino ♠️</h1>
+    <h1 class="header">BLACKJACK</h1>
+    <div id="blackJackTable">
+      <div id="rules">
+        <ul>
+          <li id="rule1">BLACKJACK PAYS 3 TO 2</li>
+          <li id="rule2">DEALER MUST STAND ON 17 AND DRAW TO 16</li>
+        </ul>
+      </div>
+      <div id="playingfield">
+        <div id="output-div">
+          Welcome to Xianglong's Blackjack Game. Please enter the number of
+          players. Up to 4 players are allowed to play.
+        </div>
+        <div id="playerinfo"></div>
+        <div id="action">
+          <p>Input:</p>
+          <input id="input-field" />
+          <br />
+          <button id="submit-button">Submit</button>
+          <button id="hit">Hit</button>
+          <button id="stand">Stand</button>
+          <button id="double">Double</button>
+        </div>
       </div>
     </div>
     <!-- Import program logic -->
@@ -191,10 +218,13 @@
         // Set result to input value
         var input = document.querySelector("#input-field");
         var result = main(input.value);
+        var result2 = displayPlayerInfo();
 
         // Display result in output element
         var output = document.querySelector("#output-div");
         output.innerHTML = result;
+        var output2 = document.querySelector("#playerinfo");
+        output2.innerHTML = result2;
 
         // Reset input value
         input.value = "";

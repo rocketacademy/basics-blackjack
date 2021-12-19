@@ -220,27 +220,25 @@ const countCardPoints = function () {
 
 //creating display player/dealer hand function
 const displayHandmsg = function (playerObject) {
-  let msg = ``;
+  let msg = `<b>Points: ${playerObject.cardPoints}</b><br>`;
   for (i = 0; i < playerObject.cards.length; i += 1) {
-    msg += `${playerObject.cards[i].img}`;
+    msg += `<div style="float:left">${playerObject.cards[i].img}</div>`;
   }
-  msg += `<b>Points: ${playerObject.cardPoints}</b>`;
   return msg;
 };
 
 //creating display dealer partial hand function
 const displayDealerHandmsg = function (dealerObject) {
-  let msg = ``;
+  let msg = `<b>Points: ${dealer.cardPoints}</b><br>`;
   if (dealer.cardPoints == 21 || gameStatus == dealerTurn) {
     for (i = 0; i < dealerObject.cards.length; i += 1) {
-      msg += `${dealerObject.cards[i].img}<br>`;
+      msg += `<div style="float:left">${dealerObject.cards[i].img}</div>`;
     }
-    msg += `<b>Points: ${dealer.cardPoints}</b>`;
   } else {
     var img_src = `"./svg-cards/2B.svg"`;
-    msg = `<img src=${img_src}/>`;
+    msg = `<div style="float:left"><img src=${img_src}/></div>`;
     for (i = 1; i < dealerObject.cards.length; i += 1) {
-      msg += `${dealerObject.cards[i].img}<br>`;
+      msg += `<div style="float:left">${dealerObject.cards[i].img}</div>`;
     }
   }
   return msg;
@@ -248,11 +246,13 @@ const displayDealerHandmsg = function (dealerObject) {
 
 //creating template message to display hand cards
 const generateHandCardsMsg = function () {
-  let msg = `<b>${
+  let msg = `<div class="carddisplay"><b>${
     playersArray[playersArrayIndex].name
   }'s hand</b><br>${displayHandmsg(
     playersArray[playersArrayIndex]
-  )}<br><br><b>Dealer's hand</b><br>${displayDealerHandmsg(dealer)}`;
+  )}</div><br><br><div class="carddisplay"><b>Dealer's hand</b><br>${displayDealerHandmsg(
+    dealer
+  )}</div>`;
   return msg;
 };
 
@@ -335,12 +335,12 @@ const runPlayerTurn = function (input) {
     hitFlag = true;
     playersArray[playersArrayIndex].cards.push(shuffledDeck.pop());
     countCardPoints();
-    msg = `${generateHandCardsMsg()}<br><br>Hi ${
+    msg = `${generateHandCardsMsg()}<br>Hi ${
       playersArray[playersArrayIndex].name
     }, would you like to "Hit" or "Stand"?`;
     bust_block: {
       if (playersArray[playersArrayIndex].cardPoints > 21) {
-        msg = `${generateHandCardsMsg()}<br><br>BUST!<br><br>${
+        msg = `${generateHandCardsMsg()}<br>BUST!<br><br>${
           playersArray[playersArrayIndex].name
         } loses $${
           playersArray[playersArrayIndex].bets
@@ -385,12 +385,12 @@ const runPlayerTurn = function (input) {
       playersArray[playersArrayIndex].bets *= 2;
       playersArray[playersArrayIndex].cards.push(shuffledDeck.pop());
       countCardPoints();
-      msg = `${generateHandCardsMsg()}<br><br>Hi ${
+      msg = `${generateHandCardsMsg()}<br>Hi ${
         playersArray[playersArrayIndex].name
       }, press Submit for next player turn.`;
       nextPlayerTurnFlag = true;
       if (playersArray[playersArrayIndex].cardPoints > 21) {
-        msg = `${generateHandCardsMsg()}<br><br>BUST!<br><br>${
+        msg = `${generateHandCardsMsg()}<br>BUST!<br><br>${
           playersArray[playersArrayIndex].name
         } loses $${
           playersArray[playersArrayIndex].bets
@@ -459,7 +459,7 @@ const runDealerTurn = function () {
   }
   let msg = "";
   if (dealer.cardPoints > 21) {
-    msg = `${generateHandCardsMsg()}<br><br>Dealer Busted, you win!<br><br>${
+    msg = `${generateHandCardsMsg()}<br>Dealer Busted, you win!<br><br>${
       playersArray[playersArrayIndex].name
     } wins $${
       playersArray[playersArrayIndex].bets
@@ -473,7 +473,7 @@ const runDealerTurn = function () {
     dealer.cardPoints <= 21 &&
     playersArray[playersArrayIndex].cardPoints == dealer.cardPoints
   ) {
-    msg = `${generateHandCardsMsg()}<br><br>Hi ${
+    msg = `${generateHandCardsMsg()}<br>Hi ${
       playersArray[playersArrayIndex].name
     }. It is a push.<br><br>Press Submit for the next turn.`;
     playersArray[playersArrayIndex].bets = 0;
@@ -483,7 +483,7 @@ const runDealerTurn = function () {
     dealer.cardPoints <= 21 &&
     playersArray[playersArrayIndex].cardPoints > dealer.cardPoints
   ) {
-    msg = `${generateHandCardsMsg()}<br><br>You win!<br><br>${
+    msg = `${generateHandCardsMsg()}<br>You win!<br><br>${
       playersArray[playersArrayIndex].name
     } wins $${
       playersArray[playersArrayIndex].bets
@@ -495,7 +495,7 @@ const runDealerTurn = function () {
     playersArrayIndex += 1;
   } else {
     bust_block2: {
-      msg = `${generateHandCardsMsg()}<br><br>You lose!<br><br>${
+      msg = `${generateHandCardsMsg()}<br>You lose!<br><br>${
         playersArray[playersArrayIndex].name
       } lose $${
         playersArray[playersArrayIndex].bets
@@ -515,6 +515,22 @@ const runDealerTurn = function () {
       playersArray[playersArrayIndex].status = PLAYED;
       playersArrayIndex += 1;
     }
+  }
+  return msg;
+};
+
+//creating function to display player's info
+const displayPlayerInfo = function () {
+  if (
+    gameStatus == pendingNumOfPlayers ||
+    gameStatus == pendingPlayersNames ||
+    gameStatus == pendingPlayersCash
+  ) {
+    return "";
+  }
+  let msg = "";
+  for (player of playersArray) {
+    msg += `${player.name}'s cash: $${player.cash}.<br>`;
   }
   return msg;
 };
