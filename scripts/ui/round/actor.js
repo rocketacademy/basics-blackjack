@@ -32,7 +32,7 @@ class UiName extends Ui_Component {
 class Ui_Actor extends Ui_Component {
   /**
    *
-   * @param {Actor} actor
+   * @param {_Actor} actor
    */
   constructor(actor) {
     super(document.createElement("div"));

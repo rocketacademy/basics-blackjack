@@ -3,7 +3,7 @@
  * @param {Participant} participant
  * @returns
  */
-class Player extends Actor {
+class Player extends _Actor {
   /**
    *
    * @param {Participant} participant
