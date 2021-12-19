@@ -231,7 +231,7 @@ var dealerDraw = function () {
   }
   if (scoreCounter(dealerCards) > 21) {
     for (var w = 0; w < numberOfPlayer; w++) {
-      if (scoreCounter(playerCards[w]) < 21) {
+      if (scoreCounter(playerCards[w]) < 22) {
         playerMoney[w].token =
           Number(playerMoney[w].token) + Number(playerMoney[w].bet);
         console.log(`within dealer bust ${w}`);
