@@ -84,19 +84,19 @@ shouldTwoCardsBeDealtToThreePlayersFromStartDeck = () => {
   });
   console.groupEnd();
 };
-const testHeadsUpTableInitialization = () => {
+const testLoungeInitialization = () => {
   console.group();
-  console.log("testHeadsUpTableInitialization");
-  const table = newTableHeadsUp();
+  console.log("testLoungeInitialization");
+  const lounge = newLoungeHeadsUp();
 
   const expectedActorsCount = 2;
   LOG_ASSERT(
-    table.getActorsCount() === expectedActorsCount,
+    lounge.getActorsCount() === expectedActorsCount,
     undefined,
     `Expected no. of actors ${expectedActorsCount}`
   );
   const expectedDealerStartCredit = 10000;
-  const actualDealerStartCredit = table.getDealer().getCredit();
+  const actualDealerStartCredit = lounge.getDealer().getCredit();
   LOG_ASSERT(
     actualDealerStartCredit === expectedDealerStartCredit,
     undefined,
@@ -108,8 +108,8 @@ const testHeadsUpTableInitialization = () => {
 const testHeadsUpRoundInitialization = () => {
   console.group();
   console.log("testHeadsUpRoundInitialization");
-  const table = newTableHeadsUp();
-  const round = new Round(table);
+  const lounge = newLoungeHeadsUp();
+  const round = new Round(lounge);
   const expectedInitialPhase = RoundPhase._NULL;
   const gotPhase = round.getPhase();
   LOG_ASSERT(
@@ -123,8 +123,8 @@ const testHeadsUpRoundInitialization = () => {
 const testHeadsUpDealRoundPhase = () => {
   console.group();
   console.log("testHeadsUpDealRoundPhase");
-  const table = newTableHeadsUp();
-  const round = new Round(table);
+  const lounge = newLoungeHeadsUp();
+  const round = new Round(lounge);
   round.setHands_tt();
   round.dealCards();
 
@@ -158,18 +158,18 @@ const testHeadsUpDrawlessFaceValueConcilliationExpectedLLN = () => {
   const upperMargin = startingCredit + 5;
   for (let i = 0; i < 1; i++) {
     // fair and uniform play
-    const table = newTableHeadsUp();
+    const lounge = newLoungeHeadsUp();
     for (let j = 0; j < roundCount; j++) {
-      const round = new Round(table);
+      const round = new Round(lounge);
       const player = round.getPlayers()[0];
 
       round.setHands_tt();
       player.getHands()[0].setBet(typicalBetSize);
       round.dealCards();
       round.concileAllPlayerHandsOnFaceValue();
-      console.log(table.getPlayers()[0].getCredit());
+      console.log(lounge.getPlayers()[0].getCredit());
     }
-    const afterCredit = table.getPlayers()[0].getCredit();
+    const afterCredit = lounge.getPlayers()[0].getCredit();
     const isNearStartingCredit = [
       lowerMargin <= afterCredit && afterCredit <= upperMargin,
       undefined,
@@ -189,7 +189,7 @@ shouldCardsOfParticipantsBeReferenceInARound();
 shouldTwoCardsBeDealtToThreePlayersFromStartDeck();
 
 // TABLE
-testHeadsUpTableInitialization();
+testLoungeInitialization();
 
 // ROUND
 testHeadsUpRoundInitialization();

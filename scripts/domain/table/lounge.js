@@ -1,6 +1,6 @@
 // TABLE
 
-class Table {
+class Lounge {
   /**
    *
    * @param {Person[]} players
@@ -16,7 +16,6 @@ class Table {
 
   getPlayers = () => this._players;
   getDealer = () => this._dealer;
-  getPhase = () => this._phase;
   getActorsCount = () => this.getPlayers().length + (!!this.getDealer ? 1 : 0);
 }
 
@@ -26,8 +25,8 @@ class Table {
  * @param {Person} dealer
  * @returns {Table}
  */
-const newTable = (players, dealer) => {
-  return new Table(players, dealer);
+const newLounge = (players, dealer) => {
+  return new Lounge(players, dealer);
 };
 
 /**
@@ -41,7 +40,7 @@ const newTableHeadsUp = (p1, dealer) => {
   const players = [p1];
   dealer = dealer || newPerson("D", 10000);
 
-  return newTable(players, dealer);
+  return newLounge(players, dealer);
 };
 
 /**
@@ -50,10 +49,10 @@ const newTableHeadsUp = (p1, dealer) => {
  * @param {Person} dealer
  * @returns
  */
-const newTableTwoPlayers = (p1, p2, dealer) => {
+const newLoungeTwoPlayers = (p1, p2, dealer) => {
   p1 = p1 || newPerson(`p1`);
   p2 = p2 || newPerson(`p2`);
   const players = [p1, p2];
   dealer = dealer || newPerson("D_AgainstTwoPlayers", 10000);
-  return newTable(players, dealer);
+  return newLounge(players, dealer);
 };

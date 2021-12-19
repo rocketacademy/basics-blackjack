@@ -1,6 +1,6 @@
 const test_Main_HeadsUp = () => {
-  const table = newTableTwoPlayers();
-  const round = new Round(table);
+  const lounge = newLoungeTwoPlayers();
+  const round = new Round(lounge);
   const uiRound = NEW_UI_ROUND(round);
   const player1 = round.getPlayers()[0];
   const player2 = round.getPlayers()[1];
@@ -54,8 +54,8 @@ console.log(`---test_Main_Ui_Til_BET TEST---`);
 
 const test_Main_Ui_Til_BET = () => {
   console.group("test_Main_Ui_Til_BET");
-  const table = newTableTwoPlayers();
-  const round = new Round(table);
+  const lounge = newLoungeTwoPlayers();
+  const round = new Round(lounge);
   const uiRound = NEW_UI_ROUND(round);
   const player1 = round.getPlayers()[0];
   const player2 = round.getPlayers()[1];

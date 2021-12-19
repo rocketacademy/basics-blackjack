@@ -32,17 +32,17 @@ class RoundPhase {
 class Round {
   /**
    *
-   * @param {Table} table
+   * @param {Lounge} lounge
    */
-  constructor(table) {
+  constructor(lounge) {
     // Domain
 
     /** @private @const {!Player[]} */
-    this._players = table.getPlayers().map((p) => {
+    this._players = lounge.getPlayers().map((p) => {
       return newPlayer(p);
     });
     /** @private @const {!Dealer} */
-    this._dealer = newDealer(table.getDealer());
+    this._dealer = newDealer(lounge.getDealer());
     /** @private @const {Card[]} */
     this._deck = shuffleDeck(generateStandardDeck());
     /** @private {RoundPhase} */
