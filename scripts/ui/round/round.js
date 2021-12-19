@@ -5,7 +5,18 @@ class UiTree extends Ui_Component {
     super(document.createElement("div"));
   }
 
-  attachGlobalRoot = () => UiTree.UI_ROOT.replaceChildren(this.getRoot());
+  _attachGlobalRoot = () => UiTree.UI_ROOT.replaceChildren(this.getRoot());
+  detachGlobalRoot = () =>
+    this.getRoot().parentNode.removeChild(this.getRoot());
+  render = () => {
+    this._attachGlobalRoot();
+  };
+}
+
+class UiLounge extends UiTree {
+  constructor(lounge) {
+    super();
+  }
 }
 
 class UiPlayersHolder extends Ui_Aggregate {
@@ -41,7 +52,10 @@ class UiPhaseDisplay extends Ui_Text {
 }
 
 class UiRound extends UiTree {
-  __newUiPlayerHolders = (players) => {
+  /**
+   * 
+   * // TEMP
+   __newUiPlayerHolders = (players) => {
     const uiPH = new UiPlayersHolder();
 
     for (const p of players) {
@@ -51,6 +65,7 @@ class UiRound extends UiTree {
 
     return uiPH;
   };
+   */
 
   _style = () => {
     this._root.style.border = "1px dotted black";
@@ -76,12 +91,15 @@ class UiRound extends UiTree {
 
     /** @private @const {UiPhaseDisplay} */
     // this._uiPhaseDisplay = new UiPhaseDisplay();
+
+    // Hooks
   }
 
   getUiPlayersHolder = () => this._uiPlayersHolder;
   getUiDealer = () => this._uiDealer;
 
-  render = () => {
-    this.attachGlobalRoot();
+  setOnFinish = (cb) => {
+    this._round.setOnFinish(cb);
+    return this;
   };
 }

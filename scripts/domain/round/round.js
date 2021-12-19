@@ -20,6 +20,15 @@ class RoundPhase {
 }
 
 class Round {
+  __resetHooks = () => {
+    this._onFinish = () => {
+      throw new Error(`Error. Callback[_onFinish] must be configured`);
+    };
+    this.setOnFinish = (fn) => {
+      this._onFinish = fn;
+    };
+  };
+
   /**
    *
    * @param {Lounge} lounge
@@ -39,6 +48,8 @@ class Round {
       thisVertexPlayer.setNext(vertexPlayer);
       thisVertexPlayer = vertexPlayer;
     }
+
+    this.__resetHooks();
   }
 
   getCurrentSeat = () => this._currentVertexSeat.getElement();
@@ -47,4 +58,13 @@ class Round {
 
   getPlayers = () => this._lounge.getPlayers();
   getDealer = () => this._lounge.getDealer();
+
+  finish = (isContinue) => {
+    if (!(isContinue === false || isContinue === true)) {
+      throw new Error(`Continue or not?`);
+    }
+
+    this._onFinish(this._lounge, isContinue);
+    this.__resetHooks();
+  };
 }
