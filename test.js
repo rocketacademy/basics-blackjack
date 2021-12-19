@@ -1,8 +1,7 @@
 const newTestCollection = new TestBlackJack();
 
 newTestCollection.addTest(`test_Lounge_TwoPlayersLounge`, () => {
-  const lounge = Sample.getSampleTwoPlayersLounge();
-
+  const lounge = Sample.getTwoPlayersLounge();
   const expectedPlayerCount = 2;
   const actualPlayerCount = lounge.playerCount();
   LOG_ASSERT(
@@ -34,10 +33,9 @@ newTestCollection.addTest(`test_Lounge_TwoPlayersLounge`, () => {
   );
 });
 
-//TODO
-
 newTestCollection.addTest(`test_Round_Init`, () => {
-  const round = new Round(new Lounge());
+  const lounge = Sample.getDefaultLounge();
+  const round = newRound(lounge);
 
   const expectedPhase = RoundPhase._NULL;
   LOG_ASSERT(
@@ -54,11 +52,9 @@ newTestCollection.addTest(`test_Round_Init`, () => {
   );
 });
 
-//TODO
-
 newTestCollection.addTest(`test_Round_TwoPlayers_Init`, () => {
-  const lounge = Sample.getSampleTwoPlayersLounge();
-  const round = new Round(lounge);
+  const lounge = Sample.getTwoPlayersLounge();
+  const round = newRound(lounge);
 
   const expectedPhase = RoundPhase._NULL;
   LOG_ASSERT(
@@ -81,17 +77,26 @@ newTestCollection.addTest(`test_Round_TwoPlayers_Init`, () => {
     ``,
     `First Player Name expected ${expectedNextPlayerName} got ${actualNextPlayerName}`
   );
+
+  const expectRoundOfDealer = round;
+  const actualRoundOfDealer = round.getDealer().getRound();
+
+  LOG_ASSERT(
+    expectRoundOfDealer === actualRoundOfDealer,
+    ``,
+    `Dealer should be roundAware`
+  );
 });
 
 const RENDER_ROUND = (lounge) => {
-  const round = new Round(lounge);
+  const round = newRound(lounge);
   const uiRound = new UiRound(round);
   uiRound.render();
   return [round, uiRound];
 };
 
 newTestCollection.addTest(`test_ROUND_Render`, () => {
-  const lounge = Sample.getSampleTwoPlayersLounge();
+  const lounge = Sample.getTwoPlayersLounge();
   const [_, uiRound] = RENDER_ROUND(lounge);
 
   const expectedChildrenOf_ROOT_BLACKJACK_ELEMENT = uiRound.getRoot();
@@ -111,7 +116,7 @@ newTestCollection.addTest(`test_ROUND_Render`, () => {
 });
 
 newTestCollection.addTest(`test_PlayingArea_TwoPlayers`, () => {
-  const lounge = Sample.getSampleTwoPlayersLounge();
+  const lounge = Sample.getTwoPlayersLounge();
   const [round, uiRound] = COMMENCE_ROUND(lounge);
 
   const expectedChildrenOf_ROOT_BLACKJACK_ELEMENT_beforeRoundFinish =

@@ -3,7 +3,7 @@
  */
 
 const COMMENCE_ROUND = (lounge) => {
-  const round = new Round(lounge);
+  const round = newRound(lounge);
   const uiRound = new UiRound(round);
   uiRound
     .setOnFinish((lounge, isContinue) => {
@@ -31,7 +31,7 @@ const REMOVE_ROOT_CHILDREN = () => {
 const main = () => {
   REMOVE_ROOT_CHILDREN();
   if (ROOT_BLACKJACK_ELEMENT) {
-    COMMENCE_ROUND(new Lounge(Sample.getSampleTwoPlayersLounge()));
+    COMMENCE_ROUND(Sample.getTwoPlayersLounge());
   }
 };
 

@@ -40,7 +40,8 @@ class Round {
     this._phase = RoundPhase._NULL;
     this._rootQueueSeat = new Vertex(null);
     this._currentVertexSeat = this._rootQueueSeat;
-
+    this._dealer = new Dealer(lounge.getDealer());
+    this._dealer.setRound(this);
     const players = lounge.getPlayers();
     let thisVertexPlayer = this._rootQueueSeat;
     for (const player of players) {
@@ -56,8 +57,11 @@ class Round {
   peekNextSeat = () => this._currentVertexSeat.peekNextElement();
   getPhase = () => this._phase;
 
-  getPlayers = () => this._lounge.getPlayers();
-  getDealer = () => this._lounge.getDealer();
+  /**
+   *
+   * @returns {Dealer}
+   */
+  getDealer = () => this._dealer;
 
   finish = (isContinue) => {
     if (!(isContinue === false || isContinue === true)) {
@@ -68,3 +72,22 @@ class Round {
     this.__resetHooks();
   };
 }
+
+newRound = (lounge) => {
+  let reject = false;
+  let rejectDescription = [];
+  if (!lounge.getDealer()) {
+    reject = true;
+    rejectDescription.push(`newRound no dealer.`);
+  }
+  if (!(lounge.getPlayers().length > 0)) {
+    reject = true;
+    rejectDescription.push(`newRound no player.`);
+  }
+
+  if (reject) {
+    throw new Error(rejectDescription.join(" "));
+  }
+
+  return new Round(lounge);
+};

@@ -11,7 +11,7 @@ class Lounge {
   getPlayers = () => this._players;
   addPlayer = (p) => this._players.push(p);
   setDealer = (d) => (this._dealer = d);
-
+  getDealer = () => this._dealer;
   playerCount = () => this._players.length;
   dealerCount = () => (!!this._dealer ? 1 : 0);
   participantCount = () => this.playerCount() + this.dealerCount();

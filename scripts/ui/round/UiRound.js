@@ -67,8 +67,22 @@ class UiRound extends UiTree {
   };
    */
 
+  /**
+   *
+   * @param {Dealer} dealer
+   * @returns {UiDealer}
+   */
+  _newUiDealer = (dealer) => {
+    if (!dealer) {
+      throw new Error(`no dealer`);
+    }
+
+    return new UiDealer(dealer);
+  };
+
   _style = () => {
     this._root.style.border = "1px dotted black";
+    this._root.style.borderRadius = "15px";
     this._root.style.flexDirection = "column";
   };
   /**
@@ -87,16 +101,15 @@ class UiRound extends UiTree {
     //TEMP this._uiPlayersHolder = this.__newUiPlayerHolders(this._round.getPlayers());
 
     /** @private @const {UiDealer} */
-    //TEMP this._uiDealer = newUiDealer(this._round.getDealer());
+    this._uiDealer = this._newUiDealer(this._round.getDealer());
 
     /** @private @const {UiPhaseDisplay} */
-    // this._uiPhaseDisplay = new UiPhaseDisplay();
+    this._uiPhaseDisplay = new UiPhaseDisplay();
+
+    this.replaceChildrenUi(this._uiDealer, this._uiPhaseDisplay);
 
     // Hooks
   }
-
-  getUiPlayersHolder = () => this._uiPlayersHolder;
-  getUiDealer = () => this._uiDealer;
 
   setOnFinish = (cb) => {
     this._round.setOnFinish(cb);

@@ -5,5 +5,11 @@ class Dealer extends _Actor {
    */
   constructor(participant) {
     super(participant);
+
+    /** @private @const {Round} */
+    this._round = null;
   }
+
+  setRound = (round) => (this._round = round);
+  getRound = () => this._round;
 }
