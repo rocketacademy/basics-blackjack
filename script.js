@@ -156,6 +156,10 @@ var playerDraw = function (input) {
         return `${outputMessage()}${
           playerMoney[playerCounter - 1].name
         } you BUST! you have went over 21. dealer will draw now`;
+      } else if (playerCards[playerCounter] == 21) {
+        return `${outputMessage()}${
+          playerMoney[playerCounter - 1].name
+        }, your point is 21, are you i suggest you stand`;
       } else {
         return `${outputMessage()}${
           playerMoney[playerCounter - 1].name
