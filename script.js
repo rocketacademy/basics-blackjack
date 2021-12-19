@@ -1,43 +1,49 @@
-/* Game rules 
-----------------
-There will be only two players. One human and one computer (for the Base solution).
-The computer will always be the dealer.
-Each player gets dealt two cards to start.
-The player goes first, and decides if they want to hit (draw a card) or stand (end their turn).
-The dealer has to hit if their hand is below 17.
-Each players' score is the total of their card ranks. Jacks/Queen/Kings are 10. Aces can be 1 or 11.
-The player who is closer to, but not above 21 wins the hand.*/
+//first make a deck of cards
+var cardsDeck = [];
+var shuffledDeck = [];
 
-// Deck is shuffled.
-// User clicks Submit to deal cards.
-// The cards are analysed for game winning conditions, e.g. Blackjack.
-// The cards are displayed to the user.
-// The user decides whether to hit or stand, using the submit button to submit their choice.
-// The user's cards are analysed for winning or losing conditions.
-// The computer decides to hit or stand automatically based on game rules.
-// The game either ends or continues.
+//---------------CARD RESULTS ------------------------------
+var deckOfCards = [];
+var playerCards = [];
+var computerCards = [];
+var sumOfCardsResults = [];
 
-/*third part 
-player decides whether to hit or stand 
+//---------------GAME MODE ------------------------------
 
-1. if hit (game mode changes to deal another card), calculate sum of cards 
-2. if stand (game mode remains), calculate sum of cards and decide who is the winner
-*/
+var placeBet = "placeBet";
+var blackJackMode = "blackJackMode";
+var gameResult = "to show results";
+var gameStart = "start of the game, shuffle cards";
+var gameEnd = "end of game to show results";
+var gameForPlayerToDecide = "for player to decide hit or stand";
+var gameMode = placeBet;
+var playerPoints = 100;
 
-/* to check sum of cards- need a helper function*/
+//---------------PLAYER POINTS ---------------------------------
+var sumOfPlayer = 0;
+var sumOfComputer = 0;
+var playerBet = 0;
 
-//1. to make a deck of cards
+//---------------OUTPUT MESSAGES ---------------------------------
+var newComputerMsg = "";
+var outputMsg = "";
+
+//---------------HELPER FUNCTIONS ------------------------------
+
+//===============TO MAKE CARD DECK==============================
 var makeDeck = function () {
   // Initialise an empty deck array
   var cardDeck = [];
   // Initialise an array of the 4 suits in our deck. We will loop over this array.
   var suits = ["hearts", "diamonds", "clubs", "spades"];
+  const suitsPicture = ["♥", "♦", "♣", "♠"];
 
   // Loop over the suits array
   var suitIndex = 0;
   while (suitIndex < suits.length) {
     // Store the current suit in a variable
     var currentSuit = suits[suitIndex];
+    var currentSuitPicture = suitsPicture[suitIndex];
 
     // Loop from 1 to 13 to create all cards for a given suit
     // Notice rankCounter starts at 1 and not 0, and ends at 13 and not 12.
@@ -49,20 +55,20 @@ var makeDeck = function () {
 
       // If rank is 1, 11, 12, or 13, set cardName to the ace or face card's name
       if (cardName == 1) {
-        cardName = "ace";
+        cardName = "Ace";
       } else if (cardName == 11) {
-        cardName = "jack";
+        cardName = "Jack";
       } else if (cardName == 12) {
-        cardName = "queen";
+        cardName = "Queen";
       } else if (cardName == 13) {
-        cardName = "king";
+        cardName = "King";
       }
-
       // Create a new card with the current name, suit, and rank
       var card = {
         name: cardName,
         suit: currentSuit,
         rank: rankCounter,
+        suitPicture: currentSuitPicture,
       };
 
       // Add the new card to the deck
@@ -120,132 +126,200 @@ var assignValueToCards = function (newDeck) {
     }
     //for ace card, the value can be 1 or 11 hence assign card value to an array of 2 values
     if (newDeck[i].rank == 1) {
-      newDeck[i].valueOfCard = [1, 11];
+      newDeck[i].valueOfCard = 1;
     }
   }
   return newDeck;
 };
 
-//first make a deck of cards
-var cardsDeck = [];
-var shuffledDeck = [];
-//then assign value to cards
-var deckOfCards = [];
-var blackJackMode = "blackJackMode";
-var drawAnotherCard = "draws another card";
-var gameStart = "start of the game, shuffle cards";
-var gameMode = gameStart;
-var playerCards = [];
-var computerCards = [];
+//=============== FUNCTIONS RELATED TO CARD GAME  ==============================
 
-var sumOfPlayer = 0;
-var sumOfComputer = 0;
-
+//--------------FUNCTIONS TO DETERMINE WINNING CONDITION -------------
 var findSumOfHand = function (cards) {
   var sum = 0;
   for (let i = 0; i < cards.length; i += 1) {
     sum += cards[i].valueOfCard;
   }
-  return sum;
-};
 
-var checkSumOfInitialHand = function (cards) {
-  for (let i = 0; i < cards.length; i += 1) {
-    if (cards[i].name == "ace") {
-      cards[i].valueOfCard = 11;
+  // if there is an Ace present and total sum is less than 12, add 10 to the total sum; else no
+  for (let j = 0; j < cards.length; j += 1) {
+    if (cards[j].name == "Ace" && sum < 12) {
+      sum = sum + 10;
     }
   }
-  //if initial hand contains ace, will be treated as 11 at first
-  var sumOfHand = findSumOfHand(cards);
-  if (sumOfHand == 21) {
-    gameMode = blackJackMode;
-  }
-  return sumOfHand;
+  return sum;
 };
-
+//--------------FUNCTIONS TO DRAW CARDS-------------------------
 var drawCard = function () {
   var cardDrawn = shuffledDeck.pop();
   return cardDrawn;
 };
 
-var checkIfComputerShouldDraw = function () {
-  var totalSumOfComputerCards = findSumOfHand(computerCards);
-  console.log(totalSumOfComputerCards);
-  if (totalSumOfComputerCards < 17) {
+var checkIfComputerShouldDraw = function (computerHand) {
+  var totalSumOfComputerCards = findSumOfHand(computerHand);
+
+  while (totalSumOfComputerCards < 17) {
     var computerNextCard = drawCard();
-    computerCards.push(computerNextCard);
+    console.log(totalSumOfComputerCards);
+    computerHand.push(computerNextCard);
+    totalSumOfComputerCards = findSumOfHand(computerHand);
   }
-  return computerCards;
+  return computerHand;
 };
 
 var craftOutputMessage = function (hand) {
   var message = ``;
   for (let i = 0; i < hand.length; i += 1) {
-    message += `card ${i + 1}: ${hand[i].name} of ${hand[i].suit} <br>`;
+    message += `Card ${i + 1}: ${hand[i].name} of ${hand[i].suitPicture} <br>`;
   }
   return message;
 };
-var newComputerMsg = "";
-var main = function (input) {
-  if (input == "") {
-    if (gameMode == gameStart) {
-      cardsDeck = makeDeck();
-      deckOfCards = assignValueToCards(cardsDeck);
-      shuffledDeck = shuffleCards(deckOfCards);
-      playerCards = deckOfCards.splice(0, 2);
-      computerCards = deckOfCards.splice(0, 2);
 
-      var outputMsg = `Player's hand: <br> ${craftOutputMessage(
-        playerCards
-      )} <br>Dealer's hand: <br>${craftOutputMessage(computerCards)}`;
+//--------------FUNCTIONS TO DETERMINE WINNING CONDITIONS-------------
 
-      console.log(playerCards);
-      console.log(computerCards);
+var computerPlay = function (dealersInitialCard) {
+  var computerFinalCards = checkIfComputerShouldDraw(dealersInitialCard);
+  sumOfComputer = findSumOfHand(computerFinalCards);
+  newComputerMsg = `<br><br><b>Dealer's card:</b> <br>${craftOutputMessage(
+    computerFinalCards
+  )} Sum: ${sumOfComputer}`;
+  return newComputerMsg;
+};
 
-      sumOfPlayer = checkSumOfInitialHand(playerCards);
-      sumOfComputer = checkSumOfInitialHand(computerCards);
-
-      if (gameMode == blackJackMode) {
-        gameMode = gameStart;
-        if (sumOfPlayer == 21 && sumOfComputer == 21) {
-          return `It is a tie! ${outputMsg} BlackJack for both`;
-        }
-        if (sumOfComputer == 21) {
-          return `Dealer won! ${outputMsg} BlackJack!`;
-        }
-        if (sumOfPlayer == 21) {
-          return `Player has won!${outputMsg} BlackJack!`;
-        }
-      } else {
-        var computerFinalCards = checkIfComputerShouldDraw();
-        newComputerMsg = craftOutputMessage(computerFinalCards);
-        outputMsg = `Player's hand: <br> ${craftOutputMessage(
-          playerCards
-        )} <br>Dealer's hand: <br>${newComputerMsg} <br>`;
-        return `${outputMsg} <br>Player enter "hit" to continue drawing another card or "stand" to stop.`;
-      }
+var toCheckWin = function (playerCardSum, computerCardSum) {
+  var restartGameMsg = `Please press Play to restart game again`;
+  var computerResultsMsg = computerPlay(computerCards);
+  outputMsg += computerResultsMsg;
+  var combinedMsg = `${outputMsg} <br><br> ${restartGameMsg}<br><br>`;
+  if (playerCardSum > 21 && computerCardSum > 21) {
+    return `<b>BUST!!!</b><br><br> Both dealer and player have points over 21. ${combinedMsg}`;
+  } // if both <21, compare by result
+  if (playerCardSum < 22 && computerCardSum < 22) {
+    if (playerCardSum > computerCardSum) {
+      playerPoints += playerBet;
+      return `<b>Player wins!!!</b><br><br>${combinedMsg}You have $${playerPoints}`;
+    }
+    if (playerCardSum == computerCardSum) {
+      return `<b>It is a tie!</b><br><br>${combinedMsg}You have $${playerPoints}`;
+    }
+    if (playerCardSum < computerCardSum) {
+      playerPoints -= playerBet;
+      return `<b>Dealer wins!</b><br><br>${combinedMsg}You have $${playerPoints}`;
     }
   }
-
-  if (input == "hit") {
-    gameMode = drawAnotherCard;
-    var playerNextCard = drawCard();
-    console.log(playerNextCard);
-    playerCards.push(playerNextCard);
-    var newMsg = craftOutputMessage(playerCards);
-    return `Player's card:<br> ${newMsg}<br> Dealer's card: <br> ${newComputerMsg}`;
+  if (playerCardSum > 21 && computerCardSum <= 21) {
+    playerPoints -= playerBet;
+    return `<b>Player bust! Dealer wins!!</b><br>${combinedMsg}You have $${playerPoints}`;
+  }
+  if (playerCardSum <= 21 && computerCardSum > 21) {
+    playerPoints += playerBet;
+    console.log(playerPoints);
+    return `<b>Player wins! Dealer bust!!</b><br> ${combinedMsg}You have $${playerPoints}`;
   }
 };
-//test
-console.log(main(""));
 
-console.log(drawCard());
+var checkIfBlackJack = function (cardsOfPlayer, cardsOfDealer) {
+  //Case1: YES BLACKJACK
+  if (sumOfPlayer == 21 || sumOfComputer == 21) {
+    gameMode = blackJackMode;
+    if (gameMode == blackJackMode) {
+      gameMode = placeBet;
+      if (sumOfPlayer == 21 && sumOfComputer == 21) {
+        return `It is a tie! ${outputMsg} BlackJack for both<br><br>You have $${playerPoints}`;
+      }
+      if (sumOfComputer == 21) {
+        console.log(sumOfComputer);
+        playerPoints -= playerBet;
+        return `<b>Dealer wins!</b> ${outputMsg} BlackJack!<br><br>You have $${playerPoints}`;
+      }
+      if (sumOfPlayer == 21) {
+        playerPoints += playerBet;
+        return `<b>Player wins!</b>${outputMsg} BlackJack!<br><br>You have $${playerPoints}`;
+      }
+    }
 
-console.log(checkIfComputerShouldDraw());
-/* second part (after scenario 4)
-1. need to set a game logic for computer to determine whether draw one more card 
-if sum of number <= 16 -> draw 
-2. if sum of number >=17 --> stand 
-*/
+    //Case2: NO BLACKJACK
+  } else {
+    gameMode = gameForPlayerToDecide;
+    outputMsg = `<b>Player's hand:</b> <br> ${craftOutputMessage(
+      playerCards
+    )} Sum: ${sumOfPlayer}`;
+    return `${outputMsg} <br><br> Please enter "hit" to continue drawing another card or "stand" to stop.`;
+  }
+};
 
-//when player submit hits --> game mode changed to "deal one more card"
+// ======================= MAIN FUNCTION==================================
+
+var showBet = function (input) {
+  playerBet = 0;
+
+  if (gameMode == placeBet) {
+    if (input > playerPoints && playerPoints > 0) {
+      return `You have $${playerPoints}. Do not bet more than what you have. `;
+    }
+    if (playerPoints <= 0) {
+      return `Please refresh the page to restart the game`;
+    }
+    gameMode = gameStart;
+    console.log(gameMode);
+    playerBet += parseInt(input);
+    console.log(playerPoints);
+    betMsg = `You now have $${
+      playerPoints - playerBet
+    }. Your bet is: $${playerBet}.<br> <br>Now press the "Play" button to start the game `;
+    return betMsg;
+  }
+  return `Please press the "Play" button to start the game`;
+};
+var hit = function () {
+  console.log(playerPoints);
+  console.log(gameMode);
+  if (gameMode == gameForPlayerToDecide) {
+    var playerNextCard = drawCard();
+    playerCards.push(playerNextCard);
+    sumOfPlayer = findSumOfHand(playerCards);
+    var newMsg = craftOutputMessage(playerCards);
+    outputMsg = `<b>Player's card:</b><br> ${newMsg} Sum: ${sumOfPlayer}
+  `;
+    return `${outputMsg} <br><br> Please press "hit" to continue drawing a card or press "stand" to stop`;
+  } else
+    return `Please enter your bet then press the "Play" button to start playing the game`;
+};
+
+var stand = function () {
+  var computerFinalCards = checkIfComputerShouldDraw(computerCards);
+  sumOfComputer = findSumOfHand(computerFinalCards);
+  if (gameMode == gameForPlayerToDecide) {
+    gameMode = placeBet;
+    console.log("player", sumOfPlayer);
+    console.log("dealer", sumOfComputer);
+    return toCheckWin(sumOfPlayer, sumOfComputer);
+  } else
+    return `Please enter your bet then press the "Play" button to start playing the game`;
+};
+
+var play = function () {
+  //start the game
+  sumOfPlayer = 0;
+  sumOfComputer = 0;
+  //gameMode is now gameStart
+  // entering the inital game state- to shuffle cards and deal 2 cards each to each player
+  if (gameMode == gameStart) {
+    gameMode = gameForPlayerToDecide;
+    cardsDeck = makeDeck();
+    deckOfCards = assignValueToCards(cardsDeck);
+    shuffledDeck = shuffleCards(deckOfCards);
+    console.log(shuffledDeck);
+
+    playerCards = shuffledDeck.splice(0, 2);
+    computerCards = shuffledDeck.splice(0, 2);
+    outputMsg = `<b>Player's hand:</b> <br> ${craftOutputMessage(
+      playerCards
+    )} <br>Dealer's hand: <br>${craftOutputMessage(computerCards)}`;
+    sumOfPlayer = findSumOfHand(playerCards);
+    sumOfComputer = findSumOfHand(computerCards);
+    return checkIfBlackJack(playerCards, computerCards);
+  } else return `Please enter your bet`;
+};
+
+console.log(play());
