@@ -41,7 +41,7 @@ class Round {
     /** @private @const {number} */
     this._actorsCount = this.getActors().length;
     /** @private @const {number} */
-    this._playersCount = this.getPlayers().length;
+    this._playerCount = this.getPlayers().length;
 
     // Properties
 
