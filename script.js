@@ -303,27 +303,46 @@ var main = function (input) {
       console.log("player total: " + playerTotalValue);
       console.log("dealer total: " + dealerTotalValue);
       // -- compare total hand value
-      // -- same value > tie
-
-      if (playerTotalValue == dealerTotalValue) {
+      // check if player or dealer bust, card total is more than 21
+      // if player is more than 21, dealer is less than 21, dealer auto wins
+      if (playerTotalValue > 21 && dealerTotalValue <= 21) {
+        myOutputMessage =
+          displayPlayerAndDealerCards(playerCards, dealerCards) +
+          `<br>Player hands has bust! Dealer WINS!` +
+          displayTotalValues(playerTotalValue, dealerTotalValue);
+      }
+      // if dealer is more than 21, player is less than 21, player auto wins
+      else if (dealerTotalValue > 21 && playerTotalValue <= 21) {
+        myOutputMessage =
+          displayPlayerAndDealerCards(playerCards, dealerCards) +
+          `<br>Dealer hands has bust! Player WINS!` +
+          displayTotalValues(playerTotalValue, dealerTotalValue);
+      }
+      // if dealer and player has same value, it's a draw
+      else if (playerTotalValue == dealerTotalValue) {
         myOutputMessage =
           displayPlayerAndDealerCards(playerCards, dealerCards) +
           `<br>It's a draw!` +
           displayTotalValues(playerTotalValue, dealerTotalValue);
       }
 
-      // player higher value > player wins
+      // player higher value AND value is less than 21 player wins
       else if (playerTotalValue > dealerTotalValue) {
         myOutputMessage =
           displayPlayerAndDealerCards(playerCards, dealerCards) +
           `<br>Player wins!` +
           displayTotalValues(playerTotalValue, dealerTotalValue);
       }
-      // dealer higher value > dealer wins
-      else {
+      // dealer higher value AND value is less than 21, dealer wins
+      else if (dealerTotalValue > playerTotalValue) {
         myOutputMessage =
           displayPlayerAndDealerCards(playerCards, dealerCards) +
           `<br>Dealer wins!` +
+          displayTotalValues(playerTotalValue, dealerTotalValue);
+      } else {
+        myOutputMessage =
+          displayPlayerAndDealerCards(playerCards, dealerCards) +
+          `<br> Both dealer and player has bust their hands!` +
           displayTotalValues(playerTotalValue, dealerTotalValue);
       }
     }
