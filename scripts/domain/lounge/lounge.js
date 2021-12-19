@@ -22,5 +22,6 @@ class Lounge {
   generateShoe = (sets) => {
     this._shoe = Deck.generateDeck(sets);
   };
+  getShoe = () => this._shoe;
   shoeSize = () => this._shoe.length;
 }

@@ -36,10 +36,22 @@ newTestCollection.addTest(`test_Lounge_TwoPlayersLounge`, () => {
 
 //TODO
 
-newTestCollection.addTest(`test_Round_TwoPlayers`, () => {
-  /**
-   * should have 2 players and a dealer
-   */
+newTestCollection.addTest(`test_Round_Init`, () => {
+  const round = new Round();
+
+  const expectedPhase = RoundPhase._NULL;
+  LOG_ASSERT(
+    expectedPhase === round.getPhase(),
+    ``,
+    `Expected Phase ${expectedPhase}`
+  );
+
+  const expectedRootSeat = null;
+  LOG_ASSERT(
+    expectedRootSeat === round.getCurrentSeat(),
+    ``,
+    `Expected Root Seat ${expectedRootSeat}`
+  );
 });
 
 newTestCollection.run();
