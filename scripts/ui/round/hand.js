@@ -126,7 +126,7 @@ class UiHand extends Ui_Component {
   id = () => this._id;
 
   _refreshUiCardsCount = () => {
-    setUiTextContent(this._uiCount, `[${this._hand.count()}]`);
+    SET_UI_TEXT_CONTENT(this._uiCount, `[${this._hand.count()}]`);
   };
 
   /** Control Options */
@@ -201,7 +201,3 @@ class UiSlider extends Ui_Component {
     this._root.oninput = fn;
   };
 }
-
-const newUiHand = (hand) => {
-  return new UiHand(hand);
-};

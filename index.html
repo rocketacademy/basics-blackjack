@@ -6,34 +6,6 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <!-- Favicon configuration -->
-    <link
-      rel="apple-touch-icon"
-      sizes="180x180"
-      href="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/favicons/apple-touch-icon.png?v=2"
-    />
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="32x32"
-      href="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/favicons/favicon-32x32.png?v=2"
-    />
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="16x16"
-      href="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/favicons/favicon-16x16.png?v=2"
-    />
-    <link rel="manifest" href="/site.webmanifest?v=2" />
-    <link
-      rel="mask-icon"
-      href="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/favicons/safari-pinned-tab.svg?v=2"
-      color="#e73c3e"
-    />
-    <link
-      rel="shortcut icon"
-      href="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/favicons/favicon.ico?v=2"
-    />
     <meta name="apple-mobile-web-app-title" content="Rocket Academy" />
     <meta name="application-name" content="Rocket Academy" />
     <meta name="msapplication-TileColor" content="#2b5797" />
@@ -96,11 +68,6 @@
         margin-left: 30px;
         margin-right: 30px;
         background-color: white;
-        color: black; /* sets the font color */
-        background-image: url(""); /* The image used */
-        background-position: center; /* Center the image */
-        background-repeat: no-repeat; /* Do not repeat the image */
-        background-size: cover; /* Resize the background image to cover the entire container */
       }
 
       #output-div img {
@@ -120,40 +87,11 @@
         max-width: 800px;
         padding: 38px 31px;
       }
-
-      input {
-        font-size: 21px;
-        line-height: 33px;
-        margin: 0 0 23px 0;
-        padding: 0 9px;
-        width: 100%;
-      }
-
-      button {
-        font-size: 21px;
-        line-height: 33px;
-        margin: 0 0 23px 0;
-        padding: 0 6px;
-      }
-
       #output-div {
         background-color: lightgrey;
         margin: 20px auto;
         padding: 20px;
         width: 100%;
-      }
-
-      .logo-img {
-        height: 49px;
-        position: relative;
-        top: 22px;
-      }
-
-      /* increase header font size on wider screens */
-      @media screen and (min-width: 600px) {
-        .header {
-          font-size: 2rem;
-        }
       }
     </style>
   </head>
@@ -163,22 +101,5 @@
       <nav>welcome</nav>
     </h1>
     <div id="root-ui-blackjack" mmm="aaa"></div>
-    <script src="scripts/helpers.js"></script>
-
-    <script src="scripts/domain/table/participant.js"></script>
-    <script src="scripts/domain/table/lounge.js"></script>
-
-    <script src="scripts/domain/round/card.js"></script>
-    <script src="scripts/domain/round/hand.js"></script>
-    <script src="scripts/domain/round/actor.js"></script>
-    <script src="scripts/domain/round/round.js"></script>
-
-    <script src="scripts/ui/round/abstract-base.js"></script>
-    <script src="scripts/ui/round/buttons.js"></script>
-    <script src="scripts/ui/round/card.js"></script>
-    <script src="scripts/ui/round/hand.js"></script>
-    <script src="scripts/ui/round/actor.js"></script>
-    <script src="scripts/ui/round/round.js"></script>
-    <script src="main.js"></script>
   </body>
 </html>

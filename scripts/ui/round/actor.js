@@ -72,7 +72,7 @@ class Ui_Actor extends Ui_Component {
     if (!val) {
       return;
     }
-    setUiStyle(this.getUiName(), "color", val);
+    SET_UI_STYLE(this.getUiName(), "color", val);
   };
 
   id = () => this._id;
@@ -131,23 +131,3 @@ class UiDealer extends Ui_Actor {
     this._root.style.alignSelf = "center";
   };
 }
-/**
- * @param {Player} player
- * @returns {UiPlayer}
- */
-const newUiPlayer = (player) => new UiPlayer(player);
-/**
- *
- * @param {Player[]} players
- * @returns {UiPlayer[]} tree representation of the players
- */
-const newUiPlayers = (players) => players.map((player) => newUiPlayer(player));
-
-/**
- *
- * @param {Dealer} dealer
- * @returns {UiDealer}
- */
-const newUiDealer = (dealer) => new UiDealer(dealer);
-
-const newUiCredit = (credit) => new UiCredit(credit);

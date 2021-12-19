@@ -7,7 +7,7 @@
  * @param {string} property
  * @param {string} value
  */
-const setUiStyle = (ui, property, value) => {
+const SET_UI_STYLE = (ui, property, value) => {
   ui.getRoot().style[property] = value;
 };
 
@@ -16,7 +16,7 @@ const setUiStyle = (ui, property, value) => {
  * @param {Ui_Component} ui
  * @param {string} value
  */
-const setUiTextContent = (ui, value) => {
+const SET_UI_TEXT_CONTENT = (ui, value) => {
   ui.getRoot().textContent = value;
 };
 

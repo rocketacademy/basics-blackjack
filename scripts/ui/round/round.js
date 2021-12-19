@@ -147,10 +147,3 @@ class UiRound extends UiTree {
     this._uiPhaseDisplay.setTextContent(text);
   };
 }
-
-/**
- *
- * @param {Round} round
- * @returns {UiRound}
- */
-const NEW_UI_ROUND = (round) => new UiRound(round);

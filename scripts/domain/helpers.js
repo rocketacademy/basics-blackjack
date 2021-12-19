@@ -1,5 +1,3 @@
-// logs
-
 const LOG_ASSERT = (predicate, trueExpr, falseExpr) => {
   if (predicate === true) {
     if (trueExpr) {
