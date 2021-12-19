@@ -180,7 +180,7 @@ var playerDraw = function (input) {
   }
   return `${outputMessage()}${
     playerMoney[playerCounter].name
-  }, you have 21, ill suggest you to stand`;
+  }, please input hit or stand`;
 };
 
 var dealerDraw = function () {
