@@ -373,10 +373,10 @@ class Round {
   _autoDeal = () => {
     console.group("[_autoDeal]");
 
-    let cardPosition = Actor.FIRST_CARD;
+    let cardPosition = Hand.FIRST_CARD;
     const dealerHoldCardIndex = Dealer.HOLE_CARD_POSITION;
 
-    for (; cardPosition <= Actor.SECOND_CARD; cardPosition++) {
+    for (; cardPosition <= Hand.SECOND_CARD; cardPosition++) {
       console.group(
         `Dealing ${
           cardPosition === 1 ? `once` : cardPosition === 2 ? `twice` : `???????`

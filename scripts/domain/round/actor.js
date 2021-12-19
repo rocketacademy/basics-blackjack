@@ -1,10 +1,4 @@
 class Actor {
-  static FIRST_CARD = 0;
-  static SECOND_CARD = 1;
-  static THIRD_CARD = 2;
-  static FOURTH_CARD = 3;
-  static FIFTH_CARD = 4;
-
   /**
    *
    * @param {Participant} participant
@@ -76,7 +70,7 @@ const newPlayer = (participant) => {
 };
 
 class Dealer extends Actor {
-  static HOLE_CARD_POSITION = Actor.SECOND_CARD; // 2, as in second card
+  static HOLE_CARD_POSITION = Hand.SECOND_CARD; // 2, as in second card
   /**
    * @param {Participant} participant
    */

@@ -7,6 +7,11 @@ class HandStatus {
 }
 
 class Hand {
+  static FIRST_CARD = 0;
+  static SECOND_CARD = 1;
+  static THIRD_CARD = 2;
+  static FOURTH_CARD = 3;
+  static FIFTH_CARD = 4;
   constructor() {
     /** @private @const {Card[]} */
     this._cards = [];
