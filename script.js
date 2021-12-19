@@ -85,7 +85,7 @@ var playerNames = function (input) {
 };
 
 var playerChooseBet = function (input) {
-  if (input > 0 && input < playerMoney[betCounter].token) {
+  if (input > 0 && input <= playerMoney[betCounter].token) {
     playerMoney[betCounter].bet = input;
     betCounter = betCounter + 1;
     if (betCounter == numberOfPlayer) {
