@@ -151,11 +151,18 @@ var playerDraw = function (input) {
     playerCards[playerCounter].push(randomCard.pop());
     if (scoreCounter(playerCards[playerCounter]) > 21) {
       playerCounter = playerCounter + 1;
-      return `${outputMessage()}${
-        playerMoney[playerCounter - 1].name
-      } you BUST! you have went over 21. <BR>${
-        playerMoney[playerCounter].name
-      }, its your turn now, would you like to hit or stand`;
+      if (playerCounter == numberOfPlayer) {
+        gameMode = `DEALER_DRAW`;
+        return `${outputMessage()}${
+          playerMoney[playerCounter - 1].name
+        } you BUST! you have went over 21. dealer will draw now`;
+      } else {
+        return `${outputMessage()}${
+          playerMoney[playerCounter - 1].name
+        } you BUST! you have went over 21. <BR>${
+          playerMoney[playerCounter].name
+        }, its your turn now, would you like to hit or stand`;
+      }
     }
     return `${outputMessage()}${
       playerMoney[playerCounter].name
