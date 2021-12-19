@@ -90,30 +90,6 @@ const RENDER_ROUND = (lounge) => {
   return [round, uiRound];
 };
 
-/**
- * Assumes control of the root element assigned to the application
- */
-
-const COMMENCE_ROUND = (lounge) => {
-  const round = new Round(lounge);
-  const uiRound = new UiRound(round);
-  uiRound
-    .setOnFinish((lounge, isContinue) => {
-      if (isContinue === true) {
-        COMMENCE_ROUND(lounge);
-      } else if (isContinue === false) {
-        COMMENCE_LOUNGE(lounge);
-      }
-    })
-    .render();
-  return [round, uiRound];
-};
-
-const COMMENCE_LOUNGE = (lounge) => {
-  const uiLounge = new UiLounge(lounge).render();
-  return [lounge, uiLounge];
-};
-
 newTestCollection.addTest(`test_ROUND_Render`, () => {
   const lounge = Sample.getSampleTwoPlayersLounge();
   const [_, uiRound] = RENDER_ROUND(lounge);
@@ -167,7 +143,7 @@ newTestCollection.addTest(`test_PlayingArea_TwoPlayers`, () => {
   LOG_ASSERT(
     1 === ROOT_BLACKJACK_ELEMENT.children.length,
     ``,
-    `Should have one and only children of ROOT_BLACKJACK_ELEMENT`
+    `Should still have one and only children of ROOT_BLACKJACK_ELEMENT. Attach some element, any element.`
   );
 });
 
