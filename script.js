@@ -91,20 +91,9 @@ var shuffledDeck = shuffleCards(deck);
 var checkBlackjack = function (drawnCards) {
   var totalPoints = drawnCards[0].rank + drawnCards[1].rank;
   if (totalPoints == 21) {
-    var myOutputValue = "Blackjack! You won!";
+    var myOutputValue = true;
   } else {
-    //just display cards and current points to user
-    myOutputValue =
-      "You have drawn " +
-      drawnCards[0].name +
-      " of " +
-      drawnCards[0].suit +
-      " and " +
-      drawnCards[1].name +
-      " of " +
-      drawnCards[1].suit +
-      ". <br> Your current points are " +
-      totalPoints;
+    myOutputValue = false;
   }
   return myOutputValue;
 };
@@ -114,16 +103,57 @@ var checkBlackjack = function (drawnCards) {
 //Total score is total of card ranks: J,Q,K = 10, Ace = 1 or 11
 //Closer to or not >21 --> Winner
 
-var decideHitOrStand = function (decision, drawnCards) {
-  var outputPlayerCard = "";
-  var myOutputValue = " ";
+var outputPlayerCard1 = " ";
+
+var decidePlayerHitOrStand = function (decision, playerCards) {
   var myOutputValue1 = " ";
+  mode = "Hit or Stand";
   if (decision == "hit") {
     //draw another card
-    drawnCards.push(shuffledDeck.pop());
+    console.log(playerCards);
+    playerCards.push(shuffledDeck.pop());
+    console.log(playerCards);
+    console.log(playerCards.length);
+    myOutputValue1 = "Player chose hit. Draw a card.";
+    console.log("enter after hit");
   } else if (decision == "stand") {
-    //end turn if player's turn and continue with computer's turn. If it's computer's turn, move to compare points.
+    //end player's turn and continue with computer's turn
+    currentPlayer = "Computer";
+    mode = "Show hand";
     myOutputValue1 = "Player chose stand. It's the computer's turn.";
+  } else {
+    // error, only can choose hit or stand
+    myOutputValue1 =
+      "Invalid choice. Please only choose 'hit' or 'stand'. Click submit button to try again.";
+  }
+
+  var index = 0;
+  while (index < playerCards.length) {
+    var outputPlayerCard2 =
+      "<br>" + playerCards[index].name + " of " + playerCards[index].suit;
+    index += 1;
+  }
+  outputPlayerCard1 = outputPlayerCard1 + outputPlayerCard2;
+  return myOutputValue1;
+};
+
+var decideComputerHitOrStand = function (drawnCards) {
+  var totalPoints = drawnCards[0].rank + drawnCards[1].rank;
+  var outputComputerCard = "";
+  var myOutputValue = " ";
+  var myOutputValue1 = " ";
+  if (totalPoints < 17) {
+    //computer is dealer, have to hit (draw another card) if hand is below 17
+    drawnCards.push(shuffledDeck.pop());
+    myOutputValue1 = "Computer's hand is below 17. Computer has to hit.";
+  } else if (totalPoints >= 17) {
+    //computer can choose to hit or stand (set default choice for computer?)
+    if (totalPoints >= 20) {
+      myOutputValue1 = "Computer chose stand.";
+    } else {
+      drawnCards.push(shuffledDeck.pop());
+      myOutputValue1 = "Computer chose hit.";
+    }
   } else {
     // error, only can choose hit or stand
     myOutputValue1 =
@@ -132,48 +162,169 @@ var decideHitOrStand = function (decision, drawnCards) {
 
   //output all cards on hand
   for (let i = 0; i < drawnCards.length; i++) {
-    outputPlayerCard =
-      outputPlayerCard +
+    outputComputerCard =
+      outputComputerCard +
       "<br> " +
-      playerCard[i].name +
+      drawnCards[i].name +
       " of " +
-      playerCard[i].suit;
+      drawnCards[i].suit;
   }
 
   myOutputValue =
-    myOutputValue1 + "<br> Player's drawn cards: " + outputPlayerCard;
+    myOutputValue1 + "<br> Computer's drawn cards: " + outputComputerCard;
   return myOutputValue;
 };
 
+var comparePoints = function (computerCards, playerCards) {
+  var computerPoints = 0;
+  var playerPoints = 0;
+  var myOutputValue1 = " ";
+  var myOutputValue = " ";
+  //check total points of player's hand --> need to convert rank to number?
+  for (let i = 0; i < playerCards.length; i++) {
+    playerPoints = playerPoints + playerCards[i].rank;
+  }
+  //check total points of computer's hand
+  for (let i = 0; i < computerCards.length; i++) {
+    computerPoints = computerPoints + computerCards[i].rank;
+  }
+
+  if (
+    (computerPoints > playerPoints && computerPoints <= 21) ||
+    playerPoints > 21
+  ) {
+    if (playerPoints > 21) {
+      myOutputValue1 = "Player's hand BURST! Computer wins!";
+    } else {
+      myOutputValue1 = "Computer wins!";
+    }
+  } else if (
+    (playerPoints > computerPoints && playerPoints <= 21) ||
+    computerPoints > 21
+  ) {
+    if (computerPoints > 21) {
+      myOutputValue1 = "Copmuter's hand BURST! Player wins!";
+    } else {
+      myOutputValue1 = "Player wins!";
+    }
+  } else {
+    myOutputValue1 = "It's a tie!";
+  }
+
+  myOutputValue =
+    myOutputValue1 +
+    "<br> Computer's total points: " +
+    computerPoints +
+    "<br> Player's total points: " +
+    playerPoints;
+
+  return myOutputValue;
+};
+
+var mode = "Show hand"; //Show hand, Hit or Stand, Compare
 var currentPlayer = "Player"; //switch between Player and Computer
+// Draw 2 cards per player, store into array
+var computerCards = [];
+var playerCards = [];
+var outputComputerCard = "";
+var outputPlayerCard = "";
 
 var main = function (input) {
-  // Draw 2 cards per player, store into array
-  var computerCards = [];
-  var playerCards = [];
-  var outputComputerCard = "";
-  var outputPlayerCard = "";
-  for (let i = 0; i < 2; i++) {
-    //const element = array[i];
-    computerCards.push(shuffledDeck.pop());
-    playerCards.push(shuffledDeck.pop());
-    outputComputerCard =
-      computerCards +
-      "<br> " +
-      computerCards[i].name +
-      " of " +
-      computerCards[i].suit;
-    outputPlayerCard =
-      outputPlayerCard +
-      "<br> " +
-      playerCards[i].name +
-      " of " +
-      playerCards[i].suit;
+  //Player starts first
+  if (currentPlayer == "Player") {
+    if (mode == "Show hand") {
+      //Draw 2 cards per player, store into array (global array)
+
+      for (let i = 0; i < 2; i++) {
+        //const element = array[i];
+        computerCards.push(shuffledDeck.pop());
+        playerCards.push(shuffledDeck.pop());
+        outputComputerCard =
+          outputComputerCard +
+          "<br> " +
+          computerCards[i].name +
+          " of " +
+          computerCards[i].suit;
+        outputPlayerCard =
+          outputPlayerCard +
+          "<br> " +
+          playerCards[i].name +
+          " of " +
+          playerCards[i].suit;
+      }
+      console.log(computerCards);
+      console.log(playerCards);
+      console.log(outputPlayerCard);
+      console.log(outputComputerCard);
+
+      //edit checkblackjack to return true or false
+      if (checkBlackjack(playerCards) || checkBlackjack(computerCards)) {
+        if (checkBlackjack(playerCards) && checkBlackjack(computerCards)) {
+          //both blackjack in first draw, it's a tie
+          var myOutputValue = "Blackjack for both players! It's a tie!";
+        } else if (checkBlackjack(playerCards)) {
+          myOutputValue =
+            "Blackjack! Player won! <br> Player has drawn " + outputPlayerCard;
+        } else if (checkBlackjack(computerCards)) {
+          myOutputValue =
+            "Blackjack! Computer won! <br> Computer has drawn " +
+            outputComputerCard;
+        }
+        return myOutputValue;
+      }
+
+      myOutputValue =
+        "Player's hand: " +
+        outputPlayerCard +
+        "<br> Decide whether to Hit or Stand. Input 'hit' or 'stand' and click on submit to confirm decision";
+      // need to switch mode here...
+      mode = "Hit or Stand";
+    } else if (mode == "Hit or Stand") {
+      console.log("Entered here");
+      //player will decide whether to hit or stand. if hit, need to add cards to array
+      var myOutputValue1 = decidePlayerHitOrStand(input, playerCards);
+      console.log(outputPlayerCard);
+
+      myOutputValue =
+        myOutputValue1 +
+        "<br> Player's drawn cards:<br>" +
+        outputPlayerCard +
+        "<br>" +
+        outputPlayerCard1;
+
+      //will switch to computer's turn if player chooses "stand"
+    }
+  } else if (currentPlayer == "Computer") {
+    if (mode == "Show hand") {
+      for (let i = 0; i < 2; i++) {
+        //const element = array[i];
+        outputComputerCard =
+          outputComputerCard +
+          "<br> " +
+          computerCards[i].name +
+          " of " +
+          computerCards[i].suit;
+      }
+      myOutputValue =
+        "Computer's hand: " +
+        outputComputerCard +
+        "<br> Computer to decide whether to Hit or Stand";
+      // need to switch mode here...
+      mode = "Hit or Stand";
+    } else if (mode == "Hit or Stand") {
+      console.log("Computer entered here");
+      //Computer decision for hit or stand defnined by standard logic (automatic, not by user input)
+      myOutputValue = decideComputerHitOrStand(computerCards);
+      console.log(outputComputerCard);
+      mode = "Compare";
+    } else if (mode == "Compare") {
+      myOutputValue = comparePoints(computerCards, playerCards);
+      console.log(computerCards);
+      console.log(playerCardspwd);
+    }
   }
-  console.log(computerCards);
-  console.log(playerCards);
-  console.log(outputPlayerCard);
-  console.log(outputComputerCard);
+
+  console.log(mode);
 
   return myOutputValue;
 };
