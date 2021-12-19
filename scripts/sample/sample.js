@@ -11,6 +11,7 @@ class Sample {
     lounge.addPlayer(newPlayer1);
     lounge.addPlayer(newPlayer2);
     lounge.setDealer(dealer);
+    lounge.generateShoe(4);
     return lounge;
   };
   constructor() {}

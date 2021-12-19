@@ -10,7 +10,7 @@ class Card {
     this._isFaceUp = null;
   }
   flip = (isToFaceUp) => {
-    if (!(this._isFaceUp === true || this._isFaceUp === false)) {
+    if (!(isToFaceUp === true || isToFaceUp === false)) {
       throw `Invalid card face direction.`;
     }
     this._isFaceUp = isToFaceUp;

@@ -5,11 +5,22 @@ class Lounge {
     /** @private @const {Partipants[]} */
     this._players = [];
     this._dealer = null;
+    /** @private @const {Card[]} */
+    this._shoe = null;
   }
   getPlayers = () => this._players;
   addPlayer = (p) => this._players.push(p);
   setDealer = (d) => (this._dealer = d);
+
   playerCount = () => this._players.length;
-  participantCount = () => this.playerCount() + this.dealerCount();
   dealerCount = () => (!!this._dealer ? 1 : 0);
+  participantCount = () => this.playerCount() + this.dealerCount();
+  /**
+   *
+   * @param {number} decks
+   */
+  generateShoe = (sets) => {
+    this._shoe = Deck.generateDeck(sets);
+  };
+  shoeSize = () => this._shoe.length;
 }
