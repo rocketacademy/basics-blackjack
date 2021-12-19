@@ -20,9 +20,9 @@ class UiCard extends Ui_Component {
 
   static getUrl = (card) =>
     `img/cards/${card
-      .getFaceValue()
+      .getRank()
       .toString()
-      .padStart(2, "0")}-${card.getSuit()}.png`;
+      .padStart(2, "0")}-${card.getSuitDesc()}.png`;
 
   constructor(card) {
     super(document.createElement("div"));

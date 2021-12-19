@@ -434,8 +434,8 @@ class Round {
       const playerHands = player.getHands();
       for (const playerHand of playerHands) {
         for (const dealerHand of dealerHands) {
-          const playerHandVal = playerHand.getFaceValue();
-          const dealerHandVal = dealerHand.getFaceValue();
+          const playerHandVal = playerHand.getHardValue();
+          const dealerHandVal = dealerHand.getHardValue();
           const bet = playerHand.getBet();
           if (bet === null || bet === undefined || bet < 0) {
             throw `Invalid bet from player: ${bet}`;
