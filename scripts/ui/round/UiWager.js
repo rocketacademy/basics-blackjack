@@ -89,8 +89,8 @@ class UiWager extends Ui_Component {
     this._uIContainerBet__ = new UiContainerMainBet();
 
     // Hooks
-    this._wager.setOnPlaceYourInitialBet((wager, dealer, playableCredit) => {
-      console.group(`ui wager notified setOnPlaceYourInitialBet `);
+    this._wager.setOnWhatIsYourInitialBet((wager, dealer, playableCredit) => {
+      console.group(`ui wager notified setOnWhatIsYourInitialBet `);
       console.groupEnd();
 
       const [_uIContainerBet__, _uiSlider__] = this._newInitialBetControl(
@@ -100,23 +100,18 @@ class UiWager extends Ui_Component {
       );
       this.replaceChildrenUi(_uIContainerBet__, _uiSlider__);
     });
-    //
 
     this._wager.setOnInitialBetStaked((bet) => {
       console.group(`ui wager notified InitialBetStaked `);
       this._uIContainerBet__.setButtonValue(bet);
       this.replaceChildrenUi(this._uIContainerBet__);
+
+      this._uIContainerBet__.setButtonOnMouseClick(() => {});
       console.groupEnd();
     });
 
     this._style();
   }
-
-  _newUiSlider = () => {
-    const s = new UiSlider();
-    s.getRoot().className += " blackjack-wager-slider";
-    return s;
-  };
 
   _newInitialBetControl = (wager, dealer, playableCredit) => {
     const initMainBetValue = 0;
@@ -124,7 +119,9 @@ class UiWager extends Ui_Component {
     _uIContainerBet__.setButtonOnMouseClick((betValue) => {
       dealer.placeInitialBet(wager, betValue);
     });
-    const _uiSlider__ = this._newUiSlider();
+
+    const _uiSlider__ = new UiSlider();
+    _uiSlider__.getRoot().className += " blackjack-wager-slider";
     _uiSlider__.setMax(playableCredit);
     _uiSlider__.setValue(initMainBetValue);
 

@@ -20,6 +20,8 @@ class Hand {
     this._status = PlayerStatus.IN_PLAY;
     this._id = uuidv4();
     this._wager = null;
+
+    this.splitCounter = 0; // to keep track i
   }
 
   id = () => this._id;
@@ -29,6 +31,12 @@ class Hand {
     this._cards.push(card);
     this._onAddCard(card);
   };
+
+  getHardTotal = () =>
+    this._cards.reduce((sum, card) => {
+      sum += card.getHardValue();
+      return sum;
+    }, 0);
 
   getWager = () => {
     return this._wager;
@@ -42,6 +50,22 @@ class Hand {
   setController = (player) => {
     this._controller = player;
   };
+
+  whatDoYouWantToDoOnSubsequentDeal = (dealer, options) => {
+    console.group(`whatDoYouWantToDoOnSubsequentDeal`);
+    if (!this._wager || !this._wager.getBet()) {
+      return new Error(
+        `[whatDoYouWantToDoOnSubsequentDeal] Non-compliance CRA-V6-3.14`
+      );
+    }
+    this._onWhatDoYouWantToDoOnSubsequentDeal(dealer, options);
+    console.groupEnd();
+  };
+
+  _onWhatDoYouWantToDoOnSubsequentDeal = (dealer, options) => {};
+
+  setOnWhatDoYouWantToDoOnSubsequentDeal = (cb) =>
+    (this._onWhatDoYouWantToDoOnSubsequentDeal = cb);
 
   placeYourInitialBet = (dealer) => {
     const sponsor = this._controller;
@@ -71,14 +95,14 @@ class Hand {
       `Awaiting wager on hand [${hand.getCards()}] sponsored by ${spon.getName()} with ${limit}`
     );
 
-    this._onPlaceYourInitialBet(spon, hand, limit, dealer);
+    this._onAskWageFoInitialBet(spon, hand, limit, dealer);
     this._wager.placeYourInitialBet(dealer);
   };
 
-  _onPlaceYourInitialBet = () => {};
+  _onAskWageFoInitialBet = () => {};
 
-  setOnPlaceYourInitialBet = (cb) => {
-    this._onPlaceYourInitialBet = cb;
+  setWhenGoingToAskForInitialBet = (cb) => {
+    this._onAskWageFoInitialBet = cb;
   };
 
   initialBetStaked = () => {

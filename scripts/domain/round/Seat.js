@@ -15,7 +15,6 @@ class Seat {
   };
   _createNewHand = () => {
     const newHand = new Hand();
-    this._handList.addElementTail(newHand);
     this._onCreateNewHand(newHand);
     return newHand;
   };
@@ -28,6 +27,7 @@ class Seat {
       throw new Error(`This method is to create the first hand only`);
     }
     const hand = this._createNewHand();
+    this._handList.addElementTail(hand);
     hand.setController(this._chair);
 
     return hand;
@@ -35,6 +35,7 @@ class Seat {
 
   callForInitialBet = (dealer) => {
     const hand = this.createInitialHand(dealer);
+
     hand.placeYourInitialBet(dealer);
   };
   id = () => this._id;

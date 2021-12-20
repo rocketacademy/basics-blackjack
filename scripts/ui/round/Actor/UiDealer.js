@@ -1,3 +1,13 @@
+class UiButtonStand extends Ui_Button {
+  constructor() {
+    super();
+    this._root.textContent = "STAND";
+    this._root.className += " blackjack-button-stand";
+  }
+
+  setOnMouseClick = (cb) => (this._root.onclick = () => cb());
+}
+
 class UiDealer extends Ui_Actor {
   _style = () => {
     this._root.style.marginBottom = "25px";

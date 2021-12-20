@@ -29,6 +29,9 @@ class UiHand extends Ui_Component {
    * @param {Wager} wager
    */
   _newUiWager = (wager) => {
+    if (!wager) {
+      throw new Error(`uiHand._newUiWager null arg`);
+    }
     return new UiWager(wager);
   };
 
@@ -57,12 +60,35 @@ class UiHand extends Ui_Component {
     this._uiWager = placeholder;
 
     // Hooks
-
-    this._hand.setOnPlaceYourInitialBet(() => {
-      console.group(`uiHand, show display on place initial bet`);
-
+    console.log(`Hooking setWhenGoingToAskForInitialBet`);
+    this._hand.setWhenGoingToAskForInitialBet(() => {
+      console.group(`uiHand, invoking setWhenGoingToAskForInitialBet`);
+      console.log(this._hand.getWager());
       this._uiWager = this._newUiWager(this._hand.getWager());
       this.replaceChildrenUi(this._uiWager);
+      console.groupEnd();
+    });
+
+    this._hand.setOnWhatDoYouWantToDoOnSubsequentDeal((dealer, options) => {
+      console.group(`uiHand, invoke setOnWhatDoYouWantToDoOnSubsequentDeal`);
+
+      const optionsUiButtons = [];
+      let buttonStand = null;
+      if (options.canStand) {
+        buttonStand = new UiButtonStand();
+        buttonStand.setOnMouseClick(() => {
+          dealer.requestStand(this._hand);
+          this.replaceChildrenUi(this._uiCardHolder, this._uiWager);
+        });
+
+        optionsUiButtons.push(buttonStand);
+      }
+
+      this.replaceChildrenUi(
+        this._uiCardHolder,
+        this._uiWager,
+        ...optionsUiButtons
+      );
       console.groupEnd();
     });
 
@@ -73,21 +99,12 @@ class UiHand extends Ui_Component {
       this.replaceChildrenUi(this._uiCardHolder, this._uiWager);
       console.groupEnd();
     });
+
     // Render
     this._style();
   }
 
   id = () => this._id;
-
-  /** Control Options */
-  _newStandControl = (player, round, hand) => {
-    const _uiButtonStand__ = new UiButtonStand();
-
-    _uiButtonStand__.setOnMouseClick(() => {
-      round.requestStand(hand);
-    });
-    return _uiButtonStand__;
-  };
 }
 
 const newUiHand = (hand) => {

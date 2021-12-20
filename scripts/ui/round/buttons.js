@@ -22,12 +22,3 @@ class UiButtonHit extends Ui_Button {
     this._root.textContent = "Hit";
   }
 }
-
-class UiButtonStand extends Ui_Button {
-  constructor() {
-    super();
-    this._root.textContent = "STAND";
-  }
-
-  setOnMouseClick = (cb) => (this._root.onclick = () => cb());
-}

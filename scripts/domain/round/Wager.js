@@ -15,6 +15,8 @@ class Wager {
     this._amt = amt;
   };
 
+  getBet = () => this._amt;
+
   placeYourInitialBet = (dealer) => {
     console.group(`wager. notified turn to bet.`);
     if (!dealer) {
@@ -27,7 +29,7 @@ class Wager {
     console.groupEnd();
   };
   _onPlaceYourInitialBet = (wage, dealer, playableCredit) => {};
-  setOnPlaceYourInitialBet = (fn) => {
+  setOnWhatIsYourInitialBet = (fn) => {
     this._onPlaceYourInitialBet = fn;
   };
 
@@ -35,6 +37,7 @@ class Wager {
     console.log(`wager notified of bet stake initialBetStaked`);
     this._onInitialBetStaked(this._amt);
   };
+
   /**
    *
    * @param {number} bet

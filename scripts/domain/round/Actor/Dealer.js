@@ -42,8 +42,11 @@ class Dealer extends _Actor {
   _initialDeal = () => {
     this.shout("");
 
-    this._createOwnHand();
-    this._round.initDeal();
+    this._round.initInitialDeal();
+  };
+
+  _initialDealEnds = () => {
+    this._round.initSubsequentDeal();
   };
   shout = (desc) => {
     this._onShout(desc);
@@ -53,8 +56,27 @@ class Dealer extends _Actor {
     this._handGen = null;
   };
 
+  _assessSubsqDealDealerOptions = () => {
+    const options = {};
+
+    const hardTotal = this._hand.getHardTotal();
+    console.log(`Dealer Hard Total ${hardTotal}`);
+    options.canHit = hardTotal < 21;
+
+    return options;
+  };
+  _assessSubsqDealPlayerOptions = (hand) => {
+    const options = {};
+    options.canHit = false;
+    options.canStand = true;
+    options.canDouble = false;
+    options.canSplit = false;
+    return options;
+  };
+
   callForInitialDeals = () => {
-    console.group(`dealer called ForInitialDeal `);
+    console.group(`dealer was called on ForInitialDeal `);
+    this._createOwnHand();
 
     if (this._round.getPhase() !== RoundPhase.INITIAL_DEAL) {
       throw new Error(
@@ -70,10 +92,11 @@ class Dealer extends _Actor {
     const shoe = this._round.getShoe();
     // Deal action
     this._performNextInitialDealsPlayerOneCard(shoe);
-    this._transferCard(shoe, this._hand);
+    this._transferCard(shoe, this._hand).flip(true);
     this._performNextInitialDealsPlayerOneCard(shoe);
     console.log(`End of dealer ForInitialDeal `);
     console.groupEnd();
+    this._initialDealEnds();
   };
 
   _transferCard = (shoe, hand) => {
@@ -91,8 +114,69 @@ class Dealer extends _Actor {
     }
     console.groupEnd();
   };
+
+  callForSubsequentDeals = () => {
+    console.group(`dealer was called on ForSubsequentDeal `);
+    if (this._round.getPhase() !== RoundPhase.SUBSEQUENT_DEAL) {
+      throw new Error(
+        `[callForSubsequentDeals] Error! Round phase should be ${RoundPhase.SUBSEQUENT_DEAL}`
+      );
+    }
+
+    this._handGen = this._round.getAllHandsGenerator();
+    this._performNextSubsequentPlayerDeal();
+
+    console.groupEnd();
+  };
+  requestStand = (hand) => {
+    this._performNextSubsequentPlayerDeal();
+  };
+
+  _performSubsequentDealDealerCompleted = () => {
+    this.shout("Dealer draw completed");
+    this._round.settleFinal();
+  };
+
+  callForFinalSettlement = () => {
+    console.group(`dealer was called on ForSubsequentDeal `);
+    if (this._round.getPhase() !== RoundPhase.SETTLEMENT_FINAL) {
+      throw new Error(
+        `[callForSubsequentDeals] Error! Round phase should be ${RoundPhase.SETTLEMENT_FINAL}`
+      );
+    }
+
+    console.groupEnd();
+  };
+  _performSubsequentDealDealer = () => {
+    console.group(`Dealing drawing turn`);
+    const options = this._assessSubsqDealDealerOptions();
+
+    if (options.canHit) {
+      this._transferCard(this._round.getShoe(), this._hand).flip(true);
+      this._performSubsequentDealDealer();
+    } else {
+      this._performSubsequentDealDealerCompleted();
+    }
+    console.groupEnd();
+  };
+  _performNextSubsequentDealPlayerCompleted = () => {
+    this._performSubsequentDealDealer();
+  };
+  _performNextSubsequentPlayerDeal = () => {
+    const activeHand = this._handGen.next();
+    if (!activeHand) {
+      console.log(`End _performNextSubsequentPlayerDeal`);
+      this._unsetGenerators();
+      this._performNextSubsequentDealPlayerCompleted();
+      return;
+    }
+    const options = this._assessSubsqDealPlayerOptions(activeHand);
+    activeHand.whatDoYouWantToDoOnSubsequentDeal(this, options);
+  };
+
+  _callForInitialBetsCompleted = () => this._initialDeal();
   callForInitialBets = () => {
-    console.group(`dealer called ForInitialBet initial bet`);
+    console.group(`dealer was called on ForInitialBet initial bet`);
 
     if (this._round.getPhase() !== RoundPhase.COMMENCE) {
       throw new Error(
@@ -109,7 +193,7 @@ class Dealer extends _Actor {
     if (!activeSeat) {
       console.log(`End of initial bet`);
       this._unsetGenerators();
-      this._initialDeal();
+      this._callForInitialBetsCompleted();
       return;
     }
     activeSeat.callForInitialBet(this);
