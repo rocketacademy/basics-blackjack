@@ -44,6 +44,13 @@ let hitStandDoubleInputArray = [HIT, STAND, DOUBLE];
 let hitStandInputArray = [HIT, STAND];
 let hitFlag = false;
 let nextPlayerTurnFlag = false;
+let blackjackFlag = false;
+const button = document.querySelector("#submit-button");
+const hitBtn = document.querySelector("#hit");
+const standBtn = document.querySelector("#stand");
+const doubleBtn = document.querySelector("#double");
+const input = document.querySelector("#input-field");
+const restartBtn = document.querySelector("#restart");
 
 const makeDeck = function () {
   // Initialise an empty deck array
@@ -159,7 +166,7 @@ const initializePlayersArray = (totalNumOfPlayers) => {
 
 //function to place bets
 const placeBets = function (input) {
-  if (isNaN(input) || input == "") {
+  if (isNaN(input) || input == "" || input == 0) {
     return `Hello ${playersArray[playersArrayIndex].name}, please place your bets.`;
   } else if (Number(input.trim()) > playersArray[playersArrayIndex].cash) {
     return `Hello ${playersArray[playersArrayIndex].name}, you have insufficient cash. Please place bets below $${playersArray[playersArrayIndex].cash}.`;
@@ -168,7 +175,7 @@ const placeBets = function (input) {
     playersArray[playersArrayIndex].bets = Number(input.trim());
     playersArrayIndex = 0;
     gameStatus = dealingCards;
-    return "Please press submit button to deal the cards.";
+    return "Please press Next button to deal the cards.";
   } else {
     playersArray[playersArrayIndex].bets = Number(input.trim());
     playersArrayIndex += 1;
@@ -263,33 +270,43 @@ const blackjackCheck = function () {
     playersArray[playersArrayIndex].cardPoints == 21 &&
     dealer.cardPoints == 21
   ) {
+    blackjackFlag = true;
     playersArray[playersArrayIndex].bets = 0;
-    msg = "It is a push!<br><br>Press submit for next player turn.";
+    msg = "It is a push!<br><br>Press Next for next player turn.";
     playersArray[playersArrayIndex].status = PLAYED;
+    if (playersArrayIndex + 1 == playersArray.length) {
+      playersArrayIndex = 0;
+      gameStatus = dealerTurn;
+    } else {
+      playersArrayIndex += 1;
+    }
     playersArrayIndex += 1;
   } else if (
     playersArray[playersArrayIndex].cardPoints == 21 &&
     dealer.cardPoints < 21
   ) {
+    blackjackFlag = true;
     playersArray[playersArrayIndex].cash +=
       (playersArray[playersArrayIndex].bets * 3) / 2;
     nextPlayerTurnFlag = true;
     msg = `It is a blackjack! ${playersArray[playersArrayIndex].name} wins $${
       (playersArray[playersArrayIndex].bets * 3) / 2
-    }.<br><br>Press submit for next player turn.`;
+    }.<br><br>Press Next for next player turn.`;
     playersArray[playersArrayIndex].bets = 0;
     playersArray[playersArrayIndex].status = PLAYED;
     if (playersArrayIndex + 1 == playersArray.length) {
       playersArrayIndex = 0;
       gameStatus = dealerTurn;
+    } else {
+      playersArrayIndex += 1;
     }
-    playersArrayIndex += 1;
   } else if (
     playersArray[playersArrayIndex].cardPoints < 21 &&
     dealer.cardPoints == 21
   ) {
     outer_block: {
-      msg = `Dealer has a blackjack. ${playersArray[playersArrayIndex].name} loses $${playersArray[playersArrayIndex].bets}.<br><br>Press submit for next player turn.`;
+      blackjackFlag = true;
+      msg = `Dealer has a blackjack. ${playersArray[playersArrayIndex].name} loses $${playersArray[playersArrayIndex].bets}.<br><br>Press Next for next player turn.`;
       playersArray[playersArrayIndex].cash -=
         playersArray[playersArrayIndex].bets;
       nextPlayerTurnFlag = true;
@@ -318,7 +335,7 @@ const blackjackCheck = function () {
 const runPlayerTurn = function (input) {
   //input validation
   if (nextPlayerTurnFlag == true) {
-    return `Please press Submit for next player turn.`;
+    return `Please press Next for next player turn.`;
   } else if (
     hitFlag == false &&
     hitStandDoubleInputArray.indexOf(input.trim().toLowerCase()) == -1
@@ -344,7 +361,7 @@ const runPlayerTurn = function (input) {
           playersArray[playersArrayIndex].name
         } loses $${
           playersArray[playersArrayIndex].bets
-        }.<br><br>Press Submit for the next turn.`;
+        }.<br><br>Press Next for the next turn.`;
         nextPlayerTurnFlag = true;
         playersArray[playersArrayIndex].cash -=
           playersArray[playersArrayIndex].bets;
@@ -361,9 +378,11 @@ const runPlayerTurn = function (input) {
         playersArray[playersArrayIndex].status = PLAYED;
         if (playersArrayIndex + 1 == playersArray.length) {
           playersArrayIndex = 0;
+          hitFlag = false;
           gameStatus = dealerTurn;
         } else {
           playersArrayIndex += 1;
+          hitFlag = false;
         }
       }
     }
@@ -387,14 +406,14 @@ const runPlayerTurn = function (input) {
       countCardPoints();
       msg = `${generateHandCardsMsg()}<br>Hi ${
         playersArray[playersArrayIndex].name
-      }, press Submit for next player turn.`;
+      }, press Next for next player turn.`;
       nextPlayerTurnFlag = true;
       if (playersArray[playersArrayIndex].cardPoints > 21) {
         msg = `${generateHandCardsMsg()}<br>BUST!<br><br>${
           playersArray[playersArrayIndex].name
         } loses $${
           playersArray[playersArrayIndex].bets
-        }.<br><br>Press Submit for the next turn.`;
+        }.<br><br>Press Next for the next turn.`;
         playersArray[playersArrayIndex].cash -=
           playersArray[playersArrayIndex].bets;
         if (playersArray[playersArrayIndex].cash <= 0) {
@@ -463,7 +482,7 @@ const runDealerTurn = function () {
       playersArray[playersArrayIndex].name
     } wins $${
       playersArray[playersArrayIndex].bets
-    }.<br><br>Press Submit for the next turn.`;
+    }.<br><br>Press Next for the next turn.`;
     playersArray[playersArrayIndex].cash +=
       playersArray[playersArrayIndex].bets;
     playersArray[playersArrayIndex].bets = 0;
@@ -475,7 +494,7 @@ const runDealerTurn = function () {
   ) {
     msg = `${generateHandCardsMsg()}<br>Hi ${
       playersArray[playersArrayIndex].name
-    }. It is a push.<br><br>Press Submit for the next turn.`;
+    }. It is a push.<br><br>Press Next for the next turn.`;
     playersArray[playersArrayIndex].bets = 0;
     playersArray[playersArrayIndex].status = PLAYED;
     playersArrayIndex += 1;
@@ -487,7 +506,7 @@ const runDealerTurn = function () {
       playersArray[playersArrayIndex].name
     } wins $${
       playersArray[playersArrayIndex].bets
-    }.<br><br>Press Submit for the next turn.`;
+    }.<br><br>Press Next for the next turn.`;
     playersArray[playersArrayIndex].cash +=
       playersArray[playersArrayIndex].bets;
     playersArray[playersArrayIndex].bets = 0;
@@ -499,7 +518,7 @@ const runDealerTurn = function () {
         playersArray[playersArrayIndex].name
       } lose $${
         playersArray[playersArrayIndex].bets
-      }.<br><br>Press Submit for the next turn.`;
+      }.<br><br>Press Next for the next turn.`;
       playersArray[playersArrayIndex].cash -=
         playersArray[playersArrayIndex].bets;
       if (playersArray[playersArrayIndex].cash <= 0) {
@@ -530,13 +549,73 @@ const displayPlayerInfo = function () {
   }
   let msg = "";
   for (player of playersArray) {
-    msg += `${player.name}'s cash: $${player.cash}.<br>`;
+    msg += `${player.name} 💵: $${player.cash}  bets: $${player.bets}<br>`;
   }
   return msg;
 };
 
+//creating function to control buttons & input display
+const displayBtn = function () {
+  if (
+    gameStatus == pendingNumOfPlayers ||
+    gameStatus == pendingBets ||
+    gameStatus == pendingPlayersNames ||
+    gameStatus == pendingPlayersCash ||
+    gameStatus == dealingCards ||
+    gameStatus == dealerTurn ||
+    blackjackFlag == true ||
+    nextPlayerTurnFlag == true
+  ) {
+    hitBtn.style.display = "none";
+    standBtn.style.display = "none";
+    doubleBtn.style.display = "none";
+  } else {
+    hitBtn.style.display = "initial";
+    standBtn.style.display = "initial";
+    doubleBtn.style.display = "initial";
+  }
+
+  if (gameStatus == hitStandSplit && blackjackFlag == false) {
+    button.style.display = "none";
+  } else {
+    button.style.display = "initial";
+  }
+
+  if (gameStatus == hitStandSplit && nextPlayerTurnFlag == false) {
+    button.style.display = "none";
+  } else {
+    button.style.display = "initial";
+  }
+
+  if (
+    gameStatus == pendingNumOfPlayers ||
+    gameStatus == pendingBets ||
+    gameStatus == pendingPlayersNames ||
+    gameStatus == pendingPlayersCash
+  ) {
+    input.style.display = "initial";
+  } else {
+    input.style.display = "none";
+  }
+};
+
+//creating function to restart the game
+const restart = function () {
+  playersArray = [];
+  playersArrayIndex = 0;
+  totalNumOfPlayers;
+  gameStatus = pendingNumOfPlayers;
+  dealer = { cards: [], cardPoints: 0 };
+  deck = makeDeck();
+  shuffledDeck = shuffleCards(deck);
+  hitFlag = false;
+  nextPlayerTurnFlag = false;
+  blackjackFlag = false;
+};
+
 deck = makeDeck();
 shuffledDeck = shuffleCards(deck);
+displayBtn();
 
 var main = function (input) {
   if (playersArray.length == 0) {
@@ -594,7 +673,7 @@ var main = function (input) {
 
   if (gameStatus == dealingCards) {
     if (input != "") {
-      return "Please press submit to deal the cards.";
+      return "Please press Next to deal the cards.";
     }
     dealCards(shuffledDeck);
     countCardPoints();

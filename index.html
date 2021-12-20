@@ -5,7 +5,10 @@
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-
+    <!-- Font configuration -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Overpass:wght@100;200&display=swap" rel="stylesheet">
     <!-- Favicon configuration -->
     <link
       rel="apple-touch-icon"
@@ -90,17 +93,18 @@
       * {
         box-sizing: border-box;
       }
-
+      footer {
+        font-size: x-small;
+      }
       body {
-        font-family: "Open Sans", sans-serif;
+        font-family: "Overpass", sans-serif;
         margin-left: 30px;
         margin-right: 30px;
-        background-color: white;
-        color: black; /* sets the font color */
-        background-image: url(""); /* The image used */
-        background-position: center; /* Center the image */
-        background-repeat: no-repeat; /* Do not repeat the image */
-        background-size: cover; /* Resize the background image to cover the entire container */
+        background-color: #000000;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100%25' height='100%25' viewBox='0 0 1600 800'%3E%3Cg %3E%3Cpolygon fill='%23220000' points='1600 160 0 460 0 350 1600 50'/%3E%3Cpolygon fill='%23440000' points='1600 260 0 560 0 450 1600 150'/%3E%3Cpolygon fill='%23660000' points='1600 360 0 660 0 550 1600 250'/%3E%3Cpolygon fill='%23880000' points='1600 460 0 760 0 650 1600 350'/%3E%3Cpolygon fill='%23A00' points='1600 800 0 800 0 750 1600 450'/%3E%3C/g%3E%3C/svg%3E");
+        background-attachment: fixed;
+        background-size: cover;
+        color: whitesmoke; /* sets the font color */
       }
 
       #output-div img {
@@ -115,7 +119,12 @@
       }
 
       #blackJackTable {
-        background-color: pink;
+        background-color: #ff7700;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1600 900'%3E%3Cpolygon fill='%23cc0000' points='957 450 539 900 1396 900'/%3E%3Cpolygon fill='%23aa0000' points='957 450 872.9 900 1396 900'/%3E%3Cpolygon fill='%23d6002b' points='-60 900 398 662 816 900'/%3E%3Cpolygon fill='%23b10022' points='337 900 398 662 816 900'/%3E%3Cpolygon fill='%23d9004b' points='1203 546 1552 900 876 900'/%3E%3Cpolygon fill='%23b2003d' points='1203 546 1552 900 1162 900'/%3E%3Cpolygon fill='%23d3006c' points='641 695 886 900 367 900'/%3E%3Cpolygon fill='%23ac0057' points='587 900 641 695 886 900'/%3E%3Cpolygon fill='%23c4008c' points='1710 900 1401 632 1096 900'/%3E%3Cpolygon fill='%239e0071' points='1710 900 1401 632 1365 900'/%3E%3Cpolygon fill='%23aa00aa' points='1210 900 971 687 725 900'/%3E%3Cpolygon fill='%23880088' points='943 900 1210 900 971 687'/%3E%3C/svg%3E");
+        background-attachment: fixed;
+        background-size: cover;
+        border: 10px solid #392f26;
+        border-radius: 50px;
         margin: 40px auto;
         max-width: 800px;
         padding: 38px 31px;
@@ -130,24 +139,32 @@
       }
 
       button {
-        font-size: 21px;
-        line-height: 33px;
-        margin: 0 0 23px 0;
-        padding: 0 6px;
+        display: inline-block;
+        padding: 20px 50px;
+        margin: 20px 0;
+        position: relative;
+        color: #ecf0f1;
       }
 
       #output-div {
-        background-color: lightgrey;
-        margin: 20px auto;
+        color: white;
+        margin: 0px auto;
         padding: 20px;
         width: 100%;
       }
 
       #playerinfo {
-        background-color: lightgrey;
-        margin: 20px auto;
+        color: white;
+        margin: 0px auto;
         padding: 20px;
         width: 100%;
+      }
+
+      #rules {
+        text-align: center;
+        font-size: 1.4rem;
+        font-weight: bolder;
+        color: white;
       }
 
       .logo-img {
@@ -160,6 +177,38 @@
         content: "";
         clear: both;
         display: table;
+      }
+
+      .myButton{
+        border: 2px solid #34495e;
+        color: #34495e;
+        overflow: hidden;
+        -webkit-transition: all 0.3s ease-in-out;
+        -o-transition: all 0.3s ease-in-out;
+        transition: all 0.3s ease-in-out;
+      }
+
+      .myButton:before{
+        content: "";
+        z-index: -1;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: -100%;
+        background-color: #34495e;
+        -webkit-transition: all 0.3s ease-in-out;
+        -o-transition: all 0.3s ease-in-out;
+        transition: all 0.3s ease-in-out;
+      }
+
+      .myButton:hover{
+        color: #ecf0f1;
+        background-color: #34495e;
+      }
+
+      .myButton:hover:before{
+        left: 0;
       }
 
       /* increase header font size on wider screens */
@@ -186,11 +235,10 @@
     <h1 class="header">♣️ Fortune Favours The Bold Casino ♠️</h1>
     <h1 class="header">BLACKJACK</h1>
     <div id="blackJackTable">
+      <button class="myButton" id="restart">Restart</button>
       <div id="rules">
-        <ul>
-          <li id="rule1">BLACKJACK PAYS 3 TO 2</li>
-          <li id="rule2">DEALER MUST STAND ON 17 AND DRAW TO 16</li>
-        </ul>
+        <p>BLACKJACK PAYS 3 TO 2</p>
+        <p>DEALER MUST STAND ON 17 AND DRAW TO 16</p>
       </div>
       <div id="playingfield">
         <div id="output-div">
@@ -199,13 +247,13 @@
         </div>
         <div id="playerinfo"></div>
         <div id="action">
-          <p>Input:</p>
+          <p></p>
           <input id="input-field" />
           <br />
-          <button id="submit-button">Submit</button>
-          <button id="hit">Hit</button>
-          <button id="stand">Stand</button>
-          <button id="double">Double</button>
+          <button class="myButton" id="submit-button">Next</button>
+          <button class="myButton" id="hit">Hit</button>
+          <button class="myButton" id="stand">Stand</button>
+          <button class="myButton" id="double">Double</button>
         </div>
       </div>
     </div>
@@ -213,10 +261,15 @@
     <script src="script.js"></script>
     <!-- Define button click functionality -->
     <script>
-      var button = document.querySelector("#submit-button");
+      input.addEventListener("keyup", function (event) {
+        event.preventDefault();
+        if (event.keyCode == 13) {
+          button.click();
+        }
+      });
+
       button.addEventListener("click", function () {
         // Set result to input value
-        var input = document.querySelector("#input-field");
         var result = main(input.value);
         var result2 = displayPlayerInfo();
 
@@ -226,9 +279,66 @@
         var output2 = document.querySelector("#playerinfo");
         output2.innerHTML = result2;
 
+        displayBtn();
+        blackjackFlag = false;
+
         // Reset input value
         input.value = "";
       });
+
+      restartBtn.addEventListener("click", function () {
+        playersArray = [];
+        playersArrayIndex = 0;
+        totalNumOfPlayers;
+        gameStatus = pendingNumOfPlayers;
+        dealer = { cards: [], cardPoints: 0 };
+        deck = makeDeck();
+        shuffledDeck = shuffleCards(deck);
+        hitFlag = false;
+        nextPlayerTurnFlag = false;
+        blackjackFlag = false;
+        var result = main("");
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
+        var output2 = document.querySelector("#playerinfo");
+        output2.innerHTML = "";
+        displayBtn();
+      });
+
+      hitBtn.addEventListener("click", function () {
+        var result = main("hit");
+        var result2 = displayPlayerInfo();
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
+        var output2 = document.querySelector("#playerinfo");
+        output2.innerHTML = result2;
+
+        displayBtn();
+        blackjackFlag = false;
+      });
+      standBtn.addEventListener("click", function () {
+        var result = main("stand");
+        var result2 = displayPlayerInfo();
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
+        var output2 = document.querySelector("#playerinfo");
+        output2.innerHTML = result2;
+
+        displayBtn();
+        blackjackFlag = false;
+      });
+      doubleBtn.addEventListener("click", function () {
+        var result = main("double");
+        var result2 = displayPlayerInfo();
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
+        var output2 = document.querySelector("#playerinfo");
+        output2.innerHTML = result2;
+
+        displayBtn();
+        blackjackFlag = false;
+      });
     </script>
   </body>
+  <footer>Background by SVGBackgrounds.com</footer>
 </html>
