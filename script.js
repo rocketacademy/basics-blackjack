@@ -1,7 +1,20 @@
+// 1. Deck is shuffled.
+// 2. User clicks Submit to deal cards.
+// 3. The cards are analysed for game winning conditions, e.g. Blackjack.
+//    A Blackjack win. When either player or dealer draw Blackjack.
+//    A tie. When both the player and dealer draw Blackjack
+// 4. The cards are displayed to the user.
+// 5. The user decides whether to hit or stand, using the submit button to submit their choice.
+// 6. The user's cards are analysed for winning or losing conditions
+// 7. The computer decides to hit or stand automatically based on game rules.
+// 8. Comparing both hands and determining a winner. The possible scenarios are:
+//    A normal win. When neither draw Blackjack, the winner is decided by whomever has the higher hand total.
+//    A tie. When both the player and dealer have the same total hand values
+
 // Declare game modes
 var gameStartMode = `game start`;
-var cardsDrawnMode = `cards drawn`;
-var resultsShownMode = `results shown`;
+var drawCardsMode = `draw cards`;
+var showResultsMode = `show results`;
 var currentGameMode = gameStartMode;
 
 // Declare variables to store player and dealer hands
@@ -61,20 +74,141 @@ var shuffleCards = function (cards) {
   return cards;
 };
 
-var shuffledDeck = shuffleCards(makeDeck());
+var createNewDeck = function () {
+  var newDeck = makeDeck();
+  var shuffledDeck = shuffleCards(newDeck);
+  return shuffledDeck;
+};
 
-// 2. User clicks Submit to deal cards.
-// 3. The cards are analysed for game winning conditions, e.g. Blackjack.
-// 4. The cards are displayed to the user.
-// 5. The user decides whether to hit or stand, using the submit button to submit their choice.
-// 6. The user's cards are analysed for winning or losing conditions.
-// 7. The computer decides to hit or stand automatically based on game rules.
-// 8. Comparing both hands and determining a winner. The possible scenarios are:
-//    A tie. When both the player and dealer have the same total hand values - or if both draw Blackjack
-//    A Blackjack win. When either player or dealer draw Blackjack.
-//    A normal win. When neither draw Blackjack, the winner is decided by whomever has the higher hand total.
+var checkBlackjack = function (handArray) {
+  // Check player hand
+  var playerCardOne = handArray[0];
+  var playerCardTwo = handArray[1];
+  var isBlackjack = false;
+
+  // return is true if:
+  // 1st card ace, 2nd card 10 or picture cards
+  // 1st card 10 or picture cards, 2nd card ace
+  // else return false
+  if (
+    (playerCardOne.name == "ace" && playerCardTwo.rank >= 10) ||
+    (playerCardOne.rank >= 10 && playerCardTwo.name == "ace")
+  ) {
+    isBlackjack = true;
+  }
+  return isBlackjack;
+};
+
+var totalCardsValue = function (handArray) {
+  var totalHandValue = 0;
+
+  // check all card values
+  var index = 0;
+  while (index < handArray.length) {
+    var currentCard = handArray[index];
+    if (
+      currentCard.name == "jack" ||
+      currentCard.name == "queen" ||
+      currentCard.name == "king"
+    ) {
+      totalHandValue += 10;
+    } else {
+      totalHandValue += currentCard.rank;
+    }
+    index += 1;
+  }
+  return totalHandValue;
+};
 
 var main = function (input) {
-  var myOutputValue = "hello world";
-  return myOutputValue;
+  var outputMessage = "";
+
+  // 2. User clicks Submit to deal cards.
+  // click submit
+  if (currentGameMode == gameStartMode) {
+    // Create game deck
+    gameDeck = createNewDeck();
+    console.log(gameDeck);
+
+    //Deal 2 cards to player and dealer respectively
+    playerHand.push(gameDeck.pop());
+    playerHand.push(gameDeck.pop());
+    dealerHand.push(gameDeck.pop());
+    dealerHand.push(gameDeck.pop());
+
+    console.log("player hand ==> ");
+    console.log(playerHand);
+    console.log("dealer hand ==> ");
+    console.log(dealerHand);
+
+    // change to the next gameMode
+    currentGameMode = drawCardsMode;
+
+    //give an output message
+    outputMessage =
+      'You got your cards!<br><br>Click "Submit" to see your cards.';
+  }
+
+  // 3. The cards are analysed for game winning conditions, e.g. Blackjack.
+  // click submit
+  if ((currentGameMode = drawCardsMode)) {
+    // check for blackjack
+    var playerHasBlackjack = checkBlackjack(playerHand);
+    var dealerHasBlackjack = checkBlackjack(dealerHand);
+
+    console.log("Player has Blackjack -> ", playerHasBlackjack);
+    console.log("Dealer has Blackjack -> ", dealerHasBlackjack);
+
+    if (playerHasBlackjack == true || dealerHasBlackjack == true) {
+      // both player and dealer has blackjack ->
+      if (playerHasBlackjack == true && dealerHasBlackjack == true) {
+        outputMessage =
+          "Both player and dealer got Blackjack!<br><br>It is a Blackjack tie!";
+      }
+
+      // only player has blackjack -> player wins
+      else if (playerHasBlackjack == true && dealerHasBlackjack == false) {
+        outputMessage = "Player got Blackjack!<br><br>You win!";
+      }
+
+      // only dealer has blackjack -> dealer wins
+      else {
+        outputMessage = "Dealer got Blackjack!<br><br>You lose!";
+      }
+
+      // no blackjack
+    } else {
+      outputMessage = "No Blackjack";
+      console.log(outputMessage);
+
+      // sum up the cards in player's and dealer's hand
+      var playerTotalCards = totalCardsValue(playerHand);
+      var dealerTotalCards = totalCardsValue(dealerHand);
+
+      console.log("Player total cards -> ", playerTotalCards);
+      console.log("Dealer total cards -> ", dealerTotalCards);
+
+      // compare the cards
+      // same value -> tie
+      if (playerTotalCards == dealerTotalCards) {
+        console.log("it's a tie");
+      }
+
+      // player value is higher -> player wins
+      else if (playerTotalCards > dealerTotalCards) {
+        console.log("player wins");
+      }
+
+      // dealer value is higher -> player wins
+      else {
+        console.log("dealer wins");
+      }
+
+      // change to the next gameMode
+      currentGameMode = showResultsMode;
+
+      // give an output message
+    }
+  }
+  return outputMessage;
 };
