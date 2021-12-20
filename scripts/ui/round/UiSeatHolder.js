@@ -24,7 +24,11 @@ class UiSeatHolder extends Ui_Aggregate {
   addUiSeat = (uiSeat) => {
     this._uiSeats.push(uiSeat);
     this._uiSeatsRef = { [uiSeat.id()]: uiSeat, ...this._uiSeatsRef };
-    this.appendChildUi(uiSeat);
+
+    const r = this._uiSeats.slice().reverse();
+    console.warn(this._uiSeats);
+    console.warn(r);
+    this.replaceChildrenUi(...r);
   };
 
   get = (index) => this._uiSeats[index];
