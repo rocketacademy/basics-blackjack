@@ -1,3 +1,21 @@
+// There will be only two players. One human and one computer (for the Base solution).
+// The computer will always be the dealer.
+// Each player gets dealt two cards to start.
+// The player goes first, and decides if they want to hit (draw a card) or stand (end their turn).
+// The dealer has to hit if their hand is below 17.
+// Each players' score is the total of their card ranks. Jacks/Queen/Kings are 10. Aces can be 1 or 11.
+// The player who is closer to, but not above 21 wins the hand.
+
+// User clicks Submit to deal cards.
+// The cards are analysed for game winning conditions, e.g. Blackjack.
+// The cards are displayed to the user.
+// The user decides whether to hit or stand, using the submit button to submit their choice.
+// The user's cards are analysed for winning or losing conditions.
+// The computer decides to hit or stand automatically based on game rules.
+// The game either ends or continues.
+
+// winning condition: closest to 21 and not the same sum with dealer
+
 // Function to make the deck
 var makeDeck = function () {
   // Initialise an empty deck array
@@ -111,6 +129,22 @@ var sumRankCardsOnHand = function (playerOrComputer) {
   for (let k = 0; k < cardsOnHandObject.length; k++) {
     totalRank = totalRank + cardsOnHandObject[k].rank;
   }
+  // to account that ace can be 11 or 1
+  for (let l = 0; l < playerOrComputer.length; l++) {
+    if (playerOrComputer[l].name == "ace") {
+      aceCounter = aceCounter + 1;
+    }
+  }
+  // console.log(aceCounter);
+  if (aceCounter > 0 && totalRank > 21) {
+    totalRank = totalRank - (aceCounter - 1) * 10;
+    // console.log(totalRank);
+    if (totalRank > 21) {
+      totalRank = totalRank - 10;
+      // console.log(totalRank);
+    }
+  }
+  aceCounter = 0;
   return totalRank;
 };
 
@@ -124,15 +158,18 @@ var getTwoCards = function () {
   computerCardsString = toDisplayCardsOnHand(computerCards);
   playerCardsSum = sumRankCardsOnHand(playerCards);
   computerCardSum = sumRankCardsOnHand(computerCards);
+  if (playerCardsSum > 21 || computerCardSum > 21) {
+    playerCardsSum = sumRankCardsOnHand(playerCards);
+    computerCardSum = sumRankCardsOnHand(computerCards);
+  }
   if (computerCardSum == 21) {
-    return `You lose! Computer gets 21. Click "submit" to replay.<br><br>${playerHandMessage}: ${playerCardsString} total point = ${playerCardsSum}<br>${computerHandMessage}: ${computerCardsString} with sum = ${computerCardSum}`;
+    return `You lost! Computer got 21.<br><br>${playerHandMessage}: ${playerCardsString} total point = ${playerCardsSum}<br>${computerHandMessage}: ${computerCardsString} with sum = ${computerCardSum}<br><br>${REPLAY}`;
   }
   if (playerCardsSum == 21) {
-    dealingPhase = false;
-    hitOrStandPhase = false;
-    return `You get 21!! You haven't won yet, it is now computer's turn. Please click 'submit' to continue.<br><br>${playerHandMessage}: ${playerCardsString} total point = ${playerCardsSum}<br>${computerHandMessage}: ${computerCardsString} with sum = ${computerCardSum}`;
+    gameMode = DEALERPHASE;
+    return `You got 21!! You haven't won yet, it is now computer's turn. Please click 'submit' to continue.<br><br>${playerHandMessage}: ${playerCardsString} total point = ${playerCardsSum}<br>${computerHandMessage}: ${computerCardsString} with sum = ${computerCardSum}`;
   }
-  dealingPhase = false;
+  gameMode = HITORSTANDPHASE;
   return `${playerHandMessage}: ${playerCardsString} total point = ${playerCardsSum}<br>${computerHandMessage}: ${computerCardsString} with sum = ${computerCardSum}<br><br>${hitOrStandMessage}`;
 };
 
@@ -143,47 +180,61 @@ var toHitInPlayerPhase = function (dealtCards) {
   playerCards.push(dealtCards);
   playerCardsString = toDisplayCardsOnHand(playerCards);
   playerCardsSum = sumRankCardsOnHand(playerCards);
+  if (playerCardsSum > 21) {
+    gameMode = DEALINGPHASE;
+    return `You went over 21, you lose!<br><br>${playerHandMessage}: ${playerCardsString} total point = ${playerCardsSum}<br>${computerHandMessage}: ${computerCardsString} with sum = ${computerCardSum}<br><br>${REPLAY}`;
+  }
+  if (playerCardsSum == 21) {
+    gameMode = DEALERPHASE;
+    return `You got 21!! You haven't won yet, it is now computer's turn. Please click 'submit' to continue.<br><br>${playerHandMessage}: ${playerCardsString} total point = ${playerCardsSum}<br>${computerHandMessage}: ${computerCardsString} with sum = ${computerCardSum}`;
+  }
+  if (playerCardsSum == computerCardSum) {
+    return `Your sum is equivalent to computer. You need to be higher than computer win.<br><br>${playerHandMessage}: ${playerCardsString} total point = ${playerCardsSum}<br>${computerHandMessage}: ${computerCardsString} with sum = ${computerCardSum}<br><br>${hitOrStandMessage}`;
+  }
   return `${playerHandMessage}: ${playerCardsString} total point = ${playerCardsSum}<br>${computerHandMessage}: ${computerCardsString} with sum = ${computerCardSum}<br><br>${hitOrStandMessage}`;
 };
 
 var toHitInComputerPhase = function (dealtCards) {
   if (computerCardSum >= 17) {
-    return `Computer chose 'stand'.<br><br>${playerHandMessage}: ${playerCardsString} total point = ${playerCardsSum}<br>${computerHandMessage}: ${computerCardsString} with sum = ${computerCardSum}<br><br>${hitOrStandMessage}`;
+    var result = toWinOrLose();
+    return result;
   }
-  while (computerCardSum <= 17) {
+  while (computerCardSum < 17) {
     dealtCards = shuffledDeck.pop();
     console.log(dealtCards);
     computerCards.push(dealtCards);
     computerCardsString = toDisplayCardsOnHand(computerCards);
     computerCardSum = sumRankCardsOnHand(computerCards);
   }
-  return `Computer drew ${
-    computerCards.length - 2
-  } card(s).<br><br>${playerHandMessage}: ${playerCardsString} total point = ${playerCardsSum}<br>${computerHandMessage}: ${computerCardsString} with sum = ${computerCardSum}<br><br>${hitOrStandMessage}`;
+  if (computerCardSum > 21) {
+    gameMode = DEALINGPHASE;
+    return `Computer drew ${
+      computerCards.length - 2
+    } card(s) and went over 21. You won!<br><br>${playerHandMessage}: ${playerCardsString} total point = ${playerCardsSum}<br>${computerHandMessage}: ${computerCardsString} with sum = ${computerCardSum}<br><br>${REPLAY}`;
+  }
+  if (computerCardSum == 21) {
+    gameMode = DEALINGPHASE;
+    return `You lost! Computer got 21.<br><br>${playerHandMessage}: ${playerCardsString} total point = ${playerCardsSum}<br>${computerHandMessage}: ${computerCardsString} with sum = ${computerCardSum}<br><br>${REPLAY}`;
+  }
+  var results = toWinOrLose();
+  return `Computer drew ${computerCards.length - 2} card(s).${results}`;
 };
 
-// There will be only two players. One human and one computer (for the Base solution).
-// The computer will always be the dealer.
-// Each player gets dealt two cards to start.
-// The player goes first, and decides if they want to hit (draw a card) or stand (end their turn).
-// The dealer has to hit if their hand is below 17.
-// Each players' score is the total of their card ranks. Jacks/Queen/Kings are 10. Aces can be 1 or 11.
-// The player who is closer to, but not above 21 wins the hand.
-
-// User clicks Submit to deal cards.
-// The cards are analysed for game winning conditions, e.g. Blackjack.
-// The cards are displayed to the user.
-// The user decides whether to hit or stand, using the submit button to submit their choice.
-// The user's cards are analysed for winning or losing conditions.
-// The computer decides to hit or stand automatically based on game rules.
-// The game either ends or continues.
-
-// winning condition: closest to 21 and not the same sum with dealer
+var toWinOrLose = function (finalResults) {
+  gameMode = DEALINGPHASE;
+  if (playerCardsSum > computerCardSum) {
+    finalResults = `You won!<br><br>${playerHandMessage}: ${playerCardsString} total point = ${playerCardsSum}<br>${computerHandMessage}: ${computerCardsString} with sum = ${computerCardSum}<br><br>${REPLAY}`;
+    return finalResults;
+  }
+  finalResults = `You lost!<br><br>${playerHandMessage}: ${playerCardsString} total point = ${playerCardsSum}<br>${computerHandMessage}: ${computerCardsString} with sum = ${computerCardSum}<br><br>${REPLAY}`;
+  return finalResults;
+};
 
 // global variables
-var dealingPhase = true;
-var hitOrStandPhase = true;
-var dealerPhase = true;
+var DEALINGPHASE = "Dealing phase";
+var gameMode = DEALINGPHASE;
+var HITORSTANDPHASE = "Player's hit or stand phase";
+var DEALERPHASE = "Dealer's turn";
 var playerHandMessage = `Player's cards`;
 var computerHandMessage = `Computer's cards`;
 var hitOrStandMessage = `Would you like to hit or stand?`;
@@ -193,25 +244,27 @@ var playerCardsString = "";
 var computerCardsString = "";
 var playerCardsSum = 0;
 var computerCardSum = 0;
+var REPLAY = "Click 'submit' to replay.";
+var aceCounter = 0;
 
 var main = function (input) {
   var myOutputValue = "";
 
-  if (dealingPhase == true) {
+  if (gameMode == DEALINGPHASE) {
     myOutputValue = getTwoCards();
     //if dealer gets 21 from the start, player lose straight away
     // phase two = hit or stand phase
-  } else if (hitOrStandPhase == true) {
+  } else if (gameMode == HITORSTANDPHASE) {
     myOutputValue = "Please enter 'hit' or 'stand'";
     if (input == "hit") {
       myOutputValue = toHitInPlayerPhase();
     }
     if (input == "stand") {
-      hitOrStandPhase = false;
+      gameMode = DEALERPHASE;
       myOutputValue =
         "You have decided to stand, it is now dealer's turn. Please click 'submit' to continue.";
     }
-  } else if (dealerPhase == true) {
+  } else if (gameMode == DEALERPHASE) {
     myOutputValue = toHitInComputerPhase();
   }
   return myOutputValue;
