@@ -33,9 +33,9 @@ class Seat {
     return hand;
   };
 
-  requestInitialBet = () => {
-    const hand = this.createInitialHand();
-    hand.placeYourInitialBet();
+  requestInitialBet = (dealer) => {
+    const hand = this.createInitialHand(dealer);
+    hand.placeYourInitialBet(dealer);
   };
   id = () => this._id;
 }

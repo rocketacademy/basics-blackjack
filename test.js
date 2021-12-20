@@ -119,7 +119,7 @@ newTestCollection.addTest(`test_PlayingArea_TwoPlayers`, () => {
     `Parent root not childless.`
   );
 
-  const [round, uiRound] = new PlayingArea(parentRoot).commenceRound(lounge);
+  const [round, uiRound] = new PlayingArea(parentRoot).newRoundOfPlay(lounge);
 
   const actualParentRoot = uiRound.getParentRoot();
   LOG_ASSERT(actualParentRoot === parentRoot, ``, `Parent root not immutable.`);
@@ -162,7 +162,7 @@ newTestCollection.addTest(`test_Round_generating players of seats`, () => {
 
   const parentRoot = TestBlackJack.newStubRoot();
 
-  const [round, uiRound] = new PlayingArea(parentRoot).commenceRound(lounge);
+  const [round, uiRound] = new PlayingArea(parentRoot).newRoundOfPlay(lounge);
 
   const seatGenerator = round.getSeatGenerator();
 
@@ -183,7 +183,7 @@ newTestCollection.addTest(`test_Round_TwoPlayer_Commence`, () => {
 
   const lounge = Sample.getTwoPlayersLounge();
 
-  const [round, uiRound] = new PlayingArea(parentRoot).commenceRound(lounge);
+  const [round, uiRound] = new PlayingArea(parentRoot).newRoundOfPlay(lounge);
 
   console.group(`Commence - Dealer Shout`);
 
@@ -241,7 +241,7 @@ newTestCollection.addTest(`test_Round_TwoPlayer_Commence`, () => {
     `e__uiHandCount ${e__uiHandCount} a__: ${a__uiHandCount}`
   );
 
-  const e__firstHandHtemlChildrenCount = 2; // count : a set of cards and wager[area]
+  const e__firstHandHtemlChildrenCount = 1; // count : wager[area] only. no display for cards
   const a__firstHandHtemlChildrenCount =
     a__firstHandUi.getRoot().childNodes.length;
 
@@ -257,5 +257,6 @@ newTestCollection.run();
 
 testMain = (() => {
   const lounge = Sample.getTwoPlayersLounge();
-  new PlayingArea().commenceRound(lounge);
+  const [round, _] = new PlayingArea().newRoundOfPlay(lounge);
+  round.getDealer().commence();
 })();

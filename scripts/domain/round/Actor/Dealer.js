@@ -33,7 +33,7 @@ class Dealer extends _Actor {
     }
     let seatGen = this._round.getSeatGenerator();
     let activeSeat = seatGen.next();
-    activeSeat.requestInitialBet();
+    activeSeat.requestInitialBet(this);
     console.groupEnd();
   };
 

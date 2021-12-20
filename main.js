@@ -1,5 +1,5 @@
 const main = () => {
-  // new PlayingArea().commenceRound(Sample.getTwoPlayersLounge());
+  // new PlayingArea().newRoundOfPlay(Sample.getTwoPlayersLounge());
 };
 
 main();

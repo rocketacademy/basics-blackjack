@@ -23,25 +23,20 @@ class Wager {
     this._amt = amt;
   };
 
-  _placeYourInitialBet = () => {
-    console.group(`wage._placeYourInitialBet`);
-    const spon = this.getSponsor();
-    const hand = this.getHand();
-    const limit = spon.getCredit();
-
-    const anyNull = [hand, spon, limit].some(
-      (e) => e === null || e === undefined
-    );
-    if (anyNull) {
-      throw new Error(
-        `Require not null args - hand ${!!hand} spon ${!!spon} limit ${!!limit}`
-      );
+  placeYourInitialBet = (dealer) => {
+    console.group(`wager. notified turn to bet.`);
+    if (!dealer) {
+      throw new Error(`arbitter required`);
     }
-    console.log(
-      `Awaiting wager on hand [${this._hand.getCards()}] sponsored by ${spon.getName()} with ${limit}`
-    );
-
+    const sponsor = this.getSponsor();
+    const playableCredit = sponsor.getCredit();
+    const hand = this.getHand();
+    this._onPlaceYourInitialBet(this, dealer, playableCredit);
     console.groupEnd();
+  };
+  _onPlaceYourInitialBet = (wage, dealer, playableCredit) => {};
+  setOnPlaceYourInitialBet = (fn) => {
+    this._onPlaceYourInitialBet = fn;
   };
 }
 class Hand {
@@ -81,15 +76,36 @@ class Hand {
     this._controller = player;
   };
 
-  placeYourInitialBet = () => {
+  placeYourInitialBet = (dealer) => {
     const sponsor = this._controller;
     if (!sponsor) {
       throw new Error(`hand.placeYourInitialBet: sponsor required.`);
     }
+    if (!dealer) {
+      throw new Error(`hand.placeYourInitialBet: dealer required to arbit.`);
+    }
     this._wager = new Wager();
     this._wager.setSponsor(sponsor);
     this._wager.setHand(this);
-    this._wager._placeYourInitialBet(this._wager);
+
+    const spon = this._wager.getSponsor();
+    const hand = this._wager.getHand();
+    const limit = spon.getCredit();
+    const anyNull = [hand, spon, limit].some(
+      (e) => e === null || e === undefined
+    );
+
+    if (anyNull) {
+      throw new Error(
+        `Require not null args - hand ${!!hand} spon ${!!spon} limit ${!!limit}`
+      );
+    }
+    console.log(
+      `Awaiting wager on hand [${hand.getCards()}] sponsored by ${spon.getName()} with ${limit}`
+    );
+
+    this._onPlaceYourInitialBet(spon, hand, limit, dealer);
+    this._wager.placeYourInitialBet(dealer);
   };
 
   _onPlaceYourInitialBet = () => {};

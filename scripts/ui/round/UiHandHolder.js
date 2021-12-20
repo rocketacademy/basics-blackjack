@@ -11,15 +11,18 @@ class UiHandHolder extends Ui_Aggregate {
     this._root.style.marginLeft = "10px";
     this._root.style.marginRight = "10px";
     this._root.style.border = "1px dotted black";
+    this._root.style.justifyContent = "center";
     this._uiHands = [];
 
     /** @private { Object.<string,UiHand>} */
     this._uiHandsRef = {};
   }
   addUiHand = (uiHand) => {
+    console.group(`addUiHand`);
     this._uiHands.push(uiHand);
     this._uiHandsRef = { [uiHand.id()]: uiHand, ...this._uiHandsRef };
     this.appendChildUi(uiHand);
+    console.groupEnd();
   };
   count = () => this._uiHands.length;
 

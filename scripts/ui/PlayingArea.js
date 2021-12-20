@@ -3,8 +3,8 @@ class PlayingArea {
     this._uiRoot = root || ROOT_BLACKJACK_ELEMENT;
   }
 
-  commenceRound = (lounge) => {
-    console.group(`commenceRound`);
+  newRoundOfPlay = (lounge) => {
+    console.group(`newRoundOfPlay`);
     const round = newRound(lounge);
     const uiRound = new UiRound(round);
 
@@ -12,7 +12,7 @@ class PlayingArea {
     uiRound
       .setOnFinish((lounge, isContinue) => {
         if (isContinue === true) {
-          new PlayingArea(this._uiRoot).commenceRound(lounge);
+          new PlayingArea(this._uiRoot).newRoundOfPlay(lounge);
         } else if (isContinue === false) {
           new PlayingArea(this._uiRoot).commenceLounge(lounge);
         }
