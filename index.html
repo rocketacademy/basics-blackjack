@@ -115,7 +115,7 @@
       }
 
       #container {
-        background-color: pink;
+        background-color: rgb(65, 105, 158);
         margin: 40px auto;
         max-width: 800px;
         padding: 38px 31px;
@@ -137,7 +137,7 @@
       }
 
       #output-div {
-        background-color: lightgrey;
+        background-color: rgb(235, 159, 106);
         margin: 20px auto;
         padding: 20px;
         width: 100%;
@@ -150,7 +150,7 @@
       }
 
       /* increase header font size on wider screens */
-      @media screen and (min-width: 600px) {
+      @media screen and (min-width: 800px) {
         .header {
           font-size: 2rem;
         }
@@ -159,7 +159,13 @@
   </head>
 
   <body>
-    <h1 class="header">
+    <h1
+      style="
+        color: rgb(158, 120, 49);
+        font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+      "
+      class="header"
+    >
       <img
         class="logo-img"
         src="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/brand/logo.png"
@@ -172,15 +178,43 @@
     </h1>
     <h1 class="header">♦♣♥♠ Welcome to a game of Blackjack ♦♣♥♠</h1>
     <div id="container">
-      <p>Input:</p>
+      <p style="text-align: center; color: aliceblue">
+        Welcome, hit "Submit" to start the game!
+      </p>
       <input id="input-field" />
       <br />
       <button id="submit-button">Submit</button>
-      <p>Output:</p>
-      <div id="output-div"></div>
+      <p style="color: aliceblue; font-size: 20px">Output:</p>
+      <div id="output-div">
+        <p>
+          Greetings, I'm pretty sure you know how to play a simple game of
+          Blackjack.
+          <br />But if you don't, then let me explain. <br />
+          You and I will draw two cards. To make things more exciting, I will
+          show you one of my cards. <br />
+          You get to decide whether you wish to draw more cards (hit) or to end
+          your turn (stand). <br />
+          When you end your turn, I will decide if I need to draw more cards.
+        </p>
+        <p>
+          At the end, we will see who is closest to the number 21. <br />
+          Of course, if your first two cards already amount to 21 and my cards
+          do not amount to 21, the win is yours. <br />
+          Conversely, if my cards amount to 21 in the first draw and yours do
+          not, the win is mine.
+        </p>
+
+        <p>Are you ready for me to win your pile of cash?</p>
+
+        <img
+          src="https://tenor.com/view/daisuke-kambe-the-millionaire-detective-gif-18569044.gif"
+          class="center"
+          height="400"
+        />
+      </div>
     </div>
     <!-- Import program logic -->
-    <script src="script.js"></script>
+    <script src="test.js"></script>
     <!-- Define button click functionality -->
     <script>
       var button = document.querySelector("#submit-button");
