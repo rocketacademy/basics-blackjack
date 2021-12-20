@@ -4,19 +4,28 @@ class UiChairDisplay extends Ui_Text {
     this._chair = chair;
     this._root.className += " blackjack-chair-display";
 
-    this._root.style.width = "fit-content";
+    this._root.style.width = "70px";
     this._root.style.height = "25px";
-    this._root.style.border = "1px black solid";
+    this._root.style.marginTop = "7px";
+    this._root.style.border = "1px dotted black";
+    this._root.style.overflow = "hidden";
+    this._root.style.alignSelf = "center";
+    this._root.style.justifyContent = "center";
+    this._root.style.fontStyle = "italic";
 
     this._root.textContent = chair.getName();
   }
 }
+
+//TODO the size of the seat ui should be determined by the size of the hand ui
 class UiSeat extends Ui_Component {
   _style = () => {
     this._root.style.flexDirection = "column";
-    this._root.style.height = "200px";
+    this._root.style.height = "fit-content";
+    this._root.style.minHeight = "210px";
     this._root.style.width = "fit-content";
-    this._root.style.minWidth = "150px";
+    this._root.style.padding = "10px 6px 20px 6spx";
+    this._root.style.borderRadius = "5px";
 
     this._root.style.border = "1px solid black";
     this._root.style.alignItems = "center";

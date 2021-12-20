@@ -22,6 +22,9 @@ class UiRound extends Ui_Tree {
     this._root.style.border = "1px dotted black";
     this._root.style.borderRadius = "15px";
     this._root.style.flexDirection = "column";
+    this._root.style.height = "100%";
+    this._root.style.minHeight = "600px";
+    this._root.style.marginBottom = "70px";
   };
 
   _newUiSeatHolder = (generator) => {
