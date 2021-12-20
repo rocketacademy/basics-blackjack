@@ -17,40 +17,43 @@
 const ENTER_NUM_PLAYER = "enter number of players";
 const ENTER_BET = "enter number of chips to bet";
 const PLAY_GAME = "players take turn to play Blackjack";
+const DEAL_CARDS = "dealer deal cards to players";
+const COMPARE_HAND = "compare hand value between dealer and players";
 let dealerHand = {
   hand: [],
   handvalue: 0,
   blackjack: false,
+  bust: false,
 };
 let gameMode = ENTER_NUM_PLAYER;
-let totalNumOfPlayersPlaying = [];
+let numOfPlayersPlaying = [];
 let playerCounter = 0;
 
 // Function to creat a deck of cards
-var makeDeck = function () {
+const makeDeck = function () {
   // Initialise an empty deck array
-  var cardDeck = [];
+  let cardDeck = [];
   // Initialise an array of the 4 suits in our deck. We will loop over this array.
-  var suits = ["♥️", "♦️", "♣️", "♠️"];
+  let suits = ["♥️", "♦️", "♣️", "♠️"];
 
   // Loop over the suits array
-  var suitIndex = 0;
+  let suitIndex = 0;
   while (suitIndex < suits.length) {
     // Store the current suit in a variable
-    var currentSuit = suits[suitIndex];
+    let currentSuit = suits[suitIndex];
 
     // Loop from 1 to 13 to create all cards for a given suit
     // Notice rankCounter starts at 1 and not 0, and ends at 13 and not 12.
     // This is an example of a loop without an array.
-    var rankCounter = 1;
+    let rankCounter = 1;
     while (rankCounter <= 13) {
       // By default, the card name is the same as rankCounter
-      var cardName = rankCounter;
-      var newRank = rankCounter;
+      let cardName = rankCounter;
+      let newRank = rankCounter;
       // If rank is 1, 11, 12, or 13, set cardName to the ace or face card's name
       if (cardName == 1) {
         cardName = "ace";
-        newRank = 1;
+        newRank = 11;
       } else if (cardName == 11) {
         cardName = "jack";
         newRank = 10;
@@ -63,7 +66,7 @@ var makeDeck = function () {
       }
 
       // Create a new card with the current name, suit, and rank
-      var card = {
+      let card = {
         name: cardName,
         suit: currentSuit,
         rank: newRank,
@@ -85,21 +88,21 @@ var makeDeck = function () {
 };
 
 // Get a random index ranging from 0 (inclusive) to max (exclusive).
-var getRandomIndex = function (max) {
+const getRandomIndex = function (max) {
   return Math.floor(Math.random() * max);
 };
 
 // Shuffle the elements in the cardDeck array
-var shuffleCards = function (cardDeck) {
+const shuffleCards = function (cardDeck) {
   // Loop over the card deck array once
-  var currentIndex = 0;
+  let currentIndex = 0;
   while (currentIndex < cardDeck.length) {
     // Select a random index in the deck
-    var randomIndex = getRandomIndex(cardDeck.length);
+    let randomIndex = getRandomIndex(cardDeck.length);
     // Select the card that corresponds to randomIndex
-    var randomCard = cardDeck[randomIndex];
+    let randomCard = cardDeck[randomIndex];
     // Select the card that corresponds to currentIndex
-    var currentCard = cardDeck[currentIndex];
+    let currentCard = cardDeck[currentIndex];
     // Swap positions of randomCard and currentCard in the deck
     cardDeck[currentIndex] = randomCard;
     cardDeck[randomIndex] = currentCard;
@@ -111,14 +114,14 @@ var shuffleCards = function (cardDeck) {
 };
 
 // Create a deck of cards
-var deck = makeDeck();
+const deck = makeDeck();
 
 // Shuffled deck of cards
 // Output message of player card
-var shuffledDeck = shuffleCards(deck);
+const shuffledDeck = shuffleCards(deck);
 
 // Create players objects function
-var createPlayers = function (input) {
+const createPlayers = function (input) {
   //  a. User to input number of players playing.
   //  b. Generate the number of players according to the input number.
   //  c. Players have attributes: Player Number, Chips.
@@ -132,8 +135,9 @@ var createPlayers = function (input) {
         hand: [],
         handvalue: 0,
         blackjack: false,
+        bust: false,
       };
-      totalNumOfPlayersPlaying.push(player);
+      numOfPlayersPlaying.push(player);
     }
   } else {
     return "Please enter the number of players playing (max. 4 players).";
@@ -150,74 +154,127 @@ const playerBets = function (input) {
   //    i. Need to convert each player's input into number.
   //    ii. Validate user input.
   //  d. Once done, enter deal card mode.
-  if (input != "" && playerCounter + 1 == totalNumOfPlayersPlaying.length) {
-    totalNumOfPlayersPlaying[playerCounter].bet = Number(input);
+  if (input != "" && playerCounter + 1 == numOfPlayersPlaying.length) {
+    numOfPlayersPlaying[playerCounter].bet = Number(input);
     playerCounter = 0;
-    gameMode = PLAY_GAME;
+    gameMode = DEAL_CARDS;
     return "Cards Dealed!";
   } else if (
     Number(input) > 0 &&
-    Number(input) < totalNumOfPlayersPlaying[playerCounter].chips
+    Number(input) < numOfPlayersPlaying[playerCounter].chips
   ) {
-    totalNumOfPlayersPlaying[playerCounter].bet = Number(input);
+    numOfPlayersPlaying[playerCounter].bet = Number(input);
     playerCounter += 1;
-    return `Player ${totalNumOfPlayersPlaying[playerCounter].number}, it is your turn to place bet.`;
+    return `Player ${numOfPlayersPlaying[playerCounter].number}, it is your turn to place bet.`;
   } else {
-    return `Player ${totalNumOfPlayersPlaying[playerCounter].number}, you have ${totalNumOfPlayersPlaying[playerCounter].chips} chips. Please place bet within your limit.`;
+    return `Player ${numOfPlayersPlaying[playerCounter].number}, you have ${numOfPlayersPlaying[playerCounter].chips} chips. Please place bet within your limit.`;
   }
 };
 
-// Function to check if Player has BlackJack
-const checkPlayerBlackJack = function () {
-  //if player has a Ace and a picture card, Ace rank value will switch to 11 and tota hand value will be 21.
+// Function to check if Player/Dealer has BlackJack
+const checkBlackJack = function (user) {
+  //if player has a Ace and a picture card, Ace rank value will switch to 11 and total hand value will be 21.
   if (
-    (totalNumOfPlayersPlaying[playerCounter].hand[0].name == "ace" &&
-      totalNumOfPlayersPlaying[playerCounter].hand[1].rank == 10) ||
-    (totalNumOfPlayersPlaying[playerCounter].hand[0].rank == 10 &&
-      totalNumOfPlayersPlaying[playerCounter].hand[1].name == "ace")
+    (user.hand[0].name == "ace" && user.hand[1].rank == 10) ||
+    (user.hand[0].rank == 10 && user.hand[1].name == "ace")
   ) {
-    totalNumOfPlayersPlaying[playerCounter].handvalue = 21;
-    totalNumOfPlayersPlaying[playerCounter].blackjack = true;
-  }
-};
-
-// Function to check if Dealer has BlackJack
-const checkDealerBlackJack = function () {
-  //if player has a Ace and a picture card, Ace rank value will switch to 11 and tota hand value will be 21.
-  if (
-    (dealerHand.hand[0].name == "ace" && dealerHand.hand[1].rank == 10) ||
-    (dealerHand.hand[0].rank == 10 && dealerHand.hand[1].name == "ace")
-  ) {
-    dealerHand.handvalue = 21;
-    dealerHand.blackjack = true;
+    user.blackjack = true;
   }
 };
 
 // Player auto receive 2 cards each.
-const dealCard = function () {
+const dealCard = function (players) {
   // Each player to draw 2 cards before Dealer.
   //  a. Cards are stored in the player's attribute and be cleared after each round.
-  while (playerCounter < totalNumOfPlayersPlaying.length) {
-    totalNumOfPlayersPlaying[playerCounter].hand.push(shuffledDeck.pop());
-    totalNumOfPlayersPlaying[playerCounter].hand.push(shuffledDeck.pop());
-    totalNumOfPlayersPlaying[playerCounter].handvalue =
-      totalNumOfPlayersPlaying[playerCounter].hand[0].rank +
-      totalNumOfPlayersPlaying[playerCounter].hand[1].rank;
-    checkPlayerBlackJack();
-    playerCounter += 1;
+  index = 0;
+  while (index < players.length) {
+    players[index].hand.push(shuffledDeck.pop());
+    players[index].hand.push(shuffledDeck.pop());
+    players[index].handvalue =
+      players[index].hand[0].rank + players[index].hand[1].rank;
+    checkBlackJack(players[index]);
+    index += 1;
   }
   // Dealer to draw 2 cards.
   dealerHand.hand = [shuffledDeck.pop(), shuffledDeck.pop()];
   dealerHand.handvalue += dealerHand.hand[0].rank + dealerHand.hand[1].rank;
-  checkDealerBlackJack();
+  checkBlackJack(dealerHand);
   playerCounter = 0;
   gameMode = PLAY_GAME;
 };
 
-const playerHandBoard = function (totalPlayer) {
+const playerHandBoard = function (players) {
   let message = "";
-  for (let player of totalPlayer) {
-    message += `Player ${player.number}: ${player.hand[0].name}${player.hand[0].suit} ${player.hand[1].name}${player.hand[1].suit}<br>`;
+  for (let player of players) {
+    message += `Player ${player.number}: ${player.hand[0].name}${player.hand[0].suit} ${player.hand[1].name}${player.hand[1].suit} <br> Hand value: ${player.handvalue}<br> -------------------- <br>`;
+  }
+  message += `Dealer hand: ${dealerHand.hand[0].name}${dealerHand.hand[0].suit} 🎴 <br> Player 1 choose Hit or Stand`;
+  return message;
+};
+
+// calculate bet when a player win/lose and add/deduct from player chips amount.
+const calcBetWinLose = function (player) {
+  if (
+    (dealerHand.blackjack == true && player.blackjack == true) ||
+    dealerHand.handvalue == player.handvalue
+  ) {
+    player.bet = 0;
+    return "It is a push!";
+  } else if (
+    dealerHand.blackjack == true ||
+    player.bust == true ||
+    (player.handvalue < dealerHand.handvalue && dealerHand.bust == false)
+  ) {
+    player.chips -= player.bet;
+    player.bet = 0;
+    return "You lose!";
+  } else if (player.blackjack == true) {
+    player.chips += player.bet * 2.5;
+    player.bet = 0;
+    return "Blackjack! You win!";
+  } else if (
+    dealerHand.bust == true ||
+    player.handvalue > dealerHand.handvalue
+  ) {
+    player.chips += player.bet;
+    player.bet = 0;
+    return "You win!";
+  }
+};
+
+// Function to validate player input to hit, stand and update their hand
+const hitStandSplit = function (input) {
+  const playerchoice = ["hit", "stand", "split"];
+  let message = "";
+
+  if (playerchoice.includes(input.toLowerCase().trim())) {
+    switch (input) {
+      case "hit":
+        numOfPlayersPlaying[playerCounter].hand.push(shuffledDeck.pop());
+        numOfPlayersPlaying[playerCounter].handvalue +=
+          numOfPlayersPlaying[playerCounter].hand[
+            numOfPlayersPlaying[playerCounter].hand.length - 1
+          ].rank;
+        if (numOfPlayersPlaying[playerCounter].handvalue > 21) {
+          numOfPlayersPlaying[playerCounter].bust = true;
+          playerCounter += 1;
+          message = `You bust! It is now Player ${numOfPlayersPlaying[playerCounter].number}'s turn. Please choose Hit or Stand`;
+        }
+        break;
+      case "stand":
+        playerCounter += 1;
+        if (playerCounter == numOfPlayersPlaying.length) {
+          gameMode = COMPARE_HAND;
+          playerCounter = 0;
+          message = "Dealer show hand.";
+        } else {
+          message = `It is now Player ${numOfPlayersPlaying[playerCounter].number}'s turn. Please choose Hit or Stand`;
+        }
+        break;
+    }
+  } else {
+    message =
+      "Please choose Hit to try your luck or Stand to stay where you are";
   }
   return message;
 };
@@ -233,16 +290,37 @@ var main = function (input) {
   if (gameMode == ENTER_BET) {
     myOutputValue = playerBets(input);
   }
+  // The cards are dealed and displayed to the user.
+  if (gameMode == DEAL_CARDS) {
+    dealCard(numOfPlayersPlaying);
+    gameMode = PLAY_GAME;
+    return playerHandBoard(numOfPlayersPlaying);
+  }
 
   // The cards are analysed for game winning conditions, e.g. Blackjack.
-  // The cards are displayed to the user.
   //  a. Player card will be displayed during their own turn.
   // Each player is able to choose to Hit, Stand or Split by clicking the respective buttons.
 
-  const playerchoice = ["hit", "stand", "split"];
   if (gameMode == PLAY_GAME) {
-    dealCard();
-    myOutputValue = playerHandBoard(totalNumOfPlayersPlaying);
+    if (dealerHand.blackjack == true) {
+      myOutputValue = "";
+      while (playerCounter < numOfPlayersPlaying.length) {
+        myOutputValue += `Dealer Blackjack! Player ${
+          numOfPlayersPlaying[playerCounter].number
+        }: ${calcBetWinLose(numOfPlayersPlaying[playerCounter])}<br>`;
+        playerCounter += 1;
+      }
+      playerCounter = 0;
+      // this condition will have issue if the player is the last person. Need to solve.
+    } else if (numOfPlayersPlaying[playerCounter].blackjack == true) {
+      playerCounter += 1;
+      return `Player ${numOfPlayersPlaying[playerCounter].number}'s turn! Please choose to Hit or Stand.`;
+    } else {
+      return (myOutputValue = hitStandSplit(
+        input,
+        numOfPlayersPlaying[playerCounter]
+      ));
+    }
   }
 
   return myOutputValue;
