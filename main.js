@@ -1,38 +1,49 @@
-/**
- * Assumes control of the root element assigned to the application
- */
-
-const COMMENCE_ROUND = (lounge) => {
-  const round = newRound(lounge);
-  const uiRound = new UiRound(round);
-  uiRound
-    .setOnFinish((lounge, isContinue) => {
-      if (isContinue === true) {
-        COMMENCE_ROUND(lounge);
-      } else if (isContinue === false) {
-        COMMENCE_LOUNGE(lounge);
-      }
-    })
-    .render();
-  return [round, uiRound];
-};
-
-const COMMENCE_LOUNGE = (lounge) => {
-  const uiLounge = new UiLounge(lounge).render();
-  return [lounge, uiLounge];
-};
-
-const REMOVE_ROOT_CHILDREN = () => {
-  while (ROOT_BLACKJACK_ELEMENT.hasChildNodes()) {
-    ROOT_BLACKJACK_ELEMENT.removeChild(ROOT_BLACKJACK_ELEMENT.lastChild);
+class PlayingArea {
+  constructor(root) {
+    this._uiRoot = root || ROOT_BLACKJACK_ELEMENT;
   }
-};
+
+  commenceRound = (lounge) => {
+    console.group(`commenceRound`);
+    const round = newRound(lounge);
+    const uiRound = new UiRound(round);
+
+    uiRound.setUiParentRoot(this._uiRoot);
+    uiRound
+      .setOnFinish((lounge, isContinue) => {
+        if (isContinue === true) {
+          new PlayingArea(this._uiRoot).commenceRound(lounge);
+        } else if (isContinue === false) {
+          new PlayingArea(this._uiRoot).commenceLounge(lounge);
+        }
+      })
+      .render();
+
+    console.groupEnd();
+
+    return [round, uiRound];
+  };
+
+  commenceLounge = (lounge) => {
+    console.group(`commenceLounge`);
+    const uiLounge = new UiLounge(lounge).render();
+    uiRound.setUiParentRoot(this._uiRoot);
+    console.groupEnd();
+    return [lounge, uiLounge];
+  };
+
+  renderRound = (lounge) => {
+    const round = newRound(lounge);
+    const uiRound = new UiRound(round);
+    uiRound.setUiParentRoot(this._uiRoot);
+
+    uiRound.render();
+    return [round, uiRound];
+  };
+}
 
 const main = () => {
-  REMOVE_ROOT_CHILDREN();
-  if (ROOT_BLACKJACK_ELEMENT) {
-    COMMENCE_ROUND(Sample.getTwoPlayersLounge());
-  }
+  // new PlayingArea().commenceRound(Sample.getTwoPlayersLounge());
 };
 
 main();

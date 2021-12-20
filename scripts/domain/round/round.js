@@ -21,7 +21,7 @@ class RoundPhase {
 
 class Round {
   __resetHooks = () => {
-    this._onFinish = () => {
+    this._onFinish = (lounge, isContinue) => {
       throw new Error(`Error. Callback[_onFinish] must be configured`);
     };
     this.setOnFinish = (fn) => {
@@ -38,23 +38,23 @@ class Round {
     this._lounge = lounge;
 
     this._phase = RoundPhase._NULL;
-    this._rootQueueSeat = new Vertex(null);
-    this._currentVertexSeat = this._rootQueueSeat;
+    this._rootQueueSeat = new RootVertex();
     this._dealer = new Dealer(lounge.getDealer());
     this._dealer.setRound(this);
     const players = lounge.getPlayers();
-    let thisVertexPlayer = this._rootQueueSeat;
+    let thisVertexSeat = this._rootQueueSeat;
     for (const player of players) {
-      const vertexPlayer = new Vertex(new Seat(new Player(player)));
-      thisVertexPlayer.setNext(vertexPlayer);
-      thisVertexPlayer = vertexPlayer;
+      const vertexSeat = new Vertex(newSeat(new Player(player)));
+      thisVertexSeat.setNext(vertexSeat);
+      thisVertexSeat = vertexSeat;
     }
 
     this.__resetHooks();
   }
 
-  getCurrentSeat = () => this._currentVertexSeat.getElement();
-  peekNextSeat = () => this._currentVertexSeat.peekNextElement();
+  getRootSeat = () => this._rootQueueSeat.getElement();
+  peekFirstChair = () => this._rootQueueSeat.peekNextElement().getChair();
+
   getPhase = () => this._phase;
 
   /**
@@ -62,6 +62,10 @@ class Round {
    * @returns {Dealer}
    */
   getDealer = () => this._dealer;
+
+  getSeatGenerator = () => {
+    return this._rootQueueSeat.getElementGenerator();
+  };
 
   finish = (isContinue) => {
     if (!(isContinue === false || isContinue === true)) {
@@ -78,11 +82,11 @@ newRound = (lounge) => {
   let rejectDescription = [];
   if (!lounge.getDealer()) {
     reject = true;
-    rejectDescription.push(`newRound no dealer.`);
+    rejectDescription.push(`newRound require a dealer.`);
   }
   if (!(lounge.getPlayers().length > 0)) {
     reject = true;
-    rejectDescription.push(`newRound no player.`);
+    rejectDescription.push(`newRound require at least one player.`);
   }
 
   if (reject) {

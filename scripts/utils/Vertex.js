@@ -25,3 +25,23 @@ class Vertex {
   getElement = () => this._element;
   peekNextElement = () => this.next()?.getElement();
 }
+
+class RootVertex extends Vertex {
+  constructor() {
+    super(null);
+  }
+
+  getElementGenerator = () => {
+    let currentVertex = this;
+    return {
+      current: () => currentVertex.getElement(),
+      next: () => {
+        if (currentVertex === null || currentVertex === undefined) {
+          return null;
+        }
+        currentVertex = currentVertex.next();
+        return !!currentVertex ? currentVertex.getElement() : null;
+      },
+    };
+  };
+}

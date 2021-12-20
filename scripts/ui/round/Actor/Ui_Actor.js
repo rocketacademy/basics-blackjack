@@ -17,6 +17,8 @@ class UiName extends Ui_Component {
     // Domain
     this.name = name;
 
+    this._uiDealer;
+
     this._style();
   }
 

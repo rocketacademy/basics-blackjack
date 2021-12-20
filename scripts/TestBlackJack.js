@@ -1,4 +1,5 @@
 class TestBlackJack {
+  static newStubRoot = () => document.createElement("div");
   constructor() {
     this._cbTest = [];
   }

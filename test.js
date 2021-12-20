@@ -46,7 +46,7 @@ newTestCollection.addTest(`test_Round_Init`, () => {
 
   const expectedRootSeat = null;
   LOG_ASSERT(
-    expectedRootSeat === round.getCurrentSeat(),
+    expectedRootSeat === round.getRootSeat(),
     ``,
     `Expected Root Seat ${expectedRootSeat}`
   );
@@ -65,17 +65,18 @@ newTestCollection.addTest(`test_Round_TwoPlayers_Init`, () => {
 
   const expectedRootSeat = null;
   LOG_ASSERT(
-    expectedRootSeat === round.getCurrentSeat(),
+    expectedRootSeat === round.getRootSeat(),
     ``,
     `Expected Root Seat ${expectedRootSeat}`
   );
 
-  const expectedNextPlayerName = `Player 1`;
-  const actualNextPlayerName = round.peekNextSeat().getChair().getName();
+  const expectedFirstPlayerName = `Player 1`;
+  const actualFirstPlayerName = round.peekFirstChair().getName();
+
   LOG_ASSERT(
-    expectedNextPlayerName === actualNextPlayerName,
+    expectedFirstPlayerName === actualFirstPlayerName,
     ``,
-    `First Player Name expected ${expectedNextPlayerName} got ${actualNextPlayerName}`
+    `First Player Name expected ${expectedFirstPlayerName} got ${actualFirstPlayerName}`
   );
 
   const expectRoundOfDealer = round;
@@ -88,68 +89,101 @@ newTestCollection.addTest(`test_Round_TwoPlayers_Init`, () => {
   );
 });
 
-const RENDER_ROUND = (lounge) => {
-  const round = newRound(lounge);
-  const uiRound = new UiRound(round);
-  uiRound.render();
-  return [round, uiRound];
-};
-
-newTestCollection.addTest(`test_ROUND_Render`, () => {
+newTestCollection.addTest(`test_Round_TwoPlayers_Render`, () => {
   const lounge = Sample.getTwoPlayersLounge();
-  const [_, uiRound] = RENDER_ROUND(lounge);
 
-  const expectedChildrenOf_ROOT_BLACKJACK_ELEMENT = uiRound.getRoot();
-  const actualChildrenOf_ROOT_BLACKJACK_ELEMENT =
-    ROOT_BLACKJACK_ELEMENT.children[0];
+  const parentRoot = TestBlackJack.newStubRoot();
+  const [round, uiRound] = new PlayingArea(parentRoot).renderRound(lounge);
+
+  const expectedChildrenOf_parentRoot = uiRound.getRoot();
+  const actualChildrenOf_parentRoot = parentRoot.childNodes[0];
   LOG_ASSERT(
-    expectedChildrenOf_ROOT_BLACKJACK_ELEMENT ===
-      actualChildrenOf_ROOT_BLACKJACK_ELEMENT,
+    expectedChildrenOf_parentRoot === actualChildrenOf_parentRoot,
     ``,
     `FAIL! ui not attached`
   );
   LOG_ASSERT(
-    1 === ROOT_BLACKJACK_ELEMENT.children.length,
+    1 === parentRoot.children.length,
     ``,
-    `Should have one and only children of ROOT_BLACKJACK_ELEMENT`
+    `Should have one and only children of parentRoot`
   );
 });
 
 newTestCollection.addTest(`test_PlayingArea_TwoPlayers`, () => {
   const lounge = Sample.getTwoPlayersLounge();
-  const [round, uiRound] = COMMENCE_ROUND(lounge);
+  const parentRoot = TestBlackJack.newStubRoot();
 
-  const expectedChildrenOf_ROOT_BLACKJACK_ELEMENT_beforeRoundFinish =
-    uiRound.getRoot();
-  const actualChildrenOf_ROOT_BLACKJACK_ELEMENT_beforeRoundFinish =
-    ROOT_BLACKJACK_ELEMENT.children[0];
   LOG_ASSERT(
-    expectedChildrenOf_ROOT_BLACKJACK_ELEMENT_beforeRoundFinish ===
-      actualChildrenOf_ROOT_BLACKJACK_ELEMENT_beforeRoundFinish,
+    parentRoot.childNodes.length === 0,
     ``,
-    `FAIL! ui not attached`
+    `Parent root not childless.`
   );
+
+  const [round, uiRound] = new PlayingArea(parentRoot).commenceRound(lounge);
+
+  const actualParentRoot = uiRound.getParentRoot();
+  LOG_ASSERT(actualParentRoot === parentRoot, ``, `Parent root not immutable.`);
+
+  const expectedChildrenOf_parentRoot_beforeRoundFinish = uiRound.getRoot();
+  const actualChildrenOf_parentRoot_beforeRoundFinish =
+    parentRoot.childNodes[0];
+
   LOG_ASSERT(
-    1 === ROOT_BLACKJACK_ELEMENT.children.length,
+    expectedChildrenOf_parentRoot_beforeRoundFinish ===
+      actualChildrenOf_parentRoot_beforeRoundFinish,
     ``,
-    `Should have one and only children of ROOT_BLACKJACK_ELEMENT`
+    `FAIL! ui not attached beforeRoundFinish ${actualChildrenOf_parentRoot_beforeRoundFinish}`
+  );
+
+  LOG_ASSERT(
+    1 === parentRoot.children.length,
+    ``,
+    `Should have one and only children of parentRoot`
   );
 
   round.finish(true);
 
-  const actualChildrenOf_ROOT_BLACKJACK_ELEMENT_afterRoundFinish =
-    ROOT_BLACKJACK_ELEMENT.children[0];
+  const actualChildrenOf_parentRoot_afterRoundFinish = parentRoot.children[0];
   LOG_ASSERT(
-    expectedChildrenOf_ROOT_BLACKJACK_ELEMENT_beforeRoundFinish !==
-      actualChildrenOf_ROOT_BLACKJACK_ELEMENT_afterRoundFinish,
+    expectedChildrenOf_parentRoot_beforeRoundFinish !==
+      actualChildrenOf_parentRoot_afterRoundFinish,
     ``,
     `FAIL! round ui attached after finish`
   );
   LOG_ASSERT(
-    1 === ROOT_BLACKJACK_ELEMENT.children.length,
+    1 === parentRoot.children.length,
     ``,
-    `Should still have one and only children of ROOT_BLACKJACK_ELEMENT. Attach some element, any element.`
+    `Should still have one and only children of parentRoot. Attach some element, any element.`
   );
+});
+
+newTestCollection.addTest(`test_Round_generating players of seats`, () => {
+  const lounge = Sample.getTwoPlayersLounge();
+
+  const parentRoot = TestBlackJack.newStubRoot();
+
+  const [round, uiRound] = new PlayingArea(parentRoot).commenceRound(lounge);
+
+  const seatGenerator = round.getSeatGenerator();
+
+  const seat1 = seatGenerator.next();
+  const chair1 = seat1.getChair();
+  const expectedFirstChairName = `Player 1`;
+  const actualFirstChairName = chair1.getName();
+
+  LOG_ASSERT(
+    expectedFirstChairName === actualFirstChairName,
+    ``,
+    `expectedFirstChairName ${expectedFirstChairName} got ${actualFirstChairName} `
+  );
+});
+
+newTestCollection.addTest(`test_Round_generating players of seats`, () => {
+  const parentRoot = TestBlackJack.newStubRoot();
+
+  const lounge = Sample.getTwoPlayersLounge();
+
+  const [round, uiRound] = new PlayingArea(parentRoot).commenceRound(lounge);
 });
 
 newTestCollection.run();
