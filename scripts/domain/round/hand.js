@@ -6,39 +6,6 @@ class PlayerStatus {
   constructor() {}
 }
 
-class Wager {
-  constructor() {
-    this._hand = null;
-    this._sponsor = null;
-    this._amt = null;
-  }
-
-  setHand = (hand) => (this._hand = hand);
-  getHand = () => this._hand;
-  setSponsor = (player) => {
-    this._sponsor = player;
-  };
-  getSponsor = () => this._sponsor;
-  setAmount = (amt) => {
-    this._amt = amt;
-  };
-
-  placeYourInitialBet = (dealer) => {
-    console.group(`wager. notified turn to bet.`);
-    if (!dealer) {
-      throw new Error(`arbitter required`);
-    }
-    const sponsor = this.getSponsor();
-    const playableCredit = sponsor.getCredit();
-    const hand = this.getHand();
-    this._onPlaceYourInitialBet(this, dealer, playableCredit);
-    console.groupEnd();
-  };
-  _onPlaceYourInitialBet = (wage, dealer, playableCredit) => {};
-  setOnPlaceYourInitialBet = (fn) => {
-    this._onPlaceYourInitialBet = fn;
-  };
-}
 class Hand {
   static FIRST_CARD = 0;
   static SECOND_CARD = 1;
@@ -112,5 +79,9 @@ class Hand {
 
   setOnPlaceYourInitialBet = (cb) => {
     this._onPlaceYourInitialBet = cb;
+  };
+
+  initialBetStaked = () => {
+    console.log(`hand notified of initial wager staked`);
   };
 }

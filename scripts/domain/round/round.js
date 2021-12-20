@@ -20,6 +20,7 @@ class RoundPhase {
 }
 
 class Round {
+  //TODO need to do this? the round should not be referenced after finish.
   __resetHooks = () => {
     this._onFinish = (lounge, isContinue) => {
       throw new Error(`Error. Callback[_onFinish] must be configured`);
@@ -55,7 +56,8 @@ class Round {
     this._lounge = lounge;
 
     this._phase = RoundPhase._NULL;
-    this._dealer = new Dealer(lounge.getDealer());
+    this._dealer = new Dealer(this._lounge.getDealer());
+    this._deck = this._lounge.getShoe();
     this._dealer.setRound(this);
 
     const players = lounge.getPlayers();
@@ -63,7 +65,7 @@ class Round {
 
     this.__resetHooks();
   }
-
+  getShoe = () => this._deck;
   getRootSeat = () => this._seatList.getRoot().getElement();
   peekFirstChair = () =>
     this._seatList.getRoot().next().getElement().getChair();
@@ -90,10 +92,44 @@ class Round {
     return this._seatList.getElementGenerator();
   };
 
+  getAllHandsGenerator = () => {
+    // nested... quite difficult
+
+    let seatGen = this._seatList.getElementGenerator();
+    let handGen = new LinkedList().getElementGenerator(); // assign a dummy LL generator for initialization
+
+    let currentSeat = seatGen.current();
+    let currentHand = handGen.current();
+    return {
+      current: () => currentHand,
+
+      next: () => {
+        while (true) {
+          currentHand = handGen.next();
+          if (currentHand) {
+            return currentHand;
+          }
+          currentSeat = seatGen.next();
+          if (!currentSeat) {
+            return null;
+          }
+          handGen = currentSeat.getHandGenerator();
+        }
+      },
+    };
+  };
+
   start = () => {
     console.group(`round.start`);
     this._setPhase(RoundPhase.COMMENCE);
-    this._dealer.requestInitialBet();
+    this._dealer.callForInitialBets();
+    console.groupEnd();
+  };
+
+  initDeal = () => {
+    console.group(`round.start`);
+    this._setPhase(RoundPhase.INITIAL_DEAL);
+    this._dealer.callForInitialDeals();
     console.groupEnd();
   };
   finish = (isContinue) => {

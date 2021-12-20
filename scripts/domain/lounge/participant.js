@@ -8,6 +8,12 @@ class Participant {
   }
   getName = () => this._name;
   getCredit = () => this._credit;
-  decreaseCredit = (amt) => (this._credit -= amt);
+  decreaseCredit = (amt) => {
+    if (!amt) {
+      throw new Error(`decreaseCredit. amt not specified`);
+    }
+
+    this._credit -= amt;
+  };
   increaseCredit = (amt) => (this._credit += amt);
 }

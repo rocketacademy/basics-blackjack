@@ -33,7 +33,7 @@ class Seat {
     return hand;
   };
 
-  requestInitialBet = (dealer) => {
+  callForInitialBet = (dealer) => {
     const hand = this.createInitialHand(dealer);
     hand.placeYourInitialBet(dealer);
   };

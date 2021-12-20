@@ -11,24 +11,23 @@ class UiCredit extends Ui_Component {
 }
 
 class UiName extends Ui_Component {
-  /** @param {!string} name */
-  constructor(name) {
-    super(document.createElement("div"));
-    // Domain
-    this.name = name;
-
-    this._uiDealer;
-
-    this._style();
-  }
-
   _style = () => {
     this._root.style.justifyContent = "center";
     this._root.style.marginTop = "10px";
     this._root.style.marginBottom = "10px";
     this._root.textContent = this.name;
-    this._root.class += `blackjack-name`;
+    this._root.class += " blackjack-name";
+    this._root.style.height = "20px";
+    this._root.style.width = "auto";
   };
+
+  /** @param {!string} name */
+  constructor(name) {
+    super(document.createElement("div"));
+    // Domain
+    this.name = name;
+    this._style();
+  }
 }
 
 class Ui_Actor extends Ui_Component {

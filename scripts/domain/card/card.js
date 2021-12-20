@@ -31,9 +31,3 @@ class Card {
   _onFlip = (isFaceUp) => {};
   setOnFlip = (fn) => (this._onFlip = fn);
 }
-
-const newCard = (suit, faceValue) => {
-  const card = new Card(suit, faceValue);
-  card.flip(false);
-  return card;
-};

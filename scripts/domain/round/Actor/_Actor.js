@@ -13,4 +13,5 @@ class _Actor {
 
   getName = () => this._participant.getName();
   getCredit = () => this._participant.getCredit();
+  decreaseCredit = (amt) => this._participant.decreaseCredit(amt);
 }

@@ -4,9 +4,9 @@ class UiImgCard extends Ui_Img {
     this._root.src = url;
     this._root.alt = url;
     this._root.style.width = "auto";
-    this._root.style.height = "auto";
-    this._root.style.maxWidth = "90px";
-    this._root.style.maxHeight = "90px";
+    this._root.style.height = "100%";
+    this._root.style.padding = "14px";
+
     this._root.className += ` blackjack-card-img`;
   }
 }
@@ -19,7 +19,7 @@ class UiCard extends Ui_Component {
    */
 
   static getUrl = (card) =>
-    `img/cards/${card
+    `static/img/cards/${card
       .getRank()
       .toString()
       .padStart(2, "0")}-${card.getSuitDesc()}.png`;
@@ -33,10 +33,14 @@ class UiCard extends Ui_Component {
     // Root Configuration
     this._id = card.getString();
     this._root.className += `blackjack-card`;
+    this._root.style.padding = "2px";
+    this._root.style.width = "12px";
+    this._root.style.height = "100%";
+
     // Children
     const urlFaceImg = UiCard.getUrl(card);
     this._uiImgFace = new UiImgCard(urlFaceImg);
-    this._uiImgBack = new UiImgCard(`img/cards/JOKER-RED.png`);
+    this._uiImgBack = new UiImgCard(`static/img/cards/JOKER-RED.png`);
 
     // Hooks
     this._card.setOnFlip(this._toggle);

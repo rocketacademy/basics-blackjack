@@ -15,10 +15,16 @@ class Deck {
     FaceValue.QUEEN,
     FaceValue.KING,
   ];
+
+  static newCard = (suit, faceValue) => {
+    const card = new Card(suit, faceValue);
+    card.flip(false);
+    return card;
+  };
   static STANDARD_DECK = Deck.RANGE_SUIT.reduce(
     (cards, suit) => [
       ...cards,
-      ...Deck.RANGE_FACE_VALUE.map((faceVal) => new Card(suit, faceVal)),
+      ...Deck.RANGE_FACE_VALUE.map((faceVal) => Deck.newCard(suit, faceVal)),
     ],
     []
   );
