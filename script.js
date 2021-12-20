@@ -35,7 +35,7 @@ var currentGameMode = GAME_START;
 var dealerCards = [];
 var playerCards = [];
 // declare variable to hold deck of cards
-var deck = "empty at the start";
+var deck = "";
 
 // create function to assemble cards: makeDeck
 var makeDeck = function () {
@@ -184,7 +184,6 @@ var displayPlayerAndDealerCards = function (
       "<br>";
     index = index + 1;
   }
-  console.log(playerMessage);
   // dealer hand
   index = 0;
   var dealerMessage = `Dealer hand: <br>`;
@@ -198,7 +197,6 @@ var displayPlayerAndDealerCards = function (
       "<br>";
     index = index + 1;
   }
-  console.log(dealerMessage);
   return playerMessage + "<br>" + dealerMessage;
 };
 
@@ -234,12 +232,6 @@ var main = function (input) {
     playerCards.push(shuffledCards.pop());
     dealerCards.push(shuffledCards.pop());
     dealerCards.push(shuffledCards.pop());
-
-    console.log("player hand: ");
-    console.log(playerCards);
-    console.log("dealer hand: ");
-    console.log(dealerCards);
-
     // progress the game mode
     currentGameMode = GAME_CARDS_DRAWN;
     myOutputMessage =
@@ -262,8 +254,6 @@ var main = function (input) {
     var playerBJ = checkBJ(playerCards);
     var dealerBJ = checkBJ(dealerCards);
 
-    // console.log("does player have bj? ==>" + playerBJ);
-    // console.log("does dealer have bj? ==>" + dealerBJ);
     if (playerBJ == true || dealerBJ == true) {
       // -- both player and dealer has blackjack > a tie
       if (playerBJ == true && dealerBJ == true) {
@@ -289,13 +279,10 @@ var main = function (input) {
           loseImage +
           playAgainMsg;
       }
-      console.log(myOutputMessage);
     } else {
       myOutputMessage =
         "There is no blackjack! Click submit to display cards" + noBJImage;
-      console.log(myOutputMessage);
       // no black jack > game continues
-
       // change game mode
       currentGameMode = GAME_HIT_OR_STAND;
 
@@ -325,9 +312,6 @@ var main = function (input) {
         dealerTotalValue = calculateTotalValue(dealerCards);
         // loop auto stops when dealer total is above or equals to 17
       }
-
-      console.log("player total: " + playerTotalValue);
-      console.log("dealer total: " + dealerTotalValue);
       // -- compare total hand value
       // check if player or dealer bust, card total is more than 21
       // if player is more than 21, dealer is less than 21, dealer auto wins
