@@ -1,20 +1,34 @@
+// 0. Preparation
+//    - Create game modes (how many game modes needed?)
+//    - Create player's hand
+//    - Create dealer's hand
 // 1. Deck is shuffled.
+//    - Create a set of card
+//    - Shuffle the card
+//    - Store the deck in a variable
 // 2. User clicks Submit to deal cards.
+//    - First click to deal the cards
+//    - Second click to compare player's and dealer's cards
 // 3. The cards are analysed for game winning conditions, e.g. Blackjack.
 //    A Blackjack win. When either player or dealer draw Blackjack.
 //    A tie. When both the player and dealer draw Blackjack
-// 4. The cards are displayed to the user.
-// 5. The user decides whether to hit or stand, using the submit button to submit their choice.
-// 6. The user's cards are analysed for winning or losing conditions
-// 7. The computer decides to hit or stand automatically based on game rules.
-// 8. Comparing both hands and determining a winner. The possible scenarios are:
+//    - Check if by player or dealer has Blackjack
+// 4. Comparing both hands and determining a winner. The possible scenarios are:
 //    A normal win. When neither draw Blackjack, the winner is decided by whomever has the higher hand total.
 //    A tie. When both the player and dealer have the same total hand values
+//    - Sum up the card value
+//    - Compare between player's and dealer's cards
+// 5. The cards are displayed to the user.
+// 6. The user decides whether to hit or stand, using the submit button to submit their choice.
+// 7. The user's cards are analysed for winning or losing conditions
+// 8. The computer decides to hit or stand automatically based on game rules.
+// 9. The game either ends or continues.
 
 // Declare game modes
 var gameStartMode = `game start`;
 var drawCardsMode = `draw cards`;
 var showResultsMode = `show results`;
+var hitOrStandMode = `hit or stand`;
 var currentGameMode = gameStartMode;
 
 // Declare variables to store player and dealer hands
@@ -121,26 +135,27 @@ var totalCardsValue = function (handArray) {
 };
 
 // 4. The cards are displayed to the user.
-var showAllCards = function (playerHand, dealerHand) {
+// Player's cards
+var showPlayerCards = function (playerHand) {
   var playerTotalCards = totalCardsValue(playerHand);
-  var dealerTotalCards = totalCardsValue(dealerHand);
-
-  // Player's card
   var playerCardsMessage = `Player got: ${playerTotalCards}<br>Player's cards:<br>`;
   var index = 0;
   while (index < playerHand.length) {
     playerCardsMessage = `${playerCardsMessage}  - ${playerHand[index].name} of ${playerHand[index].suit}<br>`;
     index += 1;
   }
-
-  // Dealer's card
+  return playerCardsMessage;
+};
+// Dealer's cards
+var showDealerCards = function (dealerHand) {
+  var dealerTotalCards = totalCardsValue(dealerHand);
   var dealerCardsMessage = `Dealer got: ${dealerTotalCards}<br>Dealer's cards:<br>`;
   var index = 0;
   while (index < dealerHand.length) {
     dealerCardsMessage = `${dealerCardsMessage}  - ${dealerHand[index].name} of ${dealerHand[index].suit}<br>`;
     index += 1;
   }
-  return playerCardsMessage + "<br>" + dealerCardsMessage;
+  return dealerCardsMessage;
 };
 
 var main = function (input) {
@@ -165,20 +180,12 @@ var main = function (input) {
     console.log("dealer hand ==> ");
     console.log(dealerHand);
 
-    // change to the next gameMode
-    currentGameMode = drawCardsMode;
+    // // change to the next gameMode
+    // currentGameMode = drawCardsMode;
 
-    //give an output message
-    outputMessage =
-      'You got your cards!<br><br>Click "Submit" to see your cards.';
+    // //give an output message
+    // outputMessage = `Welcome to Blackjack game!<br><br>Click "Submit" to deal your cards.`;
 
-    return outputMessage;
-  }
-
-  // 3. The cards are analysed for game winning conditions, e.g. Blackjack.
-  // click submit
-  if ((currentGameMode = drawCardsMode)) {
-    // check for blackjack
     var playerHasBlackjack = checkBlackjack(playerHand);
     var dealerHasBlackjack = checkBlackjack(dealerHand);
 
@@ -188,33 +195,104 @@ var main = function (input) {
     if (playerHasBlackjack == true || dealerHasBlackjack == true) {
       // both player and dealer has blackjack ->
       if (playerHasBlackjack == true && dealerHasBlackjack == true) {
-        outputMessage = `Both player and dealer got Blackjack!<br><br>It is a Blackjack tie!<br><br>${showAllCards(
-          playerHand,
-          dealerHand
-        )}`;
+        outputMessage = `Both player and dealer got Blackjack!<br><br>It is a Blackjack tie!<br><br>Dealer(
+            playerHand,
+            dealerHand
+          )}`;
       }
 
       // only player has blackjack -> player wins
       else if (playerHasBlackjack == true && dealerHasBlackjack == false) {
-        outputMessage = `Player got Blackjack!<br><br>You win!<br><br>${showAllCards(
-          playerHand,
-          dealerHand
-        )}`;
+        outputMessage = `Player got Blackjack!<br><br>You win!<br><br>${showPlayerCards(
+          playerHand
+        )}<br><br>${showDealerCards(dealerHand)}`;
       }
 
       // only dealer has blackjack -> dealer wins
       else {
-        outputMessage = `Dealer got Blackjack!<br><br>You lose!<br><br>${showAllCards(
-          playerHand,
-          dealerHand
-        )}`;
+        outputMessage = `Dealer got Blackjack!<br><br>You lose!<br><br>${showPlayerCards(
+          playerHand
+        )}<br><br>${showDealerCards(dealerHand)}`;
       }
 
       // no blackjack
     } else {
-      outputMessage = "No Blackjack";
+      outputMessage = `Welcome to Blackjack game!<br><br>You got your card!<br><br>${showPlayerCards(
+        playerHand
+      )}<br>Please type:<br>"Hit" if you want to draw more card; or<br>"Stand" if you have enough.`;
       console.log(outputMessage);
 
+      // change to the next gameMode
+      currentGameMode = hitOrStandMode;
+
+      // give an output message
+      return outputMessage;
+    }
+  }
+
+  // //
+  // //
+  // //
+  // // 3. The cards are analysed for game winning conditions, e.g. Blackjack.
+  // // click submit
+  // if (currentGameMode == drawCardsMode) {
+  //   // check for blackjack
+  //   var playerHasBlackjack = checkBlackjack(playerHand);
+  //   var dealerHasBlackjack = checkBlackjack(dealerHand);
+
+  //   console.log("Player has Blackjack -> ", playerHasBlackjack);
+  //   console.log("Dealer has Blackjack -> ", dealerHasBlackjack);
+
+  //   if (playerHasBlackjack == true || dealerHasBlackjack == true) {
+  //     // both player and dealer has blackjack ->
+  //     if (playerHasBlackjack == true && dealerHasBlackjack == true) {
+  //       outputMessage = `Both player and dealer got Blackjack!<br><br>It is a Blackjack tie!<br><br>Dealer(
+  //         playerHand,
+  //         dealerHand
+  //       )}`;
+  //     }
+
+  //     // only player has blackjack -> player wins
+  //     else if (playerHasBlackjack == true && dealerHasBlackjack == false) {
+  //       outputMessage = `Player got Blackjack!<br><br>You win!<br><br>${showPlayerCards(
+  //         playerHand
+  //       )}<br><br>${showDealerCards(dealerHand)}`;
+  //     }
+
+  //     // only dealer has blackjack -> dealer wins
+  //     else {
+  //       outputMessage = `Dealer got Blackjack!<br><br>You lose!<br><br>${showPlayerCards(
+  //         playerHand
+  //       )}<br><br>${showDealerCards(dealerHand)}`;
+  //     }
+
+  //     // no blackjack
+  //   } else {
+  //     outputMessage = `Please type:<br>"Hit" if you want to draw more card; or<br>"Stand" if you have enough.<br><br>${showPlayerCards(
+  //       playerHand
+  //     )}`;
+  //     console.log(outputMessage);
+
+  //     // change to the next gameMode
+  //     currentGameMode = hitOrStandMode;
+
+  //     // give an output message
+  //     return outputMessage;
+  //   }
+  // }
+
+  // Hit or stand mode
+  if (currentGameMode == hitOrStandMode) {
+    console.log(`Control flow : starting of hitOrStandMode`);
+    // Player Hit
+    if (input == "hit" || input == "Hit") {
+      playerHand.push(gameDeck.pop());
+      outputMessage = `You just drew one more card. Please type:<br>"Hit" if you want to draw more card; or<br>"Stand" if you have enough.<br><br>${showPlayerCards(
+        playerHand
+      )}`;
+    }
+    // Player Stand
+    else if (input == "stand" || input == "Stand") {
       // sum up the cards in player's and dealer's hand
       var playerTotalCards = totalCardsValue(playerHand);
       var dealerTotalCards = totalCardsValue(dealerHand);
@@ -225,39 +303,28 @@ var main = function (input) {
       // compare the cards
       // same value -> tie
       if (playerTotalCards == dealerTotalCards) {
-        outputMessage = `It's a tie!<br><br>${showAllCards(
-          playerHand,
-          dealerHand,
-          playerTotalCards,
-          dealerTotalCards
-        )}`;
+        outputMessage = `It's a tie!<br><br>${showPlayerCards(
+          playerHand
+        )}<br><br>${showDealerCards(dealerHand)}`;
       }
 
       // player value is higher -> player wins
       else if (playerTotalCards > dealerTotalCards) {
-        outputMessage = `You win!<br><br>${showAllCards(
-          playerHand,
-          dealerHand,
-          playerTotalCards,
-          dealerTotalCards
-        )}`;
+        outputMessage = `You win!<br><br>${showPlayerCards(
+          playerHand
+        )}<br><br>${showDealerCards(dealerHand)}`;
       }
 
       // dealer value is higher -> player wins
       else {
-        outputMessage = `You lose!<br><br>${showAllCards(
-          playerHand,
-          dealerHand,
-          playerTotalCards,
-          dealerTotalCards
-        )}`;
+        outputMessage = `You lose!<br><br>${showPlayerCards(
+          playerHand
+        )}<br><br>${showDealerCards(dealerHand)}`;
       }
-
-      // change to the next gameMode
-      currentGameMode = showResultsMode;
-
-      // give an output message
-      return outputMessage;
+    } else {
+      outputMessage = `Wrong input.<br>Please type "Hit" or "Stand".<br><br>${showPlayerCards(
+        playerHand
+      )}<br><br>${showDealerCards(dealerHand)}`;
     }
   }
   return outputMessage;
