@@ -27,8 +27,8 @@ class UiSeat extends Ui_Component {
   };
 
   _newUiHand = (h) => newUiHand(h);
-  _newUiHandsHolder = (generator) => {
-    const uiHH = new UiHandsHolder();
+  _newUiHandHolder = (generator) => {
+    const uiHH = new UiHandHolder();
 
     let limiter = 7;
     let hand = generator.next();
@@ -51,15 +51,15 @@ class UiSeat extends Ui_Component {
     this._id = seat.id();
 
     this._uiChair = this._newUiChair(this._seat.getChair());
-    /** @private @const {UiHandsHolder} */
-    this._uiHandsHolder = this._newUiHandsHolder(this._seat.getHandGenerator());
+    /** @private @const {UiHandHolder} */
+    this._UiHandHolder = this._newUiHandHolder(this._seat.getHandGenerator());
 
     this._seat.setOnCreateNewHand((hand) => {
-      this._uiHandsHolder.addUiHand(this._newUiHand(hand));
+      this._UiHandHolder.addUiHand(this._newUiHand(hand));
     });
 
     this._style();
-    this.replaceChildrenUi(this._uiChair, this._uiHandsHolder);
+    this.replaceChildrenUi(this._uiChair, this._UiHandHolder);
   }
 
   id = () => this._id;
@@ -69,10 +69,10 @@ class UiSeat extends Ui_Component {
       throw new Error(`require not null arg pos`);
     }
 
-    return this._uiHandsHolder.get(pos);
+    return this._UiHandHolder.get(pos);
   };
 
-  uiHandCount = () => this._uiHandsHolder.count();
+  uiHandCount = () => this._UiHandHolder.count();
 }
 
 /**
