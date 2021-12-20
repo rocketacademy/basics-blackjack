@@ -102,12 +102,13 @@ var computerArray = [];
 var computerArrayRank = [];
 
 // ======================================================================================================================
-// ========================================= === HELPER FUNCTIONS =======================================================
+// ============================================= HELPER FUNCTIONS =======================================================
 // ======================================================================================================================
 
 // helper function for calculating the total "rank values" for player and computer
 var calculateTotalRank = function (cardArray) {
   var index = 0;
+  var numberOfAces = 0;
   var sumOfRank = 0;
   while (index < cardArray.length) {
     var currentCard = cardArray[index];
@@ -116,8 +117,16 @@ var calculateTotalRank = function (cardArray) {
       sumOfRank += 10;
     } else if (currentCard == 1) {
       sumOfRank += 11;
+      numberOfAces += 1;
     } else {
       sumOfRank += cardArray[index];
+    }
+    index += 1;
+  }
+  index = 0;
+  while (index < numberOfAces) {
+    if (sumOfRank > 21) {
+      sumOfRank -= 10;
     }
     index += 1;
   }
@@ -156,7 +165,7 @@ var checkingForComputerBJ = function (cards) {
 
 // helper function to call out output message for an increasing array of cards for player
 var outputMsgPlayer = function (cardArray) {
-  var playerMessage = "Player Cards: <br>";
+  var playerMessage = "<b>Player Cards:</b> <br>";
   var index = 0;
   while (index < cardArray.length) {
     playerMessage = `${playerMessage} ${cardArray[index].name} of ${cardArray[index].suit} <br>`;
@@ -167,7 +176,7 @@ var outputMsgPlayer = function (cardArray) {
 
 // helper function to call out output message for an increasing array of cards for computer
 var outputMsgComputer = function (cardArray) {
-  var computerMessage = "Computer Cards: <br>";
+  var computerMessage = "<b>Dealer Cards:</b> <br>";
   var index = 0;
   while (index < cardArray.length) {
     computerMessage = `${computerMessage} ${cardArray[index].name} of ${cardArray[index].suit} <br>`;
@@ -206,7 +215,7 @@ var main = function (input) {
     var messageForPlayer = outputMsgPlayer(playerArray);
     var messageForComputer = outputMsgComputer(computerArray);
     var myOutputValue = "";
-    var revealedDealerCards = `Dealer Hand: <br> ${computerArray[0].name} of ${computerArray[1].suit}`;
+    var revealedDealerCards = `<b>Dealer Hand</b>: <br> ${computerArray[0].name} of ${computerArray[0].suit}`;
 
     // --- checking the scenarios in which whether player has blackjack or not ---
     //calling the helper functions here
@@ -215,7 +224,13 @@ var main = function (input) {
 
     // if player has bj and computer also has bj
     if (playerBJ == true && computerBJ == true) {
-      myOutputValue = `${messageForPlayer} <br> ${messageForComputer} <br> <br> It seems that we are tied. No matter, let's go for another round to determine who the true winner is <br><br> <img src = "https://c.tenor.com/9lnDEML3WYsAAAAd/kambe-daisuke.gif"/>`;
+      myOutputValue = `${messageForPlayer} <br> ${messageForComputer} <br> <br> It seems that we are tied. No matter, let's go for another round to determine who the true winner is <br><br> <img src = "https://c.tenor.com/9lnDEML3WYsAAAAd/kambe-daisuke.gif"/> <br><br> Click on the submit button to draw two new cards for you and me`;
+      //reset everything so that player need not hit refresh button. can just click on "submit" button
+      currentProgramMode = "state1";
+      playerArray = [];
+      playerArrayRank = [];
+      computerArray = [];
+      computerArrayRank = [];
     }
     // if only player has bj
     else if (playerBJ == true && computerBJ == false) {
@@ -240,7 +255,9 @@ var main = function (input) {
     }
     // no player bj
     else if (playerBJ == false) {
-      myOutputValue = ` <img src = "https://c.tenor.com/vg3j2jvFwLcAAAAC/daisuke-smile.gif"/> <br> <br>${messageForPlayer} <br> ${revealedDealerCards} <br><br> Would you like to hit (draw another card) or stand (end the turn)`;
+      var playerRankValue = calculateTotalRank(playerArrayRank);
+      var playerTotalValue = `Your hand totals to ${playerRankValue}`;
+      myOutputValue = ` <img src = "https://c.tenor.com/vg3j2jvFwLcAAAAC/daisuke-smile.gif"/> <br> <br>${messageForPlayer} <b>${playerTotalValue}</b> <br> <br> ${revealedDealerCards} <br><br> Would you like to hit (draw another card) or stand (end the turn)`;
       currentProgramMode = "state2";
     }
 
@@ -253,14 +270,15 @@ var main = function (input) {
       playerArray.push(nextPlayerhand);
       playerArrayRank.push(nextPlayerhand.rank);
       messageForPlayer = outputMsgPlayer(playerArray);
-      var playerRankValue = calculateTotalRank(playerArrayRank);
+      playerRankValue = calculateTotalRank(playerArrayRank);
 
       // creating variables for the different parts of the output message so that each output msg wont be so long
       var newCardMsg = `This is your newly drawn card: ${nextPlayerhand.name} of ${nextPlayerhand.suit}`;
       var myOutputValue = `${messageForPlayer}`;
       var questionMsg = `The revealed dealer's hand was: ${computerArray[0].name} of ${computerArray[0].suit} <br><br> Would you like to hit (draw another card) or stand (end the turn) <br> <img src = "https://c.tenor.com/_rc3PCYO1dUAAAAd/daisukekanbe-balancedunlimited.gif"/>`;
+      playerTotalValue = `Your hand totals to ${playerRankValue}`;
 
-      return `${newCardMsg}. <br><br> ${myOutputValue} <br><br> ${questionMsg}`;
+      return `${newCardMsg}. <br><br> ${myOutputValue} <b>${playerTotalValue}</b> <br><br> ${questionMsg}`;
     } else if (input == "stand") {
       // calculate what the total value of cards player and dealer has
       var playerRankValue = calculateTotalRank(playerArrayRank);
