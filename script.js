@@ -42,7 +42,7 @@ var gameDeck = "empty at the start";
 var makeDeck = function () {
   console.log(`control flow: start of makeDeck`);
   var cardDeck = [];
-  var suits = ["Hearts", "Diamonds", "Clubs", "Spades"];
+  var suits = ["♥️", "♦️", "♣️", "♠️"];
   var suitIndex = 0;
   while (suitIndex < suits.length) {
     var currentSuit = suits[suitIndex];
@@ -115,6 +115,7 @@ var checkBlackjack = function (handArray) {
 
 var totalCardsValue = function (handArray) {
   var totalHandValue = 0;
+  var aceCounter = 0;
 
   // check all card values
   var index = 0;
@@ -126,11 +127,23 @@ var totalCardsValue = function (handArray) {
       currentCard.name == "King"
     ) {
       totalHandValue += 10;
+    } else if (currentCard.name == "Ace") {
+      totalHandValue += 11;
+      aceCounter += 1;
     } else {
       totalHandValue += currentCard.rank;
     }
     index += 1;
   }
+
+  index = 0;
+  while (index < aceCounter) {
+    if (totalHandValue > 21) {
+      totalHandValue -= 10;
+    }
+    index += 1;
+  }
+
   return totalHandValue;
 };
 
@@ -158,21 +171,6 @@ var showDealerCards = function (dealerHand) {
   return dealerCardsMessage;
 };
 
-// Check if more than 21
-var checkBurst = function (handArray) {
-  // Check player hand
-  var playerCard = totalCardsValue(handArray);
-  var isBurst = false;
-
-  // return is true if:
-  // card more than 21
-  // else return false
-  if (playerCard > 21) {
-    isBurst = true;
-  }
-  return isBurst;
-};
-
 var main = function (input) {
   var outputMessage = "";
   console.log("Current Game Mode = ", currentGameMode);
@@ -195,11 +193,11 @@ var main = function (input) {
     console.log("dealer hand ==> ");
     console.log(dealerHand);
 
-    // // change to the next gameMode
-    // currentGameMode = drawCardsMode;
-
-    // //give an output message
-    // outputMessage = `Welcome to Blackjack game!<br><br>Click "Submit" to deal your cards.`;
+    // 3. The cards are analysed for game winning conditions, e.g. Blackjack.
+    // click submit
+    // check for blackjack
+    // previously the following section was part of drawCardsMode.
+    // to shorten the steps, it's disolved and combined to gameStartMode
 
     var playerHasBlackjack = checkBlackjack(playerHand);
     var dealerHasBlackjack = checkBlackjack(dealerHand);
@@ -212,21 +210,27 @@ var main = function (input) {
       if (playerHasBlackjack == true && dealerHasBlackjack == true) {
         outputMessage = `Both player and dealer got Blackjack!<br><br>It is a Blackjack tie!<br><br>${showPlayerCards(
           playerHand
-        )}<br><br>${showDealerCards(dealerHand)}`;
+        )}<br><br>${showDealerCards(
+          dealerHand
+        )}<br><br>Please hit refresh to play again.`;
       }
 
       // only player has blackjack -> player wins
       else if (playerHasBlackjack == true && dealerHasBlackjack == false) {
-        outputMessage = `Player got Blackjack!<br><br>You win!<br><br>${showPlayerCards(
+        outputMessage = `Player got Blackjack!<br><br>YOU WIN!<br><br>${showPlayerCards(
           playerHand
-        )}<br><br>${showDealerCards(dealerHand)}`;
+        )}<br><br>${showDealerCards(
+          dealerHand
+        )}<br><br>Please hit refresh to play again.`;
       }
 
       // only dealer has blackjack -> dealer wins
       else {
-        outputMessage = `Dealer got Blackjack!<br><br>You lose!<br><br>${showPlayerCards(
+        outputMessage = `Dealer got Blackjack!<br><br>YOU LOSE!<br><br>${showPlayerCards(
           playerHand
-        )}<br><br>${showDealerCards(dealerHand)}`;
+        )}<br><br>${showDealerCards(
+          dealerHand
+        )}<br><br>Please hit refresh to play again.`;
       }
 
       // no blackjack
@@ -242,54 +246,6 @@ var main = function (input) {
       return outputMessage;
     }
   }
-
-  // // 3. The cards are analysed for game winning conditions, e.g. Blackjack.
-  // // click submit
-  // if (currentGameMode == drawCardsMode) {
-  //   // check for blackjack
-  //   var playerHasBlackjack = checkBlackjack(playerHand);
-  //   var dealerHasBlackjack = checkBlackjack(dealerHand);
-
-  //   console.log("Player has Blackjack -> ", playerHasBlackjack);
-  //   console.log("Dealer has Blackjack -> ", dealerHasBlackjack);
-
-  //   if (playerHasBlackjack == true || dealerHasBlackjack == true) {
-  //     // both player and dealer has blackjack ->
-  //     if (playerHasBlackjack == true && dealerHasBlackjack == true) {
-  //       outputMessage = `Both player and dealer got Blackjack!<br><br>It is a Blackjack tie!<br><br>Dealer(
-  //         playerHand,
-  //         dealerHand
-  //       )}`;
-  //     }
-
-  //     // only player has blackjack -> player wins
-  //     else if (playerHasBlackjack == true && dealerHasBlackjack == false) {
-  //       outputMessage = `Player got Blackjack!<br><br>You win!<br><br>${showPlayerCards(
-  //         playerHand
-  //       )}<br><br>${showDealerCards(dealerHand)}`;
-  //     }
-
-  //     // only dealer has blackjack -> dealer wins
-  //     else {
-  //       outputMessage = `Dealer got Blackjack!<br><br>You lose!<br><br>${showPlayerCards(
-  //         playerHand
-  //       )}<br><br>${showDealerCards(dealerHand)}`;
-  //     }
-
-  //     // no blackjack
-  //   } else {
-  //     outputMessage = `Please type:<br>"Hit" if you want to draw more card; or<br>"Stand" if you have enough.<br><br>${showPlayerCards(
-  //       playerHand
-  //     )}`;
-  //     console.log(outputMessage);
-
-  //     // change to the next gameMode
-  //     currentGameMode = hitOrStandMode;
-
-  //     // give an output message
-  //     return outputMessage;
-  //   }
-  // }
 
   // Hit or stand mode
   if (currentGameMode == hitOrStandMode) {
@@ -316,21 +272,25 @@ var main = function (input) {
         console.log(`total card value -> ${dealerTotalCards}`);
 
         while (dealerTotalCards < 17) {
-          console.log(`test`);
+          console.log(`dealer hits`);
           dealerHand.push(gameDeck.pop());
           dealerTotalCards = totalCardsValue(dealerHand);
         }
 
-        if (dealerTotalCards < 21) {
-          outputMessage = `You lose!<br><br>${showPlayerCards(
+        if (dealerTotalCards <= 21) {
+          outputMessage = `YOU LOSE!<br><br>${showPlayerCards(
             playerHand
-          )}<br><br>${showDealerCards(dealerHand)}`;
+          )}<br><br>${showDealerCards(
+            dealerHand
+          )}<br><br>Please hit refresh to play again.`;
         }
 
         if (dealerTotalCards > 21) {
-          outputMessage = `It's a tie!<br><br>${showPlayerCards(
+          outputMessage = `IT'S A TIE!<br><br>${showPlayerCards(
             playerHand
-          )}<br><br>${showDealerCards(dealerHand)}`;
+          )}<br><br>${showDealerCards(
+            dealerHand
+          )}<br><br>Please hit refresh to play again.`;
         }
       }
     }
@@ -349,34 +309,50 @@ var main = function (input) {
         dealerTotalCards = totalCardsValue(dealerHand);
       }
 
-      if (dealerTotalCards < 21) {
+      // Dealer < 21
+      if (dealerTotalCards <= 21) {
         // compare the cards
+
         // same value -> tie
         if (playerTotalCards == dealerTotalCards) {
-          outputMessage = `It's a tie!<br><br>${showPlayerCards(
+          outputMessage = `IT'S A TIE!<br><br>${showPlayerCards(
             playerHand
-          )}<br><br>${showDealerCards(dealerHand)}`;
+          )}<br><br>${showDealerCards(
+            dealerHand
+          )}<br><br>Please hit refresh to play again.`;
         }
 
         // player value is higher -> player wins
         else if (playerTotalCards > dealerTotalCards) {
-          outputMessage = `You win!<br><br>${showPlayerCards(
+          outputMessage = `YOU WIN!<br><br>${showPlayerCards(
             playerHand
-          )}<br><br>${showDealerCards(dealerHand)}`;
+          )}<br><br>${showDealerCards(
+            dealerHand
+          )}<br><br>Please hit refresh to play again.`;
         }
 
         // dealer value is higher -> player wins
         else {
-          outputMessage = `You lose!<br><br>${showPlayerCards(
+          outputMessage = `YOU LOSE!<br><br>${showPlayerCards(
             playerHand
-          )}<br><br>${showDealerCards(dealerHand)}`;
+          )}<br><br>${showDealerCards(
+            dealerHand
+          )}<br><br>Please hit refresh to play again.`;
         }
-      } else {
-        outputMessage = `You win!<br><br>${showPlayerCards(
-          playerHand
-        )}<br><br>${showDealerCards(dealerHand)}`;
       }
-    } else {
+
+      // Dealer > 21
+      else {
+        outputMessage = `YOU WIN!<br><br>${showPlayerCards(
+          playerHand
+        )}<br><br>${showDealerCards(
+          dealerHand
+        )}<br><br>Please hit refresh to play again.`;
+      }
+    }
+
+    // Input validation
+    else {
       outputMessage = `Wrong input.<br>Please type "Hit" or "Stand".<br><br>${showPlayerCards(
         playerHand
       )}<br><br>${showDealerCards(dealerHand)}`;
