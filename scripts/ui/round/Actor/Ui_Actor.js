@@ -61,9 +61,6 @@ class Ui_Actor extends Ui_Component {
     this._uiName = new UiName(this._actor.getName());
     /** @private @const {UiCredit} */
     this._uiCredit = new UiCredit(this._actor.getCredit());
-    /** @private @const {UiHandsHolder} */
-    //TEMP this._uiHandsHolder = this._newUiHandsHolder(this._actor.getHands());
-    this._uiHandsHolder = new Ui_Component();
 
     this._style();
   }

@@ -1,3 +1,12 @@
+class UiChair extends Ui_Text {
+  constructor(chair) {
+    super();
+    this._chair = chair;
+
+    this._root.style.width = "40px";
+    this._root.style.height = "13px";
+  }
+}
 class UiSeat extends Ui_Component {
   _style = () => {
     this._root.style.flexDirection = "column";
@@ -9,13 +18,43 @@ class UiSeat extends Ui_Component {
     this._root.style.alignItems = "center";
   };
   /**
+   * @param {Player} Chair
+   */
+  _newUiChair = (chair) => {
+    const uiC = new UiChair(chair);
+
+    return uiC;
+  };
+  _newUiHandsHolder = (generator) => {
+    const uiHH = new UiHandsHolder();
+
+    let limiter = 7;
+    let hand = generator.next();
+    console.log(hand);
+    while (hand) {
+      uiHH.addUiHand(newUiHand(hand));
+      hand = generator.next();
+      limiter -= 1;
+    }
+
+    return uiHH;
+  };
+  /**
    *
    * @param {Seat} seat
    */
   constructor(seat) {
     super();
+
+    this._seat = seat;
     this._id = seat.id();
+
+    this._uiChair = this._newUiChair(this._seat.getChair());
+    /** @private @const {UiHandsHolder} */
+    this._uiHandsHolder = this._newUiHandsHolder(this._seat.getHandGenerator());
     this._style();
+
+    this.replaceChildrenUi(this._uiChair, this._uiHandsHolder);
   }
 
   id = () => this._id;

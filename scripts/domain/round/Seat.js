@@ -2,17 +2,36 @@ class Seat {
   constructor() {
     /** @private {Player} */
     this._chair = null;
-    /** @private @const {Player} */
-    this._hands = new RootVertex();
+    this._handList = new LinkedList();
     this._id = uuidv4();
   }
+  getHandGenerator = () => {
+    return this._handList.getElementGenerator();
+  };
 
   getChair = () => this._chair;
   setChair = (chair) => {
     this._chair = chair;
   };
-  createNewHand = () => {
-    this._hands.pu;
+  _createNewHand = () => {
+    const newHand = new Hand();
+    this._handList.addElementTail(newHand);
+    return newHand;
+  };
+
+  createInitialHand = () => {
+    if (!this._handList.isTrivial) {
+      throw new Error(`This method is to create the first hand only`);
+    }
+    const hand = this._createNewHand();
+    hand.setController(this._chair);
+
+    return hand;
+  };
+
+  requestInitialBet = () => {
+    const hand = this.createInitialHand();
+    hand.placeYourInitialBet();
   };
   id = () => this._id;
 }

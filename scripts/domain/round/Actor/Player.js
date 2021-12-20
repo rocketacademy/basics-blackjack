@@ -13,4 +13,6 @@ class Player extends _Actor {
   }
 
   getName = () => this._participant.getName();
+
+  getCredit = () => this._participant.getCredit();
 }

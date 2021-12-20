@@ -23,6 +23,20 @@ class Dealer extends _Actor {
     this._onShout(desc);
   };
 
+  requestInitialBet = () => {
+    console.group(`requested initial bet to dealer`);
+
+    if (this._round.getPhase() !== RoundPhase.COMMENCE) {
+      throw new Error(
+        `[requestInitialBet] Error! Round phase should be ${RoundPhase.COMMENCE}`
+      );
+    }
+    let seatGen = this._round.getSeatGenerator();
+    let activeSeat = seatGen.next();
+    activeSeat.requestInitialBet();
+    console.groupEnd();
+  };
+
   /**
    * @param {string} desc
    */

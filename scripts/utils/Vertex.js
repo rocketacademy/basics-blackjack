@@ -44,13 +44,27 @@ class RootVertex extends Vertex {
       },
     };
   };
+
+  getVertexGenerator = () => {
+    let currentVertex = this;
+    return {
+      current: () => currentVertex,
+      next: () => {
+        if (currentVertex === null || currentVertex === undefined) {
+          return null;
+        }
+        currentVertex = currentVertex.next();
+        return !!currentVertex ? currentVertex : null;
+      },
+    };
+  };
 }
 
 class LinkedList {
   constructor() {
     this._root = new RootVertex();
   }
-
+  isTrivial = () => !!this._root.next();
   getRoot = () => this._root;
   /**
    * @param {Seat|Hand []}
@@ -67,7 +81,19 @@ class LinkedList {
     console.groupEnd();
   };
 
-  addTail = (element) => {};
+  addElementTail = (element) => {
+    let gen = this.getVertexGenerator();
+    let parentV = gen.current();
+    console.log(parentV);
+    while (parentV.next()) {
+      parentV = gen.next();
+    }
 
+    const newV = new Vertex(element);
+    parentV.setNext(newV);
+
+    return newV;
+  };
+  getVertexGenerator = () => this._root.getVertexGenerator();
   getElementGenerator = () => this._root.getElementGenerator();
 }

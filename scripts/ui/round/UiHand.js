@@ -159,6 +159,9 @@ class UiHand extends Ui_Component {
     return [_uIContainerBet__, _uiSlider__];
   };
 }
+
+const newUiHand = (hand) => new UiHand(hand);
+
 class UiHandsHolder extends Ui_Aggregate {
   constructor() {
     super();
@@ -175,6 +178,7 @@ class UiHandsHolder extends Ui_Aggregate {
   };
   count = () => this._uiHands.length;
 }
+
 class UiSlider extends Ui_Component {
   constructor() {
     super(document.createElement("input"));

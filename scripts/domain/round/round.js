@@ -93,13 +93,13 @@ class Round {
   start = () => {
     console.group(`round.start`);
     this._setPhase(RoundPhase.COMMENCE);
+    this._dealer.requestInitialBet();
     console.groupEnd();
   };
   finish = (isContinue) => {
     if (!(isContinue === false || isContinue === true)) {
       throw new Error(`Continue or not?`);
     }
-
     this._onFinish(this._lounge, isContinue);
     this.__resetHooks();
   };

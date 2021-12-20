@@ -186,7 +186,8 @@ newTestCollection.addTest(`test_Round_TwoPlayer_Commence`, () => {
 
   const [round, uiRound] = new PlayingArea(parentRoot).commenceRound(lounge);
 
-  console.group(`Commence - Dealer Shoud`);
+  console.group(`Commence - Dealer Shout`);
+
   round.getDealer().commence();
   const e__roundphase = RoundPhase.COMMENCE;
   const a__roundphase = round.getPhase();
@@ -213,6 +214,17 @@ newTestCollection.addTest(`test_Round_TwoPlayer_Commence`, () => {
     .getUiRoundPhaseDisplay()
     .getTextContent();
   LOG_ASSERT(e__roundPhaseDisplay === a__roundPhaseDisplay, ``, `motherload`);
+
+  const firstSeatIndex = 0;
+  const e__firstSeatHtmlChildrenCount = 2; // chair display and a hand
+  const a__firstSeatHtmlChildrenCount = uiRound
+    .getUiSeat(firstSeatIndex)
+    .getRoot().childNodes.length;
+  LOG_ASSERT(
+    a__firstSeatHtmlChildrenCount === e__firstSeatHtmlChildrenCount,
+    ``,
+    `firstSeatHtmlChildrenCount e__ ${e__firstSeatHtmlChildrenCount} a__ ${a__firstSeatHtmlChildrenCount}`
+  );
   console.groupEnd();
 });
 

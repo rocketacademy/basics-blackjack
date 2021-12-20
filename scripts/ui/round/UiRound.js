@@ -71,6 +71,8 @@ class UiSeatsHolder extends Ui_Aggregate {
     this._uiSeatsRef = { [uiSeat.id()]: uiSeat, ...this._uiSeatsRef };
     this.appendChildUi(uiSeat);
   };
+
+  get = (index) => this._uiSeats[index];
 }
 
 class UiPlayersHolder extends Ui_Aggregate {
@@ -187,6 +189,14 @@ class UiRound extends UiTree {
 
   getUiDealer = () => this._uiDealer;
   getUiRoundPhaseDisplay = () => this._uiPhaseDisplay;
+
+  getUiSeat = (pos) => {
+    if (pos === undefined || pos === null) {
+      throw new Error(`require not null arg pos`);
+    }
+
+    return this._uiSeatHolder.get(pos);
+  };
   setOnFinish = (cb) => {
     this._round.setOnFinish((lounge, isContinue) => {
       cb(lounge, isContinue);
