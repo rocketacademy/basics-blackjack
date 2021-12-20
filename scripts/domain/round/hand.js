@@ -22,8 +22,34 @@ class Hand {
     this._wager = null;
 
     this.splitCounter = 0; // to keep track i
-  }
 
+    this._isSurrendered = false;
+  }
+  isSurrendered = () => this._isSurrendered;
+  _generallyAceWithPicture = (c1, c2) => {
+    if (c1.getHardValue() === 1) {
+      const c2HardValue = c2.getHardValue();
+      if (c2 === 10) {
+        return true;
+      }
+      return false;
+    }
+    return this._generallyAceWithPicture(c2, c1);
+  };
+  //TODO need to chedk for both soft and hard values
+  isBusted = () => {
+    const isHardBusted = this.getHardTotal() < 22;
+
+    //TODO
+    const isSoftBusted = true;
+    return !isHardBusted || !isSoftBusted;
+  };
+  isBlackJack = () => {
+    return (
+      this._cards.length === 2 &&
+      _generallyAceWithPicture(this._cards[0], this.cards[1])
+    );
+  };
   id = () => this._id;
   count = () => this._cards.length;
   getCards = () => this._cards;

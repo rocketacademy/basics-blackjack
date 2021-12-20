@@ -1,3 +1,11 @@
+const STAND_OFF = new Symbol();
+const PLAYER_WIN = new Symbol();
+const PLAYER_LOSE = new Symbol();
+const INTERIM_SETTLED = new Symbol();
+
+const PAY_TABLE_RATIO_BLACKJACK = 1.5;
+const PAY_TABLE_RATIO_REGULAR = 1;
+
 class Dealer extends _Actor {
   static HOLE_CARD_POSITION = Hand.SECOND_CARD; // 2, as in second card
 
@@ -61,7 +69,11 @@ class Dealer extends _Actor {
 
     const hardTotal = this._hand.getHardTotal();
     console.log(`Dealer Hard Total ${hardTotal}`);
-    options.canHit = hardTotal < 21;
+
+    //TODO: CRA-V6-3.34
+    options.canHit = hardTotal <= 16 || false;
+
+    //TODO: CRA-V6-3.35
 
     return options;
   };
@@ -137,13 +149,109 @@ class Dealer extends _Actor {
     this._round.settleFinal();
   };
 
+  _computeResult = () => {
+    const playerHand = wager.getSponsor();
+
+    const playerPointTotal = playerHand.getHardTotal();
+    const dealerPointTotal = this._hand.getHardTotal();
+    const isDealerBlackJack = this._hand.isBlackJack();
+    const isPlayerBlackJack = playerHand.isBlackJack();
+    const isDealerBusted = this._hand.isBusted();
+    const isPlayerHandBusted = playerHand.isBusted();
+
+    const isWagerSurrendered = false; // wager.isSurrendered()
+
+    // CRA-V6-4.5.2
+    if (isDealerBlackJack && isPlayerBlackJack) {
+      return {
+        decision: STAND_OFF,
+      };
+    }
+
+    if (!isDealerBlackJack && !isPlayerBlackJack) {
+      // CRA-V6-4.5.1
+      if (playerPointTotal === dealerPointTotal) {
+        return {
+          decision: STAND_OFF,
+        };
+      }
+      // CRA-V6-4.2.2
+      if (dealerPointTotal < playerPointTotal) {
+        return {
+          decision: PLAYER_WIN,
+          payoutRatio: PAY_TABLE_RATIO_REGULAR,
+        };
+      }
+
+      // CRA-V6-4.3.1
+
+      if (dealerPointTotal > playerPointTotal) {
+        return {
+          decision: PLAYER_LOSE,
+        };
+      }
+    }
+
+    // CRA-V6-3.32 / CRA-V6-4.3.2
+
+    if (isPlayerHandBusted) {
+      return {
+        decision: PLAYER_LOSE,
+      };
+    }
+
+    // CRA-V6-4.3.3
+    if (isDealerBlackJack && !isPlayerBlackJack) {
+      return {
+        decision: PLAYER_LOSE,
+      };
+    }
+
+    // CRA-V6-4.2.1
+    if (!isDealerBlackJack && isPlayerBlackJack) {
+      return {
+        decision: PLAYER_WIN,
+        payoutRatio: PAY_TABLE_RATIO_BLACKJACK,
+      };
+    }
+
+    // CRA-V6-4.2.3
+    if (!isPlayerHandBusted && !isWagerSurrendered && isDealerBusted) {
+      return {
+        decision: PLAYER_WIN,
+        payoutRatio: PAY_TABLE_RATIO_REGULAR,
+      };
+    }
+  };
+
+  _performSettlementFinal = () => {
+    const playerHandGen = this._round.getAllHandsGenerator();
+
+    let hand = playerHandGen.next();
+
+    while (hand) {
+      return;
+      const result = this._computeResult(playerHand);
+    }
+    // comparison point totals
+
+    /**
+     * {
+     *  decision: ,
+     *  payout?
+     * }
+     */
+  };
+
   callForFinalSettlement = () => {
     console.group(`dealer was called on ForSubsequentDeal `);
     if (this._round.getPhase() !== RoundPhase.SETTLEMENT_FINAL) {
       throw new Error(
-        `[callForSubsequentDeals] Error! Round phase should be ${RoundPhase.SETTLEMENT_FINAL}`
+        `[callForFinalSettlement] Error! Round phase should be ${RoundPhase.SETTLEMENT_FINAL}`
       );
     }
+
+    this._performSettlementFinal();
 
     console.groupEnd();
   };
