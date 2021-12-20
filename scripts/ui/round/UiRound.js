@@ -115,8 +115,8 @@ class UiRound extends UiTree {
     if (!dealer) {
       throw new Error(`no dealer`);
     }
-
-    return new UiDealer(dealer);
+    const uiD = new UiDealer(dealer);
+    return uiD;
   };
 
   _style = () => {
@@ -130,6 +130,7 @@ class UiRound extends UiTree {
 
     let limiter = 7;
     let seat = generator.next();
+    console.log(seat);
     while (seat) {
       if (limiter == 0) {
         throw new Error(`Non-compliance CRA-V6-Appendix “A”`);
@@ -168,16 +169,24 @@ class UiRound extends UiTree {
     /** @private @const {UiPhaseDisplay} */
     this._uiPhaseDisplay = new UiPhaseDisplay();
 
+    // Hooks
+
+    this._round.setOnSetPhase((phase) => {
+      console.group(`on Set Phase Callback`);
+      this._uiPhaseDisplay.setTextContent(phase.desc());
+      console.groupEnd();
+    });
+
     this._style();
     this.replaceChildrenUi(
       this._uiDealer,
       this._uiPhaseDisplay,
       this._uiSeatHolder
     );
-
-    // Hooks
   }
 
+  getUiDealer = () => this._uiDealer;
+  getUiRoundPhaseDisplay = () => this._uiPhaseDisplay;
   setOnFinish = (cb) => {
     this._round.setOnFinish((lounge, isContinue) => {
       cb(lounge, isContinue);

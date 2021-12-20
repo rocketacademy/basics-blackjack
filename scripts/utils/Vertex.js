@@ -45,3 +45,29 @@ class RootVertex extends Vertex {
     };
   };
 }
+
+class LinkedList {
+  constructor() {
+    this._root = new RootVertex();
+  }
+
+  getRoot = () => this._root;
+  /**
+   * @param {Seat|Hand []}
+   */
+  relist = (elements) => {
+    console.group(`ll.relist`);
+    let current = this._root;
+    for (const element of elements) {
+      const v = new Vertex(element);
+      console.log(v.getElement());
+      current.setNext(v);
+      current = current.next();
+    }
+    console.groupEnd();
+  };
+
+  addTail = (element) => {};
+
+  getElementGenerator = () => this._root.getElementGenerator();
+}

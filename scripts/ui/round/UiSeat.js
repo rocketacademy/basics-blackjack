@@ -21,6 +21,11 @@ class UiSeat extends Ui_Component {
   id = () => this._id;
 }
 
+/**
+ *
+ * @param {Seat} seat
+ * @returns
+ */
 const newUiSeat = (seat) => {
   if (!seat.getChair()) {
     throw new Error(`Non-compliance CRA-V6-3.13`);

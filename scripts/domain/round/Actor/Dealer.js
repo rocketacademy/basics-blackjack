@@ -12,4 +12,22 @@ class Dealer extends _Actor {
 
   setRound = (round) => (this._round = round);
   getRound = () => this._round;
+
+  commence = () => {
+    // CRA-V6-3.1
+    this.shout("Place your bets, please");
+    this._round.start();
+  };
+  _onCommence = () => {};
+  shout = (desc) => {
+    this._onShout(desc);
+  };
+
+  /**
+   * @param {string} desc
+   */
+  _onShout = (desc) => {};
+  setOnShout = (cb) => {
+    this._onShout = cb;
+  };
 }

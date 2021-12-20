@@ -71,6 +71,7 @@ newTestCollection.addTest(`test_Round_TwoPlayers_Init`, () => {
   );
 
   const expectedFirstPlayerName = `Player 1`;
+  console.warn(round.peekFirstChair());
   const actualFirstPlayerName = round.peekFirstChair().getName();
 
   LOG_ASSERT(
@@ -178,12 +179,41 @@ newTestCollection.addTest(`test_Round_generating players of seats`, () => {
   );
 });
 
-newTestCollection.addTest(`test_Round_generating players of seats`, () => {
+newTestCollection.addTest(`test_Round_TwoPlayer_Commence`, () => {
   const parentRoot = TestBlackJack.newStubRoot();
 
   const lounge = Sample.getTwoPlayersLounge();
 
   const [round, uiRound] = new PlayingArea(parentRoot).commenceRound(lounge);
+
+  console.group(`Commence - Dealer Shoud`);
+  round.getDealer().commence();
+  const e__roundphase = RoundPhase.COMMENCE;
+  const a__roundphase = round.getPhase();
+  LOG_ASSERT(
+    a__roundphase === e__roundphase,
+    ``,
+    `Round should be aware when dealer commence the round.`
+  );
+
+  const e__dealerMsgDisplay = `Place your bets, please`;
+  const a__dealerMsgDisplay = uiRound
+    .getUiDealer()
+    .getUiMsgDisplay()
+    .getTextContent();
+
+  LOG_ASSERT(
+    e__dealerMsgDisplay === a__dealerMsgDisplay,
+    ``,
+    `Non-compliance CRA-V6-3.1 Expects ${e__dealerMsgDisplay} Got: ${a__dealerMsgDisplay}`
+  );
+
+  const e__roundPhaseDisplay = `COMMENCE`;
+  const a__roundPhaseDisplay = uiRound
+    .getUiRoundPhaseDisplay()
+    .getTextContent();
+  LOG_ASSERT(e__roundPhaseDisplay === a__roundPhaseDisplay, ``, `motherload`);
+  console.groupEnd();
 });
 
 newTestCollection.run();

@@ -50,12 +50,11 @@ class Ui_Text extends Ui_Component {
   }
 
   setTextContent = (text) => {
+    console.log(`setTextContent "${text}" Class ${this._root.className}`);
     this._root.textContent = text;
   };
 
-  getTextContent = () => {
-    return this._root.textContent;
-  };
+  getTextContent = () => this._root.textContent;
 }
 
 class Ui_Img extends Ui_Component {

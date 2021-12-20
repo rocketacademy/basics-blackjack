@@ -5,7 +5,7 @@
 class RoundPhase {
   static _NULL = new RoundPhase(null);
   // CRA-V6-1.24
-  static COMMENCE = new RoundPhase("PLACE YOUR BETS, PLEASE");
+  static COMMENCE = new RoundPhase("COMMENCE");
   static INITIAL_BET = new RoundPhase("INITIAL BET");
   static INITIAL_DEAL = new RoundPhase("INITIAL DEAL");
   static IN_PLAY_PLAYERS = new RoundPhase("PLAY_PLAYERS");
@@ -28,6 +28,23 @@ class Round {
       this._onFinish = fn;
     };
   };
+  _newSeat = (player) => {
+    if (!player) {
+      throw new Error(`Player argument should not be null`);
+    }
+
+    const s = new Seat();
+    s.setChair(player);
+    return s;
+  };
+
+  _newSeatList = (players) => {
+    const list = new LinkedList();
+
+    const elements = players.map((p) => this._newSeat(p));
+    list.relist(elements);
+    return list;
+  };
 
   /**
    *
@@ -38,25 +55,31 @@ class Round {
     this._lounge = lounge;
 
     this._phase = RoundPhase._NULL;
-    this._rootQueueSeat = new RootVertex();
     this._dealer = new Dealer(lounge.getDealer());
     this._dealer.setRound(this);
+
     const players = lounge.getPlayers();
-    let thisVertexSeat = this._rootQueueSeat;
-    for (const player of players) {
-      const vertexSeat = new Vertex(newSeat(new Player(player)));
-      thisVertexSeat.setNext(vertexSeat);
-      thisVertexSeat = vertexSeat;
-    }
+    this._seatList = this._newSeatList(players);
 
     this.__resetHooks();
   }
 
-  getRootSeat = () => this._rootQueueSeat.getElement();
-  peekFirstChair = () => this._rootQueueSeat.peekNextElement().getChair();
+  getRootSeat = () => this._seatList.getRoot().getElement();
+  peekFirstChair = () =>
+    this._seatList.getRoot().next().getElement().getChair();
 
   getPhase = () => this._phase;
+  _setPhase = (phase) => {
+    this._phase = phase;
 
+    this._onSetPhase(this._phase);
+  };
+
+  _onSetPhase = (phase) => {};
+
+  setOnSetPhase = (cb) => {
+    this._onSetPhase = cb;
+  };
   /**
    *
    * @returns {Dealer}
@@ -64,9 +87,14 @@ class Round {
   getDealer = () => this._dealer;
 
   getSeatGenerator = () => {
-    return this._rootQueueSeat.getElementGenerator();
+    return this._seatList.getElementGenerator();
   };
 
+  start = () => {
+    console.group(`round.start`);
+    this._setPhase(RoundPhase.COMMENCE);
+    console.groupEnd();
+  };
   finish = (isContinue) => {
     if (!(isContinue === false || isContinue === true)) {
       throw new Error(`Continue or not?`);
