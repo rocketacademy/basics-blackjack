@@ -151,7 +151,7 @@ var totalCardsValue = function (handArray) {
 // Player's cards
 var showPlayerCards = function (playerHand) {
   var playerTotalCards = totalCardsValue(playerHand);
-  var playerCardsMessage = `Player got: ${playerTotalCards}<br>Player's cards:<br>`;
+  var playerCardsMessage = `You got: ${playerTotalCards}<br>Your cards:<br>`;
   var index = 0;
   while (index < playerHand.length) {
     playerCardsMessage = `${playerCardsMessage}  - ${playerHand[index].name} of ${playerHand[index].suit}<br>`;
@@ -217,7 +217,7 @@ var main = function (input) {
 
       // only player has blackjack -> player wins
       else if (playerHasBlackjack == true && dealerHasBlackjack == false) {
-        outputMessage = `Player got Blackjack!<br><br>YOU WIN!<br><br>${showPlayerCards(
+        outputMessage = `You got Blackjack!<br><br>YOU WIN!<br><br>${showPlayerCards(
           playerHand
         )}<br><br>${showDealerCards(
           dealerHand
@@ -235,9 +235,9 @@ var main = function (input) {
 
       // no blackjack
     } else {
-      outputMessage = `Welcome to Blackjack game!<br><br>You got your card!<br><br>${showPlayerCards(
+      outputMessage = `${showPlayerCards(
         playerHand
-      )}<br>Please type:<br>"Hit" if you want to draw more card; or<br>"Stand" if you have enough.`;
+      )}<br>Please type...<br>"Hit" if you want to draw more card; or<br>"Stand" if you have enough.`;
 
       // change to the next gameMode
       currentGameMode = hitOrStandMode;
@@ -252,7 +252,7 @@ var main = function (input) {
     console.log(`Control flow : starting of hitOrStandMode`);
 
     // Player Hit
-    if (input == "hit" || input == "Hit") {
+    if (input == "hit" || input == "Hit" || input == "h" || input == "H") {
       playerHand.push(gameDeck.pop());
 
       //check total player cards
@@ -260,7 +260,7 @@ var main = function (input) {
       console.log(`total card value -> ${playerTotalCards}`);
 
       if (playerTotalCards <= 21) {
-        outputMessage = `You just drew one more card. Please type:<br>"Hit" if you want to draw more card; or<br>"Stand" if you have enough.<br><br>${showPlayerCards(
+        outputMessage = `Wow, you're at ${playerTotalCards} right now! Do you want to hit or stand?<br><br>Type h for Hit or s for Stand. <br><br>${showPlayerCards(
           playerHand
         )}`;
       }
@@ -296,7 +296,12 @@ var main = function (input) {
     }
 
     // Player Stand
-    else if (input == "stand" || input == "Stand") {
+    else if (
+      input == "stand" ||
+      input == "Stand" ||
+      input == "s" ||
+      input == "S"
+    ) {
       // sum up the cards in player's and dealer's hand
       var playerTotalCards = totalCardsValue(playerHand);
       var dealerTotalCards = totalCardsValue(dealerHand);
