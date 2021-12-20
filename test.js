@@ -213,17 +213,43 @@ newTestCollection.addTest(`test_Round_TwoPlayer_Commence`, () => {
   const a__roundPhaseDisplay = uiRound
     .getUiRoundPhaseDisplay()
     .getTextContent();
-  LOG_ASSERT(e__roundPhaseDisplay === a__roundPhaseDisplay, ``, `motherload`);
+  LOG_ASSERT(
+    e__roundPhaseDisplay === a__roundPhaseDisplay,
+    ``,
+    `COMMENCE display round phase error.`
+  );
 
   const firstSeatIndex = 0;
-  const e__firstSeatHtmlChildrenCount = 2; // chair display and a hand
-  const a__firstSeatHtmlChildrenCount = uiRound
-    .getUiSeat(firstSeatIndex)
-    .getRoot().childNodes.length;
+  const e__firstSeatHtmlChildrenCount = 2; // count : chair display and hands holder
+
+  const a__firstUiSeat = uiRound.getUiSeat(firstSeatIndex);
+  const a__firstSeatHtmlChildrenCount =
+    a__firstUiSeat.getRoot().childNodes.length;
   LOG_ASSERT(
     a__firstSeatHtmlChildrenCount === e__firstSeatHtmlChildrenCount,
     ``,
     `firstSeatHtmlChildrenCount e__ ${e__firstSeatHtmlChildrenCount} a__ ${a__firstSeatHtmlChildrenCount}`
+  );
+
+  const firstHandIndex = 0;
+  const a__firstHandUi = a__firstUiSeat.getUiHand(firstHandIndex);
+
+  const e__uiHandCount = 1;
+  const a__uiHandCount = a__firstUiSeat.uiHandCount();
+  LOG_ASSERT(
+    e__uiHandCount === a__uiHandCount,
+    ``,
+    `e__uiHandCount ${e__uiHandCount} a__: ${a__uiHandCount}`
+  );
+
+  const e__firstHandHtemlChildrenCount = 2; // count : a set of cards and wager[area]
+  const a__firstHandHtemlChildrenCount =
+    a__firstHandUi.getRoot().childNodes.length;
+
+  LOG_ASSERT(
+    e__firstHandHtemlChildrenCount === a__firstHandHtemlChildrenCount,
+    ``,
+    `e__firstHandHtemlChildrenCount ${e__firstHandHtemlChildrenCount} a__: ${a__firstHandHtemlChildrenCount}`
   );
   console.groupEnd();
 });

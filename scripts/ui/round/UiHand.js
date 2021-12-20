@@ -1,15 +1,32 @@
+class UiWager extends Ui_Component {
+  constructor(wager) {
+    super();
+    this._wager = wager;
+    this._root.style.height = "10px";
+    this._root.style.height = "20px";
+  }
+}
+
 class UiHand extends Ui_Component {
   /**
    *
    * @param {Card[]} cards
    */
-  _newUiCardsHolder = (cards) => {
-    const uiCardHolder = new UiCardsHolder();
+  _newUiCardHolder = (cards) => {
+    const uiCardHolder = new UiCardHolder();
     for (const c of cards) {
       const uiC = new UiCard(c);
       uiCardHolder.addUiCard(uiC);
     }
     return uiCardHolder;
+  };
+
+  /**
+   *
+   * @param {Wager} wager
+   */
+  _newUiWager = (wager) => {
+    return new UiWager(wager);
   };
 
   /**
@@ -32,8 +49,9 @@ class UiHand extends Ui_Component {
 
     // Children
     this._uiCount = new Ui_Component();
-    this._uiCardsHolder = this._newUiCardsHolder(this._hand.getCards());
+    this._uiCardsHolder = this._newUiCardHolder(this._hand.getCards());
     this._uiBetAmount = new Ui_Text();
+    this._uiWager = this._newUiWager(this._hand.getWager());
 
     // Hooks
     this._hand.setOnAddCard((card) => {
@@ -42,43 +60,9 @@ class UiHand extends Ui_Component {
       this._uiCardsHolder.addUiCard(uiCard);
       this._refreshUiCardsCount();
     });
-
-    this._hand.setOnSetBet((betValue) => {
-      this._uiBetAmount.setTextContent(`Bet Value [${betValue}]`);
-    });
-
-    this._hand.setOnActiveSignal((isActive, phase, player, round) => {
-      console.group(
-        `Ui Hook[onActiveSignal] active[${isActive}] phase[${phase}] player[${player}] round[${round}]`
-      );
-      if (isActive === true) {
-        this._renderActiveDisplay(phase, player, round);
-      } else {
-        this._renderInactiveDisplay(phase, player, round);
-      }
-      console.groupEnd();
-    });
-
-    // First Render
-    this._refreshUiCardsCount();
-    this.replaceChildrenUi(this._uiCount, this._uiCardsHolder);
+    this.replaceChildrenUi(this._uiCardsHolder, this._uiWager);
   }
 
-  _renderInactiveDisplay = (phase, player, round) => {
-    console.group(
-      `Ui Hook[onInActiveHand] phase[${phase}] player[${player.getName()}]`
-    );
-
-    switch (phase) {
-      case RoundPhase.INITIAL_BET:
-        this.replaceChildrenUi(this._uiCount, this._uiCardsHolder);
-        break;
-      case RoundPhase.IN_PLAY_PLAYERS:
-        this.replaceChildrenUi(this._uiCount, this._uiCardsHolder);
-        break;
-    }
-    console.groupEnd();
-  };
   _renderActiveDisplay = (phase, player, round) => {
     console.group(
       `Ui Hook[onActiveHand] phase[${phase}] player[${player.getName()}]`
@@ -177,6 +161,8 @@ class UiHandsHolder extends Ui_Aggregate {
     this.appendChildUi(uiHand);
   };
   count = () => this._uiHands.length;
+
+  get = (index) => this._uiHands[index];
 }
 
 class UiSlider extends Ui_Component {

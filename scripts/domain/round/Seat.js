@@ -16,7 +16,11 @@ class Seat {
   _createNewHand = () => {
     const newHand = new Hand();
     this._handList.addElementTail(newHand);
+    this._onCreateNewHand(newHand);
     return newHand;
+  };
+  setOnCreateNewHand = (cb) => {
+    this._onCreateNewHand = cb;
   };
 
   createInitialHand = () => {

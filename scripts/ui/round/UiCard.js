@@ -54,7 +54,7 @@ class UiCard extends Ui_Component {
 /**
  * "Controlled" Component
  */
-class UiCardsHolder extends Ui_Aggregate {
+class UiCardHolder extends Ui_Aggregate {
   constructor() {
     super();
 
