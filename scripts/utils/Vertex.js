@@ -74,7 +74,6 @@ class LinkedList {
     let current = this._root;
     for (const element of elements) {
       const v = new Vertex(element);
-      console.log(v.getElement());
       current.setNext(v);
       current = current.next();
     }
@@ -84,7 +83,6 @@ class LinkedList {
   addElementTail = (element) => {
     let gen = this.getVertexGenerator();
     let parentV = gen.current();
-    console.log(parentV);
     while (parentV.next()) {
       parentV = gen.next();
     }

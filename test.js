@@ -71,7 +71,6 @@ newTestCollection.addTest(`test_Round_TwoPlayers_Init`, () => {
   );
 
   const expectedFirstPlayerName = `Player 1`;
-  console.warn(round.peekFirstChair());
   const actualFirstPlayerName = round.peekFirstChair().getName();
 
   LOG_ASSERT(

@@ -38,9 +38,7 @@ class Wager {
       );
     }
     console.log(
-      `Awaiting wager on hand [${
-        this._cards
-      }] sponsored by ${spon.getName()} with ${limit}`
+      `Awaiting wager on hand [${this._hand.getCards()}] sponsored by ${spon.getName()} with ${limit}`
     );
 
     console.groupEnd();

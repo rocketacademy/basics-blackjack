@@ -32,7 +32,6 @@ class UiSeat extends Ui_Component {
 
     let limiter = 7;
     let hand = generator.next();
-    console.log(hand);
     while (hand) {
       uiHH.addUiHand(this._newUiHand(hand));
       hand = generator.next();

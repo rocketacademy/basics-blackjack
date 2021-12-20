@@ -132,7 +132,6 @@ class UiRound extends UiTree {
 
     let limiter = 7;
     let seat = generator.next();
-    console.log(seat);
     while (seat) {
       if (limiter == 0) {
         throw new Error(`Non-compliance CRA-V6-Appendix “A”`);
