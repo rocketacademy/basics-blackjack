@@ -1,4 +1,4 @@
-// == HOW THE GAME WORKS ==
+// ============================================= HOW THE GAME WORKS =========================================================
 /* 
 1. there will only be two players
 2. computer will be the dealer always
@@ -7,9 +7,8 @@
 5. The dealer has to hit if their hand is below 17
 6. Each player's score is the total of their card ranks. J/Q/K are 10, Aces can be 1 or 11
 7. The player who is closer to, but not above 21 wins the hand
+=============================================================================================================================
 */
-
-//SET ACE TO 11 for version 1 to 3
 
 //-- to create the shuffed deck --
 
@@ -92,43 +91,95 @@ var shuffleCards = function (deck) {
 var shuffledDeck = shuffleCards(makeDeck());
 //-- shuffled deck created --
 
-// initializing global variables
+// ======================================================================================================================
+//   =====================================initializing global variables==================================================
+// ======================================================================================================================
 var currentProgramMode = "state1";
 
 var playerArray = [];
-var computerArray = [];
-
 var playerArrayRank = [];
+var computerArray = [];
 var computerArrayRank = [];
 
-// helper function for calculating the total "rank values" for both player and computer
-var computerTotalRank = function (rankValues) {
-  var counter = 0;
-  var sum = 0;
-  while (counter < computerArrayRank.length) {
-    sum += computerArrayRank[counter];
-    counter += 1;
+// ======================================================================================================================
+// ========================================= === HELPER FUNCTIONS =======================================================
+// ======================================================================================================================
+
+// helper function for calculating the total "rank values" for player and computer
+var calculateTotalRank = function (cardArray) {
+  var index = 0;
+  var sumOfRank = 0;
+  while (index < cardArray.length) {
+    var currentCard = cardArray[index];
+
+    if (currentCard == 11 || (currentCard == 12) | (currentCard.name == 13)) {
+      sumOfRank += 10;
+    } else if (currentCard == 1) {
+      sumOfRank += 11;
+    } else {
+      sumOfRank += cardArray[index];
+    }
+    index += 1;
   }
-  return sum;
+  return sumOfRank;
 };
 
-var playerTotalRank = function (rankValues) {
-  var counter = 0;
-  var sum = 0;
-  while (counter < playerArrayRank.length) {
-    sum += playerArrayRank[counter];
-    counter += 1;
+// helper function for calculating if its player blackjack
+var checkingForPlayerBJ = function (cards) {
+  var playerArrayCard1 = playerArray[0];
+  var playerArrayCard2 = playerArray[1];
+  var isPlayerBlackjack = false;
+
+  if (
+    (playerArrayCard1.name == "ace" && playerArrayCard2.rank >= 10) ||
+    (playerArrayCard1.rank >= 10 && playerArrayCard2.name == "ace")
+  ) {
+    isPlayerBlackjack = true;
   }
-  return sum;
+  return isPlayerBlackjack;
 };
 
-// ============================= using a statement here to turn jack queen king to 10? ===============================
+// helper function for calculating if its dealer blackjack
+var checkingForComputerBJ = function (cards) {
+  var computerArrayCard1 = computerArray[0];
+  var computerArrayCard2 = computerArray[1];
+  var isComputerBlackjack = false;
 
+  if (
+    (computerArrayCard1.name == "ace" && computerArrayCard2.rank >= 10) ||
+    (computerArrayCard1.rank >= 10 && computerArrayCard2.name == "ace")
+  ) {
+    isComputerBlackjack = true;
+  }
+  return isComputerBlackjack;
+};
+
+// helper function to call out output message for an increasing array of cards for player
+var outputMsgPlayer = function (cardArray) {
+  var playerMessage = "Player Cards: <br>";
+  var index = 0;
+  while (index < cardArray.length) {
+    playerMessage = `${playerMessage} ${cardArray[index].name} of ${cardArray[index].suit} <br>`;
+    index += 1;
+  }
+  return playerMessage;
+};
+
+// helper function to call out output message for an increasing array of cards for computer
+var outputMsgComputer = function (cardArray) {
+  var computerMessage = "Computer Cards: <br>";
+  var index = 0;
+  while (index < cardArray.length) {
+    computerMessage = `${computerMessage} ${cardArray[index].name} of ${cardArray[index].suit} <br>`;
+    index += 1;
+  }
+  return computerMessage;
+};
 //-- blackjack starts ---
 
-// i would need to ensure thaat jack, queen and king's ranks are all 10.
-
-// === MAIN FUNCTION ===
+// ======================================================================================================================
+// =============================================== MAIN FUNCTION ========================================================
+// ======================================================================================================================
 var main = function (input) {
   if (currentProgramMode == "state1") {
     // create variables for playerHand and ComputerHand
@@ -142,126 +193,127 @@ var main = function (input) {
     // have to keep the cards in an array
     playerArray.push(playerHand1);
     playerArray.push(playerHand2);
+
     playerArrayRank.push(playerHand1.rank);
     playerArrayRank.push(playerHand2.rank);
-    // console.log(`${playerArray[1].name} of ${playerArray[1].suit}`);
-    // console.log(`the player ranks in the array: ${playerArrayRank}`);
 
     computerArray.push(computerHand1);
     computerArray.push(computerHand2);
+
     computerArrayRank.push(computerHand1.rank);
     computerArrayRank.push(computerHand2.rank);
-    //console.log(`the computer ranks in the array: ${computerArrayRank}`);
 
-    var myOutputValue = `Player Hand: <br> Card1: ${playerHand1.name} of ${playerHand1.suit} <br> Card2: ${playerHand2.name} of ${playerHand2.suit} <br> <br> Computer Hand: <br> Card1 ${computerHand1.name} of ${computerHand1.suit} <br> Card2: ${computerHand2.name} of ${computerHand2.suit}`;
+    var messageForPlayer = outputMsgPlayer(playerArray);
+    var messageForComputer = outputMsgComputer(computerArray);
+    var myOutputValue = "";
+    var revealedDealerCards = `Dealer Hand: <br> ${computerArray[0].name} of ${computerArray[1].suit}`;
 
-    console.log(
-      `PLAYER CARDS: ${playerHand1.name} of ${playerHand1.suit} and ${playerHand2.name} of ${playerHand2.suit}`
-    );
-    console.log(
-      `COMPUTER CARDS: ${computerHand1.name} of ${computerHand1.suit} and ${computerHand2.name} of ${computerHand2.suit}`
-    );
+    // --- checking the scenarios in which whether player has blackjack or not ---
+    //calling the helper functions here
+    var playerBJ = checkingForPlayerBJ(playerArray);
+    var computerBJ = checkingForComputerBJ(computerArray);
 
-    // placing the helper functions in here
-    var playerValue = playerTotalRank(playerArrayRank);
-    var computerValue = computerTotalRank(computerArrayRank);
+    // if player has bj and computer also has bj
+    if (playerBJ == true && computerBJ == true) {
+      myOutputValue = `${messageForPlayer} <br> ${messageForComputer} <br> <br> It seems that we are tied. No matter, let's go for another round to determine who the true winner is <br><br> <img src = "https://c.tenor.com/9lnDEML3WYsAAAAd/kambe-daisuke.gif"/>`;
+    }
+    // if only player has bj
+    else if (playerBJ == true && computerBJ == false) {
+      myOutputValue = `${messageForPlayer} <br> ${messageForComputer} <br> <br> It seems like you have won me from the get go... <br> But no matter, my balance is still... Unlimited <br><br> <img src = "https://c.tenor.com/S0iVsGnw5ssAAAAC/anime-kambe.gif"/>`;
+      //reset everything so that player need not hit refresh button. can just click on "submit" button
+      currentProgramMode = "state1";
+      playerArray = [];
+      playerArrayRank = [];
+      computerArray = [];
+      computerArrayRank = [];
+    }
 
-    console.log(playerValue);
-    console.log(computerValue);
-
-    //input validation of isBlackJack == 21 for player
-
-    if (playerValue == 21 && computerValue == 21) {
-      myOutputValue = `${myOutputValue} <br> <br> Wow, its a BlackJack tie!!!!`;
-    } else if (playerValue == 21) {
-      myOutputValue = `${myOutputValue} <br> <br> Wow, its a BlackJack tie!!!!`;
-    } else if (playerValue != 21) {
-      myOutputValue = `Player Hand: <br> Card1: ${playerHand1.name} of ${playerHand1.suit} <br> Card2: ${playerHand2.name} of ${playerHand2.suit}. <br><br> Would you like to hit (draw another card) or stand (end the turn)`;
+    // if only dealer has bj
+    else if (computerBJ == true) {
+      myOutputValue = `${messageForPlayer} <br> ${messageForComputer} <br> <br> Hu hu hu, it is my victory. <br> Lady luck is shining on me today and it's time for me to take your pile of cash <br><br> <img src = "https://c.tenor.com/OTjx7omPuaUAAAAC/kambe-daisuke.gif"/>`;
+      //reset everything so that player need not hit refresh button. can just click on "submit" button
+      currentProgramMode = "state1";
+      playerArray = [];
+      playerArrayRank = [];
+      computerArray = [];
+      computerArrayRank = [];
+    }
+    // no player bj
+    else if (playerBJ == false) {
+      myOutputValue = ` <img src = "https://c.tenor.com/vg3j2jvFwLcAAAAC/daisuke-smile.gif"/> <br> <br>${messageForPlayer} <br> ${revealedDealerCards} <br><br> Would you like to hit (draw another card) or stand (end the turn)`;
       currentProgramMode = "state2";
     }
-  } else if (currentProgramMode == "state2") {
-    // ---------------------------------- PLAYERHASCHOSENTOSTAND = false -------------------------------------
 
+    // player to choose to draw more (hit) or end turn (stand)
+  }
+  if (currentProgramMode == "state2") {
     if (input == "hit") {
-      // var playerDecideToStand = false;
-      // while (playerDecideToStand) {
-      //   var nextPlayerHand = shuffledDeck.pop();
-      //   playerArray.push(nextPlayerHand);
-      //   playerArrayRank.push(nextPlayerHand);
-      //   playerValue = playerTotalRank(playerArrayRank);
+      // draw cards using .pop method and push the cards into all the arrays
+      var nextPlayerhand = shuffledDeck.pop();
+      playerArray.push(nextPlayerhand);
+      playerArrayRank.push(nextPlayerhand.rank);
+      messageForPlayer = outputMsgPlayer(playerArray);
+      var playerRankValue = calculateTotalRank(playerArrayRank);
 
-      //   if (playerValue > 21) {
-      //     playerDecideToStand = true;
-      //     myOutputValue = `hou dang you lose`;
-      //   } else if (input == "stand") {
-      //     playerDecideToStand = true;
-      //     currentGameMode = "state3";
-      //   }
-      // }
-      var playerHand3 = shuffledDeck.pop();
-      playerArray.push(playerHand3);
-      playerArrayRank.push(playerHand3.rank);
-      playerValue = playerTotalRank(playerArrayRank);
-      //console.log(`playerHand1: ${playerHand1.name} of ${playerHand1.suit}`);
-      console.log(`playerHand3: ${playerHand3.name} of ${playerHand3.suit}`);
-      console.log(`the player ranks in the array: ${playerArrayRank}`);
-      console.log(`the player total value: ${playerValue}`);
-      // check if the player has gone beyond 21
-      if (playerValue > 21) {
-        myOutputValue = "You lose!";
-      } else if (playerValue < 21) {
-        myOutputValue = `This is your newly drawn card: ${playerHand3.name} of ${playerHand3.suit}. <br><br> Your previous cards were: <br> Card1: ${playerArray[0].name} of ${playerArray[0].suit} <br> Card2: ${playerArray[1].name} of ${playerArray[1].suit}. <br><br> Would you like to hit (draw another card) or stand (end the turn)`;
-      }
+      // creating variables for the different parts of the output message so that each output msg wont be so long
+      var newCardMsg = `This is your newly drawn card: ${nextPlayerhand.name} of ${nextPlayerhand.suit}`;
+      var myOutputValue = `${messageForPlayer}`;
+      var questionMsg = `The revealed dealer's hand was: ${computerArray[0].name} of ${computerArray[0].suit} <br><br> Would you like to hit (draw another card) or stand (end the turn) <br> <img src = "https://c.tenor.com/_rc3PCYO1dUAAAAd/daisukekanbe-balancedunlimited.gif"/>`;
+
+      return `${newCardMsg}. <br><br> ${myOutputValue} <br><br> ${questionMsg}`;
     } else if (input == "stand") {
-      myOutputValue =
-        "It is now the dealer's turn. Click on the submit button to view the final result!";
-      currentProgramMode = "state3";
-    }
-  } else if (currentProgramMode == "state3") {
-    computerValue = computerTotalRank(computerArrayRank);
-    console.log(`AYAM HERE`);
+      // calculate what the total value of cards player and dealer has
+      var playerRankValue = calculateTotalRank(playerArrayRank);
+      var computerRankValue = calculateTotalRank(computerArrayRank);
 
-    //dealer's turn
-    if (computerValue == 21) {
-      console.log(`AYAM HERE`);
-      myOutputValue = `${myOutputValue} <br><br> And the dealer wins! Better luck next time eh?`;
-    } else if (computerValue < 21) {
-      console.log(`AYAM HERE`);
-      if (computerValue < 20 && computerValue > 18) {
-        myOutputValue =
-          "Give the dealer a moment to contemplate their life choices... If you're unkind, you may go ahead and press the submit button";
-        currentProgramMode = "state4";
-      } else if (computerValue <= 17) {
-        console.log(`AYAM HERE`);
+      // since player stands, its dealers turn automatically
+      // if dealer value < 17, will take cards until >= 17, then show output message
+      while (computerRankValue < 17) {
         var nextComputerHand = shuffledDeck.pop();
         computerArray.push(nextComputerHand);
-        computerArrayRank.push(nextComputerHand);
-        // run a while loop?
-        var computerRank = computerTotalRank(computerArrayRank);
-        while (computerRank < 17) {
-          return "yay";
-        }
+        computerArrayRank.push(nextComputerHand.rank);
+        computerRankValue = calculateTotalRank(computerArrayRank);
       }
+      currentProgramMode = "state3";
+      myOutputValue = `I see that it is my turn to draw my cards. <br><br> <img src = "https://c.tenor.com/iRxYhChXfgUAAAAC/kambe-daisuke.gif"/> <br><br> Alright, I'm done. Let's see who is the winner`;
     }
+  }
+  // comparing the values to determine the eventual winner
+  else if (currentProgramMode == "state3") {
+    // listing all the variables again
+    var playerRankValue = calculateTotalRank(playerArrayRank);
+    computerRankValue = calculateTotalRank(computerArrayRank);
+    messageForPlayer = outputMsgPlayer(playerArray);
+    messageForComputer = outputMsgComputer(computerArray);
+
+    //scenario 1: tied game
+    if (
+      playerRankValue == computerRankValue ||
+      (playerRankValue > 21 && computerRankValue > 21)
+    ) {
+      myOutputValue = `${messageForPlayer} <br> ${messageForComputer} <br> Player total hand value: ${playerRankValue} <br> Computer total hand value: ${computerRankValue}<br><br> It seems that we are tied. No matter, let's go for another round to determine who the true winner is <br><br> <img src = "https://c.tenor.com/9lnDEML3WYsAAAAd/kambe-daisuke.gif"/>`;
+    }
+    // scenario 2: player value > dealer value, or dealer goes above 21 and player still within 21
+    else if (
+      (playerRankValue > computerRankValue && playerRankValue <= 21) ||
+      (playerRankValue <= 21 && computerRankValue > 21)
+    ) {
+      myOutputValue = `${messageForPlayer} <br> ${messageForComputer} <br> Player total hand value: ${playerRankValue} <br> Computer total hand value: ${computerRankValue} <br><br> Darn, you have bested me. But no matter, my balance is still... Unlimited <br><br> <img src = "https://c.tenor.com/S0iVsGnw5ssAAAAC/anime-kambe.gif"/>`;
+    } // scenario 3: dealer value > player value, or player goes above 21 and dealer still within 21
+    else if (
+      (computerRankValue > playerRankValue && computerRankValue <= 21) ||
+      (computerRankValue <= 21 && playerRankValue > 21)
+    ) {
+      myOutputValue = `${messageForPlayer} <br> ${messageForComputer} <br> Player total hand value: ${playerRankValue} <br> Computer total hand value: ${computerRankValue} <br><br> Hu hu hu, it is my victory. <br> Lady luck is shining on me today and it's time for me to take your pile of cash <br><br> <img src = "https://c.tenor.com/OTjx7omPuaUAAAAC/kambe-daisuke.gif"/>`;
+    }
+
+    //reset everything so that player need not hit refresh button. can just click on "submit" button
+    currentProgramMode = "state1";
+    playerArray = [];
+    playerArrayRank = [];
+    computerArray = [];
+    computerArrayRank = [];
   }
 
   return myOutputValue;
 };
-
-//   - if player decides to stand
-//   currentgGameMode == "state3"
-//   13. computer's turn to decide whether to hit or stand
-//   14. if computer < 17, will draw cards until >= 17 (while loop?)
-//   15. if computer > 17, will just stand
-//   currentGameMode = "state4"
-
-// - once both sides "stand", to compare rank of cards
-// currentGameMode == "state4"
-// 16. if playerHand.rank > computerHand.rank, player wins
-// 17. if playerHand.rank < computerHand.rank, computer wins
-// 18. if both playerHand.rank and computerHand.rank > 21 OR playerHand.rank == computerHand.rank, its a tie, no winner.
-// 19. output who the winner is, and then also show the total rank on both sides
-
-// currentGameMode = "state1"
-// reshuffle the deck, all global variables need to be emptied out
-// (to play game again?)
