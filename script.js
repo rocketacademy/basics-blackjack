@@ -19,6 +19,7 @@ const ENTER_BET = "enter number of chips to bet";
 const PLAY_GAME = "players take turn to play Blackjack";
 const DEAL_CARDS = "dealer deal cards to players";
 const COMPARE_HAND = "compare hand value between dealer and players";
+const DEALER_TURN = "dealer to draw card if necessary";
 let dealerHand = {
   hand: [],
   handvalue: 0,
@@ -158,7 +159,6 @@ const playerBets = function (input) {
     numOfPlayersPlaying[playerCounter].bet = Number(input);
     playerCounter = 0;
     gameMode = DEAL_CARDS;
-    return "Cards Dealed!";
   } else if (
     Number(input) > 0 &&
     Number(input) < numOfPlayersPlaying[playerCounter].chips
@@ -203,12 +203,26 @@ const dealCard = function (players) {
   gameMode = PLAY_GAME;
 };
 
+// Display current hand a player/dealer has.
+const displayHand = function (user) {
+  let message = "";
+  index = 0;
+  while (index < user.hand.length) {
+    message += `${user.hand[index].name}${user.hand[index].suit} | `;
+    index += 1;
+  }
+  return message;
+};
+
+//Display current hand of all players and dealer.
 const playerHandBoard = function (players) {
   let message = "";
   for (let player of players) {
-    message += `Player ${player.number}: ${player.hand[0].name}${player.hand[0].suit} ${player.hand[1].name}${player.hand[1].suit} <br> Hand value: ${player.handvalue}<br> -------------------- <br>`;
+    message += `Player ${player.number}: ${displayHand(
+      player
+    )}<br> Hand value: ${player.handvalue} <br> -------------------- <br> `;
   }
-  message += `Dealer hand: ${dealerHand.hand[0].name}${dealerHand.hand[0].suit} 🎴 <br> Player 1 choose Hit or Stand`;
+  message += `Dealer hand: ${dealerHand.hand[0].name}${dealerHand.hand[0].suit} 🎴 <br> -------------------- <br> `;
   return message;
 };
 
@@ -243,38 +257,66 @@ const calcBetWinLose = function (player) {
 };
 
 // Function to validate player input to hit, stand and update their hand
-const hitStandSplit = function (input) {
+const hitStandSplit = function (input, player) {
   const playerchoice = ["hit", "stand", "split"];
-  let message = "";
+  let message = `${playerHandBoard(numOfPlayersPlaying)}`;
 
   if (playerchoice.includes(input.toLowerCase().trim())) {
     switch (input) {
       case "hit":
-        numOfPlayersPlaying[playerCounter].hand.push(shuffledDeck.pop());
-        numOfPlayersPlaying[playerCounter].handvalue +=
-          numOfPlayersPlaying[playerCounter].hand[
-            numOfPlayersPlaying[playerCounter].hand.length - 1
-          ].rank;
-        if (numOfPlayersPlaying[playerCounter].handvalue > 21) {
-          numOfPlayersPlaying[playerCounter].bust = true;
+        player.hand.push(shuffledDeck.pop());
+        player.handvalue += player.hand[player.hand.length - 1].rank;
+        message = `Player ${player.number}, you drew ${
+          player.hand[player.hand.length - 1].name
+        }${
+          player.hand[player.hand.length - 1].suit
+        } <br> -------------------- <br> ${playerHandBoard(
+          numOfPlayersPlaying
+        )}`;
+        if (player.handvalue > 21) {
+          player.bust = true;
           playerCounter += 1;
-          message = `You bust! It is now Player ${numOfPlayersPlaying[playerCounter].number}'s turn. Please choose Hit or Stand`;
+          if (playerCounter == numOfPlayersPlaying.length) {
+            gameMode = DEALER_TURN;
+            message = `You bust! Dealer's turn! <br> ${playerHandBoard(
+              numOfPlayersPlaying
+            )}`;
+          } else if (player.blackjack == true) {
+            message = `Player ${player.number}, Blackjack! It is now Player ${
+              numOfPlayersPlaying[playerCounter].number
+            }'s hand: ${displayHand(
+              numOfPlayersPlaying[playerCounter]
+            )} <br> I dare you to Hit! <br> or Stand, it's up to you...`;
+          } else {
+            message = `You bust! It is now Player ${
+              numOfPlayersPlaying[playerCounter].number
+            }'s turn. Your hand: ${displayHand(
+              numOfPlayersPlaying[playerCounter]
+            )} <br> I dare you to Hit! <br> or Stand, it's up to you...`;
+          }
         }
         break;
       case "stand":
         playerCounter += 1;
         if (playerCounter == numOfPlayersPlaying.length) {
-          gameMode = COMPARE_HAND;
+          gameMode = DEALER_TURN;
           playerCounter = 0;
-          message = "Dealer show hand.";
+          message = `Dealer hand: ${displayHand(dealerHand)} <br> Hand value: ${
+            dealerHand.handvalue
+          }`;
         } else {
-          message = `It is now Player ${numOfPlayersPlaying[playerCounter].number}'s turn. Please choose Hit or Stand`;
+          message = `It is now Player ${
+            numOfPlayersPlaying[playerCounter].number
+          }'s turn. Your hand: ${displayHand(
+            numOfPlayersPlaying[playerCounter]
+          )} <br> I dare you to Hit! <br> or Stand, it's up to you...`;
         }
         break;
     }
   } else {
-    message =
-      "Please choose Hit to try your luck or Stand to stay where you are";
+    message = `Player ${player.number}, you have ${displayHand(
+      player
+    )} <br> I dare you to Hit! <br> or Stand, it's up to you...`;
   }
   return message;
 };
@@ -294,7 +336,6 @@ var main = function (input) {
   if (gameMode == DEAL_CARDS) {
     dealCard(numOfPlayersPlaying);
     gameMode = PLAY_GAME;
-    return playerHandBoard(numOfPlayersPlaying);
   }
 
   // The cards are analysed for game winning conditions, e.g. Blackjack.
@@ -311,15 +352,56 @@ var main = function (input) {
         playerCounter += 1;
       }
       playerCounter = 0;
-      // this condition will have issue if the player is the last person. Need to solve.
+      gameMode = DEAL_CARDS;
+      // when last player blackjack, game did not automatic display dealer cards. Need to click submit...
     } else if (numOfPlayersPlaying[playerCounter].blackjack == true) {
       playerCounter += 1;
-      return `Player ${numOfPlayersPlaying[playerCounter].number}'s turn! Please choose to Hit or Stand.`;
+      if (playerCounter == numOfPlayersPlaying.length) {
+        gameMode = DEALER_TURN;
+        return `${playerHandBoard(numOfPlayersPlaying)}`;
+      } else {
+        return `Player ${
+          numOfPlayersPlaying[playerCounter - 1].number
+        } Blackjack! Player ${
+          numOfPlayersPlaying[playerCounter].number
+        }'s turn! I dare you to Hit! <br> or Stand, it's up to you...`;
+      }
     } else {
-      return (myOutputValue = hitStandSplit(
-        input,
-        numOfPlayersPlaying[playerCounter]
-      ));
+      return `${hitStandSplit(input, numOfPlayersPlaying[playerCounter])}`;
+    }
+  }
+
+  if (gameMode == DEALER_TURN) {
+    myOutputValue = "";
+    // dealer hand need to unhide at this stage, player hands are not cleared when new round starts...
+    if (dealerHand.handvalue <= 16) {
+      dealerHand.hand.push(shuffledDeck.pop());
+      dealerHand.handvalue += dealerHand.hand[dealerHand.hand.length - 1].rank;
+      myOutputValue = `Dealer drew ${
+        dealerHand.hand[dealerHand.hand.length - 1].name
+      }${
+        dealerHand.hand[dealerHand.hand.length - 1].suit
+      } <br> -------------------- <br> ${playerHandBoard(numOfPlayersPlaying)}`;
+      if (dealerHand.handvalue > 21) {
+        dealerHand.bust = true;
+        while (playerCounter < numOfPlayersPlaying.length) {
+          myOutputValue += `Dealer Bust! Player ${
+            numOfPlayersPlaying[playerCounter].number
+          }: ${calcBetWinLose(numOfPlayersPlaying[playerCounter])}<br>`;
+          playerCounter += 1;
+        }
+        playerCounter = 0;
+        gameMode = DEAL_CARDS;
+      }
+    } else {
+      while (playerCounter < numOfPlayersPlaying.length) {
+        myOutputValue += `Dealer Bust! Player ${
+          numOfPlayersPlaying[playerCounter].number
+        }: ${calcBetWinLose(numOfPlayersPlaying[playerCounter])}<br>`;
+        playerCounter += 1;
+      }
+      playerCounter = 0;
+      gameMode = DEAL_CARDS;
     }
   }
 
