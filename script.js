@@ -208,6 +208,23 @@ var displayTotalValues = function (playerValue, dealerValue) {
   return totalValueMessage;
 };
 
+// function to display play again message
+var playAgainMsg = `<br>Please refresh to try your luck at another round ⚔️...`;
+
+// functions to store images
+var winImage =
+  '<img src="https://c.tenor.com/4uZEvYyqcfEAAAAM/game-of-thrones-you-are.gif"/>';
+var drawImage =
+  '<img src="https://c.tenor.com/vJ583QK0q74AAAAM/game-of-thrones-syrio-forel.gif"/>';
+var loseImage =
+  '<img src="https://c.tenor.com/zBVsHfCHaqwAAAAM/game-of-thrones-ellaria-sand.gif"/>';
+var bustImage =
+  '<img src="https://c.tenor.com/9obX1GRSgnEAAAAM/shame-game-of-thrones.gif"/>';
+var evaluateImage =
+  '<img src="https://c.tenor.com/gKIjQaFcYL8AAAAM/sean-bean-ned-stark.gif"/>';
+var noBJImage =
+  '<img src="https://c.tenor.com/yJxGexrl_9cAAAAM/got-jon-snow.gif"/>';
+
 var main = function (input) {
   var myOutputMessage = "";
   // first click
@@ -225,18 +242,20 @@ var main = function (input) {
 
     // progress the game mode
     currentGameMode = GAME_CARDS_DRAWN;
-    myOutputMessage = `Everyone has been dealt a card. Click submit to evaluate cards!`;
+    myOutputMessage =
+      `Everyone has been dealt a card. Click submit to evaluate cards!` +
+      evaluateImage;
     return myOutputMessage;
   }
   // second click
   if (currentGameMode == GAME_CARDS_DRAWN) {
     // test checkBJ function
     // playerCards = [
-    //   { name: 3, suit: "clubs", rank: 3 },
+    //   { name: "jack", suit: "clubs", rank: 10 },
     //   { name: "ace", suit: "diamonds", rank: 1 },
     // ];
     // dealerCards = [
-    //   { name: "ace", suit: "clubs", rank: 1 },
+    //   { name: "queen", suit: "clubs", rank: 10 },
     //   { name: 10, suit: "spades", rank: 10 },
     // ];
     // check for blackjack
@@ -250,23 +269,30 @@ var main = function (input) {
       if (playerBJ == true && dealerBJ == true) {
         myOutputMessage =
           displayPlayerAndDealerCards(playerCards, dealerCards) +
-          `<br>it's a blackjack tie!`;
+          `<br>it's a blackjack tie!` +
+          drawImage +
+          playAgainMsg;
       }
       // -- only player has black jack > player wins
       else if (playerBJ == true && dealerBJ == false) {
         myOutputMessage =
           displayPlayerAndDealerCards(playerCards, dealerCards) +
-          `<br>player wins by blackjack!`;
+          `<br>player wins by blackjack!` +
+          winImage +
+          playAgainMsg;
       }
       // -- only dealer has black jack > dealer wins
       else {
         myOutputMessage =
           displayPlayerAndDealerCards(playerCards, dealerCards) +
-          `<br>dealer wins by blackjack!`;
+          `<br>dealer wins by blackjack!` +
+          loseImage +
+          playAgainMsg;
       }
       console.log(myOutputMessage);
     } else {
-      myOutputMessage = "There is no blackjack!";
+      myOutputMessage =
+        "There is no blackjack! Click submit to display cards" + noBJImage;
       console.log(myOutputMessage);
       // no black jack > game continues
 
@@ -274,13 +300,13 @@ var main = function (input) {
       currentGameMode = GAME_HIT_OR_STAND;
 
       // appropirate output message
-      return myOutputMessage;
     }
+    return myOutputMessage;
   }
   // hit or stand
   if (currentGameMode == GAME_HIT_OR_STAND) {
     //player hit
-    if (input == "hit") {
+    if (input.toLowerCase() == "hit") {
       playerCards.push(shuffledCards.pop());
       myOutputMessage = `${displayPlayerAndDealerCards(
         playerCards,
@@ -289,7 +315,7 @@ var main = function (input) {
     }
 
     //player stand
-    else if (input == "stand") {
+    else if (input.toLowerCase() == "stand") {
       // calculate total hand value of both player and dealer
       var playerTotalValue = calculateTotalValue(playerCards);
       var dealerTotalValue = calculateTotalValue(dealerCards);
@@ -309,21 +335,36 @@ var main = function (input) {
         myOutputMessage =
           displayPlayerAndDealerCards(playerCards, dealerCards) +
           `<br>Player hands has bust! Dealer WINS!` +
-          displayTotalValues(playerTotalValue, dealerTotalValue);
+          displayTotalValues(playerTotalValue, dealerTotalValue) +
+          loseImage +
+          playAgainMsg;
       }
       // if dealer is more than 21, player is less than 21, player auto wins
       else if (dealerTotalValue > 21 && playerTotalValue <= 21) {
         myOutputMessage =
           displayPlayerAndDealerCards(playerCards, dealerCards) +
           `<br>Dealer hands has bust! Player WINS!` +
-          displayTotalValues(playerTotalValue, dealerTotalValue);
+          displayTotalValues(playerTotalValue, dealerTotalValue) +
+          winImage +
+          playAgainMsg;
+      }
+      // check if both have busted
+      else if (playerTotalValue > 21 && dealerTotalValue > 21) {
+        myOutputMessage =
+          displayPlayerAndDealerCards(playerCards, dealerCards) +
+          `<br>Both player and dealer has bust their hands.<Br>There is NO WINNER!` +
+          displayTotalValues(playerTotalValue, dealerTotalValue) +
+          bustImage +
+          playAgainMsg;
       }
       // if dealer and player has same value, it's a draw
       else if (playerTotalValue == dealerTotalValue) {
         myOutputMessage =
           displayPlayerAndDealerCards(playerCards, dealerCards) +
           `<br>It's a draw!` +
-          displayTotalValues(playerTotalValue, dealerTotalValue);
+          displayTotalValues(playerTotalValue, dealerTotalValue) +
+          drawImage +
+          playAgainMsg;
       }
 
       // player higher value AND value is less than 21 player wins
@@ -331,19 +372,25 @@ var main = function (input) {
         myOutputMessage =
           displayPlayerAndDealerCards(playerCards, dealerCards) +
           `<br>Player wins!` +
-          displayTotalValues(playerTotalValue, dealerTotalValue);
+          displayTotalValues(playerTotalValue, dealerTotalValue) +
+          winImage +
+          playAgainMsg;
       }
       // dealer higher value AND value is less than 21, dealer wins
       else if (dealerTotalValue > playerTotalValue) {
         myOutputMessage =
           displayPlayerAndDealerCards(playerCards, dealerCards) +
           `<br>Dealer wins!` +
-          displayTotalValues(playerTotalValue, dealerTotalValue);
+          displayTotalValues(playerTotalValue, dealerTotalValue) +
+          loseImage +
+          playAgainMsg;
       } else {
         myOutputMessage =
           displayPlayerAndDealerCards(playerCards, dealerCards) +
           `<br> Both dealer and player has bust their hands!` +
-          displayTotalValues(playerTotalValue, dealerTotalValue);
+          displayTotalValues(playerTotalValue, dealerTotalValue) +
+          bustImage +
+          playAgainMsg;
       }
     }
     //input validation
