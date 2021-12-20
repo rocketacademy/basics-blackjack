@@ -219,7 +219,7 @@ var main = function (input) {
     }
     // if only player has bj
     else if (playerBJ == true && computerBJ == false) {
-      myOutputValue = `${messageForPlayer} <br> ${messageForComputer} <br> <br> It seems like you have won me from the get go... <br> But no matter, my balance is still... Unlimited <br><br> <img src = "https://c.tenor.com/S0iVsGnw5ssAAAAC/anime-kambe.gif"/>`;
+      myOutputValue = `${messageForPlayer} <br> ${messageForComputer} <br> <br> It seems like you have won me from the get go... <br> But no matter, my balance is still... Unlimited <br><br> <img src = "https://c.tenor.com/S0iVsGnw5ssAAAAC/anime-kambe.gif"/> <br><br> Click on the submit button to draw two new cards for you and me`;
       //reset everything so that player need not hit refresh button. can just click on "submit" button
       currentProgramMode = "state1";
       playerArray = [];
@@ -230,7 +230,7 @@ var main = function (input) {
 
     // if only dealer has bj
     else if (computerBJ == true) {
-      myOutputValue = `${messageForPlayer} <br> ${messageForComputer} <br> <br> Hu hu hu, it is my victory. <br> Lady luck is shining on me today and it's time for me to take your pile of cash <br><br> <img src = "https://c.tenor.com/OTjx7omPuaUAAAAC/kambe-daisuke.gif"/>`;
+      myOutputValue = `${messageForPlayer} <br> ${messageForComputer} <br> <br> Hu hu hu, it is my victory. <br> Lady luck is shining on me today and it's time for me to take your pile of cash <br><br> <img src = "https://c.tenor.com/OTjx7omPuaUAAAAC/kambe-daisuke.gif"/> <br><br> Click on the submit button to draw two new cards for you and me`;
       //reset everything so that player need not hit refresh button. can just click on "submit" button
       currentProgramMode = "state1";
       playerArray = [];
@@ -291,20 +291,20 @@ var main = function (input) {
       playerRankValue == computerRankValue ||
       (playerRankValue > 21 && computerRankValue > 21)
     ) {
-      myOutputValue = `${messageForPlayer} <br> ${messageForComputer} <br> Player total hand value: ${playerRankValue} <br> Computer total hand value: ${computerRankValue}<br><br> It seems that we are tied. No matter, let's go for another round to determine who the true winner is <br><br> <img src = "https://c.tenor.com/9lnDEML3WYsAAAAd/kambe-daisuke.gif"/>`;
+      myOutputValue = `${messageForPlayer} <br> ${messageForComputer} <br> Player total hand value: ${playerRankValue} <br> Computer total hand value: ${computerRankValue}<br><br> It seems that we are tied. No matter, let's go for another round to determine who the true winner is <br><br> <img src = "https://c.tenor.com/9lnDEML3WYsAAAAd/kambe-daisuke.gif"/> <br><br> Click on the submit button to draw two new cards for you and me`;
     }
     // scenario 2: player value > dealer value, or dealer goes above 21 and player still within 21
     else if (
       (playerRankValue > computerRankValue && playerRankValue <= 21) ||
       (playerRankValue <= 21 && computerRankValue > 21)
     ) {
-      myOutputValue = `${messageForPlayer} <br> ${messageForComputer} <br> Player total hand value: ${playerRankValue} <br> Computer total hand value: ${computerRankValue} <br><br> Darn, you have bested me. But no matter, my balance is still... Unlimited <br><br> <img src = "https://c.tenor.com/S0iVsGnw5ssAAAAC/anime-kambe.gif"/>`;
+      myOutputValue = `${messageForPlayer} <br> ${messageForComputer} <br> Player total hand value: ${playerRankValue} <br> Computer total hand value: ${computerRankValue} <br><br> Darn, you have bested me. But no matter, my balance is still... Unlimited <br><br> <img src = "https://c.tenor.com/S0iVsGnw5ssAAAAC/anime-kambe.gif"/> <br><br> Click on the submit button to draw two new cards for you and me`;
     } // scenario 3: dealer value > player value, or player goes above 21 and dealer still within 21
     else if (
       (computerRankValue > playerRankValue && computerRankValue <= 21) ||
       (computerRankValue <= 21 && playerRankValue > 21)
     ) {
-      myOutputValue = `${messageForPlayer} <br> ${messageForComputer} <br> Player total hand value: ${playerRankValue} <br> Computer total hand value: ${computerRankValue} <br><br> Hu hu hu, it is my victory. <br> Lady luck is shining on me today and it's time for me to take your pile of cash <br><br> <img src = "https://c.tenor.com/OTjx7omPuaUAAAAC/kambe-daisuke.gif"/>`;
+      myOutputValue = `${messageForPlayer} <br> ${messageForComputer} <br> Player total hand value: ${playerRankValue} <br> Computer total hand value: ${computerRankValue} <br><br> Hu hu hu, it is my victory. <br> Lady luck is shining on me today and it's time for me to take your pile of cash <br><br> <img src = "https://c.tenor.com/OTjx7omPuaUAAAAC/kambe-daisuke.gif"/> <br><br> Click on the submit button to draw two new cards for you and me`;
     }
 
     //reset everything so that player need not hit refresh button. can just click on "submit" button
