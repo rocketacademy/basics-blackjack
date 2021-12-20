@@ -8,7 +8,6 @@ class UiSeatHolder extends Ui_Aggregate {
     super();
     // Root Configuration
     this._root.className += ` blackjack-holder-seats`;
-
     // Children
     /** @private @const {UiSeat[]}} */
     this._uiSeats = [];

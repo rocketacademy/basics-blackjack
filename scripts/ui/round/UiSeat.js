@@ -1,10 +1,14 @@
-class UiChair extends Ui_Text {
+class UiChairDisplay extends Ui_Text {
   constructor(chair) {
     super();
     this._chair = chair;
+    this._root.className += " blackjack-chair-display";
 
-    this._root.style.width = "40px";
-    this._root.style.height = "13px";
+    this._root.style.width = "fit-content";
+    this._root.style.height = "25px";
+    this._root.style.border = "1px black solid";
+
+    this._root.textContent = chair.getName();
   }
 }
 class UiSeat extends Ui_Component {
@@ -20,9 +24,8 @@ class UiSeat extends Ui_Component {
   /**
    * @param {Player} Chair
    */
-  _newUiChair = (chair) => {
-    const uiC = new UiChair(chair);
-
+  _newUiChairDisplay = (chair) => {
+    const uiC = new UiChairDisplay(chair);
     return uiC;
   };
 
@@ -49,8 +52,8 @@ class UiSeat extends Ui_Component {
 
     this._seat = seat;
     this._id = seat.id();
-
-    this._uiChair = this._newUiChair(this._seat.getChair());
+    this._root.className += " blackjack-seat";
+    this._uiChair = this._newUiChairDisplay(this._seat.getChair());
     /** @private @const {UiHandHolder} */
     this._UiHandHolder = this._newUiHandHolder(this._seat.getHandGenerator());
 

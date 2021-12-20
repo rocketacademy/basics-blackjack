@@ -2,6 +2,7 @@ class UiHandHolder extends Ui_Aggregate {
   constructor() {
     super();
 
+    this._root.className += " blackjack-hand-holder";
     this._uiHands = [];
 
     /** @private { Object.<string,UiHand>} */
