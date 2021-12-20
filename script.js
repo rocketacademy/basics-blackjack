@@ -106,6 +106,7 @@ var computerArrayRank = [];
 // ======================================================================================================================
 
 // helper function for calculating the total "rank values" for player and computer
+// this function will be called using the ArrayRank array so wont need to use .rank / .name to change the sum
 var calculateTotalRank = function (cardArray) {
   var index = 0;
   var numberOfAces = 0;
@@ -113,7 +114,7 @@ var calculateTotalRank = function (cardArray) {
   while (index < cardArray.length) {
     var currentCard = cardArray[index];
 
-    if (currentCard == 11 || (currentCard == 12) | (currentCard.name == 13)) {
+    if (currentCard == 11 || (currentCard == 12) | (currentCard == 13)) {
       sumOfRank += 10;
     } else if (currentCard == 1) {
       sumOfRank += 11;
@@ -300,7 +301,7 @@ var main = function (input) {
   else if (currentProgramMode == "state3") {
     // listing all the variables again
     var playerRankValue = calculateTotalRank(playerArrayRank);
-    computerRankValue = calculateTotalRank(computerArrayRank);
+    var computerRankValue = calculateTotalRank(computerArrayRank);
     messageForPlayer = outputMsgPlayer(playerArray);
     messageForComputer = outputMsgComputer(computerArray);
 
