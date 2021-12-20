@@ -254,3 +254,8 @@ newTestCollection.addTest(`test_Round_TwoPlayer_Commence`, () => {
 });
 
 newTestCollection.run();
+
+testMain = (() => {
+  const lounge = Sample.getTwoPlayersLounge();
+  new PlayingArea().commenceRound(lounge);
+})();
