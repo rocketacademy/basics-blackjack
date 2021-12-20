@@ -28,7 +28,7 @@ var gameDeck = "empty at the start";
 var makeDeck = function () {
   console.log(`control flow: start of makeDeck`);
   var cardDeck = [];
-  var suits = ["hearts", "diamonds", "clubs", "spades"];
+  var suits = ["Hearts", "Diamonds", "Clubs", "Spades"];
   var suitIndex = 0;
   while (suitIndex < suits.length) {
     var currentSuit = suits[suitIndex];
@@ -36,13 +36,13 @@ var makeDeck = function () {
     while (rankCounter <= 13) {
       var cardName = rankCounter;
       if (cardName == 1) {
-        cardName = "ace";
+        cardName = "Ace";
       } else if (cardName == 11) {
-        cardName = "jack";
+        cardName = "Jack";
       } else if (cardName == 12) {
-        cardName = "queen";
+        cardName = "Queen";
       } else if (cardName == 13) {
-        cardName = "king";
+        cardName = "King";
       }
       var card = {
         name: cardName,
@@ -107,9 +107,9 @@ var totalCardsValue = function (handArray) {
   while (index < handArray.length) {
     var currentCard = handArray[index];
     if (
-      currentCard.name == "jack" ||
-      currentCard.name == "queen" ||
-      currentCard.name == "king"
+      currentCard.name == "Jack" ||
+      currentCard.name == "Queen" ||
+      currentCard.name == "King"
     ) {
       totalHandValue += 10;
     } else {
@@ -120,8 +120,32 @@ var totalCardsValue = function (handArray) {
   return totalHandValue;
 };
 
+// 4. The cards are displayed to the user.
+var showAllCards = function (playerHand, dealerHand) {
+  var playerTotalCards = totalCardsValue(playerHand);
+  var dealerTotalCards = totalCardsValue(dealerHand);
+
+  // Player's card
+  var playerCardsMessage = `Player got: ${playerTotalCards}<br>Player's cards:<br>`;
+  var index = 0;
+  while (index < playerHand.length) {
+    playerCardsMessage = `${playerCardsMessage}  - ${playerHand[index].name} of ${playerHand[index].suit}<br>`;
+    index += 1;
+  }
+
+  // Dealer's card
+  var dealerCardsMessage = `Dealer got: ${dealerTotalCards}<br>Dealer's cards:<br>`;
+  var index = 0;
+  while (index < dealerHand.length) {
+    dealerCardsMessage = `${dealerCardsMessage}  - ${dealerHand[index].name} of ${dealerHand[index].suit}<br>`;
+    index += 1;
+  }
+  return playerCardsMessage + "<br>" + dealerCardsMessage;
+};
+
 var main = function (input) {
   var outputMessage = "";
+  console.log("Current Game Mode = ", currentGameMode);
 
   // 2. User clicks Submit to deal cards.
   // click submit
@@ -147,6 +171,8 @@ var main = function (input) {
     //give an output message
     outputMessage =
       'You got your cards!<br><br>Click "Submit" to see your cards.';
+
+    return outputMessage;
   }
 
   // 3. The cards are analysed for game winning conditions, e.g. Blackjack.
@@ -162,18 +188,26 @@ var main = function (input) {
     if (playerHasBlackjack == true || dealerHasBlackjack == true) {
       // both player and dealer has blackjack ->
       if (playerHasBlackjack == true && dealerHasBlackjack == true) {
-        outputMessage =
-          "Both player and dealer got Blackjack!<br><br>It is a Blackjack tie!";
+        outputMessage = `Both player and dealer got Blackjack!<br><br>It is a Blackjack tie!<br><br>${showAllCards(
+          playerHand,
+          dealerHand
+        )}`;
       }
 
       // only player has blackjack -> player wins
       else if (playerHasBlackjack == true && dealerHasBlackjack == false) {
-        outputMessage = "Player got Blackjack!<br><br>You win!";
+        outputMessage = `Player got Blackjack!<br><br>You win!<br><br>${showAllCards(
+          playerHand,
+          dealerHand
+        )}`;
       }
 
       // only dealer has blackjack -> dealer wins
       else {
-        outputMessage = "Dealer got Blackjack!<br><br>You lose!";
+        outputMessage = `Dealer got Blackjack!<br><br>You lose!<br><br>${showAllCards(
+          playerHand,
+          dealerHand
+        )}`;
       }
 
       // no blackjack
@@ -191,23 +225,39 @@ var main = function (input) {
       // compare the cards
       // same value -> tie
       if (playerTotalCards == dealerTotalCards) {
-        console.log("it's a tie");
+        outputMessage = `It's a tie!<br><br>${showAllCards(
+          playerHand,
+          dealerHand,
+          playerTotalCards,
+          dealerTotalCards
+        )}`;
       }
 
       // player value is higher -> player wins
       else if (playerTotalCards > dealerTotalCards) {
-        console.log("player wins");
+        outputMessage = `You win!<br><br>${showAllCards(
+          playerHand,
+          dealerHand,
+          playerTotalCards,
+          dealerTotalCards
+        )}`;
       }
 
       // dealer value is higher -> player wins
       else {
-        console.log("dealer wins");
+        outputMessage = `You lose!<br><br>${showAllCards(
+          playerHand,
+          dealerHand,
+          playerTotalCards,
+          dealerTotalCards
+        )}`;
       }
 
       // change to the next gameMode
       currentGameMode = showResultsMode;
 
       // give an output message
+      return outputMessage;
     }
   }
   return outputMessage;
