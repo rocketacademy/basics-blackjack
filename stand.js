@@ -185,159 +185,61 @@ var displayAllCards = function (playerHandArray, dealerHandArray) {
 };
 
 //function for game flow
-var main = function (input) {
-  var startSentence = displayAllCards(playerHand, dealerHand);
-  var dealerValue = checkScore(dealerHand);
-  var playerValue = checkScore(playerHand);
-  //second submit click
-  if (currentGameMode == GAME_START) {
-    console.log("current game mode: " + currentGameMode);
-    drawCards();
-    myOutputValue = `Everyone has their cards. Please click on submit to see player/dealer has a blackjack!`;
-    currentGameMode = CHECK_BLACKJACK;
-    return myOutputValue;
-  }
-  //third submit click
-  if (currentGameMode == CHECK_BLACKJACK) {
-    console.log("current game mode: " + currentGameMode);
-    playerValue = playerHand[0].value + playerHand[1].value;
-    console.log(playerValue);
-    dealerValue = dealerHand[0].value + dealerHand[1].value;
-    console.log(dealerValue);
-    // Blackjack condition.
-    if (playerValue == 21 && dealerValue == 21) {
-      myOutputValue =
-        startSentence +
-        `<br><br> You and the dealer both got a Blackjack! It's a draw!`;
-
-      currentGameMode = END_GAME;
-    }
-    if (playerValue < 21 && dealerValue == 21) {
-      myOutputValue =
-        startSentence + `<br><br> The computer got a Blackjack! You lost!`;
-      currentGameMode = END_GAME;
-    }
-    if (playerValue == 21 && dealerValue < 21) {
-      myOutputValue = startSentence + `<br><br> You got a Blackjack! You won!`;
-      currentGameMode = END_GAME;
-    }
-    if (playerValue == 15) {
-      myOutputValue = `The total value of your cards is 15, you can choose to surrender now and not play this round. Please input 1 for surrender or 2 to continue.`;
-      currentGameMode = FIFTEEN_RUN;
-      console.log(currentGameMode);
-      fifteenRun();
-      return myOutputValue;
-    }
-    if (dealerValue == 15) {
-      currentGameMode == FIFTEEN_RUN;
-      fifteenRun();
-    } else {
-      myOutputValue =
-        startSentence +
-        `Total Player Score: ${playerValue} <br><br> No blackjack! Game continues! Please input 1 for "hit" to add more cards or 2 for "stand".`;
-      currentGameMode = PLAYER_HIT_STAND;
-    }
-    return myOutputValue;
-  }
-
-  //fourth submit click
+var stand = function () {
+  currentGameMode = PLAYER_HIT_STAND;
   if (currentGameMode == PLAYER_HIT_STAND) {
-    console.log("current game mode: " + currentGameMode);
-    //function when player choose hit
-    if (input == 1) {
-      playerHand.push(shuffledDeck.pop());
-      console.log(`player's card after hit:`);
-      console.log(playerHand);
-      var playerValue = checkScore(playerHand);
-      if (playerValue < 15) {
-        myOutputValue =
-          startSentence +
-          `You have drawn a ${playerHand[playerHand.length - 1].name} of 
-        ${
-          playerHand[playerHand.length - 1].suit
-        }.<br> Total Score: ${playerValue} <br> You should hit for more cards.`;
-      }
-      if (playerValue > 21) {
-        myOutputValue =
-          startSentence +
-          `You have drawn a ${playerHand[playerHand.length - 1].name} of 
-        ${
-          playerHand[playerHand.length - 1].suit
-        }.<br> Total Score: ${playerValue} <br> BUSTED. Just input stand.`;
-      } else {
-        myOutputValue =
-          startSentence +
-          `You have drawn a ${playerHand[playerHand.length - 1].name} of 
-        ${
-          playerHand[playerHand.length - 1].suit
-        }.<br> Total Score: ${playerValue} <br> Please input 1 for hit to add more cards or 2 for stand.`;
-      }
-    } else if (input == 2) {
-      playerValue = checkScore(playerHand);
-      myOutputValue =
-        startSentence +
-        `You have chosen to stand with a total score of ${playerValue}. Dealer's turn. Please click submit again.`;
-      currentGameMode = DEALER_HIT_STAND;
-      console.log(currentGameMode);
-    } else {
-      myOutputValue = `Invalid input. Please input only 1 for hit or 2 for stand.`;
-    }
-    return myOutputValue;
-  }
-  //fifth submit click
-  if (currentGameMode == DEALER_HIT_STAND) {
+    var startSentence = displayAllCards(playerHand, dealerHand);
+    var playerValue = checkScore(playerHand);
     var dealerValue = checkScore(dealerHand);
-    if (dealerValue < 17) {
+    while (dealerValue < 17) {
       dealerHand.push(shuffledDeck.pop());
       console.log(`dealer's hand after stand:`);
       console.log(dealerHand);
-      myOutputValue =
-        startSentence +
-        `Dealer Score: ${dealerValue}. <br> It will draw again. Click submit to see who won.`;
+      dealerValue = checkScore(dealerHand);
     }
     if (dealerValue >= 17) {
-      myOutputValue =
+      var playerValue = checkScore(playerHand);
+      var dealerValue = checkScore(dealerHand);
+      endGameMessage =
         startSentence +
-        `Dealer Score: ${dealerValue}. <br> It will not draw anymore. Click submit to see who won.`;
-      currentGameMode = CHECK_WHO_WIN;
-      console.log(currentGameMode);
+        `<u>Player Value: ${playerValue} <br> Dealer Value: ${dealerValue}</u> <br>`;
+      //condition if both busted
+      if (playerValue >= 21 && dealerValue >= 21) {
+        myOutputValue =
+          endGameMessage + `It's a tie! Both dealer and player busted.`;
+      }
+      //condition if both not busted but player value is more than dealer.
+      if (playerValue > dealerValue && dealerValue <= 21 && playerValue <= 21) {
+        myOutputValue = endGameMessage + `<br> Player win.`;
+      }
+      //condition if dealer busted
+      if (playerValue <= 21 && dealerValue >= 21) {
+        myOutputValue = endGameMessage + `<br> Player win. Dealer Busted.`;
+      }
+      //condition if both not busted but dealer more than player
+      if (dealerValue > playerValue && dealerValue <= 21 && playerValue <= 21) {
+        myOutputValue = endGameMessage + `<br> Dealer win.`;
+      }
+      //condition if player busted
+      if (dealerValue <= 21 && playerValue >= 21) {
+        myOutputValue = endGameMessage + `<br>  Dealer win. Player Busted.`;
+      }
+      //condition if both same value and not busted
+      if (
+        dealerValue == playerValue &&
+        dealerValue <= 21 &&
+        playerValue <= 21
+      ) {
+        myOutputValue = endGameMessage + `<br> It's a tie!`;
+      }
+      currentGameMode = END_GAME;
+      return myOutputValue;
     }
-    return myOutputValue;
-  }
-
-  //sixth submit click
-  if (currentGameMode == CHECK_WHO_WIN) {
-    var playerValue = checkScore(playerHand);
-    var dealerValue = checkScore(dealerHand);
-    endGameMessage =
+    myOutputValue =
       startSentence +
-      `<u>Player Value: ${playerValue} <br> Dealer Value: ${dealerValue}</u> <br>`;
-    //condition if both busted
-    if (playerValue >= 21 && dealerValue >= 21) {
-      myOutputValue =
-        endGameMessage + `It's a tie! Both dealer and player busted.`;
-    }
-    //condition if both not busted but player value is more than dealer.
-    if (playerValue > dealerValue && dealerValue <= 21 && playerValue <= 21) {
-      myOutputValue = endGameMessage + `<br> Player win.`;
-    }
-    //condition if dealer busted
-    if (playerValue <= 21 && dealerValue >= 21) {
-      myOutputValue = endGameMessage + `<br> Player win. Dealer Busted.`;
-    }
-    //condition if both not busted but dealer more than player
-    if (dealerValue > playerValue && dealerValue <= 21 && playerValue <= 21) {
-      myOutputValue = endGameMessage + `<br> Dealer win.`;
-    }
-    //condition if player busted
-    if (dealerValue <= 21 && playerValue >= 21) {
-      myOutputValue = endGameMessage + `<br>  Dealer win. Player Busted.`;
-    }
-    //condition if both same value and not busted
-    if (dealerValue == playerValue && dealerValue <= 21 && playerValue <= 21) {
-      myOutputValue = endGameMessage + `<br> It's a tie!`;
-    }
-    currentGameMode = END_GAME;
+      `You have chosen to stand with a total score of ${playerValue}. Dealer's turn. Please click submit again.`;
+    currentGameMode = CHECK_WHO_WIN;
+    console.log(currentGameMode);
     return myOutputValue;
   }
   // End game. Reset all the global variables for a new game.
