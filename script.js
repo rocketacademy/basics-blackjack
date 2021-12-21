@@ -43,9 +43,9 @@ var playerCards = [];
 var computerCards = [];
 var cardDeck = [];
 var playerScore = [];
-var sumOfPlayerScore = 0;
 var computerScore = [];
 var sumOfComputerScore = 0;
+var gameState = "begin";
 
 //Generate Card Deck
 var makeDeck = function () {
@@ -143,6 +143,7 @@ var playerScoreCounter = function () {
     indexCounter += 1;
   }
   var i = 0;
+  var sumOfPlayerScore = 0;
   while (i < playerScore.length) {
     sumOfPlayerScore = sumOfPlayerScore + playerScore[i];
     i += 1;
@@ -174,41 +175,77 @@ var computerScoreCounter = function () {
   }
   return sumOfComputerScore;
 };
+var newDeck = makeDeck();
+var shuffledCards = shuffleCards(newDeck);
 
-var main = function (input) {
-  var newDeck = makeDeck();
-  var shuffledCards = shuffleCards(newDeck);
-  var dealPlayerCard1 = shuffledCards.pop();
-  var dealPlayerCard2 = shuffledCards.pop();
-  var dealComputerCard1 = shuffledCards.pop();
-  var dealComputerCard2 = shuffledCards.pop();
-  playerCards.push(dealPlayerCard1);
-  playerCards.push(dealPlayerCard2);
-  computerCards.push(dealComputerCard1);
-  computerCards.push(dealComputerCard2);
-
-  // var dealPlayerCard1 = dealCards(cardDeck);
-  // playerCards.push(dealPlayerCard1);
-  // var dealPlayerCard2 = dealCards(cardDeck);
-  // playerCards.push(dealPlayerCard2);
+//'hit' helper function
+var playerChoseHit = function (shuffledCards, playerCards) {
+  var dealPlayerCard3 = shuffledCards.pop();
+  playerCards.push(dealPlayerCard3);
   console.log("this is playerCards");
   console.log(playerCards);
-  // var dealComputerCard1 = dealCards(cardDeck);
-  // computerCards.push(dealComputerCard1);
-  // var dealComputerCard2 = dealCards(cardDeck);
-  // computerCards.push(dealComputerCard2);
-  console.log("this is computerCards");
-  console.log(computerCards);
-  console.log("this is cardDeck.length");
-  console.log(cardDeck.length);
-  var playerCurrentScore = playerScoreCounter(playerCards, playerScore);
-  var computerCurrentScore = computerScoreCounter(computerCards, computerScore);
+  var playerScoreForCurrentRound = playerScoreCounter(
+    playerCards,
+    playerScoreForRound2
+  );
+  console.log("this is playerScoreForCurrentRound");
+  console.log(playerScoreForCurrentRound);
+  return playerScoreForCurrentRound;
+};
 
-  console.log("this is playerCurrentScore");
-  console.log(playerCurrentScore);
-  console.log("this is computerCurrentScore");
-  console.log(computerCurrentScore);
+var main = function (input) {
+  if (gameState == "begin") {
+    var dealPlayerCard1 = shuffledCards.pop();
+    var dealPlayerCard2 = shuffledCards.pop();
+    var dealComputerCard1 = shuffledCards.pop();
+    var dealComputerCard2 = shuffledCards.pop();
+    playerCards.push(dealPlayerCard1);
+    playerCards.push(dealPlayerCard2);
+    computerCards.push(dealComputerCard1);
+    computerCards.push(dealComputerCard2);
 
-  var myOutputValue = "";
+    // var dealPlayerCard1 = dealCards(cardDeck);
+    // playerCards.push(dealPlayerCard1);
+    // var dealPlayerCard2 = dealCards(cardDeck);
+    // playerCards.push(dealPlayerCard2);
+    console.log("this is playerCards");
+    console.log(playerCards);
+    // var dealComputerCard1 = dealCards(cardDeck);
+    // computerCards.push(dealComputerCard1);
+    // var dealComputerCard2 = dealCards(cardDeck);
+    // computerCards.push(dealComputerCard2);
+    console.log("this is computerCards");
+    console.log(computerCards);
+    console.log("this is cardDeck.length");
+    console.log(cardDeck.length);
+    var playerCurrentScore = playerScoreCounter(playerCards, playerScore);
+    var computerCurrentScore = computerScoreCounter(
+      computerCards,
+      computerScore
+    );
+
+    console.log("this is playerCurrentScore");
+    console.log(playerCurrentScore);
+    console.log("this is computerCurrentScore");
+    console.log(computerCurrentScore);
+
+    gameState = "new round";
+    var myOutputValue = "";
+    myOutputValue = `Dealer has <br> ${computerCards[0].name} of ${computerCards[0].suit} <br> and one card faced down<br><br> You have <br> ${playerCards[0].name} of ${playerCards[0].suit}<br>${playerCards[1].name} of ${playerCards[1].suit} <br> Your current score is ${playerCurrentScore}<br><br> Type 'hit' or 'stand' to proceed.`;
+  }
+
+  if (gameState == "new round" && input == "hit") {
+    var dealPlayerCard3 = shuffledCards.pop();
+    playerCards.push(dealPlayerCard3);
+    console.log("this is playerCards");
+    console.log(playerCards);
+    var playerScoreForCurrentRound = playerScoreCounter(
+      playerCards,
+      playerScoreForRound2
+    );
+    console.log("this is playerScoreForCurrentRound");
+    console.log(playerScoreForCurrentRound);
+  }
+
   return myOutputValue;
 };
