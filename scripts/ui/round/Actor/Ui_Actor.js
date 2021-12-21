@@ -15,19 +15,19 @@ class UiName extends Ui_Component {
     this._root.style.justifyContent = "center";
     this._root.style.marginTop = "10px";
     this._root.style.marginBottom = "10px";
-    this._root.textContent = this.name;
     this._root.class += " blackjack-name";
     this._root.style.height = "20px";
     this._root.style.width = "auto";
   };
 
   /** @param {!string} name */
-  constructor(name) {
+  constructor() {
     super(document.createElement("div"));
     // Domain
-    this.name = name;
     this._style();
   }
+
+  setName = (n) => (this._root.textContent = n);
 }
 
 class Ui_Actor extends Ui_Component {
@@ -40,7 +40,16 @@ class Ui_Actor extends Ui_Component {
     this._root.style.border = "1px solid black";
     this._root.style.alignItems = "center";
 
-    this._uiName.setStyle("color", "red");
+    this._uiName.setStyle("color", "#008080");
+    this._uiName.setStyle("fontWeight", "bold");
+    this._uiName.setStyle("fontStyle", "italic");
+  };
+
+  _newUiName = () => {
+    const uiN = new UiName();
+    uiN.setName(this._actor.getName());
+
+    return uiN;
   };
 
   /**
@@ -57,7 +66,7 @@ class Ui_Actor extends Ui_Component {
     // Children
 
     /** @private @const {UiName} */
-    this._uiName = new UiName(this._actor.getName());
+    this._uiName = this._newUiName();
     /** @private @const {UiCredit} */
     this._uiCredit = new UiCredit(this._actor.getCredit());
 

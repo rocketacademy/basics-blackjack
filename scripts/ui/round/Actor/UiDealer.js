@@ -16,6 +16,7 @@ class UiDealer extends Ui_Actor {
     this._root.style.height = "fit-content";
     this._root.style.minHeight = "200px";
     this._root.style.padding = "10px";
+    this._root.style.fontWeight = "bold";
   };
 
   _newUiMsgDisplay = () => {
