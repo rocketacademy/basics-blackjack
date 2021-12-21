@@ -80,7 +80,7 @@ class UiRound extends Ui_Tree {
   };
 
   _style = () => {
-    this._root.style.border = "1px dotted black";
+    this._root.style.border = "1px white dotted";
     this._root.style.borderRadius = "15px";
     this._root.style.padding = "15px";
     this._root.style.flexDirection = "column";

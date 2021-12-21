@@ -70,7 +70,7 @@ class UiContainerMainBet extends Ui_Component {
 class UiWager extends Ui_Component {
   _style = () => {
     this._root.style.height = "90%";
-    this._root.style.border = "1px black dotted";
+    this._root.style.border = "1px white dotted";
     this._root.style.width = "90%";
     this._root.style.flexDirection = "column";
     this._root.style.justifyContent = "center";

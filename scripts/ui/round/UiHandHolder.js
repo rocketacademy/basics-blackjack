@@ -10,7 +10,7 @@ class UiHandHolder extends Ui_Aggregate {
     this._root.style.marginTop = "20px";
     this._root.style.marginLeft = "10px";
     this._root.style.marginRight = "10px";
-    this._root.style.border = "1px dotted black";
+    this._root.style.border = "1px white dotted";
     this._root.style.justifyContent = "center";
     this._uiHands = [];
 

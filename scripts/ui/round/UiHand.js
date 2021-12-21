@@ -1,6 +1,6 @@
 class UiHand extends Ui_Component {
   _style = () => {
-    this._root.style.border = "1px black dotted";
+    this._root.style.border = "1px white dotted";
     this._root.style.height = "auto";
     this._root.style.marginBottom = "10%";
     this._root.style.marginTop = "10%";

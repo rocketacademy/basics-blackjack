@@ -7,7 +7,7 @@ class UiChairDisplay extends Ui_Text {
     this._root.style.width = "70px";
     this._root.style.height = "25px";
     this._root.style.marginTop = "7px";
-    this._root.style.border = "1px dotted black";
+    this._root.style.border = "1px white dotted";
     this._root.style.overflow = "hidden";
     this._root.style.alignSelf = "center";
     this._root.style.justifyContent = "center";
