@@ -207,7 +207,7 @@ var displayTotalValues = function (playerValue, dealerValue) {
 };
 
 // function to display play again message
-var playAgainMsg = `<br>Please refresh to try your luck at another round ⚔️...`;
+var playAgainMsg = `<br>Please click submit to try your luck at another round ⚔️...`;
 
 // functions to store images
 var winImage =
@@ -262,6 +262,10 @@ var main = function (input) {
           `<br>it's a blackjack tie!` +
           drawImage +
           playAgainMsg;
+        // restart game
+        playerCards = [];
+        dealerCards = [];
+        currentGameMode = GAME_START;
       }
       // -- only player has black jack > player wins
       else if (playerBJ == true && dealerBJ == false) {
@@ -270,6 +274,10 @@ var main = function (input) {
           `<br>player wins by blackjack!` +
           winImage +
           playAgainMsg;
+        // restart game
+        playerCards = [];
+        dealerCards = [];
+        currentGameMode = GAME_START;
       }
       // -- only dealer has black jack > dealer wins
       else {
@@ -278,6 +286,10 @@ var main = function (input) {
           `<br>dealer wins by blackjack!` +
           loseImage +
           playAgainMsg;
+        // restart game
+        playerCards = [];
+        dealerCards = [];
+        currentGameMode = GAME_START;
       }
     } else {
       myOutputMessage =
@@ -376,6 +388,11 @@ var main = function (input) {
           bustImage +
           playAgainMsg;
       }
+
+      // restart game
+      playerCards = [];
+      dealerCards = [];
+      currentGameMode = GAME_START;
     }
     //input validation
     else {
