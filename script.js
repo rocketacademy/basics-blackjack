@@ -145,8 +145,10 @@ var main = function (input) {
 
 // Generate output showing the total number of cards + rank + suits. Return Strings
 var showCards = function (array, input) {
+  var len = 0;
+  var outputArr = [];
   var sum = sumCards(array);
-  // This if checks if the array of dictionay contains "ace", if yes, then call checkAce
+  // This checks if the array of dictionay contains "ace", if yes, then call checkAce
   if (array.some((code) => code.name === "ace")) {
     checkAce(sum, array);
   }
@@ -159,9 +161,12 @@ var showCards = function (array, input) {
       sum = sumCards(array);
       checkAce(sum, array);
     }
+    // Display all of Computer's cards except the 1st card to the player
+    len = 1;
+    sum = "XX";
   }
-  var len = 0;
-  var outputArr = [];
+
+  // for Player only, displaying both cards
   while (len < array.length) {
     outputArr.unshift([
       "<br> " +
