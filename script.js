@@ -92,6 +92,12 @@ var drawFirstTwoCards = function () {
   playerSum = playerCards[0].rank + playerCards[1].rank;
   console.log(playerSum);
 
+  //if computer gets <17, he has to hit.
+  if (computerSum < 17) {
+    computerCards.push(shuffledCardDeck.pop());
+    console.log(computerCards);
+  }
+
   if (playerSum == 21) {
     gameMode = ENDROUND;
     return endRound();
@@ -115,10 +121,21 @@ var displayCards = function () {
   var sum = 0;
   var sumOfComp = 0;
 
-  for (let index = 0; index < computerCards.length; index++) {
+  if (gameMode == ENDROUND) {
+    for (let index = 0; index < computerCards.length; index++) {
+      showComputerCard +=
+        `<b>${computerCards[index].name} of ${computerCards[index].suit}</b>` +
+        "<br>";
+    }
+  } else {
     showComputerCard +=
-      `<b>${computerCards[index].name} of ${computerCards[index].suit}</b>` +
+      `<b>${computerCards[0].name} of ${computerCards[0].suit}</b>` +
+      "<br>" +
+      `& ${computerCards.length - 1} covered cards.` +
       "<br>";
+  }
+
+  for (let index = 0; index < computerCards.length; index++) {
     sumOfComp += computerCards[index].rank;
   }
   computerSum = sumOfComp;
@@ -137,15 +154,9 @@ var displayCards = function () {
   return message;
 };
 
-//if computer gets <17, he has to hit.
 //Player decides if they want to hit (draw a card) or stand (end their turn)
 var hitOrStand = function (userChoice) {
   var message = ``;
-
-  if (computerSum < 17) {
-    computerCards.push(shuffledCardDeck.pop());
-    console.log(computerCards);
-  }
 
   if (userChoice == HIT) {
     playerCards.push(shuffledCardDeck.pop());
