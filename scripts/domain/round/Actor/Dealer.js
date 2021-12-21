@@ -119,11 +119,13 @@ class Dealer extends _Actor {
     const hasTwentyOne = hand.hasTwentyOne();
     const isBusted = hand.isBusted();
     const count = hand.count();
-
+    console.log(`has 21 ${hasTwentyOne}`);
+    console.log(`has isBusted ${isBusted}`);
     //TODO if hand is surrender than cannot act
-    options.canStand = true || false;
+    // If minimally cannot stand, player should not be able to act
+    options.canStand = !isBusted && !false;
     options.canHit = !hasTwentyOne && !isBusted;
-    options.canDouble = count === 2;
+    options.canDouble = count === 2 && !hasTwentyOne;
     options.canSplit = false || false;
     return options;
   };
@@ -208,11 +210,22 @@ class Dealer extends _Actor {
     //TODO
     const isWagerSurrendered = false; // wager.isSurrendered()
 
+    // CRA-V6-3.32 / CRA-V6-4.3.2
+
+    if (isPlayerHandBusted) {
+      return {
+        decision: { award: AWARD_ENUM.PLAYER_LOSE, mode: PAY_TABLE.REGULAR },
+        type: SETTLEMENT_TYPE.SETTLE_FINAL,
+        remarks: `CRA-V6-4.3.2`,
+      };
+    }
+
     // CRA-V6-4.5.2
     if (isDealerBlackJack && isPlayerBlackJack) {
       return {
         decision: { award: AWARD_ENUM.STAND_OFF },
         type: SETTLEMENT_TYPE.SETTLE_FINAL,
+        remarks: `CRA-V6-4.5.2`,
       };
     }
 
@@ -221,50 +234,43 @@ class Dealer extends _Actor {
       return {
         decision: { award: AWARD_ENUM.PLAYER_WIN, mode: PAY_TABLE.BLACKJACK },
         type: SETTLEMENT_TYPE.SETTLE_FINAL,
+        remarks: `CRA-V6-4.2.1`,
       };
     }
 
     // CRA-V6-4.3.3
     if (isDealerBlackJack && !isPlayerBlackJack) {
       return {
-        decision: { award: AWARD_ENUM.PLAYER_LOSE, mode: PAY_TABLE.BLACKJACK },
+        decision: { award: AWARD_ENUM.PLAYER_LOSE },
         type: SETTLEMENT_TYPE.SETTLE_FINAL,
+        remarks: `CRA-V6-4.3.3`,
       };
     }
 
-    if (!isDealerBlackJack && !isPlayerBlackJack) {
-      // CRA-V6-4.5.1
-      if (playerPointTotal === dealerPointTotal) {
-        return {
-          decision: { award: AWARD_ENUM.STAND_OFF },
-          type: SETTLEMENT_TYPE.SETTLE_FINAL,
-        };
-      }
+    // CRA-V6-4.5.1
+    if (playerPointTotal === dealerPointTotal) {
+      return {
+        decision: { award: AWARD_ENUM.STAND_OFF },
+        type: SETTLEMENT_TYPE.SETTLE_FINAL,
+        remarks: `CRA-V6-4.5.1`,
+      };
+    }
+    if (isDealerBusted) {
+      // CRA-V6-4.3.1
+      return {
+        decision: { award: AWARD_ENUM.PLAYER_LOSE },
+        type: SETTLEMENT_TYPE.SETTLE_FINAL,
+        remarks: `CRA-V6-4.3.1`,
+      };
+    } else {
       // CRA-V6-4.2.2
       if (dealerPointTotal < playerPointTotal) {
         return {
           decision: { award: AWARD_ENUM.PLAYER_WIN, mode: PAY_TABLE.REGULAR },
           type: SETTLEMENT_TYPE.SETTLE_FINAL,
+          remarks: `CRA-V6-4.2.2`,
         };
       }
-
-      // CRA-V6-4.3.1
-
-      if (dealerPointTotal > playerPointTotal) {
-        return {
-          decision: { award: AWARD_ENUM.PLAYER_LOSE, mode: PAY_TABLE.REGULAR },
-          type: SETTLEMENT_TYPE.SETTLE_FINAL,
-        };
-      }
-    }
-
-    // CRA-V6-3.32 / CRA-V6-4.3.2
-
-    if (isPlayerHandBusted) {
-      return {
-        decision: { award: AWARD_ENUM.PLAYER_LOSE, mode: PAY_TABLE.REGULAR },
-        type: SETTLEMENT_TYPE.SETTLE_FINAL,
-      };
     }
 
     // CRA-V6-4.2.3
@@ -275,6 +281,7 @@ class Dealer extends _Actor {
           mode: PAY_TABLE.REGULAR,
         },
         type: SETTLEMENT_TYPE.SETTLE_FINAL,
+        remarks: `CRA-V6-4.2.3`,
       };
     }
   };
@@ -362,7 +369,16 @@ class Dealer extends _Actor {
   _performSettlementFinalCompleted = () => {
     this._round.settlementCompleted();
   };
-
+  requestHit = (hand) => {
+    this._transferCard(this._round.getShoe(), hand).flip(true);
+    const options = this._assessSubsqDealPlayerOptions(hand);
+    if (!Object.values(options).some((is) => is === true)) {
+      this._performNextSubsequentPlayerDealNextPlayer();
+      return;
+    } else {
+      hand.whatDoYouWantToDoOnSubsequentDeal(this, options);
+    }
+  };
   requestStand = (hand) => {
     this._performNextSubsequentPlayerDealNextPlayer();
   };
@@ -423,7 +439,7 @@ class Dealer extends _Actor {
     }
     console.groupEnd();
   };
-  _performNextSubsequentDealPlayerCompleted = () => {
+  _performNextSubsequentDealPlayersCompleted = () => {
     this._performSubsequentDealDealer();
   };
   _performNextSubsequentPlayerDealNextPlayer = () => {
@@ -431,7 +447,7 @@ class Dealer extends _Actor {
     if (!hand) {
       console.log(`End _performNextSubsequentPlayerDealNextPlayer`);
       this._unsetGenerators();
-      this._performNextSubsequentDealPlayerCompleted();
+      this._performNextSubsequentDealPlayersCompleted();
       return;
     }
     const options = this._assessSubsqDealPlayerOptions(hand);

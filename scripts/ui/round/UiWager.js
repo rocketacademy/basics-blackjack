@@ -108,10 +108,13 @@ class UiWager extends Ui_Component {
     const uiAward = this._newUiResult(award);
     uiResults.addUiResult(uiAward);
 
+    const { remarks } = result;
+    const uiRemarks = this._newUiResult(remarks);
+    uiResults.addUiResult(uiRemarks);
+
     const mode = result.decision.mode;
     if (award === AWARD_ENUM.PLAYER_WIN) {
       const uiPayout = this._newUiResult(`Payout Ratio: ${mode.ratio}`);
-      const uiMode = this._newUiResult(`${mode.desc}`);
       uiResults.addUiResult(uiPayout);
     }
     return uiResults;

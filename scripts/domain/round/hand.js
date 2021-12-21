@@ -1,5 +1,3 @@
-// HAND
-
 class PlayerStatus {
   static IN_PLAY = new PlayerStatus();
   static BUSTED = new PlayerStatus();
@@ -68,8 +66,9 @@ class Hand {
       return false;
     }
   };
+  // No good form :()
   isBusted = () => {
-    return this.getBestValue(this._cards, 0, this._cards.length) !== null;
+    return this.getBestValue(this._cards, 0, this._cards.length) === null;
   };
 
   id = () => this._id;
@@ -100,6 +99,9 @@ class Hand {
   whatDoYouWantToDoOnSubsequentDeal = (dealer, options) => {
     if (!options) {
       throw new Error(`Option required for subsequent deal`);
+    }
+    if (!Object.values(options).some((is) => is === true)) {
+      throw new Error(`No good options... Please don't ask the hand.`);
     }
     console.group(`whatDoYouWantToDoOnSubsequentDeal`);
     if (!this._wager || !this._wager.getBet()) {

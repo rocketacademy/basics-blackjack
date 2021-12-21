@@ -1,4 +1,43 @@
+// HAND
+class UiButtonStand extends Ui_Button {
+  constructor() {
+    super();
+    this._root.textContent = "STAND";
+    this._root.className += " blackjack-button-stand";
+  }
+
+  setOnMouseClick = (cb) => (this._root.onclick = () => cb());
+}
+
+class UiButtonHit extends Ui_Button {
+  constructor() {
+    super();
+    this._root.className += " blackjack-button-hit";
+    this._root.textContent = "HIT";
+  }
+  setOnMouseClick = (cb) => (this._root.onclick = () => cb());
+}
+
+class UiButtonsWrapper extends Ui_Component {
+  constructor() {
+    super();
+    this._root.style.flexDirection = "row";
+    this._root.style.marginTop = "10px";
+    this._root.style.marginBottom = "10px";
+  }
+
+  addUiButton = (uiB) => this.appendChildUi(uiB);
+}
+
 class UiHand extends Ui_Component {
+  _newUiButtonsWrapper = (uiBs) => {
+    const uiBWrap = new UiButtonsWrapper();
+    for (const uiB of uiBs) {
+      uiBWrap.addUiButton(uiB);
+    }
+
+    return uiBWrap;
+  };
   _style = () => {
     this._root.style.border = "1px white dotted";
     this._root.style.height = "auto";
@@ -71,23 +110,30 @@ class UiHand extends Ui_Component {
 
     this._hand.setOnWhatDoYouWantToDoOnSubsequentDeal((dealer, options) => {
       console.group(`uiHand, invoke setOnWhatDoYouWantToDoOnSubsequentDeal`);
-
+      console.warn(options);
       const optionsUiButtons = [];
-      let buttonStand = null;
       if (options.canStand) {
-        buttonStand = new UiButtonStand();
+        const buttonStand = new UiButtonStand();
         buttonStand.setOnMouseClick(() => {
           dealer.requestStand(this._hand);
           this.replaceChildrenUi(this._uiCardHolder, this._uiWager);
         });
-
         optionsUiButtons.push(buttonStand);
       }
 
+      if (options.canHit) {
+        const buttonHit = new UiButtonHit();
+
+        buttonHit.setOnMouseClick(() => {
+          dealer.requestHit(this._hand);
+        });
+        optionsUiButtons.push(buttonHit);
+      }
+      const uiButtonWrapper = this._newUiButtonsWrapper(optionsUiButtons);
       this.replaceChildrenUi(
         this._uiCardHolder,
         this._uiWager,
-        ...optionsUiButtons
+        uiButtonWrapper
       );
       console.groupEnd();
     });

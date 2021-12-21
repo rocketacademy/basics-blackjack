@@ -16,6 +16,8 @@ class Deck {
     FaceValue.KING,
   ];
   static POINT_TWENTY_ONE = 21;
+  static POINT_DEALER_DRAW_TO = 16;
+  static POINT_DEALER_STAND_TO = 17;
 
   static newCard = (suit, faceValue) => {
     const card = new Card(suit, faceValue);
