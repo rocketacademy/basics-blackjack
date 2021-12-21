@@ -114,16 +114,17 @@ class Dealer extends _Actor {
     return options;
   };
 
-  __assessHandCanHit = (hand) => {
-    const length = hand.count();
-  };
   _assessSubsqDealPlayerOptions = (hand) => {
     const options = {};
-    hand.hasTwentyOne();
-    options.canStand = true;
-    options.canHit = false;
-    options.canDouble = false;
-    options.canSplit = false;
+    const hasTwentyOne = hand.hasTwentyOne();
+    const isBusted = hand.isBusted();
+    const count = hand.count();
+
+    //TODO if hand is surrender than cannot act
+    options.canStand = true || false;
+    options.canHit = !hasTwentyOne && !isBusted;
+    options.canDouble = count === 2;
+    options.canSplit = false || false;
     return options;
   };
 
@@ -426,15 +427,15 @@ class Dealer extends _Actor {
     this._performSubsequentDealDealer();
   };
   _performNextSubsequentPlayerDealNextPlayer = () => {
-    const activeHand = this._handGen.next();
-    if (!activeHand) {
+    const hand = this._handGen.next();
+    if (!hand) {
       console.log(`End _performNextSubsequentPlayerDealNextPlayer`);
       this._unsetGenerators();
       this._performNextSubsequentDealPlayerCompleted();
       return;
     }
-    const options = this._assessSubsqDealPlayerOptions(activeHand);
-    activeHand.whatDoYouWantToDoOnSubsequentDeal(this, options);
+    const options = this._assessSubsqDealPlayerOptions(hand);
+    hand.whatDoYouWantToDoOnSubsequentDeal(this, options);
   };
 
   _callForInitialBetsCompleted = () => this._initialDeal();
