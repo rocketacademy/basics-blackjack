@@ -373,7 +373,7 @@ var main = function (input) {
     else {
       outputMessage = `Wrong input.<br>Please type "Hit" or "Stand".<br><br>${showPlayerCards(
         playerHand
-      )}<br><br>${showDealerCards(dealerHand)}`;
+      )}`;
     }
     return outputMessage;
   }
