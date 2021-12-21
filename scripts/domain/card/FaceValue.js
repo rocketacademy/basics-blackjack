@@ -24,7 +24,7 @@ class FaceValue {
    * @param {number} hardValue
    * @param {number} softValue
    */
-  constructor(rank, hardValue, softValue) {
+  constructor(rank, hardValue, softValue = null) {
     this._rank = rank;
     this._hardValue = hardValue;
     this._softValue = softValue;
@@ -32,5 +32,11 @@ class FaceValue {
 
   getRank = () => this._rank;
   getHardValue = () => this._hardValue;
-  getSoftValue = () => this._softValue;
+  getSoftValue = () => {
+    if (!this._softValue) {
+      throw new Error(`Null soft value should not be access`);
+    }
+
+    return this._softValue;
+  };
 }

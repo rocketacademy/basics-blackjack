@@ -35,22 +35,30 @@ class Hand {
     );
   };
   //TODO to optimize
-  hasTwentyOne = () => {
-    const copyCards = this._cards.slice();
 
-    // const possiblePointOrder = copyCards.reduce((list,card )=>{
-    //   const hards = list.map(cardsVals => cardsVals.slice().push(card.getHardValue()))
-
-    //   if(card.getRank() === FaceValue.ACE){
-
-    //     const softs = list.map(cardsVals => cardsVals.slice().push(card.getSoftValue()))
-    //     return [...hards,...softs]
-    //   }
-    // },[])
-    const length = this._cards.length;
-
-    for (let i = 0; i < length; i += 1) {}
+  getBestValue = (cards, i = 0, length, best = 0) => {
+    if (i === length) {
+      return best;
+    }
+    const card = cards[i];
+    const rank = card.getRank();
+    if (rank === FaceValue.ACE) {
+      const hard = best + card.getHardValue();
+      const soft = best + card.getSoftValue();
+      if (hard <= 21) {
+      }
+    }
   };
+  hasTwentyOne = () => {
+    const possiblePointOrder = this.getBestValue(
+      this._cards,
+      0,
+      this._cards.length
+    );
+    console.warn(`hasTwentyOne`);
+    console.warn(possiblePointOrder);
+  };
+
   _generallyAceWithPicture = (c1, c2) => {
     if (c1.getHardValue() === 1) {
       const c2HardValue = c2.getHardValue();
@@ -62,7 +70,7 @@ class Hand {
   };
   //TODO need to chedk for both soft and hard values
   isBusted = () => {
-    const isHardBusted = this.getHardTotal() < 22;
+    const isHardBusted = this.getHardTotal() > 21;
 
     //TODO
     const isSoftBusted = true;
