@@ -7,7 +7,7 @@ class UiCardHolder extends Ui_Aggregate {
 
     // Root Configuration
 
-    this._root.className += "blackjack-card-holder";
+    this._root.className += " blackjack-card-holder";
     this._root.style.height = "120px";
     this._root.style.width = "90px";
     // Children

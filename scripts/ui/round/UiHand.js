@@ -18,6 +18,15 @@ class UiButtonHit extends Ui_Button {
   setOnMouseClick = (cb) => (this._root.onclick = () => cb());
 }
 
+class UiButtonDouble extends Ui_Button {
+  constructor() {
+    super();
+    this._root.className += " blackjack-button-double";
+    this._root.textContent = "DOUBLE";
+  }
+  setOnMouseClick = (cb) => (this._root.onclick = () => cb());
+}
+
 class UiButtonsWrapper extends Ui_Component {
   constructor() {
     super();
@@ -29,6 +38,12 @@ class UiButtonsWrapper extends Ui_Component {
   addUiButton = (uiB) => this.appendChildUi(uiB);
 }
 
+class UiDouble extends Ui_Text {
+  constructor() {
+    super();
+  }
+}
+
 class UiHand extends Ui_Component {
   _newUiButtonsWrapper = (uiBs) => {
     const uiBWrap = new UiButtonsWrapper();
@@ -37,6 +52,14 @@ class UiHand extends Ui_Component {
     }
 
     return uiBWrap;
+  };
+  _newUiDouble = () => {
+    const uiD = new UiDouble();
+
+    uiD.setTextContent("Double Your Bet");
+    uiD.getRoot().style.fontSize = "10px";
+
+    return uiD;
   };
   _style = () => {
     this._root.style.border = "1px white dotted";
@@ -102,12 +125,22 @@ class UiHand extends Ui_Component {
     console.log(`Hooking setWhenGoingToAskForInitialBet`);
     this._hand.setWhenGoingToAskForInitialBet(() => {
       console.group(`uiHand, invoking setWhenGoingToAskForInitialBet`);
-      console.log(this._hand.getWager());
       this._uiWager = this._newUiWager(this._hand.getWager());
       this.replaceChildrenUi(this._uiWager);
       console.groupEnd();
     });
+    this._hand.setOnHowMuchWagerDouble(() => {
+      console.group(`uiHand, invoke setOnHowMuchWagerDouble`);
 
+      const uiDouble = this._newUiDouble();
+
+      this.replaceChildrenUi(this._uiCardHolder, this._uiWager, uiDouble);
+      console.groupEnd();
+    });
+
+    this._hand.setOnDoubledDown(() => {
+      this.replaceChildrenUi(this._uiCardHolder, this._uiWager);
+    });
     this._hand.setOnWhatDoYouWantToDoOnSubsequentDeal((dealer, options) => {
       console.group(`uiHand, invoke setOnWhatDoYouWantToDoOnSubsequentDeal`);
       console.warn(options);
@@ -128,6 +161,15 @@ class UiHand extends Ui_Component {
           dealer.requestHit(this._hand);
         });
         optionsUiButtons.push(buttonHit);
+      }
+
+      if (options.canDouble) {
+        const buttonDouble = new UiButtonDouble();
+
+        buttonDouble.setOnMouseClick(() => {
+          dealer.requestInitialDouble(this._hand);
+        });
+        optionsUiButtons.push(buttonDouble);
       }
       const uiButtonWrapper = this._newUiButtonsWrapper(optionsUiButtons);
       this.replaceChildrenUi(

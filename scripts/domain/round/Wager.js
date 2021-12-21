@@ -16,12 +16,30 @@ class Wager {
     this._onBetChange(amt);
   };
 
+  addBet = (amt) => {
+    const newBet = this._amt + amt;
+    this._onBetChange(newBet);
+  };
+
   getBet = () => this._amt;
   retrieveMainBet = () => {
     const m = this._amt;
     this.setBet(this._amt - m);
     return m;
   };
+
+  pleasePlaceYourDouble = (dealer) => {
+    const sponsor = this.getSponsor();
+    const sponsorCredit = sponsor.getCredit();
+    const placedBet = this.getBet();
+
+    // CRA-V6-3.26 (wagering an amount equal to or less than his original wager)
+    const limit = Math.min(sponsorCredit, placedBet);
+    this._onPleasePlaceYourDouble(dealer, limit);
+  };
+
+  _onPleasePlaceYourDouble = (dealer, limit) => {};
+  setOnPleasePlaceYouDouble = (cb) => (this._onPleasePlaceYourDouble = cb);
   placeYourInitialBet = (dealer) => {
     console.group(`wager. notified turn to bet.`);
     if (!dealer) {
@@ -29,7 +47,7 @@ class Wager {
     }
     const sponsor = this.getSponsor();
     const playableCredit = sponsor.getCredit();
-    const hand = this.getHand();
+
     this._onPlaceYourInitialBet(this, dealer, playableCredit);
     console.groupEnd();
   };
@@ -66,4 +84,11 @@ class Wager {
     console.log("seetint");
     this._onInitialBetStaked = cb;
   };
+
+  doubledDown = () => {
+    console.log(`hand notified of wager doubledDown`);
+    this._onDoubleDown();
+  };
+  _onDoubleDown = () => {};
+  setOnDoubledDown = (cb) => (this._onDoubleDown = cb);
 }

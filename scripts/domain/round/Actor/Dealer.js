@@ -105,7 +105,7 @@ class Dealer extends _Actor {
 
     const pointTotal = this._hand.getBestValue();
     const isBusted = this._hand.isBusted();
-    console.log(`Dealer Hard Total ${hardTotal}`);
+    console.log(`Dealer pointTotal ${pointTotal}`);
 
     //CRA-V6-3.34
     options.canHit = !isBusted && pointTotal <= 16;
@@ -120,6 +120,8 @@ class Dealer extends _Actor {
     const hasTwentyOne = hand.hasTwentyOne();
     const isBusted = hand.isBusted();
     const count = hand.count();
+
+    const isSponsorFunded = hand.getController().getCredit();
     console.log(`has 21 ${hasTwentyOne}`);
     console.log(`has isBusted ${isBusted}`);
     //TODO if hand is surrender than cannot act
@@ -132,7 +134,7 @@ class Dealer extends _Actor {
 
     // CRA-V6-3.30, CRA-V6-3.26.1
     //TODO 3.26.3
-    options.canDouble = count === 2 && !hasTwentyOne;
+    options.canDouble = count === 2 && !hasTwentyOne && isSponsorFunded;
     options.canSplit = false || false;
     return options;
   };
@@ -204,7 +206,7 @@ class Dealer extends _Actor {
     const playerHand = wager.getHand();
 
     console.log(`Hand : ${playerHand.getCards().map((c) => c.getRank())}`);
-    console.log(`Sponsor : ${wager.getSponsor()}`);
+    console.log(`Sponsor : ${wager.getSponsor().getName()}`);
     console.groupEnd();
 
     const playerPointTotal = playerHand.getHardTotal();
@@ -269,15 +271,14 @@ class Dealer extends _Actor {
         type: SETTLEMENT_TYPE.SETTLE_FINAL,
         remarks: `CRA-V6-4.3.1`,
       };
-    } else {
-      // CRA-V6-4.2.2
-      if (dealerPointTotal < playerPointTotal) {
-        return {
-          decision: { award: AWARD_ENUM.PLAYER_WIN, mode: PAY_TABLE.REGULAR },
-          type: SETTLEMENT_TYPE.SETTLE_FINAL,
-          remarks: `CRA-V6-4.2.2`,
-        };
-      }
+    }
+    // CRA-V6-4.2.2
+    if (dealerPointTotal < playerPointTotal) {
+      return {
+        decision: { award: AWARD_ENUM.PLAYER_WIN, mode: PAY_TABLE.REGULAR },
+        type: SETTLEMENT_TYPE.SETTLE_FINAL,
+        remarks: `CRA-V6-4.2.2`,
+      };
     }
 
     // CRA-V6-4.2.3
@@ -291,6 +292,7 @@ class Dealer extends _Actor {
         remarks: `CRA-V6-4.2.3`,
       };
     }
+    throw new Error(`Irregularity. No result type.`);
   };
   /**
    *
@@ -390,6 +392,22 @@ class Dealer extends _Actor {
     this._performNextSubsequentPlayerDealNextPlayer();
   };
 
+  requestInitialDouble = (hand) => {
+    // Sanity Check
+
+    const options = this._assessSubsqDealOptionsPLAYER(hand);
+    if (!options.canDouble) {
+      throw new Error(`Eager hand doubling.`);
+    }
+    hand.howMuchWagerDouble(this);
+    return;
+  };
+
+  /**
+   *     this._transferCard(this._round.getShoe(),hand).flip(true)
+    this._performNextSubsequentPlayerDealNextPlayer();
+   */
+
   requestNewRound = () => {
     this._round.finish(true);
     //TODO
@@ -484,6 +502,26 @@ class Dealer extends _Actor {
       return;
     }
     activeSeat.callForInitialBet(this);
+  };
+  requestPlaceDouble = (wager, doubleAmt) => {
+    console.group(`dealer receives request to placeInitialBet`);
+    doubleAmt = Number(doubleAmt);
+    const sponsor = wager.getSponsor();
+    this._doubleDown(sponsor, doubleAmt, wager);
+
+    wager.doubledDown();
+    wager.getHand().doubledDown();
+    this._performNextSubsequentPlayerDealNextPlayer();
+
+    console.groupEnd();
+  };
+
+  _doubleDown = (sponsor, doubleAmt, wager) => {
+    console.group(`dealer performs the transfer of value`);
+    sponsor.decreaseCredit(doubleAmt);
+    wager.addBet(doubleAmt);
+    console.log(sponsor.getCredit());
+    console.groupEnd();
   };
 
   /**

@@ -1,9 +1,3 @@
-class PlayerStatus {
-  static IN_PLAY = new PlayerStatus();
-  static BUSTED = new PlayerStatus();
-  constructor() {}
-}
-
 class Hand {
   static FIRST_CARD = 0;
   static SECOND_CARD = 1;
@@ -15,7 +9,6 @@ class Hand {
     this._cards = [];
 
     this._controller = null;
-    this._status = PlayerStatus.IN_PLAY;
     this._id = uuidv4();
     this._wager = null;
 
@@ -23,6 +16,8 @@ class Hand {
 
     this._isSurrendered = false;
   }
+
+  getController = () => this._controller;
   isSurrendered = () => this._isSurrendered;
 
   isBlackJack = () => {
@@ -33,7 +28,7 @@ class Hand {
     );
   };
 
-  getBestValue = (cards, i = 0, length, v = 0) => {
+  _getBestValue = (cards, i = 0, length, v = 0) => {
     if (v > Deck.POINT_TWENTY_ONE) {
       return null;
     }
@@ -44,16 +39,18 @@ class Hand {
     const card = cards[i];
     const hardValue = card.getHardValue();
     const rank = card.getRank();
-    let hardVal = this.getBestValue(cards, i + 1, length, v + hardValue);
+    let hardVal = this._getBestValue(cards, i + 1, length, v + hardValue);
     if (rank === FaceValue.ACE) {
       const soft = card.getSoftValue();
-      return hardVal || this.getBestValue(cards, i + 1, length, v + soft);
+      return hardVal || this._getBestValue(cards, i + 1, length, v + soft);
     }
     return hardVal;
   };
 
+  getBestValue = () => this._getBestValue(this._cards, 0, this._cards.length);
+
   hasTwentyOne = () => {
-    const bestPoint = this.getBestValue(this._cards, 0, this._cards.length);
+    const bestPoint = this._getBestValue(this._cards, 0, this._cards.length);
     return bestPoint === Deck.POINT_TWENTY_ONE;
   };
 
@@ -68,7 +65,7 @@ class Hand {
   };
   // No good form :()
   isBusted = () => {
-    return this.getBestValue(this._cards, 0, this._cards.length) === null;
+    return this._getBestValue(this._cards, 0, this._cards.length) === null;
   };
 
   id = () => this._id;
@@ -96,6 +93,14 @@ class Hand {
     this._controller = player;
   };
 
+  howMuchWagerDouble = (dealer) => {
+    this._onhowMuchWagerDouble();
+    this._wager.pleasePlaceYourDouble(dealer);
+  };
+
+  _onhowMuchWagerDouble = (dealer, limit) => {};
+  setOnHowMuchWagerDouble = (cb) => (this._onhowMuchWagerDouble = cb);
+
   whatDoYouWantToDoOnSubsequentDeal = (dealer, options) => {
     if (!options) {
       throw new Error(`Option required for subsequent deal`);
@@ -118,7 +123,7 @@ class Hand {
   setOnWhatDoYouWantToDoOnSubsequentDeal = (cb) =>
     (this._onWhatDoYouWantToDoOnSubsequentDeal = cb);
 
-  placeYourInitialBet = (dealer) => {
+  placeWageInitialBet = (dealer) => {
     const sponsor = this._controller;
     if (!sponsor) {
       throw new Error(`hand.placeYourInitialBet: sponsor required.`);
@@ -146,16 +151,26 @@ class Hand {
       `Awaiting wager on hand [${hand.getCards()}] sponsored by ${spon.getName()} with ${limit}`
     );
 
-    this._onAskWageFoInitialBet(spon, hand, limit, dealer);
+    this._onAskWagerFoInitialBet();
     this._wager.placeYourInitialBet(dealer);
   };
 
-  _onAskWageFoInitialBet = () => {};
+  _onAskWagerFoInitialBet = () => {};
 
   setWhenGoingToAskForInitialBet = (cb) => {
-    this._onAskWageFoInitialBet = cb;
+    this._onAskWagerFoInitialBet = cb;
+  };
+  doubledDown = () => {
+    console.log(`hand notified of wager doubledDown`);
+
+    this._onDoubledDown();
   };
 
+  _onDoubledDown = () => {};
+
+  setOnDoubledDown = (cb) => {
+    this._onDoubledDown = cb;
+  };
   initialBetStaked = () => {
     console.log(`hand notified of initial wager staked`);
   };

@@ -12,7 +12,7 @@ class UiDealer extends Ui_Actor {
     const t = new Ui_Text();
     t._root.style.height = "30px";
     t._root.style.width = "fit-content";
-    t._root.className += "blackjack-display-dealer-message";
+    t._root.className += " blackjack-display-dealer-message";
 
     return t;
   };
