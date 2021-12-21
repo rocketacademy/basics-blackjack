@@ -401,6 +401,14 @@ const runPlayerTurn = function (input) {
 
   double_block: {
     if (input.trim().toLowerCase() == DOUBLE) {
+      if (
+        playersArray[playersArrayIndex].bets * 2 >
+        playersArray[playersArrayIndex].cash
+      ) {
+        return `${generateHandCardsMsg()}<br>Hi ${
+          playersArray[playersArrayIndex].name
+        }, you do not have sufficient cash to double.`;
+      }
       playersArray[playersArrayIndex].bets *= 2;
       playersArray[playersArrayIndex].cards.push(shuffledDeck.pop());
       countCardPoints();
