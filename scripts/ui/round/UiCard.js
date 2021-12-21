@@ -4,7 +4,7 @@ class UiImgCard extends Ui_Img {
     this._root.src = url;
     this._root.alt = url;
     this._root.style.width = "auto";
-    this._root.style.height = "100%";
+    this._root.style.height = "7.2rem";
     this._root.style.padding = "14px";
 
     this._root.className += ` blackjack-card-img`;
