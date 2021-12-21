@@ -12,6 +12,16 @@ let houseCardValue = 0;
 let playerCardValue = [];
 let winLossTie = 0;
 
+//reset helper fn
+let gameResetter = function () {
+  cardDeck = [];
+  houseDraw = [];
+  gamePlayed = 0;
+  houseCardValue = 0;
+  playerCardValue = [];
+  winLossTie = 0;
+};
+
 //array shuffle helper fn
 let shuffleArray = function (array) {
   for (let i = array.length - 1; i > 0; i -= 1) {
@@ -146,6 +156,10 @@ let main = function (input) {
 
     //calc total house card value
     calcHouseCardValue();
+    //check for double aces, if true, house card value -10
+    if (houseCardValue > 21) {
+      houseCardValue -= 10;
+    }
     console.log(`house card value: ${houseCardValue}`);
   }
 
@@ -169,6 +183,10 @@ let main = function (input) {
     if (gamePlayed < playerCount && playerCardValue[gamePlayed] == 0) {
       //calc player card values
       calcPlayerCardValue(gamePlayed);
+      //check for double aces. minus 10 from player card value if true
+      if (playerCardValue[gamePlayed] > 21) {
+        playerCardValue[gamePlayed] -= 10;
+      }
       console.log(`player card values: ${playerCardValue}`);
       return `${outputMessage}<br><br>Your current cards gives you ${playerCardValue[gamePlayed]}<br><br>Would you like to hit or stand?`;
     }
@@ -180,33 +198,25 @@ let main = function (input) {
         //draw a card and add to player card value
         let drawCard = cardDeck.pop();
         playerCardValue[gamePlayed] += drawCard.rank;
+        //check for multiple aces. -10 from player card value for each additional ace.
+        if (drawCard.name == `A` && playerCardValue[gamePlayed] > 21) {
+          playerCardValue[gamePlayed] -= 10;
+        }
         //check player card value, if >21, bust the player.
         if (playerCardValue[gamePlayed] > 21) {
           //bust the player and gameplayed +=1. add condition if gameplayed == playerCount -1
           if (gamePlayed == playerCount - 1) {
             //check if its the last player to hit. If so, return a different statement showing house cards.
-            return `${outputMessage}<br><br>You drew ${drawCard.name}${
-              drawCard.suit
-            }<br><br>Your current cards gives you ${
-              playerCardValue[gamePlayed]
-            }. You went over 21, BUSTED.<br><br>Banker flips over his second card, showing ${
-              houseDraw[0].name
-            }${houseDraw[0].suit},${houseDraw[1].name}${
-              houseDraw[1].suit
-            } for a total of ${houseCardValue}
-            ${(gamePlayed += 1)}`;
+            let outputValue =
+              outputMessage +
+              `<br><br>You drew ${drawCard.name}${drawCard.suit}<br><br>Your current cards gives you ${playerCardValue[gamePlayed]}. You went over 21, BUSTED.<br><br>Banker flips over his second card, showing ${houseDraw[0].name}${houseDraw[0].suit},${houseDraw[1].name}${houseDraw[1].suit} for a total of ${houseCardValue}`;
+            gamePlayed += 1;
+            return `${outputValue}`;
           }
           let outPutValue =
             outputMessage +
             `<br><br>You drew ${drawCard.name}${drawCard.suit}<br><br>Your current cards gives you ${playerCardValue[gamePlayed]}. You went over 21, BUSTED.<br><br>`;
           gamePlayed += 1;
-          //   return `${outputMessage}<br><br>You drew ${drawCard.name}${
-          //     drawCard.suit
-          //   }<br><br>Your current cards gives you ${
-          //     playerCardValue[gamePlayed]
-          //   }. You went over 21, BUSTED.<br><br>${(gamePlayed += 1)}<b>${
-          //     userNames[gamePlayed].username
-          //   }</b>, click submit to play your turn.`;
           return `${outPutValue}<b>${userNames[gamePlayed].username}</b>, click submit to play your turn.`;
         }
         return `${outputMessage}<br><br>You drew ${drawCard.name}${drawCard.suit}<br><br>Your current cards gives you ${playerCardValue[gamePlayed]}`;
@@ -231,9 +241,13 @@ let main = function (input) {
     if (houseCardValue < 17) {
       let i = 2;
       while (houseCardValue < 17) {
-        console.log(`test`);
-        houseDraw.push(cardDeck.pop());
+        let houseDrawCard = cardDeck.pop();
+        houseDraw.push(houseDrawCard);
         houseCardValue += houseDraw[i].rank;
+        //check for multiple aces
+        if (houseDrawCard.name == `A` && houseCardValue > 21) {
+          houseCardValue -= 10;
+        }
         outputMessage += `<br><br>Banker draws ${houseDraw[i].name}${houseDraw[i].suit} for a total of ${houseCardValue}`;
         i += 1;
       }
@@ -251,10 +265,53 @@ let main = function (input) {
 
   //do each player card value compared to house card value.
   if (winLossTie == 1) {
+    //condition if banker busts
+    if (houseCardValue > 21) {
+      let outputWinLoss = `Banker has busted`;
+      //loop to see who else busted. anyone that did not bust add bank balance = bet amount, set message, reset statuses
+      for (let n = 0; n < playerCardValue.length; n += 1) {
+        if (playerCardValue[n] < 22) {
+          //add bank balance feature
+
+          //set message
+          outputWinLoss += `<br><br><b>${userNames[n].username}</b> Congrats! You've won.<br>Bank balance is at xx`;
+        } else {
+          outputWinLoss += `<br><br><b>${userNames[n].username}</b> you busted as well. Lucky escape!<br>Bank balance is at xx`;
+        }
+      }
+      gameResetter();
+      return outputWinLoss + "<br><br>Click submit to start again!";
+    }
+    //final output should be showing all player values incl. house
+    let outputWinLoss = `Banker has ${houseCardValue}`;
     //compare values
-    //if tie, do nothing, reset neccessary game statuses
-    //if player > house, add bank balance = bet amount, reset game statuses
-    // if player < house, reduce bank balance = bet amount, reset game statuses
+    for (let i = 0; i < playerCardValue.length; i += 1) {
+      //if player < house, reduce bank balance = bet amount
+      if (playerCardValue[i] < houseCardValue) {
+        //reduce bank balance feature
+
+        //set message
+        outputWinLoss += `<br><br><b>${userNames[i].username}</b> you have ${playerCardValue[i]}, you've lost.<br>Bank balance is at xx`;
+      } else if (playerCardValue[i] > houseCardValue) {
+        //if player > house, add bank balance = bet amount UNLESS player busted
+        if (playerCardValue[i] > 21) {
+          //reduce bank balance feature
+
+          //set message
+          outputWinLoss += `<br><br><b>${userNames[i].username}</b> you have ${playerCardValue[i]}, you've busted.<br>Bank balance is at xx`;
+        }
+        //add bank balance feature
+
+        //set message
+        outputWinLoss += `<br><br><b>${userNames[i].username}</b> you have ${playerCardValue[i]}, Congrats! You've won.<br>Bank balance is at xx`;
+      } else if (playerCardValue[i] == houseCardValue) {
+        //if tie, do nothing, set message
+        outputWinLoss += `<br><br><b>${userNames[i].username}</b> you have ${playerCardValue[i]}, it's a tie, Narrow escape!<br>Bank balance is at xx`;
+      }
+    }
+    //reset neccessary game statuses
+    gameResetter();
+    return outputWinLoss + "<br><br>Click submit to start again!";
   }
 
   //TO BE ADDED -- BETTING FUNCTIONS
