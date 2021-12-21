@@ -1,25 +1,31 @@
-// 1. Draw 2 random cards each for player and computer (4 cards to be drawn in total from the same deck)
-// 2. Check for any blackjack (both players blackjack, player blackjack, computer blackjack)
+// 1. Draw 2 random cards each for player and dealer (4 cards to be drawn in total from the same deck)
+// 2. Check for any blackjack (both players blackjack, player blackjack, dealer blackjack)
 // 3. If no blackjack, check for the total (if total > 21 -> disqualified) (winner will be the closest to 21)
 
 // Declare global variables and game mode
-var gameMode = "Draw Cards";
+var gameMode = "Intro";
+var gameModePlaceBet = "Place Bet";
+var gameModeDrawCards = "Draw Cards";
 var gameModeCheckBlackjack = "Check Blackjack";
 var gameModeCheckCardSum = "Check Card Sum";
 var gameModePlayerHitStand = "Player Hit Stand";
-var gameModeComputerHitStand = "Computer Hit Stand";
+var gameModeDealerHitStand = "Dealer Hit Stand";
 var gameModeWinningCalculation = "Winning Calculation";
 var playerCardOne;
 var playerCardTwo;
 var playerCardAdditional;
-var computerCardOne;
-var computerCardTwo;
-var ComputerCardAdditional;
+var dealerCardOne;
+var dealerCardTwo;
+var dealerCardAdditional;
 var playerCardArray = [];
-var computerCardArray = [];
+var dealerCardArray = [];
 var playerCardSum;
-var computerCardSum;
+var dealerCardSum;
 var compareScoreArray = [];
+var playerChips = 100;
+var chipsBettedInRound;
+
+////////////////////////////////////// HELPER FUNCTION //////////////////////////////////////
 
 // HELPER FUNCTION 1 - Make Deck
 var makeDeck = function () {
@@ -177,7 +183,7 @@ var sumOfCardsTest = function (cardArray) {
     while (cardSum > 21 && aceCount > 0) {
       // Ace will turn from 11 to 1 (so total sum -10 for each Ace change)
       cardSum -= 10;
-      // Loop will exit if aceCount is 1
+      // Loop will exit if aceCount is 0
       aceCount -= 1;
     }
   }
@@ -185,18 +191,20 @@ var sumOfCardsTest = function (cardArray) {
   return cardSum;
 };
 
-// HELPER FUNCTION 5 - Compare player and computer sum in an array
+// HELPER FUNCTION 5 - Compare player and dealer sum in an array
 var computeWinnerFromScore = function (scoreArray) {
   // Scenario 1 - Both Bust
   if (scoreArray[0] > 21 && scoreArray[1] > 21) {
     return `<b>🃏THE WINNER IS ... ... 🃏</b></br>
             </br>
             Player's score: ${playerCardSum} </br>
-            Computer's score: ${computerCardSum} </br>
+            Dealer's score: ${dealerCardSum} </br>
             </br>
-            <b>PLAYER AND COMPUTER BUSTED.</br>
+            <b>PLAYER AND DEALER BUSTED.</br>
             </br>
             IT'S A TIE!</br></b>
+            </br>
+            You have ${playerChips} remaining chips. </br>
             </br>
             Click submit to play another round.`;
   }
@@ -205,47 +213,59 @@ var computeWinnerFromScore = function (scoreArray) {
     return `<b>🃏THE WINNER IS ... ... 🃏</b></br>
             </br>
             Player's score: ${playerCardSum} </br>
-            Computer's score: ${computerCardSum} </br>
+            Dealer's score: ${dealerCardSum} </br>
             </br>
             <b>PLAYER BUSTED.</br>
             </br>
-            COMPUTER WINS! 🥳</br></b>
+            DEALER WINS! 🥳</br></b>
+            </br>
+            You have ${playerChips} remaining chips. </br>
             </br>
             Click submit to play another round.`;
   }
-  // Scenario 3 - Computer Bust
+  // Scenario 3 - Dealer Bust
   else if (scoreArray[1] > 21) {
+    // Add chips won
+    playerChips = playerChips + normalWin(chipsBettedInRound);
     return `<b>🃏THE WINNER IS ... ... 🃏</b></br>
             </br>
             Player's score: ${playerCardSum} </br>
-            Computer's score: ${computerCardSum} </br>
+            Dealer's score: ${dealerCardSum} </br>
             </br>
-            <b>COMPUTER BUSTED.</br>
+            <b>DEALER BUSTED.</br>
             </br>
             PLAYER WINS! 🥳</br></b>
+            </br>
+            You have ${playerChips} remaining chips. </br>
             </br>
             Click submit to play another round.`;
   }
   // Scenario 4 - Player (index = 0) wins
   else if (scoreArray[0] > scoreArray[1]) {
+    // Add chips won
+    playerChips = playerChips + normalWin(chipsBettedInRound);
     return `<b>🃏 THE WINNER IS ... ... 🃏</b></br>
             </br>
             Player's score: ${playerCardSum} </br>
-            Computer's score: ${computerCardSum} </br>
+            Dealer's score: ${dealerCardSum} </br>
             </br>
             <b>PLAYER WINS! 🥳</b></br>
             </br>
+            You have ${playerChips} remaining chips. </br>
+            </br>
             Click submit to play another round.`;
   }
-  // Scenario 5 - Computer (index = 1) wins
+  // Scenario 5 - Dealer (index = 1) wins
   else if (scoreArray[0] < scoreArray[1]) {
     return `<b>🃏 THE WINNER IS ... ... 🃏</b></br>
             </br>
             Player's score: ${playerCardSum} </br>
-            Computer's score: ${computerCardSum} </br>
+            Dealer's score: ${dealerCardSum} </br>
             </br>
-            <b> COMPUTER WINS! 🥳</b></br>
+            <b> DEALER WINS! 🥳</b></br>
             </br>
+            You have ${playerChips} remaining chips. </br>
+              </br>
             Click submit to play another round.`;
   }
   // Scenario 6 - Draw
@@ -253,10 +273,12 @@ var computeWinnerFromScore = function (scoreArray) {
     return `<b>🃏THE WINNER IS ... ... 🃏</b></br>
             </br>
             Player's score: ${playerCardSum} </br>
-            Computer's score: ${computerCardSum} </br>
+            Dealer's score: ${dealerCardSum} </br>
             </br>
             <b>IT'S A TIE!</b></br>
             </br>
+            You have ${playerChips} remaining chips. </br>
+              </br>
             Click submit to play another round.`;
   }
 };
@@ -265,67 +287,120 @@ var computeWinnerFromScore = function (scoreArray) {
 var resetGame = function () {
   // Clear all the arrays
   playerCardArray = [];
-  computerCardArray = [];
+  dealerCardArray = [];
   compareScoreArray = [];
-  //Change mode back to "Draw Cards"
-  gameMode = "Draw Cards";
+  chipsBettedInRound = 0;
+  //Change mode back to "Intro"
+  gameMode = "Intro";
 };
+
+// HELPER FUNCTION 7 - Payoff calculation for chips
+// Blackjack win (payoff 3:2, i.e. if bet 100, win 150)
+// Normal win (payoff (1:1, i.e. if bet 100, win 100))
+// to add capital (i.e. chips betted) to winning chip amount
+var blackjackWin = function (chipBetted) {
+  chipToAdd = chipBetted * 1.5 + chipBetted;
+  return chipToAdd;
+};
+
+var normalWin = function (chipBetted) {
+  chipToAdd = chipBetted * 2;
+  return chipToAdd;
+};
+
+////////////////////////////////////// MAIN FUNCTION //////////////////////////////////////
 
 // MAIN FUNCTION
 var main = function (input) {
-  // 1. GAME MODE 1 - Draw random cards for computer and player using the Make Deck and Shuffle Deck Helper Function
-  if (gameMode == "Draw Cards") {
+  // 0. GAME MODE 0 - Intro
+  if (gameMode == "Intro" && playerChips > 0) {
+    // Control flow - change game mode to betting
+    gameMode = gameModePlaceBet;
+    return `Welcome! </br> 
+            </br>
+            You have ${playerChips} chips available to bet. </br>
+            </br>
+            Please input the number of chips to bet.`;
+  }
+
+  // 1. GAME MODE 1 - Allow the player to bet chips
+  else if (gameMode == gameModePlaceBet) {
+    // assign input to chipsBettedInRound
+    chipsBettedInRound = Number(input);
+    // Chips betted cannot be more than playerChips and it must be at least 1
+    if (chipsBettedInRound > playerChips || chipsBettedInRound < 1) {
+      return `Invalid number of chips betted. </br>
+              </br>
+              Please input a valid number of chips to bet that is within your means. `;
+    } else {
+      // deduct betted chips to get the remaining chips
+      playerChips = playerChips - chipsBettedInRound;
+      // Control flow - change game mode to draw random cards
+      gameMode = gameModeDrawCards;
+      return `${chipsBettedInRound} chips betted for this round. </br>
+              </br>
+              ${playerChips} chips remaining. </br>
+              </br>
+              Click submit to continue.`;
+    }
+  }
+
+  // 2. GAME MODE 2 - Draw random cards for dealer and player using the Make Deck and Shuffle Deck Helper Function
+  else if (gameMode == gameModeDrawCards) {
     // give shuffled deck
     var gameDeck = giveShuffledDeck();
-    // assign random cards for player and computer
+    // assign random cards for player and dealer
     playerCardOne = gameDeck.pop();
     playerCardTwo = gameDeck.pop();
     playerCardAdditional = gameDeck.pop();
-    computerCardOne = gameDeck.pop();
-    computerCardTwo = gameDeck.pop();
-    computerCardAdditional = gameDeck.pop();
+    dealerCardOne = gameDeck.pop();
+    dealerCardTwo = gameDeck.pop();
+    dealerCardAdditional = gameDeck.pop();
     console.log(playerCardOne, playerCardTwo);
-    console.log(computerCardOne, computerCardTwo);
+    console.log(dealerCardOne, dealerCardTwo);
     // Control flow - change game mode to check for blackjack
     gameMode = gameModeCheckBlackjack;
     // return output message
+    // remove dealerCardOne details
     return `The card deck has been shuffled! </br> 
             </br>
             Player's draw: ${playerCardOne.name} ${playerCardOne.suit} and ${playerCardTwo.name} ${playerCardTwo.suit} </br>
-            Computer's draw: ${computerCardOne.name} ${computerCardOne.suit} and ${computerCardTwo.name} ${computerCardTwo.suit}</br>
+            Dealer's draw: Hidden card and ${dealerCardTwo.name} ${dealerCardTwo.suit}</br>
             </br>
             Click submit button to continue!`;
   }
 
-  // 2. GAME MODE 2 - Check for blackjack
+  // 3. GAME MODE 3 - Check for blackjack
   else if (gameMode == gameModeCheckBlackjack) {
     // Scenarios for blackjack (Ace + 10/Jack/Queen/King)
-    // Nested-if Scenario 1 - Player and Computer draw blackjack (Draw)
+    // Nested-if Scenario 1 - Player and Dealer draw blackjack (Draw)
     if (
       (playerCardOne.rank == 1 &&
         playerCardTwo.rank >= 10 &&
-        computerCardOne.rank == 1 &&
-        computerCardTwo.rank >= 10) ||
+        dealerCardOne.rank == 1 &&
+        dealerCardTwo.rank >= 10) ||
       (playerCardOne.rank >= 10 &&
         playerCardTwo.rank == 1 &&
-        computerCardOne.rank == 1 &&
-        computerCardTwo.rank >= 10) ||
+        dealerCardOne.rank == 1 &&
+        dealerCardTwo.rank >= 10) ||
       (playerCardOne.rank == 1 &&
         playerCardTwo.rank >= 10 &&
-        computerCardOne.rank >= 10 &&
-        computerCardTwo.rank == 1) ||
+        dealerCardOne.rank >= 10 &&
+        dealerCardTwo.rank == 1) ||
       (playerCardOne.rank >= 10 &&
         playerCardTwo.rank == 1 &&
-        computerCardOne.rank >= 10 &&
-        computerCardTwo.rank == 1)
+        dealerCardOne.rank >= 10 &&
+        dealerCardTwo.rank == 1)
     ) {
       // Reset game using helper function 6
       resetGame();
       return `<b>🃏 THE WINNER IS ... ... 🃏</b></br>
                 </br>
-                Both Player and Computer drew blackjack! </br>
+                Both Player and Dealer drew blackjack! </br>
                 </br>
                 <b>IT'S A TIE!</b></br>
+                </br>
+                You have ${playerChips} remaining chips. </br>
                 </br>
                 Click submit to play another round.`;
     }
@@ -334,6 +409,8 @@ var main = function (input) {
       (playerCardOne.rank == 1 && playerCardTwo.rank >= 10) ||
       (playerCardOne.rank >= 10 && playerCardTwo.rank == 1)
     ) {
+      // Add chips won
+      playerChips = playerChips + blackjackWin(chipsBettedInRound);
       // Reset game using helper function 6
       resetGame();
       return `<b>🃏 THE WINNER IS ... ... 🃏</b></br>
@@ -342,20 +419,24 @@ var main = function (input) {
               </br>
               <b>PLAYER WON! 🥳</b></br>
               </br>
+              You have ${playerChips} remaining chips. </br>
+              </br>
               Click submit to play another round.`;
     }
-    // Nested-if Scenario 3 - Computer draws blackjack (Computer wins)
+    // Nested-if Scenario 3 - Dealer draws blackjack (Dealer wins)
     else if (
-      (computerCardOne.rank == 1 && computerCardTwo.rank >= 10) ||
-      (computerCardOne.rank >= 10 && computerCardTwo.rank == 1)
+      (dealerCardOne.rank == 1 && dealerCardTwo.rank >= 10) ||
+      (dealerCardOne.rank >= 10 && dealerCardTwo.rank == 1)
     ) {
       // Reset game using helper function 6
       resetGame();
       return `<b>🃏 THE WINNER IS ... ... 🃏</b></br>
               </br>
-              Computer drew blackjack! </br>
+              Dealer drew blackjack! </br>
               </br>
-              <b>COMPUTER WON! 🥳</b></br>
+              <b>DEALER WON! 🥳</b></br>
+              </br>
+              You have ${playerChips} remaining chips. </br>
               </br>
               Click submit to play another round.`;
     }
@@ -363,37 +444,36 @@ var main = function (input) {
     else {
       // Control flow - change game mode to calculate the sum
       gameMode = gameModeCheckCardSum;
-      // Push the player and computer card rank into array for sum later
+      // Push the player and dealer card rank into array for sum later
       playerCardArray.push(playerCardOne.rank);
       playerCardArray.push(playerCardTwo.rank);
-      computerCardArray.push(computerCardOne.rank);
-      computerCardArray.push(computerCardTwo.rank);
-      return `Neither the Player nor the Computer drew blackjack! </br>
+      dealerCardArray.push(dealerCardOne.rank);
+      dealerCardArray.push(dealerCardTwo.rank);
+      return `Neither the Player nor the Dealer drew blackjack! </br>
               </br>
               Click submit button to continue!`;
     }
   }
 
-  // 3. GAME MODE 3 - Check for the total sum of the cards drawn
+  // 4. GAME MODE 4 - Check for the total sum of the cards drawn
   else if (gameMode == gameModeCheckCardSum) {
-    // Compute the sum for player and computer using helper function 4
+    // Compute the sum for player and dealer using helper function 4
     playerCardSum = sumOfCardsTest(playerCardArray);
-    computerCardSum = sumOfCardsTest(computerCardArray);
-    // console.log(playerCardSum, computerCardSum);
+    dealerCardSum = sumOfCardsTest(dealerCardArray);
+    // console.log(playerCardSum, dealerCardSum);
     // Control flow - change game mode to ask player for hit/stand
     gameMode = gameModePlayerHitStand;
     return `Player's hand: ${playerCardOne.name} ${playerCardOne.suit} and ${playerCardTwo.name} ${playerCardTwo.suit} </br>
-            Computer's hand: ${computerCardOne.name} ${computerCardOne.suit} and ${computerCardTwo.name} ${computerCardTwo.suit}</br>
+            Dealer's hand: Hidden card and ${dealerCardTwo.name} ${dealerCardTwo.suit}</br>
             </br>
             Current Score: </br>
             Player: ${playerCardSum} </br>
-            Computer: ${computerCardSum} </br>
             </br>
             Enter 'hit' or 'stand' to continue.
     `;
   }
 
-  // 4. GAME MODE 4 - Ask if player wishes to draw an additional card
+  // 5. GAME MODE 5 - Ask if player wishes to draw an additional card
   else if (gameMode == gameModePlayerHitStand) {
     // change the input to lower case
     input = input.toLowerCase();
@@ -403,27 +483,25 @@ var main = function (input) {
       playerCardArray.push(playerCardAdditional.rank);
       // Add the rank of the new card into the playerCardSum
       playerCardSum = sumOfCardsTest(playerCardArray);
-      // Control flow - change game mode for computer to hit/stand
-      gameMode = gameModeComputerHitStand;
+      // Control flow - change game mode for dealer to hit/stand
+      gameMode = gameModeDealerHitStand;
       return `Player chose to hit.</br>
       </br>
       Player drew an additional card of ${playerCardAdditional.name} ${playerCardAdditional.suit}.</br>
       </br>
       Current Score: </br>
       Player: ${playerCardSum} </br>
-      Computer: ${computerCardSum} </br>
       </br>
       Click submit to continue.`;
     }
     // If input is stand
     else if (input == "stand") {
-      // Control flow - change game mode for computer to hit/stand
-      gameMode = gameModeComputerHitStand;
+      // Control flow - change game mode for dealer to hit/stand
+      gameMode = gameModeDealerHitStand;
       return `Player chose to stand.</br>
       </br>
       Current Score: </br>
       Player: ${playerCardSum} </br>
-      Computer: ${computerCardSum} </br>
       </br>
       Click submit to continue.`;
     }
@@ -433,49 +511,60 @@ var main = function (input) {
     }
   }
 
-  // 5. GAME MODE 5 - Computer to decide hit / stand
-  else if (gameMode == gameModeComputerHitStand) {
-    // if computerCardSum <17, draw new card
-    if (computerCardSum < 17) {
-      // Push new card into computer array
-      computerCardArray.push(computerCardAdditional.rank);
+  // 6. GAME MODE 6 - Dealer to decide hit / stand
+  else if (gameMode == gameModeDealerHitStand) {
+    // if dealerCardSum <17, draw new card
+    if (dealerCardSum < 17) {
+      // Push new card into dealer array
+      dealerCardArray.push(dealerCardAdditional.rank);
       // Add the rank of the new card into the playerCardSum
-      computerCardSum = sumOfCardsTest(computerCardArray);
+      dealerCardSum = sumOfCardsTest(dealerCardArray);
       // Control flow - change game mode for winning calculation
       gameMode = gameModeWinningCalculation;
-      return `Computer chose to hit.</br>
+      return `Dealer chose to hit.</br>
       </br>
-      Computer drew an additional card of ${computerCardAdditional.name} ${computerCardAdditional.suit}.</br>
+      Dealer drew an additional card of ${dealerCardAdditional.name} ${dealerCardAdditional.suit}.</br>
       </br>
-      Current Score: </br>
+      Total Score: </br>
       Player: ${playerCardSum} </br>
-      Computer: ${computerCardSum} </br>
+      Dealer: ${dealerCardSum} </br>
       </br>
       Click submit to continue.`;
     }
-    // if computerCardSum is 17 or above, computer will stand
+    // if dealerCardSum is 17 or above, dealer will stand
     else {
       // Control flow - change game mode for winning calculation
       gameMode = gameModeWinningCalculation;
-      return `Computer chose to stand.</br>
+      return `Dealer chose to stand.</br>
       </br>
-      Current Score: </br>
+      Total Score: </br>
       Player: ${playerCardSum} </br>
-      Computer: ${computerCardSum} </br>
+      Dealer: ${dealerCardSum} </br>
       </br>
       Click submit to continue.`;
     }
   }
 
-  // 6. GAME MODE 6 - Computer to decide hit / stand
+  // 7. GAME MODE 7 - Dealer to decide hit / stand
   else if (gameMode == gameModeWinningCalculation) {
-    // Push the player and computer card sum to compareScoreArray for comparison
+    // Push the player and dealer card sum to compareScoreArray for comparison
     compareScoreArray.push(playerCardSum);
-    compareScoreArray.push(computerCardSum);
+    compareScoreArray.push(dealerCardSum);
     // Return winner using helper function 5
     var resultOutput = computeWinnerFromScore(compareScoreArray);
     // Reset game using helper function 6
     resetGame();
     return resultOutput;
+  }
+
+  // 8. RAN OUT OF CHIPS
+  else if (gameMode == "Intro" && playerChips < 1) {
+    // Replenish the betting chips
+    playerChips = 100;
+    return `You have 0 chips available to bet. </br>
+            </br>
+            You have gone bankrupt! 😢 </br>
+            </br>
+            Click submit to replenish betting chips.`;
   }
 };
