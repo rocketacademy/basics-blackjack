@@ -29,6 +29,7 @@ var gameStartMode = `game start`;
 var drawCardsMode = `draw cards`;
 var showResultsMode = `show results`;
 var hitOrStandMode = `hit or stand`;
+var gameOver = `game over`;
 var currentGameMode = gameStartMode;
 
 // Declare variables to store player and dealer hands
@@ -292,6 +293,8 @@ var main = function (input) {
             dealerHand
           )}<br><br>Please hit refresh to play again.`;
         }
+        // change to the next gameMode
+        currentGameMode = gameOver;
       }
     }
 
@@ -344,6 +347,8 @@ var main = function (input) {
             dealerHand
           )}<br><br>Please hit refresh to play again.`;
         }
+        // change to the next gameMode
+        currentGameMode = gameOver;
       }
 
       // Dealer > 21
@@ -353,6 +358,8 @@ var main = function (input) {
         )}<br><br>${showDealerCards(
           dealerHand
         )}<br><br>Please hit refresh to play again.`;
+        // change to the next gameMode
+        currentGameMode = gameOver;
       }
     }
 
@@ -363,5 +370,10 @@ var main = function (input) {
       )}<br><br>${showDealerCards(dealerHand)}`;
     }
     return outputMessage;
+  }
+
+  // Game Over
+  if (currentGameMode == gameOver) {
+    return `Game Over!<br><br>Please refresh the page to play again`;
   }
 };
