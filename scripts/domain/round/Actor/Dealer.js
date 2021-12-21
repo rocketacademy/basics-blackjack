@@ -100,21 +100,22 @@ class Dealer extends _Actor {
     this._handGen = null;
   };
 
-  _assessSubsqDealDealerOptions = () => {
+  _assessSubsqDealOptionsDEALER = () => {
     const options = {};
 
-    const hardTotal = this._hand.getHardTotal();
+    const pointTotal = this._hand.getBestValue();
+    const isBusted = this._hand.isBusted();
     console.log(`Dealer Hard Total ${hardTotal}`);
 
-    //TODO: CRA-V6-3.34
-    options.canHit = hardTotal <= 16 || false;
+    //CRA-V6-3.34
+    options.canHit = !isBusted && pointTotal <= 16;
 
     //TODO: CRA-V6-3.35
 
     return options;
   };
 
-  _assessSubsqDealPlayerOptions = (hand) => {
+  _assessSubsqDealOptionsPLAYER = (hand) => {
     const options = {};
     const hasTwentyOne = hand.hasTwentyOne();
     const isBusted = hand.isBusted();
@@ -126,7 +127,7 @@ class Dealer extends _Actor {
 
     // CRA-V6-3.30
     options.canStand = !isBusted && !hasTwentyOne && !false;
-
+    // CRA-V6-3.29
     options.canHit = !hasTwentyOne && !isBusted;
 
     // CRA-V6-3.30, CRA-V6-3.26.1
@@ -377,7 +378,7 @@ class Dealer extends _Actor {
   };
   requestHit = (hand) => {
     this._transferCard(this._round.getShoe(), hand).flip(true);
-    const options = this._assessSubsqDealPlayerOptions(hand);
+    const options = this._assessSubsqDealOptionsPLAYER(hand);
     if (!Object.values(options).some((is) => is === true)) {
       this._performNextSubsequentPlayerDealNextPlayer();
       return;
@@ -435,7 +436,7 @@ class Dealer extends _Actor {
   };
   _performSubsequentDealDealer = () => {
     console.group(`Dealing drawing turn`);
-    const options = this._assessSubsqDealDealerOptions();
+    const options = this._assessSubsqDealOptionsDEALER();
 
     if (options.canHit) {
       this._transferCard(this._round.getShoe(), this._hand).flip(true);
@@ -456,7 +457,7 @@ class Dealer extends _Actor {
       this._performNextSubsequentDealPlayersCompleted();
       return;
     }
-    const options = this._assessSubsqDealPlayerOptions(hand);
+    const options = this._assessSubsqDealOptionsPLAYER(hand);
     hand.whatDoYouWantToDoOnSubsequentDeal(this, options);
   };
 
