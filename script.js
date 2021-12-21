@@ -1,12 +1,8 @@
 //globals
-let playerCount = 3;
-let userNames = [
-  { username: "asd", bank: 0 },
-  { username: "bsd", bank: 0 },
-  { username: "csd", bank: 0 },
-];
+let playerCount = 0;
+let userNames = [];
 let changeUserName = 5;
-let indexUserName = 2;
+let indexUserName = 0;
 
 //to be reset after each game
 let cardDeck = [];
@@ -15,7 +11,7 @@ let gamePlayed = 0;
 let houseCardValue = 0;
 let playerCardValue = [];
 let winLossTie = 0;
-let betAmount = [10, 10, 10];
+let betAmount = [];
 
 //reset helper fn
 let gameResetter = function () {
@@ -237,6 +233,12 @@ let main = function (input) {
       if (playerCardValue[gamePlayed] > 21) {
         playerCardValue[gamePlayed] -= 10;
       }
+      //check for blackjack
+      if (playerCardValue[gamePlayed] == 21) {
+        let outputMessagee = `${outputMessage}<br><br>Your current cards gives you ${playerCardValue[gamePlayed]}<br><br>You got Blackjack, congrats!`;
+        gamePlayed += 1;
+        return `${outputMessagee}`;
+      }
       console.log(`player card values: ${playerCardValue}`);
       return `${outputMessage}<br><br>Your current cards gives you ${playerCardValue[gamePlayed]}<br><br>Would you like to hit or stand?`;
     }
@@ -249,7 +251,12 @@ let main = function (input) {
         let drawCard = cardDeck.pop();
         playerCardValue[gamePlayed] += drawCard.rank;
         //check for multiple aces. -10 from player card value for each additional ace.
-        if (drawCard.name == `A` && playerCardValue[gamePlayed] > 21) {
+        if (
+          (drawCard.name == `A` ||
+            userNames[gamePlayed].card1.name == "A" ||
+            userNames[gamePlayed].card2.name == "A") &&
+          playerCardValue[gamePlayed] > 21
+        ) {
           playerCardValue[gamePlayed] -= 10;
         }
         //check player card value, if >21, bust the player.
@@ -269,12 +276,17 @@ let main = function (input) {
           gamePlayed += 1;
           return `${outPutValue}<b>${userNames[gamePlayed].username}</b>, click submit to play your turn.`;
         }
+        if (playerCardValue[gamePlayed] == 21) {
+          let ooutputMessage = `${outputMessage}<br><br>You drew ${drawCard.name}${drawCard.suit}<br><br>Your current cards gives you ${playerCardValue[gamePlayed]}<br><br>This is the best possible outcome other than Blackjack. Just sit back and pray for now!`;
+          gamePlayed += 1;
+          return ooutputMessage;
+        }
         return `${outputMessage}<br><br>You drew ${drawCard.name}${drawCard.suit}<br><br>Your current cards gives you ${playerCardValue[gamePlayed]}`;
       } else if (input == "stand") {
         //check if its the last player to stand. If so, return a different statement showing house cards.
         if (gamePlayed == playerCount - 1) {
           gamePlayed += 1;
-          return `${outputMessage}<br><br>Banker flips over his second card, showing ${houseDraw[0].name}${houseDraw[0].suit},${houseDraw[1].name}${houseDraw[1].suit} for a total of ${houseCardValue}`;
+          return `Banker flips over his second card, showing ${houseDraw[0].name}${houseDraw[0].suit},${houseDraw[1].name}${houseDraw[1].suit} for a total of ${houseCardValue}<br><br>Banker will make its move now.`;
         }
         //go to next player
         gamePlayed += 1;
@@ -287,8 +299,10 @@ let main = function (input) {
   else if (gamePlayed == playerCount && winLossTie == 0) {
     console.log(`code reaches here success`);
     let outputMessage = `Banker is showing ${houseDraw[0].name}${houseDraw[0].suit},${houseDraw[1].name}${houseDraw[1].suit} for a total of ${houseCardValue}`;
-
-    if (houseCardValue < 17) {
+    if (houseCardValue == 21) {
+      winLossTie = 1;
+      return `${outputMessage}<br><br>Banker has Blackjack. pay up y'all!<br><br>Click submit to see outcome and claim winnings`;
+    } else if (houseCardValue < 17) {
       let i = 2;
       while (houseCardValue < 17) {
         let houseDrawCard = cardDeck.pop();
@@ -315,8 +329,31 @@ let main = function (input) {
 
   //do each player card value compared to house card value.
   if (winLossTie == 1) {
+    //condition if banker has blackjack
+    if (houseCardValue == 21 && houseDraw.length == 2) {
+      let outputWinLoss = `Banker has Blackjack!`;
+      //loop to see who else has blackjack. anyone that did not will reduce bank balance = bet amount, set message, reset statuses
+      for (let n = 0; n < playerCardValue.length; n += 1) {
+        if (
+          playerCardValue[n] == 21 &&
+          (userNames[n].card1.name == "A" || userNames[n].card2.name == "A") &&
+          (userNames[n].card1.rank == 10 || userNames[n].card2.rank == 10)
+        ) {
+          console.log("testtt");
+          //add bank balance feature
+          userNames[n].bank += betAmount[n];
+          //set message
+          outputWinLoss += `<br><br><b>${userNames[n].username}</b> Congrats! You've won with Blackjack.<br>Bank balance is at ${userNames[n].bank}`;
+        } else {
+          userNames[n].bank -= betAmount[n];
+          outputWinLoss += `<br><br><b>${userNames[n].username}</b> you lost to Banker's Blackjack!<br>Bank balance is at ${userNames[n].bank}`;
+        }
+      }
+      gameResetter();
+      return outputWinLoss + "<br><br>Click submit to start again!";
+    }
     //condition if banker busts
-    if (houseCardValue > 21) {
+    else if (houseCardValue > 21) {
       let outputWinLoss = `Banker has busted`;
       //loop to see who else busted. anyone that did not bust add bank balance = bet amount, set message, reset statuses
       for (let n = 0; n < playerCardValue.length; n += 1) {
@@ -351,11 +388,12 @@ let main = function (input) {
 
           //set message
           outputWinLoss += `<br><br><b>${userNames[i].username}</b> you have ${playerCardValue[i]}, you've busted.<br>Bank balance is at ${userNames[i].bank}`;
+        } else {
+          //add bank balance feature
+          userNames[i].bank += betAmount[i];
+          //set message
+          outputWinLoss += `<br><br><b>${userNames[i].username}</b> you have ${playerCardValue[i]}, Congrats! You've won.<br>Bank balance is at ${userNames[i].bank}`;
         }
-        //add bank balance feature
-        userNames[i].bank += betAmount[i];
-        //set message
-        outputWinLoss += `<br><br><b>${userNames[i].username}</b> you have ${playerCardValue[i]}, Congrats! You've won.<br>Bank balance is at ${userNames[i].bank}`;
       } else if (playerCardValue[i] == houseCardValue) {
         //if tie, do nothing, set message
         outputWinLoss += `<br><br><b>${userNames[i].username}</b> you have ${playerCardValue[i]}, it's a tie, Narrow escape!<br>Bank balance is at ${userNames[i].bank}`;
@@ -366,7 +404,7 @@ let main = function (input) {
     return outputWinLoss + "<br><br>Click submit to start again!";
   }
 
-  // //boot the player if bank account goes to 0 lines 343 and 351
+  // // TO BE ADDED -- boot the player if bank account goes to 0 (lines 380, 388 and 349)
   //       if (userNames[i].bank == 0) {
   //         outputWinLoss += `<br><br><b>${userNames[i].username}</b> you have ${playerCardValue[i]}, you've lost.<br>Bank balance is at ${userNames[i].bank}<br><br>You're bankrupt. Gambling never pays, go make some money instead. Goodbye!`;
   //         userNames.splice(i, 1);
