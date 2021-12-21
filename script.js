@@ -273,7 +273,7 @@ var getGameOutcome = function (input) {
     if (playerHighestSum == 21) {
       overallOutcome = `GAME OVER! <br> You win <br><br> Congrats you have a Blackjack win! Your total is ${playerHighestSum} and the dealer's total is ${dealerHighestSum}!`;
     } else if (dealerHighestSum == 21) {
-      overallOutcome = `GAME OVER! <br> You lost <br><br> Oh no you have lost! The dealer drew a black jack win! Your total is ${playerHighestSum} and the dealer's total is${dealerHighestSum}!`;
+      overallOutcome = `GAME OVER! <br> You lost <br><br> Oh no you have lost! The dealer drew a black jack win! Your total is ${playerHighestSum} and the dealer's total is ${dealerHighestSum}!`;
     } else if (playerHighestSum > 21) {
       overallOutcome = `GAME OVER! <br> You lost! <br><br> Oh no you have lost! You have exceeded 21! <br><br> Your total is ${playerHighestSum} and the dealer's total is ${dealerHighestSum}!`;
     } else if (playerHighestSum < 21) {
@@ -346,22 +346,24 @@ var main = function (input) {
     checkDealerAce(dealerHand);
     getGameOutcome(playerHand, dealerHand);
     console.log(getGameOutcome(playerHand, dealerHand), "Round 1 results");
-    gameMode += gameMode + 1;
+    gameMode += gameMode += 1;
     console.log(gameMode, "===== Current Game Mode =======");
     return `Hi ${userName}!<br><br> ${overallOutcome} <br><br> You have drawn: <br><br> Card 1: ${playerHand[0].name} of ${playerHand[0].suit}. <br><br> Card 2: ${playerHand[1].name} of ${playerHand[1].suit}.`;
   } else if (gameMode == 1) {
     getGameOutcome(playerHand, dealerHand);
     if (input == "hit") {
+      gameMode = 1;
       playerHit(input);
       console.log("===== Hit successful =====");
       getGameOutcome(playerHand, dealerHand);
       console.log(gameMode, "===== Current Game Mode =======");
-      return `Hi ${userName}!<br><br> ${overallOutcome}.`;
+      return `Hi ${userName}!<br><br> ${overallOutcome}`;
     } else if (input == "stand") {
       gameMode = 2;
       getGameOutcome(playerHand, dealerHand);
       console.log(gameMode, "===== Current Game Mode =======");
-      return `Hi ${userName}!<br><br> ${overallOutcome}.`;
+      return `Hi ${userName}!<br><br> ${overallOutcome}`;
     }
+    return `Hi ${userName}!<br><br> ${overallOutcome}`;
   }
 };
