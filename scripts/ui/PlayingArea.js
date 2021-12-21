@@ -12,7 +12,8 @@ class PlayingArea {
     uiRound
       .setOnFinish((lounge, isContinue) => {
         if (isContinue === true) {
-          new PlayingArea(this._uiRoot).newRoundOfPlay(lounge);
+          const [round] = new PlayingArea(this._uiRoot).newRoundOfPlay(lounge);
+          round.getDealer().commence();
         } else if (isContinue === false) {
           new PlayingArea(this._uiRoot).commenceLounge(lounge);
         }

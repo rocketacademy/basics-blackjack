@@ -1,25 +1,33 @@
-class UiButtonNewRound extends Ui_Button {
+class Ui_ButtonEndView extends Ui_Button {
   constructor() {
     super();
-
-    this._root.style.width = "22px";
+    this._root.style.width = "100px";
     this._root.style.height = "22px";
-    this._root.textContent = "NEW ROUND";
-    this._root.className += " blackjack-button-new-round";
+    this._root.style.display = "flex";
+    this._root.style.textAlign = "center";
   }
+
   setOnMouseClick = (cb) => (this._root.onclick = () => cb());
 }
 
-class UiButtonGoToLounge extends Ui_Button {
+class UiButtonNewRound extends Ui_ButtonEndView {
   constructor() {
     super();
+    this._root.style.backgroundColor = "blue";
 
-    this._root.style.width = "22px";
-    this._root.style.height = "22px";
-    this._root.textContent = "LOUNGE";
+    this._root.textContent = "New Round";
+    this._root.className += " blackjack-button-new-round";
+  }
+}
+
+class UiButtonGoToLounge extends Ui_ButtonEndView {
+  constructor() {
+    super();
+    this._root.style.backgroundColor = "red";
+
+    this._root.textContent = "Go To Lounge";
     this._root.className += " blackjack-button-go-to-lounge";
   }
-  setOnMouseClick = (cb) => (this._root.onclick = () => cb());
 }
 
 class UiPhaseDisplay extends Ui_Text {
@@ -30,6 +38,17 @@ class UiPhaseDisplay extends Ui_Text {
   }
 }
 
+class UiEndWrap extends Ui_Aggregate {
+  constructor() {
+    super();
+    this._root.style.display = "flex";
+    this._root.style.justifyContent = "center";
+  }
+
+  addUiButton = (uiB) => {
+    this.appendChildUi(uiB);
+  };
+}
 class UiRound extends Ui_Tree {
   /**
    *
@@ -50,8 +69,9 @@ class UiRound extends Ui_Tree {
     this._root.style.padding = "15px";
     this._root.style.flexDirection = "column";
     this._root.style.height = "100%";
-    this._root.style.minHeight = "600px";
-    this._root.style.marginBottom = "70px";
+    this._root.style.minHeight = "450px";
+    this._root.style.marginBottom = "20px";
+    this._root.style.justifiyContent = "center";
   };
 
   _newUiSeatHolder = (generator) => {
@@ -97,7 +117,32 @@ class UiRound extends Ui_Tree {
     /** @private @const {UiPhaseDisplay} */
     this._uiPhaseDisplay = new UiPhaseDisplay();
 
-    // Hooks
+    this._uiDealer.addOnEndView((dealer) => {
+      console.group(`ui round dealer request restart callback `);
+      const btnR = new UiButtonNewRound();
+      const btnL = new UiButtonGoToLounge();
+
+      const newUiWrap = new UiEndWrap();
+      newUiWrap.addUiButton(btnR);
+      newUiWrap.addUiButton(btnL);
+
+      btnR.setOnMouseClick(() => {
+        dealer.requestNewRound();
+      });
+
+      btnL.setOnMouseClick(() => {
+        dealer.requestGoToLounge();
+      });
+
+      this.replaceChildrenUi(
+        this._uiDealer,
+        this._uiPhaseDisplay,
+        this._uiSeatHolder,
+        newUiWrap
+      );
+      console.groupEnd();
+    });
+    // Domain Hooks
 
     this._round.setOnSetPhase((phase) => {
       console.group(`on Set Phase ui Callback`);

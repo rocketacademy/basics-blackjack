@@ -41,6 +41,7 @@ class Ui_Button extends Ui_Component {
     this._root.style.display = "block";
     this._root.style.height = "fit-content";
     this._root.style.width = "fit-content";
+    this._root.style.width = "fit-content";
   }
 }
 

@@ -13,8 +13,9 @@ class UiDealer extends Ui_Actor {
     this._root.style.marginBottom = "25px";
     this._root.style.alignSelf = "center";
     this._root.style.borderRadius = "25px";
-    this._root.style.height = "160px";
-    this._root.style.minHeight = "fit-content";
+    this._root.style.height = "fit-content";
+    this._root.style.minHeight = "200px";
+    this._root.style.padding = "10px";
   };
 
   _newUiMsgDisplay = () => {
@@ -31,6 +32,7 @@ class UiDealer extends Ui_Actor {
 
     return uiHH;
   };
+
   _newUiHand = (h) => newUiHand(h);
 
   /**
@@ -44,8 +46,9 @@ class UiDealer extends Ui_Actor {
     this._root.className += " blackjack-dealer";
 
     this._uiMsgDisplay = this._newUiMsgDisplay();
+
     this._uiHandHolder = this._newUiHandHolder();
-    //
+
     this._dealer.setOnShout((desc) => {
       console.group(`on Shout Callback`);
       this._uiMsgDisplay.setTextContent(desc);
@@ -58,33 +61,19 @@ class UiDealer extends Ui_Actor {
       this.replaceChildrenUi(this._uiName, this._uiHandHolder);
     });
 
-    this._dealer.setOnEndView(() => {
-      console.group(`ui dealer restart buttons`);
-
-      const buttonRestart = new UiButtonNewRound();
-
-      buttonRestart.setOnMouseClick(() => {
-        this._dealer.requestNewRound();
-      });
-      const buttonLounge = new UiButtonGoToLounge();
-
-      buttonLounge.setOnMouseClick(() => {
-        this._dealer.requestGoToLounge();
-      });
-
-      this.replaceChildrenUi(
-        this._uiName,
-        this._uiMsgDisplay,
-        buttonLounge,
-        buttonRestart
-      );
+    this._dealer.addOnEndView(() => {
+      console.group(`ui dealer  dealer restart buttons callback`);
 
       console.groupEnd();
     });
+
     // Render
     this._style();
     this.replaceChildrenUi(this._uiName, this._uiMsgDisplay);
   }
 
+  addOnEndView = (cb) => {
+    this._dealer.addOnEndView(cb);
+  };
   getUiMsgDisplay = () => this._uiMsgDisplay;
 }

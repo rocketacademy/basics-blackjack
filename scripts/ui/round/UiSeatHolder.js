@@ -26,8 +26,6 @@ class UiSeatHolder extends Ui_Aggregate {
     this._uiSeatsRef = { [uiSeat.id()]: uiSeat, ...this._uiSeatsRef };
 
     const r = this._uiSeats.slice().reverse();
-    console.warn(this._uiSeats);
-    console.warn(r);
     this.replaceChildrenUi(...r);
   };
 

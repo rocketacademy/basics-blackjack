@@ -295,12 +295,29 @@ class Dealer extends _Actor {
       console.log(`win`);
       // Return main wage
 
-      const { ratio } = mode;
       const mainWager = wager.retrieveMainBet();
+
+      console.log(`mainWager ${mainWager}`);
+
       sponsor.increaseCredit(mainWager);
+
+      // payout (win amount)
+      const { ratio } = mode;
+
       const invoice = mainWager * ratio;
-      const payout = this.decreaseCredit(invoice);
-      sponsor.increaseCredit(payout);
+      console.log(`sponsor ${sponsor}`);
+
+      console.log(`amt ${invoice}`);
+      const beforeSettleWinCredit = sponsor.getCredit();
+      this.decreaseCredit(invoice);
+      sponsor.increaseCredit(invoice);
+      const afterSettleCredit = sponsor.getCredit();
+
+      if (afterSettleCredit - beforeSettleWinCredit !== invoice) {
+        throw new Error(
+          `The invoice not tally before${beforeSettleWinCredit} - after${afterSettleCredit} !== ${invoice}`
+        );
+      }
     } else if (award === STAND_OFF) {
       console.log(`stand off`);
 
@@ -347,13 +364,13 @@ class Dealer extends _Actor {
   };
   _performEndView = () => {
     this.shout("The round of play is completed. Restart?");
-    this._onEndView();
+    this._onEndViewsCallbackList.forEach((f) => f(this));
   };
 
-  _onEndView = () => {};
+  _onEndViewsCallbackList = [];
 
-  setOnEndView = (cb) => {
-    this._onEndView = cb;
+  addOnEndView = (cb) => {
+    this._onEndViewsCallbackList.push(cb);
   };
   callForEndViewMode = () => {
     console.group(`dealer was called on ForEndViewMode `);
@@ -438,7 +455,7 @@ class Dealer extends _Actor {
    */
   placeInitialBet = (wager, betValue) => {
     console.group(`dealer receives request to placeInitialBet`);
-
+    betValue = Number(betValue);
     //TODO validation if bet can be placed
     if (!false) {
     }
