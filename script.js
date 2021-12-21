@@ -220,7 +220,7 @@ var main = function (input) {
       }
     }
 
-    // If there is no blackjack for both players then the game will continue and display the below
+    // If there is no blackjack for both players then the game will continue and display the below, player can either draw more cards or continue on with the game without drawing any cards
     if (playerHasBlackjack == false && dealerHasBlackjack == false) {
       myOutputValue = `${showPlayerAndDealerCards(
         playerHand,
@@ -234,8 +234,10 @@ var main = function (input) {
     return myOutputValue;
   }
 
+  //There will be a change in game mode to hit or stand
   if (currGameMode == gameHitOrStand) {
     console.log("Choose Hit");
+    // if player input 'hit' then the game will run the code to draw another deck and store in the array
     if (input == "hit") {
       playerHand.push(gameDeck.pop());
       console.log("Player hands", playerHand);
@@ -246,6 +248,7 @@ var main = function (input) {
     }
     console.log("Choose Stand", myOutputValue);
 
+    // if player input 'stand' then the game will run this code to continue the game and calculate the winner
     if (input == "stand") {
       var playerHandTotalValue = calculateHandValue(playerHand);
       var dealerHandTotalValue = calculateHandValue(dealerHand);
@@ -302,6 +305,7 @@ var main = function (input) {
     }
     return myOutputValue;
   }
+  // This code will run when the game mode is game reset
   if (currGameMode == gameReset) {
     if (input == "") {
       restartGame();
