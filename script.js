@@ -98,7 +98,11 @@ var drawFirstTwoCards = function () {
     console.log(computerCards);
   }
 
-  if (playerSum == 21) {
+  if (
+    playerSum == 21 ||
+    computerSum == 21 ||
+    (playerSum == 21 && computerSum == 21)
+  ) {
     gameMode = ENDROUND;
     return endRound();
   } else {
@@ -121,25 +125,25 @@ var displayCards = function () {
   var sum = 0;
   var sumOfComp = 0;
 
+  for (let index = 0; index < computerCards.length; index++) {
+    sumOfComp += computerCards[index].rank;
+  }
+  computerSum = sumOfComp;
+
   if (gameMode == ENDROUND) {
     for (let index = 0; index < computerCards.length; index++) {
       showComputerCard +=
         `<b>${computerCards[index].name} of ${computerCards[index].suit}</b>` +
         "<br>";
     }
+    showComputerCard += `SUM: ${computerSum}` + "<br>";
   } else {
     showComputerCard +=
       `<b>${computerCards[0].name} of ${computerCards[0].suit}</b>` +
       "<br>" +
-      `& ${computerCards.length - 1} covered cards.` +
+      `& ${computerCards.length - 1} covered cards` +
       "<br>";
   }
-
-  for (let index = 0; index < computerCards.length; index++) {
-    sumOfComp += computerCards[index].rank;
-  }
-  computerSum = sumOfComp;
-  showComputerCard += `SUM: ${computerSum}` + "<br>";
 
   for (let index = 0; index < playerCards.length; index++) {
     showPlayerCard +=
@@ -173,7 +177,7 @@ var hitOrStand = function (userChoice) {
     //ASK AGAIN HIT OR STAND
   } else if (userChoice == STAND) {
     console.log(playerCards);
-    gameMode == ENDROUND;
+    gameMode = ENDROUND;
     return endRound();
   } else {
     message = `please enter hit or stand`;
@@ -183,6 +187,7 @@ var hitOrStand = function (userChoice) {
 };
 
 var endRound = function () {
+  gameMode = ENDROUND;
   var showDrawnCards = displayCards();
 
   var message =
