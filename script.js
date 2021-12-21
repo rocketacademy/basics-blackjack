@@ -54,7 +54,6 @@ const makeDeck = function () {
       // If rank is 1, 11, 12, or 13, set cardName to the ace or face card's name
       if (cardName == 1) {
         cardName = "ace";
-        newRank = 11;
       } else if (cardName == 11) {
         cardName = "jack";
         newRank = 10;
@@ -195,10 +194,23 @@ const dealCard = function (players) {
       players[index].hand[1].name == "ace"
     ) {
       players[index].handvalue = 12;
+    } else if (
+      (players[index].hand[0].name == "ace" &&
+        players[index].hand[1].rank == 10) ||
+      (players[index].hand[0].rank == 10 &&
+        players[index].hand[1].name == "ace")
+    ) {
+      players[index].handvalue = 21;
+      players[index].blackjack = true;
+    } else if (
+      players[index].hand[0].name == "ace" ||
+      players[index].hand[1].name == "ace"
+    ) {
+      players[index].handvalue =
+        players[index].hand[0].rank + players[index].hand[1].rank + 10;
     } else {
       players[index].handvalue =
         players[index].hand[0].rank + players[index].hand[1].rank;
-      checkBlackJack(players[index]);
     }
     index += 1;
   }
@@ -280,14 +292,20 @@ const hitStandSplit = function (input, player) {
     switch (input) {
       case "hit":
         player.hand.push(shuffledDeck.pop());
-        if (player.handvalue > 21) {
-          for (let hand of player) {
-            if (hand.name == "ace") {
-              player.handvalue -= 10;
-            }
-          }
-        } else {
-          player.handvalue += player.hand[player.hand.length - 1].rank;
+        player.handvalue += player.hand[player.hand.length - 1].rank;
+        if (
+          (player.hand.length >= 3 &&
+            player.handvalue > 21 &&
+            player.hand[0].name == "ace") ||
+          player.hand[1].name == "ace"
+        ) {
+          player.handvalue -= 10;
+        } else if (
+          player.hand.length >= 3 &&
+          player.handvalue + 10 < 21 &&
+          player.hand[player.hand.length - 1].name == "ace"
+        ) {
+          player.handvalue += 10;
         }
         message = `Player ${player.number}, you drew ${
           player.hand[player.hand.length - 1].name
@@ -371,11 +389,12 @@ var main = function (input) {
         myOutputValue += `Dealer Blackjack! Player ${
           numOfPlayersPlaying[playerCounter].number
         }: ${calcBetWinLose(numOfPlayersPlaying[playerCounter])}<br>`;
+        numOfPlayersPlaying[playerCounter].hand = [];
         playerCounter += 1;
       }
       playerCounter = 0;
+      dealerHand.blackjack = false;
       gameMode = DEAL_CARDS;
-      // when last player blackjack, game did not automatic display dealer cards. Need to click submit...
     } else if (numOfPlayersPlaying[playerCounter].blackjack == true) {
       playerCounter += 1;
       if (playerCounter == numOfPlayersPlaying.length) {
@@ -403,11 +422,17 @@ var main = function (input) {
     myOutputValue = "";
     playerCounter = 0;
 
-    if (dealerHand.handvalue <= 16) {
+    if (dealerHand.handvalue < 17) {
       dealerHand.hand.push(shuffledDeck.pop());
       dealerHand.handvalue += dealerHand.hand[dealerHand.hand.length - 1].rank;
+      myOutputValue = `Dealer drew ${
+        dealerHand.hand[dealerHand.hand.length - 1].name
+      }${
+        dealerHand.hand[dealerHand.hand.length - 1].suit
+      } <br> -------------------- <br>${dealerHandBoard()} ${playerHandBoard(
+        numOfPlayersPlaying
+      )}`;
     }
-
     if (dealerHand.handvalue > 21) {
       dealerHand.bust = true;
       myOutputValue = `Dealer drew ${
@@ -428,13 +453,6 @@ var main = function (input) {
       dealerHand.handvalue = 0;
       gameMode = DEAL_CARDS;
     } else {
-      myOutputValue = `Dealer drew ${
-        dealerHand.hand[dealerHand.hand.length - 1].name
-      }${
-        dealerHand.hand[dealerHand.hand.length - 1].suit
-      } <br> -------------------- <br>${dealerHandBoard()} ${playerHandBoard(
-        numOfPlayersPlaying
-      )}`;
       while (playerCounter < numOfPlayersPlaying.length) {
         myOutputValue += `Player ${
           numOfPlayersPlaying[playerCounter].number
@@ -449,3 +467,24 @@ var main = function (input) {
   }
   return myOutputValue;
 };
+
+// ---- DOM Manipulation ----
+// var hitButton;
+// var standButton;
+// var container = document.getElementById("container");
+// hitButton = document.createElement("button");
+// standButton = document.createElement("button");
+// hitButton.innerText = "Hit";
+// standButton.innerText = "Stand";
+// container.appendChild(hitButton);
+// container.appendChild(standButton);
+// var message = "";
+// hitButton.addEventListener("click", function () {
+//   message = hitStandSplit("hit", numOfPlayersPlaying[playerCounter]);
+// });
+// var hitButton = document.getElementById("hit-button");
+// hitButton.addEventListener("click", function () {
+//   message = hitStandSplit("hit", numOfPlayersPlaying[playerCounter]);
+// });
+// hitButton.remove();
+// standButton.remove();
