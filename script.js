@@ -190,9 +190,16 @@ const dealCard = function (players) {
   while (index < players.length) {
     players[index].hand.push(shuffledDeck.pop());
     players[index].hand.push(shuffledDeck.pop());
-    players[index].handvalue =
-      players[index].hand[0].rank + players[index].hand[1].rank;
-    checkBlackJack(players[index]);
+    if (
+      players[index].hand[0].name == "ace" &&
+      players[index].hand[1].name == "ace"
+    ) {
+      players[index].handvalue = 12;
+    } else {
+      players[index].handvalue =
+        players[index].hand[0].rank + players[index].hand[1].rank;
+      checkBlackJack(players[index]);
+    }
     index += 1;
   }
   // Dealer to draw 2 cards.
@@ -244,6 +251,7 @@ const calcBetWinLose = function (player) {
   } else if (
     dealerHand.blackjack == true ||
     player.bust == true ||
+    (player.bust == true && dealerHand.bust == true) ||
     (player.handvalue < dealerHand.handvalue && dealerHand.bust == false)
   ) {
     player.chips -= player.bet;
@@ -267,12 +275,20 @@ const calcBetWinLose = function (player) {
 const hitStandSplit = function (input, player) {
   const playerchoice = ["hit", "stand", "split"];
   let message = ``;
-
+  // need to figure out how to recalculate value of ace if there's 2 aces...
   if (playerchoice.includes(input.toLowerCase().trim())) {
     switch (input) {
       case "hit":
         player.hand.push(shuffledDeck.pop());
-        player.handvalue += player.hand[player.hand.length - 1].rank;
+        if (player.handvalue > 21) {
+          for (let hand of player) {
+            if (hand.name == "ace") {
+              player.handvalue -= 10;
+            }
+          }
+        } else {
+          player.handvalue += player.hand[player.hand.length - 1].rank;
+        }
         message = `Player ${player.number}, you drew ${
           player.hand[player.hand.length - 1].name
         }${
@@ -364,7 +380,11 @@ var main = function (input) {
       playerCounter += 1;
       if (playerCounter == numOfPlayersPlaying.length) {
         gameMode = DEALER_TURN;
-        return `${dealerHandBoard()} ${playerHandBoard(numOfPlayersPlaying)}`;
+        return `Player ${
+          numOfPlayersPlaying[playerCounter - 1].number
+        } Blackjack!${dealerHandBoard()} ${playerHandBoard(
+          numOfPlayersPlaying
+        )}`;
       } else {
         return `Player ${
           numOfPlayersPlaying[playerCounter - 1].number
@@ -381,6 +401,7 @@ var main = function (input) {
 
   if (gameMode == DEALER_TURN) {
     myOutputValue = "";
+    playerCounter = 0;
 
     if (dealerHand.handvalue <= 16) {
       dealerHand.hand.push(shuffledDeck.pop());
@@ -404,6 +425,7 @@ var main = function (input) {
         playerCounter += 1;
       }
       playerCounter = 0;
+      dealerHand.handvalue = 0;
       gameMode = DEAL_CARDS;
     } else {
       myOutputValue = `Dealer drew ${
@@ -417,9 +439,11 @@ var main = function (input) {
         myOutputValue += `Player ${
           numOfPlayersPlaying[playerCounter].number
         }: ${calcBetWinLose(numOfPlayersPlaying[playerCounter])}<br>`;
+        numOfPlayersPlaying[playerCounter].hand = [];
         playerCounter += 1;
       }
       playerCounter = 0;
+      dealerHand.handvalue = 0;
       gameMode = DEAL_CARDS;
     }
   }
