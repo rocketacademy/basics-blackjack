@@ -34,7 +34,23 @@ class Hand {
       this._generallyAceWithPicture(this._cards[0], this._cards[1])
     );
   };
+  //TODO to optimize
+  hasTwentyOne = () => {
+    const copyCards = this._cards.slice();
 
+    // const possiblePointOrder = copyCards.reduce((list,card )=>{
+    //   const hards = list.map(cardsVals => cardsVals.slice().push(card.getHardValue()))
+
+    //   if(card.getRank() === FaceValue.ACE){
+
+    //     const softs = list.map(cardsVals => cardsVals.slice().push(card.getSoftValue()))
+    //     return [...hards,...softs]
+    //   }
+    // },[])
+    const length = this._cards.length;
+
+    for (let i = 0; i < length; i += 1) {}
+  };
   _generallyAceWithPicture = (c1, c2) => {
     if (c1.getHardValue() === 1) {
       const c2HardValue = c2.getHardValue();
@@ -79,6 +95,9 @@ class Hand {
   };
 
   whatDoYouWantToDoOnSubsequentDeal = (dealer, options) => {
+    if (!options) {
+      throw new Error(`Option required for subsequent deal`);
+    }
     console.group(`whatDoYouWantToDoOnSubsequentDeal`);
     if (!this._wager || !this._wager.getBet()) {
       return new Error(

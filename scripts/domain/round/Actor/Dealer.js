@@ -113,10 +113,15 @@ class Dealer extends _Actor {
 
     return options;
   };
+
+  __assessHandCanHit = (hand) => {
+    const length = hand.count();
+  };
   _assessSubsqDealPlayerOptions = (hand) => {
     const options = {};
-    options.canHit = false;
+    hand.hasTwentyOne();
     options.canStand = true;
+    options.canHit = false;
     options.canDouble = false;
     options.canSplit = false;
     return options;
@@ -172,12 +177,8 @@ class Dealer extends _Actor {
     }
 
     this._handGen = this._round.getAllHandsGenerator();
-    this._performNextSubsequentPlayerDeal();
-
+    this._performNextSubsequentPlayerDealNextPlayer();
     console.groupEnd();
-  };
-  requestStand = (hand) => {
-    this._performNextSubsequentPlayerDeal();
   };
 
   _performSubsequentDealDealerCompleted = () => {
@@ -360,6 +361,11 @@ class Dealer extends _Actor {
   _performSettlementFinalCompleted = () => {
     this._round.settlementCompleted();
   };
+
+  requestStand = (hand) => {
+    this._performNextSubsequentPlayerDealNextPlayer();
+  };
+
   requestNewRound = () => {
     this._round.finish(true);
     //TODO
@@ -419,10 +425,10 @@ class Dealer extends _Actor {
   _performNextSubsequentDealPlayerCompleted = () => {
     this._performSubsequentDealDealer();
   };
-  _performNextSubsequentPlayerDeal = () => {
+  _performNextSubsequentPlayerDealNextPlayer = () => {
     const activeHand = this._handGen.next();
     if (!activeHand) {
-      console.log(`End _performNextSubsequentPlayerDeal`);
+      console.log(`End _performNextSubsequentPlayerDealNextPlayer`);
       this._unsetGenerators();
       this._performNextSubsequentDealPlayerCompleted();
       return;

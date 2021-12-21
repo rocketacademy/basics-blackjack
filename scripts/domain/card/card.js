@@ -26,6 +26,7 @@ class Card {
 
   getSuitDesc = () => this._suit.desc();
   getHardValue = () => this._faceValue.getHardValue();
+  getSoftValue = () => this._faceValue.getSoftValue();
   getRank = () => this._faceValue.getRank();
   getString = () => `${this._suit}${this._faceValue}`;
   _onFlip = (isFaceUp) => {};
