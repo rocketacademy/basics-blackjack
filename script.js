@@ -568,13 +568,26 @@ const displayBtn = function () {
   ) {
     hitBtn.style.display = "none";
     standBtn.style.display = "none";
-    doubleBtn.style.display = "none";
   } else {
     hitBtn.style.display = "initial";
     standBtn.style.display = "initial";
-    doubleBtn.style.display = "initial";
   }
 
+  if (
+    gameStatus == pendingNumOfPlayers ||
+    gameStatus == pendingBets ||
+    gameStatus == pendingPlayersNames ||
+    gameStatus == pendingPlayersCash ||
+    gameStatus == dealingCards ||
+    gameStatus == dealerTurn ||
+    blackjackFlag == true ||
+    nextPlayerTurnFlag == true ||
+    hitFlag == true
+  ) {
+    doubleBtn.style.display = "none";
+  } else {
+    doubleBtn.style.display = "initial";
+  }
   if (gameStatus == hitStandSplit && blackjackFlag == false) {
     button.style.display = "none";
   } else {
