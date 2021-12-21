@@ -123,8 +123,14 @@ class Dealer extends _Actor {
     console.log(`has isBusted ${isBusted}`);
     //TODO if hand is surrender than cannot act
     // If minimally cannot stand, player should not be able to act
-    options.canStand = !isBusted && !false;
+
+    // CRA-V6-3.30
+    options.canStand = !isBusted && !hasTwentyOne && !false;
+
     options.canHit = !hasTwentyOne && !isBusted;
+
+    // CRA-V6-3.30, CRA-V6-3.26.1
+    //TODO 3.26.3
     options.canDouble = count === 2 && !hasTwentyOne;
     options.canSplit = false || false;
     return options;
