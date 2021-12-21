@@ -10,6 +10,7 @@ let houseDraw = [];
 let gamePlayed = 0;
 let houseCardValue = 0;
 let playerCardValue = [];
+let winLossTie = 0;
 
 //array shuffle helper fn
 let shuffleArray = function (array) {
@@ -96,9 +97,6 @@ let main = function (input) {
     return `Hello <b>${input}</b>, Welcome to the table.`;
   }
 
-  //fill bank accounts for all players
-  bankAccountFiller();
-
   //to change player count
   if (input == "change player count") {
     playerCount = 0;
@@ -128,6 +126,9 @@ let main = function (input) {
     changeUserName = 5;
     return `Username successfully changed. hello <b>${input}</b>.<br><br>Enough time wasted peasants. Now click submit to continue playing.`;
   }
+
+  //fill bank accounts for all players
+  bankAccountFiller();
 
   //create a shuffled deck of cards at game initiation
   if (cardDeck == "") {
@@ -159,43 +160,98 @@ let main = function (input) {
     playerCardValue.fill(Number(0));
     console.log(playerCardValue);
   }
-  //refactor outputmsg
-  let outputMessage = `Banker is showing ${houseDraw[0].name}${houseDraw[0].suit}<br><br><b>${userNames[gamePlayed].username}</b>, you are dealt ${userNames[gamePlayed].card1.name}${userNames[gamePlayed].card1.suit},${userNames[gamePlayed].card2.name}${userNames[gamePlayed].card2.suit}`;
 
-  //use gamePlayed as condition to run through the game with all players.
-  if (gamePlayed < playerCount && playerCardValue[gamePlayed] == 0) {
-    //calc player card values
-    calcPlayerCardValue(gamePlayed);
-    console.log(`player card values: ${playerCardValue}`);
-    return `${outputMessage}<br><br>Your current cards gives you ${playerCardValue[gamePlayed]}<br><br>Would you like to hit or stand?`;
-  }
-  //first player to input hit or stand. Draw card on hit, go to next player on stand
-  if (gamePlayed != playerCount) {
-    if (input == "" || (input != "hit" && input != "stand")) {
-      return `Please enter "hit" or "stand" or we will throw you out of the casino 🕴️<br><br>${outputMessage}<br><br>Your current cards gives you ${playerCardValue[gamePlayed]}`;
-    } else if (input == "hit") {
-      //draw a card and add to player card value
-      let drawCard = cardDeck.pop();
-      playerCardValue[gamePlayed] += drawCard.rank;
-      //check player card value, if >21, bust the player.
-      if (playerCardValue[gamePlayed] > 21) {
-        //bust the player and gameplayed +=1. add condition if gameplayed == playerCount -1
-      }
+  if (gamePlayed < playerCount) {
+    //refactor outputmsg
+    let outputMessage = `Banker is showing ${houseDraw[0].name}${houseDraw[0].suit}<br><br><b>${userNames[gamePlayed].username}</b>, you are dealt ${userNames[gamePlayed].card1.name}${userNames[gamePlayed].card1.suit},${userNames[gamePlayed].card2.name}${userNames[gamePlayed].card2.suit}`;
 
-      return `${outputMessage}<br><br>You drew ${drawCard.name}${drawCard.suit}<br><br>Your current cards gives you ${playerCardValue[gamePlayed]}`;
-    } else if (input == "stand") {
-      //check if its the last player to hit stand. If so, return a different statement showing house cards.
-      if (gamePlayed == playerCount - 1) {
+    //use gamePlayed as condition to run through the game with all players.
+    if (gamePlayed < playerCount && playerCardValue[gamePlayed] == 0) {
+      //calc player card values
+      calcPlayerCardValue(gamePlayed);
+      console.log(`player card values: ${playerCardValue}`);
+      return `${outputMessage}<br><br>Your current cards gives you ${playerCardValue[gamePlayed]}<br><br>Would you like to hit or stand?`;
+    }
+    //first player to input hit or stand. Draw card on hit, go to next player on stand
+    if (gamePlayed != playerCount) {
+      if (input == "" || (input != "hit" && input != "stand")) {
+        return `${outputMessage}<br><br>Your current cards gives you ${playerCardValue[gamePlayed]}<br><br>Please enter "hit" or "stand" or we will throw you out of the casino 🕴️`;
+      } else if (input == "hit") {
+        //draw a card and add to player card value
+        let drawCard = cardDeck.pop();
+        playerCardValue[gamePlayed] += drawCard.rank;
+        //check player card value, if >21, bust the player.
+        if (playerCardValue[gamePlayed] > 21) {
+          //bust the player and gameplayed +=1. add condition if gameplayed == playerCount -1
+          if (gamePlayed == playerCount - 1) {
+            //check if its the last player to hit. If so, return a different statement showing house cards.
+            return `${outputMessage}<br><br>You drew ${drawCard.name}${
+              drawCard.suit
+            }<br><br>Your current cards gives you ${
+              playerCardValue[gamePlayed]
+            }. You went over 21, BUSTED.<br><br>Banker flips over his second card, showing ${
+              houseDraw[0].name
+            }${houseDraw[0].suit},${houseDraw[1].name}${
+              houseDraw[1].suit
+            } for a total of ${houseCardValue}
+            ${(gamePlayed += 1)}`;
+          }
+          return `${outputMessage}<br><br>You drew ${drawCard.name}${
+            drawCard.suit
+          }<br><br>Your current cards gives you ${
+            playerCardValue[gamePlayed]
+          }. You went over 21, BUSTED.<br><br>${(gamePlayed += 1)}<b>${
+            userNames[gamePlayed].username
+          }</b>, click submit to play your turn.`;
+        }
+        return `${outputMessage}<br><br>You drew ${drawCard.name}${drawCard.suit}<br><br>Your current cards gives you ${playerCardValue[gamePlayed]}`;
+      } else if (input == "stand") {
+        //check if its the last player to stand. If so, return a different statement showing house cards.
+        if (gamePlayed == playerCount - 1) {
+          gamePlayed += 1;
+          return `${outputMessage}<br><br>Banker flips over his second card, showing ${houseDraw[0].name}${houseDraw[0].suit},${houseDraw[1].name}${houseDraw[1].suit} for a total of ${houseCardValue}`;
+        }
+        //go to next player
         gamePlayed += 1;
-        return `Banker flips over his second card, showing ${houseDraw[0].name}${houseDraw[0].suit},${houseDraw[1].name}${houseDraw[1].suit} for a total of ${houseCardValue}`;
+        return `<b>${userNames[gamePlayed].username}</b>, click submit to play your turn.`;
       }
-      //go to next player
-      gamePlayed += 1;
-      return `<b>${userNames[gamePlayed].username}</b>, click submit to play your turn.`;
     }
   }
 
   //check house card value, if <=16 draw card, if >=17 then stand.
-  else if (gamePlayed == playerCount) {
+  else if (gamePlayed == playerCount && winLossTie == 0) {
+    console.log(`code reaches here success`);
+    let outputMessage = `Banker is showing ${houseDraw[0].name}${houseDraw[0].suit},${houseDraw[1].name}${houseDraw[1].suit} for a total of ${houseCardValue}`;
+
+    if (houseCardValue < 17) {
+      let i = 2;
+      while (houseCardValue < 17) {
+        console.log(`test`);
+        houseDraw.push(cardDeck.pop());
+        houseCardValue += houseDraw[i].rank;
+        outputMessage += `<br><br>Banker draws ${houseDraw[i].name}${houseDraw[i].suit} for a total of ${houseCardValue}`;
+        i += 1;
+      }
+    }
+    if (houseCardValue > 21) {
+      outputMessage += `<br><br>Banker went bust! Click submit to claim winnings for all players that did not bust.`;
+    } else {
+      winLossTie = 1;
+      outputMessage += `<br><br>Click submit to see outcome and claim winnings`;
+      return `${outputMessage}`;
+    }
+    winLossTie = 1;
+    return `${outputMessage}`;
   }
+
+  //do each player card value compared to house card value.
+  if (winLossTie == 1) {
+    //compare values
+    //if tie, do nothing, reset neccessary game statuses
+    //if player > house, add bank balance = bet amount, reset game statuses
+    // if player < house, reduce bank balance = bet amount, reset game statuses
+  }
+
+  //TO BE ADDED -- BETTING FUNCTIONS
+  // TO BE ADDED -- MULTIPLE ACE VALUES
 };
