@@ -272,6 +272,10 @@ var showBet = function (input) {
     if (playerPoints <= 0) {
       return `Please refresh the page to restart the game`;
     }
+
+    if (input == "") {
+      return `This is an invalid input. Please key in at least $1.`;
+    }
     gameMode = gameStart;
     console.log(gameMode);
     //realised input keeps on giving me a string result, hence to turn into a number
