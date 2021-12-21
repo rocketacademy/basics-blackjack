@@ -69,6 +69,7 @@ var HITORSTAND = `hit or stand`;
 var HIT = `hit`;
 var STAND = `stand`;
 var ENDROUND = `end of round`;
+var COMPUTERCHOICE = `computer to choose hit or stand`;
 
 var playerCards = [];
 var computerCards = [];
@@ -91,12 +92,6 @@ var drawFirstTwoCards = function () {
   console.log(playerCards);
   playerSum = playerCards[0].rank + playerCards[1].rank;
   console.log(playerSum);
-
-  //if computer gets <17, he has to hit.
-  if (computerSum < 17) {
-    computerCards.push(shuffledCardDeck.pop());
-    console.log(computerCards);
-  }
 
   if (
     playerSum == 21 ||
@@ -177,13 +172,26 @@ var hitOrStand = function (userChoice) {
     //ASK AGAIN HIT OR STAND
   } else if (userChoice == STAND) {
     console.log(playerCards);
-    gameMode = ENDROUND;
-    return endRound();
+    gameMode = COMPUTERCHOICE;
+    return getComputerChoice();
   } else {
     message = `please enter hit or stand`;
   }
 
   return message;
+};
+
+//Computer to draw card if <17.
+var getComputerChoice = function () {
+  if (computerSum < 17) {
+    computerCards.push(shuffledCardDeck.pop());
+    var lastCardIndex = computerCards.length - 1;
+    computerSum += computerCards[lastCardIndex].rank;
+    return getComputerChoice();
+  } else {
+    gameMode = ENDROUND;
+  }
+  return endRound();
 };
 
 var endRound = function () {
@@ -234,6 +242,8 @@ var main = function (input) {
     myOutputValue = hitOrStand(input);
   } else if (gameMode == ENDROUND) {
     myOutputValue = endRound();
+  } else if (gameMode == COMPUTERCHOICE) {
+    myOutputValue = getComputerChoice();
   } else {
   }
 
