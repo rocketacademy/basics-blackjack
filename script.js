@@ -106,8 +106,8 @@ var checkBlackjack = function (handArray) {
   // 1st card 10 or picture cards, 2nd card ace
   // else return false
   if (
-    (playerCardOne.name == "ace" && playerCardTwo.rank >= 10) ||
-    (playerCardOne.rank >= 10 && playerCardTwo.name == "ace")
+    (playerCardOne.name == "Ace" && playerCardTwo.rank >= 10) ||
+    (playerCardOne.rank >= 10 && playerCardTwo.name == "Ace")
   ) {
     isBlackjack = true;
   }
@@ -233,9 +233,15 @@ var main = function (input) {
           dealerHand
         )}<br><br>Please hit refresh to play again.`;
       }
+      // change to the next gameMode
+      currentGameMode = gameOver;
 
-      // no blackjack
-    } else {
+      // give an output message
+      return outputMessage;
+    }
+
+    // no blackjack
+    else {
       outputMessage = `${showPlayerCards(
         playerHand
       )}<br>Please type...<br>"Hit" if you want to draw more card; or<br>"Stand" if you have enough.`;
