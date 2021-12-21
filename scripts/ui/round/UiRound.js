@@ -1,10 +1,22 @@
 class Ui_ButtonEndView extends Ui_Button {
+  _newUiText = (text) => {
+    const uiText = new Ui_Text();
+    uiText.setTextContent(text);
+    const root = uiText.getRoot();
+    root.style.color = "white";
+    root.style.textAlign = "center";
+    return uiText;
+  };
   constructor() {
     super();
     this._root.style.width = "100px";
     this._root.style.height = "22px";
-    this._root.style.display = "flex";
-    this._root.style.textAlign = "center";
+    this._root.style.margin = "10px";
+    this._root.style.display = "inline-flex";
+    this._root.style.justifyContent = "center";
+    this._root.style.alignItems = "center";
+    this._root.style.border = "none";
+    this._root.style.borderRadius = "2px";
   }
 
   setOnMouseClick = (cb) => (this._root.onclick = () => cb());
@@ -13,20 +25,24 @@ class Ui_ButtonEndView extends Ui_Button {
 class UiButtonNewRound extends Ui_ButtonEndView {
   constructor() {
     super();
-    this._root.style.backgroundColor = "blue";
-
-    this._root.textContent = "New Round";
+    this._root.style.backgroundColor = "#34568B";
     this._root.className += " blackjack-button-new-round";
+
+    const uiText = this._newUiText("New Round");
+
+    this.appendChildUi(uiText);
   }
 }
 
 class UiButtonGoToLounge extends Ui_ButtonEndView {
   constructor() {
     super();
-    this._root.style.backgroundColor = "red";
-
-    this._root.textContent = "Go To Lounge";
+    this._root.style.backgroundColor = "#FF6F61";
     this._root.className += " blackjack-button-go-to-lounge";
+
+    const uiText = this._newUiText("Go To Lounge");
+
+    this.appendChildUi(uiText);
   }
 }
 
