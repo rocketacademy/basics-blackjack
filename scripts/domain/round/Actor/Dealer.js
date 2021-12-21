@@ -1,10 +1,43 @@
-const STAND_OFF = new Symbol();
-const PLAYER_WIN = new Symbol();
-const PLAYER_LOSE = new Symbol();
-const INTERIM_SETTLED = new Symbol();
+/**
+ * Settlement
+ *
+ *  @typedef {Object} Settlement
+ *  @property {Decision} decision
+ *  @property {type} type
+ */
 
-const PAY_TABLE_RATIO_BLACKJACK = 1.5;
-const PAY_TABLE_RATIO_REGULAR = 1;
+/**
+ * @typedef {Object} Decision
+ * @property {string} award
+ * @property {PayTable} mode
+ */
+
+/**
+ * @typedef {Object} PayTable
+ * @property {string} desc
+ * @property {PayTable} ratio
+ */
+
+const STAND_OFF = Symbol();
+const PLAYER_WIN = Symbol();
+const PLAYER_LOSE = Symbol();
+
+const PAY_TABLE_BLACKJACK = "BLACKJACK";
+const PAY_TABLE_REGULAR = "REGULAR";
+
+const PAY_TABLE = {
+  [PAY_TABLE_BLACKJACK]: {
+    desc: "blackjack",
+    ratio: 1.5,
+  },
+  [PAY_TABLE_REGULAR]: {
+    desc: "regular",
+    ratio: 1,
+  },
+};
+
+const SETTLE_FINAL = "SETTLE_FINAL";
+const SETTLE_INTERIM = "SETTLE_INTERIM";
 
 class Dealer extends _Actor {
   static HOLE_CARD_POSITION = Hand.SECOND_CARD; // 2, as in second card
@@ -149,8 +182,16 @@ class Dealer extends _Actor {
     this._round.settleFinal();
   };
 
-  _computeResult = () => {
-    const playerHand = wager.getSponsor();
+  // compute for the final settlement. functional, just to be safe.
+
+  _computeFinalSettlement = (wager) => {
+    console.group(`_computeFinalSettlement`);
+
+    const playerHand = wager.getHand();
+
+    console.log(`Hand : ${playerHand.getCards().map((c) => c.getRank())}`);
+    console.log(`Sponsor : ${wager.getSponsor()}`);
+    console.groupEnd();
 
     const playerPointTotal = playerHand.getHardTotal();
     const dealerPointTotal = this._hand.getHardTotal();
@@ -159,12 +200,30 @@ class Dealer extends _Actor {
     const isDealerBusted = this._hand.isBusted();
     const isPlayerHandBusted = playerHand.isBusted();
 
+    //TODO
     const isWagerSurrendered = false; // wager.isSurrendered()
 
     // CRA-V6-4.5.2
     if (isDealerBlackJack && isPlayerBlackJack) {
       return {
-        decision: STAND_OFF,
+        decision: { award: STAND_OFF },
+        type: SETTLE_FINAL,
+      };
+    }
+
+    // CRA-V6-4.2.1
+    if (!isDealerBlackJack && isPlayerBlackJack) {
+      return {
+        decision: { award: PLAYER_WIN, mode: PAY_TABLE.BLACKJACK },
+        type: SETTLE_FINAL,
+      };
+    }
+
+    // CRA-V6-4.3.3
+    if (isDealerBlackJack && !isPlayerBlackJack) {
+      return {
+        decision: { award: PLAYER_LOSE, mode: PAY_TABLE.BLACKJACK },
+        type: SETTLE_FINAL,
       };
     }
 
@@ -172,14 +231,15 @@ class Dealer extends _Actor {
       // CRA-V6-4.5.1
       if (playerPointTotal === dealerPointTotal) {
         return {
-          decision: STAND_OFF,
+          decision: { award: STAND_OFF },
+          type: SETTLE_FINAL,
         };
       }
       // CRA-V6-4.2.2
       if (dealerPointTotal < playerPointTotal) {
         return {
-          decision: PLAYER_WIN,
-          payoutRatio: PAY_TABLE_RATIO_REGULAR,
+          decision: { award: PLAYER_WIN, mode: PAY_TABLE.REGULAR },
+          type: SETTLE_FINAL,
         };
       }
 
@@ -187,7 +247,8 @@ class Dealer extends _Actor {
 
       if (dealerPointTotal > playerPointTotal) {
         return {
-          decision: PLAYER_LOSE,
+          decision: { award: PLAYER_LOSE, mode: PAY_TABLE.REGULAR },
+          type: SETTLE_FINAL,
         };
       }
     }
@@ -196,58 +257,118 @@ class Dealer extends _Actor {
 
     if (isPlayerHandBusted) {
       return {
-        decision: PLAYER_LOSE,
-      };
-    }
-
-    // CRA-V6-4.3.3
-    if (isDealerBlackJack && !isPlayerBlackJack) {
-      return {
-        decision: PLAYER_LOSE,
-      };
-    }
-
-    // CRA-V6-4.2.1
-    if (!isDealerBlackJack && isPlayerBlackJack) {
-      return {
-        decision: PLAYER_WIN,
-        payoutRatio: PAY_TABLE_RATIO_BLACKJACK,
+        decision: { award: PLAYER_LOSE, mode: PAY_TABLE.REGULAR },
+        type: SETTLE_FINAL,
       };
     }
 
     // CRA-V6-4.2.3
     if (!isPlayerHandBusted && !isWagerSurrendered && isDealerBusted) {
       return {
-        decision: PLAYER_WIN,
-        payoutRatio: PAY_TABLE_RATIO_REGULAR,
+        decision: {
+          award: PLAYER_WIN,
+          mode: PAY_TABLE.REGULAR,
+        },
+        type: SETTLE_FINAL,
       };
     }
   };
+  _settle = (result, wager) => {
+    console.group(`Get result and complete settlement`);
+    const sponsor = wager.getSponsor();
+    const { decision, type } = result;
+    if (!decision) {
+      throw new Error(`Decision required to be settled`);
+    }
 
+    if (!type) {
+      throw new Error(`Settlement type required to be settled`);
+    }
+
+    const { award } = decision;
+    if (award === PLAYER_WIN) {
+      const { mode } = decision;
+      if (!mode) {
+        throw new Error(`please check pay table. payout ratio not specified`);
+      }
+
+      console.log(`win`);
+      // Return main wage
+
+      const { ratio } = mode;
+      const mainWager = wager.retrieveMainBet();
+      sponsor.increaseCredit(mainWager);
+      const invoice = mainWager * ratio;
+      const payout = this.decreaseCredit(invoice);
+      sponsor.increaseCredit(payout);
+    } else if (award === STAND_OFF) {
+      console.log(`stand off`);
+
+      // Return main wager to sponsor
+      sponsor.increaseCredit(wager.retrieveMainBet());
+    } else if (award === PLAYER_LOSE) {
+      console.log(`Makan! lose`);
+      const { mode } = decision;
+      // Makan
+      this.increaseCredit(wager.retrieveMainBet());
+    } else {
+      throw new Error(`Irregularity. No settlement type.`);
+    }
+    wager.dealerSettlementCompleted(result);
+
+    console.groupEnd();
+  };
   _performSettlementFinal = () => {
     const playerHandGen = this._round.getAllHandsGenerator();
 
     let hand = playerHandGen.next();
-
     while (hand) {
-      return;
-      const result = this._computeResult(playerHand);
+      const wage = hand.getWager();
+      const result = this._computeFinalSettlement(wage);
+      this._settle(result, wage);
+      hand = playerHandGen.next();
     }
-    // comparison point totals
 
-    /**
-     * {
-     *  decision: ,
-     *  payout?
-     * }
-     */
+    this._performSettlementFinalCompleted();
   };
 
+  _performSettlementFinalCompleted = () => {
+    this._round.settlementCompleted();
+  };
+  requestNewRound = () => {
+    //TODO
+  };
+
+  requestGoToLounge = () => {
+    //TODO
+  };
+  _performEndView = () => {
+    this.shout("The round of play is completed. Restart?");
+    this._onEndView();
+  };
+
+  _onEndView = () => {};
+
+  setOnEndView = (cb) => {
+    this._onEndView = cb;
+  };
+  callForEndViewMode = () => {
+    console.group(`dealer was called on ForEndViewMode `);
+
+    if (this._round.getPhase() !== RoundPhase.SETTLEMENT_FINAL_COMPLETED) {
+      throw new Error(
+        `[SETTLEMENT_FINAL_START] Error! Round phase should be ${RoundPhase.SETTLEMENT_FINAL_START}`
+      );
+    }
+    this._performEndView();
+
+    console.groupEnd();
+  };
   callForFinalSettlement = () => {
     console.group(`dealer was called on ForSubsequentDeal `);
-    if (this._round.getPhase() !== RoundPhase.SETTLEMENT_FINAL) {
+    if (this._round.getPhase() !== RoundPhase.SETTLEMENT_FINAL_START) {
       throw new Error(
-        `[callForFinalSettlement] Error! Round phase should be ${RoundPhase.SETTLEMENT_FINAL}`
+        `[callForFinalSettlement] Error! Round phase should be ${RoundPhase.SETTLEMENT_FINAL_START}`
       );
     }
 

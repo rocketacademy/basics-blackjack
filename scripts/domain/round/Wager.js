@@ -13,10 +13,15 @@ class Wager {
   getSponsor = () => this._sponsor;
   setBet = (amt) => {
     this._amt = amt;
+    this._onBetChange(amt);
   };
 
   getBet = () => this._amt;
-
+  retrieveMainBet = () => {
+    const m = this._amt;
+    this.setBet(this._amt - m);
+    return m;
+  };
   placeYourInitialBet = (dealer) => {
     console.group(`wager. notified turn to bet.`);
     if (!dealer) {
@@ -37,7 +42,12 @@ class Wager {
     console.log(`wager notified of bet stake initialBetStaked`);
     this._onInitialBetStaked(this._amt);
   };
-
+  dealerSettlementCompleted = (result) => {
+    console.group(`wager notified of settlement`);
+    console.groupEnd();
+  };
+  _onBetChange = (amt) => {};
+  setOnBetChange = (cb) => (this._onBetChange = cb);
   /**
    *
    * @param {number} bet

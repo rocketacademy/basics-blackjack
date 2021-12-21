@@ -9,7 +9,10 @@ class RoundPhase {
   static INITIAL_BET = new RoundPhase("INITIAL BET");
   static INITIAL_DEAL = new RoundPhase("INITIAL DEAL");
   static SUBSEQUENT_DEAL = new RoundPhase("SUBSEQUENT_DEAL");
-  static SETTLEMENT_FINAL = new RoundPhase("SETTLEMENT_FINAL");
+  static SETTLEMENT_FINAL_START = new RoundPhase("SETTLEMENT_FINAL_START");
+  static SETTLEMENT_FINAL_COMPLETED = new RoundPhase(
+    "SETTLEMENT_FINAL_COMPLETED"
+  );
   static END = new RoundPhase("END");
 
   constructor(desc) {
@@ -128,7 +131,7 @@ class Round {
 
   settleFinal = () => {
     console.group(`round.settle.final`);
-    this._setPhase(RoundPhase.SETTLEMENT_FINAL);
+    this._setPhase(RoundPhase.SETTLEMENT_FINAL_START);
     this._dealer.callForFinalSettlement();
     console.groupEnd();
   };
@@ -141,9 +144,16 @@ class Round {
   };
 
   initSubsequentDeal = () => {
-    console.group(`round.subsequentDeal`);
+    console.group(`round.initSubsequentDeal`);
     this._setPhase(RoundPhase.SUBSEQUENT_DEAL);
     this._dealer.callForSubsequentDeals();
+    console.groupEnd();
+  };
+
+  settlementCompleted = () => {
+    console.group(`round.settlementCompleted`);
+    this._setPhase(RoundPhase.SETTLEMENT_FINAL_COMPLETED);
+    this._dealer.callForEndViewMode();
     console.groupEnd();
   };
   finish = (isContinue) => {

@@ -26,6 +26,15 @@ class Hand {
     this._isSurrendered = false;
   }
   isSurrendered = () => this._isSurrendered;
+
+  isBlackJack = () => {
+    return (
+      (this._cards.length === 2 &&
+        this._generallyAceWithPicture(this._cards[0], this._cards[1])) ||
+      this._generallyAceWithPicture(this._cards[0], this._cards[1])
+    );
+  };
+
   _generallyAceWithPicture = (c1, c2) => {
     if (c1.getHardValue() === 1) {
       const c2HardValue = c2.getHardValue();
@@ -34,7 +43,6 @@ class Hand {
       }
       return false;
     }
-    return this._generallyAceWithPicture(c2, c1);
   };
   //TODO need to chedk for both soft and hard values
   isBusted = () => {
@@ -44,12 +52,7 @@ class Hand {
     const isSoftBusted = true;
     return !isHardBusted || !isSoftBusted;
   };
-  isBlackJack = () => {
-    return (
-      this._cards.length === 2 &&
-      _generallyAceWithPicture(this._cards[0], this.cards[1])
-    );
-  };
+
   id = () => this._id;
   count = () => this._cards.length;
   getCards = () => this._cards;
@@ -64,9 +67,7 @@ class Hand {
       return sum;
     }, 0);
 
-  getWager = () => {
-    return this._wager;
-  };
+  getWager = () => this._wager;
   _onAddCard = (card) => {};
   setOnAddCard = (cb) => (this._onAddCard = cb);
   /**

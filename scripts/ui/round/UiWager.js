@@ -93,19 +93,32 @@ class UiWager extends Ui_Component {
       console.group(`ui wager notified setOnWhatIsYourInitialBet `);
       console.groupEnd();
 
-      const [_uIContainerBet__, _uiSlider__] = this._newInitialBetControl(
-        wager,
-        dealer,
-        playableCredit
-      );
-      this.replaceChildrenUi(_uIContainerBet__, _uiSlider__);
+      const initMainBetValue = 0;
+      this._uIContainerBet__.setButtonOnMouseClick((betValue) => {
+        dealer.placeInitialBet(wager, betValue);
+      });
+
+      const _uiSlider__ = new UiSlider();
+      _uiSlider__.getRoot().className += " blackjack-wager-slider";
+      _uiSlider__.setMax(playableCredit);
+      _uiSlider__.setValue(initMainBetValue);
+
+      _uiSlider__.setOnRangeChange((e) => {
+        const v = e.target.value;
+        _uiSlider__.value = v;
+        this._uIContainerBet__.setButtonValue(v);
+      });
+
+      this.replaceChildrenUi(this._uIContainerBet__, _uiSlider__);
+    });
+
+    this._wager.setOnBetChange((bet) => {
+      this._uIContainerBet__.setButtonValue(bet);
     });
 
     this._wager.setOnInitialBetStaked((bet) => {
       console.group(`ui wager notified InitialBetStaked `);
-      this._uIContainerBet__.setButtonValue(bet);
       this.replaceChildrenUi(this._uIContainerBet__);
-
       this._uIContainerBet__.setButtonOnMouseClick(() => {});
       console.groupEnd();
     });
@@ -113,23 +126,5 @@ class UiWager extends Ui_Component {
     this._style();
   }
 
-  _newInitialBetControl = (wager, dealer, playableCredit) => {
-    const initMainBetValue = 0;
-    const _uIContainerBet__ = this._uIContainerBet__;
-    _uIContainerBet__.setButtonOnMouseClick((betValue) => {
-      dealer.placeInitialBet(wager, betValue);
-    });
-
-    const _uiSlider__ = new UiSlider();
-    _uiSlider__.getRoot().className += " blackjack-wager-slider";
-    _uiSlider__.setMax(playableCredit);
-    _uiSlider__.setValue(initMainBetValue);
-
-    _uiSlider__.setOnRangeChange((e) => {
-      const v = e.target.value;
-      _uiSlider__.value = v;
-      _uIContainerBet__.setButtonValue(v);
-    });
-    return [_uIContainerBet__, _uiSlider__];
-  };
+  _newInitialBetControl = (wager, dealer, playableCredit) => {};
 }

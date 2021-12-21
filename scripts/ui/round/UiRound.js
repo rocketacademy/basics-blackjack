@@ -1,6 +1,32 @@
+class UiButtonNewRound extends Ui_Button {
+  constructor() {
+    super();
+
+    this._root.style.width = "22px";
+    this._root.style.height = "22px";
+    this._root.textContent = "NEW ROUND";
+    this._root.className += " blackjack-button-new-round";
+  }
+  setOnMouseClick = (cb) => (this._root.onclick = () => cb());
+}
+
+class UiButtonGoToLounge extends Ui_Button {
+  constructor() {
+    super();
+
+    this._root.style.width = "22px";
+    this._root.style.height = "22px";
+    this._root.textContent = "LOUNGE";
+    this._root.className += " blackjack-button-go-to-lounge";
+  }
+  setOnMouseClick = (cb) => (this._root.onclick = () => cb());
+}
+
 class UiPhaseDisplay extends Ui_Text {
   constructor() {
     super(document.createElement("div"));
+
+    this._root.className += " blackjack-display-round-phase";
   }
 }
 
@@ -74,7 +100,7 @@ class UiRound extends Ui_Tree {
     // Hooks
 
     this._round.setOnSetPhase((phase) => {
-      console.group(`on Set Phase Callback`);
+      console.group(`on Set Phase ui Callback`);
       this._uiPhaseDisplay.setTextContent(phase.desc());
       console.groupEnd();
     });

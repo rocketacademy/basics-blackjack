@@ -21,7 +21,7 @@ class UiDealer extends Ui_Actor {
     const t = new Ui_Text();
     t._root.style.height = "30px";
     t._root.style.width = "fit-content";
-    t._root.className += "blackjack-message-display";
+    t._root.className += "blackjack-display-dealer-message";
 
     return t;
   };
@@ -56,6 +56,30 @@ class UiDealer extends Ui_Actor {
       this._uiHandHolder.addUiHand(uiH);
       this.getRoot().style.height = "200px";
       this.replaceChildrenUi(this._uiName, this._uiHandHolder);
+    });
+
+    this._dealer.setOnEndView(() => {
+      console.group(`ui dealer restart buttons`);
+
+      const buttonRestart = new UiButtonNewRound();
+
+      buttonRestart.setOnMouseClick(() => {
+        this._dealer.requestNewRound();
+      });
+      const buttonLounge = new UiButtonGoToLounge();
+
+      buttonLounge.setOnMouseClick(() => {
+        this._dealer.requestGoToLounge();
+      });
+
+      this.replaceChildrenUi(
+        this._uiName,
+        this._uiMsgDisplay,
+        buttonLounge,
+        buttonRestart
+      );
+
+      console.groupEnd();
     });
     // Render
     this._style();
