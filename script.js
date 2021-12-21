@@ -1,7 +1,7 @@
 DEALING = "dealing";
 HIT = "hit";
 STAND = "stand";
-mode = DEALING;
+mode = "";
 
 // Shuffle cards first
 // Computer and Player each has 2 cards upon "Submit"
@@ -19,6 +19,8 @@ var player = [];
 var computerSum = 0;
 var playerSum = 0;
 var aceIndex = 0;
+var points = 100;
+var betPoints = 0;
 
 // After shuffling the cards, return an array of 2 cards for each
 var draw2Cards = function () {
@@ -117,14 +119,27 @@ var shuffleCards = function (cardDeck) {
 var deck = shuffleCards(makeDeck());
 
 var main = function (input) {
-  // Before the game begins
+  // Player sets the points for betting
+  if (mode == "" && Number(input)) {
+    betPoints = Number(input);
+    if (betPoints > points) {
+      return "You can't bet more than what you have! Refresh the page to restart!";
+    }
+    points -= betPoints;
+    mode = DEALING;
+    return `Your bet is ${betPoints}, you have ${points} left. Click SUBMIT to continue.`;
+  } else if (mode == "" && input == "") {
+    return "Set your betting amount; <= 100 only";
+  }
+
   if (mode == DEALING && input == "") {
+    // Before the game begins
     computer = draw2Cards();
     player = draw2Cards();
     // Show the cards for HIT or STAND
     computerOutput = showCards(computer, "COMPUTER");
     playerOutput = showCards(player, "PLAYER");
-    mode = "";
+    mode = STAND;
     return `**Computer** has ${computerOutput} <br><br> **Player** has ${playerOutput}. <br><br> Type HIT to HIT or Submit to STAND!`;
   }
 
@@ -193,13 +208,22 @@ var sumCards = function (array) {
 };
 
 // Take in the total rank of the cards and set up winning conditions. Return Strings
+// BETTING: Player begins with 100 points.
+/**
+ * Blackjack wins 1.5 x 1
+ * Higher than Dealer wins 1 x 1
+ * Draws, 1
+ */
 var winConditions = function (com, play) {
   var output = "";
-  mode = DEALING;
+  mode = "";
   if (com == 21) {
-    return "Computer Wins! BLACKJACK 21";
+    return `Computer Wins! BLACKJACK 21! You lost ${betPoints} and you have ${points}`;
   } else if (play == 21) {
-    return "Player Wins! BLACKJACK 21";
+    points = points + betPoints * 2.5;
+    return `Player Wins! BLACKJACK 21! You won ${
+      betPoints * 2.5
+    } and you have ${points}`;
   }
 
   if (play < 17) {
@@ -207,17 +231,23 @@ var winConditions = function (com, play) {
   }
 
   if (com > 21 && play < 21) {
-    output = "Computer Bust. Player Wins.";
+    points = points + betPoints * 2;
+    output = `Computer Bust. Player Wins. You won ${
+      betPoints * 2
+    } and you have ${points}`;
   } else if (play > 21 && com < 21) {
-    output = "Player Bust. Computer Wins.";
+    output = `Player Bust. Computer Wins. You lost ${betPoints} and you have ${points}`;
   } else if (com > play && com < 21) {
-    output = "Computer Wins";
+    output = `Computer Wins! You lost ${betPoints} and you have ${points}`;
   } else if (play > com && play < 21) {
-    output = "Player Wins";
+    points = points + betPoints * 2;
+    output = `Player Wins! You won ${betPoints * 2} and you have ${points}`;
   } else if (play == com) {
-    output = "Thats a draw. Try Again!";
+    points += betPoints;
+    output = `Thats a draw. You got back your original bet of ${betPoints} and you have ${points}. Try Again!`;
   } else {
-    output = "Both Bust. Try Again!";
+    points += betPoints;
+    output = `Both Bust. You got back your original bet of ${betPoints} and you have ${points}. Try Again!`;
   }
   return output;
 };
