@@ -1,6 +1,10 @@
 //globals
 let playerCount = 3;
-let userNames = [{ username: "asd" }, { username: "dsa" }, { username: "zxc" }];
+let userNames = [
+  { username: "asd", bank: 0 },
+  { username: "bsd", bank: 0 },
+  { username: "csd", bank: 0 },
+];
 let changeUserName = 5;
 let indexUserName = 2;
 
@@ -11,6 +15,7 @@ let gamePlayed = 0;
 let houseCardValue = 0;
 let playerCardValue = [];
 let winLossTie = 0;
+let betAmount = [10, 10, 10];
 
 //reset helper fn
 let gameResetter = function () {
@@ -20,6 +25,7 @@ let gameResetter = function () {
   houseCardValue = 0;
   playerCardValue = [];
   winLossTie = 0;
+  betAmount = [];
 };
 
 //array shuffle helper fn
@@ -97,12 +103,14 @@ let main = function (input) {
     else if (userNames.length == playerCount - 1) {
       userNames[indexUserName] = {};
       userNames[indexUserName]["username"] = input;
+      userNames[indexUserName]["bank"] = 0;
       console.log(userNames);
-      return `Hello <b>${input}</b>, Welcome to the table. We now have your names 😈 Click submit to continue.`;
+      return `Hello <b>${input}</b>, Welcome to the table. We now have your names 😈<br><br><b>${userNames[0].username}</b> please enter the amount you wish to bet.`;
     }
     // record username as an object
     userNames[indexUserName] = {};
     userNames[indexUserName]["username"] = input;
+    userNames[indexUserName]["bank"] = 0;
     indexUserName += 1;
     return `Hello <b>${input}</b>, Welcome to the table.`;
   }
@@ -110,8 +118,8 @@ let main = function (input) {
   //to change player count
   if (input == "change player count") {
     playerCount = 0;
-    indexUserName = 0;
     userNames = [];
+    indexUserName = 0;
     return `Please enter the new number of players for the game.`;
   }
 
@@ -138,13 +146,55 @@ let main = function (input) {
   }
 
   //fill bank accounts for all players
-  bankAccountFiller();
+  if (userNames.some((x) => x.bank == 0)) {
+    let zeroCount = 0;
+    for (let q = 0; q < playerCount; q += 1) {
+      if (userNames[q].bank == 0) {
+        zeroCount += 1;
+      }
+    }
+    if (zeroCount == playerCount) {
+      bankAccountFiller();
+      console.log(`checking code flow`);
+    }
+  }
 
   //create a shuffled deck of cards at game initiation
   if (cardDeck == "") {
     makeDeck(cardDeck);
     shuffleArray(cardDeck);
     console.log(cardDeck);
+  }
+
+  //take bets for all players
+  if (betAmount.length < playerCount) {
+    //check for appropriate bet amount
+    if (
+      isNaN(input) ||
+      input == "" ||
+      input > userNames[betAmount.length].bank
+    ) {
+      let outputMsg = `Please enter an appropriate bet amount! Minimum bet of 1, and you cannot bet more than what you have! GAMBLE RESPONSIBLY!`;
+      for (let o = 0; o < playerCount; o += 1) {
+        outputMsg += `<br><br><b>${userNames[o].username}</b> bank balance: $${userNames[o].bank}`;
+      }
+      return outputMsg;
+    }
+    if (betAmount.length == playerCount - 1) {
+      betAmount.push(Number(input));
+      console.log("betAmount array: " + betAmount);
+      return `<b>${
+        userNames[betAmount.length - 1].username
+      }</b> You've placed a bet of $${input}<br><br>Click Submit to continue.`;
+    }
+    betAmount.push(Number(input));
+    return `<b>${
+      userNames[betAmount.length - 1].username
+    }</b> You've placed a bet of $${input}<br><br><b>${
+      userNames[betAmount.length].username
+    }</b> Your bank balance is at $${
+      userNames[betAmount.length].bank
+    }<br><br>please enter your desired bet amount.`;
   }
 
   //draw two cards for house
@@ -272,11 +322,11 @@ let main = function (input) {
       for (let n = 0; n < playerCardValue.length; n += 1) {
         if (playerCardValue[n] < 22) {
           //add bank balance feature
-
+          userNames[n].bank += betAmount[n];
           //set message
-          outputWinLoss += `<br><br><b>${userNames[n].username}</b> Congrats! You've won.<br>Bank balance is at xx`;
+          outputWinLoss += `<br><br><b>${userNames[n].username}</b> Congrats! You've won.<br>Bank balance is at ${userNames[n].bank}`;
         } else {
-          outputWinLoss += `<br><br><b>${userNames[n].username}</b> you busted as well. Lucky escape!<br>Bank balance is at xx`;
+          outputWinLoss += `<br><br><b>${userNames[n].username}</b> you busted as well. Lucky escape!<br>Bank balance is at ${userNames[n].bank}`;
         }
       }
       gameResetter();
@@ -289,24 +339,26 @@ let main = function (input) {
       //if player < house, reduce bank balance = bet amount
       if (playerCardValue[i] < houseCardValue) {
         //reduce bank balance feature
+        userNames[i].bank -= betAmount[i];
 
         //set message
-        outputWinLoss += `<br><br><b>${userNames[i].username}</b> you have ${playerCardValue[i]}, you've lost.<br>Bank balance is at xx`;
+        outputWinLoss += `<br><br><b>${userNames[i].username}</b> you have ${playerCardValue[i]}, you've lost.<br>Bank balance is at ${userNames[i].bank}`;
       } else if (playerCardValue[i] > houseCardValue) {
         //if player > house, add bank balance = bet amount UNLESS player busted
         if (playerCardValue[i] > 21) {
           //reduce bank balance feature
+          userNames[i].bank -= betAmount[i];
 
           //set message
-          outputWinLoss += `<br><br><b>${userNames[i].username}</b> you have ${playerCardValue[i]}, you've busted.<br>Bank balance is at xx`;
+          outputWinLoss += `<br><br><b>${userNames[i].username}</b> you have ${playerCardValue[i]}, you've busted.<br>Bank balance is at ${userNames[i].bank}`;
         }
         //add bank balance feature
-
+        userNames[i].bank += betAmount[i];
         //set message
-        outputWinLoss += `<br><br><b>${userNames[i].username}</b> you have ${playerCardValue[i]}, Congrats! You've won.<br>Bank balance is at xx`;
+        outputWinLoss += `<br><br><b>${userNames[i].username}</b> you have ${playerCardValue[i]}, Congrats! You've won.<br>Bank balance is at ${userNames[i].bank}`;
       } else if (playerCardValue[i] == houseCardValue) {
         //if tie, do nothing, set message
-        outputWinLoss += `<br><br><b>${userNames[i].username}</b> you have ${playerCardValue[i]}, it's a tie, Narrow escape!<br>Bank balance is at xx`;
+        outputWinLoss += `<br><br><b>${userNames[i].username}</b> you have ${playerCardValue[i]}, it's a tie, Narrow escape!<br>Bank balance is at ${userNames[i].bank}`;
       }
     }
     //reset neccessary game statuses
@@ -314,6 +366,9 @@ let main = function (input) {
     return outputWinLoss + "<br><br>Click submit to start again!";
   }
 
-  //TO BE ADDED -- BETTING FUNCTIONS
-  // TO BE ADDED -- MULTIPLE ACE VALUES
+  // //boot the player if bank account goes to 0 lines 343 and 351
+  //       if (userNames[i].bank == 0) {
+  //         outputWinLoss += `<br><br><b>${userNames[i].username}</b> you have ${playerCardValue[i]}, you've lost.<br>Bank balance is at ${userNames[i].bank}<br><br>You're bankrupt. Gambling never pays, go make some money instead. Goodbye!`;
+  //         userNames.splice(i, 1);
+  //         playerCount -= 1;
 };
