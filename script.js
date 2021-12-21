@@ -196,13 +196,18 @@ let main = function (input) {
             } for a total of ${houseCardValue}
             ${(gamePlayed += 1)}`;
           }
-          return `${outputMessage}<br><br>You drew ${drawCard.name}${
-            drawCard.suit
-          }<br><br>Your current cards gives you ${
-            playerCardValue[gamePlayed]
-          }. You went over 21, BUSTED.<br><br>${(gamePlayed += 1)}<b>${
-            userNames[gamePlayed].username
-          }</b>, click submit to play your turn.`;
+          let outPutValue =
+            outputMessage +
+            `<br><br>You drew ${drawCard.name}${drawCard.suit}<br><br>Your current cards gives you ${playerCardValue[gamePlayed]}. You went over 21, BUSTED.<br><br>`;
+          gamePlayed += 1;
+          //   return `${outputMessage}<br><br>You drew ${drawCard.name}${
+          //     drawCard.suit
+          //   }<br><br>Your current cards gives you ${
+          //     playerCardValue[gamePlayed]
+          //   }. You went over 21, BUSTED.<br><br>${(gamePlayed += 1)}<b>${
+          //     userNames[gamePlayed].username
+          //   }</b>, click submit to play your turn.`;
+          return `${outPutValue}<b>${userNames[gamePlayed].username}</b>, click submit to play your turn.`;
         }
         return `${outputMessage}<br><br>You drew ${drawCard.name}${drawCard.suit}<br><br>Your current cards gives you ${playerCardValue[gamePlayed]}`;
       } else if (input == "stand") {
