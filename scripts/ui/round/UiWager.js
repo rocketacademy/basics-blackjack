@@ -67,6 +67,25 @@ class UiContainerMainBet extends Ui_Component {
   setButtonOnMouseClick = (cb) => this._uiButton.setOnMouseClick(cb);
 }
 
+class UiResult extends Ui_Text {
+  constructor() {
+    super();
+    this._root.style.fontSize = "0.8rem";
+    this._root.style.textAlign = "center";
+    this._root.style.justifyContent = "center";
+  }
+}
+
+class UiResults extends Ui_Component {
+  constructor() {
+    super();
+
+    this._root.style.flexDirection = "column";
+  }
+
+  addUiResult = (uiR) => this.appendChildUi(uiR);
+}
+
 class UiWager extends Ui_Component {
   _style = () => {
     this._root.style.height = "90%";
@@ -75,6 +94,27 @@ class UiWager extends Ui_Component {
     this._root.style.flexDirection = "column";
     this._root.style.justifyContent = "center";
     this._root.style.alignItems = "center";
+  };
+
+  _newUiResult = (text) => {
+    const uiR = new UiResult();
+    uiR.setTextContent(text);
+    return uiR;
+  };
+  _newUiResults = (result) => {
+    console.warn(result);
+    const uiResults = new UiResults();
+    const award = result.decision.award;
+    const uiAward = this._newUiResult(award);
+    uiResults.addUiResult(uiAward);
+
+    const mode = result.decision.mode;
+    if (award === AWARD_ENUM.PLAYER_WIN) {
+      const uiPayout = this._newUiResult(`Payout Ratio: ${mode.ratio}`);
+      const uiMode = this._newUiResult(`${mode.desc}`);
+      uiResults.addUiResult(uiPayout);
+    }
+    return uiResults;
   };
 
   /**
@@ -120,6 +160,13 @@ class UiWager extends Ui_Component {
       console.group(`ui wager notified InitialBetStaked `);
       this.replaceChildrenUi(this._uIContainerBet__);
       this._uIContainerBet__.setButtonOnMouseClick(() => {});
+      console.groupEnd();
+    });
+
+    this._wager.setOnFinalSettled((result) => {
+      console.group(`ui wager final settled callback`);
+      const uiResults = this._newUiResults(result);
+      this.replaceChildrenUi(this._uIContainerBet__, uiResults);
       console.groupEnd();
     });
 

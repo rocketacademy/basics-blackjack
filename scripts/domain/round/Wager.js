@@ -42,8 +42,9 @@ class Wager {
     console.log(`wager notified of bet stake initialBetStaked`);
     this._onInitialBetStaked(this._amt);
   };
-  dealerSettlementCompleted = (result) => {
+  dealerFinalSettlementCompleted = (result) => {
     console.group(`wager notified of settlement`);
+    this._onFinalSettled(result);
     console.groupEnd();
   };
   _onBetChange = (amt) => {};
@@ -54,6 +55,11 @@ class Wager {
    */
   _onInitialBetStaked = (bet) => {
     throw new Error(`abstract`);
+  };
+
+  _onFinalSettled = (result) => {};
+  setOnFinalSettled = (cb) => {
+    this._onFinalSettled = cb;
   };
 
   setOnInitialBetStaked = (cb) => {

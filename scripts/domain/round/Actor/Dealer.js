@@ -1,26 +1,28 @@
 /**
- * Settlement
- *
- *  @typedef {Object} Settlement
- *  @property {Decision} decision
- *  @property {type} type
+ * @typedef {Object} PayTable
+ * @property {string} desc
+ * @property {number} ratio
  */
 
 /**
  * @typedef {Object} Decision
- * @property {string} award
- * @property {PayTable} mode
+ * @property {Enum<AWARD_ENUM>} award
+ * @property {Enum<PayTable>} mode
  */
 
 /**
- * @typedef {Object} PayTable
- * @property {string} desc
- * @property {PayTable} ratio
+ * Result
+ *
+ *  @typedef {Object} Result
+ *  @property {Decision} decision
+ *  @property {Enum<SETTLEMENT_TYPE} type
  */
 
-const STAND_OFF = Symbol();
-const PLAYER_WIN = Symbol();
-const PLAYER_LOSE = Symbol();
+const AWARD_ENUM = {
+  STAND_OFF: "STAND-OFF",
+  PLAYER_WIN: "PLAYER WIN",
+  PLAYER_LOSE: "PLAYER LOSE",
+};
 
 const PAY_TABLE_BLACKJACK = "BLACKJACK";
 const PAY_TABLE_REGULAR = "REGULAR";
@@ -36,8 +38,9 @@ const PAY_TABLE = {
   },
 };
 
-const SETTLE_FINAL = "SETTLE_FINAL";
-const SETTLE_INTERIM = "SETTLE_INTERIM";
+const SETTLEMENT_TYPE = {};
+SETTLEMENT_TYPE.SETTLE_FINAL = "SETTLEMENT_TYPE.SETTLE_FINAL";
+SETTLEMENT_TYPE.SETTLE_INTERIM = "SETTLEMENT_TYPE.SETTLE_INTERIM";
 
 class Dealer extends _Actor {
   static HOLE_CARD_POSITION = Hand.SECOND_CARD; // 2, as in second card
@@ -206,24 +209,24 @@ class Dealer extends _Actor {
     // CRA-V6-4.5.2
     if (isDealerBlackJack && isPlayerBlackJack) {
       return {
-        decision: { award: STAND_OFF },
-        type: SETTLE_FINAL,
+        decision: { award: AWARD_ENUM.STAND_OFF },
+        type: SETTLEMENT_TYPE.SETTLE_FINAL,
       };
     }
 
     // CRA-V6-4.2.1
     if (!isDealerBlackJack && isPlayerBlackJack) {
       return {
-        decision: { award: PLAYER_WIN, mode: PAY_TABLE.BLACKJACK },
-        type: SETTLE_FINAL,
+        decision: { award: AWARD_ENUM.PLAYER_WIN, mode: PAY_TABLE.BLACKJACK },
+        type: SETTLEMENT_TYPE.SETTLE_FINAL,
       };
     }
 
     // CRA-V6-4.3.3
     if (isDealerBlackJack && !isPlayerBlackJack) {
       return {
-        decision: { award: PLAYER_LOSE, mode: PAY_TABLE.BLACKJACK },
-        type: SETTLE_FINAL,
+        decision: { award: AWARD_ENUM.PLAYER_LOSE, mode: PAY_TABLE.BLACKJACK },
+        type: SETTLEMENT_TYPE.SETTLE_FINAL,
       };
     }
 
@@ -231,15 +234,15 @@ class Dealer extends _Actor {
       // CRA-V6-4.5.1
       if (playerPointTotal === dealerPointTotal) {
         return {
-          decision: { award: STAND_OFF },
-          type: SETTLE_FINAL,
+          decision: { award: AWARD_ENUM.STAND_OFF },
+          type: SETTLEMENT_TYPE.SETTLE_FINAL,
         };
       }
       // CRA-V6-4.2.2
       if (dealerPointTotal < playerPointTotal) {
         return {
-          decision: { award: PLAYER_WIN, mode: PAY_TABLE.REGULAR },
-          type: SETTLE_FINAL,
+          decision: { award: AWARD_ENUM.PLAYER_WIN, mode: PAY_TABLE.REGULAR },
+          type: SETTLEMENT_TYPE.SETTLE_FINAL,
         };
       }
 
@@ -247,8 +250,8 @@ class Dealer extends _Actor {
 
       if (dealerPointTotal > playerPointTotal) {
         return {
-          decision: { award: PLAYER_LOSE, mode: PAY_TABLE.REGULAR },
-          type: SETTLE_FINAL,
+          decision: { award: AWARD_ENUM.PLAYER_LOSE, mode: PAY_TABLE.REGULAR },
+          type: SETTLEMENT_TYPE.SETTLE_FINAL,
         };
       }
     }
@@ -257,8 +260,8 @@ class Dealer extends _Actor {
 
     if (isPlayerHandBusted) {
       return {
-        decision: { award: PLAYER_LOSE, mode: PAY_TABLE.REGULAR },
-        type: SETTLE_FINAL,
+        decision: { award: AWARD_ENUM.PLAYER_LOSE, mode: PAY_TABLE.REGULAR },
+        type: SETTLEMENT_TYPE.SETTLE_FINAL,
       };
     }
 
@@ -266,13 +269,18 @@ class Dealer extends _Actor {
     if (!isPlayerHandBusted && !isWagerSurrendered && isDealerBusted) {
       return {
         decision: {
-          award: PLAYER_WIN,
+          award: AWARD_ENUM.PLAYER_WIN,
           mode: PAY_TABLE.REGULAR,
         },
-        type: SETTLE_FINAL,
+        type: SETTLEMENT_TYPE.SETTLE_FINAL,
       };
     }
   };
+  /**
+   *
+   * @param {Result} result
+   * @param {Wager} wager
+   */
   _settle = (result, wager) => {
     console.group(`Get result and complete settlement`);
     const sponsor = wager.getSponsor();
@@ -286,7 +294,7 @@ class Dealer extends _Actor {
     }
 
     const { award } = decision;
-    if (award === PLAYER_WIN) {
+    if (award === AWARD_ENUM.PLAYER_WIN) {
       const { mode } = decision;
       if (!mode) {
         throw new Error(`please check pay table. payout ratio not specified`);
@@ -318,12 +326,12 @@ class Dealer extends _Actor {
           `The invoice not tally before${beforeSettleWinCredit} - after${afterSettleCredit} !== ${invoice}`
         );
       }
-    } else if (award === STAND_OFF) {
+    } else if (award === AWARD_ENUM.STAND_OFF) {
       console.log(`stand off`);
 
       // Return main wager to sponsor
       sponsor.increaseCredit(wager.retrieveMainBet());
-    } else if (award === PLAYER_LOSE) {
+    } else if (award === AWARD_ENUM.PLAYER_LOSE) {
       console.log(`Makan! lose`);
       const { mode } = decision;
       // Makan
@@ -331,7 +339,7 @@ class Dealer extends _Actor {
     } else {
       throw new Error(`Irregularity. No settlement type.`);
     }
-    wager.dealerSettlementCompleted(result);
+    wager.dealerFinalSettlementCompleted(result);
 
     console.groupEnd();
   };
