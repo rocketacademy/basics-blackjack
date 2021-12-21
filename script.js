@@ -130,7 +130,7 @@ var shuffleCards = function (cardDeck) {
 };
 
 // Player score counter function
-var playerScoreCounter = function () {
+var playerScoreCounter = function (playerCards, aceDrawnByPlayer) {
   indexCounter = 0;
   while (indexCounter < playerCards.length) {
     if (playerCards[indexCounter].name == "ace") {
@@ -161,7 +161,7 @@ var playerScoreCounter = function () {
 };
 
 //Computer score counter function
-var computerScoreCounter = function () {
+var computerScoreCounter = function (computerCards, aceDrawnByComputer) {
   indexCounter = 0;
   while (indexCounter < computerCards.length) {
     if (computerCards[indexCounter].name == "ace") {
@@ -278,7 +278,38 @@ var main = function (input) {
     console.log(sumOfPlayerScore);
     console.log("sumOfComputerScore");
     console.log(sumOfComputerScore);
-    if (sumOfComputerScore > sumOfPlayerScore) {
+    if (sumOfComputerScore < 17) {
+      console.log("if statement entered");
+      var dealComputerCard3 = shuffledCards.pop();
+      computerCards.push(dealComputerCard3);
+      var computerScoreNow = computerScoreCounter(
+        computerCards,
+        aceDrawnByComputer
+      );
+      console.log("this is computerScoreNow:");
+      console.log(computerScoreNow);
+      console.log("this is computerCards:");
+      console.log(computerCards);
+      if (computerScoreNow > 21) {
+        console.log("if computerScoreNow > 21 statement entered");
+        myOutputValue = `The dealer has these cards: <br> ${computerCards[0].name} of ${computerCards[0].suit} <br> and ${computerCards[1].name} of ${computerCards[1].suit} <br> and ${computerCards[2].name} of ${computerCards[2].suit}<br><br> You won as the dealer bust with a score of ${computerScoreNow}`;
+      } else if (computerScoreNow == 21) {
+        console.log("if computerScoreNow == 21 statement entered");
+        myOutputValue = `The dealer has these cards: <br> ${computerCards[0].name} of ${computerCards[0].suit} <br> and ${computerCards[1].name} of ${computerCards[1].suit} <br> and ${computerCards[2].name} of ${computerCards[2].suit}<br><br> The dealer won by BLACKJACK! You LOSE!`;
+      } else if (computerScoreNow < 21) {
+        console.log("if computerScoreNow < 21 statement entered");
+        if (computerScoreNow > sumOfPlayerScore) {
+          var showPlayerDeckIfStand = displayPlayerDeck(playerCards);
+          myOutputValue = `You currently have these cards: <br> ${showPlayerDeckIfStand} <br><br> And the Dealer has: <br> ${computerCards[0].name} of ${computerCards[0].suit} <br> and ${computerCards[1].name} of ${computerCards[1].suit}<br> and${computerCards[2].name} of ${computerCards[2].suit}. <br><br> Your current score is ${sumOfPlayerScore} <br> and Dealer's current score is ${computerScoreNow}.<br><br>You lose!`;
+        } else if (computerScoreNow < sumOfPlayerScore) {
+          var showPlayerDeckIfStand = displayPlayerDeck(playerCards);
+          myOutputValue = `You currently have these cards: <br> ${showPlayerDeckIfStand} <br><br> And the Dealer has: <br> ${computerCards[0].name} of ${computerCards[0].suit} <br> and ${computerCards[1].name} of ${computerCards[1].suit}<br> and${computerCards[2].name} of ${computerCards[2].suit}. <br><br> Your current score is ${sumOfPlayerScore} <br> and Dealer's current score is ${computerScoreNow}.<br><br>You win!`;
+        } else if (computerScoreNow == sumOfPlayerScore) {
+          var showPlayerDeckIfStand = displayPlayerDeck(playerCards);
+          myOutputValue = `You currently have these cards: <br> ${showPlayerDeckIfStand} <br><br> And the Dealer has: <br> ${computerCards[0].name} of ${computerCards[0].suit} <br> and ${computerCards[1].name} of ${computerCards[1].suit}<br> and${computerCards[2].name} of ${computerCards[2].suit}. <br><br> Your current score is ${sumOfPlayerScore} <br> and Dealer's current score is ${computerScoreNow}.<br><br>It's a tie!`;
+        }
+      }
+    } else if (sumOfComputerScore > sumOfPlayerScore) {
       var showPlayerDeckIfStand = displayPlayerDeck(playerCards);
       myOutputValue = `You currently have these cards: <br> ${showPlayerDeckIfStand} <br><br> And the Dealer has: <br> ${computerCards[0].name} of ${computerCards[0].suit} <br> and ${computerCards[1].name} of ${computerCards[1].suit}. <br><br> Your current score is ${sumOfPlayerScore} <br> and Dealer's current score is ${sumOfComputerScore}. <br><br>You lose!`;
     } else if (sumOfComputerScore < sumOfPlayerScore) {
