@@ -18,6 +18,7 @@ var computer = [];
 var player = [];
 var computerSum = 0;
 var playerSum = 0;
+var aceIndex = 0;
 
 // After shuffling the cards, return an array of 2 cards for each
 var draw2Cards = function () {
@@ -124,15 +125,14 @@ var main = function (input) {
     computerOutput = showCards(computer, "COMPUTER");
     playerOutput = showCards(player, "PLAYER");
     mode = "";
-    return `Computer has ${computerOutput} <br> Player has ${playerOutput}. <br> Type HIT to HIT or Submit to STAND!`;
+    return `**Computer** has ${computerOutput} <br><br> **Player** has ${playerOutput}. <br><br> Type HIT to HIT or Submit to STAND!`;
   }
 
   if (input.toLowerCase() == HIT) {
     mode = HIT;
     player.push(deck.pop());
-    return `Player has ${showCards(
-      player
-    )} <br> Computer has ${computerOutput}`;
+    playerOutput = showCards(player, "PLAYER");
+    return `**Player** has ${playerOutput} <br><br> **Computer** has ${computerOutput}`;
   }
 
   // Sum the cards
@@ -146,25 +146,40 @@ var main = function (input) {
 // Generate output showing the total number of cards + rank + suits. Return Strings
 var showCards = function (array, input) {
   var sum = sumCards(array);
+  // This if checks if the array of dictionay contains "ace", if yes, then call checkAce
+  if (array.some((code) => code.name === "ace")) {
+    checkAce(sum, array);
+  }
+  // This sum contains the new Ace rank from 1 to 11.
+  sum = sumCards(array);
   if (input == "COMPUTER") {
-    while (sumCards(array) < 17) {
+    // After accounting the change, check if the sum is still below 17.
+    while (sum < 17) {
       array.push(deck.pop());
+      sum = sumCards(array);
+      checkAce(sum, array);
     }
-    sum = sumCards(array);
   }
   var len = 0;
   var outputArr = [];
   while (len < array.length) {
-    outputArr.unshift([" " + array[len].rank + " of " + array[len].suit]);
+    outputArr.unshift([
+      "<br> " +
+        array[len].name +
+        " with " +
+        array[len].rank +
+        " of " +
+        array[len].suit,
+    ]);
     len += 1;
   }
-  return `${array.length} cards with total rank of ${sum} given ${outputArr}.`;
+  return `<br> ${array.length} cards with total rank of ${sum} given ${outputArr}`;
 };
 
 // Take in array of cards. Sum the rank of cards. Return Number
 var sumCards = function (array) {
-  var len = 2;
-  var output = array[0].rank + array[1].rank;
+  var len = 1;
+  var output = array[0].rank;
   while (len <= array.length - 1) {
     output += array[len].rank;
     len += 1;
@@ -200,4 +215,39 @@ var winConditions = function (com, play) {
     output = "Both Bust. Try Again!";
   }
   return output;
+};
+
+// Alternative scenarios for Ace
+// Execute the change of Ace's rank from 1 to 11 if checkAce function is True
+var changeAce = function (array) {
+  var len = 0;
+  while (len < array.length) {
+    if (array[len].name == "ace") {
+      aceIndex = len;
+      array[len].rank = 11;
+      // Only 1 Ace will be modified
+      len = array.length;
+    }
+    len += 1;
+  }
+  return array;
+};
+
+// If the cards chosen contains Ace, function checks if it is better to change Ace from 1 to 11
+var checkAce = function (sum, array) {
+  if (sum == 11) {
+    return changeAce(array);
+  }
+  // If Ace is 11, check if the total will be greater than sum but still less than 21
+  var aceTotal = sum + 10;
+  if (aceTotal < 21 && aceTotal > sum) {
+    return changeAce(array);
+  }
+
+  // Change back to 1 if changing the Ace to 11 exceeds 21.
+  if (sum > 21) {
+    if (array[aceIndex].name == "ace") {
+      array[aceIndex].rank = 1;
+    }
+  }
 };
