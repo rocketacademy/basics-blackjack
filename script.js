@@ -382,10 +382,10 @@ var emoji = function (input) {
   }
 };
 var displayPlayerDealerHand = function (input) {
-  let message2 = "";
-  for (let i = 0; i < numberOfPlayer; i++) {
-    let message1 = "";
-    for (let k = 0; k < playerCards[i].length; k++) {
+  var message2 = "";
+  for (i = 0; i < numberOfPlayer; i++) {
+    var message1 = "";
+    for (k = 0; k < playerCards[i].length; k++) {
       message1 += `${playerCards[i][k].name} of ${emoji(
         playerCards[i][k].suit
       )}<BR>`;
