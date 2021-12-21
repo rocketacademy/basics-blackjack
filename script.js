@@ -16,6 +16,23 @@
 
 // winning condition: closest to 21 and not the same sum with dealer
 
+// global variables
+var DEALINGPHASE = "Dealing phase";
+var gameMode = DEALINGPHASE;
+var HITORSTANDPHASE = "Player's hit or stand phase";
+var DEALERPHASE = "Dealer's turn";
+var playerHandMessage = `Player's cards`;
+var computerHandMessage = `Computer's cards`;
+var hitOrStandMessage = `Would you like to hit or stand?`;
+var playerCards = [];
+var computerCards = [];
+var playerCardsString = "";
+var computerCardsString = "";
+var playerCardsSum = 0;
+var computerCardSum = 0;
+var REPLAY = "Click 'submit' to replay.";
+var aceCounter = 0;
+
 // Function to make the deck
 var makeDeck = function () {
   // Initialise an empty deck array
@@ -247,23 +264,6 @@ var toWinOrLose = function (finalResults) {
   finalResults = `You lost!<br><br>${playerHandMessage}: ${playerCardsString} with sum = ${playerCardsSum}<br>${computerHandMessage}: ${computerCardsString} with sum = ${computerCardSum}<br><br>${REPLAY}`;
   return finalResults;
 };
-
-// global variables
-var DEALINGPHASE = "Dealing phase";
-var gameMode = DEALINGPHASE;
-var HITORSTANDPHASE = "Player's hit or stand phase";
-var DEALERPHASE = "Dealer's turn";
-var playerHandMessage = `Player's cards`;
-var computerHandMessage = `Computer's cards`;
-var hitOrStandMessage = `Would you like to hit or stand?`;
-var playerCards = [];
-var computerCards = [];
-var playerCardsString = "";
-var computerCardsString = "";
-var playerCardsSum = 0;
-var computerCardSum = 0;
-var REPLAY = "Click 'submit' to replay.";
-var aceCounter = 0;
 
 var main = function (input) {
   var myOutputValue = "";
