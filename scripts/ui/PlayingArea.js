@@ -26,8 +26,9 @@ class PlayingArea {
 
   commenceLounge = (lounge) => {
     console.group(`commenceLounge`);
-    const uiLounge = new UiLounge(lounge).render();
-    uiRound.setUiParentRoot(this._uiRoot);
+    const uiLounge = new UiLounge(lounge);
+    uiLounge.setUiParentRoot(this._uiRoot);
+    uiLounge.render();
     console.groupEnd();
     return [lounge, uiLounge];
   };

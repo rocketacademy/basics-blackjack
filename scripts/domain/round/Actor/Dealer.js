@@ -336,11 +336,14 @@ class Dealer extends _Actor {
     this._round.settlementCompleted();
   };
   requestNewRound = () => {
+    this._round.finish(true);
     //TODO
   };
 
   requestGoToLounge = () => {
     //TODO
+
+    this._round.finish(false);
   };
   _performEndView = () => {
     this.shout("The round of play is completed. Restart?");

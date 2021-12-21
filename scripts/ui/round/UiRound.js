@@ -123,10 +123,11 @@ class UiRound extends Ui_Tree {
 
     return this._uiSeatHolder.get(pos);
   };
-  setOnFinish = (cb) => {
+  setOnFinish = (bootstrapCb) => {
     this._round.setOnFinish((lounge, isContinue) => {
-      cb(lounge, isContinue);
       this.detachGlobalRoot();
+
+      bootstrapCb(lounge, isContinue);
     });
     return this;
   };

@@ -24,14 +24,7 @@ class RoundPhase {
 
 class Round {
   //TODO need to do this? the round should not be referenced after finish.
-  __resetHooks = () => {
-    this._onFinish = (lounge, isContinue) => {
-      throw new Error(`Error. Callback[_onFinish] must be configured`);
-    };
-    this.setOnFinish = (fn) => {
-      this._onFinish = fn;
-    };
-  };
+
   _newSeat = (player) => {
     if (!player) {
       throw new Error(`Player argument should not be null`);
@@ -66,7 +59,12 @@ class Round {
     const players = lounge.getPlayers();
     this._seatList = this._newSeatList(players);
 
-    this.__resetHooks();
+    this._onFinish = (lounge, isContinue) => {
+      throw new Error(`Error. Callback[_onFinish] must be configured`);
+    };
+    this.setOnFinish = (fn) => {
+      this._onFinish = fn;
+    };
   }
   getShoe = () => this._deck;
   getRootSeat = () => this._seatList.getRoot().getElement();
@@ -160,8 +158,8 @@ class Round {
     if (!(isContinue === false || isContinue === true)) {
       throw new Error(`Continue or not?`);
     }
+    this._setPhase(RoundPhase.END);
     this._onFinish(this._lounge, isContinue);
-    this.__resetHooks();
   };
 }
 
