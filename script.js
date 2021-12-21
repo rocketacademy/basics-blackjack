@@ -41,7 +41,7 @@ var deck = "";
 var makeDeck = function () {
   // make 52 cards
   var cardDeck = [];
-  var suits = ["hearts", "diamonds", "clubs", "spades"];
+  var suits = ["♥️", "♦️", "♣️", "♠️"];
 
   // create a loop over the suits array
   var suitIndex = 0;
