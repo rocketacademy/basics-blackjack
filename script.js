@@ -158,19 +158,12 @@ var getTwoCards = function () {
   computerCardsString = toDisplayCardsOnHand(computerCards);
   playerCardsSum = sumRankCardsOnHand(playerCards);
   computerCardSum = sumRankCardsOnHand(computerCards);
-  if (playerCardsSum > 21 || computerCardSum > 21) {
-    playerCardsSum = sumRankCardsOnHand(playerCards);
-    computerCardSum = sumRankCardsOnHand(computerCards);
-  }
-  if (computerCardSum == 21) {
-    return `You lost! Computer got 21.<br><br>${playerHandMessage}: ${playerCardsString} total point = ${playerCardsSum}<br>${computerHandMessage}: ${computerCardsString} with sum = ${computerCardSum}<br><br>${REPLAY}`;
-  }
-  if (playerCardsSum == 21) {
-    gameMode = DEALERPHASE;
-    return `You got 21!! You haven't won yet, it is now computer's turn. Please click 'submit' to continue.<br><br>${playerHandMessage}: ${playerCardsString} total point = ${playerCardsSum}<br>${computerHandMessage}: ${computerCardsString} with sum = ${computerCardSum}`;
+  if (computerCardSum == 21 || playerCardsSum == 21) {
+    outcome = generateEarlyWinningConditions();
+    return outcome;
   }
   gameMode = HITORSTANDPHASE;
-  return `${playerHandMessage}: ${playerCardsString} total point = ${playerCardsSum}<br>${computerHandMessage}: ${computerCardsString} with sum = ${computerCardSum}<br><br>${hitOrStandMessage}`;
+  return `${playerHandMessage}: ${playerCardsString} with sum = ${playerCardsSum}<br>${computerHandMessage}: ${computerCardsString} with sum = ${computerCardSum}<br><br>${hitOrStandMessage}`;
 };
 
 // function to hit or stand for player
@@ -180,18 +173,47 @@ var toHitInPlayerPhase = function (dealtCards) {
   playerCards.push(dealtCards);
   playerCardsString = toDisplayCardsOnHand(playerCards);
   playerCardsSum = sumRankCardsOnHand(playerCards);
+  if (
+    playerCardsSum > 21 ||
+    playerCardsSum == 21 ||
+    playerCardsSum == computerCardSum
+  ) {
+    outcome = generateEarlyWinningConditions();
+    return outcome;
+  }
+  return `${playerHandMessage}: ${playerCardsString} with sum = ${playerCardsSum}<br>${computerHandMessage}: ${computerCardsString} with sum = ${computerCardSum}<br><br>${hitOrStandMessage}`;
+};
+
+var generateEarlyWinningConditions = function () {
+  if (gameMode == DEALERPHASE) {
+    if (computerCardSum > 21) {
+      gameMode = DEALINGPHASE;
+      return `Computer drew ${
+        computerCards.length - 2
+      } card(s) and went over 21. You won!<br><br>${playerHandMessage}: ${playerCardsString} with sum = ${playerCardsSum}<br>${computerHandMessage}: ${computerCardsString} with sum = ${computerCardSum}<br><br>${REPLAY}`;
+    }
+    if (computerCardSum == 21) {
+      gameMode = DEALINGPHASE;
+      return `Computer drew ${
+        computerCards.length - 2
+      } card(s) and got 21. You lost!<br><br>${playerHandMessage}: ${playerCardsString} with sum = ${playerCardsSum}<br>${computerHandMessage}: ${computerCardsString} with sum = ${computerCardSum}<br><br>${REPLAY}`;
+    }
+  }
   if (playerCardsSum > 21) {
     gameMode = DEALINGPHASE;
-    return `You went over 21, you lose!<br><br>${playerHandMessage}: ${playerCardsString} total point = ${playerCardsSum}<br>${computerHandMessage}: ${computerCardsString} with sum = ${computerCardSum}<br><br>${REPLAY}`;
+    return `You went over 21, you lose!<br><br>${playerHandMessage}: ${playerCardsString} with sum = ${playerCardsSum}<br>${computerHandMessage}: ${computerCardsString} with sum = ${computerCardSum}<br><br>${REPLAY}`;
   }
   if (playerCardsSum == 21) {
     gameMode = DEALERPHASE;
-    return `You got 21!! You haven't won yet, it is now computer's turn. Please click 'submit' to continue.<br><br>${playerHandMessage}: ${playerCardsString} total point = ${playerCardsSum}<br>${computerHandMessage}: ${computerCardsString} with sum = ${computerCardSum}`;
+    return `You got 21!! You haven't won yet, it is now computer's turn. Please click 'submit' to continue.<br><br>${playerHandMessage}: ${playerCardsString} with sum = ${playerCardsSum}<br>${computerHandMessage}: ${computerCardsString} with sum = ${computerCardSum}`;
   }
   if (playerCardsSum == computerCardSum) {
-    return `Your sum is equivalent to computer. You need to be higher than computer win.<br><br>${playerHandMessage}: ${playerCardsString} total point = ${playerCardsSum}<br>${computerHandMessage}: ${computerCardsString} with sum = ${computerCardSum}<br><br>${hitOrStandMessage}`;
+    return `Your sum is equivalent to computer. You need to be higher than computer win.<br><br>${playerHandMessage}: ${playerCardsString} with sum = ${playerCardsSum}<br>${computerHandMessage}: ${computerCardsString} with sum = ${computerCardSum}<br><br>${hitOrStandMessage}`;
   }
-  return `${playerHandMessage}: ${playerCardsString} total point = ${playerCardsSum}<br>${computerHandMessage}: ${computerCardsString} with sum = ${computerCardSum}<br><br>${hitOrStandMessage}`;
+  if (computerCardSum == 21) {
+    gameMode = DEALINGPHASE;
+    return `You lost! Computer got 21.<br><br>${playerHandMessage}: ${playerCardsString} with sum = ${playerCardsSum}<br>${computerHandMessage}: ${computerCardsString} with sum = ${computerCardSum}<br><br>${REPLAY}`;
+  }
 };
 
 var toHitInComputerPhase = function (dealtCards) {
@@ -206,15 +228,9 @@ var toHitInComputerPhase = function (dealtCards) {
     computerCardsString = toDisplayCardsOnHand(computerCards);
     computerCardSum = sumRankCardsOnHand(computerCards);
   }
-  if (computerCardSum > 21) {
-    gameMode = DEALINGPHASE;
-    return `Computer drew ${
-      computerCards.length - 2
-    } card(s) and went over 21. You won!<br><br>${playerHandMessage}: ${playerCardsString} total point = ${playerCardsSum}<br>${computerHandMessage}: ${computerCardsString} with sum = ${computerCardSum}<br><br>${REPLAY}`;
-  }
-  if (computerCardSum == 21) {
-    gameMode = DEALINGPHASE;
-    return `You lost! Computer got 21.<br><br>${playerHandMessage}: ${playerCardsString} total point = ${playerCardsSum}<br>${computerHandMessage}: ${computerCardsString} with sum = ${computerCardSum}<br><br>${REPLAY}`;
+  if (computerCardSum > 21 || computerCardSum == 21) {
+    var outcome = generateEarlyWinningConditions();
+    return outcome;
   }
   var results = toWinOrLose();
   return `Computer drew ${computerCards.length - 2} card(s).${results}`;
@@ -223,10 +239,10 @@ var toHitInComputerPhase = function (dealtCards) {
 var toWinOrLose = function (finalResults) {
   gameMode = DEALINGPHASE;
   if (playerCardsSum > computerCardSum) {
-    finalResults = `You won!<br><br>${playerHandMessage}: ${playerCardsString} total point = ${playerCardsSum}<br>${computerHandMessage}: ${computerCardsString} with sum = ${computerCardSum}<br><br>${REPLAY}`;
+    finalResults = `You won!<br><br>${playerHandMessage}: ${playerCardsString} with sum = ${playerCardsSum}<br>${computerHandMessage}: ${computerCardsString} with sum = ${computerCardSum}<br><br>${REPLAY}`;
     return finalResults;
   }
-  finalResults = `You lost!<br><br>${playerHandMessage}: ${playerCardsString} total point = ${playerCardsSum}<br>${computerHandMessage}: ${computerCardsString} with sum = ${computerCardSum}<br><br>${REPLAY}`;
+  finalResults = `You lost!<br><br>${playerHandMessage}: ${playerCardsString} with sum = ${playerCardsSum}<br>${computerHandMessage}: ${computerCardsString} with sum = ${computerCardSum}<br><br>${REPLAY}`;
   return finalResults;
 };
 
