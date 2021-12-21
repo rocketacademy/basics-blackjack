@@ -44,7 +44,11 @@ var computerCards = [];
 var cardDeck = [];
 var playerScore = [];
 var computerScore = [];
+var sumOfPlayerScore = 0;
 var sumOfComputerScore = 0;
+var aceDrawnByPlayer = [];
+var aceDrawnByComputer = [];
+
 var gameState = "begin";
 
 //Generate Card Deck
@@ -130,7 +134,12 @@ var playerScoreCounter = function () {
   indexCounter = 0;
   while (indexCounter < playerCards.length) {
     if (playerCards[indexCounter].name == "ace") {
-      playerScore[indexCounter] = 11;
+      if (aceDrawnByPlayer.length > 1) {
+        playerScore[indexCounter] = 1;
+      } else {
+        playerScore[indexCounter] = 11;
+      }
+      aceDrawnByPlayer.push(0);
     } else if (
       playerCards[indexCounter].name == "king" ||
       playerCards[indexCounter].name == "queen" ||
@@ -143,7 +152,7 @@ var playerScoreCounter = function () {
     indexCounter += 1;
   }
   var i = 0;
-  var sumOfPlayerScore = 0;
+  sumOfPlayerScore = 0;
   while (i < playerScore.length) {
     sumOfPlayerScore = sumOfPlayerScore + playerScore[i];
     i += 1;
@@ -156,7 +165,11 @@ var computerScoreCounter = function () {
   indexCounter = 0;
   while (indexCounter < computerCards.length) {
     if (computerCards[indexCounter].name == "ace") {
-      computerScore[indexCounter] = 11;
+      if (aceDrawnByComputer.length > 1) {
+        computerScore[indexCounter] = 1;
+      } else {
+        computerScore[indexCounter] = 11;
+      }
     } else if (
       computerCards[indexCounter].name == "king" ||
       computerCards[indexCounter].name == "queen" ||
@@ -169,12 +182,28 @@ var computerScoreCounter = function () {
     indexCounter += 1;
   }
   var i = 0;
+  sumOfComputerScore = 0;
   while (i < computerScore.length) {
     sumOfComputerScore = sumOfComputerScore + computerScore[i];
     i += 1;
   }
   return sumOfComputerScore;
 };
+
+//helper function to display player deck
+var displayPlayerDeck = function (playerCards) {
+  var cardsInPlayerDeck = "";
+  counter = 0;
+  while (counter < playerCards.length) {
+    cardsInPlayerDeck =
+      cardsInPlayerDeck +
+      "<br>" +
+      `${playerCards[counter].name} of ${playerCards[counter].suit}`;
+    counter += 1;
+  }
+  return cardsInPlayerDeck;
+};
+
 var newDeck = makeDeck();
 var shuffledCards = shuffleCards(newDeck);
 
@@ -184,10 +213,7 @@ var playerChoseHit = function (shuffledCards, playerCards) {
   playerCards.push(dealPlayerCard3);
   console.log("this is playerCards");
   console.log(playerCards);
-  var playerScoreForCurrentRound = playerScoreCounter(
-    playerCards,
-    playerScoreForRound2
-  );
+  var playerScoreForCurrentRound = playerScoreCounter(playerCards, playerScore);
   console.log("this is playerScoreForCurrentRound");
   console.log(playerScoreForCurrentRound);
   return playerScoreForCurrentRound;
@@ -204,20 +230,13 @@ var main = function (input) {
     computerCards.push(dealComputerCard1);
     computerCards.push(dealComputerCard2);
 
-    // var dealPlayerCard1 = dealCards(cardDeck);
-    // playerCards.push(dealPlayerCard1);
-    // var dealPlayerCard2 = dealCards(cardDeck);
-    // playerCards.push(dealPlayerCard2);
     console.log("this is playerCards");
     console.log(playerCards);
-    // var dealComputerCard1 = dealCards(cardDeck);
-    // computerCards.push(dealComputerCard1);
-    // var dealComputerCard2 = dealCards(cardDeck);
-    // computerCards.push(dealComputerCard2);
     console.log("this is computerCards");
     console.log(computerCards);
     console.log("this is cardDeck.length");
     console.log(cardDeck.length);
+
     var playerCurrentScore = playerScoreCounter(playerCards, playerScore);
     var computerCurrentScore = computerScoreCounter(
       computerCards,
@@ -229,22 +248,46 @@ var main = function (input) {
     console.log("this is computerCurrentScore");
     console.log(computerCurrentScore);
 
-    gameState = "new round";
     var myOutputValue = "";
-    myOutputValue = `Dealer has <br> ${computerCards[0].name} of ${computerCards[0].suit} <br> and one card faced down<br><br> You have <br> ${playerCards[0].name} of ${playerCards[0].suit}<br>${playerCards[1].name} of ${playerCards[1].suit} <br> Your current score is ${playerCurrentScore}<br><br> Type 'hit' or 'stand' to proceed.`;
+    if (playerCurrentScore < 21 && computerCurrentScore < 21) {
+      gameState = "new round";
+      myOutputValue = `Dealer has <br> ${computerCards[0].name} of ${computerCards[0].suit} <br> and one card faced down<br><br> You have <br> ${playerCards[0].name} of ${playerCards[0].suit}<br>${playerCards[1].name} of ${playerCards[1].suit} <br> Your current score is ${playerCurrentScore}<br><br> Type 'hit' or 'stand' to proceed.`;
+    } else if (playerCurrentScore == 21) {
+      myOutputValue = `You have <br> ${playerCards[0].name} of ${playerCards[0].suit}<br>${playerCards[1].name} of ${playerCards[1].suit} <br> Your current score is ${playerCurrentScore}<br><br> BLACKJACK!`;
+    } else if (computerCurrentScore == 21) {
+      myOutputValue = `You have <br> ${playerCards[0].name} of ${playerCards[0].suit}<br>${playerCards[1].name} of ${playerCards[1].suit} <br> Your current score is ${playerCurrentScore}<br> But too bad. Dealer wins because he has BLACKJACK!`;
+    } else if (playerCurrentScore == 21 && computerCurrentScore == 21) {
+      myOutputValue = `You have <br> ${playerCards[0].name} of ${playerCards[0].suit}<br>${playerCards[1].name} of ${playerCards[1].suit} <br> Your current score is ${playerCurrentScore}<br>. You BLACKJACK! And the Dealer BLACKJACKS! <br><br> It\'s a TIE! `;
+    }
   }
 
   if (gameState == "new round" && input == "hit") {
-    var dealPlayerCard3 = shuffledCards.pop();
-    playerCards.push(dealPlayerCard3);
-    console.log("this is playerCards");
-    console.log(playerCards);
-    var playerScoreForCurrentRound = playerScoreCounter(
-      playerCards,
-      playerScoreForRound2
-    );
-    console.log("this is playerScoreForCurrentRound");
-    console.log(playerScoreForCurrentRound);
+    var playerScoreNow = playerChoseHit(shuffledCards, playerCards);
+    var showPlayerDeck = displayPlayerDeck(playerCards);
+
+    if (playerScoreNow > 21) {
+      myOutputValue = `You currently have these cards: <br> ${showPlayerDeck} <br><br> Your current score is ${playerScoreNow}. You bust. You lose! `;
+    } else if (playerScoreNow == 21) {
+      myOutputValue = `You currently have these cards: <br> ${showPlayerDeck} <br><br> Your current score is ${playerScoreNow}. Blackjack! You win!`;
+    } else {
+      myOutputValue = `You currently have these cards: <br> ${showPlayerDeck} <br><br> Your current score is ${playerScoreNow}.<br>Type 'hit' or 'stand' to proceed.`;
+    }
+  }
+  if (gameState == "new round" && input == "stand") {
+    console.log("sumOfPlayerScore");
+    console.log(sumOfPlayerScore);
+    console.log("sumOfComputerScore");
+    console.log(sumOfComputerScore);
+    if (sumOfComputerScore > sumOfPlayerScore) {
+      var showPlayerDeckIfStand = displayPlayerDeck(playerCards);
+      myOutputValue = `You currently have these cards: <br> ${showPlayerDeckIfStand} <br><br> And the Dealer has: <br> ${computerCards[0].name} of ${computerCards[0].suit} <br> and ${computerCards[1].name} of ${computerCards[1].suit}. <br><br> Your current score is ${sumOfPlayerScore} <br> and Dealer's current score is ${sumOfComputerScore}. <br><br>You lose!`;
+    } else if (sumOfComputerScore < sumOfPlayerScore) {
+      var showPlayerDeckIfStand = displayPlayerDeck(playerCards);
+      myOutputValue = `You currently have these cards: <br> ${showPlayerDeckIfStand} <br><br> And the Dealer has: <br> ${computerCards[0].name} of ${computerCards[0].suit} <br> and ${computerCards[1].name} of ${computerCards[1].suit}. <br><br> Your current score is ${sumOfPlayerScore} <br> and Dealer's current score is ${sumOfComputerScore}. <br><br>You win!`;
+    } else if (sumOfComputerScore == sumOfPlayerScore) {
+      var showPlayerDeckIfStand = displayPlayerDeck(playerCards);
+      myOutputValue = `You currently have these cards: <br> ${showPlayerDeckIfStand} <br><br> And the Dealer has: <br> ${computerCards[0].name} of ${computerCards[0].suit} <br> and ${computerCards[1].name} of ${computerCards[1].suit}. <br><br> Your current score is ${sumOfPlayerScore} <br> and Dealer's current score is ${sumOfComputerScore}. <br><br>It's a tie!`;
+    }
   }
 
   return myOutputValue;
