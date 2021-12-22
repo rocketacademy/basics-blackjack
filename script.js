@@ -30,10 +30,10 @@ var totalAmount; // that each player has
 var betAmount; // that each player bets
 var turn = "player";
 
-//create card deck
+//create card deck ♠♥♣♦
 var cardDeck = function () {
   var deck = [];
-  var suits = ["clubs", "diamonds", "hearts", "spades"];
+  var suits = ["♣", "♦", "♥", "♠"];
   var suitIndex = 0;
 
   while (suitIndex < 4) {
@@ -88,10 +88,15 @@ var shuffledDeck = shuffle(deck);
 
 //deal number of cards based on player and move
 var dealCards = function (player, move) {
-  if (move == "deal") {
-    player.hand.push(shuffledDeck.pop(), shuffledDeck.pop());
-  } else if (move == "hit") {
-    player.hand.push(shuffledDeck.pop());
+  console.log(shuffledDeck.length);
+  if (shuffledDeck.length <= 4) {
+    gameMode = "end";
+  } else {
+    if (move == "deal") {
+      player.hand.push(shuffledDeck.pop(), shuffledDeck.pop());
+    } else if (move == "hit") {
+      player.hand.push(shuffledDeck.pop());
+    }
   }
 };
 
@@ -122,6 +127,13 @@ var points = function (hand) {
 
 //score output
 var winner;
+var winImage = '<img src="https://c.tenor.com/YjPBups7H48AAAAC/6m-rain.gif"/>';
+var loseImage =
+  '<img src = "https://c.tenor.com/zyxnzLdTzqoAAAAC/sobbing-baby.gif"/>';
+var brokeImage =
+  '<img src = "https://c.tenor.com/YvOjHMyFlH0AAAAC/empty-box.gif/">';
+var drawImage =
+  '<img src = "https://c.tenor.com/MkyiUsAp8t8AAAAd/tom-and-jerry-tom-the-cat.gif/">';
 var calcScore = function (playerScore, dealerScore) {
   winner = "";
   if (playerScore == 21 || dealerScore == 21) {
@@ -160,6 +172,14 @@ var calcScore = function (playerScore, dealerScore) {
     }
   }
   allocateWinnings(winner);
+
+  if (winner == player) {
+    scoreOutput = scoreOutput + winImage;
+  } else if (winner == dealer) {
+    scoreOutput = scoreOutput + loseImage;
+  } else if (winner == "draw") {
+    scoreOutput = scoreOutput + drawImage;
+  }
   return scoreOutput;
 };
 
@@ -196,8 +216,9 @@ var main = function (input) {
   if (gameMode == "setup") {
     if (player.name != "") {
       if (player.totalAmount == 0) {
-        myOutputValue = `Sorry ${player.name}, you have $${player.totalAmount} left. <br> <br> GAME OVER!`;
-        gameMode = "";
+        myOutputValue =
+          `Sorry ${player.name}, you have $${player.totalAmount} left. <br> <br> GAME OVER! Refresh to play again.` +
+          brokeImage;
       } else {
         reset(player);
         reset(dealer);
@@ -213,7 +234,6 @@ var main = function (input) {
       myOutputValue = `Welcome ${player.name}, you have $${player.totalAmount} to play. Please enter the amount you would like to bet.`;
       gameMode = "bet";
     }
-
     return myOutputValue;
   }
   //record bet amount -reject string
@@ -273,6 +293,10 @@ var main = function (input) {
     }
     //allocateWinnings(winner);
 
+    return myOutputValue;
+  }
+  if (gameMode == "end") {
+    myOutputValue = `Out of cards! ${player.name}, you walk away with $${player.totalAmount}.  Refresh to play again`;
     return myOutputValue;
   }
 };
