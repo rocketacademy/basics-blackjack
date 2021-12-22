@@ -120,7 +120,10 @@ var main = function (input) {
     }
     playerHandTotalValue = calculateTotalHandValue(playerHand);
     var totalPlayerValueMessage = "";
-    if (playerHandTotalValue < 17) {
+    if (playerHandTotalValue == 21 && playerHand.length == 2) {
+      totalPlayerValueMessage = `Your total cards value is: ${playerHandTotalValue}<br><br>
+      <b>You got Blackjack!</b>`;
+    } else if (playerHandTotalValue < 17) {
       totalPlayerValueMessage = `Your total cards value is: ${playerHandTotalValue}<br><br>
       <b>Your total card value is less than 17, please input hit to continue.</b>`;
     } else if (playerHandTotalValue > 21) {
@@ -142,8 +145,14 @@ var main = function (input) {
       displayIndex++;
     }
     computerHandTotalValue = calculateTotalHandValue(computerHand);
-    var totalComputerValueMessage =
-      "Computer total cards value is: " + computerHandTotalValue;
+    var totalComputerValueMessage = "";
+    if (computerHandTotalValue == 21 && computerHand.length == 2) {
+      totalComputerValueMessage = `Computer total cards value is: ${playerHandTotalValue}<br><br>
+      <b>Computer got Blackjack!</b>`;
+    } else {
+      totalComputerValueMessage =
+        "Computer total cards value is: " + computerHandTotalValue;
+    }
 
     return (
       playerMessage +
