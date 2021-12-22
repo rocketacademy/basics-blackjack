@@ -7,6 +7,8 @@
 //5. Calculate scores at the end of round - J/Q/K = 10, A - 1/11  (if 2 aces, only 1 is 11)
 //6. Winner has hand closest to 21 (account for draw scenario)
 var myOutputValue;
+var score;
+var cardsInHand;
 var dealer = {
   name: "Dealer",
   hand: [],
@@ -183,7 +185,6 @@ var calcScore = function (playerScore, dealerScore) {
   return scoreOutput;
 };
 
-var cardsInHand;
 //print cards in hand
 var cardsHeld = function (hand) {
   cardsInHand = hand[0].name;
