@@ -46,6 +46,7 @@ var playerScore = [];
 var computerScore = [];
 var sumOfPlayerScore = 0;
 var sumOfComputerScore = 0;
+var myImage = "";
 
 var gameState = "begin";
 
@@ -268,11 +269,23 @@ var main = function (input) {
     var showPlayerDeck = displayPlayerDeck(playerCards);
 
     if (playerScoreNow > 21) {
-      myOutputValue = `You currently have these cards: <br> ${showPlayerDeck} <br><br> Your current score is ${playerScoreNow}. You bust. Type 'stand' to pass to the dealer. `;
+      myImage =
+        '<img src="https://c.tenor.com/2LjQJQFbUB8AAAAC/forced-smile-britney-spears.gif"/>';
+      myOutputValue =
+        `You currently have these cards: <br> ${showPlayerDeck} <br><br> Your current score is ${playerScoreNow}. You bust. Type 'stand' to pass to the dealer. ` +
+        myImage;
     } else if (playerScoreNow == 21) {
-      myOutputValue = `You currently have these cards: <br> ${showPlayerDeck} <br><br> Your current score is ${playerScoreNow}. Blackjack! You win!`;
+      myImage =
+        '<img src="https://c.tenor.com/efim3EaGrBsAAAAC/brit-britney.gif"/>';
+      myOutputValue =
+        `You currently have these cards: <br> ${showPlayerDeck} <br><br> Your current score is ${playerScoreNow}. Blackjack! You win!` +
+        myImage;
     } else {
-      myOutputValue = `You currently have these cards: <br> ${showPlayerDeck} <br><br> Your current score is ${playerScoreNow}.<br>Type 'hit' or 'stand' to proceed.`;
+      myImage =
+        '<img src="https://c.tenor.com/98Gp_HTE4LAAAAAd/britney-britney-spears.gif"/>';
+      myOutputValue =
+        `You currently have these cards: <br> ${showPlayerDeck} <br><br> Your current score is ${playerScoreNow}.<br>Type 'hit' or 'stand' to proceed.` +
+        myImage;
     }
   }
   if (gameState == "new round" && input == "stand") {
@@ -293,35 +306,71 @@ var main = function (input) {
         console.log(
           "if computerScoreNow > 21 && sumOfPlayerScore>21 statement entered"
         );
-        myOutputValue = `The dealer has these cards: <br> ${computerCards[0].name} of ${computerCards[0].suit} <br> and ${computerCards[1].name} of ${computerCards[1].suit} <br> and ${computerCards[2].name} of ${computerCards[2].suit}. There is tie as both the dealer and player has bust!`;
+        myImage =
+          '<img src="https://c.tenor.com/Roz5_5INgDUAAAAM/britney-britney-s.gif"/>';
+        myOutputValue =
+          `The dealer has these cards: <br> ${computerCards[0].name} of ${computerCards[0].suit} <br> and ${computerCards[1].name} of ${computerCards[1].suit} <br> and ${computerCards[2].name} of ${computerCards[2].suit}. There is tie as both the dealer and player has bust!` +
+          myImage;
       } else if (computerScoreNow > 21) {
         console.log("if computerScoreNow > 21 statement entered");
-        myOutputValue = `The dealer has these cards: <br> ${computerCards[0].name} of ${computerCards[0].suit} <br> and ${computerCards[1].name} of ${computerCards[1].suit} <br> and ${computerCards[2].name} of ${computerCards[2].suit}<br><br> You won as the dealer bust with a score of ${computerScoreNow}`;
+        myImage =
+          '<img src="https://c.tenor.com/TLbKn_n1mYkAAAAC/britney-spears-britney.gif"/>';
+        myOutputValue =
+          `The dealer has these cards: <br> ${computerCards[0].name} of ${computerCards[0].suit} <br> and ${computerCards[1].name} of ${computerCards[1].suit} <br> and ${computerCards[2].name} of ${computerCards[2].suit}<br><br> You won as the dealer bust with a score of ${computerScoreNow}` +
+          myImage;
       } else if (computerScoreNow == 21) {
         console.log("if computerScoreNow == 21 statement entered");
-        myOutputValue = `The dealer has these cards: <br> ${computerCards[0].name} of ${computerCards[0].suit} <br> and ${computerCards[1].name} of ${computerCards[1].suit} <br> and ${computerCards[2].name} of ${computerCards[2].suit}<br><br> The dealer won by BLACKJACK! You LOSE!`;
+        myImage =
+          '<img src="https://c.tenor.com/fCSqXh3zc1kAAAAd/britney-britney-s.gif"/>';
+        myOutputValue =
+          `The dealer has these cards: <br> ${computerCards[0].name} of ${computerCards[0].suit} <br> and ${computerCards[1].name} of ${computerCards[1].suit} <br> and ${computerCards[2].name} of ${computerCards[2].suit}<br><br> The dealer won by BLACKJACK! You LOSE!` +
+          myImage;
       } else if (computerScoreNow < 21) {
         console.log("if computerScoreNow < 21 statement entered");
         if (computerScoreNow > sumOfPlayerScore) {
           var showPlayerDeckIfStand = displayPlayerDeck(playerCards);
-          myOutputValue = `You currently have these cards: <br> ${showPlayerDeckIfStand} <br><br> And the Dealer has: <br> ${computerCards[0].name} of ${computerCards[0].suit} <br> and ${computerCards[1].name} of ${computerCards[1].suit}<br> and${computerCards[2].name} of ${computerCards[2].suit}. <br><br> Your current score is ${sumOfPlayerScore} <br> and Dealer's current score is ${computerScoreNow}.<br><br>You lose!`;
+          myImage =
+            '<img src="https://c.tenor.com/fCSqXh3zc1kAAAAd/britney-britney-s.gif"/>';
+          myOutputValue =
+            `You currently have these cards: <br> ${showPlayerDeckIfStand} <br><br> And the Dealer has: <br> ${computerCards[0].name} of ${computerCards[0].suit} <br> and ${computerCards[1].name} of ${computerCards[1].suit}<br> and${computerCards[2].name} of ${computerCards[2].suit}. <br><br> Your current score is ${sumOfPlayerScore} <br> and Dealer's current score is ${computerScoreNow}.<br><br>You lose!` +
+            myImage;
         } else if (computerScoreNow < sumOfPlayerScore) {
           var showPlayerDeckIfStand = displayPlayerDeck(playerCards);
-          myOutputValue = `You currently have these cards: <br> ${showPlayerDeckIfStand} <br><br> And the Dealer has: <br> ${computerCards[0].name} of ${computerCards[0].suit} <br> and ${computerCards[1].name} of ${computerCards[1].suit}<br> and${computerCards[2].name} of ${computerCards[2].suit}. <br><br> Your current score is ${sumOfPlayerScore} <br> and Dealer's current score is ${computerScoreNow}.<br><br>You win!`;
+          myImage =
+            '<img src="https://c.tenor.com/TLbKn_n1mYkAAAAC/britney-spears-britney.gif"/>';
+          myOutputValue =
+            `You currently have these cards: <br> ${showPlayerDeckIfStand} <br><br> And the Dealer has: <br> ${computerCards[0].name} of ${computerCards[0].suit} <br> and ${computerCards[1].name} of ${computerCards[1].suit}<br> and${computerCards[2].name} of ${computerCards[2].suit}. <br><br> Your current score is ${sumOfPlayerScore} <br> and Dealer's current score is ${computerScoreNow}.<br><br>You win!` +
+            myImage;
         } else if (computerScoreNow == sumOfPlayerScore) {
           var showPlayerDeckIfStand = displayPlayerDeck(playerCards);
-          myOutputValue = `You currently have these cards: <br> ${showPlayerDeckIfStand} <br><br> And the Dealer has: <br> ${computerCards[0].name} of ${computerCards[0].suit} <br> and ${computerCards[1].name} of ${computerCards[1].suit}<br> and${computerCards[2].name} of ${computerCards[2].suit}. <br><br> Your current score is ${sumOfPlayerScore} <br> and Dealer's current score is ${computerScoreNow}.<br><br>It's a tie!`;
+          myImage =
+            '<img src="https://c.tenor.com/TLbKn_n1mYkAAAAC/britney-spears-britney.gif"/>';
+          myOutputValue =
+            `You currently have these cards: <br> ${showPlayerDeckIfStand} <br><br> And the Dealer has: <br> ${computerCards[0].name} of ${computerCards[0].suit} <br> and ${computerCards[1].name} of ${computerCards[1].suit}<br> and${computerCards[2].name} of ${computerCards[2].suit}. <br><br> Your current score is ${sumOfPlayerScore} <br> and Dealer's current score is ${computerScoreNow}.<br><br>It's a tie!` +
+            myImage;
         }
       }
     } else if (sumOfComputerScore > sumOfPlayerScore) {
       var showPlayerDeckIfStand = displayPlayerDeck(playerCards);
-      myOutputValue = `You currently have these cards: <br> ${showPlayerDeckIfStand} <br><br> And the Dealer has: <br> ${computerCards[0].name} of ${computerCards[0].suit} <br> and ${computerCards[1].name} of ${computerCards[1].suit}. <br><br> Your current score is ${sumOfPlayerScore} <br> and Dealer's current score is ${sumOfComputerScore}. <br><br>You lose!`;
+      myImage =
+        '<img src="https://c.tenor.com/fCSqXh3zc1kAAAAd/britney-britney-s.gif"/>';
+      myOutputValue =
+        `You currently have these cards: <br> ${showPlayerDeckIfStand} <br><br> And the Dealer has: <br> ${computerCards[0].name} of ${computerCards[0].suit} <br> and ${computerCards[1].name} of ${computerCards[1].suit}. <br><br> Your current score is ${sumOfPlayerScore} <br> and Dealer's current score is ${sumOfComputerScore}. <br><br>You lose!` +
+        myImage;
     } else if (sumOfComputerScore < sumOfPlayerScore) {
       var showPlayerDeckIfStand = displayPlayerDeck(playerCards);
-      myOutputValue = `You currently have these cards: <br> ${showPlayerDeckIfStand} <br><br> And the Dealer has: <br> ${computerCards[0].name} of ${computerCards[0].suit} <br> and ${computerCards[1].name} of ${computerCards[1].suit}. <br><br> Your current score is ${sumOfPlayerScore} <br> and Dealer's current score is ${sumOfComputerScore}. <br><br>You win!`;
+      myImage =
+        '<img src="https://c.tenor.com/TLbKn_n1mYkAAAAC/britney-spears-britney.gif"/>';
+      myOutputValue =
+        `You currently have these cards: <br> ${showPlayerDeckIfStand} <br><br> And the Dealer has: <br> ${computerCards[0].name} of ${computerCards[0].suit} <br> and ${computerCards[1].name} of ${computerCards[1].suit}. <br><br> Your current score is ${sumOfPlayerScore} <br> and Dealer's current score is ${sumOfComputerScore}. <br><br>You win!` +
+        myImage;
     } else if (sumOfComputerScore == sumOfPlayerScore) {
       var showPlayerDeckIfStand = displayPlayerDeck(playerCards);
-      myOutputValue = `You currently have these cards: <br> ${showPlayerDeckIfStand} <br><br> And the Dealer has: <br> ${computerCards[0].name} of ${computerCards[0].suit} <br> and ${computerCards[1].name} of ${computerCards[1].suit}. <br><br> Your current score is ${sumOfPlayerScore} <br> and Dealer's current score is ${sumOfComputerScore}. <br><br>It's a tie!`;
+      myImage =
+        '<img src="https://c.tenor.com/TLbKn_n1mYkAAAAC/britney-spears-britney.gif"/>';
+      myOutputValue =
+        `You currently have these cards: <br> ${showPlayerDeckIfStand} <br><br> And the Dealer has: <br> ${computerCards[0].name} of ${computerCards[0].suit} <br> and ${computerCards[1].name} of ${computerCards[1].suit}. <br><br> Your current score is ${sumOfPlayerScore} <br> and Dealer's current score is ${sumOfComputerScore}. <br><br>It's a tie!` +
+        myImage;
     }
   }
 
