@@ -264,10 +264,11 @@ var main = function (input) {
 
   if (gameState == "new round" && input == "hit") {
     var playerScoreNow = playerChoseHit(shuffledCards, playerCards);
+    playerScoreNow = sumOfPlayerScore;
     var showPlayerDeck = displayPlayerDeck(playerCards);
 
     if (playerScoreNow > 21) {
-      myOutputValue = `You currently have these cards: <br> ${showPlayerDeck} <br><br> Your current score is ${playerScoreNow}. You bust. You lose! `;
+      myOutputValue = `You currently have these cards: <br> ${showPlayerDeck} <br><br> Your current score is ${playerScoreNow}. You bust. Type 'stand' to pass to the dealer. `;
     } else if (playerScoreNow == 21) {
       myOutputValue = `You currently have these cards: <br> ${showPlayerDeck} <br><br> Your current score is ${playerScoreNow}. Blackjack! You win!`;
     } else {
@@ -288,7 +289,12 @@ var main = function (input) {
       console.log(computerScoreNow);
       console.log("this is computerCards:");
       console.log(computerCards);
-      if (computerScoreNow > 21) {
+      if (computerScoreNow > 21 && sumOfPlayerScore > 21) {
+        console.log(
+          "if computerScoreNow > 21 && sumOfPlayerScore>21 statement entered"
+        );
+        myOutputValue = `The dealer has these cards: <br> ${computerCards[0].name} of ${computerCards[0].suit} <br> and ${computerCards[1].name} of ${computerCards[1].suit} <br> and ${computerCards[2].name} of ${computerCards[2].suit}. There is tie as both the dealer and player has bust!`;
+      } else if (computerScoreNow > 21) {
         console.log("if computerScoreNow > 21 statement entered");
         myOutputValue = `The dealer has these cards: <br> ${computerCards[0].name} of ${computerCards[0].suit} <br> and ${computerCards[1].name} of ${computerCards[1].suit} <br> and ${computerCards[2].name} of ${computerCards[2].suit}<br><br> You won as the dealer bust with a score of ${computerScoreNow}`;
       } else if (computerScoreNow == 21) {
