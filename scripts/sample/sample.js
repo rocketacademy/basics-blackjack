@@ -67,11 +67,11 @@ class Sample {
     return lounge;
   };
 
-  static getTwoPlayersLoungePlayerBJDealerNoBlack = () => {
+  static getFivePlayersDealerBlackjack = () => {
     const lounge = new Lounge();
-    const newPlayer1 = new Participant("Baller");
-    const newPlayer2 = new Participant("All-or-nothing");
-    const newPlayer3 = new Participant("Luckydale");
+    const newPlayer1 = new Participant("Elven");
+    const newPlayer2 = new Participant("Baller");
+    const newPlayer3 = new Participant("All-or-nothing");
     const newPlayer4 = new Participant("Alex Cruise");
     const newPlayer5 = new Participant("Bobby Cruise");
 
@@ -91,19 +91,19 @@ class Sample {
     const card5 = Deck.newCard(Suit.CLUBS, FaceValue.ACE);
     const card6 = Deck.newCard(Suit.CLUBS, FaceValue.ACE); //D
     const card7 = Deck.newCard(Suit.CLUBS, FaceValue.EIGHT); //4-3
-    const card8 = Deck.newCard(Suit.CLUBS, FaceValue.TEN); //3-3
-    const card9 = Deck.newCard(Suit.CLUBS, FaceValue.ACE); //1-3
-    const card10 = Deck.newCard(Suit.CLUBS, FaceValue.THREE); //5
+    const card8 = Deck.newCard(Suit.CLUBS, FaceValue.ACE); //3-3
+    const card9 = Deck.newCard(Suit.CLUBS, FaceValue.TEN); //1-3
+    const card10 = Deck.newCard(Suit.CLUBS, FaceValue.NINE); //5
     const card11 = Deck.newCard(Suit.CLUBS, FaceValue.SEVEN); //4
-    const card12 = Deck.newCard(Suit.CLUBS, FaceValue.SIX); //3
-    const card13 = Deck.newCard(Suit.CLUBS, FaceValue.ACE); //2
-    const card14 = Deck.newCard(Suit.CLUBS, FaceValue.KING); //1
+    const card12 = Deck.newCard(Suit.CLUBS, FaceValue.ACE); //3
+    const card13 = Deck.newCard(Suit.CLUBS, FaceValue.KING); //2
+    const card14 = Deck.newCard(Suit.CLUBS, FaceValue.SIX); //1
     const card15 = Deck.newCard(Suit.CLUBS, FaceValue.JACK); // D
     const card16 = Deck.newCard(Suit.CLUBS, FaceValue.TEN); // 5
     const card17 = Deck.newCard(Suit.CLUBS, FaceValue.SIX); // 4
-    const card18 = Deck.newCard(Suit.CLUBS, FaceValue.FIVE); //3
-    const card19 = Deck.newCard(Suit.CLUBS, FaceValue.QUEEN); //2
-    const card20 = Deck.newCard(Suit.CLUBS, FaceValue.KING); //1
+    const card18 = Deck.newCard(Suit.CLUBS, FaceValue.QUEEN); //3
+    const card19 = Deck.newCard(Suit.CLUBS, FaceValue.KING); //2
+    const card20 = Deck.newCard(Suit.CLUBS, FaceValue.FIVE); //1
 
     [
       card1,
