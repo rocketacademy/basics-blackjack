@@ -75,10 +75,6 @@
         max-width: 100%;
         max-height: 200px;
       }
-      .header {
-        text-align: center;
-        font-size: 1.1rem;
-      }
 
       #container {
         background-color: pink;
@@ -92,11 +88,12 @@
         padding: 20px;
         width: 100%;
       }
-
+    </style>
+    <!-- //TODO-REVIEW slider tags doesn't have extensive css standard for now. :( -->
+    <style>
       input[type="range"] {
         -webkit-appearance: none;
       }
-
       input[type="range"]::-webkit-slider-runnable-track {
         width: 300px;
         height: 5px;
@@ -104,7 +101,6 @@
         border: none;
         border-radius: 3px;
       }
-
       input[type="range"]::-webkit-slider-thumb {
         -webkit-appearance: "none";
         border: none;
@@ -114,11 +110,9 @@
         background: goldenrod;
         margin-top: -4px;
       }
-
       input[type="range"]:focus {
         outline: none;
       }
-
       input[type="range"]:focus::-webkit-slider-runnable-track {
         background: black;
       }
@@ -129,9 +123,19 @@
   </head>
 
   <body>
-    <h1 class="header">
-      <nav>welcome</nav>
-    </h1>
+    <!-- header -->
+    <script>
+      const h1 = document.createElement("H1");
+      h1.style.textAlign = "center";
+      h1.style.fontSize = "1.1rem";
+      h1.style.marginTop = "0px";
+      h1.style.marginBottom = "0px";
+      const nav = document.createElement("NAV");
+      nav.textContent = "welcome";
+      h1.appendChild(nav);
+
+      document.body.appendChild(h1);
+    </script>
     <!-- Entry Div-->
     <div id="root-ui-blackjack" mmm="aaa"></div>
     <script>
