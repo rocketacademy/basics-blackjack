@@ -14,7 +14,6 @@ var placeBet = "placeBet";
 var blackJackMode = "blackJackMode";
 var gameResult = "to show results";
 var gameStart = "start of the game, shuffle cards";
-var gameEnd = "end of game to show results";
 var gameForPlayerToDecide = "for player to decide hit or stand";
 var gameMode = placeBet;
 var playerPoints = 100;
@@ -193,12 +192,12 @@ var computerPlay = function (dealersInitialCard) {
 
 //to check for winning condition if no blackjack at the start. To compare sum of player card vs sum of computer card
 var toCheckWin = function (playerCardSum, computerCardSum) {
-  var restartGameMsg = `Please enter your bet and hit the "Play" button to start another round`;
+  var restartGameMsg = `<b>Please enter your bet and hit the "Play" button to start another round</b>`;
   var computerResultsMsg = computerPlay(computerCards);
   outputMsg += computerResultsMsg;
   var combinedMsg = `${outputMsg} <br><br> ${restartGameMsg}<br><br>`;
   if (playerCardSum > 21 && computerCardSum > 21) {
-    return `<b>BUST!!!</b><br><br> Both dealer and player have points over 21.<br><br> ${combinedMsg}`;
+    return `<b>BUST!!!</b><br><br> Both dealer and player have points over 21.<br><br> ${combinedMsg}You have $${playerPoints}`;
   } // if both <21, compare by result
   if (playerCardSum < 22 && computerCardSum < 22) {
     if (playerCardSum > computerCardSum) {
@@ -215,12 +214,12 @@ var toCheckWin = function (playerCardSum, computerCardSum) {
   }
   if (playerCardSum > 21 && computerCardSum <= 21) {
     playerPoints -= playerBet;
-    return `<b>Player bust! Dealer wins!!</b><br>${combinedMsg}You have $${playerPoints}`;
+    return `<b>Player bust! Dealer wins!!</b><br><br>${combinedMsg}You have $${playerPoints}`;
   }
   if (playerCardSum <= 21 && computerCardSum > 21) {
     playerPoints += playerBet;
     console.log(playerPoints);
-    return `<b>Player wins! Dealer bust!!</b><br> ${combinedMsg}You have $${playerPoints}`;
+    return `<b>Player wins! Dealer bust!!</b><br><br> ${combinedMsg}You have $${playerPoints}`;
   }
 };
 
@@ -232,16 +231,16 @@ var checkIfBlackJack = function (cardsOfPlayer, cardsOfDealer) {
     if (gameMode == blackJackMode) {
       gameMode = placeBet;
       if (sumOfPlayer == 21 && sumOfComputer == 21) {
-        return `<b>It is a tie!</b> <br>${outputMsg} BlackJack for both<br><br>You have $${playerPoints}`;
+        return `<b>It is a tie!</b> <br><br>${outputMsg} BlackJack for both<br><br>You have $${playerPoints}`;
       }
       if (sumOfComputer == 21) {
         console.log(sumOfComputer);
         playerPoints -= playerBet;
-        return `<b>Dealer wins!</b><br> ${outputMsg} BlackJack!<br><br>You have $${playerPoints}`;
+        return `<b>Dealer wins!</b><br><br>${outputMsg} BlackJack!<br><br>You have $${playerPoints}`;
       }
       if (sumOfPlayer == 21) {
         playerPoints += playerBet;
-        return `<b>Player wins!</b><br>${outputMsg} BlackJack!<br><br>You have $${playerPoints}`;
+        return `<b>Player wins!</b><br><br>${outputMsg} BlackJack!<br><br>You have $${playerPoints}`;
       }
     }
 
@@ -251,7 +250,7 @@ var checkIfBlackJack = function (cardsOfPlayer, cardsOfDealer) {
     outputMsg = `<b>Player's hand:</b> <br> ${craftOutputMessage(
       playerCards
     )} Sum: ${sumOfPlayer}`;
-    return `${outputMsg} <br><br> Please enter "hit" to continue drawing another card or "stand" to stop.`;
+    return `${outputMsg} <br><br> <b>Please enter "hit" to continue drawing another card or "stand" to stop.</b>`;
   }
 };
 
@@ -260,19 +259,16 @@ var checkIfBlackJack = function (cardsOfPlayer, cardsOfDealer) {
 //for placing bet
 var showBet = function (input) {
   playerBet = 0;
-
   //enter placebet game mode
   if (gameMode == placeBet) {
     //if player points != 0 and player's input is more than what they currently have (do not allow negative sum)
     if (input > playerPoints && playerPoints > 0) {
       return `You have $${playerPoints}. Do not bet more than what you have. `;
     }
-
     //this is when player do not have any money, then refresh page to restart game
     if (playerPoints <= 0) {
       return `Please refresh the page to restart the game`;
     }
-
     if (input == "") {
       return `This is an invalid input. Please key in at least $1.`;
     }
@@ -283,7 +279,7 @@ var showBet = function (input) {
     console.log(playerPoints);
     betMsg = `You now have $${
       playerPoints - playerBet
-    }. Your bet is: $${playerBet}.<br> <br>Now press the "Play" button to start the game `;
+    }. Your bet is: $${playerBet}.<br> <br><b>Now press the "Play" button to start the game </b>`;
     return betMsg;
   }
   return `Please press the "Play" button to start the game`;
@@ -300,7 +296,7 @@ var hit = function () {
     var newMsg = craftOutputMessage(playerCards);
     outputMsg = `<b>Player's card:</b><br> ${newMsg} Sum: ${sumOfPlayer}
   `;
-    return `${outputMsg} <br><br> Please press "hit" to continue drawing a card or press "stand" to stop`;
+    return `${outputMsg} <br><br> <b>Please press "hit" to continue drawing a card or press "stand" to stop</b>`;
   } else
     return `Please enter your bet then press the "Play" button to start playing the game`;
 };
@@ -316,6 +312,9 @@ var stand = function () {
     return toCheckWin(sumOfPlayer, sumOfComputer);
   } else
     return `Please enter your bet then press the "Play" button to start playing the game`;
+};
+var showPlayerCurrentPoints = function () {
+  return `You currently have $${playerPoints}`;
 };
 
 //function for play button
