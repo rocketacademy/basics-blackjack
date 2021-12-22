@@ -1,11 +1,20 @@
 // The participant of a Playing Area
+
+const PARTICIPANT_AVATAR_URL_DEFAULT = "static/img/avatar/default.png";
+const PARTICIPANT_AVATAR_URL_ = "";
 class Participant {
   constructor(name = "nameless", credit = 100) {
     /** @private @const {string} */
     this._name = name;
     /** @private @const {number} */
     this._credit = credit;
+
+    this._imgUrl = null;
   }
+
+  getImgUrl = () => {
+    return this._imgUrl || PARTICIPANT_AVATAR_URL_;
+  };
   getName = () => this._name;
   getCredit = () => this._credit;
   decreaseCredit = (amt) => {

@@ -6,6 +6,19 @@ class UiPlayerHolder extends Ui_Aggregate {
     this._root.className += ` blackjack-holder-player`;
     this._root.style.position = "absolute";
     this._root.style.flexDirection = "column";
+    this._root.style.borderStyle = "dotted";
+
+    this._root.style.paddingRight = "12px";
+    this._root.style.borderRadius = "4px";
+
+    this._root.style.paddingBottom = "12px";
+
+    this._root.style.borderTopWidth = "0px";
+    this._root.style.borderLeftWidth = "0px";
+    this._root.style.borderBottomWidth = "1px";
+    this._root.style.borderBottomWidth = "1px";
+    this._root.style.borderRightWidth = "1px";
+    this._root.style.borderColor = "black";
     // Children
     /** @private @const {UiPlayer[]}} */
     this._uIPlayers = [];
