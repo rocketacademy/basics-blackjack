@@ -274,6 +274,16 @@ var main = function (input) {
       newShuffledDeck = createNewDeck();
       return myOutputValue;
     }
+    // computer bust!
+    if (computerTotalValue > 21) {
+      myOutputValue = `<b>Computer got bust! Click on submit to play again!</b><br><br>${displayTotalHandValue(
+        playerHand,
+        computerHand
+      )}`;
+      currentGameMode = "waiting to start";
+      newShuffledDeck = createNewDeck();
+      return myOutputValue;
+    }
     // computer tie
     if (computerHandTotalValue == playerHandTotalValue) {
       myOutputValue = `<b>Both you and computer tied! Click on submit to play again!</b><br><br>${displayTotalHandValue(
