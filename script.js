@@ -299,22 +299,4 @@ var main = function (input) {
       return myOutputValue;
     }
   }
-
-  // Compare Blackjack Function
-  // Total Up Function
-  // if (currentGameMode == Game_Cards_Drawn) {
-
-  // }
-
-  // Win
-  // Lose
-  // Tie
-};
-
-// Before Play clicks connect
-
-// Global value = shuffle deck
-// on submit, give player 2 cards
-// give computer 2 cards
-// game value = compare player hand & computerhand
-// output who wins
+}; hello you are alive!
