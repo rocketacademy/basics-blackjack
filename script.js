@@ -15,17 +15,17 @@ var playerBet = 0;
 
 // gifs
 var bankerBJImage =
-  '<img src="https://c.tenor.com/leTKg3W0pyMAAAAC/fizzer1k-5597.gif"/>';
+  '<img src="https://c.tenor.com/leTKg3W0pyMAAAAC/fizzer1k-5597.gif"/ class="center">';
 var bankruptImage =
-  '<img src="https://c.tenor.com/wmSc-TlZvTwAAAAC/michael-jordan-memes.gif"/>';
+  '<img src="https://c.tenor.com/wmSc-TlZvTwAAAAC/michael-jordan-memes.gif"/ class="center">';
 var playerBJImage =
-  '<img src="https://c.tenor.com/6G8KXj9IaiMAAAAd/memes-happy.gif"/>';
+  '<img src="https://c.tenor.com/6G8KXj9IaiMAAAAd/memes-happy.gif"/ class="center">';
 var bankerWinImage =
-  '<img src="https://c.tenor.com/-0N5qk6UyykAAAAM/memes-meme.gif"/>';
+  '<img src="https://c.tenor.com/-0N5qk6UyykAAAAM/memes-meme.gif"/ class="center">';
 var playerWinImage =
-  '<img src="https://c.tenor.com/7Elrv5eUXoAAAAAM/funny-fat.gif"/>';
+  '<img src="https://c.tenor.com/7Elrv5eUXoAAAAAM/funny-fat.gif"/ class="center">';
 var drawImage =
-  '<img src="https://c.tenor.com/wyfhYqF1tJIAAAAC/mark-wahlberg-wahlberg.gif"/>';
+  '<img src="https://c.tenor.com/wyfhYqF1tJIAAAAC/mark-wahlberg-wahlberg.gif"/ class="center">';
 
 // Cards
 var cardDeck = [];
@@ -148,31 +148,27 @@ var checkForWinner = function () {
   if (playerCardValue > 21 && bankerCardValue > 21) {
     myOutputValue =
       myOutputValue +
-      `<br><br>Both you and Banker bust, it's a tie! ${drawImage}<br><br>Your balance: $${playerWalletBalance} `;
+      `<br><br>Both you and Banker bust, it's a tie! ${drawImage}<br>Your balance: $${playerWalletBalance} `;
     // Player bust
   } else if (playerCardValue > 21) {
     playerWalletBalance = playerWalletBalance - +playerBet;
     myOutputValue =
       myOutputValue +
-      `<br><br>You bust, Banker won 😩  ${bankerWinImage}<br><br>Your balance: $${playerWalletBalance}`;
+      `<br><br>You bust, Banker won 😩  ${bankerWinImage}<br>Your balance: $${playerWalletBalance}`;
     // Banker bust
   } else if (bankerCardValue > 21) {
     playerWalletBalance = playerWalletBalance + +playerBet;
     myOutputValue =
       myOutputValue +
-      `<br><br>Banker bust, you won!🙂 ${playerWinImage}<br><br>Your balance: $${playerWalletBalance}`;
+      `<br><br>Banker bust, you won!🙂 ${playerWinImage}<br>Your balance: $${playerWalletBalance}`;
     // Player won with higher points
   } else if (playerCardValue > bankerCardValue) {
-    console.log(playerWalletBalance);
-    console.log(playerBet);
     playerWalletBalance = playerWalletBalance + +playerBet;
     myOutputValue =
       myOutputValue +
-      `<br><br>You won!🙂 ${playerWinImage}<br><br>Your balance: $${playerWalletBalance}`;
+      `<br><br>You won!🙂 ${playerWinImage}<br>Your balance: $${playerWalletBalance}`;
     // Banker won with higher points
   } else if (playerCardValue < bankerCardValue) {
-    console.log(playerWalletBalance);
-    console.log(playerBet);
     playerWalletBalance = playerWalletBalance - +playerBet;
     myOutputValue =
       myOutputValue +
@@ -183,7 +179,8 @@ var checkForWinner = function () {
       myOutputValue +
       `<br><br>It's a tie! ${drawImage} <br><br>Your balance: $${playerWalletBalance}`;
   }
-  myOutputValue = myOutputValue + " <br>Click to start the next round.";
+  myOutputValue =
+    myOutputValue + " <br>Click 'Submit' to start the next round.";
 };
 
 // End the game if either player has Blackjack
@@ -207,7 +204,7 @@ var blackjackOutcome = function () {
     bankerOutput = `Banker drew ${bankerCards[0].name} of ${bankerCards[0].suit} | ${bankerCards[1].name} of ${bankerCards[1].suit} `;
     myOutputValue =
       `${playerOutput}<br>Total value : ${playerCardValue}<br><br>${bankerOutput}` +
-      `<br><br>You got Blackjack, you won! 🤑 ${playerBJImage} <br><br>Your balance: $${playerWalletBalance}<br>Click to start the next round.`;
+      `<br><br>You got Blackjack, you won! 🤑 ${playerBJImage} <br>Your balance: $${playerWalletBalance}<br>Click to start the next round.`;
     // Banker has Blackjack
   } else if (checkForBlackjack(bankerCards[0].rank, bankerCards[1].rank)) {
     console.log("in banker BJ condition");
@@ -216,7 +213,7 @@ var blackjackOutcome = function () {
     bankerOutput = `Banker drew ${bankerCards[0].name} of ${bankerCards[0].suit} | ${bankerCards[1].name} of ${bankerCards[1].suit} `;
     myOutputValue =
       `${playerOutput}<br>Total value : ${playerCardValue}<br><br>${bankerOutput}` +
-      `<br><br>Banker got Blackjack, you lost! 😢  ${bankerBJImage}<br><br>Your balance: $${playerWalletBalance}<br>Click to start the next round.`;
+      `<br><br>Banker got Blackjack, you lost! 😢  ${bankerBJImage}<br>Your balance: $${playerWalletBalance}<br>Click to start the next round.`;
   }
 };
 
@@ -251,7 +248,6 @@ var bankersTurn = function () {
     console.log(bankerCardValue);
   }
   checkForWinner();
-  // myOutputValue = `${playerOutput}<br>Total value : ${playerCardValue}<br><br>${bankerOutput}<br>Total value : ${bankerCardValue}`;
   return myOutputValue;
 };
 
@@ -303,14 +299,11 @@ var readCards = function (input) {
     bankerCardValue = calculateCardValue(bankerCards);
 
     // Loop to return computer and player cards by rank attribute
-    playerOutput = `You drew ${playerCards[0].name} of ${playerCards[0].suit} | ${playerCards[1].name} of ${playerCards[1].suit}`;
+    playerOutput = `Your bet: $${playerBet}<br><br>You drew ${playerCards[0].name} of ${playerCards[0].suit} | ${playerCards[1].name} of ${playerCards[1].suit}`;
     bankerOutput = `Banker drew ${bankerCards[0].name} of ${bankerCards[0].suit} | Covered `;
     myOutputValue =
       `${playerOutput}<br>Total value : ${playerCardValue}<br><br>${bankerOutput}` +
       `<br><br>Please input "hit" (to draw another card from deck) or "stand" (to not draw any card). `;
-
-    console.log(checkForBlackjack(playerCards[0].rank, playerCards[1].rank));
-    console.log(checkForBlackjack(bankerCards[0].rank, bankerCards[1].rank));
 
     blackjackOutcome();
     return myOutputValue;
