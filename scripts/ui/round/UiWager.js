@@ -72,7 +72,7 @@ class UiResult extends Ui_Text {
   constructor() {
     super();
     this._root.style.fontSize = "0.8rem";
-    this._root.style.width = "90px";
+    this._root.style.width = "120px";
     this._root.style.textAlign = "center";
     this._root.style.justifyContent = "center";
     this._root.className += " blackjack-wager-result";
@@ -87,6 +87,7 @@ class UiResults extends Ui_Component {
     this._root.className += " blackjack-wager-result-wrapper";
     this._root.style.marginTop = "10px";
     this._root.style.marginBottom = "10px";
+    this._root.style.alignItems = "center";
   }
 
   addUiResult = (uiR) => this.appendChildUi(uiR);

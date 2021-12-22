@@ -26,11 +26,11 @@ class Sample {
     const newPlayer1 = new Participant("Player 1");
     const newPlayer2 = new Participant("Player 2");
 
-    const dealer = new Participant("Rigged Dealer Two Players", 10000);
+    const dealer = new Participant("Dealer: Hardy", 10000);
     lounge.addPlayer(newPlayer1);
     lounge.addPlayer(newPlayer2);
     lounge.setDealer(dealer);
-    lounge.__generateEmptyShoe();
+    lounge.generateShoe(1);
 
     newPlayer2 === "blackjack";
 
@@ -40,14 +40,18 @@ class Sample {
     const card4 = Deck.newCard(Suit.CLUBS, FaceValue.TWO);
     const card5 = Deck.newCard(Suit.CLUBS, FaceValue.TWO);
     const card6 = Deck.newCard(Suit.CLUBS, FaceValue.TWO);
-
-    const card7 = Deck.newCard(Suit.CLUBS, FaceValue.SEVEN);
-    const card8 = Deck.newCard(Suit.CLUBS, FaceValue.ACE); //p2
-    const card9 = Deck.newCard(Suit.CLUBS, FaceValue.TEN);
-
-    const card10 = Deck.newCard(Suit.CLUBS, FaceValue.EIGHT);
-    const card11 = Deck.newCard(Suit.CLUBS, FaceValue.TEN); //p2
-    const card12 = Deck.newCard(Suit.CLUBS, FaceValue.TEN);
+    const card7 = Deck.newCard(Suit.CLUBS, FaceValue.TWO);
+    const card8 = Deck.newCard(Suit.CLUBS, FaceValue.TWO);
+    const card9 = Deck.newCard(Suit.CLUBS, FaceValue.TWO);
+    const card10 = Deck.newCard(Suit.CLUBS, FaceValue.TWO);
+    const card11 = Deck.newCard(Suit.CLUBS, FaceValue.TWO);
+    const card12 = Deck.newCard(Suit.CLUBS, FaceValue.TWO);
+    const card13 = Deck.newCard(Suit.CLUBS, FaceValue.SEVEN); //MOLECULES
+    const card14 = Deck.newCard(Suit.CLUBS, FaceValue.ACE); //p2
+    const card15 = Deck.newCard(Suit.CLUBS, FaceValue.TEN);
+    const card16 = Deck.newCard(Suit.CLUBS, FaceValue.EIGHT); //D
+    const card17 = Deck.newCard(Suit.CLUBS, FaceValue.TEN); //p2
+    const card18 = Deck.newCard(Suit.CLUBS, FaceValue.TEN);
 
     [
       card1,
@@ -62,6 +66,12 @@ class Sample {
       card10,
       card11,
       card12,
+      card13,
+      card14,
+      card15,
+      card16,
+      card17,
+      card18,
     ].forEach(lounge.addCardToShoe);
 
     return lounge;
