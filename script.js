@@ -275,7 +275,7 @@ var main = function (input) {
       return myOutputValue;
     }
     // computer bust!
-    if (computerTotalValue > 21) {
+    if (computerHandTotalValue > 21) {
       myOutputValue = `<b>Computer got bust! Click on submit to play again!</b><br><br>${displayTotalHandValue(
         playerHand,
         computerHand
