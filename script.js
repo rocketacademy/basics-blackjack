@@ -7,14 +7,13 @@
 //5. Calculate scores at the end of round - J/Q/K = 10, A - 1/11  (if 2 aces, only 1 is 11)
 //6. Winner has hand closest to 21 (account for draw scenario)
 var myOutputValue;
-var score;
 var cardsInHand;
 var dealer = {
   name: "Dealer",
   hand: [],
   //totalAmount: 100,
-  score: score,
-  cardsInHand: cardsInHand,
+  score,
+  cardsInHand,
   //betAmount: 0,
 };
 
@@ -22,8 +21,8 @@ var player = {
   name: "",
   hand: [],
   totalAmount: 100,
-  score: score,
-  cardsInHand: cardsInHand,
+  score,
+  cardsInHand,
   betAmount: 0,
 };
 var gameMode = "setup";
@@ -91,14 +90,10 @@ var shuffledDeck = shuffle(deck);
 //deal number of cards based on player and move
 var dealCards = function (player, move) {
   console.log(shuffledDeck.length);
-  if (shuffledDeck.length <= 4) {
-    gameMode = "end";
-  } else {
-    if (move == "deal") {
-      player.hand.push(shuffledDeck.pop(), shuffledDeck.pop());
-    } else if (move == "hit") {
-      player.hand.push(shuffledDeck.pop());
-    }
+  if (move == "deal") {
+    player.hand.push(shuffledDeck.pop(), shuffledDeck.pop());
+  } else if (move == "hit") {
+    player.hand.push(shuffledDeck.pop());
   }
 };
 
@@ -213,6 +208,11 @@ var allocateWinnings = function (winner) {
 
 var main = function (input) {
   //welcome msg: Welcome, player - please enter your name.
+  if (shuffledDeck.length == 0) {
+    gameMode = "end";
+    myOutputValue = `Out of cards! ${player.name}, you walk away with $${player.totalAmount}.  Refresh to play again`;
+    return myOutputValue;
+  }
   // initialise player info
   if (gameMode == "setup") {
     if (player.name != "") {
@@ -265,7 +265,6 @@ var main = function (input) {
       dealCards(player, input);
       player.cardsInHand = cardsHeld(player.hand);
       player.score = points(player.hand);
-
       // assign cards to dealer
       dealCards(dealer, input);
       dealer.cardsInHand = cardsHeld(dealer.hand);
@@ -294,10 +293,6 @@ var main = function (input) {
     }
     //allocateWinnings(winner);
 
-    return myOutputValue;
-  }
-  if (gameMode == "end") {
-    myOutputValue = `Out of cards! ${player.name}, you walk away with $${player.totalAmount}.  Refresh to play again`;
     return myOutputValue;
   }
 };
