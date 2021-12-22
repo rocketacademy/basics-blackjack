@@ -159,7 +159,7 @@ var calcScore = function (playerScore, dealerScore) {
     }
     scoreOutput = `BUST! <br> ${winner.name} wins! Click submit to go again.`;
   } else if (turn == "player") {
-    scoreOutput = `Hit or stand?`;
+    scoreOutput = `Enter "hit" or "stand"`;
   } else if (turn == "dealer") {
     gameMode = "setup";
     if (playerScore == dealerScore) {
