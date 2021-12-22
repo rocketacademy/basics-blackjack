@@ -173,7 +173,7 @@
       <button id="start-button">Start</button>
       <button id="hit-button" disabled>Hit</button>
       <button id="stand-button" disabled>Stand</button>
-
+      <button id="reset-button" disabled>Reset</button>
       <p>Output:</p>
       <div id="output-div"></div>
     </div>
@@ -206,6 +206,15 @@
       var standButton = document.querySelector("#stand-button");
       standButton.addEventListener("click", function () {
         var result = main("stand");
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
+      });
+
+      //Declare and define a variable that represents the Reset Button
+      //When the Reset button is clicked, input is assumed to be "reset"
+      var resetButton = document.querySelector("#reset-button");
+      resetButton.addEventListener("click", function () {
+        var result = main("reset");
         var output = document.querySelector("#output-div");
         output.innerHTML = result;
       });
