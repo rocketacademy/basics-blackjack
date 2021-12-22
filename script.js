@@ -1,11 +1,13 @@
 /*Global Variables*/
 // Game State
-// -2 = Introduction
-// -1 = Betting
-// 0 = After player and dealer draw, pend player action
-// 1 = After player is done (player says "stand")
-// 2 = End game state
-var gameState = -2;
+
+const INTRODUCTION = -2;
+const BETTING_PHASE = -1;
+const AFTER_PLAYER_AND_DEALER_DRAW = 0;
+const AFTER_PLAYER_ACTIONS = 1;
+const END_GAME_STATE = 2;
+
+var gameState = INTRODUCTION;
 
 // Player Wallet
 var playerWalletBalance = 100;
@@ -141,28 +143,24 @@ var checkForBlackjack = function (card1, card2) {
 // Check for winner
 var checkForWinner = function () {
   myOutputValue = `${playerOutput}<br>Total value : ${playerCardValue}<br><br>${bankerOutput}<br>Total value : ${bankerCardValue}`;
-  gameState = -2;
+  gameState = INTRODUCTION;
   // Both bust
   if (playerCardValue > 21 && bankerCardValue > 21) {
     myOutputValue =
       myOutputValue +
-      `<br><br>Both you and Banker bust, it's a tie! ${drawImage}<br><br>You have: $${playerWalletBalance} `;
+      `<br><br>Both you and Banker bust, it's a tie! ${drawImage}<br><br>Your balance: $${playerWalletBalance} `;
     // Player bust
   } else if (playerCardValue > 21) {
-    console.log(playerWalletBalance);
-    console.log(playerBet);
     playerWalletBalance = playerWalletBalance - +playerBet;
     myOutputValue =
       myOutputValue +
-      `<br><br>You bust, Banker won 😩  ${bankerWinImage}<br><br>You have: $${playerWalletBalance}`;
+      `<br><br>You bust, Banker won 😩  ${bankerWinImage}<br><br>Your balance: $${playerWalletBalance}`;
     // Banker bust
   } else if (bankerCardValue > 21) {
-    console.log(playerWalletBalance);
-    console.log(playerBet);
     playerWalletBalance = playerWalletBalance + +playerBet;
     myOutputValue =
       myOutputValue +
-      `<br><br>Banker bust, you won!🙂 ${playerWinImage}<br><br>You have: $${playerWalletBalance}`;
+      `<br><br>Banker bust, you won!🙂 ${playerWinImage}<br><br>Your balance: $${playerWalletBalance}`;
     // Player won with higher points
   } else if (playerCardValue > bankerCardValue) {
     console.log(playerWalletBalance);
@@ -170,7 +168,7 @@ var checkForWinner = function () {
     playerWalletBalance = playerWalletBalance + +playerBet;
     myOutputValue =
       myOutputValue +
-      `<br><br>You won!🙂 ${playerWinImage}<br><br>You have: $${playerWalletBalance}`;
+      `<br><br>You won!🙂 ${playerWinImage}<br><br>Your balance: $${playerWalletBalance}`;
     // Banker won with higher points
   } else if (playerCardValue < bankerCardValue) {
     console.log(playerWalletBalance);
@@ -178,12 +176,12 @@ var checkForWinner = function () {
     playerWalletBalance = playerWalletBalance - +playerBet;
     myOutputValue =
       myOutputValue +
-      `<br><br>Banker won 😩 ${bankerWinImage}<br><br>You have: $${playerWalletBalance}`;
+      `<br><br>Banker won 😩 ${bankerWinImage}<br><br>Your balance: $${playerWalletBalance}`;
     // Tie
   } else if (playerCardValue == bankerCardValue) {
     myOutputValue =
       myOutputValue +
-      `<br><br>It's a tie! ${drawImage} <br><br>You have: $${playerWalletBalance}`;
+      `<br><br>It's a tie! ${drawImage} <br><br>Your balance: $${playerWalletBalance}`;
   }
   myOutputValue = myOutputValue + " <br>Click to start the next round.";
 };
@@ -196,29 +194,29 @@ var blackjackOutcome = function () {
   ) {
     // Both player and banker has Blackjack
     console.log("in tie condition");
-    gameState = -2;
+    gameState = INTRODUCTION;
     bankerOutput = `Banker drew ${bankerCards[0].name} of ${bankerCards[0].suit} | ${bankerCards[1].name} of ${bankerCards[1].suit} `;
     myOutputValue =
       `${playerOutput}<br>Total value : ${playerCardValue}<br><br>${bankerOutput}` +
-      `<br><br>Both Player and Banker got Blackjack, it's a tie! ${drawImage} <br><br>You have: $${playerWalletBalance}<br>Click to start the next round.`;
+      `<br><br>Both Player and Banker got Blackjack, it's a tie! ${drawImage} <br><br>Your balance: $${playerWalletBalance}<br>Click to start the next round.`;
     // Player has Blackjack
   } else if (checkForBlackjack(playerCards[0].rank, playerCards[1].rank)) {
     console.log("in player BJ condition");
-    gameState = -2;
+    gameState = INTRODUCTION;
     playerWalletBalance = playerWalletBalance + playerBet * 1.5;
     bankerOutput = `Banker drew ${bankerCards[0].name} of ${bankerCards[0].suit} | ${bankerCards[1].name} of ${bankerCards[1].suit} `;
     myOutputValue =
       `${playerOutput}<br>Total value : ${playerCardValue}<br><br>${bankerOutput}` +
-      `<br><br>You got Blackjack, you won! 🤑 ${playerBJImage} <br><br>You have: $${playerWalletBalance}<br>Click to start the next round.`;
+      `<br><br>You got Blackjack, you won! 🤑 ${playerBJImage} <br><br>Your balance: $${playerWalletBalance}<br>Click to start the next round.`;
     // Banker has Blackjack
   } else if (checkForBlackjack(bankerCards[0].rank, bankerCards[1].rank)) {
     console.log("in banker BJ condition");
-    gameState = -2;
+    gameState = INTRODUCTION;
     playerWalletBalance = playerWalletBalance - +playerBet;
     bankerOutput = `Banker drew ${bankerCards[0].name} of ${bankerCards[0].suit} | ${bankerCards[1].name} of ${bankerCards[1].suit} `;
     myOutputValue =
       `${playerOutput}<br>Total value : ${playerCardValue}<br><br>${bankerOutput}` +
-      `<br><br>Banker got Blackjack, you lost! 😢  ${bankerBJImage}<br><br>You have: $${playerWalletBalance}<br>Click to start the next round.`;
+      `<br><br>Banker got Blackjack, you lost! 😢  ${bankerBJImage}<br><br>Your balance: $${playerWalletBalance}<br>Click to start the next round.`;
   }
 };
 
@@ -284,7 +282,7 @@ var calculateCardValue = function (cardsOnHand) {
 
 // First round of card draw
 var readCards = function (input) {
-  if (gameState == 0) {
+  if (gameState == AFTER_PLAYER_AND_DEALER_DRAW) {
     gameState += 1;
     // Create the cardDeck
     bankerCards = [];
@@ -316,10 +314,10 @@ var readCards = function (input) {
 
     blackjackOutcome();
     return myOutputValue;
-  } else if (gameState == 1 && input == "hit") {
+  } else if (gameState == AFTER_PLAYER_ACTIONS && input == "hit") {
     myOutputValue = playerHits();
     return myOutputValue;
-  } else if (gameState == 1 && input == "stand") {
+  } else if (gameState == AFTER_PLAYER_ACTIONS && input == "stand") {
     gameState += 1;
     myOutputValue = bankersTurn();
     return myOutputValue;
@@ -327,7 +325,9 @@ var readCards = function (input) {
 };
 
 var main = function (input) {
-  if (gameState == -2) {
+  if (gameState == INTRODUCTION && playerWalletBalance <= 0) {
+    return `You have no more money left, come back another day. <br>${bankruptImage}<br><br>The National Council on Problem Gambling operates the National Problem Gambling Helpline Network (1-800-522-4700). The network is a single national access point to local resources for those seeking help for a gambling problem.`;
+  } else if (gameState == INTRODUCTION) {
     playerBet = 0;
     gameState += 1;
     openingLine = `♠️♠️ Let's play a game of Blackjack! ♠️♠️<br><br>
@@ -335,9 +335,7 @@ The aim of the game is to have a hand of cards that has greater value than banke
 Your current wallet balance is $${playerWalletBalance}, place your bets and we will start the game.<br><br>May the odds be ever in your favor 🍀
 `;
     return openingLine;
-  } else if (playerWalletBalance <= 0) {
-    return `You have no more money left, come back another day!${bankruptImage}<br><br>The National Council on Problem Gambling operates the National Problem Gambling Helpline Network (1-800-522-4700). The network is a single national access point to local resources for those seeking help for a gambling problem.`;
-  } else if (gameState == -1) {
+  } else if (gameState == BETTING_PHASE) {
     if (input > playerWalletBalance) {
       myOutputValue =
         "Bet is more than your current wallet balance<br><br>" + openingLine;
@@ -357,7 +355,11 @@ Your current wallet balance is $${playerWalletBalance}, place your bets and we w
       console.log(input);
       return `Please input a valid response<br><br>${myOutputValue}`;
     }
-  } else if (gameState == 1 && input != "hit" && input != "stand") {
+  } else if (
+    gameState == AFTER_PLAYER_ACTIONS &&
+    input != "hit" &&
+    input != "stand"
+  ) {
     return `Please input a valid response<br><br>${myOutputValue}`;
   } else {
     readCards(input);
