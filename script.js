@@ -54,6 +54,33 @@ var makeDeck = function () {
   return cardDeck;
 };
 
+//Helper function to generate random index, to be used in the helper function shuffleDeck
+var getRandomIndex = function (max) {
+  return Math.floor(Math.random() * max);
+};
+
+//Shuffle the deck of cards
+var shuffleCards = function (cardDeck) {
+  // Loop over the card deck array once
+  var currentIndex = 0;
+  while (currentIndex < 52) {
+    // Select a random index in the deck
+    var randomIndex = getRandomIndex(52);
+    // Select the card that corresponds to randomIndex
+    var randomCard = cardDeck[randomIndex];
+    //var randomCard = cardDeck[1];
+    // Select the card that corresponds to currentIndex
+    var currentCard = cardDeck[currentIndex];
+    // Swap positions of randomCard and currentCard in the deck
+    cardDeck[currentIndex] = randomCard;
+    cardDeck[randomIndex] = currentCard;
+    // Increment currentIndex
+    currentIndex = currentIndex + 1;
+  }
+  // Return the shuffled deck
+  return cardDeck;
+};
+
 var main = function (input) {
   if (input == "start") {
     // Turn on Hit and Stand button
@@ -63,7 +90,9 @@ var main = function (input) {
     document.getElementById("start-button").disabled = true;
 
     makeDeck();
-    console.log(makeDeck());
+    var shuffledDeck = shuffleCards(makeDeck());
+    console.log(shuffledDeck);
+
     return "Start";
   } else if (input == "hit") {
     return "Hit";
