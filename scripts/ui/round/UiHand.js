@@ -16,7 +16,19 @@ class Ui_ButtonHand extends Ui_Button {
     this._root.style.padding = "4px";
     this._root.style.marginLeft = "4px";
     this._root.style.marginRight = "4px";
+    this._root.style.color = "#34568B";
 
+    this._root.addEventListener("mouseover", () => {
+      this._root.style.backgroundColor = "#34568B";
+      this._root.style.color = "white";
+    });
+
+    this._root.addEventListener("mouseleave", () => {
+      console.log("left");
+
+      this._root.style.backgroundColor = "white";
+      this._root.style.color = "#34568B";
+    });
     this._text = new Ui_Text();
 
     this._text.getRoot().style.justifyContent = "center";
