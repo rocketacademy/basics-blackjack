@@ -81,6 +81,51 @@ var shuffleCards = function (cardDeck) {
   return cardDeck;
 };
 
+// Global variables
+// Store player's hand and dealer's hand in a separate array
+// Initialize playerScore and dealerScore to 0
+var playerHand = [];
+var dealerHand = [];
+var playerScore = 0;
+var dealerScore = 0;
+var newDeck = [];
+var shuffledDeck = [];
+var isThereAce = false;
+
+//Helper function to show player's hand and dealer's hand
+var showHands = function () {
+  var index = 0;
+  var showPlayerHand = "Player's Hand: <br>";
+  var showDealerHand = "Dealer's Hand: <br>";
+
+  //Loop through playerHand and show each card
+  while (index < playerHand.length) {
+    showPlayerHand =
+      showPlayerHand +
+      playerHand[index].name +
+      " of " +
+      playerHand[index].suit +
+      "<br>";
+    index += 1;
+  }
+
+  //re-initialize index
+  index = 0;
+  //Loop through dealerHand and show each card
+  while (index < dealerHand.length) {
+    showDealerHand =
+      showDealerHand +
+      dealerHand[index].name +
+      " of " +
+      dealerHand[index].suit +
+      "<br>";
+    index += 1;
+  }
+  //re-set index back to 0
+  index = 0;
+  return showPlayerHand + "<br>" + showDealerHand;
+};
+
 var main = function (input) {
   if (input == "start") {
     // Turn on Hit and Stand button
@@ -89,11 +134,23 @@ var main = function (input) {
     // Turn off Start button
     document.getElementById("start-button").disabled = true;
 
-    makeDeck();
-    var shuffledDeck = shuffleCards(makeDeck());
-    console.log(shuffledDeck);
+    newDeck = makeDeck();
+    shuffledDeck = shuffleCards(newDeck);
 
-    return "Start";
+    //Deal 2 cards each to player and dealer
+    var playerCard1 = shuffledDeck.pop();
+    playerHand.push(playerCard1);
+
+    var dealerCard1 = shuffledDeck.pop();
+    dealerHand.push(dealerCard1);
+
+    var playerCard2 = shuffledDeck.pop();
+    playerHand.push(playerCard2);
+
+    var dealerCard2 = shuffledDeck.pop();
+    dealerHand.push(dealerCard2);
+
+    return showHands();
   } else if (input == "hit") {
     return "Hit";
   } else if (input == "stand") {
