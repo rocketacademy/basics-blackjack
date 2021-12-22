@@ -82,8 +82,8 @@
 
     <!-- fonts -->
     <link
-      rel="stylesheet"
       href="https://fonts.googleapis.com/css?family=Open+Sans"
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" 
       href="https://fonts.googleapis.com/css2?family=Asap:wght@400;600;700&family=Bebas+Neue&family=Roboto&display=swap"
       rel="stylesheet"
     />
@@ -106,12 +106,11 @@
       }
 
       #basicHeader {
-        font-family: "Bebas Neue", cursive;
+        font-family: "Bebas Neue","Arial";
         font-size: 50px;
       }
 
       #output-div img {
-        display: inline;
         max-width: 100%;
         max-height: 250px;
         margin-left: 5px;
@@ -123,6 +122,7 @@
       }
 
       #container {
+  
         border-width: medium;
         border-style: outset;
         border-color: white;
@@ -134,7 +134,11 @@
       }
 
       #instructions {
-        font-family: "Bebas Neue", cursive;
+        display: flex;
+      flex-direction: column;
+    justify-content: center;
+    flex-wrap:wrap;
+        font-family: "Bebas Neue","Arial";
         border-style: dotted;
         border-color: #b7cfb7;
         color: black;
@@ -148,7 +152,7 @@
       }
       #results {
         margin: 20px;
-        font-family: "Bebas Neue", cursive;
+        font-family: "Bebas Neue","Arial";
         color: #2b3a32;
         text-align: center;
         font-size: 30px;
@@ -162,24 +166,30 @@
         line-height: 1.2;
       }
 
-      #buttons {
-      max-width: 100%;
-        
+      .buttons {
+    display: flex;
+      flex-direction: row;
+    justify-content: space-evenly;
+    flex-wrap:wrap;
+   
       }
+        
       button {
-        transition-duration: 0.4s;
-        margin-right: 80px;
-        margin-left: 80px;
+    position:relative;
+     right: 20px;
+     flex-shrink: 1;
+      transition-duration: 0.4s;
         font-size: 21px;
         line-height: 33px;
         padding: 0 30px;
-        font-family: "Bebas Neue", cursive;
+        font-family: "Bebas Neue","Arial";
         font-size: 30px;
         color: #97c1a9;
         border: #b7cfb7;
         border-style: outset;
         float: center;
         margin-left: 50px;
+       
       }
 
       button:hover {
@@ -187,20 +197,22 @@
         color: white;
       }
       #submit-button {
+        position:relative;
+        right: -10px;
          background-color: white;
          color: black;
          border: 2px solid #97c1a9; 
          font-size:12px;
          margin:auto;
-         padding: 1px 10px;
-         line-height: 18px;
+         padding: 1px 8px;
+         line-height: 16px;
       }
       #submit-button:hover {
    background-color: #91c1a9;
         color: white;
 }
 
-      #output-div {
+      #output-div {  
         background-color: #eaeaea;
         font-family: "Roboto", sans-serif;
         margin: 20px auto;
@@ -208,12 +220,22 @@
         width: 100%;
         text-align: center;
       }
+      
+      input[type=number]{
+        width: 25%;
+        position:relative;
+        left:5px;
+
+      }
 
       .logo-img {
         height: 49px;
         position: relative;
         top: 22px;
       }
+      .slidecontainer {
+  width: 100%; /* Width of the outside container */
+}
 
       /* increase header font size on wider screens */
       @media screen and (min-width: 600px) {
@@ -236,7 +258,7 @@
         src="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/brand/logo.png"
       />
     </h1>
-    <h1 class="header" id="basicHeader">♣️ BASICS-BLACKJACK ♠️</h1>
+    <h1 class="header" id="basicHeader">♣️ BLACKJACK ♠️</h1>
     <div id="container">
       <div id="instructions">
         Game Instructions
@@ -250,17 +272,17 @@
           Be careful! Do not be too greedy, if you get over 21, you are bust!
         </p>
       </div>
-      <div id="buttons">
+      <div class="buttons">
         <button id="play-button">Play</button>
         <button id="hit-button">Hit</button>
         <button id="stand-button">Stand</button>
       </div>
 
       <p id="results">RESULTS</p>
-      <div id="bet" style="font-family: Bebas Neue, cursive"> Bet(at
-      least $1):
-      <input id="input-field" type = "number" min="1" max="100"/>
+      <div style="font-family: Bebas Neue"> Bet:
+     <input id="input-field" type = "number" min="1" max="100" placeholder="Please key in at least $1"/>
       <button id="submit-button">Submit</button>
+       <p id="bettingOutput" style="font-family:Bebas Neue,Arial; font-size:20px;text-align: center; color:#224732"></p>
       <div id="betting-results"></div>
     </div>
       <div id="output-div">
@@ -283,12 +305,18 @@
     <script src="script.js"></script>
     <!-- Define button click functionality -->
     <script>
+
+
+
       var playButton = document.querySelector("#play-button");
       playButton.addEventListener("click", function () {
         // Set result to input value
         var output = document.querySelector("#output-div");
         output.innerHTML = play();
+        var betOutput= document.getElementById("bettingOutput")
+      betOutput.innerHTML=showPlayerCurrentPoints()
       });
+
       var hitButton = document.querySelector("#hit-button");
       hitButton.addEventListener("click", function () {
         var output1 = document.querySelector("#output-div");
@@ -296,23 +324,32 @@
       });
       var standButton = document.querySelector("#stand-button");
       standButton.addEventListener("click", function () {
+
         var output2 = document.querySelector("#output-div");
         output2.innerHTML = stand();
+         var betOutput= document.getElementById("bettingOutput")
+      betOutput.innerHTML=showPlayerCurrentPoints()
+        
+        
+
       });
 
       var bet = document.querySelector("#submit-button")
       bet.addEventListener("click", function(){
+         
         var input = document.querySelector("#input-field")
         console.log(input)
         //store output of showPoints in a variable
         var bettingResult = showBet(input.value)
         console.log(bettingResult)
-     
         //display the result 
         var betResultOutput = document.getElementById("output-div")
         betResultOutput.innerHTML = bettingResult
+
         input.value = ""
+        
       })
+      
     </script>
   </body>
 </html>
