@@ -96,6 +96,13 @@ var playerHand = [];
 var computerHand = [];
 var currentGameMode = "waiting to start";
 
+// prompt as an appreciation for rocket academy
+var username = prompt("Hi there! What is your name?");
+
+alert(
+  `Hi ${username}, welcome to Kai's Blackjack, coding this caused a lack of sleep for him. But he deeply enjoyed the fruits of his labour. Kai hopes you enjoy it too. Click on Submit to start the game. Enjoy! :)`
+);
+
 // +++ Minimum Game Function +++
 
 // waiting to start
