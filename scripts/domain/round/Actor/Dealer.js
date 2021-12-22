@@ -78,7 +78,7 @@ class Dealer extends _Actor {
 
   commence = () => {
     // CRA-V6-3.1
-    this.shout("Place your bets, please");
+    this.shout("Place your bets, please 🙂");
     this._round.start();
   };
   _onCommence = () => {};

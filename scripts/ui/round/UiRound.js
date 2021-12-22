@@ -154,7 +154,7 @@ class UiRound extends Ui_Tree {
 
       this.replaceChildrenUi(
         this._uiDealer,
-        this._uiPhaseDisplay,
+        // this._uiPhaseDisplay, //TODO-TEST-PLUG
         this._uiSeatHolder,
         newUiWrap
       );
@@ -171,7 +171,7 @@ class UiRound extends Ui_Tree {
     this._style();
     this.replaceChildrenUi(
       this._uiDealer,
-      this._uiPhaseDisplay,
+      // this._uiPhaseDisplay, //TODO-TEST-PLUG
       this._uiSeatHolder
     );
   }

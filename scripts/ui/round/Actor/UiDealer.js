@@ -1,10 +1,9 @@
 class UiDealer extends Ui_Actor {
   _style = () => {
-    this._root.style.marginBottom = "25px";
     this._root.style.alignSelf = "center";
     this._root.style.borderRadius = "25px";
-    this._root.style.height = "fit-content";
-    this._root.style.minHeight = "220px";
+    this._root.style.height = "200px";
+    this._root.style.minHeight = "fit-content";
     this._root.style.padding = "10px 10px 15px 10px";
   };
 
