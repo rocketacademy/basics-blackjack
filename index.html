@@ -122,8 +122,6 @@
         padding: 38px 31px;
       }
 
-      
-
       button {
         font-size: 21px;
         line-height: 33px;
@@ -171,12 +169,11 @@
     <p style="color: white">Dealer has to hit if their hand is less than 17</p>
     <p style="color: white">Ace can be either 1 or 11 for player</p>
     <div id="container">
-      
       <br />
       <button id="start-button">Start</button>
       <button id="hit-button" disabled>Hit</button>
-      <button id="stand-button" disabled>Stand</butoon>
-      <button id="reset-button" disabled >Reset</button>
+      <button id="stand-button" disabled>Stand</button>
+
       <p>Output:</p>
       <div id="output-div"></div>
     </div>
@@ -186,10 +183,10 @@
     <script>
       var startButton = document.querySelector("#start-button");
       startButton.addEventListener("click", function () {
-        
+
         var result = main("start");
 
-        
+
         var output = document.querySelector("#output-div");
         output.innerHTML = result;
 
@@ -215,14 +212,7 @@
         output.innerHTML = result;
       })
 
-      //Declare and define a variable that represents the Reset Button
-      //When the reset button is clicked, input is assumed to be "reset"
-      var resetButton = document.querySelector("#reset-button");
-      resetButton.addEventListener("click", function(){
-        var result = main("reset");
-        var output = document.querySelector("#output-div");
-        output.innerHTML = result;
-      })
+            })
     </script>
   </body>
 </html>
