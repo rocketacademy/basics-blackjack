@@ -25,6 +25,7 @@ class Card {
   };
 
   getSuitDesc = () => this._suit.desc();
+  getFaceValue = () => this._faceValue;
   getHardValue = () => this._faceValue.getHardValue();
   getSoftValue = () => this._faceValue.getSoftValue();
   getRank = () => this._faceValue.getRank();

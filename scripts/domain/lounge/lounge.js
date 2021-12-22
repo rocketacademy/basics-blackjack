@@ -17,10 +17,18 @@ class Lounge {
   participantCount = () => this.playerCount() + this.dealerCount();
   /**
    *
-   * @param {number} decks
+   * @param {number} sets
    */
   generateShoe = (sets) => {
     this._shoe = Deck.generateDeck(sets);
+  };
+
+  __generateEmptyShoe = () => {
+    this._shoe = Deck.generateEmptyDeck();
+  };
+
+  addCardToShoe = (card) => {
+    this._shoe.push(card);
   };
   getShoe = () => this._shoe;
   shoeSize = () => this._shoe.length;

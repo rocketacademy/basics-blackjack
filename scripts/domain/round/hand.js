@@ -21,10 +21,13 @@ class Hand {
   isSurrendered = () => this._isSurrendered;
 
   isBlackJack = () => {
+    console.group(`isBlackjack`);
+    console.log(`this._cards.length === 2 ${this._cards.length === 2}`);
+    console.groupEnd();
     return (
       (this._cards.length === 2 &&
         this._generallyAceWithPicture(this._cards[0], this._cards[1])) ||
-      this._generallyAceWithPicture(this._cards[0], this._cards[1])
+      this._generallyAceWithPicture(this._cards[1], this._cards[0])
     );
   };
 
@@ -38,31 +41,45 @@ class Hand {
 
     const card = cards[i];
     const hardValue = card.getHardValue();
-    const rank = card.getRank();
+    const faceVal = card.getFaceValue();
     let hardVal = this._getBestValue(cards, i + 1, length, v + hardValue);
-    if (rank === FaceValue.ACE) {
+    if (faceVal === FaceValue.ACE) {
       const soft = card.getSoftValue();
-      return hardVal || this._getBestValue(cards, i + 1, length, v + soft);
+      const softVal = this._getBestValue(cards, i + 1, length, v + soft);
+      return softVal || hardVal;
     }
     return hardVal;
   };
-
+  getUpCard = () => this._cards[0];
   getBestValue = () => this._getBestValue(this._cards, 0, this._cards.length);
 
   hasTwentyOne = () => {
+    console.group(`hasTwentyOne`);
     const bestPoint = this._getBestValue(this._cards, 0, this._cards.length);
+    console.log(bestPoint);
+    console.groupEnd();
+
     return bestPoint === Deck.POINT_TWENTY_ONE;
   };
 
   _generallyAceWithPicture = (c1, c2) => {
-    if (c1.getHardValue() === 1) {
+    console.group(`_generallyAceWithPicture`);
+
+    console.log(
+      `c1.getRank() === FaceValue.ACE ${c1.getRank() === FaceValue.ACE}`
+    );
+    if (c1.getFaceValue() === FaceValue.ACE) {
       const c2HardValue = c2.getHardValue();
-      if (c2 === 10) {
+      if (c2HardValue === 10) {
+        console.groupEnd();
+
         return true;
       }
-      return false;
     }
+    console.groupEnd();
+    return false;
   };
+
   // No good form :()
   isBusted = () => {
     return this._getBestValue(this._cards, 0, this._cards.length) === null;

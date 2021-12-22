@@ -48,4 +48,8 @@ class Deck {
     }
     return cards;
   };
+
+  static generateEmptyDeck = () => {
+    return [];
+  };
 }

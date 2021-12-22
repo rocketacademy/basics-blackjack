@@ -120,22 +120,28 @@ class Dealer extends _Actor {
     const hasTwentyOne = hand.hasTwentyOne();
     const isBusted = hand.isBusted();
     const count = hand.count();
+    const isBlackJack = hand.isBlackJack();
+    const isSponsorFunded = hand.getController().getCredit() > 0;
 
-    const isSponsorFunded = hand.getController().getCredit();
-    console.log(`has 21 ${hasTwentyOne}`);
-    console.log(`has isBusted ${isBusted}`);
+    console.log(`hasTwentyOne ${hasTwentyOne}`);
+    console.log(`isBlackJack ${isBlackJack}`);
     //TODO if hand is surrender than cannot act
     // If minimally cannot stand, player should not be able to act
 
+    //TODO 3.20
+    options.canEvenMoney =
+      false && isBlackJack && this._hand.getUpCard() === FaceValue.ACE;
     // CRA-V6-3.30
     options.canStand = !isBusted && !hasTwentyOne && !false;
     // CRA-V6-3.29
     options.canHit = !hasTwentyOne && !isBusted;
-
     // CRA-V6-3.30, CRA-V6-3.26.1
     //TODO 3.26.3
     options.canDouble = count === 2 && !hasTwentyOne && isSponsorFunded;
     options.canSplit = false || false;
+
+    console.warn(hand.getCards());
+    console.warn(options);
     return options;
   };
 
@@ -476,6 +482,11 @@ class Dealer extends _Actor {
       return;
     }
     const options = this._assessSubsqDealOptionsPLAYER(hand);
+
+    if (!Object.values(options).some((is) => is === true)) {
+      this._performNextSubsequentPlayerDealNextPlayer();
+      return;
+    }
     hand.whatDoYouWantToDoOnSubsequentDeal(this, options);
   };
 
