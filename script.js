@@ -206,7 +206,40 @@ var main = function (input) {
   }
   //When player choose to Hit
   else if (input == "hit") {
-    return "Hit";
+    var newCard = shuffledDeck.pop();
+    playerHand.push(newCard);
+    playerScore = playerScore + newCard.value;
+
+    // Check if player went over 21
+    // if player has an Ace and went bust, Ace counts as 1
+    var playerHasAce = checkForAce();
+    console.log(playerHasAce);
+    var numOfAce = countNoAce();
+    console.log(numOfAce);
+
+    if (playerScore > 21 && playerHasAce) {
+      playerScore = playerScore - 10 * (numOfAce - 1);
+      console.log(playerScore);
+      //if after changing ace to 1 player is still bust
+      if (playerScore > 21) {
+        return `Player went bust! Sorry You Lost! <br><br>${showHands()} <br>Player score is ${playerScore}<br>Dealer score is ${dealerScore}`;
+      }
+      return `${showHands()}<br>Player score is ${playerScore}<br> Dealer score is ${dealerScore}`;
+    } else if (playerScore > 21) {
+      var bustMsg =
+        "You went bust! Sorry You Lost! <br><br>" +
+        showHands() +
+        "<br>" +
+        "Player score is " +
+        playerScore +
+        "<br>" +
+        "Dealer score is " +
+        dealerScore;
+      return bustMsg;
+    }
+
+    var hitMsg = `Player choose to hit <br><br>${showHands()}<br>${showScores()}`;
+    return hitMsg;
   } else if (input == "stand") {
     // Turn off Hit button and Stand button
     document.getElementById("hit-button").disabled = true;
@@ -214,6 +247,57 @@ var main = function (input) {
     // Turn on Start button
     document.getElementById("start-button").disabled = false;
 
-    return "Stand";
+//Dealer need to hit if dealer hand is below 17
+    while (dealerScore < 17) {
+      var newCard = shuffledDeck.pop();
+      dealerHand.push(newCard);
+      dealerScore = dealerScore + newCard.value;
+    }
+
+    // Check to see if dealer went bust
+    if (dealerScore > 21) {
+      var bustMsg =
+        "Dealer went bust! YOU WIN! <br><br>" +
+        showHands() +
+        "<br>" +
+        "Player score is " +
+        playerScore +
+        "<br>Dealer score is " +
+        dealerScore;
+      return bustMsg;
+    }
+
+    // Conditions for when it's a draw, lost or win
+    if (playerScore == dealerScore) {
+      var drawMsg =
+        "It's a draw! <br><br>" +
+        showHands() +
+        "<br>" +
+        "Player score is " +
+        playerScore +
+        "<br>Dealer score is " +
+        dealerScore;
+      return drawMsg;
+    } else if (playerScore < dealerScore) {
+      var lostMsg =
+        "Player Lost! <br><br>" +
+        showHands() +
+        "<br>" +
+        "Player score is " +
+        playerScore +
+        "<br>Dealer score is " +
+        dealerScore;
+      return lostMsg;
+    } else if (playerScore > dealerScore) {
+      var winMsg =
+        "Player WINS! CONGRATULATIONS!<br><br>" +
+        showHands() +
+        "<br>" +
+        "Player score is " +
+        playerScore +
+        "<br>Dealer score is " +
+        dealerScore;
+      return winMsg;
+
   }
 };
