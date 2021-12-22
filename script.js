@@ -66,6 +66,12 @@ var gameResultsShown = "results shown";
 var gameHitOrStand = "hit or stand";
 var currentGameMode = gameStart;
 
+var resetGame = function () {
+  currentGameMode = gameStart;
+  playerHand = [];
+  computerHand = [];
+  myOutputValue = "Game Over, please press submit to start again.";
+};
 //declare variable to hold deck of cards
 var gameDeck = "empty at the start";
 
@@ -263,6 +269,7 @@ var computerHand = [];
 var main = function (input) {
   // output message is empty string because the message changes when there are other game modes.
   var myOutputValue = "";
+
   // First Submit
   if (currentGameMode == gameStart) {
     //create the game deck
@@ -284,7 +291,7 @@ var main = function (input) {
     // write and return the appropriate output message
     myOutputValue =
       displayHand(playerHand, computerHand) +
-      'Player and Computer has been dealt 2 cards, Click "Submit" to evaluate cards.';
+      'Player and Computer has been dealt 2 cards, Click "Submit" to start the game!';
     return myOutputValue;
   }
   // Second submit
@@ -309,31 +316,36 @@ var main = function (input) {
     if (playerBlackJack == true || computerBlackJack == true) {
       // both player and computer has blackjack -> tie
       if (playerBlackJack == true && computerBlackJack == true) {
-        myOutputValue = "Its a Black Jack tie!";
+        myOutputValue =
+          displayHand(playerHand, computerHand) + "Its a Black Jack tie!";
+        resetGame();
       }
       // only player has blackjack -> player wins
       else if (playerBlackJack == true && computerBlackJack == false) {
         myOutputValue =
           displayHand(playerHand, computerHand) +
           "Player got a Black Jack! Player Wins!";
+        resetGame();
       }
       // only computer has black jack -> computer wins
       else {
         myOutputValue =
           displayHand(playerHand, computerHand) +
           "Computer got a Black Jack! Computer Wins!";
+        resetGame();
       }
       console.log(myOutputValue);
+      return myOutputValue;
     } else {
       myOutputValue =
-        displayHand(playerHand, computerHand) + "There is no blackjack!";
+        displayHand(playerHand, computerHand) +
+        "There is no blackjack!<br> Please input hit or stand.";
       console.log(myOutputValue);
       // no black jack -> game continues
 
       // change game mode
       currentGameMode = gameHitOrStand;
       // appropriate output message
-
       return myOutputValue;
     }
   }
@@ -368,6 +380,7 @@ var main = function (input) {
           "Bust! Player loses! Computer Wins!" +
           displayTotalHand(playerTotalHand, computerTotalHand);
         console.log("Player bust", playerTotalHand);
+        resetGame();
         return myOutputValue;
       }
 
@@ -377,6 +390,7 @@ var main = function (input) {
           "Bust! Computer loses! Player wins!" +
           displayTotalHand(playerTotalHand, computerTotalHand);
         console.log("Computer bust", computerTotalHand);
+        resetGame();
         return myOutputValue;
       }
 
@@ -387,13 +401,18 @@ var main = function (input) {
           displayHand(playerHand, computerHand) +
           "Its a tie!" +
           displayTotalHand(playerTotalHand, computerTotalHand);
+        resetGame();
       }
       // player has higher value -> player wins
-      else if (playerTotalHand > computerTotalHand) {
+      else if (
+        (playerTotalHand > computerTotalHand && playerTotalHand <= 21) ||
+        (playerTotalHand <= 21 && computerTotalHand > 21)
+      ) {
         myOutputValue =
           displayHand(playerHand, computerHand) +
           "Player Wins!" +
           displayTotalHand(playerTotalHand, computerTotalHand);
+        resetGame();
       }
       // computer has higher value -> computer wins
       else {
@@ -401,6 +420,7 @@ var main = function (input) {
           displayHand(playerHand, computerHand) +
           "Computer wins!" +
           displayTotalHand(playerTotalHand, computerTotalHand);
+        resetGame();
       }
     }
     // input validation
@@ -410,6 +430,7 @@ var main = function (input) {
         displayHand(playerHand, computerHand);
       console.log(myOutputValue);
     }
+
     return myOutputValue;
   }
 };
