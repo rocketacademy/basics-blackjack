@@ -27,8 +27,8 @@ var player = {
 };
 var gameMode = "setup";
 var score = 0;
-var totalAmount; // that each player has
-var betAmount; // that each player bets
+//var totalAmount; // that each player has
+//var betAmount; // that each player bets
 var turn = "player";
 
 //create card deck ♠♥♣♦
@@ -121,6 +121,14 @@ var points = function (hand) {
 
   return score;
 };
+// allocateWinnings
+var allocateWinnings = function (winner) {
+  if (winner.name == player.name) {
+    player.totalAmount = player.totalAmount + player.betAmount;
+  } else if (winner.name == dealer.name) {
+    player.totalAmount = player.totalAmount - player.betAmount;
+  }
+};
 
 //score output
 var winner;
@@ -194,16 +202,7 @@ var reset = function (player) {
   player.hand = [];
   player.score = 0;
   player.cardsInHand = 0;
-  player.betAmount;
-};
-
-// allocateWinnings
-var allocateWinnings = function (winner) {
-  if (winner.name == player.name) {
-    player.totalAmount = player.totalAmount + player.betAmount;
-  } else if (winner.name == dealer.name) {
-    player.totalAmount = player.totalAmount - player.betAmount;
-  }
+  player.betAmount = 0;
 };
 
 var main = function (input) {
@@ -295,4 +294,5 @@ var main = function (input) {
 
     return myOutputValue;
   }
+  return;
 };
