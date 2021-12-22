@@ -118,7 +118,7 @@ class UiRound extends Ui_Tree {
     // Domain
     /** @private @const {Round} */
     this._round = round;
-    this._root.id = `${uuidv4()}`;
+    this._root.id = uuidv4();
     this._root.className += ` ui-blackjack-round`;
     /** @private @const {UiPlayersHolder} */
     //TEMP this._uiPlayersHolder = this.__newUiPlayerHolders(this._round.getPlayers());
@@ -152,15 +152,17 @@ class UiRound extends Ui_Tree {
         dealer.requestGoToLounge();
       });
 
+      this.addChildrenUi(newUiWrap);
+      console.groupEnd();
+    });
+
+    this._round.setOnStart(() => {
       this.replaceChildrenUi(
         this._uiDealer,
         // this._uiPhaseDisplay, //TODO-TEST-PLUG
-        this._uiSeatHolder,
-        newUiWrap
+        this._uiSeatHolder
       );
-      console.groupEnd();
     });
-    // Domain Hooks
 
     this._round.setOnSetPhase((phase) => {
       console.group(`on Set Phase ui Callback`);
@@ -169,11 +171,6 @@ class UiRound extends Ui_Tree {
     });
 
     this._style();
-    this.replaceChildrenUi(
-      this._uiDealer,
-      // this._uiPhaseDisplay, //TODO-TEST-PLUG
-      this._uiSeatHolder
-    );
   }
 
   getUiDealer = () => this._uiDealer;

@@ -23,6 +23,10 @@ class Ui_Component {
     this._root.replaceChildren(...nodeOfUis);
   };
 
+  addChildrenUi = (ui) => {
+    this._root.appendChild(ui.getRoot());
+  };
+
   /**
    * @param {Ui_Component}
    *

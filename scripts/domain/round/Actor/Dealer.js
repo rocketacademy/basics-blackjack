@@ -81,7 +81,6 @@ class Dealer extends _Actor {
     this.shout("Place your bets, please 🙂");
     this._round.start();
   };
-  _onCommence = () => {};
 
   _initialDeal = () => {
     this.shout("");

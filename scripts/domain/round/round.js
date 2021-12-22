@@ -134,8 +134,15 @@ class Round {
     console.group(`round.start`);
     this._setPhase(RoundPhase.COMMENCE);
     this._dealer.callForInitialBets();
+
+    this._onStart();
+
     console.groupEnd();
   };
+
+  _onStart = () => {};
+
+  setOnStart = (cb) => (this._onStart = cb);
 
   settleFinal = () => {
     console.group(`round.settle.final`);
