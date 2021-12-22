@@ -166,6 +166,12 @@ var restartGame = function () {
 
 var main = function (input) {
   var myOutputValue = "";
+  var myImage =
+    '<img src="https://c.tenor.com/HHGmwb2j53IAAAAC/loveyou-cold.gif"/>';
+  var dealerWinGif = `<img src = "https://c.tenor.com/jqhPBpDQpLMAAAAC/minion-what.gif"/>`;
+  var playerWinGif = `<img src = "https://c.tenor.com/B_zYdea4l-4AAAAC/yay-minions.gif"/>`;
+  var newGameGif = `<img src = "https://c.tenor.com/gWT4cqJaOk4AAAAd/respect-power-banana-scarlett-overkill.gif"/>`;
+  var tieGif = `<img src = "https://c.tenor.com/2ICIb2MbQxMAAAAd/youve-got-something-on-your-face-bob-the-minion.gif"/>`;
   //start the game by dealing the cards to the player and dealer
   if (currGameMode == gameStart) {
     gameDeck = createNewDeck();
@@ -182,7 +188,7 @@ var main = function (input) {
 
     //Changing game mode to the draw cards
     currGameMode = gameDrawCards;
-    myOutputValue = `Everyone has been deal with 2 cards each! 🃏 <br> Click submit to view the cards for both players 🔑`;
+    myOutputValue = `Everyone has been deal with 2 cards each! 🃏 <br> Click submit to view the cards for both players 🔜 <br> <br> ${myImage}`;
 
     return myOutputValue;
   }
@@ -201,31 +207,29 @@ var main = function (input) {
         myOutputValue = `${showPlayerAndDealerCards(
           playerHand,
           dealerHand
-        )} <br> This is a tie as both of player and dealer has blackjack <br> <br> Click on submit to restart the game.`;
+        )} <br> This is a tie as both of player and dealer has blackjack <br>  ${tieGif} <br> Click on submit to restart the game.`;
         currGameMode = gameReset;
       }
       if (playerHasBlackjack == true && dealerHasBlackjack == false) {
         myOutputValue = `${showPlayerAndDealerCards(
           playerHand,
           dealerHand
-        )} <br> Player wins as player draws a blackjack! <br> <br> Click on submit to restart the game.`;
+        )} <br> Player wins as player draws a blackjack! <br> ${playerWinGif} <br> Click on submit to restart the game.`;
         currGameMode = gameReset;
       }
       if (playerHasBlackjack == false && dealerHasBlackjack == true) {
         myOutputValue = `${showPlayerAndDealerCards(
           playerHand,
           dealerHand
-        )} <br> Dealer wins as dealer draws a blackjack! <br> <br> Click on submit to restart the game.`;
+        )} <br> Dealer wins as dealer draws a blackjack! <br> ${dealerWinGif} <br> Click on submit to restart the game.`;
         currGameMode = gameReset;
       }
     }
 
     // If there is no blackjack for both players then the game will continue and display the below, player can either draw more cards or continue on with the game without drawing any cards
     if (playerHasBlackjack == false && dealerHasBlackjack == false) {
-      myOutputValue = `${showPlayerAndDealerCards(
-        playerHand,
-        dealerHand
-      )} <br> There are no Black Jacks. <br> Please input "hit" or "stand" to continue the game.`;
+      myOutputValue = `${showPlayerAndDealerCards(playerHand, dealerHand)} 
+      <br> There are no Black Jacks. <br> Please input "hit" or "stand" to continue the game ➡️ `;
 
       // update gameMode
       currGameMode = gameHitOrStand;
@@ -265,10 +269,10 @@ var main = function (input) {
         myOutputValue = `${showPlayerAndDealerCards(
           playerHand,
           dealerHand
-        )} <br> Its a Tie! 👏🏻 <br> ${showHandValue(
+        )} ${showHandValue(
           playerHandTotalValue,
           dealerHandTotalValue
-        )} <br> <br> Click on submit to restart the game.`;
+        )} <br><br> Its a Tie! <br> ${tieGif} <br> Click on submit to restart the game.`;
         currGameMode = gameReset;
       } else if (
         (playerHandTotalValue > dealerHandTotalValue &&
@@ -278,10 +282,10 @@ var main = function (input) {
         myOutputValue = `${showPlayerAndDealerCards(
           playerHand,
           dealerHand
-        )} <br> Player wins! 🎉  <br> ${showHandValue(
+        )} ${showHandValue(
           playerHandTotalValue,
           dealerHandTotalValue
-        )} <br> <br> Click on submit to restart the game.`;
+        )} <br><br> Player wins! <br> ${playerWinGif} <br> Click on submit to restart the game.`;
         currGameMode = gameReset;
       }
 
@@ -290,10 +294,10 @@ var main = function (input) {
         myOutputValue = `${showPlayerAndDealerCards(
           playerHand,
           dealerHand
-        )} <br> Dealer wins! 😢 <br> ${showHandValue(
+        )} ${showHandValue(
           playerHandTotalValue,
           dealerHandTotalValue
-        )} <br> <br> Click on submit to restart the game.`;
+        )} <br><br> Dealer wins! <br> ${dealerWinGif} <br> Click on submit to restart the game.`;
         currGameMode = gameReset;
       }
       console.log(currGameMode);
@@ -310,7 +314,7 @@ var main = function (input) {
     if (input == "") {
       restartGame();
       console.log("check game mode", currGameMode);
-      myOutputValue = `You have start a new game! Click on submit to continue playing a new round! 🔜 `;
+      myOutputValue = `You have start a new game! Click on submit to continue playing a new round! 🔜  <br> <br> ${newGameGif}`;
       console.log(
         "check if array is reset for both players",
         playerHand,
