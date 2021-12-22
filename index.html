@@ -95,9 +95,9 @@
         font-family: "Open Sans", sans-serif;
         margin-left: 30px;
         margin-right: 30px;
-        background-color: white;
+        background-color: lightpink;
         color: black; /* sets the font color */
-        background-image: url(""); /* The image used */
+        background-image: url("https://www.legitgamblingsites.com/wp-content/uploads/2017/10/blackjack-table-and-cards1.jpg"); /* The image used */
         background-position: center; /* Center the image */
         background-repeat: no-repeat; /* Do not repeat the image */
         background-size: cover; /* Resize the background image to cover the entire container */
@@ -109,16 +109,23 @@
         max-height: 200px;
       }
       .header {
+        color: gold;
         text-align: center;
         font-size: 1.1rem;
         margin-bottom: 3rem;
       }
+      .center {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: 50%;
+      }
 
       #container {
-        background-color: pink;
+        background-color: green;
         margin: 40px auto;
         max-width: 800px;
-        padding: 38px 31px;
+        padding: 50px 31px;
       }
 
       input {
@@ -170,14 +177,25 @@
         src="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/brand/logo.png"
       />
     </h1>
-    <h1 class="header">♣️ Basics - Blackjack ♠️</h1>
     <div id="container">
+      <img
+        src="https://c.tenor.com/uxFp-xPZSjsAAAAM/vegas-sincity.gif"
+        class="center"
+      />
+      <img
+        src="https://c.tenor.com/RFRPkimHjfcAAAAM/zach-galifianakis-very-bad-trip-meme.gif"
+        class="center"
+      />
+      <p style="text-align: center" class="header">♣️ Basics - Blackjack ♠️</p>
       <p>Input:</p>
       <input id="input-field" />
       <br />
       <button id="submit-button">Submit</button>
       <p>Output:</p>
-      <div id="output-div"></div>
+      <div id="output-div">
+        Please submit the number of players playing! <br />
+        (max. 4 person) **Dealer table too small...**
+      </div>
     </div>
     <!-- Import program logic -->
     <script src="script.js"></script>
