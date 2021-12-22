@@ -225,8 +225,8 @@ var main = function (input) {
         //Turn off Stand button and Hit button
         document.getElementById("stand-button").disabled = true;
         document.getElementById("hit-button").disabled = true;
-        // Turn on Start button
-        document.getElementById("start-button").disabled = false;
+        // Turn on Reset button
+        document.getElementById("reset-button").disabled = false;
         return `Player went bust! Sorry You Lost! <br><br>${showHands()} <br>Player score is ${playerScore}<br>Dealer score is ${dealerScore}`;
       }
       return `${showHands()}<br>Player score is ${playerScore}<br> Dealer score is ${dealerScore}`;
@@ -234,8 +234,8 @@ var main = function (input) {
       //Turn off Stand button and Hit button
       document.getElementById("stand-button").disabled = true;
       document.getElementById("hit-button").disabled = true;
-      // Turn on Start button
-      document.getElementById("start-button").disabled = false;
+      // Turn on Reset button
+      document.getElementById("reset-button").disabled = false;
       var bustMsg =
         "You went bust! Sorry You Lost! <br><br>" +
         showHands() +
