@@ -180,7 +180,7 @@
       <input id="input-field" />
       <br />
       <button id="start-button">Start</button>
-       <button id="hit-button">Hit</button>
+      <button id="hit-button">Hit</button>
       <button id="stand-button">Stand</butoon>
       <button id="reset-button">Reset</button>
       <p>Output:</p>
@@ -190,18 +190,18 @@
     <script src="script.js"></script>
     <!-- Define button click functionality -->
     <script>
-      var button = document.querySelector("#submit-button");
-      button.addEventListener("click", function () {
+      var startButton = document.querySelector("#submit-button");
+      startButton.addEventListener("click", function () {
         // Set result to input value
         var input = document.querySelector("#input-field");
-        var result = main(input.value);
+        var result = main("start");
 
         // Display result in output element
         var output = document.querySelector("#output-div");
         output.innerHTML = result;
 
         // Reset input value
-        input.value = "";
+        //input.value = "";
       });
 
       //Declare and define a variable that represents the Hit Button
