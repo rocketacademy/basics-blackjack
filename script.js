@@ -126,6 +126,58 @@ var showHands = function () {
   return showPlayerHand + "<br>" + showDealerHand;
 };
 
+//Helper function to show player's score and dealer's score
+var showScores = function () {
+  var index = 0;
+  playerScore = 0;
+  dealerScore = 0;
+
+  while (index < playerHand.length) {
+    playerScore = playerScore + playerHand[index].value;
+    index += 1;
+  }
+  index = 0;
+
+  while (index < dealerHand.length) {
+    dealerScore = dealerScore + dealerHand[index].value;
+    index += 1;
+  }
+  index = 0;
+
+  var showScoreMsg =
+    "Player score is " +
+    playerScore +
+    "<br>" +
+    "Dealer score is " +
+    dealerScore;
+  return showScoreMsg;
+};
+
+// Helper function to check if there's an Ace in player's Hand
+var checkForAce = function () {
+  var index = 0;
+  while (index < playerHand.length) {
+    if (playerHand[index].name == "ace") {
+      isThereAce = true;
+    }
+    index += 1;
+  }
+  return isThereAce;
+};
+
+// Helper function to count the number of ace in a hand
+var countNoAce = function () {
+  var index = 0;
+  var numOfAce = 0;
+  while (index < playerHand.length) {
+    if (playerHand[index].name == "ace") {
+      numOfAce += 1;
+    }
+    index += 1;
+  }
+  return numOfAce;
+};
+
 var main = function (input) {
   if (input == "start") {
     // Turn on Hit and Stand button
@@ -150,8 +202,10 @@ var main = function (input) {
     var dealerCard2 = shuffledDeck.pop();
     dealerHand.push(dealerCard2);
 
-    return showHands();
-  } else if (input == "hit") {
+    return `${showHands()} <br> ${showScores()}`;
+  }
+  //When player choose to Hit
+  else if (input == "hit") {
     return "Hit";
   } else if (input == "stand") {
     // Turn off Hit button and Stand button
