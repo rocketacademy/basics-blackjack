@@ -1,10 +1,21 @@
 class UiDealer extends Ui_Actor {
   _style = () => {
     this._root.style.alignSelf = "center";
+    this._root.style.flexDirection = "column";
+    this._root.style.border = "1px white dotted";
     this._root.style.borderRadius = "25px";
     this._root.style.height = "200px";
+
     this._root.style.minHeight = "fit-content";
+    this._root.style.width = "fit-content";
+    this._root.style.minWidth = "200px";
     this._root.style.padding = "10px 10px 15px 10px";
+
+    this._root.style.alignItems = "center";
+
+    this._uiName.setStyle("color", "#008080");
+    this._uiName.setStyle("fontWeight", "bold");
+    this._uiName.setStyle("fontStyle", "italic");
   };
 
   _newUiMsgDisplay = () => {

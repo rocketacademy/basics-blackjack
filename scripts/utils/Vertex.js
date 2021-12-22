@@ -1,11 +1,11 @@
 // A simple implementation of Linked List
 class Vertex {
   /**
-   * @param {Seat|Hand} element
+   * @param { Seat|Hand|Player} element
    */
   constructor(element) {
     this._element = element;
-    /** @private {Seat|Hand} */
+    /** @private { Seat|Hand|Player} */
     this._next = null;
   }
   injectNext = (vertex) => {
@@ -67,7 +67,7 @@ class LinkedList {
   isTrivial = () => !!this._root.next();
   getRoot = () => this._root;
   /**
-   * @param {Seat|Hand []}
+   * @param {Seat|Hand|Player []}
    */
   relist = (elements) => {
     console.group(`ll.relist`);

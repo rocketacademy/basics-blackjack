@@ -1,10 +1,11 @@
-class UiPlayersHolder extends Ui_Aggregate {
+class UiPlayerHolder extends Ui_Aggregate {
   constructor() {
     super();
     // Root Configuration
     this._style();
     this._root.className += ` blackjack-holder-player`;
-
+    this._root.style.position = "absolute";
+    this._root.style.flexDirection = "column";
     // Children
     /** @private @const {UiPlayer[]}} */
     this._uIPlayers = [];

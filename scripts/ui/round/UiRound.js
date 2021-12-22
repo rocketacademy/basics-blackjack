@@ -53,6 +53,7 @@ class UiPhaseDisplay extends Ui_Text {
     super(document.createElement("div"));
 
     this._root.className += " blackjack-display-round-phase";
+    this._root.style.position = "absolute";
   }
 }
 
@@ -91,7 +92,17 @@ class UiRound extends Ui_Tree {
     this._root.style.marginBottom = "20px";
     this._root.style.justifiyContent = "center";
   };
+  _newUiPlayerHolder = (generator) => {
+    const uiPH = new UiPlayerHolder();
 
+    let p = generator.next();
+    while (p) {
+      uiPH.addUiPlayer(new UiPlayer(p));
+      p = generator.next();
+    }
+
+    return uiPH;
+  };
   _newUiSeatHolder = (generator) => {
     const uiSH = new UiSeatHolder();
 
@@ -127,10 +138,11 @@ class UiRound extends Ui_Tree {
     this._uiDealer = this._newUiDealer(this._round.getDealer());
 
     const seatGen = this._round.getSeatGenerator();
-
     /** @private @const {UiSeat[]} */
     this._uiSeatHolder = this._newUiSeatHolder(seatGen);
-    // this._uiSeats = [new Ui_Component(), new Ui_Component()];
+
+    const playerGen = this._round.getPlayerGenerator();
+    this._uiPlayerHolder = this._newUiPlayerHolder(playerGen);
 
     /** @private @const {UiPhaseDisplay} */
     this._uiPhaseDisplay = new UiPhaseDisplay();
@@ -160,6 +172,7 @@ class UiRound extends Ui_Tree {
       this.replaceChildrenUi(
         this._uiDealer,
         // this._uiPhaseDisplay, //TODO-TEST-PLUG
+        this._uiPlayerHolder, //
         this._uiSeatHolder
       );
     });

@@ -43,6 +43,13 @@ class Round {
     return list;
   };
 
+  _newPlayerList = (players) => {
+    const list = new LinkedList();
+
+    list.relist(players);
+    return list;
+  };
+
   /**
    *
    * @param {Lounge} lounge
@@ -56,9 +63,9 @@ class Round {
     this._deck = this._lounge.getShoe();
     this._dealer.setRound(this);
 
-    const players = lounge.getPlayers();
-    this._seatList = this._newSeatList(players);
-
+    this._players = lounge.getPlayers().map((p) => new Player(p));
+    this._seatList = this._newSeatList(this._players);
+    this._playerList = this._newPlayerList(this._players);
     this._onFinish = (lounge, isContinue) => {
       throw new Error(`Error. Callback[_onFinish] must be configured`);
     };
@@ -101,6 +108,10 @@ class Round {
 
   getSeatGenerator = () => {
     return this._seatList.getElementGenerator();
+  };
+
+  getPlayerGenerator = () => {
+    return this._playerList.getElementGenerator();
   };
 
   getAllHandsGenerator = () => {

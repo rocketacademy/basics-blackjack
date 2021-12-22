@@ -31,20 +31,6 @@ class UiName extends Ui_Component {
 }
 
 class Ui_Actor extends Ui_Component {
-  _style = () => {
-    this._root.style.flexDirection = "column";
-    this._root.style.height = "150px";
-    this._root.style.width = "fit-content";
-    this._root.style.minWidth = "200px";
-
-    this._root.style.border = "1px white dotted";
-    this._root.style.alignItems = "center";
-
-    this._uiName.setStyle("color", "#008080");
-    this._uiName.setStyle("fontWeight", "bold");
-    this._uiName.setStyle("fontStyle", "italic");
-  };
-
   _newUiName = () => {
     const uiN = new UiName();
     uiN.setName(this._actor.getName());
@@ -58,6 +44,7 @@ class Ui_Actor extends Ui_Component {
    */
   constructor(actor) {
     super(document.createElement("div"));
+    console.log(actor);
     // Domain
     this._actor = actor;
     // Root Configuration
@@ -69,8 +56,6 @@ class Ui_Actor extends Ui_Component {
     this._uiName = this._newUiName();
     /** @private @const {UiCredit} */
     this._uiCredit = new UiCredit(this._actor.getCredit());
-
-    this._style();
   }
 
   id = () => this._id;

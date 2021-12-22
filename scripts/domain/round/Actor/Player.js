@@ -11,8 +11,4 @@ class Player extends _Actor {
   constructor(participant) {
     super(participant);
   }
-
-  getName = () => this._participant.getName();
-
-  getCredit = () => this._participant.getCredit();
 }
