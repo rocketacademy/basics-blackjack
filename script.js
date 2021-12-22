@@ -173,7 +173,8 @@ var displayPlayerAndDealerCards = function (
   while (index < playerCardsArray.length) {
     playerMessage =
       playerMessage +
-      "- " +
+      (index + 1) +
+      ". " +
       playerCardsArray[index].name +
       " of " +
       playerCardsArray[index].suit +
@@ -186,7 +187,8 @@ var displayPlayerAndDealerCards = function (
   while (index < dealerCardsArray.length) {
     dealerMessage =
       dealerMessage +
-      "- " +
+      (index + 1) +
+      ". " +
       dealerCardsArray[index].name +
       " of " +
       dealerCardsArray[index].suit +
