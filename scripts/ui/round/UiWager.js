@@ -52,6 +52,7 @@ class UiButtonMainBet extends Ui_Button {
 class UiContainerMainBet extends Ui_Component {
   constructor() {
     super();
+    this._root.className += " blackjack-container-main-bet";
 
     this._root.style.position = "relative";
     this._root.style.justifyItems = "center";
@@ -71,8 +72,10 @@ class UiResult extends Ui_Text {
   constructor() {
     super();
     this._root.style.fontSize = "0.8rem";
+    this._root.style.width = "90px";
     this._root.style.textAlign = "center";
     this._root.style.justifyContent = "center";
+    this._root.className += " blackjack-wager-result";
   }
 }
 
@@ -81,6 +84,9 @@ class UiResults extends Ui_Component {
     super();
 
     this._root.style.flexDirection = "column";
+    this._root.className += " blackjack-wager-result-wrapper";
+    this._root.style.marginTop = "10px";
+    this._root.style.marginBottom = "10px";
   }
 
   addUiResult = (uiR) => this.appendChildUi(uiR);
@@ -88,7 +94,7 @@ class UiResults extends Ui_Component {
 
 class UiWager extends Ui_Component {
   _style = () => {
-    this._root.style.height = "90%";
+    this._root.style.height = "fit-content";
     this._root.style.border = "1px white dotted";
     this._root.style.width = "90%";
     this._root.style.flexDirection = "column";
@@ -130,9 +136,11 @@ class UiWager extends Ui_Component {
     this._root.className += " blackjack-wager";
 
     this._uIContainerBet__ = new UiContainerMainBet();
+    this._uIContainerBet__.getRoot().style.marginTop = "50%";
+
     this._uiSlider__ = new UiSlider();
     this._uiSlider__.getRoot().className += " blackjack-wager-slider";
-
+    this._uiSlider__.getRoot().style.marginTop = "30%";
     // Hooks
 
     this._wager.setOnPleasePlaceYouDouble((dealer, limit) => {
@@ -143,7 +151,10 @@ class UiWager extends Ui_Component {
         console.group(
           `ui wager button clicked invoked callback setOnPleasePlaceYouDouble with bet value ${betValue}`
         );
-        dealer.requestPlaceDouble(wager, betValue);
+        if (Number(betValue) > 0) {
+          dealer.requestPlaceDouble(wager, betValue);
+        }
+
         console.groupEnd();
       });
 
@@ -194,6 +205,8 @@ class UiWager extends Ui_Component {
 
     this._wager.setOnInitialBetStaked((bet) => {
       console.group(`ui wager notified InitialBetStaked `);
+
+      this._uIContainerBet__.getRoot().style.marginTop = "5px";
       this.replaceChildrenUi(this._uIContainerBet__);
       this._uIContainerBet__.setButtonOnMouseClick(() => {});
       console.groupEnd();

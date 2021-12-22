@@ -376,7 +376,7 @@ class Dealer extends _Actor {
   };
 
   _performSettlementFinalCompleted = () => {
-    this._round.settlementCompleted();
+    this._round.FinalSettlementCompleted();
   };
   requestHit = (hand) => {
     this._transferCard(this._round.getShoe(), hand).flip(true);

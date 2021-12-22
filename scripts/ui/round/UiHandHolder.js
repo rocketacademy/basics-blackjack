@@ -4,12 +4,8 @@ class UiHandHolder extends Ui_Aggregate {
 
     this._root.className += " blackjack-hand-holder";
 
-    this._root.style.width = "130px";
-    this._root.style.height = "160px";
-    this._root.style.marginBottom = "20px";
-    this._root.style.marginTop = "20px";
-    this._root.style.marginLeft = "10px";
-    this._root.style.marginRight = "10px";
+    this._root.style.width = "fit-content";
+    this._root.style.height = "fit-content";
     this._root.style.border = "1px white dotted";
     this._root.style.justifyContent = "center";
     this._uiHands = [];

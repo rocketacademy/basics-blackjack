@@ -256,6 +256,7 @@ newTestCollection.addTest(`test_Round_TwoPlayer_Commence`, () => {
 newTestCollection.run();
 
 testMain = (() => {
+  console.warn(`-----------testMain-----------`);
   const lounge = Sample.getTwoPlayersLounge();
   const [round, _] = new PlayingArea().newRoundOfPlay(lounge);
   round.getDealer().commence();

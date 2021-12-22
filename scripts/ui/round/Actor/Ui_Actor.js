@@ -37,7 +37,7 @@ class Ui_Actor extends Ui_Component {
     this._root.style.width = "fit-content";
     this._root.style.minWidth = "200px";
 
-    this._root.style.border = "1px solid black";
+    this._root.style.border = "1px white dotted";
     this._root.style.alignItems = "center";
 
     this._uiName.setStyle("color", "#008080");

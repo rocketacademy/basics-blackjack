@@ -1,38 +1,65 @@
 // HAND
-class UiButtonStand extends Ui_Button {
+
+class Ui_ButtonHand extends Ui_Button {
   constructor() {
     super();
-    this._root.textContent = "STAND";
-    this._root.className += " blackjack-button-stand";
+
+    this._root.style.width = "3.2rem";
+    this._root.style.fontSize = "0.7rem";
+    this._root.style.backgroundColor = "white";
+
+    this._root.style.display = "inline-flex";
+    this._root.style.justifyContent = "center";
+    this._root.style.alignItems = "center";
+    this._root.style.border = "1px solid #34568B";
+    this._root.style.borderRadius = "2px";
+    this._root.style.padding = "4px";
+    this._root.style.marginLeft = "4px";
+    this._root.style.marginRight = "4px";
+
+    this._text = new Ui_Text();
+
+    this._text.getRoot().style.justifyContent = "center";
+
+    this.appendChildUi(this._text);
   }
 
   setOnMouseClick = (cb) => (this._root.onclick = () => cb());
 }
+class UiButtonStand extends Ui_ButtonHand {
+  constructor() {
+    super();
+    this._root.className += " blackjack-button-stand";
+    this._text.setTextContent("STAND");
+  }
+}
 
-class UiButtonHit extends Ui_Button {
+class UiButtonHit extends Ui_ButtonHand {
   constructor() {
     super();
     this._root.className += " blackjack-button-hit";
-    this._root.textContent = "HIT";
+    this._text.setTextContent("HIT");
   }
-  setOnMouseClick = (cb) => (this._root.onclick = () => cb());
 }
 
-class UiButtonDouble extends Ui_Button {
+class UiButtonDouble extends Ui_ButtonHand {
   constructor() {
     super();
     this._root.className += " blackjack-button-double";
-    this._root.textContent = "DOUBLE";
+    this._text.setTextContent("DOUBLE");
   }
-  setOnMouseClick = (cb) => (this._root.onclick = () => cb());
 }
 
 class UiButtonsWrapper extends Ui_Component {
   constructor() {
     super();
+
+    this._root.className += " blackjack-button-hand-wrapper";
+
     this._root.style.flexDirection = "row";
-    this._root.style.marginTop = "10px";
+    this._root.style.marginTop = "12px";
     this._root.style.marginBottom = "10px";
+    this._root.style.width = "fit-content";
   }
 
   addUiButton = (uiB) => this.appendChildUi(uiB);
@@ -64,9 +91,7 @@ class UiHand extends Ui_Component {
   _style = () => {
     this._root.style.border = "1px white dotted";
     this._root.style.height = "auto";
-    this._root.style.marginBottom = "10%";
-    this._root.style.marginTop = "10%";
-    this._root.style.width = "90%";
+    this._root.style.width = "fit-content";
     this._root.style.flexDirection = "column";
     this._root.style.justifyContent = "space-around";
     this._root.style.alignItems = "center";

@@ -65,6 +65,16 @@ class Round {
     this.setOnFinish = (fn) => {
       this._onFinish = fn;
     };
+
+    console.group(`New Round: Players summary`);
+    const seatGen = this.getSeatGenerator();
+    let seat = seatGen.next();
+    while (seat) {
+      const p = seat.getChair();
+      console.log(`Name ${p.getName()} Credit ${p.getCredit()}`);
+      seat = seatGen.next();
+    }
+    console.groupEnd();
   }
   getShoe = () => this._deck;
   getRootSeat = () => this._seatList.getRoot().getElement();
@@ -148,9 +158,18 @@ class Round {
     console.groupEnd();
   };
 
-  settlementCompleted = () => {
-    console.group(`round.settlementCompleted`);
+  FinalSettlementCompleted = () => {
+    console.group(`round.FinalSettlementCompleted`);
     this._setPhase(RoundPhase.SETTLEMENT_FINAL_COMPLETED);
+    console.group(`End of Game: Players summary`);
+    const seatGen = this.getSeatGenerator();
+    let seat = seatGen.next();
+    while (seat) {
+      const p = seat.getChair();
+      console.log(`Name ${p.getName()} Credit ${p.getCredit()}`);
+      seat = seatGen.next();
+    }
+    console.groupEnd();
     this._dealer.callForEndViewMode();
     console.groupEnd();
   };

@@ -27,7 +27,7 @@ class UiSeat extends Ui_Component {
     this._root.style.padding = "10px 6px 20px 6spx";
     this._root.style.borderRadius = "5px";
 
-    this._root.style.border = "1px solid black";
+    this._root.style.border = "1px white dotted";
     this._root.style.alignItems = "center";
   };
   /**

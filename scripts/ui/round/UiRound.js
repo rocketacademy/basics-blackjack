@@ -12,6 +12,8 @@ class Ui_ButtonEndView extends Ui_Button {
     this._root.style.width = "100px";
     this._root.style.height = "22px";
     this._root.style.margin = "10px";
+
+    // Simple nice
     this._root.style.display = "inline-flex";
     this._root.style.justifyContent = "center";
     this._root.style.alignItems = "center";
