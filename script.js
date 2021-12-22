@@ -222,10 +222,20 @@ var main = function (input) {
       console.log(playerScore);
       //if after changing ace to 1 player is still bust
       if (playerScore > 21) {
+        //Turn off Stand button and Hit button
+        document.getElementById("stand-button").disabled = true;
+        document.getElementById("hit-button").disabled = true;
+        // Turn on Start button
+        document.getElementById("start-button").disabled = false;
         return `Player went bust! Sorry You Lost! <br><br>${showHands()} <br>Player score is ${playerScore}<br>Dealer score is ${dealerScore}`;
       }
       return `${showHands()}<br>Player score is ${playerScore}<br> Dealer score is ${dealerScore}`;
     } else if (playerScore > 21) {
+      //Turn off Stand button and Hit button
+      document.getElementById("stand-button").disabled = true;
+      document.getElementById("hit-button").disabled = true;
+      // Turn on Start button
+      document.getElementById("start-button").disabled = false;
       var bustMsg =
         "You went bust! Sorry You Lost! <br><br>" +
         showHands() +
@@ -244,10 +254,10 @@ var main = function (input) {
     // Turn off Hit button and Stand button
     document.getElementById("hit-button").disabled = true;
     document.getElementById("stand-button").disabled = true;
-    // Turn on Start button
-    document.getElementById("start-button").disabled = false;
+    // Turn on Reset button
+    document.getElementById("reset-button").disabled = false;
 
-//Dealer need to hit if dealer hand is below 17
+    //Dealer need to hit if dealer hand is below 17
     while (dealerScore < 17) {
       var newCard = shuffledDeck.pop();
       dealerHand.push(newCard);
@@ -298,6 +308,20 @@ var main = function (input) {
         "<br>Dealer score is " +
         dealerScore;
       return winMsg;
+    }
+  } else if (input == "reset") {
+    playerHand = [];
+    dealerHand = [];
+    playerScore = 0;
+    dealerScore = 0;
+    newDeck = [];
+    shuffledDeck = [];
+    var resetMsg = "Game has been reset. <br> Please click Start";
 
+    // Turn on Start button
+    document.getElementById("start-button").disabled = false;
+    // Turn off Reset button
+    document.getElementById("reset-button").disabled = true;
+    return resetMsg;
   }
 };
