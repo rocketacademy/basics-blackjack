@@ -115,19 +115,17 @@ var checkAce = function (cardsInHand) {
   //ace can be 1 or 11
   var aceValue = 11;
   var countAce = 0;
-  var cards = [];
   var index = 0;
   var points = 0;
   //store card names in array
   while (index < cardsInHand.length) {
-    cards[index] = cardsInHand[index].name;
-    if (cards[index] == "ace") {
+    if (cardsInHand[index].name == "ace") {
       countAce += 1;
     }
     points = points + cardsInHand[index].rank;
     index += 1;
   }
-  if ((cardsInHand.length > 2 && countAce > 1) || points > 21) {
+  if (countAce > 1 || points > 21) {
     aceValue = 1;
   }
 
@@ -275,25 +273,17 @@ var comparePoints = function (computerCards, playerCards) {
     }
     computerPoints = computerPoints + computerCards[i].rank;
   }
+  console.log(playerPoints);
+  console.log(computerPoints);
 
-  if (
-    (computerPoints > playerPoints && computerPoints <= 21) ||
-    playerPoints > 21
-  ) {
-    if (playerPoints > 21 && computerPoints <= 21) {
-      myOutputValue1 = "Player BUSTS! Computer wins!";
-    } else {
-      myOutputValue1 = "Computer wins!";
-    }
-  } else if (
-    (playerPoints > computerPoints && playerPoints <= 21) ||
-    computerPoints > 21
-  ) {
-    if (computerPoints > 21 && playerPoints <= 21) {
-      myOutputValue1 = "Computer BUSTS! Player wins!";
-    } else {
-      myOutputValue1 = "Player wins!";
-    }
+  if (computerPoints > playerPoints && computerPoints <= 21) {
+    myOutputValue1 = "Computer wins!";
+  } else if (playerPoints > 21 && computerPoints <= 21) {
+    myOutputValue1 = "Player BUSTS! Computer wins!";
+  } else if (playerPoints > computerPoints && playerPoints <= 21) {
+    myOutputValue1 = "Player wins!";
+  } else if (computerPoints > 21 && playerPoints <= 21) {
+    myOutputValue1 = "Computer BUSTS! Player wins!";
   } else {
     myOutputValue1 = "It's a tie!";
   }
@@ -319,6 +309,7 @@ var resetGame = function () {
   outputPlayerCard1 = " ";
   outputPlayerCard2 = " ";
   outputComputerCard1 = " ";
+  outputComputerCard2 = " ";
 };
 
 //2 players: player vs computer
@@ -366,6 +357,7 @@ var main = function (input) {
             "Blackjack! Computer won! <br> Computer has drawn " +
             outputComputerCard;
         }
+        resetGame();
         return myOutputValue;
       }
 
