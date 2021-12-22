@@ -214,8 +214,8 @@ class Dealer extends _Actor {
     console.log(`Sponsor : ${wager.getSponsor().getName()}`);
     console.groupEnd();
 
-    const playerPointTotal = playerHand.getHardTotal();
-    const dealerPointTotal = this._hand.getHardTotal();
+    const playerPointTotal = playerHand.getBestValue();
+    const dealerPointTotal = this._hand.getBestValue();
     const isDealerBlackJack = this._hand.isBlackJack();
     const isPlayerBlackJack = playerHand.isBlackJack();
     const isDealerBusted = this._hand.isBusted();
@@ -228,11 +228,13 @@ class Dealer extends _Actor {
 
     if (isPlayerHandBusted) {
       return {
-        decision: { award: AWARD_ENUM.PLAYER_LOSE, mode: PAY_TABLE.REGULAR },
+        decision: { award: AWARD_ENUM.PLAYER_LOSE },
         type: SETTLEMENT_TYPE.SETTLE_FINAL,
         remarks: `CRA-V6-4.3.2`,
       };
     }
+
+    /** BLACKJACK */
 
     // CRA-V6-4.5.2
     if (isDealerBlackJack && isPlayerBlackJack) {
@@ -244,7 +246,7 @@ class Dealer extends _Actor {
     }
 
     // CRA-V6-4.2.1
-    if (!isDealerBlackJack && isPlayerBlackJack) {
+    if (isPlayerBlackJack && !isDealerBlackJack) {
       return {
         decision: { award: AWARD_ENUM.PLAYER_WIN, mode: PAY_TABLE.BLACKJACK },
         type: SETTLEMENT_TYPE.SETTLE_FINAL,
@@ -269,14 +271,7 @@ class Dealer extends _Actor {
         remarks: `CRA-V6-4.5.1`,
       };
     }
-    if (isDealerBusted) {
-      // CRA-V6-4.3.1
-      return {
-        decision: { award: AWARD_ENUM.PLAYER_LOSE },
-        type: SETTLEMENT_TYPE.SETTLE_FINAL,
-        remarks: `CRA-V6-4.3.1`,
-      };
-    }
+
     // CRA-V6-4.2.2
     if (dealerPointTotal < playerPointTotal) {
       return {
@@ -286,8 +281,19 @@ class Dealer extends _Actor {
       };
     }
 
+    // CRA-V6-4.3.1
+    if (!isDealerBusted && playerPointTotal < dealerPointTotal) {
+      return {
+        decision: {
+          award: AWARD_ENUM.PLAYER_LOSE,
+        },
+        type: SETTLEMENT_TYPE.SETTLE_FINAL,
+        remarks: `CRA-V6-4.2.3`,
+      };
+    }
+
     // CRA-V6-4.2.3
-    if (!isPlayerHandBusted && !isWagerSurrendered && isDealerBusted) {
+    if (isDealerBusted && !isWagerSurrendered) {
       return {
         decision: {
           award: AWARD_ENUM.PLAYER_WIN,
@@ -298,7 +304,13 @@ class Dealer extends _Actor {
       };
     }
     throw new Error(
-      `Irregularity. No result type. Player: ${playerHand.getCards()} Dealer: ${this._hand.getCards()}`
+      `Irregularity. No result type. Player: ${playerHand
+        .getCards()
+        .map((c) => `${c.getString()}`)
+        .join(" | ")} Dealer: ${this._hand
+        .getCards()
+        .map((c) => `${c.getString()}`)
+        .join(" | ")}`
     );
   };
   /**

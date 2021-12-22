@@ -28,11 +28,11 @@ class Ui_ProgressBar extends Ui_Component {
     this._root.style.verticalAlign = "middle";
     this._root.style.color = "white";
     this._root.style.textAlign = "center";
+    this._root.style.fontSize = "0.6rem";
   }
 
   setMoney = (money) => {
     this._root.style.width = this._convertToPx(money) + "px";
-
     this._root.textContent = `${money}`;
   };
 }
@@ -42,7 +42,6 @@ class UiCurrentMoneyBar extends Ui_ProgressBar {
 
     this._root.className += ` blackjack-bar-money-initial`;
     this._root.style.backgroundColor = "#585858";
-    this._root.style.fontSize = "0.8rem";
     this._root.style.textAlign = "center";
   }
 }

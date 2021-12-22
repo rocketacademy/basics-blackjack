@@ -30,6 +30,7 @@ class Hand {
       this._generallyAceWithPicture(this._cards[1], this._cards[0])
     );
   };
+  getBestValue = () => this._getBestValue(this._cards, 0, this._cards.length);
 
   _getBestValue = (cards, i = 0, length, v = 0) => {
     if (v > Deck.POINT_TWENTY_ONE) {
@@ -51,7 +52,6 @@ class Hand {
     return hardVal;
   };
   getUpCard = () => this._cards[0];
-  getBestValue = () => this._getBestValue(this._cards, 0, this._cards.length);
 
   hasTwentyOne = () => {
     console.group(`hasTwentyOne`);
@@ -92,12 +92,6 @@ class Hand {
     this._cards.push(card);
     this._onAddCard(card);
   };
-
-  getHardTotal = () =>
-    this._cards.reduce((sum, card) => {
-      sum += card.getHardValue();
-      return sum;
-    }, 0);
 
   getWager = () => this._wager;
   _onAddCard = (card) => {};

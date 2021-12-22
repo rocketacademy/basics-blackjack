@@ -29,7 +29,7 @@ class Card {
   getHardValue = () => this._faceValue.getHardValue();
   getSoftValue = () => this._faceValue.getSoftValue();
   getRank = () => this._faceValue.getRank();
-  getString = () => `${this._suit}${this._faceValue}`;
+  getString = () => `${this._suit.desc()}${this._faceValue.getFaceString()}`;
   _onFlip = (isFaceUp) => {};
   setOnFlip = (fn) => (this._onFlip = fn);
 }
