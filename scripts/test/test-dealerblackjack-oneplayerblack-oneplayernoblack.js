@@ -1,12 +1,12 @@
 (() => {
   /**
-   * test-playerblackjack-dealernoblackjs
-   * Test when dealer will not be dealt a blackjack
+   * test-dealerblackjack-oneplayerblack-oneplayernoblack
+   * Test when dealer will be dealt blackjack, one player no black, one player black
    */
 
+  //TODO
   const newTestCollection = new TestBlackJack();
 
-  //TODO
   newTestCollection.addTest(`test_Lounge_TwoPlayersLounge`, () => {
     const lounge = Sample.getTwoPlayersLounge();
     const expectedPlayerCount = 2;
