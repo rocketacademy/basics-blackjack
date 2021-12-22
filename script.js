@@ -81,11 +81,12 @@ var shuffleCards = function (cardDeck) {
 // if card is jack, queen or king, is just 10.
 // ace can be 1 or 11.
 // 4 game modes:
-// dealingCards: each player dealt 2 cards to start
-// playingHit: human chooses to takes another card. can keep taking even if exceed 21, and the player won't lost/win yet.
-// playingStand: player doesn't take a card. then switch to dealer's turn
-// playDealer: within each playHit or playStand, comPlay will auto decide to hit if 16 & below, or stay if 17 and above.
-// results: person with the largest combined number that is not more than 21 will win.
+// 1. dealingCards: each player dealt 2 cards to start
+// 2. play:
+// 2a. playingHit: human chooses to takes another card. can keep taking even if exceed 21, and the player won't lost/win yet.
+// 2b. playingStand: player doesn't take a card. then switch to dealer's turn
+// 3. Dealer: within each playHit or playStand, comPlay will auto decide to hit if 16 & below, or stay if 17 and above.
+// 4. results: person with the largest combined number that is not more than 21 will win.
 
 var humanCards = [];
 var comCards = [];
@@ -135,7 +136,7 @@ var countCombinedScore = function (allCards) {
 
 // helper function to check whether the player has the cards: ace + 10/jack/queen/king
 var isBlackjack = function (allCards) {
-  // "in" operator checks if the value of card equals to 10/11/12/13
+  // "indexOf" operator checks if the rank of card is inside value10
   console.log(allCards);
   var value10 = [10, 11, 12, 13];
   if (
