@@ -46,7 +46,6 @@ var playerScore = [];
 var computerScore = [];
 var sumOfPlayerScore = 0;
 var sumOfComputerScore = 0;
-var aceDrawnByComputer = [];
 
 var gameState = "begin";
 
@@ -161,13 +160,13 @@ var playerScoreCounter = function (playerCards, playerScore) {
 };
 
 //Computer score counter function
-var computerScoreCounter = function (computerCards, aceDrawnByComputer) {
+var computerScoreCounter = function (computerCards, computerScore) {
   indexCounter = 0;
   var aceDrawnByComputer = [];
   while (indexCounter < computerCards.length) {
     if (computerCards[indexCounter].name == "ace") {
       aceDrawnByComputer.push(0);
-      if (aceDrawnByComputer.length > 1) {
+      if (aceDrawnByComputer.length > 1 || sumOfComputerScore > 10) {
         computerScore[indexCounter] = 1;
       } else {
         computerScore[indexCounter] = 11;
@@ -284,10 +283,7 @@ var main = function (input) {
       console.log("if statement entered");
       var dealComputerCard3 = shuffledCards.pop();
       computerCards.push(dealComputerCard3);
-      var computerScoreNow = computerScoreCounter(
-        computerCards,
-        aceDrawnByComputer
-      );
+      var computerScoreNow = computerScoreCounter(computerCards, computerScore);
       console.log("this is computerScoreNow:");
       console.log(computerScoreNow);
       console.log("this is computerCards:");
