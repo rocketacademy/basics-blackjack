@@ -73,10 +73,8 @@ var createNewDeck = function () {
 var calculateTotalHandValue = function (cardHand) {
   var totalHandValue = 0;
   var handIndex = 0;
-  console.log("went into calculation");
   while (handIndex < cardHand.length) {
     var currentCard = cardHand[handIndex];
-    console.log("currentCard", currentCard);
     if (
       currentCard.name == "Jack" ||
       currentCard.name == "King" ||
@@ -91,20 +89,8 @@ var calculateTotalHandValue = function (cardHand) {
     }
     handIndex = handIndex + 1;
   }
-  console.log("totalHandValue", totalHandValue);
   return totalHandValue;
 };
-
-// Function that displays the total hand values of the player and the dealer in a message
-var displayHandTotalValues = function (playerHandValue, dealerHandValue) {
-  var totalHandValueMessage =
-    "<br>Player total hand value: " +
-    playerHandValue +
-    "<br>Dealer total hand value: " +
-    dealerHandValue;
-  return totalHandValueMessage;
-};
-
 // *** Global Game Variables ***
 var playerHand = [];
 var computerHand = [];
@@ -119,9 +105,6 @@ var main = function (input) {
   var newShuffledDeck = createNewDeck();
   var playerHandTotalValue = calculateTotalHandValue(playerHand);
   var computerHandTotalValue = calculateTotalHandValue(computerHand);
-
-  console.log("player hand value total ==> ", playerHandTotalValue);
-  console.log("Computer hand value total ==> ", computerHandTotalValue);
 
   var displayIndex = 0;
   var displayTotalHandValue = function (playerHand, computerHand) {
@@ -182,15 +165,43 @@ var main = function (input) {
     computerHand.push(newShuffledDeck.pop());
 
     currentGameMode = "gameCardsDrawn";
-    console.log("current game mode===>", currentGameMode);
 
     myOutputValue = "<b>Click on the submit button to start Blackjack!</b>";
     return myOutputValue;
   }
+  if (
+    currentGameMode == "gameCardsDrawn" &&
+    playerHandTotalValue == 21 &&
+    computerHandTotalValue == 21
+  ) {
+    myOutputValue = `<b>What are the odds! Blackjack! Both you & the computer got Blackjack!</b><br><br>${displayTotalHandValue(
+      playerHand,
+      computerHand
+    )}<br><br> <b>Click on Submit to play a new game!</b>`;
+    currentGameMode = "waiting to start";
+    newShuffledDeck = createNewDeck();
+    return myOutputValue;
+  }
+  if (currentGameMode == "gameCardsDrawn" && computerHandTotalValue == 21) {
+    myOutputValue = `<b>Computer got Blackjack!</b><br><br>${displayTotalHandValue(
+      playerHand,
+      computerHand
+    )}<br><br> <b>Click on Submit to play a new game!</b>`;
+    currentGameMode = "waiting to start";
+    newShuffledDeck = createNewDeck();
+    return myOutputValue;
+  }
+  if (currentGameMode == "gameCardsDrawn" && playerHandTotalValue == 21) {
+    myOutputValue = `<b>Blackjack! Did you cheat?</b><br><br>${displayTotalHandValue(
+      playerHand,
+      computerHand
+    )}<br><br> <b>Click on Submit to play a new game!</b>`;
+    currentGameMode = "waiting to start";
+    newShuffledDeck = createNewDeck();
+    return myOutputValue;
+  }
 
   if (currentGameMode == "gameCardsDrawn") {
-    console.log("game mode changed to", currentGameMode);
-
     currentGameMode = "player hit or stand";
 
     return `${displayTotalHandValue(
@@ -214,11 +225,8 @@ var main = function (input) {
     input == "stand" &&
     playerHandTotalValue >= 17
   ) {
-    console.log("currrent game mode: stand", currentGameMode);
-
     while (computerHandTotalValue < 17) {
       computerHand.push(newShuffledDeck.pop());
-      console.log(`computer hit`);
       computerHandTotalValue = calculateTotalHandValue(computerHand);
     }
 
@@ -230,7 +238,6 @@ var main = function (input) {
     return myOutputValue;
   }
   if (currentGameMode == "player hit or stand" && playerHandTotalValue > 21) {
-    console.log("currrent game mode: stand", currentGameMode);
     myOutputValue = `<b>Stand</b><br><br>${displayTotalHandValue(
       playerHand,
       computerHand
@@ -239,7 +246,6 @@ var main = function (input) {
   }
 
   if (currentGameMode == "player hit or stand") {
-    console.log("currrent game mode: stand", currentGameMode);
     myOutputValue = `<b>Game only accepts Hit or Stand function</b><br><br>${displayTotalHandValue(
       playerHand,
       computerHand
@@ -299,4 +305,4 @@ var main = function (input) {
       return myOutputValue;
     }
   }
-}; hello you are alive!
+};
