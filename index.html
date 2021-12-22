@@ -183,9 +183,7 @@
     <script>
       var startButton = document.querySelector("#start-button");
       startButton.addEventListener("click", function () {
-
         var result = main("start");
-
 
         var output = document.querySelector("#output-div");
         output.innerHTML = result;
@@ -197,22 +195,20 @@
       //Declare and define a variable that represents the Hit Button
       //When the Hit button is clicked, input is assumed to be "hit"
       var hitButton = document.querySelector("#hit-button");
-      hitButton.addEventListener("click", function(){
+      hitButton.addEventListener("click", function () {
         var result = main("hit");
         var output = document.querySelector("#output-div");
         output.innerHTML = result;
-      })
+      });
 
       //Declare and define a variable that represents the Stand Button
       //When the stand button is clicked, input is assumed to be "stand"
       var standButton = document.querySelector("#stand-button");
-      standButton.addEventListener("click", function(){
+      standButton.addEventListener("click", function () {
         var result = main("stand");
         var output = document.querySelector("#output-div");
         output.innerHTML = result;
-      })
-
-            })
+      });
     </script>
   </body>
 </html>
