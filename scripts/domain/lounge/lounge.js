@@ -26,7 +26,6 @@ class Lounge {
   __generateEmptyShoe = () => {
     this._shoe = Deck.generateEmptyDeck();
   };
-
   addCardToShoe = (card) => {
     this._shoe.push(card);
   };

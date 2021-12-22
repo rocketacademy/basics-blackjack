@@ -146,7 +146,6 @@ class UiWager extends Ui_Component {
     this._wager.setOnPleasePlaceYouDouble((dealer, limit) => {
       console.group(`ui wager setOnPleasePlaceYouDouble`);
       const initDoubleValue = 0;
-
       this._uIContainerBet__.setButtonOnMouseClick((betValue) => {
         console.group(
           `ui wager button clicked invoked callback setOnPleasePlaceYouDouble with bet value ${betValue}`
@@ -154,12 +153,12 @@ class UiWager extends Ui_Component {
         if (Number(betValue) > 0) {
           dealer.requestPlaceDouble(wager, betValue);
         }
-
         console.groupEnd();
       });
 
       this._uiSlider__.setMax(limit);
       this._uiSlider__.setValue(limit);
+      this._uIContainerBet__.setButtonValue(limit);
 
       this._uiSlider__.setOnRangeChange((e) => {
         const v = e.target.value;

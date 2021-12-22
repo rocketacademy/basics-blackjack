@@ -4,9 +4,10 @@ class UiChairDisplay extends Ui_Text {
     this._chair = chair;
     this._root.className += " blackjack-chair-display";
 
-    this._root.style.width = "70px";
-    this._root.style.height = "25px";
+    this._root.style.width = "fit-content";
+    this._root.style.height = "fit-content";
     this._root.style.marginTop = "7px";
+    this._root.style.padding = "7px";
     this._root.style.border = "1px white dotted";
     this._root.style.overflow = "hidden";
     this._root.style.alignSelf = "center";

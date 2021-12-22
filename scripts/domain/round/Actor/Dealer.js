@@ -298,7 +298,9 @@ class Dealer extends _Actor {
         remarks: `CRA-V6-4.2.3`,
       };
     }
-    throw new Error(`Irregularity. No result type.`);
+    throw new Error(
+      `Irregularity. No result type. Player: ${playerHand.getCards()} Dealer: ${this._hand.getCards()}`
+    );
   };
   /**
    *
@@ -528,9 +530,10 @@ class Dealer extends _Actor {
   };
 
   _doubleDown = (sponsor, doubleAmt, wager) => {
-    console.group(`dealer performs the transfer of value`);
+    console.group(`dealer performs the transfer of value and transfer of card`);
     sponsor.decreaseCredit(doubleAmt);
     wager.addBet(doubleAmt);
+    this._transferCard(this._round.getShoe(), wager.getHand()).flip(true);
     console.log(sponsor.getCredit());
     console.groupEnd();
   };

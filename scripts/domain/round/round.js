@@ -194,6 +194,10 @@ newRound = (lounge) => {
     rejectDescription.push(`newRound require at least one player.`);
   }
 
+  //TODO 5.19
+  const playerCount = lounge.getPlayers().length;
+  const minimumCardFloat = playerCount * 10;
+
   if (reject) {
     throw new Error(rejectDescription.join(" "));
   }
