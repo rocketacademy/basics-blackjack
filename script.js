@@ -279,10 +279,10 @@ var showBet = function (input) {
     console.log(playerPoints);
     betMsg = `You now have $${
       playerPoints - playerBet
-    }. Your bet is: $${playerBet}.<br> <br><b>Now press the "Play" button to start the game </b>`;
+    }. Your bet is: $${playerBet}.<br> <br><b>Now click the "Play" button to start the game </b>`;
     return betMsg;
   }
-  return `Please press the "Play" button to start the game`;
+  return `Please click the "Play" button to start the game`;
 };
 
 //function for hit button
@@ -296,9 +296,9 @@ var hit = function () {
     var newMsg = craftOutputMessage(playerCards);
     outputMsg = `<b>Player's card:</b><br> ${newMsg} Sum: ${sumOfPlayer}
   `;
-    return `${outputMsg} <br><br> <b>Please press "hit" to continue drawing a card or press "stand" to stop</b>`;
+    return `${outputMsg} <br><br> <b> Please click "hit" to continue drawing a card or press "stand" to stop </b>`;
   } else
-    return `Please enter your bet then press the "Play" button to start playing the game`;
+    return `Please enter your bet then click the "Play" button to start playing the game`;
 };
 
 //function for stand button
@@ -311,7 +311,7 @@ var stand = function () {
     console.log("dealer", sumOfComputer);
     return toCheckWin(sumOfPlayer, sumOfComputer);
   } else
-    return `Please enter your bet then press the "Play" button to start playing the game`;
+    return `Please enter your bet then click the "Play" button to start playing the game`;
 };
 var showPlayerCurrentPoints = function () {
   return `You currently have $${playerPoints}`;
