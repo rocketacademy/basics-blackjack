@@ -580,25 +580,63 @@ var main = function (input) {
 
       // playerHandTotalValue = 11;
       // dealerHandTotalValue = 10;
-      if (playerHandTotalValue == dealerHandTotalValue) {
+      if (
+        playerHandTotalValue == dealerHandTotalValue &&
+        playerHandTotalValue < 21 &&
+        dealerHandTotalValue < 21
+      ) {
         // console.log(" it is a tie! ");
         outputMessage =
           displayPlayerAndDealerHands(playerHand, dealerHand) +
           " <br> it is a tie! " +
           displayHandTotalValue(playerHandTotalValue, dealerHandTotalValue) +
           '<img src=" https://c.tenor.com/Gqy4WGxrMv0AAAAM/try-again.gif"/>';
-      } else if (playerHandTotalValue > dealerHandTotalValue) {
+      } else if (
+        playerHandTotalValue > dealerHandTotalValue &&
+        playerHandTotalValue < 21 &&
+        dealerHandTotalValue < 21
+      ) {
         //console.log(" player wins! ");
         outputMessage =
           displayPlayerAndDealerHands(playerHand, dealerHand) +
           " <br> player wins! " +
           displayHandTotalValue(playerHandTotalValue, dealerHandTotalValue) +
           '<img src="https://c.tenor.com/xJfQQ-t9u3oAAAAM/success-kid-hells-yes.gif"/>';
-      } else {
+      } else if (
+        playerHandTotalValue < dealerHandTotalValue &&
+        playerHandTotalValue < 21 &&
+        dealerHandTotalValue < 21
+      ) {
         //console.log(" dealer wins! ");
         outputMessage =
           displayPlayerAndDealerHands(playerHand, dealerHand) +
           " <br> dealer wins! " +
+          displayHandTotalValue(playerHandTotalValue, dealerHandTotalValue) +
+          "<br>" +
+          '<img src="https://c.tenor.com/O6icjMrTC04AAAAM/loser-spongebob-squarepants.gif"/>';
+      } else {
+        //to check if dealer busted and player wins
+        if (playerHandTotalValue < 21 && dealerHandTotalValue > 21) {
+          outputMessage =
+            displayPlayerAndDealerHands(playerHand, dealerHand) +
+            " <br> player wins as dealer busted! " +
+            displayHandTotalValue(playerHandTotalValue, dealerHandTotalValue) +
+            "<br>" +
+            '<img src="https://c.tenor.com/O6icjMrTC04AAAAM/loser-spongebob-squarepants.gif"/>';
+        }
+        //to check if players busted and dealer wins
+        if (playerHandTotalValue > 21 && dealerHandTotalValue < 21) {
+          outputMessage =
+            displayPlayerAndDealerHands(playerHand, dealerHand) +
+            " <br> dealer wins as player busted! " +
+            displayHandTotalValue(playerHandTotalValue, dealerHandTotalValue) +
+            "<br>" +
+            '<img src="https://c.tenor.com/O6icjMrTC04AAAAM/loser-spongebob-squarepants.gif"/>';
+        }
+        // for both players busted
+        outputMessage =
+          displayPlayerAndDealerHands(playerHand, dealerHand) +
+          " <br> both players busted! " +
           displayHandTotalValue(playerHandTotalValue, dealerHandTotalValue) +
           "<br>" +
           '<img src="https://c.tenor.com/O6icjMrTC04AAAAM/loser-spongebob-squarepants.gif"/>';
