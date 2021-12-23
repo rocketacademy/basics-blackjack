@@ -90,12 +90,25 @@ var shuffleCards = function (cardDeck) {
 
 var humanCards = [];
 var comCards = [];
-var gameMode = "dealCards";
+var humScore = 100;
+var humBet = 0;
+var gameRoundCounter = 0;
+var gameMode = "intro";
 // create global variable for shuffledDeck so that it can be used in conditionals
 var shuffledDeck = [];
 
 var main = function (input) {
   var output = "";
+
+  if (gameMode == "intro") {
+    return inTransit();
+  }
+  if (gameMode == "promptBet") {
+    return promptingBet(input);
+  }
+  if (gameMode == "newBet") {
+    return showNewBet(input);
+  }
   if (gameMode == "dealCards") {
     return dealingCards();
   }
@@ -114,6 +127,252 @@ var main = function (input) {
   }
   if (gameMode == "results") {
     return checkingResults();
+  }
+};
+
+// intro --> start new game. place bets. dealCards. hit...results...
+
+//2. game mode: intro
+var inTransit = function () {
+  gameMode = "promptBet";
+  humanCards = [];
+  comCards = [];
+  shuffledDeck = [];
+  return `Welcome to a new round of Blackjack! <br> You have played ${gameRoundCounter} round(s) so far, with a bet amount of ${humBet}.<br><br> Please submit "y" if you want to set a bet or change your existing bet, <br> or "n" if you want to retain your current bet.`;
+};
+
+//3. game mode: prompt bets
+var promptingBet = function (input) {
+  if (input == "y") {
+    gameMode = "newBet";
+    return `Your current points: ${humScore}. Your current bet is ${humBet}. Please enter a new bet and click "Submit".`;
+  } else if (input == "n") {
+    gameMode = "dealCards";
+    return `Your current points: ${humScore}. Your current bet is ${humBet}. Please click "Submit" to start playing a new round. Refresh if you want to start a new game.`;
+  } else {
+    return `Please only submit "y" if you want to set a bet or change your existing bet, <br> or "n" if you want to retain your current bet.`;
+  }
+};
+
+//4. game mode: show ew bets.
+var showNewBet = function (input) {
+  var output = `Please type your bet in number form only.😛`;
+  if (Number.isNaN(Number(input)) == true) {
+    return `Please type your bet in number form only.😛`;
+  }
+  //store bets in global variable.
+  var halfScore = Number(humScore) / 2;
+  if (Number(input) <= halfScore) {
+    humBet = input;
+    console.log(humBet);
+    gameMode = "dealCards";
+    return `Now, your new bet is ${humBet}. Click "Submit" to start playing.`;
+  }
+  if (Number(input) > halfScore) {
+    return `You can only bet a maximum of half your current points.`;
+  }
+  return output;
+};
+
+//game mode: dealCards.
+var dealingCards = function () {
+  //shuffled Deck
+  var madeDeck = makeDeck();
+  shuffledDeck = shuffleCards(madeDeck);
+  // human is given first card
+  var humCard1 = shuffledDeck.pop();
+  // store card in humanCards
+  humanCards.push(humCard1);
+  // dealer gets first card
+  var comCard1 = shuffledDeck.pop();
+  // store card in comCards
+  comCards.push(comCard1);
+  // same thing for 2 cards
+  var humCard2 = shuffledDeck.pop();
+  humanCards.push(humCard2);
+  var comCard2 = shuffledDeck.pop();
+  comCards.push(comCard2);
+
+  // if both have Blackjack, both wins & game is over;
+  if (isBlackjack(humanCards) && isBlackjack(comCards)) {
+    var humBlackjack = `player has: <br> ${humanCards[0].name} of ${humanCards[0].emoji} and ${humanCards[1].name} of ${humanCards[1].emoji} and dealer has: <br> ${comCards[0].name} of ${comCards[0].emoji} and ${comCards[1].name} of ${comCards[1].emoji}. Blackjack! Both won!`;
+    gameMode = "promptBet";
+    console.log(gameMode);
+    return humBlackjack;
+  }
+
+  // if dealer has blackJack, then game is over;
+  if (isBlackjack(comCards)) {
+    humScore = Number(humScore) - Number(humBet) * 1.5;
+    console.log(humScore);
+    gameRoundCounter += 1;
+    var comBlackjack = `Dealer has: <br> ${comCards[0].name} of ${comCards[0].emoji} and ${comCards[1].name} of ${comCards[1].emoji}. Blackjack! Dealer wins! <br> End of round ${gameRoundCounter}. You lost 1.5x your bet.😞 Your current points: ${humScore} <br> Click "Submit" to play the next round or refresh page to play a new game!`;
+    gameMode = "intro";
+    console.log(gameMode);
+    return comBlackjack;
+  }
+  // if human has blackJack, then game is over;
+  if (isBlackjack(humanCards)) {
+    humScore = Number(humScore) + Number(humBet) * 1.5;
+    console.log(humScore);
+    gameRoundCounter += 1;
+    var humBlackjack = `player has: <br> ${humanCards[0].name} of ${humanCards[0].emoji} and ${humanCards[1].name} of ${humanCards[1].emoji}. Blackjack! Player wins! <br> End of round ${gameRoundCounter}. You won 1.5x your bet!🏆 Your current points: ${humScore} <br> Click "Submit" to play the next round or refresh page to play a new game!`;
+    gameMode = "intro";
+    console.log(gameMode);
+    return humBlackjack;
+  }
+
+  // if nothing else, game carries on;
+  else {
+    var aceIndices = hasAce(humanCards);
+    if (aceIndices.length !== 0 && countCombinedScore(humanCards) <= 10) {
+      console.log(`total Aces`, aceIndices);
+      humanCards[aceIndices[0]].rank = 11;
+      var currentCards = `You have: ${printCard(
+        humanCards
+      )}<br>while the dealer 🖥 has: ${comCards[0].name} of ${
+        comCards[0].emoji
+      } for one of the cards.<br><br> If you want to draw more cards, type "h".<br> If you do not want any cards, type "s". `;
+      gameMode = "play";
+      console.log("with ace:", gameMode);
+      return currentCards;
+    } else {
+      var contPlay = `You have: <br> ${humanCards[0].name} of ${humanCards[0].emoji} and ${humanCards[1].name} of ${humanCards[1].emoji}, <br> while the dealer 🖥 has: ${comCards[0].name} of ${comCards[0].emoji} for one of the cards. <br><br> If you want to draw more cards, type "h".<br> If you do not want any cards, type "s".`;
+      gameMode = "play";
+      console.log(gameMode);
+      return contPlay;
+    }
+  }
+};
+
+//game mode: play. user inputs "h" to play hit.
+var playingHit = function (input) {
+  //give 1 more card to the player and store card in array.show all the cards in the array.
+  humanCards.push(shuffledDeck.pop());
+  console.log(humanCards);
+  var aceIndices = hasAce(humanCards);
+  // if there's any aces, first ace is 11.
+  if (aceIndices.length !== 0 && countCombinedScore(humanCards) <= 10) {
+    humanCards[aceIndices[0]].rank = 11;
+    // since the last element of the array is length-1 of the array, i can use this to show the latest card drawn.
+    var currentCards = `You just drew ${
+      humanCards[humanCards.length - 1].name
+    } of ${
+      humanCards[humanCards.length - 1].emoji
+    }. <br> Now you have ${printCard(
+      humanCards
+    )}which makes a total of ${countCombinedScore(
+      humanCards
+    )}<br> if you want more cards, type "h". <br> If you do not want any more cards, type "s".`;
+    return currentCards;
+  } else {
+    //if no aces, just show cards and combined score, and prompt choice of hit or stand.
+    var currentCards = `You just drew ${
+      humanCards[humanCards.length - 1].name
+    } of ${
+      humanCards[humanCards.length - 1].emoji
+    }. <br> Now you have ${printCard(
+      humanCards
+    )}which makes a total of ${countCombinedScore(
+      humanCards
+    )}.<br><br> if you want more cards, type "h". <br> If you do not want any more cards, type "s".`;
+    return currentCards;
+  }
+};
+// helper function to change mode when human plays stand, so that dealer can play
+var playingStand = function () {
+  gameMode = "dealer";
+  return `your total card value now is ${countCombinedScore(
+    humanCards
+  )}. Now click "Submit" for dealer's turn and results. `;
+};
+
+//helper function for dealer's turn
+var playDealer = function () {
+  // check if dealers' card has any ace, and change the first ace's rank to 11. then add card until total value is greater than or equals to 17.
+  var aceIndices = hasAce(comCards);
+  if (aceIndices.length !== 0 && countCombinedScore(comCards) <= 10) {
+    comCards[aceIndices[0]].rank = 11;
+    while (countCombinedScore(comCards) < 17) {
+      comCards.push(shuffledDeck.pop());
+      console.log("after adding card:", comCards);
+    }
+    if (countCombinedScore(comCards) >= 17) {
+      gameMode = "results";
+      console.log(gameMode);
+    }
+  } else {
+    while (countCombinedScore(comCards) < 17) {
+      comCards.push(shuffledDeck.pop());
+      console.log("after adding card:", comCards);
+    }
+    if (countCombinedScore(comCards) >= 17) {
+      gameMode = "results";
+      console.log(gameMode);
+    }
+  }
+};
+
+//helper function for game mode: check results.
+var checkingResults = function () {
+  var totalScoreHuman = countCombinedScore(humanCards);
+  console.log("human score:", totalScoreHuman);
+  var totalScoreCom = countCombinedScore(comCards);
+  console.log("computer score:", totalScoreCom);
+  gameMode = "intro";
+  gameRoundCounter += 1;
+  if (totalScoreHuman > 21 && totalScoreCom > 21) {
+    return `Round ${gameRoundCounter} results:📢<br>You have: ${printCard(
+      humanCards
+    )}which makes up a total of ${totalScoreHuman}.<br>Dealer has: ${printCard(
+      comCards
+    )}which makes up a total of ${totalScoreCom}<br> Both dealer and player's cards exceed 21. Both lost😞. <br>You did not lose your bet. Your current points is still: ${humScore} <br> Click "Submit" to play the next round or refresh page to play a new game!`;
+  }
+  if (totalScoreHuman > 21 && totalScoreCom <= 21) {
+    humScore = Number(humScore) - Number(humBet);
+    console.log(humScore);
+    return `Round ${gameRoundCounter} results:📢<br>You have: ${printCard(
+      humanCards
+    )}which makes up a total of ${totalScoreHuman}.<br>Dealer has: ${printCard(
+      comCards
+    )}which makes up a total of ${totalScoreCom}<br><br>Dealer won!<br> You lost your bet.😞 Your current points: ${humScore}<br> Click "Submit" to play the next round or refresh page to play a new game!`;
+  }
+  if (totalScoreHuman <= 21 && totalScoreCom > 21) {
+    humScore = Number(humScore) + Number(humBet) * 2;
+    console.log(humScore);
+    return `Round ${gameRoundCounter} results:📢<br>You have: ${printCard(
+      humanCards
+    )}which makes up a total of ${totalScoreHuman}.<br>Dealer has: ${printCard(
+      comCards
+    )}which makes up a total of ${totalScoreCom}<br><br> You won twice your bet! 🏆 Your current points: ${humScore} <br> Click "Submit" to play the next round or refresh page to play a new game!`;
+  }
+  if (totalScoreHuman <= 21 && totalScoreCom <= 21) {
+    if (totalScoreHuman < totalScoreCom) {
+      humScore = Number(humScore) - Number(humBet);
+      console.log(humScore);
+      return `Round ${gameRoundCounter} results:📢<br>You have: ${printCard(
+        humanCards
+      )}which makes up a total of ${totalScoreHuman}.<br>Dealer has: ${printCard(
+        comCards
+      )}which makes up a total of ${totalScoreCom}<br><br>Dealer won!<br>You lost your bet.😞 Your current points: ${humScore}<br> Click "Submit" to play the next round or refresh page to play a new game!`;
+    }
+    if (totalScoreHuman > totalScoreCom) {
+      humScore = Number(humScore) + Number(humBet) * 2;
+      console.log(humScore);
+      return `Round ${gameRoundCounter} results:📢<br>You have: ${printCard(
+        humanCards
+      )}which makes up a total of ${totalScoreHuman}.<br>Dealer has: ${printCard(
+        comCards
+      )}which makes up a total of ${totalScoreCom}<br><br>Player won!<br> You won twice your bet!🏆 Your current points: ${humScore}<br> Click "Submit" to play the next round or refresh page to play a new game!`;
+    }
+    if (totalScoreHuman == totalScoreCom) {
+      console.log(humScore);
+      return `Round ${gameRoundCounter} results:📢<br>You have: ${printCard(
+        humanCards
+      )}which makes up a total of ${totalScoreHuman}.<br>Dealer has: ${printCard(
+        comCards
+      )}which makes up a total of ${totalScoreCom}<br><br>It's a draw!🤷‍♀️ <br>  Your current points: ${humScore}<br> Click "Submit" to play the next round or refresh page to play a new game!`;
+    }
   }
 };
 
@@ -136,7 +395,7 @@ var countCombinedScore = function (allCards) {
 
 // helper function to check whether the player has the cards: ace + 10/jack/queen/king
 var isBlackjack = function (allCards) {
-  // "indexOf" operator checks if the rank of card is inside value10
+  // "indexOf" operator checks if the rank of first 2 cards is inside value10
   console.log(allCards);
   var value10 = [10, 11, 12, 13];
   if (
@@ -173,187 +432,4 @@ var hasAce = function (allCards) {
     i = i + 1;
   }
   return allAces;
-};
-
-//helper function for game mode: deal cards.
-var dealingCards = function () {
-  //shuffled Deck
-  var madeDeck = makeDeck();
-  shuffledDeck = shuffleCards(madeDeck);
-  // human is given first card
-  var humCard1 = shuffledDeck.pop();
-  // store card in humanCards
-  humanCards.push(humCard1);
-  // dealer gets first card
-  var comCard1 = shuffledDeck.pop();
-  // store card in comCards
-  comCards.push(comCard1);
-  // same thing for 2 cards
-  var humCard2 = shuffledDeck.pop();
-  humanCards.push(humCard2);
-  var comCard2 = shuffledDeck.pop();
-  comCards.push(comCard2);
-
-  // if both have Blackjack, both wins & game is over;
-  if (isBlackjack(humanCards) && isBlackjack(comCards)) {
-    var humBlackjack = `player has: <br> ${humanCards[0].name} of ${humanCards[0].emoji} and ${humanCards[1].name} of ${humanCards[1].emoji} and dealer has: <br> ${comCards[0].name} of ${comCards[0].emoji} and ${comCards[1].name} of ${comCards[1].emoji}. Blackjack! Both won!`;
-    gameMode = "play";
-    console.log(gameMode);
-    return humBlackjack;
-  }
-
-  // if dealer has blackJack, then game is over;
-  if (isBlackjack(comCards)) {
-    var comBlackjack = `dealer has: <br> ${comCards[0].name} of ${comCards[0].emoji} and ${comCards[1].name} of ${comCards[1].emoji}. Blackjack! dealer wins.`;
-    gameMode = "play";
-    console.log(gameMode);
-    return comBlackjack;
-  }
-  // if human has blackJack, then game is over;
-  if (isBlackjack(humanCards)) {
-    var humBlackjack = `player has: <br> ${humanCards[0].name} of ${humanCards[0].emoji} and ${humanCards[1].name} of ${humanCards[1].emoji}. Blackjack! player wins.`;
-    gameMode = "play";
-    console.log(gameMode);
-    return humBlackjack;
-  }
-
-  // if nothing else, game carries on;
-  else {
-    var aceIndices = hasAce(humanCards);
-    if (aceIndices.length !== 0 && countCombinedScore(humanCards) <= 10) {
-      console.log(`total Aces`, aceIndices);
-      humanCards[aceIndices[0]].rank = 11;
-      var currentCards = `You have ${printCard(
-        humanCards
-      )}<br>while the dealer 🖥 has drawn ${comCards[0].name} of ${
-        comCards[0].emoji
-      } for one of the cards.<br><br> If you want to draw more cards, type "h".<br> If you do not want any cards, type "s". `;
-      gameMode = "play";
-      console.log("with ace:", gameMode);
-      return currentCards;
-    } else {
-      var contPlay = `You have drawn: <br> ${humanCards[0].name} of ${humanCards[0].emoji} and ${humanCards[1].name} of ${humanCards[1].emoji}, <br> while the dealer 🖥 has drawn ${comCards[0].name} of ${comCards[0].emoji} for one of the cards. <br><br> If you want to draw more cards, type "h".<br> If you do not want any cards, type "s".`;
-      gameMode = "play";
-      console.log(gameMode);
-      return contPlay;
-    }
-  }
-};
-
-//helper function for game mode: play cards and user inputs "h" to play hit.
-var playingHit = function (input) {
-  //give 1 more card to the player and store card in array.show all the cards in the array.
-  humanCards.push(shuffledDeck.pop());
-  console.log(humanCards);
-  var aceIndices = hasAce(humanCards);
-  // if there's any aces, first ace is 11.
-  if (aceIndices.length !== 0 && countCombinedScore(humanCards) <= 10) {
-    humanCards[aceIndices[0]].rank = 11;
-    // since the last element of the array is length-1 of the array, i can use this to show the latest card drawn.
-    var currentCards = `You just drew ${
-      humanCards[humanCards.length - 1].name
-    } of ${
-      humanCards[humanCards.length - 1].emoji
-    }. <br> Now you have ${printCard(
-      humanCards
-    )}.<br><br> if you want more cards, type "h". <br> If you do not want any more cards, type "s".`;
-    return currentCards;
-  } else {
-    //if no aces, just show cards and combined score, and prompt choice of hit or stand.
-    var currentCards = `You just drew ${
-      humanCards[humanCards.length - 1].name
-    } of ${
-      humanCards[humanCards.length - 1].emoji
-    }. <br> Now you have ${printCard(
-      humanCards
-    )}. <br> Your total score now now is ${countCombinedScore(
-      humanCards
-    )}.<br><br> if you want more cards, type "h". <br> If you do not want any more cards, type "s".`;
-    return currentCards;
-  }
-};
-// helper function to change mode when human plays stand, so that dealer can play
-var playingStand = function () {
-  gameMode = "dealer";
-  return `your total score now now is ${countCombinedScore(
-    humanCards
-  )}. Now it is the dealer's turn. `;
-};
-
-//helper function for dealer's turn
-var playDealer = function () {
-  // check if dealers' card has any ace, and change the first ace's rank to 11. then add card until total value is greater than or equals to 17.
-  var aceIndices = hasAce(comCards);
-  if (aceIndices.length !== 0 && countCombinedScore(comCards) <= 10) {
-    comCards[aceIndices[0]].rank = 11;
-    while (countCombinedScore(comCards) < 17) {
-      comCards.push(shuffledDeck.pop());
-      console.log("after adding card:", comCards);
-    }
-    if (countCombinedScore(comCards) >= 17) {
-      gameMode = "results";
-      console.log(gameMode);
-    }
-  } else {
-    while (countCombinedScore(comCards) < 17) {
-      comCards.push(shuffledDeck.pop());
-      console.log("after adding card:", comCards);
-    }
-    if (countCombinedScore(comCards) >= 17) {
-      gameMode = "results";
-      console.log(gameMode);
-    }
-  }
-};
-
-//helper function for game mode: check results.
-var checkingResults = function () {
-  var totalScoreHuman = countCombinedScore(humanCards);
-  console.log("human score:", totalScoreHuman);
-  var totalScoreCom = countCombinedScore(comCards);
-  console.log("computer score:", totalScoreCom);
-  if (totalScoreHuman > 21 && totalScoreCom > 21) {
-    return `You have: ${printCard(
-      humanCards
-    )} Your score is ${totalScoreHuman}.<br>Dealer has: ${printCard(
-      comCards
-    )}Dealer's score is ${totalScoreCom}<br> Both dealer and player's cards exceed 21. Game is over and both lost😞. Refresh to try again!`;
-  }
-  if (totalScoreHuman > 21 && totalScoreCom <= 21) {
-    return `You have: ${printCard(
-      humanCards
-    )} Your score is ${totalScoreHuman}.<br>Dealer has: ${printCard(
-      comCards
-    )}Dealer's score is ${totalScoreCom}<br>Dealer won!`;
-  }
-  if (totalScoreHuman <= 21 && totalScoreCom > 21) {
-    return `You have: ${printCard(
-      humanCards
-    )}Your score is ${totalScoreHuman}.<br>Dealer has: ${printCard(
-      comCards
-    )}Dealer's score is ${totalScoreCom}<br>Player won!`;
-  }
-  if (totalScoreHuman <= 21 && totalScoreCom <= 21) {
-    if (totalScoreHuman < totalScoreCom) {
-      return `You have: ${printCard(
-        humanCards
-      )}Your score is ${totalScoreHuman}.<br>Dealer has: ${printCard(
-        comCards
-      )}Dealer's score is ${totalScoreCom}<br>Dealer won!`;
-    }
-    if (totalScoreHuman > totalScoreCom) {
-      return `You have: ${printCard(
-        humanCards
-      )} Your score is ${totalScoreHuman}.<br>Dealer has: ${printCard(
-        comCards
-      )} Dealer's score is ${totalScoreCom}<br>Player won!`;
-    }
-    if (totalScoreHuman == totalScoreCom) {
-      return `You have: ${printCard(
-        humanCards
-      )} Your score is ${totalScoreHuman}.<br>Dealer has: ${printCard(
-        comCards
-      )} Dealer's score is ${totalScoreCom}<br>It's a draw!`;
-    }
-  }
 };
