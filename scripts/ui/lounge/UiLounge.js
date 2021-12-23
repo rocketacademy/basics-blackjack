@@ -149,6 +149,12 @@ class UiLoungeBtns extends Ui_Component {
   }
 }
 
+class UiTextL extends Ui_Text {
+  constructor() {
+    super();
+  }
+}
+
 class UiLounge extends Ui_Tree {
   _newUiButtonFormPlayer = () => {
     const btn = new UiButtonFormPlayer();
@@ -196,8 +202,16 @@ class UiLounge extends Ui_Tree {
   };
   constructor(lounge) {
     super();
+    this._root.style.justifyContent = "center";
+    this._root.style.alignItems = "center";
 
     this._lounge = lounge;
+
+    this._desc1 = new Ui_Text();
+    this._desc1.getRoot().textContent = "1 TO 5 PLAYERS";
+    this._desc2 = new Ui_Text();
+    this._desc2.getRoot().textContent =
+      "PLAYERS STARTS WITH 100, DEALER DRAW TO 16, STANDS 17";
 
     this._btnPlay = this._newUiButtonPlay();
     this._btnFormPlayer = this._newUiButtonFormPlayer();
@@ -210,7 +224,12 @@ class UiLounge extends Ui_Tree {
       this._formsPlayer.adduiPlayerForm(ui);
     });
     this._style();
-    this.replaceChildrenUi(this._formsPlayer, this._uibtnWrap);
+    this.replaceChildrenUi(
+      this._desc1,
+      this._desc2,
+      this._formsPlayer,
+      this._uibtnWrap
+    );
   }
 
   _onStart = (lounge) => {};
