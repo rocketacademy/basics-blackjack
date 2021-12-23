@@ -7,7 +7,7 @@ const WHACKYISEEYOURCOLORS = [
   "#9b111e",
   "red",
   "orange",
-  "yellow",
+  "#8b4513",
   "green",
   "blue",
   "violet",
@@ -15,7 +15,7 @@ const WHACKYISEEYOURCOLORS = [
   "pink",
 ];
 
-let WHACKYISEEYOURCOLORS_I = 1;
+let WHACKYISEEYOURCOLORS_I = 0;
 class Participant {
   constructor(name = "nameless", credit = 100) {
     /** @private @const {string} */
@@ -27,8 +27,8 @@ class Participant {
 
     this._fakeId = uuidv4();
 
-    this._colorTag = WHACKYISEEYOURCOLORS[WHACKYISEEYOURCOLORS_I++];
-
+    this._colorTag = WHACKYISEEYOURCOLORS[WHACKYISEEYOURCOLORS_I];
+    WHACKYISEEYOURCOLORS_I += 1;
     console.warn(` color tag ${this._colorTag}`);
     this.setName(name);
   }
