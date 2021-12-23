@@ -580,32 +580,35 @@ var main = function (input) {
 
       // playerHandTotalValue = 11;
       // dealerHandTotalValue = 10;
-
       if (playerHandTotalValue == dealerHandTotalValue) {
         // console.log(" it is a tie! ");
         outputMessage =
           displayPlayerAndDealerHands(playerHand, dealerHand) +
           " <br> it is a tie! " +
-          displayHandTotalValue(playerHandTotalValue, dealerHandTotalValue);
+          displayHandTotalValue(playerHandTotalValue, dealerHandTotalValue) +
+          '<img src=" https://c.tenor.com/Gqy4WGxrMv0AAAAM/try-again.gif"/>';
       } else if (playerHandTotalValue > dealerHandTotalValue) {
         //console.log(" player wins! ");
         outputMessage =
           displayPlayerAndDealerHands(playerHand, dealerHand) +
           " <br> player wins! " +
-          displayHandTotalValue(playerHandTotalValue, dealerHandTotalValue);
+          displayHandTotalValue(playerHandTotalValue, dealerHandTotalValue) +
+          '<img src="https://c.tenor.com/xJfQQ-t9u3oAAAAM/success-kid-hells-yes.gif"/>';
       } else {
         //console.log(" dealer wins! ");
         outputMessage =
           displayPlayerAndDealerHands(playerHand, dealerHand) +
           " <br> dealer wins! " +
-          displayHandTotalValue(playerHandTotalValue, dealerHandTotalValue);
+          displayHandTotalValue(playerHandTotalValue, dealerHandTotalValue) +
+          "<br>" +
+          '<img src="https://c.tenor.com/O6icjMrTC04AAAAM/loser-spongebob-squarepants.gif"/>';
       }
     } else {
       outputMessage =
         " wrong input, please choose hit or stand ONLY. <br> " +
-        displayPlayerAndDealerHands(playerHand, dealerHand);
+        displayPlayerAndDealerHands(playerHand, dealerHand) +
+        '<img src="https://c.tenor.com/zd5SufE0sFUAAAAC/wrong-chicken.gif"/>';
     }
-
     return outputMessage;
   }
 };
