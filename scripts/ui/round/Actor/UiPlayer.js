@@ -1,17 +1,18 @@
-class UiImgPlayerAvatar extends Ui_Img {
+class UiImgPlayerAvatar extends Ui_Component {
   constructor(url) {
     super();
     this._root.src = url;
     this._root.alt = url;
     this._root.style.width = "auto";
     this._root.style.height = "auto";
-    this._root.style.minWidth = "10px";
-    this._root.style.maxWidth = "30px";
+    this._root.style.width = "3px";
+    this._root.style.borderRadius = "3px";
     this._root.style.maxHeight = "30px";
-    this._root.style.border = "1px dotted grey";
 
     this._root.className += ` blackjack-player-avatar`;
   }
+
+  setColor = (v) => (this._root.style.backgroundColor = v);
 }
 
 class UiMoneyBars extends Ui_Component {
@@ -72,7 +73,7 @@ class UiPlayer extends Ui_Actor {
     return uiBars;
   };
   _style = () => {
-    this._root.style.border = "1px dotted grey";
+    // this._root.style.border = "1px dotted grey";
     this._root.style.height = "fit-content";
     this._root.style.width = "fit-content";
     this._root.style.minWidth = "70px";
@@ -91,7 +92,7 @@ class UiPlayer extends Ui_Actor {
     this._root.className += " blackjack-player";
 
     this._uiAvatar = new UiImgPlayerAvatar(player.getImgUrl());
-
+    this._uiAvatar.setColor(player.getColor());
     this._uiMoneyBar = this._newUiMoneyBars(player.getCredit());
 
     this._player.setOnMainBetStaked((bet) => {

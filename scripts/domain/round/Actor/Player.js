@@ -37,7 +37,7 @@ class Player extends _Actor {
   makanDoubleBetNotif = () => {
     this._onDoubleBetCollected();
   };
-
+  getColor = () => this._participant.getWhackyColor();
   _onMainBetStaked = () => {};
   _onDoubleBetStaked = () => {};
   _onnMainBetCollected = () => {};

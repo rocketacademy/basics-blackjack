@@ -16,6 +16,8 @@ class UiChairDisplay extends Ui_Text {
 
     this._root.textContent = chair.getName();
   }
+
+  setColor = (v) => (this._root.style.color = v);
 }
 
 //TODO the size of the seat ui should be determined by the size of the hand ui
@@ -36,6 +38,7 @@ class UiSeat extends Ui_Component {
    */
   _newUiChairDisplay = (chair) => {
     const uiC = new UiChairDisplay(chair);
+    uiC.setColor(chair.getColor());
     return uiC;
   };
 

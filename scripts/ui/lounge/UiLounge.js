@@ -47,7 +47,7 @@ class UiPlayerForm extends Ui_Component {
     super();
 
     this._p = participant;
-    this._root.style.height = "270px";
+    this._root.style.height = "130px";
     this._root.style.marginTop = "50px";
     this._root.style.marginBottom = "30px";
     this._root.style.border = "1px solid black";
@@ -95,7 +95,6 @@ class UiPlayerFormsHolder extends Ui_Component {
     super();
     this._root.style.width = "100%";
     this._root.style.height = "100%";
-    this._root.style.border = "1px solid black";
     this._root.style.borderRadius = "3px";
 
     this._uiPlayerForms = [];
@@ -112,7 +111,7 @@ class UiPlayerFormsHolder extends Ui_Component {
       ...this._uiPlayerFormsRef,
     };
 
-    const r = this._uiPlayerForms.slice().reverse();
+    const r = this._uiPlayerForms.reverse();
 
     this._style();
     this.replaceChildrenUi(...r);
@@ -138,6 +137,15 @@ class UiButtonFormPlayer extends Ui_ButtonHand {
     this._root.className += " -lounge-button-play";
     this._root.style.alignSelf = "center";
     this._root.textContent = "+Player";
+  }
+}
+
+class UiLoungeBtns extends Ui_Component {
+  constructor(a, b) {
+    super();
+
+    this._root.style.justifyContent = "center";
+    this.replaceChildrenUi(a, b);
   }
 }
 
@@ -193,6 +201,8 @@ class UiLounge extends Ui_Tree {
 
     this._btnPlay = this._newUiButtonPlay();
     this._btnFormPlayer = this._newUiButtonFormPlayer();
+
+    this._uibtnWrap = new UiLoungeBtns(this._btnPlay, this._btnFormPlayer);
     this._formsPlayer = this._newUiPlayerForms(this._lounge.getPlayers());
 
     this._lounge.setOnFormPlayer((participant) => {
@@ -200,11 +210,7 @@ class UiLounge extends Ui_Tree {
       this._formsPlayer.adduiPlayerForm(ui);
     });
     this._style();
-    this.replaceChildrenUi(
-      this._btnPlay,
-      this._btnFormPlayer,
-      this._formsPlayer
-    );
+    this.replaceChildrenUi(this._formsPlayer, this._uibtnWrap);
   }
 
   _onStart = (lounge) => {};
