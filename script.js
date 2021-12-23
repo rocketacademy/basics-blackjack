@@ -80,13 +80,15 @@ var shuffleCards = function (cardDeck) {
 // P1 is human, P2 is Computer/Dealer
 // if card is jack, queen or king, is just 10.
 // ace can be 1 or 11.
-// 4 game modes:
-// 1. dealingCards: each player dealt 2 cards to start
-// 2. play:
-// 2a. playingHit: human chooses to takes another card. can keep taking even if exceed 21, and the player won't lost/win yet.
-// 2b. playingStand: player doesn't take a card. then switch to dealer's turn
-// 3. Dealer: within each playHit or playStand, comPlay will auto decide to hit if 16 & below, or stay if 17 and above.
-// 4. results: person with the largest combined number that is not more than 21 will win.
+// game modes:
+// intro: welcome message and update the rounds played, current points, and current bet.
+// promptBet: ask if want to change or retain bet.
+
+// dealingCards: each player dealt 2 cards to start
+// playingHit: human chooses to takes another card. can keep taking even if exceed 21, and the player won't lost/win yet.
+// playingStand: player doesn't take a card. then switch to dealer's turn
+// Dealer: within each playHit or playStand, comPlay will auto decide to hit if 16 & below, or stay if 17 and above.
+// results: person with the largest combined number that is not more than 21 will win.
 
 var humanCards = [];
 var comCards = [];
@@ -107,7 +109,7 @@ var main = function (input) {
     return promptingBet(input);
   }
   if (gameMode == "newBet") {
-    return showNewBet(input);
+    return placeNewBet(input);
   }
   if (gameMode == "dealCards") {
     return dealingCards();
@@ -138,38 +140,45 @@ var inTransit = function () {
   humanCards = [];
   comCards = [];
   shuffledDeck = [];
-  return `Welcome to a new round of Blackjack! <br> You have played ${gameRoundCounter} round(s) so far, with a bet amount of ${humBet}.<br><br> Please submit "y" if you want to set a bet or change your existing bet, <br> or "n" if you want to retain your current bet.`;
+  return `Welcome to a new round of Blackjack! <br> You have played ${gameRoundCounter} round(s) so far.<br> You currently have ${humScore} points, with a bet amount of ${humBet}.<br><br> Please submit "y" if you want to set a bet or change your existing bet, <br> or "n" if you want to retain your current bet.`;
 };
 
 //3. game mode: prompt bets
 var promptingBet = function (input) {
   if (input == "y") {
     gameMode = "newBet";
-    return `Your current points: ${humScore}. Your current bet is ${humBet}. Please enter a new bet and click "Submit".`;
-  } else if (input == "n") {
+    return `Your current points: ${humScore}. Your current bet is ${humBet}. <br>Please enter a new bet and click "Submit".<br>You are only allowed to set a maximum bet of half the amount of your existing points.`;
+  } else if (input == "n" && Number(humBet) <= Number(humScore) / 2) {
     gameMode = "dealCards";
     return `Your current points: ${humScore}. Your current bet is ${humBet}. Please click "Submit" to start playing a new round. Refresh if you want to start a new game.`;
+  } else if (input == "n" && Number(humBet) > Number(humScore) / 2) {
+    gameMode = "newBet";
+    return `You need to place a new bet as your current bet cannot be more than half of your existing points. <br> Please place a bet lower than or equal to ${
+      Number(humScore) / 2
+    }.`;
   } else {
     return `Please only submit "y" if you want to set a bet or change your existing bet, <br> or "n" if you want to retain your current bet.`;
   }
 };
 
-//4. game mode: show ew bets.
-var showNewBet = function (input) {
+//4. game mode: place bets.
+var placeNewBet = function (input) {
   var output = `Please type your bet in number form only.😛`;
   if (Number.isNaN(Number(input)) == true) {
     return `Please type your bet in number form only.😛`;
   }
   //store bets in global variable.
   var halfScore = Number(humScore) / 2;
-  if (Number(input) <= halfScore) {
+  if (Number(input) && Number(input) <= halfScore) {
     humBet = input;
     console.log(humBet);
     gameMode = "dealCards";
     return `Now, your new bet is ${humBet}. Click "Submit" to start playing.`;
   }
-  if (Number(input) > halfScore) {
-    return `You can only bet a maximum of half your current points.`;
+  if (Number(input) && Number(input) > halfScore) {
+    return `You can only bet a maximum of half your current points. <br> Please place a bet lower than or equal to ${Number(
+      humScore / 2
+    )}`;
   }
   return output;
 };
@@ -326,7 +335,7 @@ var checkingResults = function () {
       humanCards
     )}which makes up a total of ${totalScoreHuman}.<br>Dealer has: ${printCard(
       comCards
-    )}which makes up a total of ${totalScoreCom}<br> Both dealer and player's cards exceed 21. Both lost😞. <br>You did not lose your bet. Your current points is still: ${humScore} <br> Click "Submit" to play the next round or refresh page to play a new game!`;
+    )}which makes up a total of ${totalScoreCom}.<br><br> Both dealer and player's cards exceed 21. Both lost😞. <br>You did not lose your bet. Your current points is still: ${humScore} <br> Click "Submit" to play the next round or refresh page to play a new game!`;
   }
   if (totalScoreHuman > 21 && totalScoreCom <= 21) {
     humScore = Number(humScore) - Number(humBet);
@@ -335,7 +344,7 @@ var checkingResults = function () {
       humanCards
     )}which makes up a total of ${totalScoreHuman}.<br>Dealer has: ${printCard(
       comCards
-    )}which makes up a total of ${totalScoreCom}<br><br>Dealer won!<br> You lost your bet.😞 Your current points: ${humScore}<br> Click "Submit" to play the next round or refresh page to play a new game!`;
+    )}which makes up a total of ${totalScoreCom}.<br><br>Dealer won!<br> You lost your bet.😞 Your current points: ${humScore}<br> Click "Submit" to play the next round or refresh page to play a new game!`;
   }
   if (totalScoreHuman <= 21 && totalScoreCom > 21) {
     humScore = Number(humScore) + Number(humBet) * 2;
@@ -344,7 +353,7 @@ var checkingResults = function () {
       humanCards
     )}which makes up a total of ${totalScoreHuman}.<br>Dealer has: ${printCard(
       comCards
-    )}which makes up a total of ${totalScoreCom}<br><br> You won twice your bet! 🏆 Your current points: ${humScore} <br> Click "Submit" to play the next round or refresh page to play a new game!`;
+    )}which makes up a total of ${totalScoreCom}.<br><br> You won twice your bet! 🏆 Your current points: ${humScore} <br> Click "Submit" to play the next round or refresh page to play a new game!`;
   }
   if (totalScoreHuman <= 21 && totalScoreCom <= 21) {
     if (totalScoreHuman < totalScoreCom) {
@@ -354,7 +363,7 @@ var checkingResults = function () {
         humanCards
       )}which makes up a total of ${totalScoreHuman}.<br>Dealer has: ${printCard(
         comCards
-      )}which makes up a total of ${totalScoreCom}<br><br>Dealer won!<br>You lost your bet.😞 Your current points: ${humScore}<br> Click "Submit" to play the next round or refresh page to play a new game!`;
+      )}which makes up a total of ${totalScoreCom}.<br><br>Dealer won!<br>You lost your bet.😞 Your current points: ${humScore}<br> Click "Submit" to play the next round or refresh page to play a new game!`;
     }
     if (totalScoreHuman > totalScoreCom) {
       humScore = Number(humScore) + Number(humBet) * 2;
@@ -363,7 +372,7 @@ var checkingResults = function () {
         humanCards
       )}which makes up a total of ${totalScoreHuman}.<br>Dealer has: ${printCard(
         comCards
-      )}which makes up a total of ${totalScoreCom}<br><br>Player won!<br> You won twice your bet!🏆 Your current points: ${humScore}<br> Click "Submit" to play the next round or refresh page to play a new game!`;
+      )}which makes up a total of ${totalScoreCom}.<br><br>Player won!<br> You won twice your bet!🏆 Your current points: ${humScore}<br> Click "Submit" to play the next round or refresh page to play a new game!`;
     }
     if (totalScoreHuman == totalScoreCom) {
       console.log(humScore);
