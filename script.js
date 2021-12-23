@@ -51,6 +51,49 @@ var dealerHighestSum = 0;
 var dealerLowestSum = 0;
 var overallOutcome = 0;
 
+/* var shuffledDeck = [
+  {
+    rank: 1,
+    suit: "heart",
+    name: "ace",
+  },
+  {
+    rank: 11,
+    suit: "heart",
+    name: "jack",
+  },
+  {
+    rank: 1,
+    suit: "heart",
+    name: "ace",
+  },
+  {
+    rank: 1,
+    suit: "heart",
+    name: "ace",
+  },
+  {
+    rank: 1,
+    suit: "heart",
+    name: "ace",
+  },
+  {
+    rank: 1,
+    suit: "heart",
+    name: "ace",
+  },
+  {
+    rank: 1,
+    suit: "heart",
+    name: "ace",
+  },
+  {
+    rank: 1,
+    suit: "heart",
+    name: "ace",
+  },
+]; */
+
 var makeDeck = function () {
   // Initialise an empty deck array
   var cardDeck = [];
@@ -164,39 +207,40 @@ var checkPlayerJQK = function () {
 // (b) only possible sum
 // (c) highest/lowest possible sum.
 var checkPlayerAce = function () {
-  console.log("Ace cards determination ------");
+  var playerIndex2 = 0;
+  // if either cards have ace, convert to 11.
+  while (playerHand.length > playerIndex2) {
+    if (playerHand[playerIndex2].name == "ace") {
+      playerHand[playerIndex2].rank = 11;
+    }
+    playerIndex2 += 1;
+    console.log("Ace cards determination ------");
+  }
+  // Summation of cards
   var playerCounter = 0;
+  playerHighestSum = 0;
   while (playerCounter < playerHand.length) {
     playerHighestSum = playerHighestSum + playerHand[playerCounter].rank;
-    playerCounter += playerCounter + 1;
+    playerCounter += 1;
   }
-  playerOutcome = `Total Sum = ${playerHighestSum}`;
-  if (playerHand[0].name == "ace") {
-    if (playerHand[1].name == "ace") {
-      playerOutcome =
-        "Highest possible sum = 12. <br><br> Lowest possible sum = 2.";
-    } else if (playerHand[1].rank == 10) {
-      playerHighestSum = 21;
-      playerOutcome = "Total Sum = 21";
-    } else {
-      console.log("entered loop 1");
-      playerHighestSum = playerHand[1].rank + 11;
-      playerLowestSum = playerHand[1].rank + 1;
-      playerOutcome = `<br><br> Highest possible sum = ${playerHighestSum}. <br><br> Lowest possible sum = ${playerLowestSum}.`;
+  console.log(playerHighestSum, "Player Highest Sum =========");
+  // Convert ace card if exceeds 21
+  console.log("Ace cards conversion ------");
+  var playerIndex3 = 0;
+  while (playerIndex3 < playerHand.length) {
+    if (playerHighestSum > 21) {
+      if (playerHand[playerIndex3].name == "ace") {
+        playerHighestSum = playerHighestSum - 10;
+        console.log(playerHighestSum, playerIndex3);
+      }
+    } else if (playerHighestSum < 21) {
+      console.log(playerHighestSum, "break========");
+      break;
     }
+    playerIndex3 += 1;
   }
-  if (playerHand[1].name == "ace") {
-    if (playerHand[0].rank == 10) {
-      playerHighestSum = 21;
-      playerOutcome = "Total Sum = 21";
-    } else {
-      console.log("entered loop 2");
-      playerHighestSum = playerHand[0].rank + 11;
-      playerLowestSum = playerHand[0].rank + 1;
-      playerOutcome = `<br><br> Highest possible sum = ${playerHighestSum}. <br><br> Lowest possible sum = ${playerLowestSum}.`;
-    }
-  }
-  console.log("Ace cards determination ------");
+  console.log("Ace cards conversion ------");
+  console.log(playerHighestSum, "Player Highest Sum");
 };
 
 var getDealerHand = function () {
@@ -229,111 +273,85 @@ var checkDealerJQK = function () {
 // (b) only possible sum
 // (c) highest/lowest possible sum.
 var checkDealerAce = function () {
-  console.log("Ace cards determination ------");
-  dealerHighestSum = dealerHand[0].rank + dealerHand[1].rank;
-  console.log(`Dealer <br><br> Total Sum = ${dealerHighestSum}`);
-  if (dealerHand[0].name == "ace") {
-    if (dealerHand[1].name == "ace") {
-      dealerHighestSum = 12;
-      console.log(
-        "Dealer <br><br> Highest possible sum = 12. <br><br> Lowest possible sum = 2."
-      );
-    } else if (dealerHand[1].rank == 10) {
-      dealerHighestSum = 21;
-      console.log(
-        `Dealer <br><br>  black jack! Oh no! ${userName}, you have lost!`
-      );
-    } else {
-      dealerHighestSum = dealerHand[1].rank + 11;
-      dealerLowestSum = dealerHand[1].rank + 1;
-      console.log(
-        `Dealer <br><br>  Highest possible sum = ${dealerHighestSum}. <br><br> Lowest possible sum = ${dealerLowestSum}.`
-      );
+  var dealerIndex2 = 0;
+  // if either cards have ace, convert to 11.
+  while (dealerHand.length > dealerIndex2) {
+    if (dealerHand[dealerIndex2].name == "ace") {
+      dealerHand[dealerIndex2].rank = 11;
     }
+    dealerIndex2 += 1;
+    console.log("Ace cards determination ------");
   }
-  if (dealerHand[1].name == "ace") {
-    if (dealerHand[0].rank == 10) {
-      dealerHighestSum = 21;
-      console.log(
-        `Dealer <br><br> black jack! Oh no! ${userName}, you have lost!`
-      );
-    } else {
-      dealerHighestSum = dealerHand[0].rank + 11;
-      dealerLowestSum = dealerHand[0].rank + 1;
-      console.log(
-        `Dealer <br><br> Highest possible sum = ${dealerHighestSum}. <br><br> Lowest possible sum = ${dealerLowestSum}.`
-      );
+  // Summation of cards
+  var dealerCounter = 0;
+  dealerHighestSum = 0;
+  while (dealerCounter < dealerHand.length) {
+    dealerHighestSum = dealerHighestSum + dealerHand[dealerCounter].rank;
+    dealerCounter += 1;
+  }
+  console.log(dealerHighestSum, "Dealer Highest Sum =========");
+  // Convert ace card if exceeds 21
+  console.log("Ace cards conversion ------");
+  var dealerIndex3 = 0;
+  while (dealerIndex3 < dealerHand.length) {
+    if (dealerHighestSum > 21) {
+      if (dealerHand[dealerIndex3].name == "ace") {
+        dealerHighestSum = dealerHighestSum - 10;
+        console.log(dealerHighestSum, dealerIndex3);
+      }
+    } else if (dealerHighestSum < 21) {
+      console.log(dealerHighestSum, "break========");
+      break;
     }
+    dealerIndex3 += 1;
   }
-};
-
-var getGameOutcome = function (input) {
-  // Determine blackjack wins, or bust
-  if (gameMode == 0 || gameMode == 1) {
-    if (playerHighestSum == 21) {
-      overallOutcome = `GAME OVER! <br> You win <br><br> Congrats you have a Blackjack win! Your total is ${playerHighestSum} and the dealer's total is ${dealerHighestSum}!`;
-    } else if (dealerHighestSum == 21) {
-      overallOutcome = `GAME OVER! <br> You lost <br><br> Oh no you have lost! The dealer drew a black jack win! Your total is ${playerHighestSum} and the dealer's total is ${dealerHighestSum}!`;
-    } else if (playerHighestSum > 21) {
-      overallOutcome = `GAME OVER! <br> You lost! <br><br> Oh no you have lost! You have exceeded 21! <br><br> Your total is ${playerHighestSum} and the dealer's total is ${dealerHighestSum}!`;
-    } else if (playerHighestSum < 21) {
-      overallOutcome = `HIT OR STAND! <br><br> Your current total is ${playerHighestSum}. <br><br> Key in "hit" or "stand" to continue the game.`;
-    }
-  }
-  // If player enters stand mode
-  if (gameMode == 2) {
-    if (playerHighestSum == dealerHighestSum) {
-      overallOutcome = `GAME OVER! <br> It is a tie! <br><br> your total is ${playerHighestSum} and the dealer's total is ${dealerHighestSum}!`;
-    } else if (playerHighestSum > 21) {
-      `GAME OVER! <br> You lost! <br><br> You have exceeded 21! <br><br> Your total is ${playerHighestSum} and the dealer's total is ${dealerHighestSum}!`;
-    } else if (playerHighestSum > dealerHighestSum) {
-      overallOutcome = `GAME OVER! <br> You win! <br><br> Your total is ${playerHighestSum} and the dealer's total is ${dealerHighestSum}!`;
-    } else if (playerHighestSum < dealerHighestSum) {
-      overallOutcome = `GAME OVER! <br> You lost! <br><br> Your total is ${playerHighestSum} and the dealer's total is ${dealerHighestSum}!`;
-    }
-  }
+  console.log("Ace cards conversion ------");
+  console.log(dealerHighestSum, "Dealer Highest Sum");
 };
 
 var playerHit = function () {
   // Player draws extra card
   playerHand.push(shuffledDeck.pop());
   console.log("Player additional card ");
-  var playerIndex = 2;
-  // if either cards have king, queen, jack, convert to 10.
-  while (playerHand.length > playerIndex) {
-    if (
-      playerHand[playerIndex].name == "jack" ||
-      playerHand[playerIndex].name == "queen" ||
-      playerHand[playerIndex].name == "king"
-    ) {
-      playerHand[playerIndex].rank = 10;
+  checkPlayerJQK(playerHand);
+  checkPlayerAce(playerHand);
+  console.log(playerHighestSum, "Player Total Sum After Ace");
+};
+var dealerHit = function () {
+  // Dealer draws extra card if < 17
+  dealerHand.push(shuffledDeck.pop());
+  console.log("Dealer additional card ");
+  checkDealerJQK(dealerHand);
+  checkDealerAce(dealerHand);
+  console.log(dealerHighestSum, "Dealer Total Sum After Ace");
+};
+var getGameOutcome = function (input) {
+  // Determine blackjack wins, or bust
+  if (gameMode == 0 || gameMode == 1) {
+    if (playerHighestSum == 21) {
+      overallOutcome = `GAME OVER! 🛑 <br> You win 🎉 <br><br> Congrats you have a Blackjack win! Your total is ${playerHighestSum} and the dealer's total is ${dealerHighestSum}!`;
+    } else if (dealerHighestSum == 21) {
+      overallOutcome = `GAME OVER! 🛑 <br> You lost 👎🏻 <br><br> Oh no you have lost! The dealer drew a black jack win! Your total is ${playerHighestSum} and the dealer's total is ${dealerHighestSum}!`;
+    } else if (playerHighestSum > 21) {
+      overallOutcome = `GAME OVER! 🛑 <br> You lost! 👎🏻 <br><br> Oh no you have lost! You have exceeded 21! <br><br> Your total is ${playerHighestSum} and the dealer's total is ${dealerHighestSum}!`;
+    } else if (playerHighestSum < 21) {
+      overallOutcome = `HIT OR STAND! 🧐 <br><br> Your current total is ${playerHighestSum}. <br><br> Key in "hit" or "stand" to continue the game.`;
     }
-    playerIndex += 1;
-    console.log("Special cards determination ------");
   }
-  // If any of the card is ace, decide whether ace should be 1 or 11 depending on total sum
-  var playerCounter = 2;
-  while (playerHand.length > playerCounter) {
-    playerHighestSum += playerHand[playerCounter].rank;
-    playerCounter += 1;
-  }
-  console.log(playerHighestSum, "Player Total Sum ");
-  // 1 ace: max 21 (2 KJQ, 1 ace)
-  // 2 aces: max 22 (1 KJQ, 2 aces) --> bust
-  // 3 aces: max 14
-  if (playerHighestSum > 21) {
-    var playerAdditionalCardIndexLoop = 0;
-    while (playerAdditionalCardIndexLoop < playerHand.length) {
-      if (playerHand[playerAdditionalCardIndexLoop] == "ace") {
-        playerHighestSum = playerHighestSum - 10;
-        playerAdditionalCardIndexLoop += 1;
-      } else if (playerHighestSum == 3) {
-        playerHighestSum = 14;
-      }
+  // If player enters stand mode
+  if (gameMode == 2) {
+    if (playerHighestSum == dealerHighestSum) {
+      overallOutcome = `GAME OVER! 🛑 <br> It is a tie! 🎀 <br><br> your total is ${playerHighestSum} and the dealer's total is ${dealerHighestSum}!`;
+    } else if (playerHighestSum > 21) {
+      `GAME OVER! 🛑 <br> You lost! 👎🏻 <br><br> You have exceeded 21! <br><br> Your total is ${playerHighestSum} and the dealer's total is ${dealerHighestSum}!`;
+    } else if (playerHighestSum > dealerHighestSum) {
+      overallOutcome = `GAME OVER! 🛑 <br> You win! 🎉 <br><br> Your total is ${playerHighestSum} and the dealer's total is ${dealerHighestSum}!`;
+    } else if (playerHighestSum < dealerHighestSum) {
+      overallOutcome = `GAME OVER! 🛑 <br> You lost! 👎🏻 <br><br> Your total is ${playerHighestSum} and the dealer's total is ${dealerHighestSum}!`;
     }
-    console.log(playerHighestSum, "Player Total Sum After Ace");
   }
 };
+
 var main = function (input) {
   // Game mode 0, insert username & deal cards.
   if (gameMode == 0) {
@@ -346,24 +364,28 @@ var main = function (input) {
     checkDealerAce(dealerHand);
     getGameOutcome(playerHand, dealerHand);
     console.log(getGameOutcome(playerHand, dealerHand), "Round 1 results");
-    gameMode += gameMode += 1;
+    gameMode = gameMode + 1;
     console.log(gameMode, "===== Current Game Mode =======");
-    return `Hi ${userName}!<br><br> ${overallOutcome} <br><br> You have drawn: <br><br> Card 1: ${playerHand[0].name} of ${playerHand[0].suit}. <br><br> Card 2: ${playerHand[1].name} of ${playerHand[1].suit}.`;
+    return `Hi ${userName}!<br><br> ${overallOutcome} <br><br> You have drawn: <br><br> ${playerHand[0].name} of ${playerHand[0].suit}. <br><br> ${playerHand[1].name} of ${playerHand[1].suit}.`;
   } else if (gameMode == 1) {
+    var hitCount = 1;
     getGameOutcome(playerHand, dealerHand);
     if (input == "hit") {
       gameMode = 1;
       playerHit(input);
       console.log("===== Hit successful =====");
+      if (dealerHighestSum < 17) {
+        dealerHit(dealerHand);
+      }
       getGameOutcome(playerHand, dealerHand);
       console.log(gameMode, "===== Current Game Mode =======");
-      return `Hi ${userName}!<br><br> ${overallOutcome}`;
+      hitCount += 1;
+      return `Hi ${userName}!<br><br> ${overallOutcome} <br><br> The last card you drew was: <br><br> ${playerHand[hitCount].name} of ${playerHand[hitCount].suit}.`;
     } else if (input == "stand") {
       gameMode = 2;
       getGameOutcome(playerHand, dealerHand);
       console.log(gameMode, "===== Current Game Mode =======");
-      return `Hi ${userName}!<br><br> ${overallOutcome}`;
+      return `Hi ${userName}!<br><br> ${overallOutcome} <br><br> The last card you drew was: <br><br> ${playerHand[hitCount].name} of ${playerHand[hitCount].suit}.`;
     }
-    return `Hi ${userName}!<br><br> ${overallOutcome}`;
   }
 };
