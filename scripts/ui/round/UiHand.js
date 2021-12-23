@@ -180,7 +180,6 @@ class UiHand extends Ui_Component {
     });
     this._hand.setOnWhatDoYouWantToDoOnSubsequentDeal((dealer, options) => {
       console.group(`uiHand, invoke setOnWhatDoYouWantToDoOnSubsequentDeal`);
-      console.warn(options);
       const optionsUiButtons = [];
       if (options.canStand) {
         const buttonStand = new UiButtonStand();

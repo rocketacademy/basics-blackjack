@@ -88,6 +88,10 @@
         padding: 20px;
         width: 100%;
       }
+      #blackjack-ui-money-hider::before {
+        content: "";
+        display: inline-block;
+      }
     </style>
     <!-- //TODO-REVIEW slider tags doesn't have extensive css standard for now. :( -->
     <style>
@@ -233,7 +237,10 @@
     <script src="scripts/ui/round/abstract-base.js"></script>
     <script src="scripts/ui/Ui_Tree.js"></script>
 
+    <script src="scripts/ui/round/Actor/UiMoneyContainer/Ui_ProgressBar.js"></script>
+    <script src="scripts/ui/round/Actor/UiMoneyContainer/UiMoneyContainer.js"></script>
     <script src="scripts/ui/round/Actor/Ui_Actor.js"></script>
+
     <script src="scripts/ui/round/Actor/UiPlayer.js"></script>
     <script src="scripts/ui/round/Actor/UiPlayerHolder.js"></script>
     <script src="scripts/ui/round/Actor/UiDealer.js"></script>

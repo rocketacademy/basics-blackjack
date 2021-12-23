@@ -139,8 +139,6 @@ class Dealer extends _Actor {
     options.canDouble = count === 2 && !hasTwentyOne && isSponsorFunded;
     options.canSplit = false || false;
 
-    console.warn(hand.getCards());
-    console.warn(options);
     return options;
   };
 
@@ -332,9 +330,10 @@ class Dealer extends _Actor {
 
     const { award } = decision;
     if (award === AWARD_ENUM.PLAYER_WIN) {
+      // Win
       const { mode } = decision;
       if (!mode) {
-        throw new Error(`please check pay table. payout ratio not specified`);
+        throw new Error(`please check pay table. payout ratio not specified.`);
       }
 
       console.log(`win`);
@@ -344,7 +343,7 @@ class Dealer extends _Actor {
 
       console.log(`mainWager ${mainWager}`);
 
-      sponsor.increaseCredit(mainWager);
+      sponsor.returnMainBet(mainWager);
 
       // payout (win amount)
       const { ratio } = mode;
@@ -355,7 +354,7 @@ class Dealer extends _Actor {
       console.log(`amt ${invoice}`);
       const beforeSettleWinCredit = sponsor.getCredit();
       this.decreaseCredit(invoice);
-      sponsor.increaseCredit(invoice);
+      sponsor.awardPayout(invoice);
       const afterSettleCredit = sponsor.getCredit();
 
       if (afterSettleCredit - beforeSettleWinCredit !== invoice) {
@@ -365,14 +364,14 @@ class Dealer extends _Actor {
       }
     } else if (award === AWARD_ENUM.STAND_OFF) {
       console.log(`stand off`);
-
       // Return main wager to sponsor
-      sponsor.increaseCredit(wager.retrieveMainBet());
+      sponsor.returnMainBet(wager.retrieveMainBet());
     } else if (award === AWARD_ENUM.PLAYER_LOSE) {
       console.log(`Makan! lose`);
-      const { mode } = decision;
       // Makan
       this.increaseCredit(wager.retrieveMainBet());
+      sponsor.makanMainBetNotif();
+      sponsor.makanDoubleBetNotif();
     } else {
       throw new Error(`Irregularity. No settlement type.`);
     }
@@ -527,11 +526,11 @@ class Dealer extends _Actor {
     }
     activeSeat.callForInitialBet(this);
   };
-  requestPlaceDouble = (wager, doubleAmt) => {
+  placeDouble = (wager, doubleAmt) => {
     console.group(`dealer receives request to placeInitialBet`);
     doubleAmt = Number(doubleAmt);
     const sponsor = wager.getSponsor();
-    this._doubleDown(sponsor, doubleAmt, wager);
+    this._stakeDouble(sponsor, doubleAmt, wager);
 
     wager.doubledDown();
     wager.getHand().doubledDown();
@@ -540,9 +539,9 @@ class Dealer extends _Actor {
     console.groupEnd();
   };
 
-  _doubleDown = (sponsor, doubleAmt, wager) => {
+  _stakeDouble = (sponsor, doubleAmt, wager) => {
     console.group(`dealer performs the transfer of value and transfer of card`);
-    sponsor.decreaseCredit(doubleAmt);
+    sponsor.stakeDouble(doubleAmt);
     wager.addBet(doubleAmt);
     this._transferCard(this._round.getShoe(), wager.getHand()).flip(true);
     console.log(sponsor.getCredit());
@@ -561,16 +560,16 @@ class Dealer extends _Actor {
     if (!false) {
     }
     const sponsor = wager.getSponsor();
-    this._stake(sponsor, betValue, wager);
+    this._stakeMainBet(sponsor, betValue, wager);
 
     wager.initialBetStaked();
     wager.getHand().initialBetStaked();
     this._performNextInitialBet();
     console.groupEnd();
   };
-  _stake = (sponsor, betValue, wager) => {
+  _stakeMainBet = (sponsor, betValue, wager) => {
     console.group(`dealer performs the transfer of value`);
-    sponsor.decreaseCredit(betValue);
+    sponsor.stakeMainBet(betValue);
     wager.setBet(betValue);
     console.log(sponsor.getCredit());
     console.groupEnd();

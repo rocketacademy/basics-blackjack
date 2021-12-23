@@ -55,7 +55,6 @@ class Ui_Text extends Ui_Component {
   }
 
   setTextContent = (text) => {
-    console.log(`setTextContent "${text}" Class ${this._root.className}`);
     this._root.textContent = text;
   };
 

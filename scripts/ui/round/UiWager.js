@@ -152,7 +152,7 @@ class UiWager extends Ui_Component {
           `ui wager button clicked invoked callback setOnPleasePlaceYouDouble with bet value ${betValue}`
         );
         if (Number(betValue) > 0) {
-          dealer.requestPlaceDouble(wager, betValue);
+          dealer.placeDouble(wager, betValue);
         }
         console.groupEnd();
       });

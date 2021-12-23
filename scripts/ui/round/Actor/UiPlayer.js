@@ -4,107 +4,76 @@ class UiImgPlayerAvatar extends Ui_Img {
     this._root.src = url;
     this._root.alt = url;
     this._root.style.width = "auto";
-    this._root.style.height = "100%";
+    this._root.style.height = "auto";
     this._root.style.minWidth = "10px";
     this._root.style.maxWidth = "30px";
     this._root.style.maxHeight = "30px";
     this._root.style.border = "1px dotted grey";
 
-    this._root.className += ` blackjack-img-bet-chip`;
+    this._root.className += ` blackjack-player-avatar`;
   }
 }
 
-class Ui_ProgressBar extends Ui_Component {
-  _convertToPx = (money) => {
-    return 0.8 * money;
-  };
-  constructor() {
-    super();
-
-    this._root.style.height = "auto";
-    this._root.style.width = "0px";
-    this._root.style.justifyContent = "center";
-    this._root.style.alignItems = "center";
-    this._root.style.verticalAlign = "middle";
-    this._root.style.color = "white";
-    this._root.style.textAlign = "center";
-    this._root.style.fontSize = "0.6rem";
-  }
-
-  setMoney = (money) => {
-    this._root.style.width = this._convertToPx(money) + "px";
-    this._root.textContent = `${money}`;
-  };
-}
-class UiCurrentMoneyBar extends Ui_ProgressBar {
-  constructor() {
-    super();
-
-    this._root.className += ` blackjack-bar-money-initial`;
-    this._root.style.backgroundColor = "#585858";
-    this._root.style.textAlign = "center";
-  }
-}
-
-class UiMainBetBar extends Ui_ProgressBar {
-  constructor() {
-    super();
-
-    this._root.className += ` blackjack-bar-money-mainBet`;
-    this._root.style.backgroundColor = "#FFD700";
-  }
-}
-
-class UiDoubledBetBar extends Ui_ProgressBar {
-  constructor() {
-    super();
-    this._root.className += ` blackjack-bar-money-sideBet`;
-    this._root.style.backgroundColor = "#FF4500";
-  }
-}
-
-class UiPayoutBar extends Ui_ProgressBar {
-  constructor() {
-    super();
-    this._root.className += ` blackjack-bar-money-payout`;
-
-    this._root.style.backgroundColor = "#8FBC8F";
-  }
-}
-
-class UiMoneyBar extends Ui_Component {
+class UiMoneyBars extends Ui_Component {
   constructor() {
     super();
     this._root.className += ` blackjack-bar-money--`;
     this._root.style.flexDirection = "row";
     this._root.style.marginLeft = "5px";
-    this._uiCurrentMoneyBar = new UiCurrentMoneyBar();
-    this._uiMainBetBar = new UiMainBetBar();
-    this._uiDoubleBetBar = new UiDoubledBetBar();
-    this._uiPayoutBar = new UiPayoutBar();
+    this._uiCurrentMoneyBarContainer = new UiCurrentMoneyContainer();
+    this._uiMainBetBarContainer = new UiMainBetContainer();
+    this._uiDoubleBetBarContainer = new UiDoubleBetContainer();
+    this._uiPayoutBarContainer = new UiPayoutContainer();
 
     this.replaceChildrenUi(
-      this._uiCurrentMoneyBar,
-      this._uiDoubleBetBar,
-      this._uiMainBetBar,
-      this._uiPayoutBar
+      this._uiCurrentMoneyBarContainer,
+      this._uiDoubleBetBarContainer,
+      this._uiMainBetBarContainer,
+      this._uiPayoutBarContainer
     );
   }
-  _convertToRem = (money) => null;
+
   setCurrentMoney = (credit) => {
-    this._uiCurrentMoneyBar.setMoney(credit);
+    this._uiCurrentMoneyBarContainer.setMoney(credit);
+  };
+
+  setMainBetStaked = (stakedBet, currentMoney) => {
+    this._uiMainBetBarContainer.setMoney(stakedBet);
+
+    this.setCurrentMoney(currentMoney);
+  };
+
+  setMainBetCollected = (currentMoney) => {
+    this._uiMainBetBarContainer.setBackgroundColor("black");
+    this._uiMainBetBarContainer.setBorder("2px solid #FFA500");
+
+    this.setCurrentMoney(currentMoney);
+  };
+  setDoubleBetStaked = (stakedBet, currentMoney) => {
+    this._uiDoubleBetBarContainer.setMoney(stakedBet);
+
+    this.setCurrentMoney(currentMoney);
+  };
+  setDoubleBetDealerCollected = (currentMoney) => {
+    this._uiDoubleBetBarContainer.setBackgroundColor("#808080");
+    this._uiDoubleBetBarContainer.setBorder("2px solid #FF4500");
+    this.setCurrentMoney(currentMoney);
+  };
+
+  setPayoutMoney = (payout) => {
+    this._uiPayoutBarContainer.setMoney(payout);
   };
 }
 
 class UiPlayer extends Ui_Actor {
-  _newUiMoneyBar = (credit) => {
-    const uiBar = new UiMoneyBar();
-    uiBar.setCurrentMoney(credit);
-    return uiBar;
+  _newUiMoneyBars = (credit) => {
+    const uiBars = new UiMoneyBars();
+    uiBars.setCurrentMoney(credit);
+    return uiBars;
   };
   _style = () => {
     this._root.style.border = "1px dotted grey";
-    this._root.style.height = "25px";
+    this._root.style.height = "fit-content";
     this._root.style.width = "fit-content";
     this._root.style.minWidth = "70px";
     this._root.style.marginLeft = "7px";
@@ -117,13 +86,34 @@ class UiPlayer extends Ui_Actor {
    */
   constructor(player) {
     super(player);
-    this._style();
+    this._player = player;
     // Root Configuration
     this._root.className += " blackjack-player";
 
     this._uiAvatar = new UiImgPlayerAvatar(player.getImgUrl());
 
-    this._uiMoneyBar = this._newUiMoneyBar(player.getCredit());
+    this._uiMoneyBar = this._newUiMoneyBars(player.getCredit());
+
+    this._player.setOnMainBetStaked((bet) => {
+      this._uiMoneyBar.setMainBetStaked(bet, this._player.getCredit());
+    });
+    this._player.setOnDoubleBetStaked((bet) => {
+      console.group(`ui play setOnDoubleBetStaked`);
+      this._uiMoneyBar.setDoubleBetStaked(bet, this._player.getCredit());
+      console.groupEnd();
+    });
+
+    this._player.setOnMainBetCollectedByDealer(() => {
+      this._uiMoneyBar.setMainBetCollected(this._player.getCredit());
+    });
+
+    this._player.setOnDoubleBetCollectedByDealer(() => {
+      this._uiMoneyBar.setDoubleBetDealerCollected(this._player.getCredit());
+    });
+    this._player.setOnPayout((payout) => {
+      this._uiMoneyBar.setPayoutMoney(payout);
+    });
+    this._style();
     this.replaceChildrenUi(this._uiAvatar, this._uiMoneyBar);
   }
 }
