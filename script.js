@@ -31,6 +31,14 @@ let numOfPlayersPlaying = [];
 let playerCounter = 0;
 let allPlayersBust = false;
 
+// gif for game conditions.
+let hitStandImage =
+  '<img src="https://c.tenor.com/RFRPkimHjfcAAAAM/zach-galifianakis-very-bad-trip-meme.gif"/>';
+let betImage =
+  '<img src="https://c.tenor.com/DSYvM7jaSg8AAAAM/rounders-dice.gif"/>';
+let blackjackImage =
+  '<img src="https://c.tenor.com/JdXsetbrbyoAAAAM/money-show-me-the-receipts.gif"/>';
+
 // Function to creat a deck of cards
 const makeDeck = function () {
   // Initialise an empty deck array
@@ -145,7 +153,7 @@ const createPlayers = function (input) {
   }
   input = null;
   gameMode = ENTER_BET;
-  return "Time to place your bet! Each player has 100 chips to play. <br> Player 1, please submit your bet amount.";
+  return `Time to place your bet! Each player has 100 chips to play. <br> Player 1, please submit your bet amount. <br> ${betImage}`;
 };
 
 // Receive player bet value and update player objects
@@ -157,7 +165,7 @@ const playerBets = function (input) {
   //  d. Once done, enter deal card mode.
   input = Number(input);
   if (isNaN(input) || input == "") {
-    return `Player ${numOfPlayersPlaying[playerCounter].number}, you have ${numOfPlayersPlaying[playerCounter].chips} chips. <br> Please place bet within your limit.`;
+    return `Player ${numOfPlayersPlaying[playerCounter].number}, you have ${numOfPlayersPlaying[playerCounter].chips} chips. <br> Please place bet within your limit. <br> ${betImage}`;
   } else if (numOfPlayersPlaying[playerCounter].gameOver == true) {
     playerCounter += 1;
     return `Player ${
@@ -166,7 +174,7 @@ const playerBets = function (input) {
       numOfPlayersPlaying[playerCounter].number
     }, it is your turn to place bet. <br> You have ${
       numOfPlayersPlaying[playerCounter].chips
-    } chips.`;
+    } chips. <br> ${betImage}`;
   } else if (input != "" && playerCounter + 1 == numOfPlayersPlaying.length) {
     numOfPlayersPlaying[playerCounter].bet = input;
     playerCounter = 0;
@@ -182,12 +190,12 @@ const playerBets = function (input) {
         numOfPlayersPlaying[playerCounter].number
       }, it is your turn to place bet. <br> You have ${
         numOfPlayersPlaying[playerCounter].chips
-      } chips.`;
+      } chips.<br> ${betImage}`;
     } else {
-      return `Player ${numOfPlayersPlaying[playerCounter].number}, it is your turn to place bet. <br> You have ${numOfPlayersPlaying[playerCounter].chips} chips.`;
+      return `Player ${numOfPlayersPlaying[playerCounter].number}, it is your turn to place bet. <br> You have ${numOfPlayersPlaying[playerCounter].chips} chips.<br> ${betImage}`;
     }
   } else {
-    return `Player ${numOfPlayersPlaying[playerCounter].number}, you have ${numOfPlayersPlaying[playerCounter].chips} chips. <br> Please place bet within your limit.`;
+    return `Player ${numOfPlayersPlaying[playerCounter].number}, you have ${numOfPlayersPlaying[playerCounter].chips} chips. <br> Please place bet within your limit.<br> ${betImage}`;
   }
 };
 
@@ -230,12 +238,20 @@ const dealCard = function (players) {
   // Dealer to draw 2 cards.
   dealerHand.hand = [shuffledDeck.pop(), shuffledDeck.pop()];
 
-  if (
+  if (dealerHand.hand[0].name == "ace" && dealerHand.hand[1].name == "ace") {
+    dealerHand.handvalue = 12;
+  } else if (
     (dealerHand.hand[0].name == "ace" && dealerHand.hand[1].rank == 10) ||
     (dealerHand.hand[0].rank == 10 && dealerHand.hand[1].name == "ace")
   ) {
     dealerHand.handvalue = 21;
     dealerHand.blackjack = true;
+  } else if (
+    dealerHand.hand[0].name == "ace" ||
+    dealerHand.hand[1].name == "ace"
+  ) {
+    dealerHand.handvalue =
+      dealerHand.hand[0].rank + dealerHand.hand[1].rank + 10;
   } else {
     dealerHand.handvalue = dealerHand.hand[0].rank + dealerHand.hand[1].rank;
   }
@@ -350,10 +366,8 @@ const hitStandSplit = function (input) {
         ) {
           numOfPlayersPlaying[playerCounter].handvalue -= 10;
         } else if (
-          (numOfPlayersPlaying[playerCounter].hand.length >= 3 &&
-            numOfPlayersPlaying[playerCounter].handvalue + 10 <= 21 &&
-            numOfPlayersPlaying[playerCounter].hand[0].name == "ace") ||
-          numOfPlayersPlaying[playerCounter].hand[1].name == "ace" ||
+          numOfPlayersPlaying[playerCounter].hand.length >= 3 &&
+          numOfPlayersPlaying[playerCounter].handvalue + 10 <= 21 &&
           numOfPlayersPlaying[playerCounter].hand[
             numOfPlayersPlaying[playerCounter].hand.length - 1
           ].name == "ace"
@@ -372,7 +386,7 @@ const hitStandSplit = function (input) {
           ].suit
         } <br> -------------------- <br> ${displayHand(
           numOfPlayersPlaying[playerCounter]
-        )} I dare you to Hit! <br> or Stand, it's up to you...`;
+        )} I dare you to Hit! <br> or Stand, it's up to you... <br> ${hitStandImage}`;
         if (numOfPlayersPlaying[playerCounter].handvalue > 21) {
           numOfPlayersPlaying[playerCounter].bust = true;
           message = `Player ${numOfPlayersPlaying[playerCounter].number}, `;
@@ -391,13 +405,13 @@ const hitStandSplit = function (input) {
                 numOfPlayersPlaying[playerCounter].number
               }'s turn. Your hand: ${displayHand(
                 numOfPlayersPlaying[playerCounter]
-              )} <br> I dare you to Hit! <br> or Stand, it's up to you...`;
+              )} <br> I dare you to Hit! <br> or Stand, it's up to you... <br> ${hitStandImage}`;
             } else {
               message += `You bust! <br> It is now Player ${
                 numOfPlayersPlaying[playerCounter].number
               }'s turn. Your hand: ${displayHand(
                 numOfPlayersPlaying[playerCounter]
-              )} <br> I dare you to Hit! <br> or Stand, it's up to you...`;
+              )} <br> I dare you to Hit! <br> or Stand, it's up to you... <br> ${hitStandImage}`;
             }
           }
         }
@@ -424,13 +438,13 @@ const hitStandSplit = function (input) {
             numOfPlayersPlaying[playerCounter].number
           }'s turn. Your hand: ${displayHand(
             numOfPlayersPlaying[playerCounter]
-          )} I dare you to Hit! <br> or Stand, it's up to you...`;
+          )} I dare you to Hit! <br> or Stand, it's up to you... <br> ${hitStandImage}`;
         } else {
           message = `It is now Player ${
             numOfPlayersPlaying[playerCounter].number
           }'s turn. Your hand: ${displayHand(
             numOfPlayersPlaying[playerCounter]
-          )} I dare you to Hit! <br> or Stand, it's up to you...`;
+          )} I dare you to Hit! <br> or Stand, it's up to you... <br> ${hitStandImage}`;
         }
         break;
     }
@@ -439,7 +453,7 @@ const hitStandSplit = function (input) {
       numOfPlayersPlaying[playerCounter].number
     }, you have ${displayHand(
       numOfPlayersPlaying[playerCounter]
-    )} <br> I dare you to Hit! <br> or Stand, it's up to you...`;
+    )} <br> I dare you to Hit! <br> or Stand, it's up to you... <br> ${hitStandImage}`;
   }
   return message;
 };
@@ -523,6 +537,7 @@ const checkAllPlayerBust = function (players) {
 
 var main = function (input) {
   var myOutputValue = "";
+
   if (gameMode == ENTER_NUM_PLAYER) {
     return createPlayers(input);
   }
@@ -565,7 +580,7 @@ var main = function (input) {
       resetDealerStats();
       gameMode = ENTER_BET;
     } else if (numOfPlayersPlaying[playerCounter].blackjack == true) {
-      myOutputValue = `Player ${numOfPlayersPlaying[playerCounter].number} Blackjack! <br>`;
+      myOutputValue = `Player ${numOfPlayersPlaying[playerCounter].number} Blackjack! <br> ${blackjackImage} <br>`;
       playerCounter += 1;
       if (playerCounter == numOfPlayersPlaying.length) {
         myOutputValue += `Dealer's turn! <br> ${dealerHandBoard()} ${playerHandBoard(
@@ -609,13 +624,27 @@ var main = function (input) {
     if (dealerHand.handvalue <= 16) {
       dealerHand.hand.push(shuffledDeck.pop());
       dealerHand.handvalue += dealerHand.hand[dealerHand.hand.length - 1].rank;
+      if (
+        (dealerHand.hand.length >= 3 &&
+          dealerHand.handvalue > 21 &&
+          dealerHand.hand[0].name == "ace") ||
+        dealerHand.hand[1].name == "ace"
+      ) {
+        dealerHand.handvalue -= 10;
+      } else if (
+        dealerHand.hand.length >= 3 &&
+        dealerHand.handvalue + 10 <= 21 &&
+        dealerHand.hand[dealerHand.hand.length - 1].name == "ace"
+      ) {
+        dealerHand.handvalue += 10;
+      }
       myOutputValue = `Dealer drew ${
         dealerHand.hand[dealerHand.hand.length - 1].name
       }${
         dealerHand.hand[dealerHand.hand.length - 1].suit
       } <br> -------------------- <br>${dealerHandBoard()} ${playerHandBoard(
         numOfPlayersPlaying
-      )}`;
+      )} Click submit for Dealer next move.`;
     } else if (dealerHand.handvalue > 21) {
       dealerHand.bust = true;
       myOutputValue = `Dealer drew ${
