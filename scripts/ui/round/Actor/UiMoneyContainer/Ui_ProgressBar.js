@@ -39,10 +39,6 @@ class Ui_ProgressBar2 extends Ui_Component {
     return 2 * money;
   };
 
-  _newInnerWrap = () => {
-    return new UiMoneyLabel();
-  };
-
   constructor() {
     super();
     this._root.className += ` blackjack-ui-money-progress-bar`;
@@ -52,12 +48,14 @@ class Ui_ProgressBar2 extends Ui_Component {
     this._root.style.width = "0px";
     this._root.style.justifyContent = "center";
     this._root.style.alignItems = "center";
-    this._root.style.verticalAlign = "middle";
     this._root.style.color = "white";
     this._root.style.textAlign = "center";
     this._root.style.float = "left";
+    this._root.style.color = "black";
+    this._root.style.fontWeight = "bold";
+    this._root.style.textAlign = "center";
 
-    this._innerWrap = this._newInnerWrap();
+    this._innerWrap = new UiMoneyLabel();
     this.replaceChildrenUi(this._innerWrap);
   }
   setBackgroundColor = (val) => {
@@ -180,9 +178,5 @@ class UiCurrentMoneyBar2 extends Ui_ProgressBar2 {
     super();
 
     this._root.className += ` blackjack-bar-money-initial`;
-    this._root.style.color = "black";
-    this._root.style.fontWeight = "bold";
-
-    this._root.style.textAlign = "center";
   }
 }

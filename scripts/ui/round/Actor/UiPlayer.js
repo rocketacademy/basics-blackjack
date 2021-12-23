@@ -55,7 +55,7 @@ class UiMoneyBars extends Ui_Component {
     this.setCurrentMoney(currentMoney);
   };
   setDoubleBetDealerCollected = (currentMoney) => {
-    this._uiDoubleBetBarContainer.setBackgroundColor("#808080");
+    this._uiDoubleBetBarContainer.setBackgroundColor("black");
     this._uiDoubleBetBarContainer.setBorder("2px solid #FF4500");
     this.setCurrentMoney(currentMoney);
   };

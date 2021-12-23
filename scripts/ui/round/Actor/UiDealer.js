@@ -21,6 +21,7 @@ class UiDealer extends Ui_Actor {
   _newUiMsgDisplay = () => {
     const t = new Ui_Text();
     t._root.style.height = "30px";
+    t._root.style.fontWeight = "bold";
     t._root.style.width = "fit-content";
     t._root.className += " blackjack-display-dealer-message";
 
