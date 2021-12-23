@@ -24,23 +24,14 @@
 /*
 Thought process 
 - copy make deck function, shuffle cards
-
 - User clicks submit, => 2  cards are dealt
-
 - Display computer's hand => 2 carsd are dealt
-
 - User Card and Computer Cards are compared.
-
 - User decides to "hit"(to take an additional card) or "stand"(To leave card value as is)
-
 - Minimum card value is 17, if not user or computer has to take a card
-
 - 21 is automatic victory for User unless Computer also draws 21 .
-
 - Computer decides to "hit" or "stand" base on pre determined rules
-
 - Game outcome is determined base on which card value is higher (player or Computer)
-
 - Game repeats
 */
 // second version
@@ -65,6 +56,15 @@ var gameCardsDrawn = "cards drawn";
 var gameResultsShown = "results shown";
 var gameHitOrStand = "hit or stand";
 var currentGameMode = gameStart;
+
+var myImage =
+  '<img src="https://c.tenor.com/lsT-9B3ckkoAAAAC/let-me-tell-you-your-chances-to-win-is-zero.gif"/>';
+
+var myImageWin =
+  '<img src="https://c.tenor.com/TsTxTJzoxgQAAAAC/chow-yun-fat-clap.gif"/>';
+
+var myImageHit =
+  '<img src="https://c.tenor.com/Y3Ypjza4eWUAAAAC/god-of-gamblers-chow-yunfat.gif"/>';
 
 var resetGame = function () {
   currentGameMode = gameStart;
@@ -291,7 +291,7 @@ var main = function (input) {
     // write and return the appropriate output message
     myOutputValue =
       displayHand(playerHand, computerHand) +
-      'Player and Computer has been dealt 2 cards, Click "Submit" to start the game!';
+      "<br>Player and Computer has been dealt 2 cards, Click to start the game!";
     return myOutputValue;
   }
   // Second submit
@@ -317,21 +317,25 @@ var main = function (input) {
       // both player and computer has blackjack -> tie
       if (playerBlackJack == true && computerBlackJack == true) {
         myOutputValue =
-          displayHand(playerHand, computerHand) + "Its a Black Jack tie!";
+          displayHand(playerHand, computerHand) +
+          "Its a Black Jack tie!" +
+          myImageWin;
         resetGame();
       }
       // only player has blackjack -> player wins
       else if (playerBlackJack == true && computerBlackJack == false) {
         myOutputValue =
           displayHand(playerHand, computerHand) +
-          "Player got a Black Jack! Player Wins!";
+          "Player got a Black Jack! Player Wins!" +
+          myImageWin;
         resetGame();
       }
       // only computer has black jack -> computer wins
       else {
         myOutputValue =
           displayHand(playerHand, computerHand) +
-          "Computer got a Black Jack! Computer Wins!";
+          "Computer got a Black Jack! Computer Wins!" +
+          myImage;
         resetGame();
       }
       console.log(myOutputValue);
@@ -339,7 +343,8 @@ var main = function (input) {
     } else {
       myOutputValue =
         displayHand(playerHand, computerHand) +
-        "There is no blackjack!<br> Please input hit or stand.";
+        myImageHit +
+        "<br>There is no blackjack!<br><br> Please input hit or stand to continue";
       console.log(myOutputValue);
       // no black jack -> game continues
 
@@ -356,7 +361,7 @@ var main = function (input) {
       playerHand.push(gameDeck.pop());
       myOutputValue =
         displayHand(playerHand, computerHand) +
-        '<br> You drew another card. <br>Please input "hit" or "stand".';
+        '<br> You drew another card. <br><br>Please input "hit" or "stand".';
       console.log(myOutputValue);
     }
     // Player Stand
@@ -377,7 +382,8 @@ var main = function (input) {
       if (playerTotalHand > 21) {
         myOutputValue =
           displayHand(playerHand, computerHand) +
-          "Bust! Player loses! Computer Wins!" +
+          "Bust!<br><br> Player loses! Computer Wins!" +
+          myImage +
           displayTotalHand(playerTotalHand, computerTotalHand);
         console.log("Player bust", playerTotalHand);
         resetGame();
@@ -387,7 +393,8 @@ var main = function (input) {
       if (computerTotalHand > 21) {
         myOutputValue =
           displayHand(playerHand, computerHand) +
-          "Bust! Computer loses! Player wins!" +
+          "Bust! <br><br>Computer loses! Player wins!" +
+          myImageWin +
           displayTotalHand(playerTotalHand, computerTotalHand);
         console.log("Computer bust", computerTotalHand);
         resetGame();
@@ -399,7 +406,8 @@ var main = function (input) {
       if (playerTotalHand == computerTotalHand) {
         myOutputValue =
           displayHand(playerHand, computerHand) +
-          "Its a tie!" +
+          "Its a tie!<br><br>" +
+          myImageWin +
           displayTotalHand(playerTotalHand, computerTotalHand);
         resetGame();
       }
@@ -410,7 +418,8 @@ var main = function (input) {
       ) {
         myOutputValue =
           displayHand(playerHand, computerHand) +
-          "Player Wins!" +
+          "Player Wins!<br><br>" +
+          myImageWin +
           displayTotalHand(playerTotalHand, computerTotalHand);
         resetGame();
       }
@@ -418,7 +427,8 @@ var main = function (input) {
       else {
         myOutputValue =
           displayHand(playerHand, computerHand) +
-          "Computer wins!" +
+          "Computer wins!<br><br>" +
+          myImage +
           displayTotalHand(playerTotalHand, computerTotalHand);
         resetGame();
       }
