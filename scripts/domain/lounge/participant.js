@@ -14,8 +14,13 @@ class Participant {
     this._fakeId = uuidv4();
     this.setName(name);
   }
+
+  updateName = (name) => {
+    this.setName(name);
+  };
   setName = (nn) => {
     this._name = nn;
+    this.onnamechange(this._name);
   };
   onnamechange = () => {};
   setOnNameChange = (cb) => (this.onnamechange = cb);

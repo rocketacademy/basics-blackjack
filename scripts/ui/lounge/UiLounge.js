@@ -1,10 +1,35 @@
 // TABLE
 
+class UiNameInput extends Ui_Component {
+  constructor() {
+    super(document.createElement("INPUT"));
+    this._root.type = "text";
+    this._root.className += " textinputnamelounge";
+    this._root.style.height = "fit-content";
+    this._root.style.width = "90%";
+    this._root.style.marginTop = "5px";
+    this._root.style.border = "0px solid white";
+    this._root.style.textAlign = "center";
+    this._root.style.alignSelf = "center";
+  }
+
+  setName = (n) => (this._root.value = n);
+
+  setOnValueChange = (cb) => {
+    this._root.addEventListener("input", cb);
+  };
+}
 class UiPlayerForm extends Ui_Component {
   _newPlayerName = (name) => {
     const t = new UiName();
     t.setName(name);
 
+    return t;
+  };
+
+  _newPlayerNameInput = (name) => {
+    const t = new UiNameInput();
+    t.setName(name);
     return t;
   };
   constructor(participant) {
@@ -16,18 +41,27 @@ class UiPlayerForm extends Ui_Component {
     this._root.style.marginBottom = "30px";
     this._root.style.border = "1px solid black";
     this._root.style.width = "150px";
+    this._root.style.float = "top";
     this._root.style.borderRadius = "5px";
-    this._root.style.justifyContent = "center";
+    this._root.style.justifyContent = "flex-start";
+    this._root.style.flexDirection = "column";
+    this._root.className += " ui-player-name";
 
     this._name = this._newPlayerName(this._p.getName());
+    this._nameinput = this._newPlayerNameInput(this._p.getName());
 
     this._id = this._p.iid();
 
     this._p.setOnNameChange(() => {
-      this._name.setName(this._participant.getName());
+      this._name.setName(this._p.getName());
+      // this._nameinput.setName(this._participant.getName())
     });
 
-    this.appendChildUi(this._name);
+    this._nameinput.setOnValueChange((evt) => {
+      this._p.updateName(evt.target.value);
+    });
+
+    this.replaceChildrenUi(this._nameinput, this._name);
   }
 
   id = () => this._id;
