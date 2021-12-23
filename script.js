@@ -289,16 +289,16 @@ var main = function (input) {
 
   // THIRD CLICK
   if (currentGameMode == GAME_HIT_OR_STAND) {
-    // Hit
-    if (input == "hit") {
+    // Hit (to lower case)
+    if (input.toLowerCase() == "hit") {
       playerCards.push(shuffledDeck.pop());
       outputMessage =
         displayPlayerAndDealerCards(playerCards, dealerCards) +
         '<br> You just drew another card. <br>Please input "hit" or "stand".';
     }
 
-    // Stand
-    else if (input == "stand") {
+    // Stand (to lower case)
+    else if (input.toLowerCase() == "stand") {
       // Calculate hands
       var playerCardsTotalValue = calculateTotalHandValue(playerCards);
       var dealerCardsTotalValue = calculateTotalHandValue(dealerCards);
