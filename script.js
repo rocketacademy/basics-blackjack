@@ -20,6 +20,21 @@ var numberOfWins = 0;
 var numberOfLosses = 0;
 var myOutputValue = "";
 
+var resetGame = function () {
+  gameMode = "dealing cards";
+  playerHand = [];
+  computerHand = [];
+  computerCurrentHand = "";
+  playerCurrentHand = "";
+  mustStand = false;
+};
+
+//images
+var imgPlayerWin = `<img src="https://c.tenor.com/WPVeNwb0VTUAAAAC/angry-mad.gif">`;
+var imgComputerWin = `<img src="https://c.tenor.com/f_crPxud2qkAAAAC/santa-dance-dancing-santa.gif">`;
+var imgDraw = `<img src="https://cdn.dribbble.com/users/861491/screenshots/2430014/santa.gif">`;
+var secretMode = `<img src="https://c.tenor.com/RNzK4KQ4rycAAAAC/santa-digibyte.gif">`;
+
 // Make a deck of cards
 var makeDeck = function () {
   // Initialise an empty deck array
@@ -44,6 +59,7 @@ var makeDeck = function () {
 
       // If rank is 1, 11, 12, or 13, set cardName to the ace or face card's name
       if (cardName == 1) {
+        cardRank = 11;
         cardName = "Ace";
       } else if (cardName == 11) {
         cardRank = 10;
@@ -135,16 +151,16 @@ var calScore = function (handArray) {
   var aceCounter = 0;
   while (index < handArray.length) {
     score += handArray[index].rank;
-    // change ace from rank 11 to rank 1
-    if (handArray[index].name == "ace") {
+
+    if (handArray[index].name == "Ace") {
       aceCounter += 1;
-      score += 11;
-    }
-    if (score > 21 && aceCounter > 0) {
-      score -= 10;
-      aceCounter -= 1;
     }
     index += 1;
+  }
+  // change ace from rank 11 to rank 1
+  while (score > 21 && aceCounter > 0) {
+    score -= 10;
+    aceCounter -= 1;
   }
   return score;
 };
@@ -152,14 +168,16 @@ var calScore = function (handArray) {
 var playerTotalScore = 0;
 var computerTotalScore = 0;
 
-//check blackjack
 var checkBlackjack = function () {
   if (playerHand.length == 2 && playerTotalScore == 21) {
-    return "Blackjack! You won!";
+    numberOfWins += 1;
+    return `You have Blackjack! You won! You better watch out, Santa looks angry! <br><br>${imgPlayerWin}<br>Total number of rounds you won: ${numberOfWins}<br>Total number of rounds Santa won: ${numberOfLosses}<br><br>Click Deal to play again if you dare!`;
   }
   if (computerHand.length == 2 && computerTotalScore == 21) {
-    return "Blackjack! You lost!";
+    numberOfLosses += 1;
+    return `Santa has Blackjack! You lost! Santa is very happy. <br><br>${imgComputerWin}<br>Total number of rounds you won: ${numberOfWins}<br>Total number of rounds Santa won: ${numberOfLosses}<br><br>Click Deal to play again if you dare!`;
   }
+  return "";
 };
 
 var main = function (input) {
@@ -169,13 +187,28 @@ var main = function (input) {
     dealCardToHand(playerHand);
     dealCardToHand(computerHand);
 
-    checkBlackjack();
+    // calculate player's current score
+    playerTotalScore = calScore(playerHand);
+    console.log("player score:", playerTotalScore);
 
-    myOutputValue = `Your cards are ${playerHand[0].name} of ${playerHand[0].suit} and ${playerHand[1].name} of ${playerHand[1].suit}. <br>Type "Hit" if you want to draw another card or "Stand" if you wish to end the round and reveal computer's cards.`;
+    // calculate computer's current score
+    computerTotalScore = calScore(computerHand);
+    console.log("computer score:", computerTotalScore);
+
+    var blackjackStr = checkBlackjack();
+    if (blackjackStr != "") {
+      myOutputValue = `Your cards are ${playerHand[0].name} of ${playerHand[0].suit} and ${playerHand[1].name} of ${playerHand[1].suit}. <br>Santa's cards are ${computerHand[0].name} of ${computerHand[0].suit} and ${computerHand[1].name} of ${computerHand[1].suit}.<br>${blackjackStr}`;
+      resetGame();
+      return myOutputValue;
+    }
+
+    myOutputValue = `Your cards are ${playerHand[0].name} of ${playerHand[0].suit} and ${playerHand[1].name} of ${playerHand[1].suit}. <br>Type "Hit" if you want to draw another card or "Stand" if you wish to end the round and reveal Santa's cards.`;
 
     // now that the first two cards have been dealt to each player, switch the mode
     gameMode = "hit or stand";
   } else if (gameMode == "hit or stand") {
+    if (input == "Merry Christmas!!!")
+      return `Congratulations! You have used the secret phrase and won yourself a ₿itcoin from Santa!!! <br><br>${secretMode}<br>Have a Merry Christmas and a Happy New Year!!! Refresh to start on a clean slate for the new year!`;
     if (input == "Hit" && mustStand == false) {
       // draw a card
       dealCardToHand(playerHand);
@@ -184,10 +217,12 @@ var main = function (input) {
       playerCurrentHand = showCards(playerHand);
 
       myOutputValue = `Your cards are:<br> ${playerCurrentHand}<br>If you wish to draw another card, enter "Hit". If not, enter "Stand".`;
-
+    } else if (input == "Stand" || mustStand == true) {
       // calculate player's current score
       playerTotalScore = calScore(playerHand);
       console.log("player score:", playerTotalScore);
+      // show player cards
+      playerCurrentHand = showCards(playerHand);
 
       // max 5 cards and max score of 21
       if (playerHand.length == 5 || playerTotalScore > 21) {
@@ -195,13 +230,14 @@ var main = function (input) {
       }
       // calculate computer's current score
       computerTotalScore = calScore(computerHand);
-    } else if (input == "Stand" || mustStand == true) {
       // draw cards until computer's rank is more than 17
       while (computerTotalScore < 17) {
         var newCard = shuffledDeck.pop();
         computerHand.push(newCard);
         computerTotalScore += newCard.rank;
+        computerTotalScore = calScore(computerHand);
       }
+
       console.log("computer score:", computerTotalScore);
 
       //show computer cards
@@ -212,26 +248,21 @@ var main = function (input) {
         playerTotalScore <= 21 &&
         (playerTotalScore > computerTotalScore || computerTotalScore > 21)
       ) {
-        myOutputValue = `You won!`;
+        myOutputValue = `You won! You better watch out, Santa looks angry! ${imgPlayerWin}`;
         numberOfWins += 1;
       } else if (
         computerTotalScore <= 21 &&
         (computerTotalScore > playerTotalScore || playerTotalScore > 21)
       ) {
-        myOutputValue = `You lost!`;
+        myOutputValue = `Ho! Ho! Ho! You lost! Santa is very happy. ${imgComputerWin}`;
         numberOfLosses += 1;
       } else if ((computerTotalScore = playerTotalScore)) {
-        myOutputValue = `It's a draw!`;
+        myOutputValue = `It's a draw! ${imgDraw}`;
       }
-      myOutputValue += `<br><br>Your cards are:<br> ${playerCurrentHand} Total points: ${playerTotalScore}<br><br>Computer cards are:<br> ${computerCurrentHand} Total points: ${computerTotalScore} <br><br>Total number of rounds you won: ${numberOfWins}<br>Total number of rounds computer won: ${numberOfLosses}<br><br>Click submit to play again!`;
+      myOutputValue += `<br><br>Your cards are:<br> ${playerCurrentHand} Total points: ${playerTotalScore}<br><br>Santa's cards are:<br> ${computerCurrentHand} Total points: ${computerTotalScore} <br><br>Total number of rounds you won: ${numberOfWins}<br>Total number of rounds Santa won: ${numberOfLosses}<br><br>Click Deal to play again if you dare!`;
 
       // reinitialise game
-      gameMode = "dealing cards";
-      playerHand = [];
-      computerHand = [];
-      computerCurrentHand = "";
-      playerCurrentHand = "";
-      mustStand = false;
+      resetGame();
     } else {
       myOutputValue = `Invalid input. Please enter "Hit" or "Stand".`;
     }
