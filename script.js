@@ -85,29 +85,37 @@ var main = function (input) {
 
   if (gameMode == "pending number of players") {
     numOfPlayers = input;
-    gameMode = "pending names";
-    return `${numOfPlayers} players. Enter player 1 name.`;
+    for (var playerNo = 0; playerNo < numOfPlayers; playerNo += 1) {
+      var player = {};
+      player.bank = 100;
+      player.bet = 0;
+      player.busted = false;
+      player.hand = [];
+      players.push(player);
+    }
+    gameMode = "pending bets";
+    return `${numOfPlayers} players. Enter player 1 bet.`;
   }
 
-  if (gameMode == "pending names") {
-    var output;
-    var player = {};
-    player.name = input;
-    player.bank = 100;
-    player.bet = 0;
-    player.busted = false;
-    player.hand = [];
-    players.push(player);
-    if (currPlayer < numOfPlayers) {
-      currPlayer += 1;
-      output = `Input player ${currPlayer} name.`;
-    } else {
-      currPlayer = 1;
-      gameMode = "pending bets";
-      output = "Place bets.";
-    }
-    return output;
-  }
+  // if (gameMode == "pending names") {
+  //   var output;
+  //   var player = {};
+  //   player.name = input;
+  //   player.bank = 100;
+  //   player.bet = 0;
+  //   player.busted = false;
+  //   player.hand = [];
+  //   players.push(player);
+  //   if (currPlayer < numOfPlayers) {
+  //     currPlayer += 1;
+  //     output = `Input player ${currPlayer} name.`;
+  //   } else {
+  //     currPlayer = 1;
+  //     gameMode = "pending bets";
+  //     output = "Place bets.";
+  //   }
+  //   return output;
+  // }
 
   if (gameMode == "pending bets") {
     players[currPlayer - 1].bet = input;
@@ -167,7 +175,7 @@ var main = function (input) {
       var playerHand = player.hand;
       var output;
       var newCard = deck.pop();
-      output = `Player drew ${newCard.name} of ${newCard.suit}`;
+      output = `Player drew ${newCard.name} of ${newCard.suit}. <br>`;
       playerHand.push(newCard);
       player.hand = playerHand;
 
@@ -177,7 +185,7 @@ var main = function (input) {
       if (playerSum > 21) {
         player.busted = true;
         player.bet = 0;
-        output = "Busted";
+        output += "<br>Busted.";
         players[currPlayer - 1] = player;
 
         // player is eliminated and round goes to next player
@@ -186,7 +194,9 @@ var main = function (input) {
         // need to check if last player + busted
         if (currPlayer > numOfPlayers) {
           gameMode = "reveal dealer cards";
-          return "All players have been served.";
+          return (output += "<br>All players have been served.");
+        } else {
+          return (output += "Next player decides to hit / stand.");
         }
       } else if (playerSum == 21) {
         player.bank += 1.5 * player.bet;
@@ -195,7 +205,7 @@ var main = function (input) {
         players[currPlayer - 1] = player;
       } else {
         players[currPlayer - 1] = player;
-        output = "Decide to hit / stand.";
+        output += "Decide to hit / stand.";
       }
       return output;
     }
@@ -240,6 +250,7 @@ var main = function (input) {
       }
     }
     gameMode = "pending bets";
-    return output;
+    currPlayer = 1;
+    return (output += "Enter player 1 bets.");
   }
 };
