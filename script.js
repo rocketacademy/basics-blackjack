@@ -1,15 +1,18 @@
-//function to make a deck of cards
+//---------------HELPER FUNCTIONS ------------------------------
+//===============TO MAKE CARD DECK==============================
 var makeDeck = function () {
   // Initialise an empty deck array
   var cardDeck = [];
   // Initialise an array of the 4 suits in our deck. We will loop over this array.
   var suits = ["Hearts", "Diamonds", "Clubs", "Spades"];
+  var suitsPicture = ["♥", "♦", "♣", "♠"];
 
   // Loop over the suits array
   var suitIndex = 0;
   while (suitIndex < suits.length) {
     // Store the current suit in a variable
     var currentSuit = suits[suitIndex];
+    var currentSuitPicture = suitsPicture[suitIndex];
 
     // Loop from 1 to 13 to create all cards for a given suit
     // Notice rankCounter starts at 1 and not 0, and ends at 13 and not 12.
@@ -40,6 +43,7 @@ var makeDeck = function () {
         suit: currentSuit,
         rank: rankCounter,
         value: cardValue,
+        picture: currentSuitPicture,
       };
 
       // Add the new card to the deck
@@ -57,6 +61,7 @@ var makeDeck = function () {
   return cardDeck;
 };
 
+//===============TO MAKE SHUFFLED DECK==========================
 // Get a random index ranging from 0 (inclusive) to max (exclusive).
 var getRandomIndex = function (max) {
   return Math.floor(Math.random() * max);
@@ -85,20 +90,21 @@ var shuffleCards = function (cardDeck) {
 
 // Shuffle the deck and save it in a new variable shuffledDeck
 // to communicate that we have shuffled the deck.
-//function for player and dealer to draw 2 cards and push it into their arrays
+//===============TO DRAW CARDS FOR PLAYER AND DEALER=============
 var drawCards = function () {
+  console.log(`---DECK SHUFFLED---`);
   console.log(shuffledDeck);
   //1 card
   playerHand.push(shuffledDeck.pop());
   //2 cards
   playerHand.push(shuffledDeck.pop());
-  console.log(`playerHand`);
+  console.log(`playerHand:`);
   console.log(playerHand);
   //1 card
   dealerHand.push(shuffledDeck.pop());
   //2 cards
   dealerHand.push(shuffledDeck.pop());
-  console.log(`dealerHand`);
+  console.log(`dealerHand:`);
   console.log(dealerHand);
 };
 
@@ -107,6 +113,7 @@ var drawCards = function () {
 //if there is ace, value is 1 or 11
 //loop through hands to add the values up for 2 or more cards
 //function must work for both dealer and player (not person-specific)
+//===============TO CAL VALUE OF CARDS============================
 var checkScore = function (cardArray) {
   console.log(cardArray);
   var valueInHand = 0;
@@ -114,7 +121,9 @@ var checkScore = function (cardArray) {
     console.log("running");
     if (cardArray[i].value == 10) {
       valueInHand = valueInHand + 10;
-    } else if (cardArray[i].value == 11) {
+    } else if (cardArray[i].value == 11 && cardArray.length <= 2) {
+      valueInHand = valueInHand + 11;
+    } else if (cardArray[i].value == 11 && cardArray.length > 2) {
       valueInHand = valueInHand + 11;
     } else {
       valueInHand = valueInHand + cardArray[i].rank;
@@ -125,24 +134,38 @@ var checkScore = function (cardArray) {
   return valueInHand;
 };
 
-var fifteenRun = function (input) {
-  if (currentGameMode == FIFTEEN_RUN) {
-    if (playerValue == 15 && input == 1) {
-      myOutputValue = `You have chosen to surrender.`;
-      currentGameMode = END_GAME;
-    } else if (playerValue == 15 && input == 2) {
-      myOutputValue = `You have chosen to continue.`;
-      currentGameMode = PLAYER_HIT_STAND;
+//===============TO CHECK PLAYER ACE============================
+var checkPlayerAce = function () {
+  // If the player score > 21, then check each of his card to see if there's an Ace.
+  // If there is Ace, minus 10.
+  var playerAceCounter = 0;
+  while (playerAceCounter < playerHand.length) {
+    if (playerHand[playerAceCounter].value == 11) {
+      playerValue = playerValue - 10;
+      playerHand[playerAceCounter].value = 1;
+      playerAceCounter = playerHand.length;
     }
-    if (dealerValue == 15) {
-      myOutputValue = `The total value of the dealer's cards is 15. The dealer choose to surrender and not play this round.`;
-      currentGameMode = END_GAME;
-    } else return ` Please enter either 1 or 2 only.`;
+    playerAceCounter++;
   }
-  return myOutputValue;
 };
 
-//global variables for different games modes and player/dealer hands
+//===============TO CHECK dealer ACE============================
+var checkDealerAce = function () {
+  // If the player score > 21, then check each of his card to see if there's an Ace.
+  // If there is Ace, minus 10.
+  var dealerAceCounter = 0;
+  while (dealerAceCounter < dealerHand.length) {
+    if (dealerHand[dealerAceCounter].value == 11) {
+      dealerValue = dealerValue - 10;
+      dealerHand[dealerAceCounter].value = 1;
+      dealerAceCounter = dealerHand.length;
+    }
+    dealerAceCounter++;
+  }
+};
+
+//---------------GLOBAL VARIABLES AND CONSTANTS AND GAME MODES------------------------------
+PLACE_BET = "player to place amount of bet";
 GAME_START = "game start get cards";
 CHECK_BLACKJACK = "check for blackjack";
 PLAYER_HIT_STAND = "player to choose hit/stand";
@@ -151,17 +174,28 @@ CHECK_WHO_WIN = "check who win";
 END_GAME = "the game ends and restarts";
 FIFTEEN_RUN = "player can run at 15";
 SURRENDER_CONTINUE = "player can choose to surrender or continue";
-var currentGameMode = GAME_START;
+var currentGameMode = PLACE_BET;
 var playerHand = [];
 var dealerHand = [];
 var playerValue = 0;
 var dealerValue = 0;
+var playerBet = 0;
+var playerMoney = 100;
+var totalCounter = 0;
+var totalWin = 0;
+var restartGameMessage = `Click on <b>Restart</b> to play another round! <br><br>`;
+var winningImage =
+  '<br><br><img src="https://c.tenor.com/bQrjUlPjAnsAAAAC/despicable-me-minions.gif" width ="30%" height = "30%"/>';
+var losingImage =
+  '<br><br><img src="https://c.tenor.com/bAPQ2tejx6YAAAAd/crying-minions.gif" width ="30%" height = "30%"/>';
+var tieImage =
+  '<br><br><img src="https://c.tenor.com/1xECoN4OqNgAAAAC/yeah-happy.gif" width ="30%" height = "30%"/>';
 var shuffledDeck = shuffleCards(makeDeck());
 
-//function to display player/dealer hand in a loop
-var displayAllCards = function (playerHandArray, dealerHandArray) {
+//------HELPER FUNCTIONS TO TO DISPLAY MESSAGES ---------------
+//===============TO DISPLAY PLAYER MESSAGE=============================
+var playerDisplay = function (playerHandArray) {
   var playerMessage = `<b>Player's Card: </b><br><br>`;
-  var dealerMessage = `<br><b>Dealer's Card: </b><br><br>`;
   for (var i = 0; i < playerHandArray.length; i += 1) {
     console.log("running player display");
     playerMessage =
@@ -169,8 +203,15 @@ var displayAllCards = function (playerHandArray, dealerHandArray) {
       playerHandArray[i].name +
       " of " +
       playerHandArray[i].suit +
+      " " +
+      playerHandArray[i].picture +
       `<br>`;
   }
+  return playerMessage;
+};
+//===============TO DISPLAY DEALER MESSAGE=============================
+var dealerDisplay = function (dealerHandArray) {
+  var dealerMessage = `<br><b>Dealer's Card: </b><br><br>`;
   for (var i = 0; i < dealerHandArray.length; i += 1) {
     console.log("running dealer display");
     dealerMessage =
@@ -178,176 +219,245 @@ var displayAllCards = function (playerHandArray, dealerHandArray) {
       dealerHandArray[i].name +
       " of " +
       dealerHandArray[i].suit +
+      " " +
+      dealerHandArray[i].picture +
       `<br>`;
   }
-
-  return playerMessage + dealerMessage + "<br>";
+  return dealerMessage + `<br>`;
 };
+//===============TO DISPLAY ONE DEALER CARD MESSAGE=============================
+var displayOneDealerCard = function (dealerHandArray) {
+  var dealerMessage = `<br><b>Dealer's Card: </b><br><br>`;
+  dealerMessage =
+    dealerMessage +
+    dealerHandArray[0].name +
+    " of " +
+    dealerHandArray[0].suit +
+    " " +
+    dealerHandArray[0].picture +
+    `<br>`;
+  return dealerMessage + `<br>`;
+};
+//===============MAIN FUNCTIONS=============================
 
-//function for game flow
-var main = function (input) {
-  var startSentence = displayAllCards(playerHand, dealerHand);
+////---------------BETTING FUNCTION (FIRST BUTTON) ------------------------------
+var betAmount = function (input) {
+  currentGameMode = PLACE_BET;
+  if (currentGameMode == PLACE_BET) {
+    console.log("---PLAYER PLACE BET---");
+    playerBet = Number(input);
+    console.log("player bet: " + playerBet);
+    playerMoney = playerMoney - playerBet;
+    console.log("amount of money player left: " + playerMoney);
+    myOutputValue = `Your Bet: $${input}. <br> Amount of money left: $${playerMoney}.<br><br> Press <b>Start</b> to start the game. Good luck!`;
+    currentGameMode = GAME_START;
+    return myOutputValue;
+  }
+};
+//---------------START FUNCTION (FIRST BUTTON) ------------------------------
+var start = function () {
+  totalCounter = totalCounter + 1;
+  console.log("---START GAME---");
+  console.log(`playerHand:`);
+  console.log(playerHand);
+  drawCards();
   var dealerValue = checkScore(dealerHand);
   var playerValue = checkScore(playerHand);
-  //second submit click
+  var startPlayerSentence = playerDisplay(playerHand);
+  var oneDealer = displayOneDealerCard(dealerHand);
   if (currentGameMode == GAME_START) {
     console.log("current game mode: " + currentGameMode);
-    drawCards();
-    myOutputValue = `Everyone has their cards. Please click on submit to see player/dealer has a blackjack!`;
-    currentGameMode = CHECK_BLACKJACK;
-    return myOutputValue;
-  }
-  //third submit click
-  if (currentGameMode == CHECK_BLACKJACK) {
-    console.log("current game mode: " + currentGameMode);
     playerValue = playerHand[0].value + playerHand[1].value;
+    console.log(`playerValue:`);
     console.log(playerValue);
     dealerValue = dealerHand[0].value + dealerHand[1].value;
+    console.log(`dealerValue:`);
     console.log(dealerValue);
-    // Blackjack condition.
-    if (playerValue == 21 && dealerValue == 21) {
+    //===============BLACKJACK CONDITION=============================
+    if (playerValue >= 21 && dealerValue >= 21) {
+      playerMoney = playerMoney + playerBet;
       myOutputValue =
-        startSentence +
-        `<br><br> You and the dealer both got a Blackjack! It's a draw!`;
-
+        `Everyone has their cards. Your cards are <br><br>` +
+        startPlayerSentence +
+        `<br> You and the dealer both got a Blackjack! It's a tie! You have won ${totalWin} out of ${totalCounter}. <br><br> The dealer returns you $${playerBet}. You now have $${playerMoney}. ${restartGameMessage} ` +
+        tieImage;
       currentGameMode = END_GAME;
     }
-    if (playerValue < 21 && dealerValue == 21) {
+    if (playerValue < 21 && dealerValue >= 21) {
       myOutputValue =
-        startSentence + `<br><br> The computer got a Blackjack! You lost!`;
+        `Everyone has their cards. Your cards are <br><br>` +
+        startPlayerSentence +
+        `<br> The dealer got a Blackjack! You lost! You have won ${totalWin} out of ${totalCounter}. <br><br> You lost $${playerBet}. You now have $${playerMoney}. ${restartGameMessage}` +
+        losingImage;
       currentGameMode = END_GAME;
     }
-    if (playerValue == 21 && dealerValue < 21) {
-      myOutputValue = startSentence + `<br><br> You got a Blackjack! You won!`;
+    if (playerValue >= 21 && dealerValue < 21) {
+      playerMoney = playerMoney + playerBet + playerBet;
+      totalWin += 1;
+      myOutputValue =
+        `Everyone has their cards. Your cards are <br><br>` +
+        startPlayerSentence +
+        `<br> You got a Blackjack! You won! You have won ${totalWin} out of ${totalCounter}. <br><br> You won $${playerBet}. You now have $${playerMoney}. ${restartGameMessage}` +
+        winningImage;
       currentGameMode = END_GAME;
-    }
-    if (playerValue == 15) {
-      myOutputValue = `The total value of your cards is 15, you can choose to surrender now and not play this round. Please input 1 for surrender or 2 to continue.`;
-      currentGameMode = FIFTEEN_RUN;
-      console.log(currentGameMode);
-      fifteenRun();
-      return myOutputValue;
-    }
-    if (dealerValue == 15) {
-      currentGameMode == FIFTEEN_RUN;
-      fifteenRun();
     } else {
       myOutputValue =
-        startSentence +
-        `Total Player Score: ${playerValue} <br><br> No blackjack! Game continues! Please input 1 for "hit" to add more cards or 2 for "stand".`;
-      currentGameMode = PLAYER_HIT_STAND;
+        `Everyone has their cards. Your cards are <br><br>` +
+        startPlayerSentence +
+        `Total Player Score: ${playerValue} <br>` +
+        oneDealer +
+        `No blackjack! Game continues! Please click <b>Hit</b> to add more cards or <b>Stand</b>.`;
     }
     return myOutputValue;
+    //   }
+    //    if (currentGameMode == GAME_START || currentGameMode == PLAYER_HIT_STAND || currentGameMode == DEALER_HIT_STAND || currentGameMode == END_GAME ) {
+    //      return `Please click either `
+    // };
   }
-
-  //fourth submit click
-  if (currentGameMode == PLAYER_HIT_STAND) {
-    console.log("current game mode: " + currentGameMode);
-    //function when player choose hit
-    if (input == 1) {
-      playerHand.push(shuffledDeck.pop());
-      console.log(`player's card after hit:`);
-      console.log(playerHand);
-      var playerValue = checkScore(playerHand);
-      if (playerValue < 15) {
-        myOutputValue =
-          startSentence +
-          `You have drawn a ${playerHand[playerHand.length - 1].name} of 
-        ${
-          playerHand[playerHand.length - 1].suit
-        }.<br> Total Score: ${playerValue} <br> You should hit for more cards.`;
-      }
-      if (playerValue > 21) {
-        myOutputValue =
-          startSentence +
-          `You have drawn a ${playerHand[playerHand.length - 1].name} of 
-        ${
-          playerHand[playerHand.length - 1].suit
-        }.<br> Total Score: ${playerValue} <br> BUSTED. Just input stand.`;
-      } else {
-        myOutputValue =
-          startSentence +
-          `You have drawn a ${playerHand[playerHand.length - 1].name} of 
-        ${
-          playerHand[playerHand.length - 1].suit
-        }.<br> Total Score: ${playerValue} <br> Please input 1 for hit to add more cards or 2 for stand.`;
-      }
-    } else if (input == 2) {
-      playerValue = checkScore(playerHand);
+};
+//---------------HIT FUNCTION (SECOND BUTTON) ------------------------------
+var hit = function () {
+  currentGameMode = PLAYER_HIT_STAND;
+  var oneDealer = displayOneDealerCard(dealerHand);
+  // var dealerValue = checkScore(dealerHand);
+  var playerValue = checkScore(playerHand);
+  playerHand.push(shuffledDeck.pop());
+  console.log(`player's card after hit:`);
+  console.log(playerHand);
+  var startPlayerSentence = playerDisplay(playerHand);
+  var playerValue = checkScore(playerHand);
+  if ((currentGameMode = PLAYER_HIT_STAND)) {
+    if (playerValue < 15) {
       myOutputValue =
-        startSentence +
-        `You have chosen to stand with a total score of ${playerValue}. Dealer's turn. Please click submit again.`;
+        startPlayerSentence +
+        `You have drawn a ${playerHand[playerHand.length - 1].name} of 
+        ${
+          playerHand[playerHand.length - 1].suit
+        }.<br> Total Score: ${playerValue} <br> You should hit for more cards.<br><Br>` +
+        oneDealer;
+    }
+    if (playerValue > 21) {
+      checkPlayerAce();
+    }
+
+    if (playerValue > 21) {
+      myOutputValue =
+        startPlayerSentence +
+        `You have drawn a ${playerHand[playerHand.length - 1].name} of 
+        ${
+          playerHand[playerHand.length - 1].suit
+        }.<br><br> Total Score: ${playerValue} <br><br> BUSTED! Dealer's turn. Please click <b>stand</b>.<br><br>`;
+      oneDealer;
       currentGameMode = DEALER_HIT_STAND;
-      console.log(currentGameMode);
     } else {
-      myOutputValue = `Invalid input. Please input only 1 for hit or 2 for stand.`;
+      myOutputValue =
+        startPlayerSentence +
+        `You have drawn a ${playerHand[playerHand.length - 1].name} of 
+        ${
+          playerHand[playerHand.length - 1].suit
+        }.<br><br> Total Score: ${playerValue} <br>` +
+        oneDealer +
+        `Please input click on hit to add more cards or click on stand.`;
     }
     return myOutputValue;
   }
-  //fifth submit click
+};
+//---------------STAND FUNCTION (THIRD BUTTON) ------------------------------
+var stand = function () {
+  totalCounter = totalCounter + 1;
+  currentGameMode = DEALER_HIT_STAND;
   if (currentGameMode == DEALER_HIT_STAND) {
+    var startPlayerSentence = playerDisplay(playerHand);
+    var playerValue = checkScore(playerHand);
     var dealerValue = checkScore(dealerHand);
-    if (dealerValue < 17) {
+
+    while (dealerValue < 17) {
       dealerHand.push(shuffledDeck.pop());
       console.log(`dealer's hand after stand:`);
       console.log(dealerHand);
-      myOutputValue =
-        startSentence +
-        `Dealer Score: ${dealerValue}. <br> It will draw again. Click submit to see who won.`;
+      dealerValue = checkScore(dealerHand);
     }
-    if (dealerValue >= 17) {
-      myOutputValue =
-        startSentence +
-        `Dealer Score: ${dealerValue}. <br> It will not draw anymore. Click submit to see who won.`;
-      currentGameMode = CHECK_WHO_WIN;
-      console.log(currentGameMode);
+    if (dealerValue > 21) {
+      checkDealerAce();
     }
-    return myOutputValue;
-  }
 
-  //sixth submit click
-  if (currentGameMode == CHECK_WHO_WIN) {
-    var playerValue = checkScore(playerHand);
-    var dealerValue = checkScore(dealerHand);
-    endGameMessage =
-      startSentence +
-      `<u>Player Value: ${playerValue} <br> Dealer Value: ${dealerValue}</u> <br>`;
-    //condition if both busted
-    if (playerValue >= 21 && dealerValue >= 21) {
-      myOutputValue =
-        endGameMessage + `It's a tie! Both dealer and player busted.`;
+    if (dealerValue >= 17) {
+      var startDealerSentence = dealerDisplay(dealerHand);
+      var playerValue = checkScore(playerHand);
+      var dealerValue = checkScore(dealerHand);
+      //===============WINNING CONDITION=============================
+      endGameMessage =
+        startPlayerSentence +
+        startDealerSentence +
+        `<u>Player Value: ${playerValue} <br> Dealer Value: ${dealerValue}</u> <br>`;
+      //condition if both busted
+      if (playerValue >= 21 && dealerValue >= 21) {
+        playerMoney = playerMoney + playerBet;
+        myOutputValue =
+          endGameMessage +
+          `It's a tie! Both dealer and player busted. You have won ${totalWin} out of ${totalCounter}. Click on restart to play another round! <br><br> The dealer returns you $${playerBet}. You now have $${playerMoney}.` +
+          tieImage;
+      }
+      //condition if both not busted but player value is more than dealer.
+      if (playerValue > dealerValue && dealerValue <= 21 && playerValue <= 21) {
+        playerMoney = playerMoney + playerBet + playerBet;
+        totalWin = totalWin + 1;
+        myOutputValue =
+          endGameMessage +
+          `<br> Player win. You have won ${totalWin} out of ${totalCounter}. ${restartGameMessage} You won $${playerBet}. You now have $${playerMoney}.` +
+          winningImage;
+      }
+      //condition if dealer busted
+      if (playerValue <= 21 && dealerValue >= 21) {
+        playerMoney = playerMoney + playerBet + playerBet;
+        totalWin = totalWin + 1;
+        myOutputValue =
+          endGameMessage +
+          `<br> Player win. Dealer Busted. You have won ${totalWin} out of ${totalCounter}. ${restartGameMessage} You won $${playerBet}.You now have $${playerMoney}.` +
+          winningImage;
+      }
+      //condition if both not busted but dealer more than player
+      if (dealerValue > playerValue && dealerValue <= 21 && playerValue <= 21) {
+        myOutputValue =
+          endGameMessage +
+          `<br> Dealer win. You have won ${totalWin} out of ${totalCounter}. ${restartGameMessage} You lost $${playerBet}. You now have $${playerMoney}.` +
+          losingImage;
+      }
+      //condition if player busted
+      if (dealerValue <= 21 && playerValue > 21) {
+        myOutputValue =
+          endGameMessage +
+          `<br>  Dealer win. Player Busted. You have won ${totalWin} out of ${totalCounter}. ${restartGameMessage} You lost $${playerBet}. You now have $${playerMoney}.` +
+          losingImage;
+      }
+      //condition if both same value and not busted
+      if (
+        dealerValue == playerValue &&
+        dealerValue <= 21 &&
+        playerValue <= 21
+      ) {
+        playerMoney = playerMoney + playerBet;
+        myOutputValue =
+          endGameMessage +
+          `<br> It's a tie! ${restartGameMessage} <br><br> The dealer returns you $${playerBet}. You now have $${playerMoney}. ` +
+          tieImage;
+      }
+      currentGameMode = END_GAME;
+      return myOutputValue;
     }
-    //condition if both not busted but player value is more than dealer.
-    if (playerValue > dealerValue && dealerValue <= 21 && playerValue <= 21) {
-      myOutputValue = endGameMessage + `<br> Player win.`;
-    }
-    //condition if dealer busted
-    if (playerValue <= 21 && dealerValue >= 21) {
-      myOutputValue = endGameMessage + `<br> Player win. Dealer Busted.`;
-    }
-    //condition if both not busted but dealer more than player
-    if (dealerValue > playerValue && dealerValue <= 21 && playerValue <= 21) {
-      myOutputValue = endGameMessage + `<br> Dealer win.`;
-    }
-    //condition if player busted
-    if (dealerValue <= 21 && playerValue >= 21) {
-      myOutputValue = endGameMessage + `<br>  Dealer win. Player Busted.`;
-    }
-    //condition if both same value and not busted
-    if (dealerValue == playerValue && dealerValue <= 21 && playerValue <= 21) {
-      myOutputValue = endGameMessage + `<br> It's a tie!`;
-    }
-    currentGameMode = END_GAME;
-    return myOutputValue;
   }
-  // End game. Reset all the global variables for a new game.
+};
+// End game. Reset all the global variables for a new game.
+var restart = function () {
+  currentGameMode = END_GAME;
   if (currentGameMode == END_GAME) {
+    console.log(currentGameMode);
     playerHand = [];
     dealerHand = [];
-    dealerValue = 0;
+    playerValue = 0;
     dealerValue = 0;
     shuffledDeck = shuffleCards(makeDeck());
-    myOutputValue = `Please press "Submit" to restart the game!`;
+    myOutputValue = `Please place your bet for another game!`;
     currentGameMode = GAME_START;
     return myOutputValue;
   }
