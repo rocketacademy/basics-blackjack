@@ -38,7 +38,9 @@ class Round {
   _newSeatList = (players) => {
     const list = new LinkedList();
 
-    const elements = players.map((p) => this._newSeat(p));
+    const elements = players
+      .filter((p) => p.getCredit() > 0)
+      .map((p) => this._newSeat(p));
     list.relist(elements);
     return list;
   };
