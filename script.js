@@ -312,8 +312,8 @@ const blackjackCheck = function () {
       nextPlayerTurnFlag = true;
       if (playersArray[playersArrayIndex].cash <= 0) {
         msg += `<br><br>${playersArray[playersArrayIndex].name} has ran out of cash and left the table.`;
+        playersArray.splice(playersArrayIndex, 1);
         if (playersArrayIndex + 1 == playersArray.length) {
-          playersArray.splice(playersArrayIndex, 1);
           playersArrayIndex = 0;
           gameStatus = dealerTurn;
         }
@@ -367,8 +367,8 @@ const runPlayerTurn = function (input) {
           playersArray[playersArrayIndex].bets;
         if (playersArray[playersArrayIndex].cash <= 0) {
           msg += `<br><br>${playersArray[playersArrayIndex].name} has ran out of cash and left the table.`;
+          playersArray.splice(playersArrayIndex, 1);
           if (playersArrayIndex + 1 == playersArray.length) {
-            playersArray.splice(playersArrayIndex, 1);
             playersArrayIndex = 0;
             gameStatus = dealerTurn;
           }
@@ -426,8 +426,8 @@ const runPlayerTurn = function (input) {
           playersArray[playersArrayIndex].bets;
         if (playersArray[playersArrayIndex].cash <= 0) {
           msg += `<br><br>${playersArray[playersArrayIndex].name} has ran out of cash and left the table.`;
+          playersArray.splice(playersArrayIndex, 1);
           if (playersArrayIndex + 1 == playersArray.length) {
-            playersArray.splice(playersArrayIndex, 1);
             playersArrayIndex = 0;
             gameStatus = dealerTurn;
           }
@@ -531,8 +531,8 @@ const runDealerTurn = function () {
         playersArray[playersArrayIndex].bets;
       if (playersArray[playersArrayIndex].cash <= 0) {
         msg += `<br><br>${playersArray[playersArrayIndex].name} has ran out of cash and left the table.`;
+        playersArray.splice(playersArrayIndex, 1);
         if (playersArrayIndex + 1 == playersArray.length) {
-          playersArray.splice(playersArrayIndex, 1);
           playersArrayIndex = 0;
           gameStatus = dealerTurn;
         }
