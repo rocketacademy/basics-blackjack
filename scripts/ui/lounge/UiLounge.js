@@ -145,10 +145,13 @@ class UiLounge extends Ui_Tree {
   _newUiButtonFormPlayer = () => {
     const btn = new UiButtonFormPlayer();
     btn.setOnMouseClick(() => {
+      this._lounge.formPlayer();
+
       if (this._lounge.isFull()) {
+        btn.getRoot().parentNode.removeChild(btn.getRoot());
+
         return;
       }
-      this._lounge.formPlayer();
     });
     return btn;
   };
