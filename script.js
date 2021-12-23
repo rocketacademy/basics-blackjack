@@ -9,27 +9,18 @@ The player who is closer to, but not above 21 wins the hand.
 */
 
 // Global Variables declariation
-var player = [
-  {
-    name: "player",
-    hands: [[]],
-    points: 0, // array of points and wagers corresponding to hands
-    wager: 0,
-    chips: 100,
-    readyState: [false], // array denoting whether the hand is settled
-  },
-];
+var players = [];
 // var playerHandValue = checkValue(player[0]);
 
-var computer = [
-  {
-    name: "computer",
-    hands: [[]],
-    points: 0, // array of points and wagers corresponding to hands
-    wager: 0,
-    chips: 100,
-    readyState: [false], // array denoting whether the hand is settled
-  },
+var computers = [
+  // {
+  //   name: "computer",
+  //   hands: [[]],
+  //   points: 0, // array of points and wagers corresponding to hands
+  //   wager: 0,
+  //   chips: 100,
+  //   readyState: [false], // array denoting whether the hand is settled
+  // },
 ];
 // var computerHandValue = checkValue(computer[0]);
 
@@ -125,6 +116,13 @@ var shuffledDeck = shuffleCards(deck);
 // var splitOption = function(){
 
 // }
+var wait = function(ms){
+  var start = new Date().getTime();
+  var end = start;
+  while(end < start + ms) {
+    end = new Date().getTime();
+ }
+}
 
 var checkValue = function (player) {
   player.points = 0;
@@ -132,7 +130,7 @@ var checkValue = function (player) {
   // getting values of player first hand, if split implemented, do another for loop to change hands
   // player.hands[0] = [shuffledDeck.pop(), shuffledDeck.pop()];
   for (var i = 0; i < player.hands[0].length; i += 1) {
-    console.log(`${player.name} cards: ${player.hands[0]}`);
+    console.log(`${player.name} cards: ${JSON.stringify(player.hands[0])}`);
     var currCardCounter = 0;
     var acesInHand = 0;
 
@@ -183,98 +181,213 @@ var checkValue = function (player) {
   }
 };
 
+
+
+var hit = function(){
+  for (var i = 0; i<players.length; i++){
+    if (mainGameFunction == "waiting instructions") {
+      if(players[i].hands[i].length <6 ){
+        console.log(mainGameFunction)
+        players[i].hands[i].push(shuffledDeck.pop());
+        checkValue(players[i]).points;
+        console.log(`playershands: ${players[i].points}`);
+        checkValue(computers[i]).points;
+        console.log(`computershands: ${computers[i].points}`);
+        myOutputValue =
+          "computers had " +
+          computers[i].points +
+          ".<br><br>players had " +
+          players[i].points +
+          ".<br><br>" +
+          "players would you like to hit or stand?";
+        mainGameFunction = "waiting instructions";
+        myOutputValue = deckOutput(myOutputValue,players)
+        return myOutputValue;
+      }
+      else{
+        return "Max number of cards drawn reached"
+      }
+    }
+  }
+}
+
+var check_win = function(){
+  for (var i = 0; i<players.length; i++){
+    myOutputValue =
+        "computers final value is: " +
+        computers[i].points +
+        ".<br><br>players final value is: " +
+        players[i].points +
+        ".";
+      mainGameFunction = "start";
+      if(players[i].points >21 && computers[i].points > 21){
+        finalOutput = "Both Busts<br><br>" + myOutputValue;
+      }
+        else if (computers[i].points > players[i].points && computers[i].points <= 21) {
+        finalOutput = "computers Wins!<br><br>" + myOutputValue;
+      } else if (computers[i].points < players[i].points && players[i].points <= 21) {
+        finalOutput = "players Wins!<br><br>" + myOutputValue;
+      } else if (computers[i].points > 21) {
+        finalOutput = "computers Busts!<br><br>" + myOutputValue;
+      } else if (players[i].points > 21) {
+        finalOutput = "players Busts!<br><br>" + myOutputValue;
+      } else if (computers[i].points == players[i].points) {
+        finalOutput = "ISSA DRAW!<br><br>" + myOutputValue;
+      }
+    return finalOutput;
+  }
+}
+
+var stand = function(){
+  for (var i = 0; i<players.length; i++){
+    if (mainGameFunction == "waiting instructions") {
+      console.log(mainGameFunction + " in stand button")
+      myOutputValue = `players final hand value is ${players[i].points}!<br><br>computers's turn to draw`;
+      mainGameFunction = "computers turn";
+      return myOutputValue;
+    }
+    else if (mainGameFunction == "computers turn") {
+      if (computers[i].points < 17){
+        console.log(mainGameFunction)
+        computers[i].hands[i].push(shuffledDeck.pop());
+        checkValue(players[i]).points;
+        console.log(`playershands: ${players[i].points}`);
+        checkValue(computers[i]).points;
+        console.log(`computershands: ${computers[i].points}`);
+        myOutputValue =
+          "computers had " +
+          computers[i].points +
+          ".<br><br>players had " +
+          players[i].points +
+          ".<br><br>" +
+          "computers thinking whether to draw....";
+        myOutputValue = deckOutput(myOutputValue,computers)
+        return myOutputValue;
+        }
+      else{
+        mainGameFunction = "check win"
+        return check_win()
+      }
+    }
+    else{
+      return "Please click restart button to replay"
+    }
+  }
+}
+
+var dealHands = function(){
+    // alternate handing cards to each player
+    // 2 cards each
+    for(var i = 0; i < 2; i++)
+    {
+        for (var x = 0; x < players.length; x++)
+        {
+            var card = shuffledDeck.pop();
+            players[x].hands[0].push(card);
+        }
+    }
+    for(var i = 0; i < 2; i++)
+    {
+        for (var x = 0; x < computers.length; x++)
+        {
+          var card = shuffledDeck.pop();
+          computers[x].hands[0].push(card);
+        }
+      }
+    }
+    
+    var deckOutput = function(myOutputValue,whose_turn){
+      myOutputValue = myOutputValue 
+      for (i = 0; i<whose_turn.length;i++){
+        for(var player = 0;player < whose_turn[i].hands[i].length;player ++){
+          var card_Name = whose_turn[i].hands[i][player].name
+          var card_Suit = whose_turn[i].hands[i][player].suit
+      var player_Name = whose_turn[i].name
+      myOutputValue += `<br> ${player_Name} drew: ${card_Name} ${card_Suit} for card ${player + 1}`
+    }
+    return myOutputValue
+  }
+}
 mainGameFunction = `start`;
+
+var restart= function (){
+  mainGameFunction = "start"
+  players = []
+  computers = []
+  console.log(mainGameFunction)
+  myOutputValue = main()
+  return myOutputValue
+}
 
 var main = function (input) {
   if (mainGameFunction == "start") {
-    myOutputValue = `Welcome to blackjack please press enter to start the game`;
-    mainGameFunction = "draw cards";
+    console.log(mainGameFunction)
+    myOutputValue = `Welcome to blackjack please enter number of players and click enter`;
+    mainGameFunction = "players entered";
+    console.log(players)
+    console.log(computers)
     return myOutputValue;
   }
-  if (mainGameFunction == "draw cards") {
-    // Draw 2 cards from the top of the deck
-    player[0].hands[0] = [shuffledDeck.pop(), shuffledDeck.pop()];
-    computer[0].hands[0] = [shuffledDeck.pop(), shuffledDeck.pop()];
-    checkValue(player[0]).points;
-    console.log(`Playerhands: ${player[0].points}`);
-    checkValue(computer[0]).points;
-    console.log(`Computerhands: ${computer[0].points}`);
-    // Construct an output string to communicate which cards were drawn
-    var myOutputValue =
-      "Computer had " +
-      computer[0].points +
-      ".<br><br>Player had " +
-      player[0].points +
-      ".<br><br>" +
-      "Player would you like to hit or stand?";
-    mainGameFunction = "waiting instructions";
-    return myOutputValue;
-  }
-  if (mainGameFunction == "waiting instructions") {
-    if (input == "hit") {
-      player[0].hands[0].push(shuffledDeck.pop());
-      checkValue(player[0]).points;
-      console.log(`Playerhands: ${player[0].points}`);
-      checkValue(computer[0]).points;
-      console.log(`Computerhands: ${computer[0].points}`);
-      myOutputValue =
-        "Computer had " +
-        computer[0].points +
-        ".<br><br>Player had " +
-        player[0].points +
-        ".<br><br>" +
-        "Player would you like to hit or stand?";
-      mainGameFunction = "waiting instructions";
-      return myOutputValue;
-    } else if (input == "stand") {
-      myOutputValue = `Player final hand value is ${player[0].points}!<br><br>Computer's turn to draw`;
-      mainGameFunction = "computer turn";
-      console.log("Computer turn!");
-      console.log(`main game function ${mainGameFunction}`);
-      return myOutputValue;
-    } else {
-      myOutputValue = "Please input either hit or stand";
-      mainGameFunction = "waiting instructions";
-      return myOutputValue;
+  
+  if(mainGameFunction == "players entered"){
+    if(isNaN(input)==false){
+      computers.push({
+      name: "computer",
+      hands: [[]],
+      points: 0, // array of points and wagers corresponding to hands
+      wager: 0,
+      chips: 100,
+      readyState: [false], // array denoting whether the hand is settled
+    },)
+    for (i = 0; i < input;i++){
+      players.push({
+        name: "player",
+        hands: [[]],
+        points: 0, // array of points and wagers corresponding to hands
+        wager: 0,
+        chips: 100,
+        readyState: [false], // array denoting whether the hand is settled
+      })
     }
-  }
-  if (mainGameFunction == "computer turn") {
-    console.log("In computer turn");
-    if (computer[0].points < 17) {
-      computer[0].hands[0].push(shuffledDeck.pop());
-      checkValue(player[0]).points;
-      console.log(`Playerhands: ${player[0].points}`);
-      checkValue(computer[0]).points;
-      console.log(`Computerhands: ${computer[0].points}`);
-      myOutputValue =
-        "Computer had " +
-        computer[0].points +
-        ".<br><br>Player had " +
-        player[0].points +
-        ".<br><br>" +
-        "Computer thinking whether to draw....";
-      return myOutputValue;
+    console.log(players)
+    console.log(computers)
+    myOutputValue = `Welcome to blackjack click play to start the game`;
+    mainGameFunction = "draw cards"
+    return myOutputValue
     }
+    else{
+      mainGameFunction = "players entered";
+      return `Please input number of pax playing and click play`
+    } 
   }
-  myOutputValue =
-    "Computer final value is: " +
-    computer[0].points +
-    ".<br><br>Player final value is: " +
-    player[0].points +
-    ".";
-  mainGameFunction = "start";
-  if (computer[0].points > player[0].points && computer[0].points <= 21) {
-    finalOutput = "Computer Wins!<br><br>" + myOutputValue;
-  } else if (computer[0].points < player[0].points && player[0].points <= 21) {
-    finalOutput = "Player Wins!<br><br>" + myOutputValue;
-  } else if (computer[0].points > 21) {
-    finalOutput = "Computer Busts!<br><br>" + myOutputValue;
-  } else if (player[0].points > 21) {
-    finalOutput = "Player Busts!<br><br>" + myOutputValue;
-  } else if (computer[0].points == player[0].points) {
-    finalOutput = "ISSA DRAW!<br><br>" + myOutputValue;
-  }
+  for (var i = 0; i<players.length; i++){
+    if (mainGameFunction == "draw cards") {
+      dealHands()
+      console.log(mainGameFunction)
+      checkValue(players[i]);
+      console.log(`playershands: ${players[i].points}`);
+      checkValue(computers[i]);
+      console.log(`computershands: ${computers[i].points}`);
+      // Construct an output string to communicate which cards were drawn
+      
+      var myOutputValue =
+      "player would you like to hit or stand?" +
+      "<br><br>" +
+      "computers total " +
+      computers[i].points +
+      ".<br><br>player total " +
+      players[i].points+"<br>";
 
-  // Return the fully-constructed output string
-  return finalOutput;
+      myOutputValue = deckOutput(myOutputValue,players)
+      mainGameFunction = "waiting instructions";
+      return myOutputValue;
+    }
+    if (mainGameFunction == "waiting instructions") {
+      console.log(mainGameFunction)
+        myOutputValue = "Please choose either hit or stand";
+        mainGameFunction = "waiting instructions"
+        console.log("waiting instructions in play button");
+        return myOutputValue;
+    }
+  }
 };
