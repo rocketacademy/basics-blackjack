@@ -258,18 +258,24 @@ var main = function (input) {
         outputMessage =
           displayPlayerAndDealerCards(playerCards, dealerCards) +
           "<br>Black Jack Tie!";
+        // Restart game
+        currentGameMode = GAME_START;
       }
       // Only player has black jack
       else if (playerHasBlackJack == true && dealerHasBlackJack == false) {
         outputMessage =
           displayPlayerAndDealerCards(playerCards, dealerCards) +
           "<br>Player wins by Black Jack!";
+        // Restart game
+        currentGameMode = GAME_START;
       }
       // Only dealer has black jack
       else {
         outputMessage =
           displayPlayerAndDealerCards(playerCards, dealerCards) +
           "<br>Dealer wins by Black Jack!";
+        // Restart game
+        currentGameMode = GAME_START;
       }
     }
 
