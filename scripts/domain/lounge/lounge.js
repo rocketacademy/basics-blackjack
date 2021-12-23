@@ -1,12 +1,15 @@
 // TABLE
 
 class Lounge {
+  static MAX_PLAYERS = 5;
   constructor() {
     /** @private @const {Partipants[]} */
     this._players = [];
     this._dealer = null;
     /** @private @const {Card[]} */
     this._shoe = null;
+
+    this._fakeId = 1;
   }
   getPlayers = () => this._players;
   addPlayer = (p) => this._players.push(p);
@@ -15,6 +18,11 @@ class Lounge {
   playerCount = () => this._players.length;
   dealerCount = () => (!!this._dealer ? 1 : 0);
   participantCount = () => this.playerCount() + this.dealerCount();
+
+  isFull = () => {
+    console.log(`full ${this.playerCount()}`);
+    return Lounge.MAX_PLAYERS === this.playerCount();
+  };
   /**
    *
    * @param {number} sets
@@ -40,4 +48,10 @@ class Lounge {
   };
   getShoe = () => this._shoe;
   shoeSize = () => this._shoe.length;
+
+  formPlayer = () => {
+    this._fakeId += 1;
+    const player = new Participant(`Player ${this._fakeId}`);
+    this.addPlayer(player);
+  };
 }

@@ -77,18 +77,6 @@ class Sample {
     return lounge;
   };
 
-  static getDefaultHeadsUp = () => {
-    const lounge = new Lounge();
-    const newPlayer1 = new Participant("");
-
-    const dealer = new Participant("Dealer", 1000000);
-    lounge.addPlayer(newPlayer1);
-    lounge.setDealer(dealer);
-    lounge.generateShoe(2);
-
-    return lounge;
-  };
-
   static getStubFivePlayersDealerBlackjack = () => {
     const lounge = new Lounge();
     const newPlayer1 = new Participant("Elven");
@@ -147,6 +135,22 @@ class Sample {
       card19,
       card20,
     ].forEach(lounge.addCardToShoe);
+
+    return lounge;
+  };
+
+  /**
+   *
+   * Main
+   */
+  static getDefaultHeadsUp = () => {
+    const lounge = new Lounge();
+    const newPlayer1 = new Participant("Player 1");
+
+    const dealer = new Participant("Dealer", 1000000);
+    lounge.addPlayer(newPlayer1);
+    lounge.setDealer(dealer);
+    lounge.generateShoe(2);
 
     return lounge;
   };
