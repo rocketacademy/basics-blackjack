@@ -138,6 +138,7 @@ var main = function (input) {
     }
 
     displayIndex = 1;
+    if (currentGameMode == "gameCardsDrawn") {displayIndex = 1} 
     var computerMessage = "Computer's Hand is: <br> <i>First Card is hidden</i><br>";
     while (displayIndex < computerHand.length) {
       computerMessage =
