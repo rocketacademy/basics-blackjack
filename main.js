@@ -1,5 +1,7 @@
 const main = () => {
-  // new PlayingArea().newRoundOfPlay(Sample.getTwoPlayersLounge());
+  const lounge = new Lounge();
+
+  new PlayingArea().commenceLounge(lounge);
 };
 
 main();
