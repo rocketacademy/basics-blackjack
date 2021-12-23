@@ -9,6 +9,7 @@ class Lounge {
 
     this._fakeId = 1;
   }
+  //
   getPlayers = () => this._players;
   addPlayer = (p) => {
     this._players.push(p);

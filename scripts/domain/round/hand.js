@@ -39,7 +39,7 @@ class Hand {
     if (i === length) {
       return v;
     }
-
+    //
     const card = cards[i];
     const hardValue = card.getHardValue();
     const faceVal = card.getFaceValue();

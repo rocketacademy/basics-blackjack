@@ -14,6 +14,7 @@ const WHACKYISEEYOURCOLORS = [
   "purple",
   "pink",
 ];
+//
 
 let WHACKYISEEYOURCOLORS_I = 0;
 class Participant {

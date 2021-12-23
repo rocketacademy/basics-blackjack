@@ -74,6 +74,7 @@ class Round {
     this.setOnFinish = (fn) => {
       this._onFinish = fn;
     };
+    //
 
     console.group(`New Round: Players summary`);
     const seatGen = this.getSeatGenerator();

@@ -32,4 +32,5 @@ class Card {
   getString = () => `${this._suit.desc()}${this._faceValue.getFaceString()}`;
   _onFlip = (isFaceUp) => {};
   setOnFlip = (fn) => (this._onFlip = fn);
+  //
 }

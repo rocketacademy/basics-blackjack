@@ -8,7 +8,7 @@ class _Actor {
 
     this._id = uuidv4();
   }
-
+  //
   id = () => this._id;
 
   getName = () => this._participant.getName();
