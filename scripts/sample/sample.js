@@ -77,7 +77,19 @@ class Sample {
     return lounge;
   };
 
-  static getFivePlayersDealerBlackjack = () => {
+  static getDefaultHeadsUp = () => {
+    const lounge = new Lounge();
+    const newPlayer1 = new Participant("");
+
+    const dealer = new Participant("Dealer", 1000000);
+    lounge.addPlayer(newPlayer1);
+    lounge.setDealer(dealer);
+    lounge.generateShoe(2);
+
+    return lounge;
+  };
+
+  static getStubFivePlayersDealerBlackjack = () => {
     const lounge = new Lounge();
     const newPlayer1 = new Participant("Elven");
     const newPlayer2 = new Participant("Baller");
@@ -93,7 +105,6 @@ class Sample {
     lounge.addPlayer(newPlayer5);
     lounge.setDealer(dealer);
     lounge.generateShoe(2);
-
     const card1 = Deck.newCard(Suit.CLUBS, FaceValue.ACE);
     const card2 = Deck.newCard(Suit.CLUBS, FaceValue.ACE);
     const card3 = Deck.newCard(Suit.CLUBS, FaceValue.ACE);
@@ -114,7 +125,6 @@ class Sample {
     const card18 = Deck.newCard(Suit.HEARTS, FaceValue.QUEEN); //3
     const card19 = Deck.newCard(Suit.CLUBS, FaceValue.KING); //2
     const card20 = Deck.newCard(Suit.CLUBS, FaceValue.FIVE); //1
-
     [
       card1,
       card2,

@@ -1,5 +1,5 @@
 const main = () => {
-  const lounge = new Lounge();
+  const lounge = Sample.getDefaultHeadsUp();
 
   new PlayingArea().commenceLounge(lounge);
 };

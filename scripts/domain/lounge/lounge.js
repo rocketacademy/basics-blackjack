@@ -19,8 +19,15 @@ class Lounge {
    *
    * @param {number} sets
    */
-  generateShoe = (sets) => {
+  generateShoe = (sets, isToRiffle = true) => {
     this._shoe = Deck.generateDeck(sets);
+    if (isToRiffle) {
+      const le = this._shoe.length;
+      for (let i = 0; i < le; i += 1) {
+        const j = Math.floor(Math.random() * (le - i)) + i;
+        [this._shoe[j], this._shoe[i]] = [this._shoe[i], this._shoe[j]];
+      }
+    }
   };
 
   __generateEmptyShoe = () => {

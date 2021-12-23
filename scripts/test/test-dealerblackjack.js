@@ -43,7 +43,7 @@
   newTestCollection.run();
 
   console.warn(`-----------test-playerblackjack-dealernoblackjs-----------`);
-  const lounge = Sample.getFivePlayersDealerBlackjack();
+  const lounge = Sample.getStubFivePlayersDealerBlackjack();
   const [round, _] = new PlayingArea().newRoundOfPlay(lounge);
   round.getDealer().commence();
 })();
