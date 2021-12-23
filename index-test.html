@@ -75,11 +75,6 @@
         max-width: 100%;
         max-height: 200px;
       }
-      .header {
-        text-align: center;
-        font-size: 1.1rem;
-        margin-bottom: 3rem;
-      }
 
       #container {
         background-color: pink;
@@ -93,38 +88,100 @@
         padding: 20px;
         width: 100%;
       }
-
+      #blackjack-ui-money-hider::before {
+        content: "";
+        display: inline-block;
+      }
+    </style>
+    <!-- //TODO-REVIEW slider tags doesn't have extensive css standard for now. :( -->
+    <style>
       input[type="range"] {
+        height: 13px;
         -webkit-appearance: none;
+        margin: 10px 0;
+        width: 100%;
       }
-
-      input[type="range"]::-webkit-slider-runnable-track {
-        width: 300px;
-        height: 5px;
-        background: black;
-        border: none;
-        border-radius: 3px;
-      }
-
-      input[type="range"]::-webkit-slider-thumb {
-        -webkit-appearance: "none";
-        border: none;
-        height: 16px;
-        width: 16px;
-        border-radius: 50%;
-        background: goldenrod;
-        margin-top: -4px;
-      }
-
       input[type="range"]:focus {
         outline: none;
       }
-
+      input[type="range"]::-webkit-slider-runnable-track {
+        width: 100%;
+        height: 1px;
+        cursor: pointer;
+        animate: 0.2s;
+        box-shadow: 0px 0px 0px #000000;
+        background: #000000;
+        border-radius: 1px;
+        border: 0px solid #000000;
+      }
+      input[type="range"]::-webkit-slider-thumb {
+        box-shadow: 0px 0px 0px #000000;
+        border: 1px solid #ffffff;
+        height: 6px;
+        width: 6px;
+        border-radius: 6px;
+        background: #000000;
+        cursor: pointer;
+        -webkit-appearance: none;
+        margin-top: -3px;
+      }
       input[type="range"]:focus::-webkit-slider-runnable-track {
-        background: black;
+        background: #000000;
       }
       input[type="range"]::-moz-range-track {
-        background: black;
+        width: 100%;
+        height: 1px;
+        cursor: pointer;
+        animate: 0.2s;
+        box-shadow: 0px 0px 0px #000000;
+        background: #000000;
+        border-radius: 1px;
+        border: 0px solid #000000;
+      }
+      input[type="range"]::-moz-range-thumb {
+        box-shadow: 0px 0px 0px #000000;
+        border: 1px solid #ffffff;
+        height: 6px;
+        width: 6px;
+        border-radius: 6px;
+        background: #000000;
+        cursor: pointer;
+      }
+      input[type="range"]::-ms-track {
+        width: 100%;
+        height: 1px;
+        cursor: pointer;
+        background: transparent;
+        border-color: transparent;
+        color: transparent;
+      }
+      input[type="range"]::-ms-fill-lower {
+        background: #000000;
+        border: 0px solid #000000;
+        border-radius: 2px;
+        box-shadow: 0px 0px 0px #000000;
+      }
+      input[type="range"]::-ms-fill-upper {
+        background: #000000;
+        border: 0px solid #000000;
+        border-radius: 2px;
+        box-shadow: 0px 0px 0px #000000;
+      }
+      input[type="range"]::-ms-thumb {
+        margin-top: 1px;
+        box-shadow: 0px 0px 0px #000000;
+        border: 1px solid #ffffff;
+        height: 6px;
+        width: 6px;
+        border-radius: 6px;
+        background: #000000;
+        cursor: pointer;
+      }
+      input[type="range"]:focus::-ms-fill-lower {
+        background: #000000;
+      }
+      input[type="range"]:focus::-ms-fill-upper {
+        background: #000000;
       }
     </style>
   </head>
@@ -200,7 +257,18 @@
     <script src="scripts/ui/lounge/UiLounge.js"></script>
 
     <script src="scripts/ui/PlayingArea.js"></script>
+
     <!-- Imports - Entry -->
-    <script src="main.js"></script>
+    <!-- Imports - Test -->
+    <script src="scripts/TestBlackJack.js"></script>
+    <!-- <script src="scripts/test/test-1.js"></script> -->
+    <!-- <script src="scripts/test/test-playerblackjack-dealernoblackjs.js"></script> -->
+
+    <!-- <TEST: src="scripts/test/test-playerblackjack-dealernoblackjs.js"></script> -->
+
+    <!-- <script src="scripts/test/test-dealerblackjack-oneplayerblack-oneplayernoblack.js"></script> -->
+
+    <!-- TEST: dealer blackjack , five players-->
+    <script src="scripts/test/test-dealerblackjack.js"></script>
   </body>
 </html>
