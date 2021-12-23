@@ -116,6 +116,24 @@ class Round {
     return this._playerList.getElementGenerator();
   };
 
+  getCreditInterval = () => {
+    console.group(`getCreditInterval`);
+    const gen = this.getPlayerGenerator();
+
+    let max = 0;
+    let p = gen.next();
+    while (p) {
+      const c = p.getCredit();
+
+      if (max < c) {
+        max = c;
+      }
+      p = gen.next();
+    }
+    console.groupEnd();
+    return max;
+  };
+
   getAllHandsGenerator = () => {
     // nested... quite difficult
 

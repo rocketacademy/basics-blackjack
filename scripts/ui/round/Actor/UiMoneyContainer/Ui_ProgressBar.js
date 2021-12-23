@@ -34,11 +34,26 @@ class UiMoneyLabel extends Ui_Text {
   };
 }
 
-class Ui_ProgressBar2 extends Ui_Component {
-  _convertToPx = (money) => {
-    return 2 * money;
+class Ui_ProgressUnifire extends Ui_Component {
+  static PROGRESS_WIDTH = 400 / (5 / 2); // unit 1 + possible 1.5 payout
+  static HACKY_REM_PER_CREDIT = Ui_ProgressUnifire.PROGRESS_WIDTH / 100;
+
+  static setHACKY_REM_PER_CREDIT = (interval) => {
+    if (Number.isNaN(interval)) {
+      throw new Error(`interval should be a number`);
+    }
+    Ui_ProgressUnifire.HACKY_REM_PER_CREDIT =
+      Ui_ProgressUnifire.PROGRESS_WIDTH / interval;
+  };
+  static CONVERT_TO_PX = (money) => {
+    return Ui_ProgressUnifire.HACKY_REM_PER_CREDIT * money;
   };
 
+  constructor() {
+    super();
+  }
+}
+class Ui_ProgressBar2 extends Ui_ProgressUnifire {
   constructor() {
     super();
     this._root.className += ` blackjack-ui-money-progress-bar`;
@@ -63,16 +78,13 @@ class Ui_ProgressBar2 extends Ui_Component {
   };
   setMoney = (money) => {
     console.group(`Ui_ProgressBar setMoney`);
-    this._root.style.width = this._convertToPx(money) + "px";
+    this._root.style.width = Ui_ProgressUnifire.CONVERT_TO_PX(money) + "px";
     this._innerWrap.setTextContent(money);
     console.groupEnd();
   };
 }
-class Ui_ProgressBar extends Ui_Component {
-  _convertToPx = (money) => {
-    return 2 * money;
-  };
 
+class Ui_ProgressBar extends Ui_ProgressUnifire {
   _newInnerWrap = () => {
     return new UiInnerWrap();
   };
@@ -100,7 +112,9 @@ class Ui_ProgressBar extends Ui_Component {
   };
   setMoney = (money) => {
     console.group(`Ui_ProgressBar setMoney`);
-    this._root.style.width = this._convertToPx(money) + "px";
+    const px = Ui_ProgressUnifire.CONVERT_TO_PX(money);
+    console.log(px);
+    this._root.style.width = px + "px";
     console.groupEnd();
   };
 }

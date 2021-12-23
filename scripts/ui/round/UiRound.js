@@ -92,7 +92,8 @@ class UiRound extends Ui_Tree {
     this._root.style.marginBottom = "20px";
     this._root.style.justifiyContent = "center";
   };
-  _newUiPlayerHolder = (generator) => {
+  _newUiPlayerHolder = (generator, creditInterval) => {
+    Ui_ProgressUnifire.setHACKY_REM_PER_CREDIT(creditInterval);
     const uiPH = new UiPlayerHolder();
 
     let p = generator.next();
@@ -142,7 +143,8 @@ class UiRound extends Ui_Tree {
     this._uiSeatHolder = this._newUiSeatHolder(seatGen);
 
     const playerGen = this._round.getPlayerGenerator();
-    this._uiPlayerHolder = this._newUiPlayerHolder(playerGen);
+    const creditInterval = this._round.getCreditInterval();
+    this._uiPlayerHolder = this._newUiPlayerHolder(playerGen, creditInterval);
 
     /** @private @const {UiPhaseDisplay} */
     this._uiPhaseDisplay = new UiPhaseDisplay();
