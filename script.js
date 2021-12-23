@@ -137,9 +137,8 @@ var main = function (input) {
       totalPlayerValueMessage = `Your total cards value is:  ${playerHandTotalValue}`;
     }
 
-    displayIndex = 1;
-    if (currentGameMode == "gameCardsDrawn") {displayIndex = 1} 
-    var computerMessage = "Computer's Hand is: <br> <i>First Card is hidden</i><br>";
+    displayIndex = 0;
+    var computerMessage = "Computer's Hand is: <br>";
     while (displayIndex < computerHand.length) {
       computerMessage =
         computerMessage +
