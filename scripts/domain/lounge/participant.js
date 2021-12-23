@@ -2,6 +2,20 @@
 
 const PARTICIPANT_AVATAR_URL_DEFAULT = "static/img/avatar/default.png";
 const PARTICIPANT_AVATAR_URL_ = "";
+const WHACKYISEEYOURCOLORS = [
+  "turquoise",
+  "#9b111e",
+  "red",
+  "orange",
+  "yellow",
+  "green",
+  "blue",
+  "violet",
+  "purple",
+  "pink",
+];
+
+let WHACKYISEEYOURCOLORS_I = 1;
 class Participant {
   constructor(name = "nameless", credit = 100) {
     /** @private @const {string} */
@@ -12,8 +26,14 @@ class Participant {
     this._imgUrl = null;
 
     this._fakeId = uuidv4();
+
+    this._colorTag = WHACKYISEEYOURCOLORS[WHACKYISEEYOURCOLORS_I++];
+
+    console.warn(` color tag ${this._colorTag}`);
     this.setName(name);
   }
+
+  getWhackyColor = () => this._colorTag;
 
   updateName = (name) => {
     this.setName(name);

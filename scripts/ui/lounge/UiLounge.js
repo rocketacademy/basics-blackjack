@@ -48,9 +48,11 @@ class UiPlayerForm extends Ui_Component {
     this._root.className += " ui-player-name";
 
     this._name = this._newPlayerName(this._p.getName());
+
+    this._name.setStyle("color", this._p.getWhackyColor());
     this._nameinput = this._newPlayerNameInput(this._p.getName());
 
-    this._id = this._p.iid();
+    this._iid = this._p.iid();
 
     this._p.setOnNameChange(() => {
       this._name.setName(this._p.getName());
@@ -64,7 +66,7 @@ class UiPlayerForm extends Ui_Component {
     this.replaceChildrenUi(this._nameinput, this._name);
   }
 
-  id = () => this._id;
+  id = () => this._iid;
 }
 
 class UiPlayerFormsHolder extends Ui_Component {
