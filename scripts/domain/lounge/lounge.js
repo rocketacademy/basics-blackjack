@@ -1,5 +1,3 @@
-// TABLE
-
 class Lounge {
   static MAX_PLAYERS = 5;
   constructor() {
@@ -12,7 +10,10 @@ class Lounge {
     this._fakeId = 1;
   }
   getPlayers = () => this._players;
-  addPlayer = (p) => this._players.push(p);
+  addPlayer = (p) => {
+    this._players.push(p);
+    this._onAddPlayer(p);
+  };
   setDealer = (d) => (this._dealer = d);
   getDealer = () => this._dealer;
   playerCount = () => this._players.length;
@@ -54,4 +55,6 @@ class Lounge {
     const player = new Participant(`Player ${this._fakeId}`);
     this.addPlayer(player);
   };
+  _onAddPlayer = (participant) => {};
+  setOnFormPlayer = (cb) => (this._onAddPlayer = cb);
 }
