@@ -1,16 +1,33 @@
 // TABLE
 
 class UiPlayerForm extends Ui_Component {
-  constructor() {
+  _newPlayerName = (name) => {
+    const t = new UiName();
+    t.setName(name);
+
+    return t;
+  };
+  constructor(participant) {
     super();
+
+    this._p = participant;
     this._root.style.height = "270px";
     this._root.style.marginTop = "50px";
     this._root.style.marginBottom = "30px";
     this._root.style.border = "1px solid black";
-    this._root.style.width = "60px";
+    this._root.style.width = "150px";
     this._root.style.borderRadius = "5px";
+    this._root.style.justifyContent = "center";
 
-    this._id = uuidv4();
+    this._name = this._newPlayerName(this._p.getName());
+
+    this._id = this._p.iid();
+
+    this._p.setOnNameChange(() => {
+      this._name.setName(this._participant.getName());
+    });
+
+    this.appendChildUi(this._name);
   }
 
   id = () => this._id;
@@ -91,8 +108,10 @@ class UiLounge extends Ui_Tree {
    * @param {Participant} players
    */
   _newUiPlayerForms = (players) => {
+    console.warn(players);
     const forms = new UiPlayerFormsHolder();
     for (const p of players) {
+      console.warn(p);
       const ui = this._newUiPlayerForm(p);
       forms.adduiPlayerForm(ui);
     }

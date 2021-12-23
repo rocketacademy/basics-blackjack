@@ -5,12 +5,21 @@ const PARTICIPANT_AVATAR_URL_ = "";
 class Participant {
   constructor(name = "nameless", credit = 100) {
     /** @private @const {string} */
-    this._name = name;
+    this._name = null;
     /** @private @const {number} */
     this._credit = credit;
 
     this._imgUrl = null;
+
+    this._fakeId = uuidv4();
+    this.setName(name);
   }
+  setName = (nn) => {
+    this._name = nn;
+  };
+  onnamechange = () => {};
+  setOnNameChange = (cb) => (this.onnamechange = cb);
+  iid = () => this._fakeId;
 
   getImgUrl = () => {
     return this._imgUrl || PARTICIPANT_AVATAR_URL_;

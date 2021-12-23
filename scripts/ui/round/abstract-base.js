@@ -72,3 +72,23 @@ class Ui_Aggregate extends Ui_Component {
     super();
   }
 }
+
+class UiName extends Ui_Component {
+  _style = () => {
+    this._root.style.justifyContent = "center";
+    this._root.style.marginTop = "10px";
+    this._root.style.marginBottom = "10px";
+    this._root.class += " blackjack-name";
+    this._root.style.height = "20px";
+    this._root.style.width = "auto";
+  };
+
+  /** @param {!string} name */
+  constructor() {
+    super(document.createElement("div"));
+    // Domain
+    this._style();
+  }
+
+  setName = (n) => (this._root.textContent = n);
+}
