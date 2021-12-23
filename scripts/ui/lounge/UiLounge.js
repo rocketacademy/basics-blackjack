@@ -1,5 +1,14 @@
 // TABLE
 
+class UiPersist extends Ui_Component {
+  constructor() {
+    super();
+    this._root.style.textAlign = "center";
+    this._root.style.alignSelf = "center";
+    this._root.style.height = "fit-content";
+  }
+}
+
 class UiNameInput extends Ui_Component {
   constructor() {
     super(document.createElement("INPUT"));
@@ -8,9 +17,11 @@ class UiNameInput extends Ui_Component {
     this._root.style.height = "fit-content";
     this._root.style.width = "90%";
     this._root.style.marginTop = "5px";
-    this._root.style.border = "0px solid white";
+    this._root.style.border = "1px solid lightgrey";
     this._root.style.textAlign = "center";
     this._root.style.alignSelf = "center";
+    this._root.style.color = "grey";
+    this._root.style.backgroundColor = "white";
   }
 
   setName = (n) => (this._root.value = n);
@@ -50,7 +61,11 @@ class UiPlayerForm extends Ui_Component {
     this._name = this._newPlayerName(this._p.getName());
 
     this._name.setStyle("color", this._p.getWhackyColor());
+
     this._nameinput = this._newPlayerNameInput(this._p.getName());
+
+    this._persist = new UiPersist();
+    this._persist.replaceChildrenUi(this._name);
 
     this._iid = this._p.iid();
 
@@ -63,7 +78,7 @@ class UiPlayerForm extends Ui_Component {
       this._p.updateName(evt.target.value);
     });
 
-    this.replaceChildrenUi(this._nameinput, this._name);
+    this.replaceChildrenUi(this._persist, this._nameinput);
   }
 
   id = () => this._iid;
