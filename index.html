@@ -282,7 +282,7 @@
       <div style="font-family: Bebas Neue"> Bet:
      <input id="input-field" type = "number" min="1" max="100" placeholder="Please key in at least $1"/>
       <button id="submit-button">Submit</button>
-       <p id="bettingOutput" style="font-family:Bebas Neue,Arial; font-size:20px;text-align: center; color:#224732"></p>
+       <p id="bettingOutput" style="font-family:Bebas Neue,Arial; font-size:20px;text-align: center; color:#224732;"></p>
       <div id="betting-results"></div>
     </div>
       <div id="output-div">
@@ -315,6 +315,8 @@
         output.innerHTML = play();
         var betOutput= document.getElementById("bettingOutput")
       betOutput.innerHTML=showPlayerCurrentPoints()
+         document.getElementById("bettingOutput").style["border-style"]="dotted"
+             
       });
 
       var hitButton = document.querySelector("#hit-button");
@@ -329,25 +331,22 @@
         output2.innerHTML = stand();
          var betOutput= document.getElementById("bettingOutput")
       betOutput.innerHTML=showPlayerCurrentPoints()
-        
-        
-
+      
       });
 
       var bet = document.querySelector("#submit-button")
       bet.addEventListener("click", function(){
          
         var input = document.querySelector("#input-field")
-        console.log(input)
+  
         //store output of showPoints in a variable
         var bettingResult = showBet(input.value)
-        console.log(bettingResult)
+              input.value = ""
         //display the result 
         var betResultOutput = document.getElementById("output-div")
         betResultOutput.innerHTML = bettingResult
-
-        input.value = ""
         
+       
       })
       
     </script>
