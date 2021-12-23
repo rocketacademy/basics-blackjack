@@ -60,6 +60,10 @@ class Dealer extends _Actor {
     /** @priv {Hand} */
     this._hand = null;
   }
+
+  hasPlayablePlayer = () => {
+    return this._round.hasPlayablePlayer();
+  };
   getHand = () => this._hand;
   _createOwnHand = () => {
     this._hand = new Hand();

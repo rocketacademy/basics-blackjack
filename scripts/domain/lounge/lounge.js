@@ -29,7 +29,9 @@ class Lounge {
       }
     }
   };
-
+  hasPlayablePlayers = () => {
+    return this._players.some((p) => p.getCredit() > 0);
+  };
   __generateEmptyShoe = () => {
     this._shoe = Deck.generateEmptyDeck();
   };

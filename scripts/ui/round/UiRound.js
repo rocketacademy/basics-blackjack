@@ -141,20 +141,23 @@ class UiRound extends Ui_Tree {
 
     this._uiDealer.addOnEndView((dealer) => {
       console.group(`ui round dealer request restart callback `);
-      const btnR = new UiButtonNewRound();
-      const btnL = new UiButtonGoToLounge();
 
       const newUiWrap = new UiEndWrap();
-      newUiWrap.addUiButton(btnR);
-      newUiWrap.addUiButton(btnL);
 
-      btnR.setOnMouseClick(() => {
-        dealer.requestNewRound();
-      });
+      if (dealer.hasPlayablePlayer()) {
+        const btnR = new UiButtonNewRound();
+        newUiWrap.addUiButton(btnR);
+        btnR.setOnMouseClick(() => {
+          dealer.requestNewRound();
+        });
+      }
 
+      const btnL = new UiButtonGoToLounge();
       btnL.setOnMouseClick(() => {
         dealer.requestGoToLounge();
       });
+
+      newUiWrap.addUiButton(btnL);
 
       this.addChildrenUi(newUiWrap);
       console.groupEnd();

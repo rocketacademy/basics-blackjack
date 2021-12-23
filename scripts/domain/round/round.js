@@ -85,6 +85,15 @@ class Round {
     }
     console.groupEnd();
   }
+
+  hasPlayablePlayer = () => {
+    for (const p of this._players) {
+      if (p.getCredit() > 0) {
+        return true;
+      }
+    }
+    return false;
+  };
   getShoe = () => this._deck;
   getRootSeat = () => this._seatList.getRoot().getElement();
   peekFirstChair = () =>

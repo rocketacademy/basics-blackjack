@@ -29,6 +29,14 @@ class PlayingArea {
     console.group(`commenceLounge`);
     const uiLounge = new UiLounge(lounge);
     uiLounge.setUiParentRoot(this._uiRoot);
+
+    uiLounge.setOnStart((nextLounge) => {
+      if (!nextLounge.hasPlayablePlayers()) {
+        return;
+      }
+      const [round] = new PlayingArea(this._uiRoot).newRoundOfPlay(nextLounge);
+      round.getDealer().commence();
+    });
     uiLounge.render();
     console.groupEnd();
     return [lounge, uiLounge];
