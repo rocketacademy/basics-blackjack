@@ -20,7 +20,7 @@ class Player extends _Actor {
     this._participant.decreaseCredit(amt);
     this._onMainBetStaked(amt);
   };
-  returnMainBet = (amt) => {
+  returnAnyBet = (amt) => {
     this._participant.increaseCredit(amt);
   };
   makanMainBetNotif = () => {

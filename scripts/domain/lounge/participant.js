@@ -34,7 +34,7 @@ class Participant {
     console.groupEnd();
   };
   increaseCredit = (amt) => {
-    if (!amt) {
+    if (amt === undefined || amt === null) {
       throw new Error(`increaseCredit. amt not specified`);
     }
 

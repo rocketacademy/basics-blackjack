@@ -343,7 +343,7 @@ class Dealer extends _Actor {
 
       console.log(`mainWager ${mainWager}`);
 
-      sponsor.returnMainBet(mainWager);
+      sponsor.returnAnyBet(mainWager);
 
       // payout (win amount)
       const { ratio } = mode;
@@ -365,13 +365,21 @@ class Dealer extends _Actor {
     } else if (award === AWARD_ENUM.STAND_OFF) {
       console.log(`stand off`);
       // Return main wager to sponsor
-      sponsor.returnMainBet(wager.retrieveMainBet());
+      sponsor.returnAnyBet(wager.retrieveMainBet());
+      sponsor.returnAnyBet(wager.retrieveDoubleBet());
     } else if (award === AWARD_ENUM.PLAYER_LOSE) {
       console.log(`Makan! lose`);
       // Makan
-      this.increaseCredit(wager.retrieveMainBet());
-      sponsor.makanMainBetNotif();
-      sponsor.makanDoubleBetNotif();
+      const makanMainBet = wager.retrieveMainBet();
+      this.increaseCredit(makanMainBet);
+      const makanDoubleBet = wager.retrieveDoubleBet();
+      this.increaseCredit(makanDoubleBet);
+      if (makanMainBet > 0) {
+        sponsor.makanMainBetNotif();
+      }
+      if (makanDoubleBet > 0) {
+        sponsor.makanDoubleBetNotif();
+      }
     } else {
       throw new Error(`Irregularity. No settlement type.`);
     }
@@ -542,7 +550,7 @@ class Dealer extends _Actor {
   _stakeDouble = (sponsor, doubleAmt, wager) => {
     console.group(`dealer performs the transfer of value and transfer of card`);
     sponsor.stakeDouble(doubleAmt);
-    wager.addBet(doubleAmt);
+    wager.setDoubleBet(doubleAmt);
     this._transferCard(this._round.getShoe(), wager.getHand()).flip(true);
     console.log(sponsor.getCredit());
     console.groupEnd();
@@ -570,7 +578,7 @@ class Dealer extends _Actor {
   _stakeMainBet = (sponsor, betValue, wager) => {
     console.group(`dealer performs the transfer of value`);
     sponsor.stakeMainBet(betValue);
-    wager.setBet(betValue);
+    wager.setMainBet(betValue);
     console.log(sponsor.getCredit());
     console.groupEnd();
   };

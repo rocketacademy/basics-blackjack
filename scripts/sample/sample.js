@@ -105,13 +105,13 @@ class Sample {
     const card9 = Deck.newCard(Suit.CLUBS, FaceValue.TEN); //1-3
     const card10 = Deck.newCard(Suit.CLUBS, FaceValue.NINE); //5
     const card11 = Deck.newCard(Suit.CLUBS, FaceValue.SEVEN); //4
-    const card12 = Deck.newCard(Suit.CLUBS, FaceValue.ACE); //3
+    const card12 = Deck.newCard(Suit.HEARTS, FaceValue.ACE); //3
     const card13 = Deck.newCard(Suit.CLUBS, FaceValue.KING); //2
     const card14 = Deck.newCard(Suit.CLUBS, FaceValue.SIX); //1
     const card15 = Deck.newCard(Suit.CLUBS, FaceValue.JACK); // D
     const card16 = Deck.newCard(Suit.CLUBS, FaceValue.TEN); // 5
     const card17 = Deck.newCard(Suit.CLUBS, FaceValue.SIX); // 4
-    const card18 = Deck.newCard(Suit.CLUBS, FaceValue.QUEEN); //3
+    const card18 = Deck.newCard(Suit.HEARTS, FaceValue.QUEEN); //3
     const card19 = Deck.newCard(Suit.CLUBS, FaceValue.KING); //2
     const card20 = Deck.newCard(Suit.CLUBS, FaceValue.FIVE); //1
 

@@ -75,8 +75,17 @@ class UiResult extends Ui_Text {
     this._root.style.width = "120px";
     this._root.style.textAlign = "center";
     this._root.style.justifyContent = "center";
-    this._root.className += " blackjack-wager-result";
+    this._root.className += " blackjack-wager-result--";
   }
+
+  setFontColor = (val) => {
+    console.log("setting color");
+    this._root.style.color = val;
+  };
+
+  setBold = () => {
+    this._root.style.fontWeight = "bold";
+  };
 }
 
 class UiResults extends Ui_Component {
@@ -106,18 +115,33 @@ class UiWager extends Ui_Component {
   _newUiResult = (text) => {
     const uiR = new UiResult();
     uiR.setTextContent(text);
+
+    return uiR;
+  };
+
+  _newUiResultAward = (award) => {
+    console.warn(award);
+    const uiR = new UiResult();
+    uiR.setTextContent(award);
+
+    if (award === AWARD_ENUM.PLAYER_WIN) {
+      console.warn("WIN SHOULD SET COLOR");
+
+      uiR.setFontColor("#006400");
+      uiR.setBold();
+    }
     return uiR;
   };
   _newUiResults = (result) => {
     console.warn(result);
     const uiResults = new UiResults();
     const award = result.decision.award;
-    const uiAward = this._newUiResult(award);
+    const uiAward = this._newUiResultAward(award);
     uiResults.addUiResult(uiAward);
-
-    const { remarks } = result;
-    const uiRemarks = this._newUiResult(remarks);
-    uiResults.addUiResult(uiRemarks);
+    //TODO-TEST-PLUG
+    // const { remarks } = result;
+    // const uiRemarks = this._newUiResult(remarks);
+    // uiResults.addUiResult(uiRemarks);
 
     const mode = result.decision.mode;
     if (award === AWARD_ENUM.PLAYER_WIN) {
@@ -221,6 +245,4 @@ class UiWager extends Ui_Component {
 
     this._style();
   }
-
-  _newInitialBetControl = (wager, dealer, playableCredit) => {};
 }
