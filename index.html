@@ -130,9 +130,19 @@
   </head>
 
   <body>
-    <h1 class="header">
-      <nav>welcome</nav>
-    </h1>
+    <!-- header -->
+    <script>
+      const h1 = document.createElement("H1");
+      h1.style.textAlign = "center";
+      h1.style.fontSize = "1.1rem";
+      h1.style.marginTop = "0px";
+      h1.style.marginBottom = "0px";
+      const nav = document.createElement("NAV");
+      nav.textContent = "welcome";
+      h1.appendChild(nav);
+
+      document.body.appendChild(h1);
+    </script>
     <!-- Entry Div-->
     <div id="root-ui-blackjack" mmm="aaa"></div>
     <script>
@@ -164,27 +174,32 @@
     <script src="scripts/domain/round/Seat.js"></script>
     <script src="scripts/domain/round/Round.js"></script>
     <!-- Imports - Domain:Sample -->
-    <script src="scripts/sample/sample.js"></script>
+    <script src="scripts/sample/Sample.js"></script>
 
     <!-- Imports - Ui:Round -->
     <script src="scripts/ui/round/abstract-base.js"></script>
     <script src="scripts/ui/Ui_Tree.js"></script>
 
+    <script src="scripts/ui/round/Actor/UiMoneyContainer/Ui_ProgressBar.js"></script>
+    <script src="scripts/ui/round/Actor/UiMoneyContainer/UiMoneyContainer.js"></script>
     <script src="scripts/ui/round/Actor/Ui_Actor.js"></script>
+
     <script src="scripts/ui/round/Actor/UiPlayer.js"></script>
+    <script src="scripts/ui/round/Actor/UiPlayerHolder.js"></script>
     <script src="scripts/ui/round/Actor/UiDealer.js"></script>
 
     <script src="scripts/ui/round/UiCard.js"></script>
     <script src="scripts/ui/round/UiCardHolder.js"></script>
     <script src="scripts/ui/round/UiWager.js"></script>
-    <script src="scripts/ui/round/UiHandHolder.js"></script>
     <script src="scripts/ui/round/UiHand.js"></script>
+    <script src="scripts/ui/round/UiHandHolder.js"></script>
     <script src="scripts/ui/round/UiSeat.js"></script>
     <script src="scripts/ui/round/UiSeatHolder.js"></script>
     <script src="scripts/ui/round/UiRound.js"></script>
 
-    <script src="scripts/ui/PlayingArea.js"></script>
+    <script src="scripts/ui/lounge/UiLounge.js"></script>
 
+    <script src="scripts/ui/PlayingArea.js"></script>
     <!-- Imports - Entry -->
     <script src="main.js"></script>
   </body>
