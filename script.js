@@ -312,6 +312,9 @@ var normalWin = function (chipBetted) {
 
 // MAIN FUNCTION
 var main = function (input) {
+  // give shuffled deck --- make it a local varibale within main function --- Weiyu
+  // to reset deck for every round
+  var gameDeck = giveShuffledDeck();
   // 0. GAME MODE 0 - Intro
   if (gameMode == "Intro" && playerChips > 0) {
     // Control flow - change game mode to betting
@@ -347,15 +350,12 @@ var main = function (input) {
 
   // 2. GAME MODE 2 - Draw random cards for dealer and player using the Make Deck and Shuffle Deck Helper Function
   else if (gameMode == gameModeDrawCards) {
-    // give shuffled deck
-    var gameDeck = giveShuffledDeck();
     // assign random cards for player and dealer
     playerCardOne = gameDeck.pop();
     playerCardTwo = gameDeck.pop();
-    playerCardAdditional = gameDeck.pop();
     dealerCardOne = gameDeck.pop();
     dealerCardTwo = gameDeck.pop();
-    dealerCardAdditional = gameDeck.pop();
+
     console.log(playerCardOne, playerCardTwo);
     console.log(dealerCardOne, dealerCardTwo);
     // Control flow - change game mode to check for blackjack
@@ -479,12 +479,27 @@ var main = function (input) {
     input = input.toLowerCase();
     // if hit, draw new cards
     if (input == "hit") {
+      // Pop card every turn player enter 'hit' --- shifted from game mode 2 --- Weiyu
+      playerCardAdditional = gameDeck.pop();
       // Push new card into player array
       playerCardArray.push(playerCardAdditional.rank);
       // Add the rank of the new card into the playerCardSum
       playerCardSum = sumOfCardsTest(playerCardArray);
-      // Control flow - change game mode for dealer to hit/stand
-      gameMode = gameModeDealerHitStand;
+      // Check if player bust, if yes change game mode -- Weiyu
+      if (playerCardSum > 21) {
+        // Control flow - change game mode to winning calculation
+        gameMode = gameModeWinningCalculation;
+        return `Player chose to hit.</br>
+                </br>
+                Player drew an additional card of ${playerCardAdditional.name} ${playerCardAdditional.suit}.</br>
+                </br>
+                Player has exceeded 21.</br>
+                </br>
+                Current Score: </br>
+                Player: ${playerCardSum} </br>
+                </br>
+                Click submit to continue.`;
+      }
       return `Player chose to hit.</br>
       </br>
       Player drew an additional card of ${playerCardAdditional.name} ${playerCardAdditional.suit}.</br>
@@ -492,7 +507,7 @@ var main = function (input) {
       Current Score: </br>
       Player: ${playerCardSum} </br>
       </br>
-      Click submit to continue.`;
+      Enter 'hit' or 'stand' to continue.`;
     }
     // If input is stand
     else if (input == "stand") {
@@ -515,12 +530,28 @@ var main = function (input) {
   else if (gameMode == gameModeDealerHitStand) {
     // if dealerCardSum <17, draw new card
     if (dealerCardSum < 17) {
+      // Pop card every turn dealer 'hit' --- shifted from game mode 2 --- Weiyu
+      dealerCardAdditional = gameDeck.pop();
       // Push new card into dealer array
       dealerCardArray.push(dealerCardAdditional.rank);
       // Add the rank of the new card into the playerCardSum
       dealerCardSum = sumOfCardsTest(dealerCardArray);
-      // Control flow - change game mode for winning calculation
-      gameMode = gameModeWinningCalculation;
+      // Check if dealer bust, if yes change game mode
+      if (dealerCardSum > 21) {
+        // Control flow - change game mode to winning calculation
+        gameMode = gameModeWinningCalculation;
+        return `Dealer chose to hit.</br>
+                </br>
+                Dealer drew an additional card of ${dealerCardAdditional.name} ${dealerCardAdditional.suit}.</br>
+                </br>
+                Dealer has exceeded 21.</br>
+                </br>
+                Total Score: </br>
+                Player: ${playerCardSum} </br>
+                Dealer: ${dealerCardSum} </br>
+                </br>
+                Click submit to continue.`;
+      }
       return `Dealer chose to hit.</br>
       </br>
       Dealer drew an additional card of ${dealerCardAdditional.name} ${dealerCardAdditional.suit}.</br>
