@@ -7,6 +7,10 @@ var computerHandValue;
 var cardDeck=[];
 var points=100; //player's points is 100 initially
 var wager=0; //initialise wager to 0 to know that whether player has already wagered or not
+var playerWinImage = '<img src="https://c.tenor.com/TDaOU73RofkAAAAM/chris-pratt.gif"/>'; //image if player wins
+var computerWinImage= '<img src="https://c.tenor.com/mj6cZcZv6oIAAAAM/no-noooo.gif"/>';//image if computer wins
+var tieImage='<img src="https://c.tenor.com/wQzuOUgppUgAAAAS/phew-scrubs.gif"/>'; //Tie image
+var gameImage='<img src="https://c.tenor.com/Qd8soWF_vJgAAAAj/game-on-animated-text.gif"/>'; //game image
 
 //Base
 //There will be only two players. One human and one computer (for the Base solution).
@@ -39,7 +43,7 @@ if (isNaN(input)==true && gameMode=="Initial") //If it is start of the game and 
 }
 
 if (wager>0)    //When wager exists
-      {  
+      {   
             if (gameMode == "Initial")
               { //initial dealing of two cards
                       cardDeck=shuffleCards(makeDeck()); //create a new deck
@@ -57,8 +61,8 @@ if (wager>0)    //When wager exists
                               gameMode = "Initial"; //restart game
                               points=points+Number(wager); //player wins game
                               wager=0; //reset wager to 0 
-                              
-                              return "Player wins with Blackjack with cards " + playerHand[0].name +" and "+playerHand[1].name +"<br> The game has stopped. Please start new round by inputting your wager for next round." +"The current point is:" +points+".";
+
+                              return "Player wins with Blackjack with cards " + playerHand[0].name +" and "+playerHand[1].name +"<br> The game has stopped. Please start new round by inputting your wager for next round." +"The current point is:" +points+"." + playerWinImage;
                             }
                       else if (checkComputerBlackjack(computerHand)==true && checkPlayerBlackjack(playerHand) ==false)
                             { playerHand=[]; //empty the player hand to restart the games
@@ -66,20 +70,20 @@ if (wager>0)    //When wager exists
                               gameMode = "Initial";
                               points=points-Number(wager); //computer wins game
                               wager=0; //reset wager to 0
-                              return "Computer wins with Blackjack with cards " + computerHand[0].name +" and "+computerHand[1].name +"<br> The game has stopped. Please start new round by inputting your wager for next round."+"The current point is:" +points+".";}
+                              return "Computer wins with Blackjack with cards " + computerHand[0].name +" and "+computerHand[1].name +"<br> The game has stopped. Please start new round by inputting your wager for next round."+"The current point is:" +points+"."+computerWinImage;}
                       else if (checkPlayerBlackjack(playerHand) ==true && checkComputerBlackjack(computerHand)==true)
                               { playerHand=[]; //empty the player hand to restart the games
                                 computerHand=[] ;
                                 gameMode = "Initial";
                                 wager=0; //reset wager to 0
-                                return "Tie." + "<br> The game has stopped. Please start new round by inputting your wager for next round."+"The current point is:" +points+".";}
+                                return "Tie." + "<br> The game has stopped. Please start new round by inputting your wager for next round."+"The current point is:" +points+"."+playerWinImage;}
                               //determineResults(playerHand,computerHand);
                               
                               //initial output message
                               gameMode= "Playing"; //start the hit or stand mode
                               return "Player has: "+ playerHand[0].name + ", "+ playerHand[1].name+  " with sum "+ playerHandValue +
                                     "<br> Computer has: " + computerHand[0].name + " and one unknown card"+
-                                    "<br> Please enter hit or stand, then press Submit.";
+                                    "<br> Please enter hit or stand, then press Submit." +gameImage;
               }
             else if (gameMode == "Playing")
               {
@@ -95,11 +99,11 @@ if (wager>0)    //When wager exists
                               gameMode = "Initial";
                               points=points-Number(wager); //computer wins game
                               wager=0; //reset wager to 0
-                              return "Player has busted with value " + playerHandValue+" and Computer wins."+"<br> Input your wager for next round." +"The current point is:" +points +"."
+                              return "Player has busted with value " + playerHandValue+" and Computer wins."+"<br> Input your wager for next round." +"The current point is:" +points +"." +computerWinImage;
                             }
                         
                             return "Player has drawn "+ playerHand[hitCounter-1].name + 
-                            ".<br> The latest hand value for player is " + playerHandValue + "<br> Computer has: " + computerHand[0].name + " and one unknown card"+ "<br>. Please enter hit or stand to continue. ";     
+                            ".<br> The latest hand value for player is " + playerHandValue + "<br> Computer has: " + computerHand[0].name + " and one unknown card"+ "<br>. Please enter hit or stand to continue. " +tieImage;     
                         }
                       if (input=="stand") 
                         {
@@ -112,7 +116,7 @@ if (wager>0)    //When wager exists
                                 gameMode = "Initial";
                                  points=points+Number(wager); //player wins game
                                  wager=0; //reset wager to 0
-                                return "Computer has busted with value " + computerHandValue+" and Player wins." +"<br> Input your wager for next round."+"The current point is:" +points+"."};
+                                return "Computer has busted with value " + computerHandValue+" and Player wins." +"<br> Input your wager for next round."+"The current point is:" +points+"."+playerWinImage};
                             }
                             playerHand=[]; //empty the player hand to restart the games
                             computerHand=[] ;
@@ -160,13 +164,13 @@ var determineResults=function(playerHandValue,computerHandValue)
     if (playerHandValue > computerHandValue)
     {  points=points+Number(wager); //player wins game
       wager=0; //reset wager to 0
-      return "Player wins with "+ playerHandValue + " beating computer hand value of " + computerHandValue +". The game has ended. Input your wager for next round." +"The current point is:" +points+"."}
+      return "Player wins with "+ playerHandValue + " beating computer hand value of " + computerHandValue +". The game has ended. Input your wager for next round." +"The current point is:" +points+"."+playerWinImage}
     else if (computerHandValue > playerHandValue)
     { points=points-Number(wager); //computer wins game
       wager=0; //reset wager to 0
-      return "Computer wins with " + computerHandValue + " beating player hand value of " + playerHandValue +". The game has ended. Input your wager for next round."+"The current point is:" +points+"."}
+      return "Computer wins with " + computerHandValue + " beating player hand value of " + playerHandValue +". The game has ended. Input your wager for next round."+"The current point is:" +points+"." +computerWinImage}
     else
-    {return "Tie"+". The game has ended. Input your wager for next round."+"The current point is:" +points+"."}
+    {return "Tie"+". The game has ended. Input your wager for next round."+"The current point is:" +points+"." + tieImage}
 }
 
 //Calculate the hand value for the input array
