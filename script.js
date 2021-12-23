@@ -313,10 +313,6 @@ const blackjackCheck = function () {
       if (playersArray[playersArrayIndex].cash <= 0) {
         msg += `<br><br>${playersArray[playersArrayIndex].name} has ran out of cash and left the table.`;
         playersArray.splice(playersArrayIndex, 1);
-        if (playersArrayIndex + 1 == playersArray.length) {
-          playersArrayIndex = 0;
-          gameStatus = dealerTurn;
-        }
         break outer_block;
       }
       playersArray[playersArrayIndex].bets = 0;
@@ -368,10 +364,7 @@ const runPlayerTurn = function (input) {
         if (playersArray[playersArrayIndex].cash <= 0) {
           msg += `<br><br>${playersArray[playersArrayIndex].name} has ran out of cash and left the table.`;
           playersArray.splice(playersArrayIndex, 1);
-          if (playersArrayIndex + 1 == playersArray.length) {
-            playersArrayIndex = 0;
-            gameStatus = dealerTurn;
-          }
+          hitFlag = false;
           break bust_block;
         }
         playersArray[playersArrayIndex].bets = 0;
@@ -427,10 +420,6 @@ const runPlayerTurn = function (input) {
         if (playersArray[playersArrayIndex].cash <= 0) {
           msg += `<br><br>${playersArray[playersArrayIndex].name} has ran out of cash and left the table.`;
           playersArray.splice(playersArrayIndex, 1);
-          if (playersArrayIndex + 1 == playersArray.length) {
-            playersArrayIndex = 0;
-            gameStatus = dealerTurn;
-          }
           break double_block;
         }
         playersArray[playersArrayIndex].bets = 0;
@@ -532,11 +521,11 @@ const runDealerTurn = function () {
       if (playersArray[playersArrayIndex].cash <= 0) {
         msg += `<br><br>${playersArray[playersArrayIndex].name} has ran out of cash and left the table.`;
         playersArray.splice(playersArrayIndex, 1);
+        break bust_block2;
         if (playersArrayIndex + 1 == playersArray.length) {
           playersArrayIndex = 0;
           gameStatus = dealerTurn;
         }
-        break bust_block2;
       }
       playersArray[playersArrayIndex].bets = 0;
       playersArray[playersArrayIndex].status = PLAYED;
