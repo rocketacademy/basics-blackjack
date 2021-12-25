@@ -82,16 +82,22 @@ var playerMoney = 100;
 var playerBet = 0;
 
 var betMoney = function (betAmount) {
-  playerBet = betAmount;
-  console.log(playerBet);
   var message = ``;
-  message =
-    `You have ${playerMoney}.` +
-    "<br><br>" +
-    `Your bet is ${playerBet}.` +
-    "<br><Br>" +
-    `Press <b>Submit</b> to draw two cards.`;
-  gameMode = STARTGAME;
+  if (isNaN(betAmount) !== true) {
+    playerBet = betAmount;
+    console.log(playerBet);
+
+    message =
+      `You have ${playerMoney}.` +
+      "<br><br>" +
+      `Your bet is ${playerBet}.` +
+      "<br><Br>" +
+      `Press <b>Submit</b> to draw two cards.`;
+    gameMode = STARTGAME;
+  } else {
+    message = `Please enter bet amount.`;
+  }
+
   return message;
 };
 
