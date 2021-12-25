@@ -64,18 +64,36 @@ var shuffleDeck = function (cardDeck) {
 var shuffledCardDeck = shuffleDeck(cardDeck);
 
 var STARTGAME = `start game`;
-var gameMode = STARTGAME;
 var HITORSTAND = `hit or stand`;
 var HIT = `hit`;
 var STAND = `stand`;
 var ENDROUND = `end of round`;
 var COMPUTERCHOICE = `computer to choose hit or stand`;
+var BET = `player bet`;
+var gameMode = BET;
 
 var playerCards = [];
 var computerCards = [];
 
 var playerSum = 0;
 var computerSum = 0;
+
+var playerMoney = 100;
+var playerBet = 0;
+
+var betMoney = function (betAmount) {
+  playerBet = betAmount;
+  console.log(playerBet);
+  var message = ``;
+  message =
+    `You have ${playerMoney}.` +
+    "<br><br>" +
+    `Your bet is ${playerBet}.` +
+    "<br><Br>" +
+    `Press <b>Submit</b> to draw two cards.`;
+  gameMode = STARTGAME;
+  return message;
+};
 
 //computer and player get dealt two cards to start. Store in global variables.
 var drawFirstTwoCards = function () {
@@ -232,19 +250,22 @@ var getComputerChoice = function () {
 var endRound = function () {
   gameMode = ENDROUND;
   var showDrawnCards = displayCards();
-
   var message =
     `PLAYER SUM: ${playerSum} vs DEALER SUM: ${computerSum}.` + "<br>";
   if (playerSum > 21 && computerSum > 21) {
     message += `You both bust. Tie.`;
   } else if (computerSum > 21 && playerSum <= 21) {
+    playerMoney += playerBet;
     message += `Dealer bust! You won.`;
   } else if (computerSum <= 21 && playerSum > 21) {
+    playerMoney -= playerBet;
     message += `You bust! Dealer won.`;
   } else if (playerSum <= 21 && computerSum <= 21) {
     if (playerSum < computerSum) {
+      playerMoney -= playerBet;
       message += `Dealer won.`;
     } else if (playerSum > computerSum) {
+      playerMoney += playerBet;
       message += `You won.`;
     } else {
       message += `Tie.`;
@@ -258,7 +279,15 @@ var endRound = function () {
   playerSum = 0;
   computerSum = 0;
 
-  return showDrawnCards + "<br>" + message + "<br><br>" + restartGame;
+  return (
+    showDrawnCards +
+    "<br>" +
+    message +
+    "<br><br>" +
+    `Money: ${playerMoney}` +
+    "<br><br>" +
+    restartGame
+  );
   //if both > 21, bust.
   //if computer > 21 and player <= 21, player wins.
   // if player > 21 and computer <= 21, computer wins.
@@ -270,8 +299,10 @@ var endRound = function () {
 
 var main = function (input) {
   var myOutputValue = ``;
-
-  if (gameMode == STARTGAME) {
+  console.log(gameMode);
+  if (gameMode == BET) {
+    myOutputValue = betMoney(input);
+  } else if (gameMode == STARTGAME) {
     myOutputValue = drawFirstTwoCards();
   } else if (gameMode == HITORSTAND) {
     myOutputValue = hitOrStand(input);
