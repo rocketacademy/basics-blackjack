@@ -117,13 +117,8 @@ var displayCards = function () {
   var message = ``;
   var showComputerCard = `Dealer has drawn:` + "<br>";
   var showPlayerCard = `You have drawn:` + "<br>";
-  var sum = 0;
-  var sumOfComp = 0;
-
-  for (let index = 0; index < computerCards.length; index++) {
-    sumOfComp += computerCards[index].rank;
-  }
-  computerSum = sumOfComp;
+  var showPlayerSum = displayPlayerSum();
+  var showComputerSum = displayComputerSum();
 
   if (gameMode == ENDROUND) {
     for (let index = 0; index < computerCards.length; index++) {
@@ -131,7 +126,7 @@ var displayCards = function () {
         `<b>${computerCards[index].name} of ${computerCards[index].suit}</b>` +
         "<br>";
     }
-    showComputerCard += `SUM: ${computerSum}` + "<br>";
+    showComputerCard += showComputerSum;
   } else {
     showComputerCard +=
       `<b>${computerCards[0].name} of ${computerCards[0].suit}</b>` +
@@ -144,13 +139,52 @@ var displayCards = function () {
     showPlayerCard +=
       `<b>${playerCards[index].name} of ${playerCards[index].suit}</b>` +
       "<br>";
-    sum += playerCards[index].rank;
   }
-  playerSum = sum;
-  showPlayerCard += `SUM: ${playerSum}` + "<br>";
+  showPlayerCard += showPlayerSum;
 
   message = showComputerCard + "<br><br>" + showPlayerCard;
   return message;
+};
+
+var displayPlayerSum = function () {
+  var sumOfPlayer = 0;
+  var showSum = ``;
+  for (let index = 0; index < playerCards.length; index++) {
+    sumOfPlayer += playerCards[index].rank;
+  }
+  playerSum = sumOfPlayer;
+
+  //if ace + card < 12, + 10 to sumOfPlayer.
+  for (let index = 0; index < playerCards.length; index++) {
+    var currentCardName = playerCards[index].name;
+    if (currentCardName == `ace` && playerSum < 12) {
+      playerSum += 10;
+      console.log(playerSum);
+    }
+  }
+
+  showSum = `SUM: ${playerSum}` + "<br>";
+  return showSum;
+};
+
+var displayComputerSum = function () {
+  var sumOfComp = 0;
+  var showSum = ``;
+  for (let index = 0; index < computerCards.length; index++) {
+    sumOfComp += computerCards[index].rank;
+  }
+  computerSum = sumOfComp;
+
+  for (let index = 0; index < computerCards.length; index++) {
+    var currentCardName = computerCards[index].name;
+    if (currentCardName == `ace` && computerSum < 12) {
+      computerSum += 10;
+      console.log(computerSum);
+    }
+  }
+
+  showSum = `SUM: ${computerSum}` + "<br>";
+  return showSum;
 };
 
 //Player decides if they want to hit (draw a card) or stand (end their turn)
@@ -181,12 +215,13 @@ var hitOrStand = function (userChoice) {
   return message;
 };
 
-//Computer to draw card if <17.
+//Computer to draw card if <17
 var getComputerChoice = function () {
   if (computerSum < 17) {
     computerCards.push(shuffledCardDeck.pop());
     var lastCardIndex = computerCards.length - 1;
     computerSum += computerCards[lastCardIndex].rank;
+    console.log(computerSum);
     return getComputerChoice();
   } else {
     gameMode = ENDROUND;
