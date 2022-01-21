@@ -56,26 +56,17 @@ if (wager>0)    //When wager exists
                   
                       //if it is Blackjack at the start
                       if (checkPlayerBlackjack(playerHand) ==true && checkComputerBlackjack(computerHand) ==false)
-                            { playerHand=[]; //empty the player hand to restart the games
-                              computerHand=[] ;
-                              gameMode = "Initial"; //restart game
-                              points=points+Number(wager); //player wins game
-                              wager=0; //reset wager to 0 
-
+                            { 
+                              reinitial(wager);
                               return "Player wins with Blackjack with cards " + playerHand[0].name +" and "+playerHand[1].name +"<br> The game has stopped. Please start new round by inputting your wager for next round." +"The current point is:" +points+"." + playerWinImage;
                             }
                       else if (checkComputerBlackjack(computerHand)==true && checkPlayerBlackjack(playerHand) ==false)
-                            { playerHand=[]; //empty the player hand to restart the games
-                              computerHand=[] ;
-                              gameMode = "Initial";
-                              points=points-Number(wager); //computer wins game
-                              wager=0; //reset wager to 0
+                            { 
+                              reinitial(-wager);
                               return "Computer wins with Blackjack with cards " + computerHand[0].name +" and "+computerHand[1].name +"<br> The game has stopped. Please start new round by inputting your wager for next round."+"The current point is:" +points+"."+computerWinImage;}
                       else if (checkPlayerBlackjack(playerHand) ==true && checkComputerBlackjack(computerHand)==true)
-                              { playerHand=[]; //empty the player hand to restart the games
-                                computerHand=[] ;
-                                gameMode = "Initial";
-                                wager=0; //reset wager to 0
+                              { 
+                                reinitial(0);
                                 return "Tie." + "<br> The game has stopped. Please start new round by inputting your wager for next round."+"The current point is:" +points+"."+playerWinImage;}
                               //determineResults(playerHand,computerHand);
                               
@@ -94,11 +85,8 @@ if (wager>0)    //When wager exists
                             playerHandValue=calculateHandValue(playerHand); //calculate the player's hand value
                     
                             if (playerHandValue>21) //if player busted
-                            { playerHand=[]; //empty the player hand to restart the games
-                              computerHand=[] ;
-                              gameMode = "Initial";
-                              points=points-Number(wager); //computer wins game
-                              wager=0; //reset wager to 0
+                            { 
+                              reinitial(-wager);
                               return "Player has busted with value " + playerHandValue+" and Computer wins."+"<br> Input your wager for next round." +"The current point is:" +points +"." +computerWinImage;
                             }
                         
@@ -111,11 +99,8 @@ if (wager>0)    //When wager exists
                             { computerHand.push(cardDeck.pop()); //draw a new card to computer
                               computerHandValue=calculateHandValue(computerHand)
                               if (computerHandValue>21) //if computer busted
-                              { playerHand=[]; //empty the player hand to restart the games
-                                computerHand=[] ;
-                                gameMode = "Initial";
-                                 points=points+Number(wager); //player wins game
-                                 wager=0; //reset wager to 0
+                              { 
+                                reinitial(wager);
                                 return "Computer has busted with value " + computerHandValue+" and Player wins." +"<br> Input your wager for next round."+"The current point is:" +points+"."+playerWinImage};
                             }
                             playerHand=[]; //empty the player hand to restart the games
@@ -270,3 +255,11 @@ var shuffleCards = function (cardDeck) {
   // Return the shuffled deck
   return cardDeck;
 };
+
+var reinitial=function(wager){                             
+  playerHand=[]; //empty the player hand to restart the games
+  computerHand=[] ;
+  gameMode = "Initial"; //restart game
+  points=points+Number(wager); //player wins game
+  wager=0; //reset wager to 0
+}
