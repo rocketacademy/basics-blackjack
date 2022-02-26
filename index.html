@@ -178,12 +178,9 @@
     </h1>
     <h1 class="header">♣️ Basics - Blackjack ♠️</h1>
     <div id="container">
-      <p>Input:</p>
-      <input id="input-field" />
-      <br />
       <button id="start-button">Start</button>
       <button id="hit-button">Hit</button>
-      <button id="hold-button">Hold</button>
+      <button id="hold-button">Stand</button>
       <button id="restart-button">Restart</button>
 
       <p>Output:</p>
@@ -195,16 +192,8 @@
     <script>
       var button = document.querySelector("#start-button");
       button.addEventListener("click", function () {
-        // Set result to input value
-        var input = document.querySelector("#input-field");
-        var result = main(input.value);
-
-        // Display result in output element
         var output = document.querySelector("#output-div");
-        output.innerHTML = result;
-
-        // Reset input value
-        input.value = "";
+        output.innerHTML = main();
       });
     </script>
   </body>
