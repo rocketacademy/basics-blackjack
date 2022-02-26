@@ -24,6 +24,24 @@ var makeDeck = function () {
   }
   return cardDeck;
 };
+
+var getRandomIndex = function (max) {
+  return Math.floor(Math.random() * max);
+};
+
+var shuffleCards = function (cardDeck) {
+  var currentIndex = 0;
+  while (currentIndex < cardDeck.length) {
+    var randomIndex = getRandomIndex(cardDeck.length);
+    var randomCard = cardDeck[randomIndex];
+    var currentCard = cardDeck[currentIndex];
+    cardDeck[currentIndex] = randomCard;
+    cardDeck[randomIndex] = currentCard;
+    currentIndex = currentIndex + 1;
+  }
+  return cardDeck;
+};
+
 var main = function (input) {
   var myOutputValue = "hello world";
   return myOutputValue;
