@@ -43,6 +43,11 @@ var shuffleCards = function (cardDeck) {
 };
 
 var main = function (input) {
+  if (gameState == `gameStart`) {
+    var deck = shuffleCards(makeDeck());
+    console.log(deck);
+  }
   var myOutputValue = "hello world";
   return myOutputValue;
 };
+var gameState = `gameStart`;
