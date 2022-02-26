@@ -43,11 +43,35 @@ var shuffleCards = function (cardDeck) {
 };
 
 var main = function (input) {
+  // remember to early return otherwise the input from the first time will be used forever!
   if (gameState == `gameStart`) {
-    var deck = shuffleCards(makeDeck());
+    deck = shuffleCards(makeDeck()); // why doesn't var deck = shuffleCards(makeDeck()) work here
     console.log(deck);
+    gameState = `dealerDealsFirstCard`; // why doesn't var gameState = `dealerDealsFirstCard` work here
+    return `Please enter number of players against dealer!<br><br>Minimum: 1, Maximum: 6`;
+  }
+  if (gameState == `dealerDealsFirstCard`) {
+    numberOfPlayers = input;
+    for (counter = 1; counter <= numberOfPlayers; counter += 1) {
+      player[counter] = [];
+      player[counter].push(deck.pop());
+    }
+    player[0] = [];
+    player[0].push(deck.pop());
+    gameState = `dealerDealsSecondCard`;
+    return `Dealer has dealt first card to all`;
+  }
+  if (gameState == `dealerDealsSecondCard`) {
+    for (counter = 1; counter <= numberOfPlayers; counter += 1) {
+      player[counter].push(deck.pop());
+    }
+    player[0].push(deck.pop());
+    gameState = `trueGameStart`;
+    return `Dealer has dealt second card to all`;
   }
   var myOutputValue = "hello world";
   return myOutputValue;
 };
 var gameState = `gameStart`;
+var player = [`dealer`]; // dealer is 0
+var numberOfPlayers = "";
