@@ -11,8 +11,10 @@
 - If player choose "stand":
   -- Dealer: if Dealer's hand total value < 17, dealer must draw one more card, until the total value is >= 17
   -- Compare the total value of player hand and dealer hand, the highest value wins
+- Reset game mode
 
 */
+const output = document.querySelector("#output-div");
 
 let gameState = "start";
 let playerHand = [];
@@ -117,6 +119,8 @@ let deck = shuffleCards(makeDeck());
 var main = function (input) {
   let displayPlayerHandStr = "";
   let displayComputerHandStr = "";
+  let myOutputValue = "";
+
   if (deck.length == 0) {
     return "No more card in the deck.";
   }
@@ -126,14 +130,13 @@ var main = function (input) {
     playerHand.push(deck.pop());
     computerHand.push(deck.pop());
     computerHand.push(deck.pop());
-
-    // for (let i = 0; i < playerHand.length; i++) {
-    //   playerHandValue += playerHand[i].rank;
-    // }
-    // for (let j = 0; j < computerHand.length; j++) {
-    //   computerHandValue += computerHand[j].rank;
-    // }
     gameState = "waiting";
+    myOutputValue =
+      "<hr>Player has: " +
+      displayHand(playerHand, "player") +
+      `<br>` +
+      "Dealer has: " +
+      displayHand(computerHand, "dealer");
   }
 
   if (gameState == "hit") {
@@ -142,7 +145,24 @@ var main = function (input) {
   }
 
   if (gameState == "stand") {
-    computerHand.push(deck.pop());
+    let playerHandPoint = computePoints(playerHand);
+    let computerHandPoint = computePoints(computerHand);
+    while (computerHandPoint < 17) {
+      let newCard = deck.pop();
+      computerHand.push(newCard);
+      computerHandPoint += newCard.rank;
+    }
+
+    if (
+      playerHandPoint > computerHandPoint ||
+      (playerHandPoint == 21 && computerHandPoint != 21)
+    ) {
+      myOutputValue += `<br>` + "Player Win!";
+    } else if (playerHandPoint < computerHandPoint || computerHandPoint == 21) {
+      myOutputValue += `<br>` + "Dealer Win!";
+    } else {
+      myOutputValue += `<br>` + "It's a tie!";
+    }
   }
 
   console.log(playerHand);
@@ -158,14 +178,26 @@ var main = function (input) {
   displayComputerHandStr += ` || face down`;
   displayComputerHandStr += ` || points: ${computePoints(computerHand)}`;
 
-  return (
-    "<hr>Player has: " +
-    displayPlayerHandStr +
-    `<br>` +
-    "Dealer has: " +
-    displayComputerHandStr
-  );
+  return myOutputValue;
 };
+
+function displayHand(hand, user) {
+  let displayHandStr = "";
+  if (user == "player") {
+    for (let i = 0; i < hand.length; i++) {
+      displayHandStr += `|| ${hand[i].name} of ${hand[i].suit}`;
+    }
+    displayHandStr += ` || points: ${computePoints(hand)}`;
+  }
+  if (user == "dealer") {
+    for (let i = 0; i < hand.length - 1; i++) {
+      displayHandStr += `${hand[i].name} of ${hand[i].suit}  `;
+    }
+    displayHandStr += ` || face down`;
+    displayHandStr += ` || points: ${computePoints(hand)}`;
+  }
+  return displayHandStr;
+}
 
 function computePoints(hand) {
   // Ace is 11
@@ -190,12 +222,7 @@ const playerHitBtn = document.querySelector("#hit-button");
 const playerStandBtn = document.querySelector("#hold-button");
 playerHitBtn.addEventListener("click", function () {
   gameState = "hit";
-
-  var result = main();
-
-  // Display result in output element
-  var output = document.querySelector("#output-div");
-  output.innerHTML = result;
+  output.innerHTML = main();
 
   // Reset input value
   //input.value = "";
@@ -204,4 +231,5 @@ playerHitBtn.addEventListener("click", function () {
 playerStandBtn.addEventListener("click", function () {
   console.log("clicked stand btn");
   gameState = "stand";
+  output.innerHTML = main();
 });
