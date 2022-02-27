@@ -1,9 +1,9 @@
 /*
 - Create a shuffled deck
 - Player click "submit":
-  -- Player draw 2 cards face up
+  -- All Players draw 2 cards face up
   -- Dealer(computer) draw 2 cards: 1st card face up, 2nd card face down
-  -- wait for player's next move: "hit" or "stand"
+  -- wait for players' next move: "hit" or "stand"
   
 - If player choose "hit":
   -- Player draw 3rd card face up
