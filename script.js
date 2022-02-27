@@ -1,9 +1,10 @@
 /*
 - Create a shuffled deck
-- Player click "submit":
-  -- All Players draw 2 cards face up
+
+- User input 1 - 6 players, click "start" to start the game
+  -- Players take turns to draw 2 cards face up(clockwise)
   -- Dealer(computer) draw 2 cards: 1st card face up, 2nd card face down
-  -- wait for players' next move: "hit" or "stand"
+  -- wait for each player's next move: "hit" or "stand"
   
 - If player choose "hit":
   -- Player draw 3rd card face up
@@ -68,6 +69,7 @@ function makeDeck() {
         name: cardName,
         suit: currentSuit,
         rank: rankCounter,
+        img: "imgs/" + `${cardName}` + "_of_" + `${currentSuit}` + "s.png",
       };
 
       if (cardName == "jack" || cardName == "queen" || cardName == "king") {
