@@ -1,10 +1,15 @@
 var playDeck = [];
+playDeck = shuffleDeck(makeDeck());
 var main = function (input) {
-  var displayOutput = "";
-  playDeck = shuffleDeck(makeDeck());
-  while (playDeck.length) {
-    var pulledCard = playDeck.pop();
-    displayOutput += `${pulledCard.text}${pulledCard.suit}<br>`;
-  }
-  return displayOutput;
+  var card1 = playDeck.pop();
+  var card2 = playDeck.pop();
+
+  var cardValue = card1.rank + card2.rank;
+
+  console.log(`Card 1: ${card1.text}`);
+  console.log(`Card 2: ${card2.text}`);
+
+  if (playDeck.length == 0) playDeck = shuffleDeck(makeDeck());
+
+  return cardValue;
 };
