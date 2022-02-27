@@ -1,5 +1,10 @@
+var playDeck = [];
 var main = function (input) {
-  var testingSubmodule;
-  var myOutputValue = "hello world";
-  return myOutputValue;
+  var displayOutput = "";
+  playDeck = shuffleDeck(makeDeck());
+  while (playDeck.length) {
+    var pulledCard = playDeck.pop();
+    displayOutput += `${pulledCard.text}${pulledCard.suit}<br>`;
+  }
+  return displayOutput;
 };
