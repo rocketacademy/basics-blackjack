@@ -173,6 +173,11 @@ var main = function (input) {
       displayHand(playerHand, "showAll");
   }
 
+  if (gameState == "waiting") {
+    const startBtn = document.querySelector("#start-button");
+    startBtn.style.display = "none";
+  }
+
   if (gameState == "hit") {
     playerHand.push(deck.pop());
     myOutputValue =
@@ -194,6 +199,7 @@ var main = function (input) {
       let newCard = deck.pop();
       computerHand.push(newCard);
       computerHandPoint += newCard.rank;
+      playerHitBtn.style.display = "none";
     }
 
     myOutputValue =
