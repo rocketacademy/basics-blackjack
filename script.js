@@ -12,6 +12,7 @@
 - If player choose "stand":
   -- Dealer: if Dealer's hand total value < 17, dealer must draw one more card, until the total value is >= 17
   -- Compare the total value of player hand and dealer hand, the highest value wins
+
 - Reset game mode
 
 */
@@ -19,11 +20,14 @@ const output = document.querySelector("#output-div");
 const playerHitBtn = document.querySelector("#hit-button");
 const playerStandBtn = document.querySelector("#hold-button");
 const restartBtn = document.querySelector("#restart-button");
+const playerDiv = document.querySelector("#player");
+const dealerDiv = document.querySelector("#dealer");
 
 let gameState = "start";
 let playerHand = [];
 let computerHand = [];
 let deck = shuffleCards(makeDeck());
+console.log(deck);
 
 playerHitBtn.addEventListener("click", function () {
   gameState = "hit";
@@ -44,13 +48,14 @@ restartBtn.addEventListener("click", function () {
 function makeDeck() {
   // var makeDeck = function () {
   var cardDeck = [];
-  var suits = ["♥︎", "♦︎", "♣︎", "♠︎"];
+  var suits = ["hearts", "diamonds", "clubs", "spades"];
   var suitIdx = 0;
   while (suitIdx < suits.length) {
     var rankCounter = 1;
     var currentSuit = suits[suitIdx];
     while (rankCounter < 14) {
       var cardName = rankCounter;
+      var cardRank = rankCounter;
       if (rankCounter == 1) cardName = "ace";
       if (rankCounter == 11) {
         cardName = "jack";
@@ -68,17 +73,10 @@ function makeDeck() {
       var card = {
         name: cardName,
         suit: currentSuit,
-        rank: rankCounter,
-        img: "imgs/" + `${cardName}` + "_of_" + `${currentSuit}` + "s.png",
+        rank: cardRank,
+        img: "imgs/" + `${cardName}` + "_of_" + `${currentSuit}` + ".png",
       };
 
-      if (cardName == "jack" || cardName == "queen" || cardName == "king") {
-        card = {
-          name: cardName,
-          suit: currentSuit,
-          rank: cardRank,
-        };
-      }
       cardDeck.push(card);
       rankCounter += 1;
     }
@@ -131,23 +129,25 @@ function displayHand(hand, toDo) {
   let displayHandStr = "";
   if (toDo == "showAll") {
     for (let i = 0; i < hand.length; i++) {
-      displayHandStr += `|| ${hand[i].name} of ${hand[i].suit}`;
+      // displayHandStr += `|| ${hand[i].name} of ${hand[i].suit}`;
+      displayHandStr += `<img src="${hand[i].img}" />`;
     }
-    displayHandStr += ` || points: ${computePoints(hand)}`;
+    displayHandStr += ` || points : ${computePoints(hand)}`;
   }
   if (toDo == "hideOne") {
     for (let i = 0; i < hand.length - 1; i++) {
-      displayHandStr += `${hand[i].name} of ${hand[i].suit}  `;
+      // displayHandStr += `${hand[i].name} of ${hand[i].suit}  `;
+      displayHandStr += `<img src="${hand[i].img}" />`;
     }
-    displayHandStr += ` || face down`;
+    displayHandStr += `<img src="imgs/cardback.svg" />`;
   }
   return displayHandStr;
 }
 
 // Second Version: Add Player Hit or Stand - main2
 var main = function (input) {
-  let displayPlayerHandStr = "";
-  let displayComputerHandStr = "";
+  // let displayPlayerHandStr = "";
+  // let displayComputerHandStr = "";
   let myOutputValue = "";
 
   if (deck.length == 0) {
