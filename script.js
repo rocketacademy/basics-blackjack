@@ -13,6 +13,10 @@
 //      -- higher hand value
 // 5. Display hands of both player and dealer and declare winner
 
+// ===== ===== Pseudocode for Version 2 ===== ===== //
+// 1. Extra game mode -> "hit or stand"
+// 2. Functionality for user to input hit or stand
+
 /*=====================================*/
 /*======= GLOBAL VARIABLES ============*/
 /*=====================================*/
@@ -21,6 +25,7 @@
 var GAME_START = "game start";
 var GAME_CARDS_DRAWN = "cards drawn";
 var GAME_RESULTS_SHOWN = "results shown";
+var GAME_HIT_OR_STAND = "hit or stand";
 var currentGameMode = GAME_START;
 
 // Declare variables to store player and dealer hands
@@ -317,10 +322,63 @@ var main = function (input) {
       }
 
       // Change game mode
-      currentGameMode = GAME_RESULTS_SHOWN;
+      currentGameMode = GAME_HIT_OR_STAND;
 
       // Appropriate output message
       return outputMessage;
     }
+  }
+
+  // HIT OR STAND
+  if (currentGameMode == GAME_HIT_OR_STAND) {
+    // PLayer Hit
+    if (input == "hit") {
+      playerHand.push(gameDeck.pop());
+      outputMessage =
+        displayPlayerAndDealerHands(playerHand, dealerHand) +
+        '<br> You drew another card. <br> Please input "hit" or "stand".';
+    }
+
+    // Player Stand
+    else if (input == "stand") {
+      // Calculate the total hand value of both player and dealer
+      var playerHandTotalValue = calculateTotalHandValue(playerHand);
+      var dealerHandTotalValue = calculateTotalHandValue(dealerHand);
+
+      // console.log("Player Total Hand Value ==> ", playerHandTotalValue);
+      // console.log("Dealer Total Hand Value ==> ", dealerHandTotalValue);
+
+      // Compare total hand value
+      // Same value -> tie
+      if (playerHandTotalValue == dealerHandTotalValue) {
+        outputMessage =
+          displayPlayerAndDealerHands(playerHand, dealerHand) +
+          "<br>It is a tie!" +
+          displayHandTotalValues(playerHandTotalValue, dealerHandTotalValue);
+      }
+      // Player higher value -> player wins
+      else if (playerHandTotalValue > dealerHandTotalValue) {
+        outputMessage =
+          displayPlayerAndDealerHands(playerHand, dealerHand) +
+          "<br>Player wins!" +
+          displayHandTotalValues(playerHandTotalValue, dealerHandTotalValue);
+      }
+      // Dealer higher value -> dealer wins
+      else {
+        outputMessage =
+          displayPlayerAndDealerHands(playerHand, dealerHand) +
+          "<br>Dealer wins!" +
+          displayHandTotalValues(playerHandTotalValue, dealerHandTotalValue);
+      }
+    }
+
+    // Input validation
+    else {
+      outputMessage =
+        'Wrong input... only "hit" or "stand" are valid. <br><br>' +
+        displayPlayerAndDealerHands(playerHand, dealerHand);
+    }
+
+    return outputMessage;
   }
 };
