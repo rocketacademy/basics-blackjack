@@ -127,12 +127,14 @@ function computePoints(hand) {
 // Display cards for all players
 function displayHand(hand, toDo) {
   let displayHandStr = "";
+  if (toDo == "showAll" || gameState == "stand") {
+    displayHandStr += `Points : ${computePoints(hand)} <br>`;
+  }
   if (toDo == "showAll") {
     for (let i = 0; i < hand.length; i++) {
       // displayHandStr += `|| ${hand[i].name} of ${hand[i].suit}`;
       displayHandStr += `<img src="${hand[i].img}" />`;
     }
-    displayHandStr += ` || points : ${computePoints(hand)}`;
   }
   if (toDo == "hideOne") {
     for (let i = 0; i < hand.length - 1; i++) {
@@ -161,21 +163,27 @@ var main = function (input) {
     computerHand.push(deck.pop());
     gameState = "waiting";
     myOutputValue =
-      "Player has: " +
-      displayHand(playerHand, "showAll") +
+      "Dealer hand: " +
       `<br>` +
-      "Dealer has: " +
-      displayHand(computerHand, "hideOne");
+      displayHand(computerHand, "hideOne") +
+      `<br>` +
+      `<br>` +
+      "Player hand: " +
+      `<br>` +
+      displayHand(playerHand, "showAll");
   }
 
   if (gameState == "hit") {
     playerHand.push(deck.pop());
     myOutputValue =
-      "Player has: " +
-      displayHand(playerHand, "showAll") +
+      "Dealer hand: " +
       `<br>` +
-      "Dealer has: " +
-      displayHand(computerHand, "hideOne");
+      displayHand(computerHand, "hideOne") +
+      `<br>` +
+      `<br>` +
+      "Player hand: " +
+      `<br>` +
+      displayHand(playerHand, "showAll");
     gameState = "waiting";
   }
 
@@ -189,28 +197,28 @@ var main = function (input) {
     }
 
     myOutputValue =
-      "Player has: " +
-      displayHand(playerHand, "showAll") +
+      "Dealer hand: " +
       `<br>` +
-      "Dealer has: " +
-      displayHand(computerHand, "showAll");
+      displayHand(computerHand, "showAll") +
+      `<br>` +
+      `<br>` +
+      "Player hand: " +
+      `<br>` +
+      displayHand(playerHand, "showAll");
 
     if (playerHandPoint > 21 && computerHandPoint <= 21)
-      myOutputValue += `<br>` + "You are busted!" + " Dealer win!";
+      myOutputValue += `<hr>` + "You are busted!" + " Dealer win!";
     if (computerHandPoint > 21 && playerHandPoint <= 21)
-      myOutputValue += `<br>` + "Dealer is busted!" + " Player win!";
+      myOutputValue += `<hr>` + "Dealer is busted!" + " Player win!";
     if (playerHandPoint > 21 && computerHandPoint > 21)
-      myOutputValue += `<br>` + "Both Player and Dealer are busted!";
+      myOutputValue += `<hr>` + "Both Player and Dealer are busted!";
 
     if (playerHandPoint > computerHandPoint && playerHandPoint <= 21) {
       myOutputValue += `<hr>` + "Player Win!";
-      // ` || points: ${computePoints(computerHand)}` + `<hr>` + "Player Win!";
     } else if (playerHandPoint < computerHandPoint && computerHandPoint <= 21) {
       myOutputValue += `<hr>` + "Dealer Win!";
-      // ` || points: ${computePoints(computerHand)}` + `<hr>` + "Dealer Win!";
     } else if (playerHandPoint == computerHandPoint) {
       myOutputValue += `<hr>` + "It's a tie!";
-      // ` || points: ${computePoints(computerHand)}` + `<hr>` + "It's a tie!";
     }
   }
 

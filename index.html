@@ -96,11 +96,23 @@
         margin-left: 30px;
         margin-right: 30px;
         background-color: white;
-        color: black; /* sets the font color */
-        background-image: url(""); /* The image used */
+        color: white; /* sets the font color */
+        background-image: url("imgs/background.jpg"); /* The image used */
         background-position: center; /* Center the image */
         background-repeat: no-repeat; /* Do not repeat the image */
         background-size: cover; /* Resize the background image to cover the entire container */
+        height: 800px;
+      }
+
+      body:after {
+        content: "";
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: rgba(0, 0, 0, 0.2);
+        pointer-events: none;
       }
 
       #output-div img {
@@ -111,14 +123,13 @@
       .header {
         text-align: center;
         font-size: 1.1rem;
-        margin-bottom: 3rem;
       }
 
       #container {
-        background-color: pink;
         margin: 40px auto;
-        max-width: 800px;
-        padding: 38px 31px;
+        max-width: 100%;
+        padding: 8px 31px;
+        text-align: center;
       }
 
       input {
@@ -135,6 +146,7 @@
         margin: 0 0 23px 0;
         padding: 0 6px;
         width: 90px;
+        border-radius: 21px;
       }
 
       button:hover {
@@ -143,16 +155,15 @@
       }
 
       #output-div {
-        background-color: lightgrey;
         margin: 20px auto;
-        padding: 20px;
+        padding: 10px;
         width: 100%;
-        display: flex;
-        flex-direction: row;
       }
 
-      img {
+      #output-div img {
         margin: 0 5px 0 5px;
+        display: inline-block;
+        height: 200px;
       }
 
       .logo-img {
@@ -165,6 +176,10 @@
       @media screen and (min-width: 600px) {
         .header {
           font-size: 2rem;
+        }
+
+        body {
+          height: 900px;
         }
       }
     </style>
@@ -182,13 +197,12 @@
         src="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/brand/logo.png"
       />
     </h1>
-    <h1 class="header">♣️ Basics - Blackjack ♠️</h1>
+    <h1 class="header">♣️ Blackjack ♠️</h1>
     <div id="container">
       <button id="start-button">Start</button>
       <button id="hit-button">Hit</button>
       <button id="hold-button">Stand</button>
       <button id="restart-button">Restart</button>
-      <p>Output:</p>
       <div id="output-div"></div>
     </div>
     <!-- Import program logic -->
