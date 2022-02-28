@@ -17,6 +17,11 @@
 // 1. Extra game mode -> "hit or stand"
 // 2. Functionality for user to input hit or stand
 
+// ===== ===== Pseudocode for Version 3 ===== ===== //
+// 1. Dealer to hit or stand ONLY AFTER player choose to stand
+// 2. If dealer hand value is less than 17, dealer hits
+// 3. If dealer hand value is more than 17, dealer stands
+
 /*=====================================*/
 /*======= GLOBAL VARIABLES ============*/
 /*=====================================*/
@@ -345,8 +350,10 @@ var main = function (input) {
       var playerHandTotalValue = calculateTotalHandValue(playerHand);
       var dealerHandTotalValue = calculateTotalHandValue(dealerHand);
 
-      // console.log("Player Total Hand Value ==> ", playerHandTotalValue);
-      // console.log("Dealer Total Hand Value ==> ", dealerHandTotalValue);
+      while (dealerHandTotalValue < 17) {
+        dealerHand.push(gameDeck.pop());
+        dealerHandTotalValue = calculateTotalHandValue(dealerHand);
+      }
 
       // Compare total hand value
       // Same value -> tie
