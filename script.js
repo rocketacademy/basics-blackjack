@@ -2,45 +2,32 @@
 1. Deck is shuffled. SET ACE AS 11 FIRST
 currentState = shuffle
 makeDeck function and shuffleCards function
-
 2. User clicks Submit to deal cards.
 currentState = deal cards
 a) create 2 ARRAYS for dealer and player for their cards
 dealerHand, playerHand
 b) pop the shuffled deck: dealer,player,dealer,player
 c) display and calculate total ranks of player hands
-
-
 step 2c) should be repeated after each step
-
 d) The cards are analysed for game winning conditions, e.g. Blackjack.
 validate blacjack - ace and 10/jack/queen/king OR use rank (if playerHandTotal == 21)
   if playerHandTotal == 21, end game
   if playerHandTotal != 21, continue game, and change gamestate
-
 myOutputValue = myOutputValue + "<br><br> You got blackjack! You won!"
-
 change currentstate = playerTurn
-
 3. The cards are displayed to the user.
 myOutputValue displays the hands and the totals
-
 4. The user decides whether to hit or stand, using the submit button to submit their choice.
 a) user to key in INPUT "hit" or "stand", "stand" will change state to next step
 b) The user's cards are analysed for winning or losing conditions after each iteration of step 5a),
 user's total > 21, user loses.
-
 change currentState = dealerTurn
-
 5. The computer decides to hit or stand automatically based on game rules.
 check dealer's hand IF its < 17 - "hit" till >= 17, else "stand"
-
 change currentState = results
-
 6. RESULTS - dealer busts or compare hands, then RESET 
  compare hands
  playerHandTotal and dealerHandTotal
-
  reshuffle
  empty global var
 */
@@ -390,10 +377,3 @@ var main = function (input) {
   }
   return myOutputValue;
 };
-var hitButton = document.querySelector("#hit-button");
-hitButton.addEventListener("click", function () {
-  // var input = document.querySelector("#hit-button");
-  // var afterHit = main(input);
-  var word = "hit";
-  main(word);
-});
