@@ -47,20 +47,24 @@ var main = function (input) {
   if (gameState == `gameStart`) {
     deck = shuffleCards(makeDeck()); // why doesn't var deck = shuffleCards(makeDeck()) work here
     console.log(deck);
-    gameState = `dealerDealsFirstCard`; // why doesn't var gameState = `dealerDealsFirstCard` work here
+    gameState = `dealerDeals`; // why doesn't var gameState = `dealerDealsFirstCard` work here
     return `Please enter number of players against dealer!<br><br>Minimum: 1, Maximum: 6`;
   }
-  if (gameState == `dealerDealsFirstCard`) {
+  if (gameState == `dealerDeals`) {
     numberOfPlayers = input;
     for (counter = 1; counter <= numberOfPlayers; counter += 1) {
       player[counter] = [];
       player[counter].push(deck.pop());
+      player[counter].push(deck.pop());
     }
     player[0] = [];
     player[0].push(deck.pop());
-    gameState = `dealerDealsSecondCard`;
-    return `Dealer has dealt first card to all`;
+    player[0].push(deck.pop());
+    gameState = `hitStandBegins`;
+    var cardsOnTableStatement = cardsOnTable(numberOfPlayers);
+    return cardsOnTableStatement;
   }
+  /*too troublesome to deal two cards separately
   if (gameState == `dealerDealsSecondCard`) {
     for (counter = 1; counter <= numberOfPlayers; counter += 1) {
       player[counter].push(deck.pop());
@@ -69,9 +73,29 @@ var main = function (input) {
     gameState = `trueGameStart`;
     return `Dealer has dealt second card to all`;
   }
+  */
   var myOutputValue = "hello world";
   return myOutputValue;
 };
 var gameState = `gameStart`;
 var player = [`dealer`]; // dealer is 0
-var numberOfPlayers = "";
+var numberOfPlayers = ""; // against dealer
+var cardsOnTable = function (numberOfPlayers) {
+  var statement = "";
+  var innerstatement = "";
+  for (counter = 1; counter <= numberOfPlayers; counter += 1) {
+    for (
+      innercounter = 0;
+      innercounter < player[counter].length;
+      innercounter += 1
+    ) {
+      var innerstatement = `Player ${counter} has:<br>
+      ${player[counter][innercounter].name} of ${player[counter][innercounter].suit}<br>`;
+
+      var statement = statement + innerstatement;
+
+      return innerstatement + `<br>`;
+    }
+  }
+  return statement;
+};
