@@ -1,0 +1,74 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: sans-serif;
+  margin-left: 30px;
+  margin-right: 30px;
+}
+
+#mainHeader {
+  color: darkred;
+  font-weight: bold;
+  font-size: 36px;
+}
+
+.header {
+  text-align: center;
+  text-shadow: 2px 2px 3px grey;
+}
+
+#container {
+  background-color: burlywood;
+  margin: 40px auto;
+  max-width: 800px;
+  padding: 38px 31px;
+  border-radius: 8px;
+}
+
+input {
+  font-size: 21px;
+  line-height: 33px;
+  margin: 0 0 23px 0;
+  padding: 0 9px;
+  width: 100%;
+  border-radius: 4px;
+  border: none;
+}
+
+button {
+  font-size: 21px;
+  line-height: 33px;
+  margin: 0 0 23px 0;
+  padding: 0 6px;
+  border-radius: 8px;
+  border: 1px solid grey;
+  background-color: lightgrey;
+}
+
+#output-div {
+  /* background-color: lightgrey; */
+  margin: 20px auto;
+  padding: 20px;
+  width: 100%;
+}
+
+footer {
+  text-align: center;
+  color: lightgrey;
+  font-size: small;
+}
+
+footer > a:link {
+  color: lightgrey;
+}
+
+footer > a:visited {
+  color: lightgrey;
+}
+
+.card {
+  /* float: left; */
+  width: 120px;
+}
