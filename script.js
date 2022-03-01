@@ -11,5 +11,10 @@ var main = function (input) {
 
   if (playDeck.length == 0) playDeck = shuffleDeck(makeDeck());
 
-  return cardValue;
+  var card1SVG = card1.svg;
+  var card2SVG = card2.svg;
+
+  var displayOutput = card1SVG + card2SVG;
+
+  return displayOutput;
 };

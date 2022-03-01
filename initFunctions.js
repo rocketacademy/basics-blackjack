@@ -1,3 +1,7 @@
+/***
+ * Makes a new 52 card deck
+ * @returns {Array} an array of a playing card objects
+ */
 var makeDeck = function () {
   var cardSuits = ["♠", "♥", "♣", "♦"];
   var cardText = [
@@ -23,6 +27,7 @@ var makeDeck = function () {
         suit: currentSuit,
         rank: j + 1,
         text: cardText[j],
+        svg: `<object data="${currentSuit}${cardText[j]}" type="image/svg+xml" id="cardsvg" width="300px" height="300px"></object>`,
       };
       createdDeck.push(newCard);
     }
@@ -30,6 +35,11 @@ var makeDeck = function () {
   return createdDeck;
 };
 
+/***
+ * Shuffles a card deck
+ * @argument {Array} deckToShuffle The deck to be shuffled
+ * @returns {Array} the shuffled deck
+ */
 var shuffleDeck = function (deckToShuffle) {
   for (var i = 0; i < deckToShuffle.length; i += 1) {
     var randomIndex = Math.floor(Math.random() * deckToShuffle.length);
