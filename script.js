@@ -61,9 +61,16 @@ var main = function (input) {
     player[0].push(deck.pop());
     player[0].push(deck.pop());
     gameState = `hitStandBegins`;
-    var cardsOnTableStatement = cardsOnTable(numberOfPlayers);
+    var cardsOnTableStatement =
+      `Dealer has :<br>
+    ${player[0][0].name} of ${player[0][0].suit}<br>
+    and one hidden card<br><br>` + cardsOnTable(numberOfPlayers);
     return cardsOnTableStatement;
   }
+  // if (gameState == `hitStandBegins`){
+  //   for (counter = 0)
+
+  // }
   /*too troublesome to deal two cards separately
   if (gameState == `dealerDealsSecondCard`) {
     for (counter = 1; counter <= numberOfPlayers; counter += 1) {
@@ -82,20 +89,24 @@ var player = [`dealer`]; // dealer is 0
 var numberOfPlayers = ""; // against dealer
 var cardsOnTable = function (numberOfPlayers) {
   var statement = "";
-  var innerstatement = "";
+  var innerstatement = [];
   for (counter = 1; counter <= numberOfPlayers; counter += 1) {
-    for (
-      innercounter = 0;
-      innercounter < player[counter].length;
-      innercounter += 1
-    ) {
-      var innerstatement = `Player ${counter} has:<br>
-      ${player[counter][innercounter].name} of ${player[counter][innercounter].suit}<br>`;
-
-      var statement = statement + innerstatement;
-
-      return innerstatement + `<br>`;
-    }
+    var statement =
+      statement +
+      `Player ${counter} has:<br>
+    ${player[counter][0].name} of ${player[counter][0].suit}<br>
+    ${player[counter][1].name} of ${player[counter][1].suit}<br><br>`;
   }
   return statement;
+
+  // var innerstatement[counter-1] = `Player ${counter} has:<br>`;
+  // for (
+  //   innercounter = 0;
+  //   innercounter < player[counter].length;
+  //   innercounter += 1
+  // ) {
+  //   var innerstatement[counter-1] =
+  //     innerstatement[counter-1] +
+  //     `${player[counter][innercounter].name} of ${player[counter][innercounter].suit}<br>`;
+  // }
 };
