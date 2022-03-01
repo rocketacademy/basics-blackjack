@@ -6,8 +6,8 @@ var main = function (input) {
 
   var cardValue = card1.rank + card2.rank;
 
-  console.log(`Card 1: ${card1.text}`);
-  console.log(`Card 2: ${card2.text}`);
+  console.log(`Card 1: ${card1.text + card1.suit}`);
+  console.log(`Card 2: ${card2.text + card2.suit}`);
 
   if (playDeck.length == 0) playDeck = shuffleDeck(makeDeck());
 

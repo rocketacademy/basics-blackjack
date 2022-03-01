@@ -3,7 +3,7 @@
  * @returns {Array} an array of a playing card objects
  */
 var makeDeck = function () {
-  var cardSuits = ["♠", "♥", "♣", "♦"];
+  var cardSuits = ["S", "H", "C", "D"];
   var cardText = [
     "A",
     "2",
@@ -27,7 +27,7 @@ var makeDeck = function () {
         suit: currentSuit,
         rank: j + 1,
         text: cardText[j],
-        svg: `<object data="${currentSuit}${cardText[j]}" type="image/svg+xml" id="cardsvg" width="300px" height="300px"></object>`,
+        svg: `<img class="card" src="svg/${currentSuit}${cardText[j]}.svg" />`,
       };
       createdDeck.push(newCard);
     }
