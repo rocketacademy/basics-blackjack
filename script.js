@@ -22,6 +22,7 @@ const playerStandBtn = document.querySelector("#hold-button");
 const restartBtn = document.querySelector("#restart-button");
 const playerDiv = document.querySelector("#player");
 const dealerDiv = document.querySelector("#dealer");
+const gameRulesDiv = document.querySelector("#gameRules");
 restartBtn.style.display = "none";
 playerHitBtn.style.display = "none";
 playerStandBtn.style.display = "none";
@@ -158,6 +159,7 @@ var main = function (input) {
   }
 
   if (gameState == "start") {
+    gameRulesDiv.style.display = "none";
     playerHand.push(deck.pop());
     playerHand.push(deck.pop());
     computerHand.push(deck.pop());
@@ -184,7 +186,11 @@ var main = function (input) {
 
   if (gameState == "hit") {
     playerHand.push(deck.pop());
-    myOutputValue =
+    if (computePoints(playerHand) > 21) {
+      playerHitBtn.style.display = "none";
+      myOutputValue = "Player is busted!" + `<br>`;
+    }
+    myOutputValue +=
       "Dealer hand: " +
       `<br>` +
       displayHand(computerHand, "hideOne") +
