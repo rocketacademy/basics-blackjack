@@ -69,18 +69,13 @@ button {
 
 img.card {
   width: 70px;
-  margin: 0;
+  margin: 10px;
   padding: 0;
   border: 0;
-  vertical-align: initial;
+  vertical-align: top;
   box-sizing: initial;
 }
 
-/*
- * A hand is a div containing cards.
- */
-.hand {
+.handContainer {
   display: inline-block;
-  padding: 0;
-  margin: 0;
 }

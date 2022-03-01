@@ -27,7 +27,7 @@ var makeDeck = function () {
         suit: currentSuit,
         rank: j + 1,
         text: cardText[j],
-        svg: `<img class="card" src="svg/${currentSuit}${cardText[j]}.svg" />`,
+        svg: `<div class = "handContainer"><img class="card" src="svg/${currentSuit}${cardText[j]}.svg" /></div>`,
       };
       createdDeck.push(newCard);
     }
@@ -49,4 +49,47 @@ var shuffleDeck = function (deckToShuffle) {
     deckToShuffle[i] = randomCard;
   }
   return deckToShuffle;
+};
+
+/***
+ * Calculates the hand blackjack value
+ * @argument {Array} cardArray The current blackjack hand
+ * @returns {number} the total blackjack value of the hand.
+ */
+var calculateHand = function (cardArray) {
+  var calculatedValue = 0;
+  var acesInHand = 0;
+  for (var i = 0; i < cardArray.length; i += 1) {
+    //if it's an ace
+    if (cardArray[i].rank == 1) {
+      acesInHand += 1;
+      continue;
+    }
+    //rank > 10 means Jack Queen King
+    if (cardArray[i].rank > 10) {
+      calculatedValue += 10;
+      continue;
+    }
+    calculatedValue += cardArray[i].rank;
+  }
+
+  if (acesInHand) {
+    var aceValues = calcuateAceValue(acesInHand);
+    if (calculatedValue + aceValues[0] <= 21)
+      return (calculatedValue += aceValues[0]);
+    return (calculatedValue += aceValues[1]);
+  }
+
+  return calculatedValue;
+};
+
+/***
+ * Calculates the maximum and minimum value of the Ace cards in the hand
+ * @argument {number} numberofAces The number of Aces in hand.
+ * @returns {Array} The maximum and minimum value of the Aces in hand where [0] is the max value, and [1] is the minimum value
+ */
+var calcuateAceValue = function (numberofAces) {
+  var maxValue = 10 + numberofAces;
+  var minValue = numberofAces;
+  return [maxValue, minValue];
 };

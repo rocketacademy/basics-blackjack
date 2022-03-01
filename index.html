@@ -108,9 +108,7 @@
       <br />
       <button id="submit-button">Submit</button>
       <p>Output:</p>
-      <div id="output-div">
-        <div class="hand"></div>
-      </div>
+      <div id="output-div"></div>
     </div>
     <!-- Import program logic -->
     <script src="initFunctions.js"></script>
@@ -124,7 +122,7 @@
         var result = main(input.value);
 
         // Display result in output element
-        var output = document.querySelector(".hand");
+        var output = document.querySelector("#output-div");
         output.innerHTML = result;
 
         // Reset input value
