@@ -208,7 +208,8 @@ var main = function (input) {
     while (computerHandPoint < 17) {
       let newCard = deck.pop();
       computerHand.push(newCard);
-      computerHandPoint += newCard.rank;
+      // computerHandPoint += newCard.rank;
+      computerHandPoint = computePoints(computerHand);
     }
     playerHitBtn.style.display = "none";
     playerStandBtn.style.display = "none";
