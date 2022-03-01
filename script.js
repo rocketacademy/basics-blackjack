@@ -22,6 +22,19 @@ var makeDeck = function () {
       cardDeck.push(card);
     }
   }
+  for (counter = 0; counter < cardDeck.length; counter += 1) {
+    //J,Q,K all = 10, A = 11 by default
+    if (
+      cardDeck[counter].rank == 11 ||
+      cardDeck[counter].rank == 12 ||
+      cardDeck[counter].rank == 13
+    ) {
+      cardDeck[counter].rank = 10;
+    }
+    if (cardDeck[counter].rank == 1) {
+      cardDeck[counter].rank = 11;
+    }
+  }
   return cardDeck;
 };
 
@@ -60,18 +73,55 @@ var main = function (input) {
     player[0] = [];
     player[0].push(deck.pop());
     player[0].push(deck.pop());
+    dealerHandsHiddenText = `Dealer has:<br>
+    ${player[0][0].name} of ${player[0][0].suit}<br>
+    and one hidden card<br><br>`;
     gameState = `hitStandBegins`;
     var cardsOnTableStatement =
-      `Dealer has :<br>
-    ${player[0][0].name} of ${player[0][0].suit}<br>
-    and one hidden card<br><br>` + cardsOnTable(numberOfPlayers);
+      playerActionText(1) +
+      dealerHandsHiddenText +
+      cardsOnTable(numberOfPlayers);
     return cardsOnTableStatement;
   }
-  // if (gameState == `hitStandBegins`){
-  //   for (counter = 0)
+  if (gameState == `hitStandBegins`) {
+    if (roundCounter <= numberOfPlayers) {
+      if (input != `Hit` && input != `Stand`) {
+        var cardsOnTableStatement =
+          playerActionText(roundCounter) +
+          dealerHandsHiddenText +
+          cardsOnTable(numberOfPlayers);
+        return cardsOnTableStatement;
+      }
+      if (input == `Hit`) {
+        player[roundCounter].push(deck.pop());
+        var cardsOnTableStatement =
+          playerActionText(roundCounter) +
+          dealerHandsHiddenText +
+          cardsOnTable(numberOfPlayers);
+        return cardsOnTableStatement;
+      }
+      if (input == `Stand`) {
+        roundCounter += 1;
+        if (roundCounter > numberOfPlayers) {
+          var cardsOnTableStatement =
+            dealerHandsShown() + cardsOnTable(numberOfPlayers);
+        } else {
+          var cardsOnTableStatement =
+            playerActionText(roundCounter) +
+            dealerHandsHiddenText +
+            cardsOnTable(numberOfPlayers);
+        }
+        return cardsOnTableStatement;
+      }
+    } else {
+      gameState = `dealerTurn`;
+    }
+  }
+  if (gameState == `dealerTurn`) {
+  }
+};
 
-  // }
-  /*too troublesome to deal two cards separately
+/*too troublesome to deal two cards separately
   if (gameState == `dealerDealsSecondCard`) {
     for (counter = 1; counter <= numberOfPlayers; counter += 1) {
       player[counter].push(deck.pop());
@@ -81,15 +131,14 @@ var main = function (input) {
     return `Dealer has dealt second card to all`;
   }
   */
-  var myOutputValue = "hello world";
-  return myOutputValue;
-};
+
 var gameState = `gameStart`;
+var roundCounter = 1;
 var player = [`dealer`]; // dealer is 0
 var numberOfPlayers = ""; // against dealer
 var cardsOnTable = function (numberOfPlayers) {
+  //this function is the most important function ever
   var statement = "";
-  // var innerstatement = [];
   for (counter = 1; counter <= numberOfPlayers; counter += 1) {
     statement = statement + `Player ${counter} has:<br>`;
     for (
@@ -105,15 +154,20 @@ var cardsOnTable = function (numberOfPlayers) {
     statement = statement + `<br>`;
   }
   return statement;
+};
+var dealerHandsShown = function () {
+  var statement = `Dealer has:<br>`;
+  for (innercounter = 0; innercounter < player[0].length; innercounter += 1) {
+    statement =
+      statement +
+      `${player[0][innercounter].name} of ${player[0][innercounter].suit}<br>`;
+  }
+  statement = statement + `<br>`;
+  return statement;
+};
 
-  // var innerstatement[counter-1] = `Player ${counter} has:<br>`;
-  // for (
-  //   innercounter = 0;
-  //   innercounter < player[counter].length;
-  //   innercounter += 1
-  // ) {
-  //   var innerstatement[counter-1] =
-  //     innerstatement[counter-1] +
-  //     `${player[counter][innercounter].name} of ${player[counter][innercounter].suit}<br>`;
-  // }
+// var bustTracker =
+var playerActionText = function (playerNo) {
+  var statement = `Player ${playerNo}, please "Hit" or "Stand"!<br><br>`;
+  return statement;
 };
