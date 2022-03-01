@@ -89,13 +89,20 @@ var player = [`dealer`]; // dealer is 0
 var numberOfPlayers = ""; // against dealer
 var cardsOnTable = function (numberOfPlayers) {
   var statement = "";
-  var innerstatement = [];
+  // var innerstatement = [];
   for (counter = 1; counter <= numberOfPlayers; counter += 1) {
-    var statement =
-      statement +
-      `Player ${counter} has:<br>
-    ${player[counter][0].name} of ${player[counter][0].suit}<br>
-    ${player[counter][1].name} of ${player[counter][1].suit}<br><br>`;
+    statement = statement + `Player ${counter} has:<br>`;
+    for (
+      innercounter = 0;
+      innercounter < player[counter].length;
+      innercounter += 1
+    ) {
+      statement =
+        statement +
+        `${player[counter][innercounter].name} of ${player[counter][innercounter].suit}<br>`;
+    }
+
+    statement = statement + `<br>`;
   }
   return statement;
 
