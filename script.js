@@ -205,7 +205,7 @@ var main = function (input) {
       //console.log(playerCredits);
       myOutputValue =
         myOutputValue +
-        `<br> OH YOU HAVE BLACKJACK! HIT THE STAND BUTTON" ${image}
+        `<br> OH YOU HAVE BLACKJACK! HIT THE STAND BUTTON ${image}
         `;
       return myOutputValue;
     }
