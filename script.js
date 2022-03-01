@@ -22,6 +22,9 @@ const playerStandBtn = document.querySelector("#hold-button");
 const restartBtn = document.querySelector("#restart-button");
 const playerDiv = document.querySelector("#player");
 const dealerDiv = document.querySelector("#dealer");
+restartBtn.style.display = "none";
+playerHitBtn.style.display = "none";
+playerStandBtn.style.display = "none";
 
 let gameState = "start";
 let playerHand = [];
@@ -148,8 +151,6 @@ function displayHand(hand, toDo) {
 
 // Second Version: Add Player Hit or Stand - main2
 var main = function (input) {
-  // let displayPlayerHandStr = "";
-  // let displayComputerHandStr = "";
   let myOutputValue = "";
 
   if (deck.length == 0) {
@@ -176,6 +177,9 @@ var main = function (input) {
   if (gameState == "waiting") {
     const startBtn = document.querySelector("#start-button");
     startBtn.style.display = "none";
+    restartBtn.style.display = "inline-block";
+    playerHitBtn.style.display = "inline-block";
+    playerStandBtn.style.display = "inline-block";
   }
 
   if (gameState == "hit") {
@@ -199,8 +203,9 @@ var main = function (input) {
       let newCard = deck.pop();
       computerHand.push(newCard);
       computerHandPoint += newCard.rank;
-      playerHitBtn.style.display = "none";
     }
+    playerHitBtn.style.display = "none";
+    playerStandBtn.style.display = "none";
 
     myOutputValue =
       "Dealer hand: " +
