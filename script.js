@@ -8,6 +8,7 @@ var computerCC = "";
 var playerCC = "";
 var playerCredits = 100;
 var currentPlayingCredit = 0;
+var computerCCHide = "";
 
 var makeDeck = function () {
   // Initialise an empty deck array
@@ -146,7 +147,7 @@ var main = function (input) {
     return (myOutputValue =
       `Player's credits: ${playerCredits} <br> Please enter your bet!` + image);
   } else if (playerCredits - parseInt(input) < 0) {
-    image = '<img src="./img/llc_shock.gif" />';
+    image = '<img src="./img/llc_fade.gif" />';
     return (myOutputValue =
       `Player's credits: ${playerCredits} <br> You have not enough money!` +
       image);
@@ -187,33 +188,36 @@ var main = function (input) {
       computerCard2.name
     }${convertSuit(computerCard2.suit)}]`;
 
+    computerCCHide = `[*] [${computerCard2.name}${convertSuit(
+      computerCard2.suit
+    )}]`;
+
     playerCC = `[${playerCard1.name}${convertSuit(playerCard1.suit)}] [${
       playerCard2.name
     }${convertSuit(playerCard2.suit)}]`;
 
-    var myOutputValue = `Player's credits: ${playerCredits} <br> Dealer had ${computerCC} and dealer's score is ${computerScore} <br> 
+    var myOutputValue = `Player's credits: ${playerCredits} <br> Dealer had ${computerCCHide}<br> 
     You had ${playerCC} and your score is ${playerScore}`;
 
     if (playerScore == 21) {
+      currentGameState = "gamePlaying";
       image = '<img src="./img/cat-lan-lan-cat.gif" />';
-      playerCredits = playerCredits + currentPlayingCredit * 2;
-      console.log(playerCredits);
+      //console.log(playerCredits);
       myOutputValue =
         myOutputValue +
-        `<br> BLACKJACK! YOU WON!" ${image}
-         <br> Player's credits: 
-        ${playerCredits}`;
+        `<br> OH YOU HAVE BLACKJACK! HIT THE STAND BUTTON" ${image}
+        `;
       return myOutputValue;
     }
 
     if (computerScore == 21) {
+      currentGameState = "gamePlaying";
       image = '<img src="./img/llc_nani.gif" />';
       myOutputValue =
-        myOutputValue +
-        "<br> Dealer has BLACKJACK! YOU LOST!" +
-        image +
-        " <br> Player's credits: " +
-        playerCredits;
+        `Player's credits: ${playerCredits} <br> Dealer had ${computerCC}<br> 
+          You had ${playerCC} and your score is ${playerScore}` +
+        "<br> Dealer has BLACKJACK! DECIDE WHETHER YOU WANT TO HIT OR LOSE!" +
+        image;
       return myOutputValue;
     }
 
@@ -237,40 +241,39 @@ var hit = function () {
     var playerCard = shuffledDeck.pop();
     playerCards.push(playerCard.name);
 
-    console.log(playerCard.name);
+    //console.log(playerCard.name);
 
-    console.log(playerScore);
+    //console.log(playerScore);
 
     playerCC =
       playerCC + ` [${playerCard.name}${convertSuit(playerCard.suit)}]`;
 
     playerScore = computeFinalScore(playerCards);
 
-    console.log(playerScore);
+    //console.log(playerScore);
 
     myOutputValue = `Player's cards: ${playerCC} and now your score is ${playerScore}`;
 
     if (playerScore > 21) {
       image = '<img src="./img/llc_crawl.gif" />';
-      currentGameState = "startGame";
       myOutputValue =
-        myOutputValue +
-        "<br>YOU BUST!" +
-        image +
-        " <br> Player's credits: " +
-        playerCredits;
+        myOutputValue + "<br>YOU BUST! HIT THE STAND BUTTON" + image;
       return myOutputValue;
     }
     if (playerScore == 21) {
-      image = '<img src="./img/llc_dance.gif" />';
-      currentGameState = "startGame";
-      playerCredits = playerCredits + currentPlayingCredit * 2;
+      image = '<img src="./img/llc_heart.gif" />';
+      myOutputValue =
+        myOutputValue + "<br>BLACKJACK! HIT THE STAND BUTTON" + image;
+
+      return myOutputValue;
+    }
+
+    if (playerScore < 21 && playerCards.length < 5) {
+      image = '<img src="./img/llc_think.gif" />';
       myOutputValue =
         myOutputValue +
-        "<br>BLACKJACK! YOU WON!" +
-        image +
-        " <br> Player's credits: " +
-        playerCredits;
+        "<br>Think carefully if you want to hit or stand" +
+        image;
 
       return myOutputValue;
     }
@@ -299,25 +302,52 @@ var stand = function () {
       var computerCard = shuffledDeck.pop();
       computerCards.push(computerCard.name);
       computerScore = computeFinalScore(computerCards);
-      console.log(computerCard);
-      console.log(computerScore);
+      //console.log(computerCard);
+      //console.log(computerScore);
 
       computerCC =
         computerCC + ` [${computerCard.name}${convertSuit(computerCard.suit)}]`;
     }
+    myOutputValue = `Player's cards: ${playerCC} and player's score: ${playerScore} <br>
+        Dealer's cards: ${computerCC} and dealer's score: ${computerScore} <br>`;
 
-    if (computerScore > 21) {
-      image = '<img src="./img/llc_money.gif" />';
-      playerCredits = playerCredits + currentPlayingCredit * 2;
-
+    if (
+      (computerScore > 21 && playerScore > 21) ||
+      computerScore == playerScore
+    ) {
+      image = '<img src="./img/llc_heart.gif" />';
+      playerCredits = playerCredits + currentPlayingCredit;
       myOutputValue =
-        `Dealer's cards: ${computerCC} <br> Dealer bust. YOU WON!` +
+        myOutputValue +
+        "It's a tie!" +
         image +
         " <br> Player's credits: " +
         playerCredits;
-    } else {
-      myOutputValue = `Player's cards: ${playerCC} and player's score: ${playerScore} <br>
-        Dealer's cards: ${computerCC} and dealer's score: ${computerScore} <br>`;
+    }
+    if (computerScore > 21 && playerScore <= 21) {
+      image = '<img src="./img/llc_pop.gif" />';
+      playerCredits = playerCredits + currentPlayingCredit * 2;
+      myOutputValue =
+        myOutputValue +
+        "DEALER BUST AND YOU WON!" +
+        image +
+        " <br> Player's credits: " +
+        playerCredits;
+    }
+
+    if (computerScore <= 21 && playerScore > 21) {
+      image = '<img src="./img/llc_shock.gif" />';
+      currentGameState = "startGame";
+      myOutputValue =
+        myOutputValue +
+        "<br>YOU BUST AND DEALER WON!" +
+        image +
+        " <br> Player's credits: " +
+        playerCredits;
+      return myOutputValue;
+    }
+
+    if (computerScore <= 21 && playerScore <= 21) {
       if (playerScore < computerScore) {
         image = '<img src="./img/llc_daren.gif" />';
         myOutputValue =
@@ -332,15 +362,6 @@ var stand = function () {
         myOutputValue =
           myOutputValue +
           "YOU WON!" +
-          image +
-          " <br> Player's credits: " +
-          playerCredits;
-      } else {
-        image = '<img src="./img/llc_heart.gif" />';
-        playerCredits = playerCredits + currentPlayingCredit;
-        myOutputValue =
-          myOutputValue +
-          "It's a tie!" +
           image +
           " <br> Player's credits: " +
           playerCredits;
