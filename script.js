@@ -94,6 +94,9 @@ var main = function (input) {
       }
       if (input == `Hit`) {
         player[roundCounter].push(deck.pop());
+        if (buster(roundCounter) >= 21) {
+          roundCounter += 1;
+        }
         var cardsOnTableStatement =
           playerActionText(roundCounter) +
           dealerHandsHiddenText +
@@ -118,6 +121,15 @@ var main = function (input) {
     }
   }
   if (gameState == `dealerTurn`) {
+    if (buster(0) < 17) {
+      player[0].push(deck.pop());
+
+      var cardsOnTableStatement =
+        dealerHandsShown() + cardsOnTable(numberOfPlayers);
+      return cardsOnTableStatement;
+    } else {
+      gameState = `score`;
+    }
   }
 };
 
@@ -157,17 +169,31 @@ var cardsOnTable = function (numberOfPlayers) {
 };
 var dealerHandsShown = function () {
   var statement = `Dealer has:<br>`;
-  for (innercounter = 0; innercounter < player[0].length; innercounter += 1) {
+  for (counter = 0; counter < player[0].length; counter += 1) {
     statement =
       statement +
-      `${player[0][innercounter].name} of ${player[0][innercounter].suit}<br>`;
+      `${player[0][counter].name} of ${player[0][counter].suit}<br>`;
   }
   statement = statement + `<br>`;
   return statement;
 };
 
-// var bustTracker =
 var playerActionText = function (playerNo) {
   var statement = `Player ${playerNo}, please "Hit" or "Stand"!<br><br>`;
   return statement;
+};
+
+var buster = function (playerNo) {
+  var score = 0;
+  var aceCounter = 0;
+  for (counter = 0; counter < player[playerNo].length; counter += 1) {
+    if (player[playerNo][counter].rank == 11) {
+      aceCounter += 1;
+    }
+    score = score + player[playerNo][counter].rank;
+  }
+  if (score > 21) {
+    score = score - aceCounter * 10;
+  }
+  return score;
 };
