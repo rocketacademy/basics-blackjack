@@ -16,17 +16,6 @@ body {
   font-size: 0.7rem;
 }
 
-body:after {
-  content: "";
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: rgba(0, 0, 0, 0.2);
-  pointer-events: none;
-}
-
 #output-div img {
   display: inline-block;
   margin: 20px 5px 0 5px;
@@ -87,17 +76,25 @@ button:hover {
 #music {
   width: 180px;
   height: 25px;
-  margin: 50px 0 0 0;
+  margin: 10px 0 0 0;
+}
+
+hr {
+  margin: 20px 0;
 }
 
 /* increase header font size on wider screens */
 @media screen and (min-width: 600px) {
+  body {
+    height: 700px;
+  }
+
   .header {
     font-size: 2rem;
   }
 
-  body {
-    height: 900px;
+  hr {
+    margin: 20px 50px;
   }
 }
 

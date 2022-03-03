@@ -1,20 +1,15 @@
 /*
 - Create a shuffled deck
-
 - User input 1 - 6 players, click "start" to start the game
   -- Players take turns to draw 2 cards face up(clockwise)
   -- Dealer(computer) draw 2 cards: 1st card face up, 2nd card face down
   -- wait for each player's next move: "hit" or "stand"
-  
 - If player choose "hit":
   -- Player draw 3rd card face up
-
 - If player choose "stand":
   -- Dealer: if Dealer's hand total value < 17, dealer must draw one more card, until the total value is >= 17
   -- Compare the total value of player hand and dealer hand, the highest value wins
-
-- Reset game mode
-
+- Reset game
 */
 const output = document.querySelector("#output-div");
 const playerHitBtn = document.querySelector("#hit-button");
@@ -31,7 +26,6 @@ let gameState = "start";
 let playerHand = [];
 let computerHand = [];
 let deck = shuffleCards(makeDeck());
-console.log(deck);
 
 playerHitBtn.addEventListener("click", function () {
   gameState = "hit";
@@ -39,7 +33,6 @@ playerHitBtn.addEventListener("click", function () {
 });
 
 playerStandBtn.addEventListener("click", function () {
-  console.log("clicked stand btn");
   gameState = "stand";
   output.innerHTML = main();
 });
@@ -136,13 +129,11 @@ function displayHand(hand, toDo) {
   }
   if (toDo == "showAll") {
     for (let i = 0; i < hand.length; i++) {
-      // displayHandStr += `|| ${hand[i].name} of ${hand[i].suit}`;
       displayHandStr += `<img src="${hand[i].img}" />`;
     }
   }
   if (toDo == "hideOne") {
     for (let i = 0; i < hand.length - 1; i++) {
-      // displayHandStr += `${hand[i].name} of ${hand[i].suit}  `;
       displayHandStr += `<img src="${hand[i].img}" />`;
     }
     displayHandStr += `<img src="imgs/cardback.svg" />`;
@@ -150,14 +141,9 @@ function displayHand(hand, toDo) {
   return displayHandStr;
 }
 
-// Second Version: Add Player Hit or Stand - main2
+// Main function
 var main = function (input) {
   let myOutputValue = "";
-
-  if (deck.length == 0) {
-    return "No more card in the deck.";
-  }
-
   if (gameState == "start") {
     gameRulesDiv.style.display = "none";
     playerHand.push(deck.pop());
@@ -229,12 +215,12 @@ var main = function (input) {
     if (playerHandPoint > 21 && computerHandPoint <= 21)
       myOutputValue += `<hr>` + "You are busted!" + " Dealer win!";
     if (computerHandPoint > 21 && playerHandPoint <= 21)
-      myOutputValue += `<hr>` + "Dealer is busted!" + " Player win!";
+      myOutputValue +=
+        `<hr>` + "Dealer is busted!" + `<br>` + "🎊🎊🎊 Player win! 🎊🎊🎊";
     if (playerHandPoint > 21 && computerHandPoint > 21)
       myOutputValue += `<hr>` + "Both Player and Dealer are busted!";
-
     if (playerHandPoint > computerHandPoint && playerHandPoint <= 21) {
-      myOutputValue += `<hr>` + "Player Win!";
+      myOutputValue += `<hr>` + "🎊🎊🎊 Player Win! 🎊🎊🎊";
     } else if (playerHandPoint < computerHandPoint && computerHandPoint <= 21) {
       myOutputValue += `<hr>` + "Dealer Win!";
     } else if (playerHandPoint == computerHandPoint) {
