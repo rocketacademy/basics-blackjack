@@ -110,34 +110,20 @@
         <h2>Blackjack Rules</h2>
         <p>
           The goal of blackjack is to beat the dealer's hand without going over
-          21.
-          <br />
-          Face cards are worth 10. Aces are worth 1 or 11, whichever makes a
-          better hand.
-          <br />
-          Each player starts with two cards, one of the dealer's cards is hidden
-          until the end.
-          <br />
-          To 'Hit' is to ask for another card. To 'Stand' is to hold your total
-          and end your turn.
-          <br />
-          If you go over 21 you bust, if you are dealt 21 from the start (Ace &
-          10), you got a blackjack.
-          <br />
-          Dealer will hit until his/her cards total 17 or higher.
+          21. Face cards are worth 10. Aces are worth 1 or 11, whichever makes a
+          better hand. Each player starts with two cards, one of the dealer's
+          cards is hidden until the end. To 'Hit' is to ask for another card. To
+          'Stand' is to hold your total and end your turn. If you go over 21 you
+          bust, if you are dealt 21 from the start (Ace & 10), you got a
+          blackjack. Dealer will hit until his/her cards total 17 or higher.
         </p>
         <h2>Click "Start" to play! Good luck!!!</h2>
       </div>
       <div id="output-div"></div>
       <!-- Background music -->
-      <audio controls id="music">
-        <source src="backgroundMusic.mp3" type="audio/mpeg" />
-        Your browser does not support the audio element.
+      <audio autoplay controls id="music">
+        <source src="Inspiring-Acoustic-Guitar.mp3" type="audio/mpeg" />
       </audio>
-
-      <!-- <p>Click the buttons to play or pause the music.</p> -->
-      <button onclick="play()" type="button" hidden>Play</button>
-      <button onclick="pause()" type="button" hidden>Pause</button>
     </div>
     <!-- Import program logic -->
     <script src="script.js"></script>
@@ -148,14 +134,6 @@
         var output = document.querySelector("#output-div");
         output.innerHTML = main();
       });
-      // Background music function
-      var myMusic = document.getElementById("music");
-      function play() {
-        myMusic.play();
-      }
-      function pause() {
-        myMusic.pause();
-      }
     </script>
   </body>
 </html>
