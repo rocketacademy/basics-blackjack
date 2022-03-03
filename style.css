@@ -83,6 +83,12 @@ button:hover {
   text-align: center;
 }
 
+#music {
+  width: 180px;
+  height: 25px;
+  margin: 50px 0 0 0;
+}
+
 /* increase header font size on wider screens */
 @media screen and (min-width: 600px) {
   .header {

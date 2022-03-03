@@ -126,10 +126,18 @@
           <br />
           Dealer will hit until his/her cards total 17 or higher.
         </p>
-
         <h2>Click "Start" to play! Good luck!!!</h2>
       </div>
       <div id="output-div"></div>
+      <!-- Background music -->
+      <audio controls id="music">
+        <source src="backgroundMusic.mp3" type="audio/mpeg" />
+        Your browser does not support the audio element.
+      </audio>
+
+      <!-- <p>Click the buttons to play or pause the music.</p> -->
+      <button onclick="play()" type="button" hidden>Play</button>
+      <button onclick="pause()" type="button" hidden>Pause</button>
     </div>
     <!-- Import program logic -->
     <script src="script.js"></script>
@@ -140,6 +148,14 @@
         var output = document.querySelector("#output-div");
         output.innerHTML = main();
       });
+      // Background music function
+      var myMusic = document.getElementById("music");
+      function play() {
+        myMusic.play();
+      }
+      function pause() {
+        myMusic.pause();
+      }
     </script>
   </body>
 </html>
