@@ -60,11 +60,38 @@ var main = function (input) {
   if (gameState == `gameStart`) {
     deck = shuffleCards(makeDeck()); // why doesn't var deck = shuffleCards(makeDeck()) work here
     console.log(deck);
-    gameState = `dealerDeals`; // why doesn't var gameState = `dealerDealsFirstCard` work here
+    gameState = `registerPlayers`; // why doesn't var gameState = `dealerDealsFirstCard` work here
     return `Please enter number of players against dealer!<br><br>Minimum: 1, Maximum: 6`;
   }
-  if (gameState == `dealerDeals`) {
+  if (gameState == `registerPlayers`) {
     numberOfPlayers = input;
+    gameState = `dealerDeals`;
+    // for (counter = 1; counter <= numberOfPlayers; counter += 1) {
+    //betting system not functional
+    // playerMoney[counter] = 100;
+    // playerBet[counter] = 0;
+    // }
+    return `Click "Submit" to continue`;
+  }
+  if (gameState == `betsCreate`) {
+    gameState = `betsIn`;
+    roundCounter = 1;
+    return `Player 1, place your bets`;
+  }
+  if (gameState == `betsIn`) {
+    playerBet[roundCounter] = input;
+    playerMoney[roundCounter] =
+      playerMoney[roundCounter] - playerBet[roundCounter];
+    roundCounter += 1;
+    if (roundCounter > numberOfPlayers) {
+      gameState = `dealerDeals`;
+      var moneyStatement = moneyBet(numberOfPlayers);
+    } else {
+      var moneyStatement = `Player ${roundCounter}, place your bets`;
+    }
+    return moneyStatement;
+  } //betting system not functional
+  if (gameState == `dealerDeals`) {
     for (counter = 1; counter <= numberOfPlayers; counter += 1) {
       player[counter] = [];
       player[counter].push(deck.pop());
@@ -81,9 +108,13 @@ var main = function (input) {
       playerActionText(1) +
       dealerHandsHiddenText +
       cardsOnTable(numberOfPlayers);
+    roundCounter = 1;
     return cardsOnTableStatement;
   }
   if (gameState == `hitStandBegins`) {
+    // if (buster(roundCounter) >= 21) {
+    //   roundCounter += 1;
+    // }
     if (roundCounter <= numberOfPlayers) {
       if (input != `Hit` && input != `Stand`) {
         var cardsOnTableStatement =
@@ -97,11 +128,16 @@ var main = function (input) {
         if (buster(roundCounter) >= 21) {
           roundCounter += 1;
         }
-        var cardsOnTableStatement =
-          playerActionText(roundCounter) +
-          dealerHandsHiddenText +
-          cardsOnTable(numberOfPlayers);
-        return cardsOnTableStatement;
+        if (roundCounter > numberOfPlayers) {
+          //does this make sense with next else statement
+          var cardsOnTableStatement =
+            dealerHandsShown() + cardsOnTable(numberOfPlayers);
+        } else {
+          var cardsOnTableStatement =
+            playerActionText(roundCounter) +
+            dealerHandsHiddenText +
+            cardsOnTable(numberOfPlayers);
+        }
       }
       if (input == `Stand`) {
         roundCounter += 1;
@@ -114,8 +150,8 @@ var main = function (input) {
             dealerHandsHiddenText +
             cardsOnTable(numberOfPlayers);
         }
-        return cardsOnTableStatement;
       }
+      return cardsOnTableStatement;
     } else {
       gameState = `dealerTurn`;
     }
@@ -125,10 +161,20 @@ var main = function (input) {
       player[0].push(deck.pop());
 
       var cardsOnTableStatement =
-        dealerHandsShown() + cardsOnTable(numberOfPlayers);
+        `Click "Submit" to continue<br><br>` +
+        dealerHandsShown() +
+        cardsOnTable(numberOfPlayers);
       return cardsOnTableStatement;
     } else {
-      gameState = `score`;
+      // for (counter = 0; counter <= numberOfPlayers; counter += 1) {
+      //   scoreRec.push(buster(counter));
+      // }
+      gameState = `dealerDeals`; //gameState = `betsCreate` if betting is functional
+      // betCalculator(numberOfPlayers);
+      // var statement =
+      //   `Click "Submit" to continue<br><br>` + moneyLeft(numberOfPlayers);
+      // return statement;
+      return `Click "Submit" to continue`;
     }
   }
 };
@@ -143,7 +189,9 @@ var main = function (input) {
     return `Dealer has dealt second card to all`;
   }
   */
-
+// playerBet = [0];
+// scoreRec = [];
+// playerMoney = [100];
 var gameState = `gameStart`;
 var roundCounter = 1;
 var player = [`dealer`]; // dealer is 0
@@ -197,3 +245,43 @@ var buster = function (playerNo) {
   }
   return score;
 };
+// var moneyBet = function (numberOfPlayers) {
+//   var statement = `Click "Submit" to continue<br><br>`;
+//   for (counter = 1; counter <= numberOfPlayers; counter += 1) {
+//     statement =
+//       statement +
+//       `Player ${counter} has bet $${playerBet[counter]}.<br>Player ${counter} has $${playerMoney[counter]} left.<br><br>`;
+//   }
+//   return statement;
+// };
+// var moneyLeft = function (numberOfPlayers) {
+//   var statement = "";
+//   for (counter = 1; counter <= numberOfPlayers; counter += 1) {
+//     statement =
+//       statement +
+//       `Player ${counter} has $${playerMoney[counter]} left.<br><br>`;
+//   }
+//   return statement;
+// };
+// var betCalculator = function (numberOfPlayers) {
+//   for (counter = 1; counter <= numberOfPlayers; counter += 1) {
+//     if (scoreRec[counter] == 21 && player[counter].length == 2) {
+//       playerMoney[counter] = playerBet[counter] * 2.5 + playerMoney[counter];
+//       playerMoney[0] = playerMoney[0] - playerBet[counter] * 1.5;
+//       return numberOfPlayers; //early returns?
+//     } else if (scoreRec[counter] > 21) {
+//       playerMoney[0] = playerMoney[0] + playerBet[counter];
+//       return numberOfPlayers; //early returns?
+//     } else if (scoreRec[0] > 21 && scoreRec[counter] <= 21) {
+//       playerMoney[0] = playerMoney[0] - playerBet[counter];
+//       playerMoney[counter] = playerMoney[counter] + 2 * playerBet[counter];
+//       return numberOfPlayers; //early returns?
+//     } else if (scoreRec[0] == scoreRec[counter] && scoreRec[0] <= 21) {
+//       playerMoney[counter] = playerMoney[counter] + playerBet[counter];
+//       return numberOfPlayers; //early returns?
+//     } else if (scoreRec[0] > scoreRec[counter] && scoreRec[0] <= 21) {
+//       playerMoney[0] = playerMoney[0] + playerBet[counter];
+//       return numberOfPlayers; //early returns?
+//     }
+//   }
+// };
