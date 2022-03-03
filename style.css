@@ -6,12 +6,12 @@ body {
   font-family: "Open Sans", sans-serif;
   margin-left: 30px;
   margin-right: 30px;
-  background-color: white;
+  background-color: rgba(4, 78, 47, 0.945);
   color: white; /* sets the font color */
-  background-image: url("imgs/background.jpg"); /* The image used */
-  background-position: center; /* Center the image */
-  background-repeat: repeat; /* Do not repeat the image */
-  background-size: cover; /* Resize the background image to cover the entire container */
+  /* background-image: url("imgs/background.jpg"); The image used */
+  /* background-position: center; Center the image */
+  /* background-repeat: repeat; Do not repeat the image */
+  /* background-size: cover;  Resize the background image to cover the entire container */
   height: 700px;
   font-size: 0.7rem;
 }
@@ -29,7 +29,7 @@ body:after {
 
 #output-div img {
   display: inline-block;
-  margin: 0 5px 0 5px;
+  margin: 20px 5px 0 5px;
   max-width: 100%;
   max-height: 100px;
 }
@@ -57,7 +57,6 @@ input {
 button {
   font-size: 0.8rem;
   line-height: 1.4rem;
-  margin: 0 0 23px 0;
   padding: 0 6px;
   width: 4rem;
   border-radius: 21px;
@@ -81,10 +80,6 @@ button:hover {
 }
 
 #gameRules {
-  text-align: center;
-}
-
-#gameRules li {
   text-align: center;
 }
 

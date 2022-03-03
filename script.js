@@ -164,8 +164,10 @@ var main = function (input) {
     playerHand.push(deck.pop());
     computerHand.push(deck.pop());
     computerHand.push(deck.pop());
+    if (computePoints(playerHand) == 21)
+      myOutputValue = `💰💰💰Player got BLACKJACK!💰💰💰 <br>`;
     gameState = "waiting";
-    myOutputValue =
+    myOutputValue +=
       "Dealer hand: " +
       `<br>` +
       displayHand(computerHand, "hideOne") +
