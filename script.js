@@ -98,9 +98,19 @@ var computerHandScore = 0;
 var GAME_STATE_DEAL_HAND = "GAME_STATE_DEAL_HAND";
 var CURRENT_GAME_STATE = GAME_STATE_DEAL_HAND;
 var GAME_STATE_HIT_STAY = "GAME_STATE_HIT_STAY";
+var GAME_STATE_END_GAME = "GAME_STATE_END_GAME";
 var button = document.querySelector("#submit-button");
 var button2 = document.createElement("button");
 var buttonBox = document.querySelector("#button-container");
+
+var resetGame = function () {
+  playerHand = [];
+  computerHand = [];
+  myOutputValue = "";
+  playerHandScore = 0;
+  computerHandScore = 0;
+  CURRENT_GAME_STATE = GAME_STATE_DEAL_HAND;
+};
 
 // if player gets Blackjack they win automatically
 // change game state to allow player to hit or stay
@@ -138,7 +148,14 @@ var calculateScore = function (array) {
   return score;
 };
 
+var dealCard = function () {
+  playerHand.push(cardDeck.pop());
+};
+
 var main = function (input) {
+  if (CURRENT_GAME_STATE == GAME_STATE_END_GAME) {
+    resetGame();
+  }
   // player clicks Submit to deal cards and display cards to player
   if (CURRENT_GAME_STATE == GAME_STATE_DEAL_HAND) {
     for (i = 0; i < 2; i += 1) {
@@ -153,6 +170,16 @@ var main = function (input) {
     console.log(
       `computerHand: ${computerHand[0].name} of ${computerHand[0].suit} and ${computerHand[1].name} of ${computerHand[1].suit}`
     );
+
+    // check player's cards - if 21, player automatically wins
+    playerHandScore = calculateScore(playerHand);
+    console.log(`playerHandScore: ${playerHandScore}`);
+    if (playerHandScore == 21) {
+      myOutputValue += `<br><br> You scored 21, you win! <br><br> Click 'Submit' to play again.`;
+      CURRENT_GAME_STATE = GAME_STATE_END_GAME;
+      return myOutputValue;
+    }
+
     CURRENT_GAME_STATE = GAME_STATE_HIT_STAY;
     button.innerText = "hit";
     button2.innerText = "stay";
@@ -160,6 +187,12 @@ var main = function (input) {
     return myOutputValue;
   }
 
+  // if player clicks stay, move on
   if (CURRENT_GAME_STATE == GAME_STATE_HIT_STAY) {
+    // if player clicks hit, deal an extra card
+    button.addEventListener("click", dealCard);
+    myOutputValue = `The player's cards are: <br> ${playerHand[0].name} of ${playerHand[0].suit} <br> ${playerHand[1].name} of ${playerHand[1].suit} <br> ${playerHand[2].name} of ${playerHand[2].suit}. <br><br> The dealer's face-up card is: <br> ${computerHand[0].name} of ${computerHand[0].suit}.`;
+    // calculate total score of player's hand
+    // if >21, return "You busted!"
   }
 };
