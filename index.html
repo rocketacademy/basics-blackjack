@@ -86,113 +86,8 @@
     />
 
     <!-- CSS -->
-    <style>
-      * {
-        box-sizing: border-box;
-      }
-
-      body {
-        font-family: "Open Sans", sans-serif;
-        margin-left: 30px;
-        margin-right: 30px;
-        background-color: white;
-        color: white; /* sets the font color */
-        background-image: url("imgs/background.jpg"); /* The image used */
-        background-position: center; /* Center the image */
-        background-repeat: no-repeat; /* Do not repeat the image */
-        background-size: cover; /* Resize the background image to cover the entire container */
-        height: 800px;
-      }
-
-      body:after {
-        content: "";
-        position: fixed;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        background: rgba(0, 0, 0, 0.2);
-        pointer-events: none;
-      }
-
-      #output-div img {
-        display: block;
-        max-width: 100%;
-        max-height: 200px;
-      }
-      .header {
-        text-align: center;
-        font-size: 1.1rem;
-      }
-
-      #container {
-        margin: 40px auto;
-        max-width: 100%;
-        padding: 8px 31px;
-        text-align: center;
-      }
-
-      input {
-        font-size: 21px;
-        line-height: 33px;
-        margin: 0 0 23px 0;
-        padding: 0 9px;
-        width: 100%;
-      }
-
-      button {
-        font-size: 21px;
-        line-height: 33px;
-        margin: 0 0 23px 0;
-        padding: 0 6px;
-        width: 90px;
-        border-radius: 21px;
-      }
-
-      button:hover {
-        color: white;
-        background-color: black;
-      }
-
-      #output-div {
-        margin: 20px auto;
-        padding: 10px;
-        width: 100%;
-      }
-
-      #output-div img {
-        margin: 0 5px 0 5px;
-        display: inline-block;
-        height: 200px;
-      }
-
-      .logo-img {
-        height: 49px;
-        position: relative;
-        top: 22px;
-      }
-
-      #gameRules {
-        text-align: center;
-      }
-
-      #gameRules li {
-        text-align: center;
-      }
-
-      /* increase header font size on wider screens */
-      @media screen and (min-width: 600px) {
-        .header {
-          font-size: 2rem;
-        }
-
-        body {
-          height: 900px;
-        }
-      }
-    </style>
+    <link rel="stylesheet" href="style.css" />
   </head>
-
   <body>
     <h1 class="header">
       <img
@@ -230,11 +125,8 @@
           and end your turn.
         </li>
         <li>
-          If you go over 21 you bust, and the dealer wins regardless of the
-          dealer's hand.
-        </li>
-        <li>
-          If you are dealt 21 from the start (Ace & 10), you got a blackjack.
+          If you go over 21 you bust, if you are dealt 21 from the start (Ace &
+          10), you got a blackjack.
         </li>
         <li>Dealer will hit until his/her cards total 17 or higher.</li>
         <h2>Click "Start" to play! Good luck!!!</h2>
