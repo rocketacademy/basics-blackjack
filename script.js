@@ -65,13 +65,15 @@ var main = function (input) {
   }
   if (gameState == `registerPlayers`) {
     numberOfPlayers = input;
-    gameState = `dealerDeals`;
-    // for (counter = 1; counter <= numberOfPlayers; counter += 1) {
-    //betting system not functional
-    // playerMoney[counter] = 100;
-    // playerBet[counter] = 0;
-    // }
-    return `Click "Submit" to continue`;
+    gameState = `betsCreate`;
+    for (counter = 1; counter <= numberOfPlayers; counter += 1) {
+      //betting system not functional
+      playerMoney[counter] = 100;
+      playerBet[counter] = 0;
+    }
+    var moneyStatement =
+      `Click "Submit" to continue<br><br>` + moneyLeft(numberOfPlayers);
+    return moneyStatement;
   }
   if (gameState == `betsCreate`) {
     gameState = `betsIn`;
@@ -186,8 +188,15 @@ var main = function (input) {
     }
   }
   if (gameState == `whoWon`) {
-    var finalStatement = scoreText(numberOfPlayers);
-    gameState = `dealerDeals`;
+    var finalStatement =
+      `Click "Submit" to continue<br><br>` + scoreText(numberOfPlayers);
+    gameState = `finalScore`;
+    return finalStatement;
+  }
+  if (gameState == `finalScore`) {
+    var finalStatement =
+      `Click "Submit" to continue<br><br>` + moneyLeft(numberOfPlayers);
+    gameState = `betsCreate`;
     return finalStatement;
   }
 };
@@ -202,9 +211,9 @@ var main = function (input) {
     return `Dealer has dealt second card to all`;
   }
   */
-// playerBet = [0];
+var playerBet = [0];
 var scoreRec = [];
-// playerMoney = [100];
+var playerMoney = [9999];
 var gameState = `gameStart`;
 var roundCounter = 1;
 var player = [`dealer`]; // dealer is 0
@@ -265,8 +274,10 @@ var scoreText = function (numberOfPlayers) {
   var statement = "";
   for (counter = 1; counter <= numberOfPlayers; counter += 1) {
     if (scoreRec[counter] == 21 && player[counter].length == 2) {
+      playerMoney[counter] = playerMoney[counter] + 2.5 * playerBet[counter];
       statement = statement + `Player ${counter} has won stylishly.<br><br>`;
     } else if (scoreRec[counter] > 21 && scoreRec[0] > 21) {
+      playerMoney[counter] = playerMoney[counter] + 1 * playerBet[counter];
       statement = statement + `Player ${counter} has bust with dealer.<br><br>`;
     } else if (scoreRec[counter] > 21 && scoreRec[0] < 22) {
       statement = statement + `Player ${counter} has bust.<br><br>`;
@@ -275,6 +286,7 @@ var scoreText = function (numberOfPlayers) {
       scoreRec[0] < 22 &&
       scoreRec[counter] > scoreRec[0]
     ) {
+      playerMoney[counter] = playerMoney[counter] + 2 * playerBet[counter];
       statement = statement + `Player ${counter} has won.<br><br>`;
     } else if (
       scoreRec[counter] < 22 &&
@@ -283,32 +295,36 @@ var scoreText = function (numberOfPlayers) {
     ) {
       statement = statement + `Player ${counter} has lost.<br><br>`;
     } else if (scoreRec[counter] < 22 && scoreRec[counter] == scoreRec[0]) {
+      playerMoney[counter] = playerMoney[counter] + 1 * playerBet[counter];
       statement =
         statement + `Player ${counter} has drawn with dealer.<br><br>`;
     } else if (scoreRec[counter] < 22 && scoreRec[0] > 21) {
+      playerMoney[counter] = playerMoney[counter] + 2 * playerBet[counter];
       statement = statement + `Player ${counter} has won.<br><br>`;
     }
   }
   return statement;
 };
-// var moneyBet = function (numberOfPlayers) {
-//   var statement = `Click "Submit" to continue<br><br>`;
-//   for (counter = 1; counter <= numberOfPlayers; counter += 1) {
-//     statement =
-//       statement +
-//       `Player ${counter} has bet $${playerBet[counter]}.<br>Player ${counter} has $${playerMoney[counter]} left.<br><br>`;
-//   }
-//   return statement;
-// };
-// var moneyLeft = function (numberOfPlayers) {
-//   var statement = "";
-//   for (counter = 1; counter <= numberOfPlayers; counter += 1) {
-//     statement =
-//       statement +
-//       `Player ${counter} has $${playerMoney[counter]} left.<br><br>`;
-//   }
-//   return statement;
-// };
+var moneyBet = function (numberOfPlayers) {
+  var statement = `Click "Submit" to continue<br><br>`;
+  for (counter = 1; counter <= numberOfPlayers; counter += 1) {
+    statement =
+      statement +
+      `Player ${counter} has bet $${playerBet[counter]}.<br>Player ${counter} has $${playerMoney[counter]} left.<br><br>`;
+  }
+  return statement;
+};
+var moneyLeft = function (numberOfPlayers) {
+  var statement = "";
+  for (counter = 1; counter <= numberOfPlayers; counter += 1) {
+    statement =
+      statement +
+      `Player ${counter} has $${playerMoney[counter]} left.<br><br>`;
+  }
+  return statement;
+};
+
+// nonsense down here trying to combine win/lose + bet outcome lol
 // var betCalculator = function (numberOfPlayers) {
 //   for (counter = 1; counter <= numberOfPlayers; counter += 1) {
 //     if (scoreRec[counter] == 21 && player[counter].length == 2) {
