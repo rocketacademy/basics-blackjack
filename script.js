@@ -126,6 +126,7 @@ var main = function (input) {
       if (input == `Hit`) {
         player[roundCounter].push(deck.pop());
         if (buster(roundCounter) >= 21) {
+          scoreRec[roundCounter] = buster(roundCounter);
           roundCounter += 1;
         }
         if (roundCounter > numberOfPlayers) {
@@ -140,10 +141,13 @@ var main = function (input) {
         }
       }
       if (input == `Stand`) {
+        scoreRec[roundCounter] = buster(roundCounter);
         roundCounter += 1;
         if (roundCounter > numberOfPlayers) {
           var cardsOnTableStatement =
-            dealerHandsShown() + cardsOnTable(numberOfPlayers);
+            `Click "Submit" to continue<br><br>` +
+            dealerHandsShown() +
+            cardsOnTable(numberOfPlayers);
         } else {
           var cardsOnTableStatement =
             playerActionText(roundCounter) +
@@ -166,16 +170,25 @@ var main = function (input) {
         cardsOnTable(numberOfPlayers);
       return cardsOnTableStatement;
     } else {
+      scoreRec[0] = buster(0);
       // for (counter = 0; counter <= numberOfPlayers; counter += 1) {
       //   scoreRec.push(buster(counter));
       // }
-      gameState = `dealerDeals`; //gameState = `betsCreate` if betting is functional
+      gameState = `whoWon`; //gameState = `betsCreate` if betting is functional
       // betCalculator(numberOfPlayers);
       // var statement =
       //   `Click "Submit" to continue<br><br>` + moneyLeft(numberOfPlayers);
       // return statement;
+      // for (counter = 0; counter <= numberOfPlayers; counter += 1) {
+      //   buster(counter);
+      // }
       return `Click "Submit" to continue`;
     }
+  }
+  if (gameState == `whoWon`) {
+    var finalStatement = scoreText(numberOfPlayers);
+    gameState = `dealerDeals`;
+    return finalStatement;
   }
 };
 
@@ -190,7 +203,7 @@ var main = function (input) {
   }
   */
 // playerBet = [0];
-// scoreRec = [];
+var scoreRec = [];
 // playerMoney = [100];
 var gameState = `gameStart`;
 var roundCounter = 1;
@@ -234,6 +247,7 @@ var playerActionText = function (playerNo) {
 var buster = function (playerNo) {
   var score = 0;
   var aceCounter = 0;
+  // var miniCounter = playerNo;
   for (counter = 0; counter < player[playerNo].length; counter += 1) {
     if (player[playerNo][counter].rank == 11) {
       aceCounter += 1;
@@ -241,9 +255,41 @@ var buster = function (playerNo) {
     score = score + player[playerNo][counter].rank;
   }
   if (score > 21) {
-    score = score - aceCounter * 10;
+    score = score - aceCounter * 10; // what if player wants to use 2 aces?
   }
+  // scoreRec[miniCounter] = score;
   return score;
+};
+
+var scoreText = function (numberOfPlayers) {
+  var statement = "";
+  for (counter = 1; counter <= numberOfPlayers; counter += 1) {
+    if (scoreRec[counter] == 21 && player[counter].length == 2) {
+      statement = statement + `Player ${counter} has won stylishly.<br><br>`;
+    } else if (scoreRec[counter] > 21 && scoreRec[0] > 21) {
+      statement = statement + `Player ${counter} has bust with dealer.<br><br>`;
+    } else if (scoreRec[counter] > 21 && scoreRec[0] < 22) {
+      statement = statement + `Player ${counter} has bust.<br><br>`;
+    } else if (
+      scoreRec[counter] < 22 &&
+      scoreRec[0] < 22 &&
+      scoreRec[counter] > scoreRec[0]
+    ) {
+      statement = statement + `Player ${counter} has won.<br><br>`;
+    } else if (
+      scoreRec[counter] < 22 &&
+      scoreRec[0] < 22 &&
+      scoreRec[counter] < scoreRec[0]
+    ) {
+      statement = statement + `Player ${counter} has lost.<br><br>`;
+    } else if (scoreRec[counter] < 22 && scoreRec[counter] == scoreRec[0]) {
+      statement =
+        statement + `Player ${counter} has drawn with dealer.<br><br>`;
+    } else if (scoreRec[counter] < 22 && scoreRec[0] > 21) {
+      statement = statement + `Player ${counter} has won.<br><br>`;
+    }
+  }
+  return statement;
 };
 // var moneyBet = function (numberOfPlayers) {
 //   var statement = `Click "Submit" to continue<br><br>`;
@@ -285,3 +331,6 @@ var buster = function (playerNo) {
 //     }
 //   }
 // };
+// var winLose = function (numberOfPlayers){
+//   for (counter)
+// })
