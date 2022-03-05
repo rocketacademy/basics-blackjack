@@ -27,7 +27,7 @@ var makeDeck = function () {
         suit: currentSuit,
         rank: j + 1,
         text: cardText[j],
-        svg: `<div class = "cardContainer"><img class="card" src="svg/${currentSuit}${cardText[j]}.svg" /></div>`,
+        svg: `<div class = "handContainer"><img class="card" src="svg/${currentSuit}${cardText[j]}.svg" /></div>`,
       };
       createdDeck.push(newCard);
     }
@@ -86,7 +86,7 @@ var calculateHand = function (cardArray) {
 /***
  * Calculates the maximum and minimum value of the Ace cards in the hand
  * @argument {number} numberofAces The number of Aces in hand.
- * @returns {Array} The maximum and minimum value of the Aces in hand where [0] is the maximum value, and [1] is the minimum value
+ * @returns {Array} The maximum and minimum value of the Aces in hand where [0] is the max value, and [1] is the minimum value
  */
 var calcuateAceValue = function (numberofAces) {
   var maxValue = 10 + numberofAces;

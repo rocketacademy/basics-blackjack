@@ -103,26 +103,32 @@
     </h1>
     <h1 class="header">♣️ Basics - Blackjack ♠️</h1>
     <div id="container">
-      <p>Input:</p>
-      <input id="input-field" />
       <br />
-      <button id="submit-button">Submit</button>
+      <button id="reset-button">Reset</button>
+      <button id="hit-button">Hit</button>
       <p>Output:</p>
-      <div id="output-div"></div>
+      <div id="output-div">Hi! Welcome to Blackjack!</div>
     </div>
     <!-- Import program logic -->
     <script src="initFunctions.js"></script>
     <script src="script.js"></script>
     <!-- Define button click functionality -->
     <script>
-      var button = document.querySelector("#submit-button");
+      var button = document.querySelector("#reset-button");
+
+      var hit = document.querySelector("#hit-button");
+
+      var output = document.querySelector("#output-div");
+
+      hit.addEventListener("click", function () {
+        output.innerHTML = "hit button clicked.";
+      });
+
       button.addEventListener("click", function () {
-        // Set result to input value
-        var input = document.querySelector("#input-field");
-        var result = main(input.value);
+        var result = main();
 
         // Display result in output element
-        var output = document.querySelector("#output-div");
+
         output.innerHTML = result;
 
         // Reset input value
