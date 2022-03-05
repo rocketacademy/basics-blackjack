@@ -63,9 +63,21 @@ var main = function (input) {
     gameState = `registerPlayers`; // why doesn't var gameState = `dealerDealsFirstCard` work here
     return `Please enter number of players against dealer!<br><br>Minimum: 1, Maximum: 6`;
   }
+  if (
+    gameState == `registerPlayers` &&
+    input != 1 &&
+    input != 2 &&
+    input != 3 &&
+    input != 4 &&
+    input != 5 &&
+    input != 6
+  ) {
+    return `Please enter number of players against dealer!<br><br>Minimum: 1, Maximum: 6`;
+  }
   if (gameState == `registerPlayers`) {
     numberOfPlayers = input;
     gameState = `betsCreate`;
+    playerBet[Number(numberOfPlayers) + 1] = `0`; // for input validation in line 150
     for (counter = 1; counter <= numberOfPlayers; counter += 1) {
       //betting system not functional
       playerMoney[counter] = 100;
@@ -80,8 +92,23 @@ var main = function (input) {
     roundCounter = 1;
     return `Player 1, place your bets`;
   }
+  if (
+    gameState == `betsIn` &&
+    roundCounter <= numberOfPlayers &&
+    (isNaN(input) == true || input <= 0 || input.length == 0)
+  ) {
+    return `Player ${roundCounter}, place your bets`;
+  }
   if (gameState == `betsIn`) {
     playerBet[roundCounter] = input;
+    if (playerMoney[roundCounter] == 0) {
+      playerBet[roundCounter] = "";
+      roundCounter += 1;
+      return `Player ${roundCounter - 1} is broke. Bye bye.`;
+    } else if (playerMoney[roundCounter] - playerBet[roundCounter] < 0) {
+      // early return if no money 85 - 89
+      return `You dont have enough money bro, you only have $${playerMoney[roundCounter]}`; // early return if no money 85 - 89
+    } // early return if no money 85 - 89
     playerMoney[roundCounter] =
       playerMoney[roundCounter] - playerBet[roundCounter];
     roundCounter += 1;
@@ -96,8 +123,11 @@ var main = function (input) {
   if (gameState == `dealerDeals`) {
     for (counter = 1; counter <= numberOfPlayers; counter += 1) {
       player[counter] = [];
-      player[counter].push(deck.pop());
-      player[counter].push(deck.pop());
+      if (playerBet[counter] > 0) {
+        player[counter].push(deck.pop());
+        player[counter].push(deck.pop());
+      } else {
+      }
       // player[counter].push({ rank: 2 }); //to test multiple aces
       // player[counter].push({ rank: 11 });//to test multiple aces
     }
@@ -119,50 +149,57 @@ var main = function (input) {
     // if (buster(roundCounter) >= 21) {
     //   roundCounter += 1;
     // }
-    if (roundCounter <= numberOfPlayers) {
-      if (input != `Hit` && input != `Stand`) {
-        var cardsOnTableStatement =
-          playerActionText(roundCounter) +
-          dealerHandsHiddenText +
-          cardsOnTable(numberOfPlayers);
-        return cardsOnTableStatement;
-      }
-      if (input == `Hit`) {
-        player[roundCounter].push(deck.pop());
-        // player[roundCounter].push({ rank: 11 }); //to test multiple aces
-        if (buster(roundCounter) >= 21) {
+    if (playerBet[roundCounter].length == 0) {
+      roundCounter += 1;
+      return `Sorry Player ${
+        roundCounter - 1
+      }, you're not in the game.<br><br>Click "Submit" to continue.😋`;
+    } else {
+      if (roundCounter <= numberOfPlayers) {
+        if (input != `Hit` && input != `Stand`) {
+          var cardsOnTableStatement =
+            playerActionText(roundCounter) +
+            dealerHandsHiddenText +
+            cardsOnTable(numberOfPlayers);
+          return cardsOnTableStatement;
+        }
+        if (input == `Hit`) {
+          player[roundCounter].push(deck.pop());
+          // player[roundCounter].push({ rank: 11 }); //to test multiple aces
+          if (buster(roundCounter) >= 21) {
+            scoreRec[roundCounter] = buster(roundCounter);
+            roundCounter += 1;
+          }
+          if (roundCounter > numberOfPlayers) {
+            //does this make sense with next else statement
+            var cardsOnTableStatement =
+              dealerHandsShown() + cardsOnTable(numberOfPlayers);
+          } else {
+            var cardsOnTableStatement =
+              playerActionText(roundCounter) +
+              dealerHandsHiddenText +
+              cardsOnTable(numberOfPlayers);
+          }
+        }
+        if (input == `Stand`) {
           scoreRec[roundCounter] = buster(roundCounter);
           roundCounter += 1;
+          if (roundCounter > numberOfPlayers) {
+            var cardsOnTableStatement =
+              `Click "Submit" to continue<br><br>` +
+              dealerHandsShown() +
+              cardsOnTable(numberOfPlayers);
+          } else {
+            var cardsOnTableStatement =
+              playerActionText(roundCounter) +
+              dealerHandsHiddenText +
+              cardsOnTable(numberOfPlayers);
+          }
         }
-        if (roundCounter > numberOfPlayers) {
-          //does this make sense with next else statement
-          var cardsOnTableStatement =
-            dealerHandsShown() + cardsOnTable(numberOfPlayers);
-        } else {
-          var cardsOnTableStatement =
-            playerActionText(roundCounter) +
-            dealerHandsHiddenText +
-            cardsOnTable(numberOfPlayers);
-        }
+        return cardsOnTableStatement;
+      } else {
+        gameState = `dealerTurn`;
       }
-      if (input == `Stand`) {
-        scoreRec[roundCounter] = buster(roundCounter);
-        roundCounter += 1;
-        if (roundCounter > numberOfPlayers) {
-          var cardsOnTableStatement =
-            `Click "Submit" to continue<br><br>` +
-            dealerHandsShown() +
-            cardsOnTable(numberOfPlayers);
-        } else {
-          var cardsOnTableStatement =
-            playerActionText(roundCounter) +
-            dealerHandsHiddenText +
-            cardsOnTable(numberOfPlayers);
-        }
-      }
-      return cardsOnTableStatement;
-    } else {
-      gameState = `dealerTurn`;
     }
   }
   if (gameState == `dealerTurn`) {
@@ -284,6 +321,7 @@ var scoreText = function (numberOfPlayers) {
       playerMoney[counter] = playerMoney[counter] + 2.5 * playerBet[counter];
       statement = statement + `Player ${counter} has won stylishly.<br><br>`;
     } else if (scoreRec[counter] > 21 && scoreRec[0] > 21) {
+      //difference between if and else if? - 1 outcome || if + if if got early return
       playerMoney[counter] = playerMoney[counter] + 1 * playerBet[counter];
       statement = statement + `Player ${counter} has bust with dealer.<br><br>`;
     } else if (scoreRec[counter] > 21 && scoreRec[0] < 22) {
