@@ -98,6 +98,8 @@ var main = function (input) {
       player[counter] = [];
       player[counter].push(deck.pop());
       player[counter].push(deck.pop());
+      // player[counter].push({ rank: 2 }); //to test multiple aces
+      // player[counter].push({ rank: 11 });//to test multiple aces
     }
     player[0] = [];
     player[0].push(deck.pop());
@@ -127,6 +129,7 @@ var main = function (input) {
       }
       if (input == `Hit`) {
         player[roundCounter].push(deck.pop());
+        // player[roundCounter].push({ rank: 11 }); //to test multiple aces
         if (buster(roundCounter) >= 21) {
           scoreRec[roundCounter] = buster(roundCounter);
           roundCounter += 1;
@@ -263,8 +266,12 @@ var buster = function (playerNo) {
     }
     score = score + player[playerNo][counter].rank;
   }
-  if (score > 21) {
-    score = score - aceCounter * 10; // what if player wants to use 2 aces?
+  if (score <= 21) {
+    score = score; // what if player wants to use 2 aces?
+  } else {
+    for (counter = 1; counter <= aceCounter && score > 21; counter += 1) {
+      score = score - 10; // what if player wants to use 2 aces?
+    }
   }
   // scoreRec[miniCounter] = score;
   return score;
