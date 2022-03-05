@@ -97,22 +97,71 @@ var shuffleCards = function (cardDeck) {
 var shuffledDeck = shuffleCards(makeDeck());
 console.log(shuffledDeck);
 
-//player first two cards
-while (playerHand.length < 2) {
-  playerHand.push(shuffledDeck.pop());
-}
-console.log(playerHand);
-
 // computer first two cards
 while (computerHand.length < 2) {
   computerHand.push(shuffledDeck.pop());
 }
 console.log(computerHand);
 
-//calculate pre-score without ace points
-
+//calculate Computer pre-score without ace points
 var computerPrePoints = computerHand[0].rank + computerHand[1].rank;
 console.log(computerPrePoints);
+var calComputerTotalPoints = computerPrePoints + 11;
+
+// calculate number of Aces in Computer hand
+var main = function () {
+  var ComputerAce = 0;
+  var c = 0;
+  while (c < computerHand.length) {
+    if (computerHand[c].name == "ace") {
+      ComputerAce += 1;
+    }
+    c += 1;
+  }
+  console.log(ComputerAce);
+
+  // calculate Computer total points with ace
+  var calTotalComputerPoints = function (ComputerPrePoints) {
+    if (ComputerAce == 1) {
+      calTotalComputerPoints = ComputerPrePoints + 11;
+      if (calTotalComputerPoints > 21) {
+        calTotalComputerPoints = ComputerPrePoints + 1;
+      }
+    }
+    if (ComputerAce == 2) {
+      calTotalComputerPoints = ComputerPrePoints + 12;
+      if (calTotalComputerPoints > 21) {
+        calTotalComputerPoints = ComputerPrePoints + 2;
+      }
+    }
+    if (ComputerAce == 3) {
+      calTotalComputerPoints = ComputerPrePoints + 13;
+      if (calTotalComputerPoints > 21) {
+        calTotalComputerPoints = ComputerPrePoints + 3;
+      }
+    }
+    if (ComputerAce == 4) {
+      calTotalComputerPoints = ComputerPrePoints + 14;
+      if (calTotalComputerPoints > 21) {
+        calTotalComputerPoints = ComputerPrePoints + 4;
+      }
+    }
+    console.log(calTotalComputerPoints);
+    while (calComputerTotalPoints < 17) {
+      computerHand.push(shuffledDeck.pop());
+    }
+    return `calTotalComputerPoints`;
+  };
+};
+
+/*
+
+
+//player first two cards
+while (playerHand.length < 2) {
+  playerHand.push(shuffledDeck.pop());
+}
+console.log(playerHand);
 
 //calculate Player pre-score without ace points
 var playerPrePoints = playerHand[0].rank + playerHand[1].rank;
@@ -158,3 +207,14 @@ var calPlayerAce = function () {
   }
   console.log(calTotalPlayerPoints);
 };
+
+//player decides to draw card or end turn
+var main = function (input, playerHand) {
+  if ((input = hit)) {
+    playerHand.push(shuffledDeck.pop());
+    console.log(playerHand);
+  }
+};
+
+
+*/
