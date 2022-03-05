@@ -310,8 +310,8 @@ var main = function (input) {
   }
 
   if (gameState.state === gStateOptions.player) {
+    showGameButtons();
     if (players[gameState.currentPlayer].state == "playing") {
-      showGameButtons();
       instructionsEl.innerHTML = `${
         players[gameState.currentPlayer].name
       }, would you like to "Hit", "Stand" or "Double"`;
