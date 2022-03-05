@@ -34,7 +34,7 @@ use counter and loop to check name to find out number of ace cards
 var playerHand = [];
 var computerHand = [];
 
-var makeDeck = function () {
+var main = function () {
   var cardDeck = [];
   var suits = ["♠️", "♥️", "♣️", "♦️"];
   var suitIndex = 0;
@@ -59,21 +59,24 @@ var makeDeck = function () {
       var card = {
         name: cardName,
         suit: currentSuit,
-        rank: rankCounter,
+        value: rankCounter,
       };
+      if (card.value == 1) {
+        card.value = "0";
+      }
+      if (card.value == 11 || card.value == 12 || card.value == 13) {
+        card.value = "10";
+      }
       cardDeck.push(card);
       rankCounter += 1;
     }
     suitIndex += 1;
   }
-  cardDeck[0].rank = 0;
-  cardDeck[13].rank = 0;
-  cardDeck[26].rank = 0;
-  cardDeck[39].rank = 0;
   console.log(cardDeck);
   return cardDeck;
 };
 
+/*
 var getRandomIndex = function (max) {
   return Math.floor(Math.random() * max);
 };
