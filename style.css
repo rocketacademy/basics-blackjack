@@ -1,0 +1,116 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Open Sans", sans-serif;
+  margin-left: 30px;
+  margin-right: 30px;
+  background-color: rgba(4, 78, 47, 0.945);
+  color: white; /* sets the font color */
+  /* background-image: url("imgs/background.jpg"); The image used */
+  /* background-position: center; Center the image */
+  /* background-repeat: repeat; Do not repeat the image */
+  /* background-size: cover;  Resize the background image to cover the entire container */
+  height: 700px;
+  font-size: 0.7rem;
+}
+
+#output-div img {
+  display: inline-block;
+  margin: 20px 5px 0 5px;
+  max-width: 100%;
+  max-height: 100px;
+}
+
+.header {
+  text-align: center;
+  font-size: 1.1rem;
+}
+
+#container {
+  margin: 40px auto;
+  max-width: 100%;
+  padding: 8px 31px;
+  text-align: center;
+}
+
+input {
+  font-size: 21px;
+  line-height: 33px;
+  margin: 0 0 23px 0;
+  padding: 0 9px;
+  width: 100%;
+}
+
+button {
+  font-size: 0.8rem;
+  line-height: 1.4rem;
+  padding: 0 6px;
+  width: 4rem;
+  border-radius: 21px;
+}
+
+button:hover {
+  color: white;
+  background-color: black;
+}
+
+#output-div {
+  margin: 20px auto;
+  padding: 10px;
+  width: 100%;
+}
+
+.logo-img {
+  height: 49px;
+  position: relative;
+  top: 22px;
+}
+
+#gameRules {
+  text-align: center;
+  margin: 0 15% 0 15%;
+}
+
+#music {
+  width: 180px;
+  height: 25px;
+  margin: 10px 0 0 0;
+}
+
+hr {
+  margin: 20px 0;
+}
+
+/* increase header font size on wider screens */
+@media screen and (min-width: 600px) {
+  body {
+    height: 700px;
+  }
+
+  .header {
+    font-size: 2rem;
+  }
+
+  hr {
+    margin: 20px 50px;
+  }
+}
+
+@media screen and (min-width: 425px) {
+  body {
+    font-size: 0.9rem;
+  }
+
+  button {
+    font-size: 1rem;
+    line-height: 1.8rem;
+    width: 5rem;
+    border-radius: 21px;
+  }
+
+  #output-div img {
+    max-height: 150px;
+  }
+}
