@@ -261,7 +261,7 @@ var hit = function () {
       return myOutputValue;
     }
     if (playerScore == 21) {
-      image = '<img src="./img/llc_heart.gif" />';
+      image = '<img src="./img/llc_huali.gif" />';
       myOutputValue =
         myOutputValue + "<br>BLACKJACK! HIT THE STAND BUTTON" + image;
 
