@@ -34,7 +34,7 @@ use counter and loop to check name to find out number of ace cards
 var playerHand = [];
 var computerHand = [];
 
-var main = function () {
+var makeDeck = function () {
   var cardDeck = [];
   var suits = ["♠️", "♥️", "♣️", "♦️"];
   var suitIndex = 0;
@@ -72,11 +72,9 @@ var main = function () {
     }
     suitIndex += 1;
   }
-  console.log(cardDeck);
   return cardDeck;
 };
 
-/*
 var getRandomIndex = function (max) {
   return Math.floor(Math.random() * max);
 };
@@ -104,60 +102,68 @@ console.log(shuffledDeck);
 while (computerHand.length < 2) {
   computerHand.push(shuffledDeck.pop());
 }
+console.log`The computerHand is`;
 console.log(computerHand);
 
-//calculate Computer pre-score without ace points
-var computerPrePoints = computerHand[0].rank + computerHand[1].rank;
-console.log(computerPrePoints);
-var calComputerTotalPoints = computerPrePoints + 11;
+// MAINNNNNNN
+var main = function (computerPrePoints) {
+  //calculate Computer pre-score without ace points
+  computerPrePoints =
+    Number(computerHand[0].value) + Number(computerHand[1].value);
+  console.log`ComputerPrePoints (points without counting ace) is`;
+  console.log(computerPrePoints);
 
-// calculate number of Aces in Computer hand
-var main = function () {
-  var ComputerAce = 0;
+  // calculate number of Aces in Computer hand
+  computerAce = 0;
   var c = 0;
   while (c < computerHand.length) {
     if (computerHand[c].name == "ace") {
-      ComputerAce += 1;
+      computerAce += 1;
     }
     c += 1;
   }
-  console.log(ComputerAce);
+  console.log`the number of ace computer have is`;
+  console.log(computerAce);
 
-  // calculate Computer total points with ace
-  var calTotalComputerPoints = function (ComputerPrePoints) {
-    if (ComputerAce == 1) {
-      calTotalComputerPoints = ComputerPrePoints + 11;
-      if (calTotalComputerPoints > 21) {
-        calTotalComputerPoints = ComputerPrePoints + 1;
-      }
-    }
-    if (ComputerAce == 2) {
-      calTotalComputerPoints = ComputerPrePoints + 12;
-      if (calTotalComputerPoints > 21) {
-        calTotalComputerPoints = ComputerPrePoints + 2;
-      }
-    }
-    if (ComputerAce == 3) {
-      calTotalComputerPoints = ComputerPrePoints + 13;
-      if (calTotalComputerPoints > 21) {
-        calTotalComputerPoints = ComputerPrePoints + 3;
-      }
-    }
-    if (ComputerAce == 4) {
-      calTotalComputerPoints = ComputerPrePoints + 14;
-      if (calTotalComputerPoints > 21) {
-        calTotalComputerPoints = ComputerPrePoints + 4;
-      }
-    }
-    console.log(calTotalComputerPoints);
-    while (calComputerTotalPoints < 17) {
+  if (computerAce == 0) {
+    var totalComputerPoints = computerPrePoints;
+    console.log`the total computer points is`;
+    console.log(totalComputerPoints);
+    while (totalComputerPoints < 17) {
       computerHand.push(shuffledDeck.pop());
     }
-    return `calTotalComputerPoints`;
-  };
+    console.log`The computerHand is`;
+    console.log(computerHand);
+  }
 };
 
 /*
+if (computerAce == 1) {
+      totalComputerPoints = computerPrePoints + 11;
+      if (totalComputerPoints > 21) {
+        totalComputerPoints = computerPrePoints + 1;
+      }
+    }
+    if (computerAce == 2) {
+      totalComputerPoints = computerPrePoints + 12;
+      if (totalComputerPoints > 21) {
+        totalComputerPoints = computerPrePoints + 2;
+      }
+    }
+    if (computerAce == 3) {
+      totalComputerPoints = computerPrePoints + 13;
+      if (totalComputerPoints > 21) {
+        totalComputerPoints = computerPrePoints + 3;
+      }
+    }
+    if (computerAce == 4) {
+      totalComputerPoints = computerPrePoints + 14;
+      if (totalComputerPoints > 21) {
+        totalComputerPoints = computerPrePoints + 4;
+      }
+/*
+
+  
 
 
 //player first two cards
@@ -167,7 +173,7 @@ while (playerHand.length < 2) {
 console.log(playerHand);
 
 //calculate Player pre-score without ace points
-var playerPrePoints = playerHand[0].rank + playerHand[1].rank;
+var playerPrePoints = playerHand[0].value + playerHand[1].value;
 console.log(playerPrePoints);
 
 // calculate number of Aces in player hands
