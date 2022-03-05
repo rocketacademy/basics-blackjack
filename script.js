@@ -2,6 +2,22 @@
 /* ------- GLOBAL VARIABLES ------- */
 /* -------------------------------- */
 
+// game states.
+const STATE_DEAL = "deal";
+const STATE_PLAY = "play";
+const STATE_BUST = "bust";
+const STATE_RESULT = "result";
+
+// game keywords
+const PASS = "PASS";
+const DRAW = "DRAW";
+
+// variables to store game state.
+let gameState = STATE_DEAL;
+
+// variable to store player name.
+let playerName = "";
+
 // empty arrays to store cards that computer and player draw.
 let computerHand = [];
 let playerHand = [];
@@ -74,8 +90,57 @@ var shuffleCards = function (cardDeck) {
 
 // takes the top card from the deck.
 var drawCard = function (deck) {
-  // let i = Math.floor(Math.random() * deck.length); // could also pop a random card... but that's not how you draw a card from a deck.
   return deck.pop(0);
+};
+
+// function to draw two cards from the deck to the hand.
+var drawHand = function (deck, hand) {
+  hand.push(drawCard(deck));
+  hand.push(drawCard(deck));
+  return hand;
+};
+
+// function to substitute suit name with emoji.
+var emojiSuit = function (suitName) {
+  return suitName == "Hearts"
+    ? "♥️"
+    : suitName == "Spades"
+    ? "♠️"
+    : suitName == "Diamonds"
+    ? "♦️"
+    : "♣️";
+};
+
+// function to sum up cards in hand.
+var sumCards = function (hand, aceValue) {
+  let sum = 0;
+
+  for (let i = 0; i < hand.length; i++) {
+    if (hand[i]["rank"] > 1 && hand[i]["rank"] < 11) {
+      sum += hand[i]["rank"];
+    } else if (hand[i]["rank"] > 10) {
+      sum += 10;
+    } else if (hand[i]["rank"] == 1) {
+      sum += aceValue;
+    }
+  }
+};
+
+// function to check for 21.
+var checkTwentyOne = function (handTotal) {
+  // return true if 21, else false.
+  return handTotal == 21 ? true : false;
+};
+
+// function to check for bust.
+var checkBust = function (handTotal) {
+  // return true if > 21, else false.
+  return handTotal > 21 ? true : false;
+};
+
+// function to check if draw needs to be forced.
+var forceDraw = function (handTotal) {
+  return handTotal < 17 ? true : false;
 };
 
 /* -------------------------------- */
@@ -91,12 +156,63 @@ let shuffledDeck = shuffleCards(deck);
 /* -------------------------------- */
 
 var main = function (input) {
-  computerHand.push(drawCard(deck));
-  computerHand.push(drawCard(deck));
-  console.log(computerHand);
-  playerHand.push(drawCard(deck));
-  playerHand.push(drawCard(deck));
-  console.log(playerHand);
+  // starting game state, user presses submit once to deal cards.
+  let output;
 
-  return computerHand[0], computerHand[1], playerHand[0], playerHand[1];
+  if (gameState == STATE_DEAL) {
+    // first input should be player name, if player name is empty.
+    if (!playerName) {
+      playerName = input;
+    }
+
+    drawHand(deck, playerHand);
+    drawHand(deck, computerHand);
+
+    gameState = STATE_PLAY;
+
+    // display output.
+    output = `<b>${playerName}:</b> <br />
+    ${playerHand[0]["name"]} of ${emojiSuit(playerHand[0]["suit"])} <br />
+    ${playerHand[1]["name"]} of ${emojiSuit(playerHand[1]["suit"])} <br /><br />
+    ${playerName}, do you wish to draw another card? <br /><br />
+    Please enter "DRAW" or "PASS". `;
+    return output;
+  }
+
+  if (gameState == STATE_PLAY) {
+    if (input == "" || (input != DRAW && input != PASS)) {
+      return `Please enter "DRAW" or "PASS" to continue. `;
+    }
+
+    if (input == DRAW) {
+      playerHand.push(drawCard(deck));
+      // should check for bust here after drawing a new card.
+      // if bust, display the cards, then inform the player that he has gone bust and loses.
+
+      output = `<b>${playerName}:</b> `;
+      for (let i = 0; i < playerHand.length; i++) {
+        output += `<br /> ${playerHand[i]["name"]} of ${emojiSuit(
+          playerHand[i]["suit"]
+        )}`;
+      }
+
+      // if (bust) {
+      //   output += `<br /><br /> Your hand has exceeded 21. You lose. `;
+      //   return output;
+      // }
+
+      output += `<br /><br /> ${playerName}, do you wish to draw another card? <br /><br />
+      Please enter "DRAW" to draw a card, or "PASS" to end your turn. `;
+
+      return output;
+    }
+
+    if (input == PASS) {
+      gameState = STATE_RESULT;
+
+      output = `<b>${playerName}</b> has passed his turn. <br /><br />
+      Show results here. `;
+      return output;
+    }
+  }
 };
