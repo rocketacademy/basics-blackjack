@@ -103,6 +103,40 @@ var shuffleCards = function (cardDeck) {
   return cardDeck;
 };
 
+//show player's and computer's hands in output message
+var showPlayerAndComputerHands = function (playerHand, computerHand) {
+  // define message for player
+  var playerMessage = "Player's hand is: <br>";
+  //initialise counter
+  var counter = 0;
+  // Declare loop conditions
+  // Loop condition for player hand
+  while (counter < playerHand.length) {
+    playerMessage =
+      playerMessage +
+      playerHand[counter].name +
+      " of " +
+      playerHand[counter].suit +
+      `<br>`;
+    counter += 1;
+  }
+  //reset counter for computer hand
+  counter = 0;
+  // define message for player
+  var computerMessage = "Computer's hand is: <br>";
+  //Loop condition for computer hand
+  while (counter < computerHand.length) {
+    computerMessage =
+      computerMessage +
+      computerHand[counter].name +
+      " of " +
+      computerHand[counter].suit +
+      ` <br> `;
+    counter += 1;
+  }
+  return playerMessage + `<br>` + computerMessage;
+};
+
 // ----- global variable definition ------
 // Initialise the shuffled card deck before the game starts.
 var deck = shuffleCards(makeDeck());
@@ -112,6 +146,8 @@ var playerHand = [];
 var computerHand = [];
 
 // define game modes
+var startGame = "Start game";
+var dealCards = "Deal cards";
 
 // ------ main function below --------
 var main = function (input) {
@@ -129,6 +165,16 @@ var main = function (input) {
   computerHand.push(gameDeck.pop());
 
   console.log(computerHand);
+
+  //count no. of cards in hand
+  //var noOfCardsInPlayerHand = playerHand.length();
+  //var noOfCardsInComputerHand = computerHand.length();
+
+  console.log(playerHand.length);
+  console.log(computerHand.length);
+
+  // Initialise an output value with the cards drawn by each player.
+  var myOutputValue = showPlayerAndComputerHands(playerHand, computerHand);
 
   return myOutputValue;
 };
