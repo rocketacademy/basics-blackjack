@@ -66,6 +66,11 @@ var makeDeck = function () {
     }
     suitIndex += 1;
   }
+  cardDeck[0].rank = 0;
+  cardDeck[13].rank = 0;
+  cardDeck[26].rank = 0;
+  cardDeck[39].rank = 0;
+  console.log(cardDeck);
   return cardDeck;
 };
 
