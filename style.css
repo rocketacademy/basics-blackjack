@@ -69,13 +69,18 @@ button {
 
 img.card {
   width: 70px;
-  margin: 10px;
+  margin: 5px;
   padding: 0;
   border: 0;
   vertical-align: top;
   box-sizing: initial;
+  display: inline-block;
 }
 
 .handContainer {
+  display: inline-block;
+}
+
+.cardContainer {
   display: inline-block;
 }

@@ -19,7 +19,9 @@ var main = function (input) {
   var card1SVG = card1.svg;
   var card2SVG = card2.svg;
 
-  var displayOutput = card1SVG + card2SVG;
+  var displayOutput = `<div class = "handContainer"> ${
+    card1SVG + card2SVG
+  }</div>`;
   displayOutput += `<br><br>${cardValue}`;
 
   return displayOutput;
