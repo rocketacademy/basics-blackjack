@@ -1,38 +1,14 @@
-/* pseudo code first!!!
-- have a deck of cards
-- shuffle deck of cards
-- player take two cards
-- computer take two cards
-
-- fakescore = scores of all cards when ace = 0
-use counter and loop to check name to find out number of ace cards
-- If there is one Ace, Total score = fake score + 11
-    if total score >21, Total score = fake score + 1
-- If there are two Aces, Total score = fake score + 12
-    if total score >21, Total score = fake score + 2
-- If there are three Aces, Total score = fake score + 13
-    if total score >21, Total score = fake score + 3
-- If there are four Aces, Total score = fake score + 14
-    if total score >21, Total score = fake score + 4
-
-- player decides to draw card or end turn
-
-- if dealer <17 then need to take one more card. if not stand.
-
-- compare value and see who wins
-  if both value >21, draw
-  if player < 21 && playerpoints>comppoints, player wins
-  if com < 21 && playerpoints<compoints, com wins
-
-- reset game
-
-- use helper function .e.g check conditions to win
-
-//var suits = ["♥️", "♦️", "♠️", "♣️"];
-*/
+var GAME_START = "game start";
+var GAME_CARDS_DRAWN = "cards drawn";
+var GAME_RESULTS_SHOWN = "results shown";
+var currentGameMode = GAME_START;
 
 var playerHand = [];
-var computerHand = [];
+var dealerHand = [];
+
+var gameDeck = "empty at the start";
+
+//-------------make and shuffle-----------------------//
 
 var makeDeck = function () {
   var cardDeck = [];
@@ -59,14 +35,8 @@ var makeDeck = function () {
       var card = {
         name: cardName,
         suit: currentSuit,
-        value: rankCounter,
+        rank: rankCounter,
       };
-      if (card.value == 1) {
-        card.value = "0";
-      }
-      if (card.value == 11 || card.value == 12 || card.value == 13) {
-        card.value = "10";
-      }
       cardDeck.push(card);
       rankCounter += 1;
     }
@@ -95,135 +65,117 @@ var shuffleCards = function (cardDeck) {
   }
 };
 
-var shuffledDeck = shuffleCards(makeDeck());
-console.log(shuffledDeck);
-
-// computer first two cards
-while (computerHand.length < 2) {
-  computerHand.push(shuffledDeck.pop());
-}
-console.log`The computerHand is`;
-console.log(computerHand);
-
-// MAINNNNNNN
-var main = function (computerPrePoints) {
-  //calculate Computer pre-score without ace points
-  computerPrePoints =
-    Number(computerHand[0].value) + Number(computerHand[1].value);
-  console.log`ComputerPrePoints (points without counting ace) is`;
-  console.log(computerPrePoints);
-
-  // calculate number of Aces in Computer hand
-  computerAce = 0;
-  var c = 0;
-  while (c < computerHand.length) {
-    if (computerHand[c].name == "ace") {
-      computerAce += 1;
-    }
-    c += 1;
-  }
-  console.log`the number of ace computer have is`;
-  console.log(computerAce);
-
-  if (computerAce == 0) {
-    var totalComputerPoints = computerPrePoints;
-    console.log`the total computer points is`;
-    console.log(totalComputerPoints);
-    while (totalComputerPoints < 17) {
-      computerHand.push(shuffledDeck.pop());
-    }
-    console.log`The computerHand is`;
-    console.log(computerHand);
-  }
+var createNewDeck = function () {
+  var newDeck = makeDeck();
+  var shuffledDeck = shuffleCards(newDeck);
+  return shuffledDeck;
 };
 
-/*
-if (computerAce == 1) {
-      totalComputerPoints = computerPrePoints + 11;
-      if (totalComputerPoints > 21) {
-        totalComputerPoints = computerPrePoints + 1;
-      }
-    }
-    if (computerAce == 2) {
-      totalComputerPoints = computerPrePoints + 12;
-      if (totalComputerPoints > 21) {
-        totalComputerPoints = computerPrePoints + 2;
-      }
-    }
-    if (computerAce == 3) {
-      totalComputerPoints = computerPrePoints + 13;
-      if (totalComputerPoints > 21) {
-        totalComputerPoints = computerPrePoints + 3;
-      }
-    }
-    if (computerAce == 4) {
-      totalComputerPoints = computerPrePoints + 14;
-      if (totalComputerPoints > 21) {
-        totalComputerPoints = computerPrePoints + 4;
-      }
-/*
-
-  
-
-
-//player first two cards
-while (playerHand.length < 2) {
-  playerHand.push(shuffledDeck.pop());
-}
-console.log(playerHand);
-
-//calculate Player pre-score without ace points
-var playerPrePoints = playerHand[0].value + playerHand[1].value;
-console.log(playerPrePoints);
-
-// calculate number of Aces in player hands
-var calPlayerAce = function () {
-  var playerAce = 0;
-  var i = 0;
-  while (i < playerHand.length) {
-    if (playerHand[i].name == "ace") {
-      playerAce += 1;
-    }
-    i += 1;
+//-------------game functions-----------------------//
+// check for blackjack
+var checkforBlackjack = function (handArray) {
+  var playerCardOne = handArray[0];
+  var playerCardTwo = handArray[1];
+  var isBlackjack = false;
+  if (
+    (playerCardOne.name == "ace" && playerCardTwo.rank >= 10) ||
+    (playerCardOne.rank >= 10 && playerCardTwo.name == "ace")
+  ) {
+    isBlackjack = true;
   }
-  console.log(playerAce);
-
-  // calculate player total points with ace
-  var calTotalPlayerPoints = playerPrePoints;
-  if (playerAce == 1) {
-    calTotalPlayerPoints = playerPrePoints + 11;
-    if (calTotalPlayerPoints > 21) {
-      calTotalPlayerPoints = playerPrePoints + 1;
-    }
-  }
-  if (playerAce == 2) {
-    calTotalPlayerPoints = playerPrePoints + 12;
-    if (calTotalPlayerPoints > 21) {
-      calTotalPlayerPoints = playerPrePoints + 2;
-    }
-  }
-  if (playerAce == 3) {
-    calTotalPlayerPoints = playerPrePoints + 13;
-    if (calTotalPlayerPoints > 21) {
-      calTotalPlayerPoints = playerPrePoints + 3;
-    }
-  }
-  if (playerAce == 4) {
-    calTotalPlayerPoints = playerPrePoints + 14;
-    if (calTotalPlayerPoints > 21) {
-      calTotalPlayerPoints = playerPrePoints + 4;
-    }
-  }
-  console.log(calTotalPlayerPoints);
+  return isBlackjack;
 };
 
-//player decides to draw card or end turn
-var main = function (input, playerHand) {
-  if ((input = hit)) {
-    playerHand.push(shuffledDeck.pop());
+// calculate hand value
+var calTotalHandValue = function (handArray) {
+  var totalHandValue = 0;
+  var index = 0;
+  while (index < handArray.length) {
+    var currentCard = handArray[index];
+    if (
+      currentCard.name == "jack" ||
+      currentCard.name == "queen" ||
+      currentCard.name == "king"
+    ) {
+      totalHandValue = totalHandValue + 10;
+    } else {
+      totalHandValue = totalHandValue + currentCard.rank;
+    }
+    index = index + 1;
+  }
+  return totalHandValue;
+};
+
+//--------------------main----------------------//
+
+var main = function (input) {
+  if (currentGameMode == GAME_START) {
+    gameDeck = createNewDeck();
+    console.log(gameDeck);
+
+    playerHand.push(gameDeck.pop());
+    playerHand.push(gameDeck.pop());
+    dealerHand.push(gameDeck.pop());
+    dealerHand.push(gameDeck.pop());
+
+    console.log`PLAYER HAND IS`;
     console.log(playerHand);
+    console.log`DEALER HAND IS`;
+    console.log(dealerHand);
+
+    currentGameMode = GAME_CARDS_DRAWN;
+
+    outputMessage = `Cards has been dealt. Click "submit" buttom to see the player and dealer cards.`;
+
+    return outputMessage;
+  }
+
+  // SECOND GAME MODE
+  if (currentGameMode == GAME_CARDS_DRAWN) {
+    // --------check for blackjack------
+    var playerHasBlackjack = checkforBlackjack(playerHand);
+    var dealerHasBlackjack = checkforBlackjack(dealerHand);
+
+    // console.log(playerHasBlackjack);
+    // console.log(dealerHasBlackjack);
+    // playerHasBlackjack = true;
+    // dealerHasBlackjack = false;
+
+    if (playerHasBlackjack == true || dealerHasBlackjack == true) {
+      //tie
+      if (playerHasBlackjack == true && dealerHasBlackjack == true) {
+        outputMessage = `It's a blackjack tie!`;
+      }
+      //player wins
+      else if (playerHasBlackjack == true && dealerHasBlackjack == false) {
+        outputMessage = `Player wins by blackjack.`;
+      } else {
+        outputMessage = `Dealer wins by blackjack`;
+      }
+      console.log(outputMessage);
+    }
+
+    // --------no blackjack------
+    var playerHandTotalValue = calTotalHandValue(playerHand);
+    var dealerHandTotalValue = calTotalHandValue(dealerHand);
+
+    // console.log(playerHandTotalValue);
+    // console.log(dealerHandTotalValue);
+    // playerHandTotalValue = 12;
+    // dealerHandTotalValue = 11;
+
+    // compare total hand value
+    if (playerHandTotalValue == dealerHandTotalValue) {
+      outputMessage = `It's a tie.`;
+      console.log(`tie`);
+    } else if (playerHandTotalValue > dealerHandTotalValue) {
+      outputMessage = `Player wins.`;
+      console.log(`player wins`);
+    } else {
+      outputMessage = `Dealer wins.`;
+      console.log(`dealer wins`);
+    }
+    currentGameMode = GAME_RESULTS_SHOWN;
+    return outputMessage;
   }
 };
-
-
-*/
