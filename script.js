@@ -110,8 +110,51 @@ while (computerHand.length < 2) {
 console.log(computerHand);
 
 //calculate pre-score without ace points
-var playerPrePoints = playerHand[0].rank + playerHand[1].rank;
-console.log(playerPrePoints);
 
 var computerPrePoints = computerHand[0].rank + computerHand[1].rank;
 console.log(computerPrePoints);
+
+//calculate Player pre-score without ace points
+var playerPrePoints = playerHand[0].rank + playerHand[1].rank;
+console.log(playerPrePoints);
+
+// calculate number of Aces in player hands
+var calPlayerAce = function () {
+  var playerAce = 0;
+  var i = 0;
+  while (i < playerHand.length) {
+    if (playerHand[i].name == "ace") {
+      playerAce += 1;
+    }
+    i += 1;
+  }
+  console.log(playerAce);
+
+  // calculate player total points with ace
+  var calTotalPlayerPoints = playerPrePoints;
+  if (playerAce == 1) {
+    calTotalPlayerPoints = playerPrePoints + 11;
+    if (calTotalPlayerPoints > 21) {
+      calTotalPlayerPoints = playerPrePoints + 1;
+    }
+  }
+  if (playerAce == 2) {
+    calTotalPlayerPoints = playerPrePoints + 12;
+    if (calTotalPlayerPoints > 21) {
+      calTotalPlayerPoints = playerPrePoints + 2;
+    }
+  }
+  if (playerAce == 3) {
+    calTotalPlayerPoints = playerPrePoints + 13;
+    if (calTotalPlayerPoints > 21) {
+      calTotalPlayerPoints = playerPrePoints + 3;
+    }
+  }
+  if (playerAce == 4) {
+    calTotalPlayerPoints = playerPrePoints + 14;
+    if (calTotalPlayerPoints > 21) {
+      calTotalPlayerPoints = playerPrePoints + 4;
+    }
+  }
+  console.log(calTotalPlayerPoints);
+};
