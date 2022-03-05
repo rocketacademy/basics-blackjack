@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Black Jack</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <h2>Welcome to Blackjack!</h2>
+    <div id="container">
+      The version implemented here is one-deck casino blackjack. Since there are
+      so many rule variations out there, the detailed rules are spelled out
+      here.
+      <br />
+      To start, input the number of players. Each player starts with 100 chips.
+      Use the slider to place your bets and click New Hand to deal. The bet has
+      to be an integer amount. If a player has less than 1 chip, he will be
+      topped up with 100 chips. A player's chip count and win/loss are tracked.
+      <br /><br />
+      In Blackjack, the objective is to win by creating card totals higher than
+      those of the dealer's hand but not exceeding 21, or by stopping at a total
+      in the hope that dealer will bust. Number cards count as their number, the
+      jack, queen, and king ("face cards" or "pictures") count as 10, and aces
+      count as either 1 or 11 according to the player's choice. A total of 21 on
+      the first two cards is a "natural" or "blackjack."
+      <br />
+      The players and dealer will be dealt two cards. All players will receive
+      their hands face-up. The dealer will receive the first card face up and
+      the second card face down. The dealer peeks at the second card if the
+      first card is an ace or ten-value card but only reveals it if it makes the
+      dealer's hand a blackjack.
+      <br /><br />
+      If the dealer has blackjack:
+      <br />
+      All players with blackjack tie with the dealer and their bets are returned
+      to them. All players without blackjack lose their bets. The hand is over,
+      and players can place their bets again for the new hand. If the dealer
+      doesn't have blackjack:
+      <br />
+      All players with blackjack win and receive a payout at 3:2 odds, or 1.5
+      times their bet. All players without blackjack will take turns, starting
+      from the player first dealt. On each turn, the options available are:
+      <br />
+      Hit. The player will receive a card from the top of the deck. Stand. The
+      player ends their turn and play continues with the next player. Split.
+      This option is only available when the player's hand has two cards and if
+      the starting two cards have the same rank. The two cards will be separated
+      into two hands and one card each will be dealt to them. Play proceeds as
+      normal. Further rules on splitting below. Double down. The player doubles
+      their bet, and receives a single card. This option is only available when
+      the player's hand has two cards. Surrender. The player gives up half their
+      bet and forfeits their hand. This option is only available when the
+      player's hand has two cards.
+      <br />
+      If a player busts upon hitting or doubling, the player loses his bet. Once
+      all players have finished their turn, the dealer reveals his face down
+      card. If there are still remaining players, the dealer draws cards if
+      needed until the hand achieves a total of 17 or higher. The dealer never
+      doubles, splits, or surrenders. If the dealer busts, all remaining player
+      hands win. If the dealer does not bust, each remaining bet wins if its
+      hand is higher than the dealer's, loses if it is lower, and ties if it is
+      the same. The hand is over, and players can place their bets again for the
+      new hand. Rules on splitting:
+      <br />
+      Re-splitting not allowed. Hitting split aces allowed. A ten-value card
+      dealt on a split ace (or vice versa) will not be counted as a blackjack,
+      but simply as 21 points. Double down and surrender after split allowed.
+    </div>
+  </body>
+</html>

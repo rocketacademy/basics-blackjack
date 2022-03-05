@@ -9,34 +9,85 @@
   </head>
   <body>
     <h1 class="header" id="mainHeader">Rocket Academy</h1>
-    <h1 class="header">Black Jack <i>for</i> Dummies</h1>
+    <h1 class="header">Black Jack <i>by Denis</i></h1>
     <div id="container">
-      <p>Input:</p>
+      <button>
+        <a href="rules.html" target="_blank">Rules</a>
+      </button>
+      <button id="submit-button">Submit</button>
+      <button id="hit-button" hidden>Hit</button>
+      <button id="stand-button" hidden>Stand</button>
+      <button id="double-button" hidden>Double</button>
+      <div id="instructions">
+        <h5>Welcome to game of Black Jack. Choose number of players:</h5>
+      </div>
       <input id="input-field" />
       <br />
-      <button id="submit-button">Submit</button>
-      <button id="submit-button" hidden>Submit2</button>
-      <button id="submit-button" hidden>Submit3</button>
-      <p>Output:</p>
+      <p></p>
       <div id="output-div"></div>
     </div>
     <script src="script.js"></script>
     <script>
-      var button = document.querySelector("#submit-button");
-      button.addEventListener("click", function () {
+      var runCode = function () {
         var input = document.querySelector("#input-field");
         var result = main(input.value);
         var output = document.querySelector("#output-div");
         output.innerHTML = result;
         input.value = "";
+      };
+      var button = document.querySelector("#submit-button");
+      button.addEventListener("click", function (e) {
+        runCode();
+      });
+
+      var runCodeHit = function () {
+        var result = main("hit");
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
+      };
+      var hitButton = document.querySelector("#hit-button");
+      hitButton.addEventListener("click", function (e) {
+        runCodeHit();
+      });
+
+      var runCodeStand = function () {
+        var result = main("stand");
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
+      };
+      var standButton = document.querySelector("#stand-button");
+      standButton.addEventListener("click", function (e) {
+        runCodeStand();
+      });
+
+      var runCodeDouble = function () {
+        var result = main("double");
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
+      };
+      var doubleButton = document.querySelector("#double-button");
+      doubleButton.addEventListener("click", function (e) {
+        runCodeDouble();
+      });
+
+      var inputField = document.querySelector("#input-field");
+      inputField.addEventListener("keydown", function (e) {
+        var key = e.which || e.keyCode || 0;
+        // if (key !== 9) e.preventDefault(); // allow tab
+        console.log(e.keyCode);
+        if (key === 13) runCode();
       });
     </script>
   </body>
   <footer>
-    <audio controls loop volume="0.5">
+    <audio controls loop volume="0.5" preload="none">
       <source src="./media/bensound-ukulele.mp3" type="audio/mpeg" />
     </audio>
     <p></p>
-    <a href="http://www.bensound.com/">music bensound.com</a>
+    <a href="http://www.bensound.com/">music by bensound.com</a>
+    <div>
+      Free SVG Background by
+      <a target="_blank" href="https://bgjar.com">BGJar</a>
+    </div>
   </footer>
 </html>
