@@ -102,6 +102,7 @@ function shuffleCards(cardDeck) {
   return cardDeck;
 }
 
+// Set value for Ace
 function computePoints(hand) {
   // Ace is 11
   let points = 0;
@@ -150,8 +151,9 @@ var main = function (input) {
     playerHand.push(deck.pop());
     computerHand.push(deck.pop());
     computerHand.push(deck.pop());
-    if (computePoints(playerHand) == 21)
+    if (computePoints(playerHand) == 21) {
       myOutputValue = `💰💰💰Player got BLACKJACK!💰💰💰 <br>`;
+    }
     gameState = "waiting";
     myOutputValue +=
       "Dealer hand: " +
@@ -170,6 +172,9 @@ var main = function (input) {
     restartBtn.style.display = "inline-block";
     playerHitBtn.style.display = "inline-block";
     playerStandBtn.style.display = "inline-block";
+    if (computePoints(playerHand) == 21) {
+      playerHitBtn.style.display = "none";
+    }
   }
 
   if (gameState == "hit") {
