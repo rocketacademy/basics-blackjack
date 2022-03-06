@@ -137,6 +137,24 @@ var showPlayerAndComputerHands = function (playerHand, computerHand) {
   return playerMessage + `<br>` + computerMessage;
 };
 
+// check that player has blackjack
+var checkBlackJack = function (array) {
+  var firstCardInHand = array[0];
+  var secondCardInHand = array[1];
+  var confirmBlackJack = false;
+
+  // when player or computer has blackjack return true
+  // set sum of playerHand.rank > sum of computerHand.rank condition
+  // set sum of computerHand.rank > sum of plaayerHand.rank condition
+  if (
+    (firstCardInHand.name == `ace` && secondCardInHand.rank >= 10) ||
+    (firstCardInHand.rank >= 10 && secondCardInHand.name == `ace`)
+  ) {
+    confirmBlackJack = true;
+  }
+  return confirmBlackJack;
+};
+
 // ----- global variable definition ------
 // Initialise the shuffled card deck before the game starts.
 var deck = shuffleCards(makeDeck());
@@ -148,33 +166,72 @@ var computerHand = [];
 // define game modes
 var startGame = "Start game";
 var dealCards = "Deal cards";
+var gameMode = startGame;
 
 // ------ main function below --------
 var main = function (input) {
-  // Define game deck
-  var gameDeck = deck;
-  console.log(gameDeck);
+  // set gameMode to startGame
+  if (gameMode == startGame) {
+    // Change gameMode to deal cards
+    gameMode = dealCards;
+    console.log(gameMode);
 
-  // deal out 2 cards from the gamedeck into the player's hand, and push into player's hand array
-  playerHand.push(gameDeck.pop());
-  playerHand.push(gameDeck.pop());
+    // return output message with instructions
+    return "Welcome to Blackjack, press submit to deal cards.";
+  }
 
-  console.log(playerHand);
-  // deal out 2 cards from the gamedeck into the computer's hand, and push into computer's hand array
-  computerHand.push(gameDeck.pop());
-  computerHand.push(gameDeck.pop());
+  // set game mode to deal cards
+  if (gameMode == dealCards) {
+    // Create new shuffled deck
+    var gameDeck = deck;
+    console.log(gameDeck);
 
-  console.log(computerHand);
+    // deal out 2 cards from the gamedeck into the player's hand, and push into player's hand array
+    playerHand.push(gameDeck.pop());
+    playerHand.push(gameDeck.pop());
 
-  //count no. of cards in hand
-  //var noOfCardsInPlayerHand = playerHand.length();
-  //var noOfCardsInComputerHand = computerHand.length();
+    // deal out 2 cards from the gamedeck into the computer's hand, and push into computer's hand array
+    computerHand.push(gameDeck.pop());
+    computerHand.push(gameDeck.pop());
 
-  console.log(playerHand.length);
-  console.log(computerHand.length);
+    console.log(playerHand);
+    console.log(computerHand);
 
-  // Initialise an output value with the cards drawn by each player.
-  var myOutputValue = showPlayerAndComputerHands(playerHand, computerHand);
+    console.log(playerHand.length);
+    console.log(computerHand.length);
 
-  return myOutputValue;
+    // Initialise an output value with the cards drawn by each player.
+    var myOutputValue = showPlayerAndComputerHands(playerHand, computerHand);
+
+    //set variables for blackjack checks
+    var playerBlackJack = checkBlackJack(playerHand);
+    var computerBlackJack = checkBlackJack(computerHand);
+
+    console.log(checkBlackJack(playerHand));
+    console.log(checkBlackJack(computerHand));
+    // set output value with blackjack conditions
+    if (playerBlackJack == true && computerBlackJack == false) {
+      return (
+        showPlayerAndComputerHands(playerHand, computerHand) +
+        ` <br> ` +
+        `Player wins by black jack!`
+      );
+    }
+    if (playerBlackJack == false && computerBlackJack == true) {
+      return (
+        showPlayerAndComputerHands(playerHand, computerHand) +
+        ` <br> ` +
+        `Computer wins by black jack!`
+      );
+    }
+    if (playerBlackJack == true && computerBlackJack == true) {
+      return (
+        showPlayerAndComputerHands(playerHand, computerHand) +
+        ` <br> ` +
+        `It's a blackjack tie, please play again.`
+      );
+    }
+
+    return myOutputValue;
+  }
 };
