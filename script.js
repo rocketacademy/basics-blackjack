@@ -89,6 +89,22 @@ var showHands = function () {
   } | <br> Dealer's Current Hand Value = ${valueCal(computerHand)}`;
 };
 
+// 2nd attempt at show hand
+var showHand2 = function (hand) {
+  var allHand = "";
+  var handIndex = 0;
+
+  while (handIndex < hand.length) {
+    allHand =
+      allHand + `| ${hand[handIndex].name} of ${hand[handIndex].suit} | <br>`;
+    handIndex = handIndex + 1;
+  }
+
+  console.log("all Hand");
+  console.log(allHand);
+  return allHand;
+};
+
 // [HF] Calculate Value of Hand
 var valueCal = function (hand) {
   var numAcesInHand = 0;
@@ -161,8 +177,8 @@ var main = function (input) {
     drawCard(computerHand);
     gameMode = "HitOrStand";
     console.log(gameMode);
-    console.log(playerHand.length);
-
+    console.log(playerHand);
+    console.log(computerHand);
     console.log(gotBlackjack(computerHand));
     console.log(gotBlackjack(playerHand));
 
@@ -171,24 +187,24 @@ var main = function (input) {
       gotBlackjack(playerHand) == true
     ) {
       gameOver = true;
-      return `What are the chances! It's a lucky day! 🍀  <br> ${showHands()} <br><br> Go and buy TOTO or 4D! or Click the "Submit" reshuffle the deck and continue or "Reset" to reset the game for a new player.`;
+      return `What are the chances! It's a lucky day! 🍀 <br><br> ${showHands()} <br><br> Go and buy TOTO or 4D! or Click the "Submit" reshuffle the deck and continue or "Reset" to reset the game for a new player.`;
     }
     if (gotBlackjack(computerHand)) {
       gameOver = true;
-      return `Dealer has Blackjack! Opps. <br> ${showHands()} <br><br> Click the "Submit" reshuffle the deck and continue or "Reset" to reset the game for a new player.`;
+      return `Dealer has Blackjack! Opps. <br><br> ${showHands()} <br><br> Click the "Submit" reshuffle the deck and continue or "Reset" to reset the game for a new player.`;
     }
     if (gotBlackjack(playerHand)) {
       gameOver = true;
-      return `You got Blackjack! Luck is on your side today! 🍀 <br> ${showHands()} <br><br> Click the "Submit" reshuffle the deck and continue or "Reset" to reset the game for a new player.`;
-    } else
-      return `${showHands()} <br> <br>
+      return `You got Blackjack! Luck is on your side today! 🍀 <br><br> ${showHands()} <br><br> Click the "Submit" reshuffle the deck and continue or "Reset" to reset the game for a new player.`;
+    }
+    return `${showHand2(playerHand)} <br> ${showHand2(computerHand)}<br>
     Would you like to hit or stand? <br>`;
   }
-  if (gameMode - "HitOrStand") {
-    if (hitButton.addEventListener("click", drawCard(playerHand)))
-      console.log(playerHand);
-    return showHands;
-  }
+  // if (gameMode - "HitOrStand") {
+  //   if (hitButton.addEventListener("click", drawCard(playerHand)))
+  //     console.log(playerHand);
+  //   return showHands;
+  // }
 
   return `Click the "Submit" reshuffle the deck and continue or "Reset" to reset the game for a new player.`;
 };
