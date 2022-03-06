@@ -72,24 +72,18 @@ var dealerLimit = 16;
 var pLayerStand = false;
 var gameOver = false;
 
-// General Display of Hands
+// [HF] General Display of Hands
 var showHands = function () {
-  return `${playerName}'s Hand : <br> | ${
-    playerHand[playerHand.length - 1].name
-  } of ${playerHand[playerHand.length - 1].suit} |<br> | ${
-    playerHand[playerHand.length - 2].name
-  } of ${
-    playerHand[playerHand.length - 2].suit
-  } | <br> Your Current Hand Value = ${valueCal(
+  return `${playerName}'s Hand : <br> ${showHand2(
     playerHand
-  )} <br> <br> Dealer's Hand : <br> | ${computerHand[0].name} of ${
-    computerHand[0].suit
-  } |<br> | ${computerHand[1].name} of ${
-    computerHand[1].suit
-  } | <br> Dealer's Current Hand Value = ${valueCal(computerHand)}`;
+  )} <br> Your Current Hand Value = ${valueCal(
+    playerHand
+  )} <br> <br> Dealer's Hand : <br> ${showHand2(
+    computerHand
+  )} <br> Dealer's Current Hand Value = ${valueCal(computerHand)}`;
 };
 
-// 2nd attempt at show hand
+// Sub Function of Display of hands - Using loop to cycle through respective hands to display all cards in hand
 var showHand2 = function (hand) {
   var allHand = "";
   var handIndex = 0;
@@ -158,10 +152,10 @@ var main = function (input) {
   if (gameMode == "PlayerName" && input == "") {
     return "Please enter your name.";
   }
-  // When player enters name. Mode changes to : DrawHand
+  // When player enters name. Mode changes to : Deal
   if (input == input && gameMode == "PlayerName") {
     gameMode = "Deal";
-    console.log("Should be draw hand");
+    console.log("Should be Deal");
     console.log(gameMode);
     playerName = input;
     return `Welcome ${playerName} ! Click to start Blackjack & deal your hand!`;
@@ -176,6 +170,7 @@ var main = function (input) {
     drawCard(playerHand);
     drawCard(computerHand);
     gameMode = "HitOrStand";
+    console.log("should be hit or stand");
     console.log(gameMode);
     console.log(playerHand);
     console.log(computerHand);
@@ -191,14 +186,13 @@ var main = function (input) {
     }
     if (gotBlackjack(computerHand)) {
       gameOver = true;
-      return `Dealer has Blackjack! Opps. <br><br> ${showHands()} <br><br> Click the "Submit" reshuffle the deck and continue or "Reset" to reset the game for a new player.`;
+      return `Dealer has Blackjack! Oops. <br><br> ${showHands()} <br><br> Click the "Submit" reshuffle the deck and continue or "Reset" to reset the game for a new player.`;
     }
     if (gotBlackjack(playerHand)) {
       gameOver = true;
       return `You got Blackjack! Luck is on your side today! 🍀 <br><br> ${showHands()} <br><br> Click the "Submit" reshuffle the deck and continue or "Reset" to reset the game for a new player.`;
     }
-    return `${showHand2(playerHand)} <br> ${showHand2(computerHand)}<br>
-    Would you like to hit or stand? <br>`;
+    return `${showHands()} <br><br> Would you like to Hit! or Stand? <br>`;
   }
   // if (gameMode - "HitOrStand") {
   //   if (hitButton.addEventListener("click", drawCard(playerHand)))
