@@ -69,7 +69,7 @@ var playerHand = [];
 var computerHand = [];
 var twentyOne = 21;
 var dealerLimit = 16;
-var pLayerStand = false;
+var playerStand = false;
 var gameOver = false;
 
 // [HF] General Display of Hands
@@ -94,8 +94,8 @@ var showHand2 = function (hand) {
     handIndex = handIndex + 1;
   }
 
-  console.log("all Hand");
-  console.log(allHand);
+  // console.log("all Hand");
+  // console.log(allHand);
   return allHand;
 };
 
@@ -144,10 +144,37 @@ var gotBlackjack = function (hand) {
   return hand.length == 2 && valueCal(hand) == twentyOne;
 };
 
+// [HF] Deal first hand
+var firstHand = function () {
+  // Deal Cards
+  // deal first card each
+  drawCard(playerHand);
+  drawCard(computerHand);
+  // deal second card each
+  drawCard(playerHand);
+  drawCard(computerHand);
+  console.log(playerHand);
+  console.log(computerHand);
+  console.log(playerHand.length);
+  console.log(gotBlackjack(computerHand));
+  console.log(gotBlackjack(playerHand));
+};
+
+// Compare Final Values
+var finalScore = function () {
+  if (valueCal(playerHand) == valueCal(computerHand)) {
+    return `What a lucky draw! <br><br> ${showHands()} <br><br> Click "Submit" to reshuffle the deck and continue or "Reset" to reset the game for a new player.`;
+  }
+  if (valueCal(playerHand) > valueCal(computerHand)) {
+    return `You WIN!! <br><br> ${showHands()} <br><br> Click "Submit" to reshuffle the deck and continue or "Reset" to reset the game for a new player.`;
+  }
+  if (valueCal(playerHand) < valueCal(computerHand)) {
+    return `Oh no. The Dealer won this time <br><br> ${showHands()} <br><br> Click "Submit" to reshuffle the deck and continue or "Reset" to reset the game for a new player.`;
+  }
+};
+
 // Main Function
 var main = function (input) {
-  playerHand = [];
-  computerHand = [];
   // Input Validate Player Name
   if (gameMode == "PlayerName" && input == "") {
     return "Please enter your name.";
@@ -158,51 +185,93 @@ var main = function (input) {
     console.log("Should be Deal");
     console.log(gameMode);
     playerName = input;
-    return `Welcome ${playerName} ! Click to start Blackjack & deal your hand!`;
+    return `Welcome ${playerName} ! Click Submit to start Blackjack & deal your hand!`;
   }
   // Game Start
   // Deal Cards
-  if (playerHand.length == 0) {
-    // deal first card each
-    drawCard(playerHand);
-    drawCard(computerHand);
-    // deal second card each
-    drawCard(playerHand);
-    drawCard(computerHand);
+  if (gameMode == "Deal" && playerHand < 1) {
+    firstHand();
     gameMode = "HitOrStand";
-    console.log("should be hit or stand");
-    console.log(gameMode);
+    console.log("first deal");
     console.log(playerHand);
-    console.log(computerHand);
-    console.log(gotBlackjack(computerHand));
-    console.log(gotBlackjack(playerHand));
-
     if (
       gotBlackjack(computerHand) == true &&
       gotBlackjack(playerHand) == true
     ) {
       gameOver = true;
-      return `What are the chances! It's a lucky day! 🍀 <br><br> ${showHands()} <br><br> Go and buy TOTO or 4D! or Click the "Submit" reshuffle the deck and continue or "Reset" to reset the game for a new player.`;
+      return `What are the chances! It's a lucky day! 🍀 <br><br> ${showHands()} <br><br> Go and buy TOTO or 4D! or Click "Submit" to reshuffle the deck and continue or "Reset" to reset the game for a new player.`;
     }
+    // If Dealer gets blackjack, player lose, reshuffle or restart
     if (gotBlackjack(computerHand)) {
       gameOver = true;
-      return `Dealer has Blackjack! Oops. <br><br> ${showHands()} <br><br> Click the "Submit" reshuffle the deck and continue or "Reset" to reset the game for a new player.`;
+      return `Dealer has Blackjack! Oops. <br><br> ${showHands()} <br><br> Click "Submit" to reshuffle the deck and continue or "Reset" to reset the game for a new player.`;
     }
+    // If Player gets blackjack, dealer lose, reshuffle or restart
     if (gotBlackjack(playerHand)) {
       gameOver = true;
-      return `You got Blackjack! Luck is on your side today! 🍀 <br><br> ${showHands()} <br><br> Click the "Submit" reshuffle the deck and continue or "Reset" to reset the game for a new player.`;
+      return `You got Blackjack! Luck is on your side today! 🍀 <br><br> ${showHands()} <br><br> Click "Submit" to reshuffle the deck and continue or "Reset" to reset the game for a new player.`;
     }
-    return `${showHands()} <br><br> Would you like to Hit! or Stand? <br>`;
+    return ` ${showHands()} <br><br> Would you like to Hit! or Stand? `;
   }
-  // if (gameMode - "HitOrStand") {
-  //   if (hitButton.addEventListener("click", drawCard(playerHand)))
-  //     console.log(playerHand);
-  //   return showHands;
-  // }
+  // Player Hit / Stand
+  if (gameMode == "HitOrStand") {
+    // Input validation for Hit or Stand
+    if (input == "") {
+      return `Please choose to Hit! or Stand. <br><br> ${showHands()}`;
+    }
+    // player hit, if bust display message
+    if (input == "hit") {
+      drawCard(playerHand);
+      console.log(gameMode);
+      console.log(playerHand);
+      // player hit & value < 21
+      if (valueCal(playerHand) < twentyOne) {
+        return `You Hit the Dealer! <br><br> ${showHands()}`;
+      }
+      // player hit & bust
+      gameOver = true;
+      return `You BUST! <br><br>${showHands()} <br><br> Click "Submit" to reshuffle the deck for a new round or "Reset" to reset the game for a new player.`;
+    }
+    if (input == "stand") {
+      gameMode == "Stand";
+      if (valueCal(computerHand) <= dealerLimit) {
+        drawCard(computerHand);
+        console.log(computerHand);
+        computerValue = valueCal(computerHand);
+        if (computerValue > twentyOne) {
+          gameOver = true;
+          return `Dealer has Busted! <br><br> ${showHands()} <br><br> Click the "Submit" reshuffle the deck and continue or "Reset" to reset the game for a new player.`;
+        }
+      }
+    }
+    // If player clicks hit, player will draw a card into the hand {
+    // drawCard(playerHand) }
+    // If player NOT BUST, player can choose to Hit again Or Stand (repeat until player BUST or STAND)
 
-  return `Click the "Submit" reshuffle the deck and continue or "Reset" to reset the game for a new player.`;
+    // If player decides to stand, player no longer Hit and Dealer will proceed to draw card if necessary and end the round
+
+    // If player Click Stand
+
+    // // Dealers Turn
+    /*var computerValue = valueCal(computerHand);
+    if (computerValue <= dealerLimit) {
+      drawCard(computerHand);
+      computerValue = valueCal(computerHand);
+      if (computerValue > twentyOne) {
+        gameOver = true;
+        return `Dealer has Busted! <br><br> ${showHands()} <br><br> Click the "Submit" reshuffle the deck and continue or "Reset" to reset the game for a new player.`;
+      }
+    }*/
+
+    // If player stand and neither player nor dealer bust
+    console.log(playerHand);
+    console.log(valueCal(computerHand));
+    return finalScore();
+  }
 };
+
+//return `Click the "Submit" reshuffle the deck and continue or "Reset" to reset the game for a new player.`;
 
 // Player goes first, decide to HIT or STAND
 // Total Score of each player will be compared
-// Closest < or = 21 wins.
+// Closest < or = 21 wins
