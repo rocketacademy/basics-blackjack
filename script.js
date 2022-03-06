@@ -106,6 +106,45 @@ var calTotalHandValue = function (handArray) {
   return totalHandValue;
 };
 
+// to display player and dealer hands in a message
+var displayCards = function (playerHandArray, dealerHandArray) {
+  var playerMessage = `Player Hand: <br>`;
+  var index = 0;
+  while (index < playerHandArray.length) {
+    playerMessage =
+      playerMessage +
+      `- ` +
+      playerHandArray[index].name +
+      "of " +
+      playerHandArray[index].suit +
+      `<br>`;
+    index = index + 1;
+  }
+  index = 0;
+  var dealerMessage = `Dealer Hand: <br>`;
+  while (index < dealerHandArray.length) {
+    dealerMessage =
+      dealerMessage +
+      `- ` +
+      dealerHandArray[index].name +
+      "of " +
+      dealerHandArray[index].suit +
+      `<br>`;
+    index = index + 1;
+  }
+  return playerMessage + `<br>` + dealerMessage;
+};
+
+// to disply hand values of player and dealer cards
+var displayHandTotalValues = function (playerHandValue, dealerHandValue) {
+  var totalHandValueMessage =
+    `<br>Player total hand value: ` +
+    playerHandValue +
+    `<br>Dealer total hand value: ` +
+    dealerHandValue;
+  return totalHandValueMessage;
+};
+
 //--------------------main----------------------//
 
 var main = function (input) {
@@ -144,13 +183,22 @@ var main = function (input) {
     if (playerHasBlackjack == true || dealerHasBlackjack == true) {
       //tie
       if (playerHasBlackjack == true && dealerHasBlackjack == true) {
-        outputMessage = `It's a blackjack tie!`;
+        outputMessage =
+          displayCards(playerHand, dealerHand) +
+          `It's a blackjack tie!` +
+          displayHandTotalValues(playerHandTotalValue, dealerHandTotalValue);
       }
       //player wins
       else if (playerHasBlackjack == true && dealerHasBlackjack == false) {
-        outputMessage = `Player wins by blackjack.`;
+        outputMessage =
+          displayCards(playerHand, dealerHand) +
+          `Player wins by blackjack.` +
+          displayHandTotalValues(playerHandTotalValue, dealerHandTotalValue);
       } else {
-        outputMessage = `Dealer wins by blackjack`;
+        outputMessage =
+          displayCards(playerHand, dealerHand) +
+          `Dealer wins by blackjack` +
+          displayHandTotalValues(playerHandTotalValue, dealerHandTotalValue);
       }
       console.log(outputMessage);
     }
@@ -166,13 +214,22 @@ var main = function (input) {
 
     // compare total hand value
     if (playerHandTotalValue == dealerHandTotalValue) {
-      outputMessage = `It's a tie.`;
+      outputMessage =
+        displayCards(playerHand, dealerHand) +
+        `It's a tie.` +
+        displayHandTotalValues(playerHandTotalValue, dealerHandTotalValue);
       console.log(`tie`);
     } else if (playerHandTotalValue > dealerHandTotalValue) {
-      outputMessage = `Player wins.`;
+      outputMessage =
+        displayCards(playerHand, dealerHand) +
+        `Player wins.` +
+        displayHandTotalValues(playerHandTotalValue, dealerHandTotalValue);
       console.log(`player wins`);
     } else {
-      outputMessage = `Dealer wins.`;
+      outputMessage =
+        displayCards(playerHand, dealerHand) +
+        `Dealer wins.` +
+        displayHandTotalValues(playerHandTotalValue, dealerHandTotalValue);
       console.log(`dealer wins`);
     }
     currentGameMode = GAME_RESULTS_SHOWN;
