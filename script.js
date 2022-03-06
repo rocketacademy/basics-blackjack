@@ -174,14 +174,18 @@ var calculatePlayerScore = function (playerIndex) {
 var checkPlayerState = function (playerIndex) {
   if (players[playerIndex].score > 21) {
     players[playerIndex].state = "busted";
-    players[playerIndex].endMessage = "Busted";
+    players[
+      playerIndex
+    ].endMessage = `Busted! You lost ${players[playerIndex].bet}`;
     if (playerIndex != 0) {
       players[playerIndex].cash -= players[playerIndex].bet;
       players[playerIndex].bet = 0;
     }
   } else if (players[playerIndex].score == 21) {
     players[playerIndex].state = "black jack";
-    players[playerIndex].endMessage = "Black Jack";
+    players[playerIndex].endMessage = `WOW! Black Jack! You won ${
+      players[playerIndex].bet * 1.5
+    }`;
     if (playerIndex != 0) {
       players[playerIndex].cash += players[playerIndex].bet * 1.5;
       players[playerIndex].bet = 0;
@@ -210,6 +214,7 @@ var showPlayerCards = function (playerIndex) {
     // message += `${players[playerIndex].endMessage}`;
     if (playerIndex != 0) {
       message += `</div><div>Score: ${players[playerIndex].score} | Cash: ${players[playerIndex].cash} | Bet: ${players[playerIndex].bet} </div><br>`;
+      message += "<div>" + players[playerIndex].endMessage + "</div><br>";
     } else if (playerIndex == 0 && revealDealer()) {
       message += `</div><div>Score: ${players[playerIndex].score}</div><br>`;
     }
@@ -222,7 +227,6 @@ var showAllPlayersCards = function () {
   for (var i = 1; i <= gameState.allPlayers; i += 1) {
     message += showPlayerCards(i);
   }
-  // message += showPlayerCards(0);
   return message;
 };
 
@@ -280,6 +284,7 @@ var main = function (input) {
   }
 
   if (gameState.state === gStateOptions.takeBets) {
+    inputEl.removeAttribute("hidden");
     input = parseInt(input);
     if (input > 0 && input <= players[gameState.currentPlayer].cash) {
       players[gameState.currentPlayer].bet = input;
@@ -299,6 +304,7 @@ var main = function (input) {
   }
 
   if (gameState.state === gStateOptions.deal) {
+    instructionsEl.innerHTML = ``;
     for (var i = 0; i <= gameState.allPlayers; i += 1) {
       players[i].cards = players[i].cards.concat(getRandomCards(2));
       calculatePlayerScore(i);
@@ -387,6 +393,7 @@ var main = function (input) {
     if (players[0].state == "busted") {
       for (var i = 0; i <= gameState.allPlayers; i += 1) {
         players[i].cash += players[i].bet;
+        players[i].endMessage = `You won ${players[i].bet}`;
         players[i].bet = 0;
       }
     } else {
@@ -394,8 +401,10 @@ var main = function (input) {
         var scoreDiff = players[i].score - players[0].score;
         if (scoreDiff > 0) {
           players[i].cash += players[i].bet;
+          players[i].endMessage = `You won ${players[i].bet}`;
         } else if (scoreDiff < 0) {
           players[i].cash -= players[i].bet;
+          players[i].endMessage = `You lost ${players[i].bet}`;
         }
         players[i].bet = 0;
       }
@@ -405,10 +414,9 @@ var main = function (input) {
     gameState.state = gStateOptions.takeBets;
     prepareNewGame();
     instructionsEl.innerHTML = `Let's play again.`;
-    inputEl.removeAttribute("hidden");
-
     if (gameState.allPlayers == 0) {
       gameState.state = gStateOptions.setup;
+      inputEl.removeAttribute("hidden");
       instructionsEl.innerHTML = `No more players! For new game please choose number of players 1-4`;
       return "";
     }
