@@ -122,14 +122,18 @@ var drawTwoCards = function () {
   console.log(playerCurrentCard);
   if (computerTotalValue() == 21 && playerTotalValue() != 21) {
     var myOutputValue = `Computer has drawn: <br> ------------------ <br> ${displayComputerMessage()} <br> total value is ${computerTotalValue()}  <br> Player has drawn <br> ------------------ <br> ${displayPlayerMessage()} total value is ${playerTotalValue()} <br><br> Computer has BLACK JACK! Computer wins!`;
+    gameMode = deal;
   } else if (playerTotalValue() == 21 && computerTotalValue() != 21) {
     myOutputValue = `Computer has drawn:<br> ------------------ <br> ${displayComputerMessage()} total value is ${computerTotalValue()}  <br> Player has drawn <br> ------------------ <br> ${displayPlayerMessage()} total value is ${playerTotalValue()} <br><br> Player has BLACK JACK! player wins!`;
+    gameMode = deal;
   } else if (playerTotalValue() == 21 && computerTotalValue() == 21) {
     myOutputValue = `Computer has drawn:<br> ------------------ <br> ${displayComputerMessage()} total value is ${computerTotalValue()}  <br> Player has drawn <br> ------------------ <br> ${displayPlayerMessage()} total value is ${playerTotalValue()} <br><br> Player and Compuer both have BLACK JACK! It's a tie!`;
+    gameMode = deal;
   } else {
     myOutputValue = /*`Computer has drawn: ${displayComputerMessage()} ,total value is ${computerTotalValue()}  <br>*/ `Player has drawn <br> ------------------ <br> ${displayPlayerMessage()} total value is ${playerTotalValue()} <br><br>Does player want to hit(h) or stand(s)?`;
+    gameMode = hitOrStand;
   }
-  gameMode = hitOrStand;
+
   return myOutputValue;
 };
 
@@ -261,7 +265,7 @@ var hitStand = function (inputX) {
     }
     if (inputX == "s" && playerTotalValue() >= 15) {
       index = 2;
-      while (computerTotal < 17) {
+      while (computerTotalValue() < 17) {
         var computerCard2 = shuffledDeck.pop();
         computerCurrentCard.push(computerCard2);
         computerTotal = computerTotal + computerCurrentCard[index].rank;
