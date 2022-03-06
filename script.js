@@ -90,6 +90,8 @@ var checkforBlackjack = function (handArray) {
 // calculate hand value
 var calTotalHandValue = function (handArray) {
   var totalHandValue = 0;
+  var aceCounter = 0;
+
   var index = 0;
   while (index < handArray.length) {
     var currentCard = handArray[index];
@@ -99,11 +101,22 @@ var calTotalHandValue = function (handArray) {
       currentCard.name == "king"
     ) {
       totalHandValue = totalHandValue + 10;
+    } else if (currentCard.name == "ace") {
+      totalHandValue = totalHandValue + 11;
+      aceCounter = aceCounter + 1;
     } else {
       totalHandValue = totalHandValue + currentCard.rank;
     }
     index = index + 1;
   }
+  index = 0;
+  while (index < aceCounter) {
+    if (totalHandValue > 21) {
+      totalHandValue = totalHandValue - 10;
+    }
+    index = index + 1;
+  }
+
   return totalHandValue;
 };
 
@@ -251,10 +264,10 @@ var main = function (input) {
       var playerHandTotalValue = calTotalHandValue(playerHand);
       var dealerHandTotalValue = calTotalHandValue(dealerHand);
 
-      // console.log(playerHandTotalValue);
-      // console.log(dealerHandTotalValue);
-      // playerHandTotalValue = 12;
-      // dealerHandTotalValue = 11;
+      while (dealerHandTotalValue < 17) {
+        dealerHand.push(gameDeck.pop());
+        dealerHandTotalValue = calTotalHandValue(dealerHand);
+      }
 
       // compare total hand value
       if (playerHandTotalValue == dealerHandTotalValue) {
@@ -284,6 +297,7 @@ var main = function (input) {
       outputMessage =
         `Wrong input. only 'Hit' or 'Stand" are valid. <br><br>` +
         displayCards(playerHand, dealerHand);
+      return outputMessage;
     }
   }
 };
