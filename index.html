@@ -105,8 +105,9 @@
 
       #output-div img {
         display: block;
-        max-width: 100%;
-        max-height: 200px;
+        max-width: 150%;
+        max-height: 300px;
+        margin: auto;
       }
       .header {
         text-align: center;
@@ -141,6 +142,7 @@
         margin: 20px auto;
         padding: 20px;
         width: 100%;
+        text-align: center;
       }
 
       .logo-img {
@@ -170,14 +172,16 @@
         src="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/brand/logo.png"
       />
     </h1>
-    <h1 class="header">♣️ Basics - Blackjack ♠️</h1>
+    <h1 class="header">♣️ 888 Online Casino - Sure Win Blackjack ♠️</h1>
     <div id="container">
       <p>Input:</p>
       <input id="input-field" />
       <br />
       <button id="submit-button">Submit</button>
       <p>Output:</p>
-      <div id="output-div"></div>
+      <div id="output-div">
+        Welcome! Click Submit to start your Black Jack game!
+      </div>
     </div>
     <!-- Import program logic -->
     <script src="script.js"></script>
@@ -185,7 +189,6 @@
     <script>
       var button = document.querySelector("#submit-button");
       button.addEventListener("click", function () {
-        console.log("change HTML");
         // Set result to input value
         var input = document.querySelector("#input-field");
         var result = main(input.value);
