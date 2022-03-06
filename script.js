@@ -1,6 +1,7 @@
 var GAME_START = "game start";
 var GAME_CARDS_DRAWN = "cards drawn";
 var GAME_RESULTS_SHOWN = "results shown";
+var GAME_HIT_OR_STAND = "hit ot stand";
 var currentGameMode = GAME_START;
 
 var playerHand = [];
@@ -232,7 +233,57 @@ var main = function (input) {
         displayHandTotalValues(playerHandTotalValue, dealerHandTotalValue);
       console.log(`dealer wins`);
     }
-    currentGameMode = GAME_RESULTS_SHOWN;
+    currentGameMode = GAME_HIT_OR_STAND;
     return outputMessage;
+  }
+  if (currentGameMode == GAME_HIT_OR_STAND) {
+    //player Hit
+    if (input == "hit") {
+      playerHand.push(gameDeck.pop());
+      outputMessage =
+        displayCards(playerHand, dealerHand) +
+        `<br> You drew another card. <br> Please input "Hit" or "Stand"`;
+      return outputMessage;
+    }
+
+    // player stand
+    else if (input == "stand") {
+      var playerHandTotalValue = calTotalHandValue(playerHand);
+      var dealerHandTotalValue = calTotalHandValue(dealerHand);
+
+      // console.log(playerHandTotalValue);
+      // console.log(dealerHandTotalValue);
+      // playerHandTotalValue = 12;
+      // dealerHandTotalValue = 11;
+
+      // compare total hand value
+      if (playerHandTotalValue == dealerHandTotalValue) {
+        outputMessage =
+          displayCards(playerHand, dealerHand) +
+          `It's a tie.` +
+          displayHandTotalValues(playerHandTotalValue, dealerHandTotalValue);
+        console.log(`tie`);
+      } else if (playerHandTotalValue > dealerHandTotalValue) {
+        outputMessage =
+          displayCards(playerHand, dealerHand) +
+          `Player wins.` +
+          displayHandTotalValues(playerHandTotalValue, dealerHandTotalValue);
+        console.log(`player wins`);
+      } else {
+        outputMessage =
+          displayCards(playerHand, dealerHand) +
+          `Dealer wins.` +
+          displayHandTotalValues(playerHandTotalValue, dealerHandTotalValue);
+        console.log(`dealer wins`);
+      }
+      return outputMessage;
+    }
+
+    // input validation
+    else {
+      outputMessage =
+        `Wrong input. only 'Hit' or 'Stand" are valid. <br><br>` +
+        displayCards(playerHand, dealerHand);
+    }
   }
 };
