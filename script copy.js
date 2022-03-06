@@ -1,3 +1,5 @@
+// This copy has DOM manipulation - hit and stay buttons are created
+
 // There will be only two players. One human and one computer (for the Base solution).
 // The computer will always be the dealer.
 // Each player gets dealt two cards to start. For each player, both cards are dealt face up. For the dealer, one card is face down.
@@ -99,9 +101,9 @@ var GAME_STATE_DEAL_HAND = "GAME_STATE_DEAL_HAND";
 var CURRENT_GAME_STATE = GAME_STATE_DEAL_HAND;
 var GAME_STATE_HIT_STAY = "GAME_STATE_HIT_STAY";
 var GAME_STATE_END_GAME = "GAME_STATE_END_GAME";
-// var button = document.querySelector("#submit-button");
-// var button2 = document.createElement("button");
-// var buttonBox = document.querySelector("#button-container");
+var button = document.querySelector("#submit-button");
+var button2 = document.createElement("button");
+var buttonBox = document.querySelector("#button-container");
 
 var resetGame = function () {
   playerHand = [];
@@ -136,69 +138,22 @@ var calculateScore = function (array) {
   return score;
 };
 
-var checkWinLoseCondition = function (score) {
-  var message = "";
-  if (playerHandScore == 21) {
-    message += `<br><br> You scored 21, you win! <br><br> Click 'Submit' to play again.`;
-    CURRENT_GAME_STATE = GAME_STATE_END_GAME;
-    console.log(
-      `Control flow: current game state changed from deal hand to end game. Current game state is ${CURRENT_GAME_STATE}`
-    );
-    return message;
-  }
-  if (playerHandScore > 21) {
-    message += `<br><br> You busted! Press submit to play again.`;
-    CURRENT_GAME_STATE = GAME_STATE_END_GAME;
-    console.log(
-      `Control flow: player busted. Current game state should be changed to end game. It is ${CURRENT_GAME_STATE}`
-    );
-    return message;
-  } else {
-    message += `<br><br> Please enter "hit" or "stay".`;
-    CURRENT_GAME_STATE = GAME_STATE_HIT_STAY;
-    console.log(
-      `Control flow: current game state changed from deal hand to hit/stay. Current game state is ${CURRENT_GAME_STATE}`
-    );
-    return message;
-  }
-};
-
 var dealCard = function () {
   playerHand.push(cardDeck.pop());
   return playerHand;
 };
 
-var listCards = function (array) {
-  counter = 0;
-  var message = "";
-  while (counter < array.length) {
-    message += `<br> ${array[counter].name} of ${array[counter].suit}`;
-    counter += 1;
-  }
-  console.log(`listCards message is ${message}`);
-  return message;
-};
-
-// ========================== MAIN FUNCTION ==========================
-
 var main = function (input) {
   if (CURRENT_GAME_STATE == GAME_STATE_END_GAME) {
-    console.log(
-      `Control flow: current game state should be end game. It is ${CURRENT_GAME_STATE}`
-    );
     resetGame();
   }
   // player clicks Submit to deal cards and display cards to player
   if (CURRENT_GAME_STATE == GAME_STATE_DEAL_HAND) {
-    console.log(
-      `Control flow: current game state should be deal hand. It is ${CURRENT_GAME_STATE}`
-    );
     for (i = 0; i < 2; i += 1) {
       playerHand.push(cardDeck.pop());
       computerHand.push(cardDeck.pop());
     }
-    myOutputValue = `The cards have been dealt! <br><br> The player's cards are ${playerHand[0].name} of ${playerHand[0].suit} and ${playerHand[1].name} of ${playerHand[1].suit}.
-    <br><br> The dealer's face-up card is a ${computerHand[0].name} of ${computerHand[0].suit}.`;
+    myOutputValue = `The cards have been dealt! <br><br> The player's cards are ${playerHand[0].name} of ${playerHand[0].suit} and ${playerHand[1].name} of ${playerHand[1].suit}. <br><br> The dealer's face-up card is a ${computerHand[0].name} of ${computerHand[0].suit}.`;
 
     console.log(
       `playerHand: ${playerHand[0].name} of ${playerHand[0].suit} and ${playerHand[1].name} of ${playerHand[1].suit}`
@@ -210,29 +165,25 @@ var main = function (input) {
     // check player's cards - if 21, player automatically wins
     playerHandScore = calculateScore(playerHand);
     console.log(`playerHandScore: ${playerHandScore}`);
-    myOutputValue += `<br><br> Player's score is ${playerHandScore}.`;
-    myOutputValue += checkWinLoseCondition(playerHandScore);
+    if (playerHandScore == 21) {
+      myOutputValue += `<br><br> You scored 21, you win! <br><br> Click 'Submit' to play again.`;
+      CURRENT_GAME_STATE = GAME_STATE_END_GAME;
+      return myOutputValue;
+    }
+
+    CURRENT_GAME_STATE = GAME_STATE_HIT_STAY;
+    button.innerText = "hit";
+    button2.innerText = "stay";
+    buttonBox.appendChild(button2);
     return myOutputValue;
   }
 
-  // if player types stay, move on
+  // if player clicks stay, move on
   if (CURRENT_GAME_STATE == GAME_STATE_HIT_STAY) {
-    if (input != "hit" && input != "stay") {
-      console.log(`Control flow: input invalid - input is not hit or stay`);
-      return (myOutputValue = `The player's cards are: ${listCards(playerHand)}
-      <br><br> Please enter "hit" or "stay".`);
-    }
-    // if player types hit, deal an extra card
-    if (input == "hit") {
-      console.log(`Control flow: player typed hit`);
-      dealCard();
-      playerHandScore = calculateScore(playerHand);
-      myOutputValue = `The player's cards are:`;
-      myOutputValue += listCards(playerHand);
-      myOutputValue += `<br><br> The dealer's face-up card is: <br> ${computerHand[0].name} of ${computerHand[0].suit}
-      <br><br> Player's score is ${playerHandScore}.`;
-      myOutputValue += checkWinLoseCondition(playerHandScore);
-      return myOutputValue;
-    }
+    // if player clicks hit, deal an extra card
+    button.addEventListener("click", dealCard());
+    myOutputValue = `The player's cards are: <br> ${playerHand[0].name} of ${playerHand[0].suit} <br> ${playerHand[1].name} of ${playerHand[1].suit} <br> ${playerHand[2].name} of ${playerHand[2].suit}. <br><br> The dealer's face-up card is: <br> ${computerHand[0].name} of ${computerHand[0].suit}.`;
+    // calculate total score of player's hand
+    // if >21, return "You busted!"
   }
 };
