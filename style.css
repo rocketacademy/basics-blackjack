@@ -5,7 +5,7 @@
 
 @font-face {
   font-family: eurofurence;
-  src: url(font/eurof55.ttf);
+  src: url(font/eurof75.ttf);
 }
 
 @font-face {
@@ -42,7 +42,7 @@ body {
 }
 
 .playSpace {
-  background-color: darkgreen;
+  background-color: #023020;
   border-radius: 25px;
   margin: 40px auto;
   max-width: 1300px;
@@ -79,7 +79,7 @@ td img {
 }
 
 .ruleSpace {
-  background-color: darkslategray;
+  background-color: slategray;
   border-radius: 25px;
   margin: 40px auto;
   max-width: 1300px;
@@ -91,28 +91,28 @@ input {
   line-height: 33px;
   margin: 0 0 23px 0;
   padding: 0 9px;
-  width: 100%;
+  width: 25%;
 }
 
 button {
-  background-color: lightgreen;
+  background-color: slategray;
   border: none;
   border-radius: 5px;
-  color: black;
+  color: white;
   padding: 10px;
   text-align: center;
   text-decoration: none;
   display: inline-block;
   font-size: 1.1em;
-  margin: 1px;
+  margin: 2px;
   cursor: pointer;
   transition-duration: 0.5s;
   font-family: eurofurence;
-  box-shadow: 0 5px white;
+  box-shadow: 0 5px lightgrey;
 }
 
 button:hover {
-  background-color: green;
+  background-color: #4f7942;
 }
 
 button:disabled {
@@ -121,8 +121,9 @@ button:disabled {
 }
 
 button:active {
-  background-color: green;
+  background-color: #4f7942;
   box-shadow: 0 3px grey;
+  transition-duration: 0.2s;
   transform: translateY(2px);
 }
 

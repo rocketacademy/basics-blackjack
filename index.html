@@ -116,11 +116,11 @@
         </tr>
         <tr>
           <td colspan="3">
-            <div class="handContainer"><div id="dealer-hand"></div></div>
+            <div class="handContainer"><div id="dealer-hand"><img src="svg/back.svg" class="card" ></div></div>
           </td>
         </tr>
         <tr>
-          <td colspan="3"><div id="dealer-info"></div></td>
+          <td colspan="3"><div id="dealer-info">Let's play blackjack!</div></td>
         </tr>
         <tr>
           <td colspan="3">
@@ -141,19 +141,49 @@
           <td><img class="player" src="img/Players/P3.svg" /></td>
         </tr>
         <tr>
-          <td><div class="handContainer">P1 Hand Goes Here</div></td>
-          <td><div class="handContainer">P2 Hand Goes Here</div></td>
-          <td><div class="handContainer">P3 Hand Goes Here</div></td>
+          <td><div class="handContainer"><div id="p1-hand"><img src="svg/back.svg" class="card" ></div></div></td>
+          <td><div class="handContainer">
+            <div id="p2-hand"><img src="svg/back.svg" class="card" ></div></div></td>
+          <td><div class="handContainer"><div id="p3-hand"><img src="svg/back.svg" class="card" ></div></div></td>
         </tr>
         <tr>
-          <td>P1 info tags go here</td>
-          <td>P2 info tags go here</td>
-          <td>P3 info tags go here</td>
+          <td><div id="p1-info">Chip in, player 1!</div></td>
+          <td><div id="p2-info">Chip in, player 2!</div></td>
+          <td><div id="p3-info">Chip in, player 3!</div></td>
         </tr>
         <tr>
-          <td>P1 action buttons Go Here</td>
-          <td>P2 action buttons go here</td>
-          <td>P3 action buttons go here</td>
+          <td>
+            <button id="p1-hit" style="visibility: hidden;">Hit</button>
+            <button id="p1-stand" style="visibility: hidden;">Stand</button>
+            <button id="p1-double" style="visibility: hidden;">Double Down</button>
+          </td>
+          <td>
+            <button id="p2-hit" style="visibility: hidden;">Hit</button>
+            <button id="p2-stand" style="visibility: hidden;">Stand</button>
+            <button id="p2-double" style="visibility: hidden;">Double Down</button>
+          </td>
+          <td>
+            <button id="p3-hit" style="visibility: hidden;">Hit</button>
+            <button id="p3-stand" style="visibility: hidden;">Stand</button>
+            <button id="p3-double" style="visibility: hidden;">Double Down</button>
+          </td>
+        </tr>
+        <tr>
+          <td><div id="p1-bet-area" style="visibility: hidden;">Bet Amount: <input type="number" min="0" max="200" id="p1-bet"></div></td>
+          <td><div id="p2-bet-area" style="visibility: hidden;"> Bet Amount: <input type="number" min="0" max="200" id="p2-bet"></div></td>
+          <td><div id ="p3-bet-area" style="visibility: hidden;">Bet Amount: <input type="number" min="0" max="200" id="p3-bet"></div></td>
+        </tr>
+        </tr>
+        <tr>
+          <td>
+            <button id="p1-chip-in">Chip in!</button>
+          </td>
+          <td>
+            <button id="p2-chip-in">Chip in!</button>
+          </td>
+          <td>
+            <button id="p3-chip-in">Chip in!</button>
+          </td>
         </tr>
       </table>
     </div>
@@ -161,8 +191,8 @@
     <div class="ruleSpace">
       <h2>Welcome to Blackjack!</h2>
       <p>The version of Blackjack implemented here is a single deck casino blackjack!</p>
-      <p>Players chip in with 200 chips, minimum bet is 1 chip, there's no maximum bet.</p>
-      <p>Dealer must draw on 16 or less, and stand on 17 or more</p>
+      <p>Players chip in with 200 chips, minimum bet is 1 chip, maximum bet is 200 chips.</p>
+      <p>Dealer must draw on 16 or less, and stand on 17 or more.</p>
       <p>Blackjack pays 2 to 1</p>
       <h2>Basic Rules:</h2>
       <p>Get the closest to 21 but don't go over, or you'll go BUST!</p>
@@ -192,6 +222,7 @@
         </li>
         <li>Player who goes over 21 will bust and lose their bet.</li>
         <li>Once all players ended their turn, the dealer reveals their hidden card, and will hit until it reaches 17 or over. If the dealer bust, the remaining player wins. If the dealer does not bust, the players who does not bust will compare hands with the dealer. Player will win if their hand is higher than the dealer, gaining chips equivalent to their bet; lose if their hand is lower than the dealer, losing their bet; and will push if their hand is of the same value with the dealer, returning their bet.</li>
+        <li>Dealer will never double down on their cards.</li>
       </ul>
       
 
