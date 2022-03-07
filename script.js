@@ -159,17 +159,17 @@ var firstHand = function () {
   console.log(gotBlackjack(playerHand));
   if (gotBlackjack(computerHand) == true && gotBlackjack(playerHand) == true) {
     gameMode = "GameOver";
-    return `What are the chances! It's a lucky day! 🍀 <br><br> ${showHands()} <br><br> Go and buy TOTO or 4D! or Click "Submit" to reshuffle the deck and continue or "Reset" to reset the game for a new player.`;
+    return `What are the chances! It's a lucky day! 🍀 <br><br> ${showHands()} <br><br> Go and buy TOTO or 4D! or Click the "Submit" button to reshuffle the deck and continue or the "Reset" button to reset the game for a new player.`;
   }
   // If Dealer gets blackjack, player lose, reshuffle or restart
   if (gotBlackjack(computerHand)) {
     gameMode = "GameOver";
-    return `Dealer has Blackjack! Oops. <br><br> ${showHands()} <br><br> Click "Submit" to reshuffle the deck and continue or "Reset" to reset the game for a new player.`;
+    return `Dealer has Blackjack! Oops. <br><br> ${showHands()} <br><br> Click the "Submit" button to reshuffle the deck and continue or the "Reset" button to reset the game for a new player.`;
   }
   // If Player gets blackjack, dealer lose, reshuffle or restart
   if (gotBlackjack(playerHand)) {
     gameMode = "GameOver";
-    return `You got Blackjack! Luck is on your side today! 🍀 <br><br> ${showHands()} <br><br> Click "Submit" to reshuffle the deck and continue or "Reset" to reset the game for a new player.`;
+    return `You got Blackjack! Luck is on your side today! 🍀 <br><br> ${showHands()} <br><br> Click the "Submit" button to reshuffle the deck and continue or the "Reset" button to reset the game for a new player.`;
   }
   return ` ${showHands()} <br><br> Would you like to Hit! or Stand? `;
 };
@@ -178,15 +178,15 @@ var firstHand = function () {
 var finalScore = function () {
   if (valueCal(playerHand) == valueCal(computerHand)) {
     gameMode = "GameOver";
-    return `What a lucky draw! <br><br> ${showHands()} <br><br> Click "Reshuffle" to go another round or "Reset" to reset the game for a new player.`;
+    return `What a lucky draw! <br><br> ${showHands()} <br><br> Click the "Reshuffle" button to go another round or the "Reset" button to reset the game for a new player.`;
   }
   if (valueCal(playerHand) > valueCal(computerHand)) {
     gameMode = "GameOver";
-    return `You WIN!! <br><br> ${showHands()} <br><br> Click "Reshuffle" to go another round or "Reset" to reset the game for a new player.`;
+    return `You WIN!! <br><br> ${showHands()} <br><br> Click the "Reshuffle" button to go another round or the "Reset" button to reset the game for a new player.`;
   }
   if (valueCal(playerHand) < valueCal(computerHand)) {
     gameMode = "GameOver";
-    return `Oh no. The Dealer won this time <br><br> ${showHands()} <br><br> Click "Reshuffle" to go another round or "Reset" to reset the game for a new player.`;
+    return `Oh no. The Dealer won this time. Try again! <br><br> ${showHands()} <br><br> Click the "Reshuffle" button to go another round or the "Reset" button to reset the game for a new player.`;
   }
 };
 
@@ -212,7 +212,7 @@ var main = function (input) {
       input == "cont" ||
       input == "deal")
   ) {
-    return `Please enter your name & click "Submit".`;
+    return `Please enter your name & click the "Submit" button.`;
   }
   // When player enters name. Mode changes to : Deal
   if (input == input && gameMode == "PlayerName") {
@@ -220,13 +220,14 @@ var main = function (input) {
     console.log("Should be Deal");
     console.log(gameMode);
     playerName = input;
-    return `Welcome ${playerName} ! Click "Deal" to start Blackjack & deal your hand!`;
+    return `Welcome ${playerName}! <br> Click the "Deal" button to start Blackjack & deal your hand!`;
   }
   // Game Start
   // Deal Cards & input validate buttons
   if (gameMode == "Deal" && input !== "deal") {
-    return ` ${playerName} click "Deal" if you still want to play blackjack. <br> If not, have a pleasant day! `;
+    return ` ${playerName} click the "Deal" button if you still want to play blackjack. <br> If not, have a pleasant day! `;
   }
+  // Player clicks Deal, distribute cards
   if (gameMode == "Deal" && input == "deal") {
     gameMode = "HitOrStand";
     console.log("first deal");
@@ -247,7 +248,7 @@ var main = function (input) {
         // if dealer busted, end the game
         if (valueCal(computerHand) > twentyOne) {
           gameMode = "GameOver";
-          return `Dealer has Busted! <br><br> ${showHands()} <br><br> Click "Reshuffle" to go another round or "Reset" to reset the game for a new player.`;
+          return `Dealer has Busted! You WIN! <br><br> ${showHands()} <br><br> Click "Reshuffle" to go another round or "Reset" to reset the game for a new player.`;
         }
       }
     }
