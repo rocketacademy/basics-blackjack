@@ -137,7 +137,7 @@
       }
 
       button {
-        font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+        font-family: monospace;
         font-size: 21px;
         line-height: 33px;
         margin: 0 0 23px 0;
@@ -173,26 +173,51 @@
       <img class="logo-img" src="pngwing.com.png" />
     </h1>
     <div id="container">
-      <p>Input Player Name:</p>
       <input id="input-field" />
       <br />
       <button id="submit-button">Submit</button>
       <button id="reset-button">Reset</button>
+      <button id="deal-button">Deal</button>
       <br />
       <p>Results</p>
       <div id="output-div"></div>
       <button id="hit-button">Hit!</button>
       <button id="stand-button">Stand</button>
+      <button id="cont-button">Reshuffle</button>
     </div>
     <!-- Import program logic -->
     <script src="script.js"></script>
     <!-- Define button click functionality -->
     <script>
+      var output = document.querySelector("#output-div");
+      output.innerHTML = `Hello & welcome to Single Player Blackjack(made by me).<br><br>  <b>INSTRUCTIONS: </b><br> 1. Key in your name in the box above & click "Submit" to start. <br> 2. If your hand value is 21 and below, you stand a chance to win the dealer!<br> 3. There will be no betting because gambling is bad. <br> 4. Have fun & keep your feedback coming so that I can improve & serve you better.`;
+
       var button = document.querySelector("#submit-button");
       button.addEventListener("click", function () {
         // Set result to input value
         var input = document.querySelector("#input-field");
         var result = main(input.value);
+
+        // Display result in output element
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
+
+        // Reset input value
+        input.value = "";
+      });
+
+      // Reset the game
+      var button = document.querySelector("#reset-button");
+      button.addEventListener("click", function () {
+        location.reload();
+      });
+
+      // Deal Cards
+      var dealButton = document.querySelector("#deal-button");
+      dealButton.addEventListener("click", function () {
+        // set input to "deal"
+        var input = "deal";
+        var result = main(input);
 
         // Display result in output element
         var output = document.querySelector("#output-div");
@@ -232,10 +257,19 @@
         input.value = "";
       });
 
-      // Reset the game
-      var button = document.querySelector("#reset-button");
-      button.addEventListener("click", function () {
-        location.reload();
+      // Player wants another round
+      var contButton = document.querySelector("#cont-button");
+      contButton.addEventListener("click", function () {
+        // set input to "hit"
+        var input = "cont";
+        var result = main(input);
+
+        // Display result in output element
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
+
+        // Reset input value
+        input.value = "";
       });
     </script>
   </body>

@@ -52,7 +52,7 @@ var shuffleCards = function (cardDeck) {
   return cardDeck;
 };
 
-// Generate Deck when site loads
+// Generate Deck when site loads or deck reshuffles for new round
 deck = shuffleCards(makeDeck());
 console.log("Deck made");
 console.log(deck);
@@ -69,8 +69,7 @@ var playerHand = [];
 var computerHand = [];
 var twentyOne = 21;
 var dealerLimit = 16;
-var playerStand = false;
-var gameOver = false;
+var mainDeck = [];
 
 // [HF] General Display of Hands
 var showHands = function () {
@@ -179,15 +178,15 @@ var firstHand = function () {
 var finalScore = function () {
   if (valueCal(playerHand) == valueCal(computerHand)) {
     gameMode = "GameOver";
-    return `What a lucky draw! <br><br> ${showHands()} <br><br> Click "Submit" to reshuffle the deck and continue or "Reset" to reset the game for a new player.`;
+    return `What a lucky draw! <br><br> ${showHands()} <br><br> Click "Reshuffle" to go another round or "Reset" to reset the game for a new player.`;
   }
   if (valueCal(playerHand) > valueCal(computerHand)) {
     gameMode = "GameOver";
-    return `You WIN!! <br><br> ${showHands()} <br><br> Click "Submit" to reshuffle the deck and continue or "Reset" to reset the game for a new player.`;
+    return `You WIN!! <br><br> ${showHands()} <br><br> Click "Reshuffle" to go another round or "Reset" to reset the game for a new player.`;
   }
   if (valueCal(playerHand) < valueCal(computerHand)) {
     gameMode = "GameOver";
-    return `Oh no. The Dealer won this time <br><br> ${showHands()} <br><br> Click "Submit" to reshuffle the deck and continue or "Reset" to reset the game for a new player.`;
+    return `Oh no. The Dealer won this time <br><br> ${showHands()} <br><br> Click "Reshuffle" to go another round or "Reset" to reset the game for a new player.`;
   }
 };
 
@@ -196,15 +195,24 @@ var newRound = function () {
   gameMode = "HitOrStand";
   playerHand = [];
   computerHand = [];
-
+  deck = shuffleCards(makeDeck());
+  console.log("deck shuffled");
+  console.log(deck);
   return firstHand();
 };
 
 // Main Function
 var main = function (input) {
-  // Input Validate Player Name
-  if (gameMode == "PlayerName" && input == "") {
-    return "Please enter your name.";
+  // Input Validate Player Name, make sure no other buttons can be clicked except reset
+  if (
+    gameMode == "PlayerName" &&
+    (input == "" ||
+      input == "hit" ||
+      input == "stand" ||
+      input == "cont" ||
+      input == "deal")
+  ) {
+    return `Please enter your name & click "Submit".`;
   }
   // When player enters name. Mode changes to : Deal
   if (input == input && gameMode == "PlayerName") {
@@ -212,20 +220,22 @@ var main = function (input) {
     console.log("Should be Deal");
     console.log(gameMode);
     playerName = input;
-    return `Welcome ${playerName} ! Click Submit to start Blackjack & deal your hand!`;
+    return `Welcome ${playerName} ! Click "Deal" to start Blackjack & deal your hand!`;
   }
   // Game Start
-  // Deal Cards
-  if (gameMode == "Deal" && playerHand.length == 0) {
+  // Deal Cards & input validate buttons
+  if (gameMode == "Deal" && input !== "deal") {
+    return ` ${playerName} click "Deal" if you still want to play blackjack. <br> If not, have a pleasant day! `;
+  }
+  if (gameMode == "Deal" && input == "deal") {
     gameMode = "HitOrStand";
     console.log("first deal");
-
     return firstHand();
   }
   // Player Hit / Stand
   if (gameMode == "HitOrStand") {
     // Input validation for Hit or Stand
-    if (input == "") {
+    if (input !== "hit" && input !== "stand") {
       return `Please choose to Hit! or Stand. <br><br> ${showHands()}`;
     }
     // player chooses to stand
@@ -237,7 +247,7 @@ var main = function (input) {
         // if dealer busted, end the game
         if (valueCal(computerHand) > twentyOne) {
           gameMode = "GameOver";
-          return `Dealer has Busted! <br><br> ${showHands()} <br><br> Click the "Submit" reshuffle the deck and continue or "Reset" to reset the game for a new player.`;
+          return `Dealer has Busted! <br><br> ${showHands()} <br><br> Click "Reshuffle" to go another round or "Reset" to reset the game for a new player.`;
         }
       }
     }
@@ -246,31 +256,31 @@ var main = function (input) {
     if (input == "hit") {
       // gameMode = "Hit";
       drawCard(playerHand);
-      console.log(gameMode);
       console.log(playerHand);
       // player hit & bust
       if (valueCal(playerHand) > twentyOne) {
         gameMode = "GameOver";
-        return `You BUST! <br><br>${showHands()} <br><br> Click "Submit" to reshuffle the deck for a new round or "Reset" to reset the game for a new player.`;
+        return `You BUST! <br><br>${showHands()} <br><br> Click "Reshuffle" to go another round or "Reset" to reset the game for a new player.`;
       }
       // If player hits 5 cards and value < 21 he wins
       if (valueCal(playerHand) <= 21 && playerHand.length == 5) {
         gameMode = "GameOver";
-        return `You're one lucky fella! <br><br>${showHands()} <br><br> Click "Submit" to reshuffle the deck for a new round or "Reset" to reset the game for a new player.`;
+        return `You lucky fella! <br><br> You have earned the title "Five-Card-Charlie"! <br><br>${showHands()} <br><br> Click "Reshuffle" to go another round or "Reset" to reset the game for a new player.`;
       }
       // player hit & value < 21
       return `You Hit the Dealer! <br><br> ${showHands()} <br><br> Would you like to Hit! or Stand?`;
     }
     console.log(playerHand);
     console.log(valueCal(computerHand));
-    // Execute comparison of hands
+    // Execute comparison of hands if both decide to stand
     return finalScore();
   }
   // Player has reached the end of the game. Allow player to reshuffle to continue playing or reset the game for a new player
   if (gameMode == "GameOver") {
-    if (input == "") {
+    if (input == "cont") {
       return `Let's hit another round! <br><br> ${newRound()}`;
     }
-    return `Hello ${playerName}! <br> You have entered and invalid option. <br> Please click the "Submit" reshuffle the deck and continue or "Reset" to reset the game.`;
+    // input validate & remind player to click correctly
+    return `Hello ${playerName}! <br> This round is over. Wanna go again? <br><br> ${finalScore()}`;
   }
 };
