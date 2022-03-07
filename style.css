@@ -62,6 +62,7 @@ tr {
   margin: auto;
   vertical-align: middle;
   text-align: center;
+  width: 33.3%;
 }
 
 td img {
@@ -74,8 +75,15 @@ td img {
   display: inline-block;
 }
 
-.cardContainer {
+.handContainer.card:first-child {
   display: inline-block;
+  position: absolute;
+}
+
+.handContainer.card {
+  display: inline-block;
+  position: absolute;
+  margin: -52px;
 }
 
 .ruleSpace {
@@ -95,7 +103,7 @@ input {
 }
 
 button {
-  background-color: slategray;
+  background-color: #4f7942;
   border: none;
   border-radius: 5px;
   color: white;
@@ -112,7 +120,7 @@ button {
 }
 
 button:hover {
-  background-color: #4f7942;
+  background-color: slate;
 }
 
 button:disabled {

@@ -27,7 +27,7 @@ var makeDeck = function () {
         suit: currentSuit,
         rank: j + 1,
         text: cardText[j],
-        svg: `<div class = "handContainer"><img class="card" src="svg/${currentSuit}${cardText[j]}.svg" /></div>`,
+        svg: `<img class="card" src="svg/${currentSuit}${cardText[j]}.svg" />`,
       };
       createdDeck.push(newCard);
     }
@@ -94,4 +94,13 @@ var calcuateAceValue = function (numberofAces) {
   return [maxValue, minValue];
 };
 
-var dealGame = function () {};
+/***
+ * Draws card for blackjack, resets the deck of cards into a new shuffled deck of cards if deck is empty.
+ * @returns {Object} The pulled card Object
+ */
+var drawCard = function () {
+  if (playDeck.length == 0) {
+    playDeck = shuffleDeck(makeDeck());
+  }
+  return playDeck.pop();
+};
