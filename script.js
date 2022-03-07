@@ -14,7 +14,7 @@ const STATE_RESULT = "result";
 const STATE_RESTART = "restart";
 
 // game keywords
-const STAND = "STAND";
+const STAND = ["STAND"];
 const HIT = "HIT";
 
 // variables to get page elements.
@@ -109,27 +109,32 @@ var drawCard = function (deck) {
 };
 
 // function to draw two cards from the deck to the hand.
+// and arrange it in descending order.
 var dealHand = function (deck, hand) {
   hand.push(drawCard(deck));
   hand.push(drawCard(deck));
+  hand.sort((a, b) => b.rank - a.rank);
   return hand;
-};
-
-// function to display contents of hand.
-var displayHand = function (name, hand) {
-  let output = `<b>${name}:</b>`;
-  for (let i = 0; i < hand.length; i++) {
-    output += `<br/> ${hand[i]["name"]} of ${emojiSuit(hand[i]["suit"])}`;
-  }
-  return output;
 };
 
 // function to sum up cards in hand.
 var sumHand = function (hand) {
   let sum = 0;
+  // this function relies on the fact that the hand is sorted in
+  // descending order for it to properly score the value of the ace.
   for (let i = 0; i < hand.length; i++) {
     if (hand[i]["rank"] >= 10) {
+      // each card above 10 is only worth 10 points.
       sum += 10;
+    } else if (hand[i]["name"] == "Ace") {
+      if (sum < 11) {
+        // score +11 if the current hand is less than 11 points.
+        sum += 11;
+      } else {
+        // once the sum is more than 11 points, the ace should only be worth 1 point,
+        // so that the player does not go bust.
+        sum += 1;
+      }
     } else {
       sum += hand[i]["rank"];
     }
@@ -147,14 +152,45 @@ var checkBlackjack = function (hand) {
     : false;
 };
 
-// function to check for bust.
-var checkBust = function (handTotal) {
-  return handTotal > 21 ? true : false;
+// function to display contents of both player and computer hands.
+var displayHand = function (handOne, handTwo) {
+  // display player's hand.
+  let output = `<em>${playerName}:</em> <br/>`;
+  for (let i = 0; i < handOne.length; i++) {
+    output += `${handOne[i]["name"]} of ${emojiSuit(handOne[i]["suit"])} <br/>`;
+  }
+  // display computer's hand.
+  output += `<br/> <em>Computer:</em> <br/>`;
+  for (let i = 0; i < handTwo.length; i++) {
+    output += `${handTwo[i]["name"]} of ${emojiSuit(handTwo[i]["suit"])} <br/>`;
+  }
+  return output;
 };
 
-// function to check if computer needs to draw another card.
-var forceDraw = function (handTotal) {
-  return handTotal < 17 ? true : false;
+var displayScore = function (scoreOne, scoreTwo) {
+  let output = `<br/> Player score: ${scoreOne} 
+  <br/> Computer score: ${scoreTwo}`;
+  // if player or computer hand exceeds 21.
+  if (scoreOne > 21 || scoreTwo > 21) {
+    if (scoreOne > 21 && scoreTwo > 21) {
+      output += "<br/> Both player and dealer lose.";
+    } else if (scoreOne > 21) {
+      output += "<br/> Your hand has exceeded 21. You lose.";
+    } else {
+      output += "<br/> The dealer's hand has exceeded 21. You win!";
+    }
+  }
+  // else compare scores normally.
+  else {
+    if (scoreTwo == scoreOne) {
+      output += `<br/><br/> It's a tie.`;
+    } else if (scoreOne > scoreTwo) {
+      output += `<br/><br/> ${playerName}, you have a higher score. You win!`;
+    } else {
+      output += `<br/><br/> The computer has a higher score. The computer wins.`;
+    }
+  }
+  return output;
 };
 
 var resetGame = function () {
@@ -164,8 +200,6 @@ var resetGame = function () {
   gameDeck = [];
   computerHand = [];
   playerHand = [];
-
-  console.log("Game reset");
 };
 
 // function to substitute suit name with emoji.
@@ -185,12 +219,119 @@ var emojiSuit = function (suitName) {
 
 // give initial game instructions.
 instructBox.innerHTML =
-  "Hello, player! Please type in your name and press submit to begin dealing cards!";
+  "Hello, player! <br/><br/> Please type in your name and press submit to begin dealing cards!";
 inputBox.placeholder = "NAME";
 
 // function to run under STATE_DEAL.
+var gameDeal = function (input) {
+  // first input should be player name, if player name is empty.
+  // else assign generic player name.
+  if (!playerName) {
+    if (!input) {
+      playerName = "Player";
+    } else {
+      playerName = input;
+    }
+  }
+
+  gameDeck = createGameDeck();
+
+  // deal cards to player and computer.
+  dealHand(gameDeck, playerHand);
+  dealHand(gameDeck, computerHand);
+
+  // switch to next game state.
+  gameState = STATE_PLAY;
+
+  // display instructions.
+  instructBox.innerHTML = `${playerName}, do you wish to draw another card? <br/><br/>
+    Enter "HIT" to draw a card, or "STAND" to end your turn. `;
+  inputBox.placeholder = `HIT or STAND`;
+  submitButton.innerHTML = `Submit`;
+
+  // display output.
+  return displayHand(playerHand, computerHand);
+};
+
 // function to run under STATE_PLAY.
+var gamePlay = function (input) {
+  let output;
+  if (
+    input == "" ||
+    (input.toUpperCase() != HIT && input.toUpperCase() != STAND)
+  ) {
+    output = `Please enter "HIT" or "STAND" to continue. <br/><br/> `;
+    output += displayHand(playerHand, computerHand);
+    return output;
+  }
+
+  if (input.toUpperCase() == HIT) {
+    newCard = drawCard(gameDeck);
+    playerHand.push(newCard);
+    playerHand.sort((a, b) => b.rank - a.rank);
+    output = `You drew the ${newCard.name} of ${emojiSuit(
+      newCard.suit
+    )}. <br/><br/> `;
+    output += displayHand(playerHand, computerHand);
+    output += `<br/> Do you wish to draw another card? `;
+    return output;
+  }
+
+  if (input.toUpperCase() == STAND) {
+    gameState = STATE_RESULT;
+    instructBox.innerHTML = `${playerName}, you ended your turn. Click submit again to see the scores. `;
+    inputBox.placeholder = ``;
+
+    return displayHand(playerHand, computerHand);
+  }
+};
+
 // function to run under STATE_RESULT.
+var gameResult = function () {
+  // check if any player got a blackjack.
+  let playerBlackjack = checkBlackjack(playerHand);
+  let computerBlackjack = checkBlackjack(computerHand);
+
+  // calculate player and computer score.
+  let playerScore = sumHand(playerHand);
+  let computerScore = sumHand(computerHand);
+  // if computer score is below 17, the computer has to continue to draw.
+  while (computerScore < 17) {
+    console.log("computer is drawing card.");
+    computerHand.push(drawCard(gameDeck));
+    computerHand.sort((a, b) => b.rank - a.rank);
+    computerScore = sumHand(computerHand);
+  }
+
+  // display output.
+  let output = displayHand(playerHand, computerHand);
+
+  // if there's a blackjack,
+  if (playerBlackjack || computerBlackjack) {
+    if (playerBlackjack && computerBlackjack) {
+      // both blackjack, tie.
+      output += `<br/> Both players have blackjacks, it's a tie. `;
+    } else if (playerBlackjack) {
+      // player wins.
+      output += `<br/> ${playerName} wins with a blackjack!`;
+    } else {
+      // computer wins.
+      output += `<br/> The computer wins!`;
+    }
+  }
+  // compare scores.
+  else {
+    output += displayScore(playerScore, computerScore);
+  }
+
+  // reset the game.
+  gameState = STATE_DEAL;
+  instructBox.innerHTML = `Click restart to play again! `;
+  submitButton.innerHTML = `Restart`;
+  resetGame();
+
+  return output;
+};
 
 /* -------------------------------- */
 /* --------- MAIN FUNCTION -------- */
@@ -198,114 +339,7 @@ inputBox.placeholder = "NAME";
 
 var main = function (input) {
   // starting game state, user presses submit once to deal cards.
-  if (gameState == STATE_DEAL) {
-    // first input should be player name, if player name is empty.
-    if (!playerName) {
-      playerName = input;
-    }
-
-    gameDeck = createGameDeck();
-    console.log(gameDeck);
-
-    // deal cards to player and computer.
-    // dealHand(gameDeck, playerHand);
-    // dealHand(gameDeck, computerHand);
-    playerHand = [
-      { rank: 1, name: "Ace", suit: "Spades" },
-      { rank: 10, name: "Queen", suit: "Clubs" },
-    ];
-    computerHand = [
-      { rank: 1, name: "Ace", suit: "Spades" },
-      { rank: 3, name: "Queen", suit: "Clubs" },
-    ];
-
-    // switch to next game state.
-    gameState = STATE_RESULT;
-
-    // display instructions.
-    instructBox.innerHTML = `${playerName}, do you wish to draw another card? <br/><br/>
-    Enter "HIT" to draw a card, or "STAND" to end your turn. `;
-    inputBox.placeholder = `HIT or STAND`;
-
-    // display output.
-    let output = displayHand(playerName, playerHand);
-
-    return output;
-  }
-
-  // <b>:</b><br/> 3 of ♣️<br/> 9 of ♦️
-  // <b>:</b><br/> Ace of ♦️<br/> 10 of ♣️
-  // <b>:</b><br/> Ace of ♦️<br/> 10 of ♠️
-
-  // if (gameState == STATE_PLAY) {
-  //   if (input == "" || (input != HIT && input != STAND)) {
-  //     return `Please enter "HIT" or "STAND" to continue. `;
-  //   }
-
-  //   if (input == HIT) {
-  //     playerHand.push(drawCard(gameDeck));
-
-  //     output = `<b>${playerName}:</b> `;
-  //     output += displayHand(playerName, playerHand);
-
-  //     output += `<br/><br/> Do you wish to draw another card? `;
-
-  //     return output;
-  //   }
-
-  //   if (input == STAND) {
-  //     gameState = STATE_RESULT;
-
-  //     instructBox.innerHTML = `${playerName}, do you wish to draw another card? <br/><br/>
-  //     Enter "HIT" to draw a card, or "STAND" to end your turn. `;
-  //     inputBox.placeholder = `HIT or STAND`;
-
-  //     output = `You ended your turn. <br/><br/>
-  //     output += displayHand(playerName, playerHand);
-  //     output += `<br/><br/>`;
-  //     output += displayHand("Computer", computerHand);
-  //     return output;
-  //   }
-  // }
-
-  if (gameState == STATE_RESULT) {
-    let playerBlackjack = checkBlackjack(playerHand);
-    let computerBlackjack = checkBlackjack(computerHand);
-
-    let computerScore = sumHand(computerHand);
-    let playerScore = sumHand(playerHand);
-
-    // display output.
-    let output = displayHand(playerName, playerHand);
-    output += `<br/> Player score: ${playerScore} <br/><br/>`;
-    output += displayHand("Computer", computerHand);
-    output += `<br/> Computer score: ${computerScore}`;
-
-    // if there's a blackjack.
-    if (playerBlackjack || computerBlackjack) {
-      if (playerBlackjack && computerBlackjack) {
-        // both blackjack.
-        output += `<br/><br/> Both players have blackjacks, it's a tie. `;
-      } else if (playerBlackjack) {
-        // only player blackjack.
-        output += `<br/><br/> ${playerName} wins with a blackjack!`;
-      } else {
-        // only computer blackjack.
-        output += `<br/><br/> The computer wins!`;
-      }
-    } else {
-      if (computerScore == playerScore) {
-        output += `<br/><br/> It's a tie.`;
-      } else if (playerScore > computerScore) {
-        output += `<br/><br/> ${playerName}, you have a higher score. You win!`;
-      } else {
-        output += `<br/><br/> The computer has a higher score. The computer wins.`;
-      }
-    }
-
-    gameState = STATE_DEAL;
-    resetGame();
-
-    return output;
-  }
+  if (gameState == STATE_DEAL) return gameDeal(input);
+  if (gameState == STATE_PLAY) return gamePlay(input);
+  if (gameState == STATE_RESULT) return gameResult();
 };
