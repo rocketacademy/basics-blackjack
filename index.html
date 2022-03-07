@@ -172,14 +172,13 @@
     </h1>
     <h1 class="header">♣️ Basics - Blackjack ♠️</h1>
     <div id="container">
-      <p>
-        Hello, player! Please type in your name and press submit to begin
-        dealing cards!
-      </p>
+      <p id="instructions"></p>
       <p>Input:</p>
       <input id="input-field" />
       <br />
       <button id="submit-button">Submit</button>
+      <!-- <button id="hit-button">Submit</button>
+      <button id="stand-button">Submit</button> -->
       <p>Output:</p>
       <div id="output-div"></div>
     </div>
@@ -187,8 +186,8 @@
     <script src="script.js"></script>
     <!-- Define button click functionality -->
     <script>
-      var button = document.querySelector("#submit-button");
-      button.addEventListener("click", function () {
+      var submitButton = document.querySelector("#submit-button");
+      submitButton.addEventListener("click", function () {
         // Set result to input value
         var input = document.querySelector("#input-field");
         var result = main(input.value);
