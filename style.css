@@ -5,7 +5,7 @@
 
 @font-face {
   font-family: eurofurence;
-  src: url(font/eurof56.ttf);
+  src: url(font/eurof55.ttf);
 }
 
 @font-face {
@@ -45,8 +45,8 @@ body {
   background-color: darkgreen;
   border-radius: 25px;
   margin: 40px auto;
-  max-width: 800px;
-  padding: 38px 31px;
+  max-width: 1300px;
+  padding: 30px 25px;
 }
 
 table {
@@ -78,6 +78,14 @@ td img {
   display: inline-block;
 }
 
+.ruleSpace {
+  background-color: darkslategray;
+  border-radius: 25px;
+  margin: 40px auto;
+  max-width: 1300px;
+  padding: 30px 25px;
+}
+
 input {
   font-size: 21px;
   line-height: 33px;
@@ -87,10 +95,35 @@ input {
 }
 
 button {
-  font-size: 21px;
-  line-height: 33px;
-  margin: 0 0 23px 0;
-  padding: 0 6px;
+  background-color: lightgreen;
+  border: none;
+  border-radius: 5px;
+  color: black;
+  padding: 10px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 1.1em;
+  margin: 1px;
+  cursor: pointer;
+  transition-duration: 0.5s;
+  font-family: eurofurence;
+  box-shadow: 0 5px white;
+}
+
+button:hover {
+  background-color: green;
+}
+
+button:disabled {
+  background-color: grey;
+  cursor: not-allowed;
+}
+
+button:active {
+  background-color: green;
+  box-shadow: 0 3px grey;
+  transform: translateY(2px);
 }
 
 #output-div {

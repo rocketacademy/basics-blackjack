@@ -116,14 +116,16 @@
         </tr>
         <tr>
           <td colspan="3">
-            <div class="handContainer">Dealer Hand Goes Here</div>
+            <div class="handContainer"><div id="dealer-hand"></div></div>
           </td>
         </tr>
         <tr>
-          <td colspan="3">Dealer info tags here</td>
+          <td colspan="3"><div id="dealer-info"></div></td>
         </tr>
         <tr>
-          <td colspan="3">insert deal new cards</td>
+          <td colspan="3">
+            <button id="deal-button">Deal!</button>
+          </td>
         </tr>
         <tr>
           <td colspan="3"><br /></td>
@@ -156,39 +158,47 @@
       </table>
     </div>
 
-    <div class="playSpace">
-      <br />
-      <button id="reset-button">Reset</button>
-      <button id="hit-button">Hit</button>
-      <p>Output:</p>
-      <div id="output-div">Hi! Welcome to Blackjack!</div>
-    </div>
-    <div id="container"></div>
+    <div class="ruleSpace">
+      <h2>Welcome to Blackjack!</h2>
+      <p>The version of Blackjack implemented here is a single deck casino blackjack!</p>
+      <p>Players chip in with 200 chips, minimum bet is 1 chip, there's no maximum bet.</p>
+      <p>Dealer must draw on 16 or less, and stand on 17 or more</p>
+      <p>Blackjack pays 2 to 1</p>
+      <h2>Basic Rules:</h2>
+      <p>Get the closest to 21 but don't go over, or you'll go BUST!</p>
+      <p>If you're dealt 21 on your first turn, it's BLACKJACK!</p>
+      <p>Card values:</p>
+      <ul>
+        <li>Number cards are counted at face value (2-10)</li>
+        <li>Face cards (Jacks, Queen and Kings) are valued at 10</li>
+        <li>Ace can be counted as 11 or 1, whichever is better for the player</li>
+      </ul>
+      <p>If the dealer has blackjack:</p>
+      <ul>
+        <li>All players with blackjack will push, bets are returned to them.</li>
+        <li>All players without blackjack loses.</li>
+        <li>The hand is over, players can adjust their bets and deal again</li>
+      </ul>
+      <p>If the dealer does not have blackjack:</p>
+      <ul>
+        <li>All players with blackjack will win with 2:1 odds, or double their bet</li>
+        <li>
+          Players can decide to hit, stand or double down:
+          <ul>
+          <li><b>HIT</b>: Player will recieve a card from the top of the deck.</li>
+          <li><b>STAND</b>: Player ends their turn passing it on to the next  player</b></li>
+          <li><b>DOUBLE DOWN</b>: Player doubles their bet, receive a single card from the top of the deck, and ends their turn. Option only availabe if the player did not hit on their turn.</li>
+          </ul>
+        </li>
+        <li>Player who goes over 21 will bust and lose their bet.</li>
+        <li>Once all players ended their turn, the dealer reveals their hidden card, and will hit until it reaches 17 or over. If the dealer bust, the remaining player wins. If the dealer does not bust, the players who does not bust will compare hands with the dealer. Player will win if their hand is higher than the dealer, gaining chips equivalent to their bet; lose if their hand is lower than the dealer, losing their bet; and will push if their hand is of the same value with the dealer, returning their bet.</li>
+      </ul>
+      
+
     <!-- Import program logic -->
-    <script src="initFunctions.js"></script>
+    <script src="helperFunctions.js"></script>
     <script src="script.js"></script>
+    <script src="uihelper.js"></script>
     <!-- Define button click functionality -->
-    <script>
-      var button = document.querySelector("#reset-button");
-
-      var hit = document.querySelector("#hit-button");
-
-      var output = document.querySelector("#output-div");
-
-      hit.addEventListener("click", function () {
-        output.innerHTML = "hit button clicked.";
-      });
-
-      button.addEventListener("click", function () {
-        var result = main();
-
-        // Display result in output element
-
-        output.innerHTML = result;
-
-        // Reset input value
-        input.value = "";
-      });
-    </script>
   </body>
 </html>

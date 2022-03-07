@@ -93,3 +93,5 @@ var calcuateAceValue = function (numberofAces) {
   var minValue = numberofAces;
   return [maxValue, minValue];
 };
+
+var dealGame = function () {};
