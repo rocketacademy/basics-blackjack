@@ -171,7 +171,7 @@ var displayHand = function (handOne, handTwo) {
 
 var displayScore = function (scoreOne, scoreTwo) {
   let output = `<br/> Player score: ${scoreOne} 
-  <br/> Computer score: ${scoreTwo} <br/>git`;
+  <br/> Computer score: ${scoreTwo} <br/>`;
   // if player or computer hand exceeds 21.
   if (scoreOne > 21 || scoreTwo > 21) {
     if (scoreOne > 21 && scoreTwo > 21) {
