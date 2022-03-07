@@ -1,8 +1,3 @@
-/* 
-1. 
-
-*/
-
 /* -------------------------------- */
 /* ------- GLOBAL VARIABLES ------- */
 /* -------------------------------- */
@@ -176,7 +171,7 @@ var displayHand = function (handOne, handTwo) {
 
 var displayScore = function (scoreOne, scoreTwo) {
   let output = `<br/> Player score: ${scoreOne} 
-  <br/> Computer score: ${scoreTwo} <br/>`;
+  <br/> Computer score: ${scoreTwo} <br/>git`;
   // if player or computer hand exceeds 21.
   if (scoreOne > 21 || scoreTwo > 21) {
     if (scoreOne > 21 && scoreTwo > 21) {
