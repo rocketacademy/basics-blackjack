@@ -115,7 +115,6 @@ var drawCard = function (deck) {
 var dealHand = function (deck, hand) {
   hand.push(drawCard(deck));
   hand.push(drawCard(deck));
-  hand.sort((a, b) => b.rank - a.rank);
   return hand;
 };
 
@@ -124,6 +123,7 @@ var sumHand = function (hand) {
   let sum = 0;
   // this function relies on the fact that the hand is sorted in
   // descending order for it to properly score the value of the ace.
+  hand.sort((a, b) => b.rank - a.rank);
   for (let i = 0; i < hand.length; i++) {
     if (hand[i]["rank"] >= 10) {
       // each card above 10 is only worth 10 points.
@@ -274,7 +274,6 @@ var gamePlay = function (input) {
   if (input.toUpperCase() == HIT) {
     newCard = drawCard(gameDeck);
     playerHand.push(newCard);
-    playerHand.sort((a, b) => b.rank - a.rank);
     output = `You drew the ${newCard.name} of ${emojiSuit(
       newCard.suit
     )}. <br/><br/> `;
@@ -305,7 +304,6 @@ var gameResult = function () {
   while (computerScore < 17) {
     console.log("computer is drawing card.");
     computerHand.push(drawCard(gameDeck));
-    computerHand.sort((a, b) => b.rank - a.rank);
     computerScore = sumHand(computerHand);
   }
 
