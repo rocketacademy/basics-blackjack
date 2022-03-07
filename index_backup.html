@@ -120,11 +120,10 @@
         margin: 40px auto;
         max-width: 800px;
         padding: 38px 31px;
+        top: 200px;
       }
 
       input {
-        position: relative;
-        top: 220px;
         font-size: 21px;
         line-height: 33px;
         padding: 0 9px;
@@ -132,28 +131,21 @@
         width: 100%;
       }
       button {
-        position: relative;
-        top: 220px;
         font-size: 21px;
         line-height: 33px;
         margin: 0 0 23px 0;
         padding: 0 6px;
         width: calc(50% - 4px);
       }
-      #start-button {
-        position: relative;
-        top: 230px;
+      #submit-button {
         width: calc(100% - 4px);
       }
 
       #output-div {
-        position: relative;
-        top: 180px;
-        text-align: center;
         background-color: lightblue;
-        margin: 05px auto;
-        padding: 0px;
-        width: 50%;
+        margin: 20px auto;
+        padding: 20px;
+        width: 100%;
       }
 
       .logo-img {
@@ -188,9 +180,10 @@
     </h1>
     <h1 class="header">🦦 Otters Casino! Huat ah! 🦦</h1>
     <div id="container">
-      <div id="output-div">Click the start button to begin!</div>
+      <p>Output:</p>
+      <div id="output-div"></div>
       <br />
-      <button id="start-button">Start/Continue</button>
+      <button id="submit-button">Submit</button>
       <button id="stand-button">Stand</button>
       <button id="hit-button">Hit</button>
     </div>
@@ -198,13 +191,16 @@
     <script src="script.js"></script>
     <!-- Define button click functionality -->
     <script>
-      var button = document.querySelector("#start-button");
+      var button = document.querySelector("#submit-button");
       button.addEventListener("click", function () {
         var result = main();
 
         // Display result in output element
         var output = document.querySelector("#output-div");
         output.innerHTML = result;
+
+        // Reset input value
+        input.value = "";
       });
 
       var hit_button = document.querySelector("#hit-button");
