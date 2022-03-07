@@ -201,17 +201,22 @@
         // Reset input value
         input.value = "";
       });
+
       // Player Hit & draw Card
       var hitButton = document.querySelector("#hit-button");
-      hitButton.addEventListener("click", function () {});
+      var testFunction = function () {
+        console.log("hello");
+      };
+
+      hitButton.addEventListener("click", testFunction);
 
       // Player Stand & Dealer Ends game
-      var standButton = document.querySelector("#stand-button");
-      standButton.addEventListener("click", function () {});
+      // var standButton = document.querySelector("#stand-button");
+      // standButton.addEventListener("click", function () {});
 
       // Reset the game
-      var resetButton = document.querySelector("#reset-button");
-      resetButton.addEventListener("click", function () {
+      var button = document.querySelector("#reset-button");
+      button.addEventListener("click", function () {
         location.reload();
       });
     </script>
