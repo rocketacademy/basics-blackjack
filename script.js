@@ -138,14 +138,14 @@ var showPlayerAndComputerHands = function (playerHand, computerHand) {
 };
 
 // check that player has blackjack
-var checkBlackJack = function (array) {
-  var firstCardInHand = array[0];
-  var secondCardInHand = array[1];
+var checkBlackJack = function (playerHandArray) {
+  var firstCardInHand = playerHandArray[0];
+  var secondCardInHand = playerHandArray[1];
   var confirmBlackJack = false;
 
   // when player or computer has blackjack return true
   // set sum of playerHand.rank > sum of computerHand.rank condition
-  // set sum of computerHand.rank > sum of plaayerHand.rank condition
+  // set sum of computerHand.rank > sum of playerHand.rank condition
   if (
     (firstCardInHand.name == `ace` && secondCardInHand.rank >= 10) ||
     (firstCardInHand.rank >= 10 && secondCardInHand.name == `ace`)
@@ -153,6 +153,34 @@ var checkBlackJack = function (array) {
     confirmBlackJack = true;
   }
   return confirmBlackJack;
+};
+
+// check total points in player's hands
+var checkRankSum = function (playerHandArray) {
+  // initialise counter
+  var counter = 0;
+  var totalRank = 0;
+
+  // create while loop to add through all the cards in a player's hand
+
+  // declare loop condition
+  while (counter < playerHandArray.length) {
+    // create current card variable
+    var currentCardInHand = playerHandArray[counter];
+
+    // declare condition for jack, queen king
+    if (
+      currentCardInHand.name == `jack` ||
+      currentCardInHand.name == `queen` ||
+      currentCardInHand.name == `king`
+    ) {
+      totalRank = totalRank + 10;
+    } else {
+      totalRank = totalRank + currentCardInHand.rank;
+    }
+    counter += 1;
+  }
+  return totalRank;
 };
 
 // ----- global variable definition ------
@@ -166,12 +194,16 @@ var computerHand = [];
 // define game modes
 var startGame = "Start game";
 var dealCards = "Deal cards";
+var resetGame = "Reset game";
 var gameMode = startGame;
 
 // ------ main function below --------
 var main = function (input) {
   // set gameMode to startGame
   if (gameMode == startGame) {
+    // clear player Hand and computer hand
+    playerHand = [];
+    computerHand = [];
     // Change gameMode to deal cards
     gameMode = dealCards;
     console.log(gameMode);
@@ -207,10 +239,13 @@ var main = function (input) {
     var playerBlackJack = checkBlackJack(playerHand);
     var computerBlackJack = checkBlackJack(computerHand);
 
-    console.log(checkBlackJack(playerHand));
-    console.log(checkBlackJack(computerHand));
+    console.log(`Player BlackJack condition is ` + checkBlackJack(playerHand));
+    console.log(
+      `Computer BlackJack condition is ` + checkBlackJack(computerHand)
+    );
     // set output value with blackjack conditions
     if (playerBlackJack == true && computerBlackJack == false) {
+      gameMode = startGame;
       return (
         showPlayerAndComputerHands(playerHand, computerHand) +
         ` <br> ` +
@@ -218,6 +253,7 @@ var main = function (input) {
       );
     }
     if (playerBlackJack == false && computerBlackJack == true) {
+      gameMode = startGame;
       return (
         showPlayerAndComputerHands(playerHand, computerHand) +
         ` <br> ` +
@@ -225,11 +261,53 @@ var main = function (input) {
       );
     }
     if (playerBlackJack == true && computerBlackJack == true) {
+      gameMode = startGame;
       return (
         showPlayerAndComputerHands(playerHand, computerHand) +
         ` <br> ` +
         `It's a blackjack tie, please play again.`
       );
+    }
+
+    // NO BLACKJACK scenario on initial dealing
+
+    console.log(`Player Hand Rank sum is ` + checkRankSum(playerHand));
+    console.log(`Computer Hand Rank sum is ` + checkRankSum(computerHand));
+
+    if (playerBlackJack == false && computerBlackJack == false) {
+      if (checkRankSum(playerHand) > checkRankSum(computerHand)) {
+        gameMode = startGame;
+        return `${showPlayerAndComputerHands(playerHand, computerHand)} 
+           <br> <br>
+          Player's points is ${checkRankSum(playerHand)}
+          <br> <br>
+          Computer's points is ${checkRankSum(computerHand)}
+          <br><br>
+          Player Wins!`;
+      }
+
+      if (checkRankSum(playerHand) < checkRankSum(computerHand)) {
+        gameMode = startGame;
+        return `${showPlayerAndComputerHands(
+          playerHand,
+          computerHand
+        )} <br> <br>
+          Player's points is ${checkRankSum(playerHand)}
+          <br> <br>
+          Computer's points is ${checkRankSum(computerHand)}
+          <br><br>
+          Computer Wins!`;
+      }
+    }
+
+    if (checkRankSum(playerHand) == checkRankSum(computerHand)) {
+      gameMode = startGame;
+      return `${showPlayerAndComputerHands(playerHand, computerHand)} <br> <br>
+          Player's points is ${checkRankSum(playerHand)}
+          <br> <br>
+          Computer's points is ${checkRankSum(computerHand)}
+          <br><br>
+        It is a draw!`;
     }
 
     return myOutputValue;
