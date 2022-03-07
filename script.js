@@ -116,18 +116,16 @@ var start = function () {
       } else if (winningIndex[0] == computersHand) {
         myOutputValue += ` <br> <br> <b>The computer got Blackjack! You lose!</b>`;
       }
-      myOutputValue += ` <br> <br> Click '<b>start</b>' to play again!`;
+      myOutputValue += ` <br> <br> Click <b>Start</b> to play again!`;
       gameRestart();
     } else if (winningIndex.length == 2) {
-      myOutputValue += ` <br> <br> <b>It's a tie! Both you and the computer got Blackjack!</b> <br> <br> Click '<b>start</b>' to play again!`;
+      myOutputValue += ` <br> <br> <b>It's a tie! Both you and the computer got Blackjack!</b> <br> <br> Click <b>Start</b> to play again!`;
       gameRestart();
     } else if (winningIndex.length == 0) {
       myOutputValue =
         `<b>Player's hand: </b>` +
         displayHand(playersHand) +
-        `<br> Total: ${calculateScore(
-          playersHand
-        )} <br> <br> Click '<b>hit</b>' or '<b>stand</b>' to continue.`;
+        `<br> Total: ${playerScore} <br> <br> <b>Computer's hand: ? ${computersHand[1].name}${computersHand[1].suit}</b> <br> Total: ? <br> <br> Click <b>Hit</b> or <b>Stand</b> to continue.`;
       gameMode = "hit";
     }
   }
@@ -142,21 +140,21 @@ var hit = function () {
       myOutputValue =
         `<b>Player's hand: </b>` +
         displayHand(playersHand) +
-        `<br> Total: ${playerScore}`;
+        `<br> Total: ${playerScore} <br> <br> <b>Computer's hand: ? ${computersHand[1].name}${computersHand[1].suit}</b> <br> Total: ? `;
       if (playerScore < 22) {
-        myOutputValue += `<br> <br> Click '<b>hit</b>' or '<b>stand</b>' to continue.`;
+        myOutputValue += `<br> <br> Click <b>Hit</b> or <b>Stand</b> to continue.`;
       } else if (playerScore > 21) {
-        myOutputValue += `<br> <br> Oh no! You bust! <br> <br> Click '<b>stand</b>' to continue.`;
+        myOutputValue += `<br> <br> Oh no! You bust! <br> <br> Click <b>Stand</b> to continue.`;
         gameMode = "stand";
       }
     } else if (playersHand.length > 4) {
       myOutputValue =
         `<b>Player's hand: </b>` +
         displayHand(playersHand) +
-        `<br> Total: ${playerScore} <br> <br> You have reached your maximum hand of five cards, click '<b>stand</b>' to continue.`;
+        `<br> Total: ${playerScore}  <br> <br> <b>Computer's hand: ? ${computersHand[1].name}${computersHand[1].suit}</b> <br> Total: ? <br> <br> You have reached your maximum hand of five cards, click <b>Stand</b> to continue.`;
     }
   } else if (gameMode == "deal cards") {
-    myOutputValue = `Click '<b>start</b>' to play again!`;
+    myOutputValue = `Click <b>Start</b> to play again!`;
   }
   return myOutputValue;
 };
@@ -165,7 +163,7 @@ var stand = function () {
   gameMode = "stand";
   if (gameMode == "stand") {
     if (cardDeck.length == 0) {
-      myOutputValue = "Click '<b>start</b>' to play again!";
+      myOutputValue = "Click <b>Start</b> to play again!";
       gameRestart();
     } else {
       playerScore = calculateScore(playersHand);
@@ -198,7 +196,7 @@ var stand = function () {
           myOutputValue += `<br> <br> <b>It's a tie!</b>`;
         }
       }
-      myOutputValue += `<br> <br> Click '<b>start</b>' to play again!`;
+      myOutputValue += `<br> <br> Click <b>Start</b> to play again!`;
       gameRestart();
     }
   }
