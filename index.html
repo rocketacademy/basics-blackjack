@@ -148,8 +148,15 @@
         padding: 0 10px;
       }
 
+      .center {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
       #output-div {
         background-color: lightsalmon;
+        text-align: center;
         margin: 20px auto;
         padding: 20px;
         width: 100%;
@@ -184,11 +191,14 @@
     </h1>
     <h1 class="header">♣️ Basics - Blackjack ♠️</h1>
     <div id="container">
-      <p>Input:</p>
-      <input id="input-field" />
+      <!--<p>Input:</p>
+      <input id="input-field" />-->
       <br />
-      <button id="submit-button">Submit</button>
-      <p>Output:</p>
+      <button id="play-button">Play</button>
+      <button id="hit-button">Hit</button>
+      <button id="stand-button">Stand</button>
+      <button id="show-button">Show</button>
+      <!--<p>Output:</p>-->
       <div id="output-div">
         <script
           type="text/javascript"
@@ -200,39 +210,61 @@
           async
           src="https://tenor.com/embed.js"
         ></script>
-        🃏♥️♦️♣️♠️ Hi! Welcome to the BlackJack Game! ♠️♣️♦️♥️🃏<br /><br />
-        🃏♥️♦️♣️♠️ Click the <b>"Submit"</b> button to deal the cards
-        ♠️♣️♦️♥️🃏<br /><br />
-        <div
-          class="tenor-gif-embed"
-          data-postid="12184039"
-          data-share-method="host"
-          data-aspect-ratio="1.33758"
-          data-width="50%"
-        >
-          <a
-            href="https://tenor.com/view/snoopy-poker-gamble-flush-full-house-gif-12184039"
-            >ポーカーフェース　ギャンブル　スヌーピー GIF</a
-          >from <a href="https://tenor.com/search/snoopy-gifs">Snoopy GIFs</a>
-        </div>
+        🃏♥️ ♦️ ♣️ ♠️ Hi! Welcome to the BlackJack Game! ♠️ ♣️ ♦️ ♥️🃏<br /><br />
+        🃏♥️ ♦️ ♣️ ♠️ Click the <b>"Play"</b> button to deal the cards ♠️ ♣️ ♦️
+        ♥️🃏<br /><br />
+        <img
+        src="https://tenor.com/view/joker-joker-card-jester-jester-card-playing-card-gif-15561295.gif"/
+        class = "center">
       </div>
     </div>
     <!-- Import program logic -->
     <script src="script.js"></script>
     <!-- Define button click functionality -->
     <script>
-      var button = document.querySelector("#submit-button");
+      var button = document.querySelector("#play-button");
+      var hitButton = document.querySelector("#hit-button");
+      var standButton = document.querySelector("#stand-button");
+      var showButton = document.querySelector("#show-button");
+
       button.addEventListener("click", function () {
         // Set result to input value
-        var input = document.querySelector("#input-field");
-        var result = main(input.value);
+        // var input = document.querySelector("#input-field");
+        var result = main();
 
         // Display result in output element
         var output = document.querySelector("#output-div");
         output.innerHTML = result;
 
         // Reset input value
-        input.value = "";
+        //result = "";
+      });
+
+      hitButton.addEventListener("click", function () {
+        playerHit(playerHand);
+        var result = main();
+
+        // Display result in output element
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
+      });
+
+      standButton.addEventListener("click", function () {
+        playerStand();
+        var result = main();
+
+        // Display result in output element
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
+      });
+
+      showButton.addEventListener("click", function () {
+        showDealerHand();
+        var result = main();
+
+        // Display result in output element
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
       });
     </script>
   </body>
