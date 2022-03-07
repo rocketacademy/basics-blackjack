@@ -142,7 +142,7 @@ function printResult(player) {
   for (let i = 0; i < player.cards.length; i++) {
     result += player.cards[i].name + " of " + player.cards[i].suit + "<br>";
   }
-  result += "<br><br>";
+  result += "<br>";
   return result;
 }
 
@@ -247,9 +247,11 @@ var main = function (input) {
     newGame(p1, com);
     currentGameMode = CARDS_DRAWN;
 
+    image = '<img src="./img/curious.jfif" />';
     // reassign output message
     myOutputValue =
-      "Everyone has been dealt a card. Click button to calculate cards!";
+      "Everyone has been dealt a card. Click Continue to calculate cards!" +
+      image;
 
     return myOutputValue;
   }
@@ -271,21 +273,21 @@ var main = function (input) {
         myOutputValue =
           printResult(p1) +
           printResult(com) +
-          "<br>Its a Black Jack Tie! Game restarts";
+          "Its a Black Jack Tie! Game restarts";
       }
       // Condition when only player has black jack
       else if (p1.blackjack == true && com.blackjack == false) {
         myOutputValue =
           printResult(p1) +
           printResult(com) +
-          "<br>Player wins by Black Jack! Game restarts";
+          "Player wins by Black Jack! Game restarts";
       }
       // Condition when only dealer has black jack
       else {
         myOutputValue =
           printResult(p1) +
           printResult(com) +
-          "<br>Dealer wins by Black Jack! Game restarts";
+          "Dealer wins by Black Jack! Game restarts";
       }
       currentGameMode = START;
     }
@@ -296,7 +298,7 @@ var main = function (input) {
       myOutputValue = myOutputValue =
         printResult(p1) +
         printResult(com) +
-        '<br> There are no Black Jacks. <br>Please input "hit" or "stand".';
+        'There are no Black Jacks. <br>Please input "hit" or "stand".';
 
       // update gameMode
       currentGameMode = HIT_OR_STAND;
@@ -313,7 +315,7 @@ var main = function (input) {
       myOutputValue =
         printResult(p1) +
         printResult(com) +
-        '<br> You drew another card. <br>Please input "hit" or "stand".';
+        'You drew another card. <br>Please input "hit" or "stand".';
     }
 
     // Condition where player inputs 'stand'
@@ -333,7 +335,7 @@ var main = function (input) {
         p1.cardsPoints == com.cardsPoints ||
         (p1.cardsPoints > 21 && com.cardsPoints > 21)
       ) {
-        myOutputValue = printResult(p1) + printResult(com) + "<br>Its a Tie!";
+        myOutputValue = printResult(p1) + printResult(com) + "Its a Tie!";
       }
 
       // Conditions for player win
@@ -342,13 +344,17 @@ var main = function (input) {
         (p1.cardsPoints <= 21 && com.cardsPoints > 21)
       ) {
         updateScore(p1);
-        myOutputValue = printResult(p1) + printResult(com) + "<br>Player wins!";
+        image = '<img src="./img/fist-bump-otter.gif" />';
+        myOutputValue =
+          printResult(p1) + printResult(com) + "<br>Player wins!" + image;
       }
 
       // Dealer wins when above two conditions are not met
       else {
         updateScore(com);
-        myOutputValue = printResult(p1) + printResult(com) + "<br>Dealer wins!";
+        image = '<img src="./img/otters-sad.jfif" />';
+        myOutputValue =
+          printResult(p1) + printResult(com) + "<br>Dealer wins!<br>" + image;
       }
       //Game restarts
       currentGameMode = START;
@@ -356,7 +362,7 @@ var main = function (input) {
 
     // Input validation when player inputs anything outside of 'hit' or 'stand'
     else {
-      myOutputValue = 'wrong input... only "hit" or "stand" are valid.<br><br>';
+      myOutputValue = 'wrong input... only "hit" or "stand" are valid.';
     }
 
     // return output message
