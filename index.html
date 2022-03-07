@@ -204,15 +204,33 @@
 
       // Player Hit & draw Card
       var hitButton = document.querySelector("#hit-button");
-      var testFunction = function () {
-        console.log("hello");
-      };
+      hitButton.addEventListener("click", function () {
+        // set input to "hit"
+        var input = "hit";
+        var result = main(input);
 
-      hitButton.addEventListener("click", testFunction);
+        // Display result in output element
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
+
+        // Reset input value
+        input.value = "";
+      });
 
       // Player Stand & Dealer Ends game
-      // var standButton = document.querySelector("#stand-button");
-      // standButton.addEventListener("click", function () {});
+      var standButton = document.querySelector("#stand-button");
+      standButton.addEventListener("click", function () {
+        // set input to "hit"
+        var input = "stand";
+        var result = main(input);
+
+        // Display result in output element
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
+
+        // Reset input value
+        input.value = "";
+      });
 
       // Reset the game
       var button = document.querySelector("#reset-button");
