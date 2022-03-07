@@ -104,3 +104,177 @@ var drawCard = function () {
   }
   return playDeck.pop();
 };
+
+/***
+ * Searches the next player for the game, and assigns the global value of current player to it.
+ * @returns {null}
+ */
+var searchNextPlayer = function () {
+  for (var i = currentPlayer + 1; i < playerArray.length; i += 1) {
+    if (playerArray[i].activePlayer) {
+      currentPlayer = i;
+      return;
+    }
+  }
+  currentPlayer = 0;
+  return;
+};
+
+/***
+ * Checks whether a hand has blackjack or not
+ * @param {Array} hand An array of card objects on hand
+ * @returns {boolean} True if hand is blackjack, False if not
+ */
+var checkBlackjack = function (hand) {
+  if (calculateHand(hand) == MAX_VALUE_CARDS && hand.length == 2) return true;
+  return false;
+};
+
+/***
+ * discards all the players and dealer hands
+ * @returns {null}
+ */
+var discardAllHand = function () {
+  for (var i = 0; i < playerArray.length; i += 1)
+    playerArray[i].handArray.length = 0;
+};
+
+/***
+ * resets the game for the next round
+ * @returns {null}
+ */
+var nextRound = function () {
+  discardAllHand();
+  dealerBlackJack = false;
+  //reset UI
+  enableDeal();
+  enableChipIn();
+  enableBetInput();
+};
+
+/***
+ * When everything is done, resolves game, paid/took credit from players and resets round
+ * @returns {null}
+ */
+var resolveGame = function () {
+  //dealer blackjack scenario
+  if (dealerBlackJack) {
+    for (var i = 1; i < playerArray.length; i += 1) {
+      if (checkBlackjack(playerArray[i].handArray)) {
+        playerArray[i].handInfoSpace.innerHTML = `Push! bet will be returned`;
+        continue;
+      }
+      playerArray[
+        i
+      ].handInfoSpace.innerHTML = `You lost ${playerArray[i].betInput.value}`;
+      var playerInitialChips = Number(playerArray[i].chips);
+      var playerResultingChips =
+        playerInitialChips - Number(playerArray[i].betInput.value);
+      playerArray[i].chips = playerResultingChips;
+    }
+    nextRound();
+    return;
+  }
+
+  //if dealer hand below threshold, dealer hits
+  var dealerFinalHandValue = calculateHand(playerArray[0].handArray);
+  while (dealerFinalHandValue <= DEALER_HIT_THRESHOLD) {
+    playerArray[0].handArray.push(drawCard());
+    dealerFinalHandValue = calculateHand(playerArray[0].handArray);
+  }
+
+  //display dealer cards and value
+  dealerHand.innerHTML = "";
+  for (var i = 0; i < playerArray[0].handArray.length; i += 1) {
+    dealerHand.innerHTML += playerArray[0].handArray[i].svg;
+  }
+  dealerInfo.innerHTML = `Dealer has: ${dealerFinalHandValue}`;
+
+  if (dealerFinalHandValue > MAX_VALUE_CARDS) {
+    //dealer bust scenario
+    dealerInfo.innerHTML = `Dealer Bust!`;
+    for (var i = 1; i < playerArray.length; i += 1) {
+      //player Blackjack scenario
+      if (checkBlackjack(playerArray[i].handArray)) {
+        var blackjackWinTotal =
+          Number(playerArray[i].betInput.value) * BLACKJACK_WIN_MULTIPLIER;
+        playerArray[i].handInfoSpace.innerHTML = `You Won ${blackjackWinTotal}`;
+        var playerInitialChips = Number(playerArray[i].chips);
+        var playerResultingChips = playerInitialChips + blackjackWinTotal;
+        playerArray[i].chips = playerResultingChips;
+        continue;
+      }
+
+      var currentPlayerHandValue = calculateHand(playerArray[i].handArray);
+
+      //player bust
+      if (currentPlayerHandValue > MAX_VALUE_CARDS) {
+        playerArray[
+          i
+        ].handInfoSpace.innerHTML = `You lost ${playerArray[i].betInput.value}`;
+        var playerInitialChips = Number(playerArray[i].chips);
+        var playerResultingChips =
+          playerInitialChips - Number(playerArray[i].betInput.value);
+        playerArray[i].chips = playerResultingChips;
+        continue;
+      }
+      //player doesn't bust
+      playerArray[
+        i
+      ].handInfoSpace.innerHTML = `You Won ${playerArray[i].betInput.value}`;
+      var playerInitialChips = Number(playerArray[i].chips);
+      var playerResultingChips =
+        playerInitialChips + Number(playerArray[i].betInput.value);
+      playerArray[i].chips = playerResultingChips;
+    }
+    nextRound();
+    return;
+  }
+
+  //dealer doesn't bust scenario
+  for (var i = 1; i < playerArray.length; i += 1) {
+    //player Blackjack scenario
+    if (checkBlackjack(playerArray[i].handArray)) {
+      var blackjackWinTotal =
+        Number(playerArray[i].betInput.value) * BLACKJACK_WIN_MULTIPLIER;
+      playerArray[i].handInfoSpace.innerHTML = `You Won ${blackjackWinTotal}`;
+      var playerInitialChips = Number(playerArray[i].chips);
+      var playerResultingChips = playerInitialChips + blackjackWinTotal;
+      playerArray[i].chips = playerResultingChips;
+      continue;
+    }
+
+    var currentPlayerHandValue = calculateHand(playerArray[i].handArray);
+
+    //player bust OR player has less than dealer
+    if (
+      currentPlayerHandValue > MAX_VALUE_CARDS ||
+      currentPlayerHandValue < dealerFinalHandValue
+    ) {
+      playerArray[
+        i
+      ].handInfoSpace.innerHTML = `You lost ${playerArray[i].betInput.value}`;
+      var playerInitialChips = Number(playerArray[i].chips);
+      var playerResultingChips =
+        playerInitialChips - Number(playerArray[i].betInput.value);
+      playerArray[i].chips = playerResultingChips;
+      continue;
+    }
+    //player push
+    if (currentPlayerHandValue == dealerFinalHandValue) {
+      playerArray[i].handInfoSpace.innerHTML = `Push! bet will be returned`;
+      continue;
+    }
+
+    //player has more than dealer AND player doesnt bust
+    playerArray[
+      i
+    ].handInfoSpace.innerHTML = `You Won ${playerArray[i].betInput.value}`;
+    var playerInitialChips = Number(playerArray[i].chips);
+    var playerResultingChips =
+      playerInitialChips + Number(playerArray[i].betInput.value);
+    playerArray[i].chips = playerResultingChips;
+  }
+  nextRound();
+  return;
+};

@@ -3,7 +3,8 @@ var dealerHand = document.querySelector("#dealer-hand");
 var dealerInfo = document.querySelector("#dealer-info");
 
 var p1Hand = document.querySelector("#p1-hand");
-var p1Info = document.querySelector("#p1-info");
+var p1HandInfo = document.querySelector("#p1-hand-info");
+var p1ChipInfo = document.querySelector("#p1-chip-info");
 var p1Hit = document.querySelector("#p1-hit");
 var p1Stand = document.querySelector("#p1-stand");
 var p1Double = document.querySelector("#p1-double");
@@ -12,7 +13,8 @@ var p1BetInput = document.querySelector("#p1-bet");
 var p1ChipIn = document.querySelector("#p1-chip-in");
 
 var p2Hand = document.querySelector("#p2-hand");
-var p2Info = document.querySelector("#p2-info");
+var p2HandInfo = document.querySelector("#p2-hand-info");
+var p2ChipInfo = document.querySelector("#p2-chip-info");
 var p2Hit = document.querySelector("#p2-hit");
 var p2Stand = document.querySelector("#p2-stand");
 var p2Double = document.querySelector("#p2-double");
@@ -21,7 +23,8 @@ var p2BetInput = document.querySelector("#p2-bet");
 var p2ChipIn = document.querySelector("#p2-chip-in");
 
 var p3Hand = document.querySelector("#p3-hand");
-var p3Info = document.querySelector("#p3-info");
+var p3HandInfo = document.querySelector("#p3-hand-info");
+var p3ChipInfo = document.querySelector("#p3-chip-info");
 var p3Hit = document.querySelector("#p3-hit");
 var p3Stand = document.querySelector("#p3-stand");
 var p3Double = document.querySelector("#p3-double");
