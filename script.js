@@ -14,12 +14,19 @@ const STATE_RESULT = "result";
 const STATE_RESTART = "restart";
 
 // game keywords
-const STAND = ["STAND"];
+const STAND = "STAND";
 const HIT = "HIT";
 
 // variables to get page elements.
-let instructBox = document.querySelector("#instructions");
-let inputBox = document.querySelector("#input-field");
+const instructBox = document.querySelector("#instructions");
+const inputBox = document.querySelector("#input-field");
+const outputBox = document.querySelector("#output-div");
+const containerBox = document.querySelector("#container");
+
+// colour variables.
+const RED = "#ffd7d9";
+const GREEN = "#a7f0ba";
+const BLUE = "#dce6f0";
 
 // variables to store game state.
 let gameState = STATE_DEAL;
@@ -169,34 +176,37 @@ var displayHand = function (handOne, handTwo) {
 
 var displayScore = function (scoreOne, scoreTwo) {
   let output = `<br/> Player score: ${scoreOne} 
-  <br/> Computer score: ${scoreTwo}`;
+  <br/> Computer score: ${scoreTwo} <br/>`;
   // if player or computer hand exceeds 21.
   if (scoreOne > 21 || scoreTwo > 21) {
     if (scoreOne > 21 && scoreTwo > 21) {
-      output += "<br/> Both player and dealer lose.";
+      output += `<br/> Both player and dealer lose.`;
+      containerBox.style.backgroundColor = RED;
     } else if (scoreOne > 21) {
-      output += "<br/> Your hand has exceeded 21. You lose.";
+      output += `<br/> Your hand has exceeded 21. You lose.`;
+      containerBox.style.backgroundColor = RED;
     } else {
-      output += "<br/> The dealer's hand has exceeded 21. You win!";
+      output += `<br/> The dealer's hand has exceeded 21. You win!`;
+      containerBox.style.backgroundColor = GREEN;
     }
   }
   // else compare scores normally.
   else {
     if (scoreTwo == scoreOne) {
       output += `<br/><br/> It's a tie.`;
+      containerBox.style.backgroundColor = GREEN;
     } else if (scoreOne > scoreTwo) {
       output += `<br/><br/> ${playerName}, you have a higher score. You win!`;
+      containerBox.style.backgroundColor = GREEN;
     } else {
       output += `<br/><br/> The computer has a higher score. The computer wins.`;
+      containerBox.style.backgroundColor = RED;
     }
   }
   return output;
 };
 
 var resetGame = function () {
-  instructBox = document.querySelector("#instructions");
-  inputBox = document.querySelector("#input-field");
-
   gameDeck = [];
   computerHand = [];
   playerHand = [];
@@ -220,7 +230,7 @@ var emojiSuit = function (suitName) {
 // give initial game instructions.
 instructBox.innerHTML =
   "Hello, player! <br/><br/> Please type in your name and press submit to begin dealing cards!";
-inputBox.placeholder = "NAME";
+inputBox.placeholder = "Name";
 
 // function to run under STATE_DEAL.
 var gameDeal = function (input) {
@@ -248,6 +258,7 @@ var gameDeal = function (input) {
     Enter "HIT" to draw a card, or "STAND" to end your turn. `;
   inputBox.placeholder = `HIT or STAND`;
   submitButton.innerHTML = `Submit`;
+  containerBox.style.backgroundColor = BLUE;
 
   // display output.
   return displayHand(playerHand, computerHand);
@@ -311,12 +322,15 @@ var gameResult = function () {
     if (playerBlackjack && computerBlackjack) {
       // both blackjack, tie.
       output += `<br/> Both players have blackjacks, it's a tie. `;
+      containerBox.style.backgroundColor = GREEN;
     } else if (playerBlackjack) {
       // player wins.
       output += `<br/> ${playerName} wins with a blackjack!`;
+      containerBox.style.backgroundColor = GREEN;
     } else {
       // computer wins.
       output += `<br/> The computer wins!`;
+      containerBox.style.backgroundColor = RED;
     }
   }
   // compare scores.
