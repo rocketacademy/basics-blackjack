@@ -144,9 +144,7 @@ var checkWinLoseCondition = function (score) {
   var message = "";
   if (CURRENT_GAME_STATE != GAME_STATE_COMPUTER_TURN) {
     if (score == 21) {
-      message += `<br><br> Player ${currentPlayer + 1} scored 21. Player ${
-        currentPlayer + 1
-      } wins! <br><br> Click 'Submit' to play again.`;
+      message += `<br><br> You scored 21. You win! <br><br> Stealing money from a little old lady, hope you are proud of yourself. <br><br> Click 'Submit' to play again.`;
       CURRENT_GAME_STATE = GAME_STATE_END_GAME;
       console.log(
         `Control flow: current game state changed from deal hand to end game. Current game state is ${CURRENT_GAME_STATE}`
@@ -154,9 +152,7 @@ var checkWinLoseCondition = function (score) {
       return message;
     }
     if (score > 21) {
-      message += `<br><br> Player ${
-        currentPlayer + 1
-      } busted! Press submit to play again.`;
+      message += `<br><br> You busted! There goes your angbao money again. Ah ma is getting bored playing with you... <br><br> Click 'submit' to play again.`;
       CURRENT_GAME_STATE = GAME_STATE_END_GAME;
       console.log(
         `Control flow: player busted. Current game state should be changed to end game. It is ${CURRENT_GAME_STATE}`
@@ -172,7 +168,7 @@ var checkWinLoseCondition = function (score) {
     }
   } else if (CURRENT_GAME_STATE == GAME_STATE_COMPUTER_TURN) {
     if (score == 21) {
-      message = `<br><br> The dealer scored 21. The dealer wins! <br><br> Click 'Submit' to play again.`;
+      message = `<br><br> Ah ma scored 21. Of course you can't beat ah ma. Nice try. <br><br> Click 'Submit' to play again.`;
       CURRENT_GAME_STATE = GAME_STATE_END_GAME;
       console.log(
         `Control flow: current game state changed from deal hand to end game. Current game state is ${CURRENT_GAME_STATE}`
@@ -180,7 +176,7 @@ var checkWinLoseCondition = function (score) {
       return message;
     }
     if (score > 21) {
-      message += `<br><br> The dealer busted! Press submit to play again.`;
+      message += `Ah ma busted! Bullying a little old lady, hope you are proud of yourself. <br><br> Press submit to play again.`;
       CURRENT_GAME_STATE = GAME_STATE_END_GAME;
       console.log(
         `Control flow: dealer busted. Current game state should be changed to end game. It is ${CURRENT_GAME_STATE}`
@@ -194,7 +190,7 @@ var checkWinLoseCondition = function (score) {
   }
 };
 
-// need to change array variable to something else?
+// could arrayDealCard also just be array? or will it end up getting "confused" with the array variable used elsewhere?
 var dealCard = function (arrayDealCard) {
   arrayDealCard.push(cardDeck.pop());
   return arrayDealCard;
@@ -213,12 +209,12 @@ var listCards = function (array) {
 
 var determineWinner = function (playerHandScore, computerHandScore) {
   if (playerHandScore > computerHandScore) {
-    return `Player beat the dealer!`;
+    return `<br><br> You beat ah ma! There must be a blue moon tonight...`;
   }
   if (playerHandScore == computerHandScore) {
-    return `Player tied with the dealer and reclaims their bet.`;
+    return `<br><br> You tied with ah ma... phew!`;
   } else {
-    return `Dealer won!`;
+    return `<br><br> Ah ma won again! Yawn...`;
   }
 };
 
@@ -240,8 +236,8 @@ var main = function (input) {
       playerHand.push(cardDeck.pop());
       computerHand.push(cardDeck.pop());
     }
-    myOutputValue = `The cards have been dealt! <br><br> The player's cards are ${playerHand[0].name} of ${playerHand[0].suit} and ${playerHand[1].name} of ${playerHand[1].suit}.
-    <br><br> The dealer's face-up card is a ${computerHand[0].name} of ${computerHand[0].suit}.`;
+    myOutputValue = `The cards have been dealt! <br><br> Your cards are ${playerHand[0].name} of ${playerHand[0].suit} and ${playerHand[1].name} of ${playerHand[1].suit}.
+    <br><br> Ah ma's face-up card is a ${computerHand[0].name} of ${computerHand[0].suit}.`;
 
     console.log(
       `playerHand: ${playerHand[0].name} of ${playerHand[0].suit} and ${playerHand[1].name} of ${playerHand[1].suit}`
@@ -253,7 +249,7 @@ var main = function (input) {
     // check player's cards - if 21, player automatically wins
     playerHandScore = calculateScore(playerHand);
     console.log(`playerHandScore: ${playerHandScore}`);
-    myOutputValue += `<br><br> Player's score is ${playerHandScore}.`;
+    myOutputValue += `<br><br> Your score is ${playerHandScore}.`;
     myOutputValue += checkWinLoseCondition(playerHandScore);
     return myOutputValue;
   }
@@ -261,18 +257,18 @@ var main = function (input) {
   if (CURRENT_GAME_STATE == GAME_STATE_HIT_STAY) {
     if (input.toLowerCase() != "hit" && input != "stay") {
       console.log(`Control flow: input invalid - input is not hit or stay`);
-      return (myOutputValue = `The player's cards are: ${listCards(playerHand)}
-      <br><br> Please enter "hit" or "stay".`);
+      return (myOutputValue = `Your cards are: ${listCards(playerHand)}
+      <br><br> Please enter "hit" or "stay". <br><br> Go on, ah ma is waiting...`);
     }
     // if player types hit, deal an extra card
     if (input.toLowerCase() == "hit") {
       console.log(`Control flow: player typed hit`);
       dealCard(playerHand);
       playerHandScore = calculateScore(playerHand);
-      myOutputValue = `The player's cards are:`;
+      myOutputValue = `Your cards are:`;
       myOutputValue += listCards(playerHand);
-      myOutputValue += `<br><br> The dealer's face-up card is: <br> ${computerHand[0].name} of ${computerHand[0].suit}
-      <br><br> Player's score is ${playerHandScore}.`;
+      myOutputValue += `<br><br> Ah ma's face-up card is: <br> ${computerHand[0].name} of ${computerHand[0].suit}
+      <br><br> Your score is ${playerHandScore}.`;
       myOutputValue += checkWinLoseCondition(playerHandScore);
       return myOutputValue;
     }
@@ -291,9 +287,9 @@ var main = function (input) {
         console.log(`Computer is dealt another card`);
         console.log(`Computer's cards are: ${listCards(computerHand)}}`);
         computerHandScore = calculateScore(computerHand);
-        myOutputValue = `The dealer's cards are: ${listCards(
+        myOutputValue = `Ah ma's cards are: ${listCards(
           computerHand
-        )} <br><br> The dealer's score is ${computerHandScore}
+        )} <br><br> Ah ma's score is ${computerHandScore}
         <br><br> ${checkWinLoseCondition(computerHandScore)}`;
       }
 
@@ -301,10 +297,10 @@ var main = function (input) {
       if (computerHandScore < 21) {
         CURRENT_GAME_STATE = GAME_STATE_DETERMINE_WINNER;
         console.log(`Control flow: game state determine winner`);
-        myOutputValue = `The dealer's cards are: ${listCards(
+        myOutputValue = `Ah ma's cards are: ${listCards(
           computerHand
-        )} <br><br> The dealer's score is ${computerHandScore}
-        <br><br> ${determineWinner(playerHandScore, computerHandScore)}
+        )} <br><br> Ah ma's score is ${computerHandScore}.
+         ${determineWinner(playerHandScore, computerHandScore)}
         <br><br> Click 'Submit' to play again.`;
         CURRENT_GAME_STATE = GAME_STATE_END_GAME;
       }
@@ -312,3 +308,6 @@ var main = function (input) {
     }
   }
 };
+
+// Features to add
+// The player should not immediately lose if he busts - there is a possibility he will tie with the dealer if the dealer also busts.
