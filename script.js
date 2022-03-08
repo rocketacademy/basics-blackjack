@@ -27,6 +27,15 @@ var myOutputValue = ''
 var main = function(input){
   if(game_state == STARTING){
     CURRENT_PLAYER = 0
+    //reset all variables
+    PLAYERDECK = []
+    PLAYERSUM = []
+    PLAYERLIST = []
+    PLAYERBLACKJACK = []
+    PLAYERRESULTS = []
+    DEALER_HAND = []
+
+
     add_player(input)
     SHUFFLED_DECK = (shuffleCards(makeDeck()))
 
@@ -53,6 +62,11 @@ var main = function(input){
     if(CURRENT_PLAYER == (TOTAL_PLAYER-1)){
       if(input == 'stand'){
         
+        while(DEALER_SUM < 17){
+          DEALER_HAND.push(SHUFFLED_DECK.pop())
+          DEALER_SUM = calculatehandvalue(DEALER_HAND)
+        }
+
         game_state = GAME_STATE_RESULTS
         myOutputValue = `Player ${CURRENT_PLAYER+1}, you have ended your turn! Your total value is ${PLAYERSUM[CURRENT_PLAYER]}.
         Below are your cards <br> ${generatecontent(PLAYERDECK[CURRENT_PLAYER])} <br> 
@@ -69,6 +83,11 @@ var main = function(input){
 
         if(checkingbust(PLAYERSUM[CURRENT_PLAYER]) == true){
           
+          while(DEALER_SUM < 17){
+            DEALER_HAND.push(SHUFFLED_DECK.pop())
+            DEALER_SUM = calculatehandvalue(DEALER_HAND)
+          }
+
           game_state = GAME_STATE_RESULTS
           myOutputValue = `Sorry player ${CURRENT_PLAYER+1}, better luck next time <br>
           Your total value is ${PLAYERSUM[CURRENT_PLAYER]}.
@@ -96,39 +115,31 @@ var main = function(input){
   if(game_state == GAME_STATE_RESULTS){
   
     console.log(DEALER_SUM)
+    console.log(input)
 
-    if(input == 'results'){
-      
-      if(DEALER_SUM<17){
-        while(DEALER_SUM < 17){
-          DEALER_HAND.push(SHUFFLED_DECK.pop())
-          DEALER_SUM += calculatehandvalue(DEALER_HAND)
-        }
-      }
-
-      else{
+    if(input == 'result'){
         var summary_text = `Please find the results below <br> Dealers value: ${DEALER_SUM} <br> Dealer Cards: ${generatecontent(DEALER_HAND)} <br>`
         for (let i = 0; i < PLAYERSUM.length; i++){
-          if((PLAYERSUM[i] == 21) ||
-             (PLAYERSUM[i] > DEALER_SUM && PLAYERSUM <= 21)){
-              PLAYERRESULTS[i] = `win`
-              }
-          if((PLAYERSUM <= 21) && (PLAYERSUM == DEALER_SUM)){
-             (PLAYERRESULTS[i] = `tie`)
-          }
-          else{
+
+          PLAYERRESULTS[i] = `win`
+
+          if((PLAYERSUM[i] > 21) || ((PLAYERSUM[i] < DEALER_SUM) && (DEALER_SUM <=21))){
             PLAYERRESULTS[i] = `lost`
           }
-            
+          if((PLAYERSUM[i] == DEALER_SUM)){
+            PLAYERRESULTS[i] = `tie`
+          // return summary_text
+          }
           summary_text += `<br> Player ${i+1}: ${PLAYERRESULTS[i]}. Total value: ${PLAYERSUM[i]}`
         }
-        game_state = STARTING
         myOutputValue = `${summary_text} <br> <br> Play again by inputting the number of players!`
-      }
-      return myOutputValue 
-    }
-  }
+      // }
 
+      console.log(game_state)
+      game_state = STARTING
+      return myOutputValue 
+    }    
+  }
   return myOutputValue
 }
 
@@ -259,7 +270,7 @@ var hitting_or_standing = function(input){
       myOutputValue = `Sorry player ${CURRENT_PLAYER+1}, better luck next time <br>
       Your total value is ${PLAYERSUM[CURRENT_PLAYER]}.
       Below are your cards ${generatecontent(PLAYERDECK[CURRENT_PLAYER])} <br> <br>
-      Now it is Player ${CURRENT_PLAYER+2}'s turn`
+      Now it is Player ${CURRENT_PLAYER+2}'s turn. Below are your cards ${generatecontent(PLAYERDECK[CURRENT_PLAYER+1])}`
       
       CURRENT_PLAYER += 1
       console.log(PLAYERSUM)
@@ -275,7 +286,7 @@ var hitting_or_standing = function(input){
 
     myOutputValue = `Player ${CURRENT_PLAYER+1}, you have ended your turn! Your total value is ${PLAYERSUM[CURRENT_PLAYER]}.
     Below are your cards <br> ${generatecontent(PLAYERDECK[CURRENT_PLAYER])} <br> 
-    <br> Now it is Player ${CURRENT_PLAYER+2}'s turn`
+    <br> Now it is Player ${CURRENT_PLAYER+2}'s turn. Below are your cards ${generatecontent(PLAYERDECK[CURRENT_PLAYER+1])}`
     CURRENT_PLAYER +=1
     console.log(PLAYERSUM)
   }
@@ -303,8 +314,27 @@ return content_for_cards
 var calculatehandvalue = function(playerdeck){
   var index = 0
   var totalhandvalue = 0
+  var acecCounter = 0
+
   while(index < playerdeck.length){
-    totalhandvalue += playerdeck[index].value
+    var currCard = playerdeck[index];
+
+    if (currCard.name == 'ace'){
+      totalhandvalue = totalhandvalue +11
+      acecCounter = acecCounter +1
+    }
+    else{
+      totalhandvalue += playerdeck[index].value
+    }
+    index += 1
+  }
+
+  index = 0
+
+  while (index<acecCounter){
+    if(totalhandvalue >21){
+      totalhandvalue = totalhandvalue - 10
+    }
     index += 1
   }
   return totalhandvalue
@@ -319,14 +349,4 @@ var checkforblackjack = function(playerdeck){
       isblackjack = true
     }
   return isblackjack
-}
-
-var create_buttons = function(){
-  var hit_button = document.createElement("button")
-  hit_button.innerHTML = `Hit!`
-  document.body.appendChild(hit_button)
-
-  var stand_button = document.createElement("button")
-  stand_button.innerHTML = `Stand!`
-  document.body.appendChild(stand_button)
 }
