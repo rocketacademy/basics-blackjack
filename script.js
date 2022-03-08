@@ -195,7 +195,7 @@ var compareCards = function (playerHand, computerHand) {
   }
   playerPoints -= 20;
   computerPoints += 20;
-  return `<br><br> ${userName} lost!<br>${myImages.lose}<br>Player points: ${playerPoints}<br>Dealer Points: ${computerPoints}`;
+  return `<br><br> Computer lost!<br>${myImages.lose}<br>Player points: ${playerPoints}<br>Dealer Points: ${computerPoints}`;
 };
 
 //function to create deck
