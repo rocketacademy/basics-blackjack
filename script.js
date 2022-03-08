@@ -2,7 +2,7 @@
 // The computer will always be the dealer.
 // Each player gets dealt two cards to start.
 // The player goes first, and decides if they want to hit (draw a card) or stand (end their turn).
-// The dealer has to hit if their hand is below 17.
+// The dealer has to hit if their hand is below 16.
 // Each players' score is the total of their card ranks. Jacks/Queen/Kings are 10. Aces can be 1 or 11.
 // The player who is closer to, but not above 21 wins the hand.
 
