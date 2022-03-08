@@ -22,16 +22,16 @@ var makeDeck = function () {
     while (rankCounter <= 13) {
       var cardName = rankCounter;
       if (cardName == 1) {
-        cardName = "ace";
+        cardName = "Ace";
       }
       if (cardName == 11) {
-        cardName = "jack";
+        cardName = "Jack";
       }
       if (cardName == 12) {
-        cardName = "queen";
+        cardName = "Queen";
       }
       if (cardName == 13) {
-        cardName = "king";
+        cardName = "King";
       }
       var card = {
         name: cardName,
@@ -79,8 +79,8 @@ var checkforBlackjack = function (handArray) {
   var playerCardTwo = handArray[1];
   var isBlackjack = false;
   if (
-    (playerCardOne.name == "ace" && playerCardTwo.rank >= 10) ||
-    (playerCardOne.rank >= 10 && playerCardTwo.name == "ace")
+    (playerCardOne.name == "Ace" && playerCardTwo.rank >= 10) ||
+    (playerCardOne.rank >= 10 && playerCardTwo.name == "Ace")
   ) {
     isBlackjack = true;
   }
@@ -96,12 +96,12 @@ var calTotalHandValue = function (handArray) {
   while (index < handArray.length) {
     var currentCard = handArray[index];
     if (
-      currentCard.name == "jack" ||
-      currentCard.name == "queen" ||
-      currentCard.name == "king"
+      currentCard.name == "Jack" ||
+      currentCard.name == "Queen" ||
+      currentCard.name == "King"
     ) {
       totalHandValue = totalHandValue + 10;
-    } else if (currentCard.name == "ace") {
+    } else if (currentCard.name == "Ace") {
       totalHandValue = totalHandValue + 11;
       aceCounter = aceCounter + 1;
     } else {
@@ -176,7 +176,7 @@ var main = function (input) {
 
     currentGameMode = GAME_CARDS_DRAWN;
 
-    outputMessage = `Cards has been dealt. Click "submit" buttom to see the player and dealer cards.`;
+    outputMessage = `Cards has been dealt. Click "Next" buttom to see the player and dealer cards.`;
 
     return outputMessage;
   }
