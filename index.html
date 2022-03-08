@@ -1,7 +1,26 @@
-
+<!--  All HTML files begin with the following line: -->
 <!DOCTYPE html>
-<html lang="en">
+<!-- This indicates that the rest of the lines that follow are to be interpreted as HTML. It tells the browser about what document type to expect. -->
+
+<!-- All text enclosed in angled brackets are known as HTML element tags. There are usually, but not always, starting and closing element "tags", each representing a HTML element.
+The <html> element is known as the root element of a HTML page. All other elements are encased within it. -->
+<html>
+
+ <audio controls autoplay>
+    <source src="file:///C:/Users/chery/Downloads/An-Epic-Story.mp3" type="audio/mpeg" >
+    </audio>
+    }
+    </script> 
+
+    <!-- An Epic Story by MaxKoMusic | https://maxkomusic.com/
+Music promoted by https://www.chosic.com/free-music/all/
+Creative Commons Attribution-ShareAlike 3.0 Unported (CC BY-SA 3.0)
+https://creativecommons.org/licenses/by-sa/3.0/ -->
+ 
+  <!-- The <head> element contains meta information about the HTML page, information that is not rendered or displayed by the browser -->
   <head>
+
+
     <!-- Page setup configurations -->
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -22,62 +41,56 @@
     <!-- sharing configuration -->
     <!-- Primary Meta Tags -->
     <title>Blackjack - Basics - Rocket Academy</title>
-    <meta name="title" content="YOURNAME's BlackJack Game!">
-    <meta name="description" content="A fun card game I made myself! 😄💪🌈">
+    <meta name="title" content="CHERYLYN's BlackJack Game!">
+    <meta name="a coding project" content="A fun card game I made myself! 😄💪🌈">
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://rocketacademy.github.io/basics-blackjack/index.html">
-    <meta property="og:title" content="YOURNAME's BlackJack Game!">
+    <meta property="og:title" content="CHERYLYN's BlackJack Game!">
     <meta property="og:description" content="A fun card game I made myself! 😄💪🌈">
     <meta property="og:image" content="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/basics/basics-blackjack-share-small.jpeg">
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="https://rocketacademy.github.io/basics-blackjack/index.html">
-    <meta name="twitter:title" content="YOURNAME's BlackJack Game!">
+    <meta name="twitter:title" content="CHERYLYN's BlackJack Game!">
     <meta name="twitter:description" content="A fun card game I made myself! 😄💪🌈">
     <meta name="twitter:image" content="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/basics/basics-blackjack-share-small.jpeg">
     <meta name="twitter:site" content="@rocketacademyco">
     <meta name="twitter:creator" content="@rocketacademyco">
 
-    <!-- fonts -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans">
-
-    <!-- CSS -->
+  
     <style>
       * {
         box-sizing: border-box;
       }
 
       body {
-        font-family: 'Open Sans', sans-serif;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         margin-left: 30px;
         margin-right: 30px;
-        background-color:white;
-        color: black; /* sets the font color */
-        background-image: url(""); /* The image used */
-        background-position: center; /* Center the image */
-        background-repeat: no-repeat; /* Do not repeat the image */
-        background-size: cover; /* Resize the background image to cover the entire container */
+        background-color: goldenrod;
+        background-image: url("https://hips.hearstapps.com/toc.h-cdn.co/assets/16/44/1477951202-crown-aspinalls-main-gaming-floor.jpg");
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+
       }
 
-      #output-div img{
-        display:block;
-        max-width:100%;
-        max-height:200px;
-      }
-      .header {
+      #header {
         text-align: center;
-        font-size: 1.1rem;
-        margin-bottom: 3rem;
       }
 
       #container {
-        background-color: pink;
+        background-color: rgb(12, 129, 42);
         margin: 40px auto;
         max-width: 800px;
         padding: 38px 31px;
+        border-radius: 12px;
+        border-style: solid;
+        border-color: red;
+        border-width: 3px;
       }
 
       input {
@@ -85,62 +98,174 @@
         line-height: 33px;
         margin: 0 0 23px 0;
         padding: 0 9px;
+        border-radius: 12px;
         width: 100%;
+        cursor: text;
       }
 
       button {
         font-size: 21px;
         line-height: 33px;
         margin: 0 0 23px 0;
-        padding: 0 6px;
+        padding: 0 10px;
+        border-radius: 12px;
+        cursor:pointer;
+      }
+
+      .collapsible {
+        background-color:blueviolet;
+        color:aliceblue;
+        cursor:pointer;
+        font-size: 21px;
+        line-height: 33px;
+        margin: 0 0 23px 0;
+        padding: 0 10px;
+      }
+
+      .active, .collapsible:hover{
+        background-color: purple;
+      }
+
+      .morecontent {
+        display: none;
+        overflow: hidden;
+        background-color: goldenrod;
+        margin: 20px auto;
+        padding: 20px;
+        border-radius: 12px;
+        border-style: solid;
+        border-color: white;
+        max-width: 800px;
       }
 
       #output-div {
-        background-color: lightgrey;
+        background-color: goldenrod;
         margin: 20px auto;
         padding: 20px;
+        border-radius: 12px;
+        border-style: solid;
+        border-color: white;
         width: 100%;
       }
-
-      .logo-img {
-        height: 49px;
-        position: relative;
-        top: 22px;
-      }
-
-      /* increase header font size on wider screens */
-      @media screen and (min-width: 600px) {
-        .header {
-          font-size: 2rem;
-        }
-      }
     </style>
-
   </head>
 
+  <!-- The <body> element defines the document's body, and is a container for all the visible contents that will be rendered by the browser.  -->
   <body>
-    <h1 class="header">
-      <img class="logo-img" src="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/brand/logo.png" />
-      Rocket Academy
-      <img class="logo-img" src="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/brand/logo.png" />
+    <!-- The <h1> element defines a large heading. There are 6 pre-set header elements, <h1> to <h6> -->
+    <h1 id="header">
+      LET'S PLAY:<br /><br />
+      ~BLACKJACK~
     </h1>
-    <h1 class="header">♣️ Basics - Blackjack ♠️</h1>
+    <!-- The <div> tag defines a division or a section in an HTML document, and is commonly use as a "container" for nested HTML elements. -->
+    <br />
+
+
+    <center>
+    <button onClick="window.location.reload();">Start Over</button></br>
+    <button type="button" class ="collapsible">How To Play</button>
+
+    <div class="morecontent">
+      Welcome to the game of Blackjack!<br><br>
+      <b><u>Here are the rules:</b></u><br>
+      <br>Your goal is to get as close to 21 points without going over.<br>
+      Cards 2 - 10 will have the same points as their cards.<br>
+      Jack, Queen, King are worth 10 points each.<br>
+    Aces are special! They are worth 1, 10, or 11 points.</div>
+    
+      <button type="button" class ="collapsible">Special Win Conditions</button>
+      
+      <div class="morecontent">
+      Here are some special win conditions!<br>
+      <br>
+      <b><u>Special Scenarios</b></u><br>
+      <br>
+      10/Jack/Queen/King/Ace + Ace = Blackjack! You immediately win the round if this is your opening hand!
+
+      <br></div>
+</center>
+
     <div id="container">
-      <p>Input:</p>
+      <!-- The <p> tag defines a paragraph element. -->
+      <p>
+        
+        <fieldset><legend>
+      
+      <h2 id="body">GAMEPLAY AREA</h2></legend>
+      Whisper the right words to enter<br>
+        And what's closed will be <b>this instead</b><br>
+        On <b>this street</b> you'll hear our banter<br>
+        And have <i>sunny days</i> ahead.
+      <br>
+      <br><br>
+
+      <!-- The self-closing <input /> tag represents a field for a user to enter input. -->
       <input id="input-field" />
+      <!-- The self-closing <br /> tag represents a line break - a line's worth of spacing before dispalying the next element. -->
       <br />
-      <button id="submit-button">Submit</button>
-      <p>Output:</p>
+      <!-- The <button> tag represents.. you guessed it! a button. -->
+      <button id="submit-button">Next</button>
+      <button id="hit-button">Hit me</button>
+      <button id="stay-button">Stay</button>
+
+      <p><b>And I said...</b></p>
       <div id="output-div"></div>
     </div>
-    <!-- Import program logic -->
-    <script src="script.js"></script>
+
+
+    </div>
+
+    <!-- Everything below this is incorporating JavaScript programming logic into the webpage. -->
+    <!-- The script tag encloses JavaScript syntax for the browser to interpret programtically -->
+    <!-- The following line imports all code written in the script.js file -->
+
+    <script>
+    var coll = document.getElementsByClassName("collapsible");
+    var i;
+    
+    for (i = 0; i < coll.length; i++) {
+      coll[i].addEventListener("click", function() {
+        this.classList.toggle("active");
+        var content = this.nextElementSibling;
+        if (content.style.display === "block") {
+          content.style.display = "none";
+        } else {
+      content.style.display = "block";
+    }
+  });
+}
+</script>
+
+
+     <script src="script.js"></script>
+
+<!-- <script>
+  if (hitMode == false){
+    document.getElementByID("#hit-button").disabled= true
+  } else if (hitMode == true){
+    document.getElementByID("#hit-button").disabled = false
+  }
+</script>
+
+<script>
+  if (stayMode == false){
+  function = document.getElementByID("#hit-button").disabled=true
+  }
+</script> -->
+
+
+
     <!-- Define button click functionality -->
     <script>
+         
+      // Declare and define a variable that represents the Submit Button
       var button = document.querySelector("#submit-button");
+      // When the submit button is clicked, access the text entered by the user in the input field
+      // And pass it as an input parameter to the main function as defined in script.js
       button.addEventListener("click", function () {
         // Set result to input value
         var input = document.querySelector("#input-field");
+        // Store the output of main() in a new variable
         var result = main(input.value);
 
         // Display result in output element
@@ -151,5 +276,51 @@
         input.value = "";
       });
     </script>
+
+    <script>
+         
+      // Declare and define a variable that represents the Submit Button
+      var button = document.querySelector("#hit-button");
+      // When the submit button is clicked, access the text entered by the user in the input field
+      // And pass it as an input parameter to the main function as defined in script.js
+      button.addEventListener("click", function () {
+        // Set result to input value
+        var input = `hit`;
+        // Store the output of main() in a new variable
+        var result = main(input);
+
+        // Display result in output element
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
+
+        // Reset input value
+        input = "";
+      });
+    </script>
+
+    <script>
+         
+      // Declare and define a variable that represents the Submit Button
+      var button = document.querySelector("#stay-button");
+      // When the submit button is clicked, access the text entered by the user in the input field
+      // And pass it as an input parameter to the main function as defined in script.js
+      button.addEventListener("click", function () {
+        // Set result to input value
+        var input = `stay`;
+        // Store the output of main() in a new variable
+        var result = main(input);
+
+        // Display result in output element
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
+
+        // Reset input value
+        input = "";
+      });
+    </script>
+
+ 
+
+
   </body>
 </html>
