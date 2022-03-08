@@ -103,7 +103,9 @@ var shuffleCards = function (cardDeck) {
   return cardDeck;
 };
 
-//show player's and computer's hands in output message
+/**
+ * show player's and computer's hands in output message
+ */
 var showPlayerAndComputerHands = function (playerHand, computerHand) {
   // define message for player
   var playerMessage = "Player's hand is: <br>";
@@ -137,7 +139,9 @@ var showPlayerAndComputerHands = function (playerHand, computerHand) {
   return playerMessage + `<br>` + computerMessage;
 };
 
-// check that player has blackjack
+/**
+ * check that player has blackjack
+ */
 var checkBlackJack = function (playerHandArray) {
   var firstCardInHand = playerHandArray[0];
   var secondCardInHand = playerHandArray[1];
@@ -161,6 +165,8 @@ var checkRankSum = function (playerHandArray) {
   var counter = 0;
   var totalRank = 0;
 
+  // initialise aceCounter
+  var aceCounter = 0;
   // create while loop to add through all the cards in a player's hand
 
   // declare loop condition
@@ -175,8 +181,22 @@ var checkRankSum = function (playerHandArray) {
       currentCardInHand.name == `king`
     ) {
       totalRank = totalRank + 10;
+    }
+    // declare condition for ace
+    else if (currentCardInHand.name == `ace`) {
+      totalRank = totalRank + 11;
+      // initialise ace-specific counter
+      aceCounter += 1;
     } else {
       totalRank = totalRank + currentCardInHand.rank;
+    }
+    counter += 1;
+  }
+
+  // create while loop for ace counter to ensure that only 1 of the aces will be counted as 11
+  while (counter < aceCounter) {
+    if (totalRank > 21) {
+      totalRank = totalRank - 10;
     }
     counter += 1;
   }
@@ -194,8 +214,18 @@ var computerHand = [];
 // define game modes
 var startGame = "Start game";
 var dealCards = "Deal cards";
-var hitOrStand = "Hit Or Stand mode";
+var playerHitOrStand = "Player hit Or Stand mode";
+var dealerHitOrStand = "Dealer hit Or Stand mode";
 var gameMode = startGame;
+
+// define image tags
+var shuffleDeckImg =
+  '<img src = "https://c.tenor.com/oxauAlJ2IF8AAAAM/riffle-shuffle-world-xm.gif"/>';
+var hangoverMath =
+  '<img src = "https://c.tenor.com/NcDKtNtM7LYAAAAd/hangover-math.gif"/>';
+
+var sweatingImage =
+  '<img src= "https://c.tenor.com/RVi1u8Q3uMYAAAAC/sweating-hot.gif"/>';
 
 // ------ main function below --------
 var main = function (input) {
@@ -209,7 +239,10 @@ var main = function (input) {
     console.log(gameMode);
 
     // return output message with instructions
-    return "Welcome to Blackjack, press submit to deal cards.";
+    return (
+      "The game has started, please press submit to deal cards." +
+      shuffleDeckImg
+    );
   }
 
   // set game mode to deal cards
@@ -273,84 +306,109 @@ var main = function (input) {
     console.log(`Computer Hand Rank sum is ` + checkRankSum(computerHand));
 
     if (playerBlackJack == false && computerBlackJack == false) {
-      gameMode = hitOrStand;
+      gameMode = playerHitOrStand;
       console.log(deck);
-      return `${showPlayerAndComputerHands(playerHand, computerHand)} 
+      return (
+        `${showPlayerAndComputerHands(playerHand, computerHand)} 
            <br> <br>
           Player's points is ${checkRankSum(playerHand)}
           <br> <br>
           Computer's points is ${checkRankSum(computerHand)}
           <br><br>
-          Please enter "hit" or "stand".`;
+          Please enter "hit" or "stand".
+          <br> <br>
+          ` + hangoverMath
+      );
     }
   }
 
-  // initiate hit or stand game mode
-  if (gameMode == hitOrStand) {
+  // initiate player hit or stand game mode
+  if (gameMode == playerHitOrStand) {
     console.log(gameMode);
     console.log(playerHand);
-    // if input is hit condition
+    // if player input is hit condition
     if (input == "hit") {
       playerHand.push(deck.pop());
       console.log(deck);
       console.log(checkRankSum(playerHand));
-      // condition if total rank is more than 21, not lose immediately if he busts
+      // condition if player total rank is more than 21, not lose immediately if he busts
       if (checkRankSum(playerHand) > 21) {
+        gameMode = dealerHitOrStand;
         return `
         ${showPlayerAndComputerHands(playerHand, computerHand)}
          <br> <br>
-        Your hand is busted. Please wait for dealer to hit or stand`;
+        Your hand is busted. Please press "submit" for dealer to hit or stand. `;
       }
-      // condition if total rank is 21 or less
+      // condition if player total rank is 21 or less
       else
-        return `
+        return (
+          `
         ${showPlayerAndComputerHands(playerHand, computerHand)}
          <br> <br>
         This is your new hand, your current points is ${checkRankSum(
           playerHand
-        )} ,please enter "hit" or "stand" to continue`;
+        )} ,please enter "hit" or "stand" to continue` + sweatingImage
+        );
     }
 
-    // if input is stand condition
+    // if player input is stand condition
     if (input == "stand") {
-      // player hand total rank higher than computer hand
-      if (checkRankSum(playerHand) > checkRankSum(computerHand)) {
-        gameMode = startGame;
-        return `${showPlayerAndComputerHands(playerHand, computerHand)} 
-           <br> <br>
+      gameMode = dealerHitOrStand;
+      console.log(`Dealer hand before drawing cards is ${computerHand}`);
+
+      return `Please press "submit" for dealer to hit or stand.`;
+    }
+
+    // if player input is not hit or stand
+    if (input !== "hit" || input !== "stand") {
+      // gameMode = playerHitOrStand;
+      return `Please input "hit" or "stand" to continue game`;
+    }
+  }
+
+  //dealer Hit or stand game mode
+  if (gameMode == dealerHitOrStand) {
+    while (checkRankSum(computerHand) < 17) {
+      computerHand.push(deck.pop());
+    }
+    console.log(`Dealer hand after ddrawing cards is ${computerHand}`);
+    // player hand total rank higher than computer hand, but less than 21
+    if (
+      checkRankSum(playerHand) < 22 &&
+      checkRankSum(playerHand) > checkRankSum(computerHand)
+    ) {
+      gameMode = startGame;
+      return `${showPlayerAndComputerHands(playerHand, computerHand)} 
+           <br> <br> 
           Player's points is ${checkRankSum(playerHand)}
           <br> <br>
           Computer's points is ${checkRankSum(computerHand)}
           <br><br>
           Player Wins!`;
-      }
-      // player hand total rank lower than computer hand
-      if (checkRankSum(playerHand) < checkRankSum(computerHand)) {
-        gameMode = startGame;
-        return `${showPlayerAndComputerHands(
-          playerHand,
-          computerHand
-        )} <br> <br>
+    }
+    // player hand total rank lower than computer hand
+    if (
+      checkRankSum(playerHand) < 22 &&
+      checkRankSum(playerHand) < checkRankSum(computerHand)
+    ) {
+      gameMode = startGame;
+      return `${showPlayerAndComputerHands(playerHand, computerHand)} <br> <br>
           Player's points is ${checkRankSum(playerHand)}
           <br> <br>
           Computer's points is ${checkRankSum(computerHand)}
           <br><br>
           Computer Wins!`;
-      }
+    }
 
-      // draw condition
-      if (checkRankSum(playerHand) == checkRankSum(computerHand)) {
-        gameMode = startGame;
-        return `${showPlayerAndComputerHands(
-          playerHand,
-          computerHand
-        )} <br> <br>
+    // draw condition
+    if (checkRankSum(playerHand) == checkRankSum(computerHand)) {
+      gameMode = startGame;
+      return `${showPlayerAndComputerHands(playerHand, computerHand)} <br> <br>
           Player's points is ${checkRankSum(playerHand)}
           <br> <br>
           Computer's points is ${checkRankSum(computerHand)}
           <br><br>
         It is a draw!`;
-      }
     }
   }
 };
