@@ -158,25 +158,28 @@ var nextRound = function () {
   disableP2Options();
   disableP3Options();
 
-  p1ChipInfo.innerHTML = `Current Chips: ${playerArray[1].chips}`;
-  p2ChipInfo.innerHTML = `Current Chips: ${playerArray[2].chips}`;
-  p3ChipInfo.innerHTML = `Current Chips: ${playerArray[3].chips}`;
+  if (playerArray[1].activePlayer)
+    p1ChipInfo.innerHTML = `Current Chips: ${playerArray[1].chips}`;
+  if (playerArray[2].activePlayer)
+    p2ChipInfo.innerHTML = `Current Chips: ${playerArray[2].chips}`;
+  if (playerArray[3].activePlayer)
+    p3ChipInfo.innerHTML = `Current Chips: ${playerArray[3].chips}`;
 
-  if (playerArray[1].chips <= 0) {
+  if (playerArray[1].chips <= 0 && playerArray[1].activePlayer) {
     hideP1BetArea();
     hideP1Options();
     showP1ChipIn();
     p1ChipInfo.innerHTML = `You've run out of chips!`;
     playerArray[1].activePlayer = false;
   }
-  if (playerArray[2].chips <= 0) {
+  if (playerArray[2].chips <= 0 && playerArray[2].activePlayer) {
     hideP2BetArea();
     hideP2Options();
     showP2ChipIn();
     p2ChipInfo.innerHTML = `You've run out of chips!`;
     playerArray[2].activePlayer = false;
   }
-  if (playerArray[3].chips <= 0) {
+  if (playerArray[3].chips <= 0 && playerArray[3].activePlayer) {
     hideP3BetArea();
     hideP3Options();
     showP3ChipIn();
