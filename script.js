@@ -282,6 +282,9 @@ deal.addEventListener("click", function () {
       activePlayerPresent = true;
       break;
     }
+    playerArray[i].handSpace.innerHTML = CARDBACK_SVG;
+    playerArray[i].handInfoSpace.innerHTML = "Chip In";
+    playerArray[i].chipInfoSpace.innerHTML = "On the next game!";
   }
 
   if (!activePlayerPresent) {
