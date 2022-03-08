@@ -1,6 +1,6 @@
 var makeDeck = function () {
   var cardDeck = [];
-  var suits = ["hearts", "diamonds", "clubs", "spades"];
+  var suits = ["♥ hearts", "♦ diamonds", "♣ clubs", "♠ spades"];
   for (suitIndex = 0; suitIndex < suits.length; suitIndex += 1) {
     var currentSuit = suits[suitIndex];
     for (rankCounter = 1; rankCounter <= 13; rankCounter += 1) {
