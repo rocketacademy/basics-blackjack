@@ -193,6 +193,7 @@ var resolveGame = function () {
   //dealer blackjack scenario
   if (dealerBlackJack) {
     for (var i = 1; i < playerArray.length; i += 1) {
+      if (!playerArray[i].activePlayer) continue;
       if (checkBlackjack(playerArray[i].handArray)) {
         playerArray[i].handInfoSpace.innerHTML = `Push! bet will be returned`;
         continue;
@@ -227,6 +228,7 @@ var resolveGame = function () {
     //dealer bust scenario
     dealerInfo.innerHTML = `Dealer Bust!`;
     for (var i = 1; i < playerArray.length; i += 1) {
+      if (!playerArray[i].activePlayer) continue;
       //player Blackjack scenario
       if (checkBlackjack(playerArray[i].handArray)) {
         var blackjackWinTotal =
@@ -266,6 +268,7 @@ var resolveGame = function () {
 
   //dealer doesn't bust scenario
   for (var i = 1; i < playerArray.length; i += 1) {
+    if (!playerArray[i].activePlayer) continue;
     //player Blackjack scenario
     if (checkBlackjack(playerArray[i].handArray)) {
       var blackjackWinTotal =
