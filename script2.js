@@ -183,7 +183,7 @@ var displayComputerSum = function () {
     var currentCardName = computerCards[index].name;
     if (currentCardName == `ace` && computerSum < 12) {
       computerSum += 10;
-      console.log(computerSum);
+      console.log("computersum", computerSum);
     }
   }
 
@@ -243,6 +243,7 @@ var getComputerChoice = function () {
 //if player = computer, tie.
 
 var endRound = function () {
+  console.log("end round function");
   gameMode = ENDROUND;
   var showDrawnCards = displayCards();
   var message =
@@ -255,22 +256,21 @@ var endRound = function () {
     message += `You bust! Computer won.`;
   } else if (playerSum <= 21 && computerSum <= 21) {
     if (playerSum < computerSum) {
-      message += `Computer won. You loser.`;
+      message += "Computer won. You loser.";
     } else if (playerSum > computerSum) {
       message += `You won. 🌷 `;
     } else {
       message += `Both of you tie. Press 'let's go' to play again!`;
     }
-
-    var restartGame = "Press 'let's go' to play again!";
-    gameMode = STARTGAME;
-    myCards = [];
-    computerCards = [];
-    playerSum = 0;
-    computerSum = 0;
-
-    return showDrawnCards + "<br>" + message + "<br><br>" + restartGame;
   }
+  var restartGame = "Press 'let's go' to play again!";
+  gameMode = STARTGAME;
+  myCards = [];
+  computerCards = [];
+  playerSum = 0;
+  computerSum = 0;
+
+  return showDrawnCards + "<br>" + message + "<br><br>" + restartGame;
 };
 
 // main function
