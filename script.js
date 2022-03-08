@@ -4,7 +4,7 @@ const DEALER_HIT_THRESHOLD = 16;
 const BLACKJACK_WIN_MULTIPLIER = 2;
 
 var playDeck = [];
-var currentPlayer = -1;
+var currentPlayer = 0;
 var dealerBlackJack = false;
 
 var playerArray = [
@@ -279,8 +279,6 @@ deal.addEventListener("click", function () {
   //i = 1 because index 0 is dealer
   for (var i = 1; i < playerArray.length; i += 1) {
     if (playerArray[i].activePlayer) {
-      //sets the earliest player as the first player to run
-      currentPlayer = i;
       activePlayerPresent = true;
       break;
     }
@@ -326,13 +324,14 @@ deal.addEventListener("click", function () {
     playerArray[i].handInfoSpace.innerHTML = `Current Hand: ${calculateHand(
       playerArray[i].handArray
     )}`;
-
-    if (dealerBlackJack) {
-      resolveGame();
-      return;
-    }
+  }
+  if (dealerBlackJack) {
+    resolveGame();
+    return;
   }
 
   //activate current player options
+  searchNextPlayer();
   playerArray[currentPlayer].enableOptionFunction();
+  return;
 });

@@ -106,12 +106,15 @@ var drawCard = function () {
 };
 
 /***
- * Searches the next player for the game, and assigns the global value of current player to it.
+ * Searches the next player for the game, and assigns the global value of current player to it. Skips player if player has blackjack
  * @returns {null}
  */
 var searchNextPlayer = function () {
   for (var i = currentPlayer + 1; i < playerArray.length; i += 1) {
-    if (playerArray[i].activePlayer) {
+    if (
+      playerArray[i].activePlayer &&
+      !checkBlackjack(playerArray[i].handArray)
+    ) {
       currentPlayer = i;
       return;
     }
@@ -146,10 +149,40 @@ var discardAllHand = function () {
 var nextRound = function () {
   discardAllHand();
   dealerBlackJack = false;
+
   //reset UI
   enableDeal();
   enableChipIn();
   enableBetInput();
+  disableP1Options();
+  disableP2Options();
+  disableP3Options();
+
+  p1ChipInfo.innerHTML = `Current Chips: ${playerArray[1].chips}`;
+  p2ChipInfo.innerHTML = `Current Chips: ${playerArray[2].chips}`;
+  p3ChipInfo.innerHTML = `Current Chips: ${playerArray[3].chips}`;
+
+  if (playerArray[1].chips <= 0) {
+    hideP1BetArea();
+    hideP1Options();
+    showP1ChipIn();
+    p1ChipInfo.innerHTML = `You've run out of chips!`;
+    playerArray[1].activePlayer = false;
+  }
+  if (playerArray[2].chips <= 0) {
+    hideP2BetArea();
+    hideP2Options();
+    showP2ChipIn();
+    p2ChipInfo.innerHTML = `You've run out of chips!`;
+    playerArray[2].activePlayer = false;
+  }
+  if (playerArray[3].chips <= 0) {
+    hideP3BetArea();
+    hideP3Options();
+    showP3ChipIn();
+    p3ChipInfo.innerHTML = `You've run out of chips!`;
+    playerArray[3].activePlayer = false;
+  }
 };
 
 /***
