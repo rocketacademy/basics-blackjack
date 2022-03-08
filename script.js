@@ -9,13 +9,31 @@ b. Shuffle deck [create shuffle deck function]
 c. Deal 2 cards for player and compueter
 d. compare which card is higher and display winner message
 
+----Second version-----
+a. player draws a card upon hit
+b. player does not do anything upon stand
+c. turn goes over to the computer
+d. create win condition
+e. leave lose condition open, as player can tie with the computer
+
+----Third version-----
+a. dealer must hit if points in hand is below 17, else dealer stands
+b. compare total card rank of player against dealer
+c. create player lose or draw condition
+
+----Fourth version-----
+a. amend total card rank function
+b. let first ace be 11
+c. subsequent aces be 1, by using a loop to subtract 10 from total rank, if there is more than 1 ace
+
+
 3. What information do I have?
 4. What information do I need?
 5. How can I get there?
 
 */
 
-// Helper functions below
+// ------------ Helper functions below-------------------
 
 /**
  * Create a standard 52-card deck
@@ -203,7 +221,7 @@ var checkRankSum = function (playerHandArray) {
   return totalRank;
 };
 
-// ----- global variable definition ------
+// ----------Global variable definition ---------------
 // Initialise the shuffled card deck before the game starts.
 var deck = shuffleCards(makeDeck());
 
@@ -227,7 +245,7 @@ var hangoverMath =
 var sweatingImage =
   '<img src= "https://c.tenor.com/RVi1u8Q3uMYAAAAC/sweating-hot.gif"/>';
 
-// ------ main function below --------
+// -------------- Main function below ------------------
 var main = function (input) {
   // set gameMode to startGame
   if (gameMode == startGame) {
@@ -356,7 +374,7 @@ var main = function (input) {
       gameMode = dealerHitOrStand;
       console.log(`Dealer hand before drawing cards is ${computerHand}`);
 
-      return `Please press "submit" for dealer to hit or stand.`;
+      return `Please press "submit" button for dealer to hit or stand.`;
     }
 
     // if player input is not hit or stand
@@ -371,7 +389,7 @@ var main = function (input) {
     while (checkRankSum(computerHand) < 17) {
       computerHand.push(deck.pop());
     }
-    console.log(`Dealer hand after ddrawing cards is ${computerHand}`);
+    console.log(`Dealer hand after drawing cards is ${computerHand}`);
     // player hand total rank higher than computer hand, but less than 21
     if (
       checkRankSum(playerHand) < 22 &&
@@ -384,7 +402,9 @@ var main = function (input) {
           <br> <br>
           Computer's points is ${checkRankSum(computerHand)}
           <br><br>
-          Player Wins!`;
+          Player Wins!
+          <br> <br>
+          Please press "submit" button to reset the game`;
     }
     // player hand total rank lower than computer hand
     if (
@@ -397,7 +417,9 @@ var main = function (input) {
           <br> <br>
           Computer's points is ${checkRankSum(computerHand)}
           <br><br>
-          Computer Wins!`;
+          Computer Wins!
+          <br> <br>
+          Please press "submit" button to reset the game`;
     }
 
     // draw condition
@@ -408,7 +430,9 @@ var main = function (input) {
           <br> <br>
           Computer's points is ${checkRankSum(computerHand)}
           <br><br>
-        It is a draw!`;
+        It is a draw!
+        <br> <br>
+          Please press "submit" button to reset the game`;
     }
   }
 };
