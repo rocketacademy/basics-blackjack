@@ -280,7 +280,7 @@ deal.addEventListener("click", function () {
   for (var i = 1; i < playerArray.length; i += 1) {
     if (playerArray[i].activePlayer) {
       activePlayerPresent = true;
-      break;
+      continue;
     }
     playerArray[i].handSpace.innerHTML = CARDBACK_SVG;
     playerArray[i].handInfoSpace.innerHTML = "Chip In";
