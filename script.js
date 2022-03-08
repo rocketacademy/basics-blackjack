@@ -335,6 +335,10 @@ deal.addEventListener("click", function () {
 
   //activate current player options
   searchNextPlayer();
-  playerArray[currentPlayer].enableOptionFunction();
+  if (currentPlayer != 0) {
+    playerArray[currentPlayer].enableOptionFunction();
+    return;
+  }
+  resolveGame();
   return;
 });
