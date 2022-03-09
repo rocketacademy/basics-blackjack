@@ -344,7 +344,7 @@ deal.addEventListener("click", function () {
 });
 
 p1BetInput.addEventListener("keyup", function () {
-  if (p1BetInput.value > playerArray[1].chips) {
+  if (p1BetInput.value > playerArray[1].chips || p1BetInput.value < 1) {
     disableDeal();
     return;
   }
@@ -352,7 +352,7 @@ p1BetInput.addEventListener("keyup", function () {
 });
 
 p1BetInput.addEventListener("click", function () {
-  if (p1BetInput.value > playerArray[1].chips) {
+  if (p1BetInput.value > playerArray[1].chips || p1BetInput.value < 1) {
     disableDeal();
     return;
   }
@@ -360,7 +360,7 @@ p1BetInput.addEventListener("click", function () {
 });
 
 p2BetInput.addEventListener("keyup", function () {
-  if (p2BetInput.value > playerArray[2].chips) {
+  if (p2BetInput.value > playerArray[2].chips || p2BetInput.value < 1) {
     disableDeal();
     return;
   }
@@ -368,7 +368,7 @@ p2BetInput.addEventListener("keyup", function () {
 });
 
 p2BetInput.addEventListener("click", function () {
-  if (p2BetInput.value > playerArray[2].chips) {
+  if (p2BetInput.value > playerArray[2].chips || p2BetInput.value < 1) {
     disableDeal();
     return;
   }
@@ -376,7 +376,7 @@ p2BetInput.addEventListener("click", function () {
 });
 
 p3BetInput.addEventListener("keyup", function () {
-  if (p3BetInput.value > playerArray[3].chips) {
+  if (p3BetInput.value > playerArray[3].chips || p3BetInput.value < 1) {
     disableDeal();
     return;
   }
@@ -384,7 +384,7 @@ p3BetInput.addEventListener("keyup", function () {
 });
 
 p3BetInput.addEventListener("click", function () {
-  if (p3BetInput.value > playerArray[3].chips) {
+  if (p3BetInput.value > playerArray[3].chips || p3BetInput.value < 1) {
     disableDeal();
     return;
   }
