@@ -337,6 +337,12 @@ deal.addEventListener("click", function () {
   searchNextPlayer();
   if (currentPlayer != 0) {
     playerArray[currentPlayer].enableOptionFunction();
+    //can player double down. if player's chips are less than double of inputted bet, disable double down.
+    if (
+      playerArray[currentPlayer].chips <
+      playerArray[currentPlayer].betInput.value * 2
+    )
+      playerArray[currentPlayer].disableDoubleFunction();
     return;
   }
   resolveGame();
