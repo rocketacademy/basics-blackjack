@@ -342,3 +342,27 @@ deal.addEventListener("click", function () {
   resolveGame();
   return;
 });
+
+p1BetInput.addEventListener("keyup", function () {
+  if (p1BetInput.value > playerArray[1].chips) {
+    disableDeal();
+    return;
+  }
+  enableDeal();
+});
+
+p2BetInput.addEventListener("keyup", function () {
+  if (p2BetInput.value > playerArray[2].chips) {
+    disableDeal();
+    return;
+  }
+  enableDeal();
+});
+
+p3BetInput.addEventListener("keyup", function () {
+  if (p3BetInput.value > playerArray[3].chips) {
+    disableDeal();
+    return;
+  }
+  enableDeal();
+});
