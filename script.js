@@ -18,6 +18,7 @@ var makeDeck = function () {
         name: cardName,
         suit: currentSuit,
         rank: rankCounter,
+        image: cardName + currentSuit + `.png`,
       };
       cardDeck.push(card);
     }
@@ -136,9 +137,7 @@ var main = function (input) {
     player[0] = [];
     player[0].push(deck.pop());
     player[0].push(deck.pop());
-    dealerHandsHiddenText = `Dealer has:<br>
-    ${player[0][0].name} of ${player[0][0].suit}<br>
-    and one hidden card<br><br>`;
+    dealerHandsHiddenText = `Dealer has:<br><img src = images/${player[0][0].image}><img src = images/blank.png/}>`;
     gameState = `hitStandBegins`;
     var cardsOnTableStatement =
       playerActionText(1) +
