@@ -62,8 +62,6 @@ var main = function (input) {
     deck = shuffleCards(makeDeck()); // why doesn't var deck = shuffleCards(makeDeck()) work here
     console.log(deck);
     gameState = `registerPlayers`; // why doesn't var gameState = `dealerDealsFirstCard` work here
-    image =
-      "<img src=https://en.wikipedia.org/wiki/Clubs_(suit)#/media/File:01_of_clubs_A.svg>";
     return `Please enter number of players against dealer!<br><br>Minimum: 1, Maximum: 6`;
   }
   if (
@@ -87,7 +85,7 @@ var main = function (input) {
       playerBet[counter] = 0;
     }
     var moneyStatement =
-      `Click "Submit" to continue<br><br>` + moneyLeft(numberOfPlayers) + image;
+      `Click "Submit" to continue<br><br>` + moneyLeft(numberOfPlayers);
     return moneyStatement;
   }
   if (gameState == `betsCreate`) {
@@ -137,7 +135,7 @@ var main = function (input) {
     player[0] = [];
     player[0].push(deck.pop());
     player[0].push(deck.pop());
-    dealerHandsHiddenText = `Dealer has:<br><img src = images/${player[0][0].image}><img src = images/blank.png/}>`;
+    dealerHandsHiddenText = `Dealer has:<br><img src = images/${player[0][0].image}><img src = "images/blank.png"}>`;
     gameState = `hitStandBegins`;
     var cardsOnTableStatement =
       playerActionText(1) +
@@ -157,14 +155,14 @@ var main = function (input) {
       }, you're not in the game.<br><br>Click "Submit" to continue.😋`;
     } else {
       if (roundCounter <= numberOfPlayers) {
-        if (input != `Hit` && input != `Stand`) {
+        if (input != `hit` && input != `stand`) {
           var cardsOnTableStatement =
             playerActionText(roundCounter) +
             dealerHandsHiddenText +
             cardsOnTable(numberOfPlayers);
           return cardsOnTableStatement;
         }
-        if (input == `Hit`) {
+        if (input == `hit`) {
           player[roundCounter].push(deck.pop());
           // player[roundCounter].push({ rank: 11 }); //to test multiple aces
           if (buster(roundCounter) >= 21) {
@@ -182,7 +180,7 @@ var main = function (input) {
               cardsOnTable(numberOfPlayers);
           }
         }
-        if (input == `Stand`) {
+        if (input == `stand`) {
           scoreRec[roundCounter] = buster(roundCounter);
           roundCounter += 1;
           if (roundCounter > numberOfPlayers) {
@@ -270,8 +268,7 @@ var cardsOnTable = function (numberOfPlayers) {
       innercounter += 1
     ) {
       statement =
-        statement +
-        `${player[counter][innercounter].name} of ${player[counter][innercounter].suit}<br>`;
+        statement + `<img src = images/${player[counter][innercounter].image}>`;
     }
 
     statement = statement + `<br>`;
@@ -281,16 +278,14 @@ var cardsOnTable = function (numberOfPlayers) {
 var dealerHandsShown = function () {
   var statement = `Dealer has:<br>`;
   for (counter = 0; counter < player[0].length; counter += 1) {
-    statement =
-      statement +
-      `${player[0][counter].name} of ${player[0][counter].suit}<br>`;
+    statement = statement + `<img src = images/${player[0][counter].image}>`;
   }
   statement = statement + `<br>`;
   return statement;
 };
 
 var playerActionText = function (playerNo) {
-  var statement = `Player ${playerNo}, please "Hit" or "Stand"!<br><br>`;
+  var statement = `Player ${playerNo}, please "hit" or "stand"!<br><br>`;
   return statement;
 };
 
