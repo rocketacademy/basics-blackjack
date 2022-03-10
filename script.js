@@ -61,6 +61,8 @@ var main = function (input) {
     deck = shuffleCards(makeDeck()); // why doesn't var deck = shuffleCards(makeDeck()) work here
     console.log(deck);
     gameState = `registerPlayers`; // why doesn't var gameState = `dealerDealsFirstCard` work here
+    image =
+      "<img src=https://en.wikipedia.org/wiki/Clubs_(suit)#/media/File:01_of_clubs_A.svg>";
     return `Please enter number of players against dealer!<br><br>Minimum: 1, Maximum: 6`;
   }
   if (
@@ -84,7 +86,7 @@ var main = function (input) {
       playerBet[counter] = 0;
     }
     var moneyStatement =
-      `Click "Submit" to continue<br><br>` + moneyLeft(numberOfPlayers);
+      `Click "Submit" to continue<br><br>` + moneyLeft(numberOfPlayers) + image;
     return moneyStatement;
   }
   if (gameState == `betsCreate`) {
