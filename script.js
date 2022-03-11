@@ -155,14 +155,14 @@ var main = function (input) {
       }, you're not in the game.<br><br>Click "Submit" to continue.😋`;
     } else {
       if (roundCounter <= numberOfPlayers) {
-        if (input != `hit` && input != `stand`) {
+        if (input.toUpperCase() != `HIT` && input.toUpperCase() != `STAND`) {
           var cardsOnTableStatement =
             playerActionText(roundCounter) +
             dealerHandsHiddenText +
             cardsOnTable(numberOfPlayers);
           return cardsOnTableStatement;
         }
-        if (input == `hit`) {
+        if (input.toUpperCase() == `HIT`) {
           player[roundCounter].push(deck.pop());
           // player[roundCounter].push({ rank: 11 }); //to test multiple aces
           if (buster(roundCounter) >= 21) {
@@ -180,7 +180,7 @@ var main = function (input) {
               cardsOnTable(numberOfPlayers);
           }
         }
-        if (input == `stand`) {
+        if (input.toUpperCase() == `STAND`) {
           scoreRec[roundCounter] = buster(roundCounter);
           roundCounter += 1;
           if (roundCounter > numberOfPlayers) {
