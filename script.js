@@ -135,7 +135,7 @@ var main = function (input) {
     player[0] = [];
     player[0].push(deck.pop());
     player[0].push(deck.pop());
-    dealerHandsHiddenText = `Dealer has:<br><img src = images/${player[0][0].image}><img src = "images/blank.png"}>`;
+    dealerHandsHiddenText = `Dealer has:<br><img src = images/${player[0][0].image} style="float:left"><img src = "images/blank.png"}><br>`;
     gameState = `hitStandBegins`;
     var cardsOnTableStatement =
       playerActionText(1) +
@@ -267,8 +267,15 @@ var cardsOnTable = function (numberOfPlayers) {
       innercounter < player[counter].length;
       innercounter += 1
     ) {
-      statement =
-        statement + `<img src = images/${player[counter][innercounter].image}>`;
+      if (innercounter == player[counter].length - 1) {
+        statement =
+          statement +
+          `<img src = images/${player[counter][innercounter].image}>`;
+      } else {
+        statement =
+          statement +
+          `<img src = images/${player[counter][innercounter].image} style="float:left">`;
+      }
     }
 
     statement = statement + `<br>`;
@@ -278,7 +285,13 @@ var cardsOnTable = function (numberOfPlayers) {
 var dealerHandsShown = function () {
   var statement = `Dealer has:<br>`;
   for (counter = 0; counter < player[0].length; counter += 1) {
-    statement = statement + `<img src = images/${player[0][counter].image}>`;
+    if (counter == player[0].length - 1) {
+      statement = statement + `<img src = images/${player[0][counter].image}>`;
+    } else {
+      statement =
+        statement +
+        `<img src = images/${player[0][counter].image} style="float:left">`;
+    }
   }
   statement = statement + `<br>`;
   return statement;
