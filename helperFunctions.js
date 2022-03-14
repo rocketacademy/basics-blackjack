@@ -158,12 +158,18 @@ var nextRound = function () {
   disableP2Options();
   disableP3Options();
 
-  if (playerArray[1].activePlayer)
-    p1ChipInfo.innerHTML = `Current Chips: ${playerArray[1].chips}`;
-  if (playerArray[2].activePlayer)
-    p2ChipInfo.innerHTML = `Current Chips: ${playerArray[2].chips}`;
-  if (playerArray[3].activePlayer)
-    p3ChipInfo.innerHTML = `Current Chips: ${playerArray[3].chips}`;
+  if (playerArray[1].activePlayer) {
+    playerArray[1].chipInfoSpace.innerHTML = `Current Chips: ${playerArray[1].chips}`;
+    playerArray[1].betInput.value = 1;
+  }
+  if (playerArray[2].activePlayer) {
+    playerArray[2].chipInfoSpace.innerHTML = `Current Chips: ${playerArray[2].chips}`;
+    playerArray[2].betInput.value = 1;
+  }
+  if (playerArray[3].activePlayer) {
+    playerArray[3].chipInfoSpace.innerHTML = `Current Chips: ${playerArray[3].chips}`;
+    playerArray[3].betInput.value = 1;
+  }
 
   if (playerArray[1].chips <= 0 && playerArray[1].activePlayer) {
     hideP1BetArea();
@@ -316,4 +322,206 @@ var resolveGame = function () {
   }
   nextRound();
   return;
+};
+
+/***
+ * upates the playing player's UI.
+ */
+var updateCurrentPlayerUI = function () {
+  playerArray[currentPlayer].enableOptions();
+  //can player double down. if player's chips are less than double of inputted bet, disable double down.
+  if (
+    playerArray[currentPlayer].chips <
+    playerArray[currentPlayer].betInput.value * 2
+  )
+    playerArray[currentPlayer].disableDouble();
+};
+
+/***
+ * Chips in a player, shows and hides appropriate UI elements
+ * @param {number} player index of player to be chipped in
+ * @returns {null}
+ */
+var chipIn = function (player) {
+  playerArray[player].hideChipIn();
+  playerArray[player].disableOptions();
+  playerArray[player].showOptions();
+  playerArray[player].showBetArea();
+  playerArray[player].chips = 200;
+  playerArray[player].activePlayer = true;
+  playerArray[
+    player
+  ].chipInfoSpace.innerHTML = `Current Chips: ${playerArray[player].chips}`;
+};
+
+/***
+ * Hits: draws a card for the player and resolves it, enables and disables appropriate UI elements
+ * @param {number} player index of player to hit
+ * @returns {null}
+ */
+var playerHit = function (player) {
+  playerArray[player].handArray.push(drawCard());
+
+  //update UI
+  playerArray[player].handSpace.innerHTML = "";
+  for (var i = 0; i < playerArray[player].handArray.length; i += 1)
+    playerArray[player].handSpace.innerHTML +=
+      playerArray[player].handArray[i].svg;
+  playerArray[player].disableDouble();
+
+  var handValue = calculateHand(playerArray[player].handArray);
+
+  //if bust
+  if (handValue > MAX_VALUE_CARDS) {
+    playerArray[player].handInfoSpace.innerHTML = `BUST!`;
+    playerArray[player].disableOptions();
+    searchNextPlayer();
+    if (currentPlayer != 0) {
+      updateCurrentPlayerUI();
+      return;
+    }
+    //if next player = 0, it means it's dealer's turn, i.e. game resolve
+    resolveGame();
+    return;
+  }
+  //if not bust
+  playerArray[player].handInfoSpace.innerHTML = `Current hand: ${handValue}`;
+};
+
+/***
+ * Stand: passes on turn to the next player, enables and disables appropriate UI elements
+ * @param {number} player index of player to stand
+ * @returns {null}
+ */
+var playerStand = function (player) {
+  playerArray[player].disableOptions();
+  searchNextPlayer();
+  if (currentPlayer != 0) {
+    updateCurrentPlayerUI();
+    return;
+  }
+  resolveGame();
+  return;
+};
+
+/***
+ * Double: draws one card for the player and passes on turn to the next player, enables and disables appropriate UI elements
+ * @param {number} player index of player to double down
+ * @returns {null}
+ */
+var playerDouble = function (player) {
+  playerArray[player].betInput.value =
+    Number(playerArray[player].betInput.value) * 2;
+  playerArray[player].handArray.push(drawCard());
+  playerArray[player].handSpace.innerHTML = "";
+  for (var i = 0; i < playerArray[player].handArray.length; i += 1)
+    playerArray[player].handSpace.innerHTML +=
+      playerArray[player].handArray[i].svg;
+  playerArray[player].disableOptions();
+  searchNextPlayer();
+  var handValue = calculateHand(playerArray[player].handArray);
+  if (handValue > MAX_VALUE_CARDS) {
+    //if bust
+    playerArray[player].handInfoSpace.innerHTML = `BUST!`;
+  } else {
+    //if not bust
+    playerArray[player].handInfoSpace.innerHTML = `Current hand: ${handValue}`;
+  }
+
+  if (currentPlayer != 0) {
+    updateCurrentPlayerUI();
+    return;
+  }
+  resolveGame();
+  return;
+};
+
+/***
+ * Deals a new round of game of blackjack
+ * @returns {null}
+ */
+var dealGame = function () {
+  //check if there are any players who chipped in
+  var activePlayerPresent = false;
+  //i = 1 because index 0 is dealer
+  for (var i = 1; i < playerArray.length; i += 1) {
+    if (playerArray[i].activePlayer) {
+      activePlayerPresent = true;
+      continue;
+    }
+    playerArray[i].handSpace.innerHTML = CARDBACK_SVG;
+    playerArray[i].handInfoSpace.innerHTML = "Chip In";
+    playerArray[i].chipInfoSpace.innerHTML = "On the next game!";
+  }
+
+  if (!activePlayerPresent) {
+    dealerInfo.innerHTML = "There isn't any active player!";
+    return;
+  }
+
+  //ACTIVE PLAY
+  disableDeal();
+  disableChipIn();
+  disableBetInput();
+
+  //deals every active player, and shows hand
+  for (var i = 0; i < playerArray.length; i += 1) {
+    //skips if player isn't active
+    if (!playerArray[i].activePlayer) continue;
+    playerArray[i].handArray.push(drawCard());
+    playerArray[i].handArray.push(drawCard());
+    var currentPlayerHasBlackjack = checkBlackjack(playerArray[i].handArray);
+
+    //dealer cards, hides one card
+    if (i == 0) {
+      //dealer blackjack situation
+      if (currentPlayerHasBlackjack) {
+        playerArray[i].handSpace.innerHTML =
+          playerArray[i].handArray[0].svg + playerArray[i].handArray[1].svg;
+        playerArray[i].handInfoSpace.innerHTML = "Blackjack!";
+        dealerBlackJack = true;
+        continue;
+      }
+      playerArray[
+        i
+      ].handInfoSpace.innerHTML = `Dealer unveils their first card`;
+      playerArray[i].handSpace.innerHTML =
+        playerArray[i].handArray[0].svg + CARDBACK_SVG;
+      continue;
+    }
+    playerArray[i].handSpace.innerHTML =
+      playerArray[i].handArray[0].svg + playerArray[i].handArray[1].svg;
+    playerArray[i].handInfoSpace.innerHTML = `Current Hand: ${calculateHand(
+      playerArray[i].handArray
+    )}`;
+  }
+  if (dealerBlackJack) {
+    resolveGame();
+    return;
+  }
+
+  //activate current player options
+  searchNextPlayer();
+  if (currentPlayer != 0) {
+    updateCurrentPlayerUI();
+    return;
+  }
+  resolveGame();
+  return;
+};
+
+/***
+ * Input validation before dealing the hand
+ * @param {number} player index of player to input check
+ * @returns {null}
+ */
+var betInputCheck = function (player) {
+  if (
+    playerArray[player].betInput.value > playerArray[player].chips ||
+    playerArray[player].betInput.value < 1
+  ) {
+    disableDeal();
+    return;
+  }
+  enableDeal();
 };
