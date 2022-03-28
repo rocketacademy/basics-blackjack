@@ -80,12 +80,10 @@ var createBaseDeck = function () {
 };
 
 // function to get a random index ranging from 0 (inclusive) to max (exclusive).
-var getRandomIndex = function (max) {
-  return Math.floor(Math.random() * max);
-};
+const getRandomIndex = (max) => Math.floor(Math.random() * max);
 
 // function to shuffle the elements in the cardDeck array
-var shuffleCards = function (cardDeck) {
+const shuffleCards = function (cardDeck) {
   let currentIndex = 0;
   while (currentIndex < cardDeck.length) {
     let randomIndex = getRandomIndex(cardDeck.length);
@@ -99,25 +97,21 @@ var shuffleCards = function (cardDeck) {
 };
 
 // function to create and shuffle deck.
-var createGameDeck = function () {
-  return shuffleCards(createBaseDeck());
-};
+const createGameDeck = () => shuffleCards(createBaseDeck());
 
 // takes the top card from the deck.
-var drawCard = function (deck) {
-  return deck.pop(0);
-};
+const drawCard = (deck) => deck.pop(0);
 
 // function to draw two cards from the deck to the hand.
 // and arrange it in descending order.
-var dealHand = function (deck, hand) {
+const dealHand = function (deck, hand) {
   hand.push(drawCard(deck));
   hand.push(drawCard(deck));
   return hand;
 };
 
 // function to sum up cards in hand.
-var sumHand = function (hand) {
+const sumHand = function (hand) {
   let sum = 0;
   // this function relies on the fact that the hand is sorted in
   // descending order for it to properly score the value of the ace.
@@ -143,7 +137,7 @@ var sumHand = function (hand) {
 };
 
 // function to check for 21.
-var checkBlackjack = function (hand) {
+const checkBlackjack = function (hand) {
   let cardOne = hand[0];
   let cardTwo = hand[1];
   return (cardOne.name === "Ace" && cardTwo.rank >= 10) ||
@@ -153,7 +147,7 @@ var checkBlackjack = function (hand) {
 };
 
 // function to display contents of both player and computer hands.
-var displayHand = function (handOne, handTwo) {
+const displayHand = function (handOne, handTwo) {
   // display player's hand.
   let output = `<em>${playerName}:</em> <br/>`;
   for (let i = 0; i < handOne.length; i += 1) {
@@ -167,7 +161,7 @@ var displayHand = function (handOne, handTwo) {
   return output;
 };
 
-var displayScore = function (scoreOne, scoreTwo) {
+const displayScore = function (scoreOne, scoreTwo) {
   let output = `<br/> Player score: ${scoreOne} 
   <br/> Computer score: ${scoreTwo} <br/>`;
   // if player or computer hand exceeds 21.
@@ -199,14 +193,14 @@ var displayScore = function (scoreOne, scoreTwo) {
   return output;
 };
 
-var resetGame = function () {
+const resetGame = function () {
   gameDeck = [];
   computerHand = [];
   playerHand = [];
 };
 
 // function to substitute suit name with emoji.
-var emojiSuit = function (suitName) {
+const emojiSuit = function (suitName) {
   return suitName === "Hearts"
     ? "♥️"
     : suitName === "Spades"
@@ -226,7 +220,7 @@ instructBox.innerHTML =
 inputBox.placeholder = "Name";
 
 // function to run under STATE_DEAL.
-var gameDeal = function (input) {
+const gameDeal = function (input) {
   // first input should be player name, if player name is empty.
   // else assign generic player name.
   if (!playerName) {
@@ -258,7 +252,7 @@ var gameDeal = function (input) {
 };
 
 // function to run under STATE_PLAY.
-var gamePlay = function (input) {
+const gamePlay = function (input) {
   let output;
   if (
     input === "" ||
@@ -290,7 +284,7 @@ var gamePlay = function (input) {
 };
 
 // function to run under STATE_RESULT.
-var gameResult = function () {
+const gameResult = function () {
   // check if any player got a blackjack.
   let playerBlackjack = checkBlackjack(playerHand);
   let computerBlackjack = checkBlackjack(computerHand);
@@ -342,7 +336,7 @@ var gameResult = function () {
 /* --------- MAIN FUNCTION -------- */
 /* -------------------------------- */
 
-var main = function (input) {
+const main = function (input) {
   // starting game state, user presses submit once to deal cards.
   if (gameState === STATE_DEAL) return gameDeal(input);
   if (gameState === STATE_PLAY) return gamePlay(input);
