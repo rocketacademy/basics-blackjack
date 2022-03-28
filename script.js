@@ -59,14 +59,14 @@ var createBaseDeck = function () {
     "King",
   ];
 
-  let suitCounter = 0; // max 3 (total 4): hearts, spades, diamonds, clubs.
   const cardDeck = []; // array to store finished cards.
 
-  while (suitCounter < suits.length) {
+  for (let suitCounter = 0; suitCounter < suits.length; suitCounter += 1) {
+    // suit counter: max 3 (total 4): hearts, spades, diamonds, clubs.
     let currentSuit = suits[suitCounter];
-    let rankCounter = 0; // max 12 (total 13): ace, 2, 3, ..., 10, jack, queen, king.
     // loops through individual card names and pushes card object.
-    while (rankCounter < names.length) {
+    for (let rankCounter = 0; rankCounter < names.length; rankCounter += 1) {
+      // rank counter: max 12 (total 13): ace, 2, 3, ..., 10, jack, queen, king.
       let currentName = names[rankCounter];
       let currentRank = rankCounter + 1;
       cardDeck.push({
@@ -74,9 +74,7 @@ var createBaseDeck = function () {
         name: currentName,
         suit: currentSuit,
       });
-      rankCounter += 1;
     }
-    suitCounter += 1;
   }
   return cardDeck;
 };
