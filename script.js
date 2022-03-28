@@ -42,8 +42,8 @@ let playerHand = [];
 
 // function to create deck of cards.
 var createBaseDeck = function () {
-  let suits = ["Hearts", "Spades", "Diamonds", "Clubs"];
-  let names = [
+  const suits = ["Hearts", "Spades", "Diamonds", "Clubs"];
+  const names = [
     "Ace",
     "2",
     "3",
@@ -60,7 +60,7 @@ var createBaseDeck = function () {
   ];
 
   let suitCounter = 0; // max 3 (total 4): hearts, spades, diamonds, clubs.
-  let cardDeck = []; // array to store finished cards.
+  const cardDeck = []; // array to store finished cards.
 
   while (suitCounter < suits.length) {
     let currentSuit = suits[suitCounter];
@@ -74,9 +74,9 @@ var createBaseDeck = function () {
         name: currentName,
         suit: currentSuit,
       });
-      rankCounter++;
+      rankCounter += 1;
     }
-    suitCounter++;
+    suitCounter += 1;
   }
   return cardDeck;
 };
@@ -124,11 +124,11 @@ var sumHand = function (hand) {
   // this function relies on the fact that the hand is sorted in
   // descending order for it to properly score the value of the ace.
   hand.sort((a, b) => b.rank - a.rank);
-  for (let i = 0; i < hand.length; i++) {
+  for (let i = 0; i < hand.length; i += 1) {
     if (hand[i]["rank"] >= 10) {
       // each card above 10 is only worth 10 points.
       sum += 10;
-    } else if (hand[i]["name"] == "Ace") {
+    } else if (hand[i]["name"] === "Ace") {
       if (sum < 11) {
         // score +11 if the current hand is less than 11 points.
         sum += 11;
@@ -148,8 +148,8 @@ var sumHand = function (hand) {
 var checkBlackjack = function (hand) {
   let cardOne = hand[0];
   let cardTwo = hand[1];
-  return (cardOne.name == "Ace" && cardTwo.rank >= 10) ||
-    (cardOne.rank >= 10 && cardTwo.name == "Ace")
+  return (cardOne.name === "Ace" && cardTwo.rank >= 10) ||
+    (cardOne.rank >= 10 && cardTwo.name === "Ace")
     ? true
     : false;
 };
@@ -158,12 +158,12 @@ var checkBlackjack = function (hand) {
 var displayHand = function (handOne, handTwo) {
   // display player's hand.
   let output = `<em>${playerName}:</em> <br/>`;
-  for (let i = 0; i < handOne.length; i++) {
+  for (let i = 0; i < handOne.length; i += 1) {
     output += `${handOne[i]["name"]} of ${emojiSuit(handOne[i]["suit"])} <br/>`;
   }
   // display computer's hand.
   output += `<br/> <em>Computer:</em> <br/>`;
-  for (let i = 0; i < handTwo.length; i++) {
+  for (let i = 0; i < handTwo.length; i += 1) {
     output += `${handTwo[i]["name"]} of ${emojiSuit(handTwo[i]["suit"])} <br/>`;
   }
   return output;
@@ -187,7 +187,7 @@ var displayScore = function (scoreOne, scoreTwo) {
   }
   // else compare scores normally.
   else {
-    if (scoreTwo == scoreOne) {
+    if (scoreTwo === scoreOne) {
       output += `<br/><br/> It's a tie.`;
       containerBox.style.backgroundColor = GREEN;
     } else if (scoreOne > scoreTwo) {
@@ -209,11 +209,11 @@ var resetGame = function () {
 
 // function to substitute suit name with emoji.
 var emojiSuit = function (suitName) {
-  return suitName == "Hearts"
+  return suitName === "Hearts"
     ? "♥️"
-    : suitName == "Spades"
+    : suitName === "Spades"
     ? "♠️"
-    : suitName == "Diamonds"
+    : suitName === "Diamonds"
     ? "♦️"
     : "♣️";
 };
@@ -263,7 +263,7 @@ var gameDeal = function (input) {
 var gamePlay = function (input) {
   let output;
   if (
-    input == "" ||
+    input === "" ||
     (input.toUpperCase() != HIT && input.toUpperCase() != STAND)
   ) {
     output = `Please enter "HIT" or "STAND" to continue. <br/><br/> `;
@@ -271,7 +271,7 @@ var gamePlay = function (input) {
     return output;
   }
 
-  if (input.toUpperCase() == HIT) {
+  if (input.toUpperCase() === HIT) {
     newCard = drawCard(gameDeck);
     playerHand.push(newCard);
     output = `You drew the ${newCard.name} of ${emojiSuit(
@@ -282,7 +282,7 @@ var gamePlay = function (input) {
     return output;
   }
 
-  if (input.toUpperCase() == STAND) {
+  if (input.toUpperCase() === STAND) {
     gameState = STATE_RESULT;
     instructBox.innerHTML = `${playerName}, you ended your turn. Click submit again to see the scores. `;
     inputBox.placeholder = ``;
@@ -346,7 +346,7 @@ var gameResult = function () {
 
 var main = function (input) {
   // starting game state, user presses submit once to deal cards.
-  if (gameState == STATE_DEAL) return gameDeal(input);
-  if (gameState == STATE_PLAY) return gamePlay(input);
-  if (gameState == STATE_RESULT) return gameResult();
+  if (gameState === STATE_DEAL) return gameDeal(input);
+  if (gameState === STATE_PLAY) return gamePlay(input);
+  if (gameState === STATE_RESULT) return gameResult();
 };
