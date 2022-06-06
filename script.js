@@ -1,5 +1,6 @@
 // Declaration of variables
 var playerArray = [];
+var current = 'hi';
 var computerArray = [];
 var playerValue = 0;
 var computerValue = 0;
