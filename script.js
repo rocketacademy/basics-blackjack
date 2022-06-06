@@ -1,3 +1,6 @@
+// DEMO for 6 Jun class 15-4
+
+
 // Game modes stored in constants
 const WAITING_FOR_NUM_PLAYERS = "waiting for num of players";
 const WAITING_FOR_NAME = "waiting for username";
