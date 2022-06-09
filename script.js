@@ -80,7 +80,9 @@ var shuffleDeck = function (deck) {
 var deck = shuffleDeck(makeDeck());
 var playerHand = [];
 var computerHand = [];
-var gameStatus = "";
+var currentGameStatus = "dealing cards";
+var playerScore = 0;
+var computerScore = 0;
 
 // function to calculate hand score
 var calculateHandScore = function (hand) {
@@ -136,7 +138,7 @@ var checkWinningCondition = function (playerScore, computerScore) {
     (computerScore < 21 && computerScore > playerScore) ||
     (computerScore < 21 && playerScore > 21)
   ) {
-    outcome = "computer wins";
+    outcome = "dealer wins";
   }
   // player winning with blackjack
   else if (
@@ -150,33 +152,95 @@ var checkWinningCondition = function (playerScore, computerScore) {
     (computerScore == 21 && playerScore < 21) ||
     (computerScore == 21 && playerScore > 21)
   ) {
-    outcome = "computer wins with blackjack";
+    outcome = "dealer wins with blackjack";
   }
 
   return outcome;
 };
 
+// function to print hand and score
+var formatHandAndScore = function (player, hand, score) {
+  message = `${player} Hand:<br>`;
+
+  for (var counter = 0; counter < hand.length; counter += 1) {
+    message += `- ${hand[counter].name} of ${hand[counter].suit}<br>`;
+  }
+
+  message += `<br>Current Score: ${score}<br><br>`;
+
+  return message;
+};
+
 var main = function (input) {
   var gameMessage = "";
 
-  // deal cards to player
-  for (var counter = 0; counter < 2; counter += 1) {
-    playerHand.push(deck.pop());
-    computerHand.push(deck.pop());
+  // initialise game start
+  if (currentGameStatus == "dealing cards") {
+    // deal cards to player
+    for (var counter = 0; counter < 2; counter += 1) {
+      playerHand.push(deck.pop());
+      computerHand.push(deck.pop());
+    }
+    // calculate player's hand
+    playerScore = calculateHandScore(playerHand);
+
+    // calculate computer's hand
+    computerScore = calculateHandScore(computerHand);
+
+    gameMessage +=
+      formatHandAndScore("Player", playerHand, playerScore) +
+      `Input 'hit' if you want another card or 'stand' to end your turn.
+      <br><br>${formatHandAndScore("Dealer", computerHand, computerScore)}`;
+
+    currentGameStatus = "pending player choice";
+  }
+  // list our possible game outcomes based on player choice to hit or stand
+  else if (currentGameStatus == "pending player choice") {
+    // add card to player hand if 'hit'
+    if (input.toLowerCase() == "hit") {
+      playerHand.push(deck.pop());
+      playerScore = calculateHandScore(playerHand);
+      gameMessage =
+        formatHandAndScore("Player", playerHand, playerScore) +
+        `Input 'hit' if you want another card or 'stand' to end your turn.`;
+    } else if (input.toLowerCase() == "stand".toLowerCase()) {
+      gameMessage =
+        formatHandAndScore("Player", playerHand, playerScore) +
+        `It's the dealer's turn now.`;
+      currentGameStatus = "computer turn";
+    } else {
+      gameMessage =
+        "Invalid input! Enter 'hit' or 'stand' only<br><br>" +
+        formatHandAndScore("Player", playerHand, playerScore);
+    }
+  }
+  // dealer's turn to play
+  else if (currentGameStatus == "computer turn") {
+    // dealer stands if total equals or exceeds 17
+    console.log("status", currentGameStatus);
+    console.log("computer score", computerScore);
+    if (computerScore >= 17) {
+      currentGameStatus = "check win";
+      gameMessage = formatHandAndScore("Dealer", computerHand, computerScore);
+    } else {
+      while (computerScore < 17 && computerHand.length < 5) {
+        computerHand.push(deck.pop());
+        computerScore = calculateHandScore(computerHand);
+        gameMessage = formatHandAndScore("Dealer", computerHand, computerScore);
+        currentGameStatus = "check win";
+      }
+    }
+  }
+  // check winning condition based on player and computer score
+  else if (currentGameStatus == "check win") {
+    var outcome = checkWinningCondition(playerScore, computerScore);
+    gameMessage = `${formatHandAndScore("Player", playerHand, playerScore)}
+    ${formatHandAndScore("Dealer", computerHand, computerScore)}
+    ${outcome}`;
   }
 
-  // calculate player's hand
-  var playerScore = calculateHandScore(playerHand);
-
-  // calculate computer's hand
-  var computerScore = calculateHandScore(computerHand);
-
-  // check winning condition based on player and computer score
-  var outcome = checkWinningCondition(playerScore, computerScore);
-
-  gameMessage += `Player Hand: ${playerHand[0].name} of ${playerHand[0].suit} and ${playerHand[1].rank} of ${playerHand[1].suit} and Score: ${playerScore}<br>
-  Computer Hand: ${computerHand[0].name} of ${computerHand[0].suit} and ${computerHand[1].rank} of ${computerHand[1].suit} and Score: ${computerScore}<br>
-  ${outcome}`;
+  // Dealer Hand: ${computerHand[0].name} of ${computerHand[0].suit} and ${computerHand[1].rank} of ${computerHand[1].suit} and Score: ${computerScore}<br>
+  // ${outcome}`;
 
   return gameMessage;
 };
