@@ -87,8 +87,9 @@ var computerScore = 0;
 // function to calculate hand score
 var calculateHandScore = function (hand) {
   var handScore = 0;
-
   var index = 0;
+  var numOfAce = 0;
+
   while (index < hand.length) {
     var currentCard = hand[index];
     //set value for jack, queen, king to 10
@@ -101,13 +102,25 @@ var calculateHandScore = function (hand) {
     }
     // set value for ace
     if (currentCard.name == "ace") {
-      currentCard.rank = 11;
+      if (handScore < 21 && numOfAce < 1) {
+        currentCard.rank = 11;
+      } else if (handScore > 21 && numOfAce > 1) {
+        currentCard.rank = 1;
+      }
+      numOfAce += 1;
     }
 
-    handScore += currentCard.rank;
+    handScore += Number(currentCard.rank);
     console.log("hand score:", handScore);
     index += 1;
   }
+
+  console.log("num of ace", numOfAce);
+  // adjust the value of first ace if number exceeds 21 and there are multiple aces
+  if (numOfAce > 1 && handScore > 21) {
+    handScore -= 10;
+  }
+
   return handScore;
 };
 
@@ -166,7 +179,7 @@ var formatHandAndScore = function (player, hand, score) {
     message += `- ${hand[counter].name} of ${hand[counter].suit}<br>`;
   }
 
-  message += `<br>Current Score: ${score}<br><br>`;
+  message += `<br>Current Score: ${score}<br>`;
 
   return message;
 };
@@ -190,57 +203,58 @@ var main = function (input) {
     gameMessage +=
       formatHandAndScore("Player", playerHand, playerScore) +
       `Input 'hit' if you want another card or 'stand' to end your turn.
-      <br><br>${formatHandAndScore("Dealer", computerHand, computerScore)}`;
+      <br>`;
 
     currentGameStatus = "pending player choice";
   }
   // list our possible game outcomes based on player choice to hit or stand
   else if (currentGameStatus == "pending player choice") {
+    console.log("player hand length", playerHand.length);
+
     // add card to player hand if 'hit'
     if (input.toLowerCase() == "hit") {
       playerHand.push(deck.pop());
       playerScore = calculateHandScore(playerHand);
-      gameMessage =
-        formatHandAndScore("Player", playerHand, playerScore) +
-        `Input 'hit' if you want another card or 'stand' to end your turn.`;
-    } else if (input.toLowerCase() == "stand".toLowerCase()) {
-      gameMessage =
-        formatHandAndScore("Player", playerHand, playerScore) +
-        `It's the dealer's turn now.`;
-      currentGameStatus = "computer turn";
+
+      if (playerHand.length <= 4) {
+        gameMessage =
+          formatHandAndScore("Player", playerHand, playerScore) +
+          `Input 'hit' if you want another card or 'stand' to end your turn.`;
+      } else {
+        gameMessage =
+          formatHandAndScore("Player", playerHand, playerScore) +
+          `You can only have 5 cards max. It's the dealer's turn now.`;
+        currentGameStatus = "computer turn";
+      }
+    }
+    // switch to dealer's turn if player stands or player reaches max num of cards
+    else if (
+      input.toLowerCase() == "stand".toLowerCase() ||
+      currentGameStatus == "computer turn"
+    ) {
+      // dealer stands if total equals or exceeds 17
+      if (computerScore >= 17) {
+        var outcome = checkWinningCondition(playerScore, computerScore);
+      } else {
+        while (computerScore < 17 && computerHand.length < 5) {
+          computerHand.push(deck.pop());
+          computerScore = calculateHandScore(computerHand);
+          outcome = checkWinningCondition(playerScore, computerScore);
+        }
+      }
+      gameMessage = `${formatHandAndScore(
+        "Player",
+        playerHand,
+        playerScore
+      )}<br>
+          ${formatHandAndScore("Dealer", computerHand, computerScore)}<br>
+          ${outcome}`;
     } else {
       gameMessage =
         "Invalid input! Enter 'hit' or 'stand' only<br><br>" +
         formatHandAndScore("Player", playerHand, playerScore);
     }
   }
-  // dealer's turn to play
-  else if (currentGameStatus == "computer turn") {
-    // dealer stands if total equals or exceeds 17
-    console.log("status", currentGameStatus);
-    console.log("computer score", computerScore);
-    if (computerScore >= 17) {
-      currentGameStatus = "check win";
-      gameMessage = formatHandAndScore("Dealer", computerHand, computerScore);
-    } else {
-      while (computerScore < 17 && computerHand.length < 5) {
-        computerHand.push(deck.pop());
-        computerScore = calculateHandScore(computerHand);
-        gameMessage = formatHandAndScore("Dealer", computerHand, computerScore);
-        currentGameStatus = "check win";
-      }
-    }
-  }
-  // check winning condition based on player and computer score
-  else if (currentGameStatus == "check win") {
-    var outcome = checkWinningCondition(playerScore, computerScore);
-    gameMessage = `${formatHandAndScore("Player", playerHand, playerScore)}
-    ${formatHandAndScore("Dealer", computerHand, computerScore)}
-    ${outcome}`;
-  }
-
-  // Dealer Hand: ${computerHand[0].name} of ${computerHand[0].suit} and ${computerHand[1].rank} of ${computerHand[1].suit} and Score: ${computerScore}<br>
-  // ${outcome}`;
 
   return gameMessage;
 };
