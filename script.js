@@ -84,6 +84,41 @@ var currentGameStatus = "dealing cards";
 var playerScore = 0;
 var computerScore = 0;
 
+// function to check blackjack
+
+var restartGame = function () {
+  // var deck = shuffleDeck(makeDeck());
+  playerHand = [];
+  computerHand = [];
+  playerScore = 0;
+  computerScore = 0;
+};
+
+var hasBlackjack = function (hand) {
+  var firstCard = hand[0].name;
+  var secondCard = hand[1].name;
+  var outcome = "";
+
+  if (
+    ((firstCard == "king" ||
+      firstCard == "queen" ||
+      firstCard == "jack" ||
+      firstCard == "10") &&
+      secondCard == "ace") ||
+    (firstCard == "ace" &&
+      (secondCard == "king" ||
+        secondCard == "queen" ||
+        secondCard == "jack" ||
+        secondCard == "10"))
+  ) {
+    outcome = true;
+  } else {
+    outcome = false;
+  }
+
+  return outcome;
+};
+
 // function to calculate hand score
 var calculateHandScore = function (hand) {
   var handScore = 0;
@@ -111,11 +146,9 @@ var calculateHandScore = function (hand) {
     }
 
     handScore += Number(currentCard.rank);
-    console.log("hand score:", handScore);
     index += 1;
   }
 
-  console.log("num of ace", numOfAce);
   // adjust the value of first ace if number exceeds 21 and there are multiple aces
   if (numOfAce > 1 && handScore > 21) {
     handScore -= 10;
@@ -131,41 +164,28 @@ var checkWinningCondition = function (playerScore, computerScore) {
   // draw condition
   if (
     playerScore == computerScore ||
-    (playerScore > 21 && computerScore > 21)
+    (playerScore > 21 && computerScore > 21) ||
+    (playerScore == 21 && computerScore == 21)
   ) {
-    outcome = "draw";
-  }
-  // draw with blackjack
-  else if (playerScore == 21 && computerScore == 21) {
-    outcome = "draw with blackjack";
+    outcome = "Game Outcome: Draw";
   }
   // winning condition
   else if (
     (playerScore < 21 && playerScore > computerScore) ||
-    (playerScore < 21 && computerScore > 21)
+    (playerScore < 21 && computerScore > 21) ||
+    (playerScore == 21 && computerScore < 21) ||
+    (playerScore == 21 && computerScore > 21)
   ) {
-    outcome = "player wins";
+    outcome = "Game Outcome: Player wins";
   }
   // losing condition
   else if (
     (computerScore < 21 && computerScore > playerScore) ||
-    (computerScore < 21 && playerScore > 21)
-  ) {
-    outcome = "dealer wins";
-  }
-  // player winning with blackjack
-  else if (
-    (playerScore == 21 && computerScore < 21) ||
-    (playerScore == 21 && computerScore > 21)
-  ) {
-    outcome = "player wins with blackjack";
-  }
-  // player lose to computer blackjack
-  else if (
+    (computerScore < 21 && playerScore > 21) ||
     (computerScore == 21 && playerScore < 21) ||
     (computerScore == 21 && playerScore > 21)
   ) {
-    outcome = "dealer wins with blackjack";
+    outcome = "Game Outcome: Dealer wins";
   }
 
   return outcome;
@@ -200,17 +220,20 @@ var main = function (input) {
     // calculate computer's hand
     computerScore = calculateHandScore(computerHand);
 
-    gameMessage +=
-      formatHandAndScore("Player", playerHand, playerScore) +
-      `Input 'hit' if you want another card or 'stand' to end your turn.
-      <br>`;
+    if (hasBlackjack(playerHand)) {
+      gameMessage +=
+        formatHandAndScore("Player", playerHand, playerScore) +
+        `You've got Blackjack! <br>Input 'stand' to end your turn or 'hit' if you want another card for some reason.<br>`;
+    } else {
+      gameMessage +=
+        formatHandAndScore("Player", playerHand, playerScore) +
+        `Input 'hit' if you want another card or 'stand' to end your turn.<br>`;
+    }
 
     currentGameStatus = "pending player choice";
   }
   // list our possible game outcomes based on player choice to hit or stand
   else if (currentGameStatus == "pending player choice") {
-    console.log("player hand length", playerHand.length);
-
     // add card to player hand if 'hit'
     if (input.toLowerCase() == "hit") {
       playerHand.push(deck.pop());
@@ -234,7 +257,13 @@ var main = function (input) {
     ) {
       // dealer stands if total equals or exceeds 17
       if (computerScore >= 17) {
-        var outcome = checkWinningCondition(playerScore, computerScore);
+        if (hasBlackjack(computerHand)) {
+          var outcome =
+            "Dealer has Blackjack<br>" +
+            checkWinningCondition(playerScore, computerScore);
+        } else {
+          outcome = checkWinningCondition(playerScore, computerScore);
+        }
       } else {
         while (computerScore < 17 && computerHand.length < 5) {
           computerHand.push(deck.pop());
@@ -247,8 +276,11 @@ var main = function (input) {
         playerHand,
         playerScore
       )}<br>
-          ${formatHandAndScore("Dealer", computerHand, computerScore)}<br>
-          ${outcome}`;
+      ${formatHandAndScore("Dealer", computerHand, computerScore)}<br>
+      ${outcome}<br>
+      Hit submit to play again!`;
+      restartGame();
+      currentGameStatus = "dealing cards";
     } else {
       gameMessage =
         "Invalid input! Enter 'hit' or 'stand' only<br><br>" +
