@@ -67,13 +67,21 @@ var shuffleDeck = function (array) {
 
 var handValueCounter = function (hand) {
   var totalValue = 0;
+  var noOfAces = 0;
   for (var i = 0; i < hand.length; i++) {
     if (hand[i].value == "J" || hand[i].value == "Q" || hand[i].value == "K") {
       totalValue += 10;
     } else if (hand[i].value == "A") {
-      totalValue += 11;
+      noOfAces += 1;
     } else {
       totalValue += Number(hand[i].value);
+    }
+  }
+  for (var i = 0; i < noOfAces; i++) {
+    if (totalValue + 11 <= 21) {
+      totalValue += 11;
+    } else {
+      totalValue += 1;
     }
   }
   return totalValue;
@@ -105,7 +113,7 @@ var bjChecker = function (hand) {
 };
 
 var handDisplay = function (hand) {
-  var text = `<br>`;
+  var text = ``;
   for (var i = 0; i < hand.length; i++) {
     text += `<br>${hand[i].value + hand[i].suit}`;
   }
@@ -114,9 +122,9 @@ var handDisplay = function (hand) {
 
 var statusDisplay = function (hand1, hand2) {
   var status =
-    "<br><br>Player cards drawn:" +
+    `<br><br>Player cards drawn (${handValueCounter(hand1)}):` +
     handDisplay(hand1) +
-    "<br><br>AI cards drawn:" +
+    `<br><br>AI cards drawn (${handValueCounter(hand2)}):` +
     handDisplay(hand2);
   return status;
 };
