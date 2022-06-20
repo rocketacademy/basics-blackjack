@@ -7,6 +7,8 @@ var winImage =
   '<img src = "https://c.tenor.com/5bZBO8yLI78AAAAM/polygon-polypug.gif" class  = "center"/>';
 var drawImage =
   '<img src = "https://c.tenor.com/wyfhYqF1tJIAAAAM/mark-wahlberg-wahlberg.gif" class = "center"/>';
+  var waitImage =
+    '<img src = "https://c.tenor.com/U4ss8KmnGZMAAAAM/wait-waiting.gif" class = "center"/>';
 var makeDeck = function () {
   var deck = [];
   var suits = ["Spades", "Hearts", "Clubs", "Diamonds"];
@@ -136,7 +138,7 @@ var dealCards = function () {
       player.score
     }<br><br> Dealer's Hand:<br> ${dealer.cards[0].name} of ${displaySuit(
       dealer.cards[0].suit
-    )}`
+    )}<br>${waitImage}`
   );
 };
 
@@ -161,7 +163,7 @@ var hit = function (hand) {
       player.score
     }<br><br> Dealer's Hand:<br> ${dealer.cards[0].name} of ${displaySuit(
       dealer.cards[0].suit
-    )}`;
+    )}<br>${waitImage}`;
   } else {
     return `You have busted! You have lost!<br>${loseImage}<br>Player's Hand:<br> ${showCard(
       player.cards
