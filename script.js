@@ -11,7 +11,7 @@ var AIPLAYING = 2;
 var playerHand = [];
 var aiHand = [];
 var gameMode = DEALING;
-var aiRiskThreshold = 18;
+var aiRiskThreshold = 17;
 
 var makeDeck = function () {
   var deck = [];
@@ -120,20 +120,27 @@ var handDisplay = function (hand) {
   return text;
 };
 
-var statusDisplay = function (hand1, hand2) {
+var statusDisplay = function (hand1, hand2, slice) {
   var status =
     `<br><br>Player cards drawn (${handValueCounter(hand1)}):` +
-    handDisplay(hand1) +
-    `<br><br>AI cards drawn (${handValueCounter(hand2)}):` +
-    handDisplay(hand2);
+    handDisplay(hand1);
+  if (slice) {
+    status +=
+      `<br><br>AI cards drawn (${handValueCounter(
+        hand2.slice(slice)
+      )}):<br>??` + handDisplay(hand2.slice(slice));
+  } else {
+    status +=
+      `<br><br>AI cards drawn (${handValueCounter(hand2.slice(slice))}):` +
+      handDisplay(hand2.slice(slice));
+  }
   return status;
 };
 
 var ai = function (deck) {
   var currentScore = handValueCounter(aiHand);
-  while (currentScore < aiRiskThreshold) {
+  if (currentScore < aiRiskThreshold) {
     draw(aiHand, deck);
-    currentScore = handValueCounter(aiHand);
   }
 };
 
@@ -146,23 +153,23 @@ var main = function (input) {
     if (bjChecker(playerHand) && bjChecker(aiHand)) {
       return (
         "It's a tie! Press Submit again to start a new round." +
-        statusDisplay(playerHand, aiHand)
+        statusDisplay(playerHand, aiHand, 0)
       );
     } else if (bjChecker(playerHand)) {
       return (
         "Blackjack! Player wins! Press Submit again to start a new round." +
-        statusDisplay(playerHand, aiHand)
+        statusDisplay(playerHand, aiHand, 0)
       );
     } else if (bjChecker(aiHand)) {
       return (
         "Blackjack! AI wins! Press Submit again to start a new round." +
-        statusDisplay(playerHand, aiHand)
+        statusDisplay(playerHand, aiHand, 0)
       );
     } else {
       gameMode = PLAYING;
       return (
         "Cards have been dealt; player 1 hit or stand?" +
-        statusDisplay(playerHand, aiHand)
+        statusDisplay(playerHand, aiHand, 1)
       );
     }
   }
@@ -173,20 +180,20 @@ var main = function (input) {
         gameMode = AIPLAYING;
         return (
           "Oops! Looks like you bust. Press Submit again to continue." +
-          statusDisplay(playerHand, aiHand)
+          statusDisplay(playerHand, aiHand, 1)
         );
       }
-      return "Player 1 hit or stand?" + statusDisplay(playerHand, aiHand);
+      return "Player 1 hit or stand?" + statusDisplay(playerHand, aiHand, 1);
     } else if (input == "s") {
       gameMode = AIPLAYING;
       return (
         "Alright, now it's the AI's turn. Press Submit again to continue." +
-        statusDisplay(playerHand, aiHand)
+        statusDisplay(playerHand, aiHand, 1)
       );
     } else {
       return (
         "Please enter h or s to hit or stand." +
-        statusDisplay(playerHand, aiHand)
+        statusDisplay(playerHand, aiHand, 1)
       );
     }
   }
@@ -203,7 +210,7 @@ var main = function (input) {
       winStatement = "It's a tie! Press Submit again to start a new round.";
     }
     gameMode = DEALING;
-    return winStatement + statusDisplay(playerHand, aiHand);
+    return winStatement + statusDisplay(playerHand, aiHand, 0);
   }
 };
 
