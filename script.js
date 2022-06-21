@@ -1,17 +1,19 @@
 //constants
-var WIN = 1;
-var LOSE = 2;
-var DRAW = 0;
+var WIN = "win";
+var LOSE = "lose";
+var DRAW = "draw";
 
 var DEALING = 0;
 var PLAYING = 1;
 var AIPLAYING = 2;
 
 // Global variables
-var playerHand = [];
+var noOfPlayers = 1;
+var playerHands = [];
 var aiHand = [];
 var gameMode = DEALING;
 var aiRiskThreshold = 17;
+var currentPlayer = 0;
 
 var makeDeck = function () {
   var deck = [];
@@ -42,6 +44,12 @@ var makeDeck = function () {
 var draw = function (hand, deck) {
   var drawnCard = deck.pop();
   hand.push(drawnCard);
+};
+
+var handGenerator = function (noOfPlayers) {
+  for (var i = 0; i < noOfPlayers; i++) {
+    playerHands.push([]);
+  }
 };
 
 var deal = function (listOfHands, noOfCards, deck) {
@@ -105,6 +113,14 @@ var winChecker = function (hand1, hand2) {
   }
 };
 
+var totalWinChecker = function (listOfHands, ai) {
+  var output = [];
+  for (var i = 0; i < listOfHands.length; i++) {
+    output.push(winChecker(listOfHands[i], ai));
+  }
+  return output;
+};
+
 var bjChecker = function (hand) {
   if (handValueCounter(hand) == 21 && hand.length == 2) {
     return true;
@@ -112,27 +128,39 @@ var bjChecker = function (hand) {
   return false;
 };
 
+var totalBjChecker = function (listOfHands) {
+  var output = [];
+  for (var i = 0; i < listOfHands.length; i++) {
+    if (bjChecker(listOfHands[i])) {
+      output.push(i + 1);
+    }
+  }
+  return output;
+};
+
 var handDisplay = function (hand) {
   var text = ``;
   for (var i = 0; i < hand.length; i++) {
-    text += `<br>${hand[i].value + hand[i].suit}`;
+    text += `${hand[i].value + hand[i].suit}  `;
   }
   return text;
 };
 
-var statusDisplay = function (hand1, hand2, slice) {
-  var status =
-    `<br><br>Player cards drawn (${handValueCounter(hand1)}):` +
-    handDisplay(hand1);
+var statusDisplay = function (handlist, ai, slice) {
+  var status = "<br>";
+  for (var i = 0; i < handlist.length; i++) {
+    status +=
+      `<br>Player cards drawn (${handValueCounter(handlist[i])}): ` +
+      handDisplay(handlist[i]);
+  }
   if (slice) {
     status +=
-      `<br><br>AI cards drawn (${handValueCounter(
-        hand2.slice(slice)
-      )}):<br>??` + handDisplay(hand2.slice(slice));
+      `<br><br>AI cards drawn (${handValueCounter(ai.slice(slice))}):<br>??  ` +
+      handDisplay(ai.slice(slice));
   } else {
     status +=
-      `<br><br>AI cards drawn (${handValueCounter(hand2.slice(slice))}):` +
-      handDisplay(hand2.slice(slice));
+      `<br><br>AI cards drawn (${handValueCounter(ai.slice(slice))}): ` +
+      handDisplay(ai.slice(slice));
   }
   return status;
 };
@@ -144,73 +172,122 @@ var ai = function (deck) {
   }
 };
 
+// true to enable submit button
+var toggleButtons = function (state) {
+  if (state == true) {
+    document.getElementById("hit-button").disabled = true;
+    document.getElementById("stand-button").disabled = true;
+    document.getElementById("submit-button").disabled = false;
+  } else {
+    document.getElementById("hit-button").disabled = false;
+    document.getElementById("stand-button").disabled = false;
+    document.getElementById("submit-button").disabled = true;
+  }
+};
+
+// all numbers in blackjackcheck start with 1, not 0. compensated by +1 in the function for totalbjchecker itself
 var main = function (input) {
   if (gameMode == DEALING) {
     aiHand = [];
-    playerHand = [];
+    playerHands = [];
+    handGenerator(noOfPlayers);
     sampleDeck = shuffleDeck(makeDeck());
-    deal([playerHand, aiHand], 2, sampleDeck);
-    if (bjChecker(playerHand) && bjChecker(aiHand)) {
+    deal([...playerHands, aiHand], 2, sampleDeck);
+    blackjackCheck = totalBjChecker([...playerHands, aiHand]);
+    if (blackjackCheck.length == noOfPlayers + 1) {
       return (
         "It's a tie! Press Submit again to start a new round." +
-        statusDisplay(playerHand, aiHand, 0)
+        statusDisplay(playerHands, aiHand, 0)
       );
-    } else if (bjChecker(playerHand)) {
-      return (
-        "Blackjack! Player wins! Press Submit again to start a new round." +
-        statusDisplay(playerHand, aiHand, 0)
-      );
-    } else if (bjChecker(aiHand)) {
+    } else if (blackjackCheck.includes(noOfPlayers + 1)) {
       return (
         "Blackjack! AI wins! Press Submit again to start a new round." +
-        statusDisplay(playerHand, aiHand, 0)
+        statusDisplay(playerHands, aiHand, 0)
+      );
+    } else if (blackjackCheck.length) {
+      gameMode = PLAYING;
+      currentPlayer = 1;
+      return (
+        `Blackjack! Player ${blackjackCheck.join(
+          ", "
+        )} wins! Press Submit again to continue.` +
+        statusDisplay(
+          playerHands.filter((x, i) => blackjackCheck.includes(i + 1)),
+          aiHand,
+          1
+        )
       );
     } else {
       gameMode = PLAYING;
+      currentPlayer = 1;
+      toggleButtons(false);
       return (
         "Cards have been dealt; player 1 hit or stand?" +
-        statusDisplay(playerHand, aiHand, 1)
+        statusDisplay([playerHands[currentPlayer - 1]], aiHand, 1)
       );
     }
   }
-  if (gameMode == PLAYING) {
+  if (
+    gameMode == PLAYING &&
+    currentPlayer < noOfPlayers + 1 &&
+    !blackjackCheck.includes(currentPlayer)
+  ) {
     if (input == "h") {
-      draw(playerHand, sampleDeck);
-      if (handValueCounter(playerHand) > 21) {
-        gameMode = AIPLAYING;
+      draw(playerHands[currentPlayer - 1], sampleDeck);
+      if (handValueCounter(playerHands[currentPlayer - 1]) > 21) {
+        toggleButtons(true);
+        currentPlayer += 1;
         return (
           "Oops! Looks like you bust. Press Submit again to continue." +
-          statusDisplay(playerHand, aiHand, 1)
+          statusDisplay([playerHands[currentPlayer - 2]], aiHand, 1)
         );
       }
-      return "Player 1 hit or stand?" + statusDisplay(playerHand, aiHand, 1);
-    } else if (input == "s") {
-      gameMode = AIPLAYING;
+      return (
+        `Player ${currentPlayer} hit or stand?` +
+        statusDisplay([playerHands[currentPlayer - 1]], aiHand, 1)
+      );
+    } else if (input == "s" && currentPlayer == noOfPlayers) {
+      toggleButtons(true);
+      currentPlayer += 1;
       return (
         "Alright, now it's the AI's turn. Press Submit again to continue." +
-        statusDisplay(playerHand, aiHand, 1)
+        statusDisplay([playerHands[currentPlayer - 2]], aiHand, 1)
+      );
+    } else if (input == "s") {
+      toggleButtons(true);
+      currentPlayer += 1;
+      return (
+        `Alright, now it will be player ${currentPlayer}'s turn. Press Submit again to continue.` +
+        statusDisplay([playerHands[currentPlayer - 2]], aiHand, 1)
       );
     } else {
+      toggleButtons(false);
       return (
-        "Please enter h or s to hit or stand." +
-        statusDisplay(playerHand, aiHand, 1)
+        `Player ${currentPlayer} hit or stand?` +
+        statusDisplay([playerHands[currentPlayer - 1]], aiHand, 1)
       );
     }
+  } else if (
+    gameMode == PLAYING &&
+    currentPlayer < noOfPlayers + 1 &&
+    blackjackCheck.includes(currentPlayer)
+  ) {
+    toggleButtons(true);
+    currentPlayer += 1;
+    return "This player has won a blackjack this round. Press continue to move on to the next player.";
   }
-
-  if (gameMode == AIPLAYING) {
+  if (currentPlayer > noOfPlayers) {
+    toggleButtons(true);
     ai(sampleDeck);
-    var winner = winChecker(playerHand, aiHand);
+
+    var winners = totalWinChecker(playerHands, aiHand);
     var winStatement = "";
-    if (winner == 1) {
-      winStatement = "Player wins! Press Submit again to start a new round.";
-    } else if (winner == 2) {
-      winStatement = "AI wins! Press Submit again to start a new round.";
-    } else {
-      winStatement = "It's a tie! Press Submit again to start a new round.";
+    for (var i = 0; i < winners.length; i++) {
+      winStatement += `Player ${i + 1}: ${winners[i]}<br>`;
     }
     gameMode = DEALING;
-    return winStatement + statusDisplay(playerHand, aiHand, 0);
+    currentPlayer = 0;
+    return winStatement + statusDisplay(playerHands, aiHand, 0);
   }
 };
 
