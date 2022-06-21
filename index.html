@@ -130,6 +130,7 @@
       }
 
       button {
+        font-family: "Open Sans", sans-serif;
         font-size: 21px;
         line-height: 33px;
         margin: 0 0 23px 0;
@@ -172,24 +173,29 @@
     </h1>
     <h1 class="header">♣️ Basics - Blackjack ♠️</h1>
     <div id="container">
-      <p>Input:</p>
-      <p>Press <b>Submit</b> to get started and deal cards.</p>
-      <input id="input-field" />
-      <br />
-      <button id="submit-button">Submit</button>
-      <p>Output:</p>
+      <p>Press <b>Continue</b> to get started and deal cards.</p>
+      <!-- <input id="input-field" /> -->
+      <button id="submit-button">Continue</button>
+      <button id="hit-button" onclick="hit()">Hit</button>
+      <button id="stand-button" onclick="stand()">Stand</button>
       <div id="output-div"></div>
     </div>
     <!-- Import program logic -->
     <script src="script.js"></script>
     <!-- Define button click functionality -->
     <script>
+      document.getElementById("hit-button").disabled = true;
+      document.getElementById("stand-button").disabled = true;
       var button = document.querySelector("#submit-button");
       button.addEventListener("click", function () {
         // Set result to input value
-        var input = document.querySelector("#input-field");
-        var result = main(input.value);
-
+        // var input = document.querySelector("#input-field");
+        var result = main();
+        if (gameMode == PLAYING) {
+          document.getElementById("hit-button").disabled = false;
+          document.getElementById("stand-button").disabled = false;
+          document.getElementById("submit-button").disabled = true;
+        }
         // Display result in output element
         var output = document.querySelector("#output-div");
         output.innerHTML = result;
@@ -197,6 +203,28 @@
         // Reset input value
         input.value = "";
       });
+
+      function hit() {
+        var result = main("h");
+        // Display result in output element
+        if (gameMode != PLAYING) {
+          document.getElementById("hit-button").disabled = true;
+          document.getElementById("stand-button").disabled = true;
+          document.getElementById("submit-button").disabled = false;
+        }
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
+      }
+
+      function stand() {
+        var result = main("s");
+        // Display result in output element
+        document.getElementById("hit-button").disabled = true;
+        document.getElementById("stand-button").disabled = true;
+        document.getElementById("submit-button").disabled = false;
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
+      }
     </script>
   </body>
 </html>
