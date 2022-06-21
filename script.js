@@ -1,50 +1,48 @@
 // Global variables needed
+
 var cardDeck = [];
 var shuffledCardDeck = [];
+// To store drawn cards into respective arrays
 var playerCards = [];
 var compCards = [];
 var gameMode = "Deal Cards";
-var blackJackWin = "False";
+var blackJackCheck = "False";
+// for calculation of card values of player and computer
 var playerCardValue = 0;
 var compCardValue = 0;
-var playerHandMessage = "";
+
+// To output and display drawn card names & suits to player
+var playerCardsOutput;
+var compCardsOutput;
 
 var main = function (input) {
-  // Shuffle card deck automatically at the start
-  shuffledCardDeck = shuffleTheDeck(deckGenerator());
-  console.log("This deck of cards has been shuffled.");
-
   if (gameMode == "Deal Cards") {
+    cardDeck = deckGenerator();
+    console.log(cardDeck);
+    // Shuffle card deck automatically at the start
+    shuffledCardDeck = shuffleTheDeck(cardDeck);
     dealCards();
     console.log(playerCards);
     console.log(compCards);
     var myOutputValue = blackjackCheck(playerCards, compCards);
-    if (blackJackWin == "True") {
+    if (blackJackCheck == "True") {
       resetBlackJack();
       return myOutputValue;
     }
 
-    // calculate score for player & computer
-    playerCardValue = scoreCalculation(playerCards);
-    console.log("The Player Card Value is " + playerCardValue);
+    console.log("The PLAYER CARD VALUE is " + playerCardValue);
     // output cards and score to player for decision making
     gameMode = "Hit or Stand";
-    for (var m = 0; m < playerCards.length; m++) {
-      playerHandMessage =
-        playerHandMessage +
-        playerCards[m].name +
-        " of " +
-        playerCards[m].suit +
-        "<br>";
-    }
-    return `Your Hand: <br> ${playerHandMessage} <br> Your cards total: ${playerCardValue}. <br> Submit "hit" to draw another card or "stand" to pass.`;
+    playerCardsOutput = outputCardsDrawn(playerCards);
+
+    return `Your Hand: <br> ${playerCardsOutput} <br> Your cards total: ${playerCardValue}. <br> Submit "hit" to draw another card or "stand" to pass.`;
   }
   // Let player choose to hit or stand
   if (gameMode == "Hit or Stand") {
-    if (input.toLowerCase() != "stand" && input.toLowerCase() != "hit") {
-      return `Submit "hit" to draw another card or "stand" to pass. <br> <br> Your Hand: <br> ${playerHandMessage} <br> Your cards total: ${playerCardValue}. <br> `;
+    if (input.toUpperCase() != "STAND" && input.toUpperCase() != "HIT") {
+      return `Submit "hit" to draw another card or "stand" to pass. <br> <br> Your Hand: <br> ${playerCardsOutput} <br> Your cards total: ${playerCardValue}. <br> `;
     }
-    if (input.toLowerCase() == "stand") {
+    if (input.toUpperCase() == "STAND") {
       compAutoPlay(compCards);
       myOutputValue = winnerCheck(playerCardValue, compCardValue);
       resetBlackJack();
@@ -53,7 +51,7 @@ var main = function (input) {
     }
 
     //player decides to draw a card
-    if (input.toLowerCase() == "hit") {
+    if (input.toUpperCase() == "HIT") {
       console.log("The START FUNCTION Player Card Value is " + playerCardValue);
       // push a card into the player's array
       playerCards.push(drawCard());
@@ -68,23 +66,26 @@ var main = function (input) {
         myOutputValue = winnerCheck(playerCardValue, compCardValue);
         resetBlackJack();
         // return win / loss results
-        return "You bust!" + myOutputValue;
+        return "You bust! <br>" + myOutputValue;
       }
       console.log("The Player Card Value is " + playerCardValue);
-      playerHandMessage = "";
-      for (var m = 0; m < playerCards.length; m++) {
-        playerHandMessage =
-          playerHandMessage +
-          playerCards[m].name +
-          " of " +
-          playerCards[m].suit +
-          "<br>";
-      }
-      return `Your Hand: <br> ${playerHandMessage} <br> Your cards total: ${playerCardValue}. <br> Submit "hit" to draw another card or "stand" to pass.`;
+      playerCardsOutput = outputCardsDrawn(playerCards);
+      return `Your Hand: <br> ${playerCardsOutput} <br> Your cards total: ${playerCardValue} <br> Submit "hit" to draw another card or "stand" to pass.`;
     }
   }
 };
 
+// helper function to display drawn card names and suits to player
+var outputCardsDrawn = function (cardsArray) {
+  var cardsDrawn = "";
+  for (var m = 0; m < cardsArray.length; m++) {
+    cardsDrawn =
+      cardsDrawn + cardsArray[m].name + " of " + cardsArray[m].suit + "<br>";
+  }
+  return cardsDrawn;
+};
+
+// Computer auto-draw function with score calculation
 var compAutoPlay = function (compCards) {
   // calculate score for computer --> draw automatically if below 17
   compCardValue = scoreCalculation(compCards);
@@ -101,29 +102,40 @@ var compAutoPlay = function (compCards) {
 // score comparison function
 var winnerCheck = function (playerCardValue, compCardValue) {
   // check if there is a draw in scores --> if yes return tie message
+
+  var cardsTally =
+    "Player's Cards: <br>  " +
+    outputCardsDrawn(playerCards) +
+    "<br> Total card value: <br>" +
+    playerCardValue +
+    "<br> <br> Computer's cards are: <br>" +
+    outputCardsDrawn(compCards) +
+    "<br> Total card value: <br>" +
+    compCardValue;
+
   if (
     playerCardValue == compCardValue ||
     (playerCardValue > 21 && compCardValue > 21)
   ) {
-    var message = "It's a tie";
-    return message;
+    var message = "It's a tie! <br>";
+    return message + cardsTally;
   }
 
   if (playerCardValue > 21 && compCardValue <= 21) {
-    message = "Computer wins!";
-    return message;
+    message = "Computer wins! <br>";
+    return message + cardsTally;
   } else if (playerCardValue <= 21 && compCardValue > 21) {
-    message = "Player wins!";
-    return message;
+    message = "Player wins! <br>";
+    return message + cardsTally;
   }
 
   if (playerCardValue <= 21 && compCardValue <= 21) {
     if (playerCardValue > compCardValue) {
-      message = " player wins";
+      message = " Player wins! <br>";
     } else {
-      message = "comp wins";
+      message = "Computer wins! <br>";
     }
-    return message;
+    return message + cardsTally;
   }
 };
 
@@ -164,31 +176,32 @@ var resetBlackJack = function () {
   playerCards = [];
   compCards = [];
   gameMode = "Deal Cards";
-  blackJackWin = "False";
-  playerHandMessage = "";
+  blackJackCheck = "False";
+  playerCardsOutput;
+  compCardsOutput;
 };
 
 //
 
 // NEED TO CLEAN UP: Check for winning condition of blackjack
 var blackjackCheck = function (playerCards, compCards) {
+  playerCardValue = scoreCalculation(playerCards);
+  compCardValue = scoreCalculation(compCards);
   var playerWonMessage = "";
   var compWonMessage = "";
-  var cardsTally = `<br> Player drew: ${playerCards[0].name} of ${playerCards[0].suit} and ${playerCards[1].name} of ${playerCards[1].suit}. 
-  <br> The computer drew: ${compCards[0].name} of ${compCards[0].suit} and ${compCards[1].name} of ${compCards[1].suit}`;
-  if (
-    (playerCards[0].rank == 1 || playerCards[1].rank == 1) &&
-    (playerCards[0].value == 10 || playerCards[1].value == 10)
-  ) {
-    playerWonMessage = `You drew black jack! `;
-    blackJackWin = "True";
+  var cardsTally =
+    "Player's Cards: <br>  " +
+    outputCardsDrawn(playerCards) +
+    "<br> Computer's cards are: <br>" +
+    outputCardsDrawn(compCards);
+
+  if (playerCardValue == 21) {
+    playerWonMessage = `You drew black jack! <br>`;
+    blackJackCheck = "True";
   }
-  if (
-    (compCards[0].rank == 1 || compCards[1].rank == 1) &&
-    (compCards[0].value == 10 || compCards[1].value == 10)
-  ) {
-    compWonMessage = `Computer drew black jack! `;
-    blackJackWin = "True";
+  if (compCardValue == 21) {
+    compWonMessage = `Computer drew black jack! <br> `;
+    blackJackCheck = "True";
   }
   return (
     playerWonMessage +
@@ -208,8 +221,8 @@ var drawCard = function () {
 var dealCards = function () {
   var numOfDealtCards = 0;
   playerCards = [
-    { name: `Ace`, rank: 1, value: 11, suit: `Diamonds♦️` },
-    { name: `9`, rank: 9, value: 9, suit: `Hearts♥️` },
+    { name: `Ace`, rank: 1, value: 11, suit: `Diamonds ♦️` },
+    { name: `9`, rank: 9, value: 9, suit: `Hearts ♥️` },
     //{ name: `3`, rank: 3, value: 3, suit: `Hearts` },
   ];
   compCards = [
@@ -231,8 +244,7 @@ var dealCards = function () {
 // Generate a random number for use in functions
 var getRandomNum = function (maxNum) {
   var randomNum = Math.floor(Math.random() * maxNum);
-  var finalNum = randomNum + 1;
-  return finalNum;
+  return randomNum;
 };
 
 // Shuffle function for generated card deck
@@ -258,7 +270,7 @@ var shuffleTheDeck = function () {
 var deckGenerator = function () {
   // a card deck consists of 4 suits and 13 cards in each suit
   var suitCounter = 0;
-  var suitArray = ["Diamonds", "Clubs", "Hearts", "Spades"];
+  var suitArray = ["Diamonds♦️", "Clubs♣️", "Hearts♥️", "Spades♠️"];
   // for every suit, generate 13 cards
   while (suitCounter < suitArray.length) {
     var cardCounter = 1;
@@ -301,27 +313,3 @@ var deckGenerator = function () {
 // Multiplayer: Enable multiple players to play against the dealer, where players can take turns. The game hides and shows relevant hand according to the turn.
 
 // Splitting: Add hand-splitting functionality to the game. If the player has two of the same kind of card, they can choose to split and get dealt 2 new cards. Dealer is not allowed to split.
-
-// Deal cards: Randomly pick & pop two cards for the player and computer
-// var dealCards = function (cardNum) {
-// playerCards = [
-//   { name: `ace`, rank: 1, value: 11, suit: `diamonds` },
-//   { name: `queen`, rank: 12, value: 10, suit: `hearts` },
-// ];
-// compCards = [
-//   { name: `ace`, rank: 1, value: 11, suit: `clubs` },
-//   { name: `two`, rank: 12, value: 2, suit: `spades` },
-// ];
-// console.log("player cards are " + playerCards);
-// console.log("player cards are " + compCards);
-// return playerCards, compCards;
-
-//   var numOfDealtCards = 0;
-
-//   while (numOfDealtCards < cardNum) {
-//     playerCards.push(shuffledCardDeck.pop());
-//     compCards.push(shuffledCardDeck.pop());
-//     numOfDealtCards = numOfDealtCards + 1;
-//   }
-//   return playerCards, compCards;
-// };
