@@ -217,7 +217,7 @@ var toggleGameUI = function (state) {
 var main = function (input) {
   if (gameMode == PLAYERSELECTION) {
     if (Number(input) > 0 && Number(input) < 8) {
-      noOfPlayers = input;
+      noOfPlayers = Number(input);
       gameMode = DEALING;
       toggleGameUI("game");
       return "";
@@ -298,6 +298,12 @@ var main = function (input) {
         `Alright, now it will be player ${currentPlayer}'s turn. Press Submit again to continue.` +
         statusDisplay([playerHands[currentPlayer - 2]], aiHand, 1)
       );
+    } else {
+      toggleButtons(false);
+      return (
+        `Player ${currentPlayer} hit or stand?` +
+        statusDisplay([playerHands[currentPlayer - 1]], aiHand, 1)
+      );
     }
   } else if (
     gameMode == PLAYING &&
@@ -309,7 +315,6 @@ var main = function (input) {
     return "This player has won a blackjack this round. Press continue to move on to the next player.";
   }
   if (currentPlayer > noOfPlayers) {
-    console.log("efe");
     toggleButtons(true);
     ai(sampleDeck);
 
