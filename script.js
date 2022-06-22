@@ -5,13 +5,13 @@ var DRAW = "draw";
 
 var DEALING = 0;
 var PLAYING = 1;
-var AIPLAYING = 2;
+var PLAYERSELECTION = 2;
 
 // Global variables
-var noOfPlayers = 1;
+var noOfPlayers = 0;
 var playerHands = [];
 var aiHand = [];
-var gameMode = DEALING;
+var gameMode = PLAYERSELECTION;
 var aiRiskThreshold = 17;
 var currentPlayer = 0;
 
@@ -185,8 +185,46 @@ var toggleButtons = function (state) {
   }
 };
 
+// game to display buttons, start to display player selection
+var toggleGameUI = function (state) {
+  var opening = document.getElementById("opening");
+  var startButton = document.getElementById("start-button");
+  var inputField = document.getElementById("input-field");
+  var instructions = document.getElementById("instructions");
+  var submitButton = document.getElementById("submit-button");
+  var hitButton = document.getElementById("hit-button");
+  var standButton = document.getElementById("stand-button");
+  if (state == "game") {
+    opening.style.display = "none";
+    inputField.style.display = "none";
+    startButton.style.display = "none";
+    instructions.style.display = "block";
+    submitButton.style.display = "inline";
+    hitButton.style.display = "inline";
+    standButton.style.display = "inline";
+  } else if (state == "start") {
+    opening.style.display = "block";
+    inputField.style.display = "block";
+    startButton.style.display = "block";
+    instructions.style.display = "none";
+    submitButton.style.display = "none";
+    hitButton.style.display = "none";
+    standButton.style.display = "none";
+  }
+};
+
 // all numbers in blackjackcheck start with 1, not 0. compensated by +1 in the function for totalbjchecker itself
 var main = function (input) {
+  if (gameMode == PLAYERSELECTION) {
+    if (Number(input) > 0 && Number(input) < 8) {
+      noOfPlayers = input;
+      gameMode = DEALING;
+      toggleGameUI("game");
+      return "";
+    } else {
+      return "Please key in a player number between 0 and 8.";
+    }
+  }
   if (gameMode == DEALING) {
     aiHand = [];
     playerHands = [];
@@ -260,12 +298,6 @@ var main = function (input) {
         `Alright, now it will be player ${currentPlayer}'s turn. Press Submit again to continue.` +
         statusDisplay([playerHands[currentPlayer - 2]], aiHand, 1)
       );
-    } else {
-      toggleButtons(false);
-      return (
-        `Player ${currentPlayer} hit or stand?` +
-        statusDisplay([playerHands[currentPlayer - 1]], aiHand, 1)
-      );
     }
   } else if (
     gameMode == PLAYING &&
@@ -277,6 +309,7 @@ var main = function (input) {
     return "This player has won a blackjack this round. Press continue to move on to the next player.";
   }
   if (currentPlayer > noOfPlayers) {
+    console.log("efe");
     toggleButtons(true);
     ai(sampleDeck);
 

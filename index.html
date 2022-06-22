@@ -117,7 +117,8 @@
       #container {
         background-color: rgb(31, 88, 118);
         margin: 40px auto;
-        max-width: 800px;
+        width: 800px;
+        /* max-width: 800px; */
         padding: 38px 31px;
       }
 
@@ -126,7 +127,7 @@
         line-height: 33px;
         margin: 0 0 23px 0;
         padding: 0 9px;
-        width: 100%;
+        width: 10%;
       }
 
       button {
@@ -173,29 +174,34 @@
     </h1>
     <h1 class="header">♣️ Basics - Blackjack ♠️</h1>
     <div id="container">
-      <p>Press <b>Continue</b> to get started and deal cards.</p>
-      <!-- <input id="input-field" /> -->
-      <button id="submit-button">Continue</button>
+      <p id="opening">
+        Welcome to Blackjack! Please enter the number of players.
+      </p>
+      <input id="input-field" />
+      <!-- The self-closing <br /> tag represents a line break - a line's worth of spacing before dispalying the next element. -->
+      <button id="start-button">Start</button>
+      <p id="instructions">
+        Press <b>Continue</b> to get started and deal cards.
+      </p>
+
+      <button id="submit-button" onclick="submit()">Continue</button>
       <button id="hit-button" onclick="hit()">Hit</button>
       <button id="stand-button" onclick="stand()">Stand</button>
       <div id="output-div"></div>
     </div>
+
     <!-- Import program logic -->
     <script src="script.js"></script>
     <!-- Define button click functionality -->
     <script>
-      document.getElementById("hit-button").disabled = true;
-      document.getElementById("stand-button").disabled = true;
-      var button = document.querySelector("#submit-button");
+      toggleGameUI("start");
+      toggleButtons(true);
+      var button = document.querySelector("#start-button");
       button.addEventListener("click", function () {
         // Set result to input value
-        // var input = document.querySelector("#input-field");
-        var result = main();
-        if (gameMode == PLAYING) {
-          document.getElementById("hit-button").disabled = false;
-          document.getElementById("stand-button").disabled = false;
-          document.getElementById("submit-button").disabled = true;
-        }
+        input = document.querySelector("#input-field");
+        var result = main(input.value);
+
         // Display result in output element
         var output = document.querySelector("#output-div");
         output.innerHTML = result;
@@ -204,24 +210,20 @@
         input.value = "";
       });
 
+      function submit() {
+        var result = main();
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
+      }
+
       function hit() {
         var result = main("h");
-        // Display result in output element
-        if (gameMode != PLAYING) {
-          document.getElementById("hit-button").disabled = true;
-          document.getElementById("stand-button").disabled = true;
-          document.getElementById("submit-button").disabled = false;
-        }
         var output = document.querySelector("#output-div");
         output.innerHTML = result;
       }
 
       function stand() {
         var result = main("s");
-        // Display result in output element
-        document.getElementById("hit-button").disabled = true;
-        document.getElementById("stand-button").disabled = true;
-        document.getElementById("submit-button").disabled = false;
         var output = document.querySelector("#output-div");
         output.innerHTML = result;
       }
