@@ -1,3 +1,12 @@
+// BLACKJACK VERSION CONTROL
+// V1 - 22/6 (6hrs)
+// - basic working version, able to run the whole game
+// - ace is equal 11 when total cards <= 2. and equal to 1 when total cards > 2
+// - to update: ace should count as 11 by default. if there are more than 1 ace in the hand, can be 1 or 11 depending on whether it is beneficial to have it
+
+// V2 - 22/6 (1hr)
+// - Added helper functions to consider ace cases
+
 // Make a deck function
 var makeDeck = function () {
   // Initialise an empty deck array
@@ -89,6 +98,7 @@ console.log("shuffled deck : ", shuffledDeck);
 // gameState 10 : endGame. Reset values to 0
 
 var gameState = 0;
+
 var playerCards = [];
 var playerScore = 0;
 var computerCards = [];
@@ -108,19 +118,14 @@ var main = function (input) {
 // The player who is closer to, but not above 21 wins the hand.
 
 // Helper function to convert score of cards according to the rank
-var scoreConverter = function (noOfCards, cardRank) {
-  // If <= 2 cards, Ace = 11
-  // If > 2 cards, Ace = 1 or 10. Return 1 first and take care of 10 case later
+var scoreConverter = function (cardRank) {
+  // Return Ace = 11 first and take care of the Ace = 1 case later using Ace case converter
   if (cardRank != 11 && cardRank != 12 && cardRank != 13 && cardRank != 1) {
     return cardRank;
   } else if (cardRank == 11 || cardRank == 12 || cardRank == 13) {
     return 10;
   } else if (cardRank == 1) {
-    if (noOfCards <= 2) {
-      return 11;
-    } else {
-      return 1;
-    }
+    return 11;
   }
 };
 
@@ -131,6 +136,40 @@ var cardResultGenerator = function (cardArray, noOfCards) {
     result += `${cardArray[i].name} of ${cardArray[i].suit}<br>`;
   }
   return result;
+};
+
+// Helper function to count the number of Aces in hand, related to resultAfterAce function
+var totalAceCount = function (cardArray, noOfCards) {
+  var result = 0;
+  for (let i = 0; i < noOfCards; i++) {
+    if (cardArray[i].rank == 1) {
+      result += 1;
+    }
+  }
+  return result;
+};
+
+var playerAceCount = 0;
+var computerAceCount = 0;
+
+// Helper function to convert score to consider Ace case accordingly
+var resultAfterAce = function (noOfAce, totalScore) {
+  // if 0 ace in hand, nothing to do here, just return what the hand is
+  if (noOfAce == 0) {
+    return totalScore;
+  } else {
+    // if 1 or more aces in hand, only need to deduct if the hand is currently bust. if less, this is the best combi already, just return what the hand is
+    if (totalScore <= 21) {
+      return totalScore;
+    } else {
+      // if 1 or more aces in hand, and hand is bust. deduct 10 for each ace (originally 11, now 1) until score is not bust OR until noOfAces is fully utilized
+      while (totalScore > 21 && noOfAce != 0) {
+        totalScore -= 10;
+        noOfAce -= 1;
+      }
+      return totalScore;
+    }
+  }
 };
 
 // Main Game
@@ -144,11 +183,8 @@ var fullGame = function (userInput) {
       playerCards.push(shuffledDeck.pop());
       computerCards.push(shuffledDeck.pop());
       // Total up the score of each hand
-      playerScore += scoreConverter(playerCards.length, playerCards[i].rank);
-      computerScore += scoreConverter(
-        computerCards.length,
-        computerCards[i].rank
-      );
+      playerScore += scoreConverter(playerCards[i].rank);
+      computerScore += scoreConverter(computerCards[i].rank);
     }
 
     gameOutput += `You have drawn: <br><br> ${cardResultGenerator(
@@ -198,10 +234,7 @@ var fullGame = function (userInput) {
   if (gameState == 2) {
     // Player hit, draw another card
     playerCards.push(shuffledDeck.pop());
-    playerScore += scoreConverter(
-      playerCards.length,
-      playerCards[playerCards.length - 1].rank
-    );
+    playerScore += scoreConverter(playerCards[playerCards.length - 1].rank);
 
     gameOutput += `You have drawn: <br><br> ${cardResultGenerator(
       playerCards,
@@ -228,27 +261,32 @@ var fullGame = function (userInput) {
     while (computerScore < 17) {
       computerCards.push(shuffledDeck.pop());
       computerScore += scoreConverter(
-        computerCards.length,
         computerCards[computerCards.length - 1].rank
       );
     }
 
-    gameOutput = `Your score is ${playerScore} and the computer scored ${computerScore}. <br><br>`;
+    playerAceCount = totalAceCount(playerCards, playerCards.length);
+    computerAceCount = totalAceCount(computerCards, computerCards.length);
+
+    var finalPlayerScore = resultAfterAce(playerAceCount, playerScore);
+    var finalComputerScore = resultAfterAce(computerAceCount, computerScore);
+
+    gameOutput = `Your score is ${finalPlayerScore} and the computer scored ${finalComputerScore}. <br><br>`;
 
     // End of computer's turn. Compare result to determine winner
     // If both bust 21, it's a tie
     // If one bust 21, the other is the winner
     // If no one bust 21, compare who got the highest
-    if (computerScore > 21 && playerScore > 21) {
+    if (finalComputerScore > 21 && finalPlayerScore > 21) {
       gameOutput += `Both the computer and you bust! It's a draw!`;
-    } else if (computerScore > 21 && playerScore <= 21) {
+    } else if (finalComputerScore > 21 && finalPlayerScore <= 21) {
       gameOutput += `The computer bust! Congrats, you have won!`;
-    } else if (playerScore > 21 && computerScore <= 21) {
+    } else if (finalPlayerScore > 21 && finalComputerScore <= 21) {
       gameOutput += `You bust! You have lost, better luck next time!`;
     } else {
-      if (computerScore == playerScore) {
+      if (finalComputerScore == finalPlayerScore) {
         gameOutput += `It's a draw!`;
-      } else if (computerScore > playerScore) {
+      } else if (finalComputerScore > finalPlayerScore) {
         gameOutput += `Tough luck! You have lost, better luck next time!`;
       } else {
         gameOutput += `You won! Well done!`;
@@ -265,6 +303,8 @@ var fullGame = function (userInput) {
     playerScore = 0;
     computerCards = [];
     computerScore = 0;
+    playerAceCount = 0;
+    computerAceCount = 0;
 
     gameOutput = `Can't get enough of Blackjack? Smash the 'Submit' button to reveal your hand!`;
   }
