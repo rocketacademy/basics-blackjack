@@ -5,6 +5,7 @@ var shuffledCardDeck = [];
 // To store drawn cards into respective arrays
 var playerCards = [];
 var compCards = [];
+var numOfCompCardsDrawn = 0;
 var gameMode = "Deal Cards";
 var blackJackCheck = "False";
 // for calculation of card values of player and computer
@@ -97,6 +98,7 @@ var compAutoPlay = function (compCards) {
   while (compCardValue < 17) {
     compCards.push(drawCard());
     compCardValue = scoreCalculation(compCards);
+    numOfCompCardsDrawn = numOfCompCardsDrawn + 1;
     console.log(
       "After drawn card, the Comp Card Value now is " + compCardValue
     );
@@ -112,17 +114,21 @@ var winnerCheck = function (playerCardValue, compCardValue) {
     outputCardsDrawn(playerCards) +
     "<br> Total card value: <br>" +
     playerCardValue +
-    "<br> <br> Computer's Hand: <br>" +
+    "<br> <br> Computer drew " +
+    numOfCompCardsDrawn +
+    " cards! <br>Computer's Hand: <br>" +
     outputCardsDrawn(compCards) +
     "<br> Total card value: <br>" +
     compCardValue +
     "<br> <br> Please press submit to deal the cards for the next round. ";
 
-  if (
-    playerCardValue == compCardValue ||
-    (playerCardValue > 21 && compCardValue > 21)
-  ) {
+  if (playerCardValue == compCardValue) {
     var message = "It's a tie!";
+    return message + cardsTally;
+  }
+
+  if (playerCardValue > 21 && compCardValue > 21) {
+    message = "Phew, but the computer did too. It's a tie! ";
     return message + cardsTally;
   }
 
