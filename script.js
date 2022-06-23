@@ -108,14 +108,19 @@ var hitOrStand = function(input){
   if(input == "hit"){
     playerHand.push(shuffledDeck.pop());
     playerCurrentScore = calculateScore(playerHand);
-    if (playerCurrentScore < 22) {
+    if (playerCurrentScore == 21){
+      var computerCard1 = `${computerHand[0].name} of ${computerHand[0].suit} ${computerHand[0].emoji}`;
+      gameMode = "start";
+      print = `BLACKJACK! You win.<br> Dealer's Card:<br>${computerCard1}<br><br><br>Your Cards:${printHand(playerHand)} <br><br><br>Your Score: ${playerCurrentScore}`
+    }
+    else if (playerCurrentScore < 22) {
       var computerCard1 = `${computerHand[0].name} of ${computerHand[0].suit} ${computerHand[0].emoji}`;
       print = `Dealer's Card:<br>${computerCard1}<br><br><br>Your Cards:${printHand(playerHand)} <br><br><br>Your Score: ${playerCurrentScore}`
     } else if (playerCurrentScore > 21){
       var computerCard1 = `${computerHand[0].name} of ${computerHand[0].suit} ${computerHand[0].emoji}`;
       gameMode = "start";
       print = `BOOM! YOU LOSE!<br> Dealer's Card:<br>${computerCard1}<br><br><br>Your Cards:${printHand(playerHand)} <br><br><br>Your Score: ${playerCurrentScore}`
-    }
+    } 
   } else if (input == "stand"){
     // if the player is done hitting, the dealder(computer) will keep drawing until the computer score is at least 16
     computerCurrentScore = calculateScore(computerHand);
@@ -134,6 +139,9 @@ var hitOrStand = function(input){
     } else if (computerCurrentScore > 21 ){
       gameMode = "start";
       print = `You got lucky this time! You win. <br> Dealer's Cards:${printHand(computerHand)}<br>Dealer's Score: ${computerCurrentScore}<br><br><br>Your Cards:${printHand(playerHand)} <br><br><br>Your Score: ${playerCurrentScore}`;
+    } else if (computerCurrentScore == 21 ){
+      gameMode = "start";
+      print = `Dealer's got blackjack. Too bad.  <br> Dealer's Cards:${printHand(computerHand)}<br>Dealer's Score: ${computerCurrentScore}<br><br><br>Your Cards:${printHand(playerHand)} <br><br><br>Your Score: ${playerCurrentScore}`;
     }
   
   }
