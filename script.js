@@ -240,6 +240,7 @@ var gameReset = function() {
 
 // Main Function
 var main = function (input) {
+  console.log(input);
   if (userHitStand === false) {
     gameReset();
     startGame();
