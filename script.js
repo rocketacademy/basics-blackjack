@@ -1,29 +1,57 @@
 // Global variables needed
-
+playerName = "";
 var cardDeck = [];
 var shuffledCardDeck = [];
 // To store drawn cards into respective arrays
 var playerCards = [];
 var compCards = [];
 var numOfCompCardsDrawn = 0;
-var gameMode = "Deal Cards";
+var gameMode = "Get Name";
 var blackJackCheck = "False";
 // for calculation of card values of player and computer
 var playerCardValue = 0;
 var compCardValue = 0;
 
-// To output and display drawn card names & suits to player
+// To output and display GIFs, drawn card names & suits to player
 var playerCardsOutput;
 var compCardsOutput;
 var myOutputValue;
+var displayGIF;
+
+document.querySelector("#deal-button").disabled = false;
+document.querySelector("#deal-button").disabled = true;
+document.querySelector("#hit-button").disabled = true;
+document.querySelector("#stand-button").disabled = true;
 
 var main = function (input) {
+  if (gameMode == "Get Name") {
+    if (input == " " || input == ``) {
+      displayGIF = `<img src= "https://c.tenor.com/ClQUyrcq3xsAAAAC/rachel-friends.gif"/>`;
+      return (
+        "Come on, we've gotta know your name. what's your name?<br> <br>" +
+        displayGIF
+      );
+    }
+
+    playerName = input;
+    button.disabled = true;
+    deal.disabled = false;
+    gameMode = "Deal Cards";
+    displayGIF = `<img src= "https://c.tenor.com/eXVooWYLXh4AAAAC/group-hug-friends.gif"/>`;
+    return (
+      `Hi ${playerName}, welcome to Black Jack with friends! <br> Please press the DEAL button to start the game. <br><br> ` +
+      displayGIF
+    );
+  }
+
   if (gameMode == "Deal Cards") {
+    deal.disabled = true;
     cardDeck = deckGenerator();
     console.log(cardDeck);
     // Shuffle card deck automatically at the start
     shuffledCardDeck = shuffleTheDeck(cardDeck);
     dealCards();
+
     console.log(playerCards);
     console.log(compCards);
     myOutputValue = blackjackCheck(playerCards, compCards);
@@ -35,9 +63,13 @@ var main = function (input) {
     console.log("The PLAYER CARD VALUE is " + playerCardValue);
     // output cards and score to player for decision making
     gameMode = "Hit or Stand";
+    hit.disabled = false;
+    stand.disabled = false;
     playerCardsOutput = outputCardsDrawn(playerCards);
-    myOutputValue = `Your Hand: <br> ${playerCardsOutput} <br> Your cards total: ${playerCardValue}. <br> <br> Submit "hit" to draw another card or "stand" to pass.`;
-    return myOutputValue;
+    displayGIF =
+      '<img src="https://c.tenor.com/ONyBlCzonAEAAAAd/friends-ross-geller.gif"/>';
+    myOutputValue = `${playerName}, you drew: <br> ${playerCardsOutput} <br> Your cards total: ${playerCardValue}. <br> <br> Submit "hit" to draw another card or "stand" to pass. <br> <br>`;
+    return myOutputValue + displayGIF;
   }
   // Let player choose to hit or stand
   if (gameMode == "Hit or Stand") {
@@ -47,6 +79,7 @@ var main = function (input) {
     if (input.toUpperCase() == "STAND") {
       compAutoPlay(compCards);
       myOutputValue = winnerCheck(playerCardValue, compCardValue);
+
       resetBlackJack();
       // return win / loss results
       return myOutputValue;
@@ -68,14 +101,18 @@ var main = function (input) {
         compAutoPlay(compCards);
         console.log("Computer's card value is " + compCardValue);
         myOutputValue = winnerCheck(playerCardValue, compCardValue);
+        console.log(myOutputValue);
+
         resetBlackJack();
         // return win / loss results
         return "You bust! <br>" + myOutputValue;
       }
       console.log("The Player Card Value is " + playerCardValue);
+      displayGIF =
+        '<img src="https://c.tenor.com/PtcVKDVeSJkAAAAd/chandler-joey.gif"/>';
       playerCardsOutput = outputCardsDrawn(playerCards);
-      myOutputValue = `Your Hand: <br> ${playerCardsOutput} <br> Your cards total: ${playerCardValue}. <br> Submit "hit" to draw another card or "stand" to pass.`;
-      return myOutputValue;
+      myOutputValue = `So ${playerName}, you drew: <br> ${playerCardsOutput} <br> Your cards total: ${playerCardValue}. <br> Submit "hit" to draw another card or "stand" to pass.`;
+      return displayGIF + myOutputValue;
     }
   }
 };
@@ -108,9 +145,9 @@ var compAutoPlay = function (compCards) {
 // score comparison function
 var winnerCheck = function (playerCardValue, compCardValue) {
   // check if there is a draw in scores --> if yes return tie message
-
+  var message = "";
   var cardsTally =
-    " <br> <br>Your Hand: <br>  " +
+    `<br> So ${playerName}, you drew: <br>  ` +
     outputCardsDrawn(playerCards) +
     "<br> Total card value: <br>" +
     playerCardValue +
@@ -120,10 +157,10 @@ var winnerCheck = function (playerCardValue, compCardValue) {
     outputCardsDrawn(compCards) +
     "<br> Total card value: <br>" +
     compCardValue +
-    "<br> <br> Please press submit to deal the cards for the next round. ";
+    "<br> <br> Please press the deal button again to start the next round. ";
 
   if (playerCardValue == compCardValue) {
-    var message = "It's a tie!";
+    message = "It's a tie!";
     return message + cardsTally;
   }
 
@@ -134,19 +171,27 @@ var winnerCheck = function (playerCardValue, compCardValue) {
 
   if (playerCardValue > 21 && compCardValue <= 21) {
     message = "Computer wins!";
-    return message + cardsTally;
+    displayGIF =
+      '<img src="https://c.tenor.com/BhQICwrdyS4AAAAC/ross-ross-geller.gif"/>';
+    return displayGIF + message + cardsTally;
   } else if (playerCardValue <= 21 && compCardValue > 21) {
     message = "Player wins!";
-    return message + cardsTally;
+    displayGIF =
+      '<img src="https://c.tenor.com/hdvxjTbUuzsAAAAC/thumbs-up-friends.gif"/>';
+    return displayGIF + message + cardsTally;
   }
 
   if (playerCardValue <= 21 && compCardValue <= 21) {
     if (playerCardValue > compCardValue) {
       message = " Player wins!";
+      displayGIF =
+        '<img src="https://c.tenor.com/hdvxjTbUuzsAAAAC/thumbs-up-friends.gif"/>';
     } else {
       message = "Computer wins!";
+      displayGIF =
+        '<img src="https://c.tenor.com/r-6R6x0fQpUAAAAd/friends-leatylrs.gif"/>';
     }
-    return message + cardsTally;
+    return displayGIF + message + cardsTally;
   }
 };
 
@@ -162,6 +207,7 @@ var scoreCalculation = function (cardArray) {
       aceCardPosition.push(a);
     }
   }
+  // check for cases of double aces (2 cards = 2 aces)
   if (cardArray.length == aceCardPosition.length) {
     cardArray[1].value = 1;
   }
@@ -195,6 +241,11 @@ var resetBlackJack = function () {
   blackJackCheck = "False";
   playerCardsOutput = "";
   compCardsOutput = "";
+  numOfCompCardsDrawn = 0;
+
+  hit.disabled = true;
+  stand.disabled = true;
+  deal.disabled = false;
   console.log("reset Black Jack runs");
 };
 
@@ -212,14 +263,18 @@ var blackjackCheck = function (playerCards, compCards) {
     outputCardsDrawn(compCards);
 
   if (playerCardValue == 21) {
+    displayGIF = `<img src= "https://c.tenor.com/1IkwhlSSubUAAAAC/friends-excited.gif"/>`;
     message = `You drew black jack! <br>`;
     blackJackCheck = "True";
   }
   if (compCardValue == 21) {
+    displayGIF = `<img src= "https://c.tenor.com/f16uJcDbB60AAAAC/chandler-bing.gif"/>`;
     message = `Computer drew black jack! <br> `;
     blackJackCheck = "True";
   }
   return (
+    displayGIF +
+    "<br>" +
     message +
     "<br>" +
     cardsTally +

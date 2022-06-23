@@ -80,6 +80,11 @@
     <meta name="twitter:creator" content="@rocketacademyco" />
 
     <!-- fonts -->
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&display=swap"
+      rel="stylesheet"
+    />
     <link
       rel="stylesheet"
       href="https://fonts.googleapis.com/css?family=Open+Sans"
@@ -95,7 +100,7 @@
         font-family: "Open Sans", sans-serif;
         margin-left: 30px;
         margin-right: 30px;
-        background-color: #f2f2f2;
+        background-color: #638eab;
         color: black; /* sets the font color */
         background-image: url(""); /* The image used */
         background-position: center; /* Center the image */
@@ -106,19 +111,24 @@
       #output-div img {
         display: block;
         max-width: 100%;
-        max-height: 200px;
+        max-height: 300px;
+        margin-left: auto;
+        margin-right: auto;
       }
       .header {
+        font-family: "caveat", cursive;
         text-align: center;
         font-size: 1.1rem;
         margin-bottom: 3rem;
       }
 
       #container {
-        background-color: #8ea676;
+        background-color: #ffdc00;
         margin: 40px auto;
         max-width: 800px;
         padding: 38px 31px;
+
+        text-align: center;
       }
 
       input {
@@ -136,11 +146,19 @@
         padding: 0 6px;
       }
 
+      .center {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
       #output-div {
-        background-color: lightgrey;
+        background-color: #ffdc00;
         margin: 20px auto;
         padding: 20px;
         width: 100%;
+
+        text-align: center;
       }
 
       .logo-img {
@@ -170,20 +188,35 @@
         src="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/brand/logo.png"
       />
     </h1>
-    <h1 class="header">♣️ Up for Blackjack? ♠️</h1>
+
+    <h1 class="header">♣️ B.L.A.C.K.J.A.C.K. ♠️</h1>
     <div id="container">
-      <p>Input:</p>
+      <h3>
+        Welcome, you're now in the company of F.R.I.E.N.DS. <br />
+        And we're playing Black jack! <br />
+      </h3>
+      <p>Key your name below and press the submit button.</p>
       <input id="input-field" />
       <br />
       <button id="submit-button">Submit</button>
-      <p>Output:</p>
-      <div id="output-div"></div>
+      <button id="deal-button" disabled>Deal</button>
+      <button id="hit-button" disabled>Hit</button>
+      <button id="stand-button" disabled>Stand</button>
+      <div id="output-div">
+        <img src = https://c.tenor.com/QCLFP3CFL3MAAAAC/leatylrs-friends.gif>
+        <br />
+      </div>
     </div>
+
     <!-- Import program logic -->
     <script src="script.js"></script>
     <!-- Define button click functionality -->
     <script>
       var button = document.querySelector("#submit-button");
+      var deal = document.querySelector("#deal-button");
+      var hit = document.querySelector("#hit-button");
+      var stand = document.querySelector("#stand-button");
+
       button.addEventListener("click", function () {
         // Set result to input value
         var input = document.querySelector("#input-field");
@@ -195,6 +228,31 @@
 
         // Reset input value
         input.value = "";
+      });
+
+      deal.addEventListener("click", function () {
+        var result = main();
+
+        // Display result in output element
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
+      });
+
+      hit.addEventListener("click", function () {
+        var result = main("hit");
+
+        // Display result in output element
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
+      });
+
+      stand.addEventListener("click", function () {
+        var result = main("stand");
+
+        // Display result in output element
+        var output = document.querySelector("#output-div");
+
+        output.innerHTML = result;
       });
     </script>
   </body>
