@@ -2,7 +2,24 @@
 
 // Global Variable
 var cardDeck;
-var player
+var playerHand = [];
+var computerHand = [];
+var userHitStand = false;
+var computerHitStand = false;
+var playerWon = false;
+var computerWon = false;
+var playerBlackjack = false;
+var computerBlackjack = false;
+var myOutputValue = '';
+var userStand = false;
+var playerValue = {
+  value: 0,
+  ace11: false,
+};
+var computerValue = {
+  value: 0,
+  ace11: false,
+};
 
 // Function makeDeck
 // Purpose: To generate the card deck
@@ -65,7 +82,197 @@ var getRandomCard = function() {
   return cardDeck[Math.floor(Math.random()*cardDeck.length)];
 };
 
+// Function startGame
+// Purpose: Give player and computer 2 cards each
+var startGame = function() {
+  playerHand.push(getRandomCard());
+  playerHand.push(getRandomCard());
+  computerHand.push(getRandomCard());
+  computerHand.push(getRandomCard());
+  document.querySelector("#hit-button").disabled = false;
+  document.querySelector("#stand-button").disabled = false;
+  document.querySelector("#submit-button").disabled = true;
+};
+
+// Function calculateHandValue
+// Purpose: Calculate the Hand Value for both the player and computer
+var calculateHandValue = function(hand, userValue) {
+  var value = 0
+  for (var i = 0;i < hand.length;i++) {
+    if (isNaN(hand[i].name)) {
+      if(hand[i].name === "ace") {
+        if (userValue.ace11 === true) {
+          value += 1;
+        } else {
+          value += 11;
+          userValue.ace11 = true;
+        }
+      } else {
+        value += 10;
+      }
+    } else {
+      value += hand[i].name;
+    }
+  }
+  userValue.value = value
+};
+
+// Function checkUserInput
+// Purpose: To check whether the user enter "hit" or "stand"
+var checkUserInput = function(userInput) {
+  if (userInput === "hit" || userInput === "stand") {
+    return false;
+  }
+  return true;
+};
+
+// Function addingValue
+// Purpose: Adding the values
+var addingValue = function (userValue, userHand) {
+  var card = getRandomCard();
+  userHand.push(card);
+  if (card.name === "ace" && userValue.ace11 === true) {
+    userValue.value += 1;
+  } else if (card.name === "ace" && (userValue.value+11) <= 21) {
+    userValue.value += 11;
+    userValue.ace11 = true;
+  } else if (card.name === "ace") {
+    userValue.value += 1;
+  } else if (isNaN(card.name)) {
+    if ((userValue.value + 10) >= 21 && userValue.ace11 === true) {
+      userValue.value = userValue.value - 10 + 10;
+      userValue.ace11 = false;
+    } else {
+      userValue.value += 10;
+    }
+  } else {
+    if ((userValue.value + card.name) >= 21 && userValue.ace11 === true) {
+      userValue.value = userValue.value - 10 + card.name;
+      userValue.ace11 = false;
+    } else {
+      userValue.value += card.name;
+    }
+  }
+};
+
+// Function printOutput
+// Purpose: Print output message
+var printOutput = function() {
+  myOutputValue = ''
+  myOutputValue += `Player has: `
+  for (var i = 0; i < playerHand.length; i++) {
+    if (i === playerHand.length - 1) {
+      myOutputValue += `${playerHand[i].name}`
+    } else {
+      myOutputValue += `${playerHand[i].name},`
+    }
+  }
+  myOutputValue += ` with a sum of ${playerValue.value}<br>Computer has: `;
+  for (var i = 0; i < computerHand.length; i++) {
+    if (i === computerHand.length - 1) {
+      myOutputValue += `${computerHand[i].name}`
+    } else {
+      myOutputValue += `${computerHand[i].name},`
+    }
+  }
+  myOutputValue += ` with a sum of ${computerValue.value}<br>`;
+  if (playerBlackjack === true || playerWon === true) {
+    myOutputValue += `Player has Won. Press submit to start a new game`;
+    return;
+  } else if (computerBlackjack === true || computerWon === true) {
+    myOutputValue += `Computer has Won. Press submit to start a new game`;
+    return;
+  } else if (userStand === true) {
+    myOutputValue += `Draw. Press submit to start a new game`;
+    return;
+  }
+  if (!userHitStand || !computerHitStand) {
+    myOutputValue += `Please enter "hit" or "stand", then press Submit`;
+  }
+};
+
+// Function checkWinCondition
+// Purpose: Check whether player or computer won
+var checkWinCondition = function() {
+  if (playerValue.value > computerValue.value && playerValue.value <= 21) {
+    playerWon = true;
+  } else if (playerValue.value < computerValue.value && computerValue.value > 21) {
+    playerWon = true;
+  } else if (playerValue.value > 21 && computerValue.value > 21){
+    return;
+  }else if (playerValue.value === computerValue.value){
+    return;
+  } else {
+    computerWon = true;
+  }
+};
+
+// Function resetGameState
+// Purpose: Reset Game State of the program
+var resetGameState = function() {
+  userHitStand = false;
+  computerHitStand = false;
+  userStand = false;
+  document.querySelector("#hit-button").disabled = true;
+  document.querySelector("#stand-button").disabled = true;
+  document.querySelector("#submit-button").disabled = false;
+}
+
+// Function gameReset
+// Purpose: Reset all the values stored
+var gameReset = function() {
+  playerWon = false;
+  computerWon = false;
+  playerBlackjack = false;
+  computerBlackjack = false;
+  myOutputValue = '';
+  playerHand = [];
+  computerHand = [];
+  playerValue = {
+    value: 0,
+    ace11: false,
+  };
+  computerValue = {
+    value: 0,
+    ace11: false,
+  };
+};
+
+// Main Function
 var main = function (input) {
-  var myOutputValue = 'hello world';
+  if (userHitStand === false) {
+    gameReset();
+    startGame();
+    calculateHandValue(playerHand,playerValue);
+    calculateHandValue(computerHand,computerValue);
+    if (playerValue.value === 21) {
+      playerBlackjack = true;
+      printOutput();
+      return myOutputValue;
+    } else if (computerValue.value === 21) {
+      computerBlackjack = true;
+      printOutput();
+      return myOutputValue;
+    }
+    printOutput();
+    userHitStand = true;
+  }
+  else if (computerHitStand === false) {
+    if (checkUserInput(input)) {
+      return `Please enter "hit" or "stand"`;
+    }
+    if (input === "hit") {
+      addingValue(playerValue, playerHand);
+      printOutput();
+    } else {
+      userStand = true;
+      while (computerValue.value < 17) {
+        addingValue(computerValue, computerHand);
+      }
+      checkWinCondition();
+      printOutput();
+      resetGameState();
+    }
+  }
   return myOutputValue;
 };
