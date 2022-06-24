@@ -73,8 +73,9 @@
       <button id = "start-button">Start</button>
       <button id = "hit-button">Hit</button>
       <button id = "stand-button">Stand</button>
-      <button id = "quit-button">Quit</button>
       <button id = "next-button">Next</button>
+      <button id = "quit-button">Quit</button>
+      <button id = "continue-button">Continue</button>
       <p>Output:</p>
       <div id="output-div"></div>
     </div>
@@ -85,8 +86,9 @@
       var start = document.querySelector("#start-button")
       var hit = document.querySelector("#hit-button")
       var stand = document.querySelector("#stand-button")
-      var quit = document.querySelector("#quit-button")
       var next = document.querySelector("#next-button")
+      var quit = document.querySelector("#quit-button")
+      var cont = document.querySelector("#continue-button")
       var output = document.querySelector("#output-div")
       start.addEventListener("click", function () {
         var numPlayers = document.querySelector("#num-player");
@@ -107,16 +109,25 @@
         var result = standButton()
         output.innerHTML = result
       })
-      //quit button
-      quit.addEventListener("click", function () {
-        resetGame();
-        output.innerHTML = "Quit game. Press start for new game";
-      });
+      //next button
       next.addEventListener("click", function(){
         nextPlayer()
         var result = midgame()
         output.innerHTML = result
       })
+      //quit button
+      //reset everything
+      quit.addEventListener("click", function () {
+        resetGame();
+        output.innerHTML = "Quit game. Press start for new game";
+      });
+      //continue button
+      //reset game but players remains
+      cont.addEventListener("click", function(){
+        var result = contButton();
+        output.innerHTML = result;
+      })
+      
     </script>
   </body>
 </html>

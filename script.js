@@ -48,6 +48,7 @@ document.querySelector("#quit-button").disabled = true;
 document.querySelector("#next-button").disabled = true;
 document.querySelector("#num-player").disabled = false;
 document.querySelector("#start-button").disabled = false;
+document.querySelector("#continue-button").style.visibility = "hidden";
 
 var main = function (input) {
   var myOutputValue = 'start';
@@ -82,6 +83,15 @@ var gameStart = function(){
 //Mid-game
 var midgame = function(){
   let output
+  //dealer's turn when currentPlayer > numOfplayers
+  if(currentPlayer > numOfplayers){
+    output = endgame()
+    console.log(output)
+    document.querySelector("#hit-button").disabled = true;
+    document.querySelector("#stand-button").disabled = true;
+    document.querySelector("#continue-button").style.visibility = "visible";
+    return output
+  }
   dealeroutput = `The dealer cards:<br>??? of ???<br>${players[0].hand[1].name} of ${players[0].hand[1].suit}<br><br>`;
   currentPlayerOutput = `Player ${currentPlayer}'s cards:<br>`
   for(let i = 0; i < players[currentPlayer].hand.length; i++){
@@ -96,6 +106,7 @@ var midgame = function(){
     document.querySelector("#hit-button").disabled = true;
     document.querySelector("#next-button").disabled = false;
     players[currentPlayer].winState = "bust"
+    players[currentPlayer].handValue = 0
     if(currentPlayer == numOfplayers){
       output = dealeroutput + currentPlayerOutput + `<br><br>You have bust! It is the dealer's turn next. Press next to continue`;
     }
@@ -110,14 +121,15 @@ var midgame = function(){
 }
 
 //We are in the endgame
-//jk. this is the endgame function, consisting of determining win, lose and draw condition.
+//jk. this is the endgame function, consisting of drawing of dealer's hand and determining win, lose and draw condition.
 //It also make dealer do a soft 17 and reveal cards
 var endgame = function(){
+  let output = `The dealer has drawn:<br>`
   //Dealer drawing
   while(players[0].handValue <= 16){
     players[0].hand.push(deck.pop());
     //Update Card Values
-    updateValue(players[0].hand)
+    updateValue(players[0].hand, 0)
     //break the loop if it is within 17 and 21
     if(players[0].handValue >= 17 && players[0].handValue <= 21){
       break;
@@ -125,37 +137,44 @@ var endgame = function(){
       aceManipulator(players[0].hand, 0)
     }
   }
+  for(let i = 0; i < players[0].hand.length;i++){
+    output += `<br>${players[0].hand[i].name} of ${players[0].hand[i].suit}`;
+  }
+  output += `<br><br>Card Value: ${players[0].handValue}<br>`;
   //Check if dealer bust
   if(players[0].handValue > 21){
     players[0].winState = "bust"
+    players[0].handValue = 0
   }
   //Deal win, lose, draw condition to player
-  if(players[0].winState = "bust"){ //If dealer bust -> check if player did not bust
-    for(let i = 1; i < players.length; i++){
-      if(players[i].winState === "unknown"){//if user did not bust, user wins
-        players[i].winState = "win"
-      }
-      else if(players[i].winState === "bust"){//if user did bust, user draw with dealer
-        players[i].winState = "draw";
-      }
-    }
+  if(players[0].winState == "bust"){ //If dealer bust -> check if player did not bust
+    output += "<br>The dealer has busted!<br>"
+    output += winlosedraw()
   } // else if dealer did not bust, compare the handvalue to determine "win", "lose", "draw" condition
-  else if(players[0].winState === "unknown"){
-    for (let i = 1; i < players.length; i++) {
+  else if(players[0].winState == "unknown"){
+    output += winlosedraw()
+  }
+  return output
+  }
+
+var winlosedraw = function(){
+  let output = ""
+  for (let i = 1; i < players.length; i++) {
       if(players[i].handValue > players[0].handValue) {
         players[i].winState = "win";
+        output += `<br>Player ${i} has won!`;
       } 
       else if(players[i].handValue < players[0].handValue){
         players[i].winState = "lose"
+        output += `<br>Player ${i} has lost!`
       }
       else if(players[i].handValue == players[0].handValue) {
         players[i].winState = "draw";
+        output += `<br>Player ${i} draw with the dealer!`;
       }
-    }
   }
-  
+  return output
 }
-
 //Ace value manipulator
 var aceManipulator = function(currentPlayerHand, playerNum){
   let index = currentPlayerHand.findIndex(element => element.name === "Ace" && element.value > 1)
@@ -260,4 +279,27 @@ var resetGame = function(){
   document.querySelector("#next-button").disabled = true;
   document.querySelector("#num-player").disabled = false;
   document.querySelector("#start-button").disabled = false;
+  document.querySelector("#continue-button").style.visibility = "hidden";
+}
+
+//continue
+var contButton = function(){
+  makeDeck();
+  deck = [...shuffleCards(deck)];
+  currentPlayer = 0;
+  for (let i = 0; i < players.length; i++) {
+    players[i].hand = [];
+    players[i].handValue = 0;
+    players[i].winState = "unknown";
+  }
+  //Dealing of cards
+  for (let i = 0; i < 2; i++) {
+    for (let j = players.length; j > 0; j--) {
+      players[j - 1].hand.push(deck.pop());
+      updateValue(players[j - 1].hand, j - 1);
+    }
+  }
+  document.querySelector("#continue-button").style.visibility = "hidden";
+  document.querySelector("#next-button").disabled = false;
+  return "Game reset. Player 1, please click next to play again"
 }

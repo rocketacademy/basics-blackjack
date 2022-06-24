@@ -71,7 +71,9 @@
       #num-player{
         width: auto;
       }
-
+      #continue-button{
+        visibility: hidden;
+      }
 
       /* increase header font size on wider screens */
       @media screen and (min-width: 600px) {
