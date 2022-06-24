@@ -90,14 +90,11 @@
       var output = document.querySelector("#output-div")
       start.addEventListener("click", function () {
         var numPlayers = document.querySelector("#num-player");
-        setGameState(
-          numPlayers.value
-        );
+        setGameState(numPlayers.value);
         var result = gameStart()
         start.disabled = true;
         numPlayers.disabled = true;
         next.disabled = false;
-        //still fixing output
         output.innerHTML = result;
       });
       //hit button

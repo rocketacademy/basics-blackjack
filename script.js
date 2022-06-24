@@ -39,7 +39,7 @@ function Player(playerName, balance){
   this.hand = []
   this.wager = 0
   this.handValue = 0
-  this.winState = ""
+  this.winState = "unknown"
 }
 //HTML settings
 document.querySelector("#hit-button").disabled = true;
@@ -66,7 +66,7 @@ var gameStart = function(){
     }while(userName === "")
     players.push(new Player(userName, 100))
   }
-  //Create dealer object,, push it to first in players array
+  //Create dealer object, push it to first element in players array
   var dealer = new Player("Dealer", 0)
   players.unshift(dealer)
   //Dealing of cards
@@ -78,8 +78,8 @@ var gameStart = function(){
   }
   return `Game has been set-up.  Player 1, press Next to continue`
 }
-//Mid-game
 
+//Mid-game
 var midgame = function(){
   let output
   dealeroutput = `The dealer cards:<br>??? of ???<br>${players[0].hand[1].name} of ${players[0].hand[1].suit}<br><br>`;
@@ -87,10 +87,89 @@ var midgame = function(){
   for(let i = 0; i < players[currentPlayer].hand.length; i++){
     currentPlayerOutput += `${players[currentPlayer].hand[i].name} of ${players[currentPlayer].hand[i].suit}<br>`;
   }
-  currentPlayerOutput += `<br>Player ${currentPlayer}'s card value is: ${players[currentPlayer].handValue}`
-  output = dealeroutput + currentPlayerOutput + "<br><br>Do you want to hit or stand"
+  if (players[currentPlayer].handValue > 21)
+    aceManipulator(players[currentPlayer].hand, currentPlayer);
+  currentPlayerOutput += `<br>Player ${currentPlayer}'s card value is: ${players[currentPlayer].handValue}`;
+  //Check for bust
+  if (players[currentPlayer].handValue > 21){
+    document.querySelector("#stand-button").disabled = true;
+    document.querySelector("#hit-button").disabled = true;
+    document.querySelector("#next-button").disabled = false;
+    players[currentPlayer].winState = "bust"
+    if(currentPlayer == numOfplayers){
+      output = dealeroutput + currentPlayerOutput + `<br><br>You have bust! It is the dealer's turn next. Press next to continue`;
+    }
+    else{
+     output = dealeroutput + currentPlayerOutput + `<br><br>You have bust! Player ${currentPlayer + 1}, press next to continue`;
+    }
+  }
+  else{
+     output = dealeroutput + currentPlayerOutput + "<br><br>Do you want to hit or stand";
+  }
   return output
 }
+
+//We are in the endgame
+//jk. this is the endgame function, consisting of determining win, lose and draw condition.
+//It also make dealer do a soft 17 and reveal cards
+var endgame = function(){
+  //Dealer drawing
+  while(players[0].handValue <= 16){
+    players[0].hand.push(deck.pop());
+    //Update Card Values
+    updateValue(players[0].hand)
+    //break the loop if it is within 17 and 21
+    if(players[0].handValue >= 17 && players[0].handValue <= 21){
+      break;
+    }else if(players[0].handValue > 21){
+      aceManipulator(players[0].hand, 0)
+    }
+  }
+  //Check if dealer bust
+  if(players[0].handValue > 21){
+    players[0].winState = "bust"
+  }
+  //Deal win, lose, draw condition to player
+  if(players[0].winState = "bust"){ //If dealer bust -> check if player did not bust
+    for(let i = 1; i < players.length; i++){
+      if(players[i].winState === "unknown"){//if user did not bust, user wins
+        players[i].winState = "win"
+      }
+      else if(players[i].winState === "bust"){//if user did bust, user draw with dealer
+        players[i].winState = "draw";
+      }
+    }
+  } // else if dealer did not bust, compare the handvalue to determine "win", "lose", "draw" condition
+  else if(players[0].winState === "unknown"){
+    for (let i = 1; i < players.length; i++) {
+      if(players[i].handValue > players[0].handValue) {
+        players[i].winState = "win";
+      } 
+      else if(players[i].handValue < players[0].handValue){
+        players[i].winState = "lose"
+      }
+      else if(players[i].handValue == players[0].handValue) {
+        players[i].winState = "draw";
+      }
+    }
+  }
+  
+}
+
+//Ace value manipulator
+var aceManipulator = function(currentPlayerHand, playerNum){
+  let index = currentPlayerHand.findIndex(element => element.name === "Ace" && element.value > 1)
+  //if index is found (value of index >= 0) manipulate the value, if index not found (value of index = -1), ignore
+  if(index >= 0){
+    players[playerNum].hand[index].value = 1;
+    updateValue(currentPlayerHand, playerNum);
+    //If still burst, do a recursion, else ignore
+    if (players[playerNum].handValue > 21) {
+      aceManipulator(currentPlayerHand, playerNum);
+    }
+  }
+}
+
 //hit function for hit button
 var hitFunction = function(){
   let newCard = deck.pop();
@@ -98,44 +177,37 @@ var hitFunction = function(){
   updateValue(players[currentPlayer].hand, currentPlayer);
 }
 
+//Set game
+var setGameState = function(playersNum){
+  numOfplayers = playersNum
+}
+
 //Stand function
 //Once stand is choosen,, disable stand button and enable Next
 var standButton = function(){
+  let output
   document.querySelector("#stand-button").disabled = true;
   document.querySelector("#hit-button").disabled = true;
   document.querySelector("#next-button").disabled = false;
-  return `Player ${currentPlayer} has stand.<br> Player ${currentPlayer + 1}, please press next to start your turn.`
-}
-
-//Update the current value of player hand
-var updateValue = function(currentHand, currentplayer){
-  let cardValue = 0;
-  for(let i = 0; i < currentHand.length; i++){
-    cardValue += players[currentplayer].hand[i].value;
+  if(currentPlayer == numOfplayers){
+   output = `Player ${currentPlayer} has stand.<br>It is Dealer's turn. Please press next to continue.`;
   }
-  players[currentplayer].handValue = cardValue
+  else{
+   output = `Player ${currentPlayer} has stand.<br>Player ${currentPlayer + 1}, please press next to start your turn.`
+  }
+  return output
 }
 
+//Function for next button
 var nextPlayer = function(){
   document.querySelector("#hit-button").disabled = false;
   document.querySelector("#stand-button").disabled = false;
   document.querySelector("#quit-button").disabled = false;
   document.querySelector("#next-button").disabled = true;
   currentPlayer++
-}
-
-//Reset game
-var resetGame = function(){
-  var deck = [];
-  var players = [];
-  var numOfplayer = 0;
-  var currentPlayer = 1;
-  document.querySelector("#hit-button").disabled = true;
-  document.querySelector("#stand-button").disabled = true;
-  document.querySelector("#quit-button").disabled = true;
-  document.querySelector("#next-button").disabled = true;
-  document.querySelector("#num-player").disabled = false;
-  document.querySelector("#start-button").disabled = false;
+  if(currentPlayer > numOfplayers){
+    endgame()
+  }
 }
 
 //Make deck
@@ -166,7 +238,26 @@ var shuffleCards = function (shufflingDeck) {
   }
   return shufflingDeck;
 };
-//Set game
-var setGameState = function(playersNum){
-  numOfplayers = playersNum
+
+//Update the current value of player hand
+var updateValue = function(currentHand, currentplayer){
+  let cardValue = 0;
+  for(let i = 0; i < currentHand.length; i++){
+    cardValue += players[currentplayer].hand[i].value;
+  }
+  players[currentplayer].handValue = cardValue
+}
+
+//Reset game
+var resetGame = function(){
+  deck = [];
+  players = [];
+  numOfplayer = 0;
+  currentPlayer = 0;
+  document.querySelector("#hit-button").disabled = true;
+  document.querySelector("#stand-button").disabled = true;
+  document.querySelector("#quit-button").disabled = true;
+  document.querySelector("#next-button").disabled = true;
+  document.querySelector("#num-player").disabled = false;
+  document.querySelector("#start-button").disabled = false;
 }
