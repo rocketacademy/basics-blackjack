@@ -56,6 +56,7 @@
     </h1>
     <h1 class="header">♣️ Basics - Blackjack ♠️</h1>
     <div id="container">
+     <p>Welcome to BlackJack!. Press start to play</p>
      <div id = "game-state">
       <div>
         <p>Number of players:</p>
@@ -73,6 +74,7 @@
       <button id = "hit-button">Hit</button>
       <button id = "stand-button">Stand</button>
       <button id = "quit-button">Quit</button>
+      <button id = "next-button">Next</button>
       <p>Output:</p>
       <div id="output-div"></div>
     </div>
@@ -80,35 +82,44 @@
     <script src="script.js"></script>
     <!-- Define button click functionality -->
     <script>
-      var start = document.querySelector("#start-button");
-      var hit = document.querySelector("#hit-button");
+      var start = document.querySelector("#start-button")
+      var hit = document.querySelector("#hit-button")
       var stand = document.querySelector("#stand-button")
       var quit = document.querySelector("#quit-button")
+      var next = document.querySelector("#next-button")
       var output = document.querySelector("#output-div")
       start.addEventListener("click", function () {
         var numPlayers = document.querySelector("#num-player");
         setGameState(
           numPlayers.value
         );
-        makeDeck()
+        var result = gameStart()
         start.disabled = true;
         numPlayers.disabled = true;
-        hit.style.visibility = "visible";
-        stand.style.visibility = "visible";
-        quit.style.visibility = "visible";
+        next.disabled = false;
         //still fixing output
         output.innerHTML = result;
       });
       //hit button
       hit.addEventListener("click",  function(){
-        var result = hitFunction()
+        hitFunction()
+        var result = midgame()
         output.innerHTML = result;
+      })
+      stand.addEventListener("click", function(){
+        var result = standButton()
+        output.innerHTML = result
       })
       //quit button
       quit.addEventListener("click", function () {
         resetGame();
         output.innerHTML = "Quit game. Press start for new game";
       });
+      next.addEventListener("click", function(){
+        nextPlayer()
+        var result = midgame()
+        output.innerHTML = result
+      })
     </script>
   </body>
 </html>

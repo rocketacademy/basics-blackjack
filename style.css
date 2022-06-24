@@ -72,9 +72,6 @@
         width: auto;
       }
 
-      #hit-button,#stand-button,#quit-button {
-        visibility: hidden;
-      }
 
       /* increase header font size on wider screens */
       @media screen and (min-width: 600px) {

@@ -22,8 +22,10 @@ var deck = []
 var players = []
 const suit = ["❤️", "♦", "♣", "♠️"]
 const cardName = ["Ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King"]
-var numOfplayer = 0
-var currentPlayer = 1
+var numOfplayers = 0
+var currentPlayer = 0
+var dealeroutput
+var currentPlayerOutput
 //constructor function for cards
 function Card(cardname, logo, number){
   this.name = cardname;
@@ -31,18 +33,110 @@ function Card(cardname, logo, number){
   this.value = number
 } 
 //constructor function for player
-function Player(playerName){
+function Player(playerName, balance){
   this.name = playerName
-  this.bank = 100
+  this.bank = balance
   this.hand = []
   this.wager = 0
   this.handValue = 0
+  this.winState = ""
 }
+//HTML settings
+document.querySelector("#hit-button").disabled = true;
+document.querySelector("#stand-button").disabled = true;
+document.querySelector("#quit-button").disabled = true;
+document.querySelector("#next-button").disabled = true;
+document.querySelector("#num-player").disabled = false;
+document.querySelector("#start-button").disabled = false;
 
 var main = function (input) {
   var myOutputValue = 'start';
   return myOutputValue;
 };
+
+//Start game
+var gameStart = function(){
+  makeDeck()
+  deck = [...shuffleCards(deck)]
+  //Initailise players
+  for(let i = 1; i <= numOfplayers; i++){
+    let userName
+    do{
+     userName = prompt(`Player ${i}, what is your name?`, "")
+    }while(userName === "")
+    players.push(new Player(userName, 100))
+  }
+  //Create dealer object,, push it to first in players array
+  var dealer = new Player("Dealer", 0)
+  players.unshift(dealer)
+  //Dealing of cards
+  for(let i = 0; i < 2; i++){
+    for(let j = players.length; j > 0; j--) {
+      players[j - 1].hand.push(deck.pop());
+      updateValue(players[j - 1].hand, j - 1);
+    }
+  }
+  return `Game has been set-up.  Player 1, press Next to continue`
+}
+//Mid-game
+
+var midgame = function(){
+  let output
+  dealeroutput = `The dealer cards:<br>??? of ???<br>${players[0].hand[1].name} of ${players[0].hand[1].suit}<br><br>`;
+  currentPlayerOutput = `Player ${currentPlayer}'s cards:<br>`
+  for(let i = 0; i < players[currentPlayer].hand.length; i++){
+    currentPlayerOutput += `${players[currentPlayer].hand[i].name} of ${players[currentPlayer].hand[i].suit}<br>`;
+  }
+  currentPlayerOutput += `<br>Player ${currentPlayer}'s card value is: ${players[currentPlayer].handValue}`
+  output = dealeroutput + currentPlayerOutput + "<br><br>Do you want to hit or stand"
+  return output
+}
+//hit function for hit button
+var hitFunction = function(){
+  let newCard = deck.pop();
+  players[currentPlayer].hand.push(newCard);
+  updateValue(players[currentPlayer].hand, currentPlayer);
+}
+
+//Stand function
+//Once stand is choosen,, disable stand button and enable Next
+var standButton = function(){
+  document.querySelector("#stand-button").disabled = true;
+  document.querySelector("#hit-button").disabled = true;
+  document.querySelector("#next-button").disabled = false;
+  return `Player ${currentPlayer} has stand.<br> Player ${currentPlayer + 1}, please press next to start your turn.`
+}
+
+//Update the current value of player hand
+var updateValue = function(currentHand, currentplayer){
+  let cardValue = 0;
+  for(let i = 0; i < currentHand.length; i++){
+    cardValue += players[currentplayer].hand[i].value;
+  }
+  players[currentplayer].handValue = cardValue
+}
+
+var nextPlayer = function(){
+  document.querySelector("#hit-button").disabled = false;
+  document.querySelector("#stand-button").disabled = false;
+  document.querySelector("#quit-button").disabled = false;
+  document.querySelector("#next-button").disabled = true;
+  currentPlayer++
+}
+
+//Reset game
+var resetGame = function(){
+  var deck = [];
+  var players = [];
+  var numOfplayer = 0;
+  var currentPlayer = 1;
+  document.querySelector("#hit-button").disabled = true;
+  document.querySelector("#stand-button").disabled = true;
+  document.querySelector("#quit-button").disabled = true;
+  document.querySelector("#next-button").disabled = true;
+  document.querySelector("#num-player").disabled = false;
+  document.querySelector("#start-button").disabled = false;
+}
 
 //Make deck
 var makeDeck = function(){
@@ -72,41 +166,7 @@ var shuffleCards = function (shufflingDeck) {
   }
   return shufflingDeck;
 };
-
-//hit function for hit button
-var hitFunction = function(){
-  let newCard = deck.pop();
-  console.log(newCard)
-  players[currentPlayer].hand.push(newCard);
-  return `New card is:  ${newCard.name} of ${newCard.suit}`
-}
-
-//Stand function
-var stand = function(){
-  currentPlayer++
-}
-
-//Update the current value of player hand
-var updateValue = function(){
-  for(let i = 0; i < players[currentPlayer].hand.length; i++){
-    players[currentPlayer].value += players[currentPlayer].hand[i].value
-  }
-}
-
 //Set game
 var setGameState = function(playersNum){
-  numOfplayer = playersNum
-}
-
-//Reset game
-var resetGame = function(){
-  var deck = [];
-  var players = [];
-  var numOfplayer = 0;
-  var currentPlayer = 1;
-  document.querySelector("#hit-button").style.visibility = "hidden";
-  document.querySelector("#stand-button").style.visibility = "hidden";
-  document.querySelector("#quit-button").style.visibility = "hidden";
-  document.querySelector("#num-player").disabled = false;
-  document.querySelector("#start-button").disabled = false;
+  numOfplayers = playersNum
 }
