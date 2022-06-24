@@ -33,11 +33,11 @@ function Card(cardname, logo, number){
   this.value = number
 } 
 //constructor function for player
-function Player(playerName, balance){
+function Player(playerName, balance, bet){
   this.name = playerName
   this.bank = balance
   this.hand = []
-  this.wager = 0
+  this.wager = bet
   this.handValue = 0
   this.winState = "unknown"
 }
@@ -50,25 +50,25 @@ document.querySelector("#num-player").disabled = false;
 document.querySelector("#start-button").disabled = false;
 document.querySelector("#continue-button").style.visibility = "hidden";
 
-var main = function (input) {
-  var myOutputValue = 'start';
-  return myOutputValue;
-};
-
-//Start game
+//Start game(set up function)
+//consist of generating players andd dealer and dealing their cards
 var gameStart = function(){
   makeDeck()
   deck = [...shuffleCards(deck)]
   //Initailise players
   for(let i = 1; i <= numOfplayers; i++){
     let userName
+    let amtBet
     do{
      userName = prompt(`Player ${i}, what is your name?`, "")
     }while(userName === "")
-    players.push(new Player(userName, 100))
+    do{
+      amtBet = Number(prompt(`Player ${i}, how much to you want to wager?\nYou currently have ${100}.`, ""))
+    }while(Number.isInteger(amtBet) == false || amtBet > 100)
+    players.push(new Player(userName, 100, amtBet))
   }
   //Create dealer object, push it to first element in players array
-  var dealer = new Player("Dealer", 0)
+  var dealer = new Player("Dealer", 0, 0)
   players.unshift(dealer)
   //Dealing of cards
   for(let i = 0; i < 2; i++){
@@ -81,9 +81,10 @@ var gameStart = function(){
 }
 
 //Mid-game
+// Consists of allowing user to hit/stand. Next button serve as continuation
 var midgame = function(){
   let output
-  //dealer's turn when currentPlayer > numOfplayers
+  //dealer's turn when currentPlayer > numOfplayers -> go to endgame
   if(currentPlayer > numOfplayers){
     output = endgame()
     console.log(output)
@@ -97,6 +98,7 @@ var midgame = function(){
   for(let i = 0; i < players[currentPlayer].hand.length; i++){
     currentPlayerOutput += `${players[currentPlayer].hand[i].name} of ${players[currentPlayer].hand[i].suit}<br>`;
   }
+  //Manipulate cards if there is ace in the hands
   if (players[currentPlayer].handValue > 21)
     aceManipulator(players[currentPlayer].hand, currentPlayer);
   currentPlayerOutput += `<br>Player ${currentPlayer}'s card value is: ${players[currentPlayer].handValue}`;
@@ -155,29 +157,36 @@ var endgame = function(){
     output += winlosedraw()
   }
   return output
-  }
+}
 
+//determine win lose or draw
 var winlosedraw = function(){
   let output = ""
   for (let i = 1; i < players.length; i++) {
       if(players[i].handValue > players[0].handValue) {
         players[i].winState = "win";
+        players[i].bank += players[i].wager
+        players[i].wager = 0
         output += `<br>Player ${i} has won!`;
       } 
       else if(players[i].handValue < players[0].handValue){
         players[i].winState = "lose"
+        players[i].bank -= players[i].wager;
+        players[i].wager = 0;
         output += `<br>Player ${i} has lost!`
       }
       else if(players[i].handValue == players[0].handValue) {
         players[i].winState = "draw";
+        players[i].wager = 0;
         output += `<br>Player ${i} draw with the dealer!`;
       }
   }
   return output
 }
+
 //Ace value manipulator
 var aceManipulator = function(currentPlayerHand, playerNum){
-  let index = currentPlayerHand.findIndex(element => element.name === "Ace" && element.value > 1)
+  let index = currentPlayerHand.findIndex(element => element.name === "Ace" && element.value > 1) // ace card finder
   //if index is found (value of index >= 0) manipulate the value, if index not found (value of index = -1), ignore
   if(index >= 0){
     players[playerNum].hand[index].value = 1;
@@ -267,7 +276,7 @@ var updateValue = function(currentHand, currentplayer){
   players[currentplayer].handValue = cardValue
 }
 
-//Reset game
+//Reset game -> full reset
 var resetGame = function(){
   deck = [];
   players = [];
@@ -282,7 +291,7 @@ var resetGame = function(){
   document.querySelector("#continue-button").style.visibility = "hidden";
 }
 
-//continue
+//continue -> soft reset
 var contButton = function(){
   makeDeck();
   deck = [...shuffleCards(deck)];
@@ -291,6 +300,12 @@ var contButton = function(){
     players[i].hand = [];
     players[i].handValue = 0;
     players[i].winState = "unknown";
+    let amtBet
+    if(i >= 1){
+      do{
+        amtBet = Number(prompt(`Player ${i}, how much to you want to wager?\nYou currently have ${players[i].bank}.`, ""));
+      } while (Number.isInteger(amtBet) == false || amtBet > players[i].bank);
+    }
   }
   //Dealing of cards
   for (let i = 0; i < 2; i++){
