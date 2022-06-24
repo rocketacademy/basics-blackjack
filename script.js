@@ -39,7 +39,6 @@ function Player(playerName, balance, bet){
   this.hand = []
   this.wager = bet
   this.handValue = 0
-  this.winState = "unknown"
 }
 //HTML settings
 document.querySelector("#hit-button").disabled = true;
@@ -55,7 +54,7 @@ document.querySelector("#continue-button").style.visibility = "hidden";
 var gameStart = function(){
   makeDeck()
   deck = [...shuffleCards(deck)]
-  //Initailise players
+  //Initailise players array
   for(let i = 1; i <= numOfplayers; i++){
     let userName
     let amtBet
@@ -68,6 +67,7 @@ var gameStart = function(){
     players.push(new Player(userName, 100, amtBet))
   }
   //Create dealer object, push it to first element in players array
+  //We want to set the dealer as the first element, so it is easily referenced -> players[0] is dealer
   var dealer = new Player("Dealer", 0, 0)
   players.unshift(dealer)
   //Dealing of cards
@@ -84,7 +84,7 @@ var gameStart = function(){
 // Consists of allowing user to hit/stand. Next button serve as continuation
 var midgame = function(){
   let output
-  //dealer's turn when currentPlayer > numOfplayers -> go to endgame
+  //dealer's turn when currentPlayer > numOfplayers -> go to endgame()
   if(currentPlayer > numOfplayers){
     output = endgame()
     console.log(output)
@@ -107,8 +107,8 @@ var midgame = function(){
     document.querySelector("#stand-button").disabled = true;
     document.querySelector("#hit-button").disabled = true;
     document.querySelector("#next-button").disabled = false;
-    players[currentPlayer].winState = "bust"
     players[currentPlayer].handValue = 0
+    //for formatting, easier transition to endgame
     if(currentPlayer == numOfplayers){
       output = dealeroutput + currentPlayerOutput + `<br><br>You have bust! It is the dealer's turn next. Press next to continue`;
     }
@@ -143,17 +143,16 @@ var endgame = function(){
     output += `<br>${players[0].hand[i].name} of ${players[0].hand[i].suit}`;
   }
   output += `<br><br>Card Value: ${players[0].handValue}<br>`;
-  //Check if dealer bust
+  //Check if dealer bust, handvalue = 0 means bust
   if(players[0].handValue > 21){
-    players[0].winState = "bust"
     players[0].handValue = 0
   }
   //Deal win, lose, draw condition to player
-  if(players[0].winState == "bust"){ //If dealer bust -> check if player did not bust
+  if(players[0].handValue == 0){ //If dealer bust -> check if player did not bust
     output += "<br>The dealer has busted!<br>"
     output += winlosedraw()
   } // else if dealer did not bust, compare the handvalue to determine "win", "lose", "draw" condition
-  else if(players[0].winState == "unknown"){
+  else if(players[0].handValue > 0){
     output += winlosedraw()
   }
   return output
@@ -164,19 +163,16 @@ var winlosedraw = function(){
   let output = ""
   for (let i = 1; i < players.length; i++) {
       if(players[i].handValue > players[0].handValue) {
-        players[i].winState = "win";
         players[i].bank += players[i].wager
         players[i].wager = 0
         output += `<br>Player ${i} has won!`;
       } 
       else if(players[i].handValue < players[0].handValue){
-        players[i].winState = "lose"
         players[i].bank -= players[i].wager;
         players[i].wager = 0;
         output += `<br>Player ${i} has lost!`
       }
       else if(players[i].handValue == players[0].handValue) {
-        players[i].winState = "draw";
         players[i].wager = 0;
         output += `<br>Player ${i} draw with the dealer!`;
       }
@@ -299,7 +295,6 @@ var contButton = function(){
   for (let i = 0; i < players.length; i++) {
     players[i].hand = [];
     players[i].handValue = 0;
-    players[i].winState = "unknown";
     let amtBet
     if(i >= 1){
       do{
