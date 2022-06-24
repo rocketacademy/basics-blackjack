@@ -293,7 +293,7 @@ var contButton = function(){
     players[i].winState = "unknown";
   }
   //Dealing of cards
-  for (let i = 0; i < 2; i++) {
+  for (let i = 0; i < 2; i++){
     for (let j = players.length; j > 0; j--) {
       players[j - 1].hand.push(deck.pop());
       updateValue(players[j - 1].hand, j - 1);
