@@ -16,7 +16,7 @@ var compCardValue = 0;
 
 // gamemode changes
 var gameMode = "Get Name";
-var hitStand = false;
+var playerClickStand = false;
 var blackJackCheck = false;
 
 // To output and display GIFs, drawn card names & suits to player
@@ -59,8 +59,7 @@ var main = function (input) {
     // enable hit & stand buttons, change game mode and output cards and score to player for decision making
     hit.disabled = false;
     stand.disabled = false;
-    console.log("Player cards are", playerCards);
-    printCardHands(playerCards);
+    printCardHands();
     displayGIF =
       '<img src="https://c.tenor.com/ONyBlCzonAEAAAAd/friends-ross-geller.gif"/>';
     gameMode = "Hit or Stand";
@@ -71,11 +70,11 @@ var main = function (input) {
     if (input == "stand") {
       //draw cards for computer & calculate score
       compAutoPlay(compCards);
-      // change mode to player hit stand to output all cards and calculate winner
-      hitStand = true;
+      // change mode to fulfil condition in printCardHands function to print both player & comp cards
+      playerClickStand = true;
+      // return win / loss results
       myOutputValue = winnerCheck(playerCardValue, compCardValue);
       resetBlackJack();
-      // return win / loss results
       return myOutputValue;
     }
 
@@ -97,7 +96,7 @@ var main = function (input) {
       displayGIF =
         '<img src="https://c.tenor.com/PtcVKDVeSJkAAAAd/chandler-joey.gif"/>';
       myOutputValue = `You're on a roll. <br> <br> ${allCardsOutput}`;
-      return allCardsOutput + displayGIF;
+      return myOutputValue + displayGIF;
     }
   }
 };
@@ -105,7 +104,11 @@ var main = function (input) {
 // Function to Print both player and computer's card hands
 var printCardHands = function () {
   // if player hit black jack, or decides to stand or went bust --> print both player & comp cards
-  if (hitStand == true || playerCardValue > 21 || blackJackCheck == true) {
+  if (
+    playerClickStand == true ||
+    playerCardValue > 21 ||
+    blackJackCheck == true
+  ) {
     allCardsOutput =
       "Your Hand: <br>  " +
       printCardsDrawn(playerCards) +
@@ -118,7 +121,6 @@ var printCardHands = function () {
       printCardsDrawn(compCards) +
       "Card Total: " +
       compCardValue;
-    console.log("The correct printCard function runs");
     return allCardsOutput;
   }
   //otherwise print player's cards only
@@ -128,12 +130,11 @@ var printCardHands = function () {
     "Card Total: " +
     playerCardValue +
     `<br> <br> Press "hit" to draw another card or "stand" to pass. <br><br>`;
-  return allCardsOutput;
 };
 
 // Print drawn card names and suits
 var printCardsDrawn = function (cardsArray) {
-  console.log("Card Array running in print cards is " + cardsArray);
+  console.log("Card Array running in print cards is ", cardsArray);
   var cardsDrawn = "";
   for (var m = 0; m < cardsArray.length; m++) {
     cardsDrawn =
@@ -155,7 +156,7 @@ var compAutoPlay = function (compCards) {
 
 // score comparison function
 var winnerCheck = function (playerCardValue, compCardValue) {
-  printCardHands(playerCards, compCards);
+  printCardHands();
 
   // if both went bust
   if (playerCardValue > 21 && compCardValue > 21) {
@@ -181,8 +182,8 @@ var winnerCheck = function (playerCardValue, compCardValue) {
   if (playerCardValue <= 21 && compCardValue <= 21) {
     if (playerCardValue > compCardValue) {
       message = playerName + ", you win!";
-      displayGIF =
-        '<img src="https://c.tenor.com/hdvxjTbUuzsAAAAC/thumbs-up-friends.gif"/>';
+
+      displayGIF = '<img src="https://c.tenor.com/jCWKfaqDAjAAAAAC/xo.gif"/>';
     } else {
       message = "Computer wins!";
       displayGIF =
@@ -242,7 +243,7 @@ var resetBlackJack = function () {
   compCards = [];
 
   gameMode = "Deal Cards";
-  hitStand = false;
+  playerClickStand = false;
   blackJackCheck = false;
   numOfCompCardsDrawn = 0;
   displayGIF = ``;
@@ -260,7 +261,6 @@ var resetBlackJack = function () {
 var blackjackCheck = function (playerCards, compCards) {
   playerCardValue = scoreCalculation(playerCards);
   compCardValue = scoreCalculation(compCards);
-  printCardHands(playerCards, compCards);
   var message = "";
 
   if (playerCardValue == 21) {
@@ -273,6 +273,8 @@ var blackjackCheck = function (playerCards, compCards) {
     message = `Computer drew black jack! <br> `;
     blackJackCheck = true;
   }
+
+  printCardHands();
   return (
     displayGIF +
     "<br><br>" +
@@ -291,19 +293,6 @@ var drawCard = function () {
 // first deal of cards
 var dealCards = function () {
   var numOfDealtCards = 0;
-  playerCards = [
-    { name: `10`, rank: 10, value: 10, suit: `Diamonds ♦️` },
-    { name: `9`, rank: 9, value: 9, suit: `Hearts ♥️` },
-    //{ name: `3`, rank: 3, value: 3, suit: `Hearts` },
-  ];
-  compCards = [
-    { name: `10`, rank: 10, value: 10, suit: `Clubs ♣️` },
-    { name: `9`, rank: 9, value: 9, suit: `Spades ♠️` },
-  ];
-  console.log("PLAYER cards are " + playerCards);
-  console.log("COMPUTER cards are " + compCards);
-  return playerCards, compCards;
-
   while (numOfDealtCards < 2) {
     playerCards.push(drawCard());
     compCards.push(drawCard());
