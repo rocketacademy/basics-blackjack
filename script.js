@@ -199,6 +199,8 @@ var playerDealerCardMsg = function () {
 
 //function to calculate player's betting points after result
 var calcBettingPoints = function () {
+  //add back initial wager points to player's stack before calculating
+  bettingPoints += wagerPoints;
   var bettingPointsMsg = "";
   if (bettingResult == BET_WIN) {
     bettingPoints += wagerPoints;
@@ -211,7 +213,7 @@ var calcBettingPoints = function () {
   }
 
   if (bettingPoints > 0) {
-    bettingPointsMsg = `Your remaining is ${bettingPoints}coins. Please input wager and click submit`;
+    bettingPointsMsg = `Your remaining is ${bettingPoints}coins. Please select wager amount and click submit.`;
   } else {
     bettingPointsMsg = `Game Over, you have used up all your coins! `;
   }
@@ -225,6 +227,7 @@ var resetRound = function () {
   playerCardsArray = [];
   computerCardsArray = [];
   aceCounter = 0;
+  wagerPoints = 0;
 };
 
 const DEALCARD = "dealCard";
@@ -255,18 +258,21 @@ const BET_BLACKJACK = "betBlackJack";
 var main = function (input) {
   var myOutputValue = "";
   if (gameMode == INSTRUCTION) {
-    myOutputValue = `Please input wager amount and click submit. <br> You have ${bettingPoints}coins to start.`;
+    myOutputValue = `Welcome to Blackjack Game!<br>You have ${bettingPoints}coins to start.<br>Please select wager amount and click submit. `;
     gameMode = DEALCARD;
   } else if (gameMode == DEALCARD) {
     //check if player have enough betting points to use as wager
     if (Number(input) > bettingPoints) {
-      myOutputValue = `You do not have enough coins! You currently have ${bettingPoints}coins left.`;
-    } else if (!Number(input)) {
-      myOutputValue = `Please input number! You currently have ${bettingPoints}coins left. `;
-    } else {
-      wagerPoints = Number(input);
+      myOutputValue = `You do not have enough coins!<br>You have wagered ${wagerPoints}coins and have ${bettingPoints}coins left.<br>Please select wager amount and click submit to continue.`;
+    } else if (input == "" && wagerPoints == 0) {
+      myOutputValue = `You have not placed any bet!`;
+    } else if (Number(input) <= bettingPoints && !(input == "")) {
+      wagerPoints += Number(input);
+      bettingPoints -= Number(input);
+      myOutputValue = `You have wagered ${wagerPoints}coins and have ${bettingPoints}coins left. Do you want to add on?<br>Click Submit to confirm coins amount.`;
       console.log("wager", wagerPoints);
-
+      console.log("betting", bettingPoints);
+    } else if (input == "" && !(wagerPoints == 0)) {
       //make deck and shuffle deck
       cardDeck = createCardDeck();
       shuffledCardDeck = shuffleCardDeck(cardDeck);
@@ -299,8 +305,8 @@ var main = function (input) {
 
       //computer top up card to be more than 17 score
       computerTopUpCard();
-      console.log("player score", playerScore);
-      console.log("comp score", computerScore);
+      //console.log("player score", playerScore);
+      //console.log("comp score", computerScore);
       //console.log("player card", playerCardsArray);
       //console.log("comp card", computerCardsArray);
 

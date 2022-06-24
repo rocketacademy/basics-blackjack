@@ -178,6 +178,11 @@
       <button id="submit-button">Submit</button>
       <button id="hit-button">Hit</button>
       <button id="stand-button">Stand</button>
+      <br />
+      <button id="wager-10">10</button>
+      <button id="wager-50">50</button>
+      <button id="wager-100">100</button>
+      <button id="wager-1000">1000</button>
 
       <p>Output:</p>
       <div id="output-div"></div>
@@ -216,6 +221,46 @@
       //set "stand" as input for main function and show output
       standButton.addEventListener("click", function () {
         var result = main("stand");
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
+      });
+
+      //wager 10 coins button
+      var wagerButton_10 = document.querySelector("#wager-10");
+
+      //set "10" as input for main function and show output
+      wagerButton_10.addEventListener("click", function () {
+        var result = main("10");
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
+      });
+
+      //wager 50 coins button
+      var wagerButton_50 = document.querySelector("#wager-50");
+
+      //set "10" as input for main function and show output
+      wagerButton_50.addEventListener("click", function () {
+        var result = main("50");
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
+      });
+
+      //wager 100 coins button
+      var wagerButton_100 = document.querySelector("#wager-100");
+
+      //set "100" as input for main function and show output
+      wagerButton_100.addEventListener("click", function () {
+        var result = main("100");
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
+      });
+
+      //wager 1000 coins button
+      var wagerButton_1000 = document.querySelector("#wager-1000");
+
+      //set "10" as input for main function and show output
+      wagerButton_1000.addEventListener("click", function () {
+        var result = main("1000");
         var output = document.querySelector("#output-div");
         output.innerHTML = result;
       });
