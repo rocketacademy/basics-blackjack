@@ -131,15 +131,17 @@
       <br />
       <button id="submit-button">Submit</button>
       <p>Output:</p>
-      <div id="output-div"></div>
+      <div id="output-div">
+        Welcome to Basics Blackjack, Type 'start' to play the Game </br></br>
+        If you do not know the rules of Blackjack, here is a simple Guide.
+        <iframe width="420" height="345" src="https://www.youtube.com/embed/eyoh-Ku9TCI"></iframe>
+      </div>
     </div>
     <!-- Import program logic -->
     <script src="script.js"></script>
     <!-- Define button click functionality -->
     <script>
-      var button = document.querySelector("#submit-button");
-      button.addEventListener("click", function () {
-        // Set result to input value
+      var buttonAction = function(){
         var input = document.querySelector("#input-field");
         var result = main(input.value);
 
@@ -149,7 +151,16 @@
 
         // Reset input value
         input.value = "";
+      }
+      var button = document.querySelector("#submit-button");
+      button.addEventListener("click", function () {
+        buttonAction();
       });
+      
+      var input = document.getElementById("input-field");
+      input.addEventListener("keypress", function(event){
+        if(event.key === "Enter")buttonAction();
+      })
     </script>
   </body>
 </html>
