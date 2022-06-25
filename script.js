@@ -8,9 +8,10 @@ var DEALING = 0;
 var PLAYING = 1;
 var PLAYERSELECTION = 2;
 var BETSELECTION = 3;
+var NAMESELECTION = 4;
 
 // Global variables
-var noOfPlayers = 1;
+var noOfPlayers = 0;
 var playerInfo = [];
 var aiHand = [];
 var gameMode = PLAYERSELECTION;
@@ -275,6 +276,61 @@ var DOMplayerSelection = function (state) {
   }
 };
 
+var DOMnameSelection = function (state) {
+  if (state) {
+    const div = document.createElement("div");
+    div.id = "name-selection";
+    document.getElementById("container").appendChild(div);
+
+    const para = document.createElement("p");
+    para.innerHTML = "Please enter your names:";
+
+    const inputBoxDiv = document.createElement("div");
+    inputBoxDiv.id = "name-box-div";
+
+    document.getElementById("name-selection").appendChild(para);
+    document.getElementById("name-selection").appendChild(inputBoxDiv);
+
+    for (let i = 0; i < playerInfo.length; i++) {
+      inputBoxDiv.appendChild(document.createTextNode(`Player ${i + 1}: `));
+
+      var nameBox = document.createElement("input");
+      nameBox.type = "text";
+      nameBox.id = "name-box-" + (i + 1);
+      nameBox.style = "width:50%";
+      inputBoxDiv.appendChild(nameBox);
+      // Append a line break
+      inputBoxDiv.appendChild(document.createElement("br"));
+    }
+
+    const startButton = document.createElement("button");
+    startButton.id = "start-button";
+    startButton.innerHTML = "Start";
+    startButton.style.display = "block";
+    startButton.addEventListener("click", function () {
+      var nameList = [];
+      for (let i = 0; i < noOfPlayers; i++) {
+        var tempBox = document.getElementById(`name-box-${i + 1}`);
+        nameList.push(tempBox.value);
+      }
+      // Set result to input value
+      var result = main(nameList);
+
+      // Display result in output element
+      var output = document.querySelector("#output-div");
+      output.innerHTML = result;
+
+      // Reset input value
+      input.value = "";
+    });
+
+    document.getElementById("name-selection").appendChild(startButton);
+  } else {
+    var element = document.getElementById("name-selection");
+    element.parentNode.removeChild(element);
+  }
+};
+
 var DOMgameplay = function (state) {
   if (state) {
     const div = document.createElement("div");
@@ -294,7 +350,7 @@ var DOMgameplay = function (state) {
       var cell = document.createElement("td");
       var cell2 = document.createElement("td");
 
-      label = `Player ${i + 1}`;
+      label = `${playerInfo[i].name}`;
       boxlabels.push(label);
       cell.append(playerInfo[i].betAmt);
       cell2.append(playerInfo[i].score);
@@ -403,7 +459,7 @@ var DOMbetSelection = function (state) {
       inputField.id = `input-field${i + 1}`;
       inputField.style = "width:50%";
 
-      label = `Player ${i + 1}`;
+      label = playerInfo[i].name;
       boxlabels.push(label);
       cell.append(inputField);
       cell2.append(playerInfo[i].score);
@@ -477,13 +533,27 @@ var main = function (input) {
   if (gameMode == PLAYERSELECTION) {
     if (Number(input) > 0 && Number(input) < 8) {
       noOfPlayers = Number(input);
-      gameMode = BETSELECTION;
+      gameMode = NAMESELECTION;
       playerInfoGenerator(noOfPlayers);
       DOMplayerSelection(false);
-      DOMbetSelection(true);
+      DOMnameSelection(true);
       return "";
     } else {
       return "Please key in a player number between 0 and 8.";
+    }
+  }
+
+  if (gameMode == NAMESELECTION) {
+    if (input.includes(false)) {
+      return "";
+    } else {
+      for (let i = 0; i < playerInfo.length; i++) {
+        playerInfo[i].name = input[i];
+      }
+      gameMode = BETSELECTION;
+      DOMnameSelection(false);
+      DOMbetSelection(true);
+      return "";
     }
   }
 
@@ -498,7 +568,6 @@ var main = function (input) {
       toggleButtons(true);
       return "Bets have been placed. Press Continue to deal cards.";
     } else {
-      console.log(betValidator(input));
       return "Please place bets in multiples of 10 or what you can afford.";
     }
   }
