@@ -1,3 +1,41 @@
+const DEALCARD = "dealCard";
+const PLAYGAME = "playGame";
+const INPUT_HIT_STAND = "inputHitStand";
+const INSTRUCTION = "instruction";
+
+var gameMode = INSTRUCTION;
+var playerCardsArray = [];
+var computerCardsArray = [];
+var playerScore = 0;
+var computerScore = 0;
+var bustScore = Number(21);
+var dealerSoft17 = Number(17);
+var shuffledCardDeck = [];
+
+var bettingPoints = 100;
+var wagerPoints = 0;
+var bettingResult = "";
+
+//to record player's betting outcome
+const BET_WIN = "betWin";
+const BET_LOSE = "betLose";
+const BET_TIE = "betTie";
+const BET_BLACKJACK = "betBlackJack";
+
+//image for game result
+var imageRainMoney = `<img src="https://c.tenor.com/agZ8PxiYWPsAAAAi/pepemoney-money-rain.gif/" width="20%">`;
+var imageBlackjack = `<img src="https://c.tenor.com/x5jwK4cZEnsAAAAM/pepe-hype-hands-up.gif" width="20%">`;
+var imagePlayerWin = `<img src=https://c.tenor.com/PwFNvM2V9BgAAAAi/hype-pepe-pepe.gif" width="20%"">`;
+var imagePlayerLose = `<img src="https://c.tenor.com/w-tjf_bXRgIAAAAj/mike-mikeford.gif" width="20%"">`;
+var imageGameTie = `<img src="https://c.tenor.com/BTsc4MhnlXQAAAAM/pepe-rana.gif" width="30%"">`;
+var imageGameOver = `<img src="https://media3.giphy.com/media/fdGbhuUQpGQkkuuzIr/giphy.gif?cid=790b7611f49ab47c57959f26ab5e96a908d1700bb661f797&rid=giphy.gif&ct=ts" width="30%"">`;
+var imageBust = `<img src="https://c.tenor.com/IXHsj8PPhhMAAAAj/pepega-aim-gun.gif" width="20%"">`;
+var imageWinLetter = `<img src="https://studio.code.org/v3/assets/4GexL5YqegQ5GkD8FgvdxoUJGA7ss8mteRIAQxjGEAw/2-.gif" width="20%"">`;
+var imageLoseLetter = `<img src="https://studio.code.org/v3/assets/dBECKjaLdbXVOjEdIQm-wOtL6aXmbq3m-4IHq5Znqq8/youlose.gif" width="30%"">`;
+var imageAddOn = `<img src="https://c.tenor.com/EZm07tiVCgEAAAAj/gstarludi-peepo.gif" width="20%"">`;
+var imageHitStand = `<img src="https://c.tenor.com/OTRbTTjByUkAAAAj/gstarludi-gamble.gif" width="20%"">`;
+var imageHitStand2 = `<img src="https://c.tenor.com/oSawKS_St84AAAAj/gstarludi-gamble.gif" width="20%"">`;
+
 //function to create a deck of card
 //note: cardDeck is an array which stores cards as objects which has three attributes : name,rank,suits
 var createCardDeck = function () {
@@ -136,40 +174,40 @@ var isBust = function (score) {
   return false;
 };
 
-//function to play game (deal card,check blackjack, calculalte score)
+//function to play game (deal card,check blackjack, calculate score)
 var playBlackjack = function () {
   var gameResult = "";
 
   //check for blackjack winning condition
   if (isBlackjack(playerCardsArray)) {
-    gameResult = `player blackjack`;
+    gameResult = `Player Blackjack!!<br>${imageWinLetter} ${imageBlackjack}`;
     bettingResult = BET_BLACKJACK;
   } else if (isBlackjack(computerCardsArray)) {
-    gameResult = `comp blackjack`;
+    gameResult = `Dealer Blackjack!<br>${imageLoseLetter} ${imageBlackjack}`;
     bettingResult = BET_LOSE;
   } else if (isBlackjack(playerCardsArray) && isBlackjack(computerCardsArray)) {
-    gameResult = ` tie, both blackjack`;
+    gameResult = ` It's a tie! Both Blackjack!!<br>${imageBlackjack}`;
     bettingResult = BET_TIE;
   }
   //check for bust condition
   else if (isBust(playerScore) && !isBust(computerScore)) {
-    gameResult = `player bust`;
+    gameResult = `Player Bust!<br>${imageLoseLetter} ${imageBust}`;
     bettingResult = BET_LOSE;
   } else if (!isBust(playerScore) && isBust(computerScore)) {
-    gameResult = `computer bust`;
+    gameResult = `Dealer Bust!<br>${imageWinLetter} ${imageBust}`;
     bettingResult = BET_WIN;
   } else if (isBust(playerScore) && isBust(computerScore)) {
-    gameResult = `it's a tie, both player computer bust`;
+    gameResult = `It's a tie, both player and dealer Bust!<br>${imageGameTie}`;
     bettingResult = BET_TIE;
   } else if (!isBust(playerScore) && !isBust(computerScore)) {
     if (playerScore < computerScore) {
-      gameResult = `player lower score, lose`;
+      gameResult = `Player has lower score, you lose!<br>${imageLoseLetter} ${imagePlayerLose}`;
       bettingResult = BET_LOSE;
     } else if (playerScore > computerScore) {
-      gameResult = `player higher score , win `;
+      gameResult = `Player has higher score, you win!<br>${imageWinLetter} ${imagePlayerWin}`;
       bettingResult = BET_WIN;
     } else if (playerScore == computerScore) {
-      gameResult = `it's a tie`;
+      gameResult = `It's a tie, both has same score!<br>${imageGameTie}`;
       bettingResult = BET_TIE;
     }
   }
@@ -203,7 +241,7 @@ var playerDealerCardMsg = function () {
   var playerCardMsg = dealCardMsg(playerCardsArray);
   var computerCardMsg = dealCardMsg(computerCardsArray);
 
-  var outputMsg = `player drew ${playerCardMsg}<br>computer drew ${computerCardMsg}<br>`;
+  var outputMsg = `Pepe's Card 🐸 : ${computerCardMsg}<br>Your Card 😎 : ${playerCardMsg}<br>`;
 
   return outputMsg;
 };
@@ -226,12 +264,13 @@ var calcBettingPoints = function () {
   if (bettingPoints > 0) {
     bettingPointsMsg = `Your remaining is ${bettingPoints}coins. Please select wager amount.`;
   } else {
-    bettingPointsMsg = `Game Over, you have used up all your coins! `;
+    bettingPointsMsg = `Game Over, you have used up all your coins!<br>${imageGameOver} `;
   }
 
   return bettingPointsMsg;
 };
 
+//function to reset parameters before next round
 var resetRound = function () {
   playerScore = 0;
   computerScore = 0;
@@ -241,34 +280,10 @@ var resetRound = function () {
   wagerPoints = 0;
 };
 
-const DEALCARD = "dealCard";
-const PLAYGAME = "playGame";
-const INPUT_HIT_STAND = "inputHitStand";
-const INSTRUCTION = "instruction";
-//const RESET = "reset";
-var gameMode = INSTRUCTION;
-var playerCardsArray = [];
-var computerCardsArray = [];
-var playerScore = 0;
-var computerScore = 0;
-var bustScore = Number(21);
-var dealerSoft17 = Number(17);
-var shuffledCardDeck = [];
-
-var bettingPoints = 100;
-var wagerPoints = 0;
-var bettingResult = "";
-
-//to record player's betting outcome
-const BET_WIN = "betWin";
-const BET_LOSE = "betLose";
-const BET_TIE = "betTie";
-const BET_BLACKJACK = "betBlackJack";
-
 var main = function (input) {
   var myOutputValue = "";
   if (gameMode == INSTRUCTION) {
-    myOutputValue = `Welcome to Blackjack Game!<br>You have ${bettingPoints}coins to start.<br>Please select wager amount and click continue. `;
+    myOutputValue = `You have ${bettingPoints}coins to start.<br>Please select wager amount and click continue.<br>${imageRainMoney}`;
 
     //change start button to continue button
     document.querySelector("#submit-button").innerText = "Continue";
@@ -281,15 +296,19 @@ var main = function (input) {
     //check if player have enough betting points to use as wager
     if (Number(input) > bettingPoints) {
       myOutputValue = `You do not have enough coins!<br>You have wagered ${wagerPoints}coins and have ${bettingPoints}coins left.<br>Please select wager amount and click continue.`;
-    } else if (input == "" && wagerPoints == 0) {
+    }
+    //check if player did not input any wager
+    else if (input == "" && wagerPoints == 0) {
       myOutputValue = `You have not placed any bet!`;
-    } else if (Number(input) <= bettingPoints && !(input == "")) {
+    }
+    //player input wager and add on wager
+    else if (Number(input) <= bettingPoints && !(input == "")) {
       wagerPoints += Number(input);
       bettingPoints -= Number(input);
-      myOutputValue = `You have wagered ${wagerPoints}coins and have ${bettingPoints}coins left.<br>Do you want to add on?<br>Click continue to confirm coins amount.`;
-      console.log("wager", wagerPoints);
-      console.log("betting", bettingPoints);
-    } else if (input == "" && !(wagerPoints == 0)) {
+      myOutputValue = `You have wagered ${wagerPoints}coins and have ${bettingPoints}coins left.<br>Do you want to add on?<br>Click continue to confirm coins amount.<br>${imageAddOn}`;
+    }
+    //player done input wager and click continue
+    else if (input == "" && !(wagerPoints == 0)) {
       //make deck and shuffle deck
       cardDeck = createCardDeck();
       shuffledCardDeck = shuffleCardDeck(cardDeck);
@@ -301,7 +320,7 @@ var main = function (input) {
       //deal 1 cards to computer
       dealCard(computerCardsArray);
 
-      myOutputValue = `${playerDealerCardMsg()}<br>Please select "hit" or "stand"`;
+      myOutputValue = `${playerDealerCardMsg()}<br>Please select "hit" or "stand".<br>${imageHitStand}`;
 
       //enable hit and stand button
       document.querySelector("#hit-button").disabled = false;
@@ -317,7 +336,7 @@ var main = function (input) {
       dealCard(playerCardsArray);
 
       //reprint player & dealer dealed card message
-      myOutputValue = `${playerDealerCardMsg()} <br>Please select "hit" or "stand"`;
+      myOutputValue = `${playerDealerCardMsg()} <br>Please select "hit" or "stand".<br>${imageHitStand2}`;
     } else if (input == "stand") {
       //deal 2nd card for dealer
       dealCard(computerCardsArray);
@@ -328,10 +347,6 @@ var main = function (input) {
 
       //computer top up card to be more than 17 score
       computerTopUpCard();
-      console.log("player score", playerScore);
-      console.log("comp score", computerScore);
-      //console.log("player card", playerCardsArray);
-      //console.log("comp card", computerCardsArray);
 
       //determine winner
       myOutputValue = `${playerDealerCardMsg()} <br>${playBlackjack()}<br>`;

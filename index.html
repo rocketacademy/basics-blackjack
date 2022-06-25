@@ -103,7 +103,7 @@
         background-size: cover; /* Resize the background image to cover the entire container */
       }
 
-      #output-div img {
+      #output-div-img {
         display: block;
         max-width: 100%;
         max-height: 200px;
@@ -115,10 +115,11 @@
       }
 
       #container {
-        background-color: #4e6a54;
+        background-color: #ffec82;
         margin: 40px auto;
         max-width: 800px;
-        padding: 38px 31px;
+        padding: 30px 31px;
+        border-radius: 35px;
       }
 
       input {
@@ -130,6 +131,7 @@
       }
       .button-wrapper {
         text-align: center;
+        display: block;
       }
       button {
         font-size: 21px;
@@ -139,11 +141,12 @@
       }
 
       #output-div {
-        background-color: lightgrey;
+        background-color: aliceblue;
         margin: 10px auto;
         padding: 10px;
         width: 70%;
         text-align: center;
+        border-radius: 10px;
       }
 
       .logo-img {
@@ -157,6 +160,42 @@
         .header {
           font-size: 2rem;
         }
+      }
+      #welcome-image {
+        display: inline;
+        width: 25%;
+        padding: 8px;
+      }
+
+      #button-gif {
+        width: 15%;
+      }
+
+      #coin-gif {
+        display: inline;
+        width: 5%;
+        padding: 0px;
+      }
+
+      #wager-10 {
+        border-radius: 100%;
+        border-style: double;
+        font-size: 100%;
+      }
+      #wager-50 {
+        border-radius: 100%;
+        border-style: double;
+        font-size: 100%;
+      }
+      #wager-100 {
+        border-radius: 100%;
+        border-style: double;
+        font-size: 80%;
+      }
+      #wager-1000 {
+        border-radius: 100%;
+        border-style: double;
+        font-size: 60%;
       }
     </style>
   </head>
@@ -173,19 +212,49 @@
         src="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/brand/logo.png"
       />
     </h1>
-    <h1 class="header">♣️ Basics - Blackjack ♠️</h1>
+
+    <h1 class="header">♣️ Pepe The Frog's Blackjack Game ♠️</h1>
+
     <div id="container">
-      <div id="output-div">Click Start to begin.</div>
+      <div id="output-div">
+        Welcome to Pepe's Blackjack Game!<br />Click Start to begin.
+        <div id="output-div-img">
+          <img
+            id="welcome-image"
+            src="https://c.tenor.com/c7LVjFZrBmIAAAAi/pepe-the-frog-pepe.gif"
+          /><img
+            src=" https://c.tenor.com/RnLB_GCuQIEAAAAi/press-start.gif"
+            width="25%"
+          />
+        </div>
+      </div>
+
       <br />
       <div class="button-wrapper">
+        <img
+          id="button-gif"
+          src="https://c.tenor.com/4JsIuhZTe8kAAAAj/pepe-pepe-the-frog.gif"
+        />
         <button id="submit-button">Start</button>
         <button id="hit-button">Hit</button>
         <button id="stand-button">Stand</button>
+        <img
+          id="button-gif"
+          src="https://c.tenor.com/4JsIuhZTe8kAAAAj/pepe-pepe-the-frog.gif"
+        />
         <br />
+        <img
+          id="coin-gif"
+          src="https://c.tenor.com/oZA8hW4HNzsAAAAi/peppa-pig.gif"
+        />
         <button id="wager-10">10</button>
         <button id="wager-50">50</button>
         <button id="wager-100">100</button>
-        <button id="wager-1000">1000</button>
+        <button id="wager-1000">1,000</button>
+        <img
+          id="coin-gif"
+          src="https://c.tenor.com/oZA8hW4HNzsAAAAi/peppa-pig.gif"
+        />
       </div>
     </div>
     <!-- Import program logic -->
