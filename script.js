@@ -224,7 +224,7 @@ var calcBettingPoints = function () {
   }
 
   if (bettingPoints > 0) {
-    bettingPointsMsg = `Your remaining is ${bettingPoints}coins. Please select wager amount and click submit.`;
+    bettingPointsMsg = `Your remaining is ${bettingPoints}coins. Please select wager amount.`;
   } else {
     bettingPointsMsg = `Game Over, you have used up all your coins! `;
   }
@@ -268,18 +268,25 @@ const BET_BLACKJACK = "betBlackJack";
 var main = function (input) {
   var myOutputValue = "";
   if (gameMode == INSTRUCTION) {
-    myOutputValue = `Welcome to Blackjack Game!<br>You have ${bettingPoints}coins to start.<br>Please select wager amount and click submit. `;
+    myOutputValue = `Welcome to Blackjack Game!<br>You have ${bettingPoints}coins to start.<br>Please select wager amount and click continue. `;
+
+    //change start button to continue button
+    document.querySelector("#submit-button").innerText = "Continue";
+
     gameMode = DEALCARD;
   } else if (gameMode == DEALCARD) {
+    //enable Submit button
+    document.querySelector("#submit-button").disabled = false;
+
     //check if player have enough betting points to use as wager
     if (Number(input) > bettingPoints) {
-      myOutputValue = `You do not have enough coins!<br>You have wagered ${wagerPoints}coins and have ${bettingPoints}coins left.<br>Please select wager amount and click submit to continue.`;
+      myOutputValue = `You do not have enough coins!<br>You have wagered ${wagerPoints}coins and have ${bettingPoints}coins left.<br>Please select wager amount and click continue.`;
     } else if (input == "" && wagerPoints == 0) {
       myOutputValue = `You have not placed any bet!`;
     } else if (Number(input) <= bettingPoints && !(input == "")) {
       wagerPoints += Number(input);
       bettingPoints -= Number(input);
-      myOutputValue = `You have wagered ${wagerPoints}coins and have ${bettingPoints}coins left. Do you want to add on?<br>Click Submit to confirm coins amount.`;
+      myOutputValue = `You have wagered ${wagerPoints}coins and have ${bettingPoints}coins left.<br>Do you want to add on?<br>Click continue to confirm coins amount.`;
       console.log("wager", wagerPoints);
       console.log("betting", bettingPoints);
     } else if (input == "" && !(wagerPoints == 0)) {
@@ -294,7 +301,13 @@ var main = function (input) {
       //deal 1 cards to computer
       dealCard(computerCardsArray);
 
-      myOutputValue = `${playerDealerCardMsg()}<br>player plz input "hit" or "stand"`;
+      myOutputValue = `${playerDealerCardMsg()}<br>Please select "hit" or "stand"`;
+
+      //enable hit and stand button
+      document.querySelector("#hit-button").disabled = false;
+      document.querySelector("#stand-button").disabled = false;
+      //disable Submit button
+      document.querySelector("#submit-button").disabled = true;
 
       gameMode = INPUT_HIT_STAND;
     }
@@ -304,7 +317,7 @@ var main = function (input) {
       dealCard(playerCardsArray);
 
       //reprint player & dealer dealed card message
-      myOutputValue = `${playerDealerCardMsg()} <br>player plz input "hit" or "stand"`;
+      myOutputValue = `${playerDealerCardMsg()} <br>Please select "hit" or "stand"`;
     } else if (input == "stand") {
       //deal 2nd card for dealer
       dealCard(computerCardsArray);
@@ -333,10 +346,17 @@ var main = function (input) {
       } else {
         //reset gameMode and betting points if game over
         gameMode = INSTRUCTION;
+        //change button to Retart and enable it for new round
+        document.querySelector("#submit-button").innerText = "Restart!";
+        document.querySelector("#submit-button").disabled = false;
         bettingPoints = 100;
       }
+
+      //disable hit and stand button
+      document.querySelector("#hit-button").disabled = true;
+      document.querySelector("#stand-button").disabled = true;
     } else {
-      myOutputValue = `Error, plz input hit/stand`;
+      myOutputValue = `Error, please select "hit" or "stand".`;
     }
   }
 

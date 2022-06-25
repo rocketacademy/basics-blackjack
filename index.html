@@ -111,11 +111,11 @@
       .header {
         text-align: center;
         font-size: 1.1rem;
-        margin-bottom: 3rem;
+        margin-bottom: 1rem;
       }
 
       #container {
-        background-color: pink;
+        background-color: #4e6a54;
         margin: 40px auto;
         max-width: 800px;
         padding: 38px 31px;
@@ -128,7 +128,9 @@
         padding: 0 9px;
         width: 100%;
       }
-
+      .button-wrapper {
+        text-align: center;
+      }
       button {
         font-size: 21px;
         line-height: 33px;
@@ -138,9 +140,10 @@
 
       #output-div {
         background-color: lightgrey;
-        margin: 20px auto;
-        padding: 20px;
-        width: 100%;
+        margin: 10px auto;
+        padding: 10px;
+        width: 70%;
+        text-align: center;
       }
 
       .logo-img {
@@ -172,37 +175,39 @@
     </h1>
     <h1 class="header">♣️ Basics - Blackjack ♠️</h1>
     <div id="container">
-      <p>Input:</p>
-      <input id="input-field" />
+      <div id="output-div">Click Start to begin.</div>
       <br />
-      <button id="submit-button">Submit</button>
-      <button id="hit-button">Hit</button>
-      <button id="stand-button">Stand</button>
-      <br />
-      <button id="wager-10">10</button>
-      <button id="wager-50">50</button>
-      <button id="wager-100">100</button>
-      <button id="wager-1000">1000</button>
-
-      <p>Output:</p>
-      <div id="output-div"></div>
+      <div class="button-wrapper">
+        <button id="submit-button">Start</button>
+        <button id="hit-button">Hit</button>
+        <button id="stand-button">Stand</button>
+        <br />
+        <button id="wager-10">10</button>
+        <button id="wager-50">50</button>
+        <button id="wager-100">100</button>
+        <button id="wager-1000">1000</button>
+      </div>
     </div>
     <!-- Import program logic -->
     <script src="script.js"></script>
     <!-- Define button click functionality -->
     <script>
+      //disable hit and stand button except Submit
+      document.querySelector("#hit-button").disabled = true;
+      document.querySelector("#stand-button").disabled = true;
+
       var button = document.querySelector("#submit-button");
       button.addEventListener("click", function () {
         // Set result to input value
-        var input = document.querySelector("#input-field");
-        var result = main(input.value);
+        //var input = document.querySelector("#input-field");
+        var result = main("");
 
         // Display result in output element
         var output = document.querySelector("#output-div");
         output.innerHTML = result;
 
         // Reset input value
-        input.value = "";
+        //input.value = "";
       });
 
       //select hit button
