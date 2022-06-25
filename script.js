@@ -10,7 +10,7 @@ var PLAYERSELECTION = 2;
 var BETSELECTION = 3;
 
 // Global variables
-var noOfPlayers = 0;
+var noOfPlayers = 1;
 var playerInfo = [];
 var aiHand = [];
 var gameMode = PLAYERSELECTION;
@@ -57,6 +57,26 @@ var playerInfoGenerator = function (noOfPlayers) {
 var emptyHands = function (info) {
   for (var i = 0; i < info.length; i++) {
     info[i].hand = [];
+  }
+};
+
+var betValidator = function (betList) {
+  var validities = [];
+  for (i = 0; i < playerInfo.length; i++) {
+    if (
+      betList[i] <= playerInfo[i].score &&
+      betList[i] % 10 == 0 &&
+      betList[i] != 0
+    ) {
+      validities.push(true);
+    } else {
+      validities.push(false);
+    }
+  }
+  if (validities.includes(false)) {
+    return false;
+  } else {
+    return true;
   }
 };
 
@@ -261,6 +281,57 @@ var DOMgameplay = function (state) {
     div.id = "gameplay";
     document.getElementById("container").appendChild(div);
 
+    const scoreboard = document.createElement("div");
+    scoreboard.id = "scoreboarddiv";
+
+    document.getElementById("gameplay").appendChild(scoreboard);
+
+    var boxlabels = [];
+    var boxes = [];
+    var scores = [];
+
+    for (let i = 0; i < noOfPlayers; i++) {
+      var cell = document.createElement("td");
+      var cell2 = document.createElement("td");
+
+      label = `Player ${i + 1}`;
+      boxlabels.push(label);
+      cell.append(playerInfo[i].betAmt);
+      cell2.append(playerInfo[i].score);
+      boxes.push(cell);
+      scores.push(cell2);
+    }
+
+    let scoreboardTable = document.createElement("table"); // Create the table itself
+    scoreboardTable.className = "scoreboardTable";
+    let scoreboardTableHead = document.createElement("thead"); // Creates the table header group element
+    scoreboardTableHead.className = "scoreboardTableHead";
+    let scoreboardTableHeaderRow = document.createElement("tr"); // Creates the row that will contain the headers
+    scoreboardTableHeaderRow.className = "scoreboardTableHeaderRow";
+
+    boxlabels.forEach((header) => {
+      let scoreHeader = document.createElement("th"); // Creates the current header cell during a specific iteration
+      scoreHeader.innerText = header;
+      scoreboardTableHeaderRow.append(scoreHeader); // Appends the current header cell to the header row
+    });
+
+    scoreboardTableHead.append(scoreboardTableHeaderRow); // Appends the header row to the table header group element
+    scoreboardTable.append(scoreboardTableHead);
+    let scoreboardTableBody = document.createElement("tbody"); // Creates the table body group element
+    scoreboardTableBody.className = "scoreboardTable-Body";
+    scoreboardTable.append(scoreboardTableBody); // Appends the table body group element to the table
+    scoreboard.append(scoreboardTable); // Appends the table to the scoreboard div
+
+    let scoreboardTableBodyRow = document.createElement("tr"); // Create the current table row
+    scoreboardTableBodyRow.className = "scoreboardTableBodyRow";
+    scoreboardTableBodyRow.append(...boxes); // Append all 5 cells to the table row
+    scoreboardTable.append(scoreboardTableBodyRow);
+
+    let scoreboardTableBodyRow2 = document.createElement("tr"); // Create the current table row
+    scoreboardTableBodyRow.className = "scoreboardTableBodyRow";
+    scoreboardTableBodyRow2.append(...scores); // Append all 5 cells to the table row
+    scoreboardTable.append(scoreboardTableBodyRow2);
+
     const para = document.createElement("p");
     para.innerHTML = "Press <b>Continue</b> to get started and deal cards.";
 
@@ -312,7 +383,7 @@ var DOMbetSelection = function (state) {
     document.getElementById("container").appendChild(div);
 
     const para = document.createElement("p");
-    para.innerHTML = "Please place your bets:";
+    para.innerHTML = "Please place your bets (in multiples of 10):";
 
     const inputBoxDiv = document.createElement("div");
     inputBoxDiv.id = "input-box-div";
@@ -320,17 +391,55 @@ var DOMbetSelection = function (state) {
     document.getElementById("bet-selection").appendChild(para);
     document.getElementById("bet-selection").appendChild(inputBoxDiv);
 
+    var boxlabels = [];
     var boxes = [];
+    var scores = [];
 
     for (let i = 0; i < noOfPlayers; i++) {
+      var cell = document.createElement("td");
+      var cell2 = document.createElement("td");
+
       var inputField = document.createElement("input");
       inputField.id = `input-field${i + 1}`;
-      boxes.push(inputField);
+      inputField.style = "width:50%";
+
+      label = `Player ${i + 1}`;
+      boxlabels.push(label);
+      cell.append(inputField);
+      cell2.append(playerInfo[i].score);
+      boxes.push(cell);
+      scores.push(cell2);
     }
 
-    boxes.forEach((box) =>
-      document.getElementById("input-box-div").appendChild(box)
-    );
+    let scoreboardTable = document.createElement("table"); // Create the table itself
+    scoreboardTable.className = "scoreboardTable";
+    let scoreboardTableHead = document.createElement("thead"); // Creates the table header group element
+    scoreboardTableHead.className = "scoreboardTableHead";
+    let scoreboardTableHeaderRow = document.createElement("tr"); // Creates the row that will contain the headers
+    scoreboardTableHeaderRow.className = "scoreboardTableHeaderRow";
+
+    boxlabels.forEach((header) => {
+      let scoreHeader = document.createElement("th"); // Creates the current header cell during a specific iteration
+      scoreHeader.innerText = header;
+      scoreboardTableHeaderRow.append(scoreHeader); // Appends the current header cell to the header row
+    });
+
+    scoreboardTableHead.append(scoreboardTableHeaderRow); // Appends the header row to the table header group element
+    scoreboardTable.append(scoreboardTableHead);
+    let scoreboardTableBody = document.createElement("tbody"); // Creates the table body group element
+    scoreboardTableBody.className = "scoreboardTable-Body";
+    scoreboardTable.append(scoreboardTableBody); // Appends the table body group element to the table
+    inputBoxDiv.append(scoreboardTable); // Appends the table to the scoreboard div
+
+    let scoreboardTableBodyRow = document.createElement("tr"); // Create the current table row
+    scoreboardTableBodyRow.className = "scoreboardTableBodyRow";
+    scoreboardTableBodyRow.append(...boxes); // Append all 5 cells to the table row
+    scoreboardTable.append(scoreboardTableBodyRow);
+
+    let scoreboardTableBodyRow2 = document.createElement("tr"); // Create the current table row
+    scoreboardTableBodyRow.className = "scoreboardTableBodyRow";
+    scoreboardTableBodyRow2.append(...scores); // Append all 5 cells to the table row
+    scoreboardTable.append(scoreboardTableBodyRow2);
 
     const betButton = document.createElement("button");
     betButton.id = "bet-button";
@@ -379,14 +488,19 @@ var main = function (input) {
   }
 
   if (gameMode == BETSELECTION) {
-    for (let i = 0; i < noOfPlayers; i++) {
-      playerInfo[i].betAmt = input[i];
+    if (betValidator(input)) {
+      for (let i = 0; i < noOfPlayers; i++) {
+        playerInfo[i].betAmt = input[i];
+      }
+      gameMode = DEALING;
+      DOMbetSelection(false);
+      DOMgameplay(true);
+      toggleButtons(true);
+      return "Bets have been placed. Press Continue to deal cards.";
+    } else {
+      console.log(betValidator(input));
+      return "Please place bets in multiples of 10 or what you can afford.";
     }
-    gameMode = DEALING;
-    DOMbetSelection(false);
-    DOMgameplay(true);
-    toggleButtons(true);
-    return "Bets have been placed. Press Continue to deal cards.";
   }
 
   if (gameMode == DEALING) {
@@ -404,7 +518,7 @@ var main = function (input) {
     } else if (blackjackCheck.includes(noOfPlayers)) {
       gameMode = BETSELECTION;
       for (var i = 0; i < playerInfo.length; i++) {
-        info[i].score -= info[i].betAmt * 1.5;
+        playerInfo[i].score -= playerInfo[i].betAmt * 1.5;
       }
       return (
         "Blackjack! AI wins! Press Submit again to start a new round." +
@@ -483,18 +597,16 @@ var main = function (input) {
     return "This player has won a blackjack this round. Press continue to move on to the next player.";
   }
   if (currentPlayer > noOfPlayers) {
-    toggleButtons(true);
-    DOMgameplay(false);
-    DOMbetSelection(true);
     ai(sampleDeck);
 
     var winners = totalWinChecker(playerInfo, aiHand);
     var winStatement = "Round ended!<br>";
     for (var i = 0; i < winners.length; i++) {
-      winStatement += `Player ${i + 1}: ${winners[i]}     Current points: ${
-        playerInfo[i].score
-      }<br>`;
+      winStatement += `Player ${i + 1}: ${winners[i]}!<br>`;
     }
+    toggleButtons(true);
+    DOMgameplay(false);
+    DOMbetSelection(true);
     gameMode = BETSELECTION;
     currentPlayer = 0;
     return winStatement + statusDisplay(playerInfo, aiHand, 0);
