@@ -72,6 +72,8 @@ var dealCard = function (cardsArray) {
 
 //function to calculate score
 var calcScore = function (cardsArray) {
+  var aceCounter = 0;
+  var initialScore = 0;
   var totalScore = 0;
   var cardIndex = 0;
 
@@ -83,26 +85,35 @@ var calcScore = function (cardsArray) {
       currentCard.rank == 12 ||
       currentCard.rank == 13
     ) {
-      totalScore += 10;
+      initialScore += 10;
     }
-    // if there's ace on hand & totalscore <21, ace score = 11
-    //also if aceCounter<=1 , ace score = 11  (only one ace can be counted as 11)
-    else if (currentCard.rank == 1 && totalScore < 21 && !(aceCounter > 1)) {
-      totalScore += 11;
-      aceCounter += 1;
-    }
-    //if there's ace on hand & totalscore > 21 , ace score = 1
-    //also if aceCounter >1 , ace score = 1  (only one ace can be counted as 11)
-    else if (currentCard.rank == 1 && totalScore > 21 && aceCounter > 1) {
-      totalScore += 1;
+    // if there's ace on hand , let ace initial score = 11 and keep track number of aces using aceCounter
+    else if (currentCard.rank == 1) {
+      initialScore += 11;
       aceCounter += 1;
     }
     //any other card from 2-10
     else {
-      totalScore += currentCard.rank;
+      initialScore += currentCard.rank;
     }
-
     cardIndex += 1;
+  }
+
+  //if no ace OR no bust, total score is same as initial score
+  if (aceCounter == 0 || initialScore <= bustScore) {
+    totalScore = initialScore;
+  }
+  //if initial score is bust, deduct 10 from initial score value the number of aces times until score not bust
+  if (initialScore > bustScore) {
+    var counter = 0;
+    totalScore = initialScore;
+
+    while (counter < aceCounter) {
+      if (totalScore > bustScore) {
+        totalScore -= 10;
+      }
+      counter += 1;
+    }
   }
 
   return totalScore;
@@ -243,7 +254,6 @@ var computerScore = 0;
 var bustScore = Number(21);
 var dealerSoft17 = Number(17);
 var shuffledCardDeck = [];
-var aceCounter = 0;
 
 var bettingPoints = 100;
 var wagerPoints = 0;
@@ -305,8 +315,8 @@ var main = function (input) {
 
       //computer top up card to be more than 17 score
       computerTopUpCard();
-      //console.log("player score", playerScore);
-      //console.log("comp score", computerScore);
+      console.log("player score", playerScore);
+      console.log("comp score", computerScore);
       //console.log("player card", playerCardsArray);
       //console.log("comp card", computerCardsArray);
 
