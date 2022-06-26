@@ -37,9 +37,9 @@ var main = function (input) {
       var nextCard = playerHand[playerHand.length - 1];
       playerCurrent = sumOfCardValues(playerHand);
       for (var i = 0; i < playerHand.length; i++) {
-        if (playerHand[i].name == "Ace" && playerCurrent > 21) {
+        if (playerHand[i].name == "Ace" && sumOfCardValues(playerHand) > 21) {
           playerHand[i].value = 1;
-          playerCurrent = playerCurrent - 10;
+          playerCurrent = sumOfCardValues(playerHand) - 10;
         }
       }
 
@@ -74,9 +74,12 @@ var main = function (input) {
         i++;
         computerCurrent = sumOfCardValues(computerHand);
         for (var i = 0; i < computerHand.length; i++) {
-          if (computerHand[i].name == "Ace" && computerCurrent > 21) {
+          if (
+            computerHand[i].name == "Ace" &&
+            sumOfCardValues(computerHand) > 21
+          ) {
             computerHand[i].value = 1;
-            computerCurrent = computerCurrent - 10;
+            computerCurrent = sumOfCardValues(computerHand) - 10;
           }
         }
       }
