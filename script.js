@@ -25,8 +25,12 @@ var main = function (input) {
 
   //hit or stand game mode
   if (gameMode == "hit or stand") {
+    var image = `<img src = "https://c.tenor.com/RFRPkimHjfcAAAAC/zach-galifianakis-very-bad-trip-meme.gif">`;
     if (input != "hit" && input != "stand") {
-      return `${displayFirstTwoCards()} ${displayTotalValue()} <br><br> Please choose to "Hit" or "Stand"`;
+      return (
+        `${displayFirstTwoCards()} ${displayTotalValue()} <br><br> Please choose to "Hit" or "Stand"` +
+        image
+      );
     }
     if (input.toLowerCase() == "hit") {
       playerHand.push(deck.pop());
@@ -40,17 +44,23 @@ var main = function (input) {
       }
 
       if (playerCurrent <= 21) {
-        myOutputValue = `You were dealt a ${nextCard.name} of ${
-          nextCard.suit
-        }. ${displayTotalValue()} <br><br> Please click <b>"hit"</b> or <b>"stand"</b> `;
+        var image = `<img src = "https://c.tenor.com/Fp0JJdxY6msAAAAC/yes-sweating.gif">`;
+        myOutputValue =
+          `You were dealt a ${nextCard.name} of ${
+            nextCard.suit
+          }. ${displayTotalValue()} <br><br> Please click <b>"hit"</b> or <b>"stand"</b> ` +
+          image;
       }
       if (playerCurrent >= 22) {
+        var image = `<img src = "https://64.media.tumblr.com/4d7bf0aff8250cd7cb77ddfa73d21b9a/tumblr_miyo4heYss1qedb29o1_500.gif">`;
         deal.disabled = false;
         hit.disabled = true;
         stand.disabled = true;
-        myOutputValue = `You were dealt a ${nextCard.name} of ${
-          nextCard.suit
-        }. ${displayTotalValue()} <br><br> You have <b>BUSTED!</b><br> Click "Deal" again to start a new round`;
+        myOutputValue =
+          `You were dealt a ${nextCard.name} of ${
+            nextCard.suit
+          }. ${displayTotalValue()} <br><br> You have <b>BUSTED!</b><br> Click "Deal" again to start a new round` +
+          image;
         resetFunction();
       }
       return myOutputValue;
@@ -74,10 +84,13 @@ var main = function (input) {
         var displayMessage = determineWinner(playerCurrent, computerCurrent);
         myOutputValue = `The computer drew ${i} card(s) ${displayTotalValue()} <br><br> ${displayMessage}`;
       } else if (computerCurrent > 21) {
+        var image = `<img src = "https://c.tenor.com/rO6Fh2KNm3sAAAAM/baby-yes.gif">`;
         deal.disabled = false;
         hit.disabled = true;
         stand.disabled = true;
-        myOutputValue = `The computer drew ${i} card(s) ${displayTotalValue()} <br><br> The computer bust, you won!`;
+        myOutputValue =
+          `The computer drew ${i} card(s) ${displayTotalValue()} <br><br> The computer bust, you won!` +
+          image;
       }
     }
     resetFunction();
@@ -178,16 +191,25 @@ var sumOfCardValuesSubsequentHit = function (currentValue, currentHand) {
 //check for blackjack
 var checkForInstaWin = function () {
   if (sumOfCardValues(playerHand) == 21) {
-    myOutputValue = `${displayFirstTwoCards()}${displayTotalValue()}<br><br> you have <b>BLACKJACK!</b> You won!`;
+    var image = `<img src = "https://media0.giphy.com/media/26BGvkTon3hpPBswE/giphy.gif?cid=790b76111c7ed3ce44d2bc6d6d955d589e185bf81c9db8d4&rid=giphy.gif&ct=g">`;
+    myOutputValue =
+      `${displayFirstTwoCards()}${displayTotalValue()}<br><br> you have <b>BLACKJACK!</b> You won!` +
+      image;
     resetFunction();
   } else if (sumOfCardValues(computerHand) == 21) {
-    myOutputValue = `${displayFirstTwoCards()}${displayTotalValue()}<br><br> The computer has a <b>BLACKJACK!</b> You lost!`;
+    var image = `<img src = "https://i.pinimg.com/originals/42/1a/ee/421aee6986e10a74dbc52aae7c3965ac.gif">`;
+    myOutputValue =
+      `${displayFirstTwoCards()}${displayTotalValue()}<br><br> The computer has a <b>BLACKJACK!</b> You lost!` +
+      image;
     resetFunction();
   } else if (
     sumOfCardValues(playerHand) == 21 &&
     sumOfCardValues(computerHand) == 21
   ) {
-    myOutputValue = `${displayFirstTwoCards()}${displayTotalValue()}<br><br> Both you and the computer got a <b>blackjack</b>! It's a tie!`;
+    var image = `<img src = "https://i.giphy.com/media/bcrOR2stk6tKIxqPOZ/giphy.webp">`;
+    myOutputValue =
+      `${displayFirstTwoCards()}${displayTotalValue()}<br><br> Both you and the computer got a <b>blackjack</b>! It's a tie!` +
+      image;
     resetFunction();
   } else {
     gameMode = "hit or stand";
@@ -201,20 +223,24 @@ var checkForInstaWin = function () {
 
 var determineWinner = function (currentHandofPlayer, currentHandofComputer) {
   if (currentHandofPlayer > currentHandofComputer) {
+    var image = `<img src = "https://c.tenor.com/rO6Fh2KNm3sAAAAM/baby-yes.gif">`;
     deal.disabled = false;
     hit.disabled = true;
     stand.disabled = true;
-    return `You won! Click "Deal" to play again`;
+    return `You won! Click "Deal" to play again` + image;
   }
   if (currentHandofPlayer < currentHandofComputer) {
+    var image = `<img src = "https://i.pinimg.com/originals/42/1a/ee/421aee6986e10a74dbc52aae7c3965ac.gif">`;
     deal.disabled = false;
     hit.disabled = true;
     stand.disabled = true;
-    return `You lost! ): Click "Deal" to play again`;
-  } else deal.disabled = false;
+    return `You lost! ): Click "Deal" to play again` + image;
+  } else
+    var image = `<img src = "https://i.giphy.com/media/bcrOR2stk6tKIxqPOZ/giphy.webp">`;
+  deal.disabled = false;
   hit.disabled = true;
   stand.disabled = true;
-  return `It's a tie! Click "Deal" to play again`;
+  return `It's a tie! Click "Deal" to play again` + image;
 };
 
 //function to display first two cards
