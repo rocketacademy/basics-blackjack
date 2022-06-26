@@ -29,8 +29,7 @@ v3.
 - in game mode dealer hit/stand
   - if hand score below 17 - draw 1 card
   - if hand score above 17
-    - if hit
-    - if stand - evaluate score
+    - stand - evaluate score
 
 - in evaluate score compare final player and dealer score 
   - if burst
@@ -38,8 +37,6 @@ v3.
     - dealer burst - player win
     - player burst - dealer win
   - copy from v1 compare hand if got blackjack and no blackjack
-
-
 
 */
 
@@ -69,18 +66,14 @@ var main = function (input) {
   var currentDeck = createNewDeck();
 
   if (gameMode == GAME_MODE_GET_CARD) {
-    console.log(`mode, get card`);
-
-    // var currentDeck = createNewDeck();
-
     dealerHand.push(currentDeck.pop());
     dealerHand.push(currentDeck.pop());
-    console.log(`dealerHand ==>`);
-    console.log(dealerHand);
+    // console.log(`dealerHand ==>`);
+    // console.log(dealerHand);
     playerHand.push(currentDeck.pop());
     playerHand.push(currentDeck.pop());
-    console.log(`playerHand ==>`);
-    console.log(playerHand);
+    // console.log(`playerHand ==>`);
+    // console.log(playerHand);
 
     gameMode = GAME_MODE_EVALUATE_CARD;
     myOutputMessage = `cards have been dealt.<br><br>click submit to look at cards`;
@@ -88,25 +81,11 @@ var main = function (input) {
   }
 
   if (gameMode == GAME_MODE_EVALUATE_CARD) {
-    // // testing
-    // playerHand = [
-    //   { name: `9`, suit: "clubs", rank: 9 },
-    //   { name: `A`, suit: "diamonds", rank: 1 },
-    // ];
-    // dealerHand = [
-    //   { name: `J`, suit: "clubs", rank: 11 },
-    //   { name: `10`, suit: "clubs", rank: 10 },
-    // ];
-
     // if blackjack
     var didPlayerGetBlackjack = checkForBlackjack(playerHand);
     var didDealerGetBlackjack = checkForBlackjack(dealerHand);
     // console.log(`did dealer get blackjack: ${didDealerGetBlackjack}`);
     // console.log(`did player get blackjack: ${didPlayerGetBlackjack}`);
-
-    // // testing
-    // didPlayerGetBlackjack = false;
-    // didDealerGetBlackjack = false;
 
     if (didDealerGetBlackjack == true || didPlayerGetBlackjack == true) {
       // both player and dealer got blackjack - tie
@@ -115,6 +94,8 @@ var main = function (input) {
           dealerHand,
           playerHand
         )}`;
+        // gameReset();
+        // gameMode = GAME_MODE_GET_CARD;
       }
       // player get blackjack - player win
       else if (
@@ -125,6 +106,8 @@ var main = function (input) {
           dealerHand,
           playerHand
         )}`;
+        // gameReset();
+        // gameMode = GAME_MODE_GET_CARD;
       }
       // dealer get blackjack - dealer win
       else {
@@ -132,74 +115,122 @@ var main = function (input) {
           dealerHand,
           playerHand
         )}`;
+        // gameReset();
+        // gameMode = GAME_MODE_GET_CARD;
       }
+      gameReset();
+      gameMode = GAME_MODE_GET_CARD;
+
+      return myOutputMessage + `<br><br>click submit for another round`;
     }
     // if no blackjack
     else {
-      myOutputMessage = "there is no black jack";
-      // didDealerGetBlackjack == false || didPlayerGetBlackjack == false;
+      gameMode = GAME_MODE_HIT_OR_STAND;
+      return `there is no black jack<br><br>click submit to move to next game mode`;
+      // gameMode = GAME_MODE_HIT_OR_STAND;
+    }
 
+    // return myOutputMessage;
+  }
+
+  if (gameMode == GAME_MODE_HIT_OR_STAND) {
+    //   - if player choose hit
+    if (input == "hit") {
+      playerHand.push(currentDeck.pop());
+      playerHandScore = calculateHandScore(playerHand);
+
+      myOutputMessage = `you drew a card<br>${displayPlayerHand(
+        playerHand
+      )}<br> your hand score: ${playerHandScore}`;
+    }
+
+    //   - if stand - go to dealer to hit/stand
+    else if (input == "stand") {
       // calculate hand score
       dealerHandScore = calculateHandScore(dealerHand);
       playerHandScore = calculateHandScore(playerHand);
-      console.log(`dealer score ${dealerHandScore}`);
-      console.log(`player score ${playerHandScore}`);
+
+      // loop to run conition if deal hand score less than 17. dealer need draw 1 card. loop stop when deal score is 17 or more
+      while (dealerHandScore < 17) {
+        dealerHand.push(currentDeck.pop());
+        dealerHandScore = calculateHandScore(dealerHand);
+        // console.log(`dealer score: ${dealerHandScore}`);
+      }
 
       dealerScore.push(dealerHandScore);
       playerScore.push(playerHandScore);
 
-      // compare scores
-      // both player and dealer same score - tie
-      if (dealerHandScore == playerHandScore) {
-        myOutputMessage = `its a tie - PLAYER and DEALER hand score are the same<br><br>${displayDealerAndPlayerHand(
-          dealerHand,
-          playerHand
-        )}<br>${displayDealerAndPlayerScore(dealerScore, playerScore)}`;
+      // bust logic
+      var didDealerBust = checkForBust(dealerScore);
+      var didPlayerBust = checkForBust(playerScore);
+      // console.log(`did dealer bust? ==> ${didDealerBust}`);
+      // console.log(`did player bust? ==> ${didPlayerBust}`);
+
+      // if dealer and player bust
+      if (didDealerBust == true || didPlayerBust == true) {
+        if (didDealerBust == true && didPlayerBust == true) {
+          myOutputMessage = `PLAYER and DEALER hand busted<br><br>${displayDealerAndPlayerHand(
+            dealerHand,
+            playerHand
+          )}<br>${displayDealerAndPlayerScore(dealerScore, playerScore)}`;
+        }
+        // if dealer bust
+        else if (didDealerBust == true && didPlayerBust == false) {
+          myOutputMessage = `DEALER hand busted<br><br>${displayDealerAndPlayerHand(
+            dealerHand,
+            playerHand
+          )}<br>${displayDealerAndPlayerScore(dealerScore, playerScore)}`;
+        }
+        // if player bust
+        else {
+          myOutputMessage = `PLAYER hand busted<br><br>${displayDealerAndPlayerHand(
+            dealerHand,
+            playerHand
+          )}<br>${displayDealerAndPlayerScore(dealerScore, playerScore)}`;
+        }
       }
-      // player score higher - player win
-      else if (playerHandScore > dealerHandScore) {
-        myOutputMessage = `winner - PLAYER hand score higher<br><br>${displayDealerAndPlayerHand(
-          dealerHand,
-          playerHand
-        )}<br>${displayDealerAndPlayerScore(dealerScore, playerScore)}`;
-      }
-      // dealer score higher - dealer win
+
+      // else no one bust. compare score to determine winner
       else {
-        myOutputMessage = `winner - DEALER hand score higher<br><br>${displayDealerAndPlayerHand(
-          dealerHand,
-          playerHand
-        )}<br>${displayDealerAndPlayerScore(dealerScore, playerScore)}`;
+        myOutputMessage = `no one busted`;
+
+        if (dealerHandScore == playerHandScore) {
+          // compare scores
+          // both player and dealer same score - tie
+          myOutputMessage = `its a tie - PLAYER and DEALER hand score are the same<br><br>${displayDealerAndPlayerHand(
+            dealerHand,
+            playerHand
+          )}<br>${displayDealerAndPlayerScore(dealerScore, playerScore)}`;
+        }
+        // player score higher - player win
+        else if (playerHandScore > dealerHandScore) {
+          myOutputMessage = `winner - PLAYER hand score higher<br><br>${displayDealerAndPlayerHand(
+            dealerHand,
+            playerHand
+          )}<br>${displayDealerAndPlayerScore(dealerScore, playerScore)}`;
+        }
+        // dealer score higher - dealer win
+        else {
+          myOutputMessage = `winner - DEALER hand score higher<br><br>${displayDealerAndPlayerHand(
+            dealerHand,
+            playerHand
+          )}<br>${displayDealerAndPlayerScore(dealerScore, playerScore)}`;
+        }
       }
+      gameReset();
+      gameMode = GAME_MODE_GET_CARD;
+      return myOutputMessage + `<br><br>click submit for another round`;
     }
-    // gameMode = GAME_MODE_GAME_RESULT;
-    gameMode = GAME_MODE_HIT_OR_STAND;
-    // gameReset();
-    return myOutputMessage;
-  }
 
-  if (gameMode == GAME_MODE_HIT_OR_STAND) {
-    //  - if hand score below 17 - draw 1 card
-
-    // - else hand score above 17
-    //   - if player choose hit
-    if (input == "hit") {
-      playerHand.push(currentDeck.pop());
-
-      myOutputMessage = `you drew a card<br>${displayPlayerHand(playerHand)}`;
-    }
-    //   - if stand - go game mode for dealer to hit/stand
-    else if (input == "stand") {
-    }
-    // input validation
+    // input validation for hit or stand
     else {
-      myOutputMessage = `**ERROR** please choose to input "hit" or "stand" only<br>${displayPlayerHand(
+      playerHandScore = calculateHandScore(playerHand);
+      return `**ERROR** please choose to input "hit" or "stand" only<br>${displayPlayerHand(
         playerHand
-      )}`;
+      )}<br> your hand score: ${playerHandScore}`;
     }
     return myOutputMessage;
   }
-
-  return myOutputMessage;
 };
 
 /*======================================*/
@@ -258,6 +289,7 @@ var makeDeck = function () {
   // Return the completed card deck
   return cardDeck;
 };
+
 // Get a random index ranging from 0 (inclusive) to max (exclusive).
 var getRandomIndex = function (max) {
   return Math.floor(Math.random() * max);
@@ -284,6 +316,7 @@ var shuffleCards = function (cardDeck) {
   return cardDeck;
 };
 
+// function to create new shuffled deck
 var createNewDeck = function () {
   var newDeck = makeDeck();
   var shuffledDeck = shuffleCards(newDeck);
@@ -308,6 +341,7 @@ var checkForBlackjack = function (handArray) {
 // function to calculate score for cards in hand
 var calculateHandScore = function (handArray) {
   var handScore = 0;
+  var aceCounter = 0;
 
   var index = 0;
   while (index < handArray.length) {
@@ -319,12 +353,34 @@ var calculateHandScore = function (handArray) {
       currentCard.name == "K"
     ) {
       handScore = handScore + 10;
+    } else if (currentCard.name == "A") {
+      aceCounter + 1;
+      handScore = handScore + 11;
     } else {
       handScore = handScore + currentCard.rank;
     }
     index += 1;
   }
+
+  index = 0;
+  while (index < aceCounter) {
+    if (handScore > 21) {
+      handScore = handScore - 10;
+    }
+  }
   return handScore;
+};
+
+// function to check if dealer or player busted
+var checkForBust = function (scoreArray) {
+  // console.log(`checking for bust`);
+  var isScoreHigherThan21 = scoreArray;
+  bust = false;
+
+  if (isScoreHigherThan21 > 21) {
+    bust = true;
+  }
+  return bust;
 };
 
 /*======================================*/
@@ -338,7 +394,7 @@ var displayDealerAndPlayerHand = function (dealerHandArray, playerHandArray) {
   for (var index = 0; index < dealerHandArray.length; index += 1) {
     var cardNameAndSuit =
       dealerHandArray[index].name + dealerHandArray[index].suit;
-    console.log(`dealer hand ${index}: ${cardNameAndSuit}`);
+    // console.log(`dealer hand ${index}: ${cardNameAndSuit}`);
 
     dealerCardsMessage += cardNameAndSuit + "<br>";
   }
@@ -348,7 +404,7 @@ var displayDealerAndPlayerHand = function (dealerHandArray, playerHandArray) {
   for (var index = 0; index < playerHandArray.length; index += 1) {
     var cardNameAndSuit =
       playerHandArray[index].name + playerHandArray[index].suit;
-    console.log(`player hand ${index}: ${cardNameAndSuit}`);
+    // console.log(`player hand ${index}: ${cardNameAndSuit}`);
 
     playerCardsMessage += cardNameAndSuit + "<br>";
   }
@@ -358,7 +414,7 @@ var displayDealerAndPlayerHand = function (dealerHandArray, playerHandArray) {
 
 // function to message out to dealer and player hand score.
 var displayDealerAndPlayerScore = function (dealerScore, playerScore) {
-  var scoreMessage = `dealer hand score: ${dealerScore}<br>player hand score: ${playerScore}`;
+  var scoreMessage = `hand score<br>dealer: ${dealerScore}<br>player: ${playerScore}`;
   return scoreMessage;
 };
 
@@ -368,7 +424,6 @@ var displayPlayerHand = function (playerHandArray) {
   for (var index = 0; index < playerHandArray.length; index += 1) {
     var cardNameAndSuit =
       playerHandArray[index].name + playerHandArray[index].suit;
-    console.log(`player hand ${index}: ${cardNameAndSuit}`);
 
     playerCardsMessage += cardNameAndSuit + "<br>";
   }
