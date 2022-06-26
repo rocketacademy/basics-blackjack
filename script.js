@@ -163,6 +163,7 @@ var dealComputerCard = function (cardDeck) {
     computerCard = `Computer's hand is ${computerHand[0].image} of ${computerHand[0].suit}  ${computerHand[0].emoji} and ${computerHand[1].image} of ${computerHand[1].suit}  ${computerHand[1].emoji}.`;
     return computerCard;
   } else if (gameState == GAME_STATE_DEAL_COM_ADD_CARDS) {
+    // If computer hand is less than 17, to deal additional card
     if (computerScore < 17) {
       var dealAddComputerIndex = 0;
       while (dealAddComputerIndex < cardDeck.length) {
@@ -172,6 +173,7 @@ var dealComputerCard = function (cardDeck) {
         }
         dealAddComputerIndex += 1;
       }
+      // If computer hand is more than 17, to switch to compare cards.
     } else if (computerScore >= 17) {
       gameState = GAME_STATE_COMPARE_CARDS;
     }
@@ -180,17 +182,114 @@ var dealComputerCard = function (cardDeck) {
 };
 
 // Helper Function 5 - Compare Scores Function
+
+var compareScores = function (
+  playerHand,
+  computerHand,
+  playerScore,
+  computerScore
+) {
+  var finalComputerHand = revealComputerHand(computerHand);
+  var finalPlayerHand = revealPlayerHand(playerHand);
+  var finalComputerScore = computerScore;
+  var finalPlayerScore = playerScore;
+  var resultMessage = "";
+  var winPlayerMessage =
+    "Player's score is higher than Computer's score! Player won!";
+  var losePlayerMessage =
+    "Player's score is lower than Computer's score! Player lost!";
+  var tiePlayerMessage = "It is a tie!";
+  var bustPlayerMessage =
+    "Player's score is more than 21, while Computer's score is still less than 21. Player lost!";
+  var bustComputerMessage =
+    "Player's score is less than 21, while Computer's score is more than 21. Computer lost!";
+  var bustTieMessage =
+    "Both Player's and Computer's scores are more than 21! Both Player and Computer bust.";
+  var blackjackWinPlayerMessage =
+    "Player's score is equal to 21. Player won by blackjack!";
+  var blackjackLosePlayerMessage =
+    "Computer's score is equal to 21. Computer won by blackjack!";
+  var resetGameMessage = "Press the Submit button to reset the game!";
+  var finalPlayerHandScoreMessage = `Player's final hand is ${finalPlayerHand}, <br> and Player's final score is ${finalPlayerScore}.`;
+  var finalComputerHandScoreMessage = `Computer's final hand is ${finalComputerHand}, <br> and Computer's final score is ${finalComputerScore}. `;
+  // If both Player and Computer bust
+  if (finalPlayerScore > 21 && finalComputerScore > 21) {
+    resultMessage = `${bustTieMessage}<br><br>${finalPlayerHandScoreMessage}<br><br>${finalComputerHandScoreMessage}`;
+  }
+  // If Players bust and Computer wins, incl blackjack
+  else if (finalPlayerScore > 21 && finalComputerScore <= 21) {
+    if (finalComputerScore == 21) {
+      resultMessage = `${bustPlayerMessage}<br><br>${finalPlayerHandScoreMessage}<br><br>${finalComputerHandScoreMessage}<br><br>${blackjackLosePlayerMessage}`;
+    } else {
+      resultMessage = `${bustPlayerMessage}<br><br>${finalPlayerHandScoreMessage}<br><br>${finalComputerHandScoreMessage}`;
+    }
+  }
+  // If Player wins, incl blackjack and Computer busts
+  else if (finalPlayerScore <= 21 && finalComputerScore > 21) {
+    if (finalPlayerScore == 21) {
+      resultMessage = `${bustComputerMessage}<br><br>${finalPlayerHandScoreMessage}<br><br>${finalComputerHandScoreMessage}<br><br>${blackjackWinPlayerMessage}`;
+    } else {
+      resultMessage = `${bustComputerMessage}<br><br>${finalPlayerHandScoreMessage}<br><br>${finalComputerHandScoreMessage}`;
+    }
+  }
+  // If Player and Computer draw
+  else if (finalPlayerScore == finalComputerScore) {
+    resultMessage = `${tiePlayerMessage}<br><br>${finalPlayerHandScoreMessage}<br><br>${finalComputerHandScoreMessage}`;
+  }
+  // If Player wins, incl blackjack
+  else if (finalPlayerScore > finalComputerScore) {
+    if (finalPlayerScore == 21) {
+      resultMessage = `${blackjackWinPlayerMessage}<br><br>${finalPlayerHandScoreMessage}<br><br>${finalComputerHandScoreMessage}`;
+    } else {
+      resultMessage = `${winPlayerMessage}<br><br>${finalPlayerHandScoreMessage}<br><br>${finalComputerHandScoreMessage}`;
+    }
+  }
+  // If Computer wins, incl blackjack
+  else if (finalPlayerScore < finalComputerScore) {
+    if (finalComputerScore == 21) {
+      resultMessage = `${blackjackLosePlayerMessage}<br><br>${finalPlayerHandScoreMessage}<br><br>${finalComputerHandScoreMessage}`;
+    } else {
+      resultMessage = `${losePlayerMessage}<br><br>${finalPlayerHandScoreMessage}<br><br>${finalComputerHandScoreMessage}`;
+    }
+  }
+  return `${resultMessage}<br><br>${resetGameMessage}`;
+};
+
 // Helper Function 6 - Reset Game Function
+
+var resetGame = function () {
+  playerHand = [];
+  computerHand = [];
+  cardDeck = [];
+  playerScore = 0;
+  computerScore = 0;
+  gameRound += 1;
+  gameState = GAME_STATE_START_GAME;
+};
 
 // Helper Function 7 - Score Computation Function
 // Player Score Computation
 var computePlayerScore = function (playerHand) {
   var playerScoreIndex = 0;
   var playerScoreMessage = "";
+  var aceCounter = 0;
   playerScore = 0;
+  // Search for Aces within Player Hand
   while (playerScoreIndex < playerHand.length) {
-    playerScore += playerHand[playerScoreIndex].score;
+    var currentPlayerCardOnHand = playerHand[playerScoreIndex];
+    if (currentPlayerCardOnHand.name == "Ace") {
+      aceCounter += 1;
+    }
+    playerScore += currentPlayerCardOnHand.score;
     playerScoreIndex += 1;
+  }
+  // If player score is above 21, each Ace's score to change to 1
+  var indexAce = 0;
+  if (playerScore > 21) {
+    while (indexAce < aceCounter) {
+      playerScore = playerScore - 10;
+      indexAce += 1;
+    }
   }
   playerScoreMessage = `Player's current score is ${playerScore}.`;
   return playerScoreMessage;
@@ -200,19 +299,34 @@ var computeComputerScore = function (computerHand) {
   var computerScoreIndex = 0;
   var computerScoreMessage = "";
   computerScore = 0;
+  // Search for Aces within Computer Hand
   while (computerScoreIndex < computerHand.length) {
-    computerScore += computerHand[computerScoreIndex].score;
+    var currentComputerCardOnHand = computerHand[computerScoreIndex];
+    if (currentComputerCardOnHand.name == "Ace") {
+      aceCounter += 1;
+    }
+    computerScore += currentComputerCardOnHand.score;
     computerScoreIndex += 1;
+  }
+  // If computer score is above 21, each Ace's score to change to 1
+  var indexAce = 0;
+  if (computerScore > 21) {
+    while (indexAce < aceCounter) {
+      computerScore = computerScore - 10;
+      indexAce += 1;
+    }
   }
   computerScoreMessage = `Computer's current score is ${computerScore}.`;
   return computerScoreMessage;
 };
 
 // Helper Function 8 - reveal card hands
+// Reveal Player's Hand
 var revealPlayerHand = function (playerHand) {
   var playerHandIndex = 0;
   var currentFullPlayerHand = "";
   var currentFullPlayerHandArray = [];
+  // To record player hand
   while (playerHandIndex < playerHand.length) {
     currentFullPlayerHand = `<br> ${playerHand[playerHandIndex].image} of ${playerHand[playerHandIndex].emoji}`;
     currentFullPlayerHandArray.push(currentFullPlayerHand);
@@ -220,11 +334,12 @@ var revealPlayerHand = function (playerHand) {
   }
   return currentFullPlayerHandArray;
 };
-
+// Reveal Computer's Hand
 var revealComputerHand = function (computerHand) {
   var computerHandIndex = 0;
   var currentFullComputerHand = "";
   var currentFullComputerHandArray = [];
+  // To record computer hand
   while (computerHandIndex < computerHand.length) {
     currentFullComputerHand = `<br> ${computerHand[computerHandIndex].image} of ${computerHand[computerHandIndex].emoji}`;
     currentFullComputerHandArray.push(currentFullComputerHand);
@@ -290,15 +405,26 @@ var main = function (input) {
       gameState = GAME_STATE_DEAL_COM_ADD_CARDS;
     }
     return gameMessage;
-  } else if (GAME_STATE_DEAL_COM_ADD_CARDS) {
-    computerScore = currentComputerScoreNumber;
+  }
+  // Computer to be dealt cards if current hand is less than 17
+  else if (gameState == GAME_STATE_DEAL_COM_ADD_CARDS) {
     dealComputerCard(cardDeck);
-    var finalComputerHand = revealComputerHand(computerHand);
-    console.log(finalComputerHand);
-    gameMessage = `Computer's final hand is ${finalComputerHand}, <br> and Computer's final score is ${computerScore}.`;
+    var currentFinalComputerHand = revealComputerHand(computerHand);
     gameState = GAME_STATE_COMPARE_CARDS;
-  } else if (GAME_STATE_COMPARE_CARDS) {
-    gameMessage = "hello";
+    gameMessage = `Computer's final hand is ${currentFinalComputerHand}, <br> and Computer's final score is ${computerScore}. <br><br>Please press the Submit button to compare scores!`;
+    return gameMessage;
+  }
+  // Once player and computer hands finalized, to compare scores
+  else if (gameState == GAME_STATE_COMPARE_CARDS) {
+    var scoreComparison = compareScores(
+      playerHand,
+      computerHand,
+      playerScore,
+      computerScore
+    );
+    gameMessage = scoreComparison;
+    // Reset game
+    resetGame();
   }
   return gameMessage;
 };
