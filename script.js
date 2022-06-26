@@ -166,14 +166,12 @@ var dealCardsToPlayers = function () {
 var sumOfCardValues = function (currentHand) {
   var finalValue = 0;
   for (var i = 0; i < currentHand.length; i++) {
-    if (currentHand[i].name == "Ace" && finalValue < 11) {
+    if (finalValue < 11 && currentHand[i].name == "Ace") {
       currentHand[i].value = 11;
-    }
-    if (currentHand[i].name == "Ace" && finalValue > 21) {
-      currentHand[i].value = 1;
     }
     finalValue = finalValue + currentHand[i].value;
   }
+
   return finalValue;
 };
 
