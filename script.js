@@ -142,7 +142,7 @@ var calculateScore = function (cardArray) {
 };
 
 //FUNCTION 5 - Create loop to provide the result sentence for n number of cards drawn. To display each card's attributes within the array.
-var resultOutput = function (cardArray) {
+var outputResult = function (cardArray) {
   var output = "";
   var k = 0;
   while (k < cardArray.length) {
@@ -190,8 +190,8 @@ var main = function (input) {
     var computerHandDrawn = drawHand(shuffledDeck, computerCardArray);
     playerCurrentScore = calculateScore(playerCardArray);
     computerCurrentScore = calculateScore(computerCardArray);
-    var playerSentence = resultOutput(playerCardArray);
-    var computerSentence = resultOutput(computerCardArray);
+    var playerSentence = outputResult(playerCardArray);
+    var computerSentence = outputResult(computerCardArray);
 
     myOutputValue = `You have drawn ${playerSentence}. <br> Your initial hand gives a score of ${playerCurrentScore}. <br><br> Computer has drawn ${computerSentence}. <br> Computer's initial hand gives a score of ${computerCurrentScore}.<br><br> If you want to draw another card, submit "hit". <br>OR<br> If you are satisfied with your cards, submit "stand" to end your turn.`;
     currentGameStage = "player 1 hit or stand";
@@ -207,7 +207,7 @@ var main = function (input) {
     if (input == "hit") {
       var playerDrawnCard = drawCard(shuffledDeck, playerCardArray);
       playerCurrentScore = calculateScore(playerCardArray);
-      var playerSentence = resultOutput(playerCardArray);
+      var playerSentence = outputResult(playerCardArray);
       if (playerCurrentScore > 21) {
         myOutputValue = `Too bad, you have burst!<br><br> Your hand is ${playerSentence}. <br> Your current hand score is ${playerCurrentScore}.<br><br> Your turn ends. The computer dealer will go next. Click "submit" to continue. `;
         currentGameStage = "computer turn";
@@ -246,7 +246,7 @@ var main = function (input) {
   // Start new round. Change game stage to waiting for game to start.
   // Reset global variables of card arrays. Shuffle the deck.
   else if (currentGameStage == "compare scores") {
-    var computerSentence = resultOutput(computerCardArray);
+    var computerSentence = outputResult(computerCardArray);
     var myTieImage =
       '<img src="https://c.tenor.com/aF0ipAtOk9cAAAAC/spy-x-family-anya.gif" />';
     var myWinImage =
