@@ -46,7 +46,7 @@ var main = function (input) {
       if (playerCurrent <= 21) {
         var image = `<img src = "https://c.tenor.com/Fp0JJdxY6msAAAAC/yes-sweating.gif">`;
         myOutputValue =
-          `You were dealt a ${nextCard.name} of ${
+          `You were dealt a ${nextCard.name} ${
             nextCard.suit
           }. ${displayTotalValue()} <br><br> Please click <b>"hit"</b> or <b>"stand"</b> ` +
           image;
@@ -57,7 +57,7 @@ var main = function (input) {
         hit.disabled = true;
         stand.disabled = true;
         myOutputValue =
-          `You were dealt a ${nextCard.name} of ${
+          `You were dealt a ${nextCard.name} ${
             nextCard.suit
           }. ${displayTotalValue()} <br><br> You have <b>BUSTED!</b><br> Click "Deal" again to start a new round` +
           image;
@@ -100,7 +100,7 @@ var main = function (input) {
 
 //Deck generation
 var deck = [];
-var suits = ["Spades", "Hearts", "Clubs", "Diamonds"];
+var suits = ["♦️", "♣️", "♥️", "♠️"];
 var cardsDefaultName = [
   "Ace",
   "2",
@@ -245,7 +245,7 @@ var determineWinner = function (currentHandofPlayer, currentHandofComputer) {
 
 //function to display first two cards
 var displayFirstTwoCards = function () {
-  return `You were dealt a ${playerHand[0].name} of ${playerHand[0].suit} and  ${playerHand[1].name} of ${playerHand[1].suit}. <br> The computer was dealt a ${computerHand[0].name} of ${computerHand[0].suit} and ${computerHand[1].name} of ${computerHand[1].suit}.`;
+  return `You were dealt a ${playerHand[0].name} ${playerHand[0].suit} and  ${playerHand[1].name}  ${playerHand[1].suit}. <br> The computer was dealt a ${computerHand[0].name} ${computerHand[0].suit} and ${computerHand[1].name}  ${computerHand[1].suit}.`;
 };
 
 //function to display current total value
@@ -262,8 +262,7 @@ var displayCards = function (currentPlayer) {
   var displayedCards = ``;
   for (var i = 0; i < currentPlayer.length; i++) {
     displayedCards =
-      displayedCards +
-      `<br> ${currentPlayer[i].name} of ${currentPlayer[i].suit}`;
+      displayedCards + `<br> ${currentPlayer[i].name} ${currentPlayer[i].suit}`;
   }
   return displayedCards;
 };
