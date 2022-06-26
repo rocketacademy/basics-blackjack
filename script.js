@@ -1,4 +1,5 @@
-/*
+/* 
+// Base 
 The main function runs on each player's turn. The sequence of actions in the game might be the following.
 Deck is shuffled.
 User clicks Submit to deal cards.
@@ -118,7 +119,7 @@ var playerHand = [];
 var dealerHand = [];
 
 // Helper function 1 - deal cards to hand (push to list)
-var dealCard = function (hand) {
+var dealCardToHand = function (hand) {
   var cardDealt = shuffledDeck.pop();
   hand.push(cardDealt);
 };
@@ -131,11 +132,12 @@ var checkHandValue = function (hand) {
   while (cardInHandCounter < hand.length) {
     var currentCard = hand[cardInHandCounter];
     // Let ace be 11 by default so easier to win
-    if (currentCard.rank == 11) {
+    if (currentCard.rank == 1) {
       numOfAce += 1;
       handValue += 11;
+    } else {
+      handValue += currentCard.rank;
     }
-    handValue += currentCard.rank;
     cardInHandCounter += 1;
   }
 
@@ -165,7 +167,7 @@ var displayHand = function (hand) {
   var currentCardIndex = 0;
 
   while (currentCardIndex < hand.length) {
-    cardsInHand += `${cardsInHand}, ${hand[currentCardIndex].name} of ${hand[currentCardIndex].suit}`;
+    cardsInHand = `${cardsInHand}, ${hand[currentCardIndex].name} of ${hand[currentCardIndex].suit}`;
     currentCardIndex += 1;
   }
   return cardsInHand;
@@ -223,17 +225,18 @@ var main = function (input) {
 var main = function (input) {
   // Check if game ended already
   if (endGame) {
-    return ` ~ Game End ~ <br> 
+    return `~ Game End ~ <br> 
     Refresh to play again!`;
   }
 
   // Deal Hands if hand empty (initial) - length is 0
   if (playerHand.length == 0) {
-    // Call Helper function 1, 2 times for cards
-    dealCard(playerHand);
-    dealCard(dealerHand);
-    dealCard(playerHand);
-    dealCard(dealerHand);
+    // Call Helper function 1, 2 cards dealt
+    dealCardToHand(playerHand);
+    dealCardToHand(dealerHand);
+
+    dealCardToHand(playerHand);
+    dealCardToHand(dealerHand);
 
     // Check blackjack - call Helper function 3
     if (checkBlackjack(dealerHand)) {
@@ -260,7 +263,7 @@ var main = function (input) {
 
     // Hit - deal card to player - call Helper function 1
     if (input == "hit") {
-      dealCard(playerHand);
+      dealCardToHand(playerHand);
       // Check if > 21 - call Helper function 2
       if (checkHandValue(playerHand) > BLACKJACK) {
         endGame = true;
@@ -279,7 +282,7 @@ var main = function (input) {
   // Dealer hit if <= min - call Helper function 1, else stand
   var dealerHandValue = checkHandValue(dealerHand);
   if (dealerHandValue <= dealerHitMin) {
-    dealCard(dealerHand);
+    dealCardToHand(dealerHand);
     // Update after new dealing
     dealerHandValue = checkHandValue(dealerHand);
     // Check if > 21 - call Helper function 2
@@ -292,7 +295,7 @@ var main = function (input) {
 
   // Stand - check winner, end game
   if (playerDecision && dealerHandValue > dealerHitMin) {
-    playerDecision = true;
+    endGame = true;
     if (checkHandValue(playerHand) > dealerHandValue) {
       return `${displayOutputMessage()} <br>
       Player wins! Refresh to play again!`;
@@ -301,6 +304,6 @@ var main = function (input) {
       Dealer wins! Refresh to play again!`;
   }
   return `${displayOutputMessage()} <br>
-  Player's decision to stand: ${playerDecision} <br>
-  If player has not yet decided, please enter "hit" or "stand" and then click Submit. Click Submit to check Dealer's move.`;
+  Has Player chosen stand previously? (true - yes, false - no) : ${playerDecision} <br>
+  If player has not yet chosen to stand, please enter "hit" or "stand" and then click Submit. <br> If not, please click Submit to check Dealer's move.`;
 };
