@@ -13,6 +13,51 @@ The game either ends or continues.
 Note that for the main function to perform different logic on user input, for example when a player decides to hit or stand, we may wish to consider using a new game mode.
 */
 
+/*
+// Comfortable
+User Instructions
+Make the game intuitive and fun to use by adding explicit instructions for each step of the game. "Wow, you're at 14 right now! Do you want to hit or stand? Type h for hit or s for stand."
+
+Starting Instructions
+Add instructions on how to start the game by editing the index.html.
+
+Simply add your instructions into line 134. These instructions will appear when the game loads and will be erased as soon as the user clicks the submit button.
+
+Emoji
+Use emoji for the card suits ♣️♠️♦️♥️and for the card names 2️⃣. Use more emoji in your game instructions and results. Get creative!
+
+Images
+You can add images to your game by including an HTML image tag in myOutputValue.
+
+var myImage = '<img src="https://c.tenor.com/Hj2-u4VELREAAAAi/655.gif"/>';
+myOutputValue = myOutputValue + myImage; // will display an image in the grey box
+
+Image variable template: Fill in the COPIED_URL_OF_IMAGE with any image URL you find.
+var myImage = '<img src="COPIED_URL_OF_IMAGE"/>';
+
+Using images
+Go to a site like tenor.com for gifs (although any website with images will work)
+Right-click on an image and copy the url by selecting "Copy Image Address".
+Paste this value into your code as shown above.
+
+Using your own images
+Place an image file in your Git repository. Commit the image file and push your image to your GitHub repository.
+For example you added an image called my-image.jpeg into your repository directory. Refer to it like the following:
+
+var myImage = '<img src="/my-image.jpeg" />';
+myOutputValue = myOutputValue + myImage; // will display an image in the grey box
+
+Image variable template: Fill in the COPIED_RELATIVE_IMAGE_PATH with the image file name you uploaded to your repo.
+var myImage = '<img src="/COPIED_RELATIVE_IMAGE_PATH"/>';
+
+Colors
+Set your own custom colors in the CSS. Find the color values in index.html and change them. Use this tool to find the colors you want: https://www.w3schools.com/colors/colors_picker.asp
+Find matching color sets using this design tool: https://color.adobe.com/create/color-wheel
+
+Fonts
+Set your own custom fonts: https://www.w3schools.com/css/css_font_google.asp
+*/
+
 // Helper functions from template
 // Get a random index ranging from 0 (inclusive) to max (exclusive).
 var getRandomIndex = function (max) {
@@ -100,7 +145,55 @@ var makeDeck = function () {
   return cardDeck;
 };
 
-// High Card
+// In-class exercise
+var convertSuitToEmoji = function (suit) {
+  if (suit == "spades") {
+    return "♠️";
+  }
+  if (suit == "hearts") {
+    return "♥️";
+  }
+  if (suit == "clubs") {
+    return "♣️";
+  }
+  if (suit == "diamonds") {
+    return "♦️";
+  }
+  // If we reach here, we entered an invalid suit
+  return "Invalid Suit!";
+};
+
+var convertCardNameToEmoji = function (cardName) {
+  if (cardName == 2) {
+    return "2️⃣";
+  }
+  if (cardName == 3) {
+    return "3️⃣";
+  }
+  if (cardName == 4) {
+    return "4️⃣";
+  }
+  if (cardName == 5) {
+    return "5️⃣";
+  }
+  if (cardName == 6) {
+    return "6️⃣";
+  }
+  if (cardName == 7) {
+    return "7️⃣";
+  }
+  if (cardName == 8) {
+    return "8️⃣";
+  }
+  if (cardName == 9) {
+    return "9️⃣";
+  }
+  if (cardName == 10) {
+    return "🔟";
+  }
+  return cardName;
+};
+
 // Initialise the card deck representation as an array of objects
 // Modify template code to generate deck with function call
 var deck = makeDeck();
@@ -117,6 +210,18 @@ var playerDecision = false;
 var endGame = false;
 var playerHand = [];
 var dealerHand = [];
+
+// Comfortable Image
+var winImage = '<img src="https://c.tenor.com/Hj2-u4VELREAAAAi/655.gif"/>';
+var loseImage =
+  '<img src="https://c.tenor.com/WPvUD2aORooAAAAC/we-lost-losing.gif"/>';
+var tieImage =
+  '<img src="https://c.tenor.com/wyfhYqF1tJIAAAAC/mark-wahlberg-wahlberg.gif"/>';
+var dealerWinImage =
+  '<img src= "https://c.tenor.com/C7CZoUiIIUQAAAAC/poker-cards-deal-with-it.gif"/>';
+var addWelcomeImage = document.getElementById("output-div");
+addWelcomeImage.innerHTML +=
+  '<img src="https://c.tenor.com/Phz7IULNI9QAAAAC/box-hi.gif">';
 
 // Helper function 1 - deal cards to hand (push to list)
 var dealCardToHand = function (hand) {
@@ -167,7 +272,9 @@ var displayHand = function (hand) {
   var currentCardIndex = 0;
 
   while (currentCardIndex < hand.length) {
-    cardsInHand = `${cardsInHand}, ${hand[currentCardIndex].name} of ${hand[currentCardIndex].suit}`;
+    cardsInHand = `${cardsInHand}, ${convertCardNameToEmoji(
+      hand[currentCardIndex].name
+    )} of ${convertSuitToEmoji(hand[currentCardIndex].suit)}`;
     currentCardIndex += 1;
   }
   return cardsInHand;
@@ -178,48 +285,11 @@ var displayOutputMessage = function () {
   return `Player hand: ${displayHand(
     playerHand
   )}. Total Value: ${checkHandValue(playerHand)} <br>
+      Wow, you're at ${checkHandValue(playerHand)} right now! <br> <br>
           Dealer hand: ${displayHand(
             dealerHand
-          )}. Total Value: ${checkHandValue(dealerHand)}`;
+          )}. Total Value: ${checkHandValue(dealerHand)} <br>`;
 };
-
-/* 
-// High Card
-var main = function (input) {
-  // Draw 2 cards from the top of the deck
-  var computerCard = shuffledDeck.pop();
-  var playerCard = shuffledDeck.pop();
-
-  // Construct an output string to communicate which cards were drawn
-  var myOutputValue =
-    "Computer had " +
-    computerCard.name +
-    " of " +
-    computerCard.suit +
-    ". Player had " +
-    playerCard.name +
-    " of " +
-    playerCard.suit +
-    ". ";
-
-  // Compare computer and player cards by rank attribute
-  // If computer card rank is greater than player card rank, computer wins
-  if (computerCard.rank > playerCard.rank) {
-    // Add conditional-dependent text to the output string
-    myOutputValue = myOutputValue + "Computer wins.";
-    // Else if computer card rank is less than player card rank, player wins
-  } else if (computerCard.rank < playerCard.rank) {
-    myOutputValue = myOutputValue + "Player wins!";
-    // Otherwise (i.e. ranks are equal), it's a tie
-  } else {
-    myOutputValue = myOutputValue + "It's a tie.";
-  }
-
-  // Return the fully-constructed output string
-  return myOutputValue;
-};
-
-*/
 
 // Template
 var main = function (input) {
@@ -242,38 +312,43 @@ var main = function (input) {
     if (checkBlackjack(dealerHand)) {
       endGame = true;
       return `${displayOutputMessage()} <br> 
-    Dealer wins by black jack!`;
+    Dealer wins by black jack! <br> ${dealerWinImage} <br> Refresh to play again!`;
     }
 
     if (checkBlackjack(playerHand)) {
       endGame = true;
       return `${displayOutputMessage()} <br>
-    Player wins by black jack!`;
+    Player wins by black jack! <br> ${winImage} <br> Refresh to play again!`;
     }
     return `${displayOutputMessage()} <br>
-    Please enter "hit" or "stand" and then click Submit`;
+    Do you want to hit or stand? Type "h" or "hit" for hit or "s" or "stand" for stand and click Submit!`;
   }
 
   // Player's action - hit or stand (2nd version)
   if (!playerDecision) {
     // Input validation
-    if (input !== "hit" && input !== "stand") {
-      return `Please input "hit" or "stand" only.`;
+    if (
+      input !== "hit" &&
+      input !== "h" &&
+      input !== "stand" &&
+      input !== "s"
+    ) {
+      return `Please input "hit" or "h" or "stand" or "s" only.`;
     }
 
     // Hit - deal card to player - call Helper function 1
-    if (input == "hit") {
+    if (input == "hit" || input == "h") {
       dealCardToHand(playerHand);
       // Check if > 21 - call Helper function 2
       if (checkHandValue(playerHand) > BLACKJACK) {
         endGame = true;
         return `${displayOutputMessage()} <br>
-        Player has busted and lost. Refresh to play again!`;
+        Player has busted and lost. <br> ${loseImage} <br> Dealer won. Refresh to play again!`;
       }
     }
 
     // Stand - change player decision
-    if (input == "stand") {
+    if (input == "stand" || input == "s") {
       playerDecision = true;
     }
   }
@@ -289,7 +364,7 @@ var main = function (input) {
     if (dealerHandValue > BLACKJACK) {
       endGame = true;
       return `${displayOutputMessage()} <br>
-        Dealer has busted and lost. Refresh to play again!`;
+        Dealer has busted and lost. Player won :) <br> ${winImage} <br> Refresh to play again!`;
     }
   }
 
@@ -298,12 +373,15 @@ var main = function (input) {
     endGame = true;
     if (checkHandValue(playerHand) > dealerHandValue) {
       return `${displayOutputMessage()} <br>
-      Player wins! Refresh to play again!`;
+      Player wins! <br> ${myImage} <br> Refresh to play again!`;
+    } else if (dealerHandValue > checkHandValue(playerHand)) {
+      return `${displayOutputMessage()} <br>
+      Dealer wins! <br> ${dealerWinImage} Refresh to play again!`;
     }
     return `${displayOutputMessage()} <br>
-      Dealer wins! Refresh to play again!`;
+      It's a tie! <br> ${tieImage} <br> Refresh to play again!`;
   }
   return `${displayOutputMessage()} <br>
   Has Player chosen stand previously? (true - yes, false - no) : ${playerDecision} <br>
-  If player has not yet chosen to stand, please enter "hit" or "stand" and then click Submit. <br> If not, please click Submit to check Dealer's move.`;
+  If player has not yet chosen to stand, please enter "hit" or "h" for hit; or "stand" or "s" for stand and then click Submit. <br> If not, please click Submit to check Dealer's move.`;
 };
