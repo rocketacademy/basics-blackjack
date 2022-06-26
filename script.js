@@ -26,16 +26,23 @@ var main = function (input) {
   //hit or stand game mode
   if (gameMode == "hit or stand") {
     if (input != "hit" && input != "stand") {
-      return `Please choose to "Hit" or "Stand" ${displayTotalValue()} <br><br> Please enter <b>"hit"</b> or <b>"stand"</b>`;
+      return `${displayFirstTwoCards()} ${displayTotalValue()} <br><br> Please choose to "Hit" or "Stand"`;
     }
     if (input.toLowerCase() == "hit") {
       playerHand.push(deck.pop());
       var nextCard = playerHand[playerHand.length - 1];
       playerCurrent = sumOfCardValues(playerHand);
+      for (var i = 0; i < playerHand.length; i++) {
+        if (playerHand[i].name == "Ace" && playerCurrent > 21) {
+          playerHand[i].value = 1;
+          playerCurrent = playerCurrent - 10;
+        }
+      }
+
       if (playerCurrent <= 21) {
         myOutputValue = `You were dealt a ${nextCard.name} of ${
           nextCard.suit
-        }. ${displayTotalValue()} <br><br> Please enter <b>"hit"</b> or <b>"stand"</b>`;
+        }. ${displayTotalValue()} <br><br> Please click <b>"hit"</b> or <b>"stand"</b> `;
       }
       if (playerCurrent >= 22) {
         deal.disabled = false;
@@ -43,7 +50,7 @@ var main = function (input) {
         stand.disabled = true;
         myOutputValue = `You were dealt a ${nextCard.name} of ${
           nextCard.suit
-        }. ${displayTotalValue()} <br><br> You have <b>BUSTED!</b><br> Click "submit" again to start a new round`;
+        }. ${displayTotalValue()} <br><br> You have <b>BUSTED!</b><br> Click "Deal" again to start a new round`;
         resetFunction();
       }
       return myOutputValue;
@@ -56,6 +63,12 @@ var main = function (input) {
         compNewCards[i] = computerHand[computerHand.length - 1];
         i++;
         computerCurrent = sumOfCardValues(computerHand);
+        for (var i = 0; i < computerHand.length; i++) {
+          if (computerHand[i].name == "Ace" && computerCurrent > 21) {
+            computerHand[i].value = 1;
+            computerCurrent = computerCurrent - 10;
+          }
+        }
       }
       if (computerCurrent > 16 && computerCurrent < 22) {
         var displayMessage = determineWinner(playerCurrent, computerCurrent);
@@ -72,75 +85,6 @@ var main = function (input) {
   }
 };
 
-var determineWinner = function (currentHandofPlayer, currentHandofComputer) {
-  if (currentHandofPlayer > currentHandofComputer) {
-    deal.disabled = false;
-    hit.disabled = true;
-    stand.disabled = true;
-    return `You won! Click "Submit" to play again`;
-  }
-  if (currentHandofPlayer < currentHandofComputer) {
-    deal.disabled = false;
-    hit.disabled = true;
-    stand.disabled = true;
-    return `You lost! ): Click "Submit" to play again`;
-  } else deal.disabled = false;
-  hit.disabled = true;
-  stand.disabled = true;
-  return `It's a tie! Click "Submit" to play again`;
-};
-
-var resetFunction = function () {
-  playerHand = [];
-  computerHand = [];
-  gameMode = "deal the cards";
-  playerCurrent = 0;
-  computerCurrent = 0;
-};
-
-//check for blackjack
-var checkForInstaWin = function () {
-  if (sumOfCardValues(playerHand) == 21) {
-    myOutputValue = `${displayFirstTwoCards()}${displayTotalValue()}<br><br> you have <b>BLACKJACK!</b> You won!`;
-    resetFunction();
-  } else if (sumOfCardValues(computerHand) == 21) {
-    myOutputValue = `${displayFirstTwoCards()}${displayTotalValue()}<br><br> The computer has a <b>BLACKJACK!</b> You lost!`;
-    resetFunction();
-  } else if (
-    sumOfCardValues(playerHand) == 21 &&
-    sumOfCardValues(computerHand) == 21
-  ) {
-    myOutputValue = `${displayFirstTwoCards()}${displayTotalValue()}<br><br> Both you and the computer got a <b>blackjack</b>! It's a tie!`;
-    resetFunction();
-  } else {
-    gameMode = "hit or stand";
-    deal.disabled = true;
-    hit.disabled = false;
-    stand.disabled = false;
-    myOutputValue = `${displayFirstTwoCards()}${displayTotalValue()}<br><br>Please enter <b>"hit"</b> or <b>"stand"</b>`;
-  }
-  return myOutputValue;
-};
-
-//add cards sum for both players, if value of sum < 11 and one of the cards is an Ace, then Ace becomes 11
-var sumOfCardValues = function (currentHand) {
-  var finalValue = 0;
-  for (var i = 0; i < currentHand.length; i++) {
-    if (finalValue < 11 && currentHand[i].name == "Ace") {
-      currentHand[i].value = 11;
-    }
-    finalValue = finalValue + currentHand[i].value;
-  }
-
-  return finalValue;
-};
-
-var dealCardsToPlayers = function () {
-  for (var i = 0; i < 2; i++) {
-    playerHand.push(deck.pop());
-    computerHand.push(deck.pop());
-  }
-};
 //Deck generation
 var deck = [];
 var suits = ["Spades", "Hearts", "Clubs", "Diamonds"];
@@ -182,6 +126,11 @@ var changeFaceCardNames = function () {
   }
 };
 
+var randomCardGenerator = function () {
+  var randomCardChosen = Math.floor(Math.random() * deck.length);
+  return randomCardChosen;
+};
+
 //shuffle cards function
 var shuffleCards = function () {
   for (let i = 0; i < deck.length; i++) {
@@ -194,9 +143,78 @@ var shuffleCards = function () {
   }
 };
 
-var randomCardGenerator = function () {
-  var randomCardChosen = Math.floor(Math.random() * deck.length);
-  return randomCardChosen;
+var dealCardsToPlayers = function () {
+  for (var i = 0; i < 2; i++) {
+    playerHand.push(deck.pop());
+    computerHand.push(deck.pop());
+  }
+};
+
+var sumOfCardValues = function (currentHand) {
+  var finalValue = 0;
+  for (var i = 0; i < currentHand.length; i++) {
+    if (currentHand[i].name == "Ace" && finalValue < 11) {
+      currentHand[i].value = 11;
+    }
+    if (currentHand[i].name == "Ace" && finalValue > 21) {
+      currentHand[i].value = 1;
+    }
+    finalValue = finalValue + currentHand[i].value;
+  }
+  return finalValue;
+};
+
+var sumOfCardValuesSubsequentHit = function (currentValue, currentHand) {
+  if (currentValue > 21) {
+    for (var i = 0; i < currentHand.length; i++) {
+      if (currentHand[i].name == "Ace" && currentHand[i].value == 11) {
+        currentHand[i].value = 1;
+        currentValue = currentValue - 10;
+      }
+    }
+  }
+};
+
+//check for blackjack
+var checkForInstaWin = function () {
+  if (sumOfCardValues(playerHand) == 21) {
+    myOutputValue = `${displayFirstTwoCards()}${displayTotalValue()}<br><br> you have <b>BLACKJACK!</b> You won!`;
+    resetFunction();
+  } else if (sumOfCardValues(computerHand) == 21) {
+    myOutputValue = `${displayFirstTwoCards()}${displayTotalValue()}<br><br> The computer has a <b>BLACKJACK!</b> You lost!`;
+    resetFunction();
+  } else if (
+    sumOfCardValues(playerHand) == 21 &&
+    sumOfCardValues(computerHand) == 21
+  ) {
+    myOutputValue = `${displayFirstTwoCards()}${displayTotalValue()}<br><br> Both you and the computer got a <b>blackjack</b>! It's a tie!`;
+    resetFunction();
+  } else {
+    gameMode = "hit or stand";
+    deal.disabled = true;
+    hit.disabled = false;
+    stand.disabled = false;
+    myOutputValue = `${displayFirstTwoCards()}${displayTotalValue()}<br><br>Please click <b>"hit"</b> or <b>"stand"</b> `;
+  }
+  return myOutputValue;
+};
+
+var determineWinner = function (currentHandofPlayer, currentHandofComputer) {
+  if (currentHandofPlayer > currentHandofComputer) {
+    deal.disabled = false;
+    hit.disabled = true;
+    stand.disabled = true;
+    return `You won! Click "Deal" to play again`;
+  }
+  if (currentHandofPlayer < currentHandofComputer) {
+    deal.disabled = false;
+    hit.disabled = true;
+    stand.disabled = true;
+    return `You lost! ): Click "Deal" to play again`;
+  } else deal.disabled = false;
+  hit.disabled = true;
+  stand.disabled = true;
+  return `It's a tie! Click "Deal" to play again`;
 };
 
 //function to display first two cards
@@ -222,4 +240,12 @@ var displayCards = function (currentPlayer) {
       `<br> ${currentPlayer[i].name} of ${currentPlayer[i].suit}`;
   }
   return displayedCards;
+};
+
+var resetFunction = function () {
+  playerHand = [];
+  computerHand = [];
+  gameMode = "deal the cards";
+  playerCurrent = 0;
+  computerCurrent = 0;
 };
