@@ -126,7 +126,7 @@ var checkUserInput = function(userInput) {
   return true;
 };
 
-// Function addingValue
+/*// Function addingValue
 // Purpose: Adding the values
 var addingValue = function (userValue, userHand) {
   var card = getRandomCard();
@@ -138,6 +138,37 @@ var addingValue = function (userValue, userHand) {
     userValue.ace11 = true;
   } else if (card.name === "ace") {
     userValue.value += 1;
+  } else if (isNaN(card.name)) {
+    if ((userValue.value + 10) >= 21 && userValue.ace11 === true) {
+      userValue.value = userValue.value - 10 + 10;
+      userValue.ace11 = false;
+    } else {
+      userValue.value += 10;
+    }
+  } else {
+    if ((userValue.value + card.name) >= 21 && userValue.ace11 === true) {
+      userValue.value = userValue.value - 10 + card.name;
+      userValue.ace11 = false;
+    } else {
+      userValue.value += card.name;
+    }
+  }
+};*/
+
+// Function addingValue
+// Purpose: Adding the values
+var addingValue = function (userValue, userHand) {
+  var card = getRandomCard();
+  userHand.push(card);
+  if (card.name === "ace") {
+    if (userValue.ace11 === true) {
+      userValue.value += 1;
+    } else if ((userValue.value+11) <= 21) {
+      userValue.value += 11;
+      userValue.ace11 = true;
+    } else {
+      userValue.value += 1;
+    }
   } else if (isNaN(card.name)) {
     if ((userValue.value + 10) >= 21 && userValue.ace11 === true) {
       userValue.value = userValue.value - 10 + 10;
