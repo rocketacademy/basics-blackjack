@@ -47,10 +47,10 @@ var main = function (input) {
   if (gameMode == "Deal Cards") {
     deal.disabled = true;
     cardDeck = deckGenerator();
-    // Shuffle card deck automatically at the start
     shuffledCardDeck = shuffleTheDeck(cardDeck);
+    // deal cards to player & computer
     dealCards();
-
+    // check cards for any black jacks
     myOutputValue = blackjackCheck(playerCards, compCards);
     if (blackJackCheck == true) {
       resetBlackJack();
@@ -59,6 +59,7 @@ var main = function (input) {
     // enable hit & stand buttons, change game mode and output cards and score to player for decision making
     hit.disabled = false;
     stand.disabled = false;
+    // function to print out cards and store it under variable allCardsOutput
     printCardHands();
     displayGIF =
       '<img src="https://c.tenor.com/ONyBlCzonAEAAAAd/friends-ross-geller.gif"/>';
@@ -68,9 +69,9 @@ var main = function (input) {
   // Let player choose to hit or stand
   if (gameMode == "Hit or Stand") {
     if (input == "stand") {
-      //draw cards for computer & calculate score
+      //draw cards for computer if < 17 & calculate score to store it under compCardValue
       compAutoPlay(compCards);
-      // change mode to fulfil condition in printCardHands function to print both player & comp cards
+      // change mode to fulfil condition in printCardHands function to print BOTH player & comp cards
       playerClickStand = true;
       // return win / loss results
       myOutputValue = winnerCheck(playerCardValue, compCardValue);
@@ -83,7 +84,7 @@ var main = function (input) {
       playerCards.push(drawCard());
       // recalculate score of player's cards
       playerCardValue = scoreCalculation(playerCards);
-
+      console.log("Score calculation after hit ", playerCardValue);
       // if player busts, then move on to calculate comp's card value
       if (playerCardValue > 21) {
         compAutoPlay(compCards);
@@ -91,7 +92,7 @@ var main = function (input) {
         resetBlackJack();
         return myOutputValue;
       }
-      //otherwise, print cards out for player to hit or stand again
+      //otherwise, print cards out and store it under variable allCardsOutput for player to hit or stand again
       printCardHands();
       displayGIF =
         '<img src="https://c.tenor.com/PtcVKDVeSJkAAAAd/chandler-joey.gif"/>';
@@ -132,7 +133,7 @@ var printCardHands = function () {
     `<br> <br> Press "hit" to draw another card or "stand" to pass. <br><br>`;
 };
 
-// Print drawn card names and suits
+// Print drawn card names and suits in words
 var printCardsDrawn = function (cardsArray) {
   console.log("Card Array running in print cards is ", cardsArray);
   var cardsDrawn = "";
@@ -157,23 +158,23 @@ var compAutoPlay = function (compCards) {
 // score comparison function
 var winnerCheck = function (playerCardValue, compCardValue) {
   printCardHands();
-
-  // if both went bust
-  if (playerCardValue > 21 && compCardValue > 21) {
+  var message = "";
+  // if it's a tie
+  if (playerCardValue == compCardValue) {
+    message = "It's a tie!";
     displayGIF =
-      '<img src="https://c.tenor.com/AKfJwJjsB1sAAAAd/won-what-it-do-baby.gif"/>';
-    message =
-      playerName + ", you bust. Phew, the computer did too. It's a tie!<br>";
+      '<img src="https://c.tenor.com/ED2g4lkO9qgAAAAC/friends-joey-tribbiani.gif"/>';
   }
+
   // if only player went bust
   if (playerCardValue > 21 && compCardValue <= 21) {
-    message = playerName + ", you bust! Computer wins!";
+    message = `You bust! Computer wins. Better luck next time ${playerName}!`;
     displayGIF =
       '<img src="https://c.tenor.com/5Si0PouONMgAAAAC/tv-shows-friends.gif"/>';
   }
   // if only computer went bust
   if (playerCardValue <= 21 && compCardValue > 21) {
-    message = playerName + ", you win!";
+    message = `${playerName}, you win! The computer bust.`;
     displayGIF =
       '<img src="https://c.tenor.com/hdvxjTbUuzsAAAAC/thumbs-up-friends.gif"/>';
   }
@@ -181,21 +182,21 @@ var winnerCheck = function (playerCardValue, compCardValue) {
   // if both the player and computer did not go bust
   if (playerCardValue <= 21 && compCardValue <= 21) {
     if (playerCardValue > compCardValue) {
-      message = playerName + ", you win!";
-
+      message = `${playerName}, you win!`;
       displayGIF = '<img src="https://c.tenor.com/jCWKfaqDAjAAAAAC/xo.gif"/>';
-    } else {
-      message = "Computer wins!";
+    } else if (playerCardValue < compCardValue) {
+      message = `Oh no, Computer wins. Better luck next time ${playerName}!`;
       displayGIF =
         '<img src="https://c.tenor.com/r-6R6x0fQpUAAAAd/friends-leatylrs.gif"/>';
     }
   }
-  // if it's a tie
-  if (playerCardValue == compCardValue) {
+  // if both went bust
+  if (playerCardValue > 21 && compCardValue > 21) {
+    message = `${playerName}, you bust. Phew, the computer did too. It's a tie!<br>`;
     displayGIF =
-      '<img src="https://c.tenor.com/ED2g4lkO9qgAAAAC/friends-joey-tribbiani.gif"/>';
-    message = "It's a tie!";
+      '<img src="https://c.tenor.com/AKfJwJjsB1sAAAAd/won-what-it-do-baby.gif"/>';
   }
+
   // return specific messages & card hands
   return (
     displayGIF +
@@ -203,36 +204,59 @@ var winnerCheck = function (playerCardValue, compCardValue) {
     message +
     "<br><br>" +
     allCardsOutput +
-    "<br><br> Please press the DEAL button to shuffle the cards and start the next round."
+    "<br><br> Press the DEAL button to shuffle the cards and start the next round."
   );
 };
 
 // card score calculation function with check for number of ace cards
 var scoreCalculation = function (cardArray) {
   var aceCardPosition = [];
-  // check for ace cards and keep a record of which position it is in
+  var otherCards = [];
+
+  // check for ace cards (if any) and keep a record of which position it is in
   for (var a = 0; a < cardArray.length; a++) {
     if (cardArray[a].rank == 1) {
       aceCardPosition.push(a);
+    } else {
+      //push the other non-aces cards into another array
+      otherCards.push(cardArray[a]);
     }
   }
-  // check for cases of double aces and change ace value to 1 for 1 card
-  if (cardArray.length == aceCardPosition.length) {
-    cardArray[1].value = 1;
+  // calculate value of other non-aces cards to determine the desired value(s) of ace(s)
+  var otherCardsValue = 0;
+  for (var i = 0; i < otherCards.length; i++) {
+    otherCardsValue = otherCardsValue + otherCards[i].value;
+    console.log("other cards value is ", otherCardsValue);
   }
 
-  // if number of cards > 2, value of ace is equal to 1
-  if (cardArray.length > 2 && aceCardPosition != []) {
-    for (var i = 0; i < aceCardPosition.length; i++) {
-      cardArray[aceCardPosition[i]].value = 1;
+  console.log("other cards length is ", otherCards.length);
+  console.log("acecardposition array is ", aceCardPosition);
+  console.log("acecardposition length is ", aceCardPosition.length);
+
+  // if there are aces --> check if it is a drawn card OR a case of all aces -->  if yes, check if the value of the other cards is too high
+  if (
+    aceCardPosition.length !== 0 &&
+    (cardArray.length > 2 || cardArray.length == aceCardPosition.length)
+  ) {
+    // if other card value > 9 (10 and above), change all aces to value of 1 to avoid busting
+    if (otherCardsValue > 9) {
+      for (var i = 0; i < aceCardPosition.length; i++) {
+        cardArray[aceCardPosition[i]].value = 1;
+      }
+    }
+    // if other card value = 9 and less, retain ONE ace == 11 & change the rest to keep the score elevated
+    if (otherCardsValue <= 9) {
+      for (var i = 0; i < aceCardPosition.length - 1; i++) {
+        cardArray[aceCardPosition[i]].value = 1;
+      }
     }
   }
+
   var finalCardValue = 0;
-  // add all values of the cards in a loop
+  //recalculate final score after ace adjustment
   for (var j = 0; j < cardArray.length; j++) {
     finalCardValue = finalCardValue + cardArray[j].value;
   }
-
   return finalCardValue;
 };
 
@@ -262,18 +286,24 @@ var blackjackCheck = function (playerCards, compCards) {
   playerCardValue = scoreCalculation(playerCards);
   compCardValue = scoreCalculation(compCards);
   var message = "";
-
+  // if player hit blackjack
   if (playerCardValue == 21) {
     displayGIF = `<img src= "https://c.tenor.com/1IkwhlSSubUAAAAC/friends-excited.gif"/>`;
     message = `You drew black jack! <br>`;
     blackJackCheck = true;
   }
+  // if comp hit blackjack
   if (compCardValue == 21) {
     displayGIF = `<img src= "https://c.tenor.com/f16uJcDbB60AAAAC/chandler-bing.gif"/>`;
     message = `Computer drew black jack! <br> `;
     blackJackCheck = true;
   }
-
+  //if both hit black jack
+  if (compCardValue == 21 && playerCardValue == 21) {
+    displayGIF = `<img src= "https://c.tenor.com/0QU35MTbwP4AAAAM/leatylrs-friends.gif"/>`;
+    message = `WOW. Both of you got Black Jack! It's a tie! <br> `;
+    blackJackCheck = true;
+  }
   printCardHands();
   return (
     displayGIF +

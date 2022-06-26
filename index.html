@@ -42,7 +42,7 @@
     <!-- sharing configuration -->
     <!-- Primary Meta Tags -->
     <title>Blackjack - Basics - Rocket Academy</title>
-    <meta name="title" content="YOURNAME's BlackJack Game!" />
+    <meta name="title" content="Carmen's BlackJack Game!" />
     <meta name="description" content="A fun card game I made myself! 😄💪🌈" />
 
     <!-- Open Graph / Facebook -->
@@ -51,7 +51,7 @@
       property="og:url"
       content="https://rocketacademy.github.io/basics-blackjack/index.html"
     />
-    <meta property="og:title" content="YOURNAME's BlackJack Game!" />
+    <meta property="og:title" content="Carmen's BlackJack Game!" />
     <meta
       property="og:description"
       content="A fun card game I made myself! 😄💪🌈"
@@ -89,10 +89,6 @@
       rel="stylesheet"
       href="https://fonts.googleapis.com/css?family=Open+Sans"
     />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Merriweather&display=swap"
-      rel="stylesheet"
-    />
 
     <!-- CSS -->
     <style>
@@ -104,8 +100,8 @@
         font-family: "Raleway", sans-serif;
         margin-left: 30px;
         margin-right: 30px;
-        background-color: #ffdc00;
-        color: black; /* sets the font color */
+        background-color: black;
+        color: white; /* sets the font color */
         background-image: url(""); /* The image used */
         background-position: center; /* Center the image */
         background-repeat: no-repeat; /* Do not repeat the image */
@@ -123,14 +119,14 @@
         font-family: "caveat", cursive;
         text-align: center;
         font-size: 1.1rem;
-        margin-bottom: 3rem;
+        margin-bottom: 1rem;
       }
 
       #container {
         margin: 40px auto;
         max-width: 800px;
         padding: 0px 31px;
-
+        color: white;
         text-align: center;
       }
 
@@ -145,8 +141,8 @@
       button {
         font-size: 21px;
         line-height: 33px;
-        margin: 0 0 5px 0;
-        padding: 0 6px;
+        margin: 0 0 0px 0;
+        padding: 0 7px;
       }
 
       .center {
@@ -156,11 +152,10 @@
       }
 
       #output-div {
-        background-color: #b69a90;
-        margin: 20px auto;
+        color: white;
+        margin: 0px auto;
         padding: 20px;
         width: 100%;
-
         text-align: center;
       }
 
@@ -192,19 +187,20 @@
       />
     </h1>
 
-    <h1 class="header">♣️ B.L.A.C.K.J.A.C.K. ♠️</h1>
+    <h1 class="header">♣️♦️ B.L.A.C.K.J.A.C.K. ♥️♠️</h1>
     <div id="container">
-      <h2>Let's play Black Jack.</h2>
-      <p>Key your name below and press the submit button to start the game.</p>
+      <h2 id="welcome-text">Let's play Black Jack.</h2>
+      <p id="name-text">
+        Key your name below and press the submit button to start the game.
+      </p>
       <input id="input-field" />
-      <br />
       <button id="submit-button">Submit</button>
       <button id="deal-button" disabled>Deal</button>
       <button id="hit-button" disabled>Hit</button>
       <button id="stand-button" disabled>Stand</button>
       <div id="output-div">
-        <img src = https://c.tenor.com/QCLFP3CFL3MAAAAC/leatylrs-friends.gif>
-        <br />
+        <img src =
+        https://64.media.tumblr.com/tumblr_m72nodtKtg1rskhu4o1_500.gif>
       </div>
     </div>
 
@@ -225,6 +221,12 @@
         // Display result in output element
         var output = document.querySelector("#output-div");
         output.innerHTML = result;
+
+        if (gameMode == "Deal Cards") {
+          document.getElementById("welcome-text").remove();
+          document.getElementById("name-text").remove();
+          document.getElementById("input-field").remove();
+        }
 
         // Reset input value
         input.value = "";
