@@ -49,6 +49,20 @@ var instructionToPlayerChooseStand = `To Player - <br><br> You have chosen to "s
 var playerCard = "";
 var computerCard = "";
 
+// GV - Images
+var imageShuffledDeck =
+  '<img src="https://raw.githubusercontent.com/gist/brudnak/32733920b48d8aac9df7f20ffe375383/raw/fc87e0b765992a16210fd76e3efb6a36c9c42641/bongo-cat.gif"/>';
+var imageInvalidInput =
+  '<img src="https://c.tenor.com/A2yfsTJjyg8AAAAM/yaziprint-0020cm.gif"/>';
+var imageStandChoice =
+  '<img src="http://www.cutecatgifs.com/wp-content/uploads/2013/10/150549.gif"/>';
+var imagePlayerWon =
+  '<img src="https://c.tenor.com/0jI-YXeywSsAAAAM/nyan-cat-cat.gif"/>';
+var imagePlayerLost =
+  '<img src="https://c.tenor.com/rPJq2tNHjEkAAAAM/sad.gif"/>';
+var imagePlayerDraw =
+  '<img src="https://c.tenor.com/rfg0AmOvCVsAAAAM/amdi-dog.gif"/>';
+
 // Arrays
 var playerHand = [];
 var computerHand = [];
@@ -214,42 +228,42 @@ var compareScores = function (
   var finalComputerHandScoreMessage = `Computer's final hand is ${finalComputerHand}, <br> and Computer's final score is ${finalComputerScore}. `;
   // If both Player and Computer bust
   if (finalPlayerScore > 21 && finalComputerScore > 21) {
-    resultMessage = `${bustTieMessage}<br><br>${finalPlayerHandScoreMessage}<br><br>${finalComputerHandScoreMessage}`;
+    resultMessage = `${bustTieMessage}<br><br>${imagePlayerLost}<br><br>${finalPlayerHandScoreMessage}<br><br>${finalComputerHandScoreMessage}`;
   }
   // If Players bust and Computer wins, incl blackjack
   else if (finalPlayerScore > 21 && finalComputerScore <= 21) {
     if (finalComputerScore == 21) {
-      resultMessage = `${bustPlayerMessage}<br><br>${finalPlayerHandScoreMessage}<br><br>${finalComputerHandScoreMessage}<br><br>${blackjackLosePlayerMessage}`;
+      resultMessage = `${bustPlayerMessage}<br><br>${imagePlayerLost}<br><br>${finalPlayerHandScoreMessage}<br><br>${finalComputerHandScoreMessage}<br><br>${blackjackLosePlayerMessage}`;
     } else {
-      resultMessage = `${bustPlayerMessage}<br><br>${finalPlayerHandScoreMessage}<br><br>${finalComputerHandScoreMessage}`;
+      resultMessage = `${bustPlayerMessage}<br><br>${imagePlayerLost}<br><br>${finalPlayerHandScoreMessage}<br><br>${finalComputerHandScoreMessage}`;
     }
   }
   // If Player wins, incl blackjack and Computer busts
   else if (finalPlayerScore <= 21 && finalComputerScore > 21) {
     if (finalPlayerScore == 21) {
-      resultMessage = `${bustComputerMessage}<br><br>${finalPlayerHandScoreMessage}<br><br>${finalComputerHandScoreMessage}<br><br>${blackjackWinPlayerMessage}`;
+      resultMessage = `${bustComputerMessage}<br><br>${imagePlayerWon}<br><br>${finalPlayerHandScoreMessage}<br><br>${finalComputerHandScoreMessage}<br><br>${blackjackWinPlayerMessage}`;
     } else {
-      resultMessage = `${bustComputerMessage}<br><br>${finalPlayerHandScoreMessage}<br><br>${finalComputerHandScoreMessage}`;
+      resultMessage = `${bustComputerMessage}<br><br>${imagePlayerWon}<br><br>${finalPlayerHandScoreMessage}<br><br>${finalComputerHandScoreMessage}`;
     }
   }
   // If Player and Computer draw
   else if (finalPlayerScore == finalComputerScore) {
-    resultMessage = `${tiePlayerMessage}<br><br>${finalPlayerHandScoreMessage}<br><br>${finalComputerHandScoreMessage}`;
+    resultMessage = `${tiePlayerMessage}<br><br>${imagePlayerDraw}<br><br>${finalPlayerHandScoreMessage}<br><br>${finalComputerHandScoreMessage}`;
   }
   // If Player wins, incl blackjack
   else if (finalPlayerScore > finalComputerScore) {
     if (finalPlayerScore == 21) {
-      resultMessage = `${blackjackWinPlayerMessage}<br><br>${finalPlayerHandScoreMessage}<br><br>${finalComputerHandScoreMessage}`;
+      resultMessage = `${blackjackWinPlayerMessage}<br><br>${imagePlayerWon}<br><br>${finalPlayerHandScoreMessage}<br><br>${finalComputerHandScoreMessage}`;
     } else {
-      resultMessage = `${winPlayerMessage}<br><br>${finalPlayerHandScoreMessage}<br><br>${finalComputerHandScoreMessage}`;
+      resultMessage = `${winPlayerMessage}<br><br>${imagePlayerWon}<br><br>${finalPlayerHandScoreMessage}<br><br>${finalComputerHandScoreMessage}`;
     }
   }
   // If Computer wins, incl blackjack
   else if (finalPlayerScore < finalComputerScore) {
     if (finalComputerScore == 21) {
-      resultMessage = `${blackjackLosePlayerMessage}<br><br>${finalPlayerHandScoreMessage}<br><br>${finalComputerHandScoreMessage}`;
+      resultMessage = `${blackjackLosePlayerMessage}<br><br>${imagePlayerLost}<br><br>${finalPlayerHandScoreMessage}<br><br>${finalComputerHandScoreMessage}`;
     } else {
-      resultMessage = `${losePlayerMessage}<br><br>${finalPlayerHandScoreMessage}<br><br>${finalComputerHandScoreMessage}`;
+      resultMessage = `${losePlayerMessage}<br><br>${imagePlayerLost}<br><br>${finalPlayerHandScoreMessage}<br><br>${finalComputerHandScoreMessage}`;
     }
   }
   return `${resultMessage}<br><br>${resetGameMessage}`;
@@ -298,6 +312,7 @@ var computePlayerScore = function (playerHand) {
 var computeComputerScore = function (computerHand) {
   var computerScoreIndex = 0;
   var computerScoreMessage = "";
+  var aceCounter = 0;
   computerScore = 0;
   // Search for Aces within Computer Hand
   while (computerScoreIndex < computerHand.length) {
@@ -356,7 +371,7 @@ var main = function (input) {
     // Shuffle Deck
     shuffleDeck(makeDeck());
     gameState = GAME_STATE_DEAL_CARDS;
-    return (gameMessage = `The deck has been shuffled. Please press the Submit button to start the game!`);
+    return (gameMessage = `The deck has been shuffled. Please press the Submit button to start the game!<br><br>${imageShuffledDeck}`);
   }
   // Deal Cards and display Player and Computer Cards
   else if (gameState == GAME_STATE_DEAL_CARDS) {
@@ -382,8 +397,7 @@ var main = function (input) {
   // Player chooses to "hit" or "stand"
   else if (gameState == GAME_STATE_CHOOSE_PLAYER_CHOICE) {
     if (!(input == "hit" || input == "stand")) {
-      gameMessage =
-        'Invalid input! Please type in either "hit" or "stand" to continue playing the game!';
+      gameMessage = `Invalid input! Please type in either "hit" or "stand" to continue playing the game!<br><br>${imageInvalidInput}`;
       gameState = GAME_STATE_CHOOSE_PLAYER_CHOICE;
       return gameMessage;
     } else if (input == "hit") {
@@ -396,12 +410,12 @@ var main = function (input) {
         `<br><br><br><br>` +
         instructionToPlayer;
       if (input == "stand") {
-        gameMessage = instructionToPlayerChooseStand;
+        gameMessage = `${instructionToPlayerChooseStand}<br><br>${imageStandChoice}`;
         gameState = GAME_STATE_DEAL_COM_ADD_CARDS;
       }
       return gameMessage;
     } else if (input == "stand") {
-      gameMessage = instructionToPlayerChooseStand;
+      gameMessage = `${instructionToPlayerChooseStand}<br><br>${imageStandChoice}`;
       gameState = GAME_STATE_DEAL_COM_ADD_CARDS;
     }
     return gameMessage;
