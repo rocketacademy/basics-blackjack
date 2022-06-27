@@ -10,7 +10,6 @@ var makeDeck = function () {
     var currentEmoji = emoji[suitIndex];
 
     var cardCounter = 1;
-
     while (cardCounter <= 13) {
       // By default, the card name is the same as cardCounter
       // By default, card rank is the same as cardCounter.
@@ -44,13 +43,10 @@ var makeDeck = function () {
 
       // Add the new card to the deck
       cardDeck.push(card);
-
       cardCounter += 1;
     }
-
     suitIndex += 1;
   }
-
   return cardDeck;
 };
 
@@ -249,6 +245,32 @@ var myComputerBustImage =
   '<img src="https://c.tenor.com/Y492NC5j5LIAAAAd/kaguya-kaguya-sama-love-is-war.gif" />';
 var myPlayerBankruptImage =
   '<img src="https://c.tenor.com/shqkQ-_efj4AAAAC/kaguya-kaguya-sama.gif" />';
+var myPlayerBlackjackImage =
+  '<img src= "https://c.tenor.com/lDUXPG1xOQgAAAAC/miyuki-shirogane-rap.gif"/>';
+var myInvalidInputImage =
+  '<img src= "https://c.tenor.com/u_TnX8WnhagAAAAC/fujiwara-chika-kaguya-sama-love-is-war.gif"/>';
+
+//FOR HIT AND STAND BUTTONS
+var submitButton = document.querySelector("#submit-button");
+
+var hitButton = document.createElement("button");
+hitButton.innerText = "Hit";
+hitButton.addEventListener("click", function () {
+  document.querySelector("#output-div").innerHTML = playerHit();
+});
+
+var standButton = document.createElement("button");
+standButton.innerText = "Stand";
+standButton.addEventListener("click", function () {
+  document.querySelector("#output-div").innerHTML = playerStand();
+});
+
+var locationOfButton = document.querySelector("#subContainer");
+locationOfButton.appendChild(hitButton);
+locationOfButton.appendChild(standButton);
+//By default, hit and stand buttons will not be displayed.
+hitButton.style.display = "none";
+standButton.style.display = "none";
 
 //FUNCTION 8 - create 100 coins per player at the start of the game.
 //Betting rules: if one player goes to 0, game ends.
@@ -276,12 +298,17 @@ var playerHit = function () {
     allPlayerCardArray.push(playerCardArray);
     console.log(allPlayerCardArray);
     allPlayerScoreArray.push(playerCurrentScore);
+    //To display submit button, and hide hit&stand buttons if player bust and stage is automatically changed to next player.
+    submitButton.style.display = "inline";
+    hitButton.style.display = "none";
+    standButton.style.display = "none";
     myOutputValue = `Too bad, you have bust!<br>${myPlayerBustImage}<br><br> Your hand is ${playerSentence}. <br> Your current hand score is ${playerCurrentScore}.<br><br> Your turn ends. Click "submit" to continue. `;
     currentGameStage = "next player turn";
   } else if (playerCurrentScore <= 21) {
     myOutputValue = `You have drawn ${playerSentence}. <br> Your current hand score is ${playerCurrentScore}.<br><br> Computer has drawn ${computerCardArray[0].name} ${computerCardArray[0].emoji} as their first card. <br><br> If you want to draw another card, submit "hit". <br><b>OR</b><br> If you are satisfied with your cards, submit "stand" to end your turn. <br><br> ${myHitOrStandImage}`;
     currentGameStage = "player hit or stand";
   }
+  return myOutputValue;
 };
 
 //FUNCTION 9B - Preparation for hit/stand buttons.
@@ -291,7 +318,12 @@ var playerStand = function () {
   allPlayerCardArray.push(playerCardArray);
   console.log(allPlayerCardArray);
   allPlayerScoreArray.push(playerCurrentScore);
+  //To display submit button, and hide hit&stand buttons if player stands.
+  submitButton.style.display = "inline";
+  hitButton.style.display = "none";
+  standButton.style.display = "none";
   currentGameStage = "next player turn";
+  return myOutputValue;
 };
 
 //MAIN FUNCTION - PLAY GAME & CHANGE GAME STAGES.
@@ -308,7 +340,7 @@ var main = function (input) {
   //Shift to betting stage. Explain to players they will each receive 100 coins.
   else if (currentGameStage == "number of players confirmed") {
     if (Number.isNaN(Number(input)) || input == "") {
-      myOutputValue = `Please enter a number.`;
+      myOutputValue = `Please enter a number.<br><br>${myInvalidInputImage}`;
     } else {
       numberOfPlayers = input;
       createCoins(numberOfPlayers);
@@ -322,6 +354,8 @@ var main = function (input) {
   //Ask player 1 to enter bet.
   //Shift to betting turn stage.
   else if (currentGameStage == "wait for betting turn") {
+    submitButton.innerText = "Submit";
+    document.querySelector("#input-field").disabled = false;
     myOutputValue = `Player 1 please enter the amount of coins you want to bet for this round.`;
     currentGameStage = "player betting turn";
   }
@@ -329,13 +363,14 @@ var main = function (input) {
   //Create loop for n players to enter their bets respectively.
   //Bets are stored in global variable for all bets.
   //After the n th player finishes betting, change the output message and change stage to computer dealt cards.
+  //Also, at the end of betting, disable input field. Re-enable later when new round begins at "wait for betting turn".
   else if (currentGameStage == "player betting turn") {
     if (
       Number.isNaN(Number(input)) ||
       input == "" ||
       input > allPlayerCoins[currentPlayer - 1]
     ) {
-      myOutputValue = `Please enter a valid number not more than your number of coins..`;
+      myOutputValue = `Please enter a valid number not more than your number of coins.<br><br>${myInvalidInputImage}`;
     } else {
       if (currentPlayer < numberOfPlayers) {
         allPlayerBets.push(input);
@@ -346,6 +381,7 @@ var main = function (input) {
       } else if (currentPlayer == numberOfPlayers) {
         allPlayerBets.push(input);
         myOutputValue = `All bets have been placed! <br><br> Please click submit to start the game. `;
+        document.querySelector("#input-field").disabled = true;
         currentGameStage = "computer dealt cards turn";
         currentPlayer = 1;
       }
@@ -370,8 +406,9 @@ var main = function (input) {
   }
 
   //At player draw turn stage, let player know what hand is dealt, and current score of player.
-  //Use FUNCTIOn 3a and 4B.
+  //Use FUNCTION 3a and 4B.
   //Pop 2 cards for player, store cards in global array. Store score in global variable.
+  //Account for blackjack case. If blackjack, move on to next player turn.
   //Ask player to choose to hit or stand.
   //Change game stage to player choose hit or stand.
   else if (currentGameStage == "player draw turn") {
@@ -381,21 +418,26 @@ var main = function (input) {
     playerCurrentScore = calculateScore(playerCardArray);
     var playerSentence = outputResult(playerCardArray);
 
-    myOutputValue = `Hi Player ${currentPlayer}. You have drawn ${playerSentence}. <br> Your initial hand gives a score of ${playerCurrentScore}. <br><br> Computer has drawn ${computerCardArray[0].name} ${computerCardArray[0].emoji} as their first card. <br><br> If you want to draw another card, submit "hit". <br><b>OR</b><br> If you are satisfied with your cards, submit "stand" to end your turn. <br><br> ${myHitOrStandImage}`;
-    currentGameStage = "player hit or stand";
+    if (playerCurrentScore == 21) {
+      myOutputValue = `Hi Player ${currentPlayer}. You have drawn ${playerSentence}. <br> Your initial hand gives a score of ${playerCurrentScore}. <br><br> Congratulations, you have blackjacked!!! <br>${myPlayerBlackjackImage} Your turn ends. <br><br> Computer has drawn ${computerCardArray[0].name} ${computerCardArray[0].emoji} as their first card. <br><br>Click "submit" to continue.`;
+      currentGameStage = "next player turn";
+    } else {
+      submitButton.style.display = "none";
+      hitButton.style.display = "inline";
+      standButton.style.display = "inline";
+
+      myOutputValue = `Hi Player ${currentPlayer}. You have drawn ${playerSentence}. <br> Your initial hand gives a score of ${playerCurrentScore}. <br><br> Computer has drawn ${computerCardArray[0].name} ${computerCardArray[0].emoji} as their first card. <br><br> If you want to draw another card, submit "hit". <br><b>OR</b><br> If you are satisfied with your cards, submit "stand" to end your turn. <br><br> ${myHitOrStandImage}`;
+      currentGameStage = "player hit or stand";
+    }
   }
 
   //At player choose hit or stand stage.
   //If player choose hit, run FUNCTION 9A.
   //If player choose stand, run FUNCTION 9B.
-  //If player choose anything else, invalidate their input.
   else if (currentGameStage == "player hit or stand") {
-    if (input == "hit") {
-      playerHit();
-    } else if (input == "stand") {
-      playerStand();
-    } else
-      myOutputValue = `Please enter a valid option "hit" or "stand" to continue.`;
+    submitButton.style.display = "none";
+    hitButton.style.display = "inline";
+    standButton.style.display = "inline";
   }
 
   //At next player game stage.
@@ -526,7 +568,8 @@ var main = function (input) {
       } else {
         q += 1;
         if (q + 1 > numberOfPlayers) {
-          myOutputValue += `Click "submit" to start a new round!`;
+          submitButton.innerText = "Continue Game";
+          myOutputValue += `Click "Continue Game" to start a new round!`;
           currentGameStage = "wait for betting turn";
           shuffledDeck = shuffleCards(makeDeck());
           playerCardArray = [];
