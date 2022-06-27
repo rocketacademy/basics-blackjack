@@ -135,7 +135,7 @@ var main = function (input) {
 
   if (gameMode == GAME_MODE_HIT_OR_STAND) {
     //   - if player choose hit
-    if (input == "hit") {
+    if (input == "h") {
       playerHand.push(currentDeck.pop());
       playerHandScore = calculateHandScore(playerHand);
 
@@ -145,7 +145,7 @@ var main = function (input) {
     }
 
     //   - if stand - go to dealer to hit/stand
-    else if (input == "stand") {
+    else if (input == "s") {
       // calculate hand score
       dealerHandScore = calculateHandScore(dealerHand);
       playerHandScore = calculateHandScore(playerHand);
@@ -225,7 +225,7 @@ var main = function (input) {
     // input validation for hit or stand
     else {
       playerHandScore = calculateHandScore(playerHand);
-      return `**ERROR** please choose to input "hit" or "stand" only<br>${displayPlayerHand(
+      return `**ERROR**<br>please choose either to input <br>"h" to hit, or <br>"s" to stand <br>${displayPlayerHand(
         playerHand
       )}<br> your hand score: ${playerHandScore}`;
     }

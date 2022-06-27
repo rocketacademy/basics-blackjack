@@ -82,7 +82,7 @@
     <!-- fonts -->
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css?family=Open+Sans"
+      href="https://fonts.googleapis.com/css?family=Sofia&effect=neon|outline|emboss|shadow-multiple"
     />
 
     <!-- CSS -->
@@ -96,8 +96,8 @@
         margin-left: 30px;
         margin-right: 30px;
         background-color: white;
-        color: black; /* sets the font color */
-        background-image: url(""); /* The image used */
+        color: rgb(250, 241, 203); /* sets the font color */
+        background-image: url(https://st3.depositphotos.com/1801497/12958/v/950/depositphotos_129584572-stock-illustration-vector-logo-holdem-poker.jpg); /* The image used */
         background-position: center; /* Center the image */
         background-repeat: no-repeat; /* Do not repeat the image */
         background-size: cover; /* Resize the background image to cover the entire container */
@@ -109,16 +109,20 @@
         max-height: 200px;
       }
       .header {
+        font-family: "Sofia", sans-serif;
+        font-size: 30px;
+        text-shadow: 4px 4px 4px #3e3e3e;
         text-align: center;
         font-size: 1.1rem;
         margin-bottom: 3rem;
       }
 
       #container {
-        background-color: pink;
+        background-color: rgba(60, 124, 92, 0.536);
         margin: 40px auto;
         max-width: 800px;
         padding: 38px 31px;
+        border-radius: 12px;
       }
 
       input {
@@ -127,6 +131,8 @@
         margin: 0 0 23px 0;
         padding: 0 9px;
         width: 100%;
+        color: rgb(4, 4, 4);
+        border-radius: 8px;
       }
 
       button {
@@ -134,13 +140,16 @@
         line-height: 33px;
         margin: 0 0 23px 0;
         padding: 0 6px;
+        border-radius: 8px;
       }
 
       #output-div {
-        background-color: lightgrey;
+        background-color: rgb(207, 234, 212);
         margin: 20px auto;
         padding: 20px;
         width: 100%;
+        color: rgb(4, 4, 4);
+        border-radius: 8px;
       }
 
       .logo-img {
@@ -170,14 +179,26 @@
         src="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/brand/logo.png"
       />
     </h1>
-    <h1 class="header">♣️ Basics - Blackjack ♠️</h1>
+    <h1 class="header">Luke's Blackjack ♡♢♧♤</h1>
     <div id="container">
       <p>Input:</p>
       <input id="input-field" />
       <br />
       <button id="submit-button">Submit</button>
       <p>Output:</p>
-      <div id="output-div">click submit to start game</div>
+      <div id="output-div">
+        welcome👋🏼 click Submit when you're ready to start game!<br /><br /><br />Game
+        guide:<br />1) There will be only two players. One human and one
+        computer (for the Base solution).<br />
+        2) The computer will always be the dealer.<br />
+        3) Each player gets dealt two cards to start.<br />
+        4) The player goes first, and decides if they want to hit (draw a card)
+        or stand (end their turn).<br />
+        5) The dealer has to hit if their hand is below 17.<br />
+        6) Each players' score is the total of their card ranks.
+        Jacks/Queen/Kings are 10. Aces can be 1 or 11. <br />
+        7) The player who is closer to, but not above 21 wins the hand.
+      </div>
     </div>
     <!-- Import program logic -->
     <script src="script.js"></script>
