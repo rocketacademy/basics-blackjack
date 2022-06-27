@@ -189,7 +189,11 @@ var totalBjChecker = function (info, ai) {
 var handDisplay = function (hand) {
   var text = ``;
   for (var i = 0; i < hand.length; i++) {
-    text += `<div class = "playingCards">${hand[i].value} ${hand[i].suit}</div>`;
+    if (hand[i].suit == "♥" || hand[i].suit == "♦") {
+      text += `<div class = "playingCards" style = "color: red">${hand[i].value} ${hand[i].suit}</div>`;
+    } else {
+      text += `<div class = "playingCards">${hand[i].value} ${hand[i].suit}</div>`;
+    }
   }
   return text;
 };
@@ -474,7 +478,7 @@ var DOMbetSelection = function (state) {
 
       var inputField = document.createElement("input");
       inputField.id = `input-field${i + 1}`;
-      inputField.style = "width:50%";
+      inputField.style = "width:80%";
 
       label = playerInfo[i].name;
       boxlabels.push(label);
@@ -659,7 +663,7 @@ var main = function (input) {
         );
       }
       return (
-        `Player ${playerInfo[currentPlayer - 1].name} hit or stand?` +
+        `${playerInfo[currentPlayer - 1].name} hit or stand?` +
         statusDisplay([currentPlayer - 1], aiHand, 1)
       );
     } else if (input == "s" && currentPlayer == noOfPlayers) {
