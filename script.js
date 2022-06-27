@@ -283,12 +283,6 @@ var main = function (input) {
   }
 };
 
-//for testing
-// playerCards = [
-//   { suit: "Diamonds", rank: 12, name: "Queen", value: 9 },
-//   { suit: "Spades", rank: 1, name: "Ace", value: 11 },
-// ];
-
 var alienStrikeGif = '<img src="https://i.gifer.com/8Qk2.gif"/>';
 var bartTriedGif = '<img src ="https://i.gifer.com/225.gif"/>';
 var homerWhooGif = '<img src ="https://i.gifer.com/1vDs.gif"/>';
