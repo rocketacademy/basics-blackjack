@@ -1,16 +1,15 @@
 //ver 2: player hit or stand
 var DRAW_MODE = "DRAW MODE";
 var RESULT_MODE = "RESULT MODE";
+var GAME_START = "GAME START";
 var PLAYER_CHOICE_MODE = "PLAYER CHOICE MODE";
+var COMPUTER_CHOICE_MODE = "COMPUTER CHOICE MODE";
 
-//player start with choice mode to decide if hit or stand
+// player start with choice mode to decide if hit or stand
 // draw mode is when player decides to hit
 // result mode is when player decides to stand
-var gameMode = PLAYER_CHOICE_MODE;
-
-//ok we should have a list for player hand and CPU hand
-var playerHand = [];
-var computerHand = [];
+// game start is when 2 players draw cards
+var gameMode = GAME_START;
 
 var makeDeck = function () {
   // Initialise an empty deck array
@@ -29,21 +28,26 @@ var makeDeck = function () {
     while (rankCounter <= 13) {
       // By default, the card name is the same as rankCounter
       var cardName = rankCounter;
+      var cardValue = rankCounter;
       // If rank is 1, 11, 12, or 13, set cardName to the ace or face card's name
       if (cardName == 1) {
         cardName = "Ace";
       } else if (cardName == 11) {
         cardName = "Jack";
+        cardValue = 10;
       } else if (cardName == 12) {
         cardName = "Queen";
+        cardValue = 10;
       } else if (cardName == 13) {
         cardName = "King";
+        cardValue = 10;
       }
       // Create a new card with the current name, suit, and rank
       var card = {
         name: cardName,
         suit: currentSuit,
         rank: rankCounter,
+        value: cardValue,
       };
       // Add the new card to the deck
       cardDeck.push(card);
@@ -81,44 +85,38 @@ var shuffleDeck = function (cardDeck) {
 var deck = makeDeck();
 var shuffledDeck = shuffleDeck(deck);
 
-//function for adding value of each deck together
-
-var addTotalValue = function (card1, card2) {
-  console.log(`card 1 rank: ${card1.rank}`);
-  console.log(`card 2 rank: ${card2.rank}`);
-  var totalValue = Number(card1.rank) + Number(card2.rank);
-  return totalValue;
-};
-
-var addTotalValue2 = function () {
-  var totalValue = playerHand;
-  return totalValue;
-};
-
 //function for checking who wins.... hold on we need to add them all
 
-var checkBustOrBlackjack = function (deckValue1, deckValue2) {
+var checkBustOrBlackjack = function (playerHand, computerHand) {
+  console.log("SEND HELP");
+  var deckValue1 = addAllCards(playerHand);
+  console.log("DECK VALUE 1");
+  console.log(deckValue1);
+
+  var deckValue2 = addAllCards(computerHand);
+  console.log("DECK VALUE 2");
+  console.log(deckValue2);
+
   var endResult;
   // Compare computer and player cards by rank attribute
+
   if (deckValue1 == 21 && deckValue2 != 21) {
     //gameMode = RESULT_MODE;
     endResult = `Player wins! 21 means blackjack!`;
   } else if (deckValue1 != 21 && deckValue2 == 21) {
     endResult = `Player loses! Computer got 21 which means blackjack!`;
-  } else if (deckValue1 > 21 && deckValue2 > 21) {
-    endResult = `Player loses!... even if the computer got a bust too. Alright you both and lose together, but technically, player always loses.`;
   } else if (deckValue1 > 21 && deckValue2 < 21) {
     endResult = `Player is busted! Deck exceeds 21...Player loses.`;
   } else if (deckValue1 < 21 && deckValue2 > 21) {
     endResult = `Computer is busted! Deck exceeds 21...so Player wins!`;
-  } else if (deckValue1 < 21 && deckValue2 < 21) {
-    var compareResult = checkWhoWinLose(deckValue1, deckValue2);
-    endResult = compareResult;
   }
+
   return endResult;
 };
 
 var checkWhoWinLose = function (deckValue1, deckValue2) {
+  console.log("SEND HELP 2");
+  var endResult2;
   if (deckValue1 == deckValue2) {
     endResult2 = `It is a tie! the values of both decks are the same!`;
   } else if (deckValue1 < deckValue2) {
@@ -147,52 +145,120 @@ var listAllCards = function (cards) {
   return resultString;
 };
 
-var main = function (input) {
-  var myOutputValue;
-  //Let's draw 2 cards and push them into each others hand
-  var computerCard1 = shuffledDeck.pop();
-  var computerCard2 = shuffledDeck.pop();
-  computerHand.push(computerCard1, computerCard2);
+var addAllCards = function (cards) {
+  var result = Number();
+  //console.log(cards);
+  for (var i = 0; i < cards.length; i += 1) {
+    var currentCard = cards[i];
+    //console.log(currentCard);
+    result += Number(currentCard.value);
+    //console.log("results String:" + resultString);
+  }
+  return result;
+};
+//ok we should have a list for player hand and CPU hand
+var playerHand = [];
+var computerHand = [];
+var myOutputValue;
 
-  var playerCard1 = shuffledDeck.pop();
-  var playerCard2 = shuffledDeck.pop();
-  playerHand.push(playerCard1, playerCard2);
+var outputStatement = function (playerHand, computerHand) {
+  var playerValue = addAllCards(playerHand);
+  var computerValue = addAllCards(computerHand);
+
+  myOutputValue = `Player Hand has ${listAllCards(playerHand)}
+  <br><br> Computer Hand has ${listAllCards(computerHand)}
+  <br><br> Player deck Value is ${playerValue} and CPU total value is ${computerValue}
+  <br><br> Player, would you like to hit or stand? type h for hit and s for stand.`;
+
+  return myOutputValue;
+};
+
+var main = function (input) {
+  //Let's draw 2 cards and push them into each others hand
+
+  if (gameMode == GAME_START) {
+    var playerHandIndex = 0;
+    var playerCardCapacity = 2;
+    while (playerHandIndex < playerCardCapacity) {
+      playerDrawnCard = shuffledDeck.pop();
+      playerHand.push(playerDrawnCard);
+      //console.log
+      console.log("playerhand");
+      console.log(playerHand[playerHandIndex]);
+      playerHandIndex += 1;
+    }
+
+    //wait does the CPU draw first or the player draws first???
+    var computerHandIndex = 0;
+    var computerHandCapacity = 2;
+    while (computerHandIndex < computerHandCapacity) {
+      computerDrawnCard = shuffledDeck.pop();
+      computerHand.push(computerDrawnCard);
+      computerHandIndex += 1;
+    }
+
+    //check bust or blackjack
+    checkBustOrBlackjack(playerHand, computerHand);
+
+    gameMode = PLAYER_CHOICE_MODE;
+
+    myOutputValue = outputStatement(playerHand, computerHand);
+  }
+
+  //var playerCard1 = shuffledDeck.pop();
+  //var playerCard2 = shuffledDeck.pop();
+  //playerHand.push(playerCard1, playerCard2);
   //var computerCard3;
-  var playerCard3;
+  //var playerCard3;
   //console.log(playerCard);
   //console.log(deck);
 
-  //game mode please
-  //if ((gameMode = PLAYER_CHOICE_MODE)) {
-  //if (input != "h" || input != "s") {
-  //return `retry h or s`;
-  if (input == "h") {
-    //ok draw more cards! draw mode...
-    //gameMode = DRAW_MODE;
-    var playerCard3 = shuffledDeck.pop();
-    playerHand.push(playerCard3);
-    console.log("Player Hand now has these cards after hit" + playerHand.rank);
-  } else if (input == "s") {
-    gameMode = RESULT_MODE;
-  }
-  //}
+  //var totalvaluePlayer = addTotalValue(playerCard1, playerCard2);
+  //var totalvalueComputer = addTotalValue(computerCard1, computerCard2);
 
-  var totalvaluePlayer = addTotalValue(playerCard1, playerCard2);
-  var totalvalueComputer = addTotalValue(computerCard1, computerCard2);
-
-  var resultAnnouncement = checkBustOrBlackjack(
-    totalvaluePlayer,
-    totalvalueComputer
-  );
-  console.log(resultAnnouncement);
+  // var resultAnnouncement = checkBustOrBlackjack(totalvaluePlayer,totalvalueComputer);
+  //console.log(resultAnnouncement);
 
   //resetGame();
 
-  myOutputValue = `Player Hand has ${listAllCards(
-    playerHand
-  )}<br><br> Player deck Value is ${totalvaluePlayer} and CPU total value is ${totalvalueComputer}
-  <br><br> Player, would you like to hit or stand? type h for hit and s for stand.`;
+  //game mode please
 
+  if (gameMode == PLAYER_CHOICE_MODE) {
+    //validate the input
+    if (input == "h") {
+      //ok draw more cards! draw mode...
+
+      var playerCardCapacity = playerCardCapacity + 1;
+      playerDrawnCard = shuffledDeck.pop();
+      playerHand.push(playerDrawnCard);
+
+      console.log("player hand after he hits");
+      console.log(playerHand);
+
+      playerHandIndex += 1;
+
+      myOutputValue = outputStatement(playerHand, computerHand);
+
+      return myOutputValue;
+    } else if (input == "s") {
+      gameMode = RESULT_MODE;
+    }
+  }
+
+  if (gameMode == RESULT_MODE) {
+    console.log("RESULT MODE");
+    checkBustOrBlackjack(playerHand, computerHand);
+    checkWhoWinLose(playerHand, computerHand);
+  }
+  //var check2 = checkWhoWinLose(playerHand, computerHand);
+
+  /*
+  if (gameMode == DRAW_MODE) {
+    myOutputValue = outputStatement(playerHand, computerHand);
+    return myOutputValue;
+  }
+  //}
+*/
   //<br><br> ${resultAnnouncement}`;
 
   return myOutputValue;
