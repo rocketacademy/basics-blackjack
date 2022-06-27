@@ -74,7 +74,7 @@
       }
 
       #container {
-        background-color: pink;
+        background-color: lightblue;
         margin: 40px auto;
         max-width: 800px;
         padding: 38px 31px;
@@ -95,8 +95,13 @@
         padding: 0 6px;
       }
 
+      .text-center {
+        text-align: center;
+      }
+
       #output-div {
         background-color: lightgrey;
+        text-align: center;
         margin: 20px auto;
         padding: 20px;
         width: 100%;
@@ -106,6 +111,12 @@
         height: 49px;
         position: relative;
         top: 22px;
+      }
+
+      .center {
+        margin-left: auto;
+        margin-right: auto;
+        width: 50%;
       }
 
       /* increase header font size on wider screens */
@@ -124,19 +135,65 @@
       Rocket Academy
       <img class="logo-img" src="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/brand/logo.png" />
     </h1>
-    <h1 class="header">♣️ Basics - Blackjack ♠️</h1>
+    <h2 class="text-center">♣️ Play Blackjack with Yoman ♠️</h2>
     <div id="container">
-      <p>Input:</p>
-      <input id="input-field" />
+      <div class="text-center"> Welcome, click [Deal] button to get started! </div>
       <br />
-      <button id="submit-button">Submit</button>
-      <p>Output:</p>
-      <div id="output-div"></div>
+      <div class="text-center">
+        <button id="deal-button">Deal</button>
+        <button id="hit-button">HIT</button>
+        <button id="stand-button">Stand</button>
+      </div>
+     
+      <div id="output-div">
+        <div id="output-div">
+        </div>
+      </div>
     </div>
     <!-- Import program logic -->
     <script src="script.js"></script>
     <!-- Define button click functionality -->
     <script>
+      document.getElementById("hit-button").disabled = true;
+      document.getElementById("stand-button").disabled = true;
+
+      var dealButton = document.querySelector("#deal-button");
+      dealButton.addEventListener("click", function () {
+        //var input = document.querySelector("#input-field");
+        //var result = main(input.value);
+        var output = document.querySelector("#output-div");
+        output.innerHTML = main();
+        
+        if (playerScore < 21) {  // only toggle buttons if player didn't achieve blackjack after DEAL
+          document.getElementById("deal-button").disabled = true;
+          if (!disableAllButtons) {  // if still got enough cards to continue the game
+            document.getElementById("hit-button").disabled = false;
+            document.getElementById("stand-button").disabled = false;
+          }
+        }
+      })
+
+      var hitButton = document.querySelector("#hit-button");
+      hitButton.addEventListener("click", function () {
+        var output = document.querySelector("#output-div");
+        output.innerHTML = main("hit");
+        if (playerScore >= 21) { // only enable DEAL button if player achieves 21 or bust
+          document.getElementById("hit-button").disabled = true;
+          document.getElementById("stand-button").disabled = true;
+          document.getElementById("deal-button").disabled = false;
+        }
+      })
+
+      var standButton = document.querySelector("#stand-button");
+      standButton.addEventListener("click", function () {
+        var output = document.querySelector("#output-div");
+        output.innerHTML = main("stand");
+        document.getElementById("hit-button").disabled = true;
+        document.getElementById("stand-button").disabled = true;
+        document.getElementById("deal-button").disabled = false;
+      })
+
+      /*
       var button = document.querySelector("#submit-button");
       button.addEventListener("click", function () {
         // Set result to input value
@@ -149,7 +206,7 @@
 
         // Reset input value
         input.value = "";
-      });
+      });  */
     </script>
   </body>
 </html>
