@@ -125,16 +125,20 @@
       input {
         font-size: 21px;
         line-height: 33px;
-        margin: 0 0 23px 0;
+        margin: 0 0 10px 0;
         padding: 0 9px;
         width: 10%;
+      }
+
+      #input-field {
+        margin: 0 0 23px 0;
       }
 
       button {
         font-family: "Open Sans", sans-serif;
         font-size: 21px;
         line-height: 33px;
-        margin: 0 0 23px 0;
+        margin: 12px 12px 12px 0;
         padding: 0 6px;
       }
 
@@ -152,25 +156,45 @@
       }
 
       table {
+        table-layout: fixed;
         border: 1px solid;
       }
 
       th {
-        padding-top: 12px;
-        padding-bottom: 12px;
-        padding-left: 6px;
+        padding: 1em;
         text-align: left;
         background-color: #3254dc;
         color: white;
       }
 
       td {
-        padding-top: 12px;
-        padding-bottom: 12px;
-        padding-left: 6px;
+        padding: 1em;
         text-align: left;
         background-color: rgb(105, 140, 223);
         color: white;
+      }
+
+      .playingCards {
+        display: inline-block;
+        width: 3.3em;
+        height: 4.6em;
+        border: 1px solid #666;
+        border-radius: 0.3em;
+        -moz-border-radius: 0.3em;
+        -webkit-border-radius: 0.3em;
+        -khtml-border-radius: 0.3em;
+        padding: 0.25em;
+        margin: 0 0.5em 0.5em 0;
+        text-align: center;
+        font-size: 1.2em; /* @change: adjust this value to make bigger or smaller cards */
+        font-weight: normal;
+        color: black;
+        /* font-family: Arial, sans-serif; */
+        position: relative;
+        background-color: #fff;
+        -moz-box-shadow: 0.2em 0.2em 0.5em #333;
+        -webkit-box-shadow: 0.2em 0.2em 0.5em #333;
+        box-shadow: 0.2em 0.2em 0.5em #333;
       }
 
       /* increase header font size on wider screens */

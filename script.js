@@ -11,7 +11,8 @@ var BETSELECTION = 3;
 var NAMESELECTION = 4;
 
 // Global variables
-var noOfPlayers = 0;
+var noOfPlayers = 2;
+var playerIndexArray = [];
 var playerInfo = [];
 var aiHand = [];
 var gameMode = PLAYERSELECTION;
@@ -188,26 +189,28 @@ var totalBjChecker = function (info, ai) {
 var handDisplay = function (hand) {
   var text = ``;
   for (var i = 0; i < hand.length; i++) {
-    text += `${hand[i].value + hand[i].suit}  `;
+    text += `<div class = "playingCards">${hand[i].value} ${hand[i].suit}</div>`;
   }
   return text;
 };
 
 var statusDisplay = function (handlist, ai, slice) {
   var status = "<br>";
-  for (let i = 0; i < handlist.length; i++) {
+  for (i of handlist) {
     status +=
-      `<br>Player ${i + 1}'s cards drawn (${handValueCounter(
-        handlist[i].hand
-      )}): ` + handDisplay(handlist[i].hand);
+      `<br>${playerInfo[i].name}'s cards drawn (${handValueCounter(
+        playerInfo[i].hand
+      )}): ` + handDisplay(playerInfo[i].hand);
   }
   if (slice) {
     status +=
-      `<br><br>AI cards drawn (${handValueCounter(ai.slice(slice))}):<br>??  ` +
+      `<br><br>Dealer cards drawn (${handValueCounter(
+        ai.slice(slice)
+      )}): <div class = "playingCards" style = "background-color: green">?</div>` +
       handDisplay(ai.slice(slice));
   } else {
     status +=
-      `<br><br>AI cards drawn (${handValueCounter(ai.slice(slice))}): ` +
+      `<br><br>Dealer cards drawn (${handValueCounter(ai.slice(slice))}): ` +
       handDisplay(ai.slice(slice));
   }
   return status;
@@ -342,9 +345,16 @@ var DOMgameplay = function (state) {
 
     document.getElementById("gameplay").appendChild(scoreboard);
 
-    var boxlabels = [];
+    var boxlabels = [""];
     var boxes = [];
     var scores = [];
+
+    var boxCell = document.createElement("td");
+    var scoreCell = document.createElement("td");
+    boxCell.append("Bet");
+    scoreCell.append("Score");
+    boxes.push(boxCell);
+    scores.push(scoreCell);
 
     for (let i = 0; i < noOfPlayers; i++) {
       var cell = document.createElement("td");
@@ -447,9 +457,16 @@ var DOMbetSelection = function (state) {
     document.getElementById("bet-selection").appendChild(para);
     document.getElementById("bet-selection").appendChild(inputBoxDiv);
 
-    var boxlabels = [];
+    var boxlabels = [""];
     var boxes = [];
     var scores = [];
+
+    var boxCell = document.createElement("td");
+    var scoreCell = document.createElement("td");
+    boxCell.append("Bet");
+    scoreCell.append("Score");
+    boxes.push(boxCell);
+    scores.push(scoreCell);
 
     for (let i = 0; i < noOfPlayers; i++) {
       var cell = document.createElement("td");
@@ -534,6 +551,9 @@ var main = function (input) {
     if (Number(input) > 0 && Number(input) < 8) {
       noOfPlayers = Number(input);
       gameMode = NAMESELECTION;
+      for (let i = 0; i < noOfPlayers; i++) {
+        playerIndexArray.push(i);
+      }
       playerInfoGenerator(noOfPlayers);
       DOMplayerSelection(false);
       DOMnameSelection(true);
@@ -544,7 +564,7 @@ var main = function (input) {
   }
 
   if (gameMode == NAMESELECTION) {
-    if (input.includes(false)) {
+    if (input.includes("")) {
       return "";
     } else {
       for (let i = 0; i < playerInfo.length; i++) {
@@ -580,39 +600,46 @@ var main = function (input) {
     blackjackCheck = totalBjChecker(playerInfo, aiHand);
     if (blackjackCheck.length == noOfPlayers + 1) {
       gameMode = BETSELECTION;
+      toggleButtons(true);
+      DOMgameplay(false);
+      DOMbetSelection(true);
       return (
         "It's a tie! Press Submit again to start a new round." +
-        statusDisplay(playerInfo, aiHand, 0)
+        statusDisplay(playerIndexArray, aiHand, 0)
       );
     } else if (blackjackCheck.includes(noOfPlayers)) {
       gameMode = BETSELECTION;
       for (var i = 0; i < playerInfo.length; i++) {
         playerInfo[i].score -= playerInfo[i].betAmt * 1.5;
       }
+      toggleButtons(true);
+      DOMgameplay(false);
+      DOMbetSelection(true);
       return (
-        "Blackjack! AI wins! Press Submit again to start a new round." +
-        statusDisplay(playerInfo, aiHand, 0)
+        "Blackjack! The dealer wins! Press Submit again to start a new round." +
+        statusDisplay(playerIndexArray, aiHand, 0)
       );
     } else if (blackjackCheck.length) {
       gameMode = PLAYING;
       currentPlayer = 1;
       var winningHands = [];
       for (let i of blackjackCheck) {
-        winningHands.push(playerInfo[i]);
+        winningHands.push(playerInfo[i].name);
       }
       return (
-        `Blackjack! Player 1+ ${blackjackCheck.join(
+        `Blackjack! ${winningHands.join(
           ", "
         )} wins! Press Submit again to continue.` +
-        statusDisplay(winningHands, aiHand, 1)
+        statusDisplay(blackjackCheck, aiHand, 1)
       );
     } else {
       gameMode = PLAYING;
       currentPlayer = 1;
       toggleButtons(false);
       return (
-        "Cards have been dealt; player 1 hit or stand?" +
-        statusDisplay([playerInfo[currentPlayer - 1]], aiHand, 1)
+        `Cards have been dealt; ${
+          playerInfo[currentPlayer - 1].name
+        } hit or stand?` + statusDisplay([currentPlayer - 1], aiHand, 1)
       );
     }
   }
@@ -628,32 +655,34 @@ var main = function (input) {
         currentPlayer += 1;
         return (
           "Oops! Looks like you bust. Press Submit again to continue." +
-          statusDisplay([playerInfo[currentPlayer - 2]], aiHand, 1)
+          statusDisplay([currentPlayer - 2], aiHand, 1)
         );
       }
       return (
-        `Player ${currentPlayer} hit or stand?` +
-        statusDisplay([playerInfo[currentPlayer - 1]], aiHand, 1)
+        `Player ${playerInfo[currentPlayer - 1].name} hit or stand?` +
+        statusDisplay([currentPlayer - 1], aiHand, 1)
       );
     } else if (input == "s" && currentPlayer == noOfPlayers) {
       toggleButtons(true);
       currentPlayer += 1;
       return (
-        "Alright, now it's the AI's turn. Press Submit again to continue." +
-        statusDisplay([playerInfo[currentPlayer - 2]], aiHand, 1)
+        "Alright, now it's the dealer's turn. Press Submit again to continue." +
+        statusDisplay([currentPlayer - 2], aiHand, 1)
       );
     } else if (input == "s") {
       toggleButtons(true);
       currentPlayer += 1;
       return (
-        `Alright, now it will be player ${currentPlayer}'s turn. Press Submit again to continue.` +
-        statusDisplay([playerInfo[currentPlayer - 2]], aiHand, 1)
+        `Alright, now it will be ${
+          playerInfo[currentPlayer - 1].name
+        }'s turn. Press Submit again to continue.` +
+        statusDisplay([currentPlayer - 2], aiHand, 1)
       );
     } else {
       toggleButtons(false);
       return (
-        `Player ${currentPlayer} hit or stand?` +
-        statusDisplay([playerInfo[currentPlayer - 1]], aiHand, 1)
+        `${playerInfo[currentPlayer - 1].name} hit or stand?` +
+        statusDisplay([currentPlayer - 1], aiHand, 1)
       );
     }
   } else if (
@@ -671,13 +700,13 @@ var main = function (input) {
     var winners = totalWinChecker(playerInfo, aiHand);
     var winStatement = "Round ended!<br>";
     for (var i = 0; i < winners.length; i++) {
-      winStatement += `Player ${i + 1}: ${winners[i]}!<br>`;
+      winStatement += `${playerInfo[i].name}: ${winners[i]}!<br>`;
     }
     toggleButtons(true);
     DOMgameplay(false);
     DOMbetSelection(true);
     gameMode = BETSELECTION;
     currentPlayer = 0;
-    return winStatement + statusDisplay(playerInfo, aiHand, 0);
+    return winStatement + statusDisplay(playerIndexArray, aiHand, 0);
   }
 };
