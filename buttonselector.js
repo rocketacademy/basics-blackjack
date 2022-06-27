@@ -1,6 +1,6 @@
 var standButton = document.querySelector("#stand-button");
 var hitButton = document.querySelector("#hit-button");
-var submitButton = document.querySelector("#submit-button");
+var newgameButton = document.querySelector("#newgame-button");
       
 standButton.addEventListener("click", function () {
     // Set result to input value
@@ -22,7 +22,7 @@ hitButton.addEventListener("click", function () {
     output.innerHTML = result;
 });
       
-submitButton.addEventListener("click", function () {
+newgameButton.addEventListener("click", function () {
     // Set result to input value
     var input = document.querySelector("#input-field");
     var result = main(input.value);
