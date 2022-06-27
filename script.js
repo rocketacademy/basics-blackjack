@@ -371,13 +371,20 @@ var checkPlayerScore = function (currentPlayer) {
   return myOutputValue;
 };
 
-// ****** END MATH FUNCTIONS END *****
+//
+
+//****** END MATH FUNCTIONS END *****
+
+// generate card deck
+// shuffle deck
+
+deck = makeDeck();
+var shuffledDeck = shuffleCards(deck);
+console.log(shuffledDeck);
 
 var main = function (input) {
   var myOutputValue = "";
   var currentPlayerScore = "";
-  // WHERE DOES SHUFFLEDDECK GO?
-  var shuffledDeck = [];
 
   console.log(gameMode);
   // launch screen - instructions are on HTML page. This if statement:
@@ -389,10 +396,7 @@ var main = function (input) {
     gameMode = gameModeNumOfPlayers;
     // run input validation function to check that input is a number
     var numOfPlayers = checkNumOfPlayers(input);
-    // generate card deck
-    // shuffle deck
-    deck = makeDeck();
-    shuffledDeck = shuffleCards(deck);
+
     //call function that generates allplayerstats objarray. we need to store .playerName .tokens .sumOfCards
     createPlayerProfiles(numOfPlayers);
     currentPlayer = 1;
@@ -466,7 +470,7 @@ var main = function (input) {
     // console.log(shuffledDeck);
     // console.log(drawStartingComputerHand);
     // console.log(computerHand);
-    // console.log(computerHand.length);
+    console.log(computerHand.length);
     // console.log(displayComputerHand());
 
     //copied from displaycomputerhand(), which does not work when in a separate function, but works when in the main function.
@@ -478,7 +482,7 @@ var main = function (input) {
     //   return `Dealer has drawn ${printComputerHand}`;
     // }
 
-    // myOutputValue = displayComputerHand(computerHand);
+    myOutputValue = displayComputerHand(computerHand);
     console.log(shuffledDeck);
     calculateComputerHand(computerHand, shuffledDeck);
     console.log(calculateComputerHand);
