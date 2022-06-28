@@ -144,8 +144,8 @@ var drawStartingComputerHand = function (shuffledDeck) {
 // calculates total sum of computer hand array, checks for ace value, stores to all player statistics index [0]
 var calculateComputerHand = function () {
   // calculates sum of computerhandarray
+  console.log(computerHand);
   var sumOfComputerHandArray = 0;
-  var myOutputValue = "";
 
   for (var cardIndex = 0; cardIndex < computerHand.length; cardIndex += 1) {
     sumOfComputerHandArray = Math.floor(
@@ -165,18 +165,26 @@ var calculateComputerHand = function () {
       }
     }
   }
-
-  // check sumofcomputerhandarray and stores result to allplayerstatistics[0]
+  return sumOfComputerHandArray;
+};
+// check sumofcomputerhandarray and stores result to allplayerstatistics[0]
+var checkComputerHand = function () {
+  var myOutputValue = "";
+  var sumOfComputerHandArray = calculateComputerHand();
   if (computerHand.length == 2 && sumOfComputerHandArray == 21) {
     myOutputValue = `DEALER BLACKJACK! Dealer drew ${computerHand[0].name} of ${computerHand[0].suit} and ${computerHand[1].name} of ${computerHand[1].suit}.`;
     allPlayerStatistics[0].playerName = "Dealer";
     allPlayerStatistics[0].totalSum = "blackjack";
     gameMode = gameModeCompareScores;
+    console.log("dealerblackjack");
     return myOutputValue;
   }
   // check if >=17 && <21 = stand
   else if (sumOfComputerHandArray >= 17 && sumOfComputerHandArray <= 21) {
-    myOutputValue = displayComputerHand()`which comes up to ${sumOfComputerHandArray}`;
+    // myOutputValue = displayComputerHand`which comes up to ${sumOfComputerHandArray}`;
+    myOutputValue = displayComputerHand();
+    console.log(myOutputValue);
+    console.log("dealer stand");
     gameMode = gameModeCompareScores;
     return myOutputValue;
   }
@@ -184,19 +192,21 @@ var calculateComputerHand = function () {
   // check if <=16, hit until <=21
   else if (sumOfComputerHandArray < 17) {
     computerHand.push(drawOneCard(shuffledDeck));
-
-    myOutputValue = displayComputerHand`which comes up to (${sumOfComputerHandArray})`;
-
+    checkComputerHand();
+    // myOutputValue = displayComputerHand`which comes up to (${sumOfComputerHandArray})`;
+    myOutputValue = displayComputerHand();
+    console.log(myOutputValue);
+    console.log("dealer hand less than 17, should hit until 21");
     return myOutputValue;
   }
   // check if >21 = bust
-  else if (sumOfComputerHandArray > 21) {
+  else {
     allPlayerStatistics[0].totalSum = "bust";
     myOutputValue = "dealer busts!";
+    console.log("dealer busts");
+    gameMode = gameModeCompareScores;
     return myOutputValue;
   }
-
-  return myOutputValue;
 };
 
 // ******** END CARD HELPER FUNCTIONS END *******
@@ -261,6 +271,7 @@ var displayComputerHand = function (computerHand) {
   for (var index = 0; index < computerHand.length; index += 1) {
     var cardsOfComputerHand = `${computerHand[index].name} of ${computerHand[index].suit}<br>`;
     printComputerHand = printComputerHand + cardsOfComputerHand;
+    console.log(printComputerHand);
   }
   return `Dealer has drawn ${printComputerHand}`;
 };
@@ -282,14 +293,16 @@ var displayComputerHand = function (computerHand) {
 // game mode reset all
 var resetAllGameMode = function () {
   gameMode = gameModeReset;
-  currentPlayer = "0";
-  numOfPlayers = "input numofPlayers";
-  deck = [];
-  shuffledDeck = [];
-  computerHand = [];
-  currentPlayerHand = [];
-  allPlayerStatistics = [];
-  return `The game has been reset.`;
+  if (gameMode == "reset") {
+    currentPlayer = "0";
+    numOfPlayers = "input numofPlayers";
+    deck = [];
+    shuffledDeck = [];
+    computerHand = [];
+    currentPlayerHand = [];
+    allPlayerStatistics = [];
+    return `The game has been reset.`;
+  }
 };
 
 // ****** END GAME MODE/MAIN HELPER FUNCTIONS END *****
@@ -452,6 +465,7 @@ var main = function (input) {
       currentPlayer == playerIndex
     ) {
       drawStartingPlayerHand(shuffledDeck);
+      drawStartingComputerHand(shuffledDeck);
       console.log(shuffledDeck);
       calculateTotalHand(currentPlayer);
       currentPlayerScore = checkPlayerScore(currentPlayer);
@@ -466,31 +480,16 @@ var main = function (input) {
   console.log(currentPlayer);
   console.log(gameMode);
   if (gameMode == "computer turn" && currentPlayer == "computer") {
-    drawStartingComputerHand(shuffledDeck);
-    // console.log(shuffledDeck);
-    // console.log(drawStartingComputerHand);
-    // console.log(computerHand);
-    console.log(computerHand.length);
-    // console.log(displayComputerHand());
-
-    //copied from displaycomputerhand(), which does not work when in a separate function, but works when in the main function.
-    // var printComputerHand = "";
-    // for (var index = 0; index <= computerHand.length; index += 1) {
-    //   var cardsOfComputerHand = `${computerHand[index].name} of ${computerHand[index].suit}<br>`;
-    //   printComputerHand = printComputerHand + cardsOfComputerHand;
-
-    //   return `Dealer has drawn ${printComputerHand}`;
-    // }
-
     myOutputValue = displayComputerHand(computerHand);
-    console.log(shuffledDeck);
-    calculateComputerHand(computerHand, shuffledDeck);
-    console.log(calculateComputerHand);
+    var sumOfComputerHandArray = calculateComputerHand();
+    myOutputValue = displayComputerHand(computerHand);
+    myOutputValue =
+      displayComputerHand(computerHand) +
+      checkComputerHand(sumOfComputerHandArray);
 
-    gameMode = gameModeCompareScores;
     return myOutputValue;
   }
-
+  console.log(gameMode);
   if (gameMode == "compare scores") {
     myOutputValue = "";
     for (playerIndex = 1; playerIndex < numOfPlayers; playerIndex += 1) {
@@ -520,7 +519,7 @@ var main = function (input) {
       ) {
         myOutputValue = "player wins dealer";
       }
-      return myOutputValue;
     }
+    return myOutputValue;
   }
 };
