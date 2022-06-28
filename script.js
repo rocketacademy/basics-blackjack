@@ -202,6 +202,10 @@ var playerMode = function (numPlayer) {
     return `Atleast 1 player is needed </br></br>
     Number of Players: </br>
     How many players will be playing Blackjack?`;
+  else if (checkNum > 7)
+    return `Maximum of 7 Players only </br></br>
+    Number of Players: </br>
+    How many players will be playing Blackjack?`;
 
   for (let player = 0; player < checkNum; player++) {
     playerDetails.push({
@@ -243,7 +247,7 @@ var coinMode = function (coin) {
 var gameProperMode = function () {
   gameMode = "game proper bet";
   return `- BETTING - </br>
-  How much will you bet Player ${playerDetails[currPlayer].name}?`;
+  How much will you bet Player ${playerDetails[currPlayer].name}? </br> Coins: ${playerDetails[currPlayer].coins}`;
 };
 
 var gameProperBetMode = function (bet) {
@@ -252,16 +256,16 @@ var gameProperBetMode = function (bet) {
   if (!Number.isInteger(checkBet))
     return `Not a Number </br></br>
   - BETTING - </br>
-  How much will you bet <b> Player ${playerDetails[currPlayer].name} </b>?`;
+  How much will you bet <b> Player ${playerDetails[currPlayer].name} </b> </br> Coins: ${playerDetails[currPlayer].coins}?`;
   else {
     if (playerDetails[currPlayer].coins < checkBet) {
       return `Your currency would not reach: ${bet} </br></br>
   - BETTING - </br>
-  How much will you bet Player ${playerDetails[currPlayer].name}?`;
+  How much will you bet Player ${playerDetails[currPlayer].name}? </br> Coins: ${playerDetails[currPlayer].coins}`;
     } else if (checkBet == 0)
       return `You need to bet </br></br>
   - BETTING - </br>
-  How much will you bet Player ${playerDetails[currPlayer].name}?`;
+  How much will you bet Player ${playerDetails[currPlayer].name}? </br> Coins: ${playerDetails[currPlayer].coins}`;
     else {
       playerDetails[currPlayer].bet = checkBet;
       playerDetails[currPlayer].coins -= checkBet;
@@ -269,7 +273,7 @@ var gameProperBetMode = function (bet) {
 
       if (currPlayer < playerDetails.length)
         return `- BETTING - </br>
-  How much will you bet Player ${playerDetails[currPlayer].name} ?`;
+  How much will you bet Player ${playerDetails[currPlayer].name} ? </br> Coins: ${playerDetails[currPlayer].coins}`;
       else {
         var betString = "";
         for (let p = 0; p < playerDetails.length; p++) {
