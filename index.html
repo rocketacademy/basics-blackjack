@@ -107,6 +107,7 @@
         display: block;
         max-width: 100%;
         max-height: 200px;
+        
       }
       .header {
         text-align: center;
@@ -118,7 +119,7 @@
       #container {
         background-color: #ffec82;
         margin: 40px auto;
-        max-width: 800px;
+        max-width: 750px;
         padding: 30px 31px;
         border-radius: 35px;
       }
@@ -139,7 +140,17 @@
         line-height: 33px;
         margin: 0 0 23px 0;
         padding: 0 6px;
+        background: #488201;
+        color:white;
+        border: none;
+        border-radius: 5%;
       }
+
+      button:disabled,button[disabled]{
+        border: 1px solid #999999;
+        background-color: #488201;
+        color:darkgray;
+}
 
       #output-div {
         background-color: aliceblue;
@@ -148,6 +159,8 @@
         width: 70%;
         text-align: center;
         border-radius: 10px;
+        font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+        font-size: large;
       }
 
       .logo-img {
@@ -198,6 +211,61 @@
         border-style: double;
         font-size: 60%;
       }
+
+      #question-mark {
+        width: 10%;
+        float: left;
+      }
+
+      .popup {
+        width: 55%;
+        background:aliceblue;
+        border-radius: 20px;
+        position: absolute;
+        top: 10%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0.1);
+        text-align: center;
+        padding: 0 30px 10px;
+        color: 333;
+        visibility: hidden;
+        transition: transform 0.4s, top 0.4s;
+      }
+
+      .popup h2 {
+        font-size: 20px;
+        font-weight: 800;
+      }
+
+      .popup p {
+        font-size: 12px;
+        font-weight: 300;
+        text-align: justify;
+      }
+       .popup ol {
+        font-size: 12px;
+        font-weight: 300;
+        text-align:justify;
+      }
+
+      .popup button {
+        width: 50%;
+        margin-top: 10px;
+        padding: 5px 0;
+        background: #488201;
+        color: #fff;
+        border: 0;
+        outline: none;
+        font-size: 15px;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+
+      .open-popup {
+        visibility: visible;
+        top: 50%;
+        transform: translate(-50%, -50%) scale(1);
+      }
     </style>
   </head>
 
@@ -217,6 +285,30 @@
     <h1 class="header">♣️ Pepe The Frog's Blackjack Game ♠️</h1>
 
     <div id="container">
+      <input
+        type="image"
+        id="question-mark"
+        src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/3ce212da-22a2-4830-85cc-f5e5affc5cd6/dcxehfe-dd22d80d-4cff-49bf-be56-bb51f5ea0a78.gif?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzNjZTIxMmRhLTIyYTItNDgzMC04NWNjLWY1ZTVhZmZjNWNkNlwvZGN4ZWhmZS1kZDIyZDgwZC00Y2ZmLTQ5YmYtYmU1Ni1iYjUxZjVlYTBhNzguZ2lmIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.FPZzigXwn6ZWFixDogw4z5uQbIfnJSzyq8TDI9K_3o8"
+        onclick="openPopup()"
+      />
+      <div class="popup" id="popup">
+        <h2>How to Play</h2>
+        <p>
+          This is a Blackjack game for 1 player against the dealer, Pepe the Frog.<br />Players are given 100 coins at the start of the game and wagers a number of coins before each round starts.<br />The player loses once the coins are used up!<br /><br>The rules for Blackjack are as follows:<br />
+          <ol>
+            <li>The player gets dealt two cards to start.</li>
+            <li>The player goes first, and decides if they want to hit (draw a card) or stand (end their turn).</li>
+            <li>The dealer has to hit if their hand is below 17.</li>
+            <li>Each players' score is the total of their card ranks.</li>
+            <li>Number cards count as their number, the jack, queen, and king count as 10, and aces count as either 1 or 11 according to the player's choice.</li> 
+            <li>The player who is closer to, but not above 21 wins the hand.<li>A player gets "Blackjack"
+            if the total score is 21 on the first two cards!</li>
+            <li>The player wins immediately if he gets "Blackjack" unless dealer also has one, in which case the hand ties.</li>
+          </ol>
+          Have Fun!
+        </p>
+        <button onclick="closePopup()">Close</button>
+      </div>
       <div id="output-div">
         Welcome to Pepe's Blackjack Game!<br />Click Start to begin.
         <div id="output-div-img">
@@ -268,16 +360,12 @@
 
       var button = document.querySelector("#submit-button");
       button.addEventListener("click", function () {
-        // Set result to input value
-        //var input = document.querySelector("#input-field");
+        // Set result to input value ""
         var result = main("");
 
         // Display result in output element
         var output = document.querySelector("#output-div");
         output.innerHTML = result;
-
-        // Reset input value
-        //input.value = "";
       });
 
       //select hit button
@@ -333,12 +421,24 @@
       //wager 1000 coins button
       var wagerButton_1000 = document.querySelector("#wager-1000");
 
-      //set "10" as input for main function and show output
+      //set "1000" as input for main function and show output
       wagerButton_1000.addEventListener("click", function () {
         var result = main("1000");
         var output = document.querySelector("#output-div");
         output.innerHTML = result;
       });
+      
+      //select questions message popup
+      var questionPopUp = document.getElementById("popup");
+      //function to show question-popup
+      var openPopup = function () {
+        questionPopUp.classList.add("open-popup");
+      };
+
+      //function to show question-popup
+      var closePopup = function () {
+        questionPopUp.classList.remove("open-popup");
+      };
     </script>
   </body>
 </html>

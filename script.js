@@ -199,7 +199,9 @@ var playBlackjack = function () {
   } else if (isBust(playerScore) && isBust(computerScore)) {
     gameResult = `It's a tie, both player and dealer Bust!<br>${imageGameTie}`;
     bettingResult = BET_TIE;
-  } else if (!isBust(playerScore) && !isBust(computerScore)) {
+  }
+  //check for higher score if there's no Bust
+  else if (!isBust(playerScore) && !isBust(computerScore)) {
     if (playerScore < computerScore) {
       gameResult = `Player has lower score, you lose!<br>${imageLoseLetter} ${imagePlayerLose}`;
       bettingResult = BET_LOSE;
@@ -230,7 +232,7 @@ var dealCardMsg = function (cardsArray) {
   allDealCardMsg = "";
   while (dealCardIndex < cardsArray.length) {
     currDealCard = cardsArray[dealCardIndex];
-    allDealCardMsg += `${currDealCard.name} of ${currDealCard.suit},`;
+    allDealCardMsg += `< ${currDealCard.name}${currDealCard.suit} > `;
     dealCardIndex += 1;
   }
   return allDealCardMsg;
@@ -268,6 +270,11 @@ var calcBettingPoints = function () {
   }
 
   return bettingPointsMsg;
+};
+
+//function to output Player & Dealer's Score
+var playerDealerScoreMsg = function () {
+  return `Pepe's Score 🐸 : ${computerScore}<br>Your Score 😎 : ${playerScore}<br>`;
 };
 
 //function to reset parameters before next round
@@ -349,7 +356,7 @@ var main = function (input) {
       computerTopUpCard();
 
       //determine winner
-      myOutputValue = `${playerDealerCardMsg()} <br>${playBlackjack()}<br>`;
+      myOutputValue = `${playerDealerCardMsg()} <br>${playerDealerScoreMsg()}<br>${playBlackjack()}<br>`;
 
       //update betting points
       myOutputValue += calcBettingPoints();
