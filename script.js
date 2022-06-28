@@ -452,20 +452,20 @@ var blackjackDealer = function () {
         var prizeCoin = playerDetails[player].bet * 2;
         playerDetails[player].coins += prizeCoin;
         playerDetails[player].bet = 0;
-        cardString += `YOU WON Player ${playerDetails[currPlayer].name}! <br> ${prizeCoin} added. </br></br>`;
+        cardString += `YOU WON Player ${playerDetails[player].name}! <br> ${prizeCoin} added. </br></br>`;
       } else if (cardValue == 21) {
         playerDetails[player].bet = 0;
-        cardString += `YOU LOST Player ${playerDetails[currPlayer].name}! </br></br>`;
+        cardString += `YOU LOST Player ${playerDetails[player].name}! </br></br>`;
       } else {
         if (pCardValue > cardValue) {
           console.log(pCardValue);
           var prizeCoin = playerDetails[player].bet * 2;
           playerDetails[player].coins += prizeCoin;
           playerDetails[player].bet = 0;
-          cardString += `YOU WON Player ${playerDetails[currPlayer].name}! <br> ${prizeCoin} added. </br></br>`;
+          cardString += `YOU WON Player ${playerDetails[player].name}! <br> ${prizeCoin} added. </br></br>`;
         } else {
           playerDetails[player].bet = 0;
-          cardString += `YOU LOST Player ${playerDetails[currPlayer].name}! </br></br>`;
+          cardString += `YOU LOST Player ${playerDetails[player].name}! </br></br>`;
         }
       }
     }
@@ -503,7 +503,9 @@ var resetPlayerDetails = function () {
   for (let i = 0; i < playerDetails.length; i++) {
     playerDetails[i].stand = false;
     playerDetails[i].cards = [];
-    if (Number(playerDetails[i].coins) == 0) playersEliminated.push(i);
+    if (Number(playerDetails[i].coins) == 0) {
+      playersEliminated.push(i);
+    }
   }
 
   if (playerDetails.length == playersEliminated.length) {
@@ -511,8 +513,10 @@ var resetPlayerDetails = function () {
     playerDetails = [];
   } else {
     console.log(`not same`);
-    while (playersEliminated.length > 0)
-      playersEliminated.splice(playersEliminated[0], 0);
+    while (playersEliminated.length > 0) {
+      playerDetails.splice(playersEliminated[playersEliminated.length - 1], 1);
+      playersEliminated.pop();
+    }
   }
 
   gameMode = "game proper";
