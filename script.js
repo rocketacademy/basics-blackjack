@@ -272,6 +272,7 @@ var DOMplayerSelection = function (state) {
 
     const outputField = document.createElement("div");
     outputField.id = "output-div";
+    outputField.innerHTML = `Instructions can be found <a href="https://www.wikihow.com/Play-Blackjack" target="_blank">here</a>.`;
 
     document.getElementById("player-selection").appendChild(para);
     document.getElementById("player-selection").appendChild(inputField);
