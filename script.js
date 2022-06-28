@@ -5,18 +5,21 @@ var RESULT_MODE = "RESULT MODE";
 var GAME_START = "GAME START";
 var PLAYER_CHOICE_MODE = "PLAYER CHOICE MODE";
 var COMPUTER_CHOICE_MODE = "COMPUTER CHOICE MODE";
+var INTRO_MODE = "INTRO MODE";
+var PLACE_BET = "PLACE_BET";
 var HIT = "h";
 var STAND = "s";
-
-var gameMode = GAME_START;
+var WIN = "WIN";
+var LOSE = "LOSE";
+var TIE = "TIE";
 
 //output is updated by using this function
 var displayHandsStatement = function (playerHand, computerHand) {
   var playerValue = addAllCards(playerHand);
   var computerValue = addAllCards(computerHand);
 
-  myOutputValue = `Player Hand has ${listAllCards(playerHand)}
-  <br><br> Computer Hand has ${listAllCards(computerHand)}
+  myOutputValue = `Player Hand has ${listAllPlayerCards(playerHand)}
+  <br><br> Computer Hand has ${listCPUCards(computerHand)}
   <br><br> Player deck Value is ${playerValue} and CPU total value is ${computerValue}`;
   //<br><br> Player, would you like to hit or stand? type h for hit and s for stand.;
 
@@ -36,10 +39,23 @@ var declareStand = function () {
 };
 
 //helper function: list cards nicely for myOutputValue
-var listAllCards = function (cards) {
+var listAllPlayerCards = function (cards) {
   var resultString = String();
   //console.log(cards);
   for (var i = 0; i < cards.length; i += 1) {
+    var currentCard = cards[i];
+    //console.log(currentCard);
+    resultString += `<br><br>${currentCard.name} of ${currentCard.suit}`;
+    //console.log("results String:" + resultString);
+  }
+  return resultString;
+};
+//helper function: list cards nicely for myOutputValue
+var listCPUCards = function (cards) {
+  var resultString = String();
+  //console.log(cards);
+  resultString += `<br><br>Hidden Card`;
+  for (var i = 1; i < cards.length; i += 1) {
     var currentCard = cards[i];
     //console.log(currentCard);
     resultString += `<br><br>${currentCard.name} of ${currentCard.suit}`;
@@ -57,6 +73,17 @@ var addAllCards = function (cards) {
     //console.log(currentCard);
     result += Number(currentCard.value);
     //console.log("results String:" + resultString);
+  }
+  //variable ace 1 or 11
+  for (var i = 0; i < cards.length; i += 1) {
+    if (cards[i].name == "Ace") {
+      //cardValue = 11;
+      if (result + 10 > 21) {
+        break;
+      } else {
+        result += 10;
+      }
+    }
   }
   return result;
 };
@@ -135,10 +162,24 @@ var getRandomIndex = function (max) {
 };
 
 //variable ace function
+var variableAce = function (cards) {
+  var deckValue1 = addAllCards(cards);
+
+  for (var i = 0; i < cards.length; i += 1) {
+    if (cardName == "Ace") {
+      //cardValue = 11;
+      if (deckValue1 + 10 < 21) {
+        break;
+      } else {
+        deckValue1 += 10;
+      }
+    }
+  }
+};
 
 //helper function: reset the game for new game loop
 var resetGame = function () {
-  gameMode = PLAYER_CHOICE_MODE;
+  gameMode = INTRO_MODE;
   playerHand = [];
   computerHand = [];
 };
@@ -189,37 +230,85 @@ var checkWhoWinLose = function (deckValue1, deckValue2) {
   return endResult;
 };
 
-//draw card
-/*
-var drawCard = function (handIndex, cardCapacity, hand) {
-  var drawnCard;
-  while (handIndex < cardCapacity) {
-    drawnCard = shuffledDeck.pop();
-    hand.push(drawnCard);
+//determine round result win lose or tie
+var checkRoundResult = function (deckValue1, deckValue2) {
+  console.log("SEND HELP 3");
+  var playerValue = addAllCards(deckValue1);
+  var computerValue = addAllCards(deckValue2);
 
-    //console.log(hand);
-    console.log(hand[handIndex]);
+  var roundResult;
 
-    handIndex += 1;
+  if (
+    (playerValue == 21 && computerValue != 21) ||
+    (playerValue < 21 && computerValue > 21) ||
+    playerValue > computerValue
+  ) {
+    roundResult = WIN;
+  } else if (
+    (playerValue != 21 && computerValue == 21) ||
+    (playerValue > 21 && computerValue < 21) ||
+    playerValue < computerValue
+  ) {
+    roundResult = LOSE;
+  } else if (playerValue == computerValue) {
+    roundResult = TIE;
   }
+  return roundResult;
 };
 
-*/
+//give points based on win lose or tie
+var givePoints = function (roundResult) {
+  var point;
+  if (roundResult == WIN) {
+    point = userBet;
+  } else if (roundResult == LOSE) {
+    point = userBet * -1;
+  } else if (roundResult == TIE) {
+    point = 0;
+  }
+  return point;
+};
 
 var deck = makeDeck();
 var shuffledDeck = shuffleDeck(deck);
 
+var playerScore = 100;
+var userBet;
 var playerHand = [];
 var computerHand = [];
 var myOutputValue;
 var dealerChoice = HIT;
 var playerChoice = HIT;
 
+var gameMode = INTRO_MODE;
+var roundResult;
+
 //MAIN FUNCTION STARTS HERE
 
 var main = function (input) {
-  //Let's draw 2 cards and push them into each others hand
+  if (gameMode == INTRO_MODE) {
+    console.log("SEND HELP 0");
+    myOutputValue = `Hi, How much do you want to bet? You have ${playerScore} points.`;
+    gameMode = PLACE_BET;
+    return myOutputValue;
+  }
+  //place a bet first
+  if (gameMode == PLACE_BET) {
+    console.log("SEND HELP 1");
+    if (Number.isNaN(Number(input)) || input == "") {
+      myOutputValue = ` Sorry please enter a number. <br><br> ${myOutputValue}`;
+    } else if (input > 0 && input <= playerScore) {
+      userBet = Number(input);
+      myOutputValue = `You have placed a bet of ${userBet} points. 
+      <br><br>Entering game of Blackjack...`;
+      gameMode = GAME_START;
+    } else if (input > playerScore)
+      myOutputValue = `Please bet within your means... <br><br>${myOutputValue}`;
 
+    return myOutputValue;
+  }
+
+  //Let's draw 2 cards and push them into each others hand
   if (gameMode == GAME_START) {
     var playerHandIndex = 0;
     var playerCardCapacity = 2;
@@ -229,6 +318,7 @@ var main = function (input) {
       //console.log
       console.log("playerhand");
       console.log(playerHand[playerHandIndex]);
+
       playerHandIndex += 1;
     }
 
@@ -238,11 +328,12 @@ var main = function (input) {
     while (computerHandIndex < computerHandCapacity) {
       computerDrawnCard = shuffledDeck.pop();
       computerHand.push(computerDrawnCard);
+
+      console.log("CPUhand");
+      console.log(computerHand[computerHandIndex]);
+
       computerHandIndex += 1;
     }
-
-    //check bust or blackjack
-    var checkingEveryRound = checkBustOrBlackjack(playerHand, computerHand);
 
     gameMode = PLAYER_CHOICE_MODE;
 
@@ -313,8 +404,13 @@ var main = function (input) {
   if (gameMode == RESULT_MODE) {
     //console.log("RESULT MODE");
     var resultAnnouncement = checkWhoWinLose(playerHand, computerHand);
-    return resultAnnouncement;
+    var endRoundResult = checkRoundResult(playerHand, computerHand);
+    playerScore = playerScore + givePoints(endRoundResult);
+    resetGame();
+
+    myOutputValue = `${resultAnnouncement}<br><br>Player's current score is ${playerScore}.`;
   }
+
   //var check2 = checkWhoWinLose(playerHand, computerHand);
 
   /*
