@@ -145,12 +145,26 @@ var convertHandToString = function (hand) {
   }
   return cards;
 };
+//Hide Computer/Dealer's First Card
+var convertHandToString2 = function (hand) {
+  var cards = "Cards of " + "hidden card, ";
+  var handIndex = 1;
 
+  while (handIndex < hand.length) {
+    cards = cards + hand[handIndex].name + " " + hand[handIndex].suit;
+    if (handIndex != hand.length - 1) {
+      cards += ", ";
+    }
+    handIndex = handIndex + 1;
+  }
+  return cards;
+};
+//consolelog:computerHand[0]
 var getDefaultOutput = function () {
   return `Player hand: ${convertHandToString(
     playerHand
   )} with a sum of ${getHandSum(playerHand)}. <br>
-    Computer/dealer hand: ${convertHandToString(
+    Computer/dealer hand: ${convertHandToString2(
       computerHand
     )} with a sum of ${getHandSum(computerHand)}.<br>`;
 };
@@ -171,7 +185,7 @@ var main = function (input) {
     dealCardToHand(playerHand);
     dealCardToHand(computerHand);
 
-    // The cards are analyzed for any game winning conditions. (Blackjack)
+    // Compare computer and player cards by rank attribute
     // If computer has Blackjack, computer auto wins because computer is dealer
     if (isBlackJackCombination(computerHand)) {
       gameOver = true;
@@ -193,7 +207,7 @@ var main = function (input) {
       Please enter "hit" or "stand", then press Submit`;
   }
 
-  // Then begins a new action, where the user has to decide something: do they hit or stand.
+  // Begins a new action, where the user has to decide something: do they hit or stand.
   if (!playerHasChosenToStand) {
     // If user input is neither "hit" nor "stand" prompt user
     if (input !== "hit" && input !== "stand") {
@@ -209,12 +223,10 @@ var main = function (input) {
           Player has busted 21 points and loses. Please refresh the page to play again.♣️♠️♦️♥️`;
       }
     }
-
     if (input === "stand") {
       playerHasChosenToStand = true;
     }
   }
-
   // The computer also decides to hit or stand.
   // Computer hits if sum less than or equal to dealer hit limit
   // Otherwise, computer stays
