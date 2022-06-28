@@ -1,16 +1,67 @@
+//GLOBAL VARIABLES
 //ver 2: player hit or stand
 var DRAW_MODE = "DRAW MODE";
 var RESULT_MODE = "RESULT MODE";
 var GAME_START = "GAME START";
 var PLAYER_CHOICE_MODE = "PLAYER CHOICE MODE";
 var COMPUTER_CHOICE_MODE = "COMPUTER CHOICE MODE";
+var HIT = "h";
+var STAND = "s";
 
-// player start with choice mode to decide if hit or stand
-// draw mode is when player decides to hit
-// result mode is when player decides to stand
-// game start is when 2 players draw cards
 var gameMode = GAME_START;
 
+//output is updated by using this function
+var displayHandsStatement = function (playerHand, computerHand) {
+  var playerValue = addAllCards(playerHand);
+  var computerValue = addAllCards(computerHand);
+
+  myOutputValue = `Player Hand has ${listAllCards(playerHand)}
+  <br><br> Computer Hand has ${listAllCards(computerHand)}
+  <br><br> Player deck Value is ${playerValue} and CPU total value is ${computerValue}`;
+  //<br><br> Player, would you like to hit or stand? type h for hit and s for stand.;
+
+  return myOutputValue;
+};
+
+//ask player if hit or stand
+var askHitOrStand = function () {
+  myOutputValue = `Player, would you like to hit or stand? type h for hit and s for stand.`;
+  return myOutputValue;
+};
+
+//declares computer wants to stand
+var declareStand = function () {
+  myOutputValue = `Computer decided to stand.`;
+  return myOutputValue;
+};
+
+//helper function: list cards nicely for myOutputValue
+var listAllCards = function (cards) {
+  var resultString = String();
+  //console.log(cards);
+  for (var i = 0; i < cards.length; i += 1) {
+    var currentCard = cards[i];
+    //console.log(currentCard);
+    resultString += `<br><br>${currentCard.name} of ${currentCard.suit}`;
+    //console.log("results String:" + resultString);
+  }
+  return resultString;
+};
+
+//helper function: add cards nicely for myOutputValue
+var addAllCards = function (cards) {
+  var result = Number();
+  //console.log(cards);
+  for (var i = 0; i < cards.length; i += 1) {
+    var currentCard = cards[i];
+    //console.log(currentCard);
+    result += Number(currentCard.value);
+    //console.log("results String:" + resultString);
+  }
+  return result;
+};
+
+//create a deck
 var makeDeck = function () {
   // Initialise an empty deck array
   var cardDeck = [];
@@ -61,12 +112,7 @@ var makeDeck = function () {
   return cardDeck;
 };
 
-// Get a random index ranging from 0 (inclusive) to max (exclusive).
-var getRandomIndex = function (max) {
-  return Math.floor(Math.random() * max);
-};
-
-//this function shuffles deck
+//shuffling deck
 var shuffleDeck = function (cardDeck) {
   var currentIndex = 0;
   while (currentIndex < cardDeck.length) {
@@ -82,96 +128,94 @@ var shuffleDeck = function (cardDeck) {
   return cardDeck;
 };
 
-var deck = makeDeck();
-var shuffledDeck = shuffleDeck(deck);
-
-//function for checking who wins.... hold on we need to add them all
-
-var checkBustOrBlackjack = function (playerHand, computerHand) {
-  console.log("SEND HELP");
-  var deckValue1 = addAllCards(playerHand);
-  console.log("DECK VALUE 1");
-  console.log(deckValue1);
-
-  var deckValue2 = addAllCards(computerHand);
-  console.log("DECK VALUE 2");
-  console.log(deckValue2);
-
-  var endResult;
-  // Compare computer and player cards by rank attribute
-
-  if (deckValue1 == 21 && deckValue2 != 21) {
-    //gameMode = RESULT_MODE;
-    endResult = `Player wins! 21 means blackjack!`;
-  } else if (deckValue1 != 21 && deckValue2 == 21) {
-    endResult = `Player loses! Computer got 21 which means blackjack!`;
-  } else if (deckValue1 > 21 && deckValue2 < 21) {
-    endResult = `Player is busted! Deck exceeds 21...Player loses.`;
-  } else if (deckValue1 < 21 && deckValue2 > 21) {
-    endResult = `Computer is busted! Deck exceeds 21...so Player wins!`;
-  }
-
-  return endResult;
+// helper function: for shuffling deck
+// Get a random index ranging from 0 (inclusive) to max (exclusive).
+var getRandomIndex = function (max) {
+  return Math.floor(Math.random() * max);
 };
 
-var checkWhoWinLose = function (deckValue1, deckValue2) {
-  console.log("SEND HELP 2");
-  var endResult2;
-  if (deckValue1 == deckValue2) {
-    endResult2 = `It is a tie! the values of both decks are the same!`;
-  } else if (deckValue1 < deckValue2) {
-    endResult2 = `Player lost! Player deck is ${deckValue1} which is lesser than Computer's deck of ${deckValue2} `;
-  } else if (deckValue1 > deckValue2) {
-    endResult2 = `Player won! Player deck is ${deckValue1} which is more than Computer's deck of ${deckValue2} `;
-  }
-  return endResult2;
-};
+//variable ace function
 
+//helper function: reset the game for new game loop
 var resetGame = function () {
   gameMode = PLAYER_CHOICE_MODE;
   playerHand = [];
   computerHand = [];
 };
 
-var listAllCards = function (cards) {
-  var resultString = String();
-  //console.log(cards);
-  for (var i = 0; i < cards.length; i += 1) {
-    var currentCard = cards[i];
-    //console.log(currentCard);
-    resultString += `<br><br>${currentCard.name} of ${currentCard.suit}`;
-    //console.log("results String:" + resultString);
+// check bust or blackjack in any hand
+var checkBustOrBlackjack = function (playerHand, computerHand) {
+  var deckValue1 = addAllCards(playerHand);
+  var deckValue2 = addAllCards(computerHand);
+
+  //see if any hand is 21 or more
+
+  if (deckValue1 >= 21 || deckValue2 >= 21) {
+    //gameMode = RESULT_MODE;
+    gameMode = RESULT_MODE;
   }
-  return resultString;
+
+  console.log("game mode now", gameMode);
+  return gameMode;
 };
 
-var addAllCards = function (cards) {
-  var result = Number();
-  //console.log(cards);
-  for (var i = 0; i < cards.length; i += 1) {
-    var currentCard = cards[i];
-    //console.log(currentCard);
-    result += Number(currentCard.value);
-    //console.log("results String:" + resultString);
+// check who win or lose
+var checkWhoWinLose = function (deckValue1, deckValue2) {
+  console.log("SEND HELP 2");
+  var playerValue = addAllCards(deckValue1);
+  var computerValue = addAllCards(deckValue2);
+
+  var endResult;
+
+  if (playerValue == 21 && computerValue != 21) {
+    endResult = `Player wins! 21 means blackjack!`;
+  } else if (playerValue != 21 && computerValue == 21) {
+    endResult = `Player loses! Computer got 21 which means blackjack!`;
+  } else if (playerValue > 21 && computerValue < 21) {
+    endResult = `Player is busted! Deck exceeds 21...Player loses.`;
+  } else if (playerValue < 21 && computerValue > 21) {
+    endResult = `Computer is busted! Deck exceeds 21...so Player wins!`;
+  } else if (playerValue == 21 && computerValue == 21) {
+    endResult = `It is a tie! Both decks are Blackjack!`;
+  } else if (playerValue == computerValue) {
+    endResult = `It is a tie! the values of both decks are the same!`;
+  } else if (playerValue > 21 && computerValue > 21) {
+    endResult = `It is a tie! Both Player and Computer busted!`;
+  } else if (playerValue < computerValue) {
+    endResult = `Player lost! Player deck is ${playerValue} which is lesser than Computer's deck of ${computerValue} `;
+  } else if (playerValue > computerValue) {
+    endResult = `Player won! Player deck is ${playerValue} which is more than Computer's deck of ${computerValue} `;
   }
-  return result;
+  return endResult;
 };
-//ok we should have a list for player hand and CPU hand
+
+//draw card
+/*
+var drawCard = function (handIndex, cardCapacity, hand) {
+  var drawnCard;
+  while (handIndex < cardCapacity) {
+    drawnCard = shuffledDeck.pop();
+    hand.push(drawnCard);
+
+    //console.log(hand);
+    console.log(hand[handIndex]);
+
+    handIndex += 1;
+  }
+};
+
+*/
+
+var deck = makeDeck();
+var shuffledDeck = shuffleDeck(deck);
+
 var playerHand = [];
 var computerHand = [];
 var myOutputValue;
+var dealerChoice = HIT;
+var playerChoice = HIT;
 
-var outputStatement = function (playerHand, computerHand) {
-  var playerValue = addAllCards(playerHand);
-  var computerValue = addAllCards(computerHand);
-
-  myOutputValue = `Player Hand has ${listAllCards(playerHand)}
-  <br><br> Computer Hand has ${listAllCards(computerHand)}
-  <br><br> Player deck Value is ${playerValue} and CPU total value is ${computerValue}
-  <br><br> Player, would you like to hit or stand? type h for hit and s for stand.`;
-
-  return myOutputValue;
-};
+//MAIN FUNCTION STARTS HERE
 
 var main = function (input) {
   //Let's draw 2 cards and push them into each others hand
@@ -198,34 +242,19 @@ var main = function (input) {
     }
 
     //check bust or blackjack
-    checkBustOrBlackjack(playerHand, computerHand);
+    var checkingEveryRound = checkBustOrBlackjack(playerHand, computerHand);
 
     gameMode = PLAYER_CHOICE_MODE;
 
-    myOutputValue = outputStatement(playerHand, computerHand);
+    myOutputValue = `${displayHandsStatement(playerHand, computerHand)}
+    <br><br>${askHitOrStand()}`;
   }
 
-  //var playerCard1 = shuffledDeck.pop();
-  //var playerCard2 = shuffledDeck.pop();
-  //playerHand.push(playerCard1, playerCard2);
-  //var computerCard3;
-  //var playerCard3;
-  //console.log(playerCard);
-  //console.log(deck);
-
-  //var totalvaluePlayer = addTotalValue(playerCard1, playerCard2);
-  //var totalvalueComputer = addTotalValue(computerCard1, computerCard2);
-
-  // var resultAnnouncement = checkBustOrBlackjack(totalvaluePlayer,totalvalueComputer);
-  //console.log(resultAnnouncement);
-
-  //resetGame();
-
-  //game mode please
-
+  //Game loop starts here
   if (gameMode == PLAYER_CHOICE_MODE) {
     //validate the input
-    if (input == "h") {
+
+    if (input == HIT) {
       //ok draw more cards! draw mode...
 
       var playerCardCapacity = playerCardCapacity + 1;
@@ -237,24 +266,60 @@ var main = function (input) {
 
       playerHandIndex += 1;
 
-      myOutputValue = outputStatement(playerHand, computerHand);
+      myOutputValue = `${displayHandsStatement(playerHand, computerHand)}
+    <br><br>${askHitOrStand()}`;
 
       return myOutputValue;
-    } else if (input == "s") {
-      gameMode = RESULT_MODE;
+    } else if (input == STAND) {
+      playerChoice = STAND;
+      if (dealerChoice == HIT) {
+        gameMode = COMPUTER_CHOICE_MODE;
+      } else if (dealerChoice == STAND) {
+        gameMode = RESULT_MODE;
+      }
     }
   }
 
+  //computer's turn after player stand and he pray for the best
+  if (gameMode == COMPUTER_CHOICE_MODE) {
+    //first, computer see whats the value in his deck
+    var computerValue = addAllCards(computerHand);
+    //if his own hand is less than 17, he hits one more card and then decide to stand
+    if (computerValue < 17) {
+      var computerCardCapacity = computerCardCapacity + 1;
+      computerDrawnCard = shuffledDeck.pop();
+      computerHand.push(computerDrawnCard);
+
+      console.log("computer hand after he hits");
+      console.log(computerHand);
+
+      computerHandIndex += 1;
+
+      myOutputValue = `${displayHandsStatement(playerHand, computerHand)}
+      <br><br> ${askHitOrStand()}`;
+    } else if (computerValue >= 17) {
+      myOutputValue = `${displayHandsStatement(playerHand, computerHand)}
+      <br><br> ${declareStand()}
+      <br><br> ${askHitOrStand()}`;
+      dealerChoice = STAND;
+      if (playerChoice == STAND) {
+        gameMode = RESULT_MODE;
+      }
+    }
+
+    gameMode = PLAYER_CHOICE_MODE;
+  }
+
   if (gameMode == RESULT_MODE) {
-    console.log("RESULT MODE");
-    checkBustOrBlackjack(playerHand, computerHand);
-    checkWhoWinLose(playerHand, computerHand);
+    //console.log("RESULT MODE");
+    var resultAnnouncement = checkWhoWinLose(playerHand, computerHand);
+    return resultAnnouncement;
   }
   //var check2 = checkWhoWinLose(playerHand, computerHand);
 
   /*
   if (gameMode == DRAW_MODE) {
-    myOutputValue = outputStatement(playerHand, computerHand);
+    myOutputValue = displayHandsStatement(playerHand, computerHand);
     return myOutputValue;
   }
   //}
