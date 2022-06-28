@@ -6,8 +6,11 @@ var playerScore = 0, dealerScore = 0;   // score of player and dealer respective
 var disableAllButtons = false;      // this is a flag to terminate the game when card deck runs low
 
 var main = function (input) {
-  if (gameStage == 'SET UP') {   // SET UP mode
-    shuffledDeck = shuffleCards(makeDeck());      // Make and Shuffle a deck of cards
+  if (gameStage == 'SET UP') {   // SET UP mode   - to Make and Shuffle TWO decks of cards
+    arr1 = shuffleCards(makeDeck()); 
+    arr2 = shuffleCards(makeDeck());
+    shuffledDeck = shuffleCards(arr1.concat(arr2));
+    console.log(shuffledDeck.length);
     gameStage = 'DRAW CARDS';     // toggle to DRAW CARDS mode
     //return 'Game is setup, click Submit to play'; 
   }
@@ -156,12 +159,13 @@ var checkResult = function(playerScore, dealerScore, playerCards, dealerCards) {
 }
 
 var showGIF = function(inputResultText) {
-  var winningImage = '<img class="center" src="https://tenor.com/view/im-proud-of-you-dan-levy-david-david-rose-schitts-creek-gif-20773745.gif"/>';
-  var losingImage = '<img class="center" src="https://tenor.com/view/wolf-of-wall-street-oh-my-god-leonardo-di-caprio-fist-bite-gif-4681785.gif"/>';
+  var winningImage = '<img class="img" src="https://tenor.com/view/the-wolf-of-wall-street-clap-clapping-clapping-hands-leonardo-dicaprio-gif-22829304.gif"/>';
+  var losingImage = '<img class="img" src="https://tenor.com/view/wolf-of-wall-street-oh-my-god-leonardo-di-caprio-fist-bite-gif-4681785.gif"/>';
+  var tieImage = '<img class="img" src="https://tenor.com/view/mark-wahlberg-wahlberg-tie-oscar-%E5%B9%B3%E6%89%8B-gif-9081826.gif"/>';
   if (inputResultText.includes('Player wins')) {return winningImage;}   // return winning Image if player wins
   if (inputResultText.includes('Dealer wins')) {return losingImage;}    // return losing Image if dealer wins
 
-  return '';    // return no image if it's a tie
+  return tieImage;    // return tieImage if it's a tie
 }
 
 
