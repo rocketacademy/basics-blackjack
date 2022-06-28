@@ -1,0 +1,157 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Open Sans", sans-serif;
+  margin-left: 30px;
+  margin-right: 30px;
+  background-color: white;
+  color: white; /* sets the font color */
+  background-image: url("https://images.unsplash.com/photo-1617013371588-dfe4246161a6?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8OHx8cG9rZXJ8ZW58MHx8MHx8&w=1000&q=80"); /* The image used */
+  background-position: top; /* Center the image */
+  background-repeat: no-repeat; /* Do not repeat the image */
+  background-size: cover; /* Resize the background image to cover the entire container */
+}
+
+#output-div img {
+  display: block;
+  max-width: 100%;
+  max-height: 200px;
+}
+.header {
+  font-weight: bold;
+  text-align: center;
+  font-size: 1.1rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+#container {
+  background-color: rgb(5, 63, 109);
+  opacity: 0.8;
+  margin: 40px auto;
+  max-width: 1200px;
+  padding: 38px 31px;
+  color: white;
+}
+
+input {
+  font-size: 21px;
+  line-height: 33px;
+  margin: 0 0 23px 0;
+  padding: 0 9px;
+  width: 30%;
+}
+
+button {
+  font-size: 21px;
+  line-height: 33px;
+  margin: 0 0 23px 0;
+  padding: 0 6px;
+}
+
+#output-div {
+  background-color: lightgrey;
+  margin: 20px auto;
+  padding: 20px;
+  width: 100%;
+}
+
+.logo-img {
+  height: 49px;
+  position: relative;
+}
+
+/* increase header font size on wider screens */
+@media screen and (min-width: 600px) {
+  .header {
+    font-size: 2rem;
+  }
+}
+
+#game {
+  display: none;
+  text-align: left;
+}
+
+.output-details {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.card-display {
+  width: 13%;
+  margin-top: 10px;
+  margin-right: 10px;
+}
+.action-buttons {
+  margin-top: 30px;
+}
+
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  padding-top: 100px; /* Location of the box */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0, 0, 0); /* Fallback color */
+  background-color: rgba(0, 0, 0, 0.6); /* Black w/ opacity */
+}
+
+/* Modal Content */
+.modal-content {
+  background-color: rgb(162, 219, 255);
+  color: black;
+  text-align: center;
+  font-size: larger;
+  margin: auto;
+  padding: 20px;
+  padding-bottom: 50px;
+  width: 40%;
+  -webkit-animation-name: modal-animation;
+  -webkit-animation-duration: 0.5s;
+  animation-name: modal-animation;
+  animation-duration: 0.5s;
+}
+
+@-webkit-keyframes modal-animation {
+  from {
+    top: -100px;
+    opacity: 0;
+  }
+  to {
+    top: 0px;
+    opacity: 1;
+  }
+}
+
+@keyframes modal-animation {
+  from {
+    top: -100px;
+    opacity: 0;
+  }
+  to {
+    top: 0px;
+    opacity: 1;
+  }
+}
+
+/* The Close Button */
+.close {
+  color: #aaaaaa;
+  text-align: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
