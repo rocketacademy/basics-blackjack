@@ -1,6 +1,5 @@
 var playerHand = [];
 var playerCurrent = 0;
-var AcesPosition = [];
 var computerHand = [];
 var computerCurrent = 0;
 var compNewCards = [{}];
@@ -37,7 +36,11 @@ var main = function (input) {
       var nextCard = playerHand[playerHand.length - 1];
       playerCurrent = sumOfCardValues(playerHand);
       for (var i = 0; i < playerHand.length; i++) {
-        if (playerHand[i].name == "Ace" && sumOfCardValues(playerHand) > 21) {
+        if (
+          playerHand[i].name == "Ace" &&
+          playerHand[i].value == 11 &&
+          sumOfCardValues(playerHand) > 21
+        ) {
           playerHand[i].value = 1;
           playerCurrent = sumOfCardValues(playerHand) - 10;
         }
@@ -142,15 +145,10 @@ var changeFaceCardNames = function () {
   }
 };
 
-var randomCardGenerator = function () {
-  var randomCardChosen = Math.floor(Math.random() * deck.length);
-  return randomCardChosen;
-};
-
 //shuffle cards function
 var shuffleCards = function () {
   for (let i = 0; i < deck.length; i++) {
-    var randomIndex = randomCardGenerator();
+    var randomIndex = Math.floor(Math.random() * deck.length);
     var chosenCard1 = deck[i];
     var chosenCard2 = deck[randomIndex];
 
@@ -176,17 +174,6 @@ var sumOfCardValues = function (currentHand) {
   }
 
   return finalValue;
-};
-
-var sumOfCardValuesSubsequentHit = function (currentValue, currentHand) {
-  if (currentValue > 21) {
-    for (var i = 0; i < currentHand.length; i++) {
-      if (currentHand[i].name == "Ace" && currentHand[i].value == 11) {
-        currentHand[i].value = 1;
-        currentValue = currentValue - 10;
-      }
-    }
-  }
 };
 
 //check for blackjack
