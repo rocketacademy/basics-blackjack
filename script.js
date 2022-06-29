@@ -13,6 +13,12 @@ var WIN = "WIN";
 var LOSE = "LOSE";
 var TIE = "TIE";
 
+//IMAGE LIBRARY
+
+var IMAGE_WIN = '<img class = "bottom-img" src ="image/BlackJack_WIN.jpg"/>';
+var IMAGE_LOSE = '<img class = "bottom-img" src ="image/BlackJack_LOSE.jpg"/>';
+var IMAGE_TIE = '<img class = "bottom-img" src ="image/BlackJack_TIE.jpg"/>';
+
 //output is updated by using this function
 var displayHandsStatement = function (playerHand, computerHand) {
   var playerValue = addAllCards(playerHand);
@@ -45,7 +51,7 @@ var listAllPlayerCards = function (cards) {
   for (var i = 0; i < cards.length; i += 1) {
     var currentCard = cards[i];
     //console.log(currentCard);
-    resultString += `<br><br>${currentCard.name} of ${currentCard.suit}`;
+    resultString += `<br><br>${currentCard.name} of ${currentCard.suit}${currentCard.emoji}`;
     //console.log("results String:" + resultString);
   }
   return resultString;
@@ -58,7 +64,7 @@ var listCPUCards = function (cards) {
   for (var i = 1; i < cards.length; i += 1) {
     var currentCard = cards[i];
     //console.log(currentCard);
-    resultString += `<br><br>${currentCard.name} of ${currentCard.suit}`;
+    resultString += `<br><br>${currentCard.name} of ${currentCard.suit}${currentCard.emoji}`;
     //console.log("results String:" + resultString);
   }
   return resultString;
@@ -93,12 +99,14 @@ var makeDeck = function () {
   // Initialise an empty deck array
   var cardDeck = [];
   // Initialise an array of the 4 suits in our deck. We will loop over this array.
-  var suits = ["hearts ♥", "diamonds ♦", "clubs ♣", "spades ♠"];
+  var suits = ["hearts", "diamonds", "clubs", "spades"];
+  var emojiLibrary = ["♥", "♦", "♣", "♠"];
   // Loop over the suits array
   var suitIndex = 0;
   while (suitIndex < suits.length) {
     // Store the current suit in a variable
     var currentSuit = suits[suitIndex];
+    var currentEmoji = emojiLibrary[suitIndex];
     // Loop from 1 to 13 to create all cards for a given suit
     // Notice rankCounter starts at 1 and not 0, and ends at 13 and not 12.
     // This is an example of a loop without an array.
@@ -126,6 +134,7 @@ var makeDeck = function () {
         suit: currentSuit,
         rank: rankCounter,
         value: cardValue,
+        emoji: currentEmoji,
       };
       // Add the new card to the deck
       cardDeck.push(card);
@@ -159,22 +168,6 @@ var shuffleDeck = function (cardDeck) {
 // Get a random index ranging from 0 (inclusive) to max (exclusive).
 var getRandomIndex = function (max) {
   return Math.floor(Math.random() * max);
-};
-
-//variable ace function
-var variableAce = function (cards) {
-  var deckValue1 = addAllCards(cards);
-
-  for (var i = 0; i < cards.length; i += 1) {
-    if (cardName == "Ace") {
-      //cardValue = 11;
-      if (deckValue1 + 10 < 21) {
-        break;
-      } else {
-        deckValue1 += 10;
-      }
-    }
-  }
 };
 
 //helper function: reset the game for new game loop
@@ -256,6 +249,32 @@ var checkRoundResult = function (deckValue1, deckValue2) {
   return roundResult;
 };
 
+//determine what image for win lose or tie
+var checkImageResult = function (deckValue1, deckValue2) {
+  console.log("SEND HELP 4");
+  var playerValue = addAllCards(deckValue1);
+  var computerValue = addAllCards(deckValue2);
+
+  var imageResult;
+
+  if (
+    (playerValue == 21 && computerValue != 21) ||
+    (playerValue < 21 && computerValue > 21) ||
+    playerValue > computerValue
+  ) {
+    imageResult = IMAGE_WIN;
+  } else if (
+    (playerValue != 21 && computerValue == 21) ||
+    (playerValue > 21 && computerValue < 21) ||
+    playerValue < computerValue
+  ) {
+    imageResult = IMAGE_LOSE;
+  } else if (playerValue == computerValue) {
+    imageResult = IMAGE_TIE;
+  }
+  return imageResult;
+};
+
 //give points based on win lose or tie
 var givePoints = function (roundResult) {
   var point;
@@ -264,7 +283,7 @@ var givePoints = function (roundResult) {
   } else if (roundResult == LOSE) {
     point = userBet * -1;
   } else if (roundResult == TIE) {
-    point = 0;
+    point = userBet * 0;
   }
   return point;
 };
@@ -279,6 +298,7 @@ var computerHand = [];
 var myOutputValue;
 var dealerChoice = HIT;
 var playerChoice = HIT;
+var currentImage;
 
 var gameMode = INTRO_MODE;
 var roundResult;
@@ -406,9 +426,14 @@ var main = function (input) {
     var resultAnnouncement = checkWhoWinLose(playerHand, computerHand);
     var endRoundResult = checkRoundResult(playerHand, computerHand);
     playerScore = playerScore + givePoints(endRoundResult);
+    currentImage = checkImageResult(playerHand, computerHand);
     resetGame();
 
-    myOutputValue = `${resultAnnouncement}<br><br>Player's current score is ${playerScore}.`;
+    myOutputValue = `${resultAnnouncement}<br><br>Player's current score is ${playerScore}.
+    <br><br>${currentImage}
+    <br><br> Try again? Press Submit to go back to betting screen`;
+
+    //myOutputValue = `${currentImage}`;
   }
 
   //var check2 = checkWhoWinLose(playerHand, computerHand);
