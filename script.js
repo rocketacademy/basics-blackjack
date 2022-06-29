@@ -44,18 +44,24 @@ v3.
 /*===========GLOBAL VARIABLES===========*/
 /*======================================*/
 
-var GAME_MODE_GET_CARD = "deal card";
-var GAME_MODE_EVALUATE_CARD = "cards dealt. evaluating cards";
-var GAME_MODE_GAME_RESULT = "show card results";
+// var GAME_MODE_ENTER_PLAYER = "enter number of player";
+// var GAME_MODE_INPUT_NAME = "player enter name";
+var GAME_MODE_DEAL_CARD = "deal card";
+var GAME_MODE_CHECK_BLACKJACK = "cards dealt. evaluating hand for blackjack";
+var GAME_MODE_GAME_RESULT = "compare and get card results";
 var GAME_MODE_HIT_OR_STAND = "player choose to hit or stand";
-// var GAME_MODE_DEALER_HIT_STAND = "dealer choose to hit or stand";
-// var GAME_MODE_RESET = "game restart to deal cards";
 
-var gameMode = GAME_MODE_GET_CARD;
+var gameMode = GAME_MODE_DEAL_CARD;
+// var gameMode = GAME_MODE_ENTER_PLAYER;
 var dealerHand = [];
 var playerHand = [];
 var dealerScore = [];
 var playerScore = [];
+var roundCounter = 0;
+
+// var numberOfPlayers = 0;
+// var playerInfo = [];
+// var currentPlayer = 1;
 
 /*======================================*/
 /*=============MAIN FUNCTION============*/
@@ -65,27 +71,78 @@ var main = function (input) {
   var myOutputMessage = "";
   var currentDeck = createNewDeck();
 
-  if (gameMode == GAME_MODE_GET_CARD) {
-    dealerHand.push(currentDeck.pop());
-    dealerHand.push(currentDeck.pop());
-    // console.log(`dealerHand ==>`);
-    // console.log(dealerHand);
-    playerHand.push(currentDeck.pop());
-    playerHand.push(currentDeck.pop());
-    // console.log(`playerHand ==>`);
-    // console.log(playerHand);
+  // if (gameMode == GAME_MODE_ENTER_PLAYER) {
+  //   //  data validation for number input
+  //   if (isNaN(input) || input < 1 || input > 6) {
+  //     myOutputMessage = `**ERROR**<br><br>please enter number of players. <br><br>number of player:<br>minimum 1 players<br>maximum 6 players`;
+  //   }
+  //   // otherwise input will be number of players for game
+  //   else {
+  //     numberOfPlayers = input;
 
-    gameMode = GAME_MODE_EVALUATE_CARD;
-    myOutputMessage = `cards have been dealt.<br><br>click submit to look at cards`;
+  //     var index = 0;
+  //     while (index < numberOfPlayers) {
+  //       // console.log(`generating player info`);
+  //       playerInfo[index] = {
+  //         player: index + 1,
+  //         name: " player ${index + 1}",
+  //         hand: 0,
+  //         handScore: 0,
+  //       };
+
+  //       // if (index == numberOfPlayers - 1) {
+  //       //   playerInfo[index] = {
+  //       //     player: index + 1,
+  //       //     name: "dealer",
+  //       //     hand: 0,
+  //       //     handScore: 0,
+  //       //   };
+  //       // }
+  //       index += 1;
+  //     }
+
+  //     myOutputMessage = `there will be ${input} player and a dealer for this game. <br><br>click submit to deal cards`;
+  //     gameMode = GAME_MODE_DEAL_CARD;
+  //   }
+  //   return myOutputMessage;
+  // }
+
+  // if ((gameMode = GAME_MODE_INPUT_NAME)) {
+  //   if (!isNaN(input) || input.length < 2) {
+  //     myOutputMessage = `**ERROR**<br>player ${currentPlayer} please enter your name.`;
+  //   } else if (currentPlayer < numberOfPlayers - 1) {
+  //     playerInfo[currentPlayer - 1].name = input;
+  //     currentPlayer += 1;
+
+  //     myOutputMessage = `welcome ${input}!<br><br>player ${currentPlayer} please enter your name.`;
+  //   } else {
+  //     currentPlayer = 0;
+  //     myOutputMessage = `all players have entered your name.`;
+  //   }
+
+  //   return myOutputMessage;
+  // }
+
+  if (gameMode == GAME_MODE_DEAL_CARD) {
+    roundCounter += 1;
+    document.querySelector("#submit-button").disabled = false;
+    document.querySelector("#hit-button").disabled = true;
+    document.querySelector("#stand-button").disabled = true;
+
+    playerHand.push(currentDeck.pop());
+    dealerHand.push(currentDeck.pop());
+    playerHand.push(currentDeck.pop());
+    dealerHand.push(currentDeck.pop());
+
+    gameMode = GAME_MODE_CHECK_BLACKJACK;
+    myOutputMessage = `cards have been dealt for round ${roundCounter}<br><br>to check for black jack - click Submit`;
     return myOutputMessage;
   }
 
-  if (gameMode == GAME_MODE_EVALUATE_CARD) {
+  if (gameMode == GAME_MODE_CHECK_BLACKJACK) {
     // if blackjack
     var didPlayerGetBlackjack = checkForBlackjack(playerHand);
     var didDealerGetBlackjack = checkForBlackjack(dealerHand);
-    // console.log(`did dealer get blackjack: ${didDealerGetBlackjack}`);
-    // console.log(`did player get blackjack: ${didPlayerGetBlackjack}`);
 
     if (didDealerGetBlackjack == true || didPlayerGetBlackjack == true) {
       // both player and dealer got blackjack - tie
@@ -94,8 +151,6 @@ var main = function (input) {
           dealerHand,
           playerHand
         )}`;
-        // gameReset();
-        // gameMode = GAME_MODE_GET_CARD;
       }
       // player get blackjack - player win
       else if (
@@ -106,8 +161,6 @@ var main = function (input) {
           dealerHand,
           playerHand
         )}`;
-        // gameReset();
-        // gameMode = GAME_MODE_GET_CARD;
       }
       // dealer get blackjack - dealer win
       else {
@@ -115,31 +168,33 @@ var main = function (input) {
           dealerHand,
           playerHand
         )}`;
-        // gameReset();
-        // gameMode = GAME_MODE_GET_CARD;
       }
       gameReset();
-      gameMode = GAME_MODE_GET_CARD;
+      gameMode = GAME_MODE_DEAL_CARD;
 
-      return myOutputMessage + `<br><br>click submit for another round`;
+      return (
+        myOutputMessage + `<br><br>click Submit to deal cards for another round`
+      );
     }
     // if no blackjack
     else {
       gameMode = GAME_MODE_HIT_OR_STAND;
-      return `there is no black jack<br><br>click submit to move to next game mode`;
-      // gameMode = GAME_MODE_HIT_OR_STAND;
+      return `there is no black jack<br><br>for player to decide whether to hit/stand - click Submit`;
     }
-
-    // return myOutputMessage;
   }
 
   if (gameMode == GAME_MODE_HIT_OR_STAND) {
+    document.querySelector("#submit-button").disabled = true;
+    document.querySelector("#hit-button").disabled = false;
+    document.querySelector("#stand-button").disabled = false;
+
     //   - if player choose hit
     if (input == "h") {
       playerHand.push(currentDeck.pop());
       playerHandScore = calculateHandScore(playerHand);
 
-      myOutputMessage = `you drew a card<br>${displayPlayerHand(
+      myOutputMessage = `you drew a card<br>${displayDealerAndPlayerHandAtFirstDeal(
+        dealerHand,
         playerHand
       )}<br> your hand score: ${playerHandScore}`;
     }
@@ -154,13 +209,13 @@ var main = function (input) {
       while (dealerHandScore < 17) {
         dealerHand.push(currentDeck.pop());
         dealerHandScore = calculateHandScore(dealerHand);
-        // console.log(`dealer score: ${dealerHandScore}`);
+        console.log(`dealer score: ${dealerHandScore}`);
       }
 
       dealerScore.push(dealerHandScore);
       playerScore.push(playerHandScore);
 
-      // bust logic
+      // =====bust logic=====
       var didDealerBust = checkForBust(dealerScore);
       var didPlayerBust = checkForBust(playerScore);
       // console.log(`did dealer bust? ==> ${didDealerBust}`);
@@ -190,7 +245,7 @@ var main = function (input) {
         }
       }
 
-      // else no one bust. compare score to determine winner
+      // if dealer never bust. compare score to determine winner
       else {
         myOutputMessage = `no one busted`;
 
@@ -218,14 +273,18 @@ var main = function (input) {
         }
       }
       gameReset();
-      gameMode = GAME_MODE_GET_CARD;
-      return myOutputMessage + `<br><br>click submit for another round`;
+      gameMode = GAME_MODE_DEAL_CARD;
+      return (
+        myOutputMessage +
+        `<br><br>to deal cards for another round - click Submit `
+      );
     }
 
     // input validation for hit or stand
     else {
       playerHandScore = calculateHandScore(playerHand);
-      return `**ERROR**<br>please choose either to input <br>"h" to hit, or <br>"s" to stand <br>${displayPlayerHand(
+      return `to draw a card - click Hit, or <br>to pass - click Stand <br><br>${displayDealerAndPlayerHandAtFirstDeal(
+        dealerHand,
         playerHand
       )}<br> your hand score: ${playerHandScore}`;
     }
@@ -340,7 +399,7 @@ var checkForBlackjack = function (handArray) {
 
 // function to calculate score for cards in hand
 var calculateHandScore = function (handArray) {
-  var handScore = 0;
+  var handValue = 0;
   var aceCounter = 0;
 
   var index = 0;
@@ -352,23 +411,25 @@ var calculateHandScore = function (handArray) {
       currentCard.name == "Q" ||
       currentCard.name == "K"
     ) {
-      handScore = handScore + 10;
+      handValue = handValue + 10;
     } else if (currentCard.name == "A") {
+      handValue = handValue + 11;
       aceCounter + 1;
-      handScore = handScore + 11;
     } else {
-      handScore = handScore + currentCard.rank;
+      handValue = handValue + currentCard.rank;
     }
     index += 1;
   }
 
   index = 0;
   while (index < aceCounter) {
-    if (handScore > 21) {
-      handScore = handScore - 10;
+    if (handValue > 21) {
+      handValue = handValue - 10;
     }
+    index += 1;
   }
-  return handScore;
+
+  return handValue;
 };
 
 // function to check if dealer or player busted
@@ -414,12 +475,52 @@ var displayDealerAndPlayerHand = function (dealerHandArray, playerHandArray) {
 
 // function to message out to dealer and player hand score.
 var displayDealerAndPlayerScore = function (dealerScore, playerScore) {
-  var scoreMessage = `hand score<br>dealer: ${dealerScore}<br>player: ${playerScore}`;
+  var scoreMessage = `hand score:<br>dealer - ${dealerScore}<br>player - ${playerScore}`;
   return scoreMessage;
 };
 
-var displayPlayerHand = function (playerHandArray) {
-  var playerCardsMessage = "<br>player hand:<br>";
+// var displayPlayerHand = function (playerHandArray) {
+//   var playerCardsMessage = "<br>player hand:<br>";
+
+//   for (var index = 0; index < playerHandArray.length; index += 1) {
+//     var cardNameAndSuit =
+//       playerHandArray[index].name + playerHandArray[index].suit;
+
+//     playerCardsMessage += cardNameAndSuit + "<br>";
+//   }
+
+//   return playerCardsMessage;
+// };
+
+var gameReset = function () {
+  document.querySelector("#submit-button").disabled = false;
+  document.querySelector("#hit-button").disabled = true;
+  document.querySelector("#stand-button").disabled = true;
+
+  dealerHand = [];
+  playerHand = [];
+  dealerScore = [];
+  playerScore = [];
+};
+
+// function to display dealer and player hand after first deal. (Hide Dealer's First Card)
+var displayDealerAndPlayerHandAtFirstDeal = function (
+  dealerHandArray,
+  playerHandArray
+) {
+  var dealerCardsMessage = "dealer hand:<br>";
+
+  for (var index = 0; index < dealerHandArray.length; index += 1) {
+    var cardNameAndSuit = "__";
+
+    if (index == 1) {
+      var cardNameAndSuit =
+        dealerHandArray[index].name + dealerHandArray[index].suit;
+    }
+    dealerCardsMessage += cardNameAndSuit + "<br>";
+  }
+
+  var playerCardsMessage = "player hand:<br>";
 
   for (var index = 0; index < playerHandArray.length; index += 1) {
     var cardNameAndSuit =
@@ -428,12 +529,5 @@ var displayPlayerHand = function (playerHandArray) {
     playerCardsMessage += cardNameAndSuit + "<br>";
   }
 
-  return playerCardsMessage;
-};
-
-var gameReset = function () {
-  dealerHand = [];
-  playerHand = [];
-  dealerScore = [];
-  playerScore = [];
+  return dealerCardsMessage + "<br>" + playerCardsMessage;
 };
