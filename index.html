@@ -49,7 +49,7 @@
     <meta property="og:type" content="website" />
     <meta
       property="og:url"
-      content="https://rocketacademy.github.io/basics-blackjack/index.html"
+      content="https://github.com/yiuhankit/basics-blackjack"
     />
     <meta property="og:title" content="Han Kit's BlackJack Game!" />
     <meta
@@ -65,9 +65,9 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta
       name="twitter:url"
-      content="https://rocketacademy.github.io/basics-blackjack/index.html"
+      content="https://github.com/yiuhankit/basics-blackjack"
     />
-    <meta name="twitter:title" content="YOURNAME's BlackJack Game!" />
+    <meta name="twitter:title" content="Han Kit's BlackJack Game!" />
     <meta
       name="twitter:description"
       content="A fun card game I made myself! 😄💪🌈"
@@ -92,7 +92,7 @@
       }
 
       body {
-        font-family: "Open Sans", sans-serif;
+        font-family: "Courier";
         margin-left: 30px;
         margin-right: 30px;
         background-color: white;
@@ -101,6 +101,10 @@
         background-position: center; /* Center the image */
         background-repeat: no-repeat; /* Do not repeat the image */
         background-size: cover; /* Resize the background image to cover the entire container */
+      }
+
+      p {
+        text-align: center;
       }
 
       #output-div img {
@@ -115,14 +119,17 @@
       }
 
       #container {
-        background-color: pink;
+        background-color: rgb(139, 189, 154);
         margin: 40px auto;
         max-width: 800px;
         padding: 38px 31px;
+        border-radius: 10px;
+        font-size: 24px;
+        font-weight: bold;
       }
 
       input {
-        font-size: 21px;
+        font-size: 50px;
         line-height: 33px;
         margin: 0 0 23px 0;
         padding: 0 9px;
@@ -130,23 +137,38 @@
       }
 
       button {
-        font-size: 21px;
+        background-color: rgb(248, 235, 47);
+        border-radius: 7px;
+        font-size: 30px;
         line-height: 33px;
         margin: 0 0 23px 0;
-        padding: 0 6px;
+        padding: 0 10px;
+      }
+
+      #button-div {
+        text-align: center;
       }
 
       #output-div {
         background-color: lightgrey;
+        border-radius: 20px;
         margin: 20px auto;
         padding: 20px;
         width: 100%;
+        text-align: center;
       }
 
       .logo-img {
         height: 49px;
         position: relative;
         top: 22px;
+      }
+
+      .allImages {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: 70%;
       }
 
       /* increase header font size on wider screens */
@@ -172,15 +194,24 @@
     </h1>
     <h1 class="header">♣️ Basics - Blackjack ♠️</h1>
     <div id="container">
+      <img
+        class="allImages"
+        src="https://c.tenor.com/WUWygJ0Fwz8AAAAd/jago33-slot-machine.gif"
+      />
       <p>Hello and welcome to Blackjack by Han Kit.</p>
       <p>=========================================</p>
-      <p>Input:</p>
+      <p id="input-text">Input:</p>
       <input id="input-field" />
       <br />
-      <button id="submit-button">Submit</button>
-      <p>Output:</p>
+      <div id="button-div">
+        <button id="submit-button">PLAY</button>
+        <button id="hitButton">HIT</button>
+        <button id="standButton">STAND</button>
+      </div>
+      <!-- <p>Output:</p> -->
       <div id="output-div">
-        Welcome to Han Kit's Cards! Click the submit button to start playing!
+        Welcome to Han Kit's Cards! <br /><br />
+        Click the 'PLAY' button to start playing!
       </div>
     </div>
     <!-- Import program logic -->

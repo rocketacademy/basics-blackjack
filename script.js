@@ -7,6 +7,11 @@
 // V2 - 22/6 (1hr)
 // - Added helper functions to consider ace cases
 
+// V3 - 27/6 (1hr)
+// - Added DOM manipulation, hit and stand buttons
+// - Changed CSS to make it look nicer
+// - Removed input box as it is redundant with the buttons
+
 // Make a deck function
 var makeDeck = function () {
   // Initialise an empty deck array
@@ -104,6 +109,51 @@ var playerScore = 0;
 var computerCards = [];
 var computerScore = 0;
 
+// Hide Input text and Input field as they are not required
+var inputText = document.querySelector("#input-text");
+var inputBox = document.querySelector("#input-field");
+inputText.style.display = "none";
+inputBox.style.display = "none";
+
+// Show Submit button at the start. Hit, Stand Buttons remain hidden at this gameState
+var submitButton = document.querySelector("#submit-button");
+submitButton.style.display = "initial";
+
+var hitButton = document.querySelector("#hitButton");
+hitButton.addEventListener("click", function () {
+  // Set result to input value
+  var input = document.querySelector("#input-field");
+  var result = main("h");
+
+  // Display result in output element
+  var output = document.querySelector("#output-div");
+  output.innerHTML = result;
+
+  // Reset input value
+  input.value = "";
+});
+hitButton.style.display = "none";
+
+var standButton = document.querySelector("#standButton");
+standButton.addEventListener("click", function () {
+  // Set result to input value
+  var input = document.querySelector("#input-field");
+  var result = main("k");
+
+  // Display result in output element
+  var output = document.querySelector("#output-div");
+  output.innerHTML = result;
+
+  // Reset input value
+  input.value = "";
+});
+standButton.style.display = "none";
+
+// // Create Hit Button
+// var hitButton = document.createElement("button");
+// hitButton.innerText = "Hit";
+// document.body.appendChild(hitButton);
+
 var main = function (input) {
   var myOutputValue = fullGame(input);
   return myOutputValue;
@@ -194,16 +244,19 @@ var fullGame = function (userInput) {
 
     // Check for endGame condition: if player or computer has Blackjack. Only happens if total score is 21 at this stage
     if (playerScore == 21 && computerScore == 21) {
-      gameOutput += `<br> You got Blackjack! <br><br> Computer also drew a Blackjack! <br><br> What are the odds?? It's a draw! <br><br> Click 'Submit' to play another round.`;
+      gameOutput += `<br> You got Blackjack! <br><br> Computer also drew a Blackjack! <br><br> What are the odds?? It's a draw! <br><br> Click 'PLAY' to play another round.`;
       gameState = 10;
     } else if (playerScore == 21) {
-      gameOutput += `<br> You got Blackjack! <br><br> Congrats you have won! <br><br> Click 'Submit' to play another round.`;
+      gameOutput += `<br> You got Blackjack! <br><br> Congrats you have won! <br><br> Click 'PLAY' to play another round.`;
       gameState = 10;
     } else if (computerScore == 21) {
-      gameOutput += `<br> Computer drew a Blackjack! <br><br> You have lost, unlucky! <br><br> Click 'Submit' to play another round.`;
+      gameOutput += `<br> Computer drew a Blackjack! <br><br> You have lost, unlucky! <br><br> Click 'PLAY' to play another round.`;
       gameState = 10;
     } else {
-      gameOutput += `<br> Type <b>h</b> to draw another card, or <b>k</b> to keep your current hand.`;
+      gameOutput += `<br> Click <b>'HIT'</b> to draw another card, or <b>'STAND'</b> to keep your current hand.`;
+      hitButton.style.display = "initial";
+      standButton.style.display = "initial";
+      submitButton.style.display = "none";
       gameState = 1;
     }
     return gameOutput;
@@ -213,21 +266,23 @@ var fullGame = function (userInput) {
 
   // gameState 1 : Player to input hit or stand
   if (gameState == 1) {
-    var userChoice = userInput.toLowerCase();
+    // Show hit and stand button upon card draw, hide submit button
+    submitButton.style.display = "initial";
+    hitButton.style.display = "none";
+    standButton.style.display = "none";
+
+    var userChoice = userInput;
     console.log("userchoice:", userChoice);
 
     if (userChoice == "h") {
       gameState = 2;
-      gameOutput = "You drew a card. Click to see your current hand!";
+      return "You drew a card. Click to see your current hand!";
     } else if (userChoice == "k") {
       gameState = 3;
-      gameOutput =
-        "You chose not to draw another card. <br><br> Click to see how you did against the computer!";
+      return "You chose not to draw another card. <br><br> Click to see how you did against the computer!";
     } else {
-      gameOutput =
-        "Gibberish! Make your choice!<br><br> Type <b>h</b> to draw another card, or <b>k</b> to keep your current hand.";
+      return "Gibberish! Make your choice!<br><br> Click <b>'HIT'</b> to draw another card, or <b>'STAND'</b> to keep your current hand.";
     }
-    return gameOutput;
   }
 
   // gameState 2 : Player hit, draw another card. Then go back to gameState 1
@@ -243,9 +298,12 @@ var fullGame = function (userInput) {
 
     // Return to gameState 1 to let player to decide whether to draw or hold their current hand
     gameState = 1;
+    submitButton.style.display = "none";
+    hitButton.style.display = "initial";
+    standButton.style.display = "initial";
     return (
       gameOutput +
-      `<br> Type <b>h</b> to draw another card, or <b>k</b> to keep your current hand.`
+      `<br> Click <b>'HIT'</b> to draw another card, or <b>'STAND'</b> to keep your current hand.`
     );
   }
 
@@ -293,7 +351,7 @@ var fullGame = function (userInput) {
       }
     }
     gameState = 10;
-    return gameOutput + `<br><br> Click 'Submit' to play another round.`;
+    return gameOutput + `<br><br> Click 'PLAY' to play another round.`;
   }
 
   // gameState 10 : endGame condition. Reset the values to play another round.
@@ -306,7 +364,9 @@ var fullGame = function (userInput) {
     playerAceCount = 0;
     computerAceCount = 0;
 
-    gameOutput = `Can't get enough of Blackjack? Smash the 'Submit' button to reveal your hand!`;
+    gameOutput = `Can't get enough of Blackjack? Smash the 'PLAY' button to reveal your hand!`;
   }
-  return gameOutput;
+  var myImage =
+    '<img class="allImages" src="https://c.tenor.com/82Ionug_LqQAAAAd/bet-bet-it-all.gif"/>';
+  return `${gameOutput} <br><br> ${myImage}`;
 };
