@@ -21,7 +21,6 @@ var main = function (input) {
     checkForInstaWin();
     return `${myOutputValue}`;
   }
-
   //hit or stand game mode
   if (gameMode == "hit or stand") {
     var image = `<img src = "https://c.tenor.com/RFRPkimHjfcAAAAC/zach-galifianakis-very-bad-trip-meme.gif">`;
@@ -181,13 +180,13 @@ var checkForInstaWin = function () {
   if (sumOfCardValues(playerHand) == 21) {
     var image = `<img src = "https://media0.giphy.com/media/26BGvkTon3hpPBswE/giphy.gif?cid=790b76111c7ed3ce44d2bc6d6d955d589e185bf81c9db8d4&rid=giphy.gif&ct=g">`;
     myOutputValue =
-      `${displayFirstTwoCards()}${displayTotalValue()}<br><br> you have <b>BLACKJACK!</b> You won!` +
+      `${displayFirstTwoCards()}${displayTotalValue()}<br><br> you have <b>BLACKJACK!</b> You won! <br>Click "Deal" to start a new round!` +
       image;
     resetFunction();
   } else if (sumOfCardValues(computerHand) == 21) {
     var image = `<img src = "https://i.pinimg.com/originals/42/1a/ee/421aee6986e10a74dbc52aae7c3965ac.gif">`;
     myOutputValue =
-      `${displayFirstTwoCards()}${displayTotalValue()}<br><br> The computer has a <b>BLACKJACK!</b> You lost!` +
+      `${displayFirstTwoCards()}${displayTotalValue()}<br><br> The computer has a <b>BLACKJACK!</b> You lost! <br>Click "Deal" to start a new round!` +
       image;
     resetFunction();
   } else if (
@@ -196,7 +195,7 @@ var checkForInstaWin = function () {
   ) {
     var image = `<img src = "https://i.giphy.com/media/bcrOR2stk6tKIxqPOZ/giphy.webp">`;
     myOutputValue =
-      `${displayFirstTwoCards()}${displayTotalValue()}<br><br> Both you and the computer got a <b>blackjack</b>! It's a tie!` +
+      `${displayFirstTwoCards()}${displayTotalValue()}<br><br> Both you and the computer got a <b>blackjack</b>! It's a tie! <br>Click "Deal" to start a new round!` +
       image;
     resetFunction();
   } else {
