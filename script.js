@@ -93,7 +93,7 @@ var makeDeck = function () {
   // Initialise an empty deck array
   var cardDeck = [];
   // Initialise an array of the 4 suits in our deck. We will loop over this array.
-  var suits = ["hearts", "diamonds", "clubs", "spades"];
+  var suits = ["hearts ♥", "diamonds ♦", "clubs ♣", "spades ♠"];
   // Loop over the suits array
   var suitIndex = 0;
   while (suitIndex < suits.length) {
@@ -126,6 +126,7 @@ var makeDeck = function () {
         suit: currentSuit,
         rank: rankCounter,
         value: cardValue,
+        emoji: cardEmoji,
       };
       // Add the new card to the deck
       cardDeck.push(card);
@@ -260,7 +261,7 @@ var checkRoundResult = function (deckValue1, deckValue2) {
 var givePoints = function (roundResult) {
   var point;
   if (roundResult == WIN) {
-    point = userBet;
+    point = userBet * 2;
   } else if (roundResult == LOSE) {
     point = userBet * -1;
   } else if (roundResult == TIE) {
