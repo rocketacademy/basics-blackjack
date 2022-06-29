@@ -69,11 +69,14 @@ var main = function (input) {
     }
 
     if (input.toLowerCase() == "stand") {
-      var i = 0;
-      while (computerCurrent <= 16) {
+      var j = 0;
+      while (
+        computerCurrent <= 16 ||
+        (computerCurrent < playerCurrent && playerCurrent < 21)
+      ) {
         computerHand.push(deck.pop());
         compNewCards[i] = computerHand[computerHand.length - 1];
-        i++;
+        j++;
         computerCurrent = sumOfCardValues(computerHand);
         for (var i = 0; i < computerHand.length; i++) {
           if (
@@ -87,14 +90,14 @@ var main = function (input) {
       }
       if (computerCurrent > 16 && computerCurrent < 22) {
         var displayMessage = determineWinner(playerCurrent, computerCurrent);
-        myOutputValue = `The computer drew ${i} card(s) ${displayTotalValue()} <br><br> ${displayMessage}`;
+        myOutputValue = `The computer drew ${j} card(s) ${displayTotalValue()} <br><br> ${displayMessage}`;
       } else if (computerCurrent > 21) {
         var image = `<img src = "https://c.tenor.com/rO6Fh2KNm3sAAAAM/baby-yes.gif">`;
         deal.disabled = false;
         hit.disabled = true;
         stand.disabled = true;
         myOutputValue =
-          `The computer drew ${i} card(s) ${displayTotalValue()} <br><br> The computer bust, you won!` +
+          `The computer drew ${j} card(s) ${displayTotalValue()} <br><br> The computer bust, you won!` +
           image;
       }
     }
