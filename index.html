@@ -1,6 +1,11 @@
-
+<!--  All HTML files begin with the following line: -->
 <!DOCTYPE html>
-<html lang="en">
+<!-- This indicates that the rest of the lines that follow are to be interpreted as HTML. It tells the browser about what document type to expect. -->
+
+<!-- All text enclosed in angled brackets are known as HTML element tags. There are usually, but not always, starting and closing element "tags", each representing a HTML element.
+The <html> element is known as the root element of a HTML page. All other elements are encased within it. -->
+<html>
+  <!-- The <head> element contains meta information about the HTML page, information that is not rendered or displayed by the browser -->
   <head>
     <!-- Page setup configurations -->
     <meta charset="utf-8" />
@@ -42,63 +47,82 @@
     <meta name="twitter:creator" content="@rocketacademyco">
 
     <!-- fonts -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans">
-
-    <!-- CSS -->
-    <link rel="stylesheet" href="style.css" />
+    <link href="http://fonts.cdnfonts.com/css/casino" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans"/>
+    <!-- css -->
+    <link rel="stylesheet" href="styleproject.css" />
   </head>
 
+  <!-- The <body> element defines the document's body, and is a container for all the visible contents that will be rendered by the browser.  -->
   <body>
-    <h1 class="header">
-      <img class="logo-img" src="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/brand/logo.png" />
-      Rocket Academy
-      <img class="logo-img" src="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/brand/logo.png" />
-    </h1>
-    <h1 class="header">♣️ Basics - Blackjack ♠️</h1>
-    <div id="container">
-     <p>Welcome to BlackJack!. Press start to play</p>
-     <div id = "game-state">
-      <div>
-        <p>Number of players:</p>
-        <input
-            id = "num-player"
-            type="number"
-            min="1"
-            max="6"
-            value="1"
-            onkeydown="return false"
-        />
+    <audio id="myAudio" autoplay>
+     <source src="casino-background.mp3" type="audio/mpeg" loop = "loop">
+    </audio>
+    <!-- The <h1> element defines a large heading. There are 6 pre-set header elements, <h1> to <h6> -->
+    <h1 class = "header">🎰 CASINO BLACKJACK 🎰</h1>
+    <!-- The <div> tag defines a division or a section in an HTML document, and is commonly use as a "container" for nested HTML elements. -->
+    <div id = "poker-table">
+      <div id = "green-mat">
+        <div id = "play-table" style = "display: grid; grid-template-columns: 1fr 2fr 1fr;">
+          <div class = "odd-player-area">
+          </div>
+          <div class = "play-area">
+              <p id = "display-text">Welcome to BlackJack!. Press start to play</p>
+              <div id = "inputs">
+               <p style = "display: inline;">Number of players:</p>
+               <input
+                id = "num-player"
+                type="number"
+                min="1"
+                max="6"
+                value="1"
+                onkeydown="return false"
+               />
+               <button id = "start-button">Start</button>
+              </div>
+              <button id = "hit-button">Hit</button>
+              <button id = "stand-button">Stand</button>
+              <button id = "next-button">Next</button>
+              <button id = "quit-button">Quit</button>
+              <button id = "continue-button">Continue</button>
+              <div id = "output-div" ></div>
+          </div>
+          <div class = "even-player-area">
+          </div>
+
+        </div>
       </div>
-     </div>
-      <button id = "start-button">Start</button>
-      <button id = "hit-button">Hit</button>
-      <button id = "stand-button">Stand</button>
-      <button id = "next-button">Next</button>
-      <button id = "quit-button">Quit</button>
-      <button id = "continue-button">Continue</button>
-      <p>Output:</p>
-      <div id="output-div"></div>
     </div>
-    <!-- Import program logic -->
+      
+    <!-- Everything below this is incorporating JavaScript programming logic into the webpage. -->
+    <!-- The script tag encloses JavaScript syntax for the browser to interpret programtically -->
+    <!-- The following line imports all code written in the script.js file -->
     <script src="script.js"></script>
     <!-- Define button click functionality -->
     <script>
-      var start = document.querySelector("#start-button")
+      var start = document.querySelector('#start-button')
+      var outputText = document.querySelector('#display-text')
       var hit = document.querySelector("#hit-button")
       var stand = document.querySelector("#stand-button")
       var next = document.querySelector("#next-button")
       var quit = document.querySelector("#quit-button")
       var cont = document.querySelector("#continue-button")
       var output = document.querySelector("#output-div")
-      start.addEventListener("click", function () {
+
+      // Declare and define a variable that represents the Submit Button);
+      start.addEventListener("click", function() {
         var numPlayers = document.querySelector("#num-player");
         setGameState(numPlayers.value);
-        var result = gameStart()
-        start.disabled = true;
-        numPlayers.disabled = true;
-        next.disabled = false;
-        output.innerHTML = result;
+        setUP();
+        var result = gameStart();
+        createPlayerArea(numPlayers.value)
+        hit.disabled = true;
+        stand.disabled = true;
+        quit.disabled = true;
+        cont.disabled = true;
+        outputText.innerHTML = result;
       });
+
       //hit button
       hit.addEventListener("click",  function(){
         hitFunction()
@@ -107,7 +131,8 @@
       })
       stand.addEventListener("click", function(){
         var result = standButton()
-        output.innerHTML = result
+        outputText.innerHTML = result
+        console.log(start)
       })
       //next button
       next.addEventListener("click", function(){
@@ -115,19 +140,13 @@
         var result = midgame()
         output.innerHTML = result
       })
+      
       //quit button
       //reset everything
       quit.addEventListener("click", function () {
         resetGame();
-        output.innerHTML = "Quit game. Press start for new game";
-      });
-      //continue button
-      //reset game but players remains
-      cont.addEventListener("click", function(){
-        var result = contButton();
-        output.innerHTML = result;
+        outputText.innerHTML = "Quit game. Press start for new game";
       })
-      
     </script>
   </body>
 </html>

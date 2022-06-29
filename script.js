@@ -18,239 +18,300 @@
 // 12. else compare dealer hand value and player hand to determine winner
 // 13. Make code scalable for more players
 
-var deck = []
-var players = []
-const suit = ["❤️", "♦", "♣", "♠️"]
-const cardName = ["Ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King"]
-var numOfplayers = 0
-var currentPlayer = 0
-var dealeroutput
-var currentPlayerOutput
+var deck = [];
+var players = [];
+const suit = ["Hearts", "Diamonds", "Clubs", "Spades"];
+const cardName = [
+  "Ace",
+  "2",
+  "3",
+  "4",
+  "5",
+  "6",
+  "7",
+  "8",
+  "9",
+  "10",
+  "Jack",
+  "Queen",
+  "King",
+];
+var numOfplayers = 0;
+var currentPlayer = 0;
+var dealeroutput;
+var currentPlayerOutput;
 //constructor function for cards
-function Card(cardname, logo, number){
+function Card(cardname, logo, number, cardImage) {
   this.name = cardname;
   this.suit = logo;
-  this.value = number
-} 
-//constructor function for player
-function Player(playerName, balance, bet){
-  this.name = playerName
-  this.bank = balance
-  this.hand = []
-  this.wager = bet
-  this.handValue = 0
+  this.value = number;
+  this.image = cardImage;
 }
+//constructor function for player
+function Player(playerName, balance, bet) {
+  this.name = playerName;
+  this.bank = balance;
+  this.hand = [];
+  this.wager = bet;
+  this.handValue = 0;
+}
+
 //HTML settings
-document.querySelector("#hit-button").disabled = true;
-document.querySelector("#stand-button").disabled = true;
-document.querySelector("#quit-button").disabled = true;
-document.querySelector("#next-button").disabled = true;
+
+document.querySelector("#hit-button").style.visibility = "hidden";
+document.querySelector("#stand-button").style.visibility = "hidden";
+document.querySelector("#quit-button").style.visibility = "hidden";
+document.querySelector("#next-button").style.visibility = "hidden";
+document.querySelector("#continue-button").style.visibility = "hidden";
 document.querySelector("#num-player").disabled = false;
 document.querySelector("#start-button").disabled = false;
-document.querySelector("#continue-button").style.visibility = "hidden";
 
 //Start game(set up function)
 //consist of generating players andd dealer and dealing their cards
-var gameStart = function(){
-  makeDeck()
-  deck = [...shuffleCards(deck)]
+var gameStart = function () {
+  makeDeck();
+  deck = [...shuffleCards(deck)];
+
   //Initailise players array
-  for(let i = 1; i <= numOfplayers; i++){
-    let userName
-    let amtBet
-    do{
-     userName = prompt(`Player ${i}, what is your name?`, "")
-    }while(userName === "")
-    do{
-      amtBet = Number(prompt(`Player ${i}, how much to you want to wager?\nYou currently have ${100}.`, ""))
-    }while(Number.isInteger(amtBet) == false || amtBet > 100)
-    players.push(new Player(userName, 100, amtBet))
+  for (let i = 1; i <= numOfplayers; i++) {
+    let userName;
+    let amtBet;
+    do {
+      userName = prompt(`Player ${i}, what is your name?`, "");
+    } while (userName === "");
+    do {
+      amtBet = Number(
+        prompt(
+          `Player ${i}, how much to you want to wager?\nYou currently have ${100}.`,
+          ""
+        )
+      );
+    } while (Number.isInteger(amtBet) == false || amtBet > 100);
+    players.push(new Player(userName, 100, amtBet));
   }
+
   //Create dealer object, push it to first element in players array
   //We want to set the dealer as the first element, so it is easily referenced -> players[0] is dealer
-  var dealer = new Player("Dealer", 0, 0)
-  players.unshift(dealer)
+  var dealer = new Player("Dealer", 0, 0);
+  players.unshift(dealer);
+
   //Dealing of cards
-  for(let i = 0; i < 2; i++){
-    for(let j = players.length; j > 0; j--) {
+  for (let i = 0; i < 2; i++) {
+    for (let j = players.length; j > 0; j--) {
       players[j - 1].hand.push(deck.pop());
       updateValue(players[j - 1].hand, j - 1);
     }
   }
-  return `Game has been set-up.  Player 1, press Next to continue`
-}
+  return `Game has been set-up.  Player 1, press Next to continue`;
+};
 
 //Mid-game
 // Consists of allowing user to hit/stand. Next button serve as continuation
-var midgame = function(){
-  let output
+var midgame = function () {
+  let output;
+
   //dealer's turn when currentPlayer > numOfplayers -> go to endgame()
-  if(currentPlayer > numOfplayers){
-    output = endgame()
-    console.log(output)
+  if (currentPlayer > numOfplayers) {
+    output = endgame();
     document.querySelector("#hit-button").disabled = true;
     document.querySelector("#stand-button").disabled = true;
     document.querySelector("#continue-button").style.visibility = "visible";
-    return output
+    return output;
   }
-  dealeroutput = `The dealer cards:<br>??? of ???<br>${players[0].hand[1].name} of ${players[0].hand[1].suit}<br><br>`;
-  currentPlayerOutput = `Player ${currentPlayer}'s cards:<br>`
-  for(let i = 0; i < players[currentPlayer].hand.length; i++){
-    currentPlayerOutput += `${players[currentPlayer].hand[i].name} of ${players[currentPlayer].hand[i].suit}<br>`;
+
+  dealeroutput = `The dealer cards:<br><img src = "./assets/backcard.png"/><img src = "${players[0].hand[1].image}"/><br><br>`;
+  currentPlayerOutput = `Player ${currentPlayer}'s cards:<br>`;
+  for (let i = 0; i < players[currentPlayer].hand.length; i++) {
+    currentPlayerOutput += `<img src = "${players[currentPlayer].hand[i].image}"/>`;
   }
+
   //Manipulate cards if there is ace in the hands
-  if (players[currentPlayer].handValue > 21)
+  if (players[currentPlayer].handValue > 21) {
     aceManipulator(players[currentPlayer].hand, currentPlayer);
+  }
+
   currentPlayerOutput += `<br>Player ${currentPlayer}'s card value is: ${players[currentPlayer].handValue}`;
+
+  //output-div ouput
+  output = dealeroutput + currentPlayerOutput;
+
   //Check for bust
-  if (players[currentPlayer].handValue > 21){
+  let displaytext = document.querySelector("#display-text");
+  if (players[currentPlayer].handValue > 21) {
     document.querySelector("#stand-button").disabled = true;
     document.querySelector("#hit-button").disabled = true;
     document.querySelector("#next-button").disabled = false;
-    players[currentPlayer].handValue = 0
-    //for formatting, easier transition to endgame
-    if(currentPlayer == numOfplayers){
-      output = dealeroutput + currentPlayerOutput + `<br><br>You have bust! It is the dealer's turn next. Press next to continue`;
+    players[currentPlayer].handValue = 0;
+
+    //for formatting, easier transition to endgame when next player is dealer
+    if (currentPlayer == numOfplayers) {
+      displaytext.innerHTML = `You have bust! It is the dealer's turn next. Press next to continue`;
+    } else {
+      //else continue if there are players left
+      displaytext.innerHTML = `You have bust! Player ${
+        currentPlayer + 1
+      }, press next to continue`;
     }
-    else{
-     output = dealeroutput + currentPlayerOutput + `<br><br>You have bust! Player ${currentPlayer + 1}, press next to continue`;
-    }
+    cardStorage(players[currentPlayer].hand, currentPlayer);
+  } else {
+    displaytext.innerHTML = "Do you want to hit or stand";
   }
-  else{
-     output = dealeroutput + currentPlayerOutput + "<br><br>Do you want to hit or stand";
-  }
-  return output
-}
+  return output;
+};
 
 //We are in the endgame
 //jk. this is the endgame function, consisting of drawing of dealer's hand and determining win, lose and draw condition.
 //It also make dealer do a soft 17 and reveal cards
-var endgame = function(){
-  let output = `The dealer has drawn:<br>`
+var endgame = function () {
+  let output = `The dealer has drawn:<br>`;
+
   //Dealer drawing
-  while(players[0].handValue <= 16){
+  while (players[0].handValue <= 16) {
     players[0].hand.push(deck.pop());
+
     //Update Card Values
-    updateValue(players[0].hand, 0)
+    updateValue(players[0].hand, 0);
+
     //break the loop if it is within 17 and 21
-    if(players[0].handValue >= 17 && players[0].handValue <= 21){
-      break;
-    }else if(players[0].handValue > 21){
-      aceManipulator(players[0].hand, 0)
+    if (players[0].handValue > 21) {
+      console.log(`work 2`);
+      aceManipulator(players[0].hand, 0);
+      console.log(players[0].handValue);
     }
   }
-  for(let i = 0; i < players[0].hand.length;i++){
-    output += `<br>${players[0].hand[i].name} of ${players[0].hand[i].suit}`;
+
+  for (let i = 0; i < players[0].hand.length; i++) {
+    output += `<img src = "${players[0].hand[i].image}"/>`;
   }
   output += `<br><br>Card Value: ${players[0].handValue}<br>`;
+
   //Check if dealer bust, handvalue = 0 means bust
-  if(players[0].handValue > 21){
-    players[0].handValue = 0
+  if (players[0].handValue > 21) {
+    players[0].handValue = 0;
   }
+  let displayText = document.querySelector("#display-text");
+  let text = "";
   //Deal win, lose, draw condition to player
-  if(players[0].handValue == 0){ //If dealer bust -> check if player did not bust
-    output += "<br>The dealer has busted!<br>"
-    output += winlosedraw()
-  } // else if dealer did not bust, compare the handvalue to determine "win", "lose", "draw" condition
-  else if(players[0].handValue > 0){
-    output += winlosedraw()
+  if (players[0].handValue == 0) {
+    //If dealer bust -> check if player did not bust
+    text += "The dealer has busted!<br>";
+    text += winlosedraw();
+    displayText.innerHTML = text;
   }
-  return output
-}
+
+  // else if dealer did not bust, compare the handvalue to determine "win", "lose", "draw" condition
+  else if (players[0].handValue > 0) {
+    text += winlosedraw();
+    displayText.innerHTML = text;
+  }
+
+  return output;
+};
 
 //determine win lose or draw
-var winlosedraw = function(){
-  let output = ""
+var winlosedraw = function () {
+  let output = "";
   for (let i = 1; i < players.length; i++) {
-      if(players[i].handValue > players[0].handValue) {
-        players[i].bank += players[i].wager
-        players[i].wager = 0
-        output += `<br>Player ${i} has won!`;
-      } 
-      else if(players[i].handValue < players[0].handValue){
-        players[i].bank -= players[i].wager;
-        players[i].wager = 0;
-        output += `<br>Player ${i} has lost!`
-      }
-      else if(players[i].handValue == players[0].handValue) {
-        players[i].wager = 0;
-        output += `<br>Player ${i} draw with the dealer!`;
-      }
+    if (players[i].handValue > players[0].handValue) {
+      players[i].bank += players[i].wager;
+      players[i].wager = 0;
+      output += `Player ${i} has won!,`;
+    } else if (players[i].handValue < players[0].handValue) {
+      players[i].bank -= players[i].wager;
+      players[i].wager = 0;
+      output += `Player ${i} has lost!,`;
+    } else if (players[i].handValue == players[0].handValue) {
+      players[i].wager = 0;
+      output += `Player ${i} draw with the dealer!,`;
+    }
   }
-  return output
-}
+  return output;
+};
 
 //Ace value manipulator
-var aceManipulator = function(currentPlayerHand, playerNum){
-  let index = currentPlayerHand.findIndex(element => element.name === "Ace" && element.value > 1) // ace card finder
+var aceManipulator = function (currentPlayerHand, playerNum) {
+  let index = currentPlayerHand.findIndex(
+    (element) => element.name === "Ace" && element.value > 1
+  ); // ace card finder
+
   //if index is found (value of index >= 0) manipulate the value, if index not found (value of index = -1), ignore
-  if(index >= 0){
+  console.log(`ace manipulate: ${players[0].handValue}`);
+  if (index >= 0) {
     players[playerNum].hand[index].value = 1;
     updateValue(currentPlayerHand, playerNum);
+
     //If still burst, do a recursion, else ignore
     if (players[playerNum].handValue > 21) {
       aceManipulator(currentPlayerHand, playerNum);
     }
   }
-}
+  console.log(`ace manipulate: ${players[0].handValue}`);
+};
 
 //hit function for hit button
-var hitFunction = function(){
+var hitFunction = function () {
   let newCard = deck.pop();
   players[currentPlayer].hand.push(newCard);
   updateValue(players[currentPlayer].hand, currentPlayer);
-}
+};
 
 //Set game
-var setGameState = function(playersNum){
-  numOfplayers = playersNum
-}
+var setGameState = function (playersNum) {
+  numOfplayers = playersNum;
+  console.log("setgamestate runs");
+};
 
 //Stand function
 //Once stand is choosen,, disable stand button and enable Next
-var standButton = function(){
-  let output
+var standButton = function () {
+  let output;
   document.querySelector("#stand-button").disabled = true;
   document.querySelector("#hit-button").disabled = true;
   document.querySelector("#next-button").disabled = false;
-  if(currentPlayer == numOfplayers){
-   output = `Player ${currentPlayer} has stand.<br>It is Dealer's turn. Please press next to continue.`;
+  if (currentPlayer == numOfplayers) {
+    output = `Player ${currentPlayer} has stand.<br>It is Dealer's turn. Please press next to continue.`;
+  } else {
+    output = `Player ${currentPlayer} has stand.<br>Player ${
+      currentPlayer + 1
+    }, please press next to start your turn.`;
   }
-  else{
-   output = `Player ${currentPlayer} has stand.<br>Player ${currentPlayer + 1}, please press next to start your turn.`
-  }
-  return output
-}
+  cardStorage(players[currentPlayer].hand, currentPlayer);
+  return output;
+};
 
 //Function for next button
-var nextPlayer = function(){
+var nextPlayer = function () {
   document.querySelector("#hit-button").disabled = false;
   document.querySelector("#stand-button").disabled = false;
   document.querySelector("#quit-button").disabled = false;
   document.querySelector("#next-button").disabled = true;
-  currentPlayer++
-  if(currentPlayer > numOfplayers){
-    endgame()
-  }
-}
+  currentPlayer++;
+};
 
 //Make deck
-var makeDeck = function(){
-  for(let i = 0; i < suit.length; i++){
-    for(let j = 0; j < cardName.length; j++)
-    {
-      let currentCard = new Card(cardName[j], suit[i], j + 1)
-      //Force set value of Jack, Queen, King as 10
-      if (cardName[j] === "Jack" || cardName[j] === "Queen" || cardName[j] === "King"){
-        currentCard.value = 10
+var makeDeck = function () {
+  for (let i = 0; i < suit.length; i++) {
+    for (let j = 0; j < cardName.length; j++) {
+      let cardtype = cardName[j];
+      let cardsuit = suit[i];
+      let cardImage = "./assets/" + cardtype + "Of" + cardsuit + ".png";
+      let currentCard = new Card(cardName[j], suit[i], j + 1, cardImage);
+
+      //Force set value of Jack, Queen, King as 10 and Ace as 11
+      if (
+        cardName[j] === "Jack" ||
+        cardName[j] === "Queen" ||
+        cardName[j] === "King"
+      ) {
+        currentCard.value = 10;
       }
-      if(cardName[j] === "Ace"){
-        currentCard.value = 11
+      if (cardName[j] === "Ace") {
+        currentCard.value = 11;
       }
       deck.push(currentCard);
     }
   }
-}
+};
 
 //Shuffling deck function
 var shuffleCards = function (shufflingDeck) {
@@ -264,46 +325,73 @@ var shuffleCards = function (shufflingDeck) {
 };
 
 //Update the current value of player hand
-var updateValue = function(currentHand, currentplayer){
+var updateValue = function (currentHand, currentplayer) {
   let cardValue = 0;
-  for(let i = 0; i < currentHand.length; i++){
+  for (let i = 0; i < currentHand.length; i++) {
     cardValue += players[currentplayer].hand[i].value;
   }
-  players[currentplayer].handValue = cardValue
-}
+  players[currentplayer].handValue = cardValue;
+};
+
+var setUP = function () {
+  var element = document.getElementById("inputs");
+  while (element.hasChildNodes()) {
+    element.removeChild(element.firstChild);
+  }
+  document.querySelector("#hit-button").style.visibility = "visible";
+  document.querySelector("#stand-button").style.visibility = "visible";
+  document.querySelector("#quit-button").style.visibility = "visible";
+  document.querySelector("#next-button").style.visibility = "visible";
+};
 
 //Reset game -> full reset
-var resetGame = function(){
+var resetGame = function () {
   deck = [];
   players = [];
   numOfplayer = 0;
   currentPlayer = 0;
-  document.querySelector("#hit-button").disabled = true;
-  document.querySelector("#stand-button").disabled = true;
-  document.querySelector("#quit-button").disabled = true;
-  document.querySelector("#next-button").disabled = true;
-  document.querySelector("#num-player").disabled = false;
-  document.querySelector("#start-button").disabled = false;
+  document.querySelector("#hit-button").style.visibility = "hidden";
+  document.querySelector("#stand-button").style.visibility = "hidden";
+  document.querySelector("#quit-button").style.visibility = "hidden";
+  document.querySelector("#next-button").style.visibility = "hidden";
   document.querySelector("#continue-button").style.visibility = "hidden";
-}
+  let input = document.querySelector("#inputs");
+  input.innerHTML = `<p style = "display: inline;">Number of players:</p> 
+               <input id = "num-player" 
+                type="number"
+                min="1"
+                max="6"
+                value="1"
+                onkeydown="return false"
+               />
+               <button id = "start-button">Start</button>`;
+  let output = document.querySelector("#output-div");
+  output.innerHTML = "";
+  console.log("reset complete");
+};
 
 //continue -> soft reset
-var contButton = function(){
+var contButton = function () {
   makeDeck();
   deck = [...shuffleCards(deck)];
   currentPlayer = 0;
   for (let i = 0; i < players.length; i++) {
     players[i].hand = [];
     players[i].handValue = 0;
-    let amtBet
-    if(i >= 1){
-      do{
-        amtBet = Number(prompt(`Player ${i}, how much to you want to wager?\nYou currently have ${players[i].bank}.`, ""));
+    let amtBet;
+    if (i >= 1) {
+      do {
+        amtBet = Number(
+          prompt(
+            `Player ${i}, how much to you want to wager?\nYou currently have ${players[i].bank}.`,
+            ""
+          )
+        );
       } while (Number.isInteger(amtBet) == false || amtBet > players[i].bank);
     }
   }
   //Dealing of cards
-  for (let i = 0; i < 2; i++){
+  for (let i = 0; i < 2; i++) {
     for (let j = players.length; j > 0; j--) {
       players[j - 1].hand.push(deck.pop());
       updateValue(players[j - 1].hand, j - 1);
@@ -311,5 +399,37 @@ var contButton = function(){
   }
   document.querySelector("#continue-button").style.visibility = "hidden";
   document.querySelector("#next-button").disabled = false;
-  return "Game reset. Player 1, please click next to play again"
-}
+  return "Game reset. Player 1, please click next to play again";
+};
+
+var createPlayerArea = function (num) {
+  for (let i = 1; i <= num; i++) {
+    if (i % 2 == 0) {
+      var playerArea = document.querySelector(".even-player-area");
+      var playersInfo = document.createElement("div");
+      playersInfo.id = `player-${i}`;
+      playersInfo.innerHTML = `<p style="margin: 0px;" id = "player-${i}-name">${players[i].name}</p><p style ="margin: 0px;"id = "classValue-player${i}"></p><output id = "player-${i}-output"></output>`;
+      playerArea.appendChild(playersInfo);
+    } else {
+      var playerArea = document.querySelector(".odd-player-area");
+      var playersInfo = document.createElement("div");
+      playersInfo.id = `player-${i}`;
+      playersInfo.innerHTML = `<p style="margin: 0px;" id = "player-${i}-name">${players[i].name}</p><p style ="margin: 0px;"id = "classValue-player${i}"></p><output id = "player-${i}-output"></output>`;
+      playerArea.appendChild(playersInfo);
+    }
+  }
+};
+
+var cardStorage = function (playerhand, num) {
+  //display card value and bet
+  let playercardvalue = document.querySelector(`#classValue-player${num}`);
+  let displayCardValue = `Card Value: ${players[num].handValue}&emsp;Bets: ${players[num].wager}`;
+  playercardvalue.innerHTML = displayCardValue;
+  //give the stored cards a class
+  let output = "";
+  for (let i = 0; i < playerhand.length; i++) {
+    output += `<img class = "cardstorage" src = "${playerhand[i].image}"/>`;
+  }
+  var playerOutput = document.querySelector(`#player-${num}-output`);
+  playerOutput.innerHTML = output;
+};
