@@ -231,6 +231,7 @@ var checkRoundResult = function (deckValue1, deckValue2) {
 
   var roundResult;
 
+  /*
   if (
     (playerValue == 21 && computerValue != 21) ||
     (playerValue < 21 && computerValue > 21) ||
@@ -246,6 +247,27 @@ var checkRoundResult = function (deckValue1, deckValue2) {
   } else if (playerValue == computerValue) {
     roundResult = TIE;
   }
+  
+  */
+  if (playerValue == 21 && computerValue != 21) {
+    roundResult = WIN;
+  } else if (playerValue != 21 && computerValue == 21) {
+    roundResult = LOSE;
+  } else if (playerValue > 21 && computerValue < 21) {
+    roundResult = LOSE;
+  } else if (playerValue < 21 && computerValue > 21) {
+    roundResult = WIN;
+  } else if (playerValue == 21 && computerValue == 21) {
+    roundResult = TIE;
+  } else if (playerValue == computerValue) {
+    roundResult = TIE;
+  } else if (playerValue > 21 && computerValue > 21) {
+    roundResult = TIE;
+  } else if (playerValue < computerValue) {
+    roundResult = LOSE;
+  } else if (playerValue > computerValue) {
+    roundResult = WIN;
+  }
   return roundResult;
 };
 
@@ -257,6 +279,7 @@ var checkImageResult = function (deckValue1, deckValue2) {
 
   var imageResult;
 
+  /*
   if (
     (playerValue == 21 && computerValue != 21) ||
     (playerValue < 21 && computerValue > 21) ||
@@ -271,6 +294,27 @@ var checkImageResult = function (deckValue1, deckValue2) {
     imageResult = IMAGE_LOSE;
   } else if (playerValue == computerValue) {
     imageResult = IMAGE_TIE;
+  }
+  return imageResult;
+  */
+  if (playerValue == 21 && computerValue != 21) {
+    imageResult = IMAGE_WIN;
+  } else if (playerValue != 21 && computerValue == 21) {
+    imageResult = IMAGE_LOSE;
+  } else if (playerValue > 21 && computerValue < 21) {
+    imageResult = IMAGE_LOSE;
+  } else if (playerValue < 21 && computerValue > 21) {
+    imageResult = IMAGE_WIN;
+  } else if (playerValue == 21 && computerValue == 21) {
+    imageResult = IMAGE_TIE;
+  } else if (playerValue == computerValue) {
+    imageResult = IMAGE_TIE;
+  } else if (playerValue > 21 && computerValue > 21) {
+    imageResult = IMAGE_TIE;
+  } else if (playerValue < computerValue) {
+    imageResult = IMAGE_LOSE;
+  } else if (playerValue > computerValue) {
+    imageResult = IMAGE_WIN;
   }
   return imageResult;
 };
