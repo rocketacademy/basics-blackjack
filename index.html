@@ -106,7 +106,7 @@
       #output-div img {
         display: block;
         max-width: 100%;
-        max-height: 200px;
+        max-height: 100%;
       }
       .header {
         text-align: center;
@@ -116,6 +116,7 @@
 
       #container {
         background-color: rgb(123, 197, 139);
+        border-radius: 25px;
         margin: 40px auto;
         max-width: 800px;
         padding: 38px 31px;
@@ -123,6 +124,7 @@
 
       input {
         font-size: 21px;
+        border-radius: 10px;
         line-height: 33px;
         margin: 0 0 23px 0;
         padding: 0 9px;
@@ -137,7 +139,8 @@
       }
 
       #output-div {
-        background-color: lightgrey;
+        background-color: rgb(248, 252, 189);
+        border-radius: 20px;
         margin: 20px auto;
         padding: 20px;
         width: 100%;
@@ -147,6 +150,17 @@
         height: 49px;
         position: relative;
         top: 22px;
+      }
+
+      .bottom-img {
+        height: 512px; 
+        width: 512px; 
+        position: relative;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        
+
       }
 
       /* increase header font size on wider screens */
@@ -178,8 +192,12 @@
       <button id="submit-button">Submit</button>
       <p>Output:</p>
       <div id="output-div">
+        <!-- These instructions will appear when the game loads and will be erased as soon as the user clicks the submit button. -->
       Welcome to the game of blackjack. Press submit to get started...
     </div>
+    
+    
+    
     <!-- Import program logic -->
     <script src="script.js"></script>
     <!-- Define button click functionality -->
@@ -198,5 +216,8 @@
         input.value = "";
       });
     </script>
+    
   </body>
+  
+
 </html>
