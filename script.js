@@ -126,7 +126,6 @@ var makeDeck = function () {
         suit: currentSuit,
         rank: rankCounter,
         value: cardValue,
-        emoji: cardEmoji,
       };
       // Add the new card to the deck
       cardDeck.push(card);
