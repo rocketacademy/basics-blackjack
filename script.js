@@ -72,7 +72,7 @@ var main = function (input) {
       var j = 0;
       while (
         computerCurrent <= 16 ||
-        (computerCurrent < playerCurrent && playerCurrent < 21)
+        (computerCurrent < playerCurrent && playerCurrent < 22)
       ) {
         computerHand.push(deck.pop());
         compNewCards[i] = computerHand[computerHand.length - 1];
