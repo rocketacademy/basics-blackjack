@@ -24,4 +24,4 @@ Is there anything in this code that you feel pleased about?
 Being able to find a way to convert the value of Ace
 
 What's one aspect of your code you would like specific, elaborate feedback on?
-Whether my code is easily understandable to a third party
+How come it's so difficult to get a blackjack with my code? The generate deck function and shuffle cards function seem to work fine but it takes almost 100+ tries to even get a blackjack.
