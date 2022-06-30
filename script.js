@@ -14,7 +14,8 @@ var LOSE = "LOSE";
 var TIE = "TIE";
 
 //IMAGE LIBRARY
-Blackjack\basics-blackjack\image\Blackjack_WIN.jpg
+
+//it is case sensitive
 
 var IMAGE_WIN = '<img class = "bottom-img" src ="image/Blackjack_WIN.jpg"/>';
 var IMAGE_LOSE = '<img class = "bottom-img" src ="image/Blackjack_LOSE.jpg"/>';
