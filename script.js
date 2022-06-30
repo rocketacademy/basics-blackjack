@@ -26,7 +26,13 @@ var main = function (input) {
     var image = `<img src = "https://c.tenor.com/RFRPkimHjfcAAAAC/zach-galifianakis-very-bad-trip-meme.gif">`;
     if (input != "hit" && input != "stand") {
       return (
-        `${displayFirstTwoCards()} ${displayTotalValue()} <br><br> Please choose to "Hit" or "Stand"` +
+        `${displayFirstTwoCards()} <br><br><b>Your cards: </b>${displayCards(
+          playerHand
+        )}<br><b>Current total:</b> ${playerCurrent} <br><br> <b>Computer's cards:</b><br> ?? of ?? <br> ${
+          computerHand[1].name
+        } ${
+          computerHand[1].suit
+        } <br><b>Current total:</b> ?? <br><br> Please choose to "Hit" or "Stand"` +
         image
       );
     }
@@ -50,7 +56,13 @@ var main = function (input) {
         myOutputValue =
           `You were dealt a ${nextCard.name} ${
             nextCard.suit
-          }. ${displayTotalValue()} <br><br> Please click <b>"hit"</b> or <b>"stand"</b> ` +
+          }. <br><br><b>Your cards: </b>${displayCards(
+            playerHand
+          )}<br><b>Current total:</b> ${playerCurrent} <br><br> <b>Computer's cards:</b><br> ?? of ?? <br> ${
+            computerHand[1].name
+          } ${
+            computerHand[1].suit
+          } <br><b>Current total:</b> ?? <br><br> Please choose to "Hit" or "Stand"` +
           image;
       }
       if (playerCurrent >= 22) {
@@ -232,7 +244,7 @@ var determineWinner = function (currentHandofPlayer, currentHandofComputer) {
 
 //function to display first two cards
 var displayFirstTwoCards = function () {
-  return `You were dealt a ${playerHand[0].name} ${playerHand[0].suit} and  ${playerHand[1].name}  ${playerHand[1].suit}. <br> The computer was dealt a ${computerHand[0].name} ${computerHand[0].suit} and ${computerHand[1].name}  ${computerHand[1].suit}.`;
+  return `You were dealt a ${playerHand[0].name} ${playerHand[0].suit} and  ${playerHand[1].name}  ${playerHand[1].suit}. <br> The computer was dealt a ?? of ?? and ${computerHand[1].name}  ${computerHand[1].suit}.`;
 };
 
 //function to display current total value
