@@ -1,43 +1,3 @@
-/*
-Logic
---- betting system
-- player starts with $100 balance
-- Have 4 buttons for $1, $2, $5, $10
-- player will choose how much they want to bet, whatever they bet will be added up to a output screen
-- have a balance that adds/minus their win/loss
-
---- playing system
-- there will be 5 decks at all times 
-- once happy with bet, press 'play' button
-- 2 cards for player, 2 cards for dealer
-show 2 cards for player, 1 card for dealer at this point 
-e.g. player: 9 Spade, 2 Club | 11 points 
-e.g. dealer: Jack Spade, Closed card
-- if player blackjack, instant win
-- if dealer blackjack, instant lose
-- if both blackjack, instant draw
-- player turn - 2 choices, buttons [stand] [hit]
-- [stand], locks in player cards
-e.g. before hit - King Diamond, 2 Spades | 12 points 
-- [hit], draws a new card for player
-e.g. after hit - King Diamon, 2 Spades, 4 Clubs | 16 points
-- if player bust, instant lose no matter what cards dealer have
-- if player doesn't bust, dealer's turn 
-- dealer 2nd card reveal
-- if dealer is < 17, draw a card, tally points 
-- if dealer is < <17, draw a card, tally points
-
---- payout system 
-- if player wins, add to player balance
-- if player loses, minus from their balance
-
-
-Good to learn from 
-Able to show picture - https://supershazwi.github.io/basics-blackjack/
-Able to double down & surrender - https://lim-jiahao.github.io/basics-blackjack/
-*/
-
-//---------------------------------------------------
 // TO MAKE DECKS
 // Helper Function - to make deck
 var makeDeck = function () {
@@ -362,3 +322,44 @@ If 2 Ace
 2nd Ace, must be 1
 Note: Only can have 1 
 */
+
+/*
+Logic
+--- betting system
+- player starts with $100 balance
+- Have 4 buttons for $1, $2, $5, $10
+- player will choose how much they want to bet, whatever they bet will be added up to a output screen
+- have a balance that adds/minus their win/loss
+
+--- playing system
+- there will be 5 decks at all times 
+- once happy with bet, press 'play' button
+- 2 cards for player, 2 cards for dealer
+show 2 cards for player, 1 card for dealer at this point 
+e.g. player: 9 Spade, 2 Club | 11 points 
+e.g. dealer: Jack Spade, Closed card
+- if player blackjack, instant win
+- if dealer blackjack, instant lose
+- if both blackjack, instant draw
+- player turn - 2 choices, buttons [stand] [hit]
+- [stand], locks in player cards
+e.g. before hit - King Diamond, 2 Spades | 12 points 
+- [hit], draws a new card for player
+e.g. after hit - King Diamon, 2 Spades, 4 Clubs | 16 points
+- if player bust, instant lose no matter what cards dealer have
+- if player doesn't bust, dealer's turn 
+- dealer 2nd card reveal
+- if dealer is < 17, draw a card, tally points 
+- if dealer is < <17, draw a card, tally points
+
+--- payout system 
+- if player wins, add to player balance
+- if player loses, minus from their balance
+
+
+Good to learn from 
+Able to show picture - https://supershazwi.github.io/basics-blackjack/
+Able to double down & surrender - https://lim-jiahao.github.io/basics-blackjack/
+*/
+
+//---------------------------------------------------
