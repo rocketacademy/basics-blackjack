@@ -94,7 +94,8 @@ button:active{
   border-radius: 10px;
   margin: 6px 6px 6px 6px;
   display: grid;
-  grid-template-rows: 1fr 1fr
+  grid-template-rows: 1fr 1fr 2fr;
+  align-items: center;
 }
 
 #player-1-name,#player-2-name,#player-3-name,#player-4-name,#player-5-name,#player-6-name{
@@ -162,4 +163,19 @@ img{
   font-weight: bold;
   border: none;
   padding-left: 20px;
+}
+
+#WLD{
+  height: 80px;
+  width: 200px;
+  border-radius: 6px;
+  border: 4px solid #c29f41;
+  color: #c29f41;
+  background-color: #59110f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  margin: 98px;
+  font-size: 60px;
 }

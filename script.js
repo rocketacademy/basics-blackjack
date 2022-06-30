@@ -82,7 +82,7 @@ var gameStart = function () {
     do {
       amtBet = Number(
         prompt(
-          `Player ${i}, how much to you want to wager?\nYou currently have ${100}.`,
+          `${userName}, how much to you want to wager?\nYou currently have ${100}.`,
           ""
         )
       );
@@ -102,20 +102,20 @@ var gameStart = function () {
       updateValue(players[j - 1].hand, j - 1);
     }
   }
-  return `Game has been set-up.  Player 1, press Next to continue`;
+  return `Game has been set-up.  ${players[1].name}, press Next to continue`;
 };
 
 //Mid-game
 // Consists of allowing user to hit/stand. Next button serve as continuation
 var midgame = function () {
   let output;
-
   //dealer's turn when currentPlayer > numOfplayers -> go to endgame()
   if (currentPlayer > numOfplayers) {
     output = endgame();
     document.querySelector("#hit-button").disabled = true;
     document.querySelector("#stand-button").disabled = true;
     document.querySelector("#continue-button").style.visibility = "visible";
+    document.querySelector("#continue-button").disabled = false
     return output;
   }
 
@@ -146,14 +146,29 @@ var midgame = function () {
     //for formatting, easier transition to endgame when next player is dealer
     if (currentPlayer == numOfplayers) {
       displaytext.innerHTML = `You have bust! It is the dealer's turn next. Press next to continue`;
-    } else {
+    } 
+    else {
       //else continue if there are players left
-      displaytext.innerHTML = `You have bust! Player ${
-        currentPlayer + 1
-      }, press next to continue`;
+      displaytext.innerHTML = `You have bust! Player ${currentPlayer + 1}, press next to continue`;
     }
     cardStorage(players[currentPlayer].hand, currentPlayer);
-  } else {
+  } 
+  //player has blackjack
+  else if(hasBlackjack(players[currentPlayer].hand, currentPlayer) && players[currentPlayer].hand.length === 2){
+    document.querySelector("#stand-button").disabled = true;
+    document.querySelector("#hit-button").disabled = true;
+    document.querySelector("#next-button").disabled = false;
+    if(currentPlayer == numOfplayers){
+      displaytext.innerHTML = `Player ${currentPlayer} has blackjack!. It is Dealer's turn next! Press next to continue `;
+    }
+    else{
+      displaytext.innerHTML = `Player ${currentPlayer} has blackjack!. It is Player ${
+        currentPlayer + 1
+      } turn! Press next to continue `;
+    }
+  }
+  //no bust or blackjack
+  else{
     displaytext.innerHTML = "Do you want to hit or stand";
   }
   return output;
@@ -164,7 +179,6 @@ var midgame = function () {
 //It also make dealer do a soft 17 and reveal cards
 var endgame = function () {
   let output = `The dealer has drawn:<br>`;
-
   //Dealer drawing
   while (players[0].handValue <= 16) {
     players[0].hand.push(deck.pop());
@@ -173,11 +187,8 @@ var endgame = function () {
     updateValue(players[0].hand, 0);
 
     //break the loop if it is within 17 and 21
-    if (players[0].handValue > 21) {
-      console.log(`work 2`);
+    if (players[0].handValue > 21) 
       aceManipulator(players[0].hand, 0);
-      console.log(players[0].handValue);
-    }
   }
 
   for (let i = 0; i < players[0].hand.length; i++) {
@@ -191,17 +202,22 @@ var endgame = function () {
   }
   let displayText = document.querySelector("#display-text");
   let text = "";
+  if (hasBlackjack(players[0].hand, 0)) {
+    text += "The dealer has blackjack! Game Over!";
+    players[0].handValue = 100;
+  }
   //Deal win, lose, draw condition to player
   if (players[0].handValue == 0) {
-    //If dealer bust -> check if player did not bust
-    text += "The dealer has busted!<br>";
-    text += winlosedraw();
-    displayText.innerHTML = text;
+      //If dealer bust -> check if player did not bust
+      text += "The dealer has busted! Game Over!";
+      winlosedraw()
+      displayText.innerHTML = text;
   }
 
   // else if dealer did not bust, compare the handvalue to determine "win", "lose", "draw" condition
-  else if (players[0].handValue > 0) {
-    text += winlosedraw();
+  else if (players[0].handValue > 0 && players[0].handValue != 100) {
+    text += "Game Over!"
+    winlosedraw();
     displayText.innerHTML = text;
   }
 
@@ -210,22 +226,38 @@ var endgame = function () {
 
 //determine win lose or draw
 var winlosedraw = function () {
-  let output = "";
   for (let i = 1; i < players.length; i++) {
     if (players[i].handValue > players[0].handValue) {
+      console.log(
+        `Player ${i} Bank: ${players[i].bank} Bet: ${players[i].wager}`
+      );
       players[i].bank += players[i].wager;
       players[i].wager = 0;
-      output += `Player ${i} has won!,`;
+      console.log(
+        `Player ${i} Bank: ${players[i].bank} Bet: ${players[i].wager}`
+      );
+      let output = document.querySelector(`#player-${i}`);
+      let win = document.createElement('div')
+      win.id = "WLD"
+      win.innerText = "WIN!"
+      output.appendChild(win)
     } else if (players[i].handValue < players[0].handValue) {
       players[i].bank -= players[i].wager;
       players[i].wager = 0;
-      output += `Player ${i} has lost!,`;
+      let output = document.querySelector(`#player-${i}`);
+      let lose = document.createElement("div");
+      lose.id = "WLD";
+      lose.innerText = "LOSE";
+      output.appendChild(lose);
     } else if (players[i].handValue == players[0].handValue) {
       players[i].wager = 0;
-      output += `Player ${i} draw with the dealer!,`;
+      let output = document.querySelector(`#player-${i}`);
+      let draw = document.createElement("div");
+      draw.id = "WLD";
+      draw.innerText = "DRAW";
+      output.appendChild(draw);
     }
   }
-  return output;
 };
 
 //Ace value manipulator
@@ -235,7 +267,6 @@ var aceManipulator = function (currentPlayerHand, playerNum) {
   ); // ace card finder
 
   //if index is found (value of index >= 0) manipulate the value, if index not found (value of index = -1), ignore
-  console.log(`ace manipulate: ${players[0].handValue}`);
   if (index >= 0) {
     players[playerNum].hand[index].value = 1;
     updateValue(currentPlayerHand, playerNum);
@@ -245,7 +276,6 @@ var aceManipulator = function (currentPlayerHand, playerNum) {
       aceManipulator(currentPlayerHand, playerNum);
     }
   }
-  console.log(`ace manipulate: ${players[0].handValue}`);
 };
 
 //hit function for hit button
@@ -258,7 +288,6 @@ var hitFunction = function () {
 //Set game
 var setGameState = function (playersNum) {
   numOfplayers = playersNum;
-  console.log("setgamestate runs");
 };
 
 //Stand function
@@ -348,7 +377,6 @@ var setUP = function () {
 var resetGame = function () {
   deck = [];
   players = [];
-  numOfplayer = 0;
   currentPlayer = 0;
   document.querySelector("#hit-button").style.visibility = "hidden";
   document.querySelector("#stand-button").style.visibility = "hidden";
@@ -367,28 +395,39 @@ var resetGame = function () {
                <button id = "start-button">Start</button>`;
   let output = document.querySelector("#output-div");
   output.innerHTML = "";
-  console.log("reset complete");
+  for(let i = 1; i <= numOfplayers; i++){
+    let divRemover = document.querySelector(`#player-${i}`);
+    divRemover.remove();
+  }
+  numOfplayer = 0;
 };
 
 //continue -> soft reset
-var contButton = function () {
+var continueButton = function () {
   makeDeck();
   deck = [...shuffleCards(deck)];
   currentPlayer = 0;
+  //reset player's div output
+   for (let i = 1; i <= numOfplayers; i++) {
+     let outputRemover = document.querySelector(`#player-${i}-output`);
+     let playercardvalue = document.querySelector(`#classValue-player${i}`);
+     outputRemover.innerHTML = ""
+     playercardvalue.innerHTML = ""
+   }
+  let outputDiv = document.querySelector("#output-div");
+  outputDiv.innerHTML = ""
+  //reset display output div
+  document.querySelectorAll("#WLD").forEach((e) => e.remove());
   for (let i = 0; i < players.length; i++) {
     players[i].hand = [];
     players[i].handValue = 0;
     let amtBet;
     if (i >= 1) {
       do {
-        amtBet = Number(
-          prompt(
-            `Player ${i}, how much to you want to wager?\nYou currently have ${players[i].bank}.`,
-            ""
-          )
-        );
+        amtBet = Number(prompt (`Player ${i}, how much to you want to wager?\nYou currently have ${players[i].bank}.`, ""));
       } while (Number.isInteger(amtBet) == false || amtBet > players[i].bank);
     }
+    players[i].wager = amtBet
   }
   //Dealing of cards
   for (let i = 0; i < 2; i++) {
@@ -432,4 +471,14 @@ var cardStorage = function (playerhand, num) {
   }
   var playerOutput = document.querySelector(`#player-${num}-output`);
   playerOutput.innerHTML = output;
+};
+
+var hasBlackjack = function (playerHand, num) {
+  let index = playerHand.findIndex((element) => element.name === "Ace" ); // ace card finder
+  if(index >= 0 && players[num].handValue === 21){
+    return true
+  }
+  else{
+    return false
+  }
 };

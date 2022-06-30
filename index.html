@@ -64,8 +64,7 @@ The <html> element is known as the root element of a HTML page. All other elemen
     <div id = "poker-table">
       <div id = "green-mat">
         <div id = "play-table" style = "display: grid; grid-template-columns: 1fr 2fr 1fr;">
-          <div class = "odd-player-area">
-          </div>
+          <div class = "odd-player-area"></div>
           <div class = "play-area">
               <p id = "display-text">Welcome to BlackJack!. Press start to play</p>
               <div id = "inputs">
@@ -87,9 +86,7 @@ The <html> element is known as the root element of a HTML page. All other elemen
               <button id = "continue-button">Continue</button>
               <div id = "output-div" ></div>
           </div>
-          <div class = "even-player-area">
-          </div>
-
+          <div class = "even-player-area"></div>
         </div>
       </div>
     </div>
@@ -101,16 +98,15 @@ The <html> element is known as the root element of a HTML page. All other elemen
     <!-- Define button click functionality -->
     <script>
       var start = document.querySelector('#start-button')
-      var outputText = document.querySelector('#display-text')
+      var displayText = document.querySelector('#display-text')
       var hit = document.querySelector("#hit-button")
       var stand = document.querySelector("#stand-button")
       var next = document.querySelector("#next-button")
       var quit = document.querySelector("#quit-button")
-      var cont = document.querySelector("#continue-button")
+      var contButton = document.querySelector("#continue-button")
       var output = document.querySelector("#output-div")
 
-      // Declare and define a variable that represents the Submit Button);
-      start.addEventListener("click", function() {
+      var setup = function (){
         var numPlayers = document.querySelector("#num-player");
         setGameState(numPlayers.value);
         setUP();
@@ -119,8 +115,13 @@ The <html> element is known as the root element of a HTML page. All other elemen
         hit.disabled = true;
         stand.disabled = true;
         quit.disabled = true;
-        cont.disabled = true;
-        outputText.innerHTML = result;
+        contButton.disabled = true;
+        next.disabled = false
+        displayText.innerHTML = result;
+      }
+      // Declare and define a variable that represents the Submit Button);
+      start.addEventListener("click", function(){
+        setup()
       });
 
       //hit button
@@ -131,8 +132,7 @@ The <html> element is known as the root element of a HTML page. All other elemen
       })
       stand.addEventListener("click", function(){
         var result = standButton()
-        outputText.innerHTML = result
-        console.log(start)
+        displayText.innerHTML = result
       })
       //next button
       next.addEventListener("click", function(){
@@ -145,7 +145,16 @@ The <html> element is known as the root element of a HTML page. All other elemen
       //reset everything
       quit.addEventListener("click", function () {
         resetGame();
-        outputText.innerHTML = "Quit game. Press start for new game";
+        displayText.innerHTML = "Quit game. Press start for new game";
+        start = document.querySelector('#start-button')
+        start.addEventListener("click", function(){
+          setup()
+        });
+      })
+
+      contButton.addEventListener("click", function(){
+        var result = continueButton()
+        displayText.innerHTML = result
       })
     </script>
   </body>
