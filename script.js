@@ -144,7 +144,6 @@ var drawStartingComputerHand = function (shuffledDeck) {
 // calculates total sum of computer hand array, checks for ace value, stores to all player statistics index [0]
 var calculateComputerHand = function () {
   // calculates sum of computerhandarray
-  console.log(computerHand);
   var sumOfComputerHandArray = 0;
 
   for (var cardIndex = 0; cardIndex < computerHand.length; cardIndex += 1) {
@@ -209,7 +208,7 @@ var calculateComputerHand = function () {
 //     return myOutputValue;
 //   }
 // };
-////////// computer hand function not working ///////////
+////////// computer hand function not working CONTROL FLOW ISSUE ///////////
 
 // ******** END CARD HELPER FUNCTIONS END *******
 
@@ -273,13 +272,11 @@ var displayComputerHand = function (computerHand) {
   for (var index = 0; index < computerHand.length; index += 1) {
     var cardsOfComputerHand = `${computerHand[index].name} of ${computerHand[index].suit}<br>`;
     printComputerHand = printComputerHand + cardsOfComputerHand;
-    console.log(printComputerHand);
   }
   return `Dealer has drawn ${printComputerHand}`;
 };
 
 // var allocateCurrentPlayerHandToAllPlayerStats = function(){
-
 // }
 
 // var displayAllPlayerStatistics = function () {
@@ -292,7 +289,7 @@ var displayComputerHand = function (computerHand) {
 //   return `Player ${currentPlayer}, you have drawn ${printAllPlayerStatistics}`;
 // };
 
-// game mode reset all
+// game mode reset all DOESN'T WORK >.<
 var resetAllGameMode = function () {
   gameMode = gameModeReset;
   if (gameMode == "reset") {
@@ -405,7 +402,6 @@ var main = function (input) {
   var myOutputValue = "";
   var currentPlayerScore = "";
 
-  console.log(gameMode);
   // launch screen - instructions are on HTML page. This if statement:
   // 1. creates allPlayerStatistics[]
   // 2. allows user to input number of players
@@ -421,17 +417,14 @@ var main = function (input) {
     currentPlayer = 1;
     myOutputValue =
       myOutputValue + `welcome player(s)! Click submit to draw your cards. `;
-    console.log(gameMode);
     return myOutputValue;
   }
+  console.log(currentPlayer);
   console.log(gameMode);
-
   //switch game mode from input = number of players to current player turn
   if (currentPlayer == 1 && gameMode == "input numOfPlayers") {
     gameMode = gameModeCurrentPlayerTurn;
   }
-  console.log(currentPlayer);
-  console.log(gameMode);
 
   // gamemode = current player turn. the idea is to push currentplayer into all player statistics after the current player turn ends. for loop cycles through all players until each player either wins, busts or hits "s". code is written only for 1 player at the moment. bust = needs hard reset and "s" should prompt computer turn.
   if (currentPlayer == 1 && gameMode == "current player turn") {
@@ -444,13 +437,11 @@ var main = function (input) {
       input == "h"
     ) {
       hitPlayerHand(shuffledDeck);
-      console.log(shuffledDeck);
+
       calculateTotalHand(currentPlayer);
       currentPlayerScore = checkPlayerScore(currentPlayer);
       myOutputValue = displayCurrentPlayerHand(currentPlayerHand);
-      console.log(currentPlayer);
-      console.log(gameMode);
-      console.log(currentPlayerScore);
+
       return myOutputValue + currentPlayerScore;
     } else if (
       gameMode == "current player turn" &&
@@ -464,8 +455,7 @@ var main = function (input) {
       // currentPlayerHand = [];
       gameMode = gameModeComputerTurn;
       currentPlayer = "computer";
-      console.log(currentPlayer);
-      console.log(gameMode);
+
       return myOutputValue;
     } else if (
       gameMode == "current player turn" &&
@@ -473,13 +463,9 @@ var main = function (input) {
     ) {
       drawStartingPlayerHand(shuffledDeck);
       drawStartingComputerHand(shuffledDeck);
-      console.log(shuffledDeck);
       calculateTotalHand(currentPlayer);
       currentPlayerScore = checkPlayerScore(currentPlayer);
       myOutputValue = displayCurrentPlayerHand(currentPlayerHand);
-      console.log(currentPlayer);
-      console.log(currentPlayerScore);
-      console.log(gameMode);
       return myOutputValue + currentPlayerScore;
     }
   }
@@ -496,30 +482,21 @@ var main = function (input) {
         computerOutcome = `DEALER BLACKJACK! Dealer drew ${computerHand[0].name} of ${computerHand[0].suit} and ${computerHand[1].name} of ${computerHand[1].suit}.`;
         allPlayerStatistics[0].playerName = "Dealer";
         allPlayerStatistics[0].totalSum = "blackjack";
-        console.log("dealerblackjack");
-
         return computerOutcome;
       }
     }
-
     if (sumOfComputerHandArray < 16) {
       computerHand.push(drawOneCard(shuffledDeck));
       computerOutcome = displayComputerHand(computerHand);
       sumOfComputerHandArray = calculateComputerHand();
-      console.log(computerOutcome);
-      console.log(sumOfComputerHandArray);
       return computerOutcome;
     } else if (sumOfComputerHandArray >= 17 && sumOfComputerHandArray <= 21) {
       allPlayerStatistics[0].totalSum = sumOfComputerHandArray;
       computerOutcome = displayComputerHand(computerHand);
-      console.log(myOutputValue);
-      console.log("dealer stand");
-      console.log(allPlayerStatistics[0].totalSum);
       gameMode = gameModeCompareScores;
-      console.log(computerOutcome);
+
       return computerOutcome;
     } else if (sumOfComputerHandArray > 21) {
-      console.log(computerOutcome);
       computerOutcome = displayComputerHand(computerHand);
       allPlayerStatistics[0].totalSum = "bust";
       console.log(allPlayerStatistics[0].totalSum);
