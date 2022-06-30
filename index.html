@@ -55,8 +55,9 @@ The <html> element is known as the root element of a HTML page. All other elemen
 
   <!-- The <body> element defines the document's body, and is a container for all the visible contents that will be rendered by the browser.  -->
   <body>
-    <audio id="myAudio" autoplay>
-     <source src="casino-background.mp3" type="audio/mpeg" loop = "loop">
+    <iframe src = "silence.mp3" allow = "autoplay" id=" audio" style="display: none"></iframe>
+    <audio id = "BGAudio" autoplay loop>
+      <source src = "CasinoJazz.mp3" type = "audio/mp3">
     </audio>
     <!-- The <h1> element defines a large heading. There are 6 pre-set header elements, <h1> to <h6> -->
     <h1 class = "header">🎰 CASINO BLACKJACK 🎰</h1>
@@ -84,6 +85,7 @@ The <html> element is known as the root element of a HTML page. All other elemen
               <button id = "next-button">Next</button>
               <button id = "quit-button">Quit</button>
               <button id = "continue-button">Continue</button>
+              <button id = "secret-button">SECRET?</button>
               <div id = "output-div" ></div>
           </div>
           <div class = "even-player-area"></div>
@@ -105,8 +107,10 @@ The <html> element is known as the root element of a HTML page. All other elemen
       var quit = document.querySelector("#quit-button")
       var contButton = document.querySelector("#continue-button")
       var output = document.querySelector("#output-div")
+      var secret = document.querySelector("#secret-button")
 
       var setup = function (){
+        background()
         var numPlayers = document.querySelector("#num-player");
         setGameState(numPlayers.value);
         setUP();
@@ -155,6 +159,10 @@ The <html> element is known as the root element of a HTML page. All other elemen
       contButton.addEventListener("click", function(){
         var result = continueButton()
         displayText.innerHTML = result
+      })
+
+      secret.addEventListener("click", function(){
+        document.body.style.backgroundImage = background()
       })
     </script>
   </body>

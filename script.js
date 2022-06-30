@@ -1,23 +1,3 @@
-//Blackjack project:
-
-//Requirements:
-// 1. Generate deck -> deck generator function but 'Jack', 'Queen', 'King' = 10. "Ace" set to 11, later to be manipulated
-// 2. Shuffle deck -> shuffle deck function (copy from previous work) -> Constructor card: name, suits, value
-// 3. Deal initial cards to players and dealer -> constructor function for players and dealer -> constructor player: name, hands, bank
-// 4. "Ace" manipulator -> a function to manipulate value of Ace. -> check value of current hands
-//     One way to do it is to check current value of player hand and manipulate depending on current value of player card
-// 5. Read current value of player card function: Based on player hand, return the value of player hand.
-//    Initialise an array for player's hand
-// 6. Hit: draw a card  -> hit function for hit button
-// 7. Stand: End turn -> stand function
-// 8. Dealer must hit if value <17, stand if >17 && <21 and dealer draw first
-// 8. if burst >= 22 -> stand function and include msg you burst (check if dealer/player burst)
-// 9. if dealer burst and player burst: outcome draw
-// 10. if dealer burst and player didnt burst: player win regardless of numbers
-// 11. if player burst, player instant lose
-// 12. else compare dealer hand value and player hand to determine winner
-// 13. Make code scalable for more players
-
 var deck = [];
 var players = [];
 const suit = ["Hearts", "Diamonds", "Clubs", "Spades"];
@@ -40,6 +20,7 @@ var numOfplayers = 0;
 var currentPlayer = 0;
 var dealeroutput;
 var currentPlayerOutput;
+var isSecret = true;
 //constructor function for cards
 function Card(cardname, logo, number, cardImage) {
   this.name = cardname;
@@ -55,7 +36,6 @@ function Player(playerName, balance, bet) {
   this.wager = bet;
   this.handValue = 0;
 }
-
 //HTML settings
 
 document.querySelector("#hit-button").style.visibility = "hidden";
@@ -63,6 +43,7 @@ document.querySelector("#stand-button").style.visibility = "hidden";
 document.querySelector("#quit-button").style.visibility = "hidden";
 document.querySelector("#next-button").style.visibility = "hidden";
 document.querySelector("#continue-button").style.visibility = "hidden";
+document.querySelector("#secret-button").style.visibility = "hidden";
 document.querySelector("#num-player").disabled = false;
 document.querySelector("#start-button").disabled = false;
 
@@ -106,7 +87,7 @@ var gameStart = function () {
 };
 
 //Mid-game
-// Consists of allowing user to hit/stand. Next button serve as continuation
+//This set as the main display
 var midgame = function () {
   let output;
   //dealer's turn when currentPlayer > numOfplayers -> go to endgame()
@@ -119,8 +100,9 @@ var midgame = function () {
     return output;
   }
 
+  //display cards
   dealeroutput = `The dealer cards:<br><img src = "./assets/backcard.png"/><img src = "${players[0].hand[1].image}"/><br><br>`;
-  currentPlayerOutput = `Player ${currentPlayer}'s cards:<br>`;
+  currentPlayerOutput = `${players[currentPlayer].name}'s cards:<br>`;
   for (let i = 0; i < players[currentPlayer].hand.length; i++) {
     currentPlayerOutput += `<img src = "${players[currentPlayer].hand[i].image}"/>`;
   }
@@ -130,7 +112,7 @@ var midgame = function () {
     aceManipulator(players[currentPlayer].hand, currentPlayer);
   }
 
-  currentPlayerOutput += `<br>Player ${currentPlayer}'s card value is: ${players[currentPlayer].handValue}`;
+  currentPlayerOutput += `<br>${players[currentPlayer].name}'s card value is: ${players[currentPlayer].handValue}`;
 
   //output-div ouput
   output = dealeroutput + currentPlayerOutput;
@@ -149,7 +131,7 @@ var midgame = function () {
     } 
     else {
       //else continue if there are players left
-      displaytext.innerHTML = `You have bust! Player ${currentPlayer + 1}, press next to continue`;
+      displaytext.innerHTML = `You have bust! ${players[currentPlayer + 1].name} turn is next. Press next to continue`;
     }
     cardStorage(players[currentPlayer].hand, currentPlayer);
   } 
@@ -158,13 +140,12 @@ var midgame = function () {
     document.querySelector("#stand-button").disabled = true;
     document.querySelector("#hit-button").disabled = true;
     document.querySelector("#next-button").disabled = false;
+    players[currentPlayer].handValue = 100
     if(currentPlayer == numOfplayers){
-      displaytext.innerHTML = `Player ${currentPlayer} has blackjack!. It is Dealer's turn next! Press next to continue `;
+      displaytext.innerHTML = `${players[currentPlayer].name} has blackjack!. It is Dealer's turn next! Press next to continue `;
     }
     else{
-      displaytext.innerHTML = `Player ${currentPlayer} has blackjack!. It is Player ${
-        currentPlayer + 1
-      } turn! Press next to continue `;
+      displaytext.innerHTML = `${players[currentPlayer].name} has blackjack!. It is Player ${players[currentPlayer + 1].name} turn! Press next to continue `;
     }
   }
   //no bust or blackjack
@@ -191,6 +172,7 @@ var endgame = function () {
       aceManipulator(players[0].hand, 0);
   }
 
+  //display dealer's hand
   for (let i = 0; i < players[0].hand.length; i++) {
     output += `<img src = "${players[0].hand[i].image}"/>`;
   }
@@ -220,28 +202,27 @@ var endgame = function () {
     winlosedraw();
     displayText.innerHTML = text;
   }
-
+  //?????
+  document.querySelector("#secret-button").style.visibility = "visible";
+  document.querySelector("#secret-button").disabled = false;
   return output;
 };
 
 //determine win lose or draw
 var winlosedraw = function () {
   for (let i = 1; i < players.length; i++) {
+    //user wins
     if (players[i].handValue > players[0].handValue) {
-      console.log(
-        `Player ${i} Bank: ${players[i].bank} Bet: ${players[i].wager}`
-      );
       players[i].bank += players[i].wager;
       players[i].wager = 0;
-      console.log(
-        `Player ${i} Bank: ${players[i].bank} Bet: ${players[i].wager}`
-      );
       let output = document.querySelector(`#player-${i}`);
       let win = document.createElement('div')
       win.id = "WLD"
       win.innerText = "WIN!"
       output.appendChild(win)
-    } else if (players[i].handValue < players[0].handValue) {
+    } 
+    //user lose
+    else if (players[i].handValue < players[0].handValue) {
       players[i].bank -= players[i].wager;
       players[i].wager = 0;
       let output = document.querySelector(`#player-${i}`);
@@ -249,7 +230,9 @@ var winlosedraw = function () {
       lose.id = "WLD";
       lose.innerText = "LOSE";
       output.appendChild(lose);
-    } else if (players[i].handValue == players[0].handValue) {
+    }
+    //user draw with dealer
+    else if (players[i].handValue == players[0].handValue) {
       players[i].wager = 0;
       let output = document.querySelector(`#player-${i}`);
       let draw = document.createElement("div");
@@ -285,25 +268,26 @@ var hitFunction = function () {
   updateValue(players[currentPlayer].hand, currentPlayer);
 };
 
-//Set game
+//set global variable numofplayers
 var setGameState = function (playersNum) {
   numOfplayers = playersNum;
 };
 
 //Stand function
-//Once stand is choosen,, disable stand button and enable Next
+//Once stand is choosen, disable stand button and enable Next
 var standButton = function () {
   let output;
   document.querySelector("#stand-button").disabled = true;
   document.querySelector("#hit-button").disabled = true;
   document.querySelector("#next-button").disabled = false;
+  //for going into endgame
   if (currentPlayer == numOfplayers) {
-    output = `Player ${currentPlayer} has stand.<br>It is Dealer's turn. Please press next to continue.`;
+    output = `${players[currentPlayer].name} has stand.<br>It is Dealer's turn. Please press next to continue.`;
   } else {
-    output = `Player ${currentPlayer} has stand.<br>Player ${
-      currentPlayer + 1
+    output = `${players[currentPlayer].name} has stand. ${players[currentPlayer + 1].name}
     }, please press next to start your turn.`;
   }
+  //storing cards in a div
   cardStorage(players[currentPlayer].hand, currentPlayer);
   return output;
 };
@@ -362,6 +346,7 @@ var updateValue = function (currentHand, currentplayer) {
   players[currentplayer].handValue = cardValue;
 };
 
+//set-up function, mainly this function was created when DOM was used
 var setUP = function () {
   var element = document.getElementById("inputs");
   while (element.hasChildNodes()) {
@@ -395,6 +380,8 @@ var resetGame = function () {
                <button id = "start-button">Start</button>`;
   let output = document.querySelector("#output-div");
   output.innerHTML = "";
+
+  //Remove all player area's
   for(let i = 1; i <= numOfplayers; i++){
     let divRemover = document.querySelector(`#player-${i}`);
     divRemover.remove();
@@ -441,6 +428,7 @@ var continueButton = function () {
   return "Game reset. Player 1, please click next to play again";
 };
 
+//Create player area
 var createPlayerArea = function (num) {
   for (let i = 1; i <= num; i++) {
     if (i % 2 == 0) {
@@ -459,6 +447,7 @@ var createPlayerArea = function (num) {
   }
 };
 
+//Card to store in player area
 var cardStorage = function (playerhand, num) {
   //display card value and bet
   let playercardvalue = document.querySelector(`#classValue-player${num}`);
@@ -473,6 +462,7 @@ var cardStorage = function (playerhand, num) {
   playerOutput.innerHTML = output;
 };
 
+//Check has blackjack
 var hasBlackjack = function (playerHand, num) {
   let index = playerHand.findIndex((element) => element.name === "Ace" ); // ace card finder
   if(index >= 0 && players[num].handValue === 21){
@@ -482,3 +472,30 @@ var hasBlackjack = function (playerHand, num) {
     return false
   }
 };
+
+//background music or it is?
+var background = function(){
+  //toggle secret value
+  let audioPlay = document.querySelector("#BGAudio");
+  if(isSecret){
+    isSecret = false
+  }
+  else{
+    isSecret = true
+  }
+  //??????
+  if(isSecret){
+    document.querySelector("#secret-button").innerText = "GOT U!"
+    audioPlay.innerHTML = `<source src = "secretmusic.mp3" type = "audio/mp3">`;
+    audioPlay.load()
+    audioPlay.play()
+    return 'url(RICKROLL.gif)'
+  }
+  else{
+    document.querySelector("#secret-button").innerText = "SECRET?";
+    audioPlay.innerHTML = `<source src = "CasinoJazz.mp3" type = "audio/mp3">`;
+    audioPlay.load();
+    audioPlay.play();
+    return "url(pngtree-classy-luxury-casino-game-background-image_774371.jpg)";
+  }
+}

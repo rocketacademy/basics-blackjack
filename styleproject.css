@@ -1,10 +1,14 @@
 body{
-  background: url(pngtree-classy-luxury-casino-game-background-image_774371.jpg) no-repeat center fixed;
-  background-size: cover
+  background: fixed;
+  background-image: url(pngtree-classy-luxury-casino-game-background-image_774371.jpg);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  height: 100%;
 }
 button{
   height: 50px;
-  max-width: 160px;
+  max-width: 300px;
   margin-left: 8px;
   margin-bottom: 24px;
   padding-left: 10px;
