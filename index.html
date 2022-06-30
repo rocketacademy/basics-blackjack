@@ -126,7 +126,7 @@
       #container {
         background-color: transparent;
         margin: 40px auto;
-        max-width: 800px;
+        max-width: 1000px;
         padding: 38px 31px;
         text-align: center;
       }
@@ -140,7 +140,7 @@
         font-size: 30px;
         line-height: 33px;
         margin: 0 0 23px 30px;
-        padding: 0 6px;
+        padding: 6px;
       }
 
       #output-div {
@@ -155,6 +155,10 @@
         height: 49px;
         position: relative;
         top: 22px;
+      }
+      .jumbotron {
+        background-color: lightgray;
+        padding: 0px 5px;
       }
 
       /* increase header font size on wider screens */
@@ -180,6 +184,31 @@
     </h1>
     <h1 class="header">♣️ Basics - Blackjack ♠️</h1>
     <div id="container">
+      <div class="jumbotron">
+        <h1 class="display-4">Welcome to JR's blackjack game!</h1>
+        <hr class="my-4" />
+        <p>
+          Press Deal to start the game. The hand closest to 21 points will win
+          the game!
+        </p>
+        <p>
+          The player can either 'hit' or 'stand'. If the player calls out 'HIT',
+          they are given an extra card. They can then either call out 'HIT'
+          again, or 'STAND' if they do not wish to draw any more cards. The
+          player can 'HIT' as many times as they wish, but have to aim not to
+          bust (exceed a total of 21). More information about the game can be
+          found below.
+        </p>
+        <p class="lead">
+          <a
+            class="btn btn-primary btn-lg"
+            href="https://basics.rocketacademy.co/projects/project-3-blackjack"
+            role="button"
+            >Learn more</a
+          >
+        </p>
+      </div>
+
       <button id="deal-button" class="btn btn-outline-primary">Deal</button>
       <button id="hit-button" class="btn btn-outline-success">Hit</button>
       <button id="stand-button" class="btn btn-outline-secondary">Stand</button>
