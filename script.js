@@ -131,7 +131,7 @@ var midgame = function () {
     } 
     else {
       //else continue if there are players left
-      displaytext.innerHTML = `You have bust! ${players[currentPlayer + 1].name} turn is next. Press next to continue`;
+      displaytext.innerHTML = `You have bust! ${players[currentPlayer + 1].name}'s turn is next. Press next to continue`;
     }
     cardStorage(players[currentPlayer].hand, currentPlayer);
   } 
@@ -145,7 +145,7 @@ var midgame = function () {
       displaytext.innerHTML = `${players[currentPlayer].name} has blackjack!. It is Dealer's turn next! Press next to continue `;
     }
     else{
-      displaytext.innerHTML = `${players[currentPlayer].name} has blackjack!. It is Player ${players[currentPlayer + 1].name} turn! Press next to continue `;
+      displaytext.innerHTML = `${players[currentPlayer].name} has blackjack!. It is Player ${players[currentPlayer + 1].name}'s turn! Press next to continue `;
     }
   }
   //no bust or blackjack
@@ -284,8 +284,7 @@ var standButton = function () {
   if (currentPlayer == numOfplayers) {
     output = `${players[currentPlayer].name} has stand.<br>It is Dealer's turn. Please press next to continue.`;
   } else {
-    output = `${players[currentPlayer].name} has stand. ${players[currentPlayer + 1].name}
-    }, please press next to start your turn.`;
+    output = `${players[currentPlayer].name} has stand. ${players[currentPlayer + 1].name}, please press next to start your turn.`;
   }
   //storing cards in a div
   cardStorage(players[currentPlayer].hand, currentPlayer);
@@ -368,6 +367,7 @@ var resetGame = function () {
   document.querySelector("#quit-button").style.visibility = "hidden";
   document.querySelector("#next-button").style.visibility = "hidden";
   document.querySelector("#continue-button").style.visibility = "hidden";
+  document.querySelector("#secret-button").style.visibility = "hidden";
   let input = document.querySelector("#inputs");
   input.innerHTML = `<p style = "display: inline;">Number of players:</p> 
                <input id = "num-player" 
@@ -398,7 +398,7 @@ var continueButton = function () {
    for (let i = 1; i <= numOfplayers; i++) {
      let outputRemover = document.querySelector(`#player-${i}-output`);
      let playercardvalue = document.querySelector(`#classValue-player${i}`);
-     outputRemover.innerHTML = ""
+     outputRemover.innerHTML =  
      playercardvalue.innerHTML = ""
    }
   let outputDiv = document.querySelector("#output-div");
@@ -411,7 +411,7 @@ var continueButton = function () {
     let amtBet;
     if (i >= 1) {
       do {
-        amtBet = Number(prompt (`Player ${i}, how much to you want to wager?\nYou currently have ${players[i].bank}.`, ""));
+        amtBet = Number(prompt (`${players[i].name}, how much to you want to wager?\nYou currently have ${players[i].bank}.`, ""));
       } while (Number.isInteger(amtBet) == false || amtBet > players[i].bank);
     }
     players[i].wager = amtBet
@@ -423,6 +423,7 @@ var continueButton = function () {
       updateValue(players[j - 1].hand, j - 1);
     }
   }
+  document.querySelector("#secret-button").style.visibility = "hidden";
   document.querySelector("#continue-button").style.visibility = "hidden";
   document.querySelector("#next-button").disabled = false;
   return "Game reset. Player 1, please click next to play again";
