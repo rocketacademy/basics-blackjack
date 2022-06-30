@@ -392,7 +392,7 @@ var main2 = function () {
   } else {
     playerHand.push(shuffledDeck.pop());
     output =
-      `You have taken another card. Please enter "hit" above to take another card or enter "stand" to stop.</br> ` +
+      `You have taken another card. Please click "hit" above to take another card or click "stand" to stop.</br> ` +
       displayBothHands(playerHand, computerHand);
   }
   return output;
