@@ -204,6 +204,25 @@ var formatHandAndScore = function (player, hand, score) {
   return message;
 };
 
+var hitForCard = function () {
+  var gameMessage = "";
+  playerHand.push(deck.pop());
+  playerScore = calculateHandScore(playerHand);
+
+  if (playerHand.length <= 4) {
+    gameMessage =
+      formatHandAndScore("Player", playerHand, playerScore) +
+      `Input 'hit' if you want another card or 'stand' to end your turn.`;
+  } else {
+    gameMessage =
+      formatHandAndScore("Player", playerHand, playerScore) +
+      `You can only have 5 cards max. It's the dealer's turn now.`;
+    currentGameStatus = "computer turn";
+  }
+
+  return gameMessage;
+};
+
 var main = function (input) {
   var gameMessage = "";
 
