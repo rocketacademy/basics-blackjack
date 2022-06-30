@@ -16,9 +16,9 @@ var TIE = "TIE";
 //IMAGE LIBRARY
 Blackjack\basics-blackjack\image\Blackjack_WIN.jpg
 
-var IMAGE_WIN = '<img class = "bottom-img" src ="./image/BlackJack_WIN.jpg"/>';
-var IMAGE_LOSE = '<img class = "bottom-img" src ="./image/BlackJack_LOSE.jpg"/>';
-var IMAGE_TIE = '<img class = "bottom-img" src ="./image/BlackJack_TIE.jpg"/>';
+var IMAGE_WIN = '<img class = "bottom-img" src ="image/Blackjack_WIN.jpg"/>';
+var IMAGE_LOSE = '<img class = "bottom-img" src ="image/Blackjack_LOSE.jpg"/>';
+var IMAGE_TIE = '<img class = "bottom-img" src ="image/Blackjack_TIE.jpg"/>';
 
 //output is updated by using this function
 var displayHandsStatement = function (playerHand, computerHand) {
