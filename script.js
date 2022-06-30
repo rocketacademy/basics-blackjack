@@ -199,7 +199,7 @@ var hitOrStandStage = function () {
       playerHand,
       computerHand
     )}`;
-    while (calculateHandScore(computerHand) < 16) {
+    while (calculateHandScore(computerHand) < 17) {
       computerHand.push(shuffledDeck.pop());
     }
     mainButton.innerText = "See results";
@@ -217,7 +217,7 @@ var hitOrStandStage = function () {
     buttonContainer.removeChild(hitButton);
     currentGameMode = whoWon;
 
-    while (calculateHandScore(computerHand) < 16) {
+    while (calculateHandScore(computerHand) < 17) {
       computerHand.push(shuffledDeck.pop());
     }
     return output;
@@ -228,7 +228,7 @@ var hitOrStandStage = function () {
   ) {
     console.log("hit mode 3");
 
-    while (calculateHandScore(computerHand) < 16) {
+    while (calculateHandScore(computerHand) < 17) {
       computerHand.push(shuffledDeck.pop());
     }
     output =
@@ -372,7 +372,7 @@ var main2 = function () {
       playerHand,
       computerHand
     )}`;
-    while (calculateHandScore(computerHand) < 16) {
+    while (calculateHandScore(computerHand) < 17) {
       computerHand.push(shuffledDeck.pop());
     }
     mainButton.innerText = "See results";
@@ -383,7 +383,7 @@ var main2 = function () {
       playerHand,
       computerHand
     )}`;
-    while (calculateHandScore(computerHand) < 16) {
+    while (calculateHandScore(computerHand) < 17) {
       computerHand.push(shuffledDeck.pop());
     }
     mainButton.innerText = "See results";
