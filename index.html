@@ -199,7 +199,7 @@
         />
       </div>
       <p>Input:</p>
-      <input id="input-field" />
+      <input id="input-field" disabled />
       <br />
       <div id="subContainer">
         <button id="submit-button">Submit</button>
@@ -209,7 +209,6 @@
     <script src="script.js"></script>
     <!-- Define button click functionality -->
     <script>
-      document.querySelector("#input-field").disabled = true;
       var button = document.querySelector("#submit-button");
       button.addEventListener("click", function () {
         // Set result to input value
