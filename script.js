@@ -1,3 +1,65 @@
+//GLOBAL VARIABLES.
+//Global game stage.
+//Player card array and computer card array.
+//Player score and computer score.
+var currentGameStage = "waiting for number of players";
+var playerCardArray = [];
+var computerCardArray = [];
+var playerCurrentScore = 0;
+var computerCurrentScore = 0;
+var myOutputValue = ``;
+//For MULTIPLAYER: number of players, all player cards, all player scores, current player.
+var numberOfPlayers = 0;
+var allPlayerCardArray = [];
+var allPlayerScoreArray = [];
+var currentPlayer = 1;
+//For BETTING: all player coins, all player bets.
+var allPlayerCoins = [];
+var allPlayerBets = [];
+//FOR GIF OUTPUTS
+var myHitOrStandImage =
+  '<img src="https://c.tenor.com/tzJXjXSW7I4AAAAC/miyuki-miyuki-shirogane.gif" />';
+var myPlayerBustImage =
+  '<img src="https://c.tenor.com/OlB9hb8iBOIAAAAC/kaguya-sama-love-is-war-kaguya-sama.gif" />';
+var myComputerTurnImage =
+  '<img src="https://c.tenor.com/jmzhEvYQG6EAAAAC/shirogane-miyuki.gif" />';
+var myLoseImage =
+  '<img src="https://c.tenor.com/U1Uw6JT3_UcAAAAd/kaguya-kaguya-sama.gif" />';
+var myTieImage =
+  '<img src="https://c.tenor.com/dM4ts2v4ahoAAAAC/o-kawaii-koto-thinking.gif" />';
+var myWinImage =
+  '<img src="https://c.tenor.com/DFiy9xMYmPwAAAAC/happy-kaguya.gif" />';
+var myComputerBustImage =
+  '<img src="https://c.tenor.com/Y492NC5j5LIAAAAd/kaguya-kaguya-sama-love-is-war.gif" />';
+var myPlayerBankruptImage =
+  '<img src="https://c.tenor.com/shqkQ-_efj4AAAAC/kaguya-kaguya-sama.gif" />';
+var myPlayerBlackjackImage =
+  '<img src= "https://c.tenor.com/lDUXPG1xOQgAAAAC/miyuki-shirogane-rap.gif"/>';
+var myInvalidInputImage =
+  '<img src= "https://c.tenor.com/u_TnX8WnhagAAAAC/fujiwara-chika-kaguya-sama-love-is-war.gif"/>';
+
+//FOR HIT AND STAND BUTTONS
+var submitButton = document.querySelector("#submit-button");
+
+var hitButton = document.createElement("button");
+hitButton.innerText = "Hit";
+hitButton.addEventListener("click", function () {
+  document.querySelector("#output-div").innerHTML = playerHit();
+});
+
+var standButton = document.createElement("button");
+standButton.innerText = "Stand";
+standButton.addEventListener("click", function () {
+  document.querySelector("#output-div").innerHTML = playerStand();
+});
+
+var locationOfButton = document.querySelector("#subContainer");
+locationOfButton.appendChild(hitButton);
+locationOfButton.appendChild(standButton);
+//By default, hit and stand buttons will not be displayed.
+hitButton.style.display = "none";
+standButton.style.display = "none";
+
 //FUNCTION 1 - Create deck.
 var makeDeck = function () {
   var cardDeck = [];
@@ -115,13 +177,13 @@ var calculateScore = function (cardArray) {
   var sortedCardArray = cardArray.sort(sortFromLargest);
   var currentInitialScore = 0;
   var currentFinalScore = 0;
-  console.log(sortedCardArray);
+
   var i = 0;
   while (i < sortedCardArray.length) {
     currentInitialScore += sortedCardArray[i].rank;
     i += 1;
   }
-  console.log(currentInitialScore);
+
   if (currentInitialScore > 21) {
     currentFinalScore = currentInitialScore;
     var j = 0;
@@ -208,70 +270,6 @@ var showAllPlayerCoins = function (numberOfPlayers) {
   return result;
 };
 
-//GLOBAL VARIABLES.
-//Global game stage.
-//Player card array and computer card array.
-//Player score and computer score.
-//Shuffled deck created.
-var currentGameStage = "waiting for number of players";
-var shuffledDeck = shuffleCards(makeDeck());
-var playerCardArray = [];
-var computerCardArray = [];
-var playerCurrentScore = 0;
-var computerCurrentScore = 0;
-var myOutputValue = ``;
-//For MULTIPLAYER: number of players, all player cards, all player scores, current player.
-var numberOfPlayers = 0;
-var allPlayerCardArray = [];
-var allPlayerScoreArray = [];
-var currentPlayer = 1;
-//For BETTING: all player coins, all player bets.
-var allPlayerCoins = [];
-var allPlayerBets = [];
-//FOR GIF OUTPUTS
-var myHitOrStandImage =
-  '<img src="https://c.tenor.com/tzJXjXSW7I4AAAAC/miyuki-miyuki-shirogane.gif" />';
-var myPlayerBustImage =
-  '<img src="https://c.tenor.com/OlB9hb8iBOIAAAAC/kaguya-sama-love-is-war-kaguya-sama.gif" />';
-var myComputerTurnImage =
-  '<img src="https://c.tenor.com/jmzhEvYQG6EAAAAC/shirogane-miyuki.gif" />';
-var myLoseImage =
-  '<img src="https://c.tenor.com/U1Uw6JT3_UcAAAAd/kaguya-kaguya-sama.gif" />';
-var myTieImage =
-  '<img src="https://c.tenor.com/dM4ts2v4ahoAAAAC/o-kawaii-koto-thinking.gif" />';
-var myWinImage =
-  '<img src="https://c.tenor.com/DFiy9xMYmPwAAAAC/happy-kaguya.gif" />';
-var myComputerBustImage =
-  '<img src="https://c.tenor.com/Y492NC5j5LIAAAAd/kaguya-kaguya-sama-love-is-war.gif" />';
-var myPlayerBankruptImage =
-  '<img src="https://c.tenor.com/shqkQ-_efj4AAAAC/kaguya-kaguya-sama.gif" />';
-var myPlayerBlackjackImage =
-  '<img src= "https://c.tenor.com/lDUXPG1xOQgAAAAC/miyuki-shirogane-rap.gif"/>';
-var myInvalidInputImage =
-  '<img src= "https://c.tenor.com/u_TnX8WnhagAAAAC/fujiwara-chika-kaguya-sama-love-is-war.gif"/>';
-
-//FOR HIT AND STAND BUTTONS
-var submitButton = document.querySelector("#submit-button");
-
-var hitButton = document.createElement("button");
-hitButton.innerText = "Hit";
-hitButton.addEventListener("click", function () {
-  document.querySelector("#output-div").innerHTML = playerHit();
-});
-
-var standButton = document.createElement("button");
-standButton.innerText = "Stand";
-standButton.addEventListener("click", function () {
-  document.querySelector("#output-div").innerHTML = playerStand();
-});
-
-var locationOfButton = document.querySelector("#subContainer");
-locationOfButton.appendChild(hitButton);
-locationOfButton.appendChild(standButton);
-//By default, hit and stand buttons will not be displayed.
-hitButton.style.display = "none";
-standButton.style.display = "none";
-
 //FUNCTION 8 - create 100 coins per player at the start of the game.
 //Betting rules: if one player goes to 0, game ends.
 //Need to create betting game stage after users have been input, to say how much each person wants to bet. Player input and create coins at same time.
@@ -296,7 +294,6 @@ var playerHit = function () {
   var playerSentence = outputResult(playerCardArray);
   if (playerCurrentScore > 21) {
     allPlayerCardArray.push(playerCardArray);
-    console.log(allPlayerCardArray);
     allPlayerScoreArray.push(playerCurrentScore);
     //To display submit button, and hide hit&stand buttons if player bust and stage is automatically changed to next player.
     submitButton.style.display = "inline";
@@ -305,7 +302,15 @@ var playerHit = function () {
     myOutputValue = `Too bad, you have bust!<br>${myPlayerBustImage}<br><br> Your hand is ${playerSentence}. <br> Your current hand score is ${playerCurrentScore}.<br><br> Your turn ends. Click "submit" to continue. `;
     currentGameStage = "next player turn";
   } else if (playerCurrentScore <= 21) {
-    myOutputValue = `You have drawn ${playerSentence}. <br> Your current hand score is ${playerCurrentScore}.<br><br> Computer has drawn ${computerCardArray[0].name} ${computerCardArray[0].emoji} as their first card. <br><br> If you want to draw another card, submit "hit". <br><b>OR</b><br> If you are satisfied with your cards, submit "stand" to end your turn. <br><br> ${myHitOrStandImage}`;
+    myOutputValue = `You have drawn ${playerSentence}. <br> Your current hand score is ${playerCurrentScore}.<br><br> Computer has drawn ${
+      computerCardArray[0].name
+    } ${
+      computerCardArray[0].emoji
+    } as their first card. <br><br> If you want to draw another card, submit "hit". <br><b>OR</b><br> If you are satisfied with your cards, submit "stand" to end your turn. <br><br> Current Coin Balance: ${
+      allPlayerCoins[currentPlayer - 1]
+    } coins <br> Current Bet: ${
+      allPlayerBets[currentPlayer - 1]
+    } coins <br><br> ${myHitOrStandImage}`;
     currentGameStage = "player hit or stand";
   }
   return myOutputValue;
@@ -316,7 +321,6 @@ var playerHit = function () {
 var playerStand = function () {
   myOutputValue = `Your turn ends. Click "submit" to continue.`;
   allPlayerCardArray.push(playerCardArray);
-  console.log(allPlayerCardArray);
   allPlayerScoreArray.push(playerCurrentScore);
   //To display submit button, and hide hit&stand buttons if player stands.
   submitButton.style.display = "inline";
@@ -324,6 +328,84 @@ var playerStand = function () {
   standButton.style.display = "none";
   currentGameStage = "next player turn";
   return myOutputValue;
+};
+
+//FUNCTION 10 - Determination of player result with output for different scenarios.
+
+//FUNCTION 10A - Determination of player result if computer result is >21 (i.e. computer bust).
+var determineResultComputerBust = function () {
+  var z = 1;
+  while (z <= numberOfPlayers) {
+    if (allPlayerScoreArray[z - 1] <= 21) {
+      if (
+        allPlayerScoreArray[z - 1] == 21 &&
+        allPlayerCardArray[z - 1].length == 2
+      ) {
+        allPlayerCoins[z - 1] += Number(allPlayerBets[z - 1]) * 1.5;
+      } else {
+        allPlayerCoins[z - 1] += Number(allPlayerBets[z - 1]);
+      }
+      myOutputValue += `Player ${z} wins! <br> ${myWinImage} <br> Your score is ${
+        allPlayerScoreArray[z - 1]
+      } and you are closer to 21 than the dealer is! <br><br><br>  `;
+    } else if (allPlayerScoreArray[z - 1] > 21) {
+      allPlayerCoins[z - 1] += 0;
+      myOutputValue += `Player ${z} ties! <br> ${myTieImage} <br> Your score is ${
+        allPlayerScoreArray[z - 1]
+      }. <br><br><br>`;
+    }
+    z += 1;
+  }
+  return myOutputValue;
+};
+
+//FUNCTION 10B - Determination of player result if computer result is <=21.
+var determineResultComputerIn = function () {
+  var z = 1;
+  while (z <= numberOfPlayers) {
+    if (
+      allPlayerScoreArray[z - 1] <= 21 &&
+      allPlayerScoreArray[z - 1] > computerCurrentScore
+    ) {
+      if (
+        allPlayerScoreArray[z - 1] == 21 &&
+        allPlayerCardArray[z - 1].length == 2
+      ) {
+        allPlayerCoins[z - 1] += Number(allPlayerBets[z - 1]) * 1.5;
+      } else {
+        allPlayerCoins[z - 1] += Number(allPlayerBets[z - 1]);
+      }
+      myOutputValue += `Player ${z} wins! <br> ${myWinImage} <br> Your score is ${
+        allPlayerScoreArray[z - 1]
+      } and you are closer to 21 than the dealer is!  <br><br><br>`;
+    } else if (allPlayerScoreArray[z - 1] == computerCurrentScore) {
+      allPlayerCoins[z - 1] += 0;
+      myOutputValue += `Player ${z} ties!<br> ${myTieImage} <br> Your score is ${
+        allPlayerScoreArray[z - 1]
+      } <br><br><br>`;
+    } else {
+      allPlayerCoins[z - 1] -= Number(allPlayerBets[z - 1]);
+      myOutputValue += `Player ${z} loses! <br> ${myLoseImage} <br> Your score is ${
+        allPlayerScoreArray[z - 1]
+      } and the dealer is closer to 21 than you are! <br><br><br>`;
+    }
+    z += 1;
+  }
+  return myOutputValue;
+};
+
+//FUNCTION 11 - Create shuffled deck for start of game.
+var shuffledDeck = shuffleCards(makeDeck());
+
+//FUNCTION 12 - Reset game states and global variables for continuation of game.
+var resetGameforContinuation = function () {
+  shuffledDeck = shuffleCards(makeDeck());
+  playerCardArray = [];
+  computerCardArray = [];
+  allPlayerCardArray = [];
+  allPlayerScoreArray = [];
+  currentPlayer = 1;
+  allPlayerBets = [];
 };
 
 //MAIN FUNCTION - PLAY GAME & CHANGE GAME STAGES.
@@ -344,7 +426,7 @@ var main = function (input) {
     } else {
       numberOfPlayers = input;
       createCoins(numberOfPlayers);
-      myOutputValue = `${input} player(s) registered. <br><br> You may place your bets next. <br> Each player starts with 100 coins. <br><br> `;
+      myOutputValue = `${input} player(s) registered. <br><br> You may place your bets next. <br> Each player starts with 100 coins. `;
       currentGameStage = "wait for betting turn";
     }
   }
@@ -356,7 +438,9 @@ var main = function (input) {
   else if (currentGameStage == "wait for betting turn") {
     submitButton.innerText = "Submit";
     document.querySelector("#input-field").disabled = false;
-    myOutputValue = `Player 1 please enter the amount of coins you want to bet for this round.`;
+    myOutputValue = `Player 1 please enter the amount of coins you want to bet for this round. <br><br> Your current coin balance is ${
+      allPlayerCoins[currentPlayer - 1]
+    }.`;
     currentGameStage = "player betting turn";
   }
 
@@ -370,13 +454,17 @@ var main = function (input) {
       input == "" ||
       input > allPlayerCoins[currentPlayer - 1]
     ) {
-      myOutputValue = `Please enter a valid number not more than your number of coins.<br><br>${myInvalidInputImage}`;
+      myOutputValue = `Please enter a valid number not more than your number of coins.<br><br> Your current coin balance is ${
+        allPlayerCoins[currentPlayer - 1]
+      }.<br><br>${myInvalidInputImage}`;
     } else {
       if (currentPlayer < numberOfPlayers) {
         allPlayerBets.push(input);
         myOutputValue = `Player ${
           currentPlayer + 1
-        } please enter the amount of coins you want to bet for this round. `;
+        } please enter the amount of coins you want to bet for this round. <br><br> Your current coin balance is ${
+          allPlayerCoins[currentPlayer]
+        }. `;
         currentPlayer += 1;
       } else if (currentPlayer == numberOfPlayers) {
         allPlayerBets.push(input);
@@ -393,7 +481,6 @@ var main = function (input) {
   else if (currentGameStage == "computer dealt cards turn") {
     drawHand(shuffledDeck, computerCardArray);
     computerCurrentScore = calculateScore(computerCardArray);
-    console.log(allPlayerBets);
     myOutputValue = `Computer dealer has been dealt his cards. Please click submit to continue.`;
     currentGameStage = "waiting for game to start";
   }
@@ -412,21 +499,30 @@ var main = function (input) {
   //Ask player to choose to hit or stand.
   //Change game stage to player choose hit or stand.
   else if (currentGameStage == "player draw turn") {
-    var playerHandDrawn = drawHand(shuffledDeck, playerCardArray);
+    drawHand(shuffledDeck, playerCardArray);
 
-    console.log(playerHandDrawn);
     playerCurrentScore = calculateScore(playerCardArray);
     var playerSentence = outputResult(playerCardArray);
 
     if (playerCurrentScore == 21) {
       myOutputValue = `Hi Player ${currentPlayer}. You have drawn ${playerSentence}. <br> Your initial hand gives a score of ${playerCurrentScore}. <br><br> Congratulations, you have blackjacked!!! <br>${myPlayerBlackjackImage} Your turn ends. <br><br> Computer has drawn ${computerCardArray[0].name} ${computerCardArray[0].emoji} as their first card. <br><br>Click "submit" to continue.`;
+      allPlayerCardArray.push(playerCardArray);
+      allPlayerScoreArray.push(playerCurrentScore);
       currentGameStage = "next player turn";
     } else {
       submitButton.style.display = "none";
       hitButton.style.display = "inline";
       standButton.style.display = "inline";
 
-      myOutputValue = `Hi Player ${currentPlayer}. You have drawn ${playerSentence}. <br> Your initial hand gives a score of ${playerCurrentScore}. <br><br> Computer has drawn ${computerCardArray[0].name} ${computerCardArray[0].emoji} as their first card. <br><br> If you want to draw another card, submit "hit". <br><b>OR</b><br> If you are satisfied with your cards, submit "stand" to end your turn. <br><br> ${myHitOrStandImage}`;
+      myOutputValue = `Hi Player ${currentPlayer}. You have drawn ${playerSentence}. <br> Your initial hand gives a score of ${playerCurrentScore}. <br><br> Computer has drawn ${
+        computerCardArray[0].name
+      } ${
+        computerCardArray[0].emoji
+      } as their first card. <br><br> If you want to draw another card, submit "hit". <br><b>OR</b><br> If you are satisfied with your cards, submit "stand" to end your turn. <br><br>Current Coin Balance: ${
+        allPlayerCoins[currentPlayer - 1]
+      } coins <br> Current Bet: ${
+        allPlayerBets[currentPlayer - 1]
+      } coins <br><br> ${myHitOrStandImage}`;
       currentGameStage = "player hit or stand";
     }
   }
@@ -487,63 +583,12 @@ var main = function (input) {
     var computerSentence = outputResult(computerCardArray);
     myOutputValue = "";
     if (computerCurrentScore > 21) {
-      var z = 1;
-      while (z <= numberOfPlayers) {
-        if (allPlayerScoreArray[z - 1] <= 21) {
-          if (
-            allPlayerScoreArray[z - 1] == 21 &&
-            allPlayerCardArray[z - 1].length == 2
-          ) {
-            allPlayerCoins[z - 1] += Number(allPlayerBets[z - 1]) * 1.5;
-          } else {
-            allPlayerCoins[z - 1] += Number(allPlayerBets[z - 1]);
-          }
-          myOutputValue += `Player ${z} wins! <br> ${myWinImage} <br> Your score is ${
-            allPlayerScoreArray[z - 1]
-          } and you are closer to 21 than the dealer is! <br><br><br>  `;
-        } else if (allPlayerScoreArray[z - 1] > 21) {
-          allPlayerCoins[z - 1] += 0;
-          myOutputValue += `Player ${z} ties! <br> ${myTieImage} <br> Your score is ${
-            allPlayerScoreArray[z - 1]
-          }. <br><br><br>`;
-        }
-        z += 1;
-      }
+      determineResultComputerBust();
     } else if (computerCurrentScore <= 21) {
-      var z = 1;
-      while (z <= numberOfPlayers) {
-        if (
-          allPlayerScoreArray[z - 1] <= 21 &&
-          allPlayerScoreArray[z - 1] > computerCurrentScore
-        ) {
-          if (
-            allPlayerScoreArray[z - 1] == 21 &&
-            allPlayerCardArray[z - 1].length == 2
-          ) {
-            allPlayerCoins[z - 1] += Number(allPlayerBets[z - 1]) * 1.5;
-          } else {
-            allPlayerCoins[z - 1] += Number(allPlayerBets[z - 1]);
-          }
-          myOutputValue += `Player ${z} wins! <br> ${myWinImage} <br> Your score is ${
-            allPlayerScoreArray[z - 1]
-          } and you are closer to 21 than the dealer is!  <br><br><br>`;
-        } else if (allPlayerScoreArray[z - 1] == computerCurrentScore) {
-          allPlayerCoins[z - 1] += 0;
-          myOutputValue += `Player ${z} ties!<br> ${myTieImage} <br> Your score is ${
-            allPlayerScoreArray[z - 1]
-          } <br><br><br>`;
-        } else {
-          allPlayerCoins[z - 1] -= Number(allPlayerBets[z - 1]);
-          myOutputValue += `Player ${z} loses! <br> ${myLoseImage} <br> Your score is ${
-            allPlayerScoreArray[z - 1]
-          } and the dealer is closer to 21 than you are! <br><br><br>`;
-        }
-        z += 1;
-      }
+      determineResultComputerIn();
     }
 
     //Create table showing all players (from player 1 to n)'s cards in their hands, and current coin balance.
-    console.log(allPlayerCoins);
     var playerAllHands = showAllPlayerHands(numberOfPlayers);
     var playerCoinBalance = showAllPlayerCoins(numberOfPlayers);
 
@@ -572,12 +617,7 @@ var main = function (input) {
           myOutputValue += `Click "Continue Game" to start a new round!`;
           currentGameStage = "wait for betting turn";
           shuffledDeck = shuffleCards(makeDeck());
-          playerCardArray = [];
-          computerCardArray = [];
-          allPlayerCardArray = [];
-          allPlayerScoreArray = [];
-          currentPlayer = 1;
-          allPlayerBets = [];
+          resetGameforContinuation();
         }
       }
     }
