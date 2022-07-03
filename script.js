@@ -98,6 +98,10 @@ var startGame = function() {
 // Purpose: Calculate the Hand Value for both the player and computer
 var calculateHandValue = function(hand, userValue) {
   var value = 0
+  if (hand[0].name === "ace" && hand[1].name === "ace") {
+    userValue.value = 21;
+    return;
+  }
   for (var i = 0;i < hand.length;i++) {
     if (isNaN(hand[i].name)) {
       if(hand[i].name === "ace") {
@@ -125,35 +129,6 @@ var checkUserInput = function(userInput) {
   }
   return true;
 };
-
-/*// Function addingValue
-// Purpose: Adding the values
-var addingValue = function (userValue, userHand) {
-  var card = getRandomCard();
-  userHand.push(card);
-  if (card.name === "ace" && userValue.isace11 === true) {
-    userValue.value += 1;
-  } else if (card.name === "ace" && (userValue.value+11) <= 21) {
-    userValue.value += 11;
-    userValue.isace11 = true;
-  } else if (card.name === "ace") {
-    userValue.value += 1;
-  } else if (isNaN(card.name)) {
-    if ((userValue.value + 10) >= 21 && userValue.isace11 === true) {
-      userValue.value = userValue.value - 10 + 10;
-      userValue.isace11 = false;
-    } else {
-      userValue.value += 10;
-    }
-  } else {
-    if ((userValue.value + card.name) >= 21 && userValue.isace11 === true) {
-      userValue.value = userValue.value - 10 + card.name;
-      userValue.isace11 = false;
-    } else {
-      userValue.value += card.name;
-    }
-  }
-};*/
 
 // Function addingValue
 // Purpose: Adding the values
@@ -285,7 +260,6 @@ var gameReset = function() {
 
 // Main Function
 var main = function (input) {
-  console.log(input);
   if (userHitStand === false) {
     gameReset();
     startGame();
@@ -303,15 +277,20 @@ var main = function (input) {
       return myOutputValue;
     }
     printOutput();
+    if (playerValue.value < 16) {
+      document.querySelector("#stand-button").disabled = true;
+    }
     userHitStand = true;
   }
   else if (computerHitStand === false) {
-    if (checkUserInput(input)) {
-      return `Please enter "hit" or "stand"`;
-    }
     if (input === "hit") {
       addingValue(playerValue, playerHand);
       printOutput();
+      if (playerValue.value < 16) {
+        document.querySelector("#stand-button").disabled = true;
+      } else {
+        document.querySelector("#stand-button").disabled = false;
+      }
     } else {
       userStand = true;
       while (computerValue.value < 17) {
