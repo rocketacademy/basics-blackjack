@@ -256,16 +256,16 @@ var showAllPlayerHands = function (numberOfPlayers) {
 
 //FUNCTION 7 FOR MULTIPLAYER BETTING - Create loop to show all players' coins at the end of the round when win/lose/tie is determined.
 var showAllPlayerCoins = function (numberOfPlayers) {
-  var playerCounter = 0;
+  var playerCoinBalanceCounter = 0;
   var result = "";
-  while (playerCounter < numberOfPlayers) {
+  while (playerCoinBalanceCounter < numberOfPlayers) {
     result +=
       "Player " +
-      String(Number(playerCounter + 1)) +
+      String(Number(playerCoinBalanceCounter + 1)) +
       ": " +
-      allPlayerCoins[playerCounter] +
+      allPlayerCoins[playerCoinBalanceCounter] +
       " coins <br>";
-    playerCounter += 1;
+    playerCoinBalanceCounter += 1;
   }
   return result;
 };
@@ -319,11 +319,12 @@ var playerHit = function () {
 //FUNCTION 9B - Preparation for hit/stand buttons.
 //If player choose stand, end player turn. Push final hand into global all player card array. Push final score into global all player score array. Change game stage to next player turn stage.
 var playerStand = function () {
-  myOutputValue = `Your turn ends. Click "submit" to continue.`;
+  myOutputValue = `Your turn ends. Click "Next" to continue.`;
   allPlayerCardArray.push(playerCardArray);
   allPlayerScoreArray.push(playerCurrentScore);
   //To display submit button, and hide hit&stand buttons if player stands.
   submitButton.style.display = "inline";
+  submitButton.innerText = "Next";
   hitButton.style.display = "none";
   standButton.style.display = "none";
   currentGameStage = "next player turn";
@@ -352,7 +353,7 @@ var determineResultComputerBust = function () {
       allPlayerCoins[z - 1] += 0;
       myOutputValue += `Player ${z} ties! <br> ${myTieImage} <br> Your score is ${
         allPlayerScoreArray[z - 1]
-      }. <br><br><br>`;
+      }! <br><br><br>`;
     }
     z += 1;
   }
@@ -371,7 +372,7 @@ var determineResultComputerIn = function () {
         allPlayerScoreArray[z - 1] == 21 &&
         allPlayerCardArray[z - 1].length == 2
       ) {
-        allPlayerCoins[z - 1] += Number(allPlayerBets[z - 1]) * 1.5;
+        allPlayerCoins[z - 1] += Math.round(Number(allPlayerBets[z - 1]) * 1.5);
       } else {
         allPlayerCoins[z - 1] += Number(allPlayerBets[z - 1]);
       }
@@ -414,6 +415,7 @@ var main = function (input) {
   //Shift to confirming how many players.
   if (currentGameStage == "waiting for number of players") {
     myOutputValue = `Please type in how many players there are.`;
+    document.querySelector("#input-field").disabled = false;
     currentGameStage = "number of players confirmed";
   }
 
@@ -421,11 +423,17 @@ var main = function (input) {
   //Call FUNCTION 8 to create coins for n players.
   //Shift to betting stage. Explain to players they will each receive 100 coins.
   else if (currentGameStage == "number of players confirmed") {
-    if (Number.isNaN(Number(input)) || input == "") {
-      myOutputValue = `Please enter a number.<br><br>${myInvalidInputImage}`;
+    if (
+      Number.isNaN(Number(input)) ||
+      input == "" ||
+      input != Math.floor(input)
+    ) {
+      myOutputValue = `Please enter a valid number.<br><br>${myInvalidInputImage}`;
     } else {
       numberOfPlayers = input;
       createCoins(numberOfPlayers);
+      document.querySelector("#input-field").disabled = true;
+      submitButton.innerText = "Next";
       myOutputValue = `${input} player(s) registered. <br><br> You may place your bets next. <br> Each player starts with 100 coins. `;
       currentGameStage = "wait for betting turn";
     }
@@ -452,7 +460,8 @@ var main = function (input) {
     if (
       Number.isNaN(Number(input)) ||
       input == "" ||
-      input > allPlayerCoins[currentPlayer - 1]
+      input > allPlayerCoins[currentPlayer - 1] ||
+      input != Math.floor(input)
     ) {
       myOutputValue = `Please enter a valid number not more than your number of coins.<br><br> Your current coin balance is ${
         allPlayerCoins[currentPlayer - 1]
@@ -468,8 +477,9 @@ var main = function (input) {
         currentPlayer += 1;
       } else if (currentPlayer == numberOfPlayers) {
         allPlayerBets.push(input);
-        myOutputValue = `All bets have been placed! <br><br> Please click submit to start the game. `;
+        myOutputValue = `All bets have been placed! <br><br> Please click "Next" to start the game. `;
         document.querySelector("#input-field").disabled = true;
+        submitButton.innerText = "Next";
         currentGameStage = "computer dealt cards turn";
         currentPlayer = 1;
       }
@@ -481,7 +491,7 @@ var main = function (input) {
   else if (currentGameStage == "computer dealt cards turn") {
     drawHand(shuffledDeck, computerCardArray);
     computerCurrentScore = calculateScore(computerCardArray);
-    myOutputValue = `Computer dealer has been dealt his cards. Please click submit to continue.`;
+    myOutputValue = `Computer dealer has been dealt his cards. Please click "Next" to continue.`;
     currentGameStage = "waiting for game to start";
   }
 
@@ -508,8 +518,10 @@ var main = function (input) {
       myOutputValue = `Hi Player ${currentPlayer}. You have drawn ${playerSentence}. <br> Your initial hand gives a score of ${playerCurrentScore}. <br><br> Congratulations, you have blackjacked!!! <br>${myPlayerBlackjackImage} Your turn ends. <br><br> Computer has drawn ${computerCardArray[0].name} ${computerCardArray[0].emoji} as their first card. <br><br>Click "submit" to continue.`;
       allPlayerCardArray.push(playerCardArray);
       allPlayerScoreArray.push(playerCurrentScore);
+      submitButton.innerText = "Next";
       currentGameStage = "next player turn";
     } else {
+      submitButton.innerText = "Submit";
       submitButton.style.display = "none";
       hitButton.style.display = "inline";
       standButton.style.display = "inline";
@@ -546,10 +558,10 @@ var main = function (input) {
     playerCurrentScore = 0;
     currentPlayer += 1;
     if (currentPlayer <= numberOfPlayers) {
-      myOutputValue = `Please pass the control to Player ${currentPlayer} and click "submit".`;
+      myOutputValue = `Please pass the control to Player ${currentPlayer} and click "Next".`;
       currentGameStage = "waiting for game to start";
     } else if (currentPlayer > numberOfPlayers) {
-      myOutputValue = `The computer dealer will go next. Please click "submit" to continue.`;
+      myOutputValue = `The computer dealer will go next. Please click "Next" to continue.`;
       currentGameStage = "computer turn";
     }
   }
@@ -561,13 +573,13 @@ var main = function (input) {
   //Change game stage to compare score stage.
   else if (currentGameStage == "computer turn") {
     if (computerCurrentScore < 17) {
-      myOutputValue = `The computer dealer will draw cards as he has less than 17. <br> ${myComputerTurnImage} <br>Click "submit" to continue.`;
+      myOutputValue = `The computer dealer will draw cards as he has less than 17. <br> ${myComputerTurnImage} <br>Click "Next" to continue.`;
       while (computerCurrentScore < 17) {
         drawCard(shuffledDeck, computerCardArray);
         computerCurrentScore = calculateScore(computerCardArray);
       }
     } else
-      myOutputValue = `Computer dealer turn has ended. Click "submit" to find out the winner!`;
+      myOutputValue = `Computer dealer turn has ended. Click "Next" to find out the winner!`;
     currentGameStage = "compare scores";
   }
 
@@ -582,22 +594,26 @@ var main = function (input) {
     //Create output sentence for computer's cards in computer hand.
     var computerSentence = outputResult(computerCardArray);
     myOutputValue = "";
-    if (computerCurrentScore > 21) {
-      determineResultComputerBust();
-    } else if (computerCurrentScore <= 21) {
-      determineResultComputerIn();
-    }
-
-    //Create table showing all players (from player 1 to n)'s cards in their hands, and current coin balance.
-    var playerAllHands = showAllPlayerHands(numberOfPlayers);
-    var playerCoinBalance = showAllPlayerCoins(numberOfPlayers);
 
     if (computerCurrentScore > 21) {
       myOutputValue += `The dealer has bust! <br>The dealer's hand is ${computerSentence}. <br> The dealer's score is ${computerCurrentScore}. <br>${myComputerBustImage}<br><br> `;
     } else {
       myOutputValue += `The dealer's hand is ${computerSentence}. <br> The dealer's score is ${computerCurrentScore}. <br><br> `;
     }
-    myOutputValue += `<b><u>HANDS OF EACH PLAYER</u></b> <br> ${playerAllHands} <br><b><u>PLAYER COIN BALANCE</u></b> <br> ${playerCoinBalance} <br>`;
+
+    //Create table showing all players (from player 1 to n)'s cards in their hands.
+    var playerAllHands = showAllPlayerHands(numberOfPlayers);
+
+    myOutputValue += `<b><u>HANDS OF EACH PLAYER</u></b> <br> ${playerAllHands} <br>`;
+
+    if (computerCurrentScore > 21) {
+      determineResultComputerBust();
+    } else if (computerCurrentScore <= 21) {
+      determineResultComputerIn();
+    }
+    //Create table showing all players' current coin balance.
+    var playerCoinBalance = showAllPlayerCoins(numberOfPlayers);
+    myOutputValue += `<b><u>PLAYER COIN BALANCE</u></b> <br> ${playerCoinBalance} <br>`;
 
     //Check if any player has gone bankrupt (coin balance = 0), if so, end game, shift to end game stage.
     //If all players more than 0 coins, shift game stage to new betting turn.

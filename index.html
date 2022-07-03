@@ -133,6 +133,7 @@
         font-size: 21px;
         line-height: 33px;
         margin: 0 0 23px 0;
+        margin-right: 5px;
         padding: 0 6px;
       }
 
@@ -208,6 +209,7 @@
     <script src="script.js"></script>
     <!-- Define button click functionality -->
     <script>
+      document.querySelector("#input-field").disabled = true;
       var button = document.querySelector("#submit-button");
       button.addEventListener("click", function () {
         // Set result to input value
