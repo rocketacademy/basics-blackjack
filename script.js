@@ -426,7 +426,8 @@ var main = function (input) {
     if (
       Number.isNaN(Number(input)) ||
       input == "" ||
-      input != Math.floor(input)
+      input != Math.floor(input) ||
+      input <= 0
     ) {
       myOutputValue = `Please enter a valid number.<br><br>${myInvalidInputImage}`;
     } else {
@@ -461,7 +462,8 @@ var main = function (input) {
       Number.isNaN(Number(input)) ||
       input == "" ||
       input > allPlayerCoins[currentPlayer - 1] ||
-      input != Math.floor(input)
+      input != Math.floor(input) ||
+      input <= 0
     ) {
       myOutputValue = `Please enter a valid number not more than your number of coins.<br><br> Your current coin balance is ${
         allPlayerCoins[currentPlayer - 1]
