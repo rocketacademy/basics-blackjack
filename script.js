@@ -221,7 +221,11 @@ var main = function (input) {
     // write and return appropriate output message
     outputMessage = `Everyone has been dealt a card. Click submit to evaluate cards`;
     return outputMessage;
+    // NOTE: "return outputMessage;" statement should be at the end of each gameMode if statement
+    // It should be at the outermost but within each gameMode if statement to ensure it runs.
+    // It shouldn't be inside any nested if/else/else if statement.
   }
+
   // SECOND CLICK OF SUBMIT BUTTON
   if (currentGameMode == GAME_CARDS_DRAWN) {
     // check for blackjack
@@ -251,7 +255,31 @@ var main = function (input) {
       console.log(outputMessage);
     } else {
       // no blackjack -> game continues
+      outputMessage =
+        displayPlayerAndDealerHands(playerHand, dealerHand) +
+        '<br>There are no Black Jacks. <br>Please input "hit" or "stand".';
 
+      // change the gameMode
+      currentGameMode = GAME_HIT_OR_STAND;
+    }
+    // appropriate output message
+    return outputMessage;
+    // NOTE: "return outputMessage;" statement should be at the end of each gameMode if statement
+    // It should be at the outermost but within each gameMode if statement to ensure it runs.
+    // It shouldn't be inside any nested if/else/else if statement.
+  }
+
+  // THIRD CLICK: HIT OR STAND
+  if (currentGameMode == GAME_HIT_OR_STAND) {
+    // Player hit (i.e. draw one card)
+    if (input.toLowerCase() == `hit`) {
+      playerHand.push(gameDeck.pop());
+      outputMessage =
+        displayPlayerAndDealerHands(playerHand, dealerHand) +
+        `<br>You drew another card. <br>Please input "hit" or "stand".`;
+    }
+    // Player stand
+    else if (input.toLowerCase() == `stand`) {
       // calculate total hand value of both player and dealer
       var playerHandTotalValue = calculateTotalHandValue(playerHand);
       var dealerHandTotalValue = calculateTotalHandValue(dealerHand);
@@ -279,11 +307,16 @@ var main = function (input) {
           `<br>Dealer wins!<br>` +
           displayHandTotalValues(playerHandTotalValue, dealerHandTotalValue);
       }
-      // change the gameMode
-      currentGameMode = GAME_RESULTS_SHOWN;
-
-      // appropriate output message
-      return outputMessage;
     }
+    // Input validation
+    else {
+      outputMessage =
+        `Invalid input. Please input "hit" or "stand" only!<br><br>` +
+        displayPlayerAndDealerHands(playerHand, dealerHand);
+    }
+    return outputMessage;
+    // NOTE: "return outputMessage;" statement should be at the end of each gameMode if statement
+    // It should be at the outermost but within each gameMode if statement to ensure it runs.
+    // It shouldn't be inside any nested if/else/else if statement.
   }
 };
