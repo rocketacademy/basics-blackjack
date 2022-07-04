@@ -6,18 +6,22 @@ var playerScore = 0, dealerScore = 0;   // score of player and dealer respective
 var disableAllButtons = false;      // this is a flag to terminate the game when card deck runs low
 
 var main = function (input) {
-  if (gameStage == 'SET UP') {   // SET UP mode   - to Make and Shuffle TWO decks of cards
-    arr1 = shuffleCards(makeDeck()); 
-    arr2 = shuffleCards(makeDeck());
-    shuffledDeck = shuffleCards(arr1.concat(arr2));
+  if (gameStage == 'SET UP') {   // SET UP mode   - to Make and Shuffle SIX decks of cards
+    deck = [];
+    for (var i=0; i<6; i+=1) {
+      arr = shuffleCards(makeDeck());
+      deck = deck.concat(arr);
+    }
+    shuffledDeck = shuffleCards(deck);
+
     console.log(shuffledDeck.length);
     gameStage = 'DRAW CARDS';     // toggle to DRAW CARDS mode
     //return 'Game is setup, click Submit to play'; 
   }
 
   if (gameStage == 'DRAW CARDS') {    // this game mode to draw the cards, for player and dealer to have two cards each
-    // if the stack of cards is below 10 cards left, then game must restart
-    if (shuffledDeck.length < 10) {
+    // if the stack of cards is below 30 cards left, then game must restart
+    if (shuffledDeck.length < 30) {
       disableAllButtons = true;
       return `Dealer needs to shuffle the cards now.  <br> 
         Please refresh browser to restart the game.`;
