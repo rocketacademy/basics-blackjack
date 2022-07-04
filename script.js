@@ -12,8 +12,18 @@
 //    - higher hand value
 // 5. display hands of both player and dealer in the output box and declare winner
 
+// ===== version 2 pseudocode (add player hit or stand) =====
+// 1. extra game mode hit or stand
+// 2. functionality for user to input hit or stand
+//    - if hit, add a card to their hand
+//    - if stand, compare the player hand against the dealer
+
+// ===== version 3 pseudocode (add dealer hit or stand) =====
+// 1. dealer to hit or stand ONLY AFTER player chooses to stand
+// 2. if dealer hand value is less than 17, dealer hits
+// 3. if dealer hand value is more than 17, dealer stands
+
 // Declare game modes:
-// Declare Game modes
 var GAME_START = "game start";
 var GAME_CARDS_DRAWN = "cards are drawn";
 var GAME_RESULTS_SHOWN = "results are shown";
@@ -285,6 +295,14 @@ var main = function (input) {
       var dealerHandTotalValue = calculateTotalHandValue(dealerHand);
       console.log(`Player total hand value = ${playerHandTotalValue}`);
       console.log(`Dealer total hand value = ${dealerHandTotalValue}`);
+
+      // Dealer hit or stand (occurs ONLY AFTER player chooses to stand)
+      // if dealer hand value is less than 17, dealer hits
+      while (dealerHandTotalValue < 17) {
+        dealerHand.push(gameDeck.pop());
+        dealerHandTotalValue = calculateTotalHandValue(dealerHand);
+      }
+
       // compare total hand value
       // same value -> tie
       if (playerHandTotalValue == dealerHandTotalValue) {
