@@ -23,6 +23,10 @@
 // 2. if dealer hand value is less than 17, dealer hits
 // 3. if dealer hand value is more than 17, dealer stands
 
+// ===== version 4 pseudocode (add variable ace values) =====
+// 1. if totalHandValue, including an ace, is less than 21, ace value is 11
+// 2. if totalHandValue, including an ace, is more than 21, ace value is reduced to 1
+
 // Declare game modes:
 var GAME_START = "game start";
 var GAME_CARDS_DRAWN = "cards are drawn";
@@ -138,6 +142,8 @@ var checkForBlackjack = function (handArray) {
 // Function that calculates hand value
 var calculateTotalHandValue = function (handArray) {
   var totalHandValue = 0;
+  // counter to track no. of times aces appear in hand array
+  var aceCounter = 0;
   // loop through player or dealer hand and add up the values
   var index = 0;
   while (index < handArray.length) {
@@ -149,8 +155,19 @@ var calculateTotalHandValue = function (handArray) {
       currentCard.name == "jack"
     ) {
       totalHandValue = totalHandValue + 10;
+    } else if (currentCard.name == "ace") {
+      totalHandValue = totalHandValue + 11;
+      aceCounter = aceCounter + 1;
     } else {
       totalHandValue = totalHandValue + currentCard.rank;
+    }
+    index += 1;
+  }
+
+  index = 0;
+  while (index < aceCounter) {
+    if (totalHandValue > 21) {
+      totalHandValue = totalHandValue - 10;
     }
     index += 1;
   }
