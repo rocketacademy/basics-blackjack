@@ -38,3 +38,17 @@ var initializeDeck = function () {
   }
   return unshuffledDeck;
 };
+
+var shuffleDeck = function (input) {
+  var unshuffledDeck = input.slice();
+  var deckLen = unshuffledDeck.length;
+  var shuffledDeck = [];
+
+  for (k = 0; k < deckLen; deckLen--) {
+    var currentCardIndex = Math.floor(Math.random() * deckLen);
+    var currentCard = unshuffledDeck[currentCardIndex];
+    unshuffledDeck.splice(currentCardIndex, 1);
+    shuffledDeck.push(currentCard);
+  }
+  return shuffledDeck;
+};
