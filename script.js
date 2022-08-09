@@ -7,6 +7,8 @@ var playerNames = [];
 var playerTurn = 0;
 var betInitial = false;
 var initialBlackjack = false;
+var splitInitial = false;
+var openSplit = false;
 
 var players = [];
 
@@ -84,40 +86,73 @@ var main = function (input) {
       turnUpdate();
     }
 
-    //Temporary to debug blackjackArr insert
-    players[0].hands = [
-      [
-        { suit: "Spades", cardNum: "Ace", cardValue: 1 },
-        { suit: "Spades", cardNum: "King", cardValue: 10 },
-      ],
-      [
-        { suit: "Spades", cardNum: 5, cardValue: 2 },
-        { suit: "Spades", cardNum: 5, cardValue: 5 },
-      ],
-    ];
-    // players[1].hands = [
-    //   [
-    //     { suit: "spades", cardNum: "Ace", cardValue: 1 },
-    //     { suit: "spades", cardNum: "King", cardValue: 10 },
-    //   ],
-    // ];
-
     //Deal hand for dealer
     dealerHand.push(currentDeck.pop());
     dealerHand.push(currentDeck.pop());
     initialHand = true;
   }
+
+  //Check if player has 2 cards of the same type to split
+  if (splitInitial == false) {
+    if (
+      players[playerTurn].hands[0][0].cardNum ==
+        players[playerTurn].hands[0][1].cardNum &&
+      openSplit == false &&
+      players[playerTurn].bet * (players[playerTurn].hands.length + 1) <=
+        players[playerTurn].chips
+    ) {
+      openSplit = true;
+      return `You have a pair of ${players[playerTurn].hands[0][0].cardNum}s.<br>Would you like to split your hand?<br>Enter "y" to split or "n" to keep a single hand.`;
+    } else if (openSplit == true) {
+      if (input.toLowerCase() != "y" && input.toLowerCase() != "n") {
+        return `Please enter either "y" to split or "n" to keep a single hand.`;
+      } else if (input.toLowerCase() == "y") {
+        splitHand(playerTurn);
+      }
+      openSplit = false;
+      turnUpdate();
+      if (playerTurn == 0) {
+        splitInitial = true;
+      }
+    }
+  }
+
+  //Temporary to debug blackjackArr insert
+  players[0].hands = [
+    [
+      { suit: "Spades", cardNum: "Ace", cardValue: 1 },
+      { suit: "Spades", cardNum: "King", cardValue: 10 },
+    ],
+    [
+      { suit: "Hearts", cardNum: "Ace", cardValue: 1 },
+      { suit: "Hearts", cardNum: "King", cardValue: 10 },
+    ],
+  ];
+  // players[1].hands = [
+  //   [
+  //     { suit: "spades", cardNum: "Ace", cardValue: 1 },
+  //     { suit: "spades", cardNum: "King", cardValue: 10 },
+  //   ],
+  // ];
+
   //Check if any players have a natural blackjack
   var blackjackArr = [];
   if (initialBlackjack == false) {
     for (i = 0; i < playerNum; i++) {
-      var curPlayerHand = players[playerTurn].hands[0];
-      if (isBlackjack(curPlayerHand)) {
-        players[playerTurn].roundStatus[0] = "Won";
-        players[playerTurn].chips += Math.round(players[playerTurn].bet * 1.5);
+      console.log("a");
+      for (j = 0; j < players[playerTurn].hands.length; j++) {
+        var curPlayerHand = players[playerTurn].hands[j];
+        console.log(curPlayerHand);
+        if (isBlackjack(curPlayerHand)) {
+          players[playerTurn].roundStatus[j] = "Won";
+          players[playerTurn].chips += Math.round(
+            players[playerTurn].bet * 1.5
+          );
+        }
         blackjackArr.push(playerTurn);
       }
       turnUpdate();
+      blackjackArr = [...new Set(blackjackArr)];
       if (playerTurn == 0) {
         initialBlackjack = true;
       }
@@ -143,10 +178,24 @@ var main = function (input) {
   }
 };
 
+//Function for splitting hands
+var splitHand = function (input) {
+  var handOne = [];
+  var handTwo = [];
+
+  handOne.push(players[input].hands[0][0]);
+  handOne.push(currentDeck.pop());
+  handTwo.push(players[input].hands[0][1]);
+  handTwo.push(currentDeck.pop());
+
+  players[input].hands = [];
+  players[input].hands.push(handOne);
+  players[input].hands.push(handTwo);
+};
+
 //Function for overall game status generation message
 var gameStateMsg = function () {
   //Test multiple hand scenario
-  players[0].roundStatus.push("Test State");
 
   var outputMsg = "";
 
@@ -173,7 +222,7 @@ var gameStateMsg = function () {
         for (j = 0; j < players[i].hands[k].length; j++) {
           outputMsg =
             outputMsg +
-            `${players[i].hands[0][j].cardNum} of ${players[i].hands[0][j].suit}<br>`;
+            `${players[i].hands[k][j].cardNum} of ${players[i].hands[k][j].suit}<br>`;
         }
       }
     } else {
