@@ -1,6 +1,31 @@
-var initialHand = false;
 var initialDeck = false;
+var initialHand = false;
 var currentDeck = [];
+var dealerHand = [];
+var playerNum = 0;
+var playerNames = [];
+
+var players = [];
+
+//Function to initialize set of players
+var playerInitialize = function (input) {
+  for (i = 0; i < playerNum; i++) {
+    var curPlayer = {};
+    curPlayer.name = input[i];
+    curPlayer.chips = 100;
+    curPlayer.hands = [];
+    players.push(curPlayer);
+  }
+};
+
+//Function to reset players hands and dealer hands
+var handReset = function () {
+  dealerHand = [];
+  for (i = 0; i < playerNum; i++) {
+    players[i].hands = [];
+  }
+  initialHand = false;
+};
 
 var main = function (input) {
   //Setting initial shuffled deck
