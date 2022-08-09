@@ -135,6 +135,8 @@ var calcCardValue = function (input) {
   return value;
 };
 
+/* 
+// Compare value function has been shifted to V2
 // Create a helper function with winning conditions
 var compareHands = function (player, dealer) {
   // Inputs are 2 numerical values
@@ -156,6 +158,7 @@ var compareHands = function (player, dealer) {
   }
   return outputValue;
 };
+*/
 
 // Create a function to reveal the cards drawn by each player
 var revealCards = function (input) {
@@ -169,17 +172,8 @@ var revealCards = function (input) {
   return cardsInHand;
 };
 
-// // [REDUNDANT FOR V1] Create a helper function to declare if player has blackjack.
-// var haveBlackJack = function (input) {
-//   var message = "";
-//   // input is an array of card objects
-//   if (calcCardValue(input) == Number(21)) {
-//     message = "wins by Blackjack 👑";
-//   }
-// };
-
 /*
-// Line 181 to Line 202 transferred to V2 
+// Main function shifted to V2 
 var gameMode = "deal cards";
 
 var main = function (input) {
@@ -205,6 +199,78 @@ var main = function (input) {
 */
 
 // ==================== V2 - Add Player Hit or Stand ====================
+
+var haveBlackjack = function (input) {
+  // Input is an array of card objects
+  var gotBlackjack = false;
+  if (
+    input[0].name == "Ace" &&
+    (input[1].name == "King" ||
+      input[1].name == "Queen" ||
+      input[1].name == "Jack" ||
+      input[1].name == "10")
+  ) {
+    gotBlackjack = true;
+  } else if (
+    input[1].name == "Ace" &&
+    (input[0].name == "King" ||
+      input[0].name == "Queen" ||
+      input[0].name == "Jack" ||
+      input[0].name == "10")
+  ) {
+    gotBlackjack = true;
+  }
+  return gotBlackjack;
+};
+
+var compareHands = function (player, dealer) {
+  // Inputs are 2 numerical values
+  var outputValue = "";
+  if (player == dealer) {
+    if (player == Number(21)) {
+      if (
+        haveBlackjack(playerHands) == true &&
+        haveBlackjack(dealerHands) == true
+      ) {
+        outputValue = "Tie with Blackjack.";
+      } else {
+        outputValue = `Tie with 21.`;
+      }
+    } else {
+      outputValue = "It's a Tie.";
+    }
+  } else if (haveBlackjack(playerHands) == true) {
+    outputValue = "Player wins with Blackjack!";
+  } else if (haveBlackjack(dealerHands) == true) {
+    outputValue = "Dealer wins with Blackjack!";
+  } else if (player > dealer && !(player > Number(21))) {
+    if (player == Number(21)) {
+      outputValue = "Player wins with 21.";
+    } else {
+      outputValue = "Player wins";
+    }
+  } else if (player < dealer && !(dealer > Number(21))) {
+    if (dealer == Number(21)) {
+      outputValue = "Dealer wins with 21.";
+    } else {
+      outputValue = "Dealer wins";
+    }
+  } else if (player > 21) {
+    if (dealer > 21) {
+      outputValue = `It's a Tie - both bust.`;
+    } else {
+      outputValue = `Player bust. Dealer wins.`;
+    }
+  } else if (dealer > 21) {
+    if (player > 21) {
+      outputValue = `It's a Tie - both bust.`;
+    } else {
+      outputValue = `Dealer bust. Player wins. `;
+    }
+  }
+  return outputValue;
+};
+
 var gameMode = "deal cards";
 
 var main = function (input) {
@@ -227,7 +293,7 @@ var main = function (input) {
   } else if (gameMode == "player to hit or stand") {
     var playerInput = input.toLowerCase();
     if (!(playerInput == "h" || playerInput == "s")) {
-      outputMsg = `Invalid input. Enter <b>'h'</b> to hit or <b>'s'</b> to stand. <br> Player (${playerValue}):<br>${revealCards(
+      outputMsg = `Invalid input. Player, enter <b>'h'</b> to hit or <b>'s'</b> to stand. <br><br> Player (${playerValue}):<br>${revealCards(
         playerHands
       )}<br> Dealer (${dealerValue}):<br> ${revealCards(dealerHands)}`;
     } else if (playerInput == "h") {
