@@ -125,7 +125,7 @@ var main = function (input) {
     ],
     [
       { suit: "Hearts", cardNum: "Ace", cardValue: 1 },
-      { suit: "Hearts", cardNum: "King", cardValue: 10 },
+      { suit: "Hearts", cardNum: 5, cardValue: 5 },
     ],
   ];
   // players[1].hands = [
@@ -139,10 +139,8 @@ var main = function (input) {
   var blackjackArr = [];
   if (initialBlackjack == false) {
     for (i = 0; i < playerNum; i++) {
-      console.log("a");
       for (j = 0; j < players[playerTurn].hands.length; j++) {
         var curPlayerHand = players[playerTurn].hands[j];
-        console.log(curPlayerHand);
         if (isBlackjack(curPlayerHand)) {
           players[playerTurn].roundStatus[j] = "Won";
           players[playerTurn].chips += Math.round(
@@ -174,8 +172,23 @@ var main = function (input) {
         2
       )} for drawing a Blackjack!`;
     }
+
     return gameStateMsg();
   }
+};
+
+//Function for checking if a player is done playing
+var playerDone = function (input) {
+  if (players[input].roundStatus.find(activeHandHelper) == "Playing") {
+    return false;
+  } else {
+    return true;
+  }
+};
+
+//Helper function to check if player has any active hands
+var activeHandHelper = function (input) {
+  return (input = "Playing");
 };
 
 //Function for splitting hands
@@ -191,6 +204,7 @@ var splitHand = function (input) {
   players[input].hands = [];
   players[input].hands.push(handOne);
   players[input].hands.push(handTwo);
+  players[input].roundStatus.push("Playing");
 };
 
 //Function for overall game status generation message
@@ -220,9 +234,11 @@ var gameStateMsg = function () {
         outputMsg =
           outputMsg + `<b>Hand ${k + 1}:</b> ${players[i].roundStatus[k]}<br>`;
         for (j = 0; j < players[i].hands[k].length; j++) {
-          outputMsg =
-            outputMsg +
-            `${players[i].hands[k][j].cardNum} of ${players[i].hands[k][j].suit}<br>`;
+          var visibleCard = `${players[i].hands[k][j].cardNum} of ${players[i].hands[k][j].suit}`;
+          if (playerTurn != i) {
+            visibleCard = "Facedown card";
+          }
+          outputMsg = outputMsg + visibleCard + `<br>`;
         }
       }
     } else {
@@ -230,9 +246,11 @@ var gameStateMsg = function () {
         outputMsg +
         `<b>Current round status: ${players[i].roundStatus[0]}<br>Hand:</b><br>`;
       for (j = 0; j < players[i].hands[0].length; j++) {
-        outputMsg =
-          outputMsg +
-          `${players[i].hands[0][j].cardNum} of ${players[i].hands[0][j].suit}<br>`;
+        var visibleCard = `${players[i].hands[0][j].cardNum} of ${players[i].hands[0][j].suit}`;
+        if (playerTurn != i) {
+          visibleCard = "Facedown card";
+        }
+        outputMsg = outputMsg + visibleCard + `<br>`;
       }
     }
   }
