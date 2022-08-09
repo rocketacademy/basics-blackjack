@@ -73,3 +73,25 @@ var isBlackjack = function (input) {
     return false;
   }
 };
+
+//Function for checking hard score
+var handScore = function (input) {
+  var aceCounter = 0;
+  var outputScore = 0;
+  var handLen = input.length;
+
+  for (i = 0; i < handLen; i++) {
+    if (input[i].cardNum == "Ace") {
+      aceCounter++;
+    }
+    outputScore += input[i].cardValue;
+  }
+
+  for (j = 0; j < aceCounter; j++) {
+    if (outputScore + 10 <= 21) {
+      outputScore += 10;
+    }
+  }
+
+  return outputScore;
+};
