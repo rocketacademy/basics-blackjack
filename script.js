@@ -4,6 +4,8 @@ var currentDeck = [];
 var dealerHand = [];
 var playerNum = 0;
 var playerNames = [];
+var playerTurn = 0;
+var betInitial = false;
 
 var players = [];
 
@@ -11,29 +13,67 @@ var players = [];
 var playerInitialize = function (input) {
   for (i = 0; i < playerNum; i++) {
     var curPlayer = {};
-    curPlayer.name = input[i];
     curPlayer.chips = 100;
     curPlayer.hands = [];
+    curPlayer.bet = 0;
     players.push(curPlayer);
   }
 };
 
-//Function to reset players hands and dealer hands
-var handReset = function () {
+//Function to reset players hands & bets, dealer hand
+var handDeckReset = function () {
   dealerHand = [];
   for (i = 0; i < playerNum; i++) {
     players[i].hands = [];
+    player[i].bet = 0;
   }
   initialHand = false;
+  initialDeck = false;
 };
 
 var main = function (input) {
-  //Setting initial shuffled deck
+  //Setting initial shuffled deck and dealer hand
   if (initialDeck == false) {
     currentDeck = shuffleDeck(initializeDeck());
     initialDeck = true;
   }
+
+  //Setting number of players
+  if (playerNum == 0) {
+    if (isNaN(input) == false && input % 1 == 0 && input > 0 && input <= 5) {
+      playerNum = input;
+      return `We will have ${playerNum} player(s) in this game.<br>Each player begins with 100 chips.<br><br>Hit "continue" to place the bets for the first round and deal the cards.`;
+    } else {
+      return "Please input a valid number of players (1 to 5).";
+    }
+  }
+
+  //Taking bets for all players
+  if (playerTurn < playerNum) {
+  }
+
+  //Dealing initial hand for each player, check if blackjack
+
+  //Deal hand for dealer
+  dealerHand.push(currentDeck.pop());
+  dealerHand.push(currentDeck.pop());
+
+  //
 };
+//Function for validating bet placed
+var betValidate = function (input) {
+  if (isNaN(input) == true || input < 0 || input % 1 != 0) {
+    return "Please input a valid number of chips as your bet.";
+  }
+
+  if (input > players[playerTurn].chips) {
+    return `I'm sorry, you do not have enough chips to bet ${input} chips.`;
+  }
+
+  return true;
+};
+
+//Function for dealing initial set of player hands.
 
 //Function for generating unshuffled deck
 var initializeDeck = function () {
