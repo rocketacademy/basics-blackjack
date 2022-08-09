@@ -17,7 +17,7 @@ var playerInitialize = function () {
     curPlayer.chips = 100;
     curPlayer.hands = [];
     curPlayer.bet = 0;
-    curPlayer.roundStatus = "";
+    curPlayer.roundStatus = ["Playing"];
     players.push(curPlayer);
   }
 };
@@ -87,10 +87,20 @@ var main = function (input) {
     //Temporary to debug blackjackArr insert
     players[0].hands = [
       [
-        { suit: "spades", cardNum: "Ace", cardValue: 1 },
-        { suit: "spades", cardNum: "King", cardValue: 10 },
+        { suit: "Spades", cardNum: "Ace", cardValue: 1 },
+        { suit: "Spades", cardNum: "King", cardValue: 10 },
+      ],
+      [
+        { suit: "Spades", cardNum: 5, cardValue: 2 },
+        { suit: "Spades", cardNum: 5, cardValue: 5 },
       ],
     ];
+    // players[1].hands = [
+    //   [
+    //     { suit: "spades", cardNum: "Ace", cardValue: 1 },
+    //     { suit: "spades", cardNum: "King", cardValue: 10 },
+    //   ],
+    // ];
 
     //Deal hand for dealer
     dealerHand.push(currentDeck.pop());
@@ -103,7 +113,7 @@ var main = function (input) {
     for (i = 0; i < playerNum; i++) {
       var curPlayerHand = players[playerTurn].hands[0];
       if (isBlackjack(curPlayerHand)) {
-        players[playerTurn].roundStatus = "won";
+        players[playerTurn].roundStatus[0] = "Won";
         players[playerTurn].chips += Math.round(players[playerTurn].bet * 1.5);
         blackjackArr.push(playerTurn);
       }
@@ -112,7 +122,72 @@ var main = function (input) {
         initialBlackjack = true;
       }
     }
+
+    var blackjackMsg = "";
+    if (blackjackArr.length == 1) {
+      blackjackMsg =
+        blackjackMsg +
+        `Congratulations Player ${
+          blackjackArr[0] + 1
+        } for drawing a Blackjack!`;
+    } else if (blackjackArr.length > 1) {
+      blackjackIntMsg = "";
+      for (i = 0; i < blackjackArr.length; i++) {
+        blackjackIntMsg = blackjackIntMsg + ", " + blackjackArr[i];
+      }
+      blackjackMsg = `Congratulations Players ${blackjackIntMsg.substring(
+        2
+      )} for drawing a Blackjack!`;
+    }
+    return gameStateMsg();
   }
+};
+
+//Function for overall game status generation message
+var gameStateMsg = function () {
+  //Test multiple hand scenario
+  players[0].roundStatus.push("Test State");
+
+  var outputMsg = "";
+
+  outputMsg =
+    outputMsg + "<b><u>Dealer</u><br>Hand:</b><br>[Facedown card]<br>";
+  for (i = 1; i < dealerHand.length; i++) {
+    outputMsg =
+      outputMsg + `${dealerHand[i].cardNum} of ${dealerHand[i].suit}<br>`;
+  }
+
+  for (i = 0; i < playerNum; i++) {
+    outputMsg =
+      outputMsg +
+      `<br><b><u>Player ${i + 1}</u><br>Chips: ${
+        players[i].chips
+      }<br>Current round bet: ${players[i].bet}<br></b>`;
+    var handNum = players[i].hands.length;
+    if (handNum > 1) {
+      //Add scenario of number of hands per player > 1
+
+      for (k = 0; k < players[i].hands.length; k++) {
+        outputMsg =
+          outputMsg + `<b>Hand ${k + 1}:</b> ${players[i].roundStatus[k]}<br>`;
+        for (j = 0; j < players[i].hands[k].length; j++) {
+          outputMsg =
+            outputMsg +
+            `${players[i].hands[0][j].cardNum} of ${players[i].hands[0][j].suit}<br>`;
+        }
+      }
+    } else {
+      outputMsg =
+        outputMsg +
+        `<b>Current round status: ${players[i].roundStatus[0]}<br>Hand:</b><br>`;
+      for (j = 0; j < players[i].hands[0].length; j++) {
+        outputMsg =
+          outputMsg +
+          `${players[i].hands[0][j].cardNum} of ${players[i].hands[0][j].suit}<br>`;
+      }
+    }
+  }
+  return outputMsg;
 };
 
 //Function for player turn cycling
@@ -139,7 +214,7 @@ var betValidate = function (input) {
 
 //Function for generating unshuffled deck
 var initializeDeck = function () {
-  var suitList = ["spades", "hearts", "clubs", "diamonds"];
+  var suitList = ["Spades", "Hearts", "Clubs", "Diamonds"];
   var cardNumList = [
     "Ace",
     2,
