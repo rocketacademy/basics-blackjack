@@ -114,11 +114,34 @@
         margin-bottom: 3rem;
       }
 
+      #outerContainer {
+        border: 50px solid #fff;
+        padding: 20px;
+        margin: 40px auto;
+        position: ;
+      }
       #container {
         background-color: pink;
-        margin: 40px auto;
-        max-width: 800px;
+        /* margin: 40px auto; */
+        position: relative;
+        max-width: 600px;
         padding: 38px 31px;
+        width: 50%;
+        float: left;
+        padding: 20px;
+        border: 40px;
+      }
+
+      #container2 {
+        background-color: pink;
+        /* margin: 40px auto; */
+        position: relative;
+        max-width: 600px;
+        padding: 38px 31px;
+        width: 50%;
+        float: right;
+        padding: 20px;
+        border: 40px;
       }
 
       input {
@@ -137,6 +160,13 @@
       }
 
       #output-div {
+        background-color: lightgrey;
+        margin: 20px auto;
+        padding: 20px;
+        width: 100%;
+      }
+
+      #gameTracker {
         background-color: lightgrey;
         margin: 20px auto;
         padding: 20px;
@@ -171,15 +201,26 @@
       />
     </h1>
     <h1 class="header">♣️ Basics - Blackjack ♠️</h1>
-    <div id="container">
-      <p>Input:</p>
-      <input id="input-field" />
+    <div id="outerContainer">
+      <div id="container">
+        <p>Input:</p>
+        <input id="input-field" />
+        <br />
+        <button id="submit-button">Continue</button>
+        <p>Output:</p>
+        <div id="output-div">
+          Hi, welcome to a game of Blackjack.<br />To begin, please select the
+          number of players for this game (1 to 5).
+        </div>
+      </div>
+
+      <div id="container2">
+        <p><b>Game State Tracker</b></p>
+        <!-- <input id="input-field" />
       <br />
-      <button id="submit-button">Continue</button>
-      <p>Output:</p>
-      <div id="output-div">
-        Hi, welcome to a game of Blackjack.<br />To begin, please select the
-        number of players for this game (1 to 5).
+      <button id="submit-button">Continue</button> -->
+        <!-- <p>Output:</p> -->
+        <div id="gameTracker">Game not started.</div>
       </div>
     </div>
     <!-- Import program logic -->
@@ -198,6 +239,10 @@
 
         // Reset input value
         input.value = "";
+
+        var trackerMsg = gameStateMsg();
+        var trackerOutput = document.querySelector("#gameTracker");
+        trackerOutput.innerHTML = trackerMsg;
       });
     </script>
   </body>
