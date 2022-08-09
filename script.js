@@ -91,6 +91,8 @@ var shuffledDeck = shuffleCards(deck);
 // Create global variables to store each player's cards
 var playerHands = [];
 var dealerHands = [];
+var playerValue = "";
+var dealerValue = "";
 
 // Create a helper function to draw 2 cards for each player
 var drawCards = function (input) {
@@ -176,6 +178,8 @@ var revealCards = function (input) {
 //   }
 // };
 
+/*
+// Line 181 to Line 202 transferred to V2 
 var gameMode = "deal cards";
 
 var main = function (input) {
@@ -190,12 +194,58 @@ var main = function (input) {
     // Store the value of each player's hands into a variable
     var playerValue = calcCardValue(playerHands);
     var dealerValue = calcCardValue(dealerHands);
-    outputMsg = `Player:<br>${revealCards(
+    outputMsg = `Player (${playerValue}):<br>${revealCards(
       playerHands
-    )}<br> Dealer:<br> ${revealCards(dealerHands)} <br> <b>${compareHands(
-      playerValue,
-      dealerValue
-    )}</b>`;
+    )}<br> Dealer (${dealerValue}):<br> ${revealCards(
+      dealerHands
+    )} <br> <b>${compareHands(playerValue, dealerValue)}</b>`;
+  }
+  return outputMsg;
+};
+*/
+
+// ==================== V2 - Add Player Hit or Stand ====================
+var gameMode = "deal cards";
+
+var main = function (input) {
+  var outputMsg = "";
+  if (gameMode == "deal cards") {
+    gameMode = "compare cards";
+    playerHands = drawCards(2);
+    dealerHands = drawCards(2);
+    // Store the value of each player's hands into a variable
+    playerValue = calcCardValue(playerHands);
+    dealerValue = calcCardValue(dealerHands);
+    outputMsg = `<i> The dealer deals 2 cards to each player... </i><br><br> Click 'Submit' to begin.`;
+  } else if (gameMode == "compare cards") {
+    gameMode = "player to hit or stand";
+    outputMsg = `Player (${playerValue}):<br>${revealCards(
+      playerHands
+    )}<br> Dealer (${dealerValue}):<br> ${revealCards(
+      dealerHands
+    )} <br> Player, enter <b>'h'</b> to hit or <b>'s'</b> to stand.`;
+  } else if (gameMode == "player to hit or stand") {
+    var playerInput = input.toLowerCase();
+    if (!(playerInput == "h" || playerInput == "s")) {
+      outputMsg = `Invalid input. Enter <b>'h'</b> to hit or <b>'s'</b> to stand. <br> Player (${playerValue}):<br>${revealCards(
+        playerHands
+      )}<br> Dealer (${dealerValue}):<br> ${revealCards(dealerHands)}`;
+    } else if (playerInput == "h") {
+      playerHands.push(shuffledDeck.pop());
+      playerValue = calcCardValue(playerHands);
+      outputMsg = `Player (${playerValue}):<br>${revealCards(
+        playerHands
+      )}<br> Dealer (${dealerValue}):<br> ${revealCards(
+        dealerHands
+      )} <br> Player, enter <b>'h'</b> to hit or <b>'s'</b> to stand.`;
+    } else if (playerInput == "s") {
+      gameMode = "deal cards";
+      outputMsg = `Player (${playerValue}):<br>${revealCards(
+        playerHands
+      )}<br> Dealer (${dealerValue}):<br> ${revealCards(
+        dealerHands
+      )} <br> <b>${compareHands(playerValue, dealerValue)}</b>`;
+    }
   }
   return outputMsg;
 };
