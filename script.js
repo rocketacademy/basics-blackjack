@@ -79,11 +79,18 @@ var main = function (input) {
       var currentHand = [];
       currentHand.push(currentDeck.pop());
       currentHand.push(currentDeck.pop());
-      console.log(currentHand);
       players[playerTurn].hands.push(currentHand);
 
       turnUpdate();
     }
+
+    //Temporary to debug blackjackArr insert
+    players[0].hands = [
+      [
+        { suit: "spades", cardNum: "Ace", cardValue: 1 },
+        { suit: "spades", cardNum: "King", cardValue: 10 },
+      ],
+    ];
 
     //Deal hand for dealer
     dealerHand.push(currentDeck.pop());
@@ -92,14 +99,19 @@ var main = function (input) {
   }
   //Check if any players have a natural blackjack
   var blackjackArr = [];
-  for (i = 0; i < playerNum; i++) {
-    var curPlayerHand = players[playerTurn].hands[0];
-    if (isBlackjack(curPlayerHand)) {
-      players[playerTurn].roundStatus = "won";
-      players[playerTurn].chips += Math.round(players[playerTurn].bet * 1.5);
-      blackjackArr.push[playerTurn];
+  if (initialBlackjack == false) {
+    for (i = 0; i < playerNum; i++) {
+      var curPlayerHand = players[playerTurn].hands[0];
+      if (isBlackjack(curPlayerHand)) {
+        players[playerTurn].roundStatus = "won";
+        players[playerTurn].chips += Math.round(players[playerTurn].bet * 1.5);
+        blackjackArr.push(playerTurn);
+      }
+      turnUpdate();
+      if (playerTurn == 0) {
+        initialBlackjack = true;
+      }
     }
-    turnUpdate();
   }
 };
 
