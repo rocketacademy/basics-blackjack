@@ -231,18 +231,19 @@
       button.addEventListener("click", function () {
         // Set result to input value
         var input = document.querySelector("#input-field");
+
         var result = main(input.value);
+        var trackerMsg = gameStateMsg();
 
         // Display result in output element
         var output = document.querySelector("#output-div");
+        var trackerOutput = document.querySelector("#gameTracker");
+
         output.innerHTML = result;
+        trackerOutput.innerHTML = trackerMsg;
 
         // Reset input value
         input.value = "";
-
-        var trackerMsg = gameStateMsg();
-        var trackerOutput = document.querySelector("#gameTracker");
-        trackerOutput.innerHTML = trackerMsg;
       });
     </script>
   </body>
