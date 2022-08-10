@@ -9,6 +9,7 @@ var betInitial = false;
 var initialBlackjack = false;
 var splitInitial = false;
 var openSplit = false;
+var hitStandInitial = false;
 
 var players = [];
 
@@ -123,10 +124,10 @@ var main = function (input) {
       { suit: "Spades", cardNum: "Ace", cardValue: 1 },
       { suit: "Spades", cardNum: "King", cardValue: 10 },
     ],
-    [
-      { suit: "Hearts", cardNum: "Ace", cardValue: 1 },
-      { suit: "Hearts", cardNum: 5, cardValue: 5 },
-    ],
+    // [
+    //   { suit: "Hearts", cardNum: "Ace", cardValue: 1 },
+    //   { suit: "Hearts", cardNum: 5, cardValue: 5 },
+    // ],
   ];
   // players[1].hands = [
   //   [
@@ -139,30 +140,30 @@ var main = function (input) {
   var blackjackArr = [];
   if (initialBlackjack == false) {
     for (i = 0; i < playerNum; i++) {
-      for (j = 0; j < players[playerTurn].hands.length; j++) {
-        var curPlayerHand = players[playerTurn].hands[j];
+      for (j = 0; j < players[i].hands.length; j++) {
+        var curPlayerHand = players[i].hands[j];
         if (isBlackjack(curPlayerHand)) {
-          players[playerTurn].roundStatus[j] = "Won";
-          players[playerTurn].chips += Math.round(
-            players[playerTurn].bet * 1.5
-          );
+          players[i].roundStatus[j] = "Won";
+          players[i].chips += Math.round(players[i].bet * 1.5);
+          blackjackArr.push(i);
         }
-        blackjackArr.push(playerTurn);
       }
       turnUpdate();
-      blackjackArr = [...new Set(blackjackArr)];
+
       if (playerTurn == 0) {
         initialBlackjack = true;
       }
+    }
+    blackjackArr = [...new Set(blackjackArr)];
+    for (i = 0; i < blackjackArr.length; i++) {
+      blackjackArr[i] = blackjackArr[i] + 1;
     }
 
     var blackjackMsg = "";
     if (blackjackArr.length == 1) {
       blackjackMsg =
         blackjackMsg +
-        `Congratulations Player ${
-          blackjackArr[0] + 1
-        } for drawing a Blackjack!`;
+        `Congratulations Player ${blackjackArr[0]} for drawing a Blackjack!`;
     } else if (blackjackArr.length > 1) {
       blackjackIntMsg = "";
       for (i = 0; i < blackjackArr.length; i++) {
@@ -172,8 +173,14 @@ var main = function (input) {
         2
       )} for drawing a Blackjack!`;
     }
+    blackjackMsg =
+      blackjackMsg + `<br>Hit "continue" to move to the next phase.`;
+    return blackjackMsg;
+  }
 
-    return gameStateMsg();
+  if (hitStandInitial == false) {
+    if (players[playerTurn].roundStatus == "Playing") {
+    }
   }
 };
 
