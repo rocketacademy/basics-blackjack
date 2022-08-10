@@ -368,24 +368,17 @@ var main = function (input) {
         dealerHands
       )} <br> Player, enter <b>'h'</b> to hit or <b>'s'</b> to stand.`;
     } else if (playerInput == "s") {
-      gameMode = "dealer to hit or stand";
+      gameMode = "game over";
+      while (shouldDealerHit(dealerValue) == true) {
+        dealerHands.push(shuffledDeck.pop());
+        dealerValue = calcCardValue(dealerHands);
+      }
       outputMsg = `Player (${playerValue}):<br>${revealCards(
         playerHands
       )}<br> Dealer (${dealerValue}):<br> ${revealCards(
         dealerHands
-      )} <br> Click 'Submit' for Dealer to hit to stand.`;
+      )} <br><b>${compareHands(playerValue, dealerValue)}</b>`;
     }
-  } else if (gameMode == "dealer to hit or stand") {
-    gameMode = "game over";
-    while (shouldDealerHit(dealerValue) == true) {
-      dealerHands.push(shuffledDeck.pop());
-      dealerValue = calcCardValue(dealerHands);
-    }
-    outputMsg = `Player (${playerValue}):<br>${revealCards(
-      playerHands
-    )}<br> Dealer (${dealerValue}):<br> ${revealCards(
-      dealerHands
-    )}<br><b>${compareHands(playerValue, dealerValue)}</b>`;
   } else if (gameMode == "game over") {
     outputMsg = `End of Game. Refresh to restart.`;
   }
