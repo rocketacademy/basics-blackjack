@@ -213,8 +213,11 @@ var gameStateMsg = function () {
 
   var outputMsg = "";
 
-  outputMsg =
-    outputMsg + "<b><u>Dealer</u><br>Hand:</b><br>[Facedown card]<br>";
+  outputMsg = outputMsg + "<b><u>Dealer</u><br>";
+  if (dealerHand.length > 0) {
+    outputMsg = outputMsg + "Hand:</b><br>[Facedown card]<br>";
+  }
+
   for (i = 1; i < dealerHand.length; i++) {
     outputMsg =
       outputMsg + `${dealerHand[i].cardNum} of ${dealerHand[i].suit}<br>`;
@@ -232,14 +235,17 @@ var gameStateMsg = function () {
 
       for (k = 0; k < players[i].hands.length; k++) {
         outputMsg =
-          outputMsg + `<b>Hand ${k + 1}:</b> ${players[i].roundStatus[k]}<br>`;
+          outputMsg +
+          `<b>Hand ${k + 1}:</b> [Hand Status: ${
+            players[i].roundStatus[k]
+          }]<br>`;
         for (j = 0; j < players[i].hands[k].length; j++) {
           outputMsg =
             outputMsg +
             `${players[i].hands[k][j].cardNum} of ${players[i].hands[k][j].suit}<br>`;
         }
       }
-    } else {
+    } else if (handNum == 1) {
       outputMsg =
         outputMsg +
         `<b>Current round status: ${players[i].roundStatus[0]}<br>Hand:</b><br>`;
