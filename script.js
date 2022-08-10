@@ -3,13 +3,14 @@ var initialHand = false;
 var currentDeck = [];
 var dealerHand = [];
 var playerNum = 0;
-var playerNames = [];
 var playerTurn = 0;
 var betInitial = false;
 var initialBlackjack = false;
 var splitInitial = false;
 var openSplit = false;
+var activePlayerBlackjack = false;
 var hitStandInitial = false;
+var gameResetStatus = false;
 
 var players = [];
 
@@ -25,18 +26,36 @@ var playerInitialize = function () {
   }
 };
 
-//Function to reset players hands & bets, dealer hand
-var handDeckReset = function () {
-  dealerHand = [];
+//Function to reset game state and start next round
+var gameReset = function () {
   for (i = 0; i < playerNum; i++) {
     players[i].hands = [];
-    player[i].bet = 0;
+    players[i].bet = 0;
+    players[i].roundStatus = ["Playing"];
   }
+  dealerHand = [];
+  currentDeck = [];
   initialHand = false;
   initialDeck = false;
+  playerTurn = 0;
+  betInitial = false;
+  initialBlackjack = false;
+  splitInitial = false;
+  openSplit = false;
+  hitStandInitial = false;
+  gameResetStatus = false;
+  activePlayerBlackjack = false;
 };
 
 var main = function (input) {
+  //Check if game state need to be reset as part of new round.
+  if (gameResetStatus == true) {
+    gameReset();
+    return `Player ${
+      playerTurn + 1
+    }, please enter the number of chips you would like to bet for this round.`;
+  }
+
   //Setting initial shuffled deck and dealer hand
   if (initialDeck == false) {
     currentDeck = shuffleDeck(initializeDeck());
@@ -163,7 +182,7 @@ var main = function (input) {
     if (blackjackArr.length == 1) {
       blackjackMsg =
         blackjackMsg +
-        `Congratulations Player ${blackjackArr[0]} for drawing a Blackjack!`;
+        `Congratulations Player ${blackjackArr[0]} for drawing a Blackjack!<br>`;
     } else if (blackjackArr.length > 1) {
       blackjackIntMsg = "";
       for (i = 0; i < blackjackArr.length; i++) {
@@ -171,16 +190,34 @@ var main = function (input) {
       }
       blackjackMsg = `Congratulations Players ${blackjackIntMsg.substring(
         2
-      )} for drawing a Blackjack!`;
+      )} for drawing a Blackjack!<br>`;
     }
-    blackjackMsg =
-      blackjackMsg + `<br>Hit "continue" to move to the next phase.`;
-    return blackjackMsg;
+  }
+
+  var activePlayers = [];
+  if (activePlayerBlackjack == false) {
+    for (i = 0; i < playerNum; i++) {
+      if (playerDone(i) == false) {
+        activePlayers.push(i);
+      }
+    }
+    activePlayerBlackjack = true;
+
+    if (activePlayers.length == 0) {
+      gameResetStatus = true;
+      return (
+        blackjackMsg +
+        `<br>This round is over.<br><br>Hit "continue" to begin the next round.`
+      );
+    } else {
+      for (i = 0; i < activePlayers.length; i++) {
+        activePlayers[i] = activePlayers[i] + 1;
+      }
+      return blackjackMsg + `<br>Hit "continue" to move to the next phase.`;
+    }
   }
 
   if (hitStandInitial == false) {
-    if (players[playerTurn].roundStatus == "Playing") {
-    }
   }
 };
 
