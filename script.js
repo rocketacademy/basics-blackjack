@@ -247,17 +247,9 @@ var compareHands = function (player, dealer) {
   } else if (haveBlackjack(dealerHands) == true) {
     outputValue = "Dealer wins with Blackjack!";
   } else if (player > dealer && !(player > Number(21))) {
-    if (player == Number(21)) {
-      outputValue = "Player wins with 21.";
-    } else {
-      outputValue = "Player wins.";
-    }
+    outputValue = "Player wins.";
   } else if (player < dealer && !(dealer > Number(21))) {
-    if (dealer == Number(21)) {
-      outputValue = "Dealer wins with 21.";
-    } else {
-      outputValue = "Dealer wins.";
-    }
+    outputValue = "Dealer wins.";
   } else if (player > 21) {
     if (dealer > 21) {
       outputValue = `It's a Tie - both bust.`;
