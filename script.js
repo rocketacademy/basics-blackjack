@@ -1,3 +1,4 @@
+// ==================== Generate deck of 52 cards ====================
 var makeDeck = function () {
   // Initialise an empty deck array
   var cardDeck = [];
@@ -91,6 +92,8 @@ var shuffledDeck = shuffleCards(deck);
 // Create global variables to store each player's cards
 var playerHands = [];
 var dealerHands = [];
+
+// Store the value of each player's hands into a variable
 var playerValue = "";
 var dealerValue = "";
 
@@ -247,13 +250,13 @@ var compareHands = function (player, dealer) {
     if (player == Number(21)) {
       outputValue = "Player wins with 21.";
     } else {
-      outputValue = "Player wins";
+      outputValue = "Player wins.";
     }
   } else if (player < dealer && !(dealer > Number(21))) {
     if (dealer == Number(21)) {
       outputValue = "Dealer wins with 21.";
     } else {
-      outputValue = "Dealer wins";
+      outputValue = "Dealer wins.";
     }
   } else if (player > 21) {
     if (dealer > 21) {
@@ -271,6 +274,8 @@ var compareHands = function (player, dealer) {
   return outputValue;
 };
 
+/*
+// Main function shifted to V3
 var gameMode = "deal cards";
 
 var main = function (input) {
@@ -279,7 +284,6 @@ var main = function (input) {
     gameMode = "compare cards";
     playerHands = drawCards(2);
     dealerHands = drawCards(2);
-    // Store the value of each player's hands into a variable
     playerValue = calcCardValue(playerHands);
     dealerValue = calcCardValue(dealerHands);
     outputMsg = `<i> The dealer deals 2 cards to each player... </i><br><br> Click 'Submit' to begin.`;
@@ -305,13 +309,85 @@ var main = function (input) {
         dealerHands
       )} <br> Player, enter <b>'h'</b> to hit or <b>'s'</b> to stand.`;
     } else if (playerInput == "s") {
-      gameMode = "deal cards";
+      gameMode = "game over";
       outputMsg = `Player (${playerValue}):<br>${revealCards(
         playerHands
       )}<br> Dealer (${dealerValue}):<br> ${revealCards(
         dealerHands
       )} <br> <b>${compareHands(playerValue, dealerValue)}</b>`;
     }
+  } else if (gameMode == "game over") {
+    //gameMode = "deal cards"; // comment this out unless want game to keep running on 'Submit'
+    outputMsg = `End of Game. Refresh to restart.`;
+  }
+  return outputMsg;
+};
+*/
+
+// ==================== V3 - Add Dealer Hit or Stand ====================
+// Dealer to hit if 16 or under, to stand if 17 or higher
+
+var shouldDealerHit = function (input) {
+  // Takes in a numerical input of dealer hand value
+  if (input <= 16) {
+    return true;
+  }
+  return false;
+};
+
+var gameMode = "deal cards";
+
+var main = function (input) {
+  var outputMsg = "";
+  if (gameMode == "deal cards") {
+    gameMode = "compare cards";
+    playerHands = drawCards(2);
+    dealerHands = drawCards(2);
+    playerValue = calcCardValue(playerHands);
+    dealerValue = calcCardValue(dealerHands);
+    outputMsg = `<i> The dealer deals 2 cards to each player... </i><br><br> Click 'Submit' to begin.`;
+  } else if (gameMode == "compare cards") {
+    gameMode = "player to hit or stand";
+    outputMsg = `Player (${playerValue}):<br>${revealCards(
+      playerHands
+    )}<br> Dealer (${dealerValue}):<br> ${revealCards(
+      dealerHands
+    )} <br> Player, enter <b>'h'</b> to hit or <b>'s'</b> to stand.`;
+  } else if (gameMode == "player to hit or stand") {
+    var playerInput = input.toLowerCase();
+    if (!(playerInput == "h" || playerInput == "s")) {
+      outputMsg = `Invalid input. Player, enter <b>'h'</b> to hit or <b>'s'</b> to stand. <br><br> Player (${playerValue}):<br>${revealCards(
+        playerHands
+      )}<br> Dealer (${dealerValue}):<br> ${revealCards(dealerHands)}`;
+    } else if (playerInput == "h") {
+      playerHands.push(shuffledDeck.pop());
+      playerValue = calcCardValue(playerHands);
+      outputMsg = `Player (${playerValue}):<br>${revealCards(
+        playerHands
+      )}<br> Dealer (${dealerValue}):<br> ${revealCards(
+        dealerHands
+      )} <br> Player, enter <b>'h'</b> to hit or <b>'s'</b> to stand.`;
+    } else if (playerInput == "s") {
+      gameMode = "dealer to hit or stand";
+      outputMsg = `Player (${playerValue}):<br>${revealCards(
+        playerHands
+      )}<br> Dealer (${dealerValue}):<br> ${revealCards(
+        dealerHands
+      )} <br> Click 'Submit' for Dealer to hit to stand.`;
+    }
+  } else if (gameMode == "dealer to hit or stand") {
+    gameMode = "game over";
+    while (shouldDealerHit(dealerValue) == true) {
+      dealerHands.push(shuffledDeck.pop());
+      dealerValue = calcCardValue(dealerHands);
+    }
+    outputMsg = `Player (${playerValue}):<br>${revealCards(
+      playerHands
+    )}<br> Dealer (${dealerValue}):<br> ${revealCards(
+      dealerHands
+    )}<br><b>${compareHands(playerValue, dealerValue)}</b>`;
+  } else if (gameMode == "game over") {
+    outputMsg = `End of Game. Refresh to restart.`;
   }
   return outputMsg;
 };
