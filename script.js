@@ -354,11 +354,24 @@ var main = function (input) {
     } else if (playerInput == "h") {
       playerHands.push(shuffledDeck.pop());
       playerValue = calcCardValue(playerHands);
-      outputMsg = `Player (${playerValue}):<br>${revealCards(
-        playerHands
-      )}<br> Dealer (${dealerValue}):<br> ${revealCards(
-        dealerHands
-      )} <br> Player, enter <b>'h'</b> to hit or <b>'s'</b> to stand.`;
+      if (playerValue > 21) {
+        gameMode = "game over";
+        while (shouldDealerHit(dealerValue) == true) {
+          dealerHands.push(shuffledDeck.pop());
+          dealerValue = calcCardValue(dealerHands);
+        }
+        outputMsg = `Player (${playerValue}):<br>${revealCards(
+          playerHands
+        )}<br> Dealer (${dealerValue}):<br> ${revealCards(
+          dealerHands
+        )} <br><b>${compareHands(playerValue, dealerValue)}</b>`;
+      } else {
+        outputMsg = `Player (${playerValue}):<br>${revealCards(
+          playerHands
+        )}<br> Dealer (${dealerValue}):<br> ${revealCards(
+          dealerHands
+        )} <br> Player, enter <b>'h'</b> to hit or <b>'s'</b> to stand.`;
+      }
     } else if (playerInput == "s") {
       gameMode = "game over";
       while (shouldDealerHit(dealerValue) == true) {
