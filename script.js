@@ -11,6 +11,8 @@ var openSplit = false;
 var activePlayerBlackjack = false;
 var hitStandInitial = false;
 var gameResetStatus = false;
+var activePlayers = [];
+var hitStandDone = false;
 
 var players = [];
 
@@ -35,6 +37,7 @@ var gameReset = function () {
   }
   dealerHand = [];
   currentDeck = [];
+  activePlayers = [];
   initialHand = false;
   initialDeck = false;
   playerTurn = 0;
@@ -45,6 +48,7 @@ var gameReset = function () {
   hitStandInitial = false;
   gameResetStatus = false;
   activePlayerBlackjack = false;
+  hitStandDone = false;
 };
 
 var main = function (input) {
@@ -134,20 +138,22 @@ var main = function (input) {
       if (playerTurn == 0) {
         splitInitial = true;
       }
+    } else {
+      splitInitial = true;
     }
   }
 
   //Temporary to debug blackjackArr insert
-  players[0].hands = [
-    [
-      { suit: "Spades", cardNum: "Ace", cardValue: 1 },
-      { suit: "Spades", cardNum: "King", cardValue: 10 },
-    ],
-    // [
-    //   { suit: "Hearts", cardNum: "Ace", cardValue: 1 },
-    //   { suit: "Hearts", cardNum: 5, cardValue: 5 },
-    // ],
-  ];
+  // players[0].hands = [
+  //   [
+  //     { suit: "Spades", cardNum: "Ace", cardValue: 1 },
+  //     { suit: "Spades", cardNum: "King", cardValue: 10 },
+  //   ],
+  // [
+  //   { suit: "Hearts", cardNum: "Ace", cardValue: 1 },
+  //   { suit: "Hearts", cardNum: 5, cardValue: 5 },
+  // ],
+  // ];
   // players[1].hands = [
   //   [
   //     { suit: "spades", cardNum: "Ace", cardValue: 1 },
@@ -194,7 +200,7 @@ var main = function (input) {
     }
   }
 
-  var activePlayers = [];
+  //Check if there are any active players left after blackjack round
   if (activePlayerBlackjack == false) {
     for (i = 0; i < playerNum; i++) {
       if (playerDone(i) == false) {
@@ -213,12 +219,109 @@ var main = function (input) {
       for (i = 0; i < activePlayers.length; i++) {
         activePlayers[i] = activePlayers[i] + 1;
       }
-      return blackjackMsg + `<br>Hit "continue" to move to the next phase.`;
+      activePlayers.reverse();
+
+      playerTurn = activePlayers.pop();
+      //return blackjackMsg + `<br>Hit "continue" to move to the next phase.`;
     }
   }
 
+  //Hit or stand phase
   if (hitStandInitial == false) {
+    hitStandInitial = true;
+    var hitStandMsg = `Hi Player ${playerTurn}, your current hand is:<br>${activePlayerHand(
+      playerTurn - 1
+    )}<br>Would you like to hit or stand?<br>Enter "h" to hit or "s" to stand.`;
+    return hitStandMsg;
   }
+
+  if (hitStandDone == false) {
+    if (playerDone(playerTurn - 1) == false) {
+      var currentPlayerHand = playerTurnHand(playerTurn - 1);
+      hitStandMsg = "";
+
+      if (input.toLowerCase() == "s") {
+        hitStandMsg = hitStandMsg + `Player ${playerTurn} has chosen to stand.`;
+        players[playerTurn - 1].roundStatus[currentPlayerHand] = "Stand";
+      } else if (input.toLowerCase() == "h") {
+        var newCard = currentDeck.pop();
+
+        players[playerTurn - 1].hands[currentPlayerHand].push(newCard);
+
+        if (handScore(players[playerTurn - 1].hands[currentPlayerHand]) > 21) {
+          players[playerTurn - 1].roundStatus[currentPlayerHand] = "Bust";
+          players[playerTurn - 1].chips -= players[playerTurn - 1].bet;
+          hitStandMsg =
+            hitStandMsg +
+            `Player ${playerTurn} drew ${newCard.cardNum} of ${newCard.suit} and bust.`;
+        } else {
+          hitStandMsg =
+            hitStandMsg +
+            `Player ${playerTurn}, you drew ${newCard.cardNum} of ${
+              newCard.suit
+            }.<br>Your current hand is:<br>${activePlayerHand(
+              playerTurn - 1
+            )}<br>Would you like to hit or stand?<br>Enter "h" to hit or "s" to stand.`;
+          return hitStandMsg;
+        }
+      } else {
+        return `Please select whether you like to hit or stand?<br>Enter "h" to hit or "s" to stand.`;
+      }
+
+      if (players[playerTurn - 1].roundStatus[currentPlayerHand] == "Playing") {
+        hitStandMsg =
+          hitStandMsg +
+          `<br><br>Hi Player ${playerTurn}, your current hand is:<br>${activePlayerHand(
+            playerTurn - 1
+          )}<br>Would you like to hit or stand?<br>Enter "h" to hit or "s" to stand.`;
+        return hitStandMsg;
+      } else if (
+        players[playerTurn - 1].roundStatus[currentPlayerHand + 1] === undefined
+      ) {
+        if (activePlayers.length > 0) {
+          playerTurn = activePlayers.pop();
+          hitStandMsg =
+            hitStandMsg +
+            `<br><br>Hi Player ${playerTurn}, your current hand is:<br>${activePlayerHand(
+              playerTurn - 1
+            )}<br>Would you like to hit or stand?<br>Enter "h" to hit or "s" to stand.`;
+          return hitStandMsg;
+        } else {
+          hitStandDone = true;
+          // All players are done
+
+          return hitStandMsg;
+        }
+      }
+    }
+  }
+
+  //Dealer draws if their score is less than 17
+  if (handScore(dealerHand) < 17) {
+    dealerHand.push(currentDeck.pop());
+  }
+};
+
+//Function for getting current active hand of active player
+var playerTurnHand = function (input) {
+  var activeHand = 0;
+  while (players[input].roundStatus[activeHand] != "Playing") {
+    activeHand++;
+  }
+  return activeHand;
+};
+
+//Function for generating active player's hand as an output msg
+var activePlayerHand = function (input) {
+  outputMsg = "";
+  var currentHand = playerTurnHand(input);
+  players[input].hands[currentHand];
+  for (i = 0; i < players[input].hands[currentHand].length; i++) {
+    outputMsg =
+      outputMsg +
+      `${players[input].hands[currentHand][i].cardNum} of ${players[input].hands[currentHand][i].suit}<br>`;
+  }
+  return outputMsg;
 };
 
 //Function for checking if a player is done playing
@@ -233,6 +336,19 @@ var playerDone = function (input) {
 //Helper function to check if player has any active hands
 var activeHandHelper = function (input) {
   return (input = "Playing");
+};
+
+var standPlayer = function (input) {
+  if (players[input].roundStatus.find(standHandHelper) == "Stand") {
+    return false;
+  } else {
+    return true;
+  }
+};
+
+//Helper function to check if player has any hands that they stand
+var standHelper = function (input) {
+  return (input = "Stand");
 };
 
 //Function for splitting hands
