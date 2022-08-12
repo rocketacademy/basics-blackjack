@@ -11,19 +11,26 @@ var makeDeck = function () {
     var rankCounter = 1;
     while (rankCounter <= 13) {
       var cardName = rankCounter;
+      //add card value
+      var cardValue = rankCounter;
       if (rankCounter == 1) {
         cardName = "ace";
+        cardValue = 1 || 11;
       } else if (rankCounter == 11) {
         cardName = "jack";
+        cardValue = 10;
       } else if (rankCounter == 12) {
         cardName = "queen";
+        cardValue = 10;
       } else if (rankCounter == 13) {
         cardName = "king";
+        cardValue = 10;
       }
       var card = {
         name: cardName,
         suit: currentSuit,
         rank: rankCounter,
+        value: cardValue,
       };
       cardDeck.push(card);
       rankCounter += 1;
@@ -33,13 +40,12 @@ var makeDeck = function () {
   return cardDeck;
 };
 
-// //assigning blackjack value to face cards
-// var storeValues = function () {
-//   while (rankCounter == 2 - 10) {}
-//   return cardValue;
-// };
-
-// var main = function (input) {
-//   var myOutputValue = "hello world";
-//   return myOutputValue;
-// };
+var main = function (input) {
+  var myOutputValue = "hello world";
+  var check = function () {
+    var testing = makeDeck(card);
+    return testing;
+  };
+  console.log(`card: ${card}`);
+  return myOutputValue;
+};
