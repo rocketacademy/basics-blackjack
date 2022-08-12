@@ -5,6 +5,25 @@ var hitOrStay = "hit or stay";
 var gameMode = drawCard;
 var currentPlayer = playerTurn;
 
+var currentPlayerDraw = [];
+
+//making draw card function
+var drawCardForPlayer = function () {
+  var counter = 0;
+  while (counter < 2) {
+    currentPlayerDraw.push(shuffle());
+    counter += 1;
+  }
+  console.log(`Player draws: ${currentPlayerDraw}`);
+  return `Cards drew: ${currentPlayerDraw}.`;
+};
+
+//making shuffle deck of cards function
+var shuffle = function () {
+  var shuffleCards = Math.floor(Math.random() * 52) + 1;
+  return shuffleCards;
+};
+
 //making the deck of cards
 var makeDeck = function () {
   var cardDeck = [];
@@ -48,5 +67,6 @@ var main = function (input) {
   console.log(`current game mode: ${gameMode}`);
   console.log(`current player: ${currentPlayer}`);
   var myOutputValue = "";
+
   return myOutputValue;
 };
