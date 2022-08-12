@@ -1,5 +1,9 @@
 var playerTurn = "player turn";
 var computerTurn = "computer turn";
+var drawCard = "draw card";
+var hitOrStay = "hit or stay";
+var gameMode = drawCard;
+var currentPlayer = playerTurn;
 
 //making the deck of cards
 var makeDeck = function () {
@@ -41,11 +45,8 @@ var makeDeck = function () {
 };
 
 var main = function (input) {
-  var myOutputValue = "hello world";
-  var check = function () {
-    var testing = makeDeck(card);
-    return testing;
-  };
-  console.log(`card: ${card}`);
+  console.log(`current game mode: ${gameMode}`);
+  console.log(`current player: ${currentPlayer}`);
+  var myOutputValue = "";
   return myOutputValue;
 };
