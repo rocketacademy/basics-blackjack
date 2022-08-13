@@ -104,7 +104,7 @@ var calculateTotalHandValue = function (handArray) {
 };
 
 //display player and dealer hands function
-displayHands = function (playerHandArray, dealerHandArray) {
+var displayHands = function (playerHandArray, dealerHandArray) {
   //player hand message
   var playerMessage = `Player hand:<br>`;
   var index = 0;
@@ -120,6 +120,12 @@ displayHands = function (playerHandArray, dealerHandArray) {
     index += 1;
   }
   return playerMessage + "<br>" + dealerMessage;
+};
+
+//display TOTAL player and dealer hands value function
+var displayHandsTotalValue = function (playerHandValue, dealerHandValue) {
+  var totalHandValueMessage = `<br>Player total hand value: ${playerHandValue} <br>Dealer total hand value: ${dealerHandValue}`;
+  return totalHandValueMessage;
 };
 
 var main = function (input) {
@@ -183,11 +189,20 @@ var main = function (input) {
       // playerHandTotalValue = 11;
       // dealerHandTotalValue = 11;
       if (playerHandTotalValue == dealerHandTotalValue) {
-        outputMessage = displayHands(playerHand, dealerHand) + "Its a tie!";
+        outputMessage =
+          displayHands(playerHand, dealerHand) +
+          "Its a tie!" +
+          displayHandsTotalValue(playerHandTotalValue, dealerHandTotalValue);
       } else if (playerHandTotalValue > dealerHandTotalValue) {
-        outputMessage = displayHands(playerHand, dealerHand) + "Player wins!";
+        outputMessage =
+          displayHands(playerHand, dealerHand) +
+          "Player wins!" +
+          displayHandsTotalValue(playerHandTotalValue, dealerHandTotalValue);
       } else {
-        outputMessage = displayHands(playerHand, dealerHand) + "Dealer wins!";
+        outputMessage =
+          displayHands(playerHand, dealerHand) +
+          "Dealer wins!" +
+          displayHandsTotalValue(playerHandTotalValue, dealerHandTotalValue);
       }
       //change game mode to show player and dealer results
       gameMode = showResults;
