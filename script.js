@@ -114,7 +114,19 @@ var main = function (input) {
     ];
     var playerHasBlackjack = checkForBlackjack(playerHand);
     var dealerHasBlackjack = checkForBlackjack(dealerHand);
-    console.log("Does player have BJ? ==?" + playerHasBlackjack);
-    console.log("Does dealer have BJ? ==?" + dealerHasBlackjack);
+    // console.log("Does player have BJ? ==?" + playerHasBlackjack);
+    // console.log("Does dealer have BJ? ==?" + dealerHasBlackjack);
+    playerHasBlackjack = true;
+    dealerHasBlackjack = true;
+    if (playerHasBlackjack == true || dealerHasBlackjack == true) {
+      if (playerHasBlackjack == true && dealerHasBlackjack == true) {
+        outputMessage = `It's a tie! Player and dealer both have blackjack.`;
+      } else if (playerHasBlackjack == true && dealerHasBlackjack == false) {
+        outputMessage = `Player wins! Player drew blackjack.`;
+      }
+    } else {
+      outputMessage = `Dealer wins! Dealer drew blackjack.`;
+    }
+    console.log(outputMessage);
   }
 };
