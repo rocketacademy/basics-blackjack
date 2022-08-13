@@ -83,6 +83,26 @@ var checkForBlackjack = function (handArray) {
   return isBlackjack;
 };
 
+//calculate total hand value function
+var calculateTotalHandValue = function (handArray) {
+  var totalHandValue = 0;
+  var index = 0;
+  while (index < handArray.length) {
+    var currentCard = handArray[index];
+    if (
+      currentCard.name == "jack" ||
+      currentCard.name == "queen" ||
+      currentCard.name == "king"
+    ) {
+      totalHandValue = totalHandValue + 10;
+    } else {
+      totalHandValue = totalHandValue + currentCard.rank;
+    }
+    index += 1;
+  }
+  return totalHandValue;
+};
+
 var main = function (input) {
   var outputMessage = "";
   if (gameMode == startGame) {
@@ -116,17 +136,26 @@ var main = function (input) {
     var dealerHasBlackjack = checkForBlackjack(dealerHand);
     // console.log("Does player have BJ? ==?" + playerHasBlackjack);
     // console.log("Does dealer have BJ? ==?" + dealerHasBlackjack);
-    playerHasBlackjack = true;
-    dealerHasBlackjack = true;
+    // playerHasBlackjack = true;
+    // dealerHasBlackjack = true;
     if (playerHasBlackjack == true || dealerHasBlackjack == true) {
       if (playerHasBlackjack == true && dealerHasBlackjack == true) {
         outputMessage = `It's a tie! Player and dealer both have blackjack.`;
       } else if (playerHasBlackjack == true && dealerHasBlackjack == false) {
         outputMessage = `Player wins! Player drew blackjack.`;
+      } else {
+        outputMessage = `Dealer wins! Dealer drew blackjack.`;
       }
-    } else {
-      outputMessage = `Dealer wins! Dealer drew blackjack.`;
+      console.log(outputMessage);
     }
-    console.log(outputMessage);
+    //no blackjack scenerio
+    else {
+      outputMessage = `There is no blackjack!`;
+      console.log(outputMessage);
+      var playerHandTotalValue = calculateTotalHandValue(playerHand);
+      var dealerHandTotalValue = calculateTotalHandValue(dealerHand);
+      console.log("Player hand total value:" + playerHandTotalValue);
+      console.log("Dealer hand total value:" + dealerHandTotalValue);
+    }
   }
 };
