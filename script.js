@@ -17,12 +17,14 @@ var dealerHandHide = true;
 var standPlayers = [];
 var dealerBust = false;
 var dealerDraw = "";
+var bankruptPlayerList = [];
 
 var players = [];
 var test = false;
 
 //Function to initialize set of players
 var playerInitialize = function () {
+  var playerID = 1;
   for (i = 0; i < playerNum; i++) {
     var curPlayer = {};
     curPlayer.chips = 100;
@@ -30,11 +32,26 @@ var playerInitialize = function () {
     curPlayer.bet = 0;
     curPlayer.roundStatus = ["Playing"];
     players.push(curPlayer);
+    curPlayer.id = playerID;
+    playerID++;
   }
 };
 
 //Function to reset game state and start next round
 var gameReset = function () {
+  var curListIndex = 0;
+  for (j = 0; j < playerNum; j++) {
+    console.log(j);
+    console.log(players[curListIndex].chips);
+    if (players[curListIndex].chips <= 0) {
+      players.splice(curListIndex, 1);
+    } else {
+      curListIndex++;
+    }
+  }
+
+  playerNum = players.length;
+
   for (i = 0; i < playerNum; i++) {
     players[i].hands = [];
     players[i].bet = 0;
@@ -63,10 +80,10 @@ var gameReset = function () {
 var main = function (input) {
   //Check if game state need to be reset as part of new round.
   if (gameResetStatus == true) {
+    console.log("a");
     gameReset();
-    return `Player ${
-      playerTurn + 1
-    }, please enter the number of chips you would like to bet for this round.`;
+    console.log("b");
+    return `Player ${players[playerTurn].id}, please enter the number of chips you would like to bet for this round.`;
   }
 
   //Setting initial shuffled deck and dealer hand
@@ -80,9 +97,7 @@ var main = function (input) {
     if (isNaN(input) == false && input % 1 == 0 && input > 0 && input <= 5) {
       playerNum = Number(input);
       playerInitialize();
-      return `We will have ${playerNum} player(s) in this game.<br>Each player begins with 100 chips.<br><br>Player ${
-        playerTurn + 1
-      }, please enter the number of chips you would like to bet for this round.`;
+      return `We will have ${playerNum} player(s) in this game.<br>Each player begins with 100 chips.<br><br>Player ${players[playerTurn].id}, please enter the number of chips you would like to bet for this round.`;
     } else {
       return "Please input a valid number of players (1 to 5).";
     }
@@ -98,9 +113,7 @@ var main = function (input) {
 
     if (playerTurn < playerNum - 1) {
       playerTurn++;
-      return `Player ${playerTurn} bets ${input} chips this round.<br><br>Player ${
-        playerTurn + 1
-      }, please enter the number of chips you would like to bet for this round.`;
+      return `Player ${playerTurn} bets ${input} chips this round.<br><br>Player ${players[playerTurn].id}, please enter the number of chips you would like to bet for this round.`;
     } else if (playerTurn == playerNum - 1) {
       playerTurn = 0;
       betInitial = true;
@@ -128,14 +141,14 @@ var main = function (input) {
   if (test == false) {
     //Temporary to debug blackjackArr insert
     players[1].hands = [
-      // [
-      //   { suit: "Spades", cardNum: "Ace", cardValue: 1 },
-      //   { suit: "Hearts", cardNum: "King", cardValue: 10 },
-      // ],
       [
-        { suit: "Hearts", cardNum: 5, cardValue: 5 },
-        { suit: "Spades", cardNum: 5, cardValue: 5 },
+        { suit: "Spades", cardNum: "Ace", cardValue: 1 },
+        { suit: "Hearts", cardNum: "King", cardValue: 10 },
       ],
+      // [
+      //   { suit: "Hearts", cardNum: 5, cardValue: 5 },
+      //   { suit: "Spades", cardNum: 5, cardValue: 5 },
+      // ],
     ];
     // players[0].hands = [
     //   [
@@ -168,9 +181,7 @@ var main = function (input) {
       ) {
         //Check if player wants to split
         openSplit = true;
-        return `Hi Player ${playerTurn + 1}, you have a pair of ${
-          players[playerTurn].hands[0][0].cardNum
-        }s.<br>Would you like to split your hand?<br>Enter "y" to split or "n" to keep a single hand.`;
+        return `Hi Player ${players[playerTurn].id}, you have a pair of ${players[playerTurn].hands[0][0].cardNum}s.<br>Would you like to split your hand?<br>Enter "y" to split or "n" to keep a single hand.`;
       } else if (openSplit == true) {
         //User input validation
         if (input.toLowerCase() != "y" && input.toLowerCase() != "n") {
@@ -262,7 +273,7 @@ var main = function (input) {
     hitStandInitial = true;
 
     var hitStandMsg = `Hi Player ${
-      playerTurn + 1
+      players[playerTurn].id
     }, your current hand is:<br>${activePlayerHand(
       playerTurn
     )}<br>Would you like to hit or stand?<br>Enter "h" to hit or "s" to stand.`;
@@ -281,7 +292,7 @@ var main = function (input) {
       //User choose to stand
     } else if (input.toLowerCase() == "s") {
       hitStandMsg =
-        hitStandMsg + `Player ${playerTurn + 1} has chosen to stand.`;
+        hitStandMsg + `Player ${players[playerTurn].id} has chosen to stand.`;
       players[playerTurn].roundStatus[currentPlayerHand] = "Stand";
     } else {
       //User choose to hit
@@ -295,14 +306,12 @@ var main = function (input) {
         players[playerTurn].chips -= players[playerTurn].bet;
         hitStandMsg =
           hitStandMsg +
-          `Player ${playerTurn + 1} drew ${newCard.cardNum} of ${
-            newCard.suit
-          } and bust.`;
+          `Player ${players[playerTurn].id} drew ${newCard.cardNum} of ${newCard.suit} and bust.`;
       } else {
         //Player didn't bust
         hitStandMsg =
           hitStandMsg +
-          `Player ${playerTurn + 1}, you drew ${newCard.cardNum} of ${
+          `Player ${players[playerTurn].id}, you drew ${newCard.cardNum} of ${
             newCard.suit
           }.<br>Your current hand is:<br>${activePlayerHand(
             playerTurn
@@ -323,7 +332,7 @@ var main = function (input) {
       hitStandMsg =
         hitStandMsg +
         `<br><br>Hi Player ${
-          playerTurn + 1
+          players[playerTurn].id
         }, your current hand is:<br>${activePlayerHand(
           playerTurn
         )}<br>Would you like to hit or stand?<br>Enter "h" to hit or "s" to stand.`;
@@ -348,12 +357,21 @@ var main = function (input) {
     return hitStandMsg;
   } else {
     //Dealer draws if their score is less than 17
+    hitStandMsg = hitStandMsg + `<br>`;
     dealerHandHide = false;
     while (handScore(dealerHand) < 17) {
       dealerDraw = currentDeck.pop();
       dealerHand.push(dealerDraw);
+
       if (handScore(dealerHand) > 21) {
         dealerBust = true;
+        hitStandMsg =
+          hitStandMsg +
+          `<br>The dealer drew ${dealerDraw.cardNum} of ${dealerDraw.suit} and bust.`;
+      } else {
+        hitStandMsg =
+          hitStandMsg +
+          `<br>The dealer drew ${dealerDraw.cardNum} of ${dealerDraw.suit}.`;
       }
     }
 
@@ -368,20 +386,74 @@ var main = function (input) {
               //Player lose
               players[k].chips -= players[k].bet;
               players[k].roundStatus[l] = "Lost";
+              hitStandMsg =
+                hitStandMsg +
+                `<br><br>The dealer has a hand of ${handScore(
+                  dealerHand
+                )} points, beating Player ${
+                  players[k].id
+                }'s hand of ${handScore(players[k].hands[l])} points.`;
             } else if (handScore(dealerHand) < handScore(players[k].hands[l])) {
               //Player win
               players[k].chips += players[k].bet * 2;
               players[k].roundStatus[l] = "Won";
+
+              hitStandMsg =
+                hitStandMsg +
+                `<br><br>The dealer has a hand of ${handScore(
+                  dealerHand
+                )} points, losing to Player ${
+                  players[k].id
+                }'s hand of ${handScore(players[k].hands[l])} points.`;
             } else {
               //Draw
               players[k].roundStatus[l] = "Draw";
+              hitStandMsg =
+                hitStandMsg +
+                `<br><br>The dealer has a hand of ${handScore(
+                  dealerHand
+                )} points, tying with Player ${
+                  players[k].id
+                }'s hand of ${handScore(players[k].hands[l])} points.`;
             }
           }
         }
       }
     }
   }
-  return "Game over";
+
+  //Check if a player is out of chips
+  for (p = 0; p < playerNum; p++) {
+    var chipCheck = 0;
+    var bankruptPlayers = [];
+    if (players[chipCheck].chips <= 0) {
+      bankruptPlayers.push(chipCheck);
+    }
+  }
+
+  if (bankruptPlayers.length == 1) {
+    hitStandMsg =
+      hitStandMsg +
+      `<br><br>Player ${
+        players[bankruptPlayers[0]].id
+      } ran out of chips and is out of the game.`;
+    bankruptPlayerList.push(bankruptPlayers[0]);
+  } else if (bankruptPlayers.length > 1) {
+    hitStandMsg = hitStandMsg + `<br><br>Players `;
+    var bankruptMsg = "";
+    for (q = 0; q < bankruptPlayers.length; q++) {
+      if (players[bankruptPlayers[q]].chips <= 0) {
+        bankruptMsg = bankruptMsg + `, ${players[bankruptPlayers[q]].id}`;
+        bankruptPlayerList.push(bankruptPlayers[q]);
+      }
+    }
+    bankruptMsg = bankruptMsg.substring(2);
+    hitStandMsg =
+      hitStandMsg + bankruptMsg + `ran out of chips and are out of the game.`;
+  }
+  hitStandMsg = hitStandMsg + `<br><br>Hit "continue" to start a new round.`;
+  gameResetStatus = true;
+  return hitStandMsg;
 };
 
 //Function for getting current active hand of active player
@@ -509,9 +581,7 @@ var gameStateMsg = function () {
   for (i = 0; i < playerNum; i++) {
     outputMsg =
       outputMsg +
-      `<br><b><u>Player ${i + 1}</u><br>Chips: ${
-        players[i].chips
-      }<br>Current round bet: ${players[i].bet}<br></b>`;
+      `<br><b><u>Player ${players[i].id}</u><br>Chips: ${players[i].chips}<br>Current round bet: ${players[i].bet}<br></b>`;
     var handNum = players[i].hands.length;
     if (handNum > 1) {
       //Add scenario of number of hands per player > 1
