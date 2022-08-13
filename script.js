@@ -4,7 +4,7 @@ var startGame = "start game";
 var drawnCard = "drawn card";
 var showResults = "show results";
 // var hitOrStay = "hit or stay";
-var gameMode = drawnCard;
+var gameMode = startGame;
 // var currentPlayer = playerTurn;
 
 var playerHand = [];
@@ -103,6 +103,25 @@ var calculateTotalHandValue = function (handArray) {
   return totalHandValue;
 };
 
+//display player and dealer hands function
+displayHands = function (playerHandArray, dealerHandArray) {
+  //player hand message
+  var playerMessage = `Player hand:<br>`;
+  var index = 0;
+  while (index < playerHandArray.length) {
+    playerMessage = `${playerMessage} - ${playerHandArray[index].name} of ${playerHandArray[index].suit} <br>`;
+    index += 1;
+  }
+  //dealer hand message
+  var dealerMessage = `Dealer hand:<br>`;
+  var index = 0;
+  while (index < playerHandArray.length) {
+    dealerMessage = `${dealerMessage} - ${dealerHandArray[index].name} of ${dealerHandArray[index].suit} <br>`;
+    index += 1;
+  }
+  return playerMessage + "<br>" + dealerMessage;
+};
+
 var main = function (input) {
   var outputMessage = "";
   if (gameMode == startGame) {
@@ -118,20 +137,20 @@ var main = function (input) {
     console.log("dealer hand:");
     console.log(dealerHand);
     //change game mode to game cards drawn
-    gameMode == drawnCard;
+    gameMode = drawnCard;
     outputMessage = `Everyone have drawn 2 cards. Click submit to check the cards!`;
     return outputMessage;
   }
   if (gameMode == drawnCard) {
     //check whether player or dealer has drawn bj
-    playerHand = [
-      { name: 10, suit: "diamonds", rank: 10 },
-      { name: 3, suit: "spades", rank: 3 },
-    ];
-    dealerHand = [
-      { name: 4, suit: "hearts", rank: 4 },
-      { name: 5, suit: "hearts", rank: 5 },
-    ];
+    // playerHand = [
+    //   { name: 10, suit: "diamonds", rank: 10 },
+    //   { name: 3, suit: "spades", rank: 3 },
+    // ];
+    // dealerHand = [
+    //   { name: 4, suit: "hearts", rank: 4 },
+    //   { name: 5, suit: "hearts", rank: 5 },
+    // ];
     var playerHasBlackjack = checkForBlackjack(playerHand);
     var dealerHasBlackjack = checkForBlackjack(dealerHand);
     // console.log("Does player have BJ? ==?" + playerHasBlackjack);
@@ -140,22 +159,39 @@ var main = function (input) {
     // dealerHasBlackjack = true;
     if (playerHasBlackjack == true || dealerHasBlackjack == true) {
       if (playerHasBlackjack == true && dealerHasBlackjack == true) {
-        outputMessage = `It's a tie! Player and dealer both have blackjack.`;
+        outputMessage =
+          displayHands(playerHand, dealerHand) +
+          "Its a tie! Player and dealer both have blackjack.";
       } else if (playerHasBlackjack == true && dealerHasBlackjack == false) {
-        outputMessage = `Player wins! Player drew blackjack.`;
+        outputMessage =
+          displayHands(playerHand, dealerHand) +
+          "Player wins! Player drew blackjack.";
       } else {
-        outputMessage = `Dealer wins! Dealer drew blackjack.`;
+        outputMessage =
+          displayHands(playerHand, dealerHand) +
+          "Dealer wins! Dealer drew blackjack.";
       }
       console.log(outputMessage);
     }
     //no blackjack scenerio
     else {
-      outputMessage = `There is no blackjack!`;
+      outputMessage =
+        displayHands(playerHand, dealerHand) + "There is no blackjack!";
       console.log(outputMessage);
       var playerHandTotalValue = calculateTotalHandValue(playerHand);
       var dealerHandTotalValue = calculateTotalHandValue(dealerHand);
-      console.log("Player hand total value:" + playerHandTotalValue);
-      console.log("Dealer hand total value:" + dealerHandTotalValue);
+      // playerHandTotalValue = 11;
+      // dealerHandTotalValue = 11;
+      if (playerHandTotalValue == dealerHandTotalValue) {
+        outputMessage = displayHands(playerHand, dealerHand) + "Its a tie!";
+      } else if (playerHandTotalValue > dealerHandTotalValue) {
+        outputMessage = displayHands(playerHand, dealerHand) + "Player wins!";
+      } else {
+        outputMessage = displayHands(playerHand, dealerHand) + "Dealer wins!";
+      }
+      //change game mode to show player and dealer results
+      gameMode = showResults;
+      return outputMessage;
     }
   }
 };
