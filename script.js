@@ -41,8 +41,6 @@ var playerInitialize = function () {
 var gameReset = function () {
   var curListIndex = 0;
   for (j = 0; j < playerNum; j++) {
-    console.log(j);
-    console.log(players[curListIndex].chips);
     if (players[curListIndex].chips <= 0) {
       players.splice(curListIndex, 1);
     } else {
@@ -52,6 +50,9 @@ var gameReset = function () {
 
   playerNum = players.length;
 
+  if (playerNum == 0) {
+    startNewGame = true;
+  }
   for (i = 0; i < playerNum; i++) {
     players[i].hands = [];
     players[i].bet = 0;
@@ -80,10 +81,12 @@ var gameReset = function () {
 var main = function (input) {
   //Check if game state need to be reset as part of new round.
   if (gameResetStatus == true) {
-    console.log("a");
     gameReset();
-    console.log("b");
-    return `Player ${players[playerTurn].id}, please enter the number of chips you would like to bet for this round.`;
+    if (playerNum > 0) {
+      return `Player ${players[playerTurn].id}, please enter the number of chips you would like to bet for this round.`;
+    } else {
+      return `There are no more players with chips remaining.<br><br>You can start a new game with fresh set of players.<br>Input the number of players you would like to begin the new game with.`;
+    }
   }
 
   //Setting initial shuffled deck and dealer hand
@@ -138,36 +141,37 @@ var main = function (input) {
     initialHand = true;
   }
 
-  if (test == false) {
-    //Temporary to debug blackjackArr insert
-    players[1].hands = [
-      [
-        { suit: "Spades", cardNum: "Ace", cardValue: 1 },
-        { suit: "Hearts", cardNum: "King", cardValue: 10 },
-      ],
-      // [
-      //   { suit: "Hearts", cardNum: 5, cardValue: 5 },
-      //   { suit: "Spades", cardNum: 5, cardValue: 5 },
-      // ],
-    ];
-    // players[0].hands = [
-    //   [
-    //     { suit: "Spades", cardNum: "Ace", cardValue: 1 },
-    //     { suit: "Hearts", cardNum: "King", cardValue: 10 },
-    //   ],
-    //   // [
-    //   //   { suit: "Hearts", cardNum: 5, cardValue: 5 },
-    //   //   { suit: "Spades", cardNum: 5, cardValue: 5 },
-    //   // ],
-    // ];
-    test = true;
-    // players[1].hands = [
-    //   [
-    //     { suit: "spades", cardNum: "Ace", cardValue: 1 },
-    //     { suit: "spades", cardNum: "King", cardValue: 10 },
-    //   ],
-    // ];
-  }
+  //Section for manually altering results of the hand draw to do scenario testing
+  // if (test == false) {
+  //   //Temporary to debug blackjackArr insert
+  //   // players[1].hands = [
+  //   //   [
+  //   //     { suit: "Spades", cardNum: "Ace", cardValue: 1 },
+  //   //     { suit: "Hearts", cardNum: "King", cardValue: 10 },
+  //   //   ],
+  //   //   // [
+  //   //   //   { suit: "Hearts", cardNum: 5, cardValue: 5 },
+  //   //   //   { suit: "Spades", cardNum: 5, cardValue: 5 },
+  //   //   // ],
+  //   // ];
+  //   // // players[0].hands = [
+  //   // //   [
+  //   // //     { suit: "Spades", cardNum: "Ace", cardValue: 1 },
+  //   // //     { suit: "Hearts", cardNum: "King", cardValue: 10 },
+  //   // //   ],
+  //   // //   // [
+  //   // //   //   { suit: "Hearts", cardNum: 5, cardValue: 5 },
+  //   // //   //   { suit: "Spades", cardNum: 5, cardValue: 5 },
+  //   // //   // ],
+  //   // // ];
+  //   // test = true;
+  //   // players[1].hands = [
+  //   //   [
+  //   //     { suit: "spades", cardNum: "Ace", cardValue: 1 },
+  //   //     { suit: "spades", cardNum: "King", cardValue: 10 },
+  //   //   ],
+  //   // ];
+  // }
   //Check if player has 2 cards of the same type to split
   if (splitInitial == false) {
     for (o = playerTurn; o < playerNum; o++) {
@@ -264,7 +268,6 @@ var main = function (input) {
       activePlayers.reverse();
 
       playerTurn = activePlayers.pop();
-      //return blackjackMsg + `<br>Hit "continue" to move to the next phase.`;
     }
   }
 
@@ -354,6 +357,7 @@ var main = function (input) {
     hitStandMsg =
       hitStandMsg +
       `<br>This round is over.<br><br>Hit "continue" to begin the next round.`;
+    gameResetStatus = true;
     return hitStandMsg;
   } else {
     //Dealer draws if their score is less than 17
