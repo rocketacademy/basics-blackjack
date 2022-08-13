@@ -3,7 +3,7 @@
 var startGame = "start game";
 var drawnCard = "drawn card";
 var showResults = "show results";
-// var hitOrStay = "hit or stay";
+var hitOrStand = "hit or stand";
 var gameMode = startGame;
 // var currentPlayer = playerTurn;
 
@@ -109,14 +109,14 @@ var displayHands = function (playerHandArray, dealerHandArray) {
   var playerMessage = `Player hand:<br>`;
   var index = 0;
   while (index < playerHandArray.length) {
-    playerMessage = `${playerMessage} - ${playerHandArray[index].name} of ${playerHandArray[index].suit} <br>`;
+    playerMessage = `${playerMessage} - ${playerHandArray[index].name} of ${playerHandArray[index].suit}<br>`;
     index += 1;
   }
   //dealer hand message
   var dealerMessage = `Dealer hand:<br>`;
-  var index = 0;
-  while (index < playerHandArray.length) {
-    dealerMessage = `${dealerMessage} - ${dealerHandArray[index].name} of ${dealerHandArray[index].suit} <br>`;
+  index = 0;
+  while (index < dealerHandArray.length) {
+    dealerMessage = `${dealerMessage} - ${dealerHandArray[index].name} of ${dealerHandArray[index].suit}<br>`;
     index += 1;
   }
   return playerMessage + "<br>" + dealerMessage;
@@ -184,6 +184,21 @@ var main = function (input) {
       outputMessage =
         displayHands(playerHand, dealerHand) + "There is no blackjack!";
       console.log(outputMessage);
+
+      //change game mode to show player and dealer results
+      gameMode = hitOrStand;
+      return outputMessage;
+    }
+  }
+
+  //hit or stand function
+  if (gameMode == hitOrStand) {
+    if (input == "hit") {
+      playerHand.push(gameDeck.pop());
+      outputMessage =
+        displayHands(playerHand, dealerHand) +
+        "<br>Your drew another card. <br>Please enter hit or stand.";
+    } else if (input == "stand") {
       var playerHandTotalValue = calculateTotalHandValue(playerHand);
       var dealerHandTotalValue = calculateTotalHandValue(dealerHand);
       // playerHandTotalValue = 11;
@@ -204,9 +219,14 @@ var main = function (input) {
           "Dealer wins!" +
           displayHandsTotalValue(playerHandTotalValue, dealerHandTotalValue);
       }
-      //change game mode to show player and dealer results
-      gameMode = showResults;
-      return outputMessage;
     }
+    //input validation
+    else {
+      outputMessage = `Sorry, please enter either "hit" or "stand". <br><br>${displayHands(
+        playerHand,
+        dealerHand
+      )}`;
+    }
+    return outputMessage;
   }
 };
