@@ -201,8 +201,11 @@ var main = function (input) {
     } else if (input == "stand") {
       var playerHandTotalValue = calculateTotalHandValue(playerHand);
       var dealerHandTotalValue = calculateTotalHandValue(dealerHand);
-      // playerHandTotalValue = 11;
-      // dealerHandTotalValue = 11;
+      while (dealerHandTotalValue < 17) {
+        dealerHand.push(gameDeck.pop());
+        dealerHandTotalValue = calculateTotalHandValue(dealerHand);
+      }
+
       if (playerHandTotalValue == dealerHandTotalValue) {
         outputMessage =
           displayHands(playerHand, dealerHand) +
