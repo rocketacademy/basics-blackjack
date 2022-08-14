@@ -35,7 +35,9 @@ var eachBet = [];
 var dealerFundBalance = 0;
 var deck = [];
 var eachPlayerCard = [];
+var eachPlayerScore = [];
 var dealerCard = [];
+var dealerScore = 0;
 
 var main = function (input) {
   // Initialize value
@@ -82,6 +84,7 @@ var main = function (input) {
     }
     // Create a deck
     deck = makeDeck();
+    deck = shuffleCards(deck);
     console.log(deck);
     // Show the betting amount by each player
     return outputMessage;
@@ -89,11 +92,44 @@ var main = function (input) {
 
   // Round 1: Start the game
   if (eachBet.length != 0 && eachPlayerCard.length == 0) {
-    for (counter = 1; counter <= player; counter += 1) {}
-    // Initial 2 cards are randomly dealth
-    // 2 cards are added to a player card array
-    // scores are updated to a player score array
-    // Show the faced up cards of each player and a dealer (Dealer have two cards but show only one card)
+    // Initialize card dealth for each
+    var cardDealth = [];
+    outputMessage = `Everyone has two cards on hands ... <br>`;
+
+    for (counter = 0; counter < player; counter += 1) {
+      // Deal two cards each
+      cardDealth.push(deck.pop());
+      cardDealth.push(deck.pop());
+      eachPlayerCard.push(cardDealth);
+      // Calculate scores for each player
+      eachPlayerScore.push(handScores(cardDealth, false));
+      // Output message
+      if (counter == 0) {
+        outputMessage =
+          outputMessage +
+          "<br>" +
+          `You have ${eachPlayerScore[counter]} scores`;
+      } else {
+        outputMessage =
+          outputMessage +
+          "<br>" +
+          `Player ${counter + 1} has ${eachPlayerScore[counter]} scores`;
+      }
+      // Reinitialize variables to be reused
+      cardDealth = [];
+    }
+    // Dealer dealth two cards
+    dealerCard.push(deck.pop());
+    dealerCard.push(deck.pop());
+    // Calculate dealer scores
+    dealerScore = handScores(dealerCard, false);
+    // Output message
+    outputMessage =
+      outputMessage +
+      "<br><br>" +
+      `Dealer has dealth 2 cards, one of which is ${dealerCard[0].name} of ${dealerCard[0].suit}.`;
+
+    return outputMessage;
     // Return the value of
   }
 
@@ -102,7 +138,7 @@ var main = function (input) {
     gameRound = gameRound + 1;
 
     // If the player's score is
-
+    deck[randomNumber(deck.length) - 1];
     // Return "You have
   }
 
@@ -122,10 +158,9 @@ var main = function (input) {
 var randomNumber = function (max) {
   var randomWithinMax = 0;
   // Get random number between 1 and max
-  randomWithinMax = Math.floor(Math.random() * max) + 1;
-  return randomWithinMax;
+  return Math.floor(Math.random() * max) + 1;
 };
-
+// Create a new deck
 var makeDeck = function () {
   // Initialise an empty deck array
   var cardDeck = [];
@@ -177,4 +212,66 @@ var makeDeck = function () {
 
   // Return the completed card deck
   return cardDeck;
+};
+
+// Shuffle the elements in the cardDeck array
+var shuffleCards = function (cardDeck) {
+  // Loop over the card deck array once
+  var currentIndex = 0;
+  while (currentIndex < cardDeck.length) {
+    // Select a random index in the deck
+    var randomIndex = randomNumber(cardDeck.length) - 1;
+    // Select the card that corresponds to randomIndex
+    var randomCard = cardDeck[randomIndex];
+    // Select the card that corresponds to currentIndex
+    var currentCard = cardDeck[currentIndex];
+    // Swap positions of randomCard and currentCard in the deck
+    deck[currentIndex] = randomCard;
+    deck[randomIndex] = currentCard;
+    // Increment currentIndex
+    currentIndex = currentIndex + 1;
+  }
+  // Return the shuffled deck
+  return deck;
+};
+
+var handScores = function (handCard, gameEnd) {
+  var aceCard = [];
+  var nonAceCard = [];
+  var totalScore = 0;
+  // Split cards on hand into "ace" and "non-ace"
+  for (counterCard = 0; counterCard < handCard.length; counterCard += 1) {
+    console.log(handCard[counterCard].rank);
+    if (handCard[counterCard].rank == 1) {
+      aceCard.push(handCard[counterCard]);
+    } else {
+      nonAceCard.push(handCard[counterCard]);
+    }
+  }
+  // Calculate a summation of non-ace
+  for (counterCard = 0; counterCard < nonAceCard.length; counterCard += 1) {
+    if (nonAceCard[counterCard].rank < 10) {
+      totalScore = totalScore + nonAceCard[counterCard].rank;
+    } else {
+      totalScore = totalScore + 10;
+    }
+  }
+  // Calculate a summation of ace
+  // For normal players ace will count as 1 unless it makes the score 21
+  for (counterCard = 0; counterCard < aceCard.length; counterCard += 1) {
+    // If there is more than 1 ace, then only one ace is possible to count as 11
+    if (counterCard == aceCard.length - 1) {
+      // The player or dealer should count ace as 11 only when it makes
+      if (totalScore == 10) {
+        totalScore = totalScore + 11;
+      } else if (gameEnd == true && totalScore < 10) {
+        totalScore = totalScore + 11;
+      } else {
+        totalScore = totalScore + 1;
+      }
+    } else {
+      totalScore = totalScore + 1;
+    }
+  }
+  return totalScore;
 };
