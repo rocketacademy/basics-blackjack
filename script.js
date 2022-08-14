@@ -200,6 +200,7 @@ var main = function (input) {
       gameMode = hitOrStand;
       return outputMessage;
     }
+    return outputMessage;
   }
 
   //hit or stand function
@@ -223,15 +224,49 @@ var main = function (input) {
           displayHands(playerHand, dealerHand) +
           "Its a tie!" +
           displayHandsTotalValue(playerHandTotalValue, dealerHandTotalValue);
-      } else if (playerHandTotalValue > dealerHandTotalValue) {
+      } else if (
+        playerHandTotalValue > dealerHandTotalValue &&
+        playerHandTotalValue <= 21
+      ) {
         outputMessage =
           displayHands(playerHand, dealerHand) +
           "Player wins!" +
           displayHandsTotalValue(playerHandTotalValue, dealerHandTotalValue);
-      } else {
+      } else if (
+        playerHandTotalValue < dealerHandTotalValue &&
+        dealerHandTotalValue > 21 &&
+        playerHandTotalValue <= 21
+      ) {
+        outputMessage =
+          displayHands(playerHand, dealerHand) +
+          "Player wins!" +
+          displayHandsTotalValue(playerHandTotalValue, dealerHandTotalValue);
+      } else if (
+        dealerHandTotalValue > playerHandTotalValue &&
+        dealerHandTotalValue <= 21
+      ) {
         outputMessage =
           displayHands(playerHand, dealerHand) +
           "Dealer wins!" +
+          displayHandsTotalValue(playerHandTotalValue, dealerHandTotalValue);
+      } else if (
+        dealerHandTotalValue < playerHandTotalValue &&
+        playerHandTotalValue > 21 &&
+        dealerHandTotalValue <= 21
+      ) {
+        outputMessage =
+          displayHands(playerHand, dealerHand) +
+          "Dealer wins!" +
+          displayHandsTotalValue(playerHandTotalValue, dealerHandTotalValue);
+      } else if (dealerHandTotalValue > 21 && playerHandTotalValue > 21) {
+        outputMessage =
+          displayHands(playerHand, dealerHand) +
+          "Dealer and player burst!" +
+          displayHandsTotalValue(playerHandTotalValue, dealerHandTotalValue);
+      } else {
+        outputMessage =
+          displayHands(playerHand, dealerHand) +
+          "No one wins!" +
           displayHandsTotalValue(playerHandTotalValue, dealerHandTotalValue);
       }
     }
