@@ -145,36 +145,42 @@ var main = function (input) {
   }
 
   //Section for manually altering results of the hand draw to do scenario testing
-  // if (test == false) {
-  //   //   //Temporary to debug blackjackArr insert
-  //   players[0].hands = [
-  //     // [
-  //     //   { suit: "Spades", cardNum: "Ace", cardValue: 1 },
-  //     //   { suit: "Hearts", cardNum: "King", cardValue: 10 },
-  //     // ],
-  //     [
-  //       { suit: "Hearts", cardNum: 5, cardValue: 5 },
-  //       { suit: "Spades", cardNum: 5, cardValue: 5 },
-  //     ],
-  //   ];
-  //   // // players[0].hands = [
-  //   // //   [
-  //   // //     { suit: "Spades", cardNum: "Ace", cardValue: 1 },
-  //   // //     { suit: "Hearts", cardNum: "King", cardValue: 10 },
-  //   // //   ],
-  //   // //   // [
-  //   // //   //   { suit: "Hearts", cardNum: 5, cardValue: 5 },
-  //   // //   //   { suit: "Spades", cardNum: 5, cardValue: 5 },
-  //   // //   // ],
-  //   // // ];
-  //   test = true;
-  //   // players[1].hands = [
-  //   //   [
-  //   //     { suit: "spades", cardNum: "Ace", cardValue: 1 },
-  //   //     { suit: "spades", cardNum: "King", cardValue: 10 },
-  //   //   ],
-  //   // ];
-  // }
+  if (test == false) {
+    //   //Temporary to debug blackjackArr insert
+    players[0].hands = [
+      // [
+      //   { suit: "Spades", cardNum: "Ace", cardValue: 1 },
+      //   { suit: "Hearts", cardNum: "King", cardValue: 10 },
+      // ],
+      [
+        { suit: "Hearts", cardNum: 2, cardValue: 2 },
+        { suit: "Spades", cardNum: 2, cardValue: 2 },
+        { suit: "Clubs", cardNum: 2, cardValue: 2 },
+        { suit: "Diamonds", cardNum: 2, cardValue: 2 },
+        { suit: "Hearts", cardNum: 3, cardValue: 3 },
+        { suit: "Spades", cardNum: 3, cardValue: 3 },
+        { suit: "Clubs", cardNum: 3, cardValue: 3 },
+        { suit: "Diamonds", cardNum: 3, cardValue: 3 },
+      ],
+    ];
+    // // players[0].hands = [
+    // //   [
+    // //     { suit: "Spades", cardNum: "Ace", cardValue: 1 },
+    // //     { suit: "Hearts", cardNum: "King", cardValue: 10 },
+    // //   ],
+    // //   // [
+    // //   //   { suit: "Hearts", cardNum: 5, cardValue: 5 },
+    // //   //   { suit: "Spades", cardNum: 5, cardValue: 5 },
+    // //   // ],
+    // // ];
+    test = true;
+    // players[1].hands = [
+    //   [
+    //     { suit: "spades", cardNum: "Ace", cardValue: 1 },
+    //     { suit: "spades", cardNum: "King", cardValue: 10 },
+    //   ],
+    // ];
+  }
   //  Check if player has 2 cards of the same type to split
   if (splitInitial == false) {
     for (o = playerTurn; o < playerNum; o++) {
@@ -281,12 +287,9 @@ var main = function (input) {
   if (hitStandInitial == false) {
     hitStandInitial = true;
 
-    var hitStandMsg = `Hi Player ${
-      players[playerTurn].id
-    }, your current hand is:<br>${activePlayerHand(
-      playerTurn
-    )}<br>Would you like to hit or stand?`;
+    var hitStandMsg = `Hi Player ${players[playerTurn].id}, would you like to hit or stand?<br><br>Your current hand is:`;
     switchHitStandButton();
+    addHandImg(playerTurn);
     return hitStandMsg;
   }
 
@@ -322,12 +325,9 @@ var main = function (input) {
         //Player didn't bust
         hitStandMsg =
           hitStandMsg +
-          `Player ${players[playerTurn].id}, you drew ${newCard.cardNum} of ${
-            newCard.suit
-          }.<br>Your current hand is:<br>${activePlayerHand(
-            playerTurn
-          )}<br>Would you like to hit or stand?`;
+          `Player ${players[playerTurn].id}, you drew ${newCard.cardNum} of ${newCard.suit}.<br>Would you like to hit or stand?<br><br>Your current hand is:`;
         switchHitStandButton();
+        addHandImg(playerTurn);
         return hitStandMsg;
       }
     }
@@ -343,12 +343,9 @@ var main = function (input) {
       }
       hitStandMsg =
         hitStandMsg +
-        `<br><br>Hi Player ${
-          players[playerTurn].id
-        }, your current hand is:<br>${activePlayerHand(
-          playerTurn
-        )}<br>Would you like to hit or stand?`;
+        `<br><br>Hi Player ${players[playerTurn].id}, would you like to hit or stand?<br><br>Your current hand is:`;
       switchHitStandButton();
+      addHandImg(playerTurn);
       return hitStandMsg;
     } else {
       hitStandDone = true;
@@ -753,6 +750,10 @@ var switchHitStandButton = function () {
   standButton.id = "standButton";
 
   hitButton.addEventListener("click", function () {
+    //Clear player hand div
+    var playerHand = document.querySelector("#player-hand");
+    playerHand.replaceChildren();
+
     var result = main("h");
     var output = document.querySelector("#output-div");
     output.innerHTML = result;
@@ -764,6 +765,10 @@ var switchHitStandButton = function () {
   });
 
   standButton.addEventListener("click", function () {
+    //Clear player hand div
+    var playerHand = document.querySelector("#player-hand");
+    playerHand.replaceChildren();
+
     var result = main("s");
     var output = document.querySelector("#output-div");
     output.innerHTML = result;
@@ -797,6 +802,10 @@ var switchContinueButton = function () {
   continueButton.id = "submit-button";
 
   continueButton.addEventListener("click", function () {
+    //Clear player hand div
+    var playerHand = document.querySelector("#player-hand");
+    playerHand.replaceChildren();
+
     // Set result to input value
     var input = document.querySelector("#input-field");
 
@@ -839,6 +848,10 @@ var switchSplitButton = function () {
   splitNButton.id = "splitNButton";
 
   splitYButton.addEventListener("click", function () {
+    //Clear player hand div
+    var playerHand = document.querySelector("#player-hand");
+    playerHand.replaceChildren();
+
     var result = main("y");
     var output = document.querySelector("#output-div");
     output.innerHTML = result;
@@ -850,6 +863,10 @@ var switchSplitButton = function () {
   });
 
   splitNButton.addEventListener("click", function () {
+    //Clear player hand div
+    var playerHand = document.querySelector("#player-hand");
+    playerHand.replaceChildren();
+
     var result = main("n");
     var output = document.querySelector("#output-div");
     output.innerHTML = result;
@@ -883,6 +900,10 @@ var switchDealButton = function () {
   continueButton.id = "submit-button";
 
   continueButton.addEventListener("click", function () {
+    //Clear player hand div
+    var playerHand = document.querySelector("#player-hand");
+    playerHand.replaceChildren();
+
     // Set result to input value
     var input = document.querySelector("#input-field");
 
@@ -916,6 +937,10 @@ var removeInput = function () {
   continueButton.id = "submit-button";
 
   continueButton.addEventListener("click", function () {
+    //Clear player hand div
+    var playerHand = document.querySelector("#player-hand");
+    playerHand.replaceChildren();
+
     var result = main();
     var trackerMsg = gameStateMsg();
 
@@ -946,6 +971,10 @@ var addInputBox = function () {
   continueButton.id = "submit-button";
 
   continueButton.addEventListener("click", function () {
+    //Clear player hand div
+    var playerHand = document.querySelector("#player-hand");
+    playerHand.replaceChildren();
+
     // Set result to input value
     var input = document.querySelector("#input-field");
 
@@ -971,4 +1000,15 @@ var addInputBox = function () {
   const inputBox = document.createElement("input");
   inputBox.id = "input-field";
   container2.appendChild(inputBox);
+};
+
+var addHandImg = function (input) {
+  var inputHand = players[input].hands[playerTurnHand(input)];
+  const outputBox = document.querySelector("#player-hand");
+  for (let i = 0; i < inputHand.length; i++) {
+    const cardElement = document.createElement("img");
+    cardElement.src = `../basics-blackjack/cards/${inputHand[i].cardNum}-of-${inputHand[i].suit}.png`;
+    cardElement.style.width = "20%";
+    outputBox.appendChild(cardElement);
+  }
 };

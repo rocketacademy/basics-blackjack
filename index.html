@@ -217,6 +217,7 @@
           Hi, welcome to a game of Blackjack.<br />To begin, please select the
           number of players for this game (1 to 5).
         </div>
+        <div id="player-hand"></div>
       </div>
 
       <div id="container2">
@@ -234,6 +235,10 @@
     <script>
       var button = document.querySelector("#submit-button");
       button.addEventListener("click", function () {
+        //Clear player hand div
+        var playerHand = document.querySelector("#player-hand");
+        playerHand.replaceChildren();
+
         // Set result to input value
         var input = document.querySelector("#input-field");
 
