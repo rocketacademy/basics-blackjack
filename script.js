@@ -175,7 +175,7 @@ var compareHands = function (player, dealer) {
   return outputValue;
 };
 */
-// Create a function for formatting emoji
+// Create a function for formatting suit with emoji
 var emoji = function (suitName) {
   if (suitName == "Hearts") {
     return `<span style="color:red">❤</span>`;
@@ -205,7 +205,7 @@ var revealCards = function (input) {
   }
   return cardsInHand;
 };
-
+// Create a function to reveal only one card of dealer's
 var revealOneCard = function (input) {
   // Input is an object with card arrays
   var cardsInHand = "";
