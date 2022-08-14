@@ -323,11 +323,6 @@ var main = function (input) {
       nextButton.disabled = true;
     }
   } else if (gameMode == "player to hit or stand") {
-    // if (!(input == "h" || input == "s")) {
-    //   outputMsg = `Invalid input. Player, enter <b>'h'</b> to hit or <b>'s'</b> to stand. <br><br> Player (${playerValue}):<br>${revealCards(
-    //     playerHands
-    //   )}<br> Dealer (❓):<br> ${revealOneCard(dealerHands)}`;
-    // } else
     if (input == "h") {
       playerHands.push(shuffledDeck.pop());
       playerValue = calcCardValue(playerHands);
@@ -346,7 +341,7 @@ var main = function (input) {
           playerHands
         )}<br> Dealer (❓):<br> ${revealOneCard(
           dealerHands
-        )} <br> Player, enter <b>'h'</b> to hit or <b>'s'</b> to stand.`;
+        )} <br> Player, 'Hit' to draw a card, or 'Stand' to pass.`;
       }
     } else if (input == "s") {
       gameMode = "dealer to hit or stand";
@@ -357,7 +352,7 @@ var main = function (input) {
         playerHands
       )}<br> Dealer (❓):<br> ${revealOneCard(
         dealerHands
-      )} <br><b>End of Player's turn. Dealer's turn. 'Submit' for dealer's move.</b>`;
+      )} <br><b>End of Player's turn. Dealer's turn. Click 'Next' for dealer's move.</b>`;
     }
   } else if (gameMode == "dealer to hit or stand") {
     gameMode = "game over";
