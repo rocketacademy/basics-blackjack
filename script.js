@@ -1008,7 +1008,15 @@ var addHandImg = function (input) {
   const outputBox = document.querySelector("#player-hand");
   for (let i = 0; i < inputHand.length; i++) {
     const cardElement = document.createElement("img");
-    cardElement.src = `darrenlowjq.github.io/basics-blackjack/cards/${inputHand[i].cardNum}-of-${inputHand[i].suit}.png`;
+
+    var cardNumInput = inputHand[i].cardNum;
+    var cardSuitInput = inputHand[i].suit.toLowerCase();
+
+    if (isNaN(cardNumInput)) {
+      cardNumInput = cardNumInput.toLowerCase();
+    }
+
+    cardElement.src = `../basics-blackjack/cards/${cardNumInput}-of-${cardSuitInput}.png`;
     cardElement.style.width = "20%";
     outputBox.appendChild(cardElement);
   }
