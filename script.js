@@ -1008,7 +1008,7 @@ var addHandImg = function (input) {
   const outputBox = document.querySelector("#player-hand");
   for (let i = 0; i < inputHand.length; i++) {
     const cardElement = document.createElement("img");
-    cardElement.src = `../basics-blackjack/cards/${inputHand[i].cardNum}-of-${inputHand[i].suit}.png`;
+    cardElement.src = `../cards/${inputHand[i].cardNum}-of-${inputHand[i].suit}.png`;
     cardElement.style.width = "20%";
     outputBox.appendChild(cardElement);
   }
