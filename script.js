@@ -281,6 +281,29 @@ var inputPlayerNames = function (input) {
 };
 
 var startRound = function () {
+  var areThereBrokePlayers = false;
+  var brokePlayers = ``;
+  for (player of arrOfPlayers) {
+    if (player.chips <= 0) {
+      var playerToRemove = arrOfPlayers.indexOf(player);
+      arrOfPlayers.splice(playerToRemove, 1);
+      brokePlayers += ` ${player.name}, `;
+      areThereBrokePlayers = true;
+    }
+
+    if (areThereBrokePlayers == true) {
+      brokePlayers += `ran out of Chips and will be removed from game. Better luck next time!`;
+      infoDisplay.innerHTML = brokePlayers;
+      return `Press Submit to Continue.`;
+    }
+  }
+
+  if (arrOfPlayers.length == 0) {
+    infoDisplay.innerHTML = `All players went broke. Game is over.`;
+    greatReset();
+    return `Press Submit to Reset App`;
+  }
+
   infoDisplay.innerHTML = `<b> Starting Round ${roundCounter}... </b>`;
   currentDeck = shuffleCards(makeDeck());
   for (player of arrOfPlayers) {
@@ -377,11 +400,11 @@ var splitHandIfYes = function (input, currentHand, currentPlayer) {
 
     currentPlayer.chips -= currentPlayer.wager;
     currentHand.splitDecided = true;
-    infoDisplay.innerHTML = `@${currentPlayer}, you have split your hand for ${currentPlayer.wager} and now have ${currentPlayer.chips} chips left`;
+    infoDisplay.innerHTML = `@${currentPlayer.name}, you have split your hand for ${currentPlayer.wager} and now have ${currentPlayer.chips} chips left`;
     return `Press Submit to process your new hands!`;
   } else if (input == "no") {
     currentHand.splitDecided = true;
-    infoDisplay.innerHTML = `@${currentPlayer}, Noted. You have passed on splitting your hand!`;
+    infoDisplay.innerHTML = `@${currentPlayer.name}, Noted. You have passed on splitting your hand!`;
     return `Press Submit to continue`;
   } else {
     return `Invalid Option. Please type in "Yes" or "No" to Split your hand`;
