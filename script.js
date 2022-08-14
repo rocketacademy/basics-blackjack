@@ -32,6 +32,7 @@ var gameRound = 0;
 var player = 0;
 var eachFund = [];
 var eachBet = [];
+var eachStatus = [];
 var dealerFundBalance = 0;
 var deck = [];
 var eachPlayerCard = [];
@@ -50,9 +51,12 @@ var main = function (input) {
     if (Number.isInteger(parseInt(input)) == true) {
       // Set the input as the number of players
       player = input;
-      // Players' starting funds
+
       for (counter = 0; counter < player; counter += 1) {
+        // Players' starting funds
         eachFund.push(100);
+        // Player's starting status
+        eachStatus.push("current");
       }
       // Output message
       outputMessage = `${player} players in the game! <br>
@@ -63,10 +67,15 @@ var main = function (input) {
 
   // Round 0: Get the bet by each player
   if (eachBet.length == 0) {
+    // Starting output message
+    outputMessage = "Now, everyone has put their bet ...";
     // Check whether the input (betting amount) is no greater than fund amount
     if (parseInt(input) <= eachFund[0]) {
       eachBet.push(parseInt(input));
-      outputMessage = `You bet $${eachBet[0]} out of $${eachFund[0]}`;
+      outputMessage =
+        outputMessage +
+        "<br><br>" +
+        `You bet $${eachBet[0]} out of $${eachFund[0]}`;
     } else {
       outputMessage = `Please bet within what you have; you only have $${eachFund[0]} now.`;
       return outputMessage;
@@ -82,19 +91,20 @@ var main = function (input) {
           eachFund[counter]
         }`;
     }
+    // Ending output message
+    outputMessage = outputMessage + "<hr>" + "Press submit to deal the cards";
     // Create a deck
     deck = makeDeck();
     deck = shuffleCards(deck);
-    console.log(deck);
     // Show the betting amount by each player
     return outputMessage;
   }
 
-  // Round 1: Start the game
+  // Round 1: first two dealth
   if (eachBet.length != 0 && eachPlayerCard.length == 0) {
     // Initialize card dealth for each
     var cardDealth = [];
-    outputMessage = `Everyone has two cards on hands ... <br>`;
+    outputMessage = `Everyone has two cards on hands of which scores are... <br>`;
 
     for (counter = 0; counter < player; counter += 1) {
       // Deal two cards each
@@ -115,6 +125,17 @@ var main = function (input) {
           "<br>" +
           `Player ${counter + 1} has ${eachPlayerScore[counter]} scores`;
       }
+
+      if (eachPlayerScore[counter] == 21) {
+        // Update status to win
+        eachStatus[counter] = "win";
+        // Get twice of the betting amount
+        eachFund[counter] = eachFund[counter] + eachBet[counter] * 2;
+        dealerFundBalance = dealerFundBalance - eachBet[counter] * 2;
+        // Update output message
+        outputMessage =
+          outputMessage + ` -- WIN! WITH $${eachBet[counter] * 2} GAINS`;
+      }
       // Reinitialize variables to be reused
       cardDealth = [];
     }
@@ -125,26 +146,134 @@ var main = function (input) {
     dealerScore = handScores(dealerCard, false);
     // Output message
     outputMessage =
-      outputMessage +
-      "<br><br>" +
-      `Dealer has dealth 2 cards, one of which is ${dealerCard[0].name} of ${dealerCard[0].suit}.`;
+      outputMessage + "<br><br>" + `Dealer has ${dealerScore} scores`;
 
+    // Check whether the game is ended
+    if (dealerScore < 17) {
+      if (eachStatus[0] == "win") {
+        outputMessage =
+          outputMessage + "<hr>" + "Press submit to let the game continue.";
+      } else {
+        outputMessage =
+          outputMessage + "<hr>" + "Choose 'hit' or 'stay' for this turn.";
+      }
+    } else {
+      outputMessage = outputMessage + "<hr>" + "Press submit to see the result";
+    }
+    //Return output message
     return outputMessage;
-    // Return the value of
   }
 
-  // dealer score is not over 17, the game continue
-  while (playerBets != 0 && dealerScore < 17) {
-    gameRound = gameRound + 1;
+  // The game continues when dealer score is not over 17
+  if (dealerScore < 17) {
+    outputMessage = `You ${input} this round`;
+    // If you has not busted or won
+    if (eachStatus[0] == "current") {
+      if (input == "hit") {
+        eachPlayerCard[0].push(deck.pop());
+        eachPlayerScore[0] = handScores(eachPlayerCard[0], false);
+      } else if (input == "stay") {
+      } else {
+        outputMessage = `Please input only 'hit' or 'stay'`;
+        return outputMessage;
+      }
+      outputMessage =
+        outputMessage + "<hr>" + `You have ${eachPlayerScore[0]} scores`;
+      // Check 'win' and 'bust'
+      if (eachPlayerScore[counter] == 21) {
+        // Update status to win
+        eachStatus[counter] = "win";
+        // Get twice of the betting amount
+        eachFund[counter] = eachFund[counter] + eachBet[counter] * 2;
+        dealerFundBalance = dealerFundBalance - eachBet[counter] * 2;
+        // Update output message
+        outputMessage =
+          outputMessage + ` -- WIN! WITH $${eachBet[counter] * 2} GAINS`;
+      } else if (eachPlayerScore[counter] > 21) {
+        eachStatus[counter] = "bust";
+        // Get twice of the betting amount
+        eachFund[counter] = eachFund[counter] - eachBet[counter];
+        dealerFundBalance = dealerFundBalance + eachBet[counter];
+        // Update output message
+        outputMessage =
+          outputMessage + ` -- BUST! WITH $${eachBet[counter]} LOSS`;
+      }
+    }
 
-    // If the player's score is
-    deck[randomNumber(deck.length) - 1];
-    // Return "You have
+    // Randomly hit or stay for current players
+    for (counter = 1; counter < player; counter += 1) {
+      if (eachStatus[counter] == "current") {
+        var action = randomNumber(2) - 1; // 0 = "hit", 1 = "stay"
+        if (action == 0) {
+          eachPlayerCard[counter].push(deck.pop());
+          eachPlayerScore[counter] = handScores(eachPlayerCard[counter], false);
+        }
+        outputMessage =
+          outputMessage +
+          "<br>" +
+          `Player ${counter + 1} has ${eachPlayerScore[counter]} scores`;
+        // Check 'win' and 'bust'
+        if (eachPlayerScore[counter] == 21) {
+          // Update status to win
+          eachStatus[counter] = "win";
+          // Get twice of the betting amount
+          eachFund[counter] = eachFund[counter] + eachBet[counter] * 2;
+          dealerFundBalance = dealerFundBalance - eachBet[counter] * 2;
+          // Update output message
+          outputMessage =
+            outputMessage + ` -- WIN! WITH $${eachBet[counter] * 2} GAINS`;
+        } else if (eachPlayerScore[counter] > 21) {
+          eachStatus[counter] = "bust";
+          // Get twice of the betting amount
+          eachFund[counter] = eachFund[counter] - eachBet[counter];
+          dealerFundBalance = dealerFundBalance + eachBet[counter];
+          // Update output message
+          outputMessage =
+            outputMessage + ` -- BUST! WITH $${eachBet[counter]} LOSS`;
+        }
+      }
+    }
+    // Hit for dealer
+    dealerCard.push(deck.pop());
+    dealerScore = handScores(dealerCard, false);
+
+    // Check whether the game is ended
+    if (dealerScore < 17) {
+      if (eachStatus[0] == "win") {
+        outputMessage =
+          outputMessage + "<hr>" + "Press submit to let the game continue.";
+      } else {
+        outputMessage =
+          outputMessage + "<hr>" + "Choose 'hit' or 'stay' for this turn.";
+      }
+    } else {
+      outputMessage = outputMessage + "<hr>" + "Press submit to see the result";
+    }
+    //Return output message
+    return outputMessage;
   }
-
   // The game is ended
-  if (delaerScore > 21) {
-    // every players get 1X of bet
+  // The dealer bust
+  if (dealerScore > 21) {
+    outputMessage =
+      "The dealer bust! The game is over with 1X gains for everyone.";
+    for (counter = 0; counter < player; counter += 1) {
+      if (eachStatus[counter] == "current") {
+        // Gain / Loss
+        eachFund[counter] = eachFund[counter] + eachBet[counter];
+        dealerFundBalance = dealerFundBalance - eachBet[counter];
+        // Output message
+        if (counter == 0) {
+          outputMessage =
+            outputMessage + "<br>" + `You gained $${eachBet[counter]}`;
+        } else {
+          outputMessage =
+            outputMessage +
+            "<br>" +
+            `Player ${counter + 1} gained $${eachBet[counter]}`;
+        }
+      }
+    }
   } else {
     // the player who have the closest score to 21 get 1X of bet
     // the rest lose their bet
