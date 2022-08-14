@@ -145,42 +145,42 @@ var main = function (input) {
   }
 
   //Section for manually altering results of the hand draw to do scenario testing
-  if (test == false) {
-    //   //Temporary to debug blackjackArr insert
-    players[0].hands = [
-      // [
-      //   { suit: "Spades", cardNum: "Ace", cardValue: 1 },
-      //   { suit: "Hearts", cardNum: "King", cardValue: 10 },
-      // ],
-      [
-        { suit: "Hearts", cardNum: 2, cardValue: 2 },
-        { suit: "Spades", cardNum: 2, cardValue: 2 },
-        { suit: "Clubs", cardNum: 2, cardValue: 2 },
-        { suit: "Diamonds", cardNum: 2, cardValue: 2 },
-        { suit: "Hearts", cardNum: 3, cardValue: 3 },
-        { suit: "Spades", cardNum: 3, cardValue: 3 },
-        { suit: "Clubs", cardNum: 3, cardValue: 3 },
-        { suit: "Diamonds", cardNum: 3, cardValue: 3 },
-      ],
-    ];
-    // // players[0].hands = [
-    // //   [
-    // //     { suit: "Spades", cardNum: "Ace", cardValue: 1 },
-    // //     { suit: "Hearts", cardNum: "King", cardValue: 10 },
-    // //   ],
-    // //   // [
-    // //   //   { suit: "Hearts", cardNum: 5, cardValue: 5 },
-    // //   //   { suit: "Spades", cardNum: 5, cardValue: 5 },
-    // //   // ],
-    // // ];
-    test = true;
-    // players[1].hands = [
-    //   [
-    //     { suit: "spades", cardNum: "Ace", cardValue: 1 },
-    //     { suit: "spades", cardNum: "King", cardValue: 10 },
-    //   ],
-    // ];
-  }
+  // if (test == false) {
+  //   //   //Temporary to debug blackjackArr insert
+  //   players[0].hands = [
+  //     // [
+  //     //   { suit: "Spades", cardNum: "Ace", cardValue: 1 },
+  //     //   { suit: "Hearts", cardNum: "King", cardValue: 10 },
+  //     // ],
+  //     [
+  //       { suit: "Hearts", cardNum: 2, cardValue: 2 },
+  //       { suit: "Spades", cardNum: 2, cardValue: 2 },
+  //       { suit: "Clubs", cardNum: 2, cardValue: 2 },
+  //       { suit: "Diamonds", cardNum: 2, cardValue: 2 },
+  //       { suit: "Hearts", cardNum: 3, cardValue: 3 },
+  //       { suit: "Spades", cardNum: 3, cardValue: 3 },
+  //       { suit: "Clubs", cardNum: 3, cardValue: 3 },
+  //       { suit: "Diamonds", cardNum: 3, cardValue: 3 },
+  //     ],
+  //   ];
+  //   // // players[0].hands = [
+  //   // //   [
+  //   // //     { suit: "Spades", cardNum: "Ace", cardValue: 1 },
+  //   // //     { suit: "Hearts", cardNum: "King", cardValue: 10 },
+  //   // //   ],
+  //   // //   // [
+  //   // //   //   { suit: "Hearts", cardNum: 5, cardValue: 5 },
+  //   // //   //   { suit: "Spades", cardNum: 5, cardValue: 5 },
+  //   // //   // ],
+  //   // // ];
+  //   test = true;
+  //   // players[1].hands = [
+  //   //   [
+  //   //     { suit: "spades", cardNum: "Ace", cardValue: 1 },
+  //   //     { suit: "spades", cardNum: "King", cardValue: 10 },
+  //   //   ],
+  //   // ];
+  // }
   //  Check if player has 2 cards of the same type to split
   if (splitInitial == false) {
     for (o = playerTurn; o < playerNum; o++) {
@@ -195,7 +195,8 @@ var main = function (input) {
         //Check if player wants to split
         openSplit = true;
         switchSplitButton();
-        return `Hi Player ${players[playerTurn].id}, you have a pair of ${players[playerTurn].hands[0][0].cardNum}s.<br>Would you like to split your hand?<br>Enter "y" to split or "n" to keep a single hand.`;
+        addHandImg(playerTurn);
+        return `Hi Player ${players[playerTurn].id}, you have a pair of ${players[playerTurn].hands[0][0].cardNum}s.<br>Would you like to split your hand?<br><br>Your current hand is:`;
       } else if (openSplit == true) {
         //User input validation
         if (input.toLowerCase() != "y" && input.toLowerCase() != "n") {
@@ -1011,4 +1012,13 @@ var addHandImg = function (input) {
     cardElement.style.width = "20%";
     outputBox.appendChild(cardElement);
   }
+  const newPara = document.createElement("p");
+  const creditLink = document.createElement("a");
+  creditLink.innerText = "Playing card icons courtesy of rizal2109";
+  creditLink.href =
+    "https://www.flaticon.com/packs/playing-cards-6?style_id=1216&family_id=333&group_id=810";
+  newPara.appendChild(creditLink);
+  newPara.style.fontSize = "10px";
+  newPara.style.fontcolor = "black";
+  outputBox.appendChild(newPara);
 };
