@@ -179,6 +179,11 @@
         top: 22px;
       }
 
+      img.resize {
+        height: 30px;
+        width: 30px;
+      }
+
       /* increase header font size on wider screens */
       @media screen and (min-width: 600px) {
         .header {
@@ -204,10 +209,10 @@
     <div id="outerContainer">
       <div id="container">
         <p>Input:</p>
-        <input id="input-field" />
+        <div id="inputBox"><input id="input-field" /></div>
         <br />
-        <button id="submit-button">Continue</button>
-        <p>Output:</p>
+        <div id="buttonBox"><button id="submit-button">Continue</button></div>
+        <!-- <p>Output:</p> -->
         <div id="output-div">
           Hi, welcome to a game of Blackjack.<br />To begin, please select the
           number of players for this game (1 to 5).

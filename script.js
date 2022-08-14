@@ -82,7 +82,9 @@ var main = function (input) {
   //Check if game state need to be reset as part of new round.
   if (gameResetStatus == true) {
     gameReset();
+
     if (playerNum > 0) {
+      addInputBox();
       return `Player ${players[playerTurn].id}, please enter the number of chips you would like to bet for this round.`;
     } else {
       return `There are no more players with chips remaining.<br><br>You can start a new game with fresh set of players.<br>Input the number of players you would like to begin the new game with.`;
@@ -120,6 +122,7 @@ var main = function (input) {
     } else if (playerTurn == playerNum - 1) {
       playerTurn = 0;
       betInitial = true;
+      switchDealButton();
       return `Player ${playerNum} bets ${input} chips this round.<br><br>Please hit "continue" to deal cards.`;
     }
   }
@@ -143,17 +146,17 @@ var main = function (input) {
 
   //Section for manually altering results of the hand draw to do scenario testing
   // if (test == false) {
-  //   //Temporary to debug blackjackArr insert
-  //   // players[1].hands = [
-  //   //   [
-  //   //     { suit: "Spades", cardNum: "Ace", cardValue: 1 },
-  //   //     { suit: "Hearts", cardNum: "King", cardValue: 10 },
-  //   //   ],
-  //   //   // [
-  //   //   //   { suit: "Hearts", cardNum: 5, cardValue: 5 },
-  //   //   //   { suit: "Spades", cardNum: 5, cardValue: 5 },
-  //   //   // ],
-  //   // ];
+  //   //   //Temporary to debug blackjackArr insert
+  //   players[0].hands = [
+  //     // [
+  //     //   { suit: "Spades", cardNum: "Ace", cardValue: 1 },
+  //     //   { suit: "Hearts", cardNum: "King", cardValue: 10 },
+  //     // ],
+  //     [
+  //       { suit: "Hearts", cardNum: 5, cardValue: 5 },
+  //       { suit: "Spades", cardNum: 5, cardValue: 5 },
+  //     ],
+  //   ];
   //   // // players[0].hands = [
   //   // //   [
   //   // //     { suit: "Spades", cardNum: "Ace", cardValue: 1 },
@@ -164,7 +167,7 @@ var main = function (input) {
   //   // //   //   { suit: "Spades", cardNum: 5, cardValue: 5 },
   //   // //   // ],
   //   // // ];
-  //   // test = true;
+  //   test = true;
   //   // players[1].hands = [
   //   //   [
   //   //     { suit: "spades", cardNum: "Ace", cardValue: 1 },
@@ -172,7 +175,7 @@ var main = function (input) {
   //   //   ],
   //   // ];
   // }
-  //Check if player has 2 cards of the same type to split
+  //  Check if player has 2 cards of the same type to split
   if (splitInitial == false) {
     for (o = playerTurn; o < playerNum; o++) {
       if (
@@ -185,6 +188,7 @@ var main = function (input) {
       ) {
         //Check if player wants to split
         openSplit = true;
+        switchSplitButton();
         return `Hi Player ${players[playerTurn].id}, you have a pair of ${players[playerTurn].hands[0][0].cardNum}s.<br>Would you like to split your hand?<br>Enter "y" to split or "n" to keep a single hand.`;
       } else if (openSplit == true) {
         //User input validation
@@ -206,6 +210,7 @@ var main = function (input) {
     }
     if (playerTurn == 0 && openSplit == false) {
       splitInitial = true;
+      switchContinueButton();
     }
   }
 
@@ -260,6 +265,7 @@ var main = function (input) {
 
     if (activePlayers.length == 0) {
       gameResetStatus = true;
+      removeInput();
       return (
         blackjackMsg +
         `<br>This round is over.<br><br>Hit "continue" to begin the next round.`
@@ -279,7 +285,8 @@ var main = function (input) {
       players[playerTurn].id
     }, your current hand is:<br>${activePlayerHand(
       playerTurn
-    )}<br>Would you like to hit or stand?<br>Enter "h" to hit or "s" to stand.`;
+    )}<br>Would you like to hit or stand?`;
+    switchHitStandButton();
     return hitStandMsg;
   }
 
@@ -290,7 +297,8 @@ var main = function (input) {
 
     //Invalid user input scenario
     if (input.toLowerCase() != "s" && input.toLowerCase() != "h") {
-      return `Please select whether you like to hit or stand?<br>Enter "h" to hit or "s" to stand.`;
+      switchHitStandButton();
+      return `Please select whether you like to hit or stand?`;
 
       //User choose to stand
     } else if (input.toLowerCase() == "s") {
@@ -318,7 +326,8 @@ var main = function (input) {
             newCard.suit
           }.<br>Your current hand is:<br>${activePlayerHand(
             playerTurn
-          )}<br>Would you like to hit or stand?<br>Enter "h" to hit or "s" to stand.`;
+          )}<br>Would you like to hit or stand?`;
+        switchHitStandButton();
         return hitStandMsg;
       }
     }
@@ -338,10 +347,12 @@ var main = function (input) {
           players[playerTurn].id
         }, your current hand is:<br>${activePlayerHand(
           playerTurn
-        )}<br>Would you like to hit or stand?<br>Enter "h" to hit or "s" to stand.`;
+        )}<br>Would you like to hit or stand?`;
+      switchHitStandButton();
       return hitStandMsg;
     } else {
       hitStandDone = true;
+      switchContinueButton();
     }
   }
 
@@ -358,6 +369,7 @@ var main = function (input) {
       hitStandMsg +
       `<br>This round is over.<br><br>Hit "continue" to begin the next round.`;
     gameResetStatus = true;
+    removeInput();
     return hitStandMsg;
   } else {
     //Dealer draws if their score is less than 17
@@ -457,6 +469,7 @@ var main = function (input) {
   }
   hitStandMsg = hitStandMsg + `<br><br>Hit "continue" to start a new round.`;
   gameResetStatus = true;
+  removeInput();
   return hitStandMsg;
 };
 
@@ -489,6 +502,7 @@ var activePlayerHand = function (input) {
       outputMsg +
       `${players[input].hands[currentHand][i].cardNum} of ${players[input].hands[currentHand][i].suit}<br>`;
   }
+
   return outputMsg;
 };
 
@@ -722,4 +736,239 @@ var handScore = function (input) {
   }
 
   return outputScore;
+};
+
+var switchHitStandButton = function () {
+  //Replace new buttons
+  const container = document.getElementById("buttonBox");
+  container.replaceChildren();
+
+  const hitButton = document.createElement("button");
+  const standButton = document.createElement("button");
+
+  hitButton.innerHTML = "Hit";
+  standButton.innerHTML = "Stand";
+
+  hitButton.id = "hitButton";
+  standButton.id = "standButton";
+
+  hitButton.addEventListener("click", function () {
+    var result = main("h");
+    var output = document.querySelector("#output-div");
+    output.innerHTML = result;
+
+    //Populate game state tracker box
+    var trackerMsg = gameStateMsg();
+    var trackerOutput = document.querySelector("#gameTracker");
+    trackerOutput.innerHTML = trackerMsg;
+  });
+
+  standButton.addEventListener("click", function () {
+    var result = main("s");
+    var output = document.querySelector("#output-div");
+    output.innerHTML = result;
+
+    //Populate game state tracker box
+    var trackerMsg = gameStateMsg();
+    var trackerOutput = document.querySelector("#gameTracker");
+    trackerOutput.innerHTML = trackerMsg;
+  });
+
+  hitButton.style.width = "100px";
+  standButton.style.width = "100px";
+
+  container.appendChild(hitButton);
+  container.appendChild(standButton);
+
+  //Remove input box
+  const container2 = document.getElementById("inputBox");
+  container2.replaceChildren();
+};
+
+var switchContinueButton = function () {
+  //Replace new buttons
+  const container = document.getElementById("buttonBox");
+  container.replaceChildren();
+
+  const continueButton = document.createElement("button");
+
+  continueButton.innerHTML = "Continue";
+
+  continueButton.id = "submit-button";
+
+  continueButton.addEventListener("click", function () {
+    // Set result to input value
+    var input = document.querySelector("#input-field");
+
+    var result = main(input.value);
+    var trackerMsg = gameStateMsg();
+
+    // Display result in output element
+    var output = document.querySelector("#output-div");
+    var trackerOutput = document.querySelector("#gameTracker");
+
+    output.innerHTML = result;
+    trackerOutput.innerHTML = trackerMsg;
+
+    // Reset input value
+    input.value = "";
+  });
+
+  container.appendChild(continueButton);
+
+  //Add input box
+  const container2 = document.getElementById("inputBox");
+  container2.replaceChildren();
+  const inputBox = document.createElement("input");
+  inputBox.id = "input-field";
+  container2.appendChild(inputBox);
+};
+
+var switchSplitButton = function () {
+  //Replace new buttons
+  const container = document.getElementById("buttonBox");
+  container.replaceChildren();
+
+  const splitYButton = document.createElement("button");
+  const splitNButton = document.createElement("button");
+
+  splitYButton.innerHTML = "Split";
+  splitNButton.innerHTML = "Don't split";
+
+  splitYButton.id = "splitYButton";
+  splitNButton.id = "splitNButton";
+
+  splitYButton.addEventListener("click", function () {
+    var result = main("y");
+    var output = document.querySelector("#output-div");
+    output.innerHTML = result;
+
+    //Populate game state tracker box
+    var trackerMsg = gameStateMsg();
+    var trackerOutput = document.querySelector("#gameTracker");
+    trackerOutput.innerHTML = trackerMsg;
+  });
+
+  splitNButton.addEventListener("click", function () {
+    var result = main("n");
+    var output = document.querySelector("#output-div");
+    output.innerHTML = result;
+
+    //Populate game state tracker box
+    var trackerMsg = gameStateMsg();
+    var trackerOutput = document.querySelector("#gameTracker");
+    trackerOutput.innerHTML = trackerMsg;
+  });
+
+  splitYButton.style.width = "120px";
+  splitNButton.style.width = "120px";
+
+  container.appendChild(splitYButton);
+  container.appendChild(splitNButton);
+
+  //Remove input box
+  const container2 = document.getElementById("inputBox");
+  container2.replaceChildren();
+};
+
+var switchDealButton = function () {
+  //Replace new buttons
+  const container = document.getElementById("buttonBox");
+  container.replaceChildren();
+
+  const continueButton = document.createElement("button");
+
+  continueButton.innerHTML = "Deal Cards";
+
+  continueButton.id = "submit-button";
+
+  continueButton.addEventListener("click", function () {
+    // Set result to input value
+    var input = document.querySelector("#input-field");
+
+    var result = main();
+    var trackerMsg = gameStateMsg();
+
+    // Display result in output element
+    var output = document.querySelector("#output-div");
+    var trackerOutput = document.querySelector("#gameTracker");
+
+    output.innerHTML = result;
+    trackerOutput.innerHTML = trackerMsg;
+  });
+
+  container.appendChild(continueButton);
+
+  //Remove input box
+  const container2 = document.getElementById("inputBox");
+  container2.replaceChildren();
+};
+
+var removeInput = function () {
+  //Replace new buttons
+  const container = document.getElementById("buttonBox");
+  container.replaceChildren();
+
+  const continueButton = document.createElement("button");
+
+  continueButton.innerHTML = "Continue";
+
+  continueButton.id = "submit-button";
+
+  continueButton.addEventListener("click", function () {
+    var result = main();
+    var trackerMsg = gameStateMsg();
+
+    // Display result in output element
+    var output = document.querySelector("#output-div");
+    var trackerOutput = document.querySelector("#gameTracker");
+
+    output.innerHTML = result;
+    trackerOutput.innerHTML = trackerMsg;
+  });
+
+  container.appendChild(continueButton);
+
+  //Remove input box
+  const container2 = document.getElementById("inputBox");
+  container2.replaceChildren();
+};
+
+var addInputBox = function () {
+  //Replace new buttons
+  const container = document.getElementById("buttonBox");
+  container.replaceChildren();
+
+  const continueButton = document.createElement("button");
+
+  continueButton.innerHTML = "Continue";
+
+  continueButton.id = "submit-button";
+
+  continueButton.addEventListener("click", function () {
+    // Set result to input value
+    var input = document.querySelector("#input-field");
+
+    var result = main(input.value);
+    var trackerMsg = gameStateMsg();
+
+    // Display result in output element
+    var output = document.querySelector("#output-div");
+    var trackerOutput = document.querySelector("#gameTracker");
+
+    output.innerHTML = result;
+    trackerOutput.innerHTML = trackerMsg;
+
+    // Reset input value
+    input.value = "";
+  });
+
+  container.appendChild(continueButton);
+
+  //Add input box
+  const container2 = document.getElementById("inputBox");
+  container2.replaceChildren();
+  const inputBox = document.createElement("input");
+  inputBox.id = "input-field";
+  container2.appendChild(inputBox);
 };
