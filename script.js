@@ -97,3 +97,74 @@ function shuffleCards(cardDeck) {
 
 // Declare a new variable to communicate that we have shuffled the deck.
 let shuffledDeck = shuffleCards(newValuedDeck);
+
+// function to check blackJack
+function checkForBlackJack(handsArray) {
+  let playerCard1 = handsArray[0];
+  let playerCard2 = handsArray[1];
+  let isBlackJack = false;
+  if (
+    (playerCard1.name == "ace" && playerCard2.value >= 10) ||
+    (playerCard2.name == "ace" && playerCard1.value >= 10)
+  ) {
+    isBlackJack = true;
+  }
+  return isBlackJack;
+}
+
+// function to check the total points
+function calculateTotalPoints(handsArray) {
+  let totalPoints = 0;
+  let aceCounter = 0;
+  let i = 0;
+  while (i < handsArray.length) {
+    let currCard = handsArray[i];
+    if (currCard.name == "ace") {
+      totalPoints = totalPoints + 11;
+      aceCounter += 1;
+    } else {
+      totalPoints = totalPoints + currCard.value;
+    }
+    i += 1;
+  }
+  i = 0;
+  while (i < aceCounter) {
+    if (totalPoints > 21) {
+      totalPoints = totalPoints - 10;
+    }
+    i += 1;
+  }
+  return totalPoints;
+}
+
+// function to display player and dealer hands
+function displayHands(playerHands, dealerHands) {
+  let playerMessage = `Player Hand: <br>`;
+  let index = 0;
+  while (index < playerHands.length) {
+    playerMessage =
+      playerMessage +
+      `${playerHands[index].name} of ${playerHands[index].suits}` +
+      "<br>";
+    index += 1;
+  }
+  index = 0;
+  let dealerMessage = `Dealer Hand: <br>`;
+  while (index < dealerHands.length) {
+    dealerMessage =
+      dealerMessage +
+      `${dealerHands[index].name} of ${dealerHands[index].suits}` +
+      "<br>";
+    index += 1;
+  }
+  return playerMessage + "<br>" + dealerMessage;
+}
+// function to display player and dealer hands value
+function displayTotalPoints(playerHandsValue, dealerHandsValue) {
+  let totalPointsMessage =
+    `<br> Player total hand value:` +
+    playerHandsValue +
+    `<br> Dealer total hand value:` +
+    dealerHandsValue;
+  return totalPointsMessage;
+}
