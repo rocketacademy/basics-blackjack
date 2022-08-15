@@ -24,7 +24,6 @@ var restartGame = "Please refresh the browser to play again.";
 var gameDeck = [];
 var userCards = [];
 var computerCards = [];
-var blackJack = 21;
 var userSumOfCards = "";
 var computerSumOfCards = "";
 var displayPlayersScores = "";
@@ -97,17 +96,6 @@ var createShuffledDeck = function () {
   return shuffledDeck;
 };
 
-//Helper function to deal first 2 cards to User and Computer
-var dealCardsToPlayers = function () {
-  userCards.push(gameDeck.pop());
-  userCards.push(gameDeck.pop());
-  //console.log("User Cards: ", userCards);
-
-  computerCards.push(gameDeck.pop());
-  computerCards.push(gameDeck.pop());
-  //console.log("Computer Cards: ", computerCards);
-};
-
 //============GAME_CARDS_DEALT===============================
 
 //Helper Function to find all values for ace, to use in function to calculate value of player's cards
@@ -158,34 +146,6 @@ var calcTotalSumOfCards = function (userSumOfCards, computerSumOfCards) {
   displayPlayersScores = `Your score: ${userSumOfCards}<br>Computer's score: ${computerSumOfCards}<br>`;
 };
 
-//Helper Function to Check for Black Jack
-var checkForBlackJack = function (userSumOfCards, computerSumOfCards) {
-  if (userSumOfCards == blackJack && computerSumOfCards == blackJack) {
-    return `Both you and the computer have gotten Black Jack. It is a tie! ${displayUserCards(
-      userCards
-    )}<br>${displayComputerCards(computerCards)}<br><br>${restartGame}`;
-  }
-
-  if (userSumOfCards == blackJack && computerSumOfCards !== blackJack) {
-    return `You got Black Jack. You win! ${displayUserCards(
-      userCards
-    )}<br>${displayComputerCards(computerCards)}<br><br>${restartGame}`;
-  }
-
-  if (computerSumOfCards == blackJack && userSumOfCards !== blackJack) {
-    return `The Computer got Black Jack. Sorry, you lose. The Computer wins. ${displayUserCards(
-      userCards
-    )}<br>${displayComputerCards(computerCards)}<br><br>${restartGame}`;
-  } else {
-    //No black jack. Change game mode. Player to hit or stand.
-    currentGameMode = GAME_HIT_OR_STAND;
-    //console.log("game mode: ", currentGameMode);
-    myOutputValue = `${displayUserCards(userCards)}<br>${displayComputerCards(
-      computerCards
-    )}<br>There is no black jack. Key in 'hit' to draw another card; OR <br>Key in 'stand' to end your turn.`;
-  }
-};
-
 //Helper Function to display User cards in message
 var displayUserCards = function (userCards) {
   var userMessage = "Your cards:<br>";
@@ -230,78 +190,71 @@ var computerPlaysHitOrStand = function () {
   return computerSumOfCards;
 };
 
-//Helper Function to compare sums of User and Computer to determine game outcome
-var determineFinalGameOutcome = function (userSumOfCards, computerSumOfCards) {
-  if (
-    //Where it is a tie, i.e. both have same sum OR both bust
-    userSumOfCards == computerSumOfCards ||
-    (userSumOfCards > 21 && computerSumOfCards > 21)
-  ) {
-    myOutputValue = `It is a tie! <br>${displayUserCards(
-      userCards
-    )}<br>${displayComputerCards(
-      computerCards
-    )}<br>${displayPlayersScores}<br>${restartGame}`;
-  }
-
-  //Where User wins, i.e. User closer to 21 than the Computer OR User under 21 and the Computer busts
-  if (
-    (userSumOfCards > computerSumOfCards && userSumOfCards <= 21) ||
-    (userSumOfCards <= 21 && computerSumOfCards > 21)
-  ) {
-    myOutputValue = `You win! <br>${displayUserCards(
-      userCards
-    )}<br>${displayComputerCards(
-      computerCards
-    )}<br>${displayPlayersScores}<br>${restartGame}`;
-  }
-
-  //Where Computer wins
-  if (
-    (computerSumOfCards > userSumOfCards && computerSumOfCards <= 21) ||
-    (computerSumOfCards <= 21 && userSumOfCards > 21)
-  ) {
-    myOutputValue = `The Computer wins! <br>${displayUserCards(
-      userCards
-    )}<br>${displayComputerCards(
-      computerCards
-    )}<br>${displayPlayersScores}<br>${restartGame}`;
-  }
-};
-
 //===========================================
 
 var main = function (input) {
   var myOutputValue = "";
   if (currentGameMode == GAME_START) {
     gameDeck = createShuffledDeck();
-    //console.log(gameDeck);
+    console.log(gameDeck);
 
     //Deal 2 cards to User and Computer
-    dealCardsToPlayers(input);
+    userCards.push(gameDeck.pop());
+    userCards.push(gameDeck.pop());
+    console.log("User Cards: ", userCards);
+
+    computerCards.push(gameDeck.pop());
+    computerCards.push(gameDeck.pop());
+    console.log("Computer Cards: ", computerCards);
 
     //Change game mode
     currentGameMode = GAME_CARDS_DEALT;
     myOutputValue = `Everyone has been dealt 2 cards each. Click 'Submit' to evaluate the cards.`;
   } else if (currentGameMode == GAME_CARDS_DEALT) {
-    //console.log("game mode: ", currentGameMode);
+    console.log("game mode: ", currentGameMode);
 
     //Calculate respective player's sum of cards (this helper function did not work - calcTotalSumOfCards(userCards, computerCards));
     userSumOfCards = calcPlayerCards(userCards);
-    //console.log("User card total sum: ", userSumOfCards);
+    console.log("User card total sum: ", userSumOfCards);
     computerSumOfCards = calcPlayerCards(computerCards);
-    //console.log("Computer card total sum: ", computerSumOfCards);
+    console.log("Computer card total sum: ", computerSumOfCards);
 
     //Check for black jack
-    checkForBlackJack(userSumOfCards, computerSumOfCards);
+    if (userSumOfCards == 21 && computerSumOfCards == 21) {
+      return `Both you and the computer have gotten Black Jack. It is a tie! <br>${displayUserCards(
+        userCards
+      )}<br>${displayComputerCards(
+        computerCards
+      )}<br>${displayPlayersScores}<br>${restartGame}`;
+    }
 
+    if (userSumOfCards == 21 && computerSumOfCards !== 21) {
+      return `You got Black Jack. You win! ${displayUserCards(
+        userCards
+      )}<br>${displayComputerCards(
+        computerCards
+      )}<br>${displayPlayersScores}<br>${restartGame}`;
+    }
+
+    if (computerSumOfCards == 21 && userSumOfCards !== 21) {
+      return `The Computer got Black Jack. Sorry, you lose. The Computer wins. <br>${displayUserCards(
+        userCards
+      )}<br>${displayComputerCards(computerCards)}<br><br>${restartGame}`;
+    } else {
+      //No black jack. Change game mode. Player to hit or stand.
+      currentGameMode = GAME_HIT_OR_STAND;
+      //console.log("game mode: ", currentGameMode);
+      myOutputValue = `${displayUserCards(userCards)}<br>${displayComputerCards(
+        computerCards
+      )}<br>There is no black jack. Key in 'hit' to draw another card; OR <br>Key in 'stand' to end your turn.`;
+    }
     //No black jack - continue to let User hit or stand
   } else if (currentGameMode == GAME_HIT_OR_STAND) {
     if (input == "hit") {
       userCards.push(gameDeck.pop());
-      //console.log("User Cards: ", userCards);
+      console.log("User Cards: ", userCards);
       userSumOfCards = calcPlayerCards(userCards);
-      //console.log("User total value after hit: ", userSumOfCards);
+      console.log("User total value after hit: ", userSumOfCards);
       myOutputValue = `${displayUserCards(userCards)}<br>${displayComputerCards(
         computerCards
       )} <br>Enter 'hit' to draw another card OR 'stand' to end your turn.`;
@@ -310,7 +263,41 @@ var main = function (input) {
       calcTotalSumOfCards(userSumOfCards, computerSumOfCards);
 
       //Compare sums of User and Computer to determine game outcome
-      determineFinalGameOutcome(userSumOfCards, computerSumOfCards);
+      if (
+        //Where it is a tie, i.e. both have same sum OR both bust
+        userSumOfCards == computerSumOfCards ||
+        (userSumOfCards > 21 && computerSumOfCards > 21)
+      ) {
+        myOutputValue = `It is a tie! <br>${displayUserCards(
+          userCards
+        )}<br>${displayComputerCards(
+          computerCards
+        )}<br>${displayPlayersScores}<br>${restartGame}`;
+      }
+
+      //Where User wins, i.e. User closer to 21 than the Computer OR User under 21 and the Computer busts
+      else if (
+        (userSumOfCards > computerSumOfCards && userSumOfCards <= 21) ||
+        (userSumOfCards <= 21 && computerSumOfCards > 21)
+      ) {
+        myOutputValue = `You win! <br>${displayUserCards(
+          userCards
+        )}<br>${displayComputerCards(
+          computerCards
+        )}<br>${displayPlayersScores}<br>${restartGame}`;
+      }
+
+      //Where Computer wins
+      else if (
+        (computerSumOfCards > userSumOfCards && computerSumOfCards <= 21) ||
+        (computerSumOfCards <= 21 && userSumOfCards > 21)
+      ) {
+        myOutputValue = `The Computer wins! <br>${displayUserCards(
+          userCards
+        )}<br>${displayComputerCards(
+          computerCards
+        )}<br>${displayPlayersScores}<br>${restartGame}`;
+      }
     }
 
     //Input validation - not "hit" or "stand"
