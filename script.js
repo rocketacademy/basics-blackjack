@@ -3,14 +3,26 @@ var gameMode = "inital draw";
 var myOutputValue = "";
 
 var playerCardDrawn = [];
-var playerCardDrawnRank = [];
 var playerCardDrawnDisplay = [];
 var playerPoints = 0;
 
 var computerCardDrawn = [];
-var computerCardDrawnRank = [];
 var computerCardDrawnDisplay = [];
 var computerPoints = 0;
+
+var clearInput = function () {
+  myOutputValue = "";
+
+  playerCardDrawn = [];
+  playerCardDrawnRank = [];
+  playerCardDrawnDisplay = [];
+  playerPoints = 0;
+
+  computerCardDrawn = [];
+  computerCardDrawnRank = [];
+  computerCardDrawnDisplay = [];
+  computerPoints = 0;
+};
 
 var getRandomIndex = function (max) {
   return Math.floor(Math.random() * max);
@@ -140,8 +152,44 @@ var checkCurrentPoints = function (cardArray) {
   return currentPoints;
 };
 
+var checkAce = function (cardArray) {
+  var points = 0;
+  if (cardArray.length == 2) {
+    for (j = 0; j < cardArray.length; j++) {
+      if (cardArray[j].name == "ace") {
+        cardArray[j].rank = 11;
+        points = checkCurrentPoints(cardArray);
+      }
+      if (points > 21) {
+        cardArray[j].rank = 1;
+      }
+    }
+  } else if (cardArray.length == 3) {
+    for (j = 0; j < cardArray.length; j++) {
+      if (cardArray[j].name == "ace") {
+        // default 10
+        cardArray[j].rank = 10;
+      }
+      points = checkCurrentPoints(cardArray);
+      console.log("j:" + j);
+      console.log("points with 10:" + points);
+      if (points > 21) {
+        cardArray[j].rank = 1;
+      }
+    }
+  } else if (cardArray.length == 4) {
+    for (j = 0; j < cardArray.length; j++) {
+      if (cardArray[j].name == "ace") {
+        cardArray[j].rank = 1;
+      }
+    }
+  }
+  points = checkCurrentPoints(cardArray);
+  return points;
+};
+
 var runComputerLogic = function () {
-  computerPoints = checkCurrentPoints(computerCardDrawn);
+  computerPoints = checkAce(computerCardDrawn);
   while (computerPoints < 17) {
     card = draw1Card(computerCardDrawn);
     computerCardDrawnDisplay.push(card.name + " of " + card.suit);
@@ -151,8 +199,14 @@ var runComputerLogic = function () {
 };
 
 // check if hand is BJ
-var checkBJ = function (cardDrawnRank) {
-  if (cardDrawnRank.includes(10, 1)) {
+var checkBJ = function (cardDrawnArray) {
+  var rankArray = [];
+
+  for (k = 0; k < cardDrawnArray.length; k++) {
+    rankArray.push(cardDrawnArray[k].rank);
+  }
+  console.log("rankArray" + rankArray);
+  if (rankArray.includes(11) && rankArray.includes(10)) {
     return true;
   } else {
     return false;
@@ -163,26 +217,32 @@ var checkBurst = function (points) {
   if (points > 21) {
     return true;
   } else {
-    false;
+    return false;
   }
 };
 
 var checkWinner = function () {
-  isPlayerBJ = checkBJ(playerCardDrawnRank);
-  isComputerBJ = checkBJ(computerCardDrawnRank);
-  isPlayerBurst = checkBurst(playerPoints);
-  isComputerBurst = checkBurst(computerPoints);
+  var isPlayerBJ = checkBJ(playerCardDrawn);
+  var isComputerBJ = checkBJ(computerCardDrawn);
+  var isPlayerBurst = checkBurst(playerPoints);
+  var isComputerBurst = checkBurst(computerPoints);
 
-  if ((isPlayerBJ && isComputerBJ) || (isPlayerBurst && isComputerBurst)) {
-    myOutputValue += `it's a tie!`;
+  if (isPlayerBJ && isComputerBJ) {
+    myOutputValue += `Both have blackjack! it's a tie!`;
   } else if (isPlayerBJ) {
     myOutputValue += `Player has blackjack. Player Wins`;
   } else if (isComputerBJ) {
     myOutputValue += `Computer has blackjack. Computer Wins`;
+  } else if (isPlayerBurst && isComputerBurst) {
+    myOutputValue += `it's a tie!`;
+  } else if (isPlayerBurst) {
+    myOutputValue += "Computer Wins!";
+  } else if (isComputerBurst) {
+    myOutputValue += `Player Win!`;
   } else {
     if (playerPoints == computerPoints) {
       myOutputValue += `it's a tie`;
-    } else if (playerPoints > computerPoints && isPlayerBurst == false) {
+    } else if (playerPoints > computerPoints) {
       myOutputValue += `Player Win!`;
     } else {
       myOutputValue += "Computer Wins!";
@@ -200,16 +260,17 @@ var main = function (input) {
   }
 
   if (gameMode == "inital draw") {
+    clearInput();
     draw2Cards();
     displayCardsDrawn();
-    playerPoints = checkCurrentPoints(playerCardDrawn);
+    playerPoints = checkAce(playerCardDrawn);
     myOutputValue += `Player, your current points is ${playerPoints} <br> 
     Would you like to "hit" or "stand" ?`;
   } else if (gameMode == "player draw card") {
     drawnCard = draw1Card(playerCardDrawn);
     playerCardDrawnDisplay.push(drawnCard.name + " of " + drawnCard.suit);
     displayCardsDrawn();
-    playerPoints = checkCurrentPoints(playerCardDrawn);
+    playerPoints = checkAce(playerCardDrawn);
     myOutputValue += `Player, your current points is ${playerPoints} <br> 
     Would you like to "hit" or "stand" ?`;
   } else if (gameMode == "computer turn") {
@@ -222,6 +283,7 @@ var main = function (input) {
     myOutputValue += `Player points is ${playerPoints}. <br>
     Computer points is ${computerPoints} <br>`;
     checkWinner();
+    gameMode = "inital draw";
   }
   return myOutputValue;
 };
