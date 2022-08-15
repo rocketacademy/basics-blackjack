@@ -92,7 +92,7 @@
       }
 
       body {
-        font-family: "Open Sans", sans-serif;
+        font-family: system-ui;
         margin-left: 30px;
         margin-right: 30px;
         background-color: rgb(0, 0, 0);
@@ -110,15 +110,15 @@
       }
       .header {
         text-align: center;
-        font-size: 1.1rem;
+        font-size: 2.1rem;
         margin-bottom: 3rem;
       }
 
       #container {
         background-color: rgb(139, 3, 3);
         margin: 40px auto;
-        max-width: 1800px;
-        height: 800px;
+        max-width: 1000px;
+        height: 1000px;
         padding: 38px 31px;
       }
 
@@ -151,6 +151,11 @@
         position: relative;
         top: 22px;
       }
+      .bot-img {
+        height: 300px;
+        position: center;
+        width: 500px;
+      }
 
       /* increase header font size on wider screens */
       @media screen and (min-width: 600px) {
@@ -165,23 +170,31 @@
     <h1 class="header">
       <img
         class="logo-img"
-        src="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/brand/logo.png"
+        src="https://www.nicepng.com/png/full/776-7760819_facebook-transparent-angry-reaction-facebook-angry-emoji-png.png"
       />
-      Karen's Blackjack
+      Karen's Casino
       <img
         class="logo-img"
-        src="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/brand/logo.png"
+        src="https://www.nicepng.com/png/full/776-7760819_facebook-transparent-angry-reaction-facebook-angry-emoji-png.png"
       />
     </h1>
-    <h1 class="header">♣️ Welcome, Karen is your dealer today. ♠️</h1>
+    <h1 class="header">♣️ Angry Blackjack ♠️</h1>
     <div id="container">
       <p>Input:</p>
       <input id="input-field" />
       <br />
       <button id="submit-button">Submit</button>
       <p>Output:</p>
-      <div id="output-div"></div>
+      <div id="output-div">
+        Welcome to Karen's Casino. Your dealer, Karen, is displeased to serve
+        you today. Click the submit button to begin.
+      </div>
+      <img
+        class="bot-img"
+        src="https://cdn.vox-cdn.com/thumbor/R6Fa96JSV98fRaWQD0yhmn9xpYY=/0x0:3000x1996/920x613/filters:focal(1376x534:1856x1014):format(webp)/cdn.vox-cdn.com/uploads/chorus_image/image/66256416/138256433.jpg.0.jpg"
+      />
     </div>
+
     <!-- Import program logic -->
     <script src="script.js"></script>
     <!-- Define button click functionality -->
