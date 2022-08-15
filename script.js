@@ -696,7 +696,7 @@ var main = function (input) {
 
     if (sumComputer == sumPlayer) {
       currentMode = `calculation done`;
-      return `It's a tie.`;
+      return `Push!<br><br>You drew ${drawPlayer}, computer drew ${drawComputer}.<br><br>Please refresh the page to play again!`;
     }
   }
 
