@@ -173,7 +173,7 @@ var checkAce = function (cardArray) {
       points = checkCurrentPoints(cardArray);
       console.log("j:" + j);
       console.log("points with 10:" + points);
-      if (points > 21) {
+      if (points > 21 && cardArray[j].name == "ace") {
         cardArray[j].rank = 1;
       }
     }
