@@ -233,9 +233,12 @@ var main = function (input) {
         }
       }
     }
+
     // Hit for dealer
     dealerCard.push(deck.pop());
     dealerScore = handScores(dealerCard, false);
+    outputMessage =
+      outputMessage + "<br><br>" + `Dealer has ${dealerScore} scores`;
 
     // Check whether the game is ended
     if (dealerScore < 17) {
@@ -275,11 +278,62 @@ var main = function (input) {
       }
     }
   } else {
+    outputMessage = "The game is over ..." + "<br>";
+    // Recalculate scores
+    for (counter = 0; counter < player; counter += 1) {
+      eachPlayerScore[counter] = handScores(eachPlayerCard[counter], true);
+    }
+    // Calculate the highest value
+    var highestScore = [];
+    highestScore = maxArray(eachPlayerScore);
+    console.log(highestScore);
     // the player who have the closest score to 21 get 1X of bet
-    // the rest lose their bet
-  }
+    for (counter = 0; counter < player; counter += 1) {
+      if (highestScore[counter] == 0 && eachStatus[counter] == "current") {
+        // Gain / Loss
+        eachFund[counter] = eachFund[counter] + eachBet[counter];
+        dealerFundBalance = dealerFundBalance - eachBet[counter];
+        // Output message
+        if (counter == 0) {
+          outputMessage =
+            outputMessage + "<br>" + `You gained $${eachBet[counter]}`;
+        } else {
+          outputMessage =
+            outputMessage +
+            "<br>" +
+            `Player ${counter + 1} gained $${eachBet[counter]}`;
+        }
+      } else if (
+        highestScore[counter] != 0 &&
+        eachStatus[counter] == "current"
+      ) {
+        // Gain / Loss
+        eachFund[counter] = eachFund[counter] - eachBet[counter];
+        dealerFundBalance = dealerFundBalance + eachBet[counter];
+        // Output message
+        if (counter == 0) {
+          outputMessage =
+            outputMessage + "<br>" + `You lost $${eachBet[counter]}`;
+        } else {
+          outputMessage =
+            outputMessage +
+            "<br>" +
+            `Player ${counter + 1} lost $${eachBet[counter]}`;
+        }
+      }
+    }
+    outputMessage = outputMessage + "<hr>" + "Put your bet for the next round";
+    // Initialize values
+    eachBet = [];
+    eachStatus = [];
+    deck = [];
+    eachPlayerCard = [];
+    eachPlayerScore = [];
+    dealerCard = [];
+    dealerScore = 0;
 
-  // Initialize values
+    return outputMessage;
+  }
 };
 
 // Helper function
@@ -403,4 +457,23 @@ var handScores = function (handCard, gameEnd) {
     }
   }
   return totalScore;
+};
+
+// Rank array
+var maxArray = function (array) {
+  var ranks = [];
+  var rank = 0;
+  for (i = 0; i < array.length; i += 1) {
+    // Find the rank of each element
+    for (j = 0; j < array.length; j += 1) {
+      if (array[i] < array[j]) {
+        rank += 1;
+      }
+    }
+    // Push the rank of each element into an array
+    ranks.push(rank);
+    // Initialize 'rank' for next elelment
+    rank = 0;
+  }
+  return ranks;
 };
