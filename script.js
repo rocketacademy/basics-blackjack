@@ -96,7 +96,7 @@ function shuffleCards(cardDeck) {
 }
 
 // Declare a new variable to communicate that we have shuffled the deck.
-let shuffledDeck = shuffleCards(newValuedDeck);
+let newShuffledDeck = shuffleCards(newValuedDeck);
 
 // function to check blackJack
 function checkForBlackJack(handsArray) {
@@ -168,3 +168,146 @@ function displayTotalPoints(playerHandsValue, dealerHandsValue) {
     dealerHandsValue;
   return totalPointsMessage;
 }
+
+// Main game play function is to deal cards and compare results and output the result
+var main = function (input) {
+  let ouputMessage = "";
+  if (currentGameState == gameState1) {
+    let newShuffledDeck = shuffleCards(newValuedDeck);
+    let playerCard1 = playerHands.push(newShuffledDeck.pop());
+    let playerCard2 = playerHands.push(newShuffledDeck.pop());
+    let computerCard1 = dealerHands.push(newShuffledDeck.pop());
+    let computerCard2 = dealerHands.push(newShuffledDeck.pop());
+    ouputMessage = `Player and Dealer had dealt two cards each. Press submit button to check the value`;
+    currentGameState = gameState2;
+    return ouputMessage;
+  }
+
+  // Player check value and decide to hit or not. If player or dealer got blackjack, it will display here.
+  if ((currentGameState = gameState2)) {
+    let playerGotBlackJack = checkForBlackJack(playerHands);
+    let dealerGotBlackJack = checkForBlackJack(dealerHands);
+
+    // if either one has blackjack, this condition will be in placed
+    if (playerGotBlackJack == true || dealerGotBlackJack == true) {
+      // Both got blackjack condition
+      if (playerGotBlackJack == true && dealerGotBlackJack == true) {
+        ouputMessage = `${displayHands(
+          playerHands,
+          dealerHands
+        )} <br> It's a tie!`;
+
+        // Either player or dealer got blackjack
+      } else if (playerGotBlackJack == true && dealerGotBlackJack == false) {
+        ouputMessage = `${displayHands(
+          playerHands,
+          dealerHands
+        )}<br>BlackJack! Player wins!`;
+      } else {
+        ouputMessage = `${displayHands(
+          playerHands,
+          dealerHands
+        )}<br>BlackJack! Dealer wins!`;
+      }
+      currentGameState = gameState1;
+      playerHands = [];
+      dealerHands = [];
+      return ouputMessage;
+    } else {
+      ouputMessage = `${displayHands(
+        playerHands,
+        dealerHands
+      )}<br> ${displayTotalPoints(
+        calculateTotalPoints(playerHands),
+        calculateTotalPoints(dealerHands)
+      )} <br><br> Please enter input "hit" or "stand".`;
+    }
+    currentGameState = gameState3;
+  }
+
+  // Player will choose to hit or stand condition
+  if (currentGameState == gameState3) {
+    if (input == "hit") {
+      // condition for player to hit if the value is less than 21
+      if (calculateTotalPoints(playerHands) < 21) {
+        playerHands.push(newShuffledDeck.pop());
+        ouputMessage = `${displayHands(
+          playerHands,
+          dealerHands
+        )}<br>${displayTotalPoints(
+          calculateTotalPoints(playerHands),
+          calculateTotalPoints(dealerHands)
+        )} <br><br> You drew another card! <br> Please input "hit" or "stand".`;
+      }
+
+      // condition to stop player from drawing card if the value reached 21
+      if (calculateTotalPoints(playerHands) == 21) {
+        ouputMessage = `${displayHands(
+          playerHands,
+          dealerHands
+        )}<br>${displayTotalPoints(
+          calculateTotalPoints(playerHands),
+          calculateTotalPoints(dealerHands)
+        )} <br><br> You have maximum handvalue <br> Please input "stand".`;
+      }
+      // condition to declare winner straightaway after player hand value more than 21
+      else if (calculateTotalPoints(playerHands) > 21) {
+        ouputMessage = `${displayHands(
+          playerHands,
+          dealerHands
+        )}<br>${displayTotalPoints(
+          calculateTotalPoints(playerHands),
+          calculateTotalPoints(dealerHands)
+        )} <br><br> You bust! Dealer wins!`;
+        currentGameState = gameState1;
+        playerHands = [];
+        dealerHands = [];
+      }
+    } else if (input == "stand") {
+      let playerTotalPoints = calculateTotalPoints(playerHands);
+      let dealerTotalPoints = calculateTotalPoints(dealerHands);
+      while (dealerTotalPoints < 17) {
+        dealerHands.push(newShuffledDeck.pop());
+        dealerTotalPoints = calculateTotalPoints(dealerHands);
+      }
+      if (
+        playerTotalPoints == dealerTotalPoints ||
+        (playerTotalPoints > 21 && dealerTotalPoints > 21)
+      ) {
+        ouputMessage = `${displayHands(
+          playerHands,
+          dealerHands
+        )}<br>${displayTotalPoints(
+          playerTotalPoints,
+          dealerTotalPoints
+        )}<br><br>It is a tie!`;
+      } else if (
+        (playerTotalPoints > dealerTotalPoints && playerTotalPoints <= 21) ||
+        (playerTotalPoints <= 21 && dealerTotalPoints > 21)
+      ) {
+        ouputMessage = `${displayHands(
+          playerHands,
+          dealerHands
+        )}<br>${displayTotalPoints(
+          playerTotalPoints,
+          dealerTotalPoints
+        )}<br><br>Player wins!`;
+      } else {
+        ouputMessage = `${displayHands(
+          playerHands,
+          dealerHands
+        )}<br>${displayTotalPoints(
+          playerTotalPoints,
+          dealerTotalPoints
+        )}<br><br>Dealer wins!`;
+      }
+
+      // reset back to game state 1 and reset the array
+      currentGameState = gameState1;
+      playerHands = [];
+      dealerHands = [];
+    }
+
+    return ouputMessage;
+  }
+};
