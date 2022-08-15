@@ -427,7 +427,7 @@ var main = function (input) {
     playerHands = [];
     computerHands = [];
     CURRENT_GAME_MODE = GAME_START;
-    outputMessage = `Click on submit again to deal a new set of hands.`;
+    outputMessage = `Click on submit again to deal a new set of hands!`;
   }
   return outputMessage;
 };
