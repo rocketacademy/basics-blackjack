@@ -302,7 +302,9 @@ var main = function (input) {
 
     //Input validation - not "hit" or "stand"
     else {
-      myOutputValue = `Please try again. Only "hit" or "stand" are accepted.`;
+      myOutputValue = `Please try again. Only "hit" or "stand" are accepted.<br><br>${displayUserCards(
+        userCards
+      )}<br>${displayComputerCards(computerCards)}`;
     }
   }
 
