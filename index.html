@@ -97,6 +97,7 @@
 
       #output-div {
         background-color: lightgrey;
+        height: 160px;
         margin: 20px auto;
         padding: 20px;
         width: 100%;
@@ -106,6 +107,24 @@
         height: 49px;
         position: relative;
         top: 22px;
+      }
+
+      #scores {
+        background-color: aliceblue;
+        max-width: 400px;
+        padding: 0px;
+      }
+      
+      #balance {
+        padding :5px;
+      }
+
+      #currentBet {
+        padding: 5px;
+      }
+
+      #display {
+        background-color: azure;
       }
 
       /* increase header font size on wider screens */
@@ -126,10 +145,28 @@
     </h1>
     <h1 class="header">♣️ Basics - Blackjack ♠️</h1>
     <div id="container">
+      <h3>Welcome to blackjack!</h1>
+      <p>Try to beat the game by taking all the money on the table!</p>
+      <p>Press submit to start, and keep pressing submit to progress the game.<br>The other players will make their own decisions!</p>
       <p>Input:</p>
       <input id="input-field" />
       <br />
       <button id="submit-button">Submit</button>
+      <br />
+      <div id="scores">
+        <p>Balance: <div id="balance">100</div></p>
+        
+        <button id="raise">Raise bet</button> <button id="lower">Lower bet</button> <button id="allin">ALL IN</button>
+        <p>Current Bet: <div id="currentBet">10</div></p>
+      </div>
+
+  
+        <div id="display0"></div>
+        <div id="display1"></div>
+        <div id="display2"></div>
+        <div id="display3"></div>
+        <div id="display4"></div>
+      
       <p>Output:</p>
       <div id="output-div"></div>
     </div>
@@ -138,18 +175,52 @@
     <!-- Define button click functionality -->
     <script>
       var button = document.querySelector("#submit-button");
+      var raiseButton = document.querySelector("#raise")
+      var lowerButton = document.querySelector("#lower")
+      var allinButton = document.querySelector("#allin")
+      var balanceField = document.querySelector("#balance")
+      var bet = document.querySelector("#currentBet")
       button.addEventListener("click", function () {
         // Set result to input value
         var input = document.querySelector("#input-field");
-        var result = main(input.value);
+        console.log(Number(bet.innerHTML),"bet val")
+        result = main(input.value,Number(bet.innerHTML));
 
         // Display result in output element
         var output = document.querySelector("#output-div");
         output.innerHTML = result;
-
+        //balanceField.innerHTML = playerRecords[playerRecords.length].balance
         // Reset input value
         input.value = "";
       });
+
+    
+      
+      
+      
+      
+
+      raiseButton.addEventListener("click", function(){
+        var betValue = Number(bet.innerHTML)
+        if(betValue < Number(balance.innerHTML)){
+          betValue += 10
+          bet.innerHTML = betValue
+        }
+      })
+
+      lowerButton.addEventListener("click", function(){
+        var betValue = Number(bet.innerHTML)
+        if(betValue > 10){
+          betValue -= 10
+          bet.innerHTML = betValue
+        }
+      })
+
+      allinButton.addEventListener("click", function(){
+        var betValue = Number(bet.innerHTML)
+        betValue = balance.innerHTML
+        bet.innerHTML = betValue
+      })
     </script>
   </body>
 </html>
