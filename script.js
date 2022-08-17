@@ -98,7 +98,7 @@ var createNewDeck = function () {
   return shuffledDeck;
 };
 
-// game functions (helper)
+// game functions -------------------------------------------------------------
 
 // checks for blackjack
 let checkForBJ = function(handArray) {
@@ -122,6 +122,7 @@ let checkForBJ = function(handArray) {
 let calculateHand = function(handArray) {
 
   let totalHand = 0;
+  let aceCount = 0;
 
   // loop through player or dealer hand and add values
   let index = 0;
@@ -132,8 +133,19 @@ let calculateHand = function(handArray) {
     // for J, Q, K, value is 10
     if (currentCard.name == 'jack' || currentCard.name == 'queen' || currentCard.name == 'king') {
       totalHand += 10;
+    } else if (currentCard.name == 'ace') {
+      totalHand += 11;
+      aceCount += 1;
     } else {
       totalHand += currentCard.rank;
+    }
+    index += 1;
+  }
+
+  index = 0;
+  while (index < aceCount) {
+    if (totalHand > 21) {
+      totalHand -= 10;
     }
     index += 1;
   }
@@ -144,7 +156,7 @@ let calculateHand = function(handArray) {
 let displayHands = function(playerHandArray, dealerHandArray) {
 
   // player
-  let playerDisplay = `<strong>player's hand (${calculateHand(playerHand)}): </strong><br />`;
+  let playerDisplay = `<strong>your hand (${calculateHand(playerHand)}): </strong><br />`;
   let index = 0;
   while (index < playerHandArray.length) {
     playerDisplay = `${playerDisplay} - ${playerHandArray[index].name} of ${playerHandArray[index].suit} <br />`;
@@ -164,7 +176,11 @@ let displayHands = function(playerHandArray, dealerHandArray) {
 
 var main = function (input) {
   
+  let answer = input.toLowerCase();
+
   let myOutputValue = '';
+
+  let playerName = '' || input;
 
   // first click
   if (currentMode == gameStart) {
@@ -186,7 +202,9 @@ var main = function (input) {
     currentMode = cardsDrawn;
     
     // write and return the output
-    myOutputValue = `cards are dealt`
+    myOutputValue = `hello <strong><span>${playerName}</span></strong>!<br /><br />
+                      The cards have been shuffled and dealt~<br />
+                      Click the button again to proceed`;
     
     return myOutputValue;
   };
@@ -213,51 +231,23 @@ var main = function (input) {
 
       // both have, tie
       if (playerHasBJ == true && dealerHasBJ == true) {
-        myOutputValue = `tie bj!`;
+        myOutputValue = `You both tie by <span>blackjack</span>! <br /><br />` + displayHands(playerHand, dealerHand);
       }
       // player have, player win
       else if (playerHasBJ == true && dealerHasBJ == false) {
-        myOutputValue = `player wins bj!`;
+        myOutputValue = `<span>YAYYYYYYYYYY!!!!!!</span> You with <span>blackjack</span>! <br /><br />` + displayHands(playerHand, dealerHand);
       }
       // dealer have, dealer win
       else {
-        myOutputValue = `dealer wins bj!`;
+        myOutputValue = `Dealer wins with <span>blackjack</span>! <br /><br />` + displayHands(playerHand, dealerHand);
       };
+      return myOutputValue;
       console.log(myOutputValue);
     }
 
     else {
-      myOutputValue = `no bj`;
+      myOutputValue = `Here are the cards!<br />Would you like to <strong>hit</strong> or <strong>stand</strong>? <br /><br />` + displayHands(playerHand, dealerHand);
       console.log(myOutputValue);
-
-    // no blackjack, game cont
-      // // calc total hand of player & dealer
-      // let playerHandValue = calculateHand(playerHand);
-      // let dealerHandValue = calculateHand(dealerHand);
-
-      // console.log('player hand val:', playerHandValue);
-      // console.log('dealer hand val:', dealerHandValue);
-
-      // // hardcode testing
-      // // playerHandValue = 11;
-      // // dealerHandValue = 11;
-
-      // // compare total hand value
-      //   // same value, tie
-      //   if (playerHandValue == dealerHandValue) {
-      //     myOutputValue = displayHands(playerHand, dealerHand) + `tie! no bj!`;
-      //     console.log('tie no bj');
-      //   }
-      //   // player higher, win
-      //   else if (playerHandValue > dealerHandValue) {
-      //     myOutputValue = displayHands(playerHand, dealerHand) + `player wins!`;
-      //     console.log('player wins');
-      //   }
-      //   // dealer higher, win
-      //   else {
-      //     myOutputValue = displayHands(playerHand, dealerHand) + `dealer wins!`;
-      //     console.log('dealer wins');
-      //   };
 
       // change game mode
       currentMode = hitOrStand;
@@ -270,13 +260,13 @@ var main = function (input) {
   if (currentMode == hitOrStand) {
 
     // player hit
-    if (input == 'hit') {
+    if (answer == 'hit') {
       playerHand.push(gameDeck.pop());
-      myOutputValue = displayHands(playerHand, dealerHand) + `<br />You drew a card. hit or stand`;
+      myOutputValue = `You drew a card! Would you like to <strong>hit</strong> (again) or <strong>stand</strong>?<br /><br />` + displayHands(playerHand, dealerHand);
     }
 
     // player stand
-    else if (input == 'stand') {
+    else if (answer == 'stand') {
       // calc total hand of player & dealer
       let playerHandValue = calculateHand(playerHand);
       let dealerHandValue = calculateHand(dealerHand);
@@ -293,28 +283,47 @@ var main = function (input) {
       // playerHandValue = 11;
       // dealerHandValue = 11;
 
+
       // compare total hand value
+        if ((playerHandValue > 21) || (dealerHandValue > 21)) {
+
+          if ((playerHandValue > 21) && (dealerHandValue > 21)) {
+            myOutputValue = `<span>You both bust!</span> <br /><br />` + displayHands(playerHand, dealerHand);
+
+          } else if (playerHandValue > 21) {
+          myOutputValue = `<span>busted!</span> I'm sorry but you lose! <br /><br />` + displayHands(playerHand, dealerHand);
+
+          console.log('player hand val:', playerHandValue);
+          console.log('dealer hand val:', dealerHandValue);
+          } else {
+            myOutputValue = `<span>YAYYYYYYYYYY!!!!!!</span> You won! The dealer bust! <br /><br />` + displayHands(playerHand, dealerHand);
+  
+            console.log('player hand val:', playerHandValue);
+            console.log('dealer hand val:', dealerHandValue);
+          }
+        }
         // same value, tie
-        if (playerHandValue == dealerHandValue) {
-          myOutputValue = displayHands(playerHand, dealerHand) + `tie! no bj!`;
-          console.log('tie no bj');
+        else if (playerHandValue == dealerHandValue) {
+          myOutputValue = `<span>It is a tie!</span> <br /><br />` + displayHands(playerHand, dealerHand);
+          console.log('tie with drawn');
         }
         // player higher, win
         else if (playerHandValue > dealerHandValue) {
-          myOutputValue = displayHands(playerHand, dealerHand) + `player wins!`;
+          myOutputValue = `<span>YAYYYYYYYYYY!!!!!!</span> You won! <br /><br />` + displayHands(playerHand, dealerHand);
           console.log('player wins');
         }
         // dealer higher, win
         else {
-          myOutputValue = displayHands(playerHand, dealerHand) + `dealer wins!`;
+          myOutputValue = `I'm sorry but the dealer has won! <br /><br />` + displayHands(playerHand, dealerHand);
           console.log('dealer wins');
         };
+
 
     }
 
     // input validation
     else {
-      myOutputValue = `please only input hit or stand <br /><br />` + displayHands(playerHand, dealerHand);
+      myOutputValue = `I'm sorry! <em>${input}</em> is an invalid input. Please kindly input either <strong>hit</strong> or <strong>stand</strong> <br /><br />` + displayHands(playerHand, dealerHand);
     };
 
     return myOutputValue;

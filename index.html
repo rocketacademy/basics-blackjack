@@ -42,6 +42,9 @@
 
     <!-- fonts -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Karla">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Pacifico">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Teko">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Amatic+SC">
 
     <!-- CSS -->
     <style>
@@ -62,6 +65,7 @@
         background-position: center; /* Center the image */
         background-repeat: no-repeat; /* Do not repeat the image */
         background-size: cover; /* Resize the background image to cover the entire container */
+        cursor: url(https://ani.cursors-4u.net/cursors/cur-13/cur1156.ani), url(https://ani.cursors-4u.net/cursors/cur-13/cur1156.png), auto !important;
       }
 
       #output-div img{
@@ -71,32 +75,36 @@
       }
       .header {
         text-align: center;
-        font-size: 1.1rem;
+        font-size: 1.5rem;
+        font-family: Karla, sans-serif;
         margin-bottom: 3rem;
       }
 
       #container {
         margin: 40px auto;
         max-width: 800px;
-        padding: 38px 31px;
+        padding: 10px 31px;
       }
 
       input {
         font-size: 18px;
-        font-family: 'Courier New', serif;
+        font-family: Teko, 'Courier New', serif;
         line-height: 33px;
         margin: 0 0 23px 0;
         padding: 0 9px;
         width: 100%;
         border: 0;
         border-radius: 5px;
+        letter-spacing: 0.2rem;
       }
 
       button {
         font-size: 21px;
+        font-family: Pacifico, sans-serif;
         line-height: 33px;
         margin: 0 0 23px 0;
         padding: 0 6px;
+        cursor: grab;
       }
 
       #output-div {
@@ -105,6 +113,12 @@
         padding: 20px;
         width: 100%;
         border-radius: 10px;
+      }
+
+      span {
+        font-family: 'Amatic SC', sans-serif;
+        font-weight: 600;
+        font-size: 2rem;
       }
 
       .logo-img {
@@ -149,22 +163,26 @@
       <p>Input:</p>
       <input id="input-field" />
       <br />
-      <button id="submit-button">Submit</button>
+      <button id="submit-button">I am just a button to be clicked</button>
       <p>Output:</p>
-      <div id="output-div"></div>
+      <div id="output-div">Welcome to nadlam's blackjack game! Please kindly input your name and click the button! (:</div>
     </div>
     <footer>
       nadlam &copy; 2022. Credits: 
       <a href="https://www.flaticon.com/free-icons/blackjack" target="_blank">icons</a> 
       <a href="https://cssgradient.io/" target="_blank">gradient</a> 
+      <a href="https://www.cursors-4u.com/animated/" target="_blank">pointer</a> 
+      <a href="https://tholman.com/cursor-effects/" target="_blank">cursor</a> 
       <a href="#" target="_blank">jack</a> 
       <a href="#" target="_blank">vivian</a> 
       <a href="#" target="_blank">basics 16-5</a> 
     </footer>
     <!-- Import program logic -->
     <script src="script.js"></script>
+    <script src="https://unpkg.com/cursor-effects@latest/dist/browser.js"></script>
     <!-- Define button click functionality -->
     <script>
+      new cursoreffects.fairyDustCursor();
       var button = document.querySelector("#submit-button");
       button.addEventListener("click", function () {
         // Set result to input value
