@@ -6,12 +6,22 @@
 //    - higher hand value
 // 5. display hands of player & dealer and declare winner
 
+// 1. extra game mode (hit or stand)
+// 2. function to hit or stand
+
+// 1. dealer to hit or stand ONLY AFTER player stands
+// 2. if dealer hand value < 17, dealer hits
+// 3. if dealerhand value > 17, dealer stands
+
+// if total hand value, incl ace, is < 21, ace = 11
+// if total hand value, incl ace, is > 21, ace = 1
 
 
 // game modes
 let gameStart = 'game start';
 let cardsDrawn = 'cards drawn';
 let resultsShown = 'results shown';
+let hitOrStand = 'hot or stand';
 let currentMode = gameStart;
 
 // store hands
@@ -221,12 +231,63 @@ var main = function (input) {
       console.log(myOutputValue);
 
     // no blackjack, game cont
+      // // calc total hand of player & dealer
+      // let playerHandValue = calculateHand(playerHand);
+      // let dealerHandValue = calculateHand(dealerHand);
+
+      // console.log('player hand val:', playerHandValue);
+      // console.log('dealer hand val:', dealerHandValue);
+
+      // // hardcode testing
+      // // playerHandValue = 11;
+      // // dealerHandValue = 11;
+
+      // // compare total hand value
+      //   // same value, tie
+      //   if (playerHandValue == dealerHandValue) {
+      //     myOutputValue = displayHands(playerHand, dealerHand) + `tie! no bj!`;
+      //     console.log('tie no bj');
+      //   }
+      //   // player higher, win
+      //   else if (playerHandValue > dealerHandValue) {
+      //     myOutputValue = displayHands(playerHand, dealerHand) + `player wins!`;
+      //     console.log('player wins');
+      //   }
+      //   // dealer higher, win
+      //   else {
+      //     myOutputValue = displayHands(playerHand, dealerHand) + `dealer wins!`;
+      //     console.log('dealer wins');
+      //   };
+
+      // change game mode
+      currentMode = hitOrStand;
+      // output msg
+      return myOutputValue;
+    };
+  };
+
+  // hit or stand
+  if (currentMode == hitOrStand) {
+
+    // player hit
+    if (input == 'hit') {
+      playerHand.push(gameDeck.pop());
+      myOutputValue = displayHands(playerHand, dealerHand) + `<br />You drew a card. hit or stand`;
+    }
+
+    // player stand
+    else if (input == 'stand') {
       // calc total hand of player & dealer
       let playerHandValue = calculateHand(playerHand);
       let dealerHandValue = calculateHand(dealerHand);
 
       console.log('player hand val:', playerHandValue);
       console.log('dealer hand val:', dealerHandValue);
+
+      while (dealerHandValue < 17) {
+        dealerHand.push(gameDeck.pop());
+        dealerHandValue = calculateHand(dealerHand);
+      };
 
       // hardcode testing
       // playerHandValue = 11;
@@ -249,10 +310,13 @@ var main = function (input) {
           console.log('dealer wins');
         };
 
-      // change game mode
-      currentMode = resultsShown;
-      // output msg
-      return myOutputValue;
+    }
+
+    // input validation
+    else {
+      myOutputValue = `please only input hit or stand <br /><br />` + displayHands(playerHand, dealerHand);
     };
+
+    return myOutputValue;
   };
 };
