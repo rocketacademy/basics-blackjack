@@ -612,7 +612,13 @@ var gameStateMsg = function () {
       dealerHandImg.appendChild(facedownCard);
     } else {
       const dealerCard = document.createElement("img");
-      dealerCard.src = `../basics-blackjack/cards/${dealerHand[0].cardNum}-of-${dealerHand[0].suit}.png`;
+      var cardNumInput = dealerHand[0].cardNum;
+      var cardSuitInput = dealerHand[0].suit.toLowerCase();
+
+      if (isNaN(cardNumInput)) {
+        cardNumInput = cardNumInput.toLowerCase();
+      }
+      dealerCard.src = `../basics-blackjack/cards/${cardNumInput}-of-${cardSuitInput}.png`;
       dealerCard.style.width = "20%";
       dealerHandImg.appendChild(dealerCard);
     }
@@ -620,7 +626,14 @@ var gameStateMsg = function () {
 
   for (i = 1; i < dealerHand.length; i++) {
     const dealerCard = document.createElement("img");
-    dealerCard.src = `../basics-blackjack/cards/${dealerHand[i].cardNum}-of-${dealerHand[i].suit}.png`;
+    var cardNumInput = dealerHand[i].cardNum;
+    var cardSuitInput = dealerHand[i].suit.toLowerCase();
+
+    if (isNaN(cardNumInput)) {
+      cardNumInput = cardNumInput.toLowerCase();
+    }
+
+    dealerCard.src = `../basics-blackjack/cards/${cardNumInput}-of-${cardSuitInput}.png`;
     dealerCard.style.width = "20%";
     dealerHandImg.appendChild(dealerCard);
   }
@@ -648,7 +661,14 @@ var gameStateMsg = function () {
 
         for (j = 0; j < players[i].hands[k].length; j++) {
           const playerCard = document.createElement("img");
-          playerCard.src = `../basics-blackjack/cards/${players[i].hands[k][j].cardNum}-of-${players[i].hands[k][j].suit}.png`;
+          var cardNumInput = players[i].hands[k][j].cardNum;
+          var cardSuitInput = players[i].hands[k][j].suit.toLowerCase();
+
+          if (isNaN(cardNumInput)) {
+            cardNumInput = cardNumInput.toLowerCase();
+          }
+
+          playerCard.src = `../basics-blackjack/cards/${cardNumInput}-of-${cardSuitInput}.png`;
           playerCard.style.width = "20%";
           playerHandImg.appendChild(playerCard);
         }
@@ -663,7 +683,14 @@ var gameStateMsg = function () {
 
       for (j = 0; j < players[i].hands[0].length; j++) {
         const playerCard = document.createElement("img");
-        playerCard.src = `../basics-blackjack/cards/${players[i].hands[0][j].cardNum}-of-${players[i].hands[0][j].suit}.png`;
+        var cardNumInput = players[i].hands[0][j].cardNum;
+        var cardSuitInput = players[i].hands[0][j].suit.toLowerCase();
+
+        if (isNaN(cardNumInput)) {
+          cardNumInput = cardNumInput.toLowerCase();
+        }
+
+        playerCard.src = `../basics-blackjack/cards/${cardNumInput}-of-${cardSuitInput}.png`;
         playerCard.style.width = "20%";
         playerHandImg.appendChild(playerCard);
       }
