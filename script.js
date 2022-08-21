@@ -87,6 +87,7 @@ var main = function (input) {
       addInputBox();
       return `Player ${players[playerTurn].id}, please enter the number of chips you would like to bet for this round.`;
     } else {
+      addInputBox();
       return `There are no more players with chips remaining.<br><br>You can start a new game with fresh set of players.<br>Input the number of players you would like to begin the new game with.`;
     }
   }
