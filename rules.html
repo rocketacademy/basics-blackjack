@@ -67,7 +67,7 @@
       name="twitter:url"
       content="https://rocketacademy.github.io/basics-blackjack/index.html"
     />
-    <meta name="twitter:title" content="YOURNAME's BlackJack Game!" />
+    <meta name="twitter:title" content="Darren's BlackJack Game!" />
     <meta
       name="twitter:description"
       content="A fun card game I made myself! 😄💪🌈"
@@ -114,26 +114,32 @@
         margin-bottom: 3rem;
       }
 
+      .rules {
+        text-align: center;
+        font-size: 1rem;
+        margin-bottom: 3rem;
+      }
+
       #outerContainer {
-        border: 50px solid #fff;
+        border: 50px solid white;
         padding: 20px;
         margin: 40px auto;
         position: center;
       }
       #container {
-        background-color: pink;
+        background-color: rgb(170, 181, 181);
         /* margin: 40px auto; */
         position: relative;
-        max-width: 600px;
+        max-width: 2000px;
         padding: 38px 31px;
-        width: 50%;
+        width: 100%;
         float: left;
         padding: 20px;
-        border: 40px;
+        border: 400px;
       }
 
       #container2 {
-        background-color: pink;
+        background-color: rgb(170, 181, 181);
         /* margin: 40px auto; */
         position: relative;
         max-width: 600px;
@@ -160,14 +166,21 @@
       }
 
       #output-div {
-        background-color: lightgrey;
-        margin: 20px auto;
+        background-color: rgb(90, 184, 61);
+        /* margin: 20px auto; */
+        padding: 20px;
+        width: 100%;
+      }
+
+      #player-hand {
+        background-color: rgb(90, 184, 61);
+        /* margin: 20px auto; */
         padding: 20px;
         width: 100%;
       }
 
       #gameTracker {
-        background-color: lightgrey;
+        background-color: rgb(90, 184, 61);
         margin: 20px auto;
         padding: 20px;
         width: 100%;
@@ -184,6 +197,10 @@
         width: 30px;
       }
 
+      .button {
+        width: "150px";
+      }
+
       /* increase header font size on wider screens */
       @media screen and (min-width: 600px) {
         .header {
@@ -194,69 +211,95 @@
   </head>
 
   <body>
-    <h1 class="header">
-      <img
-        class="logo-img"
-        src="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/brand/logo.png"
-      />
-      Rocket Academy
-      <img
-        class="logo-img"
-        src="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/brand/logo.png"
-      />
-    </h1>
-    <h1 class="header">♣️ Basics - Blackjack ♠️</h1>
+    <h1 class="header">♣️ Blackjack ♠️</h1>
+
     <div id="outerContainer">
       <div id="container">
-        <p>Input:</p>
-        <div id="inputBox"><input id="input-field" /></div>
-        <br />
-        <div id="buttonBox"><button id="submit-button">Continue</button></div>
-        <!-- <p>Output:</p> -->
-        <div id="output-div">
-          Hi, welcome to a game of Blackjack.<br />To begin, please select the
-          number of players for this game (1 to 5).
-        </div>
-        <div id="player-hand"></div>
-      </div>
+        <p>
+          <b><u>Rules of this game</u></b>
+        </p>
+        <p>
+          1. Begin by selecting whether the game is to be played in single or
+          multi-player mode, and how many players will be playing if
+          multi-player mode (max 5 players).
+        </p>
+        <p>
+          2. During each round, each player chooses how many chips they would
+          like to bet before hands are dealt. Each player starts the game with
+          100 chips.
+        </p>
+        <p>
+          3. A player who drew a natural Blackjack wins 1.5x their bet (rounded up if bet is an odd number). A
+          natural Blackjack consists of an Ace and one of the following: 10,
+          Jack, Queen or King.
+        </p>
 
-      <div id="container2">
-        <p><b>Game State Tracker</b></p>
-        <!-- <input id="input-field" />
-      <br />
-      <button id="submit-button">Continue</button> -->
-        <!-- <p>Output:</p> -->
-        <div id="gameTracker">Game not started.</div>
+        <p>
+          4. A player whose initial hand dealt consists of two cards of the same
+          value (e.g. 3 of Hearts and 3 of Clubs), you have the option to split
+          your hand to be played as 2 separate hands and get an extra card dealt
+          to each hand. Note: You can only do this if you have enough chips to
+          double up your bet with a second hand.
+        </p>
+
+        <p>
+          5. For all players who did not get a natural Blackjack, they will get
+          opportunities to hit (draw extra card) or stand (not draw another card
+          and let the turn move to next player if any).
+        </p>
+
+        <p>
+          6. Any player who hit and whose hand score exceeds 21 as a result
+          busts and immediately loses their bet.
+        </p>
+
+        <p>
+          7. Once all players have either bust or chosen to stand, the dealer
+          will draw their card(s). The dealer must draw until their hand is not
+          less than 17 points. If the dealer busts as a result of drawing cards,
+          each player wins 2x their bet.
+        </p>
+
+        <p>
+          8. If the dealer did not bust, the scores of all players who has
+          chosen to stand will be compared against the dealer's hand. Players
+          whose hands have a large score than the dealer wins 2x their bet.
+          Players whose hands have a smaller score than the dealer loses their
+          bet. Players whose hands have an equal score to the dealer neither
+          wins any nor loses any chips.
+        </p>
+
+        <p>
+          9. At the point, all players who have run out of chips will be removed
+          from the game. If there are no more players with any chips remaining,
+          option will be provided to start an entirely new game. Otherwise,
+          remaining players will be given the option to begin the next round by
+          entering their bets.
+        </p>
+
+        <p>
+          A continuous tracker is provided to the right side of the screen
+          showing the current state of the game. During play, all player's cards are visible but one of the
+          dealer's cards is concealed and represented as the icon below. The
+          dealer's concealed card is revealed during step 7 above.
+        </p>
+        <img src = "../basics-blackjack/cards/jokers.png" width ="10%"></img>
+        <p>
+          <b><u>Score Calculation of a given Hand</u></b>
+        </p>
+
+        <p>
+          All numerical cards (2 to 10) provide points equal to their respective
+          face value.
+        </p>
+        <p>Jack, Queen and King are worth 10 points each.</p>
+        <p>An Ace can be either worth 1 point or 11 points.</p>
+        <p>A player busts when they have more than 21 points.</p>
+        <p>
+          A Blackjack consists of an Ace and one of the following: 10, Jack,
+          Queen or King (i.e. 21 points).
+        </p>
       </div>
     </div>
-    <!-- Import program logic -->
-    <script src="script.js"></script>
-    <!-- Define button click functionality -->
-    <script>
-      var button = document.querySelector("#submit-button");
-      button.addEventListener("click", function () {
-        //Clear player hand div
-        var playerHand = document.querySelector("#player-hand");
-        playerHand.replaceChildren();
-
-        // Set result to input value
-        var input = document.querySelector("#input-field");
-
-        var result = main(input.value);
-        var trackerMsg = gameStateMsg();
-
-        //gameStateMsg();
-
-        // Display result in output element
-        var output = document.querySelector("#output-div");
-        var trackerOutput = document.querySelector("#gameTracker");
-
-        output.innerHTML = result;
-        //trackerOutput.innerHTML = trackerMsg;
-
-        // Reset input value
-        input.value = "";
-      });
-    </script>
   </body>
 </html>

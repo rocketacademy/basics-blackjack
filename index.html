@@ -220,7 +220,7 @@
 
     <div id="outerContainer">
       <div id="container">
-        <p>Input:</p>
+        <p>Player Input:</p>
         <div id="inputBox"></div>
         <br />
         <div id="buttonBox">
@@ -240,10 +240,6 @@
 
       <div id="container2">
         <p><b>Game Status</b></p>
-        <!-- <input id="input-field" />
-      <br />
-      <button id="submit-button">Continue</button> -->
-        <!-- <p>Output:</p> -->
         <div id="gameTracker">Game not started.</div>
       </div>
     </div>
@@ -258,8 +254,6 @@
         playerHand.replaceChildren();
 
         // Set result to input value
-        // var input = document.querySelector("#input-field");
-
         var result = main("n");
 
         // Display result in output element
@@ -270,9 +264,6 @@
         trackerOutput.replaceChildren();
         gameStateMsg();
         output.innerHTML = result;
-
-        // Reset input value
-        // input.value = "";
       });
 
       var multiButton = document.querySelector("#multi-button");
@@ -282,8 +273,6 @@
         playerHand.replaceChildren();
 
         // Set result to input value
-        // var input = document.querySelector("#input-field");
-
         var result = main("y");
 
         // Display result in output element
@@ -294,9 +283,6 @@
         trackerOutput.replaceChildren();
         gameStateMsg();
         output.innerHTML = result;
-
-        // Reset input value
-        // input.value = "";
       });
     </script>
   </body>
