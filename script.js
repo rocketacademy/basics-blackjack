@@ -1119,6 +1119,7 @@ var addHandImg = function (input) {
   creditLink.innerText = "Playing card icons courtesy of rizal2109";
   creditLink.href =
     "https://www.flaticon.com/packs/playing-cards-6?style_id=1216&family_id=333&group_id=810";
+  creditLink.target = "_blank";
   newPara.appendChild(creditLink);
   newPara.style.fontSize = "10px";
   newPara.style.fontcolor = "black";
