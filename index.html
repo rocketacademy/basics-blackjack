@@ -218,19 +218,6 @@
           number of players for this game (1 to 5).
         </div>
         <div id="player-hand"></div>
-        <div>
-          <a
-            href="https://www.flaticon.com/packs/playing-cards-6?style_id=1216&family_id=333&group_id=810"
-            title="Playing"
-            card
-            icons
-            courtesy
-            of
-            rizal2109
-            -
-            Flaticon
-          ></a>
-        </div>
       </div>
 
       <div id="container2">
@@ -256,14 +243,15 @@
         var input = document.querySelector("#input-field");
 
         var result = main(input.value);
-        var trackerMsg = gameStateMsg();
 
         // Display result in output element
         var output = document.querySelector("#output-div");
         var trackerOutput = document.querySelector("#gameTracker");
 
+        //Clear game state tracker div
+        trackerOutput.replaceChildren();
+        gameStateMsg();
         output.innerHTML = result;
-        trackerOutput.innerHTML = trackerMsg;
 
         // Reset input value
         input.value = "";

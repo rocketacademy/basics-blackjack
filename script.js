@@ -145,42 +145,42 @@ var main = function (input) {
   }
 
   //Section for manually altering results of the hand draw to do scenario testing
-  // if (test == false) {
-  //   //   //Temporary to debug blackjackArr insert
-  //   players[0].hands = [
-  //     // [
-  //     //   { suit: "Spades", cardNum: "Ace", cardValue: 1 },
-  //     //   { suit: "Hearts", cardNum: "King", cardValue: 10 },
-  //     // ],
-  //     [
-  //       { suit: "Hearts", cardNum: 2, cardValue: 2 },
-  //       { suit: "Spades", cardNum: 2, cardValue: 2 },
-  //       { suit: "Clubs", cardNum: 2, cardValue: 2 },
-  //       { suit: "Diamonds", cardNum: 2, cardValue: 2 },
-  //       { suit: "Hearts", cardNum: 3, cardValue: 3 },
-  //       { suit: "Spades", cardNum: 3, cardValue: 3 },
-  //       { suit: "Clubs", cardNum: 3, cardValue: 3 },
-  //       { suit: "Diamonds", cardNum: 3, cardValue: 3 },
-  //     ],
-  //   ];
-  //   // // players[0].hands = [
-  //   // //   [
-  //   // //     { suit: "Spades", cardNum: "Ace", cardValue: 1 },
-  //   // //     { suit: "Hearts", cardNum: "King", cardValue: 10 },
-  //   // //   ],
-  //   // //   // [
-  //   // //   //   { suit: "Hearts", cardNum: 5, cardValue: 5 },
-  //   // //   //   { suit: "Spades", cardNum: 5, cardValue: 5 },
-  //   // //   // ],
-  //   // // ];
-  //   test = true;
-  //   // players[1].hands = [
-  //   //   [
-  //   //     { suit: "spades", cardNum: "Ace", cardValue: 1 },
-  //   //     { suit: "spades", cardNum: "King", cardValue: 10 },
-  //   //   ],
-  //   // ];
-  // }
+  if (test == false) {
+    //   //Temporary to debug blackjackArr insert
+    // players[0].hands = [
+    //   // [
+    //   //   { suit: "Spades", cardNum: "Ace", cardValue: 1 },
+    //   //   { suit: "Hearts", cardNum: "King", cardValue: 10 },
+    //   // ],
+    //   [
+    //     { suit: "Hearts", cardNum: 2, cardValue: 2 },
+    //     { suit: "Spades", cardNum: 2, cardValue: 2 },
+    //     { suit: "Clubs", cardNum: 2, cardValue: 2 },
+    //     { suit: "Diamonds", cardNum: 2, cardValue: 2 },
+    //     { suit: "Hearts", cardNum: 3, cardValue: 3 },
+    //     { suit: "Spades", cardNum: 3, cardValue: 3 },
+    //     { suit: "Clubs", cardNum: 3, cardValue: 3 },
+    //     { suit: "Diamonds", cardNum: 3, cardValue: 3 },
+    //   ],
+    // ];
+    players[0].hands = [
+      // [
+      //   { suit: "Spades", cardNum: "Ace", cardValue: 1 },
+      //   { suit: "Hearts", cardNum: "King", cardValue: 10 },
+      // ],
+      [
+        { suit: "Hearts", cardNum: 5, cardValue: 5 },
+        { suit: "Spades", cardNum: 5, cardValue: 5 },
+      ],
+    ];
+    test = true;
+    // players[1].hands = [
+    //   [
+    //     { suit: "spades", cardNum: "Ace", cardValue: 1 },
+    //     { suit: "spades", cardNum: "King", cardValue: 10 },
+    //   ],
+    // ];
+  }
   //  Check if player has 2 cards of the same type to split
   if (splitInitial == false) {
     for (o = playerTurn; o < playerNum; o++) {
@@ -575,57 +575,82 @@ var splitHand = function (input) {
 
 //Function for overall game status generation message
 var gameStateMsg = function () {
-  //Test multiple hand scenario
-
   var outputMsg = "";
 
-  outputMsg = outputMsg + "<b><u>Dealer</u><br>";
+  var gameStateBox = document.querySelector("#gameTracker");
+
+  const dealerHeader = document.createElement("p");
+  dealerHeader.innerHTML = `<b><u>Dealer</u><br>Hand:</b><br>`;
+  dealerHeader.id = "dealerHeader";
+  gameStateBox.appendChild(dealerHeader);
+
+  const dealerHandImg = document.createElement("div");
   if (dealerHand.length > 0) {
     if (dealerHandHide == true) {
-      outputMsg = outputMsg + "Hand:</b><br>[Facedown card]<br>";
+      const facedownCard = document.createElement("img");
+      facedownCard.src = `../basics-blackjack/cards/jokers.png`;
+      facedownCard.style.width = "20%";
+      dealerHandImg.appendChild(facedownCard);
     } else {
-      outputMsg =
-        outputMsg + `${dealerHand[0].cardNum} of ${dealerHand[0].suit}<br>`;
+      const dealerCard = document.createElement("img");
+      dealerCard.src = `../basics-blackjack/cards/${dealerHand[0].cardNum}-of-${dealerHand[0].suit}.png`;
+      dealerCard.style.width = "20%";
+      dealerHandImg.appendChild(dealerCard);
     }
   }
 
   for (i = 1; i < dealerHand.length; i++) {
-    outputMsg =
-      outputMsg + `${dealerHand[i].cardNum} of ${dealerHand[i].suit}<br>`;
+    const dealerCard = document.createElement("img");
+    dealerCard.src = `../basics-blackjack/cards/${dealerHand[i].cardNum}-of-${dealerHand[i].suit}.png`;
+    dealerCard.style.width = "20%";
+    dealerHandImg.appendChild(dealerCard);
   }
+  gameStateBox.appendChild(dealerHandImg);
 
   for (i = 0; i < playerNum; i++) {
-    outputMsg =
-      outputMsg +
-      `<br><b><u>Player ${players[i].id}</u><br>Chips: ${players[i].chips}<br>Current round bet: ${players[i].bet}<br></b>`;
+    //Add player header
+    const playerHeader = document.createElement("p");
+    playerHeader.innerHTML = `<br><b><u>Player ${players[i].id}</u><br>Chips: ${players[i].chips}🪙<br>Current round bet: ${players[i].bet}🪙<br></b>`;
+    playerHeader.id = `player${i}Header`;
+    gameStateBox.appendChild(playerHeader);
+
     var handNum = players[i].hands.length;
     if (handNum > 1) {
       //Add scenario of number of hands per player > 1
 
       for (k = 0; k < players[i].hands.length; k++) {
-        outputMsg =
-          outputMsg +
-          `<b>Hand ${k + 1}:</b> [Hand Status: ${
-            players[i].roundStatus[k]
-          }]<br>`;
+        const playerHandStatus = document.createElement("p");
+        playerHandStatus.innerHTML = `<b>Hand ${k + 1}:</b> [Hand Status: ${
+          players[i].roundStatus[k]
+        }]<br>`;
+        playerHandStatus.id = `player${i}hand${k}header`;
+        gameStateBox.appendChild(playerHandStatus);
+        const playerHandImg = document.createElement("div");
+
         for (j = 0; j < players[i].hands[k].length; j++) {
-          outputMsg =
-            outputMsg +
-            `${players[i].hands[k][j].cardNum} of ${players[i].hands[k][j].suit}<br>`;
+          const playerCard = document.createElement("img");
+          playerCard.src = `../basics-blackjack/cards/${players[i].hands[k][j].cardNum}-of-${players[i].hands[k][j].suit}.png`;
+          playerCard.style.width = "20%";
+          playerHandImg.appendChild(playerCard);
         }
+        gameStateBox.appendChild(playerHandImg);
       }
     } else if (handNum == 1) {
-      outputMsg =
-        outputMsg +
-        `<b>Current round status: ${players[i].roundStatus[0]}<br>Hand:</b><br>`;
+      const playerHandStatus = document.createElement("p");
+      playerHandStatus.innerHTML = `<b>Current round status: ${players[i].roundStatus[0]}<br>Hand:</b><br>`;
+      playerHandStatus.id = `player${i}handheader`;
+      gameStateBox.appendChild(playerHandStatus);
+      const playerHandImg = document.createElement("div");
+
       for (j = 0; j < players[i].hands[0].length; j++) {
-        outputMsg =
-          outputMsg +
-          `${players[i].hands[0][j].cardNum} of ${players[i].hands[0][j].suit}<br>`;
+        const playerCard = document.createElement("img");
+        playerCard.src = `../basics-blackjack/cards/${players[i].hands[0][j].cardNum}-of-${players[i].hands[0][j].suit}.png`;
+        playerCard.style.width = "20%";
+        playerHandImg.appendChild(playerCard);
       }
+      gameStateBox.appendChild(playerHandImg);
     }
   }
-  return outputMsg;
 };
 
 //Function for player turn cycling
@@ -759,10 +784,12 @@ var switchHitStandButton = function () {
     var output = document.querySelector("#output-div");
     output.innerHTML = result;
 
-    //Populate game state tracker box
-    var trackerMsg = gameStateMsg();
+    //Clear game state tracker div
     var trackerOutput = document.querySelector("#gameTracker");
-    trackerOutput.innerHTML = trackerMsg;
+    trackerOutput.replaceChildren();
+
+    //Populate game state tracker div
+    gameStateMsg();
   });
 
   standButton.addEventListener("click", function () {
@@ -774,10 +801,12 @@ var switchHitStandButton = function () {
     var output = document.querySelector("#output-div");
     output.innerHTML = result;
 
-    //Populate game state tracker box
-    var trackerMsg = gameStateMsg();
+    //Clear game state tracker div
     var trackerOutput = document.querySelector("#gameTracker");
-    trackerOutput.innerHTML = trackerMsg;
+    trackerOutput.replaceChildren();
+
+    //Populate game state tracker div
+    gameStateMsg();
   });
 
   hitButton.style.width = "100px";
@@ -811,17 +840,21 @@ var switchContinueButton = function () {
     var input = document.querySelector("#input-field");
 
     var result = main(input.value);
-    var trackerMsg = gameStateMsg();
 
     // Display result in output element
     var output = document.querySelector("#output-div");
-    var trackerOutput = document.querySelector("#gameTracker");
 
     output.innerHTML = result;
-    trackerOutput.innerHTML = trackerMsg;
 
     // Reset input value
     input.value = "";
+
+    //Clear game state tracker div
+    var trackerOutput = document.querySelector("#gameTracker");
+    trackerOutput.replaceChildren();
+
+    //Populate game state tracker div
+    gameStateMsg();
   });
 
   container.appendChild(continueButton);
@@ -857,10 +890,12 @@ var switchSplitButton = function () {
     var output = document.querySelector("#output-div");
     output.innerHTML = result;
 
-    //Populate game state tracker box
-    var trackerMsg = gameStateMsg();
+    //Clear game state tracker div
     var trackerOutput = document.querySelector("#gameTracker");
-    trackerOutput.innerHTML = trackerMsg;
+    trackerOutput.replaceChildren();
+
+    //Populate game state tracker div
+    gameStateMsg();
   });
 
   splitNButton.addEventListener("click", function () {
@@ -872,10 +907,12 @@ var switchSplitButton = function () {
     var output = document.querySelector("#output-div");
     output.innerHTML = result;
 
-    //Populate game state tracker box
-    var trackerMsg = gameStateMsg();
+    //Clear game state tracker div
     var trackerOutput = document.querySelector("#gameTracker");
-    trackerOutput.innerHTML = trackerMsg;
+    trackerOutput.replaceChildren();
+
+    //Populate game state tracker div
+    gameStateMsg();
   });
 
   splitYButton.style.width = "120px";
@@ -909,14 +946,18 @@ var switchDealButton = function () {
     var input = document.querySelector("#input-field");
 
     var result = main();
-    var trackerMsg = gameStateMsg();
+    //var trackerMsg = gameStateMsg();
 
     // Display result in output element
     var output = document.querySelector("#output-div");
-    var trackerOutput = document.querySelector("#gameTracker");
-
     output.innerHTML = result;
-    trackerOutput.innerHTML = trackerMsg;
+
+    //Clear game state tracker div
+    var trackerOutput = document.querySelector("#gameTracker");
+    trackerOutput.replaceChildren();
+
+    //Populate game state tracker div
+    gameStateMsg();
   });
 
   container.appendChild(continueButton);
@@ -943,14 +984,17 @@ var removeInput = function () {
     playerHand.replaceChildren();
 
     var result = main();
-    var trackerMsg = gameStateMsg();
 
     // Display result in output element
     var output = document.querySelector("#output-div");
-    var trackerOutput = document.querySelector("#gameTracker");
-
     output.innerHTML = result;
-    trackerOutput.innerHTML = trackerMsg;
+
+    //Clear game state tracker div
+    var trackerOutput = document.querySelector("#gameTracker");
+    trackerOutput.replaceChildren();
+
+    //Populate game state tracker div
+    gameStateMsg();
   });
 
   container.appendChild(continueButton);
@@ -980,17 +1024,20 @@ var addInputBox = function () {
     var input = document.querySelector("#input-field");
 
     var result = main(input.value);
-    var trackerMsg = gameStateMsg();
 
     // Display result in output element
     var output = document.querySelector("#output-div");
-    var trackerOutput = document.querySelector("#gameTracker");
-
     output.innerHTML = result;
-    trackerOutput.innerHTML = trackerMsg;
 
     // Reset input value
     input.value = "";
+
+    //Clear game state tracker div
+    var trackerOutput = document.querySelector("#gameTracker");
+    trackerOutput.replaceChildren();
+
+    //Populate game state tracker div
+    gameStateMsg();
   });
 
   container.appendChild(continueButton);
