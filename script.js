@@ -2,6 +2,7 @@ var initialDeck = false;
 var initialHand = false;
 var currentDeck = [];
 var dealerHand = [];
+var multiplayer = "";
 var playerNum = 0;
 var playerTurn = 0;
 var betInitial = false;
@@ -76,6 +77,7 @@ var gameReset = function () {
   dealerHandHide = true;
   dealerBust = false;
   dealerDraw = "";
+  multiplayer = "";
 };
 
 var main = function (input) {
@@ -89,6 +91,22 @@ var main = function (input) {
     } else {
       addInputBox();
       return `There are no more players with chips remaining.<br><br>You can start a new game with fresh set of players.<br>Input the number of players you would like to begin the new game with.`;
+    }
+  }
+
+  //Checking if player wants to play multi-player mode or not
+  if (multiplayer == "" && playerNum == 0) {
+    if (input == "n") {
+      multiplayer = false;
+      playerNum = 1;
+      playerInitialize();
+      switchContinueButton();
+      return `We will have 1 player in this game.<br>You begin with 100 chips.<br><br>Please enter the number of chips you would like to bet for this round.`;
+    } else {
+      multiplayer = true;
+      switchContinueButton();
+      return `Please select the
+          number of players for this game (2 to 5 players).`;
     }
   }
 

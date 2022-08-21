@@ -95,7 +95,7 @@
         font-family: "Open Sans", sans-serif;
         margin-left: 30px;
         margin-right: 30px;
-        background-color: rgb(170, 181, 181);
+        background-color: white;
         color: black; /* sets the font color */
         background-image: url(""); /* The image used */
         background-position: center; /* Center the image */
@@ -121,7 +121,7 @@
       }
 
       #outerContainer {
-        border: 50px solid rgb(170, 181, 181);
+        border: 50px solid white;
         padding: 20px;
         margin: 40px auto;
         position: center;
@@ -135,7 +135,7 @@
         width: 50%;
         float: left;
         padding: 20px;
-        border: 40px;
+        border: 400px;
       }
 
       #container2 {
@@ -167,7 +167,14 @@
 
       #output-div {
         background-color: rgb(90, 184, 61);
-        margin: 20px auto;
+        /* margin: 20px auto; */
+        padding: 20px;
+        width: 100%;
+      }
+
+      #player-hand {
+        background-color: rgb(90, 184, 61);
+        /* margin: 20px auto; */
         padding: 20px;
         width: 100%;
       }
@@ -190,6 +197,10 @@
         width: 30px;
       }
 
+      .button {
+        width: "150px";
+      }
+
       /* increase header font size on wider screens */
       @media screen and (min-width: 600px) {
         .header {
@@ -210,19 +221,25 @@
     <div id="outerContainer">
       <div id="container">
         <p>Input:</p>
-        <div id="inputBox"><input id="input-field" /></div>
+        <div id="inputBox"></div>
         <br />
-        <div id="buttonBox"><button id="submit-button">Continue</button></div>
+        <div id="buttonBox">
+          <button id="single-button" style="width: 150px">Single Player</button
+          ><button id="multi-button" style="width: 150px">Multi-Player</button>
+        </div>
+
         <!-- <p>Output:</p> -->
+
         <div id="output-div">
-          Hi, welcome to a game of Blackjack.<br />To begin, please select the
-          number of players for this game (1 to 5).
+          Hi, welcome to a game of Blackjack.<br />Please begin by choosing if
+          you would like to play in single player mode or multi-player mode (max
+          5 players).
         </div>
         <div id="player-hand"></div>
       </div>
 
       <div id="container2">
-        <p><b>Game State Tracker</b></p>
+        <p><b>Game Status</b></p>
         <!-- <input id="input-field" />
       <br />
       <button id="submit-button">Continue</button> -->
@@ -234,16 +251,16 @@
     <script src="script.js"></script>
     <!-- Define button click functionality -->
     <script>
-      var button = document.querySelector("#submit-button");
-      button.addEventListener("click", function () {
+      var singleButton = document.querySelector("#single-button");
+      singleButton.addEventListener("click", function () {
         //Clear player hand div
         var playerHand = document.querySelector("#player-hand");
         playerHand.replaceChildren();
 
         // Set result to input value
-        var input = document.querySelector("#input-field");
+        // var input = document.querySelector("#input-field");
 
-        var result = main(input.value);
+        var result = main("n");
 
         // Display result in output element
         var output = document.querySelector("#output-div");
@@ -255,7 +272,31 @@
         output.innerHTML = result;
 
         // Reset input value
-        input.value = "";
+        // input.value = "";
+      });
+
+      var multiButton = document.querySelector("#multi-button");
+      multiButton.addEventListener("click", function () {
+        //Clear player hand div
+        var playerHand = document.querySelector("#player-hand");
+        playerHand.replaceChildren();
+
+        // Set result to input value
+        // var input = document.querySelector("#input-field");
+
+        var result = main("y");
+
+        // Display result in output element
+        var output = document.querySelector("#output-div");
+        var trackerOutput = document.querySelector("#gameTracker");
+
+        //Clear game state tracker div
+        trackerOutput.replaceChildren();
+        gameStateMsg();
+        output.innerHTML = result;
+
+        // Reset input value
+        // input.value = "";
       });
     </script>
   </body>
