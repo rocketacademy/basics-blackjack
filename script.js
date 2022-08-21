@@ -89,7 +89,7 @@ var main = function (input) {
       addInputBox();
       return `Player ${players[playerTurn].id}, please enter the number of chips you would like to bet for this round.`;
     } else {
-      addInputBox();
+      switchMultiplayerButton();
       return `There are no more players with chips remaining.<br><br>You can start a new game with fresh set of players.<br>Input the number of players you would like to begin the new game with.`;
     }
   }
@@ -1122,4 +1122,63 @@ var addHandImg = function (input) {
   newPara.style.fontSize = "10px";
   newPara.style.fontcolor = "black";
   outputBox.appendChild(newPara);
+};
+
+var switchMultiplayerButton = function () {
+  //Replace new buttons
+  const container = document.getElementById("buttonBox");
+  container.replaceChildren();
+
+  const singleButton = document.createElement("button");
+  const multiButton = document.createElement("button");
+
+  singleButton.innerHTML = "Single Player";
+  multiButton.innerHTML = "Multi-Player";
+
+  singleButton.id = "single-button";
+  multiButton.id = "multi-button";
+
+  singleButton.addEventListener("click", function () {
+    //Clear player hand div
+    var playerHand = document.querySelector("#player-hand");
+    playerHand.replaceChildren();
+
+    var result = main("n");
+    var output = document.querySelector("#output-div");
+    output.innerHTML = result;
+
+    //Clear game state tracker div
+    var trackerOutput = document.querySelector("#gameTracker");
+    trackerOutput.replaceChildren();
+
+    //Populate game state tracker div
+    gameStateMsg();
+  });
+
+  multiButton.addEventListener("click", function () {
+    //Clear player hand div
+    var playerHand = document.querySelector("#player-hand");
+    playerHand.replaceChildren();
+
+    var result = main("y");
+    var output = document.querySelector("#output-div");
+    output.innerHTML = result;
+
+    //Clear game state tracker div
+    var trackerOutput = document.querySelector("#gameTracker");
+    trackerOutput.replaceChildren();
+
+    //Populate game state tracker div
+    gameStateMsg();
+  });
+
+  singleButton.style.width = "150px";
+  multiButton.style.width = "150px";
+
+  container.appendChild(singleButton);
+  container.appendChild(multiButton);
+
+  //Remove input box
+  const container2 = document.getElementById("inputBox");
+  container2.replaceChildren();
 };
