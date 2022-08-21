@@ -67,7 +67,7 @@
       name="twitter:url"
       content="https://rocketacademy.github.io/basics-blackjack/index.html"
     />
-    <meta name="twitter:title" content="Darren's BlackJack Game!" />
+    <meta name="twitter:title" content="YOURNAME's BlackJack Game!" />
     <meta
       name="twitter:description"
       content="A fun card game I made myself! 😄💪🌈"
@@ -95,7 +95,7 @@
         font-family: "Open Sans", sans-serif;
         margin-left: 30px;
         margin-right: 30px;
-        background-color: rgb(170, 181, 181);
+        background-color: white;
         color: black; /* sets the font color */
         background-image: url(""); /* The image used */
         background-position: center; /* Center the image */
@@ -114,20 +114,14 @@
         margin-bottom: 3rem;
       }
 
-      .rules {
-        text-align: center;
-        font-size: 1rem;
-        margin-bottom: 3rem;
-      }
-
       #outerContainer {
-        border: 50px solid rgb(170, 181, 181);
+        border: 50px solid #fff;
         padding: 20px;
         margin: 40px auto;
         position: center;
       }
       #container {
-        background-color: rgb(170, 181, 181);
+        background-color: pink;
         /* margin: 40px auto; */
         position: relative;
         max-width: 600px;
@@ -139,7 +133,7 @@
       }
 
       #container2 {
-        background-color: rgb(170, 181, 181);
+        background-color: pink;
         /* margin: 40px auto; */
         position: relative;
         max-width: 600px;
@@ -166,14 +160,14 @@
       }
 
       #output-div {
-        background-color: rgb(90, 184, 61);
+        background-color: lightgrey;
         margin: 20px auto;
         padding: 20px;
         width: 100%;
       }
 
       #gameTracker {
-        background-color: rgb(90, 184, 61);
+        background-color: lightgrey;
         margin: 20px auto;
         padding: 20px;
         width: 100%;
@@ -200,13 +194,18 @@
   </head>
 
   <body>
-    <h1 class="header">♣️ Blackjack ♠️</h1>
-
-    <p class="rules">
-      Overview of the rules of the game:
-      <a class="rules" href="rules.html"><u>Game Rules</u></a>
-    </p>
-
+    <h1 class="header">
+      <img
+        class="logo-img"
+        src="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/brand/logo.png"
+      />
+      Rocket Academy
+      <img
+        class="logo-img"
+        src="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/brand/logo.png"
+      />
+    </h1>
+    <h1 class="header">♣️ Basics - Blackjack ♠️</h1>
     <div id="outerContainer">
       <div id="container">
         <p>Input:</p>
@@ -244,15 +243,16 @@
         var input = document.querySelector("#input-field");
 
         var result = main(input.value);
+        var trackerMsg = gameStateMsg();
+
+        //gameStateMsg();
 
         // Display result in output element
         var output = document.querySelector("#output-div");
         var trackerOutput = document.querySelector("#gameTracker");
 
-        //Clear game state tracker div
-        trackerOutput.replaceChildren();
-        gameStateMsg();
         output.innerHTML = result;
+        //trackerOutput.innerHTML = trackerMsg;
 
         // Reset input value
         input.value = "";
