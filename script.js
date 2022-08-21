@@ -145,42 +145,42 @@ var main = function (input) {
   }
 
   //Section for manually altering results of the hand draw to do scenario testing
-  if (test == false) {
-    //   //Temporary to debug blackjackArr insert
-    // players[0].hands = [
-    //   // [
-    //   //   { suit: "Spades", cardNum: "Ace", cardValue: 1 },
-    //   //   { suit: "Hearts", cardNum: "King", cardValue: 10 },
-    //   // ],
-    //   [
-    //     { suit: "Hearts", cardNum: 2, cardValue: 2 },
-    //     { suit: "Spades", cardNum: 2, cardValue: 2 },
-    //     { suit: "Clubs", cardNum: 2, cardValue: 2 },
-    //     { suit: "Diamonds", cardNum: 2, cardValue: 2 },
-    //     { suit: "Hearts", cardNum: 3, cardValue: 3 },
-    //     { suit: "Spades", cardNum: 3, cardValue: 3 },
-    //     { suit: "Clubs", cardNum: 3, cardValue: 3 },
-    //     { suit: "Diamonds", cardNum: 3, cardValue: 3 },
-    //   ],
-    // ];
-    players[0].hands = [
-      // [
-      //   { suit: "Spades", cardNum: "Ace", cardValue: 1 },
-      //   { suit: "Hearts", cardNum: "King", cardValue: 10 },
-      // ],
-      [
-        { suit: "Hearts", cardNum: 5, cardValue: 5 },
-        { suit: "Spades", cardNum: 5, cardValue: 5 },
-      ],
-    ];
-    test = true;
-    // players[1].hands = [
-    //   [
-    //     { suit: "spades", cardNum: "Ace", cardValue: 1 },
-    //     { suit: "spades", cardNum: "King", cardValue: 10 },
-    //   ],
-    // ];
-  }
+  // if (test == false) {
+  //   //   //Temporary to debug blackjackArr insert
+  //   // players[0].hands = [
+  //   //   // [
+  //   //   //   { suit: "Spades", cardNum: "Ace", cardValue: 1 },
+  //   //   //   { suit: "Hearts", cardNum: "King", cardValue: 10 },
+  //   //   // ],
+  //   //   [
+  //   //     { suit: "Hearts", cardNum: 2, cardValue: 2 },
+  //   //     { suit: "Spades", cardNum: 2, cardValue: 2 },
+  //   //     { suit: "Clubs", cardNum: 2, cardValue: 2 },
+  //   //     { suit: "Diamonds", cardNum: 2, cardValue: 2 },
+  //   //     { suit: "Hearts", cardNum: 3, cardValue: 3 },
+  //   //     { suit: "Spades", cardNum: 3, cardValue: 3 },
+  //   //     { suit: "Clubs", cardNum: 3, cardValue: 3 },
+  //   //     { suit: "Diamonds", cardNum: 3, cardValue: 3 },
+  //   //   ],
+  //   // ];
+  //   players[0].hands = [
+  //     // [
+  //     //   { suit: "Spades", cardNum: "Ace", cardValue: 1 },
+  //     //   { suit: "Hearts", cardNum: "King", cardValue: 10 },
+  //     // ],
+  //     [
+  //       { suit: "Hearts", cardNum: 5, cardValue: 5 },
+  //       { suit: "Spades", cardNum: 5, cardValue: 5 },
+  //     ],
+  //   ];
+  //   test = true;
+  //   // players[1].hands = [
+  //   //   [
+  //   //     { suit: "spades", cardNum: "Ace", cardValue: 1 },
+  //   //     { suit: "spades", cardNum: "King", cardValue: 10 },
+  //   //   ],
+  //   // ];
+  // }
   //  Check if player has 2 cards of the same type to split
   if (splitInitial == false) {
     for (o = playerTurn; o < playerNum; o++) {
