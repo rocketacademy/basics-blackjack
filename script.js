@@ -139,10 +139,11 @@ var main = function (input) {
       playerTurn++;
       return `Player ${playerTurn} bets ${input} chips this round.<br><br>Player ${players[playerTurn].id}, please enter the number of chips you would like to bet for this round.`;
     } else if (playerTurn == playerNum - 1) {
+      var lastPlayer = playerTurn + 1;
       playerTurn = 0;
       betInitial = true;
       switchDealButton();
-      return `Player ${playerNum} bets ${input} chips this round.<br><br>Please hit "continue" to deal cards.`;
+      return `Player ${lastPlayer} bets ${input} chips this round.<br><br>Please hit "continue" to deal cards.`;
     }
   }
 
