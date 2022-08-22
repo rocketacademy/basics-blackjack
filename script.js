@@ -90,7 +90,7 @@ var main = function (input) {
       return `Player ${players[playerTurn].id}, please enter the number of chips you would like to bet for this round.`;
     } else {
       switchMultiplayerButton();
-      return `There are no more players with chips remaining.<br><br>You can start a new game with fresh set of players.<br>Input the number of players you would like to begin the new game with.`;
+      return `There are no more players with chips remaining.<br><br>You can start a new game with fresh set of players.<br>Please choose whether you would like to play in single player mode or multi-player mode (max 5 players).`;
     }
   }
 
