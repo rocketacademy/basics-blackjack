@@ -206,8 +206,8 @@ var main = function (input) {
     for (o = playerTurn; o < playerNum; o++) {
       if (
         //Player able to split
-        players[playerTurn].hands[0][0].cardNum ==
-          players[playerTurn].hands[0][1].cardNum &&
+        players[playerTurn].hands[0][0].cardValue ==
+          players[playerTurn].hands[0][1].cardValue &&
         openSplit == false &&
         players[playerTurn].bet * (players[playerTurn].hands.length + 1) <=
           players[playerTurn].chips
