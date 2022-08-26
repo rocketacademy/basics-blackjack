@@ -189,8 +189,8 @@ var main = function (input) {
   //     //   { suit: "Hearts", cardNum: "King", cardValue: 10 },
   //     // ],
   //     [
-  //       { suit: "Hearts", cardNum: 5, cardValue: 5 },
-  //       { suit: "Spades", cardNum: 5, cardValue: 5 },
+  //       { suit: "Hearts", cardNum: "Jack", cardValue: 10 },
+  //       { suit: "Spades", cardNum: "Jack", cardValue: 10 },
   //     ],
   //   ];
   //   test = true;
@@ -216,7 +216,14 @@ var main = function (input) {
         openSplit = true;
         switchSplitButton();
         addHandImg(playerTurn);
-        return `Hi Player ${players[playerTurn].id}, you have a pair of ${players[playerTurn].hands[0][0].cardNum}s.<br>Would you like to split your hand?<br><br>Your current hand is:`;
+        if (
+          players[playerTurn].hands[0][0].cardNum ==
+          players[playerTurn].hands[0][1].cardNum
+        ) {
+          return `Hi Player ${players[playerTurn].id}, you have a pair of ${players[playerTurn].hands[0][0].cardNum}s.<br>Would you like to split your hand?<br><br>Your current hand is:`;
+        } else {
+          return `Hi Player ${players[playerTurn].id}, you have a ${players[playerTurn].hands[0][0].cardNum} and a ${players[playerTurn].hands[0][1].cardNum}.<br>Would you like to split your hand?<br><br>Your current hand is:`;
+        }
       } else if (openSplit == true) {
         //User input validation
         if (input.toLowerCase() != "y" && input.toLowerCase() != "n") {
