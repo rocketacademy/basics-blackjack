@@ -1194,3 +1194,84 @@ var switchMultiplayerButton = function () {
   const container2 = document.getElementById("inputBox");
   container2.replaceChildren();
 };
+
+var switchHitStandDoubleButton = function () {
+  //Replace new buttons
+  const container = document.getElementById("buttonBox");
+  container.replaceChildren();
+
+  const hitButton = document.createElement("button");
+  const standButton = document.createElement("button");
+  const doubleButton = document.createElement("button");
+
+  hitButton.innerHTML = "Hit";
+  standButton.innerHTML = "Stand";
+  doubleButton.innerHTML = "Double Down";
+
+  hitButton.id = "hitButton";
+  standButton.id = "standButton";
+  doubleButton.id = "doubleButton";
+
+  hitButton.addEventListener("click", function () {
+    //Clear player hand div
+    var playerHand = document.querySelector("#player-hand");
+    playerHand.replaceChildren();
+
+    var result = main("h");
+    var output = document.querySelector("#output-div");
+    output.innerHTML = result;
+
+    //Clear game state tracker div
+    var trackerOutput = document.querySelector("#gameTracker");
+    trackerOutput.replaceChildren();
+
+    //Populate game state tracker div
+    gameStateMsg();
+  });
+
+  standButton.addEventListener("click", function () {
+    //Clear player hand div
+    var playerHand = document.querySelector("#player-hand");
+    playerHand.replaceChildren();
+
+    var result = main("s");
+    var output = document.querySelector("#output-div");
+    output.innerHTML = result;
+
+    //Clear game state tracker div
+    var trackerOutput = document.querySelector("#gameTracker");
+    trackerOutput.replaceChildren();
+
+    //Populate game state tracker div
+    gameStateMsg();
+  });
+
+  doubleButton.addEventListener("click", function () {
+    //Clear player hand div
+    var playerHand = document.querySelector("#player-hand");
+    playerHand.replaceChildren();
+
+    var result = main("d");
+    var output = document.querySelector("#output-div");
+    output.innerHTML = result;
+
+    //Clear game state tracker div
+    var trackerOutput = document.querySelector("#gameTracker");
+    trackerOutput.replaceChildren();
+
+    //Populate game state tracker div
+    gameStateMsg();
+  });
+
+  hitButton.style.width = "100px";
+  standButton.style.width = "100px";
+  doubleButton.style.width = "100px";
+
+  container.appendChild(hitButton);
+  container.appendChild(standButton);
+  container.appendChild(doubleButton);
+
+  //Remove input box
+  const container2 = document.getElementById("inputBox");
+  container2.replaceChildren();
+};
