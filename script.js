@@ -32,6 +32,7 @@ var playerInitialize = function () {
     curPlayer.hands = [];
     curPlayer.bet = 0;
     curPlayer.roundStatus = ["Playing"];
+    cutPlayer.doubleDown = [""];
     players.push(curPlayer);
     curPlayer.id = playerID;
     playerID++;
@@ -58,6 +59,7 @@ var gameReset = function () {
     players[i].hands = [];
     players[i].bet = 0;
     players[i].roundStatus = ["Playing"];
+    players[i].doubleDown = [""];
   }
   dealerHand = [];
   currentDeck = [];
@@ -598,6 +600,7 @@ var splitHand = function (input) {
   players[input].hands.push(handOne);
   players[input].hands.push(handTwo);
   players[input].roundStatus.push("Playing");
+  players[input.doubleDown.push("")];
 };
 
 //Function for overall game status generation message
