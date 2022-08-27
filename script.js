@@ -707,7 +707,11 @@ var gameStateMsg = function () {
   for (i = 0; i < playerNum; i++) {
     //Add player header
     const playerHeader = document.createElement("p");
-    playerHeader.innerHTML = `<br><b><u>Player ${players[i].id}</u><br>Chips: ${players[i].chips}🪙<br>Current round bet: ${players[i].bet}🪙<br></b>`;
+    if (players[i].hands.length == 1 && players[i].betMultiply > 1) {
+      playerHeader.innerHTML = `<br><b><u>Player ${players[i].id}</u><br>Chips: ${players[i].chips}🪙<br>Current round bet: ${players[i].bet}🪙<br>Bet Doubled<br></b>`;
+    } else {
+      playerHeader.innerHTML = `<br><b><u>Player ${players[i].id}</u><br>Chips: ${players[i].chips}🪙<br>Current round bet: ${players[i].bet}🪙<br></b>`;
+    }
     playerHeader.id = `player${i}Header`;
     gameStateBox.appendChild(playerHeader);
 
@@ -717,9 +721,15 @@ var gameStateMsg = function () {
 
       for (k = 0; k < players[i].hands.length; k++) {
         const playerHandStatus = document.createElement("p");
-        playerHandStatus.innerHTML = `<b>Hand ${k + 1}:</b> [Hand Status: ${
-          players[i].roundStatus[k]
-        }]<br>`;
+        if (players[i].doubleDown[k] == 2) {
+          var betDoubled = "Bet Doubled. ";
+        } else {
+          var betDoubled = "";
+        }
+
+        playerHandStatus.innerHTML = `<b>Hand ${
+          k + 1
+        }:</b> ${betDoubled}[Hand Status: ${players[i].roundStatus[k]}]<br>`;
         playerHandStatus.id = `player${i}hand${k}header`;
         gameStateBox.appendChild(playerHandStatus);
         const playerHandImg = document.createElement("div");
