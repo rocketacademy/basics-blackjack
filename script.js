@@ -32,7 +32,8 @@ var playerInitialize = function () {
     curPlayer.hands = [];
     curPlayer.bet = 0;
     curPlayer.roundStatus = ["Playing"];
-    cutPlayer.doubleDown = [""];
+    curPlayer.doubleDown = [1];
+    curPlayer.betMultiply = 1;
     players.push(curPlayer);
     curPlayer.id = playerID;
     playerID++;
@@ -59,7 +60,8 @@ var gameReset = function () {
     players[i].hands = [];
     players[i].bet = 0;
     players[i].roundStatus = ["Playing"];
-    players[i].doubleDown = [""];
+    players[i].doubleDown = [1];
+    players[i].betMultiply = 1;
   }
   dealerHand = [];
   currentDeck = [];
@@ -167,42 +169,42 @@ var main = function (input) {
   }
 
   //Section for manually altering results of the hand draw to do scenario testing
-  // if (test == false) {
-  //   //   //Temporary to debug blackjackArr insert
-  //   // players[0].hands = [
-  //   //   // [
-  //   //   //   { suit: "Spades", cardNum: "Ace", cardValue: 1 },
-  //   //   //   { suit: "Hearts", cardNum: "King", cardValue: 10 },
-  //   //   // ],
-  //   //   [
-  //   //     { suit: "Hearts", cardNum: 2, cardValue: 2 },
-  //   //     { suit: "Spades", cardNum: 2, cardValue: 2 },
-  //   //     { suit: "Clubs", cardNum: 2, cardValue: 2 },
-  //   //     { suit: "Diamonds", cardNum: 2, cardValue: 2 },
-  //   //     { suit: "Hearts", cardNum: 3, cardValue: 3 },
-  //   //     { suit: "Spades", cardNum: 3, cardValue: 3 },
-  //   //     { suit: "Clubs", cardNum: 3, cardValue: 3 },
-  //   //     { suit: "Diamonds", cardNum: 3, cardValue: 3 },
-  //   //   ],
-  //   // ];
-  //   players[0].hands = [
-  //     // [
-  //     //   { suit: "Spades", cardNum: "Ace", cardValue: 1 },
-  //     //   { suit: "Hearts", cardNum: "King", cardValue: 10 },
-  //     // ],
-  //     [
-  //       { suit: "Hearts", cardNum: "Jack", cardValue: 10 },
-  //       { suit: "Spades", cardNum: "Jack", cardValue: 10 },
-  //     ],
-  //   ];
-  //   test = true;
-  //   // players[1].hands = [
-  //   //   [
-  //   //     { suit: "spades", cardNum: "Ace", cardValue: 1 },
-  //   //     { suit: "spades", cardNum: "King", cardValue: 10 },
-  //   //   ],
-  //   // ];
-  // }
+  if (test == false) {
+    //   //Temporary to debug blackjackArr insert
+    // players[0].hands = [
+    //   // [
+    //   //   { suit: "Spades", cardNum: "Ace", cardValue: 1 },
+    //   //   { suit: "Hearts", cardNum: "King", cardValue: 10 },
+    //   // ],
+    //   [
+    //     { suit: "Hearts", cardNum: 2, cardValue: 2 },
+    //     { suit: "Spades", cardNum: 2, cardValue: 2 },
+    //     { suit: "Clubs", cardNum: 2, cardValue: 2 },
+    //     { suit: "Diamonds", cardNum: 2, cardValue: 2 },
+    //     { suit: "Hearts", cardNum: 3, cardValue: 3 },
+    //     { suit: "Spades", cardNum: 3, cardValue: 3 },
+    //     { suit: "Clubs", cardNum: 3, cardValue: 3 },
+    //     { suit: "Diamonds", cardNum: 3, cardValue: 3 },
+    //   ],
+    // ];
+    players[0].hands = [
+      // [
+      //   { suit: "Spades", cardNum: "Ace", cardValue: 1 },
+      //   { suit: "Hearts", cardNum: "King", cardValue: 10 },
+      // ],
+      [
+        { suit: "Hearts", cardNum: "Jack", cardValue: 10 },
+        { suit: "Spades", cardNum: "Jack", cardValue: 10 },
+      ],
+    ];
+    test = true;
+    // players[1].hands = [
+    //   [
+    //     { suit: "spades", cardNum: "Ace", cardValue: 1 },
+    //     { suit: "spades", cardNum: "King", cardValue: 10 },
+    //   ],
+    // ];
+  }
   //  Check if player has 2 cards of the same type to split
   if (splitInitial == false) {
     for (o = playerTurn; o < playerNum; o++) {
@@ -277,7 +279,7 @@ var main = function (input) {
     if (blackjackArr.length == 1) {
       blackjackMsg =
         blackjackMsg +
-        `Congratulations Player ${blackjackArr[0]} for drawing a Blackjack!<br>`;
+        `Congratulations Player ${blackjackArr[0]} for drawing a Blackjack!<br><br>`;
     } else if (blackjackArr.length > 1) {
       blackjackIntMsg = "";
       for (i = 0; i < blackjackArr.length; i++) {
@@ -285,7 +287,7 @@ var main = function (input) {
       }
       blackjackMsg = `Congratulations Players ${blackjackIntMsg.substring(
         2
-      )} for drawing a Blackjack!<br>`;
+      )} for drawing a Blackjack!<br><br>`;
     }
   }
 
@@ -317,8 +319,26 @@ var main = function (input) {
   if (hitStandInitial == false) {
     hitStandInitial = true;
 
-    var hitStandMsg = `Hi Player ${players[playerTurn].id}, would you like to hit or stand?<br><br>Your current hand is:`;
-    switchHitStandButton();
+    var hitStandMsg = "";
+    hitStandMsg = hitStandMsg + blackjackMsg;
+    hitStandMsg =
+      hitStandMsg +
+      `Hi Player ${players[playerTurn].id}, would you like to hit or stand?<br><br>Your current hand is:`;
+
+    if (
+      players[playerTurn].bet * (players[playerTurn].betMultiply + 1) <=
+      players[playerTurn].chips
+    ) {
+      switchHitStandDoubleButton();
+      var hitStandMsg =
+        hitStandMsg +
+        `Hi Player ${players[playerTurn].id}, would you like to hit, stand or double down?<br><br>Your current hand is:`;
+    } else {
+      switchHitStandButton();
+      var hitStandMsg =
+        hitStandMsg +
+        `Hi Player ${players[playerTurn].id}, would you like to hit or stand?<br><br>Your current hand is:`;
+    }
     addHandImg(playerTurn);
     return hitStandMsg;
   }
@@ -329,7 +349,11 @@ var main = function (input) {
     hitStandMsg = "";
 
     //Invalid user input scenario
-    if (input.toLowerCase() != "s" && input.toLowerCase() != "h") {
+    if (
+      input.toLowerCase() != "s" &&
+      input.toLowerCase() != "h" &&
+      input.toLowerCase() != "d"
+    ) {
       switchHitStandButton();
       return `Please select whether you like to hit or stand?`;
 
@@ -339,7 +363,16 @@ var main = function (input) {
         hitStandMsg + `Player ${players[playerTurn].id} has chosen to stand.`;
       players[playerTurn].roundStatus[currentPlayerHand] = "Stand";
     } else {
-      //User choose to hit
+      //User choose to double down
+      if (input.toLowerCase() == "d") {
+        players[playerTurn].roundStatus[currentPlayerHand] = "Stand";
+        players[playerTurn].betMultiply++;
+        players[playerTurn].doubleDown[currentPlayerHand] = 2;
+        hitStandMsg =
+          hitStandMsg +
+          `Player ${players[playerTurn].id} has chosen to double down.<br>`;
+      }
+
       var newCard = currentDeck.pop();
 
       players[playerTurn].hands[currentPlayerHand].push(newCard);
@@ -347,18 +380,29 @@ var main = function (input) {
       //If player went bust after hitting
       if (handScore(players[playerTurn].hands[currentPlayerHand]) > 21) {
         players[playerTurn].roundStatus[currentPlayerHand] = "Bust";
-        players[playerTurn].chips -= players[playerTurn].bet;
+        players[playerTurn].chips -=
+          players[playerTurn].bet *
+          players[playerTurn].doubleDown[currentPlayerHand];
         hitStandMsg =
           hitStandMsg +
           `Player ${players[playerTurn].id} drew ${newCard.cardNum} of ${newCard.suit} and bust.`;
       } else {
-        //Player didn't bust
-        hitStandMsg =
-          hitStandMsg +
-          `Player ${players[playerTurn].id}, you drew ${newCard.cardNum} of ${newCard.suit}.<br>Would you like to hit or stand?<br><br>Your current hand is:`;
+        //Player didn't bust and doubled down
+        if (input.toLowerCase() == "d") {
+          hitStandMsg =
+            hitStandMsg +
+            `Player ${players[playerTurn].id} drew ${newCard.cardNum} of ${newCard.suit}.`;
+        } else {
+          //Player didn't bust and did not doubled down
+          hitStandMsg =
+            hitStandMsg +
+            `Player ${players[playerTurn].id}, you drew ${newCard.cardNum} of ${newCard.suit}.<br>Would you like to hit or stand?<br><br>Your current hand is:`;
+        }
         switchHitStandButton();
-        addHandImg(playerTurn);
-        return hitStandMsg;
+        if (input.toLowerCase() != "d") {
+          addHandImg(playerTurn);
+          return hitStandMsg;
+        }
       }
     }
 
@@ -374,7 +418,16 @@ var main = function (input) {
       hitStandMsg =
         hitStandMsg +
         `<br><br>Hi Player ${players[playerTurn].id}, would you like to hit or stand?<br><br>Your current hand is:`;
-      switchHitStandButton();
+
+      if (
+        players[playerTurn].bet * (players[playerTurn].betMultiply + 1) <=
+        players[playerTurn].chips
+      ) {
+        switchHitStandDoubleButton();
+      } else {
+        switchHitStandButton();
+      }
+
       addHandImg(playerTurn);
       return hitStandMsg;
     } else {
@@ -422,12 +475,12 @@ var main = function (input) {
       for (l = 0; l < players[k].hands.length; l++) {
         if (players[k].roundStatus[l] == "Stand") {
           if (dealerBust == true) {
-            players[k].chips += players[k].bet * 2;
+            players[k].chips += players[k].bet * players[k].doubleDown[l] * 2;
             players[k].roundStatus[l] = "Won";
           } else {
             if (handScore(dealerHand) > handScore(players[k].hands[l])) {
               //Player lose
-              players[k].chips -= players[k].bet;
+              players[k].chips -= players[k].bet * players[k].doubleDown[l];
               players[k].roundStatus[l] = "Lost";
               hitStandMsg =
                 hitStandMsg +
@@ -438,7 +491,7 @@ var main = function (input) {
                 }'s hand of ${handScore(players[k].hands[l])} points.`;
             } else if (handScore(dealerHand) < handScore(players[k].hands[l])) {
               //Player win
-              players[k].chips += players[k].bet * 2;
+              players[k].chips += players[k].bet * players[k].doubleDown[l] * 2;
               players[k].roundStatus[l] = "Won";
 
               hitStandMsg =
@@ -600,7 +653,8 @@ var splitHand = function (input) {
   players[input].hands.push(handOne);
   players[input].hands.push(handTwo);
   players[input].roundStatus.push("Playing");
-  players[input.doubleDown.push("")];
+  players[input].doubleDown.push(1);
+  players[input].betMultiply++;
 };
 
 //Function for overall game status generation message
@@ -1265,7 +1319,7 @@ var switchHitStandDoubleButton = function () {
 
   hitButton.style.width = "100px";
   standButton.style.width = "100px";
-  doubleButton.style.width = "100px";
+  doubleButton.style.width = "200px";
 
   container.appendChild(hitButton);
   container.appendChild(standButton);
