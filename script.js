@@ -19,6 +19,7 @@ var standPlayers = [];
 var dealerBust = false;
 var dealerDraw = "";
 var bankruptPlayerList = [];
+var maxPlayerNum = 10;
 
 var players = [];
 var test = false;
@@ -94,7 +95,7 @@ var main = function (input) {
       return `Player ${players[playerTurn].id}, please enter the number of chips you would like to bet for this round.`;
     } else {
       switchMultiplayerButton();
-      return `There are no more players with chips remaining.<br><br>You can start a new game with fresh set of players.<br>Please choose whether you would like to play in single player mode or multi-player mode (max 5 players).`;
+      return `There are no more players with chips remaining.<br><br>You can start a new game with fresh set of players.<br>Please choose whether you would like to play in single player mode or multi-player mode (max ${maxPlayerNum} players).`;
     }
   }
 
@@ -110,7 +111,7 @@ var main = function (input) {
       multiplayer = true;
       switchContinueButton();
       return `Please select the
-          number of players for this game (2 to 5 players).`;
+          number of players for this game (2 to ${maxPlayerNum} players).`;
     }
   }
 
@@ -122,12 +123,17 @@ var main = function (input) {
 
   //Setting number of players
   if (playerNum == 0) {
-    if (isNaN(input) == false && input % 1 == 0 && input > 0 && input <= 5) {
+    if (
+      isNaN(input) == false &&
+      input % 1 == 0 &&
+      input > 0 &&
+      input <= maxPlayerNum
+    ) {
       playerNum = Number(input);
       playerInitialize();
       return `We will have ${playerNum} player(s) in this game.<br>Each player begins with 100 chips.<br><br>Player ${players[playerTurn].id}, please enter the number of chips you would like to bet for this round.`;
     } else {
-      return "Please input a valid number of players (1 to 5).";
+      return `Please input a valid number of players (1 to ${maxPlayerNum}).`;
     }
   }
 

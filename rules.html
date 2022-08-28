@@ -224,9 +224,11 @@
           <b><u>Rules of this game</u></b>
         </p>
         <p>
-          1. Begin by selecting whether the game is to be played in single or
+          <div id ="playerCount">
+          <!-- 1. Begin by selecting whether the game is to be played in single or
           multi-player mode, and how many players will be playing if
-          multi-player mode (max 5 players).
+          multi-player mode (max 5 players). -->
+          </div>
         </p>
         <p>
           2. During each round, each player chooses how many chips they would
@@ -307,5 +309,13 @@
         </p>
       </div>
     </div>
+    <!-- Import program logic -->
+    <script src="script.js"></script>
+
+    <script>
+document.getElementById("playerCount").innerHTML = `1. Begin by selecting whether the game is to be played in single or
+          multi-player mode, and how many players will be playing if
+          multi-player mode (max ${maxPlayerNum} players).`
+    </script>
   </body>
 </html>

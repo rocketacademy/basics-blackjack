@@ -230,11 +230,7 @@
 
         <!-- <p>Output:</p> -->
 
-        <div id="output-div">
-          Hi, welcome to a game of Blackjack.<br />Please begin by choosing if
-          you would like to play in single player mode or multi-player mode (max
-          5 players).
-        </div>
+        <div id="output-div"></div>
         <div id="player-hand"></div>
       </div>
 
@@ -284,6 +280,13 @@
         gameStateMsg();
         output.innerHTML = result;
       });
+
+      //Set max player count in opening message
+      document.getElementById(
+        "output-div"
+      ).innerHTML = `          Hi, welcome to a game of Blackjack.<br />Please begin by choosing if
+          you would like to play in single player mode or multi-player mode (max
+          ${maxPlayerNum} players).`;
     </script>
   </body>
 </html>
