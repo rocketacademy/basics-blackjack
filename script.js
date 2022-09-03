@@ -1345,3 +1345,8 @@ var switchHitStandDoubleButton = function () {
   const container2 = document.getElementById("inputBox");
   container2.replaceChildren();
 };
+
+var topCard = function () {
+  deckLen = currentDeck.length;
+  return currentDeck[deckLen - 1];
+};
