@@ -714,9 +714,19 @@ var gameStateMsg = function () {
     //Add player header
     const playerHeader = document.createElement("p");
     if (players[i].hands.length == 1 && players[i].betMultiply > 1) {
-      playerHeader.innerHTML = `<br><b><u>Player ${players[i].id}</u><br>Chips: ${players[i].chips}🪙<br>Current round bet: ${players[i].bet}🪙<br>Bet Doubled<br></b>`;
+      playerHeader.innerHTML = `<br><b><u>Player ${
+        players[i].id
+      }</u><br>Chips: ${numberWithCommas(
+        players[i].chips
+      )}🪙<br>Current round bet: ${numberWithCommas(
+        players[i].bet
+      )}🪙<br>Bet Doubled<br></b>`;
     } else {
-      playerHeader.innerHTML = `<br><b><u>Player ${players[i].id}</u><br>Chips: ${players[i].chips}🪙<br>Current round bet: ${players[i].bet}🪙<br></b>`;
+      playerHeader.innerHTML = `<br><b><u>Player ${
+        players[i].id
+      }</u><br>Chips: ${numberWithCommas(
+        players[i].chips
+      )}🪙<br>Current round bet: ${numberWithCommas(players[i].bet)}🪙<br></b>`;
     }
     playerHeader.id = `player${i}Header`;
     gameStateBox.appendChild(playerHeader);
@@ -1349,4 +1359,8 @@ var switchHitStandDoubleButton = function () {
 var topCard = function () {
   deckLen = currentDeck.length;
   return currentDeck[deckLen - 1];
+};
+
+var numberWithCommas = function (num) {
+  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 };
