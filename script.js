@@ -91,7 +91,8 @@ var main = function (input) {
     gameReset();
 
     if (playerNum > 0) {
-      addInputBox();
+      // addInputBox();
+      switchBetButton();
       return `Player ${players[playerTurn].id}, please enter the number of chips you would like to bet for this round.`;
     } else {
       switchMultiplayerButton();
@@ -105,8 +106,8 @@ var main = function (input) {
       multiplayer = false;
       playerNum = 1;
       playerInitialize();
-      switchContinueButton();
-      return `We will have 1 player in this game.<br>You begin with 100 chips.<br><br>Please enter the number of chips you would like to bet for this round.`;
+      switchBetButton();
+      return `We will have 1 player in this game.<br>Each player begins with 100 chips.<br><br>Player ${players[playerTurn].id}, please select the number of chips you would like to bet for this round.<br><br>You can choose to bet a percent (rounded up to nearest integer) of your chips using the respective buttons.<br>The "All In!" button places all of your chips as a bet.<br>You can also bet a specific number of chips and hit the "Continue" button to submit.`;
     } else {
       multiplayer = true;
       switchContinueButton();
@@ -131,7 +132,8 @@ var main = function (input) {
     ) {
       playerNum = Number(input);
       playerInitialize();
-      return `We will have ${playerNum} player(s) in this game.<br>Each player begins with 100 chips.<br><br>Player ${players[playerTurn].id}, please enter the number of chips you would like to bet for this round.`;
+      switchBetButton();
+      return `We will have ${playerNum} player(s) in this game.<br>Each player begins with 100 chips.<br><br>Player ${players[playerTurn].id}, please select the number of chips you would like to bet for this round.<br><br>You can choose to bet a percent (rounded up to nearest integer) of your chips using the respective buttons.<br>The "All In!" button places all of your chips as a bet.<br>You can also bet a specific number of chips and hit the "Continue" button to submit.`;
     } else {
       return `Please input a valid number of players (1 to ${maxPlayerNum}).`;
     }
@@ -147,13 +149,14 @@ var main = function (input) {
 
     if (playerTurn < playerNum - 1) {
       playerTurn++;
-      return `Player ${playerTurn} bets ${input} chips this round.<br><br>Player ${players[playerTurn].id}, please enter the number of chips you would like to bet for this round.`;
+      return `Player ${playerTurn} bets ${input} chips this round.<br><br>Player ${players[playerTurn].id}, please select the number of chips you would like to bet for this round.`;
     } else if (playerTurn == playerNum - 1) {
       var lastPlayer = playerTurn + 1;
       playerTurn = 0;
       betInitial = true;
       switchDealButton();
-      return `Player ${lastPlayer} bets ${input} chips this round.<br><br>Please hit "continue" to deal cards.`;
+      console.log("a");
+      return `Player ${lastPlayer} bets ${input} chips this round.<br><br>Please hit "Deal Cards" to deal cards.`;
     }
   }
 
@@ -1102,6 +1105,12 @@ var switchDealButton = function () {
   //Remove input box
   const container2 = document.getElementById("inputBox");
   container2.replaceChildren();
+
+  //Clear Bet input boxes
+  document.getElementById("betBox1").innerHTML = "";
+  document.getElementById("betBox2").innerHTML = "";
+  document.getElementById("betBox3").innerHTML = "";
+  document.getElementById("betBox4").innerHTML = "";
 };
 
 var removeInput = function () {
@@ -1393,4 +1402,288 @@ var safeDraw = function () {
 
 var topCardToBottom = function () {
   currentDeck.unshift(currentDeck.pop());
+};
+
+var switchBetButton = function () {
+  //Replace new buttons
+  const container = document.getElementById("buttonBox");
+  container.replaceChildren();
+
+  const betContainer1 = document.getElementById("betBox1");
+  betContainer1.replaceChildren();
+
+  const betContainer2 = document.getElementById("betBox2");
+  betContainer2.replaceChildren();
+
+  const betContainer3 = document.getElementById("betBox3");
+  betContainer3.replaceChildren();
+
+  const betContainer4 = document.getElementById("betBox4");
+  betContainer4.replaceChildren();
+
+  const continueButton = document.createElement("button");
+
+  const bet10pButton = document.createElement("button");
+  const bet20pButton = document.createElement("button");
+  const bet30pButton = document.createElement("button");
+  const bet40pButton = document.createElement("button");
+  const bet50pButton = document.createElement("button");
+  const bet60pButton = document.createElement("button");
+  const bet70pButton = document.createElement("button");
+  const bet80pButton = document.createElement("button");
+  const bet90pButton = document.createElement("button");
+  const bet100pButton = document.createElement("button");
+
+  continueButton.innerHTML = "Continue";
+
+  bet10pButton.innerHTML = "10%";
+  bet20pButton.innerHTML = "20%";
+  bet30pButton.innerHTML = "30%";
+  bet40pButton.innerHTML = "40%";
+  bet50pButton.innerHTML = "50%";
+  bet60pButton.innerHTML = "60%";
+  bet70pButton.innerHTML = "70%";
+  bet80pButton.innerHTML = "80%";
+  bet90pButton.innerHTML = "90%";
+  bet100pButton.innerHTML = "All In!";
+
+  continueButton.id = "submit-button";
+
+  bet10pButton.id = "bet10pButton";
+  bet20pButton.id = "bet20pButton";
+  bet30pButton.id = "bet30pButton";
+  bet40pButton.id = "bet40pButton";
+  bet50pButton.id = "bet50pButton";
+  bet60pButton.id = "bet60pButton";
+  bet70pButton.id = "bet70pButton";
+  bet80pButton.id = "bet80pButton";
+  bet90pButton.id = "bet90pButton";
+  bet100pButton.id = "bet100pButton";
+
+  continueButton.addEventListener("click", function () {
+    //Clear player hand div
+    var playerHand = document.querySelector("#player-hand");
+    playerHand.replaceChildren();
+
+    // Set result to input value
+    var input = document.querySelector("#input-field");
+
+    var result = main(input.value);
+
+    // Display result in output element
+    var output = document.querySelector("#output-div");
+
+    output.innerHTML = result;
+
+    // Reset input value
+    input.value = "";
+
+    //Clear game state tracker div
+    var trackerOutput = document.querySelector("#gameTracker");
+    trackerOutput.replaceChildren();
+
+    //Populate game state tracker div
+    gameStateMsg();
+  });
+
+  bet10pButton.addEventListener("click", function () {
+    //Clear player hand div
+    var playerHand = document.querySelector("#player-hand");
+    playerHand.replaceChildren();
+
+    var result = main(Math.ceil(players[playerTurn].chips * 0.1));
+    var output = document.querySelector("#output-div");
+    output.innerHTML = result;
+
+    //Clear game state tracker div
+    var trackerOutput = document.querySelector("#gameTracker");
+    trackerOutput.replaceChildren();
+
+    //Populate game state tracker div
+    gameStateMsg();
+  });
+
+  bet20pButton.addEventListener("click", function () {
+    //Clear player hand div
+    var playerHand = document.querySelector("#player-hand");
+    playerHand.replaceChildren();
+
+    var result = main(Math.ceil(players[playerTurn].chips * 0.2));
+    var output = document.querySelector("#output-div");
+    output.innerHTML = result;
+
+    //Clear game state tracker div
+    var trackerOutput = document.querySelector("#gameTracker");
+    trackerOutput.replaceChildren();
+
+    //Populate game state tracker div
+    gameStateMsg();
+  });
+
+  bet30pButton.addEventListener("click", function () {
+    //Clear player hand div
+    var playerHand = document.querySelector("#player-hand");
+    playerHand.replaceChildren();
+
+    var result = main(Math.ceil(players[playerTurn].chips * 0.3));
+    var output = document.querySelector("#output-div");
+    output.innerHTML = result;
+
+    //Clear game state tracker div
+    var trackerOutput = document.querySelector("#gameTracker");
+    trackerOutput.replaceChildren();
+
+    //Populate game state tracker div
+    gameStateMsg();
+  });
+
+  bet40pButton.addEventListener("click", function () {
+    //Clear player hand div
+    var playerHand = document.querySelector("#player-hand");
+    playerHand.replaceChildren();
+
+    var result = main(Math.ceil(players[playerTurn].chips * 0.4));
+    var output = document.querySelector("#output-div");
+    output.innerHTML = result;
+
+    //Clear game state tracker div
+    var trackerOutput = document.querySelector("#gameTracker");
+    trackerOutput.replaceChildren();
+
+    //Populate game state tracker div
+    gameStateMsg();
+  });
+
+  bet50pButton.addEventListener("click", function () {
+    //Clear player hand div
+    var playerHand = document.querySelector("#player-hand");
+    playerHand.replaceChildren();
+
+    var result = main(Math.ceil(players[playerTurn].chips * 0.5));
+    var output = document.querySelector("#output-div");
+    output.innerHTML = result;
+
+    //Clear game state tracker div
+    var trackerOutput = document.querySelector("#gameTracker");
+    trackerOutput.replaceChildren();
+
+    //Populate game state tracker div
+    gameStateMsg();
+  });
+
+  bet60pButton.addEventListener("click", function () {
+    //Clear player hand div
+    var playerHand = document.querySelector("#player-hand");
+    playerHand.replaceChildren();
+
+    var result = main(Math.ceil(players[playerTurn].chips * 0.6));
+    var output = document.querySelector("#output-div");
+    output.innerHTML = result;
+
+    //Clear game state tracker div
+    var trackerOutput = document.querySelector("#gameTracker");
+    trackerOutput.replaceChildren();
+
+    //Populate game state tracker div
+    gameStateMsg();
+  });
+
+  bet70pButton.addEventListener("click", function () {
+    //Clear player hand div
+    var playerHand = document.querySelector("#player-hand");
+    playerHand.replaceChildren();
+
+    var result = main(Math.ceil(players[playerTurn].chips * 0.7));
+    var output = document.querySelector("#output-div");
+    output.innerHTML = result;
+
+    //Clear game state tracker div
+    var trackerOutput = document.querySelector("#gameTracker");
+    trackerOutput.replaceChildren();
+
+    //Populate game state tracker div
+    gameStateMsg();
+  });
+
+  bet80pButton.addEventListener("click", function () {
+    //Clear player hand div
+    var playerHand = document.querySelector("#player-hand");
+    playerHand.replaceChildren();
+
+    var result = main(Math.ceil(players[playerTurn].chips * 0.8));
+    var output = document.querySelector("#output-div");
+    output.innerHTML = result;
+
+    //Clear game state tracker div
+    var trackerOutput = document.querySelector("#gameTracker");
+    trackerOutput.replaceChildren();
+
+    //Populate game state tracker div
+    gameStateMsg();
+  });
+
+  bet90pButton.addEventListener("click", function () {
+    //Clear player hand div
+    var playerHand = document.querySelector("#player-hand");
+    playerHand.replaceChildren();
+
+    var result = main(Math.ceil(players[playerTurn].chips * 0.9));
+    var output = document.querySelector("#output-div");
+    output.innerHTML = result;
+
+    //Clear game state tracker div
+    var trackerOutput = document.querySelector("#gameTracker");
+    trackerOutput.replaceChildren();
+
+    //Populate game state tracker div
+    gameStateMsg();
+  });
+
+  bet100pButton.addEventListener("click", function () {
+    //Clear player hand div
+    var playerHand = document.querySelector("#player-hand");
+    playerHand.replaceChildren();
+
+    var result = main(players[playerTurn].chips);
+    var output = document.querySelector("#output-div");
+    output.innerHTML = result;
+
+    //Clear game state tracker div
+    var trackerOutput = document.querySelector("#gameTracker");
+    trackerOutput.replaceChildren();
+
+    //Populate game state tracker div
+    gameStateMsg();
+  });
+
+  // continueButton.style.width = "50px";
+  bet10pButton.style.width = "80px";
+  bet20pButton.style.width = "80px";
+  bet30pButton.style.width = "80px";
+  bet40pButton.style.width = "80px";
+  bet50pButton.style.width = "80px";
+  bet60pButton.style.width = "80px";
+  bet70pButton.style.width = "80px";
+  bet80pButton.style.width = "80px";
+  bet90pButton.style.width = "80px";
+  bet100pButton.style.width = "240px";
+
+  container.appendChild(continueButton);
+  betContainer1.appendChild(bet10pButton);
+  betContainer1.appendChild(bet20pButton);
+  betContainer1.appendChild(bet30pButton);
+  betContainer2.appendChild(bet40pButton);
+  betContainer2.appendChild(bet50pButton);
+  betContainer2.appendChild(bet60pButton);
+  betContainer3.appendChild(bet70pButton);
+  betContainer3.appendChild(bet80pButton);
+  betContainer3.appendChild(bet90pButton);
+  betContainer4.appendChild(bet100pButton);
+
+  //Add input box
+  const container2 = document.getElementById("inputBox");
+  container2.replaceChildren();
+  const inputBox = document.createElement("input");
+  inputBox.id = "input-field";
+  container2.appendChild(inputBox);
 };
