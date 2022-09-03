@@ -336,9 +336,7 @@ var main = function (input) {
       players[playerTurn].chips
     ) {
       switchHitStandDoubleButton();
-      var hitStandMsg =
-        hitStandMsg +
-        `Hi Player ${players[playerTurn].id}, would you like to hit, stand or double down?<br><br>Your current hand is:`;
+      var hitStandMsg = `Hi Player ${players[playerTurn].id}, would you like to hit, stand or double down?<br><br>Your current hand is:`;
     } else {
       switchHitStandButton();
       var hitStandMsg =
@@ -670,7 +668,11 @@ var gameStateMsg = function () {
   var gameStateBox = document.querySelector("#gameTracker");
 
   const dealerHeader = document.createElement("p");
-  dealerHeader.innerHTML = `<b><u>Dealer</u><br>Hand:</b><br>`;
+  var deckLen = currentDeck.length;
+  if (deckLen == 0) {
+    deckLen = 52;
+  }
+  dealerHeader.innerHTML = `Cards left in Deck: ${deckLen}<br><br><b><u>Dealer</u><br>Hand:</b><br>`;
   dealerHeader.id = "dealerHeader";
   gameStateBox.appendChild(dealerHeader);
 
@@ -1364,3 +1366,5 @@ var topCard = function () {
 var numberWithCommas = function (num) {
   return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 };
+
+var sleightOfHand = function () {};
