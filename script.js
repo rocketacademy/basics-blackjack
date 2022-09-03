@@ -1657,16 +1657,16 @@ var switchBetButton = function () {
   });
 
   // continueButton.style.width = "50px";
-  bet10pButton.style.width = "75px";
-  bet20pButton.style.width = "75px";
-  bet30pButton.style.width = "75px";
-  bet40pButton.style.width = "75px";
-  bet50pButton.style.width = "75px";
-  bet60pButton.style.width = "75px";
-  bet70pButton.style.width = "75px";
-  bet80pButton.style.width = "75px";
-  bet90pButton.style.width = "75px";
-  bet100pButton.style.width = "225px";
+  bet10pButton.style.width = "60px";
+  bet20pButton.style.width = "60px";
+  bet30pButton.style.width = "60px";
+  bet40pButton.style.width = "60px";
+  bet50pButton.style.width = "60px";
+  bet60pButton.style.width = "60px";
+  bet70pButton.style.width = "60px";
+  bet80pButton.style.width = "60px";
+  bet90pButton.style.width = "60px";
+  bet100pButton.style.width = "180px";
 
   container.appendChild(continueButton);
   betContainer1.appendChild(bet10pButton);
