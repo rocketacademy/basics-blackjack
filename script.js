@@ -1111,6 +1111,7 @@ var switchDealButton = function () {
   document.getElementById("betBox2").innerHTML = "";
   document.getElementById("betBox3").innerHTML = "";
   document.getElementById("betBox4").innerHTML = "";
+  document.getElementById("betBox5").innerHTML = "";
 };
 
 var removeInput = function () {
@@ -1421,6 +1422,9 @@ var switchBetButton = function () {
   const betContainer4 = document.getElementById("betBox4");
   betContainer4.replaceChildren();
 
+  const betContainer5 = document.getElementById("betBox5");
+  betContainer5.replaceChildren();
+
   const continueButton = document.createElement("button");
 
   const bet10pButton = document.createElement("button");
@@ -1657,28 +1661,28 @@ var switchBetButton = function () {
   });
 
   // continueButton.style.width = "50px";
-  bet10pButton.style.width = "60px";
-  bet20pButton.style.width = "60px";
-  bet30pButton.style.width = "60px";
-  bet40pButton.style.width = "60px";
-  bet50pButton.style.width = "60px";
-  bet60pButton.style.width = "60px";
-  bet70pButton.style.width = "60px";
-  bet80pButton.style.width = "60px";
-  bet90pButton.style.width = "60px";
-  bet100pButton.style.width = "180px";
+  bet10pButton.style.width = "80px";
+  bet20pButton.style.width = "80px";
+  bet30pButton.style.width = "80px";
+  bet40pButton.style.width = "80px";
+  bet50pButton.style.width = "80px";
+  bet60pButton.style.width = "80px";
+  bet70pButton.style.width = "80px";
+  bet80pButton.style.width = "80px";
+  bet90pButton.style.width = "80px";
+  bet100pButton.style.width = "80px";
 
   container.appendChild(continueButton);
   betContainer1.appendChild(bet10pButton);
   betContainer1.appendChild(bet20pButton);
-  betContainer1.appendChild(bet30pButton);
+  betContainer2.appendChild(bet30pButton);
   betContainer2.appendChild(bet40pButton);
-  betContainer2.appendChild(bet50pButton);
-  betContainer2.appendChild(bet60pButton);
-  betContainer3.appendChild(bet70pButton);
-  betContainer3.appendChild(bet80pButton);
-  betContainer3.appendChild(bet90pButton);
-  betContainer4.appendChild(bet100pButton);
+  betContainer3.appendChild(bet50pButton);
+  betContainer3.appendChild(bet60pButton);
+  betContainer4.appendChild(bet70pButton);
+  betContainer4.appendChild(bet80pButton);
+  betContainer5.appendChild(bet90pButton);
+  betContainer5.appendChild(bet100pButton);
 
   //Add input box
   const container2 = document.getElementById("inputBox");
