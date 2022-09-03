@@ -339,9 +339,7 @@ var main = function (input) {
       var hitStandMsg = `Hi Player ${players[playerTurn].id}, would you like to hit, stand or double down?<br><br>Your current hand is:`;
     } else {
       switchHitStandButton();
-      var hitStandMsg =
-        hitStandMsg +
-        `Hi Player ${players[playerTurn].id}, would you like to hit or stand?<br><br>Your current hand is:`;
+      var hitStandMsg = `Hi Player ${players[playerTurn].id}, would you like to hit or stand?<br><br>Your current hand is:`;
     }
     addHandImg(playerTurn);
     return hitStandMsg;
@@ -1367,4 +1365,32 @@ var numberWithCommas = function (num) {
   return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 };
 
-var sleightOfHand = function () {};
+var safeDraw = function () {
+  playerHandScore = handScore(
+    players[playerTurn].hands[playerTurnHand(playerTurn)]
+  );
+
+  var nextCard = topCard();
+  if (nextCard.cardValue == 1) {
+    if (
+      nextCard.cardValue + playerHandScore <= 21 ||
+      nextCard.cardValue + playerHandScore + 10 <= 21
+    ) {
+      return "draw";
+    } else {
+      topCardToBottom();
+      return "check again";
+    }
+  } else {
+    if (nextCard.cardValue + playerHandScore <= 21) {
+      return "draw";
+    } else {
+      topCardToBottom();
+      return "check again";
+    }
+  }
+};
+
+var topCardToBottom = function () {
+  currentDeck.unshift(currentDeck.pop());
+};
