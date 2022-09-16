@@ -123,7 +123,7 @@ function makeNewDeck() {
       });
     }
   }
-  // Set value of jack, queen and king to 10
+  // Set value of jack, queen and king to 10 and ace to 11
   for (var card in deck) {
     if (deck[card].rank >= 11 && deck[card].rank <= 13) {
       deck[card].value = 10;
@@ -156,7 +156,18 @@ var checkBlackjack = function (cards) {
 function sumCardsValue(cards) {
   var sum = 0;
   for (var item of cards) {
-    sum += item.value;
+    console.log(cards.indexOf(item) == 0);
+    if (item.name != "ace") {
+      sum += item.value;
+    }
+    // Ace will be 11 if it does not make the total score exceed 21
+    else {
+      if (sum < 11) {
+        sum += item.value;
+      } else {
+        sum += 1;
+      }
+    }
   }
   return sum;
 }
