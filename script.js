@@ -36,21 +36,25 @@ function playGame(input) {
       `Player drew ${playerCards[0].suit} ${playerCards[0].name} ${playerCards[1].suit} ${playerCards[1].name}`
     );
     gameMode = "hit or stand";
-    return `Dealer drew ${dealerCards[0].suit} ${dealerCards[0].name} and ${dealerCards[1].suit} ${dealerCards[1].name}; Dealer's score is ${dealerHand}. <br>Player drew ${playerCards[0].suit} ${playerCards[0].name} and ${playerCards[1].suit} ${playerCards[1].name}; Player's score is ${playerHand}. <br>Player - hit or stand?`;
+    hitButton.disabled = false;
+    standButton.disabled = false;
+    return `One of Dealer's card is ${dealerCards[0].suit} ${dealerCards[0].name}. <br>Player drew ${playerCards[0].suit} ${playerCards[0].name} and ${playerCards[1].suit} ${playerCards[1].name}; Player's score is ${playerHand}. <br>Player - hit or stand?`;
   } else if (gameMode == "hit or stand") {
     if (input != "hit" && input != "stand") {
-      return "Please enter either 'hit' or 'stand'.";
+      return "Please select either 'hit' or 'stand'.";
     } else if (input == "hit") {
       var hitCard = gameDeck.pop();
       playerCards.push(hitCard);
       playerHand = sumCardsValue(playerCards);
       console.log(`Player drew ${hitCard.suit} ${hitCard.name}.`);
-      return `Player drew ${hitCard.suit} ${hitCard.name}. Player's score is ${playerHand}`;
+      return `Player drew ${hitCard.suit} ${hitCard.name}. Player's score is ${playerHand}. <br>Player - hit or stand?`;
     } else if (input == "stand") {
       var hitCard = gameDeck.pop();
       dealerCards.push(hitCard);
       dealerHand = sumCardsValue(dealerCards);
       gameMode = "check results";
+      hitButton.disabled = true;
+      standButton.disabled = true;
       return "Player chose to stand. Dealer hits.";
     }
   } else if (gameMode == "check results") {

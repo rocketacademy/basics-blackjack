@@ -142,12 +142,84 @@
         width: 100%;
       }
 
-      button {
+      #next-button {
         font-family: "Kite one", sans-serif;
         font-size: 18px;
         line-height: 33px;
         margin: 0 0 23px 0;
         padding: 0 6px;
+        width: 80px;
+        transition: all 0.5s;
+      }
+
+      #next-button span {
+        display: inline-block;
+        position: relative;
+        transition: 0.5s;
+      }
+
+      #next-button span:after {
+        content: "\00bb";
+        position: absolute;
+        opacity: 0;
+        top: 0;
+        right: -20px;
+        transition: 0.5s;
+      }
+
+      #next-button:hover span {
+        padding-right: 25px;
+      }
+
+      #next-button:hover span:after {
+        opacity: 1;
+        right: 0;
+      }
+
+      #hit-button {
+        background-color: #28282b;
+        border: none;
+        color: white;
+        border-radius: 10%;
+        font-family: "Kite one", sans-serif;
+        font-size: 18px;
+        line-height: 33px;
+        margin: 0 0 23px 0;
+        padding: 0 6px;
+        width: 80px;
+        text-align: center;
+        opacity: 0.6;
+        transition: 0.3s;
+        display: inline-block;
+        text-decoration: none;
+        cursor: pointer;
+      }
+
+      #hit-button:hover {
+        opacity: 1;
+      }
+
+      #stand-button {
+        background-color: #28282b;
+        border: none;
+        color: white;
+        border-radius: 10%;
+        font-family: "Kite one", sans-serif;
+        font-size: 18px;
+        line-height: 33px;
+        margin: 0 0 23px 0;
+        padding: 0 6px;
+        width: 80px;
+        text-align: center;
+        opacity: 0.6;
+        transition: 0.3s;
+        display: inline-block;
+        text-decoration: none;
+        cursor: pointer;
+      }
+
+      #stand-button:hover {
+        opacity: 1;
       }
 
       #output-div {
@@ -198,15 +270,16 @@
         This is the all-time classic game.
         <a href="https://bicyclecards.com/how-to-play/blackjack/">Read me</a> or
         <a href="https://www.youtube.com/watch?v=eyoh-Ku9TCI">watch me</a> for
-        instructions. Good luck!
+        instructions. Click "next" to begin!
       </p>
     </div>
     <div class="container">
-      <p>Input:</p>
+      <!-- <p>Input:</p>
       <input id="input-field" />
-      <br />
-      <button id="next-button">Next</button>
-      <p>Output:</p>
+      <br /> -->
+      <button id="hit-button" disabled="true">Hit</button>
+      <button id="stand-button" disabled="true">Stand</button><br />
+      <button id="next-button"><span>Next</span></button>
       <div id="output-div"></div>
     </div>
     <div class="box">
@@ -218,18 +291,25 @@
     <script src="script.js"></script>
     <!-- Define button click functionality -->
     <script>
-      var button = document.querySelector("#next-button");
-      button.addEventListener("click", function () {
-        // Set result to input value
-        var input = document.querySelector("#input-field");
-        var result = main(input.value);
-
-        // Display result in output element
+      var nextButton = document.querySelector("#next-button");
+      nextButton.addEventListener("click", function () {
+        var result = main();
         var output = document.querySelector("#output-div");
         output.innerHTML = result;
+      });
 
-        // Reset input value
-        input.value = "";
+      var hitButton = document.querySelector("#hit-button");
+      hitButton.addEventListener("click", function () {
+        var result = main("hit");
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
+      });
+
+      var standButton = document.querySelector("#stand-button");
+      standButton.addEventListener("click", function () {
+        var result = main("stand");
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
       });
     </script>
   </body>
