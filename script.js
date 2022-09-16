@@ -38,23 +38,26 @@ function playGame(input) {
     gameMode = "hit or stand";
     return `Dealer drew ${dealerCards[0].suit} ${dealerCards[0].name} and ${dealerCards[1].suit} ${dealerCards[1].name}; Dealer's score is ${dealerHand}. <br>Player drew ${playerCards[0].suit} ${playerCards[0].name} and ${playerCards[1].suit} ${playerCards[1].name}; Player's score is ${playerHand}. <br>Player - hit or stand?`;
   } else if (gameMode == "hit or stand") {
-    if (input == "") {
+    if (input != "hit" && input != "stand") {
       return "Please enter either 'hit' or 'stand'.";
     } else if (input == "hit") {
       var hitCard = gameDeck.pop();
       playerCards.push(hitCard);
       playerHand = sumCardsValue(playerCards);
-      console.log(`Player drew ${hitCard.suit} ${hitCard.name}.}`);
+      console.log(`Player drew ${hitCard.suit} ${hitCard.name}.`);
       return `Player drew ${hitCard.suit} ${hitCard.name}. Player's score is ${playerHand}`;
     } else if (input == "stand") {
+      var hitCard = gameDeck.pop();
+      dealerCards.push(hitCard);
+      dealerHand = sumCardsValue(dealerCards);
       gameMode = "check results";
-      return "Player chose to stand.";
+      return "Player chose to stand. Dealer hits.";
     }
   } else if (gameMode == "check results") {
     // Check for Blackjack
     if (checkBlackjack(dealerCards) || checkBlackjack(playerCards)) {
       if (checkBlackjack(dealerCards) && checkBlackjack(playerCards)) {
-        result = "tie";
+        result = "double blackjack";
         winner = "nobody wins";
       } else if (checkBlackjack(dealerCards)) {
         result = "blackjack";
@@ -66,15 +69,18 @@ function playGame(input) {
     }
     // Check for bust
     else if (dealerHand > 21 || playerHand > 21) {
-      if (dealerHand > 21) {
+      if (dealerHand > 21 && playerHand > 21) {
+        result = "double bust";
+        winner = "nobody wins";
+      } else if (dealerHand > 21 && playerHand <= 21) {
         result = "bust";
         winner = "Player";
-      } else if (playerHand > 21) {
+      } else if (playerHand > 21 && dealerHand <= 21) {
         result = "bust";
         winner = "Dealer";
       }
     }
-    // Nobody has Blackjack, nobody bust
+    // If nobody has Blackjack and nobody bust
     else {
       if (dealerHand == playerHand) {
         result = "tie";
@@ -90,7 +96,7 @@ function playGame(input) {
     console.log(`dealer ${dealerHand} player ${playerHand}`);
     console.log(`${result}, ${winner}`);
     gameMode = "new round";
-    return `The Dealer's hand is ${dealerHand} and the Player's hand is ${playerHand}. We have a ${result}! ${winner} takes this round.`;
+    return `The Dealer's hand is ${dealerHand} and the Player's hand is ${playerHand}. We have a ${result}! The winner is... ${winner}!`;
   }
 }
 
