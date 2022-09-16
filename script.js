@@ -102,17 +102,20 @@ function playGame(input) {
 
 function makeNewDeck() {
   var deck = [];
-  var suits = ["hearts", "diamonds", "clubs", "spades"];
+  var suits = ["♥️", "♦️", "♣️", "♠️"];
+  var numbers = ["2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣", "🔟"];
   for (var suitCounter = 0; suitCounter < 4; suitCounter += 1) {
     for (var nameCounter = 0; nameCounter < 13; nameCounter += 1) {
-      var cardName = nameCounter + 1;
-      if (cardName == 1) {
+      var cardIndex = nameCounter + 1;
+      if (cardIndex == 1) {
         cardName = "ace";
-      } else if (cardName == 11) {
+      } else if (cardIndex > 1 && cardIndex < 11) {
+        cardName = numbers[cardIndex - 2];
+      } else if (cardIndex == 11) {
         cardName = "jack";
-      } else if (cardName == 12) {
+      } else if (cardIndex == 12) {
         cardName = "queen";
-      } else if (cardName == 13) {
+      } else if (cardIndex == 13) {
         cardName = "king";
       }
       deck.push({
@@ -156,7 +159,6 @@ var checkBlackjack = function (cards) {
 function sumCardsValue(cards) {
   var sum = 0;
   for (var item of cards) {
-    console.log(cards.indexOf(item) == 0);
     if (item.name != "ace") {
       sum += item.value;
     }
