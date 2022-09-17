@@ -1,6 +1,6 @@
 var gameMode = "new round";
-var gameDeck = shuffleDeck(makeNewDeck());
-var players = ["Dealer", "Player"];
+var gameDeck = shuffleDeck(makeSixDecks());
+var playersArray = ["Player", "Dealer"];
 var dealerCards = [];
 var playerCards = [];
 var result = "";
@@ -109,6 +109,9 @@ function playGame(input) {
     console.log(`dealer ${dealerHand} player ${playerHand}`);
     console.log(`${result}, ${winner}`);
     gameMode = "new round";
+    if (gameDeck.length < 60) {
+      gameDeck = shuffleDeck(makeSixDecks());
+    }
     return `The Dealer's hand is ${dealerHand} and the Player's hand is ${playerHand}. We have a ${result}! The winner is... ${winner}!`;
   }
 }
@@ -148,6 +151,14 @@ function makeNewDeck() {
     }
   }
   return deck;
+}
+
+function makeSixDecks() {
+  var sixDecks = [];
+  for (let deckCounter = 0; deckCounter < 6; deckCounter += 1) {
+    sixDecks = sixDecks.concat(makeNewDeck());
+  }
+  return sixDecks;
 }
 
 function shuffleDeck(deck) {
