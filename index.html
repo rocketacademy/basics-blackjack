@@ -152,6 +152,18 @@
         background-color: whitesmoke;
       }
 
+      input#player-bet {
+        text-align: center;
+        font-family: "Kite one", sans-serif;
+        font-size: 18px;
+        border: none;
+        margin-left: 4px;
+        width: 105px;
+        height: 40px;
+        border-radius: 10%;
+        background-color: whitesmoke;
+      }
+
       .standard-buttons {
         font-family: "Kite one", sans-serif;
         font-size: 18px;
@@ -218,30 +230,6 @@
         opacity: 1;
       }
 
-      /* #stand-button {
-        background-color: #28282b;
-        border: none;
-        color: white;
-        border-radius: 10%;
-        font-family: "Kite one", sans-serif;
-        font-size: 18px;
-        line-height: 33px;
-        margin: 0 0 23px 16px;
-        padding: 0 6px;
-        width: 120px;
-        height: 40px;
-        text-align: center;
-        opacity: 0.6;
-        transition: 0.3s;
-        display: inline-block;
-        text-decoration: none;
-        cursor: pointer;
-      }
-
-      #stand-button:hover {
-        opacity: 1;
-      } */
-
       #output-div {
         background-color: #b2b2b2;
         margin: 20px auto;
@@ -303,7 +291,7 @@
       </p>
     </div>
     <div class="container">
-      <form>
+      <div>
         Number of Players:
         <input
           type="number"
@@ -316,7 +304,20 @@
         <button class="standard-buttons" id="confirm-button">
           <span>Confirm</span>
         </button>
-      </form>
+      </div>
+
+      Player's bet:
+      <input
+        type="number"
+        id="player-bet"
+        name="player-bet"
+        min="10"
+        value="10"
+        step="10"
+      />
+      <button class="standard-buttons" id="bet-button" disabled="true">
+        <span>Bet</span>
+      </button>
       <br />
       <button class="action-buttons" id="hit-button" disabled="true">
         Hit
@@ -337,7 +338,7 @@
       </div>
       <div class="box-child">
         <h3>💸💸💸Wins & Losses💸💸💸</h3>
-        <div id="winnings"></div>
+        <div id="bet-board"></div>
         <br />
       </div>
     </div>
@@ -350,31 +351,36 @@
         var inputField = document.querySelector("#number-of-players");
         numberOfPlayers = inputField.value;
         playersArray = generatePlayersArray(numberOfPlayers);
-        var nextButton = document.querySelector("#next-button");
-        nextButton.disabled = false;
+        var betButton = document.querySelector("#bet-button");
+        betButton.disabled = false;
+        // var nextButton = document.querySelector("#next-button");
+        // nextButton.disabled = false;
         confirmButton.disabled = true;
         inputField.disabled = true;
         console.log(numberOfPlayers);
         console.log(playersArray);
+        main(undefined, playersArray);
+        // printOutput(`Player 1 - please enter your bet!`);
       });
 
-      var nextButton = document.querySelector("#next-button");
-      nextButton.addEventListener("click", function () {
+      var betButton = document.querySelector("#bet-button");
+      betButton.addEventListener("click", function () {
         main(undefined, playersArray);
       });
 
       var hitButton = document.querySelector("#hit-button");
       hitButton.addEventListener("click", function () {
         main("hit", playersArray);
-        // var output = document.querySelector("#output-div");
-        // output.innerHTML = result;
       });
 
       var standButton = document.querySelector("#stand-button");
       standButton.addEventListener("click", function () {
         main("stand", playersArray);
-        // var output = document.querySelector("#output-div");
-        // output.innerHTML = result;
+      });
+
+      var nextButton = document.querySelector("#next-button");
+      nextButton.addEventListener("click", function () {
+        main(undefined, playersArray);
       });
     </script>
   </body>

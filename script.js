@@ -1,24 +1,23 @@
 // Default settings
 var gameMode = "new round";
 var gameDeck = shuffleDeck(makeSixDecks());
-var numberOfPlayers = 1;
 var playersArray = [];
+var playerCounter = 0;
 var dealerCards = [];
 var playerCards = [];
 var allPlayersCards = [];
-var result = "";
-var winner = "";
 var dealerHand = 0;
 var playerHand = 0;
 var allPlayersHand = [];
-var playerCounter = 0;
+var playersBets = [];
 var roundScoreBoard = {};
+var betBoard = {};
 
 var main = function (hitOrStand, playersArray) {
   return playGame(hitOrStand, playersArray);
 };
 
-// Generate the list of Players
+// Generate the list of Players & corresponding boards
 function generatePlayersArray(numberOfPlayers) {
   var playersArray = [];
   var counter = 0;
@@ -28,6 +27,8 @@ function generatePlayersArray(numberOfPlayers) {
   }
   roundScoreBoard = generateRoundScoreBoard(playersArray);
   printRoundScoreBoard(roundScoreBoard);
+  betBoard = generateBetBoard(playersArray);
+  printBetBoard(betBoard);
   return playersArray;
 }
 
@@ -39,9 +40,38 @@ function playGame(hitOrStand, playersArray) {
     allPlayersHand = [];
     allPlayersCards = [];
     playerCounter = 0;
-    gameMode = "deal cards";
     roundScoreBoard = generateRoundScoreBoard(playersArray);
-    printOutput("Dealing cards... Click 'next' to check your hands.");
+    playersBets = [];
+    var betButton = document.querySelector("#bet-button");
+    betButton.disabled = false;
+    var playerBetField = document.querySelector("#player-bet");
+    playerBetField.disabled = false;
+    printOutput(`Player 1 - please enter your bet!`);
+    gameMode = "take bets";
+  }
+  // Let every player enter their bets
+  else if (gameMode == "take bets") {
+    var playerBetField = document.querySelector("#player-bet");
+    var playerBet = parseInt(playerBetField.value);
+    printOutput(
+      `Player ${
+        playerCounter + 1
+      } bets ${playerBet}. Next Player - please enter your bet.`
+    );
+    playersBets.push(playerBet);
+    playerCounter += 1;
+    if (playerCounter >= playersArray.length) {
+      var nextButton = document.querySelector("#next-button");
+      nextButton.disabled = false;
+      var betButton = document.querySelector("#bet-button");
+      betButton.disabled = true;
+      playerBetField.disabled = true;
+      playerCounter = 0; //reset
+      printOutput(
+        `All bets are in! ${playersBets}. Click 'next' for Dealer to start dealing cards.`
+      );
+      gameMode = "deal cards";
+    }
   } else if (gameMode == "deal cards") {
     // Dealer draws cards
     dealerCards.push(gameDeck.pop());
@@ -72,12 +102,12 @@ function playGame(hitOrStand, playersArray) {
       );
     }
     console.log(`All players' hand: ${allPlayersHand}`);
-    gameMode = "hit or stand";
     hitButton.disabled = false;
     standButton.disabled = false;
     printOutput(
       `One of Dealer's cards is ${dealerCards[0].suit} ${dealerCards[0].name}. <br>Here's everyone's hand so far: ${allPlayersHand}. <br>Player 1 - select hit or stand.`
     );
+    gameMode = "hit or stand";
   }
 
   // Players take turns to hit or stand
@@ -107,12 +137,12 @@ function playGame(hitOrStand, playersArray) {
       } else {
         hitButton.disabled = true;
         standButton.disabled = true;
-        gameMode = "Dealer plays";
         printOutput(
           `${
             playersArray[playerCounter - 1]
           } chose to stand. Click 'next' to let Dealer have their turn.`
         );
+        gameMode = "Dealer plays";
       }
     }
   }
@@ -176,6 +206,59 @@ function playGame(hitOrStand, playersArray) {
       roundScoreBoard["Dealer"] = dealerHand;
     }
     printRoundScoreBoard(roundScoreBoard);
+
+    // Update wins and losses
+    if (roundScoreBoard["Dealer"] == "Bust") {
+      for (
+        let playerCounter = 0;
+        playerCounter < playersArray.length;
+        playerCounter += 1
+      ) {
+        betBoard[playersArray[playerCounter]] += playersBets[playerCounter];
+        betBoard["Dealer"] -= playersBets[playerCounter];
+      }
+    } else if (roundScoreBoard["Dealer"] != "Blackjack") {
+      for (
+        let playerCounter = 0;
+        playerCounter < playersArray.length;
+        playerCounter += 1
+      ) {
+        if (roundScoreBoard[playersArray[playerCounter]] == "Blackjack") {
+          betBoard[playersArray[playerCounter]] +=
+            playersBets[playerCounter] * 1.5;
+          betBoard["Dealer"] -= playersBets[playerCounter] * 1.5;
+        } else {
+          if (
+            roundScoreBoard[playersArray[playerCounter]] >
+              roundScoreBoard["Dealer"] &&
+            roundScoreBoard[playersArray[playerCounter]] != "Bust"
+          ) {
+            betBoard[playersArray[playerCounter]] += playersBets[playerCounter];
+            betBoard["Dealer"] -= playersBets[playerCounter];
+          } else if (
+            roundScoreBoard[playersArray[playerCounter]] <
+              roundScoreBoard["Dealer"] &&
+            roundScoreBoard[playersArray[playerCounter]] != "Bust"
+          ) {
+            betBoard["Dealer"] += playersBets[playerCounter];
+            betBoard[playersArray[playerCounter]] -= playersBets[playerCounter];
+          }
+        }
+      }
+    } else if (roundScoreBoard["Dealer"] == "Blackjack") {
+      for (
+        let playerCounter = 0;
+        playerCounter < playersArray.length;
+        playerCounter += 1
+      ) {
+        if (roundScoreBoard[playersArray[playerCounter]] != "Blackjack") {
+          betBoard["Dealer"] += playersBets[playerCounter];
+          betBoard[playersArray[playerCounter]] -= playersBets[playerCounter];
+        }
+      }
+    }
+    printBetBoard(betBoard);
+
     printOutput(
       "This round's results are out! Click 'next' to start another round."
     );
@@ -286,26 +369,24 @@ function printRoundScoreBoard(scoreBoard) {
   scoreBoardBox.innerHTML = output;
 }
 
-function generateLeaderboard(numberOfPlayers) {
+function generateBetBoard(playersArray) {
   var counter = 0;
-  var leaderBoard = {};
-  while (counter < numberOfPlayers) {
-    leaderBoard[`Player ${counter + 1}`] = 0;
+  var betBoard = {};
+  while (counter < playersArray.length) {
+    betBoard[playersArray[counter]] = 100;
     counter += 1;
   }
-  leaderBoard["Dealer"] = 0;
-  return leaderBoard;
+  betBoard["Dealer"] = 100;
+  return betBoard;
 }
 
-// Update the leaderboard player by player
-function updateLeaderboard(winningPlayer) {
-  leaderBoard[winningPlayer] += 1;
-  var scoreSpace = document.querySelector("#scores");
+function printBetBoard(betBoard) {
+  var betBoardBox = document.querySelector("#bet-board");
   var output = "";
-  for (var entry in leaderBoard) {
-    output += `${entry}: ${leaderBoard[entry]}<br>`;
+  for (var entry in betBoard) {
+    output += `${entry}: ${betBoard[entry]}<br>`;
   }
-  scoreSpace.innerHTML = output;
+  betBoardBox.innerHTML = output;
 }
 
 function printOutput(output) {
