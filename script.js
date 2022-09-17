@@ -49,14 +49,23 @@ function playGame(input) {
       console.log(`Player drew ${hitCard.suit} ${hitCard.name}.`);
       return `Player drew ${hitCard.suit} ${hitCard.name}. Player's score is ${playerHand}. <br>Player - hit or stand?`;
     } else if (input == "stand") {
-      var hitCard = gameDeck.pop();
-      dealerCards.push(hitCard);
-      dealerHand = sumCardsValue(dealerCards);
-      gameMode = "check results";
       hitButton.disabled = true;
       standButton.disabled = true;
-      return "Player chose to stand. Dealer hits.";
+      gameMode = "Dealer plays";
+      return "Player chose to stand. Dealer's turn.";
     }
+  } else if (gameMode == "Dealer plays") {
+    dealerHand = sumCardsValue(dealerCards);
+    while (dealerHand < 17) {
+      var hitCard = gameDeck.pop();
+      dealerCards.push(hitCard);
+      dealerHand += hitCard.value;
+      console.log(
+        `Dealer hits and drew ${hitCard.suit} ${hitCard.name}. Dealer's hand is ${dealerHand}.`
+      );
+    }
+    gameMode = "check results";
+    return `Dealer's turn ended. Click next to tally results.`;
   } else if (gameMode == "check results") {
     // Check for Blackjack
     if (checkBlackjack(dealerCards) || checkBlackjack(playerCards)) {
