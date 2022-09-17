@@ -131,34 +131,48 @@
         background-color: #bc5a45;
         margin: 20px auto;
         max-width: 800px;
-        padding: 38px 31px;
+        padding: 30px 31px;
       }
 
-      input {
-        font-size: 21px;
-        line-height: 33px;
-        margin: 0 0 23px 0;
-        padding: 0 9px;
-        width: 100%;
+      form {
+        margin-top: 0px;
+        text-align: left;
+        font-size: 18px;
       }
 
-      #next-button {
+      input#number-of-players {
+        text-align: center;
+        font-family: "Kite one", sans-serif;
+        font-size: 18px;
+        border: none;
+        margin-left: 4px;
+        width: 50px;
+        height: 40px;
+        border-radius: 10%;
+        background-color: whitesmoke;
+      }
+
+      .standard-buttons {
         font-family: "Kite one", sans-serif;
         font-size: 18px;
         line-height: 33px;
         margin: 0 0 23px 0;
         padding: 0 6px;
         width: 120px;
+        height: 40px;
         transition: all 0.5s;
+        border: none;
+        border-radius: 10px;
+        background-color: whitesmoke;
       }
 
-      #next-button span {
+      .standard-buttons span {
         display: inline-block;
         position: relative;
         transition: 0.5s;
       }
 
-      #next-button span:after {
+      .standard-buttons span:after {
         content: "\00bb";
         position: absolute;
         opacity: 0;
@@ -167,16 +181,20 @@
         transition: 0.5s;
       }
 
-      #next-button:hover span {
+      .standard-buttons:hover {
+        cursor: pointer;
+      }
+
+      .standard-buttons:hover span {
         padding-right: 25px;
       }
 
-      #next-button:hover span:after {
+      .standard-buttons:hover span:after {
         opacity: 1;
         right: 0;
       }
 
-      #hit-button {
+      .action-buttons {
         background-color: #28282b;
         border: none;
         color: white;
@@ -187,6 +205,7 @@
         margin: 0 0 23px 0;
         padding: 0 6px;
         width: 120px;
+        height: 40px;
         text-align: center;
         opacity: 0.6;
         transition: 0.3s;
@@ -195,11 +214,11 @@
         cursor: pointer;
       }
 
-      #hit-button:hover {
+      .action-buttons:hover {
         opacity: 1;
       }
 
-      #stand-button {
+      /* #stand-button {
         background-color: #28282b;
         border: none;
         color: white;
@@ -207,9 +226,10 @@
         font-family: "Kite one", sans-serif;
         font-size: 18px;
         line-height: 33px;
-        margin: 0 0 23px 0;
+        margin: 0 0 23px 16px;
         padding: 0 6px;
         width: 120px;
+        height: 40px;
         text-align: center;
         opacity: 0.6;
         transition: 0.3s;
@@ -220,7 +240,7 @@
 
       #stand-button:hover {
         opacity: 1;
-      }
+      } */
 
       #output-div {
         background-color: #b2b2b2;
@@ -229,11 +249,25 @@
         width: 100%;
       }
 
-      .box {
+      #rules {
         background-color: #f18973;
         margin: 10px auto;
         max-width: 800px;
         padding: 15px 30px;
+      }
+
+      .box {
+        display: flex;
+        background-color: #f18973;
+        margin: 10px auto;
+        max-width: 800px;
+        padding: 15px 30px;
+      }
+
+      .box-child {
+        flex: 1;
+        border: 12px white;
+        text-align: center;
       }
 
       .logo-img {
@@ -258,13 +292,9 @@
         src="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/brand/logo.png"
       />
       Rocket Academy
-      <img
-        class="logo-img"
-        src="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/brand/logo.png"
-      />
     </h1>
-    <h1 class="header">♣️ Basics - Blackjack ♠️</h1>
-    <div class="box">
+    <h1 class="header">♣️ Basics - Blackjack</h1>
+    <div id="rules">
       <h3>Welcome!</h3>
       <p>
         <a href="https://bicyclecards.com/how-to-play/blackjack/">Read me</a> or
@@ -273,42 +303,78 @@
       </p>
     </div>
     <div class="container">
-      <!-- <p>Input:</p>
-      <input id="input-field" />
-      <br /> -->
-      <button id="hit-button" disabled="true">Hit</button>
-      <button id="stand-button" disabled="true">Stand</button><br />
-      <button id="next-button"><span>Next</span></button>
+      <form>
+        Number of Players:
+        <input
+          type="number"
+          id="number-of-players"
+          name="number-of-players"
+          min="1"
+          max="10"
+          value="1"
+        />
+        <button class="standard-buttons" id="confirm-button">
+          <span>Confirm</span>
+        </button>
+      </form>
+      <br />
+      <button class="action-buttons" id="hit-button" disabled="true">
+        Hit
+      </button>
+      <button class="action-buttons" id="stand-button" disabled="true">
+        Stand</button
+      ><br />
+      <button class="standard-buttons" id="next-button" disabled="true">
+        <span>Next</span>
+      </button>
       <div id="output-div"></div>
     </div>
     <div class="box">
-      <h3>Leaderboard</h3>
-      <div id="scores"></div>
-      <br />
+      <div class="box-child">
+        <h3>🌟🌟🌟Round Results🌟🌟🌟</h3>
+        <div id="round-results"></div>
+        <br />
+      </div>
+      <div class="box-child">
+        <h3>💸💸💸Wins & Losses💸💸💸</h3>
+        <div id="winnings"></div>
+        <br />
+      </div>
     </div>
     <!-- Import program logic -->
     <script src="script.js"></script>
     <!-- Define button click functionality -->
     <script>
+      var confirmButton = document.querySelector("#confirm-button");
+      confirmButton.addEventListener("click", function () {
+        var inputField = document.querySelector("#number-of-players");
+        numberOfPlayers = inputField.value;
+        playersArray = generatePlayersArray(numberOfPlayers);
+        var nextButton = document.querySelector("#next-button");
+        nextButton.disabled = false;
+        confirmButton.disabled = true;
+        inputField.disabled = true;
+        console.log(numberOfPlayers);
+        console.log(playersArray);
+      });
+
       var nextButton = document.querySelector("#next-button");
       nextButton.addEventListener("click", function () {
-        var result = main();
-        var output = document.querySelector("#output-div");
-        output.innerHTML = result;
+        main(undefined, playersArray);
       });
 
       var hitButton = document.querySelector("#hit-button");
       hitButton.addEventListener("click", function () {
-        var result = main("hit");
-        var output = document.querySelector("#output-div");
-        output.innerHTML = result;
+        main("hit", playersArray);
+        // var output = document.querySelector("#output-div");
+        // output.innerHTML = result;
       });
 
       var standButton = document.querySelector("#stand-button");
       standButton.addEventListener("click", function () {
-        var result = main("stand");
-        var output = document.querySelector("#output-div");
-        output.innerHTML = result;
+        main("stand", playersArray);
+        // var output = document.querySelector("#output-div");
+        // output.innerHTML = result;
       });
     </script>
   </body>
