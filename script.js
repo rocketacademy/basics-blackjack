@@ -214,35 +214,12 @@ function playGame(hitOrStand, playersArray) {
         playerCounter < playersArray.length;
         playerCounter += 1
       ) {
-        betBoard[playersArray[playerCounter]] += playersBets[playerCounter];
-        betBoard["Dealer"] -= playersBets[playerCounter];
-      }
-    } else if (roundScoreBoard["Dealer"] != "Blackjack") {
-      for (
-        let playerCounter = 0;
-        playerCounter < playersArray.length;
-        playerCounter += 1
-      ) {
-        if (roundScoreBoard[playersArray[playerCounter]] == "Blackjack") {
-          betBoard[playersArray[playerCounter]] +=
-            playersBets[playerCounter] * 1.5;
-          betBoard["Dealer"] -= playersBets[playerCounter] * 1.5;
+        if (roundScoreBoard[playersArray[playerCounter]] != "Bust") {
+          betBoard[playersArray[playerCounter]] += playersBets[playerCounter];
+          betBoard["Dealer"] -= playersBets[playerCounter];
         } else {
-          if (
-            roundScoreBoard[playersArray[playerCounter]] >
-              roundScoreBoard["Dealer"] &&
-            roundScoreBoard[playersArray[playerCounter]] != "Bust"
-          ) {
-            betBoard[playersArray[playerCounter]] += playersBets[playerCounter];
-            betBoard["Dealer"] -= playersBets[playerCounter];
-          } else if (
-            roundScoreBoard[playersArray[playerCounter]] <
-              roundScoreBoard["Dealer"] &&
-            roundScoreBoard[playersArray[playerCounter]] != "Bust"
-          ) {
-            betBoard["Dealer"] += playersBets[playerCounter];
-            betBoard[playersArray[playerCounter]] -= playersBets[playerCounter];
-          }
+          betBoard["Dealer"] += playersBets[playerCounter];
+          betBoard[playersArray[playerCounter]] -= playersBets[playerCounter];
         }
       }
     } else if (roundScoreBoard["Dealer"] == "Blackjack") {
@@ -254,6 +231,35 @@ function playGame(hitOrStand, playersArray) {
         if (roundScoreBoard[playersArray[playerCounter]] != "Blackjack") {
           betBoard["Dealer"] += playersBets[playerCounter];
           betBoard[playersArray[playerCounter]] -= playersBets[playerCounter];
+        }
+      }
+    } else {
+      for (
+        let playerCounter = 0;
+        playerCounter < playersArray.length;
+        playerCounter += 1
+      ) {
+        if (roundScoreBoard[playersArray[playerCounter]] == "Blackjack") {
+          betBoard[playersArray[playerCounter]] +=
+            playersBets[playerCounter] * 1.5;
+          betBoard["Dealer"] -= playersBets[playerCounter] * 1.5;
+        } else if (roundScoreBoard[playersArray[playerCounter]] == "Bust") {
+          betBoard["Dealer"] += playersBets[playerCounter];
+          betBoard[playersArray[playerCounter]] -= playersBets[playerCounter];
+        } else if (
+          roundScoreBoard[playersArray[playerCounter]] <
+          roundScoreBoard["Dealer"]
+        ) {
+          betBoard["Dealer"] += playersBets[playerCounter];
+          betBoard[playersArray[playerCounter]] -= playersBets[playerCounter];
+        } else {
+          if (
+            roundScoreBoard[playersArray[playerCounter]] >
+            roundScoreBoard["Dealer"]
+          ) {
+            betBoard[playersArray[playerCounter]] += playersBets[playerCounter];
+            betBoard["Dealer"] -= playersBets[playerCounter];
+          }
         }
       }
     }
