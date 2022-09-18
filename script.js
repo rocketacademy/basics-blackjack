@@ -81,6 +81,7 @@ function playGame(hitOrStand, playersArray) {
       `Dealer drew ${dealerCards[0].suit} ${dealerCards[0].name} ${dealerCards[1].suit} ${dealerCards[1].name}. Dealer's hand: ${dealerHand}.`
     );
     // Players take turn to draw cards
+    var output = "";
     for (
       let playerCounter = 0;
       playerCounter < playersArray.length;
@@ -97,6 +98,7 @@ function playGame(hitOrStand, playersArray) {
       allPlayersCards.push(playerCards);
       playerHand = sumCardsValue(playerCards);
       allPlayersHand.push(playerHand);
+      output += `${playersArray[playerCounter]}: ${playerCards[0].suit} ${playerCards[0].name} | ${playerCards[1].suit} ${playerCards[1].name} (${playerHand})<br>`;
       console.log(
         `${playersArray[playerCounter]} got ${playerCards[0].suit} ${playerCards[0].name} ${playerCards[1].suit} ${playerCards[1].name}`
       );
@@ -105,13 +107,21 @@ function playGame(hitOrStand, playersArray) {
     hitButton.disabled = false;
     standButton.disabled = false;
     printOutput(
-      `One of Dealer's cards is ${dealerCards[0].suit} ${dealerCards[0].name}. <br>Here's everyone's hand so far: ${allPlayersHand}. <br>Player 1 - select hit or stand.`
+      `Dealer ${dealerCards[0].suit} ${dealerCards[0].name}. <br>${output}Player 1 - select hit or stand.`
     );
     gameMode = "hit or stand";
   }
 
   // Players take turns to hit or stand
   else if (gameMode == "hit or stand") {
+    if (allPlayersHand[playerCounter] >= 21 && hitOrStand != "stand") {
+      printOutput(
+        `${playersArray[playerCounter]}'s hand is already ${allPlayersHand[playerCounter]}. Passing...`
+      );
+      setTimeout(function () {
+        playGame("stand", playersArray);
+      }, 2000);
+    }
     if (hitOrStand != "hit" && hitOrStand != "stand") {
       printOutput("Please select either 'hit' or 'stand'.");
     } else if (hitOrStand == "hit") {
@@ -124,24 +134,36 @@ function playGame(hitOrStand, playersArray) {
         `${playersArray[playerCounter]} drew ${hitCard.suit} ${hitCard.name}.`
       );
       printOutput(
-        `${playersArray[playerCounter]} drew ${hitCard.suit} ${hitCard.name}. ${playersArray[playerCounter]}'s hand is ${allPlayersHand[playerCounter]}. <br>${playersArray[playerCounter]} - hit or stand?`
+        `${playersArray[playerCounter]} drew ${hitCard.suit} ${hitCard.name}. ${playersArray[playerCounter]}'s hand is now ${allPlayersHand[playerCounter]}.`
       );
+      if (allPlayersHand[playerCounter] >= 21) {
+        setTimeout(function () {
+          playGame("stand", playersArray);
+        }, 2000);
+      }
     } else if (hitOrStand == "stand") {
       playerCounter += 1;
-      if (playerCounter < playersArray.length) {
+      if (
+        playerCounter < playersArray.length &&
+        allPlayersHand[playerCounter] < 21
+      ) {
         printOutput(
-          `${playersArray[playerCounter - 1]} chose to stand. ${
-            playersArray[playerCounter]
-          }'s turn - your current hand is ${allPlayersHand[playerCounter]}.`
+          `${playersArray[playerCounter]}'s turn. Reminder - your current hand is ${allPlayersHand[playerCounter]}.`
         );
-      } else {
+      } else if (
+        playerCounter < playersArray.length &&
+        allPlayersHand[playerCounter] >= 21
+      ) {
+        printOutput(
+          `${playersArray[playerCounter]}'s hand is already ${allPlayersHand[playerCounter]}. Passing...`
+        );
+        setTimeout(function () {
+          playGame("stand", playersArray);
+        }, 2000);
+      } else if (playerCounter >= playersArray.length) {
         hitButton.disabled = true;
         standButton.disabled = true;
-        printOutput(
-          `${
-            playersArray[playerCounter - 1]
-          } chose to stand. Click 'next' to let Dealer have their turn.`
-        );
+        printOutput(`Click 'next' to let Dealer have their turn.`);
         gameMode = "Dealer plays";
       }
     }
