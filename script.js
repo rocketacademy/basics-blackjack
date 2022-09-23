@@ -107,7 +107,7 @@ function playGame(hitOrStand, playersArray) {
     hitButton.disabled = false;
     standButton.disabled = false;
     printOutput(
-      `Dealer ${dealerCards[0].suit} ${dealerCards[0].name}. <br>${output}Player 1 - select hit or stand.`
+      `Dealer drew ${dealerCards[0].suit} ${dealerCards[0].name} and a concealed card. <br>${output}Player 1 - select hit or stand.`
     );
     gameMode = "hit or stand";
   }
@@ -133,13 +133,17 @@ function playGame(hitOrStand, playersArray) {
       console.log(
         `${playersArray[playerCounter]} drew ${hitCard.suit} ${hitCard.name}.`
       );
-      printOutput(
-        `${playersArray[playerCounter]} drew ${hitCard.suit} ${hitCard.name}. ${playersArray[playerCounter]}'s hand is now ${allPlayersHand[playerCounter]}.`
-      );
       if (allPlayersHand[playerCounter] >= 21) {
         setTimeout(function () {
           playGame("stand", playersArray);
-        }, 2000);
+        }, 3500);
+        printOutput(
+          `${playersArray[playerCounter]} drew ${hitCard.suit} ${hitCard.name}. ${playersArray[playerCounter]}'s hand is already ${allPlayersHand[playerCounter]}. Sit tight and your turn will be passed.`
+        );
+      } else {
+        printOutput(
+          `${playersArray[playerCounter]} drew ${hitCard.suit} ${hitCard.name}. ${playersArray[playerCounter]}'s hand is now ${allPlayersHand[playerCounter]}. ${playersArray[playerCounter]} - hit or stand?`
+        );
       }
     } else if (hitOrStand == "stand") {
       playerCounter += 1;
@@ -147,15 +151,23 @@ function playGame(hitOrStand, playersArray) {
         playerCounter < playersArray.length &&
         allPlayersHand[playerCounter] < 21
       ) {
+        var suitsAndNames = "";
+        for (i = 0; i < allPlayersCards[playerCounter].length; i += 1) {
+          suitsAndNames += `${allPlayersCards[playerCounter][i].suit}${allPlayersCards[playerCounter][i].name}  `;
+        }
         printOutput(
-          `${playersArray[playerCounter]}'s turn. Reminder - your current hand is ${allPlayersHand[playerCounter]}.`
+          `${playersArray[playerCounter]}'s turn. Reminder - your cards are ${suitsAndNames} and your current hand is ${allPlayersHand[playerCounter]}.`
         );
       } else if (
         playerCounter < playersArray.length &&
         allPlayersHand[playerCounter] >= 21
       ) {
+        var suitsAndNames = "";
+        for (i = 0; i < allPlayersCards[playerCounter].length; i += 1) {
+          suitsAndNames += `${allPlayersCards[playerCounter][i].suit}${allPlayersCards[playerCounter][i].name}  `;
+        }
         printOutput(
-          `${playersArray[playerCounter]}'s hand is already ${allPlayersHand[playerCounter]}. Passing...`
+          `${playersArray[playerCounter]} has ${suitsAndNames}. Your hand is already ${allPlayersHand[playerCounter]}. Passing...`
         );
         setTimeout(function () {
           playGame("stand", playersArray);
@@ -179,8 +191,14 @@ function playGame(hitOrStand, playersArray) {
         `Dealer hits and drew ${hitCard.suit} ${hitCard.name}. Dealer's hand is ${dealerHand}.`
       );
     }
+    var suitsAndNames = "";
+    for (i = 0; i < dealerCards.length; i += 1) {
+      suitsAndNames += `${dealerCards[i].suit}${dealerCards[i].name}  `;
+    }
     gameMode = "check results";
-    printOutput(`Dealer's turn ended. Click 'next' to tally results.`);
+    printOutput(
+      `Dealer has ${suitsAndNames}, which adds up to a hand of ${dealerHand}. Click 'next' to tally results.`
+    );
   }
 
   // Tally results
