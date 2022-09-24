@@ -4,14 +4,12 @@ var makeDeck = function () {
   var cardDeck = [];
   // Initialise an array of the 4 suits in our deck. We will loop over this array.
   var suits = ["Hearts", "Diamonds", "Clubs", "Spades"];
-  var suitLetter = ["H", "D", "C", "S"];
 
   // Loop over the suits array
   var suitIndex = 0;
   while (suitIndex < suits.length) {
     // Store the current suit in a variable
     var currentSuit = suits[suitIndex];
-    var currentSuitLetter = suitLetter[suitIndex];
 
     // Loop from 1 to 13 to create all cards for a given suit
     // Notice rankCounter starts at 1 and not 0, and ends at 13 and not 12.
@@ -20,21 +18,16 @@ var makeDeck = function () {
     while (rankCounter <= 13) {
       // By default, the card name is the same as rankCounter
       var cardName = rankCounter;
-      var cardImg = cardName + currentSuitLetter + ".svg";
 
       // If rank is 1, 11, 12, or 13, set cardName to the ace or face card's name
       if (cardName == 1) {
         cardName = "Ace";
-        cardImg = "A" + currentSuitLetter + ".svg";
       } else if (cardName == 11) {
         cardName = "Jack";
-        cardImg = "J" + currentSuitLetter + ".svg";
       } else if (cardName == 12) {
         cardName = "Queen";
-        cardImg = "Q" + currentSuitLetter + ".svg";
       } else if (cardName == 13) {
         cardName = "King";
-        cardImg = "K" + currentSuitLetter + ".svg";
       }
 
       // Create a new card with the current name, suit, and rank
@@ -42,7 +35,6 @@ var makeDeck = function () {
         name: cardName,
         suit: currentSuit,
         rank: rankCounter,
-        image: cardImg,
       };
 
       // Add the new card to the deck
@@ -91,7 +83,7 @@ var shuffleCards = function (cardDeck) {
 // Shuffle the deck and save it in a new variable shuffledDeck
 var shuffledDeck = shuffleCards(deck);
 
-// ==================== GIFS ====================
+// ==================== Images ====================
 var imageStart =
   '<img src="https://c.tenor.com/Z4adaEQmUqkAAAAd/pokemon-fighting.gif"/>';
 
@@ -103,12 +95,6 @@ var imageEnd =
 
 var imageTieBJ =
   '<img src="https://c.tenor.com/zuGJiqsnkPIAAAAC/eevee-pikachu.gif"/>';
-
-var imageWin =
-  '<img src="https://c.tenor.com/nh5GiWZW1g4AAAAC/psyduck-floaty.gif"/>';
-
-var imageLose =
-  '<img src="https://c.tenor.com/GQVoTVtfLvoAAAAC/psyduck-farfetchd.gif"/>';
 
 // ==================== V1 - Compare initial hands to determine winner ====================
 // two players - one player and one computer
@@ -165,6 +151,30 @@ var calcCardValue = function (input) {
   return value;
 };
 
+/* 
+// Compare value function has been shifted to V2
+// Create a helper function with winning conditions
+var compareHands = function (player, dealer) {
+  // Inputs are 2 numerical values
+  var outputValue = "";
+  if (player == dealer) {
+    if (player == Number(21)) {
+      outputValue = "Tie. Both drew Blackjack.";
+    } else {
+      outputValue = "Tie.";
+    }
+  } else if (player == Number(21)) {
+    outputValue = "Player wins by Blackjack!";
+  } else if (dealer == Number(21)) {
+    outputValue = "Dealer wins by Blackjack!";
+  } else if (player > dealer && player != Number(21)) {
+    outputValue = "Player wins";
+  } else if (player < dealer && dealer != Number(21)) {
+    outputValue = "Dealer wins";
+  }
+  return outputValue;
+};
+*/
 // Create a function for formatting suit with emoji
 var emoji = function (suitName) {
   if (suitName == "Hearts") {
@@ -211,6 +221,32 @@ var revealOneCard = function (input) {
   return cardsInHand;
 };
 
+/*
+// Main function shifted to V2 
+var gameMode = "deal cards";
+
+var main = function (input) {
+  var outputMsg = "";
+  if (gameMode == "deal cards") {
+    gameMode = "compare cards";
+    playerHands = drawCards(2);
+    dealerHands = drawCards(2);
+    outputMsg = `<i> The dealer deals 2 cards to each player... </i><br><br> Click 'Submit' for the winner.`;
+  } else if (gameMode == "compare cards") {
+    gameMode = "deal cards";
+    // Store the value of each player's hands into a variable
+    var playerValue = calcCardValue(playerHands);
+    var dealerValue = calcCardValue(dealerHands);
+    outputMsg = `Player (${playerValue}):<br>${revealCards(
+      playerHands
+    )}<br> Dealer (${dealerValue}):<br> ${revealCards(
+      dealerHands
+    )} <br> <b>${compareHands(playerValue, dealerValue)}</b>`;
+  }
+  return outputMsg;
+};
+*/
+
 // ==================== V2 - Add Player Hit or Stand ====================
 
 var haveBlackjack = function (input) {
@@ -251,28 +287,78 @@ var compareHands = function (player, dealer) {
       outputValue = `It's a Tie. <br> ${imageDitto}`;
     }
   } else if (haveBlackjack(playerHands) == true) {
-    outputValue = `Player wins with Blackjack! <br> ${imageWin}`;
+    outputValue = "Player wins with Blackjack!";
   } else if (haveBlackjack(dealerHands) == true) {
-    outputValue = `Dealer wins with Blackjack!<br> ${imageLose}`;
+    outputValue = "Dealer wins with Blackjack!";
   } else if (player > dealer && !(player > Number(21))) {
-    outputValue = `Player wins. <br> ${imageWin}`;
+    outputValue = "Player wins.";
   } else if (player < dealer && !(dealer > Number(21))) {
-    outputValue = `Dealer wins. <br> ${imageLose}`;
+    outputValue = "Dealer wins.";
   } else if (player > 21) {
     if (dealer > 21) {
       outputValue = `It's a Tie - both bust. <br> ${imageDitto}`;
     } else {
-      outputValue = `Player bust. Dealer wins. <br> ${imageLose}`;
+      outputValue = `Player bust. Dealer wins.`;
     }
   } else if (dealer > 21) {
     if (player > 21) {
       outputValue = `It's a Tie - both bust. <br> ${imageDitto}`;
     } else {
-      outputValue = `Dealer bust. Player wins. <br> ${imageWin} `;
+      outputValue = `Dealer bust. Player wins. `;
     }
   }
   return outputValue;
 };
+
+/*
+// Main function shifted to V3
+var gameMode = "deal cards";
+
+var main = function (input) {
+  var outputMsg = "";
+  if (gameMode == "deal cards") {
+    gameMode = "compare cards";
+    playerHands = drawCards(2);
+    dealerHands = drawCards(2);
+    playerValue = calcCardValue(playerHands);
+    dealerValue = calcCardValue(dealerHands);
+    outputMsg = `<i> The dealer deals 2 cards to each player... </i><br><br> Click 'Submit' to begin.`;
+  } else if (gameMode == "compare cards") {
+    gameMode = "player to hit or stand";
+    outputMsg = `Player (${playerValue}):<br>${revealCards(
+      playerHands
+    )}<br> Dealer (${dealerValue}):<br> ${revealCards(
+      dealerHands
+    )} <br> Player, enter <b>'h'</b> to hit or <b>'s'</b> to stand.`;
+  } else if (gameMode == "player to hit or stand") {
+    var playerInput = input.toLowerCase();
+    if (!(playerInput == "h" || playerInput == "s")) {
+      outputMsg = `Invalid input. Player, enter <b>'h'</b> to hit or <b>'s'</b> to stand. <br><br> Player (${playerValue}):<br>${revealCards(
+        playerHands
+      )}<br> Dealer (${dealerValue}):<br> ${revealCards(dealerHands)}`;
+    } else if (playerInput == "h") {
+      playerHands.push(shuffledDeck.pop());
+      playerValue = calcCardValue(playerHands);
+      outputMsg = `Player (${playerValue}):<br>${revealCards(
+        playerHands
+      )}<br> Dealer (${dealerValue}):<br> ${revealCards(
+        dealerHands
+      )} <br> Player, enter <b>'h'</b> to hit or <b>'s'</b> to stand.`;
+    } else if (playerInput == "s") {
+      gameMode = "game over";
+      outputMsg = `Player (${playerValue}):<br>${revealCards(
+        playerHands
+      )}<br> Dealer (${dealerValue}):<br> ${revealCards(
+        dealerHands
+      )} <br> <b>${compareHands(playerValue, dealerValue)}</b>`;
+    }
+  } else if (gameMode == "game over") {
+    //gameMode = "deal cards"; // comment this out unless want game to keep running on 'Submit'
+    outputMsg = `End of Game. Refresh to restart.`;
+  }
+  return outputMsg;
+};
+*/
 
 // ==================== V3 - Add Dealer Hit or Stand ====================
 // Dealer to hit if 16 or under, to stand if 17 or higher
@@ -285,59 +371,14 @@ var shouldDealerHit = function (input) {
   return false;
 };
 
-/*
-var displayCardImages = function (input) {
-  var output = "";
-  var cardPic = document.createElement("img");
-  var j = 0;
-  while (j < input.length) {
-    cardPic.src = `<img class="card" src="cards/${input[j].image}" />`;
-    output += cardPic.src;
-    j += 1;
-  }
-  return output;
-};
-
-// ok the issue is that it's not recognising it as an image it's recognising it as a string.
-
-var displayOneCardImage = function (input) {
-  var cardPic = document.createElement("img");
-  var k = 0;
-  while (k < input.length) {
-    if (k == 1) {
-      cardPic.src = "cards/RED_BACK.svg";
-      cardPic.setAttribute("class", "card");
-      document.getElementById("computer-cards").append(cardPic);
-    } else {
-      cardPic.src = "cards/" + input[k].image;
-      cardPic.setAttribute("class", "card");
-      document.getElementById("computer-cards").append(cardPic);
-    }
-    k += 1;
-  }
-  // problem is only the else is returned and one card is appended..
-  // my functions not working haiz, why cannot use function ah?
-};
-*/
-
 var gameMode = "deal cards";
-
-var dealerCardDesign = document.getElementById("computer-cards");
-dealerCardDesign.setAttribute("class", "hand hhand-compact");
-
-var playerCardDesign = document.getElementById("player-cards");
-playerCardDesign.setAttribute("class", "hand hhand-compact");
 
 var main = function (input) {
   var outputMsg = "";
   if (gameMode == "deal cards") {
     gameMode = "compare cards";
-    restartButton.disabled = false;
-    nextButton.disabled = false;
-    dealButton.disabled = true;
     playerHands = drawCards(2);
     dealerHands = drawCards(2);
-    //*******To test for blackjack condition********
     // dealerHands = [
     //   { name: "Ace", suit: "Spades", rank: 1 },
     //   { name: "King", suit: "Clubs", rank: 13 },
@@ -347,107 +388,56 @@ var main = function (input) {
     //   { name: "Ace", suit: "Hearts", rank: 1 },
     //   { name: "Queen", suit: "Diamonds", rank: 12 },
     // ];
-    //**********************************************
+
     playerValue = calcCardValue(playerHands);
     dealerValue = calcCardValue(dealerHands);
-
-    var dealerHFour = document.getElementById("dealer-header");
-    dealerHFour.innerText = "Dealer's Hand: ";
-    var playerHFour = document.getElementById("player-header");
-    playerHFour.innerText = "Player's Hand: ";
-
-    for (var i = 0; i < playerHands.length; i += 1) {
-      var cardPic = document.createElement("img");
-      cardPic.setAttribute("class", "card");
-      cardPic.src = "cards/BLUE_BACK.svg";
-      document.getElementById("player-cards").append(cardPic);
-    }
-
-    for (var i = 0; i < dealerHands.length; i += 1) {
-      var cardPic = document.createElement("img");
-      cardPic.setAttribute("class", "card");
-      cardPic.src = "cards/RED_BACK.svg";
-      document.getElementById("computer-cards").append(cardPic);
-    }
-
-    outputMsg = `<i> Dealer and Player each draws 2 cards... </i><br><br> ${imageStart} <br>Click 'Next' to begin.`;
+    outputMsg = `<i> The dealer deals 2 cards to each player... </i><br><br> ${imageStart} <br>Click 'Submit' to begin.`;
   } else if (gameMode == "compare cards") {
-    document.getElementById("player-cards").innerHTML = "";
-    document.getElementById("computer-cards").innerHTML = "";
-
-    for (var i = 0; i < playerHands.length; i += 1) {
-      var cardPic = document.createElement("img");
-      cardPic.setAttribute("class", "card");
-      cardPic.src = "cards/" + playerHands[i].image;
-      document.getElementById("player-cards").append(cardPic);
-    }
-
-    for (var i = 0; i < dealerHands.length; i += 1) {
-      var cardPic = document.createElement("img");
-      cardPic.setAttribute("class", "card");
-      if (i == 1) {
-        cardPic.src = "cards/RED_BACK.svg";
-      } else {
-        cardPic.src = "cards/" + dealerHands[i].image;
-      }
-      document.getElementById("computer-cards").append(cardPic);
-    }
-
-    // what's the diff between append and appendChild?
-
     if (haveBlackjack(playerHands) == true) {
       gameMode = "dealer to hit or stand";
       outputMsg = `Player (${playerValue}):<br>${revealCards(
         playerHands
       )}<br> Dealer (❓):<br> ${revealOneCard(
         dealerHands
-      )} <br><b>End of Player's turn. Dealer's turn. Click 'Next' for dealer's move.</b>`;
+      )} <br><b>End of Player's turn. Dealer's turn. 'Submit' for dealer's move.</b>`;
     } else {
       gameMode = "player to hit or stand";
       outputMsg = `Player (${playerValue}):<br>${revealCards(
         playerHands
       )}<br> Dealer (❓):<br> ${revealOneCard(
         dealerHands
-      )} <br> Player, 'Hit' to draw a card, or 'Stand' to pass.`;
-      standButton.disabled = false;
-      hitButton.disabled = false;
-      nextButton.disabled = true;
+      )} <br> Player, enter <b>'h'</b> to hit or <b>'s'</b> to stand.`;
     }
   } else if (gameMode == "player to hit or stand") {
-    if (input == "h") {
+    var playerInput = input.toLowerCase();
+    if (!(playerInput == "h" || playerInput == "s")) {
+      outputMsg = `Invalid input. Player, enter <b>'h'</b> to hit or <b>'s'</b> to stand. <br><br> Player (${playerValue}):<br>${revealCards(
+        playerHands
+      )}<br> Dealer (❓):<br> ${revealOneCard(dealerHands)}`;
+    } else if (playerInput == "h") {
       playerHands.push(shuffledDeck.pop());
       playerValue = calcCardValue(playerHands);
-      var cardPic = document.createElement("img");
-      cardPic.setAttribute("class", "card");
-      cardPic.src = "cards/" + playerHands[playerHands.length - 1].image;
-      document.getElementById("player-cards").append(cardPic);
       if (playerValue >= 21) {
         gameMode = "dealer to hit or stand";
-        standButton.disabled = true;
-        hitButton.disabled = true;
-        nextButton.disabled = false;
         outputMsg = `Player (${playerValue}):<br>${revealCards(
           playerHands
         )}<br> Dealer (❓):<br> ${revealOneCard(
           dealerHands
-        )} <br><b>End of Player's turn. Dealer's turn. Click 'Next' for dealer's move.</b>`;
+        )} <br><b>End of Player's turn. Dealer's turn. 'Submit' for dealer's move.</b>`;
       } else {
         outputMsg = `Player (${playerValue}):<br>${revealCards(
           playerHands
         )}<br> Dealer (❓):<br> ${revealOneCard(
           dealerHands
-        )} <br> Player, 'Hit' to draw a card, or 'Stand' to pass.`;
+        )} <br> Player, enter <b>'h'</b> to hit or <b>'s'</b> to stand.`;
       }
-    } else if (input == "s") {
+    } else if (playerInput == "s") {
       gameMode = "dealer to hit or stand";
-      standButton.disabled = true;
-      hitButton.disabled = true;
-      nextButton.disabled = false;
       outputMsg = `Player (${playerValue}):<br>${revealCards(
         playerHands
       )}<br> Dealer (❓):<br> ${revealOneCard(
         dealerHands
-      )} <br><b>End of Player's turn. Dealer's turn. Click 'Next' for dealer's move.</b>`;
+      )} <br><b>End of Player's turn. Dealer's turn. 'Submit' for dealer's move.</b>`;
     }
   } else if (gameMode == "dealer to hit or stand") {
     gameMode = "game over";
@@ -455,31 +445,14 @@ var main = function (input) {
       dealerHands.push(shuffledDeck.pop());
       dealerValue = calcCardValue(dealerHands);
     }
-
-    document.getElementById("computer-cards").innerHTML = "";
-
-    for (var i = 0; i < dealerHands.length; i += 1) {
-      var cardPic = document.createElement("img");
-      cardPic.setAttribute("class", "card");
-      cardPic.src = "cards/" + dealerHands[i].image;
-      document.getElementById("computer-cards").append(cardPic);
-    }
-
     outputMsg = `Player (${playerValue}):<br>${revealCards(
       playerHands
     )}<br> Dealer (${dealerValue}):<br> ${revealCards(
       dealerHands
     )} <br><b>${compareHands(playerValue, dealerValue)}</b>`;
   } else if (gameMode == "game over") {
-    document.getElementById("computer-cards").innerHTML = "";
-    document.getElementById("player-cards").innerHTML = "";
-    document.getElementById("dealer-header").innerHTML = "";
-    document.getElementById("player-header").innerHTML = "";
-
-    nextButton.disabled = true;
-    outputMsg = `End of Game. Click 'Restart' to play again. <br><br> ${imageEnd}`;
+    //gameMode = "deal cards"; //activate if you don't want to keep refreshing
+    outputMsg = `End of Game. Refresh to restart. <br><br> ${imageEnd}`;
   }
   return outputMsg;
 };
-
-// Card images from:  http://richardschneider.github.io/cardsJS/
