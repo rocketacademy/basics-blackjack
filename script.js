@@ -316,7 +316,7 @@ var displayOneCardImage = function (input) {
     k += 1;
   }
   // problem is only the else is returned and one card is appended..
-  // my functions not working haiz, why cannot use function ah?
+  // Why can't elements be added using a function? 
 };
 */
 
