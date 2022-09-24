@@ -88,6 +88,9 @@
       href="https://fonts.googleapis.com/css?family=Open+Sans|Gemunu+Libre"
     />
 
+    <!-- Link external style sheet for cards  -->
+    <link rel="stylesheet" type="text/css" href="cards.css" />
+
     <!-- CSS -->
     <style>
       * {
@@ -154,6 +157,11 @@
         top: 22px;
       }
 
+      .icon-img {
+        height: 300px;
+        position: center;
+      }
+
       /* increase header font size on wider screens */
       @media screen and (min-width: 600px) {
         .header {
@@ -197,9 +205,22 @@
       <button id="stand-button" disabled>Stand</button>
       <button id="next-button" disabled>Next</button>
       <button id="restart-button" disabled>Restart</button>
+
+      <h4 id="player-header">
+        <img
+          class="icon-img"
+          src="https://c.tenor.com/HQJDSCgOqkkAAAAi/char.gif"
+        />
+      </h4>
+      <div id="player-cards"></div>
+
+      <h4 id="dealer-header"></h4>
+      <div id="computer-cards"></div>
+
       <!-- <p>Outcome:</p> -->
       <div id="output-div">Hi, click 'Deal' to draw cards.</div>
     </div>
+
     <!-- Import program logic -->
     <script src="script.js"></script>
     <!-- Define button click functionality -->

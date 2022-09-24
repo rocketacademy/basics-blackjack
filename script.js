@@ -4,12 +4,14 @@ var makeDeck = function () {
   var cardDeck = [];
   // Initialise an array of the 4 suits in our deck. We will loop over this array.
   var suits = ["Hearts", "Diamonds", "Clubs", "Spades"];
+  var suitLetter = ["H", "D", "C", "S"];
 
   // Loop over the suits array
   var suitIndex = 0;
   while (suitIndex < suits.length) {
     // Store the current suit in a variable
     var currentSuit = suits[suitIndex];
+    var currentSuitLetter = suitLetter[suitIndex];
 
     // Loop from 1 to 13 to create all cards for a given suit
     // Notice rankCounter starts at 1 and not 0, and ends at 13 and not 12.
@@ -18,16 +20,21 @@ var makeDeck = function () {
     while (rankCounter <= 13) {
       // By default, the card name is the same as rankCounter
       var cardName = rankCounter;
+      var cardImg = cardName + currentSuitLetter + ".svg";
 
       // If rank is 1, 11, 12, or 13, set cardName to the ace or face card's name
       if (cardName == 1) {
         cardName = "Ace";
+        cardImg = "A" + currentSuitLetter + ".svg";
       } else if (cardName == 11) {
         cardName = "Jack";
+        cardImg = "J" + currentSuitLetter + ".svg";
       } else if (cardName == 12) {
         cardName = "Queen";
+        cardImg = "Q" + currentSuitLetter + ".svg";
       } else if (cardName == 13) {
         cardName = "King";
+        cardImg = "K" + currentSuitLetter + ".svg";
       }
 
       // Create a new card with the current name, suit, and rank
@@ -35,6 +42,7 @@ var makeDeck = function () {
         name: cardName,
         suit: currentSuit,
         rank: rankCounter,
+        image: cardImg,
       };
 
       // Add the new card to the deck
@@ -83,7 +91,7 @@ var shuffleCards = function (cardDeck) {
 // Shuffle the deck and save it in a new variable shuffledDeck
 var shuffledDeck = shuffleCards(deck);
 
-// ==================== Images ====================
+// ==================== GIFS ====================
 var imageStart =
   '<img src="https://c.tenor.com/Z4adaEQmUqkAAAAd/pokemon-fighting.gif"/>';
 
@@ -277,7 +285,48 @@ var shouldDealerHit = function (input) {
   return false;
 };
 
+/*
+var displayCardImages = function (input) {
+  var output = "";
+  var cardPic = document.createElement("img");
+  var j = 0;
+  while (j < input.length) {
+    cardPic.src = `<img class="card" src="cards/${input[j].image}" />`;
+    output += cardPic.src;
+    j += 1;
+  }
+  return output;
+};
+
+// ok the issue is that it's not recognising it as an image it's recognising it as a string.
+
+var displayOneCardImage = function (input) {
+  var cardPic = document.createElement("img");
+  var k = 0;
+  while (k < input.length) {
+    if (k == 1) {
+      cardPic.src = "cards/RED_BACK.svg";
+      cardPic.setAttribute("class", "card");
+      document.getElementById("computer-cards").append(cardPic);
+    } else {
+      cardPic.src = "cards/" + input[k].image;
+      cardPic.setAttribute("class", "card");
+      document.getElementById("computer-cards").append(cardPic);
+    }
+    k += 1;
+  }
+  // problem is only the else is returned and one card is appended..
+  // my functions not working haiz, why cannot use function ah?
+};
+*/
+
 var gameMode = "deal cards";
+
+var dealerCardDesign = document.getElementById("computer-cards");
+dealerCardDesign.setAttribute("class", "hand hhand-compact");
+
+var playerCardDesign = document.getElementById("player-cards");
+playerCardDesign.setAttribute("class", "hand hhand-compact");
 
 var main = function (input) {
   var outputMsg = "";
@@ -299,11 +348,53 @@ var main = function (input) {
     //   { name: "Queen", suit: "Diamonds", rank: 12 },
     // ];
     //**********************************************
-
     playerValue = calcCardValue(playerHands);
     dealerValue = calcCardValue(dealerHands);
+
+    var dealerHFour = document.getElementById("dealer-header");
+    dealerHFour.innerText = "Dealer's Hand: ";
+    var playerHFour = document.getElementById("player-header");
+    playerHFour.innerText = "Player's Hand: ";
+
+    for (var i = 0; i < playerHands.length; i += 1) {
+      var cardPic = document.createElement("img");
+      cardPic.setAttribute("class", "card");
+      cardPic.src = "cards/BLUE_BACK.svg";
+      document.getElementById("player-cards").append(cardPic);
+    }
+
+    for (var i = 0; i < dealerHands.length; i += 1) {
+      var cardPic = document.createElement("img");
+      cardPic.setAttribute("class", "card");
+      cardPic.src = "cards/RED_BACK.svg";
+      document.getElementById("computer-cards").append(cardPic);
+    }
+
     outputMsg = `<i> Dealer and Player each draws 2 cards... </i><br><br> ${imageStart} <br>Click 'Next' to begin.`;
   } else if (gameMode == "compare cards") {
+    document.getElementById("player-cards").innerHTML = "";
+    document.getElementById("computer-cards").innerHTML = "";
+
+    for (var i = 0; i < playerHands.length; i += 1) {
+      var cardPic = document.createElement("img");
+      cardPic.setAttribute("class", "card");
+      cardPic.src = "cards/" + playerHands[i].image;
+      document.getElementById("player-cards").append(cardPic);
+    }
+
+    for (var i = 0; i < dealerHands.length; i += 1) {
+      var cardPic = document.createElement("img");
+      cardPic.setAttribute("class", "card");
+      if (i == 1) {
+        cardPic.src = "cards/RED_BACK.svg";
+      } else {
+        cardPic.src = "cards/" + dealerHands[i].image;
+      }
+      document.getElementById("computer-cards").append(cardPic);
+    }
+
+    // what's the diff between append and appendChild?
+
     if (haveBlackjack(playerHands) == true) {
       gameMode = "dealer to hit or stand";
       outputMsg = `Player (${playerValue}):<br>${revealCards(
@@ -326,6 +417,10 @@ var main = function (input) {
     if (input == "h") {
       playerHands.push(shuffledDeck.pop());
       playerValue = calcCardValue(playerHands);
+      var cardPic = document.createElement("img");
+      cardPic.setAttribute("class", "card");
+      cardPic.src = "cards/" + playerHands[playerHands.length - 1].image;
+      document.getElementById("player-cards").append(cardPic);
       if (playerValue >= 21) {
         gameMode = "dealer to hit or stand";
         standButton.disabled = true;
@@ -360,14 +455,31 @@ var main = function (input) {
       dealerHands.push(shuffledDeck.pop());
       dealerValue = calcCardValue(dealerHands);
     }
+
+    document.getElementById("computer-cards").innerHTML = "";
+
+    for (var i = 0; i < dealerHands.length; i += 1) {
+      var cardPic = document.createElement("img");
+      cardPic.setAttribute("class", "card");
+      cardPic.src = "cards/" + dealerHands[i].image;
+      document.getElementById("computer-cards").append(cardPic);
+    }
+
     outputMsg = `Player (${playerValue}):<br>${revealCards(
       playerHands
     )}<br> Dealer (${dealerValue}):<br> ${revealCards(
       dealerHands
     )} <br><b>${compareHands(playerValue, dealerValue)}</b>`;
   } else if (gameMode == "game over") {
+    document.getElementById("computer-cards").innerHTML = "";
+    document.getElementById("player-cards").innerHTML = "";
+    document.getElementById("dealer-header").innerHTML = "";
+    document.getElementById("player-header").innerHTML = "";
+
     nextButton.disabled = true;
     outputMsg = `End of Game. Click 'Restart' to play again. <br><br> ${imageEnd}`;
   }
   return outputMsg;
 };
+
+// Card images from:  http://richardschneider.github.io/cardsJS/
