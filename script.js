@@ -16,10 +16,15 @@
 //      4) win (black jack / higher hand value)
 //      5) display and for both plaer and get who is the winner
 
+// ******** Step 2 : hit or stand ******* //
+//      1) extra game mode to hit or stand
+//      2) function to add card card after being input of "hit" or "stand"
+
 // *** GLOBAL VARIABLE ***//
 var gameMode_Start = "Game Start";
 var gameMode_DrawnCards = "Drawn Cards";
 var gameMode_ResultShown = "Show Result";
+var gameMode_HitOrStand = "Hit or Stand";
 var currentGameMode = gameMode_Start;
 
 // variable for the group of multiple cards holding
@@ -521,8 +526,69 @@ var main = function (input) {
       }
     }
     // change game mode
-    currentGameMode = gameMode_ResultShown;
+    currentGameMode = gameMode_HitOrStand;
     // update the output message
+    return myOutputValue;
+  }
+
+  // Hit or Stand Mode
+  if (currentGameMode == gameMode_HitOrStand) {
+    // input validation
+    if (input !== "hit" && input !== "stand") {
+      myOutputValue =
+        "Wrong input! Please type either 'hit' or 'stand' <br><br>" +
+        displayPlayerAndDealerHands(playerHand, dealerHand);
+    }
+    // user input "hit"
+    else if (input == "hit") {
+      playerHand.push(deck.pop());
+      myOutputValue =
+        displayPlayerAndDealerHands(playerHand, dealerHand) +
+        "<br> You just draw another card. <br>Please input 'hit' or 'stand' to continue. ";
+    }
+    // user input "stand"
+    else if (input == "stand") {
+      var playerHandTotalValue = calculateTotalHandValue(playerHand);
+      var dealerHandTotalValue = calculateTotalHandValue(dealerHand);
+
+      // compare total hand value
+      // BUST 1 : player total value goes above 21
+      if (playerHandTotalValue > 21) {
+        myOutputValue =
+          displayPlayerAndDealerHands(playerHand, dealerHand) +
+          "BUST! player lose" +
+          displayTotalValue(playerHandTotalValue, dealerHandTotalValue);
+      }
+      // BUST 2 : dealer total value goes above 21
+      else if (dealerHandTotalValue > 21) {
+        myOutputValue =
+          displayPlayerAndDealerHands(playerHand, dealerHand) +
+          "BUST! dealer lose" +
+          displayTotalValue(playerHandTotalValue, dealerHandTotalValue);
+      }
+      // same value for both -> tie
+      else if (playerHandTotalValue == dealerHandTotalValue) {
+        myOutputValue =
+          displayPlayerAndDealerHands(playerHand, dealerHand) +
+          "It is a tie! Both add up to same amount!" +
+          displayTotalValue(playerHandTotalValue, dealerHandTotalValue);
+      }
+      // player has higher value -> player wins
+      else if (playerHandTotalValue > dealerHandTotalValue) {
+        myOutputValue =
+          displayPlayerAndDealerHands(playerHand, dealerHand) +
+          "Player wins!" +
+          displayTotalValue(playerHandTotalValue, dealerHandTotalValue);
+      }
+      // dealer has higher value -> dealer wins
+      else if (playerHandTotalValue < dealerHandTotalValue) {
+        myOutputValue =
+          displayPlayerAndDealerHands(playerHand, dealerHand) +
+          "Dealer wins!" +
+          displayTotalValue(playerHandTotalValue, dealerHandTotalValue);
+      }
+    }
+
     return myOutputValue;
   }
 };
