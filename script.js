@@ -29,6 +29,22 @@
 //      1) if the total value goes below 21, Ace will be counted as 11
 //      2) if the total value goes above 21, Ace need to change value to 1 instead of 11
 
+//image global variable//
+var image1 =
+  '<img src="https://c.tenor.com/FaMwfY6UU9kAAAAM/shuffle-cards.gif"/>';
+var imageThumbsUp =
+  '<img src="https://c.tenor.com/D5d3KKgydBUAAAAM/gavin-meme.gif"/>';
+var imageWhat =
+  '<img src="https://c.tenor.com/8W03lgoMEv0AAAAM/umm-what.gif"/>';
+var imageEvilLaugh =
+  '<img src="https://c.tenor.com/Jw3KI0JGQFAAAAAM/gavin-gavin-thomas.gif"/>';
+var imageLost =
+  '<img src="https://c.tenor.com/9-0P-Fh_VSMAAAAM/gavin-meme.gif"/>';
+var imageThinking =
+  '<img src="https://c.tenor.com/BMQTJ4nWvCIAAAAM/thinking-think.gif"/>';
+var imageWrongAnswer =
+  '<img src="https://c.tenor.com/S9A24f_TI_EAAAAM/did-you-read-it-you-get-it.gif"/>';
+
 // *** GLOBAL VARIABLE ***//
 var gameMode_Start = "Game Start";
 var gameMode_DrawnCards = "Drawn Cards";
@@ -477,7 +493,8 @@ var main = function (input) {
 
     // show updated output message
     myOutputValue =
-      "Everyone already draw their cards. Click 'submit' to see the result of cards";
+      image1 +
+      "<br>Everyone already draw their cards. Click 'submit' to see the result of cards";
     return myOutputValue;
   }
 
@@ -502,6 +519,8 @@ var main = function (input) {
 
     // check whether blackjack situation or not
     if (playerHasBlackJack == true || dealerHasBlackJack == true) {
+      var playerHandTotalValue = calculateTotalHandValue(playerHand);
+      var dealerHandTotalValue = calculateTotalHandValue(dealerHand);
       // both player have blackjacks -> tie
       if (playerHasBlackJack == true && dealerHasBlackJack == true) {
         myOutputValue =
@@ -514,14 +533,18 @@ var main = function (input) {
         myOutputValue =
           displayPlayerAndDealerHands(playerHand, dealerHand) +
           "Player, You win! You have a blackjack" +
-          displayTotalValue(playerHandTotalValue, dealerHandTotalValue);
+          displayTotalValue(playerHandTotalValue, dealerHandTotalValue) +
+          "<br>" +
+          imageThumbsUp;
       }
       // dealer has blackjack -> dealer wins
       else if (playerHasBlackJack == false && dealerHasBlackJack == true) {
         myOutputValue =
           displayPlayerAndDealerHands(playerHand, dealerHand) +
           "Opppsy, you lose! Dealer got a black jack!" +
-          displayTotalValue(playerHandTotalValue, dealerHandTotalValue);
+          displayTotalValue(playerHandTotalValue, dealerHandTotalValue) +
+          "<br>" +
+          imageLost;
       }
       console.log(myOutputValue);
     } else {
@@ -552,14 +575,18 @@ var main = function (input) {
         myOutputValue =
           displayPlayerAndDealerHands(playerHand, dealerHand) +
           "BUST! player lose" +
-          displayTotalValue(playerHandTotalValue, dealerHandTotalValue);
+          displayTotalValue(playerHandTotalValue, dealerHandTotalValue) +
+          "<br>" +
+          imageWhat;
       }
       // BUST 2 : dealer total value goes above 21
       else if (dealerHandTotalValue > 21) {
         myOutputValue =
           displayPlayerAndDealerHands(playerHand, dealerHand) +
-          "BUST! dealer lose" +
-          displayTotalValue(playerHandTotalValue, dealerHandTotalValue);
+          "Dear got a 'BUST'! Plaer, you won!" +
+          displayTotalValue(playerHandTotalValue, dealerHandTotalValue) +
+          "<br>" +
+          imageEvilLaugh;
       }
       // same value for both -> tie
       else if (playerHandTotalValue == dealerHandTotalValue) {
@@ -572,14 +599,16 @@ var main = function (input) {
       else if (playerHandTotalValue > dealerHandTotalValue) {
         myOutputValue =
           displayPlayerAndDealerHandsFirst(playerHand, dealerHand) +
-          "Player, Type 'hit' or 'stand' to continue" +
+          "Player, Type 'hit' or 'stand' to continue<br>" +
+          imageThinking +
           displayTotalValueFirst(playerHandTotalValue, dealerHand);
       }
       // dealer has higher value -> dealer wins
       else if (playerHandTotalValue < dealerHandTotalValue) {
         myOutputValue =
           displayPlayerAndDealerHandsFirst(playerHand, dealerHand) +
-          "Player, Type 'hit' or 'stand' to continue" +
+          "Player, Type 'hit' or 'stand' to continue<br>" +
+          imageThinking +
           displayTotalValueFirst(playerHandTotalValue, dealerHand);
       }
     }
@@ -595,7 +624,8 @@ var main = function (input) {
     if (input !== "hit" && input !== "stand") {
       myOutputValue =
         "Wrong input! Please type either 'hit' or 'stand' <br><br>" +
-        displayPlayerAndDealerHands(playerHand, dealerHand);
+        imageWrongAnswer +
+        displayPlayerAndDealerHandsFirst(playerHand, dealerHand);
     }
     // user input "hit"
     else if (input == "hit") {
@@ -603,10 +633,10 @@ var main = function (input) {
       var playerHandTotalValue = calculateTotalHandValue(playerHand);
       var dealerHandTotalValue = calculateTotalHandValue(dealerHand);
       if (playerHandTotalValue > 21) {
-        myOutputValue = "BUST! player lose";
+        myOutputValue = "BUST! player lose<br>" + imageLost;
       } else {
         myOutputValue =
-          displayPlayerAndDealerHands(playerHand, dealerHand) +
+          displayPlayerAndDealerHandsFirst(playerHand, dealerHand) +
           "<br> You just draw another card. Your total value is " +
           playerHandTotalValue +
           " now. <br> Please input 'hit' or 'stand' to continue. ";
@@ -629,14 +659,18 @@ var main = function (input) {
         myOutputValue =
           displayPlayerAndDealerHands(playerHand, dealerHand) +
           "BUST! player lose" +
-          displayTotalValue(playerHandTotalValue, dealerHandTotalValue);
+          displayTotalValue(playerHandTotalValue, dealerHandTotalValue) +
+          "<br>" +
+          imageWhat;
       }
       // BUST 2 : dealer total value goes above 21
       else if (dealerHandTotalValue > 21) {
         myOutputValue =
           displayPlayerAndDealerHands(playerHand, dealerHand) +
-          "BUST! dealer lose" +
-          displayTotalValue(playerHandTotalValue, dealerHandTotalValue);
+          "Dear got a 'BUST'! Player! you just WON! " +
+          displayTotalValue(playerHandTotalValue, dealerHandTotalValue) +
+          "<br>" +
+          imageThumbsUp;
       }
       // same value for both -> tie
       else if (playerHandTotalValue == dealerHandTotalValue) {
@@ -650,14 +684,18 @@ var main = function (input) {
         myOutputValue =
           displayPlayerAndDealerHands(playerHand, dealerHand) +
           "Player wins!" +
-          displayTotalValue(playerHandTotalValue, dealerHandTotalValue);
+          displayTotalValue(playerHandTotalValue, dealerHandTotalValue) +
+          "<br>" +
+          imageThumbsUp;
       }
       // dealer has higher value -> dealer wins
       else if (playerHandTotalValue < dealerHandTotalValue) {
         myOutputValue =
           displayPlayerAndDealerHands(playerHand, dealerHand) +
-          "Dealer wins!" +
-          displayTotalValue(playerHandTotalValue, dealerHandTotalValue);
+          "Dealer wins! You lost" +
+          displayTotalValue(playerHandTotalValue, dealerHandTotalValue) +
+          "<br>" +
+          imageLost;
       }
     }
 
