@@ -16,9 +16,14 @@
 //      4) win (black jack / higher hand value)
 //      5) display and for both plaer and get who is the winner
 
-// ******** Step 2 : hit or stand ******* //
+// ******** Step 2 : Player hit or stand ******* //
 //      1) extra game mode to hit or stand
 //      2) function to add card card after being input of "hit" or "stand"
+
+// ******** Step 3 : Dear hit or stand ***** //
+//      1) dealer choose to hit or stand after player finish their turn
+//      2) if dealer hand value is less than 17, hit
+//      3) if dealer hand value is more than 17, stand
 
 // *** GLOBAL VARIABLE ***//
 var gameMode_Start = "Game Start";
@@ -550,6 +555,12 @@ var main = function (input) {
     else if (input == "stand") {
       var playerHandTotalValue = calculateTotalHandValue(playerHand);
       var dealerHandTotalValue = calculateTotalHandValue(dealerHand);
+
+      // dealer draw one more card or not
+      while (dealerHandTotalValue < 17) {
+        dealerHand.push(deck.pop());
+        dealerHandTotalValue = calculateTotalHandValue(dealerHand);
+      }
 
       // compare total hand value
       // BUST 1 : player total value goes above 21
