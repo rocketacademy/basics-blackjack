@@ -25,6 +25,10 @@
 //      2) if dealer hand value is less than 17, hit
 //      3) if dealer hand value is more than 17, stand
 
+// ********* step 4 : Ace to be come either 1 or 11 ********* //
+//      1) if the total value goes below 21, Ace will be counted as 11
+//      2) if the total value goes above 21, Ace need to change value to 1 instead of 11
+
 // *** GLOBAL VARIABLE ***//
 var gameMode_Start = "Game Start";
 var gameMode_DrawnCards = "Drawn Cards";
@@ -58,8 +62,11 @@ var checkForBlackJack = function (handArray) {
 
 var calculateTotalHandValue = function (handArray) {
   var totalHandValue = 0;
-  for (var index = 0; index < handArray.length; index += 1) {
-    var currentCard = handArray[index];
+  var aceCounter = 0;
+
+  for (var i = 0; i < handArray.length; i += 1) {
+    var currentCard = handArray[i];
+    // console.log(currentCard);
     // Jack / Queen / King equals to 10
     if (
       currentCard.name == "jack" ||
@@ -67,13 +74,47 @@ var calculateTotalHandValue = function (handArray) {
       currentCard.name == "king"
     ) {
       totalHandValue = totalHandValue + 10;
+    } else if (currentCard.name == "ace") {
+      totalHandValue = totalHandValue + 11;
+      aceCounter += 1;
     }
     // if not, just face value
     else {
       totalHandValue = totalHandValue + currentCard.rank;
     }
+    for (var j = 0; j < aceCounter; j += 1) {
+      if (totalHandValue > 21) {
+        totalHandValue = totalHandValue - 10;
+      }
+    }
   }
   return totalHandValue;
+};
+
+var displayPlayerAndDealerHandsFirst = function (
+  playerHandArray,
+  dealerHandArray
+) {
+  //playerHand
+  var playerMessage = "Player Hand : <br>";
+  for (var index = 0; index < playerHandArray.length; index += 1) {
+    playerMessage =
+      playerMessage +
+      "- " +
+      playerHandArray[index].name +
+      " of " +
+      playerHandArray[index].suit +
+      "<br>";
+  }
+  //dealerHand
+  var dealerMessage =
+    "Dealer Hand : <br>" +
+    "- " +
+    dealerHandArray[0].name +
+    " of " +
+    dealerHandArray[0].suit +
+    "<br>- Unknown Card";
+  return playerMessage + "<br>" + dealerMessage + "<br><br>";
 };
 
 var displayPlayerAndDealerHands = function (playerHandArray, dealerHandArray) {
@@ -100,6 +141,16 @@ var displayPlayerAndDealerHands = function (playerHandArray, dealerHandArray) {
       "<br>";
   }
   return playerMessage + "<br>" + dealerMessage + "<br><br>";
+};
+
+var displayTotalValueFirst = function (playerHandValue, dealerHandArray) {
+  var totalHandValueMessage =
+    "<br><br><br>Player Total Hand Value : " +
+    playerHandValue +
+    "<br>Dealer Total Hand Value : " +
+    dealerHandArray[0].rank +
+    " + 'unknown card' ";
+  return totalHandValueMessage;
 };
 
 var displayTotalValue = function (playerHandValue, dealerHandValue) {
@@ -440,7 +491,7 @@ var main = function (input) {
     //   { name: "ace", suit: "spades", rank: 1 },
     //   { name: 10, suit: "spades", rank: 10 },
     // ];
-
+    // console.log(currentGameMode);
     var playerHasBlackJack = checkForBlackJack(playerHand);
     var dealerHasBlackJack = checkForBlackJack(dealerHand);
 
@@ -466,7 +517,7 @@ var main = function (input) {
           displayTotalValue(playerHandTotalValue, dealerHandTotalValue);
       }
       // dealer has blackjack -> dealer wins
-      else if (playerHasBlackJack == false && dealerHasBlackJack == trure) {
+      else if (playerHasBlackJack == false && dealerHasBlackJack == true) {
         myOutputValue =
           displayPlayerAndDealerHands(playerHand, dealerHand) +
           "Opppsy, you lose! Dealer got a black jack!" +
@@ -485,8 +536,10 @@ var main = function (input) {
       myOutputValue = "There is no blackjack! Let's calculate";
       // no blackjack -> check the total value
       // calculate the total hand value for both dealer and player
+      // console.log("pre function");
       var playerHandTotalValue = calculateTotalHandValue(playerHand);
       var dealerHandTotalValue = calculateTotalHandValue(dealerHand);
+      // console.log("post function");
 
       // console.log("player total hand value");
       // console.log(playerHandTotalValue);
@@ -511,23 +564,23 @@ var main = function (input) {
       // same value for both -> tie
       else if (playerHandTotalValue == dealerHandTotalValue) {
         myOutputValue =
-          displayPlayerAndDealerHands(playerHand, dealerHand) +
-          "It is a tie! Both add up to same amount!" +
-          displayTotalValue(playerHandTotalValue, dealerHandTotalValue);
+          displayPlayerAndDealerHandsFirst(playerHand, dealerHand) +
+          "Player, It is a tie so far! Type 'hit' or 'stand' to continue" +
+          displayTotalValueFirst(playerHandTotalValue, dealerHand);
       }
       // player has higher value -> player wins
       else if (playerHandTotalValue > dealerHandTotalValue) {
         myOutputValue =
-          displayPlayerAndDealerHands(playerHand, dealerHand) +
-          "Player wins!" +
-          displayTotalValue(playerHandTotalValue, dealerHandTotalValue);
+          displayPlayerAndDealerHandsFirst(playerHand, dealerHand) +
+          "Player, Type 'hit' or 'stand' to continue" +
+          displayTotalValueFirst(playerHandTotalValue, dealerHand);
       }
       // dealer has higher value -> dealer wins
       else if (playerHandTotalValue < dealerHandTotalValue) {
         myOutputValue =
-          displayPlayerAndDealerHands(playerHand, dealerHand) +
-          "Dealer wins!" +
-          displayTotalValue(playerHandTotalValue, dealerHandTotalValue);
+          displayPlayerAndDealerHandsFirst(playerHand, dealerHand) +
+          "Player, Type 'hit' or 'stand' to continue" +
+          displayTotalValueFirst(playerHandTotalValue, dealerHand);
       }
     }
     // change game mode
@@ -547,9 +600,17 @@ var main = function (input) {
     // user input "hit"
     else if (input == "hit") {
       playerHand.push(deck.pop());
-      myOutputValue =
-        displayPlayerAndDealerHands(playerHand, dealerHand) +
-        "<br> You just draw another card. <br>Please input 'hit' or 'stand' to continue. ";
+      var playerHandTotalValue = calculateTotalHandValue(playerHand);
+      var dealerHandTotalValue = calculateTotalHandValue(dealerHand);
+      if (playerHandTotalValue > 21) {
+        myOutputValue = "BUST! player lose";
+      } else {
+        myOutputValue =
+          displayPlayerAndDealerHands(playerHand, dealerHand) +
+          "<br> You just draw another card. Your total value is " +
+          playerHandTotalValue +
+          " now. <br> Please input 'hit' or 'stand' to continue. ";
+      }
     }
     // user input "stand"
     else if (input == "stand") {
