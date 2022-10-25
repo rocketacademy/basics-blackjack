@@ -3,6 +3,8 @@ var computer = [];
 
 var dealtDeck = [];
 
+var WIN_VALUE = 21;
+
 var cardType = ["Hearts", "Spades", "Clovers", "Clubs"];
 var handType = {
   Normal : 'Normal',
@@ -31,8 +33,8 @@ var getCardName = function (num, suit) {
 var getCardFromDeck = function () {
  //get value of card from Ace(1) to King(13)
  var num = Math.floor(Math.random() * 13) + 1;
-
  var suit = cardType[Math.floor(Math.random() * 4)];
+ var name = getCardName(num, suit);
 
 //value of card will be 10 regardless of card is 10, Jack, Queen or King.
 if (num > 10)
@@ -41,7 +43,7 @@ if (num > 10)
  return card = {
     rank: num,
     suit: suit,
-    name: getCardName(num, suit)
+    name: name
  };
 }
 
@@ -58,17 +60,16 @@ var dealFirstHand = function(hand) {
 
 var findHandHighestScore = function (hand){
   if (hand.length == 2) {
-    //check if contain Ace - can be used as 1, 10 or 11
     if (hand[0].rank == 1 && hand[1].rank == 1){
       //TODO: Advanced - handle double Ace condition
       return {
-        score: 21,
+        score: WIN_VALUE,
         handType: handType.DoubleAs
       }
     }
     if ((hand[0].rank == 1) && (hand[1].rank >= 10) || (hand[1].rank == 1) && (hand[0].rank >= 10)) {
       return {
-        score: 21,
+        score: WIN_VALUE,
         handType: handType.Blackjack
       }
     } else {
@@ -80,12 +81,35 @@ var findHandHighestScore = function (hand){
   }
 
   var total = 0;
+  var numOfAce = 0;
+  var numOfAceUsed = 0;
   for (var card in hand) {
-    total += hand[card].rank;
+    var value = hand[card].rank;
+    if (value == 1) { //is Ace
+      numOfAce += 1;
+    } else {
+      total += hand[card].rank;
+    }
+  }
+
+  //check if contain 1 Ace - can be used as 1, 10 or 11, 2 Ace - can only be 1.
+  if (numOfAce > 0) {
+    if (WIN_VALUE - total >= 11){
+      total += 11;
+      numOfAceUsed += 1;
+    }
+
+    if (WIN_VALUE - total >= 10){
+      total += 10;
+      numOfAceUsed += 1;
+    }
+    
+    var remainder = numOfAce - numOfAceUsed;
+    total += remainder;
   }
 
   var type = handType.Normal;
-  if (total > 21)
+  if (total > WIN_VALUE)
     type = handType.Busted;
 
   return {
@@ -144,8 +168,6 @@ var findWinnerResults = function (comScore, playerScore){
 var playBlackjackResults = function (){
   var comScore = findHandHighestScore(computer);
   var playerScore = findHandHighestScore(player);
-  console.log(comScore);
-  console.log(playerScore);
   return findWinnerResults(comScore, playerScore);
 }
 
