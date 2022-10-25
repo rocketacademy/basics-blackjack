@@ -8,6 +8,7 @@ var handType = {
   Normal : 'Normal',
   Blackjack : 'Blackjack',
   DoubleAs : 'DoubleAs',
+  Busted : 'Busted'
 }
 
 var getCardName = function (num, suit) {
@@ -32,6 +33,10 @@ var getCardFromDeck = function () {
  var num = Math.floor(Math.random() * 13) + 1;
 
  var suit = cardType[Math.floor(Math.random() * 4)];
+
+//value of card will be 10 regardless of card is 10, Jack, Queen or King.
+if (num > 10)
+  num = 10;
 
  return card = {
     rank: num,
@@ -76,40 +81,60 @@ var findHandHighestScore = function (hand){
 
   var total = 0;
   for (var card in hand) {
-    total += card.rank;
+    total += hand[card].rank;
   }
+
+  var type = handType.Normal;
+  if (total > 21)
+    type = handType.Busted;
 
   return {
     score: total,
-    handType: handType.Normal
+    handType: type
   } 
 }
 
+//TODO: Sum of cards cannot be under 16 & cover busted hands
 var findWinnerResults = function (comScore, playerScore){
+
+  if (playerScore.score < 16) {
+    if (comScore.handType == handType.Busted){
+      return `Computer busted and Player hands under 16, <br> It's a draw!`;
+    }
+    return `Computer draws ${comSCore.score} and Player hand is under 16, <br> Computer Wins!`;
+  }
+
   switch (comScore.handType) {
+    case handType.Busted:
+      if (playerScore.handType == handType.Busted) {
+        return `Computer Busted and Player Busted, <br> It's a draw.`;
+      } 
+      return `Computer busted and Player hands ${playerScore.score}, <br> Player Wins!`;
     case handType.Blackjack:
     case handType.DoubleAs:
       if (playerScore.handType == handType.Normal) {
         if (playerScore.score == 21)
-          return `Computer draws ${comScore.handType} and Player hands ${playerScore.score}, <br> it's a draw.`;
+          return `Computer draws ${comScore.handType} and Player hands ${playerScore.score}, <br> It's a draw.`;
         else {
           return `Computer draws ${comScore.handType} and Player hands ${playerScore.score}, <br> Computer Wins.`;
         }
       } else {
-        return `Computer draws ${comScore.handType} and Player hands ${playerScore.handType}, <br>  it's a draw.`;
+        return `Computer draws ${comScore.handType} and Player hands ${playerScore.handType}, <br> It's a draw.`;
       }
     default: //Normal
-      if (playerScore.handType == handType.Normal) {
+      if (playerScore.handType == handType.Busted) {
+        return `Computer draws ${comScore.score} and Player Busted, <br> Computer Wins!`;
+      } else if (playerScore.handType == handType.Normal) {
         var result = `Computer draws ${comScore.score} and Player hands ${playerScore.score}, `;
         if (comScore.score > playerScore.score)
           return  result + '<br> Computer Wins.';
         if (comScore.score < playerScore.score)
           return result +  '<br> Player Wins.';
-        return result + `<br> it's a draw.`;
+        return result + `<br> It's a draw.`;
       } else {
         //check if player has blackjack or doubleAs
         if (playerScore.score == 21)
-          return `Computer draws ${comScore.score} and Player hands ${playerScore.handType},<br> it's a draw.`;
+          return `Computer draws ${comScore.score} and Player hands ${playerScore.handType},<br> It's a draw.`;
         else
           return `Computer draws ${comScore.score} and Player hands ${playerScore.handType},<br> Player Win.`;
       }
@@ -124,15 +149,58 @@ var playBlackjackResults = function (){
   return findWinnerResults(comScore, playerScore);
 }
 
+var getRoundDetails = function (){
+  var roundDetails = 'Player: ';
+
+  for (var card in player) {
+    roundDetails += player[card].name + ", ";
+  }
+  roundDetails += " with sum " + findHandHighestScore(player).score + '<br>';
+
+  roundDetails += 'Computer: ';
+
+  for (var card in computer) {
+    roundDetails += computer[card].name + ", ";
+  }
+
+  roundDetails += " with sum " + findHandHighestScore(computer).score;
+
+  return roundDetails + '<br>';
+}
+
+var playComputerAI = function(){
+  var highest = findHandHighestScore(computer).score;
+  var playerHand = findHandHighestScore(player);
+  //check if card is lower than 16
+  if ((highest < 16) || (playerHand.handType != handType.Busted && highest < playerHand.score)){
+    computer.push(getCardFromDeck());
+    playComputerAI();
+  }
+}
+
 var main = function (input) {
   //populate hand
-  dealFirstHand(computer);
-  dealFirstHand(player);
-  return `
-  Computer: ${computer[0].name}, ${computer[1].name}
-  <br>
-  Player: ${player[0].name}, ${player[1].name}
-  <br>
-  ${playBlackjackResults()}
-  `;
+  if (computer.length < 2)
+    dealFirstHand(computer);
+  if (player.length < 2)
+    dealFirstHand(player);
+
+  var output = getRoundDetails();
+
+  //user draws another card
+  if (input == "hit") {
+    console.log('hit');
+    player.push(getCardFromDeck());
+    output = getRoundDetails();
+  }
+
+  //user end turn
+  if (input == "stand") {
+    //computer turn
+    playComputerAI();
+    output = getRoundDetails();
+    return output + `<br> ${playBlackjackResults()}`;
+  }
+
+  return output + '<br> Please type "hit" or "stand" to continue the game';
 };
