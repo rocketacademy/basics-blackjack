@@ -5,7 +5,8 @@ var dealtDeck = [];
 
 var WIN_VALUE = 21;
 
-var cardType = ["Hearts", "Spades", "Clovers", "Clubs"];
+// var cardType = ["Hearts", "Spades", "Clubs", "Diamonds"];
+var cardType = ["♥️", "♠️", "♣️", "♦️"];
 var handType = {
   Normal : 'Normal',
   Blackjack : 'Blackjack',
@@ -171,7 +172,7 @@ var playBlackjackResults = function (){
   return findWinnerResults(comScore, playerScore);
 }
 
-var getRoundDetails = function (){
+var getRoundDetails = function (hideDealer){
   var roundDetails = 'Player: ';
 
   for (var card in player) {
@@ -181,11 +182,15 @@ var getRoundDetails = function (){
 
   roundDetails += 'Computer: ';
 
-  for (var card in computer) {
-    roundDetails += computer[card].name + ", ";
+  if (hideDealer) {
+    roundDetails += computer[0].name;
+  } else {
+    for (var card in computer) {
+      roundDetails += computer[card].name + ", ";
+    }
+  
+    roundDetails += " with sum " + findHandHighestScore(computer).score;
   }
-
-  roundDetails += " with sum " + findHandHighestScore(computer).score;
 
   return roundDetails + '<br>';
 }
@@ -207,20 +212,20 @@ var main = function (input) {
   if (player.length < 2)
     dealFirstHand(player);
 
-  var output = getRoundDetails();
+  var output = getRoundDetails(true);
 
   //user draws another card
   if (input == "hit") {
     console.log('hit');
     player.push(getCardFromDeck());
-    output = getRoundDetails();
+    output = getRoundDetails(true);
   }
 
   //user end turn
   if (input == "stand") {
     //computer turn
     playComputerAI();
-    output = getRoundDetails();
+    output = getRoundDetails(false);
     return output + `<br> ${playBlackjackResults()}`;
   }
 
