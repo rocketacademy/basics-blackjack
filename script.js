@@ -1,8 +1,8 @@
 // Project #3 - Blackjack
 
-// Add logic for replaying game + if blackjack to go to replay state
-// Add computer hit or stand logic
-// Add ace variable logic
+// To-do List:
+// Add user minimum card draw logic
+// Add buttons and remove input box
 // Bonus Features: add ban-ban or 5 cards<21 logic? (Only if bets are included); multi players; betting features
 
 // Game States & Modes
@@ -15,7 +15,7 @@ var computerCards = [];
 // Make deck function
 var makeDeck = function () {
   var cardDeck = [];
-  var suits = ["Hearts", "Diamonds", "Clubs", "Spades"];
+  var suits = ["♦️", "♣️", "♥️", "♠️"];
   // Loop over the suits array
   var suitIndex = 0;
   while (suitIndex < suits.length) {
@@ -86,18 +86,7 @@ var dealFirstHand = function () {
   playerCards.push(shuffledDeck.pop());
   computerCards.push(shuffledDeck.pop());
 
-  playerFirstTwoCards =
-    "Player's hand:<br>" +
-    playerCards[0].name +
-    " of " +
-    playerCards[0].suit +
-    "<br>" +
-    playerCards[1].name +
-    " of " +
-    playerCards[1].suit +
-    "<br>";
-
-  return playerFirstTwoCards + calculateHandValue(playerCards);
+  return showPlayerHand(playerCards);
 };
 
 // Check for Blackjack
@@ -118,6 +107,7 @@ var checkBlackjack = function (inputArray) {
 // Loop through arrays to calculate value of current hands
 var calculateHandValue = function (inputArray) {
   var handValue = 0;
+  var aceCounter = 0;
   for (let counter = 0; counter < inputArray.length; counter += 1) {
     var currentCard = inputArray[counter];
     if (
@@ -126,11 +116,30 @@ var calculateHandValue = function (inputArray) {
       currentCard.name == "King"
     ) {
       handValue = handValue + 10;
+    }
+
+    // Variable ace logic using ace counter
+    else if (currentCard.name == "Ace") {
+      aceCounter = aceCounter + 1;
+      //Blackjack scenario
+      if (aceCounter < 2 && handValue == 21 && inputArray.length == 2) {
+        handValue = handValue + 11;
+        // Ace = 10 condition, for more than 2 cards
+      } else if (aceCounter < 2 && handValue < 12 && inputArray.length > 2) {
+        handValue = handValue + 10;
+        // Ace = 1 condition, for more than 2 cards
+      } else if (aceCounter < 2 && handValue >= 12 && inputArray.length > 2) {
+        handValue = handValue + 1;
+        // Ace = 1 condition, for 2 aces or more, more than 2 cards
+      } else if (aceCounter >= 2 && inputArray.length > 2) {
+        handValue = handValue + 1;
+      }
+      return handValue;
     } else {
       handValue = handValue + currentCard.rank;
     }
   }
-  return "<br>Hand value: " + handValue;
+  return handValue;
 };
 
 // Loop to update Player's hand throughout game
@@ -144,7 +153,7 @@ var showPlayerHand = function (playerCards) {
       playerCards[counter].suit +
       "<br>";
   }
-  return playerMessage + calculateHandValue(playerCards);
+  return playerMessage + "<br>Hand value: " + calculateHandValue(playerCards);
 };
 
 // Loop for Computer's hand
@@ -158,7 +167,9 @@ var showComputerHand = function (computerCards) {
       computerCards[counter].suit +
       "<br>";
   }
-  return computerMessage + calculateHandValue(computerCards);
+  return (
+    computerMessage + "<br>Hand value: " + calculateHandValue(computerCards)
+  );
 };
 
 // Restart Game
@@ -166,6 +177,7 @@ var restartGame = function () {
   gameState = "deal";
   playerCards = [];
   computerCards = [];
+  return "<br><br> Ready for another round? Press submit to deal a new hand.";
 };
 
 var main = function (input) {
@@ -182,16 +194,13 @@ var main = function (input) {
 
     // Two Blackjacks
     if (playerBlackjack == true && computerBlackjack == true) {
-      outputMessage = "<br><br>It's a tie.";
-      gameState = "results";
-      // Player blackjack
+      outputMessage = "<br><br>It's a tie." + restartGame();
+      // Player Blackjack
     } else if (playerBlackjack == true && computerBlackjack == false) {
-      outputMessage = "<br><br>Blackjack! Player wins.";
-      gameState = "results";
+      outputMessage = "<br><br>Blackjack! Player wins." + restartGame();
       // Computer Blackjack
     } else if (playerBlackjack == false && computerBlackjack == true) {
-      outputMessage = "<br><br>Blackjack! Computer wins.";
-      gameState = "results";
+      outputMessage = "<br><br>Blackjack! Computer wins." + restartGame();
     } else {
       outputMessage =
         "<br><br> Choose your next action by typing in 'hit' or 'stand'.";
@@ -210,6 +219,13 @@ var main = function (input) {
         "You drew a card!<br><br>" + showPlayerHand(playerCards) + outputMessage
       );
     } else if (input == "stand") {
+      var playerTotal = calculateHandValue(playerCards);
+      var computerTotal = calculateHandValue(computerCards);
+      // Dealer Hit functionality
+      while (computerTotal < 17) {
+        computerCards.push(shuffledDeck.pop());
+        computerTotal = calculateHandValue(computerCards);
+      }
       gameState = "results";
     } else {
       return showPlayerHand(playerCards) + outputMessage;
@@ -220,10 +236,8 @@ var main = function (input) {
   if (gameState == "results") {
     var allScores =
       showPlayerHand(playerCards) +
-      "<br><br>♣️♠️♦️♥️♣️♠️♦️♥️<br><br>" +
+      "<br><br>--------------<br><br>" +
       showComputerHand(computerCards);
-    var playerTotal = calculateHandValue(playerCards);
-    var computerTotal = calculateHandValue(computerCards);
 
     // Tie Scenario - #1 Player and Computer tie but less than 21, #2 Both bust
     if (
@@ -244,11 +258,8 @@ var main = function (input) {
       outputMessage = "Computer wins!<br><br>" + allScores;
     }
     // Update game state to replay
-    restartGame();
-    return (
-      outputMessage +
-      "<br><br> Ready for another round? Press submit to deal a new hand."
-    );
+
+    return outputMessage + restartGame();
   }
 
   return myOutputvalue;
