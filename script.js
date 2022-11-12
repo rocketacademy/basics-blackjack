@@ -1,7 +1,7 @@
 // Project #3 - Blackjack
 
 // To-do List:
-// Add user minimum card draw logic
+// Add user minimum card draw logic (can implement this with buttons? Button disabled when below a certain number, always put rules on screen?)
 // Add buttons and remove input box
 // Bonus Features: add ban-ban or 5 cards<21 logic? (Only if bets are included); multi players; betting features
 
@@ -108,6 +108,7 @@ var checkBlackjack = function (inputArray) {
 var calculateHandValue = function (inputArray) {
   var handValue = 0;
   var aceCounter = 0;
+  // Main loop
   for (let counter = 0; counter < inputArray.length; counter += 1) {
     var currentCard = inputArray[counter];
     if (
@@ -116,27 +117,25 @@ var calculateHandValue = function (inputArray) {
       currentCard.name == "King"
     ) {
       handValue = handValue + 10;
-    }
-
-    // Variable ace logic using ace counter
-    else if (currentCard.name == "Ace") {
+      // Return Ace as 11 as a default
+    } else if (currentCard.name == "Ace") {
       aceCounter = aceCounter + 1;
-      //Blackjack scenario
-      if (aceCounter < 2 && handValue == 21 && inputArray.length == 2) {
-        handValue = handValue + 11;
-        // Ace = 10 condition, for more than 2 cards
-      } else if (aceCounter < 2 && handValue < 12 && inputArray.length > 2) {
-        handValue = handValue + 10;
-        // Ace = 1 condition, for more than 2 cards
-      } else if (aceCounter < 2 && handValue >= 12 && inputArray.length > 2) {
-        handValue = handValue + 1;
-        // Ace = 1 condition, for 2 aces or more, more than 2 cards
-      } else if (aceCounter >= 2 && inputArray.length > 2) {
-        handValue = handValue + 1;
-      }
-      return handValue;
+      handValue = handValue + 11;
     } else {
       handValue = handValue + currentCard.rank;
+    }
+  }
+  // Variable Ace logic loop
+  for (let index = 0; index < aceCounter; index += 1) {
+    // Double Ace Scenario
+    if (handValue == 22 && inputArray.length == 2) {
+      handValue = handValue - 1;
+      // Above 21, Ace is always a "1"
+    } else if (handValue > 21) {
+      handValue = handValue - 10;
+      // Below 21, Ace should count as 10
+    } else if (handValue <= 21 && inputArray.length > 2) {
+      handValue = handValue - 1;
     }
   }
   return handValue;
@@ -194,13 +193,15 @@ var main = function (input) {
 
     // Two Blackjacks
     if (playerBlackjack == true && computerBlackjack == true) {
-      outputMessage = "<br><br>It's a tie." + restartGame();
+      outputMessage =
+        "<br><br>Both players got Blackjack! It's a tie." + restartGame();
       // Player Blackjack
     } else if (playerBlackjack == true && computerBlackjack == false) {
       outputMessage = "<br><br>Blackjack! Player wins." + restartGame();
       // Computer Blackjack
     } else if (playerBlackjack == false && computerBlackjack == true) {
-      outputMessage = "<br><br>Blackjack! Computer wins." + restartGame();
+      outputMessage =
+        "<br><br>Computer got a Blackjack! Computer wins." + restartGame();
     } else {
       outputMessage =
         "<br><br> Choose your next action by typing in 'hit' or 'stand'.";
@@ -246,10 +247,11 @@ var main = function (input) {
     ) {
       outputMessage = "It's a tie.<br><br>" + allScores;
     }
-    // Player Win - #1 Player > Computer but less than 21, #2 Computer bust only
+    // Player Win - #1 Player > Computer but less than 21, #2 Computer bust only. #3 >5 cards below 21
     else if (
       (playerTotal > computerTotal && playerTotal <= 21) ||
-      (playerTotal <= 21 && computerTotal > 21)
+      (playerTotal <= 21 && computerTotal > 21) ||
+      (playerTotal <= 21 && playerCards.length >= 5)
     ) {
       outputMessage = "Player wins!<br><br>" + allScores;
     }
