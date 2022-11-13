@@ -328,10 +328,14 @@ var standMain = function (input) {
       "<br><br><br>" +
       showdealerHand(dealerCards);
 
-    // Tie Scenario - #1 Player and dealer tie but less than 21, #2 Both bust
+    // Tie Scenario - #1 Player and dealer tie but less than 21, #2 Both bust, #3 Computer and Player both hit 5-card instant win condition
     if (
       (playerTotal == dealerTotal && playerTotal <= 21) ||
-      (playerTotal > 21 && dealerTotal > 21)
+      (playerTotal > 21 && dealerTotal > 21) ||
+      (playerTotal <= 21 &&
+        playerCards.length >= 5 &&
+        dealerTotal <= 21 &&
+        dealerCards.length >= 5)
     ) {
       outputMessage =
         "<strong>😐 It's a tie. How boring. 😐<br><br></strong>" +
