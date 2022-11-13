@@ -1,16 +1,11 @@
 // Project #3 - Blackjack
 
-// To-do List:
-// Add user minimum card draw logic (can implement this with buttons? Button disabled when below a certain number, always put rules on screen?)
-// Add buttons and remove input box
-// Bonus Features: add ban-ban or 5 cards<21 logic? (Only if bets are included); multi players; betting features
-
 // Game States & Modes
 var gameState = "deal";
 
 // Arrays
 var playerCards = [];
-var computerCards = [];
+var dealerCards = [];
 
 // Make deck function
 var makeDeck = function () {
@@ -78,13 +73,13 @@ var shuffleCards = function (cardDeck) {
   return cardDeck;
 };
 
-// Deal first two cards to player and computer
+// Deal first two cards to player and dealer
 var dealFirstHand = function () {
   // Draw and remove
   playerCards.push(shuffledDeck.pop());
-  computerCards.push(shuffledDeck.pop());
+  dealerCards.push(shuffledDeck.pop());
   playerCards.push(shuffledDeck.pop());
-  computerCards.push(shuffledDeck.pop());
+  dealerCards.push(shuffledDeck.pop());
 
   return showPlayerHand(playerCards);
 };
@@ -143,7 +138,7 @@ var calculateHandValue = function (inputArray) {
 
 // Loop to update Player's hand throughout game
 var showPlayerHand = function (playerCards) {
-  var playerMessage = "Player's hand:<br>";
+  var playerMessage = "<strong>Player's hand:<br></strong>";
   for (let counter = 0; counter < playerCards.length; counter += 1) {
     playerMessage =
       playerMessage +
@@ -152,117 +147,220 @@ var showPlayerHand = function (playerCards) {
       playerCards[counter].suit +
       "<br>";
   }
-  return playerMessage + "<br>Hand value: " + calculateHandValue(playerCards);
+  return playerMessage + "Hand value: " + calculateHandValue(playerCards);
 };
 
-// Loop for Computer's hand
-var showComputerHand = function (computerCards) {
-  var computerMessage = "Computer's hand:<br> ";
-  for (let counter = 0; counter < computerCards.length; counter += 1) {
-    computerMessage =
-      computerMessage +
-      computerCards[counter].name +
+// Loop for dealer's hand
+var showdealerHand = function (dealerCards) {
+  var dealerMessage = "<strong>Dealer's hand:<br></strong> ";
+  for (let counter = 0; counter < dealerCards.length; counter += 1) {
+    dealerMessage =
+      dealerMessage +
+      dealerCards[counter].name +
       " of " +
-      computerCards[counter].suit +
+      dealerCards[counter].suit +
       "<br>";
   }
-  return (
-    computerMessage + "<br>Hand value: " + calculateHandValue(computerCards)
-  );
+  return dealerMessage + "Hand value: " + calculateHandValue(dealerCards);
 };
 
 // Restart Game
 var restartGame = function () {
   gameState = "deal";
   playerCards = [];
-  computerCards = [];
-  return "<br><br> Ready for another round? Press submit to deal a new hand.";
+  dealerCards = [];
+  // Only deal button should be activated on game restart
+  document.querySelector("#deal-button").disabled = false;
+  document.querySelector("#hit-button").disabled = true;
+  document.querySelector("#stand-button").disabled = true;
+  return "<br><br> Ready for another round? Press the deal button for a new hand.";
 };
 
-var main = function (input) {
-  var myOutputvalue = "";
+// Deal Button Functionality
+var button = document.querySelector("#deal-button");
+button.addEventListener("click", function () {
+  var input = document.querySelector("#deal-button");
+  var result = dealMain(input.value);
+  var checkLimit = calculateHandValue(playerCards);
+  var playerBlackjack = checkBlackjack(playerCards);
+  var dealerBlackjack = checkBlackjack(dealerCards);
+  // Anything less than 16, player can only hit, disable stand button
+  if (checkLimit < 16) {
+    document.querySelector("#stand-button").disabled = true;
+    document.querySelector("#hit-button").disabled = false;
+    // Blackjack - both hit and stand buttons disabled
+  } else if (
+    (playerBlackjack == true && dealerBlackjack == true) ||
+    (playerBlackjack == true && dealerBlackjack == false) ||
+    (playerBlackjack == false && dealerBlackjack == true)
+  ) {
+    document.querySelector("#hit-button").disabled = true;
+    document.querySelector("#stand-button").disabled = true;
+    // Otherwise, hit and stand should be operational by default
+  } else {
+    document.querySelector("#stand-button").disabled = false;
+    document.querySelector("#hit-button").disabled = false;
+  }
 
-  // Game State deal - deal first hand to players and computer
+  var output = document.querySelector("#output-div");
+  output.innerHTML = result;
+});
+
+// Hit Button Functionality
+var button = document.querySelector("#hit-button");
+button.addEventListener("click", function () {
+  var input = document.querySelector("#hit-button");
+  var result = hitMain(input.value);
+  var checkLimit = calculateHandValue(playerCards);
+  // Player under limit and less than 5 cards, have to hit
+  if (checkLimit < 16 && playerCards.length < 5) {
+    document.querySelector("#stand-button").disabled = true;
+    // Player at 21 or over limit, have to stand
+  } else if (checkLimit >= 21) {
+    document.querySelector("#hit-button").disabled = true;
+    document.querySelector("#stand-button").disabled = false;
+    // Player under or = 21, and more than 5 cards, instant win, hit disabled
+  } else if (checkLimit <= 21 && playerCards.length >= 5) {
+    document.querySelector("#hit-button").disabled = true;
+    document.querySelector("#stand-button").disabled = false;
+    // Else, stand should be enabled by default
+  } else {
+    document.querySelector("#stand-button").disabled = false;
+  }
+  var output = document.querySelector("#output-div");
+  output.innerHTML = result;
+});
+
+// Stand Button Functionality
+var button = document.querySelector("#stand-button");
+button.addEventListener("click", function () {
+  var input = document.querySelector("#stand-button");
+  var result = standMain(input.value);
+  var output = document.querySelector("#output-div");
+  output.innerHTML = result;
+});
+
+// Images
+var firstTwoCardsImage =
+  '<img src="https://media.giphy.com/media/e683aBpYMgrKhOg0gJ/giphy.gif" class = "center">';
+var tieImage =
+  '<img src = "https://media.giphy.com/media/cqcsaDCht6hmZX7e6d/giphy-downsized-large.gif" class = "center">';
+var dealerWinImage =
+  '<img src = "https://media.giphy.com/media/NY3tXwOBUwQYq7lbXx/giphy.gif" class="center">';
+var playerWinImage =
+  '<img src = "https://media.giphy.com/media/WjubYDzkPDMiVg8Zn2/giphy.gif" class="center">';
+var playerHitImage =
+  '<img src = "https://media.giphy.com/media/Hloo0Lv97Sw72owSRA/giphy.gif" class="center">';
+
+// Main Function #1 - Deal Button
+var dealMain = function (input) {
+  // Game State deal - deal first hand to players and dealer
   if (gameState == "deal") {
     shuffledDeck = createShuffledDeck();
     playerFirstTwoCards = dealFirstHand();
 
     // Blackjack Check
     var playerBlackjack = checkBlackjack(playerCards);
-    var computerBlackjack = checkBlackjack(computerCards);
+    var dealerBlackjack = checkBlackjack(dealerCards);
 
     // Two Blackjacks
-    if (playerBlackjack == true && computerBlackjack == true) {
+    if (playerBlackjack == true && dealerBlackjack == true) {
       outputMessage =
-        "<br><br>Both players got Blackjack! It's a tie." + restartGame();
+        "<br><br>Both players got Blackjack! It's a tie.<br><br>" +
+        restartGame() +
+        "<br><br>" +
+        tieImage;
       // Player Blackjack
-    } else if (playerBlackjack == true && computerBlackjack == false) {
-      outputMessage = "<br><br>Blackjack! Player wins." + restartGame();
-      // Computer Blackjack
-    } else if (playerBlackjack == false && computerBlackjack == true) {
+    } else if (playerBlackjack == true && dealerBlackjack == false) {
       outputMessage =
-        "<br><br>Computer got a Blackjack! Computer wins." + restartGame();
+        "<br><br>Blackjack! Player wins." +
+        restartGame() +
+        "<br><br>" +
+        playerWinImage;
+      // Dealer Blackjack
+    } else if (playerBlackjack == false && dealerBlackjack == true) {
+      outputMessage =
+        "<br><br>Dealer got a Blackjack! Dealer wins.<br><br>" +
+        restartGame() +
+        "<br><br>" +
+        dealerWinImage;
     } else {
       outputMessage =
-        "<br><br> Choose your next action by typing in 'hit' or 'stand'.";
+        "<br><br> Press 'hit' to draw a card or 'stand' to view results.<br><br>" +
+        firstTwoCardsImage;
       gameState = "choose";
+      document.querySelector("#deal-button").disabled = true;
     }
     return playerFirstTwoCards + outputMessage;
   }
+};
 
-  // Game State "Choose" - player to decide to hit or stand
+// Main Function #2 - Hit Button
+var hitMain = function (input) {
   if (gameState == "choose") {
     outputMessage =
-      "<br><br> Choose your next action by typing in 'hit' or 'stand'.";
-    if (input == "hit") {
-      playerCards.push(shuffledDeck.pop());
-      return (
-        "You drew a card!<br><br>" + showPlayerHand(playerCards) + outputMessage
-      );
-    } else if (input == "stand") {
-      var playerTotal = calculateHandValue(playerCards);
-      var computerTotal = calculateHandValue(computerCards);
-      // Dealer Hit functionality
-      while (computerTotal < 17) {
-        computerCards.push(shuffledDeck.pop());
-        computerTotal = calculateHandValue(computerCards);
-      }
-      gameState = "results";
-    } else {
-      return showPlayerHand(playerCards) + outputMessage;
-    }
-  }
+      "<br><br> Press 'hit' to draw a card or 'stand' to view results.<br><br>" +
+      playerHitImage;
+    playerCards.push(shuffledDeck.pop());
 
-  // Game State "Results"
+    return (
+      "<strong>🃏 You drew a card 🃏<br><br></strong>" +
+      showPlayerHand(playerCards) +
+      outputMessage
+    );
+  }
+};
+
+// Main Function #3 - Stand Button
+var standMain = function (input) {
+  var playerTotal = calculateHandValue(playerCards);
+  var dealerTotal = calculateHandValue(dealerCards);
+  // Dealer Hit functionality
+  while (dealerTotal < 17) {
+    dealerCards.push(shuffledDeck.pop());
+    dealerTotal = calculateHandValue(dealerCards);
+  }
+  gameState = "results";
+
   if (gameState == "results") {
     var allScores =
       showPlayerHand(playerCards) +
-      "<br><br>--------------<br><br>" +
-      showComputerHand(computerCards);
+      "<br><br><br>" +
+      showdealerHand(dealerCards);
 
-    // Tie Scenario - #1 Player and Computer tie but less than 21, #2 Both bust
+    // Tie Scenario - #1 Player and dealer tie but less than 21, #2 Both bust
     if (
-      (playerTotal == computerTotal && playerTotal <= 21) ||
-      (playerTotal > 21 && computerTotal > 21)
+      (playerTotal == dealerTotal && playerTotal <= 21) ||
+      (playerTotal > 21 && dealerTotal > 21)
     ) {
-      outputMessage = "It's a tie.<br><br>" + allScores;
+      outputMessage =
+        "<strong>😐 It's a tie. How boring. 😐<br><br></strong>" +
+        allScores +
+        "<br><br>" +
+        tieImage;
     }
-    // Player Win - #1 Player > Computer but less than 21, #2 Computer bust only. #3 >5 cards below 21
+    // Player Win - #1 Player > dealer but less than 21, #2 dealer bust only. #3 >5 cards below 21
     else if (
-      (playerTotal > computerTotal && playerTotal <= 21) ||
-      (playerTotal <= 21 && computerTotal > 21) ||
+      (playerTotal > dealerTotal && playerTotal <= 21) ||
+      (playerTotal <= 21 && dealerTotal > 21) ||
       (playerTotal <= 21 && playerCards.length >= 5)
     ) {
-      outputMessage = "Player wins!<br><br>" + allScores;
+      outputMessage =
+        "<strong>🏆 Player wins! Let's goooooo! 🏆<br><br></strong>" +
+        allScores +
+        "<br><br>" +
+        playerWinImage;
     }
-    // Computer Win
+    // dealer Win
     else {
-      outputMessage = "Computer wins!<br><br>" + allScores;
+      outputMessage =
+        "<strong>🤖 Dealer wins! Better luck next time chump. 🤖<br><br></strong>" +
+        allScores +
+        "<br><br>" +
+        dealerWinImage;
     }
     // Update game state to replay
 
     return outputMessage + restartGame();
   }
-
-  return myOutputvalue;
 };
