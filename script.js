@@ -96,6 +96,7 @@ const analyzeGame = function () {
       results["Player 1"].cardTotal <= 21) ||
     (results["Player 1"].cardTotal <= 21 && results.dealer.cardTotal > 21)
   ) {
+    results["Player 1"].score += 1;
     if (checkBlackjackWin("Player 1")) return "Player won by Blackjack";
     else return "Player won";
   } else if (
@@ -103,8 +104,9 @@ const analyzeGame = function () {
       results.dealer.cardTotal <= 21) ||
     (results.dealer.cardTotal <= 21 && results["Player 1"].cardTotal > 21)
   )
-    if (checkBlackjackWin("dealer")) return "Dealer won by Blackjack";
-    else return "Dealer won";
+    results.dealer.score += 1;
+  if (checkBlackjackWin("dealer")) return "Dealer won by Blackjack";
+  else return "Dealer won";
 };
 const resetGame = () => {
   gameState = GAMESTATES[0];
@@ -175,6 +177,7 @@ document.querySelector(".button__div").addEventListener("click", function (e) {
   }
 });
 const main = function (input) {
+  outputLeaderBoard();
   if (gameState === GAMESTATES[0]) {
     // 1. shuffle the card deck
     // 2. draw the cards
@@ -187,4 +190,15 @@ const main = function (input) {
     return drawCardOutput();
   }
   return resultOutput(); // if gameState === show-results
+};
+const outputLeaderBoard = function () {
+  let allScores = [];
+  const players = Object.keys(results);
+  for (const player of players) {
+    allScores.push(results[player].score);
+  }
+  const scoreNodes = document.querySelectorAll(".score");
+  scoreNodes.forEach((score, idx) => {
+    score.innerHTML = `${players[idx]}'s score: ${allScores[idx]}`;
+  });
 };
