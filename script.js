@@ -29,10 +29,7 @@ const shuffleArray = (array) => {
 const drawCards = (numCards, player) => {
   for (let _ = 0; _ < numCards; _++) {
     // adds drawn cards to cardsDrawn
-    results[player].cardsDrawn = [
-      ...results[player].cardsDrawn,
-      cardDeck.pop(),
-    ];
+    results[player].cardsDrawn.push(cardDeck.pop());
   }
   results[player].cardNames = results[player].cardsDrawn.map(
     // get the card names
@@ -45,7 +42,7 @@ const drawCards = (numCards, player) => {
         // if it is a normal number just add the number
         return (total += +cardName);
       } else if (cardName === "ace") {
-        if (results[player].cardTotal > 10) return (total += 1); // if total > 10 ace becomes 1
+        if (total > 10) return (total += 1); // if total > 10 ace becomes 1
         return (total += 11);
       }
       return (total += 10); // if it is jack queen etc
@@ -53,25 +50,15 @@ const drawCards = (numCards, player) => {
     0
   );
 };
-const BlackjackWinScenario = () => {
-  let output = "";
-  for (const player of Object.keys(results)) {
-    if (
-      results[player].cardTotal === 21 &&
-      results[player].cardNames.length === 2
-    ) {
-      const cardDescription = results["Player 1"].cardsDrawn.map(
-        (card) => card.name + " of " + card.suit
-      );
-      output = `${player} has won by blackjack! <br><br>
-    Your cards were ${cardDescription.join(", ")}<br><br>
-    Click submit to play again!`;
-      resetGame();
-      return output;
-    }
-  }
-  return output;
+const checkBlackjackWin = (player) => {
+  if (
+    results[player].cardTotal === 21 &&
+    results[player].cardNames.length === 2
+  )
+    return true;
+  return false;
 };
+
 const drawCardOutput = function () {
   if (results["Player 1"].cardTotal > 21) {
     // if bust proceed to results
@@ -89,19 +76,25 @@ const drawCardOutput = function () {
 };
 // need a fxn to check for blackjack when both player and dealer first draw 2 cards
 const analyzeGame = function () {
-  if (results["Player 1"].cardTotal === results.dealer.cardTotal) return "draw";
+  if (
+    results["Player 1"].cardTotal === results.dealer.cardTotal ||
+    (results.dealer.cardTotal > 21 && results["Player 1"].cardTotal > 21)
+  )
+    return "draw";
   else if (
     (results["Player 1"].cardTotal > results.dealer.cardTotal &&
       results["Player 1"].cardTotal <= 21) ||
     (results["Player 1"].cardTotal <= 21 && results.dealer.cardTotal > 21)
-  )
-    return "Player won";
-  else if (
+  ) {
+    if (checkBlackjackWin("Player 1")) return "Player won by Blackjack";
+    else return "Player won";
+  } else if (
     (results.dealer.cardTotal > results["Player 1"].cardTotal &&
       results.dealer.cardTotal <= 21) ||
     (results.dealer.cardTotal <= 21 && results["Player 1"].cardTotal > 21)
   )
-    return "Dealer won";
+    if (checkBlackjackWin("dealer")) return "Dealer won by Blackjack";
+    else return "Dealer won";
 };
 const resetGame = () => {
   gameState = GAMESTATES[0];
@@ -121,7 +114,6 @@ const resultOutput = (gameResult) => {
     output += `♣️ ♣️ ♣️ ♣️ ♣️ ♣️ ♣️ ♣️ ♣️ ${player}'s results:♣️ ♣️ ♣️ ♣️ ♣️ ♣️ ♣️ ♣️ ♣️ ♣️ ♣️ ♣️  <br><br>
     ${cardDescription.join("<br><br>")}<br><br>
     Total Score: ${results[player].cardTotal} <br><br>
-
     `;
   }
   output += `${analyzeGame()}!<br><br>
@@ -132,24 +124,26 @@ const resultOutput = (gameResult) => {
 
 // 3. ask player to hit or stand
 // 4. end
-const main = function (input) {
+export const main = function (input) {
+  console.log(results);
+  console.log(gameState);
   if (gameState === GAMESTATES[0]) {
     // 1. shuffle the card deck
     // 2. draw the cards
     shuffleArray(cardDeck);
     drawCards(2, "Player 1");
     drawCards(2, "dealer");
-    const blackjackWinOutput = BlackjackWinScenario();
-    if (blackjackWinOutput) return blackjackWinOutput;
     while (results.dealer.cardTotal < 17) drawCards(1, "dealer");
+    gameState = GAMESTATES[1]; // if dealer total less than 17 draw a card
     return drawCardOutput();
   } else if (gameState === GAMESTATES[1]) {
     if (input === "hit") {
       drawCards(1, "Player 1");
       return drawCardOutput();
-    }
-    gameState = GAMESTATES[2];
-    return "Click submit to see the result of the game!";
+    } else if (input === "stand") {
+      gameState = GAMESTATES[2];
+      return "Click submit to see the result of the game!";
+    } else return "Type either hit or stand!"; // input validation
   }
   return resultOutput();
 };

@@ -171,13 +171,16 @@
       <div id="output-div"></div>
     </div>
     <!-- Import program logic -->
+    <!-- <script src="deck.js"></script> -->
     <script src="script.js" type="module"></script>
     <!-- Define button click functionality -->
-    <script>
+    <script type="module">
+      import { main } from "./script.js";
       var button = document.querySelector("#submit-button");
       button.addEventListener("click", function () {
         // Set result to input value
         var input = document.querySelector("#input-field");
+
         var result = main(input.value);
 
         // Display result in output element
