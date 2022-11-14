@@ -148,6 +148,9 @@
         position: relative;
         top: 22px;
       }
+      .btn--conditional {
+        display: none;
+      }
 
       /* increase header font size on wider screens */
       @media screen and (min-width: 600px) {
@@ -166,7 +169,11 @@
       <p>Input:</p>
       <input id="input-field" />
       <br />
-      <button id="submit-button">Submit</button>
+      <div class="button__div">
+        <button class="btn submit-button" id="">Submit</button>
+        <button class="btn btn--conditional hit-button">Hit</button>
+        <button class="btn btn--conditional stand-button">Stand</button>
+      </div>
       <p>Output:</p>
       <div id="output-div"></div>
     </div>
@@ -174,9 +181,9 @@
     <!-- <script src="deck.js"></script> -->
     <script src="script.js" type="module"></script>
     <!-- Define button click functionality -->
-    <script type="module">
+    <!-- <script type="module">
       import { main } from "./script.js";
-      var button = document.querySelector("#submit-button");
+      var button = document.querySelector(".submit-button");
       button.addEventListener("click", function () {
         // Set result to input value
         var input = document.querySelector("#input-field");
@@ -190,6 +197,6 @@
         // Reset input value
         input.value = "";
       });
-    </script>
+    </script> -->
   </body>
 </html>

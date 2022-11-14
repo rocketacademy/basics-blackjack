@@ -17,7 +17,16 @@ let results = {
     cardTotal: 0,
   },
 };
-
+const renderButtons = () => {
+  document
+    .querySelectorAll(".btn--conditional")
+    .forEach((e) => (e.style.display = "inline-block"));
+};
+const hideButtons = () => {
+  document
+    .querySelectorAll(".btn--conditional")
+    .forEach((e) => (e.style.display = "none"));
+};
 const shuffleArray = (array) => {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1)); // FisherYates Algorithm
@@ -62,6 +71,7 @@ const checkBlackjackWin = (player) => {
 const drawCardOutput = function () {
   if (results["Player 1"].cardTotal > 21) {
     // if bust proceed to results
+    hideButtons();
     gameState = GAMESTATES[2];
     return "Oops, you busted! Click submit to check if the dealer also busted...";
   }
@@ -72,7 +82,7 @@ const drawCardOutput = function () {
   return `Your cards are ${cardDescription.join(", ")}<br><br>
   Your total score is now ${
     results["Player 1"].cardTotal
-  }. Please type hit to draw one more or stand to stop drawing!`;
+  }. Please press hit to draw one more or stand to stop drawing!`;
 };
 // need a fxn to check for blackjack when both player and dealer first draw 2 cards
 const analyzeGame = function () {
@@ -124,9 +134,45 @@ const resultOutput = (gameResult) => {
 
 // 3. ask player to hit or stand
 // 4. end
-export const main = function (input) {
-  console.log(results);
-  console.log(gameState);
+const pressHit = () => {
+  drawCards(1, "Player 1");
+  return drawCardOutput();
+};
+const pressStand = () => {
+  gameState = GAMESTATES[2];
+  hideButtons();
+  return "Click the submit button to see the result of the game!";
+};
+document.querySelector(".button__div").addEventListener("click", function (e) {
+  var input = document.querySelector("#input-field");
+  var output = document.querySelector("#output-div");
+  // 1. matching strategy
+  if (e.target.classList.contains("submit-button")) {
+    // Set result to input value
+
+    var result = main(input.value);
+
+    // Display result in output element
+
+    output.innerHTML = result;
+
+    // Reset input value
+    input.value = "";
+  } else if (e.target.classList.contains("hit-button")) {
+    if (gameState === GAMESTATES[1]) {
+      // console.log("hit");
+      output.innerHTML = pressHit();
+      input.value = "";
+    }
+  } else if (e.target.classList.contains("stand-button")) {
+    if (gameState === GAMESTATES[1]) {
+      // console.log("stand");
+      output.innerHTML = pressStand();
+      input.value = "";
+    }
+  }
+});
+const main = function (input) {
   if (gameState === GAMESTATES[0]) {
     // 1. shuffle the card deck
     // 2. draw the cards
@@ -135,15 +181,8 @@ export const main = function (input) {
     drawCards(2, "dealer");
     while (results.dealer.cardTotal < 17) drawCards(1, "dealer");
     gameState = GAMESTATES[1]; // if dealer total less than 17 draw a card
+    renderButtons();
     return drawCardOutput();
-  } else if (gameState === GAMESTATES[1]) {
-    if (input === "hit") {
-      drawCards(1, "Player 1");
-      return drawCardOutput();
-    } else if (input === "stand") {
-      gameState = GAMESTATES[2];
-      return "Click submit to see the result of the game!";
-    } else return "Type either hit or stand!"; // input validation
   }
   return resultOutput();
 };
