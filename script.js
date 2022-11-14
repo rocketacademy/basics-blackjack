@@ -1,5 +1,4 @@
 import { DECK } from "./deck.js";
-// left with check for blackjack wins and variable ace value
 let cardDeck = DECK;
 const GAMESTATES = ["draw-cards", "stand-or-hit", "show-results"];
 let gameState = GAMESTATES[0];
@@ -67,7 +66,6 @@ const checkBlackjackWin = (player) => {
     return true;
   return false;
 };
-
 const drawCardOutput = function () {
   if (results["Player 1"].cardTotal > 21) {
     // if bust proceed to results
@@ -82,9 +80,8 @@ const drawCardOutput = function () {
   return `Your cards are ${cardDescription.join(", ")}<br><br>
   Your total score is now ${
     results["Player 1"].cardTotal
-  }. Please press hit to draw one more or stand to stop drawing!`;
+  }. Please press hit to draw one more, stand to stop drawing or submit to view results!`;
 };
-// need a fxn to check for blackjack when both player and dealer first draw 2 cards
 const analyzeGame = function () {
   if (
     results["Player 1"].cardTotal === results.dealer.cardTotal ||
@@ -135,9 +132,7 @@ const resultOutput = (gameResult) => {
   resetGame();
   return output;
 };
-
-// 3. ask player to hit or stand
-// 4. end
+// Make buttons visible or invinsible
 const pressHit = () => {
   drawCards(1, "Player 1");
   return drawCardOutput();
@@ -147,8 +142,8 @@ const pressStand = () => {
   hideButtons();
   return "Click the submit button to see the result of the game!";
 };
+// event delegation - attach listener to parent div
 document.querySelector(".button__div").addEventListener("click", function (e) {
-  // event delegation - attach listener to parent div
   var input = document.querySelector("#input-field");
   var output = document.querySelector("#output-div");
   if (e.target.classList.contains("submit-button")) {
