@@ -121,7 +121,9 @@ const resultOutput = (gameResult) => {
     const cardDescription = results[player].cardsDrawn.map(
       (card) => card.name + " of " + card.suit
     );
-    output += `♣️ ♣️ ♣️ ♣️ ♣️ ♣️ ♣️ ♣️ ♣️ ${player}'s results:♣️ ♣️ ♣️ ♣️ ♣️ ♣️ ♣️ ♣️ ♣️ ♣️ ♣️ ♣️  <br><br>
+    output += `${"♠️".repeat(30)} ${player}'s results: ${"♠️".repeat(
+      30
+    )} <br><br>
     ${cardDescription.join("<br><br>")}<br><br>
     Total Score: ${results[player].cardTotal} <br><br>
     `;
@@ -144,9 +146,9 @@ const pressStand = () => {
   return "Click the submit button to see the result of the game!";
 };
 document.querySelector(".button__div").addEventListener("click", function (e) {
+  // event delegation - attach listener to parent div
   var input = document.querySelector("#input-field");
   var output = document.querySelector("#output-div");
-  // 1. matching strategy
   if (e.target.classList.contains("submit-button")) {
     // Set result to input value
 
@@ -184,5 +186,5 @@ const main = function (input) {
     renderButtons();
     return drawCardOutput();
   }
-  return resultOutput();
+  return resultOutput(); // if gameState === show-results
 };
