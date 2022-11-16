@@ -21,6 +21,7 @@ var main = function (input) {
     drawCard(2, computerHand);
     console.log(playerHand, computerHand);
     mode = "hit-or-stand";
+    myOutputValue = "Submit 'hit' or 'stand' for your next move";
   } else if (mode == "hit-or-stand") {
     if (input == "hit") {
       drawCard(1, playerHand);
