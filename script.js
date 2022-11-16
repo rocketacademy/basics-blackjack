@@ -1,206 +1,124 @@
-//Global variables
-var mode = "play"; //play(to start game), player-choice(hit or stand), end-score(when game ends) ...
-var myOutputValue = "";
+var mode = "game-start";
 var playerHand = [];
 var computerHand = [];
+var gameDeck = [];
+var myOutputValue = "";
+var drawedCard = [];
 var playerScore = "";
 var computerScore = "";
 var endScore = [];
 
-//Group output message
-var tieMessage = "<br>It's a tie<br>Your vs computer card value is:";
-var loseMessage = "<br>You lose<br>Your vs computer card value is:";
-var winMessage = "<br>You win<br>Your vs computer card value is:";
-var continueMessage =
-  "<br>Type 'hit' or 'stand' for your next move<br>Your card value is: ";
-var footNote =
-  "<br><br><i>Rule of blackjack: If your card exceed 21 in value, you lose.</i>";
+//Output messages
+var bothLose = "Both hand lose<br>Your vs computer score:<br>";
+var playerLose = "You lose<br>Your vs computer score:<br>";
+var playerWin = "You won<br>Your vs computer score:<br>";
+var playerTie = "It's a tie<br>Your vs computer score:<br>";
 
 var main = function (input) {
-  if (mode == "play") {
-    startGame();
-    if (playerScore == 21 && computerScore != 21) {
-      displayGameResult();
-    } else {
-      mode = "player-choice";
-      displayGameResult();
-    }
-  } else if (mode == "player-choice") {
+  gameDeck = shuffleCards(makeDeck());
+  if (mode == "game-start") {
+    drawCard(2, playerHand);
+    drawCard(2, computerHand);
+    console.log(playerHand, computerHand);
+    mode = "hit-or-stand";
+  } else if (mode == "hit-or-stand") {
     if (input == "hit") {
-      computerHitMoves();
-      playerHitMoves();
-      displayGameResult();
+      drawCard(1, playerHand);
+      computerMoves();
     } else if (input == "stand") {
-      mode = "end-score";
-      standGameResult();
+      playerStand();
     }
   }
-  return myOutputValue;
+
+  console.log(playerScore, computerScore);
+
+  checkIfEndGame();
+  return (
+    displayHand(playerHand) +
+    "<br>Your score: " +
+    playerScore +
+    "<br><br>" +
+    myOutputValue
+  );
 };
 
-//Function to draw cards for player and computer
-var startGame = function () {
-  playerHand = draw2Cards();
-  computerHand = draw2Cards();
-  playerScore = calculateScorePlayer();
-  computerScore = calculateScoreComputer();
-  return playerHand;
-};
-
-//Function for computer to think and act
-var computerHitMoves = function (addCard) {
+//Function for computer to move
+var computerMoves = function () {
   if (computerScore < 21) {
-    addCard = hitCard();
-    computerHand.push(addCard);
-    computerScore = calculateScoreComputer();
+    drawCard(1, computerHand);
   }
-  return computerHand;
 };
 
-//Function to hit 1 card
-var hitCard = function () {
-  var outputDeck = makeDeck();
-  shuffleCards(outputDeck);
-  return outputDeck.pop();
+//Function to stand
+var playerStand = function () {
+  endScore = [playerScore, computerScore];
+  if (playerScore < 21 && computerScore < 21) {
+    if (playerScore > computerScore) {
+      myOutputValue = playerWin + endScore;
+    } else if (playerScore < computerScore) {
+      myOutputValue = playerLose + endScore;
+    } else if (playerScore == computerScore) {
+      myOutputValue = playerTie + endScore;
+    }
+  }
 };
 
-//Function to calculate score (with rules) for player and computer, AJQK condition
-var calculateScorePlayer = function () {
+//Function to detect if game ends
+var checkIfEndGame = function () {
+  playerScore = calculateScore(playerHand, playerScore);
+  computerScore = calculateScore(computerHand, computerScore);
+  endScore = [playerScore, computerScore];
+  if (playerScore > 21) {
+    if (computerScore > 21) {
+      myOutputValue = bothLose + endScore;
+    } else if (computerScore < 21) {
+      myOutputValue = playerLose + endScore;
+    }
+  } else if (playerScore == 21) {
+    if (computerScore != 21) {
+      myOutputValue = playerWin + endScore;
+    } else if (computerScore == 21) {
+      myOutputValue = playerTie + endScore;
+    }
+  }
+};
+
+//Function to calculate score
+var calculateScore = function (handOfWho, scoreOfWho) {
   var score = 0;
-  for (let counter = 0; counter < playerHand.length; counter++) {
-    var getCardName = playerHand[counter].name;
-    //J,Q,K to be 10 in score
+  for (let counter = 0; counter < handOfWho.length; counter += 1) {
+    var getCardName = handOfWho[counter]["name"];
     if (
       getCardName == "Jack" ||
       getCardName == "Queen" ||
       getCardName == "King"
     ) {
       score = score + 10;
-    } //Ace to be scored 11 when score is not 21. So if 11 doesn't benefit player it will counted as 1.
-    else if (playerScore + 11 < 21 && getCardName == "Ace") {
+    } else if (scoreOfWho + 11 < 21 && getCardName == "Ace") {
       playerHand[counter]["rank"] = 11;
       score = score + playerHand[counter]["rank"];
     } else {
-      score = score + playerHand[counter]["rank"];
-    }
-  }
-  return score;
-};
-var calculateScoreComputer = function () {
-  var score = 0;
-  for (let counter = 0; counter < computerHand.length; counter++) {
-    var getCardName = computerHand[counter].name;
-    //J,Q,K to be 10 in score
-    if (
-      getCardName == "Jack" ||
-      getCardName == "Queen" ||
-      getCardName == "King"
-    ) {
-      score = score + 10;
-    } //Ace to be scored 11 when score is not 21. So if 11 doesn't benefit player it will counted as 1.
-    else if (computerScore + 11 < 21 && getCardName == "Ace") {
-      computerHand[counter]["rank"] = 11;
-      score = score + computerHand[counter]["rank"];
-    } else {
-      score = score + computerHand[counter]["rank"];
+      score = score + handOfWho[counter]["rank"];
     }
   }
   return score;
 };
 
-//Function to display end score array
-var displayPlayerHand = function (playerHand) {
-  var playerMessage = "Player hand: ";
-  for (var index = 0; index < playerHand.length; index += 1) {
-    playerMessage =
-      playerMessage +
-      playerHand[index]["name"] +
-      " of " +
-      playerHand[index]["suit"];
-    +" ";
+//Function to display cards in hand
+var displayHand = function (handOfWho) {
+  var Message = "";
+  for (let index = 0; index < handOfWho.length; index += 1) {
+    Message = Message + handOfWho[index]["name"] + handOfWho[index]["suit"];
   }
-  return playerMessage;
+  return Message;
 };
 
-//Function for player to add a hit card score in
-var playerHitMoves = function (addCard) {
-  addCard = hitCard();
-  playerHand.push(addCard);
-  playerScore = calculateScorePlayer();
-  return playerHand;
-};
-
-//Function to determine if game ends or continue
-var displayGameResult = function () {
-  endScore = [playerScore, computerScore];
-  if (playerScore == 21 && computerScore == 21) {
-    footNote = "Refresh to play again";
-    myOutputValue =
-      displayPlayerHand(playerHand) + tieMessage + endScore + footNote;
-  } else if (playerScore == 21 && computerScore != 21) {
-    myOutputValue =
-      displayPlayerHand(playerHand) + winMessage + endScore + footNote;
-  } else if (playerScore != 21 && computerScore == 21) {
-    myOutputValue =
-      displayPlayerHand(playerHand) + loseMessage + endScore + footNote;
-  } else if (playerScore > 21) {
-    if (computerScore > 21) {
-      myOutputValue =
-        displayPlayerHand(playerHand) + "<br>Both lose" + endScore + footNote;
-    } else if (computerScore < 21) {
-      myOutputValue =
-        displayPlayerHand(playerHand) + loseMessage + endScore + footNote;
-    }
-  } else {
-    myOutputValue =
-      displayPlayerHand(playerHand) + continueMessage + playerScore + footNote;
+// Function to draw a card with how many cards
+var drawCard = function (times, handOfWho) {
+  for (let counter = 0; counter < times; counter += 1) {
+    handOfWho.push(gameDeck.pop());
   }
-};
-
-//Function to display end result of the game when user stand
-var standGameResult = function () {
-  endScore = [playerScore, computerScore];
-  if (playerScore == 21 && computerScore == 21) {
-    footNote = "Refresh to play again";
-    myOutputValue =
-      displayPlayerHand(playerHand) + tieMessage + endScore + footNote;
-  } else if (playerScore == 21 && computerScore != 21) {
-    myOutputValue =
-      displayPlayerHand(playerHand) + winMessage + endScore + footNote;
-  } else if (playerScore != 21 && computerScore == 21) {
-    myOutputValue =
-      displayPlayerHand(playerHand) + loseMessage + endScore + footNote;
-  } else if (playerScore > 21 && computerScore > 21) {
-    if (playerScore < computerScore || playerScore > computerScore) {
-      myOutputValue =
-        displayPlayerHand(playerHand) + "<br>Both lose" + endScore + footNote;
-    } else if (computerScore < 21) {
-      myOutputValue =
-        displayPlayerHand(playerHand) + loseMessage + endScore + footNote;
-    }
-  } else if (playerScore < 21 && computerScore < 21) {
-    if (playerScore < computerScore) {
-      myOutputValue =
-        displayPlayerHand(playerHand) + loseMessage + endScore + footNote;
-    } else if (playerScore > computerScore) {
-      myOutputValue =
-        displayPlayerHand(playerHand) + winMessage + endScore + footNote;
-    }
-  } else {
-    myOutputValue =
-      displayPlayerHand(playerHand) + winMessage + endScore + footNote;
-  }
-};
-
-//Function to loop draw card 2x
-var draw2Cards = function () {
-  var outputHand = [];
-  var outputDeck = makeDeck(); //52 cards ready
-  shuffleCards(outputDeck); //shuffle cards to random order
-  for (var turn = 0; turn < 2; turn += 1) {
-    outputHand.push(outputDeck.pop());
-  }
-  return outputHand;
+  return handOfWho;
 };
 
 // Get 52 cards in a deck
