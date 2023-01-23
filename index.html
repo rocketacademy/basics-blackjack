@@ -353,14 +353,11 @@
         playersArray = generatePlayersArray(numberOfPlayers);
         var betButton = document.querySelector("#bet-button");
         betButton.disabled = false;
-        // var nextButton = document.querySelector("#next-button");
-        // nextButton.disabled = false;
         confirmButton.disabled = true;
         inputField.disabled = true;
         console.log(numberOfPlayers);
         console.log(playersArray);
         main(undefined, playersArray);
-        // printOutput(`Player 1 - please enter your bet!`);
       });
 
       var betButton = document.querySelector("#bet-button");
