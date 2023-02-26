@@ -1,5 +1,3 @@
-// Initialize global variables. We need (1) a shuffled deck of cards (2) player and computer hands (3) player and computer hand totals (4) game mode
-
 // Program to generate standard deck of 52 cards. Cards have a blackjack value with Ace being either 1 or 11
 const makeDeck = () => {
   let cardDeck = [];
@@ -60,17 +58,26 @@ const shuffleCards = (deck) => {
 // Generate random index for shuffling
 const getRandomIndex = max => Math.floor(Math.random() * max);
 
-// Generate shuffled deck of 52 cards
-const deck = shuffleCards(makeDeck())
+// Generate standard deck of 52 cards
+let deck = makeDeck()
 
 // Global variables
-const playerHand = [];
-const dealerHand = [];
+let playerHand = [];
+let dealerHand = [];
 
 let gameMode = 'start'
 let playerScore = 0;
 let dealerScore = 0;
 
+
+
+
+
+
+
+
+
+// Draw 2 cards each for player and dealer
 const drawHand = deck => {
   playerHand.push(deck.pop())
   dealerHand.push(deck.pop())
@@ -78,6 +85,8 @@ const drawHand = deck => {
   dealerHand.push(deck.pop());
 }
 
+// Update player score by looping through the player's hand and capturing total value
+// Assess no. of aces => if more than 1 ace, reduce the points by the number of extra aces * 10
 const updatePlayerScore = () => {
   for (const card of playerHand) {
     if (card.name === 'Ace') {
@@ -86,8 +95,19 @@ const updatePlayerScore = () => {
       playerScore += card.value
     }
   }
+  let aceCounter = 0
+  for (const card of playerHand) {
+    if (card.name === 'Ace') {
+      aceCounter += 1
+    }
+  }
+  if (aceCounter > 1) {
+    playerScore -= (10 * (aceCounter - 1))
+  }
 }
 
+// Update dealer score by looping through the dealer's hand and capturing total value
+// Assess no. of aces => if more than 1 ace, reduce the points by the number of extra aces * 10
 const updateDealerScore = () => {
   for (const card of dealerHand) {
     if (card.name === 'Ace') {
@@ -96,62 +116,154 @@ const updateDealerScore = () => {
       dealerScore += card.value
     }
   }
+  let aceCounter = 0;
+  for (const card of dealerHand) {
+    if (card.name === "Ace") {
+      aceCounter += 1;
+    }
+  }
+  if (aceCounter > 1) {
+    dealerScore -= 10 * (aceCounter - 1);
+  }
 }
 
+// Consolidation function
 const updateScores = () => {
   updatePlayerScore()
   updateDealerScore()
 }
 
-const getWinner = () => {
-  let result = ''
-  if (playerScore === dealerScore && playerScore === 21) {
-    result = 'blackjackTie' 
-  } else if (playerScore === dealerScore) {
-    result = 'tie'
-  } else if (playerScore > dealerScore && playerScore === 21) {
-    result = 'blackjackPlayer'
-  } else if (playerScore < dealerScore && dealerScore === 21) {
-    result = 'blackjackDealer'
-  } else if (playerScore > dealerScore) {
-    result = 'player'
+// Check for Blackjack in the first draw
+const checkBlackjack = () => {
+  if (playerScore === 21 && dealerScore === 21) {
+    return "blackjacktie";
+  } else if (playerScore === 21 && dealerScore !== 21) {
+    return "blackjackplayer";
+  } else if (playerScore !== 21 && dealerScore === 21) {
+    return "blackjackdealer";
   } else {
-    result = 'dealer'
+    return 'continue'
   }
-  return result
 }
 
-const displayMessage = result => {
-  let message = `You drew ${playerHand[0].name} of ${playerHand[0].suit} and ${playerHand[1].name} of ${playerHand[1].suit}<br>Dealer drew ${dealerHand[0].name} of ${dealerHand[0].suit} and ${dealerHand[1].name} of ${dealerHand[1].suit}<br>`;
-  if (result === 'blackjackTie') {
-    message += `Both you and the dealer drew a Blackjack! What are the chances... it's a tie.`
-  } else if (result === 'tie') {
-    message += `Both you and the dealer drew a score of ${playerScore}! It's a tie.`
-  } else if (result === 'blackjackPlayer') {
-    message += `You drew a Blackjack. You won!`
-  } else if (result === 'blackjackDealer') {
-    message += `Dealer drew a Blackjack. Tough luck...`
-  } else if (result === 'player') {
-    message += `You won!`
+const getWinner = () => {
+  if (playerScore === dealerScore) {
+    return 'tie'
+  } else if (playerScore > dealerScore) {
+    return 'player'
   } else {
-    message += `You lost...`
+    return 'dealer'
+  }
+}
+
+const displayBlackjackWinMessage = result => {
+  let message = `You drew ${playerHand[0].name} of ${playerHand[0].suit} and ${playerHand[1].name} of ${playerHand[1].suit}.   <br>Your score: ${playerScore}<br><br>Dealer drew ${dealerHand[0].name} of ${dealerHand[0].suit} and ${dealerHand[1].name} of ${dealerHand[1].suit}.<br>Dealer's score: ${dealerScore}<br><br><br> `;
+  if (result === 'blackjacktie') {
+    message +=
+      "Both you and the dealer drew a Blackjack! What are the chances... it's a tie.";
+  } else if (result === 'blackjackplayer') {
+    message += "You drew a Blackjack. You won! 🥳"; 
+  } else if (result === 'blackjackdealer') {
+    message +=
+      "Dealer drew a Blackjack. Tough luck...☹️";
+  } else {
+    message += `<strong>Hit</strong> to draw a 🃏 or <strong>Stand</strong> to pass.`;
   }
   return message
 }
 
-const main = function (input) {
-  // 2 cards are drawn from shuffled deck for player and dealer, and stored in respective arrays
+// Consolidation function
+const runDrawLogic = () => {
+  shuffleCards(deck);
   drawHand(deck)
-  // Update respective scores
-  updateScores()
-  // Compare both hands and determine a winner. Scenarios are: (1) tie (2) Blackjack win (3) Normal win
-  let result = getWinner()
-  // Display appropriate messages
-  let finalMessage = displayMessage(result)
+  updateScores();
+  let result = checkBlackjack()
+  if (result === "continue") {
+    gameMode = "choose";
+    switchButtonStates(gameMode);
+  } else if (result !== "continue") {
+    gameMode = "end";
+    switchButtonStates(gameMode);
+  }
+    return result;
+  }
+
+// Switch button states to indicate active or disabled
+const switchButtonStates = (state) => {
+  let submitButton = document.getElementById("submit-button")
+  let hitButton = document.getElementById("hit-button")
+  let standButton = document.getElementById("stand-button")
+  let restartButton = document.getElementById("restart-button");
   
-  return finalMessage;
+  if (state === 'choose') {
+    submitButton.disabled = true;
+    hitButton.disabled = false;
+    standButton.disabled = false;
+    restartButton.disabled = true;
+  } else if (state === 'end') {
+    submitButton.disabled = true;
+    hitButton.disabled = true;
+    standButton.disabled = true;
+    restartButton.disabled = false;
+  } else {
+    submitButton.disabled = false;
+    hitButton.disabled = true;
+    standButton.disabled = true;
+    restartButton.disabled = true;
+  }  
+}
+
+// Restart round when restart button is clicked
+const restartRound = () => {
+  playerHand = [];
+  dealerHand = [];
+
+  deck = makeDeck()
+
+  gameMode = "start";
+  playerScore = 0;
+  dealerScore = 0;
+
+  switchButtonStates(gameMode)
+}
+
+
+
+
+
+const main = function () {
+  
+  // First round => draw 2 cards for player and dealer, store in arrays, update score
+  if (gameMode === 'start') {
+    let result = runDrawLogic()
+    return displayBlackjackWinMessage(result);
+    
+    // check blackjack wins for player and dealer. if yes, declare winner and end game
+
+    // if no blackjack, show player score and ask whether hit or stand
+
+    // if hit, check for > 21. If yes, automatic dealer
+  }
+
+  
+
+  
+  
+  // Compare both hands and determine a winner. Scenarios are: (1) tie (2) Blackjack win (3) Normal win
+  // let result = getWinner()
+  // // Display appropriate messages
+  // let finalMessage = displayBMessage(result)
+  
+  // return finalMessage;
 };
 
 
 
-// To fix: (1) Ace is constant at value 11, how to switch to value 1? (2) Display message only caters for two cards. Need to find a way to cater to > 2 cards
+
+// else if (result === 'tie') {
+//     message += `Both you and the dealer drew a score of ${playerScore}! It's a tie.` 
+//     else if (result === 'player') {
+//     message += `You won!`
+//   } else {
+//     message += `You lost...`
+//   }

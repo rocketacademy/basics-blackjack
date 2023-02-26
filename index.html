@@ -91,8 +91,21 @@
       button {
         font-size: 21px;
         line-height: 33px;
-        margin: 0 0 23px 0;
-        padding: 0 6px;
+        margin: 0 12px 23px 0;
+        padding: 4px 12px;
+        border-radius: 10px;
+        transition-duration: 0.4s;
+        cursor: pointer;
+      }
+
+      /* button:hover {
+        background-color: rgb(82, 54, 225);
+        color:rgb(231, 231, 231);
+        border-color: blue;
+      } */
+
+      button:disabled {
+        cursor: not-allowed;
       }
 
       #output-div {
@@ -129,9 +142,12 @@
       <p>Input:</p>
       <input id="input-field" />
       <br />
-      <button id="submit-button">Submit</button>
+      <button id="submit-button">Draw cards</button>
+      <button id="hit-button" disabled>Hit</button>
+      <button id="stand-button" disabled>Stand</button>
+      <button id="restart-button" disabled>Restart</button>
       <p>Output:</p>
-      <div id="output-div">Welcome! Hit the button to start a game of Blackjack!</div>
+      <div id="output-div">Welcome! Draw 2 cards to start a game of Blackjack!</div>
     </div>
     <!-- Import program logic -->
     <script src="script.js"></script>
@@ -149,7 +165,21 @@
 
         // Reset input value
         input.value = "";
-      });
+      })
+      
+      var hitButton = document.querySelector("#hit-button");
+      hitButton.addEventListener("click", function () {})
+
+      var standButton = document.querySelector("#stand-button");
+      standButton.addEventListener("click", function () {})
+
+      var restartButton = document.querySelector("#restart-button");
+      restartButton.addEventListener("click", function () {
+        restartRound()
+        var output = document.querySelector("#output-div");
+        output.innerHTML = 'Welcome! Draw 2 cards to start a game of Blackjack!';
+      })
+  
     </script>
   </body>
 </html>
