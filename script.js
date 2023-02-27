@@ -3,26 +3,37 @@
 const makeDeck = () => {
   let cardDeck = [];
   let suits = ["♥️", "♦️", "♣️", "♠️"];
+  let rankIcons = [
+    "🅰️",
+    "2️⃣",
+    "3️⃣",
+    "4️⃣",
+    "5️⃣",
+    "6️⃣",
+    "7️⃣",
+    "8️⃣",
+    "9️⃣",
+    "🔟",
+    "🎃",
+    "👸🏻",
+    "🤴🏻",
+  ];
 
   let suitIndex = 0;
   while (suitIndex < suits.length) {
     let currentSuit = suits[suitIndex];
 
-    let rankCounter = 1;
-    while (rankCounter <= 13) {
-      let cardName = rankCounter;
-      let blackjackValue = rankCounter;
-      if (rankCounter === 1) {
-        cardName = "Ace";
+    let rankCounter = 0;
+    while (rankCounter <= 12) {
+      let cardName = rankIcons[rankCounter];
+      let blackjackValue = rankCounter + 1;
+      if (rankCounter === 0) {
         blackjackValue = [1, 11];
-      } else if (rankCounter === 11) {
-        cardName = "Jack";
-        blackjackValue = 10;
-      } else if (rankCounter === 12) {
-        cardName = "Queen";
-        blackjackValue = 10;
-      } else if (rankCounter === 13) {
-        cardName = "King";
+      } else if (
+        rankCounter === 10 ||
+        rankCounter === 11 ||
+        rankCounter === 12
+      ) {
         blackjackValue = 10;
       }
 
@@ -62,8 +73,6 @@ const getRandomIndex = (max) => Math.floor(Math.random() * max);
 // Generate standard deck of 52 cards
 let deck = makeDeck();
 
-
-
 // ==================== Global variables ====================
 let playerHand = [];
 let dealerHand = [];
@@ -74,8 +83,6 @@ let dealerScore = 0;
 
 let playerState = "safe";
 let dealerState = "safe";
-
-
 
 // ==================== Draw card functions ====================
 // Draw 2 cards each for player and dealer
@@ -91,57 +98,64 @@ const updateScore = (person) => {
   let score = 0;
   if (person === "player") {
     for (const card of playerHand) {
-      if (card.name === "Ace") {
+      if (card.name === "🅰️") {
         score += card.value[1];
       } else {
         score += card.value;
       }
     }
     playerScore = score;
-  } else if (person === "dealer")
+  } else if (person === "dealer") {
     for (const card of dealerHand) {
-      if (card.name === "Ace") {
+      if (card.name === "🅰️") {
         score += card.value[1];
       } else {
         score += card.value;
       }
     }
     dealerScore = score;
+  }
 };
 
 // Assess no. of aces => if more than 1 ace, reduce the points by the number of extra aces * 10
 const hasAce = (hand, person) => {
   let aceCounter = 0;
   for (const card of hand) {
-    if (card.name === "Ace") {
+    if (card.name === "🅰️") {
       aceCounter += 1;
     }
   }
-  if (person === 'player') {
-    if (aceCounter > 1) {
-      playerScore -= 10 * (aceCounter - 1);
+  if (person === "player") {
+    if (aceCounter > 1 && playerScore > 21) {
+      while (playerScore > 21) {
+        playerScore -= 10;
+        if (playerScore <= 21) {
+          break;
+        }
+      }
     } else if (aceCounter === 1 && playerScore > 21) {
       playerScore -= 10;
-    } else if (aceCounter > 1 && playerScore > 21) {
-      playerScore -= 10 * (aceCounter)
     }
-  } else if (person === 'dealer') {
-    if (aceCounter > 1) {
-      dealerScore -= 10 * (aceCounter - 1);
+  } else if (person === "dealer") {
+    if (aceCounter > 1 && dealerScore > 21) {
+      while (dealerScore > 21) {
+        dealerScore -= 10;
+        if (dealerScore <= 21) {
+          break;
+        }
+      }
     } else if (aceCounter === 1 && dealerScore > 21) {
       dealerScore -= 10;
-    } else if (aceCounter > 1 && dealerScore > 21) {
-      dealerScore -= 10 * aceCounter;
     }
   }
 };
 
 // Consolidation function
 const updateScores = () => {
-  updateScore('player');
-  updateScore('dealer')
-  hasAce(playerHand, 'player');
-  hasAce(dealerHand, 'dealer');
+  updateScore("player");
+  updateScore("dealer");
+  hasAce(playerHand, "player");
+  hasAce(dealerHand, "dealer");
 };
 
 // Check for Blackjack in the first draw
@@ -160,7 +174,8 @@ const checkBlackjack = () => {
 const displayBlackjackWinMessage = (result) => {
   let message = `You drew ${playerHand[0].name} of ${playerHand[0].suit} and ${playerHand[1].name} of ${playerHand[1].suit}.   <br>Your score: ${playerScore}<br><br>Dealer drew ${dealerHand[0].name} of ${dealerHand[0].suit} and ${dealerHand[1].name} of ${dealerHand[1].suit}.<br>Dealer's score: ${dealerScore}<br><br><br> `;
   if (result === "blackjacktie") {
-    message += "Both you and the dealer drew a Blackjack! What are the chances... it's a tie.";
+    message +=
+      "Both you and the dealer drew a Blackjack! What are the chances... it's a tie.";
   } else if (result === "blackjackplayer") {
     message += "You drew a Blackjack. You won! 🥳";
   } else if (result === "blackjackdealer") {
@@ -211,6 +226,9 @@ const restartRound = () => {
 
   playerState = "safe";
   dealerState = "safe";
+
+  document.getElementById("image").src =
+    "https://1.bp.blogspot.com/-XnESTN5FkyM/XUx1uHowBfI/AAAAAAAAAKU/9zeKVJuCzZwDsUTgQ2QJe-3SdHlBO1HQQCLcBGAs/s320/tenor.gif";
 };
 
 // ==================== Hit Button helper functions ====================
@@ -242,7 +260,7 @@ const isBust = (player) => {
       dealerState = "bust";
       standButton.disabled = true;
       restartButton.disabled = false;
-      gameMode = 'checkwinner'
+      gameMode = "checkwinner";
       return "bust";
     } else if (dealerScore === 21) {
       standButton.disabled = true;
@@ -267,13 +285,13 @@ const displayHitMessage = (state, turn) => {
     } else if (state === "safe") {
       message += `<strong>Hit</strong> to draw a 🃏 or <strong>Stand</strong> to end your turn.`;
     }
-    return message
+    return message;
   } else if (turn === "dealer") {
     let message = `Dealer drew ${newCardDealer.name} of ${newCardDealer.suit}<br>Dealer's score: ${dealerScore}.<br><br>`;
     if (state === "bust") {
-      message += `Dealer went bust. Click <strong>Results</strong> to see who won.`;
+      message += `Dealer went bust.<br><br>Click <strong>Results</strong> to see who won.`;
     } else if (state === "dealerblackjack") {
-      message += `Dealer drew a Blackjack! Click <strong>Results</strong> to see who won.`;
+      message += `Dealer drew a Blackjack!<br><br> Click <strong>Results</strong> to see who won.`;
     } else if (state === "safe") {
       message += `Click <strong>Stand</strong> to see if the dealer draws another card.`;
     }
@@ -302,17 +320,42 @@ const getWinner = () => {
 
 const displayEndGameMessage = (result) => {
   let message = `Your final score is: <strong>${playerScore}</strong>.<br><br> Dealer's final score is: <strong>${dealerScore}</strong>.<br><br>`;
-  if (result === 'tiebust') {
+  if (result === "tiebust") {
     message += `Both players went bust. It's a tie!`;
-  } else if (result === 'player' || result === 'safeplayer') {
+  } else if (result === "player" || result === "safeplayer") {
     message += `You win! 🥳`;
-  } else if (result === 'dealer' || result === 'safedealer') {
-    message += `You lost... ☹️`; 
-  } else if (result === 'tie') {
-    message += `It's a tie!`; 
+  } else if (result === "dealer" || result === "safedealer") {
+    message += `You lost... ☹️`;
+  } else if (result === "tie") {
+    message += `It's a tie!`;
   }
-  return message
-}
+  return message;
+};
+
+const updateImage = (result) => {
+  let image = document.getElementById("image");
+  if (
+    result === "player" ||
+    result === "safeplayer" ||
+    result === "blackjackplayer"
+  ) {
+    image.src =
+      "https://media.tenor.com/y_qDvEaALjMAAAAC/spongebob-patrick-star.gif";
+  } else if (
+    result === "dealer" ||
+    result === "safedealer" ||
+    "blackjackdealer"
+  ) {
+    image.src =
+      "https://media.tenor.com/Z6LSdNe-rmUAAAAd/wheel-of-fortune-wheel.gif";
+  } else if (
+    result === "tiebust" ||
+    result === "tie" ||
+    result === "blackjacktie"
+  ) {
+    image.src = "https://media.tenor.com/b0PPWTjR4KcAAAAC/draw.gif";
+  }
+};
 
 // ==================== Consolidation functions ====================
 const runDrawLogic = () => {
@@ -325,25 +368,26 @@ const runDrawLogic = () => {
     switchButtonStates(gameMode);
   } else if (result !== "continue") {
     gameMode = "end";
+    updateImage(result);
     switchButtonStates(gameMode);
-    restartButton.innerText = 'Play again'
+    restartButton.innerText = "Play again";
   }
   return result;
 };
 
 const runHitLogic = () => {
   drawCard();
-  updateScore('player');
-  hasAce(playerHand, 'player');
+  updateScore("player");
+  hasAce(playerHand, "player");
   return isBust("player");
-}
+};
 
 const runStandLogic = () => {
   drawCard();
   updateScore("dealer");
-  hasAce(dealerHand, 'dealer');
+  hasAce(dealerHand, "dealer");
   return isBust("dealer");
-}
+};
 // ==================== Main functions ====================
 
 const main = function () {
@@ -354,57 +398,49 @@ const main = function () {
 };
 
 const hit = () => {
-  let playerState = runHitLogic()
-  return displayHitMessage(playerState, 'player');
+  let playerState = runHitLogic();
+  return displayHitMessage(playerState, "player");
 };
 
 const stand = () => {
   if (gameMode === "player") {
-    gameMode = "dealer"
+    gameMode = "dealer";
     hitButton.disabled = true;
   }
   if (dealerScore < 17) {
-    let dealerState = runStandLogic()
-    return displayHitMessage(dealerState, 'dealer')
+    let state = runStandLogic();
+    return displayHitMessage(state, "dealer");
   } else if (dealerScore >= 17) {
-    let randomIndex = Math.floor(Math.random () * 4)
+    let randomIndex = Math.floor(Math.random() * 4);
     if (randomIndex === 0) {
-      let state = runStandLogic() 
+      let state = runStandLogic();
       return displayHitMessage(state, "dealer");
     } else if (randomIndex !== 0) {
       standButton.disabled = true;
       restartButton.disabled = false;
-      gameMode = 'checkwinner'
-      return `Dealer decided not to draw another card, Click <strong>Results</strong> to see who won.`;
+      gameMode = "checkwinner";
+      return `Dealer decided not to draw another card.<br><br> Click <strong>Results</strong> to see who won.`;
     }
   }
 };
 
 const results = () => {
-  if (gameMode === 'checkwinner') {
-    gameMode = 'end'
-    restartButton.innerText = "Play again"
-    let winner = getWinner()
-    return displayEndGameMessage(winner)
-  } else if (gameMode === 'end') {
-    restartRound()
-    restartButton.innerText = 'Results'
+  if (gameMode === "checkwinner") {
+    gameMode = "end";
+    restartButton.innerText = "Play again";
+    let winner = getWinner();
+    updateImage(winner);
+    return displayEndGameMessage(winner);
+  } else if (gameMode === "end") {
+    restartRound();
+    restartButton.innerText = "Results";
     return "Welcome! Draw 2 cards to start a game of Blackjack!";
   }
-
-}
+};
 
 // ==================== Misc. Logic ====================
 
 // If dealer's hand >= 17, assign 80% probability not to draw, and 20% probability to draw, by using random number generator
-// 
 
-// else if (result === 'tie') {
-//     message += `Both you and the dealer drew a score of ${playerScore}! It's a tie.`
-//     else if (result === 'player') {
-//     message += `You won!`
-//   } else {
-//     message += `You lost...`
-//   }
 
-// L
+// TO FIX, WHEN BOTH USERS BUST AND IT'S A TIE, GIF IS NOT SHOWING PROPERLY
