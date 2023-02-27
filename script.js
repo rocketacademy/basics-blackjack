@@ -84,6 +84,7 @@ const drawHand = (deck) => {
   dealerHand.push(deck.pop());
 };
 
+
 // Update player score by looping through the player's hand and capturing total value
 const updatePlayerScore = () => {
   let score = 0;
@@ -111,20 +112,20 @@ const updateDealerScore = () => {
 };
 
 // Assess no. of aces => if more than 1 ace, reduce the points by the number of extra aces * 10
-const hasAce = (hand) => {
+const hasAce = (hand, person) => {
   let aceCounter = 0;
   for (const card of hand) {
     if (card.name === "Ace") {
       aceCounter += 1;
     }
   }
-  if (hand === 'player') {
+  if (person === 'player') {
     if (aceCounter > 1) {
       playerScore -= 10 * (aceCounter - 1);
     } else if (aceCounter === 1 && playerScore > 21) {
       playerScore -= 10;
     }
-  } else if (hand === 'dealer') {
+  } else if (person === 'dealer') {
     if (aceCounter > 1) {
       dealerScore -= 10 * (aceCounter - 1);
     } else if (aceCounter === 1 && dealerScore > 21) {
@@ -137,8 +138,8 @@ const hasAce = (hand) => {
 const updateScores = () => {
   updatePlayerScore();
   updateDealerScore();
-  hasAce('player');
-  hasAce('dealer');
+  hasAce(playerHand, 'player');
+  hasAce(dealerHand, 'dealer');
 };
 
 // Check for Blackjack in the first draw
@@ -240,12 +241,12 @@ const isBust = (player) => {
       dealerState = "bust";
       standButton.disabled = true;
       restartButton.disabled = false;
-      gameMode = 'checkWinner'
+      gameMode = 'checkwinner'
       return "bust";
     } else if (dealerScore === 21) {
       standButton.disabled = true;
       restartButton.disabled = false;
-      gameMode = "checkWinner";
+      gameMode = "checkwinner";
       return "dealerblackjack";
     } else {
       return "safe";
@@ -259,7 +260,7 @@ const displayHitMessage = (state, turn) => {
   if (turn === "player") {
     let message = `You drew ${newCardPlayer.name} of ${newCardPlayer.suit}<br>Your score: ${playerScore}.<br><br>`;
     if (state === "bust") {
-      message += `You have gone bust! Click <strong>Stand</strong> to continue.`;
+      message += `You went bust! Click <strong>Stand</strong> to continue.`;
     } else if (state === "playerblackjack") {
       message += `Blackjack! Click <strong>Stand</strong> to continue.`;
     } else if (state === "safe") {
@@ -269,7 +270,7 @@ const displayHitMessage = (state, turn) => {
   } else if (turn === "dealer") {
     let message = `Dealer drew ${newCardDealer.name} of ${newCardDealer.suit}<br>Dealer's score: ${dealerScore}.<br><br>`;
     if (state === "bust") {
-      message += `Dealer has gone bust. Click <strong>Results</strong> to see who won.`;
+      message += `Dealer went bust. Click <strong>Results</strong> to see who won.`;
     } else if (state === "dealerblackjack") {
       message += `Dealer drew a Blackjack! Click <strong>Results</strong> to see who won.`;
     } else if (state === "safe") {
@@ -324,6 +325,7 @@ const runDrawLogic = () => {
   } else if (result !== "continue") {
     gameMode = "end";
     switchButtonStates(gameMode);
+    restartButton.innerText = 'Play again'
   }
   return result;
 };
@@ -331,14 +333,14 @@ const runDrawLogic = () => {
 const runHitLogic = () => {
   drawCard();
   updatePlayerScore();
-  hasAce('player');
+  hasAce(playerHand, 'player');
   return isBust("player");
 }
 
 const runStandLogic = () => {
   drawCard();
   updateDealerScore();
-  hasAce('dealer');
+  hasAce(dealerHand, 'dealer');
   return isBust("dealer");
 }
 // ==================== Main functions ====================
@@ -380,11 +382,12 @@ const stand = () => {
 const results = () => {
   if (gameMode === 'checkwinner') {
     gameMode = 'end'
-    restartButton.innerText = 'Play again'
+    restartButton.innerText = "Play again"
     let winner = getWinner()
     return displayEndGameMessage(winner)
   } else if (gameMode === 'end') {
     restartRound()
+    restartButton.innerText = 'Results'
     return "Welcome! Draw 2 cards to start a game of Blackjack!";
   }
 
