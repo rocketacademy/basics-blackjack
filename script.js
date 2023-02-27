@@ -1,5 +1,4 @@
 // ==================== Programs ====================
-
 // Program to generate standard deck of 52 cards. Cards have a blackjack value with Ace being either 1 or 11
 const makeDeck = () => {
   let cardDeck = [];
@@ -63,6 +62,8 @@ const getRandomIndex = (max) => Math.floor(Math.random() * max);
 // Generate standard deck of 52 cards
 let deck = makeDeck();
 
+
+
 // ==================== Global variables ====================
 let playerHand = [];
 let dealerHand = [];
@@ -74,8 +75,9 @@ let dealerScore = 0;
 let playerState = "safe";
 let dealerState = "safe";
 
-// ==================== Draw card functions ====================
 
+
+// ==================== Draw card functions ====================
 // Draw 2 cards each for player and dealer
 const drawHand = (deck) => {
   playerHand.push(deck.pop());
@@ -84,31 +86,27 @@ const drawHand = (deck) => {
   dealerHand.push(deck.pop());
 };
 
-
-// Update player score by looping through the player's hand and capturing total value
-const updatePlayerScore = () => {
+// Update player score by looping through the hand and capturing total value
+const updateScore = (person) => {
   let score = 0;
-  for (const card of playerHand) {
-    if (card.name === "Ace") {
-      score += card.value[1];
-    } else {
-      score += card.value;
+  if (person === "player") {
+    for (const card of playerHand) {
+      if (card.name === "Ace") {
+        score += card.value[1];
+      } else {
+        score += card.value;
+      }
     }
-  }
-  playerScore = score;
-};
-
-// Update dealer score by looping through the dealer's hand and capturing total value
-const updateDealerScore = () => {
-  let score = 0;
-  for (const card of dealerHand) {
-    if (card.name === "Ace") {
-      score += card.value[1];
-    } else {
-      score += card.value;
+    playerScore = score;
+  } else if (person === "dealer")
+    for (const card of dealerHand) {
+      if (card.name === "Ace") {
+        score += card.value[1];
+      } else {
+        score += card.value;
+      }
     }
-  }
-  dealerScore = score;
+    dealerScore = score;
 };
 
 // Assess no. of aces => if more than 1 ace, reduce the points by the number of extra aces * 10
@@ -136,8 +134,8 @@ const hasAce = (hand, person) => {
 
 // Consolidation function
 const updateScores = () => {
-  updatePlayerScore();
-  updateDealerScore();
+  updateScore('player');
+  updateScore('dealer')
   hasAce(playerHand, 'player');
   hasAce(dealerHand, 'dealer');
 };
@@ -158,8 +156,7 @@ const checkBlackjack = () => {
 const displayBlackjackWinMessage = (result) => {
   let message = `You drew ${playerHand[0].name} of ${playerHand[0].suit} and ${playerHand[1].name} of ${playerHand[1].suit}.   <br>Your score: ${playerScore}<br><br>Dealer drew ${dealerHand[0].name} of ${dealerHand[0].suit} and ${dealerHand[1].name} of ${dealerHand[1].suit}.<br>Dealer's score: ${dealerScore}<br><br><br> `;
   if (result === "blackjacktie") {
-    message +=
-      "Both you and the dealer drew a Blackjack! What are the chances... it's a tie.";
+    message += "Both you and the dealer drew a Blackjack! What are the chances... it's a tie.";
   } else if (result === "blackjackplayer") {
     message += "You drew a Blackjack. You won! 🥳";
   } else if (result === "blackjackdealer") {
@@ -332,14 +329,14 @@ const runDrawLogic = () => {
 
 const runHitLogic = () => {
   drawCard();
-  updatePlayerScore();
+  updateScore('player');
   hasAce(playerHand, 'player');
   return isBust("player");
 }
 
 const runStandLogic = () => {
   drawCard();
-  updateDealerScore();
+  updateScore("dealer");
   hasAce(dealerHand, 'dealer');
   return isBust("dealer");
 }
