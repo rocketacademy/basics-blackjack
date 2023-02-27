@@ -122,12 +122,16 @@ const hasAce = (hand, person) => {
       playerScore -= 10 * (aceCounter - 1);
     } else if (aceCounter === 1 && playerScore > 21) {
       playerScore -= 10;
+    } else if (aceCounter > 1 && playerScore > 21) {
+      playerScore -= 10 * (aceCounter)
     }
   } else if (person === 'dealer') {
     if (aceCounter > 1) {
       dealerScore -= 10 * (aceCounter - 1);
     } else if (aceCounter === 1 && dealerScore > 21) {
       dealerScore -= 10;
+    } else if (aceCounter > 1 && dealerScore > 21) {
+      dealerScore -= 10 * aceCounter;
     }
   }
 };
