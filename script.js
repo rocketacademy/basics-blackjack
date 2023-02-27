@@ -443,4 +443,4 @@ const results = () => {
 // If dealer's hand >= 17, assign 80% probability not to draw, and 20% probability to draw, by using random number generator
 
 
-// TO FIX, WHEN BOTH USERS BUST AND IT'S A TIE, GIF IS NOT SHOWING PROPERLY
+// TO FIX, WHEN USERS TIE (OR BOTH BUST AND TIE), GIF IS NOT SHOWING PROPERLY
