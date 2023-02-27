@@ -145,7 +145,7 @@
       <button id="submit-button">Draw cards</button>
       <button id="hit-button" disabled>Hit</button>
       <button id="stand-button" disabled>Stand</button>
-      <button id="restart-button" disabled>Restart</button>
+      <button id="restart-button" disabled>Results</button>
       <p>Output:</p>
       <div id="output-div">Welcome! Draw 2 cards to start a game of Blackjack!</div>
     </div>
@@ -168,16 +168,24 @@
       })
       
       var hitButton = document.querySelector("#hit-button");
-      hitButton.addEventListener("click", function () {})
+      hitButton.addEventListener("click", function () {
+        let result = hit()
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
+      })
 
       var standButton = document.querySelector("#stand-button");
-      standButton.addEventListener("click", function () {})
+      standButton.addEventListener("click", function () {
+        let result = stand()
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
+      })
 
       var restartButton = document.querySelector("#restart-button");
       restartButton.addEventListener("click", function () {
-        restartRound()
+        let result = results()
         var output = document.querySelector("#output-div");
-        output.innerHTML = 'Welcome! Draw 2 cards to start a game of Blackjack!';
+        output.innerHTML = result
       })
   
     </script>
