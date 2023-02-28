@@ -75,17 +75,19 @@ let deck = makeDeck();
 
 // Program to show cards
 const addCard = (card) => {
-  const div = document.getElementById('cards')
+  const div = document.getElementById("cards");
   let p = document.createElement("p");
   p.innerText = `${card.name} of ${card.suit}`;
-  div.appendChild(p)
-}
+  div.appendChild(p);
+};
 
 // Program to create score
-const showScore = () => {
-  const scoreTracker = document.getElementById("score");
-  score.innerText = `${playerScore}`;
-}
+const showScore = (person) => {
+  if (person === "player") {
+    const score = document.getElementById("player-score");
+    score.innerText = `${playerScore}`;
+  }
+};
 
 // ==================== Global variables ====================
 let playerHand = [];
@@ -98,13 +100,12 @@ let dealerScore = 0;
 let playerState = "safe";
 let dealerState = "safe";
 
-
 // ==================== Draw card functions ====================
 // Draw 2 cards each for player and dealer
-const drawHand = (deck) => { 
-  let card1 = deck.pop()
+const drawHand = (deck) => {
+  let card1 = deck.pop();
   playerHand.push(card1);
-  addCard(card1)
+  addCard(card1);
 
   dealerHand.push(deck.pop());
 
@@ -127,8 +128,6 @@ const updateScore = (person) => {
       }
     }
     playerScore = score;
-    showScore();
-
   } else if (person === "dealer") {
     for (const card of dealerHand) {
       if (card.name === "🅰️") {
@@ -149,22 +148,26 @@ const hasAce = (hand, person) => {
       aceCounter += 1;
     }
   }
+  let secondCounter = aceCounter;
   if (person === "player") {
     if (aceCounter > 1 && playerScore > 21) {
       while (playerScore > 21) {
         playerScore -= 10;
-        if (playerScore <= 21) {
+        secondCounter -= 1
+        if (playerScore <= 21 || secondCounter === 0) {
           break;
         }
       }
     } else if (aceCounter === 1 && playerScore > 21) {
       playerScore -= 10;
     }
+    showScore("player");
   } else if (person === "dealer") {
     if (aceCounter > 1 && dealerScore > 21) {
       while (dealerScore > 21) {
         dealerScore -= 10;
-        if (dealerScore <= 21) {
+        secondCounter -= 1;
+        if (dealerScore <= 21 || secondCounter === 0) {
           break;
         }
       }
@@ -198,11 +201,11 @@ const checkBlackjack = () => {
 const displayBlackjackWinMessage = (result) => {
   let message = `You drew <span style="font-size: 20px">${playerHand[0].name} of ${playerHand[0].suit}</span> and <span style="font-size: 20px">${playerHand[1].name} of ${playerHand[1].suit}</span>.<br><br>Dealer drew <span style="font-size: 20px">${dealerHand[0].name} of ${dealerHand[0].suit}</span> and another card...<br><br>`;
   if (result === "blackjacktie") {
-    message += `The dealer flipped open its card to show <span style="font-size: 20px">${dealerHand[1].name} of ${dealerHand[1].suit}</span>. Both you and the dealer drew a Blackjack! What are the chances... it's a tie.`;
+    message += `The dealer flipped open his card to show <span style="font-size: 20px">${dealerHand[1].name} of ${dealerHand[1].suit}</span>.<br><br> Both you and the dealer drew a Blackjack! What are the chances... it's a tie.`;
   } else if (result === "blackjackplayer") {
     message += "You drew a Blackjack. You won! 🥳";
   } else if (result === "blackjackdealer") {
-    message += `The dealer flipped open its card to show <span style="font-size: 20px">${dealerHand[1].name} of ${dealerHand[1].suit}</span>. Dealer drew a Blackjack. Tough luck...☹️`;
+    message += `The dealer flipped open his card to show <span style="font-size: 20px">${dealerHand[1].name} of ${dealerHand[1].suit}</span>.<br><br> Dealer drew a Blackjack. Tough luck...☹️`;
   } else {
     message += `<strong>Hit</strong> to draw a <span style="font-size: 20px">🃏</span> or <strong>Stand</strong> to end your turn.`;
   }
@@ -252,6 +255,13 @@ const restartRound = () => {
 
   document.getElementById("image").src =
     "https://1.bp.blogspot.com/-XnESTN5FkyM/XUx1uHowBfI/AAAAAAAAAKU/9zeKVJuCzZwDsUTgQ2QJe-3SdHlBO1HQQCLcBGAs/s320/tenor.gif";
+
+  restartButton.innerText = "Results";
+  const div = document.getElementById("cards");
+  while (div.hasChildNodes()) {
+    div.removeChild(div.firstChild);
+  }
+  showScore("player");
 };
 
 // ==================== Hit Button helper functions ====================
@@ -259,9 +269,9 @@ const restartRound = () => {
 // Hit function
 const drawCard = () => {
   if (gameMode === "player") {
-    let card = deck.pop()
-    playerHand.push(card)
-    addCard(card);;
+    let card = deck.pop();
+    playerHand.push(card);
+    addCard(card);
   } else if (gameMode === "dealer") {
     dealerHand.push(deck.pop());
   }
@@ -312,7 +322,7 @@ const displayHitMessage = (state, turn) => {
     }
     return message;
   } else if (turn === "dealer") {
-    let message = `Dealer drew <span style="font-size: 20px">${newCardDealer.name} of ${newCardDealer.suit}</span><br><br>`;
+    let message = `Dealer drew a new card. Dealer now has ${dealerHand.length} cards.</span><br><br>`;
     if (state === "bust") {
       message += `Dealer went bust.<br><br>Click <strong>Results</strong> to see who won.`;
     } else if (state === "dealerblackjack") {
@@ -340,7 +350,7 @@ const getWinner = () => {
     } else if (dealerScore > playerScore) {
       return "safedealer";
     } else if (playerScore === dealerScore && playerScore === 21) {
-      return "blackjacktie"
+      return "blackjacktie";
     }
   }
 };
@@ -355,8 +365,8 @@ const displayEndGameMessage = (result) => {
     message += `You lost... ☹️`;
   } else if (result === "tie") {
     message += `It's a tie!`;
-  } else if (result === 'blackjacktie') {
-    message += `Both players drew Blackjacks. It's a tie!`
+  } else if (result === "blackjacktie") {
+    message += `Both players drew Blackjacks. It's a tie!`;
   }
   return message;
 };
@@ -408,6 +418,7 @@ const runHitLogic = () => {
   drawCard();
   updateScore("player");
   hasAce(playerHand, "player");
+  showScore('player');
   return isBust("player");
 };
 
@@ -462,12 +473,6 @@ const results = () => {
     return displayEndGameMessage(winner);
   } else if (gameMode === "end") {
     restartRound();
-    restartButton.innerText = "Results";
-    const div = document.getElementById('cards')
-    while (div.hasChildNodes()) {
-      div.removeChild(div.firstChild)
-    }
-    showScore()
     return "Welcome! Draw 2 cards to start a game of Blackjack!";
   }
 };

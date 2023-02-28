@@ -188,10 +188,16 @@
         display: flex;
       }
 
-      #tracker {
+      .score {
         display: flex;
-        align-items: center;
         flex-direction: column;
+        align-items: center;
+      }
+
+      #scoreboard {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
       }
 
       #cards p {
@@ -235,10 +241,12 @@
         <button id="restart-button" disabled>Results</button>
       </div>
       <!-- <p>Output:</p> -->
-      <div id="tracker">
-        <p style="font-weight: bold">Your Hand:</p>
-        <div id="cards"></div>
-        <p style="margin-top: 8px">Your Score: <span id="score">0</span></p>
+      <div id="scoreboard">
+        <div class = "score" id="tracker">
+            <p style="font-weight: bold">Your Hand:</p>
+            <div id="cards"></div>
+            <p style="margin-top: 20px">Your Score: <span id="player-score">0</span></p>
+        </div>
       </div>
       <div id="output-div">
         Welcome! Draw 2 cards to start a game of Blackjack!
