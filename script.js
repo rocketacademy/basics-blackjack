@@ -73,6 +73,20 @@ const getRandomIndex = (max) => Math.floor(Math.random() * max);
 // Generate standard deck of 52 cards
 let deck = makeDeck();
 
+// Program to show cards
+const addCard = (card) => {
+  const div = document.getElementById('cards')
+  let p = document.createElement("p");
+  p.innerText = `${card.name} of ${card.suit}`;
+  div.appendChild(p)
+}
+
+// Program to create score
+const showScore = () => {
+  const scoreTracker = document.getElementById("score");
+  score.innerText = `${playerScore}`;
+}
+
 // ==================== Global variables ====================
 let playerHand = [];
 let dealerHand = [];
@@ -84,12 +98,20 @@ let dealerScore = 0;
 let playerState = "safe";
 let dealerState = "safe";
 
+
 // ==================== Draw card functions ====================
 // Draw 2 cards each for player and dealer
-const drawHand = (deck) => {
-  playerHand.push(deck.pop());
+const drawHand = (deck) => { 
+  let card1 = deck.pop()
+  playerHand.push(card1);
+  addCard(card1)
+
   dealerHand.push(deck.pop());
-  playerHand.push(deck.pop());
+
+  let card2 = deck.pop();
+  playerHand.push(card2);
+  addCard(card2);
+
   dealerHand.push(deck.pop());
 };
 
@@ -105,6 +127,8 @@ const updateScore = (person) => {
       }
     }
     playerScore = score;
+    showScore();
+
   } else if (person === "dealer") {
     for (const card of dealerHand) {
       if (card.name === "🅰️") {
@@ -172,16 +196,15 @@ const checkBlackjack = () => {
 };
 
 const displayBlackjackWinMessage = (result) => {
-  let message = `You drew ${playerHand[0].name} of ${playerHand[0].suit} and ${playerHand[1].name} of ${playerHand[1].suit}.   <br>Your score: ${playerScore}<br><br>Dealer drew ${dealerHand[0].name} of ${dealerHand[0].suit} and ${dealerHand[1].name} of ${dealerHand[1].suit}.<br>Dealer's score: ${dealerScore}<br><br><br> `;
+  let message = `You drew <span style="font-size: 20px">${playerHand[0].name} of ${playerHand[0].suit}</span> and <span style="font-size: 20px">${playerHand[1].name} of ${playerHand[1].suit}</span>.<br><br>Dealer drew <span style="font-size: 20px">${dealerHand[0].name} of ${dealerHand[0].suit}</span> and another card...<br><br>`;
   if (result === "blackjacktie") {
-    message +=
-      "Both you and the dealer drew a Blackjack! What are the chances... it's a tie.";
+    message += `The dealer flipped open its card to show <span style="font-size: 20px">${dealerHand[1].name} of ${dealerHand[1].suit}</span>. Both you and the dealer drew a Blackjack! What are the chances... it's a tie.`;
   } else if (result === "blackjackplayer") {
     message += "You drew a Blackjack. You won! 🥳";
   } else if (result === "blackjackdealer") {
-    message += "Dealer drew a Blackjack. Tough luck...☹️";
+    message += `The dealer flipped open its card to show <span style="font-size: 20px">${dealerHand[1].name} of ${dealerHand[1].suit}</span>. Dealer drew a Blackjack. Tough luck...☹️`;
   } else {
-    message += `<strong>Hit</strong> to draw a 🃏 or <strong>Stand</strong> to end your turn.`;
+    message += `<strong>Hit</strong> to draw a <span style="font-size: 20px">🃏</span> or <strong>Stand</strong> to end your turn.`;
   }
   return message;
 };
@@ -236,7 +259,9 @@ const restartRound = () => {
 // Hit function
 const drawCard = () => {
   if (gameMode === "player") {
-    playerHand.push(deck.pop());
+    let card = deck.pop()
+    playerHand.push(card)
+    addCard(card);;
   } else if (gameMode === "dealer") {
     dealerHand.push(deck.pop());
   }
@@ -277,17 +302,17 @@ const displayHitMessage = (state, turn) => {
   let newCardPlayer = playerHand[playerHand.length - 1];
   let newCardDealer = dealerHand[dealerHand.length - 1];
   if (turn === "player") {
-    let message = `You drew ${newCardPlayer.name} of ${newCardPlayer.suit}<br>Your score: ${playerScore}.<br><br>`;
+    let message = `You drew <span style="font-size: 20px">${newCardPlayer.name} of ${newCardPlayer.suit}</span>.<br><br>`;
     if (state === "bust") {
       message += `You went bust! Click <strong>Stand</strong> to continue.`;
     } else if (state === "playerblackjack") {
       message += `Blackjack! Click <strong>Stand</strong> to continue.`;
     } else if (state === "safe") {
-      message += `<strong>Hit</strong> to draw a 🃏 or <strong>Stand</strong> to end your turn.`;
+      message += `<strong>Hit</strong> to draw a <span style="font-size: 20px">🃏</span> or <strong>Stand</strong> to end your turn.`;
     }
     return message;
   } else if (turn === "dealer") {
-    let message = `Dealer drew ${newCardDealer.name} of ${newCardDealer.suit}<br>Dealer's score: ${dealerScore}.<br><br>`;
+    let message = `Dealer drew <span style="font-size: 20px">${newCardDealer.name} of ${newCardDealer.suit}</span><br><br>`;
     if (state === "bust") {
       message += `Dealer went bust.<br><br>Click <strong>Results</strong> to see who won.`;
     } else if (state === "dealerblackjack") {
@@ -314,20 +339,24 @@ const getWinner = () => {
       return "safeplayer";
     } else if (dealerScore > playerScore) {
       return "safedealer";
+    } else if (playerScore === dealerScore && playerScore === 21) {
+      return "blackjacktie"
     }
   }
 };
 
 const displayEndGameMessage = (result) => {
-  let message = `Your final score is: <strong>${playerScore}</strong>.<br><br> Dealer's final score is: <strong>${dealerScore}</strong>.<br><br>`;
+  let message = `Your final score is: <span style="font-size: 20px; font-weight: bold;">${playerScore}</span>.<br><br> Dealer's final score is: <span style="font-size: 20px; font-weight: bold;">${dealerScore}</span>.<br><br>`;
   if (result === "tiebust") {
     message += `Both players went bust. It's a tie!`;
   } else if (result === "player" || result === "safeplayer") {
-    message += `You win! 🥳`;
+    message += `You won! 🥳`;
   } else if (result === "dealer" || result === "safedealer") {
     message += `You lost... ☹️`;
   } else if (result === "tie") {
     message += `It's a tie!`;
+  } else if (result === 'blackjacktie') {
+    message += `Both players drew Blackjacks. It's a tie!`
   }
   return message;
 };
@@ -344,7 +373,7 @@ const updateImage = (result) => {
   } else if (
     result === "dealer" ||
     result === "safedealer" ||
-    "blackjackdealer"
+    result === "blackjackdealer"
   ) {
     image.src =
       "https://media.tenor.com/Z6LSdNe-rmUAAAAd/wheel-of-fortune-wheel.gif";
@@ -434,6 +463,11 @@ const results = () => {
   } else if (gameMode === "end") {
     restartRound();
     restartButton.innerText = "Results";
+    const div = document.getElementById('cards')
+    while (div.hasChildNodes()) {
+      div.removeChild(div.firstChild)
+    }
+    showScore()
     return "Welcome! Draw 2 cards to start a game of Blackjack!";
   }
 };
@@ -441,6 +475,3 @@ const results = () => {
 // ==================== Misc. Logic ====================
 
 // If dealer's hand >= 17, assign 80% probability not to draw, and 20% probability to draw, by using random number generator
-
-
-// TO FIX, WHEN USERS TIE (OR BOTH BUST AND TIE), GIF IS NOT SHOWING PROPERLY
