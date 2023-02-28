@@ -3,19 +3,19 @@ var shuffledDeck = [];
 var playerHand = [];
 var computerHand = [];
 
-function main(inputMode) {
+function main(mode) {
   let output = "";
-  if (inputMode === "deal") {
+  if (mode === "deal") {
     shuffledDeck = shuffleCards(deck);
-    playerHand.push(drawCard(shuffledDeck));
-    computerHand.push(drawCard(shuffledDeck));
-    playerHand.push(drawCard(shuffledDeck));
-    computerHand.push(drawCard(shuffledDeck));
+    for (let i = 0; i < 2; i++) {
+      playerHand.push(drawCard(shuffledDeck));
+      computerHand.push(drawCard(shuffledDeck));
+    }
     output = getSitrep(playerHand, computerHand);
-  } else if (inputMode === "hit") {
+  } else if (mode === "hit") {
     playerHand.push(drawCard(shuffledDeck));
     output = getSitrep(playerHand, computerHand);
-  } else if (inputMode === "stand") {
+  } else if (mode === "stand") {
     while (getScore(computerHand) < 17) {
       computerHand.push(drawCard(shuffledDeck));
     }
@@ -23,11 +23,10 @@ function main(inputMode) {
       getSitrep(playerHand, computerHand) +
       "<br><br>" +
       getWinner(playerHand, computerHand);
-  } else if (inputMode === "restart") {
+  } else if (mode === "restart") {
     resetGame();
     output = "Click 'Deal' to begin!";
   }
-  console.log(deck.length);
   return output;
 }
 
