@@ -94,11 +94,11 @@ function getScore(hand) {
 }
 
 function displayHand(hand) {
-  let result = "";
+  let result = `<div id = "all-cards">`;
   for (let i = 0; i < hand.length; i++) {
-    result += getCardName(hand[i]);
+    result += `<div id="card"> ${getCardName(hand[i])} </div>`;
   }
-
+  result += `</div>`;
   return result;
 }
 
