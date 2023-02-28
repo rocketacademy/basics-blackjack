@@ -20,7 +20,7 @@ Sequential things to do
 
 Attempt the project in parts to make sure each section works before adding more to it.
 
-### Commit 1 Goal
+### Commit 1 Goal - COMPLETED
 
 - Create deck
 - Shuffle deck
@@ -30,11 +30,23 @@ Attempt the project in parts to make sure each section works before adding more 
 
 - Sum up the card value for each player
 - Display the sums as output
-- Compare the cards and display one out of 3 outcomes: tie, blackjack win or highest hand win
 
 ### Commit 3 Goal
+
+- Compare the cards and display one out of 3 outcomes: tie, blackjack win or highest hand win
+
+### Commit 4 Goal
 
 - Player can choose to hit or stand
 - Draw card for player
 - Add card to sum
--
+- Re-evaluate winning condition
+- Output the results
+
+### Commit 4 Goal
+
+- Add dealer hit or stand
+- Draw card for dealer
+- Add card to sum
+- Re-evaluate winning condition
+- Output the results

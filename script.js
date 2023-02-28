@@ -14,7 +14,7 @@ The player who is closer to, but not above 21 wins the hand.
 
 // Helper function to create a deck of cards using a loop
 
-var makeDeck = function () {
+var makeDeck = function (cardDeck) {
   var cardDeck = [];
   var suits = ["hearts", "diamonds", "clubs", "spades"];
   var suitIndex = 0;
@@ -75,8 +75,16 @@ var shuffleCards = function (cardDeck) {
   return cardDeck;
 };
 
-// Helper function to draw cards
+// Helper function to add cards rank together
+function sumCardsInArray(inputArray) {
+  var outputSum = 0;
+  for (let sumCounter = 0; sumCounter < inputArray.length; sumCounter += 1) {
+    outputSum += inputArray[sumCounter];
+  }
+  return outputSum;
+}
 
+// Main function
 var main = function (input) {
   var deck = makeDeck();
   var shuffledDeck = shuffleCards(deck);
@@ -84,25 +92,44 @@ var main = function (input) {
   var playerArr = [];
   var dealerHandArr = [];
   var playerHandArr = [];
-  var dealerCard1 = shuffledDeck.pop();
-  dealerArr.push(dealerCard1);
-  dealerHandArr.push(dealerCard1.rank);
-  var dealerCard2 = shuffledDeck.pop();
-  dealerArr.push(dealerCard2);
-  dealerHandArr.push(dealerCard2.rank);
-  var playerCard1 = shuffledDeck.pop();
-  playerArr.push(playerCard1);
-  playerHandArr.push(playerCard1.rank);
-  var playerCard2 = shuffledDeck.pop();
-  playerArr.push(playerCard2);
-  playerHandArr.push(playerCard2.rank);
-  // console.log(dealerArr, "this is the dealer's cards");
-  // console.log(playerArr, "this is the player's cards");
-  // console.log(dealerHandArr, "dealer hand array");
-  // console.log(playerHandArr, "player hand arr");
-  var myOutputValue = `This is the dealer's cards:${dealerHandArr}. This is the player's cards. ${playerHandArr}`;
+
+  // for loop to draw cards
+  for (let drawCardsCounter = 0; drawCardsCounter < 2; drawCardsCounter++) {
+    dealerArr.push(shuffledDeck.pop());
+    dealerHandArr.push(shuffledDeck.pop().rank);
+    playerArr.push(shuffledDeck.pop());
+    playerHandArr.push(shuffledDeck.pop().rank);
+    // console.log(dealerArr, "this is the dealer's cards");
+    // console.log(playerArr, "this is the player's cards");
+    // console.log(dealerHandArr, "dealer hand array");
+    // console.log(playerHandArr, "player hand arr");
+  }
+
+  // for loop to add cards
+  var dealerSum = sumCardsInArray(dealerHandArr);
+  var playerSum = sumCardsInArray(playerHandArr);
+  console.log(dealerSum, "this is the sum of dealer's hand");
+  console.log(playerSum, "this is the sum of player's hand");
+
+  var myOutputValue = `This is the dealer's cards: ${dealerHandArr} and the total hand is ${dealerSum}. <br/> <br/> This is the player's cards: ${playerHandArr} and the total hand is ${playerSum} `;
 
   return myOutputValue;
 };
 
 // ideas: use a for loop to draw cards multiple times and push them into an array?
+
+// Code Graveyard
+
+// draw cards one by one (replaced by for loop)
+// var dealerCard1 = shuffledDeck.pop();
+// dealerArr.push(dealerCard1);
+// dealerHandArr.push(dealerCard1.rank);
+// var dealerCard2 = shuffledDeck.pop();
+// dealerArr.push(dealerCard2);
+// dealerHandArr.push(dealerCard2.rank);
+// var playerCard1 = shuffledDeck.pop();
+// playerArr.push(playerCard1);
+// playerHandArr.push(playerCard1.rank);
+// var playerCard2 = shuffledDeck.pop();
+// playerArr.push(playerCard2);
+// playerHandArr.push(playerCard2.rank);
