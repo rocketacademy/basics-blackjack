@@ -16,6 +16,13 @@ Sequential things to do
 12. Use if else to handle conditionals, report outcome
 13. Rerun game
 
+## Timelog
+
+28/2
+
+- 2 hours
+- From scratch till commit 3
+
 ## Break it down
 
 Attempt the project in parts to make sure each section works before adding more to it.
@@ -26,16 +33,21 @@ Attempt the project in parts to make sure each section works before adding more 
 - Shuffle deck
 - Draw two cards for each player and display them in output
 
-### Commit 2 Goal
+### Commit 2 Goal - COMPLETED
 
 - Sum up the card value for each player
 - Display the sums as output
 
-### Commit 3 Goal
+### Commit 3 Goal - COMPLETED
 
 - Compare the cards and display one out of 3 outcomes: tie, blackjack win or highest hand win
 
 ### Commit 4 Goal
+
+- Reassign rank so that J, Q, K are 10
+- Reassign rank so that Ace is 1
+
+### Commit 5 Goal
 
 - Player can choose to hit or stand
 - Draw card for player
@@ -43,7 +55,7 @@ Attempt the project in parts to make sure each section works before adding more 
 - Re-evaluate winning condition
 - Output the results
 
-### Commit 4 Goal
+### Commit 7 Goal
 
 - Add dealer hit or stand
 - Draw card for dealer

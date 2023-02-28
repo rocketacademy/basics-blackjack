@@ -99,24 +99,36 @@ var main = function (input) {
     dealerHandArr.push(shuffledDeck.pop().rank);
     playerArr.push(shuffledDeck.pop());
     playerHandArr.push(shuffledDeck.pop().rank);
-    // console.log(dealerArr, "this is the dealer's cards");
-    // console.log(playerArr, "this is the player's cards");
-    // console.log(dealerHandArr, "dealer hand array");
-    // console.log(playerHandArr, "player hand arr");
   }
 
-  // for loop to add cards
+  // call function to sum cards
   var dealerSum = sumCardsInArray(dealerHandArr);
   var playerSum = sumCardsInArray(playerHandArr);
   console.log(dealerSum, "this is the sum of dealer's hand");
   console.log(playerSum, "this is the sum of player's hand");
 
-  var myOutputValue = `This is the dealer's cards: ${dealerHandArr} and the total hand is ${dealerSum}. <br/> <br/> This is the player's cards: ${playerHandArr} and the total hand is ${playerSum} `;
+  var genericOutput = `This is the dealer's cards: ${dealerHandArr} and the total hand is ${dealerSum}. <br/> <br/> This is the player's cards: ${playerHandArr} and the total hand is ${playerSum} <br/><br/>`;
 
-  return myOutputValue;
+  // create conditionals to evaluate both players' hands
+  // condition 1 and 2, either hits 21
+  // condition 3, tie
+  // condition 4, player wins
+  // only other possibility is dealer wins, return that
+  if (playerSum == 21) {
+    return ` ${genericOutput} Player gets blackjack`;
+  } else if (dealerSum == 21) {
+    return ` ${genericOutput} Dealer gets blackjack`;
+  } else if (dealerSum == playerSum) {
+    return ` ${genericOutput} There's a tie`;
+  } else if (playerSum > dealerSum) {
+    return ` ${genericOutput} Player has the highest hand`;
+  } else return `${genericOutput} Dealer has the highest hand and wins`;
 };
 
-// ideas: use a for loop to draw cards multiple times and push them into an array?
+//   var myOutputValue = genericOutput + "placeholder";
+
+//   return myOutputValue;
+// };
 
 // Code Graveyard
 
