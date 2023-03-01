@@ -11,23 +11,35 @@ function main(mode) {
       playerHand.push(drawCard(shuffledDeck));
       computerHand.push(drawCard(shuffledDeck));
     }
-    output = getSitrep(playerHand, computerHand);
+    output = checkWinner() + getSitrep();
   } else if (mode === "hit") {
     playerHand.push(drawCard(shuffledDeck));
-    output = getSitrep(playerHand, computerHand);
+    output = checkWinner() + getSitrep();
   } else if (mode === "stand") {
     while (getScore(computerHand) < 17) {
       computerHand.push(drawCard(shuffledDeck));
     }
-    output =
-      getSitrep(playerHand, computerHand) +
-      "<br><br>" +
-      getWinner(playerHand, computerHand);
+    output = getWinner(playerHand, computerHand) + "<br><br>" + getSitrep();
+    endGameButtons();
   } else if (mode === "restart") {
     resetGame();
     output = "Click 'Deal' to begin!";
   }
   return output;
+}
+
+function checkWinner() {
+  if (getScore(playerHand) >= 21 || getScore(computerHand) >= 21) {
+    endGameButtons();
+    return getWinner(playerHand, computerHand) + "<br><br>";
+  } else {
+    return "";
+  }
+}
+
+function endGameButtons() {
+  hitButton.disabled = true;
+  standButton.disabled = true;
 }
 
 function resetGame() {
@@ -63,12 +75,12 @@ function getWinner(playerHand, computerHand) {
   }
 }
 
-function getSitrep(hand1, hand2) {
-  return `Your hand: ${displayHand(hand1)}<br>Your score: ${getScore(
-    hand1
-  )} <br><br> Dealer's hand: ${displayHand(
-    hand2
-  )}<br>Dealer's score: ${getScore(hand2)}`;
+function getSitrep() {
+  return `Your hand: ${displayHand(playerHand)}<br>Your score: ${getScore(
+    playerHand
+  )} <br><br>——————————<br><br> Dealer's hand: ${displayHand(
+    computerHand
+  )}<br>Dealer's score: ${getScore(computerHand)}`;
 }
 
 function getScore(hand) {
@@ -96,10 +108,20 @@ function getScore(hand) {
 function displayHand(hand) {
   let result = `<div id = "all-cards">`;
   for (let i = 0; i < hand.length; i++) {
-    result += `<div id="card"> ${getCardName(hand[i])} </div>`;
+    result += `<div id="${getCardColor(hand[i])}"> ${getCardName(
+      hand[i]
+    )} </div>`;
   }
   result += `</div>`;
   return result;
+}
+
+function getCardColor(card) {
+  if (card.suit === "hearts" || card.suit === "diamonds") {
+    return "redcard";
+  } else {
+    return "card";
+  }
 }
 
 function drawCard(deck) {

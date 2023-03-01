@@ -42,8 +42,8 @@
     <!-- sharing configuration -->
     <!-- Primary Meta Tags -->
     <title>Blackjack - Basics - Rocket Academy</title>
-    <meta name="title" content="YOURNAME's BlackJack Game!" />
-    <meta name="description" content="A fun card game I made myself! 😄💪🌈" />
+    <meta name="title" content="Mark's BlackJack Game!" />
+    <meta name="description" content="A fun card game I made myself!" />
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
@@ -51,11 +51,8 @@
       property="og:url"
       content="https://rocketacademy.github.io/basics-blackjack/index.html"
     />
-    <meta property="og:title" content="YOURNAME's BlackJack Game!" />
-    <meta
-      property="og:description"
-      content="A fun card game I made myself! 😄💪🌈"
-    />
+    <meta property="og:title" content="Mark's BlackJack Game!" />
+    <meta property="og:description" content="A fun card game I made myself!" />
     <meta
       property="og:image"
       content="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/basics/basics-blackjack-share-small.jpeg"
@@ -67,11 +64,8 @@
       name="twitter:url"
       content="https://rocketacademy.github.io/basics-blackjack/index.html"
     />
-    <meta name="twitter:title" content="YOURNAME's BlackJack Game!" />
-    <meta
-      name="twitter:description"
-      content="A fun card game I made myself! 😄💪🌈"
-    />
+    <meta name="twitter:title" content="Mark's BlackJack Game!" />
+    <meta name="twitter:description" content="A fun card game I made myself!" />
     <meta
       name="twitter:image"
       content="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/basics/basics-blackjack-share-small.jpeg"
@@ -80,9 +74,11 @@
     <meta name="twitter:creator" content="@rocketacademyco" />
 
     <!-- fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;700;900&display=swap"
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css?family=Poppins"
     />
 
     <!-- CSS -->
@@ -122,7 +118,21 @@
         background-color: white;
         border: solid;
         border-color: black;
-        border-width: 1px;
+        border-width: 2px;
+        border-radius: 5px;
+        width: 80px;
+        height: 100px;
+        text-align: center;
+        padding: 35px 0;
+        margin-right: 10px;
+        margin-top: 10px;
+      }
+
+      #redcard {
+        background-color: white;
+        border: solid;
+        border-color: red;
+        border-width: 2px;
         border-radius: 5px;
         width: 80px;
         height: 100px;
@@ -134,13 +144,19 @@
 
       #all-cards {
         display: flex;
+        justify-content: center;
       }
 
       #container {
         background-color: rgb(49, 49, 49);
         margin: 40px auto;
-        max-width: 800px;
-        padding: 30px 30px;
+        max-width: 600px;
+        padding: 20px 0px 0px 0px;
+      }
+
+      #button-container {
+        display: flex;
+        justify-content: center;
       }
 
       input {
@@ -154,12 +170,12 @@
       button {
         font-family: "Poppins", sans-serif;
         font-size: 15px;
-        font-weight: 700;
+        font-weight: 600;
         letter-spacing: 2px;
         text-transform: uppercase;
         line-height: 33px;
         width: 110px;
-        margin: 2px 0;
+        margin: 5px 5px;
         padding: 6px 6px;
         stroke: none;
       }
@@ -169,6 +185,7 @@
         margin: 20px auto 0 auto;
         padding: 20px;
         width: 100%;
+        text-align: center;
       }
 
       .logo-img {
@@ -192,10 +209,12 @@
       <!-- <p>Input:</p>
       <input id="input-field" />
       <br /> -->
-      <button id="deal-button">Deal</button>
-      <button id="hit-button">Hit</button>
-      <button id="stand-button">Stand</button>
-      <button id="restart-button">Restart</button>
+      <div id="button-container">
+        <button id="deal-button">Deal</button>
+        <button id="hit-button">Hit</button>
+        <button id="stand-button">Stand</button>
+        <button id="restart-button">Restart</button>
+      </div>
       <!-- <p>Output:</p> -->
       <div id="output-div">Click 'Deal' to begin!</div>
     </div>
