@@ -82,11 +82,9 @@ const addCard = (card) => {
 };
 
 // Program to create score
-const showScore = (person) => {
-  if (person === "player") {
-    const score = document.getElementById("player-score");
-    score.innerText = `${playerScore}`;
-  }
+const showScore = () => {
+  const score = document.getElementById("player-score");
+  score.innerText = `${playerScore}`;
 };
 
 // ==================== Global variables ====================
@@ -117,25 +115,18 @@ const drawHand = (deck) => {
 };
 
 // Update player score by looping through the hand and capturing total value
-const updateScore = (person) => {
+const updateScore = (hand, person) => {
   let score = 0;
+  for (const card of hand) {
+    if (card.name === "🅰️") {
+      score += card.value[1];
+    } else {
+      score += card.value;
+    }
+  }
   if (person === "player") {
-    for (const card of playerHand) {
-      if (card.name === "🅰️") {
-        score += card.value[1];
-      } else {
-        score += card.value;
-      }
-    }
     playerScore = score;
-  } else if (person === "dealer") {
-    for (const card of dealerHand) {
-      if (card.name === "🅰️") {
-        score += card.value[1];
-      } else {
-        score += card.value;
-      }
-    }
+  } else {
     dealerScore = score;
   }
 };
@@ -148,39 +139,24 @@ const hasAce = (hand, person) => {
       aceCounter += 1;
     }
   }
-  let secondCounter = aceCounter;
-  if (person === "player") {
-    if (aceCounter > 1 && playerScore > 21) {
-      while (playerScore > 21) {
-        playerScore -= 10;
-        secondCounter -= 1
-        if (playerScore <= 21 || secondCounter === 0) {
-          break;
-        }
-      }
-    } else if (aceCounter === 1 && playerScore > 21) {
+  if (person === 'player') {
+    while (aceCounter > 0 && playerScore > 21) {
       playerScore -= 10;
+      aceCounter -= 1;
     }
     showScore("player");
-  } else if (person === "dealer") {
-    if (aceCounter > 1 && dealerScore > 21) {
-      while (dealerScore > 21) {
-        dealerScore -= 10;
-        secondCounter -= 1;
-        if (dealerScore <= 21 || secondCounter === 0) {
-          break;
-        }
-      }
-    } else if (aceCounter === 1 && dealerScore > 21) {
+  } else if (person === 'dealer') {
+    while (aceCounter > 0 && dealerScore > 21) {
       dealerScore -= 10;
+      aceCounter -= 1;
     }
   }
 };
 
 // Consolidation function
 const updateScores = () => {
-  updateScore("player");
-  updateScore("dealer");
+  updateScore(playerHand, 'player');
+  updateScore(dealerHand, 'dealer');
   hasAce(playerHand, "player");
   hasAce(dealerHand, "dealer");
 };
@@ -278,8 +254,8 @@ const drawCard = () => {
 };
 
 // Check if gone bust
-const isBust = (player) => {
-  if (player === "player") {
+const isBust = (person) => {
+  if (person === "player") {
     if (playerScore > 21) {
       playerState = "bust";
       hitButton.disabled = true;
@@ -290,7 +266,7 @@ const isBust = (player) => {
     } else {
       return "safe";
     }
-  } else if (player === "dealer") {
+  } else if (person === "dealer") {
     if (dealerScore > 21) {
       dealerState = "bust";
       standButton.disabled = true;
@@ -310,7 +286,6 @@ const isBust = (player) => {
 
 const displayHitMessage = (state, turn) => {
   let newCardPlayer = playerHand[playerHand.length - 1];
-  let newCardDealer = dealerHand[dealerHand.length - 1];
   if (turn === "player") {
     let message = `You drew <span style="font-size: 20px">${newCardPlayer.name} of ${newCardPlayer.suit}</span>.<br><br>`;
     if (state === "bust") {
@@ -416,21 +391,21 @@ const runDrawLogic = () => {
 
 const runHitLogic = () => {
   drawCard();
-  updateScore("player");
+  updateScore(playerHand, 'player');
   hasAce(playerHand, "player");
-  showScore('player');
+  showScore("player");
   return isBust("player");
 };
 
 const runStandLogic = () => {
   drawCard();
-  updateScore("dealer");
+  updateScore(dealerHand, 'dealer');
   hasAce(dealerHand, "dealer");
   return isBust("dealer");
 };
 // ==================== Main functions ====================
 
-const main = function () {
+const main = () => {
   if (gameMode === "start") {
     let result = runDrawLogic();
     return displayBlackjackWinMessage(result);
