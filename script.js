@@ -131,7 +131,7 @@ const updateScore = (hand, person) => {
   }
 };
 
-// Assess no. of aces => if more than 1 ace, reduce the points by the number of extra aces * 10
+// Assess no. of aces and adjust scores accordingly
 const hasAce = (hand, person) => {
   let aceCounter = 0;
   for (const card of hand) {
@@ -139,24 +139,41 @@ const hasAce = (hand, person) => {
       aceCounter += 1;
     }
   }
-  if (person === 'player') {
-    while (aceCounter > 0 && playerScore > 21) {
+  let secondCounter = aceCounter;
+  if (person === "player") {
+    if (aceCounter > 1 && playerScore > 21) {
+      while (playerScore > 21) {
+        playerScore -= 10;
+        if (playerScore <= 21) {
+          secondCounter -= 1;
+          if (playerScore <= 21 || secondCounter === 0) {
+            break;
+          }
+        }
+      }
+    } else if (aceCounter === 1 && playerScore > 21) {
       playerScore -= 10;
-      aceCounter -= 1;
     }
     showScore("player");
-  } else if (person === 'dealer') {
-    while (aceCounter > 0 && dealerScore > 21) {
-      dealerScore -= 10;
-      aceCounter -= 1;
+  } else if (person === "dealer") {
+    if (aceCounter > 1 && dealerScore > 21) {
+      while (dealerScore > 21) {
+        dealerScore -= 10;
+        if (dealerScore <= 21) {
+          secondCounter -= 1;
+          if (dealerScore <= 21 || secondCounter === 0) {
+            break;
+          }
+        }
+      }
     }
   }
 };
 
 // Consolidation function
 const updateScores = () => {
-  updateScore(playerHand, 'player');
-  updateScore(dealerHand, 'dealer');
+  updateScore(playerHand, "player");
+  updateScore(dealerHand, "dealer");
   hasAce(playerHand, "player");
   hasAce(dealerHand, "dealer");
 };
@@ -391,7 +408,7 @@ const runDrawLogic = () => {
 
 const runHitLogic = () => {
   drawCard();
-  updateScore(playerHand, 'player');
+  updateScore(playerHand, "player");
   hasAce(playerHand, "player");
   showScore("player");
   return isBust("player");
@@ -399,7 +416,7 @@ const runHitLogic = () => {
 
 const runStandLogic = () => {
   drawCard();
-  updateScore(dealerHand, 'dealer');
+  updateScore(dealerHand, "dealer");
   hasAce(dealerHand, "dealer");
   return isBust("dealer");
 };
