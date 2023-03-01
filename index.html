@@ -42,8 +42,8 @@
     <!-- sharing configuration -->
     <!-- Primary Meta Tags -->
     <title>Weirong's BlackJack Game 🌈</title>
-    <meta name="title" content="Weirong's BlackJack Game!" />
-    <meta name="description" content="A fun card game I made myself! 😄💪🌈" />
+    <meta name="title" content="Weirong's BlackJack Game" />
+    <meta name="description" content="A fun card game I made using HTML, CSS and JavaScript" />
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
@@ -51,10 +51,10 @@
       property="og:url"
       content="https://lamefreak.github.io/basics-blackjack/"
     />
-    <meta property="og:title" content="Weirong's BlackJack Game! 🌈" />
+    <meta property="og:title" content="Weirong's BlackJack Game" />
     <meta
       property="og:description"
-      content="A fun card game I made myself! 😄💪🌈"
+      content="A fun card game I made using HTML, CSS and JavaScript"
     />
     <meta
       property="og:image"
@@ -116,7 +116,7 @@
       }
       .header {
         text-align: center;
-        font-size: 1.1rem;
+        font-size: 2rem;
         padding-top: 3rem;
         margin-bottom: 3rem;
       }
@@ -145,7 +145,7 @@
       button {
         font-size: 21px;
         line-height: 33px;
-        margin: 0 12px 23px 0;
+        margin: 0 12px 0 0;
         padding: 4px 12px;
         border-radius: 10px;
         transition-duration: 0.4s;
@@ -155,6 +155,8 @@
       #button-container {
         display: flex;
         justify-content: center;
+        width: 100%;
+        margin-bottom: 12px;
       }
 
       button:disabled {
@@ -236,7 +238,7 @@
       <input id="input-field" />
       <br />
       <div id="button-container">
-        <button id="submit-button">Draw cards</button>
+        <button id="submit-button">Draw</button>
         <button id="hit-button" disabled>Hit</button>
         <button id="stand-button" disabled>Stand</button>
         <button id="restart-button" disabled>Results</button>

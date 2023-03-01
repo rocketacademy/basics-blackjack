@@ -139,36 +139,59 @@ const hasAce = (hand, person) => {
       aceCounter += 1;
     }
   }
-  let secondCounter = aceCounter;
   if (person === "player") {
-    if (aceCounter > 1 && playerScore > 21) {
-      while (playerScore > 21) {
-        playerScore -= 10;
-        if (playerScore <= 21) {
-          secondCounter -= 1;
-          if (playerScore <= 21 || secondCounter === 0) {
-            break;
-          }
-        }
-      }
-    } else if (aceCounter === 1 && playerScore > 21) {
+    while (aceCounter > 0 && playerScore > 21) {
+      aceCounter -= 1
       playerScore -= 10;
     }
-    showScore("player");
+  showScore("player");
   } else if (person === "dealer") {
-    if (aceCounter > 1 && dealerScore > 21) {
-      while (dealerScore > 21) {
-        dealerScore -= 10;
-        if (dealerScore <= 21) {
-          secondCounter -= 1;
-          if (dealerScore <= 21 || secondCounter === 0) {
-            break;
-          }
-        }
+    while (aceCounter > 0 && dealerScore > 21) {
+      aceCounter -= 1
+      dealerScore -= 10;
       }
     }
-  }
-};
+}
+
+
+// const hasAce = (hand, person) => {
+//   let aceCounter = 0;
+//   for (const card of hand) {
+//     if (card.name === "🅰️") {
+//       aceCounter += 1;
+//     } //45 //ace counter = 2
+//   }
+//   let secondCounter = aceCounter;
+//   if (person === "player") {
+//     if (aceCounter > 1 && playerScore > 21) {
+//       while (playerScore > 21) {
+//         playerScore -= 10;
+//         if (playerScore <= 21) {
+//           secondCounter -= 1;
+//           if (playerScore <= 21 || secondCounter === 0) {
+//             break;
+//           }
+//         }
+//       }
+//     } else if (aceCounter === 1 && playerScore > 21) {
+//       playerScore -= 10;
+//     }
+//     showScore("player");
+//   } else if (person === "dealer") {
+//     if (aceCounter > 1 && dealerScore > 21) {
+//       while (dealerScore > 21) {
+//         dealerScore -= 10;
+//         if (dealerScore <= 21) {
+//           secondCounter -= 1;
+//           if (dealerScore <= 21 || secondCounter === 0) {
+//             break;
+//           }
+//         }
+//       }
+//     }
+//   }
+// };
+
 
 // Consolidation function
 const updateScores = () => {
