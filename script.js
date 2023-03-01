@@ -424,7 +424,7 @@ const runDrawLogic = () => {
     gameMode = "end";
     updateImage(result);
     switchButtonStates(gameMode);
-    restartButton.innerText = "Play again";
+    restartButton.innerText = "Restart";
   }
   return result;
 };
@@ -482,7 +482,7 @@ const stand = () => {
 const results = () => {
   if (gameMode === "checkwinner") {
     gameMode = "end";
-    restartButton.innerText = "Play again";
+    restartButton.innerText = "Restart";
     let winner = getWinner();
     updateImage(winner);
     return displayEndGameMessage(winner);
