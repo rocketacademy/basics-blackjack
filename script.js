@@ -153,46 +153,6 @@ const hasAce = (hand, person) => {
     }
 }
 
-
-// const hasAce = (hand, person) => {
-//   let aceCounter = 0;
-//   for (const card of hand) {
-//     if (card.name === "🅰️") {
-//       aceCounter += 1;
-//     } //45 //ace counter = 2
-//   }
-//   let secondCounter = aceCounter;
-//   if (person === "player") {
-//     if (aceCounter > 1 && playerScore > 21) {
-//       while (playerScore > 21) {
-//         playerScore -= 10;
-//         if (playerScore <= 21) {
-//           secondCounter -= 1;
-//           if (playerScore <= 21 || secondCounter === 0) {
-//             break;
-//           }
-//         }
-//       }
-//     } else if (aceCounter === 1 && playerScore > 21) {
-//       playerScore -= 10;
-//     }
-//     showScore("player");
-//   } else if (person === "dealer") {
-//     if (aceCounter > 1 && dealerScore > 21) {
-//       while (dealerScore > 21) {
-//         dealerScore -= 10;
-//         if (dealerScore <= 21) {
-//           secondCounter -= 1;
-//           if (dealerScore <= 21 || secondCounter === 0) {
-//             break;
-//           }
-//         }
-//       }
-//     }
-//   }
-// };
-
-
 // Consolidation function
 const updateScores = () => {
   updateScore(playerHand, "player");
@@ -228,7 +188,7 @@ const displayBlackjackWinMessage = (result) => {
   return message;
 };
 
-// Switch button states to indicate active or disabled
+// Hide & switch button states to indicate active or disabled
 const switchButtonStates = (state) => {
   let submitButton = document.getElementById("submit-button");
   let hitButton = document.getElementById("hit-button");
@@ -237,19 +197,29 @@ const switchButtonStates = (state) => {
 
   if (state === "player") {
     submitButton.disabled = true;
+    submitButton.setAttribute("style", 'display: none;')
     hitButton.disabled = false;
+    hitButton.setAttribute("style", "display: default;");
     standButton.disabled = false;
+    standButton.setAttribute("style", "display: default;");
     restartButton.disabled = true;
+    restartButton.setAttribute("style", "display: default;");
   } else if (state === "end") {
     submitButton.disabled = true;
     hitButton.disabled = true;
     standButton.disabled = true;
     restartButton.disabled = false;
+    restartButton.setAttribute("style", "display: default;");
+    submitButton.setAttribute("style", "display: none;");
   } else {
     submitButton.disabled = false;
     hitButton.disabled = true;
     standButton.disabled = true;
     restartButton.disabled = true;
+    submitButton.setAttribute("style", "display: default;");
+    hitButton.setAttribute("style", "display: none;");
+    standButton.setAttribute("style", "display: none;");
+    restartButton.setAttribute("style", "display: none;");
   }
 };
 
@@ -424,7 +394,7 @@ const runDrawLogic = () => {
     gameMode = "end";
     updateImage(result);
     switchButtonStates(gameMode);
-    restartButton.innerText = "Restart";
+    restartButton.innerText = "Play again";
   }
   return result;
 };
@@ -482,9 +452,11 @@ const stand = () => {
 const results = () => {
   if (gameMode === "checkwinner") {
     gameMode = "end";
-    restartButton.innerText = "Restart";
+    restartButton.innerText = "Play again";
     let winner = getWinner();
     updateImage(winner);
+    hitButton.setAttribute("style", "display: none;");
+    standButton.setAttribute("style", "display: none;");
     return displayEndGameMessage(winner);
   } else if (gameMode === "end") {
     restartRound();

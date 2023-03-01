@@ -156,7 +156,7 @@
         display: flex;
         justify-content: center;
         width: 100%;
-        margin-bottom: 12px;
+        margin-bottom: 36px;
       }
 
       button:disabled {
@@ -201,6 +201,7 @@
         display: flex;
         flex-direction: row;
         justify-content: center;
+        margin-bottom: 36px;
       }
 
       #cards p {
@@ -238,17 +239,17 @@
       <input id="input-field" />
       <br />
       <div id="button-container">
-        <button id="submit-button">Draw</button>
-        <button id="hit-button" disabled>Hit</button>
-        <button id="stand-button" disabled>Stand</button>
-        <button id="restart-button" disabled>Results</button>
+        <button id="submit-button">Draw cards</button>
+        <button id="hit-button" disabled style="display: none;">Hit</button>
+        <button id="stand-button" disabled style="display: none;">Stand</button>
+        <button id="restart-button" disabled style="display: none;">Results</button>
       </div>
       <!-- <p>Output:</p> -->
       <div id="scoreboard">
         <div class = "score" id="tracker">
             <p style="font-weight: bold">Your Hand:</p>
             <div id="cards"></div>
-            <p style="margin-top: 20px">Your Score: <span id="player-score">0</span></p>
+            <p style="margin-top: 20px">Your Score: <span id="player-score" style="font-weight: bold;">0</span></p>
         </div>
       </div>
       <div id="output-div">
