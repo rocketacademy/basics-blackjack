@@ -3,43 +3,66 @@ var shuffledDeck = [];
 var playerHand = [];
 var computerHand = [];
 
+var dealButton = document.querySelector("#deal-button");
+var hitButton = document.querySelector("#hit-button");
+var standButton = document.querySelector("#stand-button");
+var restartButton = document.querySelector("#restart-button");
+
+startGameButtonStates();
+
 function main(mode) {
   let output = "";
+
   if (mode === "deal") {
+    inGameButtonStates();
     shuffledDeck = shuffleCards(deck);
     for (let i = 0; i < 2; i++) {
       playerHand.push(drawCard(shuffledDeck));
       computerHand.push(drawCard(shuffledDeck));
     }
-    output = checkWinner() + getSitrep();
   } else if (mode === "hit") {
     playerHand.push(drawCard(shuffledDeck));
-    output = checkWinner() + getSitrep();
   } else if (mode === "stand") {
     while (getScore(computerHand) < 17) {
       computerHand.push(drawCard(shuffledDeck));
     }
-    output = getWinner(playerHand, computerHand) + "<br><br>" + getSitrep();
-    endGameButtons();
   } else if (mode === "restart") {
     resetGame();
-    output = "Click 'Deal' to begin!";
+    return "Click 'Deal' to begin!";
   }
+
+  if (
+    getScore(playerHand) >= 21 ||
+    getScore(computerHand) >= 21 ||
+    mode === "stand"
+  ) {
+    endGameButtonStates();
+    output = winStatement(playerHand, computerHand) + "<br>";
+  }
+
+  output += getSitrep();
   return output;
 }
 
-function checkWinner() {
-  if (getScore(playerHand) >= 21 || getScore(computerHand) >= 21) {
-    endGameButtons();
-    return getWinner(playerHand, computerHand) + "<br><br>";
-  } else {
-    return "";
-  }
-}
-
-function endGameButtons() {
+function startGameButtonStates() {
+  dealButton.disabled = false;
   hitButton.disabled = true;
   standButton.disabled = true;
+  restartButton.disabled = true;
+}
+
+function inGameButtonStates() {
+  dealButton.disabled = true;
+  hitButton.disabled = false;
+  standButton.disabled = false;
+  restartButton.disabled = false;
+}
+
+function endGameButtonStates() {
+  dealButton.disabled = true;
+  hitButton.disabled = true;
+  standButton.disabled = true;
+  restartButton.disabled = false;
 }
 
 function resetGame() {
@@ -47,40 +70,7 @@ function resetGame() {
   shuffledDeck = [];
   playerHand = [];
   computerHand = [];
-  dealButton.disabled = false;
-  hitButton.disabled = true;
-  standButton.disabled = true;
-  restartButton.disabled = true;
-}
-
-function getWinner(playerHand, computerHand) {
-  let playerScore = getScore(playerHand);
-  let computerScore = getScore(computerHand);
-  if (playerScore == computerScore) {
-    return "It's a draw!";
-  } else if (playerScore === 21) {
-    return "Blackjack! You win!";
-  } else if (computerScore === 21) {
-    return "Blackjack! Dealer wins!";
-  } else if (playerScore > computerScore && playerScore <= 21) {
-    return "You win!";
-  } else if (playerScore < computerScore && computerScore <= 21) {
-    return "Dealer wins!";
-  } else if (playerScore > 21 && computerScore <= 21) {
-    return "You busted. Dealer wins!";
-  } else if (computerScore > 21 && playerScore <= 21) {
-    return "Dealer busted. You win!";
-  } else {
-    return "You've both busted. Nobody wins!";
-  }
-}
-
-function getSitrep() {
-  return `Your hand: ${displayHand(playerHand)}<br>Your score: ${getScore(
-    playerHand
-  )} <br><br>——————————<br><br> Dealer's hand: ${displayHand(
-    computerHand
-  )}<br>Dealer's score: ${getScore(computerHand)}`;
+  startGameButtonStates();
 }
 
 function getScore(hand) {
@@ -105,6 +95,69 @@ function getScore(hand) {
   return score;
 }
 
+//Game Statement Generators
+
+function getWinner(playerHand, computerHand) {
+  let playerScore = getScore(playerHand);
+  let computerScore = getScore(computerHand);
+  if (
+    playerScore === 21 ||
+    (playerScore > computerScore && playerScore <= 21) ||
+    (computerScore > 21 && playerScore <= 21)
+  ) {
+    return "player";
+  } else if (
+    computerScore === 21 ||
+    (computerScore > playerScore && computerScore <= 21) ||
+    (playerScore > 21 && computerScore <= 21)
+  ) {
+    return "dealer";
+  } else if (computerScore === playerScore) {
+    return "draw";
+  } else {
+    return "";
+  }
+}
+
+function winStatement(playerHand, computerHand) {
+  let playerScore = getScore(playerHand);
+  let computerScore = getScore(computerHand);
+  let winner = getWinner(playerHand, computerHand);
+  let result = `<div id="result"`;
+
+  if (winner === "player") {
+    result += `style = "background-color: #B5EA8D">`;
+  } else if (winner === "dealer") {
+    result += `style = "background-color: #FF8484">`;
+  } else {
+    result += ">";
+  }
+
+  if (playerScore === 21 || computerScore === 21) {
+    result += "Blackjack! ";
+  } else if (playerScore > 21 || computerScore > 21) {
+    result += "Bust! ";
+  }
+
+  if (winner == "draw") {
+    result += "It's a draw!";
+  } else if (winner == "player") {
+    result += "You win!";
+  } else if (winner == "dealer") {
+    result += "Dealer wins!";
+  }
+  result += `</div>`;
+  return result;
+}
+
+function getSitrep() {
+  return `Your hand: ${displayHand(playerHand)}<br>Your score: ${getScore(
+    playerHand
+  )} <br><br>——————————<br><br> Dealer's hand: ${displayHand(
+    computerHand
+  )}<br>Dealer's score: ${getScore(computerHand)}`;
+}
+
 function displayHand(hand) {
   let result = `<div id = "all-cards">`;
   for (let i = 0; i < hand.length; i++) {
@@ -116,6 +169,8 @@ function displayHand(hand) {
   return result;
 }
 
+// Card Aesthetics
+
 function getCardColor(card) {
   if (card.suit === "hearts" || card.suit === "diamonds") {
     return "redcard";
@@ -123,6 +178,36 @@ function getCardColor(card) {
     return "card";
   }
 }
+
+function getCardName(card) {
+  var name = "";
+
+  if (card.rank <= 10 && card.rank > 1) {
+    name += card.name;
+  } else if (card.rank === 1) {
+    name += "A";
+  } else if (card.rank === 11) {
+    name += "J";
+  } else if (card.rank === 12) {
+    name += "Q";
+  } else if (card.rank === 13) {
+    name += "K";
+  }
+
+  if (card.suit === "hearts") {
+    name += "♥️";
+  } else if (card.suit === "diamonds") {
+    name += "♦️";
+  } else if (card.suit === "clubs") {
+    name += "♣️";
+  } else {
+    name += "♠️";
+  }
+
+  return name;
+}
+
+// Deck Creation & Functionality
 
 function drawCard(deck) {
   return deck.pop();
@@ -156,34 +241,6 @@ function makeDeck() {
   return cardDeck;
 }
 
-function getCardName(card) {
-  var name = "";
-
-  if (card.rank <= 10 && card.rank > 1) {
-    name += card.name;
-  } else if (card.rank === 1) {
-    name += "A";
-  } else if (card.rank === 11) {
-    name += "J";
-  } else if (card.rank === 12) {
-    name += "Q";
-  } else if (card.rank === 13) {
-    name += "K";
-  }
-
-  if (card.suit === "hearts") {
-    name += "♥️";
-  } else if (card.suit === "diamonds") {
-    name += "♦️";
-  } else if (card.suit === "clubs") {
-    name += "♣️";
-  } else {
-    name += "♠️";
-  }
-
-  return name;
-}
-
 function getRandomIndex(max) {
   return Math.floor(Math.random() * max);
 }
@@ -201,23 +258,10 @@ function shuffleCards(cards) {
 
 /// Button Functionalities
 
-var dealButton = document.querySelector("#deal-button");
-var hitButton = document.querySelector("#hit-button");
-var standButton = document.querySelector("#stand-button");
-var restartButton = document.querySelector("#restart-button");
-
-hitButton.disabled = true;
-standButton.disabled = true;
-restartButton.disabled = true;
-
 dealButton.addEventListener("click", function () {
   var result = main("deal");
   var output = document.querySelector("#output-div");
   output.innerHTML = result;
-  dealButton.disabled = true;
-  hitButton.disabled = false;
-  standButton.disabled = false;
-  restartButton.disabled = false;
 });
 
 hitButton.addEventListener("click", function () {
@@ -237,17 +281,3 @@ restartButton.addEventListener("click", function () {
   var output = document.querySelector("#output-div");
   output.innerHTML = result;
 });
-
-// Button Backup
-
-// var dealButton = document.querySelector("#deal-button");
-// dealButton.addEventListener("click", function () {
-
-//   var input = document.querySelector("#input-field");
-//   var result = main(input.value);
-
-//   var output = document.querySelector("#output-div");
-//   output.innerHTML = result;
-
-//   input.value = "";
-// });
