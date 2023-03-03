@@ -2,7 +2,6 @@
 <html lang="en">
   <head>
     <!--
-
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -79,11 +78,18 @@
     <meta name="twitter:site" content="@rocketacademyco" />
     <meta name="twitter:creator" content="@rocketacademyco" />
     -->
-    
+
     <!-- fonts -->
     <link
       rel="stylesheet"
       href="https://fonts.googleapis.com/css?family=Open+Sans"
+    />
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD"
+      crossorigin="anonymous"
     />
 
     <!-- CSS -->
@@ -100,12 +106,22 @@
         color: black; /* sets the font color */
       }
 
-      #backgroundImg {
-        opacity: 0.75;
-        background-image: url("https://www.telegraph.co.uk/content/dam/betting/Better-Collective/blackjack-table-dealing-xlarge.jpg"); /* The image used */
-        background-position: center; /* Center the image */
-        background-repeat: no-repeat; /* Do not repeat the image */
-        background-size: cover; /* Resize the background image to cover the entire container */
+      .wrap {
+        overflow: hidden;
+        position: relative;
+      }
+
+      .backgroundImg {
+        opacity: 0.6;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: auto;
+      }
+
+      .content {
+        position: relative;
       }
 
       #output-div img {
@@ -113,6 +129,7 @@
         max-width: 100%;
         max-height: 200px;
       }
+
       .header {
         text-align: center;
         font-size: 1.1rem;
@@ -120,7 +137,7 @@
       }
 
       #container {
-        background-color: pink;
+        background-color: transparent;
         margin: 40px auto;
         max-width: 800px;
         padding: 38px 31px;
@@ -146,6 +163,8 @@
         margin: 20px auto;
         padding: 20px;
         width: 100%;
+        min-height: 150px;
+        overflow: hidden;
       }
 
       .logo-img {
@@ -164,40 +183,91 @@
   </head>
 
   <body>
-    <div id="backgroundImg">
-      <h1 class="header">
-        <img class="logo-img" src="./Imgs/blackjacklogo.png" />
-        Rocket Academy
-        <img class="logo-img" src="./Imgs/blackjacklogo.png" />
-      </h1>
-    </div>
-    <h1 class="header">♣️ Fundamentals - Blackjack ♠️</h1>
-    <div id="container">
-      <p>Input:</p>
-      <input id="input-field" />
-      <br />
-      <button id="submit-button">Submit</button>
-      <p>Output:</p>
-      <div id="output-div"></div>
+    <div class="wrap">
+      <img class="backgroundImg" src="./Imgs/youngblackjack.png" />
+      <div class="content">
+        <h1 class="header">
+          <img class="logo-img" src="./Imgs/blackjacklogo.png" />
+          Rocket Academy
+          <img class="logo-img" src="./Imgs/blackjacklogo.png" />
+        </h1>
 
-      <!-- Import program logic -->
-      <script src="script.js"></script>
-      <!-- Define button click functionality -->
-      <script>
-        var button = document.querySelector("#submit-button");
-        button.addEventListener("click", function () {
-          // Set result to input value
-          var input = document.querySelector("#input-field");
-          var result = main(input.value);
+        <h1 class="header">♣️ Fundamentals - Blackjack ♠️</h1>
+        <div id="container">
+          <div id="output-div">
+            Welcome to Blackjack! Click the submit button to get started!
+          </div>
 
-          // Display result in output element
-          var output = document.querySelector("#output-div");
-          output.innerHTML = result;
+          <button id="submit-button">Submit</button><br />
+          <button id="hit-button">Hit</button>
+          <button id="stand-button">Stand</button>
 
-          // Reset input value
-          input.value = "";
-        });
-      </script>
+          <!-- Import program logic -->
+          <script src="script.js"></script>
+          <!-- Define button click functionality -->
+          <script>
+            var button = document.querySelector("#submit-button");
+            button.addEventListener("click", function () {
+              // Set result to input value
+              var result = main();
+
+              // Display result in output element
+              var output = document.querySelector("#output-div");
+              output.innerHTML = result;
+            });
+
+            var hitButton = document.getElementById("hit-button");
+            var standButton = document.getElementById("stand-button");
+
+            if (gameState != "hitStand") {
+              hitButton.style.visibility = "hidden";
+              standButton.style.visibility = "hidden";
+            }
+
+            hitButton.addEventListener("click", function () {
+              var hitCard = shuffledDeck.pop();
+              playerHand.push(hitCard);
+              var playerScore = totalValueOfHand(playerHand);
+              var myOutputValue = "";
+
+              myOutputValue = `You have hit ${hitCard.name} of ${hitCard.suit}.`;
+
+              if (playerScore > 21) {
+                hitButton.disabled = true;
+                myOutputValue += `<br><br>You have busted !`;
+              }
+
+              var output = document.querySelector("#output-div");
+              output.innerHTML = myOutputValue;
+            });
+
+            standButton.addEventListener("click", function () {
+              hitButton.style.visibility = "hidden";
+              standButton.style.visibility = "hidden";
+              button.style.visibility = "hidden";
+
+              var myOutputValue = `<img src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/a778dfe2-d565-43f8-9999-6078790b0998/dcn9rfv-ab795d15-f17b-478a-836a-41ad5ad9eacd.gif?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcL2E3NzhkZmUyLWQ1NjUtNDNmOC05OTk5LTYwNzg3OTBiMDk5OFwvZGNuOXJmdi1hYjc5NWQxNS1mMTdiLTQ3OGEtODM2YS00MWFkNWFkOWVhY2QuZ2lmIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.pcI_PfJA9BCHJ_MeyguDbWUpRM6zErWLPBgnHYjsofU" style = "height: 100px"/> Drum Roll ...`;
+              output = document.querySelector("#output-div");
+              output.innerHTML = myOutputValue;
+              dealerHand = hitOrStandDealer();
+              gameState = "winnerDetermine";
+              setTimeout(function () {
+                // Set result to input value
+                var result = main();
+
+                // Display result in output element
+                var output = document.querySelector("#output-div");
+                output.innerHTML = result;
+              }, 3000);
+            });
+          </script>
+          <script
+            src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
+            crossorigin="anonymous"
+          ></script>
+        </div>
+      </div>
     </div>
   </body>
 </html>
