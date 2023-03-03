@@ -65,10 +65,15 @@ Attempt the project in parts to make sure each section works before adding more 
 - Evaluate if player went bust with the addition of the third card
 - Output the results for the player
 
-### Commit 7 Goal
+### Commit 6 Goal - COMPLETED
 
+- input validation if input is not "hit" or "stand"
+- Evaluate if dealer needs to hit (if below 17)
 - Add dealer hit or stand
 - Draw card for dealer
 - Add card to sum
+
+### Commit 7 Goal
+
 - Re-evaluate winning condition
 - Output the results

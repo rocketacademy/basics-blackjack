@@ -127,6 +127,13 @@ var playerHit = function () {
   playerHandArr.push(playerCard.point);
 };
 
+// DEAL ONE CARD FOR DEALER
+var dealerHit = function () {
+  dealerCard = shuffledDeck.pop();
+  dealerArr.push(dealerCard);
+  dealerHandArr.push(dealerCard.point);
+};
+
 // RESET GAME
 var resetGame = function () {
   playerArr = [];
@@ -146,6 +153,8 @@ var deck = makeDeck();
 var shuffledDeck = shuffleCards(deck);
 var GAME_MODE_START = "DEAL_TWO_CARDS_EACH";
 var GAME_MODE_PLAYER_MOVE = "PLAYER_CHOOSE_HIT_OR_STAND";
+var GAME_MODE_DEALER = "DEALER_HIT_OR_STAND";
+var dealerLimit = 17;
 
 // initialise game mode to enter num dice mode
 var gameMode = GAME_MODE_START;
@@ -179,20 +188,41 @@ var main = function (input) {
   }
 
   if (gameMode == GAME_MODE_PLAYER_MOVE) {
+    if (input != "hit" && input != "stand") {
+      return "Please enter 'hit' or 'stand' to proceed";
+    }
     if (input == "hit") {
       playerHit();
       var playerSum = sumCardsInArray(playerHandArr);
+      var dealerSum = sumCardsInArray(dealerHandArr);
       console.log(playerArr, playerHandArr);
-      if (isBust) {
+      if (isBust == true) {
         resetGame();
         gameMode = GAME_MODE_START;
         return `This is the player's sum ${playerSum}. Player has gone bust. Restart game.`;
       }
+      gameMode = GAME_MODE_DEALER;
       return "player has chosen to hit, this is the sum in hand: " + playerSum;
     }
+    gameMode = GAME_MODE_DEALER;
     return (
       "player has chosen to stand. Player's current hand is: " + playerHandArr
     );
+  }
+
+  // Dealer needs to hit if their cards are under 17
+
+  if (gameMode == GAME_MODE_DEALER) {
+    if (sumCardsInArray(dealerHandArr) < 17) {
+      dealerHit();
+      var dealerSum = sumCardsInArray(dealerHandArr);
+      var myOutputValue =
+        genericOutput +
+        "dealer hit. This is the new sum for dealer " +
+        dealerSum;
+      return myOutputValue;
+    }
+    return "dealer does not need to hit";
   }
 };
 
