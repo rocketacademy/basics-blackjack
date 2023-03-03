@@ -51,19 +51,19 @@ Attempt the project in parts to make sure each section works before adding more 
 
 - Compare the cards and display one out of 3 outcomes: tie, blackjack win or highest hand win
 
-### Commit 4 Goal
+### Commit 4 Goal - COMPLETED
 
 - Fix bug where the array and handarray are using different cards
 - Reassign rank so that J, Q, K are 10 (done)
 - Reassign rank so that Ace is 1 (done)
 
-### Commit 5 Goal
+### Commit 5 Goal - COMPLETED
 
 - Player can choose to hit or stand
 - Draw (third) card for player
 - Add card to sum
-- Re-evaluate winning condition
-- Output the results
+- Evaluate if player went bust with the addition of the third card
+- Output the results for the player
 
 ### Commit 7 Goal
 

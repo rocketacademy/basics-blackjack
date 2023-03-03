@@ -12,7 +12,7 @@ Each players' score is the total of their card ranks. Jacks/Queen/Kings are 10. 
 The player who is closer to, but not above 21 wins the hand.
 */
 
-// Helper function to create a deck of cards using a loop
+// MAKE DECK OF CARDS
 
 var makeDeck = function (cardDeck) {
   var cardDeck = [];
@@ -63,13 +63,13 @@ var makeDeck = function (cardDeck) {
   return cardDeck;
 };
 
-// Helper function to get a random index ranging from 0 (inclusive) to max (exclusive).
+// Get a random index ranging from 0 (inclusive) to max (exclusive).
 var getRandomIndex = function (max) {
   return Math.floor(Math.random() * max);
 };
 // the length of card deck will be used as "max". Hence 42 cards is the total/max number of cards in the deck
 
-// Helper function to shuffle the elements in the cardDeck array
+// SHUFFLE CARDS
 var shuffleCards = function (cardDeck) {
   // Loop over the card deck array once
   var currentIndex = 0;
@@ -85,13 +85,7 @@ var shuffleCards = function (cardDeck) {
   return cardDeck;
 };
 
-// Helper function to draw cards
-
-function dealOneCard(handArr) {
-  handArr.push(shuffledDeck.pop());
-}
-
-// Helper function to add cards rank together
+// SUM OF HAND
 function sumCardsInArray(inputArray) {
   var outputSum = 0;
   for (let sumCounter = 0; sumCounter < inputArray.length; sumCounter += 1) {
@@ -100,16 +94,20 @@ function sumCardsInArray(inputArray) {
   return outputSum;
 }
 
-// Main function
-var main = function (input) {
-  var deck = makeDeck();
-  var shuffledDeck = shuffleCards(deck);
-  var dealerArr = [];
-  var playerArr = [];
-  var dealerHandArr = [];
-  var playerHandArr = [];
+// CHECK FOR BLACKJACK
+var isBlackjack = function (hand) {
+  return hand.length === 2 && sumCardsInArray(hand) == 21;
+};
 
-  // for loop to draw cards
+// CHECK FOR BUST
+var isBust = function (sumOfCards) {
+  if (sumOfCards > 21) {
+    return true;
+  }
+};
+
+// DRAW TWO CARDS WHEN STARTING
+var drawTwoCards = function () {
   for (let drawCardsCounter = 0; drawCardsCounter < 2; drawCardsCounter++) {
     // draw one card for each player
     dealerCard = shuffledDeck.pop();
@@ -119,38 +117,91 @@ var main = function (input) {
     dealerHandArr.push(dealerCard.point);
     playerArr.push(playerCard);
     playerHandArr.push(playerCard.point);
+  }
+};
 
-    // console.log(dealerArr, "dealerArr");
-    // console.log(playerArr, "player arr");
-    // console.log(dealerHandArr, "dealer hand Arr");
-    // console.log(playerHandArr, "player hand arr");
+// DEAL ONE CARD FOR PLAYER
+var playerHit = function () {
+  playerCard = shuffledDeck.pop();
+  playerArr.push(playerCard);
+  playerHandArr.push(playerCard.point);
+};
 
-    // loop it once more
+// RESET GAME
+var resetGame = function () {
+  playerArr = [];
+  playerHandArr = [];
+  dealerArr = [];
+  dealerHandArr = [];
+  gameMode = GAME_MODE_START;
+  shuffledDeck = shuffleCards(makeDeck());
+};
+
+// GLOBAL VARIABLES
+var dealerArr = [];
+var playerArr = [];
+var dealerHandArr = [];
+var playerHandArr = [];
+var deck = makeDeck();
+var shuffledDeck = shuffleCards(deck);
+var GAME_MODE_START = "DEAL_TWO_CARDS_EACH";
+var GAME_MODE_PLAYER_MOVE = "PLAYER_CHOOSE_HIT_OR_STAND";
+
+// initialise game mode to enter num dice mode
+var gameMode = GAME_MODE_START;
+
+// MAIN FUNCTION
+var main = function (input) {
+  if (gameMode == GAME_MODE_START) {
+    drawTwoCards();
+    // console.log(playerArr, playerHandArr);
+    // console.log(dealerArr, dealerHandArr);
+
+    // call function to sum cards
+    var dealerSum = sumCardsInArray(dealerHandArr);
+    var playerSum = sumCardsInArray(playerHandArr);
+    console.log(dealerSum, "this is the sum of dealer's hand");
+    console.log(playerSum, "this is the sum of player's hand");
+
+    var genericOutput = `This is the dealer's cards: ${dealerHandArr} and the total hand is ${dealerSum}. <br/> <br/> This is the player's cards: ${playerHandArr} and the total hand is ${playerSum} <br/><br/>`;
+
+    if (isBlackjack(playerHandArr)) {
+      resetGame();
+      return ` ${genericOutput} Player gets blackjack`;
+    }
+
+    if (isBlackjack(dealerHandArr)) {
+      resetGame();
+      return ` ${genericOutput} Dealer gets blackjack`;
+    }
+    gameMode = GAME_MODE_PLAYER_MOVE;
+    return genericOutput + `Player please choose to "hit" or "stand".`;
   }
 
-  // call function to sum cards
-  var dealerSum = sumCardsInArray(dealerHandArr);
-  var playerSum = sumCardsInArray(playerHandArr);
-  console.log(dealerSum, "this is the sum of dealer's hand");
-  console.log(playerSum, "this is the sum of player's hand");
-
-  var genericOutput = `This is the dealer's cards: ${dealerHandArr} and the total hand is ${dealerSum}. <br/> <br/> This is the player's cards: ${playerHandArr} and the total hand is ${playerSum} <br/><br/>`;
-
-  // create conditionals to evaluate both players' hands
-  // condition 1 and 2, either hits 21
-  // condition 3, tie
-  // condition 4, player wins
-  // only other possibility is dealer wins, return that
-  if (playerSum == 21) {
-    return ` ${genericOutput} Player gets blackjack`;
-  } else if (dealerSum == 21) {
-    return ` ${genericOutput} Dealer gets blackjack`;
-  } else if (dealerSum == playerSum) {
-    return ` ${genericOutput} There's a tie`;
-  } else if (playerSum > dealerSum) {
-    return ` ${genericOutput} Player has the highest hand`;
-  } else return `${genericOutput} Dealer has the highest hand and wins`;
+  if (gameMode == GAME_MODE_PLAYER_MOVE) {
+    if (input == "hit") {
+      playerHit();
+      var playerSum = sumCardsInArray(playerHandArr);
+      console.log(playerArr, playerHandArr);
+      if (isBust) {
+        resetGame();
+        gameMode = GAME_MODE_START;
+        return `This is the player's sum ${playerSum}. Player has gone bust. Restart game.`;
+      }
+      return "player has chosen to hit, this is the sum in hand: " + playerSum;
+    }
+    return (
+      "player has chosen to stand. Player's current hand is: " + playerHandArr
+    );
+  }
 };
+
+// park
+// } else if (dealerSum == playerSum) {
+//   return ` ${genericOutput} There's a tie`;
+// } else if (playerSum > dealerSum) {
+//   return ` ${genericOutput} Player has the highest hand`;
+// } else return `${genericOutput} Dealer has the highest hand and wins`;
 
 // Code Graveyard
 
@@ -171,3 +222,10 @@ var main = function (input) {
 //   var myOutputValue = genericOutput + "placeholder";
 //   return myOutputValue;
 // };
+
+// console.log(dealerArr, "dealerArr");
+// console.log(playerArr, "player arr");
+// console.log(dealerHandArr, "dealer hand Arr");
+// console.log(playerHandArr, "player hand arr");
+
+// loop it once more
