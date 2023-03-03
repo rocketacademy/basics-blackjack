@@ -35,11 +35,21 @@ var makeDeck = function (cardDeck) {
       } else if (cardName == 13) {
         cardName = "king";
       }
+      var pointInHand = rankCounter;
+      // create new key called point to use later to sum up the hands
+      if (pointInHand == 11) {
+        pointInHand = 10;
+      } else if (pointInHand == 12) {
+        pointInHand = 10;
+      } else if (pointInHand == 13) {
+        pointInHand = 10;
+      }
 
       var card = {
         name: cardName,
         suit: currentSuit,
         rank: rankCounter,
+        point: pointInHand,
       };
 
       cardDeck.push(card);
@@ -75,6 +85,12 @@ var shuffleCards = function (cardDeck) {
   return cardDeck;
 };
 
+// Helper function to draw cards
+
+function dealOneCard(handArr) {
+  handArr.push(shuffledDeck.pop());
+}
+
 // Helper function to add cards rank together
 function sumCardsInArray(inputArray) {
   var outputSum = 0;
@@ -95,10 +111,21 @@ var main = function (input) {
 
   // for loop to draw cards
   for (let drawCardsCounter = 0; drawCardsCounter < 2; drawCardsCounter++) {
-    dealerArr.push(shuffledDeck.pop());
-    dealerHandArr.push(shuffledDeck.pop().rank);
-    playerArr.push(shuffledDeck.pop());
-    playerHandArr.push(shuffledDeck.pop().rank);
+    // draw one card for each player
+    dealerCard = shuffledDeck.pop();
+    playerCard = shuffledDeck.pop();
+    // push card into array for cards and array for points
+    dealerArr.push(dealerCard);
+    dealerHandArr.push(dealerCard.point);
+    playerArr.push(playerCard);
+    playerHandArr.push(playerCard.point);
+
+    // console.log(dealerArr, "dealerArr");
+    // console.log(playerArr, "player arr");
+    // console.log(dealerHandArr, "dealer hand Arr");
+    // console.log(playerHandArr, "player hand arr");
+
+    // loop it once more
   }
 
   // call function to sum cards
@@ -125,11 +152,6 @@ var main = function (input) {
   } else return `${genericOutput} Dealer has the highest hand and wins`;
 };
 
-//   var myOutputValue = genericOutput + "placeholder";
-
-//   return myOutputValue;
-// };
-
 // Code Graveyard
 
 // draw cards one by one (replaced by for loop)
@@ -145,3 +167,7 @@ var main = function (input) {
 // var playerCard2 = shuffledDeck.pop();
 // playerArr.push(playerCard2);
 // playerHandArr.push(playerCard2.rank);
+
+//   var myOutputValue = genericOutput + "placeholder";
+//   return myOutputValue;
+// };

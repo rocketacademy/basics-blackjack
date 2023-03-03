@@ -23,6 +23,15 @@ Sequential things to do
 - 2 hours
 - From scratch till commit 3
 
+1/3
+
+- 30 min
+- tried to debug, didn't commit
+
+3/3
+
+- 7.30pm start
+
 ## Break it down
 
 Attempt the project in parts to make sure each section works before adding more to it.
@@ -44,13 +53,14 @@ Attempt the project in parts to make sure each section works before adding more 
 
 ### Commit 4 Goal
 
-- Reassign rank so that J, Q, K are 10
-- Reassign rank so that Ace is 1
+- Fix bug where the array and handarray are using different cards
+- Reassign rank so that J, Q, K are 10 (done)
+- Reassign rank so that Ace is 1 (done)
 
 ### Commit 5 Goal
 
 - Player can choose to hit or stand
-- Draw card for player
+- Draw (third) card for player
 - Add card to sum
 - Re-evaluate winning condition
 - Output the results
