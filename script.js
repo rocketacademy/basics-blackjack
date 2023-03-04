@@ -115,26 +115,39 @@ var sumCounter = function (cards) {
   return sum;
 };
 
-var defaultHandSumMsg = function (playerSum, compSum) {
-  return `<b>Your hand totals to ${playerSum}! <br>Dealer's hand totals to ${compSum}!</b>`;
+var defaultHandSumMsg = function (playerCards, compCards, playerSum, compSum) {
+  return `<u> YOUR HAND </u> <br> ${listOfCards(
+    playerCards
+  )} <br> <u>DEALER'S HAND</u> <br> ${listOfCards(
+    compCards
+  )} <br> <b>Your hand totals to ${playerSum}! <br>Dealer's hand totals to ${compSum}!</b>`;
 };
 
-var defaultWinMsg = function (playerCards, playerSum, compSum) {
-  outputBox.innerHTML = `YOU WON!  <br> <br> <u> YOUR HAND </u> <br> ${listOfCards(
-    playerCards
-  )} <br>${defaultHandSumMsg(playerSum, compSum)}`;
+var defaultWinMsg = function (playerCards, compCards, playerSum, compSum) {
+  outputBox.innerHTML = `YOU WON!  <br> <br> ${defaultHandSumMsg(
+    playerCards,
+    compCards,
+    playerSum,
+    compSum
+  )}`;
 };
 
-var defaultLoseMsg = function (playerCards, playerSum, compSum) {
-  outputBox.innerHTML = `HA! YOU LOST!  <br> <br> <u> YOUR HAND </u> <br> ${listOfCards(
-    playerCards
-  )} <br> ${defaultHandSumMsg(playerSum, compSum)}`;
+var defaultLoseMsg = function (playerCards, compCards, playerSum, compSum) {
+  outputBox.innerHTML = `HA! YOU LOST!  <br> <br> ${defaultHandSumMsg(
+    playerCards,
+    compCards,
+    playerSum,
+    compSum
+  )}`;
 };
 
-var defaultTieMsg = function (playerCards, playerSum, compSum) {
-  outputBox.innerHTML = `IT'S A TIE! <br><br> <u> YOUR HAND </u> <br> ${listOfCards(
-    playerCards
-  )} <br> ${defaultHandSumMsg(playerSum, compSum)}`;
+var defaultTieMsg = function (playerCards, compCards, playerSum, compSum) {
+  outputBox.innerHTML = `IT'S A TIE! <br><br> ${defaultHandSumMsg(
+    playerCards,
+    compCards,
+    playerSum,
+    compSum
+  )}`;
 };
 
 var defaultHitOrStandMsg = function (playerCards) {
@@ -143,6 +156,12 @@ var defaultHitOrStandMsg = function (playerCards) {
   )} <b>Your hand totals to ${sumCounter(
     playerCards
   )}</b> <br><br> Press 'hit' or 'stand'!`;
+};
+
+var defaultRevealMsg = function (playerCards, playerSum) {
+  outputBox.innerHTML = `<u> YOUR HAND </u> <br> ${listOfCards(
+    playerCards
+  )} <b>Your hand totals to ${playerSum}</b> <br><br> It's the Dealer's turn. <br> Click 'Reveal to view dealer's hand.`;
 };
 
 var startOfGameButtons = function () {
@@ -157,10 +176,18 @@ var hitOrStandButtons = function () {
   standButton.disabled = false;
 };
 
+// var revealButtonOnly = function () {
+//   dealButton.disabled = true;
+//   hitButton.disabled = true;
+//   standButton.disabled = true;
+//   revealButton.disabled = false;
+// };
+
 var outputBox = document.getElementById("output-div");
 var dealButton = document.getElementById("deal-button");
 var hitButton = document.getElementById("hit-button");
 var standButton = document.getElementById("stand-button");
+// var revealButton = document.getElementById("reveal-button");
 startOfGameButtons();
 
 //DEAL
@@ -171,62 +198,97 @@ dealButton.addEventListener("click", function () {
   compCards = draw2Cards(shuffledDeck);
   var compSum = sumCounter(compCards);
   var playerSum = sumCounter(playerCards);
-  while (compSum < 17) {
-    compCardExtra = shuffledDeck.pop();
-    compCards.push(compCardExtra);
-    compSum = sumCounter(compCards);
-  }
   console.log("compSum: ", compSum);
-  if (compSum == 21) {
-    outputBox.innerHTML =
-      "HA! YOU LOST! <br> <b>Dealer's hand totals to 21!</b> ";
-  } else if (playerSum == 21) {
-    defaultWinMsg(playerCards, playerSum, compSum);
+  if (playerSum == 21 && compSum != 21) {
+    defaultWinMsg(playerCards, compCards, playerSum, compSum);
+  } else if (playerSum == 21 && compSum == 21) {
+    defaultTieMsg(playerCards, compCards, playerSum, compSum);
   } else {
     hitOrStandButtons();
     defaultHitOrStandMsg(playerCards);
   }
 });
 
+// if (playerSum > 21 && compSum <= 21) {
+//     startOfGameButtons();
+//     outputBox.innerHTML = `HA! YOU BUSTED! <br><br> <u> YOUR HAND </u> <br> ${listOfCards(
+//       playerCards
+//     )} <br> ${defaultHandSumMsg(playerSum, compSum)}`;
+// else {
+//     startOfGameButtons();
+//     defaultWinMsg(playerCards, playerSum, compSum);
+
 //HIT
 hitButton.addEventListener("click", function () {
-  cardExtra = shuffledDeck.pop();
+  var cardExtra = shuffledDeck.pop();
   playerCards.push(cardExtra);
   playerSum = sumCounter(playerCards);
   compSum = sumCounter(compCards);
-  if (playerSum > 21 && compSum <= 21) {
+
+  if (playerSum > 21) {
     startOfGameButtons();
-    outputBox.innerHTML = `HA! YOU BUSTED! <br><br> <u> YOUR HAND </u> <br> ${listOfCards(
-      playerCards
-    )} <br> ${defaultHandSumMsg(playerSum, compSum)}`;
-  } else if (playerSum > 21 && compSum > 21) {
-    startOfGameButtons();
-    defaultTieMsg(playerCards, playerSum, compSum);
+    defaultLoseMsg(playerCards, compCards, playerSum, compSum);
   } else if (playerSum < 21) {
-    hitOrStandButtons();
     defaultHitOrStandMsg(playerCards, playerSum, compSum);
-  } else {
+  } else if (playerSum == 21) {
     startOfGameButtons();
-    defaultWinMsg(playerCards, playerSum, compSum);
+    if (compSum == 21) {
+      defaultTieMsg(playerCards, compCards, playerSum, compSum);
+    } else {
+      defaultWinMsg(playerCards, compCards, playerSum, compSum);
+    }
   }
 });
 
+// playerSum = sumCounter(playerCards);
+//   compSum = sumCounter(compCards);
+//   startOfGameButtons();
+//   if (
+//     (playerSum > compSum && playerSum <= 21) ||
+//     (playerSum <= 21 && compSum > 21)
+//   ) {
+//     defaultWinMsg(playerCards, playerSum, compSum);
+//   } else if (playerSum < compSum && compSum <= 21) {
+//     defaultLoseMsg(playerCards, playerSum, compSum);
+//   } else {
+//       defaultTieMsg(playerCards, playerSum, compSum);}
+
 //STAND
 standButton.addEventListener("click", function () {
-  playerSum = sumCounter(playerCards);
   compSum = sumCounter(compCards);
+  playerSum = sumCounter(playerCards);
+  while (compSum < 17) {
+    compCardExtra = shuffledDeck.pop();
+    compCards.push(compCardExtra);
+    compSum = sumCounter(compCards);
+  }
+  console.log("compSum: ", compSum);
   startOfGameButtons();
-  if (
-    (playerSum > compSum && playerSum <= 21) ||
-    (playerSum <= 21 && compSum > 21)
-  ) {
-    defaultWinMsg(playerCards, playerSum, compSum);
-  } else if (playerSum < compSum && compSum <= 21) {
-    defaultLoseMsg(playerCards, playerSum, compSum);
+  if (playerSum == compSum) {
+    defaultTieMsg(playerCards, compCards, playerSum, compSum);
+  } else if ((playerSum > compSum && playerSum <= 21) || compSum > 21) {
+    defaultWinMsg(playerCards, compCards, playerSum, compSum);
   } else {
-    defaultTieMsg(playerCards, playerSum, compSum);
+    defaultLoseMsg(playerCards, compCards, playerSum, compSum);
   }
 });
+
+//REVEAL
+// revealButton.addEventListener("click", function () {
+//   compSum = sumCounter(compCards);
+
+//   startOfGameButtons();
+//   if (playerSum == 21 && compSum == 21) {
+//     defaultTieMsg(playerCards, compCards, playerSum, compSum);
+//   } else if (
+//     (playerSum <= 21 && compSum != 21) ||
+//     (playerSum > compSum && playerSum <= 21)
+//   ) {
+//     defaultWinMsg(playerCards, compCards, playerSum, compSum);
+//   } else {
+//     defaultLoseMsg(playerCards, compCards, playerSum, compSum);
+//   }
+// });
 
 //----------------------------------
 //-----MAIN OF BLACKJACK BASE-------
