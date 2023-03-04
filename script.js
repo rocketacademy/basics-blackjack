@@ -1,6 +1,6 @@
 // There will be only two players. One human and one computer (for the Base solution).
 // The computer will always be the dealer.
-// Each player gets dealt two cards to start.
+// Each player gets dealt two cards to start. (both face up, dealer has 1 card open and 1 card closed)
 // The player goes first, and decides if they want to hit (draw a card) or stand (end their turn).
 // The dealer has to hit if their hand is below 17.
 // Each players' score is the total of their card ranks. Jacks/Queen/Kings are 10. Aces can be 1 or 11.
@@ -8,6 +8,46 @@
 
 //global variables
 var deck = [];
+var gameMode;
+//states for game modes: dealCard, hit, stand, findWinner
+
+function getRandomNumber(max) {
+  return Math.floor(Math.random() * max);
+}
+function shuffleDeck() {
+  for (i = 0; i < deck.length; i += 1) {
+    var randomIndex = getRandomNumber(deck.length);
+    var currentIndex = i;
+    var currentCard = deck[currentIndex];
+    var randomCard = deck[randomIndex];
+    deck[currentIndex] = randomCard;
+    deck[randomIndex] = currentCard;
+  }
+  return deck;
+}
+
+function getStartingHand() {}
+//two cards
+
+function dealCard() {}
+
+function displayUserCards() {}
+
+function getComputerDecision() {}
+
+function matchNumber(cardTotal) {}
+
+function findWinner(cardTotal) {}
+
+function displayGameStatus() {}
+
+var main = function (input) {
+  makeDeck();
+  console.log(deck);
+  shuffleDeck();
+  console.log(deck);
+  return deck;
+};
 
 //card deck
 function makeDeck() {
@@ -37,14 +77,3 @@ function makeDeck() {
   }
   return deck;
 }
-
-function shuffleDeck() {}
-
-function displayUserCards() {}
-
-function findWinner() {}
-
-var main = function (input) {
-  console.log(makeDeck());
-  return deck;
-};
