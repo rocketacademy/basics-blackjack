@@ -8,9 +8,8 @@
 
 //global variables
 var deck = [];
-var gameMode;
-var playerHand = [];
-//states for game modes: dealCard, hit, stand, findWinner
+var gameMode; //states for game modes: dealCard, hit, stand, findWinner
+var playerHand = []; //to reset
 
 function getRandomNumber(max) {
   return Math.floor(Math.random() * max);
@@ -39,7 +38,13 @@ function dealCard() {
   return drawnCard;
 }
 
-function displayUserCards() {}
+function displayUserCards(numberOfCards) {
+  var output = `You drew: <br>`;
+  for (i = 0; i < numberOfCards; i += 1) {
+    output += `${playerHand[i].name} of ${playerHand[i].suit}<br>`;
+  }
+  return output;
+}
 
 function getComputerDecision() {}
 
@@ -54,14 +59,14 @@ var main = function (input) {
   shuffleDeck();
   getStartingHand(2);
   console.log(playerHand);
-  return playerHand;
+  return displayUserCards(2);
 };
 
 //card deck
 function makeDeck() {
   for (i = 0; i < 4; i += 1) {
-    var suits = ["diamonds", "spades", "clubs", "hearts"];
-    var currentSuit = suits[i];
+    var allSuits = ["diamonds ♦️", "spades ♠️", "clubs ♣️", "hearts ♥️"];
+    var currentSuit = allSuits[i];
     for (j = 1; j <= 13; j += 1) {
       var currentRank = j;
       var currentName = String(j);
