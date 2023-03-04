@@ -99,8 +99,9 @@ var sumCounter = function (cards) {
     if (currentCard.rank == 1) {
       aceNum += 1;
       sum += 11;
+    } else {
+      sum += currentCard.rank;
     }
-    sum += currentCard.rank;
   }
 
   if (sum > 21 && aceNum > 0) {
@@ -114,70 +115,164 @@ var sumCounter = function (cards) {
   return sum;
 };
 
-var main = function (input) {
-  if (gameMode == drawCards) {
-    deck = makeDeck();
-    shuffledDeck = shuffleCards(deck);
-    playerCards = draw2Cards(shuffledDeck);
-    compCards = draw2Cards(shuffledDeck);
-    var compSum = sumCounter(compCards);
-    console.log(compSum);
-    while (compSum < 17) {
-      compCardExtra = shuffledDeck.pop();
-      compCards.push(compCardExtra);
-      compSum = sumCounter(compCards);
-    }
-    console.log(sumCounter(compCards));
-    if (compSum == 21) {
-      return "The sum of Dealer's cards is 21! <br> Ha! you lost! ";
-    }
-    gameMode = hitOrStand;
-    return `your cards are: <br><br> ${listOfCards(
-      playerCards
-    )} <br><br> Enter 'hit' or 'stand'!`;
-  }
-
-  if (gameMode == hitOrStand) {
-    if (input != "hit" && input != "stand") {
-      return `Please ONLY input 'hit' or 'stand'!😡`;
-    }
-    if (input == "stand") {
-      gameMode = determineWinner;
-    }
-    if (input == "hit") {
-      cardExtra = shuffledDeck.pop();
-      playerCards.push(cardExtra);
-      var playerSum = sumCounter(playerCards);
-      if (playerSum > 21) {
-        gameMode = drawCards;
-        return `HA! YOU BUSTED! Your cards are: <br><br> ${listOfCards(
-          playerCards
-        )}`;
-      }
-      if (playerSum == 21) {
-        gameMode = determineWinner;
-      }
-      if (playerSum < 21) {
-        return `your cards are: <br><br> ${listOfCards(
-          playerCards
-        )} <br><br> Enter 'hit' or 'stand'!`;
-      }
-    }
-  }
-
-  if (gameMode == determineWinner) {
-    playerSum = sumCounter(playerCards);
-    compSum = sumCounter(compCards);
-    gameMode = drawCards;
-    if (
-      (playerSum > compSum && playerSum <= 21) ||
-      (playerSum <= 21 && compSum > 21)
-    ) {
-      return `playerSum is ${playerSum}. compSum is ${compSum}. you win!`;
-    } else if (playerSum < compSum && compSum <= 21) {
-      return `playerSum is ${playerSum}. compSum is ${compSum}. you lose!`;
-    } else {
-      return `it's a tie`;
-    }
-  }
+var defaultHandSumMsg = function (playerSum, compSum) {
+  return `<b>Your hand totals to ${playerSum}! <br>Dealer's hand totals to ${compSum}!</b>`;
 };
+
+var defaultWinMsg = function (playerCards, playerSum, compSum) {
+  return `YOU WON!  <br> <br> <u> YOUR HAND </u> <br> ${listOfCards(
+    playerCards
+  )} <br>${defaultHandSumMsg(playerSum, compSum)}`;
+};
+
+var defaultLoseMsg = function (playerCards, playerSum, compSum) {
+  return `HA! YOU LOST!  <br> <br> <u> YOUR HAND </u> <br> ${listOfCards(
+    playerCards
+  )} <br><br> ${defaultHandSumMsg(playerSum, compSum)}`;
+};
+
+var defaultTieMsg = function (playerCards, playerSum, compSum) {
+  return `IT'S A TIE! <br><br> <u> YOUR HAND </u> <br> ${listOfCards(
+    playerCards
+  )} <br> ${defaultHandSumMsg(playerSum, compSum)}`;
+};
+
+var defaultHitOrStandMsg = function (playerCards) {
+  return `<u> YOUR HAND </u> <br> ${listOfCards(
+    playerCards
+  )} <b>Your hand totals to ${sumCounter(
+    playerCards
+  )}</b> <br><br> Press 'hit' or 'stand'!`;
+};
+
+//DEAL
+var outputBox = document.getElementById("output-div");
+var dealButton = document.getElementById("deal-button");
+dealButton.addEventListener("click", function () {
+  deck = makeDeck();
+  shuffledDeck = shuffleCards(deck);
+  playerCards = draw2Cards(shuffledDeck);
+  compCards = draw2Cards(shuffledDeck);
+  var compSum = sumCounter(compCards);
+  var playerSum = sumCounter(playerCards);
+  console.log(compSum);
+  while (compSum < 17) {
+    compCardExtra = shuffledDeck.pop();
+    compCards.push(compCardExtra);
+    compSum = sumCounter(compCards);
+  }
+  console.log(sumCounter(compCards));
+  if (compSum == 21) {
+    outputBox.innerHTML =
+      "HA! YOU LOST! <br> <b>Dealer's hand totals to 21!</b> ";
+  } else if (playerSum == 21) {
+    outputBox.innerHTML = defaultWinMsg(playerCards, playerSum, compSum);
+  } else {
+    outputBox.innerHTML = defaultHitOrStandMsg(playerCards);
+  }
+});
+
+//HIT
+var hitButton = document.getElementById("hit-button");
+hitButton.addEventListener("click", function () {
+  cardExtra = shuffledDeck.pop();
+  playerCards.push(cardExtra);
+  playerSum = sumCounter(playerCards);
+  compSum = sumCounter(compCards);
+  if (playerSum > 21 && compSum <= 21) {
+    outputBox.innerHTML = `HA! YOU BUSTED! <br><br> <u> YOUR HAND </u> <br> ${listOfCards(
+      playerCards
+    )} <br> ${defaultHandSumMsg(playerSum, compSum)}`;
+  } else if (playerSum > 21 && compSum > 21) {
+    outputBox.innerHTML = defaultTieMsg(playerCards, playerSum, compSum);
+  } else if (playerSum < 21) {
+    outputBox.innerHTML = defaultHitOrStandMsg(playerCards, playerSum, compSum);
+  } else {
+    outputBox.innerHTML = defaultWinMsg(playerCards, playerSum, compSum);
+  }
+});
+
+//STAND
+var standButton = document.getElementById("stand-button");
+standButton.addEventListener("click", function () {
+  playerSum = sumCounter(playerCards);
+  compSum = sumCounter(compCards);
+  if (
+    (playerSum > compSum && playerSum <= 21) ||
+    (playerSum <= 21 && compSum > 21)
+  ) {
+    outputBox.innerHTML = defaultWinMsg(playerCards, playerSum, compSum);
+  } else if (playerSum < compSum && compSum <= 21) {
+    outputBox.innerHTML = defaultLoseMsg(playerCards, playerSum, compSum);
+  } else {
+    outputBox.innerHTML = defaultTieMsg(playerCards, playerSum, compSum);
+  }
+});
+
+// var main = function (input) {
+//   if (gameMode == drawCards) {
+//     deck = makeDeck();
+//     shuffledDeck = shuffleCards(deck);
+//     playerCards = draw2Cards(shuffledDeck);
+//     compCards = draw2Cards(shuffledDeck);
+//     var compSum = sumCounter(compCards);
+//     console.log(compSum);
+//     while (compSum < 17) {
+//       compCardExtra = shuffledDeck.pop();
+//       compCards.push(compCardExtra);
+//       compSum = sumCounter(compCards);
+//     }
+//     console.log(sumCounter(compCards));
+//     if (compSum == 21) {
+//       return "The sum of Dealer's cards is 21! <br> Ha! you lost! ";
+//     }
+//     gameMode = hitOrStand;
+//     return `your cards are: <br><br> ${listOfCards(
+//       playerCards
+//     )} <br><br> Enter 'hit' or 'stand'!`;
+//   }
+
+// if (gameMode == hitOrStand) {
+//   if (input != "hit" && input != "stand") {
+//     return `Please ONLY input 'hit' or 'stand'!😡`;
+//   }
+//   if (input == "stand") {
+//     gameMode = determineWinner;
+//   }
+//   if (input == "hit") {
+//     cardExtra = shuffledDeck.pop();
+//     playerCards.push(cardExtra);
+//     var playerSum = sumCounter(playerCards);
+//     if (playerSum > 21) {
+//       gameMode = drawCards;
+//       return `HA! YOU BUSTED! Your cards are: <br><br> ${listOfCards(
+//         playerCards
+//       )}`;
+//     }
+//     if (playerSum == 21) {
+//       gameMode = determineWinner;
+//     }
+//     if (playerSum < 21) {
+//       return `your cards are: <br><br> ${listOfCards(
+//         playerCards
+//       )} <br><br> Enter 'hit' or 'stand'!`;
+//     }
+//   }
+// }
+
+//   if (gameMode == determineWinner) {
+//     playerSum = sumCounter(playerCards);
+//     compSum = sumCounter(compCards);
+//     gameMode = drawCards;
+//     if (
+//       (playerSum > compSum && playerSum <= 21) ||
+//       (playerSum <= 21 && compSum > 21)
+//     ) {
+//       return `playerSum is ${playerSum}. compSum is ${compSum}. you win!`;
+//     } else if (playerSum < compSum && compSum <= 21) {
+//       return `playerSum is ${playerSum}. compSum is ${compSum}. you lose!`;
+//     } else {
+//       return `it's a tie`;
+//     }
+//   }
+// };
