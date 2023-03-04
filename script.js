@@ -9,6 +9,7 @@
 //global variables
 var deck = [];
 var gameMode;
+var playerHand = [];
 //states for game modes: dealCard, hit, stand, findWinner
 
 function getRandomNumber(max) {
@@ -26,10 +27,17 @@ function shuffleDeck() {
   return deck;
 }
 
-function getStartingHand() {}
-//two cards
+function getStartingHand(numberOfCards) {
+  for (i = 0; i < numberOfCards; i += 1) {
+    var card = dealCard();
+    playerHand.push(card);
+  }
+}
 
-function dealCard() {}
+function dealCard() {
+  var drawnCard = deck.pop();
+  return drawnCard;
+}
 
 function displayUserCards() {}
 
@@ -43,10 +51,10 @@ function displayGameStatus() {}
 
 var main = function (input) {
   makeDeck();
-  console.log(deck);
   shuffleDeck();
-  console.log(deck);
-  return deck;
+  getStartingHand(2);
+  console.log(playerHand);
+  return playerHand;
 };
 
 //card deck
