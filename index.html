@@ -134,12 +134,14 @@
         text-align: center;
         font-size: 1.1rem;
         margin-bottom: 3rem;
+        border-radius: 25px;
       }
 
       #container {
         background-color: transparent;
         margin: 40px auto;
         max-width: 800px;
+        min-height: auto;
         padding: 38px 31px;
       }
 
@@ -159,18 +161,27 @@
       }
 
       #output-div {
-        background-color: lightgrey;
+        background-color: #333333;
         margin: 20px auto;
+        border-radius: 25px;
         padding: 20px;
         width: 100%;
         min-height: 150px;
         overflow: hidden;
+        color: antiquewhite;
       }
 
       .logo-img {
         height: 49px;
         position: relative;
         top: 22px;
+      }
+
+      .container-fluid {
+        border-radius: 25px;
+        background: #706c61;
+        padding: 20px;
+        color: antiquewhite;
       }
 
       /* increase header font size on wider screens */
@@ -198,14 +209,54 @@
             Welcome to Blackjack! Click the submit button to get started!
           </div>
 
-          <button id="submit-button">Submit</button><br />
-          <button id="hit-button">Hit</button>
-          <button id="stand-button">Stand</button>
+          <button id="submit-button" type="button" class="btn btn-primary">
+            Submit
+          </button>
+          <button id="hit-button" type="button" class="btn btn-secondary">
+            Hit
+          </button>
+          <button id="stand-button" type="button" class="btn btn-secondary">
+            Stand
+          </button>
+
+          <div class="container-fluid" id="gameSettings">
+            <label for="bettingRange" class="form-label" id="valueBet"></label>
+            <input
+              id="bettingRange"
+              type="range"
+              class="form-range"
+              min="0"
+              max="100"
+              step="10"
+            />
+
+            <div id="numOfplayers">
+              <label for="numPlayers">Number Of Players:</label>
+              <input
+                id="numPlayers"
+                type="number"
+                value="1"
+                min="1"
+                max="3"
+                placeholder="Input here"
+              />
+            </div>
+          </div>
 
           <!-- Import program logic -->
           <script src="script.js"></script>
           <!-- Define button click functionality -->
           <script>
+            betAmt.textContent = `You are betting ${inputRange.value} chips`;
+            inputRange.addEventListener("input", (event) => {
+              betAmt.textContent = `You are betting ${event.target.value} chips`;
+            });
+
+            var numOfPlayersInput = document.getElementById("numPlayers");
+            numOfPlayersInput.addEventListener("keypress", (event) => {
+              event.preventDefault();
+            });
+
             var button = document.querySelector("#submit-button");
             button.addEventListener("click", function () {
               // Set result to input value
@@ -220,21 +271,26 @@
             var standButton = document.getElementById("stand-button");
 
             if (gameState != "hitStand") {
-              hitButton.style.visibility = "hidden";
-              standButton.style.visibility = "hidden";
+              hitButton.style.display = "none";
+              standButton.style.display = "none";
             }
 
             hitButton.addEventListener("click", function () {
               var hitCard = shuffledDeck.pop();
-              playerHand.push(hitCard);
-              var playerScore = totalValueOfHand(playerHand);
+              playersData[turn - 1].hand.push(hitCard);
+              var playerScore = totalValueOfHand(playersData[turn - 1].hand);
               var myOutputValue = "";
 
               myOutputValue = `You have hit ${hitCard.name} of ${hitCard.suit}.`;
 
               if (playerScore > 21) {
-                hitButton.disabled = true;
+                hitButton.style.display = "none";
                 myOutputValue += `<br><br>You have busted !`;
+              }
+
+              if (playerScore == 21) {
+                hitButton.style.display = "none";
+                myOutputValue += `<br><br>Blackjack blessed one !`;
               }
 
               var output = document.querySelector("#output-div");
@@ -242,23 +298,45 @@
             });
 
             standButton.addEventListener("click", function () {
-              hitButton.style.visibility = "hidden";
-              standButton.style.visibility = "hidden";
-              button.style.visibility = "hidden";
+              hitButton.style.display = "none";
+              standButton.style.display = "none";
+              button.style.display = "none";
 
-              var myOutputValue = `<img src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/a778dfe2-d565-43f8-9999-6078790b0998/dcn9rfv-ab795d15-f17b-478a-836a-41ad5ad9eacd.gif?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcL2E3NzhkZmUyLWQ1NjUtNDNmOC05OTk5LTYwNzg3OTBiMDk5OFwvZGNuOXJmdi1hYjc5NWQxNS1mMTdiLTQ3OGEtODM2YS00MWFkNWFkOWVhY2QuZ2lmIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.pcI_PfJA9BCHJ_MeyguDbWUpRM6zErWLPBgnHYjsofU" style = "height: 100px"/> Drum Roll ...`;
+              var myOutputValue = `<img src="./Imgs/bongoCat.gif" style = "height: 100px"/> Drum Roll ...`;
               output = document.querySelector("#output-div");
               output.innerHTML = myOutputValue;
-              dealerHand = hitOrStandDealer();
-              gameState = "winnerDetermine";
-              setTimeout(function () {
-                // Set result to input value
-                var result = main();
 
-                // Display result in output element
+              if (turn != totalNumOfPlayers) {
+                turn += 1;
                 var output = document.querySelector("#output-div");
-                output.innerHTML = result;
-              }, 3000);
+                if (!newGame) {
+                  output.innerHTML = `It is Player ${turn} turn !`;
+                } else {
+                  output.innerHTML = `It is Player ${
+                    playersData[turn - 1].index
+                  } turn !`;
+                }
+
+                gameState = "deal";
+                button.style.display = "inline-block";
+                hitButton.disabled = false;
+                if (turn > 1) {
+                  var inputSettings = document.getElementById("gameSettings");
+                  inputSettings.style.display = "block";
+                }
+              } else {
+                dealerHand = hitOrStandDealer();
+
+                gameState = "winnerDetermine";
+                setTimeout(function () {
+                  // Set result to input value
+                  var result = main();
+
+                  // Display result in output element
+                  var output = document.querySelector("#output-div");
+                  output.innerHTML = result;
+                }, 3000);
+              }
             });
           </script>
           <script
