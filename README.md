@@ -18,6 +18,8 @@ Sequential things to do
 
 ## Timelog
 
+Running total: 6 hours
+
 28/2
 
 - 2 hours
@@ -30,7 +32,12 @@ Sequential things to do
 
 3/3
 
-- 7.30pm start
+- 3.5 hours
+- commit 4 to 6
+
+5/3
+
+- Start 1pm
 
 ## Break it down
 
@@ -73,7 +80,29 @@ Attempt the project in parts to make sure each section works before adding more 
 - Draw card for dealer
 - Add card to sum
 
-### Commit 7 Goal
+### Commit 7 Goal - COMPLETED
 
-- Re-evaluate winning condition
-- Output the results
+- Add back evaluating winning conditions
+  -- Tie: both blackjack (DONE) or same score or bust (DONE)
+  -- Win: Blackjack win (DONE), highest score to 21 wins, other player bust (DONE)
+  -- Remove bust conditions from player play state as there could be a possibility of a dealer bust too (DONE)
+
+### Commit 8 Goal
+
+- Add logic to change ace to 1 or 11 depending on the hand
+- Fix the bug where player chose to stand but is asked to hit again
+
+### Commit 9 Goal
+
+- Allow player to restart game without refreshing page
+
+### Commit ? Comfortable
+
+- Add the names and suits of the cards to the output
+- Clean up output to be more readable and engaging
+- Add starting instructions in html file within another container
+- Add GIF for winning and losing states
+
+### Commit ? More comfortable
+
+- Hide dealer's first card

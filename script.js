@@ -117,6 +117,8 @@ var drawTwoCards = function () {
     dealerHandArr.push(dealerCard.point);
     playerArr.push(playerCard);
     playerHandArr.push(playerCard.point);
+    // dealerHandArr.push(10.5);
+    // playerHandArr.push(5);
   }
 };
 
@@ -140,6 +142,10 @@ var resetGame = function () {
   playerHandArr = [];
   dealerArr = [];
   dealerHandArr = [];
+  dealerChoseToStand = false;
+  playerChoseToStand = false;
+  dealerBust = false;
+  playerBust = false;
   gameMode = GAME_MODE_START;
   shuffledDeck = shuffleCards(makeDeck());
 };
@@ -154,38 +160,55 @@ var shuffledDeck = shuffleCards(deck);
 var GAME_MODE_START = "DEAL_TWO_CARDS_EACH";
 var GAME_MODE_PLAYER_MOVE = "PLAYER_CHOOSE_HIT_OR_STAND";
 var GAME_MODE_DEALER = "DEALER_HIT_OR_STAND";
+var GAME_MODE_EVALUATE = "EVALUATE_WINNING_CONDITIONS";
 var dealerLimit = 17;
 
 // initialise game mode to enter num dice mode
 var gameMode = GAME_MODE_START;
+// player choice to stand is false at the start
+var playerChoseToStand = false;
+var dealerChoseToStand = false;
+// both players bust is false at the start
+var playerBust = false;
+var dealerBust = false;
 
 // MAIN FUNCTION
 var main = function (input) {
   if (gameMode == GAME_MODE_START) {
     drawTwoCards();
-    // console.log(playerArr, playerHandArr);
-    // console.log(dealerArr, dealerHandArr);
 
     // call function to sum cards
     var dealerSum = sumCardsInArray(dealerHandArr);
     var playerSum = sumCardsInArray(playerHandArr);
     console.log(dealerSum, "this is the sum of dealer's hand");
     console.log(playerSum, "this is the sum of player's hand");
+    var genericOutput = `This is the dealer's cards points: ${dealerHandArr} and the total hand is ${dealerSum}. <br/> <br/> This is the player's cards: ${playerHandArr} and the total hand is ${playerSum} <br/><br/>`;
+    // If both has blackjack, it's a tie. If either gets blackjack, that player wins in the first round.
 
-    var genericOutput = `This is the dealer's cards: ${dealerHandArr} and the total hand is ${dealerSum}. <br/> <br/> This is the player's cards: ${playerHandArr} and the total hand is ${playerSum} <br/><br/>`;
+    if (isBlackjack(playerHandArr) && isBlackjack(dealerHandArr)) {
+      resetGame();
+      gameMode = GAME_MODE_START;
+      return ` ${genericOutput} Both players got Blackjack! It's a tie. Play again.`;
+    }
 
     if (isBlackjack(playerHandArr)) {
       resetGame();
-      return ` ${genericOutput} Player gets blackjack`;
+      gameMode = GAME_MODE_START;
+      return ` ${genericOutput} Player gets blackjack. Player wins the game!`;
     }
 
     if (isBlackjack(dealerHandArr)) {
       resetGame();
+      gameMode = GAME_MODE_START;
       return ` ${genericOutput} Dealer gets blackjack`;
     }
+
+    // If neither players got blackjack in the first round, the game state changes to ask the player to hit or stand
     gameMode = GAME_MODE_PLAYER_MOVE;
     return genericOutput + `Player please choose to "hit" or "stand".`;
   }
+
+  // Start new state: Player's move to hit or stand
 
   if (gameMode == GAME_MODE_PLAYER_MOVE) {
     if (input != "hit" && input != "stand") {
@@ -193,20 +216,25 @@ var main = function (input) {
     }
     if (input == "hit") {
       playerHit();
+      console.log(playerArr);
       var playerSum = sumCardsInArray(playerHandArr);
       var dealerSum = sumCardsInArray(dealerHandArr);
       console.log(playerArr, playerHandArr);
-      if (isBust == true) {
-        resetGame();
-        gameMode = GAME_MODE_START;
-        return `This is the player's sum ${playerSum}. Player has gone bust. Restart game.`;
+
+      //Dealer needs to choose to hit or stand after the player
+
+      if (isBust(playerSum)) {
+        gameMode = GAME_MODE_DEALER;
+        playerBust = true;
+        return `This is the player's sum ${playerSum}. Player has gone bust. Let's see what the dealer does.`;
       }
       gameMode = GAME_MODE_DEALER;
       return "player has chosen to hit, this is the sum in hand: " + playerSum;
     }
+    playerChoseToStand = true;
     gameMode = GAME_MODE_DEALER;
     return (
-      "player has chosen to stand. Player's current hand is: " + playerHandArr
+      "Player has chosen to stand. Player's current hand is: " + playerHandArr
     );
   }
 
@@ -216,22 +244,65 @@ var main = function (input) {
     if (sumCardsInArray(dealerHandArr) < 17) {
       dealerHit();
       var dealerSum = sumCardsInArray(dealerHandArr);
-      var myOutputValue =
-        genericOutput +
-        "dealer hit. This is the new sum for dealer " +
-        dealerSum;
-      return myOutputValue;
+      gameMode = GAME_MODE_EVALUATE;
+      if (isBust(dealerSum)) {
+        dealerBust = true;
+        return `This is the dealer's sum ${dealerSum}. Dealer has gone bust.`;
+      }
+      return "Dealer hit. This is the new sum for dealer " + dealerSum;
     }
-    return "dealer does not need to hit";
+    dealerChoseToStand = true;
+    gameMode = GAME_MODE_EVALUATE;
+    return "Dealer does not hit. Their score remains at " + dealerSum;
+  }
+
+  // new line
+  if (gameMode == GAME_MODE_EVALUATE) {
+    var playerSum = sumCardsInArray(playerHandArr);
+    var dealerSum = sumCardsInArray(dealerHandArr);
+
+    if (playerBust == true && dealerBust == true) {
+      resetGame();
+      gameMode = GAME_MODE_START;
+      return `This is the player's sum ${playerSum}. This is the dealer's sum. Both players bust. Restart game.`;
+    } else if (
+      playerSum == dealerSum &&
+      playerChoseToStand == true &&
+      dealerChoseToStand == true
+    ) {
+      resetGame();
+      gameMode == GAME_MODE_START;
+      return `${genericOutput} Both players have chose to stand and the dealer sum is ${dealerSum} and the player sum is ${playerSum}.`;
+    } else if (dealerBust == true) {
+      return `${genericOutput} Dealer has bust. Player sum is ${playerSum}. Player wins!`;
+    } else if (playerBust == true) {
+      return `${genericOutput} Player has bust. Player sum is ${playerSum}. Dealer wins!`;
+    } else if (
+      playerChoseToStand == true &&
+      dealerChoseToStand == true &&
+      dealerSum > playerSum
+    ) {
+      return `Dealer has a sum of ${dealerSum}. Player sum is ${playerSum}. Dealer wins!`;
+    } else if (
+      playerChoseToStand == true &&
+      dealerChoseToStand == true &&
+      dealerSum < playerSum
+    ) {
+      return `Dealer has a sum of ${dealerSum}. Player sum is ${playerSum}. Player wins!`;
+    } else gameMode = GAME_MODE_PLAYER_MOVE;
+    return `Player's turn to hit or stand. Player has a sum of ${playerSum}.`;
   }
 };
 
-// park
-// } else if (dealerSum == playerSum) {
-//   return ` ${genericOutput} There's a tie`;
-// } else if (playerSum > dealerSum) {
-//   return ` ${genericOutput} Player has the highest hand`;
-// } else return `${genericOutput} Dealer has the highest hand and wins`;
+// end new line
+
+// if (playerChoseToStand == false) {
+//   gameMode = GAME_MODE_PLAYER_MOVE;
+//   return `the results. Player choose to hit or stand.`;
+// } else if (dealerChoseToStand == false) {
+//   gameMode = GAME_MODE_DEALER;
+//   return `the dealer takes a turn now.`;
+// } else
 
 // Code Graveyard
 
@@ -257,5 +328,3 @@ var main = function (input) {
 // console.log(playerArr, "player arr");
 // console.log(dealerHandArr, "dealer hand Arr");
 // console.log(playerHandArr, "player hand arr");
-
-// loop it once more
