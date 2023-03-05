@@ -179,24 +179,24 @@ function isInvalid(input) {
 }
 
 function restartGame() {
-  playerHand = [];
-  computerHand = [];
+  deck = [];
   gameMode = "first round";
+  winningMode = ""; //blackjack, bigger number max 21
+  playerHand = []; //to reset
+  computerHand = [];
   gameRound = 1;
 }
 
 var main = function (input) {
   //first round
   if (gameMode === "first round") {
-    restartGame();
     makeDeck();
     shuffleDeck();
     playerHand = getStartingHand(2, playerHand);
     computerHand = getStartingHand(2, computerHand);
     // playerHand = [{ rank: 10 }, { rank: 10 }, { rank: 1 }, { rank: 0 }];
     // computerHand = [{ rank: 1 }, { rank: 10 }, { rank: 10 }, { rank: 0 }];
-    console.log(newAceTotal(playerHand));
-    // console.log(assignAceRank(computerHand));
+    // console.log(newAceTotal(playerHand));
     var output = displayAllPlayerCards();
     gameMode = "find winner";
   }
@@ -208,13 +208,16 @@ var main = function (input) {
       gameMode = input;
       if (gameMode === "hit") {
         playerHand = getStartingHand(1, playerHand);
-        computerHand = getStartingHand(1, computerHand);
-        output = displayAllPlayerCards();
-      } else if (gameMode === "stand") {
         if (isLessThan(17, computerHand)) {
           computerHand = getStartingHand(1, computerHand);
-          output = displayAllPlayerCards();
         }
+        output = displayAllPlayerCards();
+      } else if (gameMode === "stand") {
+        console.log(gameMode);
+        if (isLessThan(17, computerHand)) {
+          computerHand = getStartingHand(1, computerHand);
+        }
+        output = displayAllPlayerCards();
       }
       gameMode = "find winner";
     }
