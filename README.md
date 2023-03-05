@@ -101,7 +101,7 @@ Attempt the project in parts to make sure each section works before adding more 
 - Add Gifs for outcomes
 - Clean up output to be more readable and engaging
 
-### Commit 10 Comfortable
+### Commit 10 Comfortable - COMPLETED
 
 - Add starting instructions in html file within another container
 - Format the page to be pretty

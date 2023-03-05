@@ -205,6 +205,8 @@ var playerChoiceGif =
   '<img src = "https://media.tenor.com/juxL3ZtqwRMAAAAd/what-will-you-do-next-anya-taylor-joy.gif"/>';
 var playerNervousGif =
   '<img src ="https://media.tenor.com/pB-cPZmiMeEAAAAC/stress-spongebob.gif"/>';
+var itsATieGif =
+  '<img src = "https://media.tenor.com/wyfhYqF1tJIAAAAC/mark-wahlberg-wahlberg.gif"/>';
 
 // GLOBAL VARIABLES
 var dealerArr = [];
@@ -236,8 +238,7 @@ var main = function (input) {
     // call function to sum cards
     var dealerSum = sumCardsInArray(dealerHandArr);
     var playerSum = sumCardsInArray(playerHandArr);
-    console.log(dealerSum, "this is the sum of dealer's hand");
-    console.log(playerSum, "this is the sum of player's hand");
+
     var genericOutput = `This is the dealer's cards points: ${dealerHandArr} and the total hand is ${dealerSum}. <br/> <br/> This is the player's cards: ${playerHandArr} and the total hand is ${playerSum} <br/><br/>`;
     // If both has blackjack, it's a tie. If either gets blackjack, that player wins in the first round.
 
@@ -356,7 +357,8 @@ var main = function (input) {
       myOutputValue =
         generatePlayerOutput() +
         generateDealerOutput() +
-        `Both players hands' bust! 💣💣 Restart game by hitting Submit.`;
+        `Both players hands' bust! 💣💣 Restart game by hitting Submit.<br><br>` +
+        itsATieGif;
       resetGame();
       gameMode = GAME_MODE_START;
       return myOutputValue;
@@ -368,7 +370,8 @@ var main = function (input) {
       myOutputValue =
         generatePlayerOutput() +
         generateDealerOutput() +
-        `Both players have chose to stand and are tied! Click Submit to play again`;
+        `Both players have chose to stand and are tied! Click Submit to play again <br><br>` +
+        itsATieGif;
       resetGame();
       gameMode == GAME_MODE_START;
       return myOutputValue;
@@ -428,36 +431,3 @@ var main = function (input) {
     return `You've chosen to stand. It is the dealer's turn now.`;
   }
 };
-
-// Code Graveyard
-
-// function sumCardsInArray(inputArray) {
-//   var outputSum = 0;
-//   for (let sumCounter = 0; sumCounter < inputArray.length; sumCounter += 1) {
-//     outputSum += inputArray[sumCounter];
-//   }
-//   return outputSum;
-// }
-
-// draw cards one by one (replaced by for loop)
-// var dealerCard1 = shuffledDeck.pop();
-// dealerArr.push(dealerCard1);
-// dealerHandArr.push(dealerCard1.rank);
-// var dealerCard2 = shuffledDeck.pop();
-// dealerArr.push(dealerCard2);
-// dealerHandArr.push(dealerCard2.rank);
-// var playerCard1 = shuffledDeck.pop();
-// playerArr.push(playerCard1);
-// playerHandArr.push(playerCard1.rank);
-// var playerCard2 = shuffledDeck.pop();
-// playerArr.push(playerCard2);
-// playerHandArr.push(playerCard2.rank);
-
-//   var myOutputValue = genericOutput + "placeholder";
-//   return myOutputValue;
-// };
-
-// console.log(dealerArr, "dealerArr");
-// console.log(playerArr, "player arr");
-// console.log(dealerHandArr, "dealer hand Arr");
-// console.log(playerHandArr, "player hand arr");
