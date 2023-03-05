@@ -69,6 +69,12 @@ var dealCardsToPlayers = function (hand) {
   return hand;
 };
 
+var dealOneCard = function (hand) {
+  var dealtCard = shuffledDeck.pop();
+  hand.push(dealtCard);
+  return hand;
+};
+
 var handResults = function (hand) {
   var myOutputValue = "";
   for (var counter = 0; counter < hand.length; counter += 1) {
@@ -90,25 +96,67 @@ var dealResult = function () {
 
   playersData[turn - 1].hand = dealCardsToPlayers(playersData[turn - 1].hand);
 
+  myOutputValue += `Player ${playersData[turn - 1].index} hand : ${handResults(
+    playersData[turn - 1].hand
+  )}<br>`;
+
   if (turn == 1) {
     dealerHand = dealCardsToPlayers(dealerHand);
   }
 
-  myOutputValue += `Player ${playersData[turn - 1].index} hand : ${handResults(
-    playersData[turn - 1].hand
-  )}<br>`;
   myOutputValue += `Dealer hand : ` + handResults(dealerHand) + `<br>`;
   myOutputValue += `</br> Please enter "hit" or "stand".`;
 
   return myOutputValue;
 };
 
+var currentHandResult = function () {
+  var myOutputValue = "";
+
+  var counter = 0;
+  while (counter < playersData[turn - 1].hand.length) {
+    playersData[turn - 1].hand[counter] = dealOneCard(
+      playersData[turn - 1].hand[counter]
+    );
+    myOutputValue += `Player ${
+      playersData[turn - 1].index
+    } hand : ${handResults(playersData[turn - 1].hand[counter])}<br>`;
+    counter += 1;
+  }
+
+  return myOutputValue;
+};
+
+var loopHandResult = function () {
+  var myOutputValue = "";
+  var counter = 0;
+  while (counter < playersData[turn - 1].hand.length) {
+    myOutputValue += `Player ${
+      playersData[turn - 1].index
+    } hand : ${handResults(playersData[turn - 1].hand[counter])}<br>`;
+    counter += 1;
+  }
+
+  return myOutputValue;
+};
+
 var playerHandResults = function () {
   var myOutputValue = "";
+
   for (var counter = 0; counter < totalNumOfPlayers; counter += 1) {
-    myOutputValue += `Player ${playersData[counter].index} hand : ${handResults(
-      playersData[counter].hand
-    )} <br>`;
+    if (playersData[counter].hand[0][0] != undefined) {
+      var deckIndex = 0;
+      while (deckIndex < playersData[counter].hand.length) {
+        myOutputValue += `Player ${
+          playersData[counter].index
+        } hand : ${handResults(playersData[counter].hand[deckIndex])} <br>`;
+        deckIndex++;
+      }
+    } else {
+      myOutputValue += `Player ${
+        playersData[counter].index
+      } hand : ${handResults(playersData[counter].hand)} <br>`;
+    }
   }
 
   return myOutputValue;
@@ -139,8 +187,19 @@ var totalValueOfHand = function (hand) {
 
 var totalPlayerScore = function () {
   for (var counter = 0; counter < totalNumOfPlayers; counter += 1) {
-    var score = totalValueOfHand(playersData[counter].hand);
-    playerScores.push(score);
+    if (playersData[counter].hand[0][0] != undefined) {
+      var index = 0;
+      while (index < playersData[counter].hand.length) {
+        var score = totalValueOfHand(playersData[counter].hand[index]);
+        score = { player: playersData[counter].index, score: score };
+        playerScores.push(score);
+        index++;
+      }
+    } else {
+      var score = totalValueOfHand(playersData[counter].hand);
+      score = { player: playersData[counter].index, score: score };
+      playerScores.push(score);
+    }
   }
 };
 
@@ -148,22 +207,37 @@ var winResult = function (dealerScore) {
   var myOutputValue = "";
   for (var counter = 0; counter < playerScores.length; counter++) {
     if (
-      playerScores[counter] == dealerScore ||
-      (playerScores[counter] > 21 && dealerScore > 21)
+      playerScores[counter].score == dealerScore ||
+      (playerScores[counter].score > 21 && dealerScore > 21)
     ) {
       myOutputValue += `Its a tie.<br>`;
     } else if (
-      (playerScores[counter] <= 21 && playerScores[counter] > dealerScore) ||
-      (playerScores[counter] <= 21 && dealerScore > 21)
+      (playerScores[counter].score <= 21 &&
+        playerScores[counter].score > dealerScore) ||
+      (playerScores[counter].score <= 21 && dealerScore > 21)
     ) {
-      playersData[counter].savings =
-        playersData[counter].savings + playersData[counter].betting;
-      myOutputValue += `Player ${playersData[counter].index} wins with ${playersData[counter].betting}! `;
+      var playerIndex = 0;
+      while (playerIndex < playersData.length) {
+        if (playersData[playerIndex].index == playerScores[counter].player) {
+          playersData[playerIndex].savings =
+            playersData[playerIndex].savings + playersData[playerIndex].betting;
+          myOutputValue += `Player ${playersData[playerIndex].index} wins with ${playersData[playerIndex].betting}! `;
+        }
+        playerIndex++;
+      }
+
       myOutputValue += `Dealer loses!<br>`;
     } else {
-      playersData[counter].savings =
-        playersData[counter].savings - playersData[counter].betting;
-      myOutputValue += `Player ${playersData[counter].index} loses with ${playersData[counter].betting}! `;
+      var playerIndex = 0;
+      while (playerIndex < playersData.length) {
+        if (playersData[playerIndex].index == playerScores[counter].player) {
+          playersData[playerIndex].savings =
+            playersData[playerIndex].savings - playersData[playerIndex].betting;
+          myOutputValue += `Player ${playersData[playerIndex].index} loses with ${playersData[playerIndex].betting}! `;
+        }
+        playerIndex++;
+      }
+
       myOutputValue += `Dealer wins!<br>`;
     }
   }
@@ -220,7 +294,21 @@ var continueGame = function () {
     button.style.display = "inline-block";
     inputSettings.style.display = "block";
     gameState = "deal";
+    deckTurn = 0;
   }
+
+  return myOutputValue;
+};
+
+var splitTheDeck = function () {
+  var lastCard = playersData[turn - 1].hand[1];
+  var firstCard = playersData[turn - 1].hand[0];
+  playersData[turn - 1].hand = [[firstCard], [lastCard]];
+  console.log(playersData[turn - 1].hand);
+
+  var myOutputValue = "";
+  myOutputValue = currentHandResult();
+  splitted = true;
 
   return myOutputValue;
 };
@@ -247,7 +335,11 @@ var main = function (input) {
     shuffledDeck = shuffleCards(unshuffledDeck);
 
     if (turn == 1 && newGame == false) {
-      totalNumOfPlayers = setNumOfPlayer.value;
+      if (setNumOfPlayer.value == "") {
+        totalNumOfPlayers = 1;
+      } else {
+        totalNumOfPlayers = setNumOfPlayer.value;
+      }
 
       var inputPlayers = document.getElementById("numOfplayers");
       inputPlayers.style.display = "none";
@@ -259,6 +351,7 @@ var main = function (input) {
   } else if (gameState == "deal") {
     if (shuffledDeck.length == 0) {
       shuffledDeck = shuffleCards(unshuffledDeck);
+      myOutputValue += `New deck of shuffled cards has been added.`;
     }
     if (!newGame) {
       inputSettings.style.display = "none";
@@ -271,6 +364,12 @@ var main = function (input) {
 
     myOutputValue = dealResult();
 
+    if (
+      playersData[turn - 1].hand[0].name == playersData[turn - 1].hand[1].name
+    ) {
+      splitButton.style.display = "inline-block";
+    }
+
     gameState = "hitStand";
     hitButton.style.display = "inline-block";
     standButton.style.display = "inline-block";
@@ -280,6 +379,7 @@ var main = function (input) {
     }
   } else if (gameState == "winnerDetermine") {
     totalPlayerScore();
+    console.log(playerScores);
     var dealerScore = totalValueOfHand(dealerHand);
 
     myOutputValue = playerHandResults();
