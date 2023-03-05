@@ -48,7 +48,38 @@ function displayUserCards(numberOfCards) {
 
 function getComputerDecision() {}
 
-function matchNumber(cardTotal) {}
+function findCardTotal() {
+  var cardTotal = 0;
+  for (i = 0; i < playerHand.length; i += 1) {
+    cardTotal += playerHand[i].rank;
+  }
+  return cardTotal;
+}
+
+function assignAceRank() {
+  var cardTotal = findCardTotal();
+  for (i = 0; i < playerHand.length; i += 1) {
+    if (playerHand[i].rank === 1) {
+      if (cardTotal === 11) {
+        playerHand[i].rank = 11; //playerhand array updated with new rank
+      }
+      cardTotal = findCardTotal();
+    }
+  }
+  return cardTotal;
+}
+
+function matchNumber(number) {
+  //for initial winning condition, 2 cards only
+  var cardTotal = findCardTotal();
+  if (cardTotal === number) {
+    var output = "Blackjack! Player wins"; //put to player then use display message function
+    console.log(typeof cardTotal);
+  } else {
+    output = "No blackjack, game continues!"; //rephrase?
+  }
+  return output;
+}
 
 function findWinner(cardTotal) {}
 
@@ -57,9 +88,10 @@ function displayGameStatus() {}
 var main = function (input) {
   makeDeck();
   shuffleDeck();
-  getStartingHand(2);
-  console.log(playerHand);
-  return displayUserCards(2);
+  // getStartingHand(2);
+  playerHand = [{ rank: 1 }, { rank: 1 }];
+  return assignAceRank();
+  return `${displayUserCards(2)} ${matchNumber(21)}`;
 };
 
 //card deck
@@ -70,15 +102,17 @@ function makeDeck() {
     for (j = 1; j <= 13; j += 1) {
       var currentRank = j;
       var currentName = String(j);
-      console.log(typeof currentRank);
       if (currentRank === 1) {
         currentName = "ace";
       } else if (currentRank === 11) {
         currentName = "jack";
+        currentRank = 10;
       } else if (currentRank === 12) {
         currentName = "queen";
+        currentRank = 10;
       } else if (currentRank === 13) {
         currentName = "king";
+        currentRank = 10;
       }
       var currentCard = {
         name: currentName,
