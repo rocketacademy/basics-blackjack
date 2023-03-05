@@ -10,6 +10,7 @@
 var deck = [];
 var gameMode; //states for game modes: dealCard, hit, stand, findWinner
 var playerHand = []; //to reset
+var computerHand = [];
 
 function getRandomNumber(max) {
   return Math.floor(Math.random() * max);
@@ -48,22 +49,22 @@ function displayUserCards(numberOfCards) {
 
 function getComputerDecision() {}
 
-function findCardTotal() {
+function findCardTotal(array) {
   var cardTotal = 0;
-  for (i = 0; i < playerHand.length; i += 1) {
-    cardTotal += playerHand[i].rank;
+  for (i = 0; i < array.length; i += 1) {
+    cardTotal += array[i].rank;
   }
   return cardTotal;
 }
 
-function assignAceRank() {
-  var cardTotal = findCardTotal();
-  for (i = 0; i < playerHand.length; i += 1) {
-    if (playerHand[i].rank === 1) {
+function assignAceRank(array) {
+  var cardTotal = findCardTotal(array);
+  for (i = 0; i < array.length; i += 1) {
+    if (array[i].rank === 1) {
       if (cardTotal === 11) {
-        playerHand[i].rank = 11; //playerhand array updated with new rank
+        array[i].rank = 11; //playerhand array updated with new rank
       }
-      cardTotal = findCardTotal();
+      cardTotal = findCardTotal(array);
     }
   }
   return cardTotal;
@@ -73,7 +74,7 @@ function matchNumber(number) {
   //for initial winning condition, 2 cards only
   var cardTotal = findCardTotal();
   if (cardTotal === number) {
-    var output = "Blackjack! Player wins"; //put to player then use display message function
+    var output = "Blackjack!"; //put to player then use display message function
     console.log(typeof cardTotal);
   } else {
     output = "No blackjack, game continues!"; //rephrase?
@@ -89,8 +90,9 @@ var main = function (input) {
   makeDeck();
   shuffleDeck();
   // getStartingHand(2);
-  playerHand = [{ rank: 1 }, { rank: 1 }];
-  return assignAceRank();
+  playerHand = [{ rank: 1 }, { rank: 10 }];
+  // return findCardTotal(playerHand);
+  return assignAceRank(playerHand);
   return `${displayUserCards(2)} ${matchNumber(21)}`;
 };
 
