@@ -40,15 +40,13 @@ function dealCard() {
   return drawnCard;
 }
 
-function displayUserCards(numberOfCards) {
-  var output = `You drew: <br>`;
-  for (i = 0; i < numberOfCards; i += 1) {
-    output += `${playerHand[i].name} of ${playerHand[i].suit}<br>`;
+function displayUserCards(array) {
+  var output = `drew: <br>`;
+  for (i = 0; i < array.length; i += 1) {
+    output = output + `${array[i].name} of ${array[i].suit}<br>`;
   }
   return output;
 }
-
-function getComputerDecision() {}
 
 // find total to determine ace rank and to determine whether dealer draws a card
 function findCardTotal(array) {
@@ -58,6 +56,8 @@ function findCardTotal(array) {
   }
   return cardTotal;
 }
+
+function getComputerDecision() {} //is this the same as assignAceRank()?
 
 function assignAceRank(array) {
   var cardTotal = findCardTotal(array);
@@ -84,7 +84,10 @@ function matchNumber(number) {
   return output;
 }
 
-function findWinner(cardTotal) {}
+function findWinner() {
+  var playerCardTotal = findCardTotal(playerHand);
+  var computerCardTotal = findCardTotal(computerHand);
+}
 
 function displayGameStatus() {}
 
@@ -97,8 +100,9 @@ var main = function (input) {
   console.log(computerHand);
   // playerHand = [{ rank: 1 }, { rank: 10 }];
   // return findCardTotal(playerHand);
-  return assignAceRank(playerHand);
-  return `${displayUserCards(2)} ${matchNumber(21)}`;
+  return `Player ${displayUserCards(playerHand)} Computer ${displayUserCards(
+    computerHand
+  )}`;
 };
 
 //card deck
