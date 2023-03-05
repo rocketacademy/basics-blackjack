@@ -18,28 +18,27 @@ Sequential things to do
 
 ## Timelog
 
-Running total: 6 hours
+Running total: 11.5 hours
 
 28/2
 
-- 2 hours
+- 2h
 - From scratch till commit 3
 
 1/3
 
-- 30 min
+- 0.5h
 - tried to debug, didn't commit
 
 3/3
 
-- 3.5 hours
+- 3.5h
 - commit 4 to 6
 
 5/3
 
-- Start 1pm to 4.50pm 3.5h
-- commits 7 and 8
-- start 6.45
+- commits 7 to 11
+- 5.5h
 
 ## Break it down
 
@@ -104,7 +103,11 @@ Attempt the project in parts to make sure each section works before adding more 
 ### Commit 10 Comfortable - COMPLETED
 
 - Add starting instructions in html file within another container
-- Format the page to be pretty
+- Format the page to be pretty\
+
+### Commit 11 - COMPLETED
+
+- Minor html changes
 
 ### Commit ? More comfortable
 
