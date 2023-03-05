@@ -83,11 +83,11 @@ Attempt the project in parts to make sure each section works before adding more 
 ### Commit 7 Goal - COMPLETED
 
 - Add back evaluating winning conditions
-  -- Tie: both blackjack (DONE) or same score or bust (DONE)
-  -- Win: Blackjack win (DONE), highest score to 21 wins, other player bust (DONE)
-  -- Remove bust conditions from player play state as there could be a possibility of a dealer bust too (DONE)
+  -- Tie: both blackjack or same score or bust
+  -- Win: Blackjack win, highest score to 21 wins, other player bust
+  -- Remove bust conditions from player play state as there could be a possibility of a dealer bust too
 
-### Commit 8 Goal
+### Commit 8 Goal - COMPLETED
 
 - Add logic to change ace to 1 or 11 depending on the hand
 - Fix the bug where player chose to stand but is asked to hit again

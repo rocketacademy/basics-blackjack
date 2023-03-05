@@ -37,7 +37,9 @@ var makeDeck = function (cardDeck) {
       }
       var pointInHand = rankCounter;
       // create new key called point to use later to sum up the hands
-      if (pointInHand == 11) {
+      if (pointInHand == 1) {
+        pointInHand = 11;
+      } else if (pointInHand == 11) {
         pointInHand = 10;
       } else if (pointInHand == 12) {
         pointInHand = 10;
@@ -85,12 +87,34 @@ var shuffleCards = function (cardDeck) {
   return cardDeck;
 };
 
-// SUM OF HAND
+// SUM OF HAND.
 function sumCardsInArray(inputArray) {
   var outputSum = 0;
+  var acesInHand = 0;
   for (let sumCounter = 0; sumCounter < inputArray.length; sumCounter += 1) {
-    outputSum += inputArray[sumCounter];
+    var indexCard = inputArray[sumCounter];
+    if (indexCard.rank == 1) {
+      // count number of aces
+      acesInHand += 1;
+      outputSum += inputArray[sumCounter];
+    } else {
+      outputSum += inputArray[sumCounter];
+    }
   }
+
+  if (outputSum > 21 && acesInHand > 0) {
+    var aceCounter = 0;
+    while (aceCounter < acesInHand) {
+      sum -= 10;
+      // If the sum is less than TWENTY_ONE before converting all Ace values from
+      // 11 to 1, break out of the loop and return the current sum.
+      if (outputSum <= 21) {
+        break; // break keyword causes the loop to finish
+      }
+      aceCounter = aceCounter + 1;
+    }
+  }
+
   return outputSum;
 }
 
@@ -289,22 +313,23 @@ var main = function (input) {
       dealerSum < playerSum
     ) {
       return `Dealer has a sum of ${dealerSum}. Player sum is ${playerSum}. Player wins!`;
-    } else gameMode = GAME_MODE_PLAYER_MOVE;
-    return `Player's turn to hit or stand. Player has a sum of ${playerSum}.`;
+    } else if (playerChoseToStand == false) {
+      gameMode = GAME_MODE_PLAYER_MOVE;
+      return `Player's turn to hit or stand. Player has a sum of ${playerSum}.`;
+    } else gameMode = GAME_MODE_DEALER;
+    return `Player has chosen to stand: ${playerChoseToStand}. It is the dealer's turn now.`;
   }
 };
 
-// end new line
-
-// if (playerChoseToStand == false) {
-//   gameMode = GAME_MODE_PLAYER_MOVE;
-//   return `the results. Player choose to hit or stand.`;
-// } else if (dealerChoseToStand == false) {
-//   gameMode = GAME_MODE_DEALER;
-//   return `the dealer takes a turn now.`;
-// } else
-
 // Code Graveyard
+
+// function sumCardsInArray(inputArray) {
+//   var outputSum = 0;
+//   for (let sumCounter = 0; sumCounter < inputArray.length; sumCounter += 1) {
+//     outputSum += inputArray[sumCounter];
+//   }
+//   return outputSum;
+// }
 
 // draw cards one by one (replaced by for loop)
 // var dealerCard1 = shuffledDeck.pop();
