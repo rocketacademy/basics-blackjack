@@ -8,7 +8,7 @@
 
 //global variables
 var deck = [];
-var gameMode = "deal cards"; //states for game modes: deal cards, find winner, hit, stand
+var gameMode = "first round";
 var winningMode = ""; //blackjack, bigger number max 21
 var playerHand = []; //to reset
 var computerHand = [];
@@ -118,11 +118,11 @@ function findBlackjack(playerHand, computerHand) {
 
 function findWinner(playerCardTotal, computerCardTotal) {
   if (playerCardTotal === computerCardTotal) {
-    var winner = "tie";
+    var winner = "It's a tie";
   } else if (playerCardTotal > computerCardTotal) {
-    winner = "player";
+    winner = "Player wins";
   } else {
-    winner = "computer";
+    winner = "Computer wins";
   }
   return winner;
 }
@@ -131,7 +131,10 @@ function displayMessage() {
   var playerCardTotal = assignAceRank(playerHand);
   var computerCardTotal = assignAceRank(computerHand);
   if (winningMode === "blackjack") {
-    var output = "Blackjack! " + findWinner(playerCardTotal, computerCardTotal);
+    var output =
+      "Blackjack! " +
+      findWinner(playerCardTotal, computerCardTotal) +
+      ". Game restarts";
   } else if (gameMode === "game continues") {
     output = "No blackjack, game continues. Player please choose hit or stand!";
   } else if (winningMode === "bigger number") {
@@ -145,12 +148,18 @@ function isGreaterThan(number, cardTotal) {
   return cardTotal > number;
 }
 
+function restartGame() {
+  playerHand = [];
+  computerHand = [];
+}
+
 function displayGameStatus() {} //?
 
 var main = function (input) {
-  makeDeck();
-  shuffleDeck();
-  if (gameMode === "deal cards") {
+  //first round
+  if (gameMode === "first round") {
+    makeDeck();
+    shuffleDeck();
     playerHand = getStartingHand(2, playerHand);
     computerHand = getStartingHand(2, computerHand);
     // playerHand = [{ rank: 1 }, { rank: 10 }];
@@ -158,23 +167,47 @@ var main = function (input) {
     var output = `Player ${displayUserCards(
       playerHand
     )} Computer ${displayUserCards(computerHand)}`;
-    gameMode = "find winner";
+    // gameMode = "find winner";
     checkWinningMode(playerHand, computerHand);
     if (winningMode === "blackjack") {
       output = output + displayMessage();
+      restartGame();
+      gameMode = "first round";
     } else {
       gameMode = "game continues";
       output = output + displayMessage();
-      playerHand = getStartingHand(1, playerHand);
-      console.log(playerHand);
     }
-    // } else if (gameMode === "find winner") {
-    //   var winner = displayMessage();
-    //   output = `${winner}`;
-    // } else if (gameMode === "game continues") {
-
-    return output;
   }
+  //second round onwards
+  else if (gameMode === "game continues") {
+    gameMode = input;
+    if (gameMode === "hit") {
+      console.log(gameMode);
+      playerHand = getStartingHand(1, playerHand);
+      output = displayUserCards(playerHand);
+      gameMode = "stand";
+    } else if (gameMode === "stand") {
+      console.log("stand");
+      getComputerDecision();
+    }
+    gameMode = "find winner";
+  } else if (gameMode === "find winner") {
+    var playerCardTotal = findCardTotal(playerHand);
+    var computerCardTotal = findCardTotal(computerHand);
+    if (
+      isGreaterThan(21, playerCardTotal) ||
+      isGreaterThan(21, computerCardTotal)
+    ) {
+      if (playerCardTotal === computerCardTotal) {
+        output = "Player and computer bust. It's a tie. Game restarts";
+      } else if (isGreaterThan(21, playerCardTotal)) {
+        output = "Player busts. Computer wins";
+      } else {
+        output = "Computer busts. Player wins";
+      }
+    }
+  }
+  return output;
 };
 
 //card deck
