@@ -1,7 +1,9 @@
 var makeDeck = function () {
   var cardDeck = [];
-  var suits = ["hearts ♥️", "diamonds ♦️", "clubs ♣️", "spades ♠️"];
-  var tenthNames = [10, "jack 🎃", "queen 👸", "king 🤴"];
+  //var suits = ["hearts ♥️", "diamonds ♦️", "clubs ♣️", "spades ♠️"];
+  //var tenthNames = [10, "jack 🎃", "queen 👸", "king 🤴"];
+  var suits = ["hearts", "diamonds", "clubs", "spades"];
+  var tenthNames = [10, "jack", "queen", "king"];
 
   for (var suitIndex = 0; suitIndex < suits.length; suitIndex += 1) {
     var currentSuit = suits[suitIndex];
@@ -17,6 +19,7 @@ var makeDeck = function () {
           name: cardName,
           suit: currentSuit,
           rank: rankCounter,
+          img: `<img src="./Imgs/PNG-cards-1.3/${cardName}_of_${currentSuit}.png"/>`,
         };
 
         cardDeck.push(card);
@@ -31,6 +34,7 @@ var makeDeck = function () {
             name: cardName,
             suit: currentSuit,
             rank: rankCounter,
+            img: `<img src="./Imgs/PNG-cards-1.3/${cardName}_of_${currentSuit}.png"/>`,
           };
 
           cardDeck.push(tenthCard);
@@ -79,10 +83,12 @@ var handResults = function (hand) {
   var myOutputValue = "";
   for (var counter = 0; counter < hand.length; counter += 1) {
     if (dealerHand[counter] == hand[0] && gameState == "deal") {
-      myOutputValue = myOutputValue + ` Hidden card, `;
-    } else {
       myOutputValue =
-        myOutputValue + ` ${hand[counter].name} of ${hand[counter].suit} , `;
+        myOutputValue + ` <img src="./Imgs/PNG-cards-1.3/emptyCard.png"/> `;
+    } else {
+      myOutputValue = myOutputValue + `${hand[counter].img}`;
+      //myOutputValue =
+      // myOutputValue + ` ${hand[counter].name} of ${hand[counter].suit} , `;
     }
   }
 
@@ -96,15 +102,15 @@ var dealResult = function () {
 
   playersData[turn - 1].hand = dealCardsToPlayers(playersData[turn - 1].hand);
 
-  myOutputValue += `Player ${playersData[turn - 1].index} hand : ${handResults(
-    playersData[turn - 1].hand
-  )}<br>`;
+  myOutputValue += `Player ${
+    playersData[turn - 1].index
+  } hand :<br>${handResults(playersData[turn - 1].hand)}<br>`;
 
   if (turn == 1) {
     dealerHand = dealCardsToPlayers(dealerHand);
   }
 
-  myOutputValue += `Dealer hand : ` + handResults(dealerHand) + `<br>`;
+  myOutputValue += `<br>Dealer hand :<br> ${handResults(dealerHand)}<br>`;
   myOutputValue += `</br> Please enter "hit" or "stand".`;
 
   return myOutputValue;
@@ -120,7 +126,7 @@ var currentHandResult = function () {
     );
     myOutputValue += `Player ${
       playersData[turn - 1].index
-    } hand : ${handResults(playersData[turn - 1].hand[counter])}<br>`;
+    } hand :<br>${handResults(playersData[turn - 1].hand[counter])}<br><br>`;
     counter += 1;
   }
 
@@ -133,7 +139,7 @@ var loopHandResult = function () {
   while (counter < playersData[turn - 1].hand.length) {
     myOutputValue += `Player ${
       playersData[turn - 1].index
-    } hand : ${handResults(playersData[turn - 1].hand[counter])}<br>`;
+    } hand :<br>${handResults(playersData[turn - 1].hand[counter])}<br><br>`;
     counter += 1;
   }
 
@@ -147,15 +153,15 @@ var playerHandResults = function () {
     if (playersData[counter].hand[0][0] != undefined) {
       var deckIndex = 0;
       while (deckIndex < playersData[counter].hand.length) {
-        myOutputValue += `Player ${
+        myOutputValue += `<br>Player ${
           playersData[counter].index
-        } hand : ${handResults(playersData[counter].hand[deckIndex])} <br>`;
+        } hand :<br> ${handResults(playersData[counter].hand[deckIndex])} <br>`;
         deckIndex++;
       }
     } else {
-      myOutputValue += `Player ${
+      myOutputValue += `<br>Player ${
         playersData[counter].index
-      } hand : ${handResults(playersData[counter].hand)} <br>`;
+      } hand :<br> ${handResults(playersData[counter].hand)} <br>`;
     }
   }
 
@@ -281,8 +287,10 @@ var continueGame = function () {
   }
 
   if (playersData.length == 0) {
-    myOutputValue = `Please refresh to restart the game !`;
+    myOutputValue += `Please refresh to restart the game !`;
+    myOutputValue += `<br><br><img src = "./Imgs/lose.gif"/>`;
   } else {
+    myOutputValue += `<br><br><img src = "./Imgs/win.gif"/>`;
     for (var counter = 0; counter < playersData.length; counter++) {
       playersData[counter].hand = [];
     }
@@ -331,63 +339,66 @@ var newGame = false;
 var main = function (input) {
   var myOutputValue = "";
 
-  if (gameState == "shuffling") {
-    shuffledDeck = shuffleCards(unshuffledDeck);
+  if (shuffledDeck.length == 0 && gameState != "shuffling") {
+    //shuffledDeck = shuffleCards(unshuffledDeck);
+    myOutputValue += `Shuffled Deck is empty. Refresh to start a new round.`;
+    myOutputValue += `<br><br><img src = "./Imgs/emptydeck.gif"/>`;
+  } else {
+    if (gameState == "shuffling") {
+      shuffledDeck = shuffleCards(unshuffledDeck);
 
-    if (turn == 1 && newGame == false) {
-      if (setNumOfPlayer.value == "") {
-        totalNumOfPlayers = 1;
-      } else {
-        totalNumOfPlayers = setNumOfPlayer.value;
+      if (turn == 1 && newGame == false) {
+        if (setNumOfPlayer.value == "") {
+          totalNumOfPlayers = 1;
+        } else {
+          totalNumOfPlayers = setNumOfPlayer.value;
+        }
+
+        var inputPlayers = document.getElementById("numOfplayers");
+        inputPlayers.style.display = "none";
       }
 
-      var inputPlayers = document.getElementById("numOfplayers");
-      inputPlayers.style.display = "none";
-    }
-
-    myOutputValue = `Cards have been shuffled! Click submit to deal cards.`;
-    gameState = "deal";
-    inputSettings.style.display = "none";
-  } else if (gameState == "deal") {
-    if (shuffledDeck.length == 0) {
-      shuffledDeck = shuffleCards(unshuffledDeck);
-      myOutputValue += `New deck of shuffled cards has been added.`;
-    }
-    if (!newGame) {
+      myOutputValue = `Cards have been shuffled! Click submit to deal cards.`;
+      gameState = "deal";
       inputSettings.style.display = "none";
-      playersData = assignPlayers();
-    } else {
-      inputSettings.style.display = "block";
+    } else if (gameState == "deal") {
+      if (!newGame) {
+        inputSettings.style.display = "none";
+        playersData = assignPlayers();
+      } else {
+        inputSettings.style.display = "block";
+        playersData[turn - 1].betting = Number(inputRange.value);
+      }
+
+      console.log(playersData);
+
+      myOutputValue = dealResult();
+
+      if (
+        playersData[turn - 1].hand[0].name == playersData[turn - 1].hand[1].name
+      ) {
+        splitButton.style.display = "inline-block";
+      }
+
+      gameState = "hitStand";
+      hitButton.style.display = "inline-block";
+      standButton.style.display = "inline-block";
+      button.style.display = "none";
+      if (newGame) {
+        inputSettings.style.display = "none";
+      }
+    } else if (gameState == "winnerDetermine") {
+      totalPlayerScore();
+      console.log(playerScores);
+      var dealerScore = totalValueOfHand(dealerHand);
+
+      myOutputValue = playerHandResults();
+      myOutputValue += `<br>Dealer hand :<br> ${handResults(dealerHand)}`;
+
+      var result = winResult(dealerScore);
+
+      myOutputValue += `<br><br><br><br>${result} <br><br>${continueGame()}`;
     }
-
-    console.log(playersData);
-
-    myOutputValue = dealResult();
-
-    if (
-      playersData[turn - 1].hand[0].name == playersData[turn - 1].hand[1].name
-    ) {
-      splitButton.style.display = "inline-block";
-    }
-
-    gameState = "hitStand";
-    hitButton.style.display = "inline-block";
-    standButton.style.display = "inline-block";
-    button.style.display = "none";
-    if (newGame) {
-      inputSettings.style.display = "none";
-    }
-  } else if (gameState == "winnerDetermine") {
-    totalPlayerScore();
-    console.log(playerScores);
-    var dealerScore = totalValueOfHand(dealerHand);
-
-    myOutputValue = playerHandResults();
-    myOutputValue += `Dealer hand : ` + handResults(dealerHand);
-
-    var result = winResult(dealerScore);
-
-    myOutputValue += `</br></br>${result} <br><br>${continueGame()}`;
   }
 
   return myOutputValue;

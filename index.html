@@ -169,6 +169,11 @@
         min-height: 150px;
         overflow: hidden;
         color: antiquewhite;
+
+      }
+
+      #output-div img {
+        display: inline;
       }
 
       .logo-img {
@@ -242,7 +247,7 @@
           <button id="stand-button" type="button" class="btn btn-secondary">
             Stand
           </button>
-          <button id="split-button" type="button" class="btn btn-light">
+          <button id="split-button" type="button" class="btn btn-danger">
             Split
           </button>
 
@@ -290,13 +295,14 @@
                 var hitCard = shuffledDeck.pop();
                 playersData[turn - 1].hand.push(hitCard);
                 var playerScore = totalValueOfHand(playersData[turn - 1].hand);
-
-                myOutputValue = `You have hit ${hitCard.name} of ${hitCard.suit}.`;
+                
+                myOutputValue += `You have hit<br> ${hitCard.img}.`;
 
                 if (playerScore > 21) {
                   hitButton.style.display = "none";
-
+                  
                   myOutputValue += `<br><br>You have busted !`;
+                  myOutputValue += `<br><br><img src="./Imgs/busted.gif"/>`;
                 }
               } else if (splitted == true) {
                 var hitCard = shuffledDeck.pop();
@@ -307,12 +313,12 @@
                     playersData[turn - 1].hand[0]
                   );
 
-                  myOutputValue += `You have hit ${hitCard.name} of ${hitCard.suit}.`;
+                  myOutputValue += `You have hit<br> ${hitCard.img}.`;
                   if (playerScore > 21) {
                     hitButton.style.display = "none";
 
                     myOutputValue += `<br><br>You have busted !`;
-                    
+                    myOutputValue += `<br><br><img "./Imgs/busted.gif"/>`;
                   }
                 } else {
                   playersData[turn - 1].hand[1].push(hitCard);
@@ -320,12 +326,12 @@
                     playersData[turn - 1].hand[1]
                   );
 
-                  myOutputValue += `You have hit ${hitCard.name} of ${hitCard.suit}.`;
+                  myOutputValue += `You have hit<br> ${hitCard.img}.`;
                   if (playerScore > 21) {
                     hitButton.style.display = "none";
 
                     myOutputValue += `<br><br>You have busted !`;
-                    
+                    myOutputValue += `<br><br><img src="./Imgs/busted.gif"/>`;
                   }
                 }
               }
@@ -354,11 +360,11 @@
                 standButton.style.display = "none";
                 button.style.display = "none";
 
-                myOutputValue = `<img src="./Imgs/bongoCat.gif" style = "height: 100px"/> Drum Roll ...`;
+                myOutputValue = `<img src="./Imgs/bongoCat.gif" style = "height: 100px"/><br> Drum Roll ...`;
 
                 output.innerHTML = myOutputValue;
 
-                if (playersData.length != totalNumOfPlayers) {
+                if (turn != totalNumOfPlayers) {
                   turn += 1;
                   var output = document.querySelector("#output-div");
                   if (!newGame) {
