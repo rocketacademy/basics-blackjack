@@ -8,7 +8,7 @@
 
 //global variables
 var deck = [];
-var gameMode; //states for game modes: dealCard, hit, stand, findWinner
+var gameMode = "deal cards"; //states for game modes: dealCard, hit, stand, findWinner
 var playerHand = []; //to reset
 var computerHand = [];
 
@@ -72,37 +72,65 @@ function assignAceRank(array) {
   return cardTotal;
 }
 
-function matchNumber(number) {
+function matchNumber(number, cardTotal) {
+  //return a Boolean
   //for initial winning condition, 2 cards only
-  var cardTotal = findCardTotal();
-  if (cardTotal === number) {
-    var output = "Blackjack!"; //put to player then use display message function
-    console.log(typeof cardTotal);
-  } else {
-    output = "No blackjack, game continues!"; //rephrase?
-  }
-  return output;
+  // if (cardTotal === number) {
+  //   var output = "Blackjack!"; //put to player then use display message function
+  // } else {
+  //   output = "No blackjack, game continues!"; //rephrase?
+  // }
+  return cardTotal === number;
 }
 
 function findWinner() {
-  var playerCardTotal = findCardTotal(playerHand);
-  var computerCardTotal = findCardTotal(computerHand);
+  var playerCardTotal = assignAceRank(playerHand);
+  var computerCardTotal = assignAceRank(computerHand);
+  //win by blackjack
+  var playerBlackjack = matchNumber(21, playerCardTotal);
+  var computerBlackjack = matchNumber(21, computerCardTotal);
+  if (playerBlackjack || computerBlackjack) {
+    var winner = `Blackjack! `;
+    if (playerBlackjack === computerBlackjack) {
+      winner += "tie";
+    } else if (matchNumber(21, playerCardTotal)) {
+      winner += "player";
+    } else if (matchNumber(21, computerCardTotal)) {
+      winner += "computer";
+    }
+  } else {
+    //win by bigger number
+    if (playerCardTotal > computerCardTotal) {
+      winner = "player";
+    } else {
+      winner = "computer";
+    }
+  }
+  return winner;
 }
 
-function displayGameStatus() {}
+function displayGameStatus() {} //?
 
 var main = function (input) {
   makeDeck();
   shuffleDeck();
-  playerHand = getStartingHand(2, playerHand);
-  computerHand = getStartingHand(2, computerHand);
-  console.log(playerHand);
-  console.log(computerHand);
-  // playerHand = [{ rank: 1 }, { rank: 10 }];
-  // return findCardTotal(playerHand);
-  return `Player ${displayUserCards(playerHand)} Computer ${displayUserCards(
-    computerHand
-  )}`;
+  if (gameMode === "deal cards") {
+    playerHand = getStartingHand(2, playerHand);
+    computerHand = getStartingHand(2, computerHand);
+    console.log(playerHand);
+    console.log(computerHand);
+    playerHand = [{ rank: 1 }, { rank: 10 }];
+    computerHand = [{ rank: 1 }, { rank: 10 }];
+    // return findCardTotal(playerHand);
+    var output = `Player ${displayUserCards(
+      playerHand
+    )} Computer ${displayUserCards(computerHand)}`;
+    gameMode = "compare cards";
+  } else if (gameMode === "compare cards") {
+    findWinner();
+    output = `${findWinner()} is the winner!`;
+  }
+  return output;
 };
 
 //card deck
