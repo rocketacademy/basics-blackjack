@@ -181,7 +181,7 @@ var main = function (input) {
     shuffleDeck();
     playerHand = getStartingHand(2, playerHand);
     computerHand = getStartingHand(2, computerHand);
-    // playerHand = [{ rank: 11 }, { rank: 10 }];
+    playerHand = [{ rank: 11 }, { rank: 10 }];
     // computerHand = [{ rank: 11 }, { rank: 10 }];
     var output = `Player ${displayUserCards(
       playerHand
@@ -214,22 +214,19 @@ var main = function (input) {
       gameMode = "bust";
       if (playerCardTotal === computerCardTotal) {
         output = `Player and computer bust. It's a tie. Game restarts<br>`;
-        console.log("tie");
       } else if (isBust(21, playerCardTotal) && isBust(21, computerCardTotal)) {
         output = `Player and computer both bust. Game restarts<br>`;
-        console.log("not tie");
       } else {
         output = `Player or computer bust. Game restarts<br>`;
-        console.log("one busted");
       }
       restartGame();
     } else if (winningMode === "blackjack") {
       var winner = findRoundOutcome(playerCardTotal, computerCardTotal);
-      var output = `Blackjack! ${winner} is/are the winner. Game restarts<br>`;
+      var output = craftMessage();
       gameMode = "first round";
     } else if (winningMode === "bigger number") {
       winner = findRoundOutcome(playerCardTotal, computerCardTotal);
-      output = `${winner} is/are the winner. Game restarts<br>`;
+      output = craftMessage();
     } else {
       gameMode = "game continues";
       output = craftMessage();
