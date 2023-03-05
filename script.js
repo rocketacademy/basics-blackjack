@@ -187,6 +187,7 @@ var main = function (input) {
       playerHand
     )} Computer ${displayUserCards(computerHand)}`;
     gameMode = "find winner";
+    checkWinningMode();
   }
   //second round onwards
   else if (gameMode === "game continues") {
@@ -225,9 +226,7 @@ var main = function (input) {
     } else if (winningMode === "blackjack") {
       var winner = findRoundOutcome(playerCardTotal, computerCardTotal);
       var output = `Blackjack! ${winner} is/are the winner. Game restarts<br>`;
-      // } else if (gameMode === "bust") {
-      //   var busted = findRoundOutcome(playerCardTotal, computerCardTotal);
-      //   output = `${busted} has/have busted. Game restarts<br>`;
+      gameMode = "first round";
     } else if (winningMode === "bigger number") {
       winner = findRoundOutcome(playerCardTotal, computerCardTotal);
       output = `${winner} is/are the winner. Game restarts<br>`;
