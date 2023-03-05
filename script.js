@@ -74,13 +74,6 @@ function assignAceRank(array) {
 }
 
 function isMatch(number, cardTotal) {
-  //return a Boolean
-  //for initial winning condition, 2 cards only
-  // if (cardTotal === number) {
-  //   var output = "Blackjack!"; //put to player then use display message function
-  // } else {
-  //   output = "No blackjack, game continues!"; //rephrase?
-  // }
   return cardTotal === number;
 }
 
@@ -120,14 +113,10 @@ function checkWinningMode(playerCardTotal, computerCardTotal) {
 function displayWinner() {
   var playerCardTotal = assignAceRank(playerHand);
   var computerCardTotal = assignAceRank(computerHand);
-  //win by blackjack
-  // var playerBlackjack = isMatch(21, playerCardTotal);
-  // var computerBlackjack = isMatch(21, computerCardTotal);
   checkWinningMode(playerCardTotal, computerCardTotal);
   if (winningMode === "blackjack") {
-    // winningMode = "blackjack";
     var winner = "Blackjack! " + findWinner(playerCardTotal, computerCardTotal);
-  } else if ((winningMode = "bigger number")) {
+  } else if (winningMode === "bigger number") {
     winner = findWinner(playerCardTotal, computerCardTotal);
   }
   return winner;
@@ -148,8 +137,10 @@ var main = function (input) {
   if (gameMode === "deal cards") {
     playerHand = getStartingHand(2, playerHand);
     computerHand = getStartingHand(2, computerHand);
-    playerHand = [{ rank: 1 }, { rank: 10 }];
-    computerHand = [{ rank: 1 }, { rank: 10 }];
+    console.log("player", playerHand);
+    console.log("computer", computerHand);
+    // playerHand = [{ rank: 1 }, { rank: 10 }];
+    // computerHand = [{ rank: 1 }, { rank: 10 }];
     var output = `Player ${displayUserCards(
       playerHand
     )} Computer ${displayUserCards(computerHand)}`;
