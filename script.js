@@ -145,7 +145,7 @@ function craftMessage() {
       //   output = `${busted} has/have busted. Game restarts<br>`;
     } else if (winningMode === "bigger number") {
       winner = findRoundOutcome(playerCardTotal, computerCardTotal);
-      output = `Blackjack! ${winner} is/are the winner. Game restarts<br>`;
+      output = `${winner} is/are the winner. Game restarts<br>`;
     }
   }
   return `${output}<br> Player ${displayUserCards(
@@ -187,9 +187,6 @@ var main = function (input) {
       playerHand
     )} Computer ${displayUserCards(computerHand)}`;
     gameMode = "find winner";
-    console.log(gameMode);
-    // } else if (gameMode === "find winner") {
-    //   output = displayWinner(playerHand, computerHand);
   }
   //second round onwards
   else if (gameMode === "game continues") {
@@ -224,6 +221,16 @@ var main = function (input) {
         output = `Player or computer bust. Game restarts<br>`;
         console.log("one busted");
       }
+      restartGame();
+    } else if (winningMode === "blackjack") {
+      var winner = findRoundOutcome(playerCardTotal, computerCardTotal);
+      var output = `Blackjack! ${winner} is/are the winner. Game restarts<br>`;
+      // } else if (gameMode === "bust") {
+      //   var busted = findRoundOutcome(playerCardTotal, computerCardTotal);
+      //   output = `${busted} has/have busted. Game restarts<br>`;
+    } else if (winningMode === "bigger number") {
+      winner = findRoundOutcome(playerCardTotal, computerCardTotal);
+      output = `${winner} is/are the winner. Game restarts<br>`;
     } else {
       gameMode = "game continues";
       output = craftMessage();
