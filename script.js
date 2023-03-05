@@ -9,7 +9,7 @@
 //global variables
 var deck = [];
 var gameMode = "deal cards"; //states for game modes: deal cards, find winner, hit, stand
-var winningMode = "blackjack"; //blackjack, bigger number max 21
+var winningMode = ""; //blackjack, bigger number max 21
 var playerHand = []; //to reset
 var computerHand = [];
 
@@ -84,20 +84,14 @@ function isMatch(number, cardTotal) {
   return cardTotal === number;
 }
 
-function findBlackjack(playerCardTotal, computerCardTotal) {
-  var playerBlackjack = isMatch(21, playerCardTotal);
-  var computerBlackjack = isMatch(21, computerCardTotal);
-  if (playerBlackjack || computerBlackjack) {
-    var winner = "Blackjack! ";
-    if (playerBlackjack === computerBlackjack) {
-      winner += "tie";
-    } else if (playerBlackjack) {
-      winner += "player";
-    } else {
-      winner += "computer";
-    }
+function findBlackjack(playerBlackjack, computerBlackjack) {
+  var winner = "Blackjack! ";
+  if (playerBlackjack === computerBlackjack) {
+    winner += "tie";
+  } else if (playerBlackjack) {
+    winner += "player";
   } else {
-    winningMode = "bigger number";
+    winner += "computer";
   }
   return winner;
 }
@@ -117,13 +111,18 @@ function findWinner() {
   var playerCardTotal = assignAceRank(playerHand);
   var computerCardTotal = assignAceRank(computerHand);
   //win by blackjack
-  if (winningMode === "blackjack") {
-    return (winner = findBlackjack(playerCardTotal, computerCardTotal));
-  } else if (winningMode === "bigger number");
-  {
+  var playerBlackjack = isMatch(21, playerCardTotal);
+  var computerBlackjack = isMatch(21, computerCardTotal);
+  if (playerBlackjack || computerBlackjack) {
+    winningMode = "blackjack";
+    var winner = findBlackjack(playerBlackjack, computerBlackjack);
+  } else {
+    winningMode = "bigger number";
+    console.log(winningMode);
     //win by bigger number
-    return (winner = findBiggerNumber(playerCardTotal, computerCardTotal));
+    winner = findBiggerNumber(playerCardTotal, computerCardTotal);
   }
+  return winner;
 }
 
 function isGreaterThan(number, cardTotal) {
