@@ -131,16 +131,16 @@ function findRoundOutcome() {
 function craftMessage() {
   var playerCardTotal = findCardTotal(playerHand);
   var computerCardTotal = findCardTotal(computerHand);
-  if (gameMode === "bust") {
-    var busted = findRoundOutcome(playerCardTotal, computerCardTotal);
-    output = `${busted} has/have busted. Game restarts<br>`;
-  } else if (gameMode === "game continues") {
+  if (gameMode === "game continues") {
     output = `No blackjack, game continues. Player please choose hit or stand!<br>`;
   } else if (gameMode === "find winner") {
-    if (winningMode === "blackjack") {
+    if (winningMode === "bust") {
+      var busted = findRoundOutcome(playerCardTotal, computerCardTotal);
+      output = `${busted} has/have busted. Game restarts<br>`;
+    } else if (winningMode === "blackjack") {
       var winner = findRoundOutcome(playerCardTotal, computerCardTotal);
       var output = `Blackjack! ${winner} is/are the winner. Game restarts<br>`;
-      // } else if (gameMode === "bust") {
+      // } else if (winningMode === "bust") {
       //   var busted = findRoundOutcome(playerCardTotal, computerCardTotal);
       //   output = `${busted} has/have busted. Game restarts<br>`;
     } else if (winningMode === "bigger number") {
@@ -181,13 +181,12 @@ var main = function (input) {
     shuffleDeck();
     playerHand = getStartingHand(2, playerHand);
     computerHand = getStartingHand(2, computerHand);
-    playerHand = [{ rank: 11 }, { rank: 10 }];
+    // playerHand = [{ rank: 11 }, { rank: 10 }];
     // computerHand = [{ rank: 11 }, { rank: 10 }];
     var output = `Player ${displayUserCards(
       playerHand
     )} Computer ${displayUserCards(computerHand)}`;
     gameMode = "find winner";
-    checkWinningMode();
   }
   //second round onwards
   else if (gameMode === "game continues") {
@@ -208,25 +207,27 @@ var main = function (input) {
     }
     gameMode = "find winner";
   } else if (gameMode === "find winner") {
+    checkWinningMode();
     var playerCardTotal = findCardTotal(playerHand);
     var computerCardTotal = findCardTotal(computerHand);
     if (isBust(21, playerCardTotal) || isBust(21, computerCardTotal)) {
-      gameMode = "bust";
+      winningMode = "bust";
       if (playerCardTotal === computerCardTotal) {
         output = `Player and computer bust. It's a tie. Game restarts<br>`;
       } else if (isBust(21, playerCardTotal) && isBust(21, computerCardTotal)) {
         output = `Player and computer both bust. Game restarts<br>`;
       } else {
-        output = `Player or computer bust. Game restarts<br>`;
+        output = craftMessage();
       }
       restartGame();
     } else if (winningMode === "blackjack") {
       var winner = findRoundOutcome(playerCardTotal, computerCardTotal);
       var output = craftMessage();
-      gameMode = "first round";
+      restartGame();
     } else if (winningMode === "bigger number") {
       winner = findRoundOutcome(playerCardTotal, computerCardTotal);
       output = craftMessage();
+      restartGame();
     } else {
       gameMode = "game continues";
       output = craftMessage();
