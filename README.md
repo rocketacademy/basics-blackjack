@@ -37,7 +37,9 @@ Running total: 6 hours
 
 5/3
 
-- Start 1pm
+- Start 1pm to 4.50pm 3.5h
+- commits 7 and 8
+- start 6.45
 
 ## Break it down
 
@@ -61,8 +63,8 @@ Attempt the project in parts to make sure each section works before adding more 
 ### Commit 4 Goal - COMPLETED
 
 - Fix bug where the array and handarray are using different cards
-- Reassign rank so that J, Q, K are 10 (done)
-- Reassign rank so that Ace is 1 (done)
+- Reassign rank so that J, Q, K are 10
+- Reassign rank so that Ace is 1
 
 ### Commit 5 Goal - COMPLETED
 
@@ -92,16 +94,17 @@ Attempt the project in parts to make sure each section works before adding more 
 - Add logic to change ace to 1 or 11 depending on the hand
 - Fix the bug where player chose to stand but is asked to hit again
 
-### Commit 9 Goal
+### Commit 9 Goal - COMPLETED
 
 - Allow player to restart game without refreshing page
-
-### Commit ? Comfortable
-
 - Add the names and suits of the cards to the output
+- Add Gifs for outcomes
 - Clean up output to be more readable and engaging
+
+### Commit 10 Comfortable
+
 - Add starting instructions in html file within another container
-- Add GIF for winning and losing states
+- Format the page to be pretty
 
 ### Commit ? More comfortable
 

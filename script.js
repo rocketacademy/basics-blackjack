@@ -141,8 +141,8 @@ var drawTwoCards = function () {
     dealerHandArr.push(dealerCard.point);
     playerArr.push(playerCard);
     playerHandArr.push(playerCard.point);
-    // dealerHandArr.push(10.5);
-    // playerHandArr.push(5);
+    // dealerHandArr.push(5);
+    // playerHandArr.push(10.5);
   }
 };
 
@@ -173,6 +173,38 @@ var resetGame = function () {
   gameMode = GAME_MODE_START;
   shuffledDeck = shuffleCards(makeDeck());
 };
+
+// OUPUT PLAYER'S HAND
+var generatePlayerOutput = function () {
+  var playerTotalValue = sumCardsInArray(playerHandArr);
+  var PLAYER_OUTPUT_MSG = `<b><u>YOUR HAND</u></b><br>`;
+  for (var i = 0; i < playerArr.length; i += 1) {
+    PLAYER_OUTPUT_MSG += `${playerArr[i].name} of ${playerArr[i].suit}<br>`;
+  }
+  PLAYER_OUTPUT_MSG += `<b>Your hand totals to ${playerTotalValue}.</b><br><br>`;
+  return PLAYER_OUTPUT_MSG;
+};
+
+// OUPUT DEALER'S HAND
+var generateDealerOutput = function () {
+  var dealerTotalValue = sumCardsInArray(dealerHandArr);
+  var DEALER_OUTPUT_MSG = `<b><u>DEALER'S HAND</u></b><br>`;
+  for (var i = 0; i < dealerArr.length; i += 1) {
+    DEALER_OUTPUT_MSG += `${dealerArr[i].name} of ${dealerArr[i].suit}<br>`;
+  }
+  DEALER_OUTPUT_MSG += `<b>The dealer's hand totals to ${dealerTotalValue}.</b><br><br>`;
+  return DEALER_OUTPUT_MSG;
+};
+
+// GIFS
+var playerWinGif =
+  '<img src ="https://media.tenor.com/OaYYWO9efBIAAAAC/rich-money.gif"/>';
+var playerLosesGif =
+  '<img src = "https://media.tenor.com/lgDnQxXr8XIAAAAC/spongebob.gif"/>';
+var playerChoiceGif =
+  '<img src = "https://media.tenor.com/juxL3ZtqwRMAAAAd/what-will-you-do-next-anya-taylor-joy.gif"/>';
+var playerNervousGif =
+  '<img src ="https://media.tenor.com/pB-cPZmiMeEAAAAC/stress-spongebob.gif"/>';
 
 // GLOBAL VARIABLES
 var dealerArr = [];
@@ -210,114 +242,190 @@ var main = function (input) {
     // If both has blackjack, it's a tie. If either gets blackjack, that player wins in the first round.
 
     if (isBlackjack(playerHandArr) && isBlackjack(dealerHandArr)) {
-      resetGame();
       gameMode = GAME_MODE_START;
-      return ` ${genericOutput} Both players got Blackjack! It's a tie. Play again.`;
+      resetGame();
+      return (
+        generatePlayerOutput() +
+        generateDealerOutput() +
+        ` Both players got Blackjack! It's a tie. Play again.`
+      );
     }
 
     if (isBlackjack(playerHandArr)) {
-      resetGame();
+      var myOutputValue =
+        generatePlayerOutput() +
+        generateDealerOutput() +
+        `Player gets blackjack. Player wins the game!<br></br>` +
+        playerWinGif;
       gameMode = GAME_MODE_START;
-      return ` ${genericOutput} Player gets blackjack. Player wins the game!`;
+      resetGame();
+      return myOutputValue;
     }
 
     if (isBlackjack(dealerHandArr)) {
-      resetGame();
+      var myOutputValue =
+        generatePlayerOutput() +
+        generateDealerOutput() +
+        `Dealer gets blackjack <br></br>` +
+        playerLosesGif;
       gameMode = GAME_MODE_START;
-      return ` ${genericOutput} Dealer gets blackjack`;
+      resetGame();
+      return myOutputValue;
     }
 
     // If neither players got blackjack in the first round, the game state changes to ask the player to hit or stand
     gameMode = GAME_MODE_PLAYER_MOVE;
-    return genericOutput + `Player please choose to "hit" or "stand".`;
+    return (
+      generatePlayerOutput() +
+      generateDealerOutput() +
+      `Enter "h" to hit or "s" to stand.`
+    );
   }
 
   // Start new state: Player's move to hit or stand
 
   if (gameMode == GAME_MODE_PLAYER_MOVE) {
-    if (input != "hit" && input != "stand") {
-      return "Please enter 'hit' or 'stand' to proceed";
+    if (input != "h" && input != "s") {
+      return "Enter 'h' for hit or 's' for stand to proceed";
     }
-    if (input == "hit") {
+    if (input == "h") {
       playerHit();
-      console.log(playerArr);
       var playerSum = sumCardsInArray(playerHandArr);
       var dealerSum = sumCardsInArray(dealerHandArr);
-      console.log(playerArr, playerHandArr);
 
       //Dealer needs to choose to hit or stand after the player
 
       if (isBust(playerSum)) {
         gameMode = GAME_MODE_DEALER;
         playerBust = true;
-        return `This is the player's sum ${playerSum}. Player has gone bust. Let's see what the dealer does.`;
+        myOutputValue =
+          generatePlayerOutput() +
+          generateDealerOutput() +
+          `You've chosen to hit and gone bust! 💣 Let's see what the dealer does. <br><br>` +
+          playerNervousGif;
+        return myOutputValue;
       }
       gameMode = GAME_MODE_DEALER;
-      return "player has chosen to hit, this is the sum in hand: " + playerSum;
+      myOutputValue =
+        `You've chosen to hit. <br><br> The hands are now: <br><br>` +
+        generatePlayerOutput() +
+        generateDealerOutput();
+      return myOutputValue;
     }
     playerChoseToStand = true;
     gameMode = GAME_MODE_DEALER;
-    return (
-      "Player has chosen to stand. Player's current hand is: " + playerHandArr
-    );
+    myOutputValue =
+      `You've chosen to stand. <br><br> The hands remain: <br><br>` +
+      generatePlayerOutput() +
+      generateDealerOutput();
+    return myOutputValue;
   }
 
   // Dealer needs to hit if their cards are under 17
 
   if (gameMode == GAME_MODE_DEALER) {
-    if (sumCardsInArray(dealerHandArr) < 17) {
+    if (sumCardsInArray(dealerHandArr) < dealerLimit) {
       dealerHit();
       var dealerSum = sumCardsInArray(dealerHandArr);
       gameMode = GAME_MODE_EVALUATE;
       if (isBust(dealerSum)) {
         dealerBust = true;
-        return `This is the dealer's sum ${dealerSum}. Dealer has gone bust.`;
+        myOutputValue =
+          generatePlayerOutput() +
+          generateDealerOutput() +
+          `Dealer choses to hit and gone bust! 💣`;
+        return myOutputValue;
       }
-      return "Dealer hit. This is the new sum for dealer " + dealerSum;
+      return (
+        "Dealer hit. <br><br> The hands are now: <br>" +
+        generatePlayerOutput() +
+        generateDealerOutput()
+      );
     }
     dealerChoseToStand = true;
     gameMode = GAME_MODE_EVALUATE;
-    return "Dealer does not hit. Their score remains at " + dealerSum;
+    return `Dealer chose to stand.`;
   }
 
-  // new line
+  // EVALUATE WIN CONDITIONS
   if (gameMode == GAME_MODE_EVALUATE) {
     var playerSum = sumCardsInArray(playerHandArr);
     var dealerSum = sumCardsInArray(dealerHandArr);
 
     if (playerBust == true && dealerBust == true) {
+      myOutputValue =
+        generatePlayerOutput() +
+        generateDealerOutput() +
+        `Both players hands' bust! 💣💣 Restart game by hitting Submit.`;
       resetGame();
       gameMode = GAME_MODE_START;
-      return `This is the player's sum ${playerSum}. This is the dealer's sum. Both players bust. Restart game.`;
+      return myOutputValue;
     } else if (
       playerSum == dealerSum &&
       playerChoseToStand == true &&
       dealerChoseToStand == true
     ) {
+      myOutputValue =
+        generatePlayerOutput() +
+        generateDealerOutput() +
+        `Both players have chose to stand and are tied! Click Submit to play again`;
       resetGame();
       gameMode == GAME_MODE_START;
-      return `${genericOutput} Both players have chose to stand and the dealer sum is ${dealerSum} and the player sum is ${playerSum}.`;
+      return myOutputValue;
     } else if (dealerBust == true) {
-      return `${genericOutput} Dealer has bust. Player sum is ${playerSum}. Player wins!`;
+      myOutputValue =
+        generatePlayerOutput() +
+        generateDealerOutput() +
+        `Dealer has bust! 💣 You win!<br></br>` +
+        playerWinGif;
+      gameMode = GAME_MODE_START;
+      resetGame();
+      return myOutputValue;
     } else if (playerBust == true) {
-      return `${genericOutput} Player has bust. Player sum is ${playerSum}. Dealer wins!`;
+      myOutputValue =
+        generatePlayerOutput() +
+        generateDealerOutput() +
+        `You've bust! 💣 Dealer wins! Click Submit to play again.<br></br>` +
+        playerLosesGif;
+      gameMode = GAME_MODE_START;
+      resetGame();
+      return myOutputValue;
     } else if (
       playerChoseToStand == true &&
       dealerChoseToStand == true &&
       dealerSum > playerSum
     ) {
-      return `Dealer has a sum of ${dealerSum}. Player sum is ${playerSum}. Dealer wins!`;
+      myOutputValue =
+        generatePlayerOutput() +
+        generateDealerOutput() +
+        `You lose! <br> Dealer has the hand closer to 21 and wins! <br></br> Click Submit to play again. <br></br>` +
+        playerLosesGif;
+      gameMode = GAME_MODE_START;
+      resetGame();
+      return myOutputValue;
     } else if (
       playerChoseToStand == true &&
       dealerChoseToStand == true &&
       dealerSum < playerSum
     ) {
-      return `Dealer has a sum of ${dealerSum}. Player sum is ${playerSum}. Player wins!`;
+      myOutputValue =
+        generatePlayerOutput() +
+        generateDealerOutput() +
+        `You win! Click Submit to play again <br></br>` +
+        playerWinGif;
+      gameMode = GAME_MODE_START;
+      resetGame();
+      return myOutputValue;
     } else if (playerChoseToStand == false) {
+      myOutputValue =
+        generatePlayerOutput() +
+        generateDealerOutput() +
+        `Your turn to hit or stand. <br><br>` +
+        playerChoiceGif;
       gameMode = GAME_MODE_PLAYER_MOVE;
-      return `Player's turn to hit or stand. Player has a sum of ${playerSum}.`;
+      return myOutputValue;
     } else gameMode = GAME_MODE_DEALER;
-    return `Player has chosen to stand: ${playerChoseToStand}. It is the dealer's turn now.`;
+    return `You've chosen to stand. It is the dealer's turn now.`;
   }
 };
 
