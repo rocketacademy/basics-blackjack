@@ -27,11 +27,12 @@ function shuffleDeck() {
   return deck;
 }
 
-function getStartingHand(numberOfCards) {
+function getStartingHand(numberOfCards, array) {
   for (i = 0; i < numberOfCards; i += 1) {
     var card = dealCard();
-    playerHand.push(card);
+    array.push(card);
   }
+  return array;
 }
 
 function dealCard() {
@@ -49,6 +50,7 @@ function displayUserCards(numberOfCards) {
 
 function getComputerDecision() {}
 
+// find total to determine ace rank and to determine whether dealer draws a card
 function findCardTotal(array) {
   var cardTotal = 0;
   for (i = 0; i < array.length; i += 1) {
@@ -89,8 +91,11 @@ function displayGameStatus() {}
 var main = function (input) {
   makeDeck();
   shuffleDeck();
-  // getStartingHand(2);
-  playerHand = [{ rank: 1 }, { rank: 10 }];
+  playerHand = getStartingHand(2, playerHand);
+  computerHand = getStartingHand(2, computerHand);
+  console.log(playerHand);
+  console.log(computerHand);
+  // playerHand = [{ rank: 1 }, { rank: 10 }];
   // return findCardTotal(playerHand);
   return assignAceRank(playerHand);
   return `${displayUserCards(2)} ${matchNumber(21)}`;
