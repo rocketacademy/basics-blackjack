@@ -44,27 +44,6 @@ function main(mode) {
   return output;
 }
 
-function startGameButtonStates() {
-  dealButton.disabled = false;
-  hitButton.disabled = true;
-  standButton.disabled = true;
-  restartButton.disabled = true;
-}
-
-function inGameButtonStates() {
-  dealButton.disabled = true;
-  hitButton.disabled = false;
-  standButton.disabled = false;
-  restartButton.disabled = false;
-}
-
-function endGameButtonStates() {
-  dealButton.disabled = true;
-  hitButton.disabled = true;
-  standButton.disabled = true;
-  restartButton.disabled = false;
-}
-
 function resetGame() {
   deck = makeDeck();
   shuffledDeck = [];
@@ -158,6 +137,8 @@ function getSitrep() {
   )}<br>Dealer's score: ${getScore(computerHand)}`;
 }
 
+// Card Aesthetics
+
 function displayHand(hand) {
   let result = `<div id = "all-cards">`;
   for (let i = 0; i < hand.length; i++) {
@@ -168,8 +149,6 @@ function displayHand(hand) {
   result += `</div>`;
   return result;
 }
-
-// Card Aesthetics
 
 function getCardColor(card) {
   if (card.suit === "hearts" || card.suit === "diamonds") {
@@ -281,3 +260,24 @@ restartButton.addEventListener("click", function () {
   var output = document.querySelector("#output-div");
   output.innerHTML = result;
 });
+
+function startGameButtonStates() {
+  dealButton.disabled = false;
+  hitButton.disabled = true;
+  standButton.disabled = true;
+  restartButton.disabled = true;
+}
+
+function inGameButtonStates() {
+  dealButton.disabled = true;
+  hitButton.disabled = false;
+  standButton.disabled = false;
+  restartButton.disabled = false;
+}
+
+function endGameButtonStates() {
+  dealButton.disabled = true;
+  hitButton.disabled = true;
+  standButton.disabled = true;
+  restartButton.disabled = false;
+}
