@@ -1,6 +1,4 @@
-// 2 mar: 2 hrs
-// 5 mar: 1 hr
-// 6 mar: 2 hrs
+//--- GLOBAL VARIABLES ---
 
 var gameMode = "startGame"; // startGame, playerTurn, computerTurn
 var cardDeck = [];
@@ -8,6 +6,8 @@ var dealerHand = [];
 var dealerScore = 0;
 var playerHand = [];
 var playerScore = 0;
+
+//--- HELPER FUNCTIONS ---
 
 function makeDeck() {
   var cardDeck = [];
@@ -57,31 +57,40 @@ function shuffleCards(cardDeck) {
   return cardDeck;
 }
 
-function dealCards(playerHand, cardDeck, noOfCards) {
+function dealCards(handArray, cardDeck, noOfCards) {
   for (var counter = 0; counter < noOfCards; counter += 1) {
-    playerHand.push(cardDeck.pop());
+    handArray.push(cardDeck.pop());
   }
-  return playerHand;
+  return handArray;
 }
 
-//can refactor?
-function isBlackjack(playerHand) {
+function isBlackjack(handArray) {
   return (
-    (playerHand[0].name === "ace" && playerHand[1].name === "king") ||
-    (playerHand[0].name === "ace" && playerHand[1].name === "queen") ||
-    (playerHand[0].name === "ace" && playerHand[1].name === "jack") ||
-    (playerHand[0].name === "ace" && playerHand[1].name === "10") ||
-    (playerHand[1].name === "ace" && playerHand[0].name === "king") ||
-    (playerHand[1].name === "ace" && playerHand[0].name === "queen") ||
-    (playerHand[1].name === "ace" && playerHand[0].name === "jack") ||
-    (playerHand[1].name === "ace" && playerHand[0].name === "10")
+    (handArray[0].name === "ace" && handArray[1].rank >= 10) ||
+    (handArray[1].name === "ace" && handArray[0].rank >= 10)
   );
+}
+
+function calculateScore(handArray) {
+  var score = 0;
+  for (var counter = 0; counter < handArray.length; counter += 1) {
+    score = score + getCardScore(handArray[counter]);
+  }
+  //if there are aces, update ace value in score. if total hand value is >21, update ace value from 11 to 1
+  for (var counter = 0; counter < handArray.length; counter += 1) {
+    if (handArray[counter].name === "ace") {
+      score = updateAceValueinScore(score);
+    }
+  }
+  return score;
 }
 
 function getCardScore(card) {
   score = 0;
   if (card.name === "king" || card.name === "queen" || card.name === "jack") {
     score = 10;
+  } else if (card.name === "ace") {
+    score = 11;
   } else {
     score = card.rank;
   }
@@ -89,38 +98,11 @@ function getCardScore(card) {
 }
 
 function updateAceValueinScore(score) {
-  //if score is >21, update score
+  //if total value of hand is >21, update ace value from 11 to 1
   if (score > 21) {
     score = score - 10;
   }
   return score;
-}
-
-function calculateScore(playerHand) {
-  var playerScore = 0;
-  for (var counter = 0; counter < playerHand.length; counter += 1) {
-    //assume aces have a starting value of 11.
-    if (playerHand[counter].name === "ace") {
-      playerScore = playerScore + 11;
-    } else {
-      playerScore = playerScore + getCardScore(playerHand[counter]);
-    }
-  }
-  //if there are aces, update ace value in score
-  for (var counter = 0; counter < playerHand.length; counter += 1) {
-    if (playerHand[counter].name === "ace") {
-      playerScore = updateAceValueinScore(playerScore);
-    }
-  }
-  return playerScore;
-}
-
-function listCards(hand) {
-  var cardList = "";
-  for (i = 0; i < hand.length; i += 1) {
-    cardList = cardList + `- ${hand[i].name} of ${hand[i].suit}<br>`;
-  }
-  return `<br> ${cardList}`;
 }
 
 function displayPlayerHandAndScore(player, handArray, score) {
@@ -134,18 +116,28 @@ function displayPlayerHandAndScore(player, handArray, score) {
   return message;
 }
 
-function isBust(playerHand) {
-  playerScore = calculateScore(playerHand);
-  return playerScore > 21;
+function listCards(hand) {
+  var cardList = "";
+  for (i = 0; i < hand.length; i += 1) {
+    cardList = cardList + `- ${hand[i].name} of ${hand[i].suit}<br>`;
+  }
+  return `<br> ${cardList}`;
 }
 
-function generateResult(playerHand, dealerHand) {
+function isBust(handArray) {
+  score = calculateScore(handArray);
+  return score > 21;
+}
+
+function generateResult(playerHandArray, dealerHandArray) {
+  playerScore = calculateScore(playerHandArray);
+  dealerScore = calculateScore(dealerHandArray);
   gameResult = "";
-  if (isBust(dealerHand) && isBust(playerHand)) {
+  if (isBust(dealerHandArray) && isBust(playerHandArray)) {
     gameResult = "Tie!";
-  } else if (isBust(dealerHand)) {
+  } else if (isBust(dealerHandArray)) {
     gameResult = "Player wins!";
-  } else if (isBust(playerHand)) {
+  } else if (isBust(playerHandArray)) {
     gameResult = "Dealer wins!";
   } else if (playerScore == dealerScore) {
     gameResult = "Tie!";
@@ -154,40 +146,45 @@ function generateResult(playerHand, dealerHand) {
   } else {
     gameResult = "Player wins!";
   }
-  console.log(playerScore, dealerScore, gameResult);
   return gameResult;
 }
 
+//--- MAIN FUNCTION ---
+
 var main = function (input) {
   var myOutputValue = "";
-  //when player hits submit, shuffle deck and deal two cards to player and dealer.
+
   if (gameMode === "startGame") {
+    //game set up: create deck, shuffle deck and deal two cards to player and dealer.
     dealerHand = [];
     playerHand = [];
     cardDeck = makeDeck();
     cardDeck = shuffleCards(cardDeck);
 
     dealerHand = dealCards(dealerHand, cardDeck, 2);
-    playerHand = dealCards(playerHand, cardDeck, 2);
+    dealCards(playerHand, cardDeck, 2);
+    dealerScore = calculateScore(dealerHand);
+    playerScore = calculateScore(playerHand);
 
-    // check for blackjack.
+    myOutputValue =
+      `You received two cards. <br><br>` +
+      displayPlayerHandAndScore("Player", playerHand, playerScore) +
+      displayPlayerHandAndScore("Dealer", dealerHand, dealerScore);
+
+    // if either player gets blackjack, game ends
     if (isBlackjack(playerHand) || isBlackjack(dealerHand)) {
       if (isBlackjack(playerHand) && isBlackjack(dealerHand)) {
-        myOutputValue = "WOOWW YOU BOTH GOT BLACKJACK! It's a tie!";
+        myOutputValue =
+          myOutputValue + "WOOWW YOU BOTH GOT BLACKJACK! It's a tie!";
       } else if (isBlackjack(playerHand)) {
-        myOutputValue = "BLACKJACK! You win!";
+        myOutputValue = myOutputValue + "BLACKJACK! You win!";
       } else if (isBlackjack(dealerHand)) {
-        myOutputValue = "dealer GOT BLACKJACK! dealer wins!";
+        myOutputValue = myOutputValue + "Dealer GOT BLACKJACK! Dealer wins!";
       }
     } else {
-      //calculate scores
-      dealerScore = calculateScore(dealerHand);
-      playerScore = calculateScore(playerHand);
-      //display hand and score and ask whether player wants to hit or stand.
+      // display hand and score and ask whether player wants to hit or stand.
       myOutputValue =
-        `You received two cards. <br><br>` +
-        displayPlayerHandAndScore("Player", playerHand, playerScore) +
-        displayPlayerHandAndScore("Dealer", dealerHand, dealerScore) +
+        myOutputValue +
         `Please enter "Hit" to draw another card or "Stand" to end your turn!`;
       gameMode = "playerTurn";
     }
@@ -199,24 +196,25 @@ var main = function (input) {
     } else if (input === "hit") {
       //if player chooses hit, deal player one more card
       playerHand = dealCards(playerHand, cardDeck, 1);
+      playerScore = calculateScore(playerHand);
 
       //check whether player went bust. if bust, proceed to dealer's turn.
       if (isBust(playerHand)) {
         myOutputValue =
           `You went bust! <br><br>` +
           displayPlayerHandAndScore("Player", playerHand, playerScore) +
-          `We assume you stand! Press submit for Dealer's turn.`;
+          `Press submit for Dealer's turn.`;
         gameMode = "dealerTurn";
       } else {
-        //else return player cards and score, and ask whether they want to hit or stand.
+        //else return player's current hand and ask whether they want to hit or stand.
         myOutputValue =
           displayPlayerHandAndScore("Player", playerHand, playerScore) +
           `Please enter "Hit" to draw another card or "Stand" to end your turn!`;
       }
     } else if (input === "stand") {
-      //else if player chooses stand, enter dealer's turn
-      gameMode = "dealerTurn";
+      //else if player chooses stand, end player's turn and proceed to dealer's turn
       myOutputValue = `You end your turn! Press submit for Dealer's turn.`;
+      gameMode = "dealerTurn";
     }
   } else if (gameMode === "dealerTurn") {
     //if dealer hand is under 17, dealer gets one more card.
@@ -224,7 +222,6 @@ var main = function (input) {
       dealerHand = dealCards(dealerHand, cardDeck, 1);
       dealerScore = calculateScore(dealerHand);
     }
-
     //display final result. press submit to play again.
     var gameResult = generateResult(playerHand, dealerHand);
     myOutputValue =
