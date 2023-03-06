@@ -20,6 +20,7 @@ function main(mode) {
       playerHand.push(drawCard(shuffledDeck));
       computerHand.push(drawCard(shuffledDeck));
     }
+    flipCard(computerHand, 2);
   } else if (mode === "hit") {
     playerHand.push(drawCard(shuffledDeck));
   } else if (mode === "stand") {
@@ -37,12 +38,19 @@ function main(mode) {
     mode === "stand"
   ) {
     endGameButtonStates();
+    flipCard(computerHand, 2);
     output = winStatement(playerHand, computerHand) + "<br>";
   }
 
   output += getSitrep();
   return output;
 }
+
+//
+//
+// Helper Functions Below
+//
+//
 
 function resetGame() {
   deck = makeDeck();
@@ -72,6 +80,12 @@ function getScore(hand) {
   }
 
   return score;
+}
+
+function flipCard(hand, cardNo) {
+  var tempHand = hand;
+  tempHand[cardNo - 1].flipped = !tempHand[cardNo - 1].flipped;
+  return tempHand;
 }
 
 //Game Statement Generators
@@ -130,11 +144,19 @@ function winStatement(playerHand, computerHand) {
 }
 
 function getSitrep() {
-  return `Your hand: ${displayHand(playerHand)}<br>Your score: ${getScore(
+  let result = `Your hand: ${displayHand(playerHand)}<br>Your score: ${getScore(
     playerHand
   )} <br><br>——————————<br><br> Dealer's hand: ${displayHand(
     computerHand
-  )}<br>Dealer's score: ${getScore(computerHand)}`;
+  )}<br>Dealer's score: `;
+
+  if (computerHand[1].flipped) {
+    result += "?";
+  } else {
+    result += getScore(computerHand);
+  }
+
+  return result;
 }
 
 // Card Aesthetics
@@ -151,6 +173,10 @@ function displayHand(hand) {
 }
 
 function getCardColor(card) {
+  if (card.flipped === true) {
+    return "flipped-card";
+  }
+
   if (card.suit === "hearts" || card.suit === "diamonds") {
     return "redcard";
   } else {
@@ -160,6 +186,10 @@ function getCardColor(card) {
 
 function getCardName(card) {
   var name = "";
+
+  if (card.flipped === true) {
+    return "?";
+  }
 
   if (card.rank <= 10 && card.rank > 1) {
     name += card.name;
@@ -213,6 +243,7 @@ function makeDeck() {
         name: cardName,
         suit: cardSuit,
         rank: j,
+        flipped: false,
       };
       cardDeck.push(card);
     }
