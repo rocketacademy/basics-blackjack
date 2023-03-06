@@ -151,18 +151,13 @@
         position: relative;
         top: 22px;
       }
-
-      /* increase header font size on wider screens */
-      @media screen and (min-width: 600px) {
-        .header {
-          font-size: 2rem;
-        }
-      }
       #content {background-color: linen;
         margin: 40px auto;
         max-width: 800px;
         padding: 38px 31px;
       border-radius: 10px;
+      display: none; 
+      overflow: hidden;
     }
 
       .collapsible {
@@ -182,6 +177,25 @@
       .collapsible:hover {
         background-color: goldenrod;
       }
+
+      .collapsible:after {
+  content: '\02795'; /* Unicode character for "plus" sign (+) */
+  font-size: 10px;
+  float: right;
+  margin-left: 5px;
+}
+
+.active:after {
+  content: "\2796"; /* Unicode character for "minus" sign (-) */
+}
+
+      /* increase header font size on wider screens */
+      @media screen and (min-width: 600px) {
+        .header {
+          font-size: 2rem;
+        }
+      }
+
     </style>
   </head>
 

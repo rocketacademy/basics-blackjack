@@ -202,11 +202,13 @@ var playerWinGif =
 var playerLosesGif =
   '<img src = "https://media.tenor.com/lgDnQxXr8XIAAAAC/spongebob.gif"/>';
 var playerChoiceGif =
-  '<img src = "https://media.tenor.com/juxL3ZtqwRMAAAAd/what-will-you-do-next-anya-taylor-joy.gif"/>';
+  '<img src = "https://media.tenor.com/8Qbw56-IuPgAAAAC/sponge-bob-square-pants-sponge-bob.gif"/>';
 var playerNervousGif =
   '<img src ="https://media.tenor.com/pB-cPZmiMeEAAAAC/stress-spongebob.gif"/>';
 var itsATieGif =
-  '<img src = "https://media.tenor.com/wyfhYqF1tJIAAAAC/mark-wahlberg-wahlberg.gif"/>';
+  '<img src = "https://media.tenor.com/gRQbmeKOOb0AAAAC/spongebob-patrick.gif"/>';
+var hitIt =
+  '<img src = "https://media.tenor.com/ceLVRjW6w8gAAAAC/patrick-star-smash.gif"/>';
 
 // GLOBAL VARIABLES
 var dealerArr = [];
@@ -308,7 +310,8 @@ var main = function (input) {
       }
       gameMode = GAME_MODE_DEALER;
       myOutputValue =
-        `You've chosen to hit. <br><br> The hands are now: <br><br>` +
+        hitIt +
+        `<br><br> You've chosen to hit. <br><br> The hands are now: <br><br>` +
         generatePlayerOutput() +
         generateDealerOutput();
       return myOutputValue;
@@ -423,7 +426,7 @@ var main = function (input) {
       myOutputValue =
         generatePlayerOutput() +
         generateDealerOutput() +
-        `Your turn to hit or stand. <br><br>` +
+        `Your turn to hit or stand. Enter 'h' for hit or 's' for stand. <br><br>` +
         playerChoiceGif;
       gameMode = GAME_MODE_PLAYER_MOVE;
       return myOutputValue;
