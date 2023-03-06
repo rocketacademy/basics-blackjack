@@ -2,6 +2,8 @@ var deck;
 var shuffledDeck;
 var playerCards = [];
 var compCards = [];
+var playerSum;
+var compSum;
 var outputBox = document.getElementById("output-div");
 var dealButton = document.getElementById("deal-button");
 var hitButton = document.getElementById("hit-button");
@@ -11,7 +13,7 @@ var makeDeck = function () {
   //empty deck array
   var cardDeck = [];
   //initialise array with 4 suits
-  var suits = ["hearts", "diamonds", "clubs", "spades"];
+  var suits = ["Hearts ♥️ ", "Diamonds ♦️", "Clubs ♣️", "Spades ♠️"];
 
   //loop over suits array
   for (var suitIndex = 0; suitIndex < suits.length; suitIndex++) {
@@ -26,16 +28,16 @@ var makeDeck = function () {
 
       //if rank is 1, 11, 12, 13
       if (cardName == 1) {
-        cardName = "ace";
+        cardName = "♤ Ace";
       } else if (cardName == 11) {
         rankCounter = 10;
-        cardName = "jack";
+        cardName = "🤴🏼 Jack";
       } else if (cardName == 12) {
         rankCounter = 10;
-        cardName = "queen";
+        cardName = "👑 Queen";
       } else if (cardName == 13) {
         rankCounter = 10;
-        cardName = "king";
+        cardName = "🫅🏼 King";
       }
 
       //create a new card with name, suit and rank
@@ -134,7 +136,7 @@ var defaultHandSumMsg = function (playerCards, compCards, playerSum, compSum) {
 };
 
 var defaultWinMsg = function (playerCards, compCards, playerSum, compSum) {
-  outputBox.innerHTML = `YOU WON!  <br> <br> ${defaultHandSumMsg(
+  outputBox.innerHTML = `YOU WON! 😲 <br> <br> ${defaultHandSumMsg(
     playerCards,
     compCards,
     playerSum,
@@ -143,7 +145,7 @@ var defaultWinMsg = function (playerCards, compCards, playerSum, compSum) {
 };
 
 var defaultLoseMsg = function (playerCards, compCards, playerSum, compSum) {
-  outputBox.innerHTML = `HA! YOU LOST!  <br> <br> ${defaultHandSumMsg(
+  outputBox.innerHTML = `HA! YOU LOST! 😵 <br> <br> ${defaultHandSumMsg(
     playerCards,
     compCards,
     playerSum,
@@ -152,7 +154,7 @@ var defaultLoseMsg = function (playerCards, compCards, playerSum, compSum) {
 };
 
 var defaultTieMsg = function (playerCards, compCards, playerSum, compSum) {
-  outputBox.innerHTML = `IT'S A TIE! <br><br> ${defaultHandSumMsg(
+  outputBox.innerHTML = `IT'S A TIE! 😪 <br><br> ${defaultHandSumMsg(
     playerCards,
     compCards,
     playerSum,
@@ -168,6 +170,18 @@ var defaultHitOrStandMsg = function (playerCards) {
   )}</b> <br><br> Press 'hit' or 'stand'!`;
 };
 
+var defaultBustedMsg = function (playerCards, playerSum) {
+  outputBox.innerHTML = `HA! YOU BUSTED! 😂 <br><br> <u> YOUR HAND </u> <br> ${listOfCards(
+    playerCards
+  )} <b>Your hand totals to ${playerSum}!</b> <br><br> Click the 'deal' button to play again!`;
+};
+
+var defaultStandMsg = function (playerCards, playerSum) {
+  outputBox.innerHTML = `<u> YOUR HAND </u> <br> ${listOfCards(
+    playerCards
+  )} <b>Your hand totals to ${playerSum}!</b> <br><br> Click 'stand' to view the Dealer's cards!`;
+};
+
 //functions to disable/enable buttons accordingly
 var startOfGameButtons = function () {
   dealButton.disabled = false;
@@ -181,6 +195,12 @@ var hitOrStandButtons = function () {
   standButton.disabled = false;
 };
 
+var standButtonOnly = function () {
+  dealButton.disabled = true;
+  hitButton.disabled = true;
+  standButton.disabled = false;
+};
+
 //disable hit and stand buttons at the start
 startOfGameButtons();
 
@@ -189,28 +209,16 @@ dealButton.addEventListener("click", function () {
   //make and shuffle deck
   deck = makeDeck();
   shuffledDeck = shuffleCards(deck);
-  //draw cards and store into respective arrays
+  // draw cards and store into respective arrays
   playerCards = draw2Cards(shuffledDeck);
   compCards = draw2Cards(shuffledDeck);
   //calculate sum for players
-  var compSum = sumCounter(compCards);
-  var playerSum = sumCounter(playerCards);
+  compSum = sumCounter(compCards);
+  playerSum = sumCounter(playerCards);
   console.log("compSum1: ", compSum);
   //if player get blackjack
   if (playerSum == 21 && compSum != 21) {
-    //dealer draws extra cards if dealerSum < 17
-    while (compSum < 17) {
-      var compCardExtra = shuffledDeck.pop();
-      compCards.push(compCardExtra);
-      compSum = sumCounter(compCards);
-    }
-    //if dealer get blackjack - TIE
-    //else - player wins
-    if (compSum == 21) {
-      defaultTieMsg(playerCards, compCards, playerSum, compSum);
-    } else {
-      defaultWinMsg(playerCards, compCards, playerSum, compSum);
-    }
+    defaultWinMsg(playerCards, compCards, playerSum, compSum);
   }
   //if both get blackjack on first 2 cards - TIE
   else if (playerSum == 21 && compSum == 21) {
@@ -230,42 +238,25 @@ hitButton.addEventListener("click", function () {
   playerCards.push(cardExtra);
   //recount cuurent sum for respective players
   playerSum = sumCounter(playerCards);
-  compSum = sumCounter(compCards);
   //player sum > 21 - player lose
   if (playerSum > 21) {
     startOfGameButtons();
-    outputBox.innerHTML = `HA! YOU BUSTED! <br><br> <u> YOUR HAND </u> <br> ${listOfCards(
-      playerCards
-    )} <b>Your hand totals to ${playerSum}!</b> <br><br> Click the 'deal' button to play again!`;
+    defaultBustedMsg(playerCards, playerSum);
   }
   //player sum < 21 - ask Hit or Stand
   else if (playerSum < 21) {
     defaultHitOrStandMsg(playerCards, playerSum, compSum);
   }
-  //if player get blackjack with extra card
+  //if player get 21 with extra card
   else if (playerSum == 21) {
-    //only enable deal button
-    startOfGameButtons();
-    //dealer draws extra cards if sum < 17
-    compCardExtra = shuffledDeck.pop();
-    compCards.push(compCardExtra);
-    compSum = sumCounter(compCards);
-    //if comp also get blackjack - TIE
-    if (compSum == 21) {
-      defaultTieMsg(playerCards, compCards, playerSum, compSum);
-    }
-    //if comp did not get blackjack - player win
-    else {
-      defaultWinMsg(playerCards, compCards, playerSum, compSum);
-    }
+    //only enable stand button
+    standButtonOnly();
+    defaultStandMsg(playerCards, playerSum);
   }
 });
 
 //STAND
 standButton.addEventListener("click", function () {
-  //recalculate current sum
-  compSum = sumCounter(compCards);
-  playerSum = sumCounter(playerCards);
   //comp draw cards if sum < 17
   while (compSum < 17) {
     compCardExtra = shuffledDeck.pop();
