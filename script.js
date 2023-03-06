@@ -105,9 +105,18 @@ function updateAceValueinScore(score) {
   return score;
 }
 
-function displayPlayerHandAndScore(player, handArray, score) {
+function displayPlayerHandAndScore(player, handArray, score, gameMode) {
   message = "";
-  message = `${player}'s Hand: ${listCards(handArray)}Score: ${score}`;
+
+  if (gameMode === "startGame") {
+    message = `${player}'s Hand: ${listCards(player, handArray, gameMode)}`;
+  } else {
+    message = `${player}'s Hand: ${listCards(
+      player,
+      handArray,
+      gameMode
+    )} Score: ${score}`;
+  }
 
   if (isBust(handArray)) {
     message = message + " (BUST!)";
@@ -116,10 +125,17 @@ function displayPlayerHandAndScore(player, handArray, score) {
   return message;
 }
 
-function listCards(hand) {
+function listCards(player, handArray, gameMode) {
   var cardList = "";
-  for (i = 0; i < hand.length; i += 1) {
-    cardList = cardList + `- ${hand[i].name} of ${hand[i].suit}<br>`;
+  if (player === "Dealer" && gameMode === "startGame") {
+    cardList =
+      cardList +
+      `- ${handArray[0].name} of ${handArray[0].suit}<br> - (Hidden Card)<br>`;
+  } else {
+    for (i = 0; i < handArray.length; i += 1) {
+      cardList =
+        cardList + `- ${handArray[i].name} of ${handArray[i].suit}<br>`;
+    }
   }
   return `<br> ${cardList}`;
 }
@@ -168,8 +184,8 @@ var main = function (input) {
 
     myOutputValue =
       `You received two cards. <br><br>` +
-      displayPlayerHandAndScore("Player", playerHand, playerScore) +
-      displayPlayerHandAndScore("Dealer", dealerHand, dealerScore);
+      displayPlayerHandAndScore("Player", playerHand, playerScore, gameMode) +
+      displayPlayerHandAndScore("Dealer", dealerHand, dealerScore, gameMode);
 
     // if either player gets blackjack, game ends
     if (isBlackjack(playerHand) || isBlackjack(dealerHand)) {
