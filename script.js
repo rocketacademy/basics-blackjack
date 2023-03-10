@@ -74,6 +74,82 @@ var shuffleCards = function (cardDeck) {
   return cardDeck;
 };
 
+// ==== GAME HELPER FUNCTIONS ====
+
+// ==== function to check blackjack ====
+var BlackjackCheck = function (handArray) {
+  // check for blackjack in hand
+  var playerCardOne = handArray[0];
+  var playerCardTwo = handArray[1];
+  var isBlackjack = false;
+
+  // if got blackjack, return true
+  // else return false
+  // possible scenarios:
+  //  1st card ace, 2nd card 10 or picture cards
+  // 1st card 10 or icture cards, 2nd card ace
+  if (
+    (playerCardOne.name == "ace" && playerCardTwo.rank >= 10) ||
+    (playerCardOne.rank >= 10 && playerCardTwo.name == "ace")
+  ) {
+    isBlackjack = true;
+  }
+  return isBlackjack;
+};
+
+// ==== function to display player & dealer hands =====
+var showPlayerAndDealerHands = function (playerHandArray, dealerHandArray) {
+  // PLAYER
+  var playerMessage = "Player Hand:<br>";
+  var index = 0;
+  while (index < playerHandArray.length) {
+    playerMessage =
+      playerMessage +
+      "- " +
+      playerHandArray[index].name +
+      "of" +
+      playerHandArray[index].suit +
+      "<br>";
+    index = index + 1;
+  }
+  // DEALER
+  var dealerMessage = "Dealer Hand:<br>";
+  var index = 0;
+  while (index < dealerHandArray.length) {
+    dealerMessage =
+      dealerMessage +
+      "- " +
+      dealerHandArray[index].name +
+      "of" +
+      dealerHandArray[index].suit +
+      "<br>";
+    index = index + 1;
+  }
+  return playerMessage + "<br>" + dealerMessage;
+};
+
+// ==== Function calclate total hand value ====
+var totalHandValue = function (handArray) {
+  var totalHandValue = 0;
+  // loop through player & com hand and add values
+  var index = 0;
+  while (index < handArray.length) {
+    var currentCard = handArray[index];
+    if (
+      currentCard.name == "jack" ||
+      currentCard.name == "queen" ||
+      currentCard.name == "king"
+    ) {
+      totalHandValue = totalHandValue + 10;
+    } else {
+      totalHandValue = totalHandValue + currentCard.rank;
+    }
+    index = index + 1;
+  }
+
+  return totalHandValue;
+};
+
 // ==== Function for shuffled deck ====
 var shuffledDeck = function () {
   var newDeck = makeDeck();
@@ -92,37 +168,104 @@ var main = function (input) {
     playerHand.push(gameDeck.pop());
     computerHand.push(gameDeck.pop());
     computerHand.push(gameDeck.pop());
-    console.log(" P HAND", playerHand);
-    console.log(" COM HAND", computerHand);
+    console.log("P", playerHand);
+    console.log("C", computerHand);
 
     currentGameMode = drawCards;
-
-    message = "Ya'll ben dealt cards bruh";
+    // Approach through little steps first e.g. shuffle first etc
+    message = "Ya'll been dealt cards bruh";
 
     return message;
   }
-
+  // 2nd click - check for blackjack
   if (currentGameMode == drawCards) {
+    // test checkforBlacjack function
+    // playerHand = [
+    //   { name: "queen", suit: "clubs", rank: 12 },
+    //   { name: "ace", suit: "diamonds", rank: 1 },
+    // ];
+    // computerHand = [
+    //   { name: "ace", suit: "clubs", rank: 1 },
+    //   { name: 10, suit: "spades", rank: 10 },
+    // ];
+
     var playerBlackjack = BlackjackCheck(playerHand);
     var comBlackJack = BlackjackCheck(computerHand);
-    // 2nd click - check for blackjack
-    // player & com have blackjack = draw
-    // player has blackjack = player wins
-    // com has blackjack = com wins
+    console.log("player got blackjack", playerBlackjack);
+    console.log("com got blackjack", comBlackJack);
 
-    // no blackjack - game continues >>
-    // calculate sum of hand value & com
-    // compare total hand value
-    // same value = draw
-    // player has higher value = player wins
-    // com has higher value = com wins
+    // // player & com have blackjack = draw
+    // // boolean false add ! in front of var
+    if (playerBlackjack || comBlackJack) {
+      if (playerBlackjack && comBlackJack) {
+        message =
+          showPlayerAndDealerHands(playerHand, computerHand) +
+          "It's a blackjack tie mannn!";
+      }
+      //   // player has blackjack = player wins
+      else if (playerBlackjack && !comBlackJack) {
+        message =
+          showPlayerAndDealerHands(playerHand, computerHand) +
+          "Eyyyy! You won mannnn!";
+      }
+      //   // com has blackjack = com wins
+      else {
+        message =
+          showPlayerAndDealerHands(playerHand, computerHand) +
+          "Nawwww! Dealer won mannn!";
+      }
+    } else {
+      message =
+        showPlayerAndDealerHands(playerHand, computerHand) +
+        "Nope! There is no Blackjack.";
+      console.log(message);
+    }
+    //   // // no blackjack - game continues >>
 
-    // change game mode
-    // appropriate output message
+    //   // // calculate sum of hand value & com
+    var playerHandTotalValue = totalHandValue(playerHand);
+    var compHandTotalValue = totalHandValue(computerHand);
+    console.log("p total", playerHandTotalValue);
+    console.log("c total", compHandTotalValue);
+
+    //   // // compare total hand valuer
+    //   // // same value = draw
+    if (playerHandTotalValue == compHandTotalValue) {
+      message =
+        showPlayerAndDealerHands(playerHand, computerHand) +
+        "It's a tie mannn!";
+      console.log(message);
+      return message;
+      // If player gets a bust
+    } else if (playerHandTotalValue >= 22) {
+      message =
+        showPlayerAndDealerHands(playerHand, computerHand) +
+        "It's a bust! You loseeeeee!";
+    }
+    // If com gets a bust
+    else if (compHandTotalValue >= 22) {
+      message =
+        showPlayerAndDealerHands(playerHand, computerHand) +
+        "Dealer got bust! You won mannn!";
+    }
+    //   // //   // player has higher value = player wins
+    else if (playerHandTotalValue > compHandTotalValue) {
+      message =
+        showPlayerAndDealerHands(playerHand, computerHand) +
+        "Eyyyy! You won mannnn!";
+      console.log(message);
+      return message;
+    } else {
+      message =
+        showPlayerAndDealerHands(playerHand, computerHand) +
+        "Nawwww! Dealer won mannn!";
+      console.log(message);
+      return message;
+    }
   }
-
-  var myOutputValue = "shiz niz";
-  return myOutputValue;
+  // change game mode
+  currentGameMode = gameResults;
+  return message;
 };
 
 // // ===== BLACKJACK GAME PLAYERS ======
@@ -137,116 +280,6 @@ var main = function (input) {
 // // 5. Player close to 21, but not above 21, wins hand.
 
 // // ==== GLOBAL VARIABLES ====
-// var player = 1;
-// var computer = 2;
-// // ==== HELPER FUNCTIONS ====
-
-// // ````Deck of cards````
-// var makeDeck = function () {
-//   var cardDeck = [];
-//   var suits = ["hearts", "diamonds", "clubs", "spades"];
-
-//   var suitIndex = 0;
-//   while (suitIndex < suits.length) {
-//     var currentSuit = suits[suitIndex];
-
-//     var rankCounter = 1;
-//     while (rankCounter <= 13) {
-//       var cardName = rankCounter;
-
-//       // If rank is 1 or 11 should be ace, If rank is 10, should be jack or queen or king
-//       if (cardName == 1 || cardName == 11) {
-//         cardName = "ace";
-//       } else if (cardName == 10) {
-//         cardName = "jack" || "queen" || "king";
-//       }
-
-//       // Create a new card with the current name, suit, and rank
-//       var card = {
-//         name: cardName,
-//         suit: currentSuit,
-//         rank: rankCounter,
-//       };
-
-//       // Add the new card to the deck
-//       cardDeck.push(card);
-
-//       // Increment rankCounter to iterate over the next rank
-//       rankCounter += 1;
-//     }
-
-//     // Increment the suit index to iterate over the next suit
-//     suitIndex += 1;
-//   }
-
-//   // Return the completed card deck
-//   return cardDeck;
-// };
-
-// // ```` SHUFFLE CARDS ````
-// // Get a random index ranging from 0 (inclusive) to max (exclusive).
-// var getRandomIndex = function (max) {
-//   return Math.floor(Math.random() * max);
-// };
-
-// // Shuffle the elements in the cardDeck array
-// var shuffleCards = function (cardDeck) {
-//   // Loop over the card deck array once
-//   var currentIndex = 0;
-//   while (currentIndex < cardDeck.length) {
-//     // Select a random index in the deck
-//     var randomIndex = getRandomIndex(cardDeck.length);
-//     // Select the card that corresponds to randomIndex
-//     var randomCard = cardDeck[randomIndex];
-//     // Select the card that corresponds to currentIndex
-//     var currentCard = cardDeck[currentIndex];
-//     // Swap positions of randomCard and currentCard in the deck
-//     cardDeck[currentIndex] = randomCard;
-//     cardDeck[randomIndex] = currentCard;
-//     // Increment currentIndex
-//     currentIndex = currentIndex + 1;
-//   }
-//   // Return the shuffled deck
-//   return cardDeck;
-// };
-
-// // ==== MAIN FUNCTION ====
-
-// var main = function (input) {
-//   var comCardArray = [];
-//   console.log("com card array global", comCardArray);
-//   var playerCardArray = [];
-//   console.log("player card array global", playerCardArray);
-//   var cardDeck = makeDeck();
-//   var shuffle = shuffleCards(cardDeck);
-//   var randomIndex = getRandomIndex(cardDeck.length);
-//   // Com Draw a Card
-//   var computerCard = shuffle.pop();
-//   console.log("com", computerCard);
-//   // Record Com Card
-//   comCardArray.push(computerCard);
-//   console.log("com record", comCardArray);
-//   // Player Draw a Card
-//   var playerCard = shuffle.pop();
-//   console.log("p", playerCard);
-//   // Record Player Card
-//   playerCardArray.push(playerCard);
-//   console.log("p record", playerCardArray);
-
-//   // Construct an output string to communicate which cards were drawn
-//   var myOutputValue =
-//     "Computer had " +
-//     computerCard.name +
-//     " of " +
-//     computerCard.suit +
-//     ". Player had " +
-//     playerCard.name +
-//     " of " +
-//     playerCard.suit +
-//     ". ";
-
-//   return myOutputValue;
-// };
 
 // // ==== GAME RUNNING SEQUENCE ====
 
@@ -256,4 +289,4 @@ var main = function (input) {
 // // 5. Player decides to "hit" or "stand" using submit button to submit their choice.
 // // 6. Player's cards are analysed for winning or losing conditions
 // // 7. Computer decides to hit or stand automatically based on game rules.
-// // 8. Game either ends or continues
+// // 8. Game either ends or continues.
