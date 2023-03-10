@@ -4,17 +4,22 @@
 // 3. Dealer can either "hit" or "stand"
 // 4. variable value of Ace = either 1 or 11
 
-// ==== Pseudo Code ====
+// ==== Pseudo Code part 1 ====
 // 1.define player & dealer
 // 2. create & shuffle a game deck
 // 3. draw 2 cards for player & dealer respectively
 // 4. win conditions [BLACKJACK or HIGHER HAND VALUE]
 // 5. display dealer and player hand and declare winner
 
+//  ==== Pseudo Code Part 2 ====
+// 1. players can either "hit" or "stand".
+// 2. make function for player to input "hit" or "stand"
+
 // Game States
 var gameStart = "game start";
 var drawCards = "draw cards";
 var gameResults = "game results";
+var hitOrStand = "hit or stand";
 var currentGameMode = gameStart;
 
 // Computer & Dealer Hands
@@ -105,9 +110,9 @@ var showPlayerAndDealerHands = function (playerHandArray, dealerHandArray) {
   while (index < playerHandArray.length) {
     playerMessage =
       playerMessage +
-      "- " +
+      " - " +
       playerHandArray[index].name +
-      "of" +
+      " of " +
       playerHandArray[index].suit +
       "<br>";
     index = index + 1;
@@ -118,14 +123,24 @@ var showPlayerAndDealerHands = function (playerHandArray, dealerHandArray) {
   while (index < dealerHandArray.length) {
     dealerMessage =
       dealerMessage +
-      "- " +
+      " - " +
       dealerHandArray[index].name +
-      "of" +
+      " of " +
       dealerHandArray[index].suit +
       "<br>";
     index = index + 1;
   }
   return playerMessage + "<br>" + dealerMessage;
+};
+
+// ==== show total value of player & dealer hands ====
+var showHandTotalValues = function (playerHandValue, dealerHandValue) {
+  var totalHandValueMessage =
+    "<br>Player total hand value: " +
+    playerHandValue +
+    "<br>Dealer total hand value:" +
+    dealerHandValue;
+  return totalHandValueMessage;
 };
 
 // ==== Function calclate total hand value ====
@@ -200,24 +215,36 @@ var main = function (input) {
       if (playerBlackjack && comBlackJack) {
         message =
           showPlayerAndDealerHands(playerHand, computerHand) +
-          "It's a blackjack tie mannn!";
+          "<br>" +
+          "It's a blackjack tie mannn! " +
+          "<br>" +
+          showHandTotalValues(playerHandTotalValue, compHandTotalValue);
       }
       //   // player has blackjack = player wins
       else if (playerBlackjack && !comBlackJack) {
         message =
           showPlayerAndDealerHands(playerHand, computerHand) +
-          "Eyyyy! You won mannnn!";
+          "<br>" +
+          "Eyyyy! You won mannnn! " +
+          "<br>" +
+          showHandTotalValues(playerHandTotalValue, compHandTotalValue);
       }
       //   // com has blackjack = com wins
       else {
         message =
           showPlayerAndDealerHands(playerHand, computerHand) +
-          "Nawwww! Dealer won mannn!";
+          "<br>" +
+          "Nawwww! Dealer won mannn! " +
+          "<br>" +
+          showHandTotalValues(playerHandTotalValue, compHandTotalValue);
       }
     } else {
       message =
         showPlayerAndDealerHands(playerHand, computerHand) +
-        "Nope! There is no Blackjack.";
+        "<br>" +
+        "Nope! There is no Blackjack. " +
+        "<br>" +
+        showHandTotalValues(playerHandTotalValue, compHandTotalValue);
       console.log(message);
     }
     //   // // no blackjack - game continues >>
@@ -233,39 +260,146 @@ var main = function (input) {
     if (playerHandTotalValue == compHandTotalValue) {
       message =
         showPlayerAndDealerHands(playerHand, computerHand) +
-        "It's a tie mannn!";
+        "<br>" +
+        "It's a tie mannn! " +
+        "<br>" +
+        showHandTotalValues(playerHandTotalValue, compHandTotalValue);
       console.log(message);
+      // change game mode
+      currentGameMode = hitOrStand;
+      console.log(currentGameMode, "game mode changed");
       return message;
       // If player gets a bust
     } else if (playerHandTotalValue >= 22) {
       message =
         showPlayerAndDealerHands(playerHand, computerHand) +
-        "It's a bust! You loseeeeee!";
+        "<br>" +
+        "It's a bust! You loseeeeee!" +
+        "<br>" +
+        showHandTotalValues(playerHandTotalValue, compHandTotalValue);
+      console.log(message);
+      // change game mode
+      currentGameMode = hitOrStand;
+      console.log(currentGameMode, "game mode changed");
     }
     // If com gets a bust
     else if (compHandTotalValue >= 22) {
       message =
         showPlayerAndDealerHands(playerHand, computerHand) +
-        "Dealer got bust! You won mannn!";
+        "<br>" +
+        "Dealer got bust! You won mannn!" +
+        "<br>" +
+        showHandTotalValues(playerHandTotalValue, compHandTotalValue);
+      console.log(message);
+      // change game mode
+      currentGameMode = hitOrStand;
+      console.log(currentGameMode, "game mode changed");
     }
     //   // //   // player has higher value = player wins
     else if (playerHandTotalValue > compHandTotalValue) {
       message =
         showPlayerAndDealerHands(playerHand, computerHand) +
-        "Eyyyy! You won mannnn!";
+        "<br>" +
+        "Eyyyy! You won mannnn!" +
+        "<br>" +
+        showHandTotalValues(playerHandTotalValue, compHandTotalValue);
       console.log(message);
+      console.log(message);
+      // change game mode
+      currentGameMode = hitOrStand;
+      console.log(currentGameMode, "game mode changed");
       return message;
     } else {
       message =
         showPlayerAndDealerHands(playerHand, computerHand) +
-        "Nawwww! Dealer won mannn!";
+        "<br>" +
+        "Nawwww! Dealer won mannn!" +
+        "<br>" +
+        showHandTotalValues(playerHandTotalValue, compHandTotalValue);
       console.log(message);
+      console.log(message);
+      // change game mode
+      currentGameMode = hitOrStand;
+      console.log(currentGameMode, "game mode changed");
       return message;
     }
   }
-  // change game mode
-  currentGameMode = gameResults;
-  return message;
+
+  // hit or stand mode
+  if (currentGameMode == hitOrStand) {
+    // player can hit
+    if (input == "hit") {
+      playerHand.push(gameDeck.pop());
+      message =
+        showPlayerAndDealerHands(playerHand, computerHand) +
+        "<br> you just drew a card. <b> input either 'hit' or 'stand'.";
+    }
+    // player can stand
+    else if (input == "stand") {
+      //   // // calculate sum of hand value & com
+      var playerHandTotalValue = totalHandValue(playerHand);
+      var compHandTotalValue = totalHandValue(computerHand);
+      console.log("p total", playerHandTotalValue);
+      console.log("c total", compHandTotalValue);
+
+      //   // // compare total hand valuer
+      //   // // same value = draw
+      if (playerHandTotalValue == compHandTotalValue) {
+        message =
+          showPlayerAndDealerHands(playerHand, computerHand) +
+          "<br>" +
+          "It's a tie mannn! " +
+          "<br>" +
+          showHandTotalValues(playerHandTotalValue, compHandTotalValue);
+        console.log(message);
+        return message;
+        // If player gets a bust
+      } else if (playerHandTotalValue >= 22) {
+        message =
+          showPlayerAndDealerHands(playerHand, computerHand) +
+          "<br>" +
+          "It's a bust! You loseeeeee!" +
+          "<br>" +
+          showHandTotalValues(playerHandTotalValue, compHandTotalValue);
+      }
+      // If com gets a bust
+      else if (compHandTotalValue >= 22) {
+        message =
+          showPlayerAndDealerHands(playerHand, computerHand) +
+          "<br>" +
+          "Dealer got bust! You won mannn!" +
+          "<br>" +
+          showHandTotalValues(playerHandTotalValue, compHandTotalValue);
+      }
+      //   // //   // player has higher value = player wins
+      else if (playerHandTotalValue > compHandTotalValue) {
+        message =
+          showPlayerAndDealerHands(playerHand, computerHand) +
+          "<br>" +
+          "Eyyyy! You won mannnn!" +
+          "<br>" +
+          showHandTotalValues(playerHandTotalValue, compHandTotalValue);
+        console.log(message);
+        return message;
+      } else {
+        message =
+          showPlayerAndDealerHands(playerHand, computerHand) +
+          "<br>" +
+          "Nawwww! Dealer won mannn!" +
+          "<br>" +
+          showHandTotalValues(playerHandTotalValue, compHandTotalValue);
+        console.log(message);
+        return message;
+      }
+    }
+    // Give error message, if player inputs other things, it's invalid
+    else {
+      message =
+        "Nope. You either write 'hit' or 'stand'. <br><br>" +
+        showPlayerAndDealerHands(playerHand, computerHand);
+    }
+    return message;
+  }
 };
 
 // // ===== BLACKJACK GAME PLAYERS ======
