@@ -15,6 +15,15 @@
 // 1. players can either "hit" or "stand".
 // 2. make function for player to input "hit" or "stand"
 
+// ==== Pseudo Code Part 3 ====
+// 1. Dealer only to "hit/stand" after player choose to "stand"
+// 2. If dealer hand value less than 17, dealer hits
+// 3. If dealer hand value is mmore than 17, dealer stands
+
+// ====Pseudo Code Part 4 ====
+// if totalHandValue, including ace, is less than 21, ace = 11
+// if totalHandValue, including ace, is more than 21, ace = 1
+
 // Game States
 var gameStart = "game start";
 var drawCards = "draw cards";
@@ -146,6 +155,7 @@ var showHandTotalValues = function (playerHandValue, dealerHandValue) {
 // ==== Function calclate total hand value ====
 var totalHandValue = function (handArray) {
   var totalHandValue = 0;
+  var aceCounter = 0;
   // loop through player & com hand and add values
   var index = 0;
   while (index < handArray.length) {
@@ -156,8 +166,15 @@ var totalHandValue = function (handArray) {
       currentCard.name == "king"
     ) {
       totalHandValue = totalHandValue + 10;
+    } else if (currentCard.name == "ace") {
+      totalHandValue = totalHandValue + 11;
+      aceCounter = +1;
     } else {
       totalHandValue = totalHandValue + currentCard.rank;
+    }
+    index = index + 1;
+    while (index < aceCounter) {
+      totalHandValue = totalHandValue - 10;
     }
     index = index + 1;
   }
@@ -170,6 +187,12 @@ var shuffledDeck = function () {
   var newDeck = makeDeck();
   var shuffledDeck = shuffleCards(newDeck);
   return shuffledDeck;
+};
+
+// ==== function to reset game ====
+var reset = function () {
+  currentMode = gameStart;
+  gameDeck = "empty at the start";
 };
 
 var main = function (input) {
@@ -194,16 +217,6 @@ var main = function (input) {
   }
   // 2nd click - check for blackjack
   if (currentGameMode == drawCards) {
-    // test checkforBlacjack function
-    // playerHand = [
-    //   { name: "queen", suit: "clubs", rank: 12 },
-    //   { name: "ace", suit: "diamonds", rank: 1 },
-    // ];
-    // computerHand = [
-    //   { name: "ace", suit: "clubs", rank: 1 },
-    //   { name: 10, suit: "spades", rank: 10 },
-    // ];
-
     var playerBlackjack = BlackjackCheck(playerHand);
     var comBlackJack = BlackjackCheck(computerHand);
     console.log("player got blackjack", playerBlackjack);
@@ -342,6 +355,11 @@ var main = function (input) {
       console.log("p total", playerHandTotalValue);
       console.log("c total", compHandTotalValue);
 
+      while (compHandTotalValue < 17) {
+        computerHand.push(gameDeck.pop());
+        compHandTotalValue = totalHandValue(computerHand);
+      }
+
       //   // // compare total hand valuer
       //   // // same value = draw
       if (playerHandTotalValue == compHandTotalValue) {
@@ -370,6 +388,7 @@ var main = function (input) {
           "Dealer got bust! You won mannn!" +
           "<br>" +
           showHandTotalValues(playerHandTotalValue, compHandTotalValue);
+        return message;
       }
       //   // //   // player has higher value = player wins
       else if (playerHandTotalValue > compHandTotalValue) {
@@ -398,6 +417,7 @@ var main = function (input) {
         "Nope. You either write 'hit' or 'stand'. <br><br>" +
         showPlayerAndDealerHands(playerHand, computerHand);
     }
+
     return message;
   }
 };
