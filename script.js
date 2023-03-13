@@ -24,6 +24,16 @@
 // if totalHandValue, including ace, is less than 21, ace = 11
 // if totalHandValue, including ace, is more than 21, ace = 1
 
+// ==== Toggle function for Instrunctions in index.html ====
+function toggle() {
+  var x = document.getElementById("instructions");
+  if (x.style.display === "none") {
+    x.style.display = "block";
+  } else {
+    x.style.display = "none";
+  }
+}
+
 // Game States
 var gameStart = "game start";
 var drawCards = "draw cards";
@@ -41,7 +51,7 @@ var gameDeck = "empty at the start";
 // All my cards
 var makeDeck = function () {
   var cardDeck = [];
-  var suits = ["hearts", "diamonds", "clubs", "spades"];
+  var suits = ["♥️", "♦️", "♣️", "♠️"];
   var suitIndex = 0;
   while (suitIndex < suits.length) {
     var currentSuit = suits[suitIndex];
@@ -200,14 +210,11 @@ var main = function (input) {
   var message = "";
   if (currentGameMode == gameStart) {
     gameDeck = shuffledDeck();
-    console.log(gameDeck);
 
     playerHand.push(gameDeck.pop());
     playerHand.push(gameDeck.pop());
     computerHand.push(gameDeck.pop());
     computerHand.push(gameDeck.pop());
-    console.log("P", playerHand);
-    console.log("C", computerHand);
 
     currentGameMode = drawCards;
     // Approach through little steps first e.g. shuffle first etc
@@ -219,11 +226,9 @@ var main = function (input) {
   if (currentGameMode == drawCards) {
     var playerBlackjack = BlackjackCheck(playerHand);
     var comBlackJack = BlackjackCheck(computerHand);
-    console.log("player got blackjack", playerBlackjack);
-    console.log("com got blackjack", comBlackJack);
 
-    // // player & com have blackjack = draw
-    // // boolean false add ! in front of var
+    //  player & com have blackjack = draw
+    //  boolean false add ! in front of var
     if (playerBlackjack || comBlackJack) {
       if (playerBlackjack && comBlackJack) {
         message =
@@ -233,7 +238,7 @@ var main = function (input) {
           "<br>" +
           showHandTotalValues(playerHandTotalValue, compHandTotalValue);
       }
-      //   // player has blackjack = player wins
+      // player has blackjack = player wins
       else if (playerBlackjack && !comBlackJack) {
         message =
           showPlayerAndDealerHands(playerHand, computerHand) +
@@ -242,7 +247,7 @@ var main = function (input) {
           "<br>" +
           showHandTotalValues(playerHandTotalValue, compHandTotalValue);
       }
-      //   // com has blackjack = com wins
+      // com has blackjack = com wins
       else {
         message =
           showPlayerAndDealerHands(playerHand, computerHand) +
@@ -258,82 +263,53 @@ var main = function (input) {
         "Nope! There is no Blackjack. " +
         "<br>" +
         showHandTotalValues(playerHandTotalValue, compHandTotalValue);
+      // no blackjack - game continues >>
+      currentGameMode = gameResults;
       console.log(message);
     }
-    //   // // no blackjack - game continues >>
 
-    //   // // calculate sum of hand value & com
+    //  calculate sum of hand value & com
     var playerHandTotalValue = totalHandValue(playerHand);
     var compHandTotalValue = totalHandValue(computerHand);
-    console.log("p total", playerHandTotalValue);
-    console.log("c total", compHandTotalValue);
 
-    //   // // compare total hand valuer
-    //   // // same value = draw
+    //  compare total hand valuer
+    //   same value = draw
     if (playerHandTotalValue == compHandTotalValue) {
       message =
         showPlayerAndDealerHands(playerHand, computerHand) +
         "<br>" +
-        "It's a tie mannn! " +
+        "It's a tie! Input either 'h' or 's'. " +
         "<br>" +
         showHandTotalValues(playerHandTotalValue, compHandTotalValue);
       console.log(message);
       // change game mode
       currentGameMode = hitOrStand;
-      console.log(currentGameMode, "game mode changed");
       return message;
-      // If player gets a bust
-    } else if (playerHandTotalValue >= 22) {
-      message =
-        showPlayerAndDealerHands(playerHand, computerHand) +
-        "<br>" +
-        "It's a bust! You loseeeeee!" +
-        "<br>" +
-        showHandTotalValues(playerHandTotalValue, compHandTotalValue);
-      console.log(message);
-      // change game mode
-      currentGameMode = hitOrStand;
-      console.log(currentGameMode, "game mode changed");
     }
-    // If com gets a bust
-    else if (compHandTotalValue >= 22) {
-      message =
-        showPlayerAndDealerHands(playerHand, computerHand) +
-        "<br>" +
-        "Dealer got bust! You won mannn!" +
-        "<br>" +
-        showHandTotalValues(playerHandTotalValue, compHandTotalValue);
-      console.log(message);
-      // change game mode
-      currentGameMode = hitOrStand;
-      console.log(currentGameMode, "game mode changed");
-    }
-    //   // //   // player has higher value = player wins
+
+    // player has higher value = player wins
     else if (playerHandTotalValue > compHandTotalValue) {
       message =
         showPlayerAndDealerHands(playerHand, computerHand) +
         "<br>" +
-        "Eyyyy! You won mannnn!" +
+        "Eyyyy! You got higher values! Input either 'h' or 's'." +
         "<br>" +
         showHandTotalValues(playerHandTotalValue, compHandTotalValue);
       console.log(message);
-      console.log(message);
       // change game mode
       currentGameMode = hitOrStand;
-      console.log(currentGameMode, "game mode changed");
       return message;
     } else {
       message =
         showPlayerAndDealerHands(playerHand, computerHand) +
         "<br>" +
-        "Nawwww! Dealer won mannn!" +
+        "Nawwww! Dealer has higher values! Input either 'h' or 's'." +
         "<br>" +
         showHandTotalValues(playerHandTotalValue, compHandTotalValue);
       console.log(message);
-      console.log(message);
       // change game mode
       currentGameMode = hitOrStand;
-      console.log(currentGameMode, "game mode changed");
+
       return message;
     }
   }
@@ -341,15 +317,15 @@ var main = function (input) {
   // hit or stand mode
   if (currentGameMode == hitOrStand) {
     // player can hit
-    if (input == "hit") {
+    if (input == "h") {
       playerHand.push(gameDeck.pop());
       message =
         showPlayerAndDealerHands(playerHand, computerHand) +
-        "<br> you just drew a card. <b> input either 'hit' or 'stand'.";
+        "<br> you just drew a card. <b> input either 'h' or 's'.";
     }
     // player can stand
-    else if (input == "stand") {
-      //   // // calculate sum of hand value & com
+    else if (input == "s") {
+      // calculate sum of hand value & com
       var playerHandTotalValue = totalHandValue(playerHand);
       var compHandTotalValue = totalHandValue(computerHand);
       console.log("p total", playerHandTotalValue);
@@ -360,8 +336,8 @@ var main = function (input) {
         compHandTotalValue = totalHandValue(computerHand);
       }
 
-      //   // // compare total hand valuer
-      //   // // same value = draw
+      //  compare total hand valuer
+      //  same value = draw
       if (playerHandTotalValue == compHandTotalValue) {
         message =
           showPlayerAndDealerHands(playerHand, computerHand) +
@@ -390,7 +366,7 @@ var main = function (input) {
           showHandTotalValues(playerHandTotalValue, compHandTotalValue);
         return message;
       }
-      //   // //   // player has higher value = player wins
+      //  player has higher value = player wins
       else if (playerHandTotalValue > compHandTotalValue) {
         message =
           showPlayerAndDealerHands(playerHand, computerHand) +
@@ -414,7 +390,7 @@ var main = function (input) {
     // Give error message, if player inputs other things, it's invalid
     else {
       message =
-        "Nope. You either write 'hit' or 'stand'. <br><br>" +
+        "Nope. You either write 'h' or 's'. <br><br>" +
         showPlayerAndDealerHands(playerHand, computerHand);
     }
 
@@ -432,8 +408,6 @@ var main = function (input) {
 // // 3. Computer hits if hand is below 17.
 // // 4. Player's score = total of their card ranks. Jacks/Queen/Kings = 10. Aces = 1 or 11
 // // 5. Player close to 21, but not above 21, wins hand.
-
-// // ==== GLOBAL VARIABLES ====
 
 // // ==== GAME RUNNING SEQUENCE ====
 
