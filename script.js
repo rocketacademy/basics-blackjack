@@ -1,14 +1,39 @@
 // Initialize global variables
+const WINNING_SCORE = 21;
+const PROGRAM_STATE_INITIAL_ROUND = "PROGRAM_STATE_INITIAL_ROUND";
+const PROGRAM_STATE_CHOOSE_HIT_OR_STAND = "PROGRAM_STATE_CHOOSE_HIT_OR_STAND";
 let isStartOfGame = true;
 let playerCards = [];
 let pcCards = [];
 let playerScore = 0;
 let pcScore = 0;
-const winningScore = 21;
+let program_state = PROGRAM_STATE_INITIAL_ROUND;
+let hasPlayerBusted = false;
+let hasPcBusted = false;
 
-// Helper functions
+// --- Helper functions ---
 
-// Make an ordinary deck
+// Function to initialize game at the start
+const initializeGame = function (shuffledBlackjackDeck) {
+  // Each user gets 2 cards only at the start
+  if (isStartOfGame) {
+    playerCards = drawCards(2, playerCards, shuffledBlackjackDeck);
+    pcCards = drawCards(2, pcCards, shuffledBlackjackDeck);
+    isStartOfGame = false;
+  }
+
+  // Calculate each user's scores
+  const playerCardValues = getCardValues(playerCards);
+  const pcCardValues = getCardValues(pcCards);
+
+  playerScore = calculateScores(playerCardValues);
+  pcScore = calculateScores(pcCardValues);
+
+  return `Player has: ${playerCards[0].name} of ${playerCards[0].suit} and ${playerCards[1].name} of ${playerCards[1].suit} with sum ${playerScore}. <br>
+Computer has: ${pcCards[0].name} of ${pcCards[0].suit} and ${pcCards[1].name} of ${pcCards[1].suit} with sum ${pcScore}. <br>`;
+};
+
+// Function to make an ordinary deck
 const createDeck = function () {
   const deck = [];
   const suits = ["hearts", "diamonds", "clubs", "spades"];
@@ -36,7 +61,7 @@ const createDeck = function () {
   return deck;
 };
 
-// Shuffle the ordinary deck
+// Function to shuffle the ordinary deck
 const getRandomNumber = function (max) {
   return Math.floor(Math.random() * max);
 };
@@ -52,7 +77,7 @@ const shuffleDeck = function (deck) {
   return deck;
 };
 
-// Update cards ranks of face cards according to Blackjack's rules
+// Function to update cards ranks of face cards according to Blackjack's rules
 const updateCardValues = function (deckShuffled) {
   for (let i = 0; i < deckShuffled.length; i++)
     if (
@@ -67,19 +92,15 @@ const updateCardValues = function (deckShuffled) {
   return deckShuffled;
 };
 
-// Draw multiple random cards
-const drawMultipleCards = function (
-  cardCount,
-  userCards,
-  blackjackDeckShuffled
-) {
+// Function to draw 1 or more random cards
+const drawCards = function (cardCount, userCards, blackjackDeckShuffled) {
   for (let i = 0; i < cardCount; i++) {
     userCards.push(blackjackDeckShuffled.pop());
   }
   return userCards;
 };
 
-// Access cards ranks and store them in an array to calculate each user's scores
+// Function to access cards ranks and store them in an array to calculate each user's scores
 const getCardValues = function (userCard) {
   const cardRanks = [];
   for (let i = 0; i < userCard.length; i++) {
@@ -88,7 +109,7 @@ const getCardValues = function (userCard) {
   return cardRanks;
 };
 
-// Calculate each user's scores
+// Function to calculate each user's scores
 const calculateScores = function (userCardValues) {
   let sum = 0;
   for (let i = 0; i < userCardValues.length; i++) {
@@ -97,69 +118,116 @@ const calculateScores = function (userCardValues) {
   return sum;
 };
 
-// Compare scores
-const compareScores = function (playerScore, pcScore) {
+// Function to hit 1 more card
+const hitMoreCard = function (shuffledBlackjackDeck) {
+  // Push 1 more card to and update the cards array
+  // Reassign with '=' instead of += or another push below as drawCards function already updates the ENTIRE cards array with push
+  playerCards = drawCards(1, playerCards, shuffledBlackjackDeck);
+
+  const playerCardValues = getCardValues(playerCards);
+
+  // Update the score with value of 1 more card hit
+  // Reassign with '=' instead of += below as calculateScores function already updates the sum with ALL the card values
+  playerScore = calculateScores(playerCardValues);
+
+  // Update the output message of 1 more card
+  return `Player has: ${playerCards[0].name} of ${playerCards[0].suit}, ${playerCards[1].name} of ${playerCards[1].suit}, and ${playerCards[2].name} of ${playerCards[2].suit} with sum ${playerScore}. <br>
+Computer has: ${pcCards[0].name} of ${pcCards[0].suit} and ${pcCards[1].name} of ${pcCards[1].suit} with sum ${pcScore}. <br>`;
+};
+
+// Function to detect blackjack
+const detectBlackjack = function (playerScore, pcScore) {
   let isThereBlackjack = false;
-  let result = "";
-  // If there is blackjack
-  if (playerScore === winningScore && pcScore === winningScore) {
+  if (
+    (playerScore === WINNING_SCORE && pcScore === WINNING_SCORE) ||
+    pcScore === WINNING_SCORE ||
+    playerScore === WINNING_SCORE
+  ) {
     isThereBlackjack = true;
-    result = `Both player and computer have a blackjack. It's miraculously tied!!!`;
-  } else if (pcScore === winningScore) {
-    isThereBlackjack = true;
-    result = `Computer has a blackjack. Computer wins!!!`;
-  } else if (playerScore === winningScore) {
-    isThereBlackjack = true;
-    result = `Player has a blackjack. Player wins!!!`;
   }
+  return isThereBlackjack;
+};
+
+// Function to compare scores
+const compareScores = function (playerScore, pcScore) {
+  let didAnyoneHasBlackjack = detectBlackjack(playerScore, pcScore);
+  let result = "";
+
+  // If there is blackjack
+  if (didAnyoneHasBlackjack) {
+    if (playerScore === WINNING_SCORE && pcScore === WINNING_SCORE) {
+      result = `Both player and computer have a blackjack. It's miraculously a draw!!!`;
+    } else if (pcScore === WINNING_SCORE) {
+      result = `Computer has a blackjack. Computer wins!!!`;
+    } else if (playerScore === WINNING_SCORE) {
+      result = `Player has a blackjack. Player wins!!!`;
+    }
+  }
+
   // If there is no blackjack
-  else if (!isThereBlackjack) {
-    if (playerScore > pcScore) {
+  else if (!didAnyoneHasBlackjack) {
+    // If player has busted
+    if (playerScore > WINNING_SCORE) {
+      hasPlayerBusted = true;
+    }
+    // If pc has busted
+    if (pcScore > WINNING_SCORE) {
+      hasPcBusted = true;
+    }
+    // If both player and pc have busted
+    if (hasPlayerBusted && hasPcBusted) {
+      result = `Both player and computer have busted. It's miraculously a draw!!!`;
+    }
+    // If only player has busted
+    else if (hasPlayerBusted && !hasPcBusted) {
+      result = `Player has busted and lost. Computer wins!!!`;
+    }
+    // If only pc has busted
+    else if (hasPcBusted && !hasPlayerBusted) {
+      result = `Computer has busted and lost. Player wins!!!`;
+    }
+    // Remaining conditions if there is no blackjack and no one has busted
+    else if (playerScore > pcScore) {
       result = `Player's sum of card values is closer to 21. Player wins!!!`;
     } else if (playerScore < pcScore) {
       result = `Computer's sum of card values is closer to 21. Computer wins!!!`;
     } else if (playerScore === pcScore) {
-      result = `Both player and computer have the same sum of card values. It's miraculously tied!!!`;
+      result = `Both player and computer have the same sum of card values. It's miraculously a draw!!!`;
     }
   }
   return result;
 };
 
-// Main function
+// --- Main function ---
 const main = function (input) {
   // Create blackjackdeck
   const originalDeck = createDeck();
   const shuffledDeck = shuffleDeck(originalDeck);
   const shuffledBlackjackDeck = updateCardValues(shuffledDeck);
 
-  // Each user gets 2 cards only at the start
-  if (isStartOfGame) {
-    playerCards = drawMultipleCards(2, playerCards, shuffledBlackjackDeck);
-    pcCards = drawMultipleCards(2, pcCards, shuffledBlackjackDeck);
-    isStartOfGame = false;
+  let myOutputValue = "";
+
+  if (program_state === PROGRAM_STATE_INITIAL_ROUND) {
+    myOutputValue = initializeGame(shuffledBlackjackDeck);
+    program_state = PROGRAM_STATE_CHOOSE_HIT_OR_STAND;
+  } else if (program_state === PROGRAM_STATE_CHOOSE_HIT_OR_STAND) {
+    if (input === "h") {
+      myOutputValue = hitMoreCard(shuffledBlackjackDeck);
+    } else if (input === "s") {
+      myOutputValue;
+    }
   }
 
-  // Calculate each user's scores
-  const playerCardValues = getCardValues(playerCards);
-  const pcCardValues = getCardValues(pcCards);
-  console.log("PlayerCardRanks: " + playerCardValues);
-  console.log("PcCardRanks: " + pcCardValues);
-
-  playerScore = calculateScores(playerCardValues);
-  pcScore = calculateScores(pcCardValues);
-  console.log("playerScore: " + playerScore);
-  console.log("pcScore: " + pcScore);
-
-  // Update output message
+  // Update output message with final result
   const resultMessage = compareScores(playerScore, pcScore);
 
-  let myOutputValue = `Player has: ${playerCards[0].name} of ${playerCards[0].suit} and ${playerCards[1].name} of ${playerCards[1].suit} with sum ${playerScore}. <br>
-Computer has: ${pcCards[0].name} of ${pcCards[0].suit} and ${pcCards[1].name} of ${pcCards[1].suit} with sum ${pcScore}. <br>
-${resultMessage} <br>
-Please enter "h" to hit or "s" to stand, then press Submit.`;
-  return myOutputValue;
+  console.log(playerScore);
+
+  return `${myOutputValue} <br> Please enter "h" to hit or "s" to stand, then press Submit. <br> ${resultMessage}`;
 };
 
 // Issues:
 // Ace being rank 1 upon busting not accounted for yet
 // 2 aces totalling 22 may happen
+// resultMessage appears in the initial round even if there is no blackjack
+// `Please enter "h" to hit or "s" to stand, then press Submit.` appears every single round even after the game ends
