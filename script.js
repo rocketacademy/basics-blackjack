@@ -52,6 +52,10 @@
 
 */
 
+// ==== GLOBAL VARIALBLES ==== //
+let cardArray = [];
+
+// ==== MAIN FUNCTION ==== //
 let main = function (input) {
   let output = drawCard();
   return output;
@@ -62,7 +66,6 @@ let main = function (input) {
 // card deck
 let makeDeck = function () {
   let suits = [`Spades`, `Hearts`, `Clubs`, `Diamonds`];
-  let cardArray = [];
 
   for (let i = 0; i < suits.length; i += 1) {
     for (let j = 1; j <= 13; j += 1) {
@@ -84,7 +87,6 @@ let makeDeck = function () {
       cardArray.push(cardObject);
     }
   }
-  console.log(cardArray);
   return cardArray;
 };
 
@@ -102,10 +104,14 @@ let shuffledDeck = function (deck) {
 };
 
 // draw 2 cards
-
 let drawCard = function () {
   let drawCard = shuffledDeck(makeDeck());
   let chosenCardOne = drawCard.pop();
   let chosenCardTwo = drawCard.pop();
+  console.log(drawCard);
+  cardArray = [];
   return `Player Hand:<br /><br />${chosenCardOne.name} of ${chosenCardOne.suit}<br />${chosenCardTwo.name} of ${chosenCardTwo.suit}`;
 };
+
+// calculate hand value
+let totalCardValue = function (cardArray) {};
