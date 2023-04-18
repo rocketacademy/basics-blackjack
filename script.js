@@ -19,7 +19,6 @@
 1.1 create a deck
 1.2 jacks, queen and kings to have a value of 10
 1.3 ace to have a value of 1 or 11 
-1.4 if current player score is less than 10, ace will be 11 else ace is 1
 
 2.1 create a shuffled deck
 
@@ -27,8 +26,9 @@
 
 4.1 create player's choice function
 4.2 if player choose "hit" draw another card from shuffled deck
-4.3 total value of player's score changes according to "hit" result
-4.4 else player choose to "stand" and the current value is the final score
+4.3 if current player score is less than 10, ace will be 11 else ace is 1
+4.4 total value of player's score changes according to "hit" result
+4.5 else player choose to "stand" and the current value is the final score
 
 5.1 create a win/lose function
 5.2 if player's score is more than 21, player lose
@@ -45,13 +45,45 @@
 8.1 create a random choice function for computer
 8.2 generate random selection between "hit" or "stand"
 8.3 if current computer score is less than 17 computer "hit"
+4.3 if current computer score is less than 10, ace will be 11 else ace is 1
 8.4 else randomize selection
 8.5 if "stand" is generated, current value is computer's final score
 
 
 */
 
-var main = function (input) {
-  var myOutputValue = "hello world";
-  return myOutputValue;
+let main = function (input) {
+  let output = makeDeck();
+  console.log(output);
+  return output;
+};
+
+// ==== HELPER FUNCTIONS ==== //
+
+let makeDeck = function () {
+  let suits = [`Spades`, `Hearts`, `Clubs`, `Diamonds`];
+  let cardArray = [];
+
+  for (let i = 0; i < suits.length; i += 1) {
+    for (let j = 1; j <= 13; j += 1) {
+      let cardObject = {
+        name: j,
+        value: j,
+        suit: suits[i],
+      };
+      if (j == 1) {
+        cardObject.name = `Ace`;
+      } else if (j == 11) {
+        cardObject.name = `Jack`;
+      } else if (j == 12) {
+        cardObject.name = `Queen`;
+      } else if (j == 13) {
+        cardObject.name = `King`;
+      }
+
+      cardArray.push(cardObject);
+    }
+  }
+  console.log(cardArray);
+  return cardArray;
 };
