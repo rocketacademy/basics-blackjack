@@ -53,13 +53,13 @@
 */
 
 let main = function (input) {
-  let output = makeDeck();
-  console.log(output);
+  let output = drawCard();
   return output;
 };
 
 // ==== HELPER FUNCTIONS ==== //
 
+// card deck
 let makeDeck = function () {
   let suits = [`Spades`, `Hearts`, `Clubs`, `Diamonds`];
   let cardArray = [];
@@ -86,4 +86,26 @@ let makeDeck = function () {
   }
   console.log(cardArray);
   return cardArray;
+};
+
+// shuffled card deck
+let shuffledDeck = function (deck) {
+  let deckCopy = [...deck];
+  for (let i = 0; i < deckCopy.length; i += 1) {
+    let randomIndex = Math.floor(Math.random() * deckCopy.length);
+    let currentCard = deckCopy[i];
+    let randomCard = deckCopy[randomIndex];
+    deckCopy[i] = randomCard;
+    deckCopy[randomIndex] = currentCard;
+  }
+  return deckCopy;
+};
+
+// draw 2 cards
+
+let drawCard = function () {
+  let drawCard = shuffledDeck(makeDeck());
+  let chosenCardOne = drawCard.pop();
+  let chosenCardTwo = drawCard.pop();
+  return `Player Hand:<br /><br />${chosenCardOne.name} of ${chosenCardOne.suit}<br />${chosenCardTwo.name} of ${chosenCardTwo.suit}`;
 };
