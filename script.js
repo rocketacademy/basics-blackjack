@@ -252,6 +252,7 @@ let playerChoice = function (playerInput) {
       `<br /><br />Do you want to hit or stand?`
     );
   }
+  console.log(output);
   return output;
 };
 
@@ -263,6 +264,11 @@ let dealerChoice = function () {
     let chosenNewCardOne = dealerDrawOneCard.pop();
 
     dealerHand.push(chosenNewCardOne);
+
+    // calculate new card value
+    let newTotalPlayerHandValue = calCardValue(dealerHand);
+
+    dealerValue.push(newTotalPlayerHandValue);
   }
   return output;
 };
@@ -279,10 +285,4 @@ let outputBothPlayersHand = function (playerHand, dealerHand) {
     dealerMessage = `${dealerMessage}- ${dealerHand[i].name} of ${dealerHand[i].suit}<br />`;
   }
   return `${playerMessage} <br />Player total hand value: ${playerValue}<br /><br /> ${dealerMessage} <br />Dealer total hand value: ${dealerValue}`;
-};
-
-// set displays for player and dealer value output
-let outputBothPlayersValue = function (playerValue, dealerValue) {
-  let bothPlayersValueMessage = `<br />Player total hand value: ${playerValue} <br />Dealer total hand value: ${dealerValue}`;
-  return bothPlayersValueMessage;
 };
