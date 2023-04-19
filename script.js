@@ -24,10 +24,10 @@
 
 3.1 output 2 cards from shuffled deck to user (done)
 
-4.1 create player's choice function
-4.2 if player choose "hit" draw another card from shuffled deck
+4.1 create player's choice function (done)
+4.2 if player choose "hit" draw another card from shuffled deck (done)
 4.3 if current player score is less than 10, ace will be 11 else ace is 1
-4.4 total value of player's score changes according to "hit" result
+4.4 total value of player's score changes according to "hit" result 
 4.5 else player choose to "stand" and the current value is the final score
 
 5.1 create a win/lose function
@@ -256,7 +256,6 @@ let playerChoice = function (playerInput) {
 };
 
 // dealer's choice
-
 let dealerChoice = function () {
   let output = ``;
   if (dealerValue < 17) {
@@ -268,7 +267,7 @@ let dealerChoice = function () {
   return output;
 };
 
-// set displays for player and dealer output
+// set displays for player and dealer hand output
 let outputBothPlayersHand = function (playerHand, dealerHand) {
   let playerMessage = `Player Hand:<br />`;
   for (let i = 0; i < playerHand.length; i += 1) {
@@ -279,5 +278,11 @@ let outputBothPlayersHand = function (playerHand, dealerHand) {
   for (let i = 0; i < dealerHand.length; i += 1) {
     dealerMessage = `${dealerMessage}- ${dealerHand[i].name} of ${dealerHand[i].suit}<br />`;
   }
-  return `${playerMessage} <br /> ${dealerMessage} `;
+  return `${playerMessage} <br />Player total hand value: ${playerValue}<br /><br /> ${dealerMessage} <br />Dealer total hand value: ${dealerValue}`;
+};
+
+// set displays for player and dealer value output
+let outputBothPlayersValue = function (playerValue, dealerValue) {
+  let bothPlayersValueMessage = `<br />Player total hand value: ${playerValue} <br />Dealer total hand value: ${dealerValue}`;
+  return bothPlayersValueMessage;
 };
