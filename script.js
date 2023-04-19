@@ -16,13 +16,13 @@
 
 // Create a game that player is playing on their own
 
-1.1 create a deck
-1.2 jacks, queen and kings to have a value of 10
+1.1 create a deck (done)
+1.2 jacks, queen and kings to have a value of 10 (done)
 1.3 ace to have a value of 1 or 11 
 
-2.1 create a shuffled deck
+2.1 create a shuffled deck (done)
 
-3.1 output 2 cards from shuffled deck to user
+3.1 output 2 cards from shuffled deck to user (done)
 
 4.1 create player's choice function
 4.2 if player choose "hit" draw another card from shuffled deck
@@ -33,6 +33,7 @@
 5.1 create a win/lose function
 5.2 if player's score is more than 21, player lose
 5.3 else player wins
+5.4 if player scores blackjack, player wins
 
 // Create a game player is playing against computer
 
@@ -55,10 +56,19 @@
 // ==== GLOBAL VARIALBLES ==== //
 let cardArray = [];
 let playerHand = [];
+let dealerHand = [];
+
+let GAME_STATE_CARD_GENERATE = `generate two random cards`;
+let gameState = GAME_STATE_CARD_GENERATE;
 
 // ==== MAIN FUNCTION ==== //
 let main = function (input) {
-  let output = drawCard();
+  gameState = GAME_STATE_CARD_GENERATE;
+  if (gameState == GAME_STATE_CARD_GENERATE) {
+    let drawTwoCards = drawCard();
+    return drawTwoCards;
+  }
+
   return output;
 };
 
@@ -107,16 +117,24 @@ let shuffledDeck = function (cardArray) {
 // draw 2 cards
 let drawCard = function () {
   let drawCard = shuffledDeck(makeDeck());
+
+  // player hand cards
   let chosenCardOne = drawCard.pop();
   let chosenCardTwo = drawCard.pop();
   playerHand.push(chosenCardOne, chosenCardTwo);
   let totalPlayerHandValue = calCardValue(playerHand);
-  console.log(cardArray);
+
+  // dealer hand cards
+  let chosenCardThree = drawCard.pop();
+  let chosenCardFour = drawCard.pop();
+  dealerHand.push(chosenCardThree, chosenCardFour);
+  let totalDealerHandValue = calCardValue(dealerHand);
+
   cardArray = [];
   playerHand = [];
-  console.log(cardArray);
+  dealerHand = [];
 
-  return `Player Hand:<br /><br />${chosenCardOne.name} of ${chosenCardOne.suit}<br />${chosenCardTwo.name} of ${chosenCardTwo.suit}<br /><br />Total value: ${totalPlayerHandValue}`;
+  return `Player Hand:<br />${chosenCardOne.name} of ${chosenCardOne.suit}<br />${chosenCardTwo.name} of ${chosenCardTwo.suit}<br /><br />Current rank: ${totalPlayerHandValue}<br /><br />Dealer Hand:<br />${chosenCardThree.name} of ${chosenCardThree.suit}<br />${chosenCardFour.name} of ${chosenCardFour.suit}<br /><br />Current rank: ${totalDealerHandValue}`;
 };
 
 // calculate hand value
@@ -136,3 +154,5 @@ let calCardValue = function (handArray) {
   }
   return totalValue;
 };
+
+// game logic
