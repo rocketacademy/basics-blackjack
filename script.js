@@ -54,6 +54,7 @@
 
 // ==== GLOBAL VARIALBLES ==== //
 let cardArray = [];
+let playerHand = [];
 
 // ==== MAIN FUNCTION ==== //
 let main = function (input) {
@@ -91,8 +92,8 @@ let makeDeck = function () {
 };
 
 // shuffled card deck
-let shuffledDeck = function (deck) {
-  let deckCopy = [...deck];
+let shuffledDeck = function (cardArray) {
+  let deckCopy = [...cardArray];
   for (let i = 0; i < deckCopy.length; i += 1) {
     let randomIndex = Math.floor(Math.random() * deckCopy.length);
     let currentCard = deckCopy[i];
@@ -108,10 +109,30 @@ let drawCard = function () {
   let drawCard = shuffledDeck(makeDeck());
   let chosenCardOne = drawCard.pop();
   let chosenCardTwo = drawCard.pop();
-  console.log(drawCard);
+  playerHand.push(chosenCardOne, chosenCardTwo);
+  let totalPlayerHandValue = calCardValue(playerHand);
+  console.log(cardArray);
   cardArray = [];
-  return `Player Hand:<br /><br />${chosenCardOne.name} of ${chosenCardOne.suit}<br />${chosenCardTwo.name} of ${chosenCardTwo.suit}`;
+  playerHand = [];
+  console.log(cardArray);
+
+  return `Player Hand:<br /><br />${chosenCardOne.name} of ${chosenCardOne.suit}<br />${chosenCardTwo.name} of ${chosenCardTwo.suit}<br /><br />Total value: ${totalPlayerHandValue}`;
 };
 
 // calculate hand value
-let totalCardValue = function (cardArray) {};
+let calCardValue = function (handArray) {
+  let totalValue = 0;
+  for (let i = 0; i < handArray.length; i += 1) {
+    let currentCard = handArray[i];
+    if (
+      currentCard.name == `Jack` ||
+      currentCard.name == `Queen` ||
+      currentCard.name == `King`
+    ) {
+      totalValue = totalValue + 10;
+    } else {
+      totalValue = totalValue + currentCard.value;
+    }
+  }
+  return totalValue;
+};
