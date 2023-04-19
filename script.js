@@ -37,7 +37,7 @@
 
 // Create a game player is playing against computer
 
-6.1 computer gets 2 cards from shuffled deck
+6.1 computer gets 2 cards from shuffled deck (done)
 
 7.1 edit win/lose function to also include computer's scores
 7.2 if computer's score is more than 21, computer lose
@@ -57,16 +57,38 @@
 let cardArray = [];
 let playerHand = [];
 let dealerHand = [];
+let playerValue = [];
+let dealerValue = [];
 
+let GAME_STATE_STARTING_POINT = `game starting`;
+let GAME_STATE_PLAYER_CHOOSE = `player choose to hit or stand`;
 let GAME_STATE_CARD_GENERATE = `generate two random cards`;
-let gameState = GAME_STATE_CARD_GENERATE;
+let gameState = GAME_STATE_STARTING_POINT;
 
 // ==== MAIN FUNCTION ==== //
 let main = function (input) {
-  gameState = GAME_STATE_CARD_GENERATE;
+  let output = ``;
+
+  if (gameState == GAME_STATE_STARTING_POINT) {
+    gameState = GAME_STATE_CARD_GENERATE;
+    return `Welcome! Let's play a game of Blackjack.<br /><br />Click submit to deal the cards. Let's see what you got!`;
+  }
+  // generate two cards for player and dealer
   if (gameState == GAME_STATE_CARD_GENERATE) {
     let drawTwoCards = drawCard();
-    return drawTwoCards;
+    if (playerValue == 21 || dealerValue == 21) {
+      gameState = GAME_STATE_STARTING_POINT;
+      output = gameReset();
+      return output + drawTwoCards;
+    } else {
+      //switch game mode
+      gameState = GAME_STATE_PLAYER_CHOOSE;
+      return drawTwoCards;
+    }
+  }
+  // player choose to hit or stand
+  if (gameState == GAME_STATE_PLAYER_CHOOSE) {
+    return `Do you want to hit or stand?`;
   }
 
   return output;
@@ -123,18 +145,29 @@ let drawCard = function () {
   let chosenCardTwo = drawCard.pop();
   playerHand.push(chosenCardOne, chosenCardTwo);
   let totalPlayerHandValue = calCardValue(playerHand);
+  playerValue.push(totalPlayerHandValue);
 
   // dealer hand cards
   let chosenCardThree = drawCard.pop();
   let chosenCardFour = drawCard.pop();
   dealerHand.push(chosenCardThree, chosenCardFour);
   let totalDealerHandValue = calCardValue(dealerHand);
+  dealerValue.push(totalDealerHandValue);
+
+  // console.log(`player hand:`, playerHand);
+  // console.log(`dealer hand:`, dealerHand);
 
   cardArray = [];
-  playerHand = [];
-  dealerHand = [];
 
-  return `Player Hand:<br />${chosenCardOne.name} of ${chosenCardOne.suit}<br />${chosenCardTwo.name} of ${chosenCardTwo.suit}<br /><br />Current rank: ${totalPlayerHandValue}<br /><br />Dealer Hand:<br />${chosenCardThree.name} of ${chosenCardThree.suit}<br />${chosenCardFour.name} of ${chosenCardFour.suit}<br /><br />Current rank: ${totalDealerHandValue}`;
+  if (playerValue == 21) {
+    return `You win! You got blackjack.<br /><br />Player Hand:<br />${chosenCardOne.name} of ${chosenCardOne.suit}<br />${chosenCardTwo.name} of ${chosenCardTwo.suit}<br />Your hand totals to ${totalPlayerHandValue}.<br /><br />Click submit to restart.`;
+  } else if (dealerValue == 21) {
+    return `You lost! Dealer got blackjack!<br /><br />Dealer Hand:<br />${chosenCardThree.name} of ${chosenCardThree.suit}<br />${chosenCardFour.name} of ${chosenCardFour.suit}<br />Dealer's hand totals to ${totalDealerHandValue}.<br /><br />Click submit to restart.`;
+  } else if (dealerValue == 21 && playerValue == 21) {
+    return `It's a tie! Both of you got blackjack!<br /><br />Player Hand:<br />${chosenCardOne.name} of ${chosenCardOne.suit}<br />${chosenCardTwo.name} of ${chosenCardTwo.suit}<br /><br />Dealer Hand:<br />${chosenCardThree.name} of ${chosenCardThree.suit}<br />${chosenCardFour.name} of ${chosenCardFour.suit}<br /><br />Both your hand totals to ${totalDealerHandValue}.<br /><br />Click submit to restart.`;
+  } else {
+    return `Player Hand:<br />${chosenCardOne.name} of ${chosenCardOne.suit}<br />${chosenCardTwo.name} of ${chosenCardTwo.suit}<br />Your hand totals to ${totalPlayerHandValue}.<br /><br />Dealer Hand:<br />${chosenCardThree.name} of ${chosenCardThree.suit}<br />${chosenCardFour.name} of ${chosenCardFour.suit}<br />Dealer's hand totals to ${totalDealerHandValue}.`;
+  }
 };
 
 // calculate hand value
@@ -148,6 +181,8 @@ let calCardValue = function (handArray) {
       currentCard.name == `King`
     ) {
       totalValue = totalValue + 10;
+    } else if (currentCard.name == `Ace`) {
+      totalValue = totalValue + 11;
     } else {
       totalValue = totalValue + currentCard.value;
     }
@@ -155,4 +190,26 @@ let calCardValue = function (handArray) {
   return totalValue;
 };
 
-// game logic
+// game logic //
+// players choice function
+
+let playerChoice = function (playerInput) {
+  if (playerInput == `hit`) {
+    gameState = GAME_STATE_CARD_GENERATE;
+    console.log(`gamestate:`, gameState);
+  }
+  if (playerInput == `stand`) {
+    output = `You chose to stand.`;
+  }
+  return output;
+};
+
+let gameReset = function () {
+  let output = ``;
+  gameState = GAME_STATE_STARTING_POINT;
+  playerHand = [];
+  dealerHand = [];
+  playerValue = [];
+  dealerValue = [];
+  return output;
+};
