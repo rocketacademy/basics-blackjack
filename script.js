@@ -93,8 +93,9 @@ let main = function (input) {
   // third click
   // player choose to hit or stand
   if (gameState == GAME_STATE_PLAYER_CHOOSE) {
+    let dealerRandomChoice = dealerChoice();
     output = playerChoice(input);
-    return output;
+    return output + dealerRandomChoice;
   }
 
   return output;
@@ -160,11 +161,9 @@ let drawCard = function () {
   let totalDealerHandValue = calCardValue(dealerHand);
   dealerValue.push(totalDealerHandValue);
 
-  // console.log(`player hand:`, playerHand);
-  // console.log(`dealer hand:`, dealerHand);
-
   cardArray = [];
 
+  // if player/dealer gets blackjack
   if (playerValue == 21) {
     return (
       `You win! You got blackjack.<br /><br />` +
@@ -252,6 +251,19 @@ let playerChoice = function (playerInput) {
       outputBothPlayersHand(playerHand, dealerHand) +
       `<br /><br />Do you want to hit or stand?`
     );
+  }
+  return output;
+};
+
+// dealer's choice
+
+let dealerChoice = function () {
+  let output = ``;
+  if (dealerValue < 17) {
+    let dealerDrawOneCard = shuffledDeck(makeDeck());
+    let chosenNewCardOne = dealerDrawOneCard.pop();
+
+    dealerHand.push(chosenNewCardOne);
   }
   return output;
 };
