@@ -1,3 +1,4 @@
+// --- Base + Comfortable ---
 // Initialize global variables
 const WINNING_SCORE = 21;
 const PROGRAM_STATE_INITIAL_ROUND = "PROGRAM_STATE_INITIAL_ROUND";
@@ -22,13 +23,13 @@ const createDeck = function () {
     for (let rankIndex = 1; rankIndex <= 13; rankIndex++) {
       let cardName = rankIndex;
       if (rankIndex === 1) {
-        cardName = "ace";
+        cardName = "Ace";
       } else if (rankIndex === 11) {
-        cardName = "jack";
+        cardName = "Jack";
       } else if (rankIndex === 12) {
-        cardName = "queen";
+        cardName = "Queen";
       } else if (rankIndex === 13) {
-        cardName = "king";
+        cardName = "King";
       }
       const card = {
         name: cardName,
@@ -74,6 +75,25 @@ const createBlackjackDeck = function (deckShuffled) {
   return deckShuffled;
 };
 
+// Function to update the emoji from the shuffledBlackjackDeck as both players are drawing cards from that deck
+const updateEmoji = function (blackjackDeckShuffled) {
+  const heartsImage =
+    '<img src="assets/heart-love.gif" width="18px" style="display: inline-block; vertical-align: middle;;"/>';
+  const diamondsImage =
+    '<img src="assets/diamond.png" width="15px" style="display: inline-block; vertical-align: middle;;"/>';
+  for (let i = 0; i < blackjackDeckShuffled.length; i++) {
+    if (blackjackDeckShuffled[i].suit === "hearts") {
+      blackjackDeckShuffled[i].suit = heartsImage;
+    } else if (blackjackDeckShuffled[i].suit === "diamonds") {
+      blackjackDeckShuffled[i].suit = diamondsImage;
+    } else if (blackjackDeckShuffled[i].suit === "clubs") {
+      blackjackDeckShuffled[i].suit = "♣️";
+    } else if (blackjackDeckShuffled[i].suit === "spades") {
+      blackjackDeckShuffled[i].suit = "♠️";
+    }
+  }
+};
+
 // Function to draw multiple random cards
 const drawCards = function (cardCount, userCards, blackjackDeckShuffled) {
   for (let i = 0; i < cardCount; i++) {
@@ -91,7 +111,7 @@ const calculateScores = function (userCards) {
     sum += userCards[i].rank;
   }
 
-  // Loop through the user cards to check if there is any ace card and if the sum from the previous loop is > 21, if so, reduce sum by 10 for each ace until the sum is <= 21. Examples are available the bottom of this file. 
+  // Loop through the user cards to check if there is any ace card and if the sum from the previous loop is > 21, if so, reduce sum by 10 for each ace until the sum is <= 21. Examples are available the bottom of this file.
   // Put it simply, reduce the sum by 10 only if the ace card causes the user to be busted
   for (let j = 0; j < userCards.length; j++) {
     if (userCards[j].rank === 11 && sum > 21) {
@@ -183,6 +203,9 @@ const main = function (input) {
     const shuffledDeck = shuffleDeck(createDeck());
     shuffledBlackjackDeck = createBlackjackDeck(shuffledDeck);
 
+    // Update the emoji immediately after creating the shuffledBlackjackDeck so that all card suits are updated before drawn
+    updateEmoji(shuffledBlackjackDeck);
+
     // Each user gets 2 cards only at the start
     playerCards = drawCards(2, playerCards, shuffledBlackjackDeck);
     pcCards = drawCards(2, pcCards, shuffledBlackjackDeck);
@@ -267,7 +290,7 @@ const main = function (input) {
 // ];
 
 // Examples of calculating scores involving variable ace values
-  /* Example 1: dealt with ace and 3 initially, followed by hitting an ace, 10, 5, then queen
+/* Example 1: dealt with ace and 3 initially, followed by hitting an ace, 10, 5, then queen
   (A) Dealt with ace and 3 initially
   1st loop above: sum = 11 + 3 = 14
   2nd loop below: since sum of 14 is < 21, sum remains 14
@@ -285,7 +308,7 @@ const main = function (input) {
   2nd loop below: 1st iteration - since card 0 is ace and sum of 50 is > 21, sum reduces by 10 to 40; 2nd iteration - since card 1 is 3 but not ace, sum remains 40; 3rd iteration - card 2 is ace and sum of 40 is > 21, sum reduces by 10 to 30; 4th iteration - card 3 is 10 but not ace, sum remains 30; 5th iteration - since card 4 is 5 but not ace, sum remains 30; 6 iteration - since card 5 is queen but not ace, final sum remains 30 and busted
   */
 
-  /* Example 2: dealt with 2 aces initially, followed by hitting an ace, then ace, then ace, etc..
+/* Example 2: dealt with 2 aces initially, followed by hitting an ace, then ace, then ace, etc..
   (A) Dealt with 2 aces initially
   1st loop above: sum = 11 + 11 = 22
   2nd loop below: 1st iteration - since card 0 is ace and sum of 22 is > 21, sum reduces by 10 to 12; 2nd iteration - card 1 is ace but sum of 12 is not > 21, so sum remains 12
