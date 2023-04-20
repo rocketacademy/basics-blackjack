@@ -8,6 +8,11 @@
 // Buttons: Shuffle/Deal Hit Stand
 // Game Modes: player turn, computer turn, results
 // define global variables
+let numCards = 2;
+let computerCard = [];
+let playerCard = [];
+const PLAYER = 1;
+const COMPUTER = 0;
 
 // define function to get random index
 let getRandomIndex = function (maxSize) {
@@ -61,79 +66,96 @@ let shuffleCards = function (cardDeck) {
   return cardDeck;
 };
 
-let main = function (input) {
-  let shuffledDeck = shuffleCards(makeDeck());
-  let myOutputValue = "";
-  let computerCard = [];
-  let playerCard = [];
-  let numCards = 2;
-  let playerSum = 0;
-  let computerSum = 0;
-  let blackjack = "";
-  let winner = "";
-  // draws computer's cards
-  for (let ctr = 0; ctr < numCards; ctr += 1) {
-    computerCard.push(shuffledDeck.pop());
-    console.log(`Computer card ${computerCard[ctr]}`);
-  }
-  // draws player's cards
-  for (let ctr = 0; ctr < numCards; ctr += 1) {
-    playerCard.push(shuffledDeck.pop());
-    console.log(`Player card ${playerCard[ctr]}`);
-  }
-
+let checkBlackjack = function (arrayStore) {
   //checks for black jack
   if (computerCard[0].name == "ace" || computerCard[1].name == "ace") {
     if (computerCard[0].rank > 10 || computerCard[1].rank > 10) {
-      winner = "computer";
-      blackjack = "computer blackjack";
+      arrayStore[COMPUTER].winner = true;
+      arrayStore[COMPUTER].blackjack = true;
     } else {
-      computerSum = computerCard[0].rank + computerCard[1].rank;
+      arrayStore[COMPUTER].sum = computerCard[0].rank + computerCard[1].rank;
     }
   } else {
-    computerSum = computerCard[0].rank + computerCard[1].rank;
+    arrayStore[COMPUTER].sum = computerCard[0].rank + computerCard[1].rank;
   }
 
   if (playerCard[0].name == "ace" || playerCard[1].name == "ace") {
     if (
       (playerCard[0].rank > 10 || playerCard[1].rank > 10) &&
-      winner == "computer"
+      arrayStore[COMPUTER].winner == true
     ) {
-      winner = "tie";
-      blackjack = "both blackjack";
+      arrayStore[PLAYER].winner = true;
+      arrayStore[PLAYER].blackjack = true;
     } else if (playerCard[0].rank > 10 || playerCard[1].rank > 10) {
-      winner = "player";
-      blackjack = "player blackjack";
+      arrayStore[PLAYER].winner = true;
+      arrayStore[PLAYER].blackjack = true;
     } else {
-      playerSum = playerCard[0].rank + playerCard[1].rank;
+      arrayStore[PLAYER].sum = playerCard[0].rank + playerCard[1].rank;
     }
   } else {
-    playerSum = playerCard[0].rank + playerCard[1].rank;
+    arrayStore[PLAYER].sum = playerCard[0].rank + playerCard[1].rank;
   }
 
-  if (blackjack == "") {
-    if (playerSum > computerSum) {
-      winner = "player";
-    } else {
-      winner = "computer";
-    }
+  return arrayStore;
+};
+
+let drawCard = function (shuffledDeck) {
+  // draws computer's cards
+  for (let ctr = 0; ctr < numCards; ctr += 1) {
+    computerCard.push(shuffledDeck.pop());
+    playerCard.push(shuffledDeck.pop());
   }
+  return;
+};
 
-  myOutputValue = `Player hand: ${playerCard[0].name} of ${playerCard[0].suit}, ${playerCard[1].name} of ${playerCard[1].suit}<br>Computer hand: ${computerCard[0].name} of ${computerCard[0].suit}, ${computerCard[1].name} of ${computerCard[1].suit}<br>`;
-
-  if (blackjack != "") {
-    if (blackjack == "both blackjack") {
-      myOutputValue += `Both computer and player has black jack! It's a tie!`;
-    } else if (blackjack == "computer blackjack") {
-      myOutputValue += `Computer wins by black jack!`;
-    } else {
-      myOutputValue += `Player wins  by black jack!`;
-    }
-  } else if (winner == "player") {
-    myOutputValue += `Player wins!`;
+let displayResults = function (arrayStore) {
+  let outputValue = "";
+  if (
+    arrayStore[COMPUTER].blackjack == true &&
+    arrayStore[PLAYER].blackjack == true
+  ) {
+    outputValue += `Both computer and player has black jack! It's a tie! <br>`;
+  } else if (arrayStore[COMPUTER].blackjack == true) {
+    outputValue += `Computer wins by black jack! <br>`;
+  } else if (arrayStore[PLAYER].blackjack == true) {
+    outputValue += `Player wins by black jack! <br>`;
+  } else if (arrayStore[PLAYER].sum > arrayStore[COMPUTER].sum) {
+    winner = "player";
+    outputValue += `Player wins! <br>`;
   } else {
-    myOutputValue += `Computer wins!`;
+    winner = "computer";
+    outputValue += `Computer wins! <br>`;
   }
 
+  outputValue += `Player hand: ${playerCard[0].name} of ${playerCard[0].suit}, ${playerCard[1].name} of ${playerCard[1].suit}<br>Computer hand: ${computerCard[0].name} of ${computerCard[0].suit}, ${computerCard[1].name} of ${computerCard[1].suit}<br>`;
+
+  return outputValue;
+};
+
+let main = function (input) {
+  let player = {
+    name: "",
+    sum: 0,
+    blackjack: false,
+    winner: false,
+    totalWins: 0,
+    totalBJ: 0,
+  };
+  let computer = {
+    name: "",
+    sum: 0,
+    blackjack: false,
+    winner: false,
+    totalWins: 0,
+    totalBJ: 0,
+  };
+  let myOutputValue = "";
+  let arrayStore = [computer, player];
+  let shuffledDeck = shuffleCards(makeDeck());
+  drawCard(shuffledDeck);
+  arrayStore = checkBlackjack(arrayStore);
+  myOutputValue = displayResults(arrayStore);
+  computerCard = [];
+  playerCard = [];
   return myOutputValue;
 };
