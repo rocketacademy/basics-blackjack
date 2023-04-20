@@ -228,10 +228,10 @@ let gameReset = function () {
 };
 
 // player choice function
-
 let playerChoice = function (playerInput) {
   let output = ``;
   if (playerInput == `hit`) {
+    playerValue = [];
     // draw once card from shuffled deck
     let drawOneCard = shuffledDeck(makeDeck());
     let chosenNewCardOne = drawOneCard.pop();
@@ -265,6 +265,7 @@ let playerChoice = function (playerInput) {
 // dealer's choice
 let dealerChoice = function () {
   let output = ``;
+  dealerValue = [];
   if (dealerValue < 17) {
     let dealerDrawOneCard = shuffledDeck(makeDeck());
     let chosenNewCardOne = dealerDrawOneCard.pop();
