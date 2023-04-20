@@ -94,9 +94,9 @@ let main = function (input) {
     return generateCards;
   }
 
-  // player choose to hit or stand
+  // player choose to stand, dealer will start hitting
   if (gameState == GAME_STATE_PLAYER_CHOOSE) {
-    let dealerRandomChoice = dealerChoice();
+    let dealerRandomChoice = dealerChoice(input);
     output = playerChoice(input);
     return output + dealerRandomChoice;
   }
@@ -251,22 +251,24 @@ let playerChoice = function (playerInput) {
       outputBothPlayersHand(playerHand, dealerHand) +
       `<br /><br />Do you want to hit or stand?`
     );
-  }
-  if (playerInput == `stand`) {
-    return (
-      outputBothPlayersHand(playerHand, dealerHand) +
-      `<br /><br />Do you want to hit or stand?`
-    );
+  } else if (playerInput == `stand`) {
+    return outputBothPlayersHand(playerHand, dealerHand);
+  } else {
+    output =
+      `Please enter either hit or stand <br /><br />` +
+      outputBothPlayersHand(playerHand, dealerHand);
   }
   console.log(output);
   return output;
 };
 
 // dealer's choice
-let dealerChoice = function () {
+let dealerChoice = function (playerInput) {
   let output = ``;
-  dealerValue = [];
-  if (dealerValue < 17) {
+
+  if (playerInput == `stand` && dealerValue < 17) {
+    dealerValue = [];
+
     let dealerDrawOneCard = shuffledDeck(makeDeck());
     let chosenNewCardOne = dealerDrawOneCard.pop();
 
@@ -277,7 +279,8 @@ let dealerChoice = function () {
 
     dealerValue.push(newTotalPlayerHandValue);
   }
-  return output;
+
+  return output + `<br / ><br />Click submit to see dealer's next card`;
 };
 
 // set displays for player and dealer hand output
@@ -292,4 +295,27 @@ let outputBothPlayersHand = function (playerHand, dealerHand) {
     dealerMessage = `${dealerMessage}- ${dealerHand[i].name} of ${dealerHand[i].suit}<br />`;
   }
   return `${playerMessage} <br />Player total hand value: ${playerValue}<br /><br /> ${dealerMessage} <br />Dealer total hand value: ${dealerValue}`;
+};
+
+// find which player wins
+let findwinner = function (playerValue, dealerValue) {
+  if (playerValue > dealerValue) {
+    return (
+      `You win! You have a higher hand than the dealer.<br /><br />` +
+      outputBothPlayersHand(playerHand, dealerHand) +
+      `<br /><br />Click submit to restart.`
+    );
+  } else if (playerValue < dealerValue) {
+    return (
+      `You lose! Dealer hand is higher than yours.<br /><br />` +
+      outputBothPlayersHand(playerHand, dealerHand) +
+      `<br /><br />Click submit to restart.`
+    );
+  } else {
+    return (
+      `It's a tie! You both got the same hand value.<br /><br />` +
+      outputBothPlayersHand(playerHand, dealerHand) +
+      `<br /><br />Click submit to restart.`
+    );
+  }
 };
