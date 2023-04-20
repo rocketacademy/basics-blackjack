@@ -1,3 +1,14 @@
+// Shuffle Deck > submit to deal cards
+// Cards analysed for winning condition > cards displayed to user
+// User hits/stands
+// User cards analysed for winning/losing conditions
+// computer decides to hit/stand
+// game ends or continues
+
+// Buttons: Shuffle/Deal Hit Stand
+// Game Modes: player turn, computer turn, results
+// define global variables
+
 // define function to get random index
 let getRandomIndex = function (maxSize) {
   return Math.floor(Math.random() * maxSize);
@@ -50,9 +61,8 @@ let shuffleCards = function (cardDeck) {
   return cardDeck;
 };
 
-let shuffledDeck = shuffleCards(makeDeck());
-
 let main = function (input) {
+  let shuffledDeck = shuffleCards(makeDeck());
   let myOutputValue = "";
   let computerCard = [];
   let playerCard = [];
@@ -74,7 +84,7 @@ let main = function (input) {
 
   //checks for black jack
   if (computerCard[0].name == "ace" || computerCard[1].name == "ace") {
-    if (computerCard[0].name == "10" || computerCard[1].name == "10") {
+    if (computerCard[0].rank > 10 || computerCard[1].rank > 10) {
       winner = "computer";
       blackjack = "computer blackjack";
     } else {
@@ -86,12 +96,12 @@ let main = function (input) {
 
   if (playerCard[0].name == "ace" || playerCard[1].name == "ace") {
     if (
-      (playerCard[0].name == "10" || playerCard[1].name == "10") &&
+      (playerCard[0].rank > 10 || playerCard[1].rank > 10) &&
       winner == "computer"
     ) {
       winner = "tie";
       blackjack = "both blackjack";
-    } else if (playerCard[0].name == "10" || playerCard[1].name == "10") {
+    } else if (playerCard[0].rank > 10 || playerCard[1].rank > 10) {
       winner = "player";
       blackjack = "player blackjack";
     } else {
@@ -124,5 +134,6 @@ let main = function (input) {
   } else {
     myOutputValue += `Computer wins!`;
   }
+
   return myOutputValue;
 };
