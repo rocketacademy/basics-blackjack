@@ -60,6 +60,7 @@ let dealerHand = [];
 let playerValue = [];
 let dealerValue = [];
 
+let GAME_STATE_BLACKJACK = `either/both players hit blackjack`;
 let GAME_STATE_STARTING_POINT = `game starting`;
 let GAME_STATE_PLAYER_CHOOSE = `player choose to hit or stand`;
 let GAME_STATE_CARD_GENERATE = `generate two random cards`;
@@ -68,29 +69,31 @@ let gameState = GAME_STATE_STARTING_POINT;
 // ==== MAIN FUNCTION ==== //
 let main = function (input) {
   let output = ``;
+  console.log(`game state starting point ==>`, gameState);
 
-  // first click
+  // intro message to start the game
   if (gameState == GAME_STATE_STARTING_POINT) {
     gameState = GAME_STATE_CARD_GENERATE;
     return `Welcome! Let's play a game of Blackjack.<br /><br />Click submit to deal the cards. Let's see what you got!`;
   }
 
-  // second click
   // generate two cards for player and dealer
   if (gameState == GAME_STATE_CARD_GENERATE) {
-    output = drawCard();
-    if (playerValue == 21 || dealerValue == 21) {
-      gameState = GAME_STATE_STARTING_POINT;
+    let generateCards = drawCard();
+    console.log(`game state card generate ==>`, gameState);
+
+    // if result is blackjack ==> restart game
+    if (gameState == GAME_STATE_BLACKJACK) {
       output = gameReset();
+      gameState = GAME_STATE_STARTING_POINT;
     } else {
-      //switch game mode
+      // else switch game mode to let player choose
       gameState = GAME_STATE_PLAYER_CHOOSE;
       console.log(gameState);
-      return output;
     }
+    return generateCards;
   }
 
-  // third click
   // player choose to hit or stand
   if (gameState == GAME_STATE_PLAYER_CHOOSE) {
     let dealerRandomChoice = dealerChoice();
@@ -165,18 +168,21 @@ let drawCard = function () {
 
   // if player/dealer gets blackjack
   if (playerValue == 21) {
+    gameState = GAME_STATE_BLACKJACK;
     return (
       `You win! You got blackjack.<br /><br />` +
       outputBothPlayersHand(playerHand, dealerHand) +
-      `<br />Your hand totals to 21. <br /><br />Click submit to restart.`
+      `<br /><br />Click submit to restart.`
     );
   } else if (dealerValue == 21) {
+    gameState = GAME_STATE_BLACKJACK;
     return (
       `You lost! Dealer got blackjack!<br /><br />` +
       outputBothPlayersHand(playerHand, dealerHand) +
       `<br /><br />Click submit to restart.`
     );
   } else if (dealerValue == 21 && playerValue == 21) {
+    gameState = GAME_STATE_BLACKJACK;
     return (
       `It's a tie! Both of you got blackjack!<br /><br />` +
       outputBothPlayersHand(playerHand, dealerHand) +
