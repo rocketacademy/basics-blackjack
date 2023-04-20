@@ -178,6 +178,12 @@
       <source src="assets/Neon.mp4" type="video/mp4" />
     </video>
 
+    <!-- Background music -->
+    <audio controls autoplay>
+      <source src="assets/BeautifulWorld.mp3" type="audio/mp3" />
+      Your browser does not support the audio element.
+    </audio>
+
     <h1 class="header">
       <img
         class="logo-img"
@@ -195,11 +201,13 @@
       <input id="input-field" />
       <br />
       <button id="submit-button">Submit</button>
+      <button id="hit-button">Hit</button>
+      <button id="stand-button">Stand</button>
       <p>Output:</p>
       <div id="output-div">
         The player who is closer to, but not above 21 wins the hand. <br />
         <br />
-        Press Submit to start.
+        Please enter number of points (1 to 100) and press Submit to start.
       </div>
     </div>
     <!-- Import program logic -->
