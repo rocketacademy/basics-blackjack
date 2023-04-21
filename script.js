@@ -36,11 +36,13 @@ let makeDeck = function () {
       } else if (cardName == 13) {
         cardName = "king";
       }
+
       // Create a new card object with the current name, suit, and rank
       let card = {
         name: cardName,
         suit: currentSuit,
         rank: rankCounter,
+        imgSrc: `./cards/${cardName}${currentSuit}.svg`,
       };
       // Add the new card to the deck
       cardDeck.push(card);
@@ -69,7 +71,7 @@ let shuffleCards = function (cardDeck) {
 let checkBlackjack = function (arrayStore) {
   //checks for black jack
   if (computerCard[0].name == "ace" || computerCard[1].name == "ace") {
-    if (computerCard[0].rank > 10 || computerCard[1].rank > 10) {
+    if (computerCard[0].rank >= 10 || computerCard[1].rank >= 10) {
       arrayStore[COMPUTER].winner = true;
       arrayStore[COMPUTER].blackjack = true;
     } else {
@@ -80,13 +82,7 @@ let checkBlackjack = function (arrayStore) {
   }
 
   if (playerCard[0].name == "ace" || playerCard[1].name == "ace") {
-    if (
-      (playerCard[0].rank > 10 || playerCard[1].rank > 10) &&
-      arrayStore[COMPUTER].winner == true
-    ) {
-      arrayStore[PLAYER].winner = true;
-      arrayStore[PLAYER].blackjack = true;
-    } else if (playerCard[0].rank > 10 || playerCard[1].rank > 10) {
+    if (playerCard[0].rank >= 10 || playerCard[1].rank >= 10) {
       arrayStore[PLAYER].winner = true;
       arrayStore[PLAYER].blackjack = true;
     } else {
@@ -119,15 +115,16 @@ let displayResults = function (arrayStore) {
     outputValue += `Computer wins by black jack! <br>`;
   } else if (arrayStore[PLAYER].blackjack == true) {
     outputValue += `Player wins by black jack! <br>`;
+  } else if (arrayStore[PLAYER].sum == arrayStore[COMPUTER].sum) {
+    outputValue += `It's a tie! <br>`;
   } else if (arrayStore[PLAYER].sum > arrayStore[COMPUTER].sum) {
-    winner = "player";
-    outputValue += `Player wins! <br>`;
+    outputValue += `Player wins!`;
   } else {
-    winner = "computer";
     outputValue += `Computer wins! <br>`;
   }
 
-  outputValue += `Player hand: ${playerCard[0].name} of ${playerCard[0].suit}, ${playerCard[1].name} of ${playerCard[1].suit}<br>Computer hand: ${computerCard[0].name} of ${computerCard[0].suit}, ${computerCard[1].name} of ${computerCard[1].suit}<br>`;
+  outputValue += `<br>Player hand: <img class='card' src="${playerCard[0].imgSrc}"><img class='card' src="${playerCard[1].imgSrc}">`;
+  outputValue += `Computer hand: <img class='card' src="${computerCard[0].imgSrc}"><img class='card' src="${computerCard[1].imgSrc}">`;
 
   return outputValue;
 };
@@ -138,16 +135,14 @@ let main = function (input) {
     sum: 0,
     blackjack: false,
     winner: false,
-    totalWins: 0,
-    totalBJ: 0,
+    totalChips: 100,
   };
   let computer = {
     name: "",
     sum: 0,
     blackjack: false,
     winner: false,
-    totalWins: 0,
-    totalBJ: 0,
+    totalChips: 100,
   };
   let myOutputValue = "";
   let arrayStore = [computer, player];
