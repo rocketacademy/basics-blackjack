@@ -9,11 +9,10 @@ body {
   margin-right: 30px;
   background-color: white;
   color: white; /* sets the font color */
-  background: url(""); /* The image used */
-  background-attachment: fixed;
+  background-image: url(""); /* The image used */
   background-position: center; /* Center the image */
   background-repeat: no-repeat; /* Do not repeat the image */
-  background-size: contain; /* Resize the background image to cover the entire container */
+  background-size: cover; /* Resize the background image to cover the entire container */
 }
 
 #output-div img {

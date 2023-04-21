@@ -129,9 +129,9 @@ const compareScores = function (
   // Initialize a string to store result info which will be combined with the standard output message later
   let result = `<br> Please enter number of points to bet and press Submit to replay.`;
 
-  // Video for win cases
-  const winVideo =
-    '<img src="assets/cat.gif" style="float:right;position:absolute;top:60%;right:30%;"/>';
+  // Gif for win cases
+  const winGif =
+    '<img src="assets/cat.gif"/>';
 
   // --- Blackjack win ---
   // If both players have blackjack
@@ -153,7 +153,7 @@ const compareScores = function (
     playerScore === WINNING_SCORE &&
     playerCards.length === 2
   ) {
-    result = `You have a blackjack. You win!!! ${winVideo} ${result}`;
+    result = `You have a blackjack. You win!!! ${winGif} ${result}`;
   }
 
   // --- No blackjack ---
@@ -167,11 +167,11 @@ const compareScores = function (
   }
   // If only pc has busted
   else if (pcScore > WINNING_SCORE) {
-    result = `Computer has busted and lost. You win!!! ${winVideo} ${result}`;
+    result = `Computer has busted and lost. You win!!! ${winGif} ${result}`;
   }
   // Remaining conditions if there is no blackjack and no one has busted
   else if (playerScore > pcScore) {
-    result = `Your sum of card values is closer or equal to 21. You win!!! ${winVideo} ${result}`;
+    result = `Your sum of card values is closer or equal to 21. You win!!! ${winGif} ${result}`;
   } else if (playerScore < pcScore) {
     result = `Computer's sum of card values is closer or equal to 21. You lost!!! ${result}`;
   } else if (playerScore === pcScore) {
