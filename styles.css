@@ -23,14 +23,14 @@ body {
 .header {
   text-align: center;
   font-size: 1.1rem;
-  margin-bottom: 3rem;
+  margin-bottom: 1.2rem;
 }
 
 #container {
   font-size: 18px;
-  margin: 40px auto;
+  margin: 0px auto;
   max-width: 800px;
-  padding: 38px 31px;
+  padding: 0px 31px;
   color: gray;
 }
 
@@ -52,15 +52,15 @@ button {
 
 #output-div {
   background-color: white;
-  margin: 20px auto;
-  padding: 20px;
+  margin: 0px auto;
+  padding: 15px;
   width: 100%;
 }
 
 .logo-img {
   height: 49px;
   position: relative;
-  top: 22px;
+  top: 12px;
 }
 
 /* increase header font size on wider screens */
