@@ -14,6 +14,7 @@ let pcScore = 0;
 let didPlayerStand = false;
 let availableBettingPoints = 100;
 let playerBet = 0;
+let highestPointRecord = 0;
 
 // --- Helper functions ---
 
@@ -24,9 +25,9 @@ const createDeck = function () {
   // Create card suits emoji
   // Emoji for hearts and diamonds are represented by colored images
   const heartsEmoji =
-    '<img src="assets/heart-love.gif" width="18px" style="display: inline-block; vertical-align: middle;;"/>';
+    '<img src="assets/heart-love.gif" width="18px" style="display: inline-block; vertical-align: middle;"/>';
   const diamondsEmoji =
-    '<img src="assets/diamond.png" width="15px" style="display: inline-block; vertical-align: middle;;"/>';
+    '<img src="assets/diamond.png" width="15px" style="display: inline-block; vertical-align: middle;"/>';
   const suits = [heartsEmoji, diamondsEmoji, "♣️", "♠️"];
   // Outer loop for each of the 4 suits
   for (let suitIndex = 0; suitIndex < 4; suitIndex++) {
@@ -112,7 +113,7 @@ const calculateScores = function (userCards) {
 const getAllCardsInfo = function (userCards) {
   let userCardsInfo = "";
   for (i = 0; i < userCards.length; i++) {
-    userCardsInfo += `${userCards[i].name} of ${userCards[i].suit} <br>`;
+    userCardsInfo += `<em>${userCards[i].name}</em> of ${userCards[i].suit},   `;
   }
   return userCardsInfo;
 };
@@ -128,6 +129,10 @@ const compareScores = function (
   // Initialize a string to store result info which will be combined with the standard output message later
   let result = `<br> Please enter number of points to bet and press Submit to replay.`;
 
+  // Video for win cases
+  const winVideo =
+    '<img src="assets/cat.gif" style="float:right;position:absolute;top:60%;right:30%;"/>';
+
   // --- Blackjack win ---
   // If both players have blackjack
   if (
@@ -136,47 +141,47 @@ const compareScores = function (
     pcScore === WINNING_SCORE &&
     pcCards.length === 2
   ) {
-    result = `Both player and computer have a blackjack. It's a draw!!! ${result}`;
+    result = `Both you and computer have a blackjack. It's a draw!!! ${result}`;
   } else if (
     // If only pc has blackjack
     pcScore === WINNING_SCORE &&
     pcCards.length === 2
   ) {
-    result = `Computer has a blackjack. Computer wins!!! ${result}`;
+    result = `Computer has a blackjack. You lost!!! ${result}`;
   } else if (
     // If only player has blackjack
     playerScore === WINNING_SCORE &&
     playerCards.length === 2
   ) {
-    result = `Player has a blackjack. Player wins!!! ${result}`;
+    result = `You have a blackjack. You win!!! ${winVideo} ${result}`;
   }
 
   // --- No blackjack ---
   // If both player and pc have busted
   else if (playerScore > WINNING_SCORE && pcScore > WINNING_SCORE) {
-    result = `Both player and computer have busted. It's a draw!!! ${result}`;
+    result = `Both you and computer have busted. It's a draw!!! ${result}`;
   }
   // If only player has busted
   else if (playerScore > WINNING_SCORE) {
-    result = `Player has busted and lost. Computer wins!!! ${result}`;
+    result = `You have busted and lost!!! ${result}`;
   }
   // If only pc has busted
   else if (pcScore > WINNING_SCORE) {
-    result = `Computer has busted and lost. Player wins!!! ${result}`;
+    result = `Computer has busted and lost. You win!!! ${winVideo} ${result}`;
   }
   // Remaining conditions if there is no blackjack and no one has busted
   else if (playerScore > pcScore) {
-    result = `Player's sum of card values is closer or equal to 21. Player wins!!! ${result}`;
+    result = `Your sum of card values is closer or equal to 21. You win!!! ${winVideo} ${result}`;
   } else if (playerScore < pcScore) {
-    result = `Computer's sum of card values is closer or equal to 21. Computer wins!!! ${result}`;
+    result = `Computer's sum of card values is closer or equal to 21. You lost!!! ${result}`;
   } else if (playerScore === pcScore) {
-    result = `Both player and computer have the same sum of card values. It's a draw!!! ${result}`;
+    result = `Both you and computer have the same sum of card values. It's a draw!!! ${result}`;
   }
 
   return result;
 };
 
-// Function to calculate betting points
+// Function to calculate betting points balance left each round
 /* 
 Player wins by blackjack - gets back original bet + 1.5x of original bet
 Player wins normally - gets back original bet + original bet
@@ -240,6 +245,15 @@ const calculateBettingPoints = function (
   return availableBettingPoints;
 };
 
+// Function to update highest record of betting points
+const updateHighestRecord = function (availableBettingPoints) {
+  if (highestPointRecord < availableBettingPoints) {
+    highestPointRecord = availableBettingPoints;
+  }
+
+  return highestPointRecord;
+};
+
 // Function to reset game
 const reset = function () {
   deck = [];
@@ -256,11 +270,11 @@ const main = function (input) {
   // Prompt player to bet
   if (programState === PROGRAM_STATE_BET) {
     if (!input) {
-      return `Please enter number of points to bet from 1 to ${availableBettingPoints}.`;
+      return `Please enter number of points to bet from 1 to ${availableBettingPoints} and press Submit.`;
     } else if (Number.isNaN(Number(input))) {
-      return `Invalid input! Please enter number of points to bet from 1 to ${availableBettingPoints}.`;
+      return `Invalid input! Please enter number of points to bet from 1 to ${availableBettingPoints} and press Submit.`;
     } else if (Number(input) > availableBettingPoints) {
-      return `Invalid number! Minimum bet is 1 points while maximum bet is ${availableBettingPoints} points.`;
+      return `Number is out of range! Please enter number of points to bet from 1 to ${availableBettingPoints} and press Submit.`;
     } else {
       playerBet = Number(input);
       programState = PROGRAM_STATE_INITIAL_ROUND;
@@ -289,7 +303,7 @@ const main = function (input) {
     programState = PROGRAM_STATE_CHOOSE_HIT_OR_STAND;
   } else if (programState === PROGRAM_STATE_CHOOSE_HIT_OR_STAND) {
     // If player has chosen to hit and has not busted, add 1 or more cards to player and update player's score until player has chosen to stand and/ or has busted
-    if (input === "h" && playerScore < WINNING_SCORE) {
+    if (!didPlayerStand && playerScore < WINNING_SCORE) {
       playerCards.push(deck.pop());
 
       // Update the score with value(s) of extra card(s) hit
@@ -298,8 +312,7 @@ const main = function (input) {
     }
     // If player has chosen to stand, add 1 or more cards to pc and update pc's score until pc's score is >= 17
     // Global boolean variable below keeps track of when player has chosen to stand so that game will reset after displaying the result
-    else if (input === "s") {
-      didPlayerStand = true;
+    else if (didPlayerStand) {
       while (pcScore < 17) {
         pcCards.push(deck.pop());
         pcScore = calculateScores(pcCards);
@@ -309,7 +322,7 @@ const main = function (input) {
 
   // After drawing cards and calculating all the scores, initialize a standard message displaying player's cards drawn, one of the pc's card drawn and player's score.
   const allPlayerCardsInfo = getAllCardsInfo(playerCards);
-  let myOutputValue = `Player has:<br> ${allPlayerCardsInfo} with sum of ${playerScore}.<br> <br> Computer has:<br> ${pcCards[0].name} of ${pcCards[0].suit} <br> A hidden card <br><br>`;
+  let myOutputValue = `You bet ${playerBet} points. <br> <br> You have:<br> ${allPlayerCardsInfo} with sum of <em>${playerScore}</em>.<br> <br> Computer has:<br> <em> ${pcCards[0].name} </em> of ${pcCards[0].suit} and a <em> hidden card</em>. <br><br>`;
 
   // Update the standard output message for different cases
   const resultMessage = compareScores(
@@ -329,7 +342,7 @@ const main = function (input) {
     (pcScore === WINNING_SCORE && pcCards.length === 2) ||
     didPlayerStand
   ) {
-    // Calculate betting points
+    // Update betting points balance left
     availableBettingPoints = calculateBettingPoints(
       availableBettingPoints,
       playerBet,
@@ -340,32 +353,34 @@ const main = function (input) {
       WINNING_SCORE
     );
 
-    console.log("FINAL availableBettingPoints: " + availableBettingPoints);
+    // Update high score
+    highestPointRecord = updateHighestRecord(availableBettingPoints);
 
-    myOutputValue = `Player has:<br> ${allPlayerCardsInfo} with sum of ${playerScore}.<br> <br> Computer has:<br> ${allPcCardsInfo} with sum of ${pcScore}. <br> <br> ${resultMessage} You have ${availableBettingPoints} points now.`;
+    console.log("FINAL availableBettingPoints: " + availableBettingPoints);
+    // Main output message when the game ends
+    myOutputValue = `You bet ${playerBet} points. <br> <br> You have:<br> ${allPlayerCardsInfo} with sum of <em>${playerScore}</em>.<br> <br> Computer has:<br> ${allPcCardsInfo} with sum of <em>${pcScore}</em>. <br> <br> ${resultMessage} <br> You have ${availableBettingPoints} points now. <br> <br> 🎆 HIGHEST RECORD: ${highestPointRecord} points 🎆`;
 
     // When betting points are running out, reset the betting points
     if (availableBettingPoints <= 0) {
-      myOutputValue += `<br> Game will restart from 100 points.`;
+      myOutputValue = `You bet ${playerBet} points. <br> <br> You have:<br> ${allPlayerCardsInfo} with sum of <em>${playerScore}</em>.<br> <br> Computer has:<br> ${allPcCardsInfo} with sum of <em>${pcScore}</em>. <br> <br> ${resultMessage} <br> You have ${availableBettingPoints} points now. <br> Game will restart from 100 points. <br> <br> 🎆 HIGHEST RECORD: ${highestPointRecord} points 🎆`;
       availableBettingPoints = 100;
     }
 
-    // Reset the game in the end after the result output is stored
-    // Do not reset the betting point so the point persists
+    // Reset the game in the end while having the value of available betting points persisted
     reset();
   }
 
   // If player has busted, prompt player to stand
   else if (playerScore > WINNING_SCORE) {
-    myOutputValue += `Player has busted! Please enter "s" to stand, then press Submit to see the result.`;
+    myOutputValue += `You have busted! Please press Stand to see the result.`;
   }
   // If player has reached 21 points, prompt player to stand
   else if (playerScore === WINNING_SCORE) {
-    myOutputValue += `Player has ${WINNING_SCORE} points! Please enter "s" to stand, then press Submit to see the result.`;
+    myOutputValue += `You cards sum up to ${WINNING_SCORE}! Please press Stand to see the result.`;
   }
-  // Else, in all other cases including invalid input, prompt player to enter 'h' or 's' to hit or stand
+  // Else, in all other cases, prompt player to hit or stand
   else {
-    myOutputValue += `Please enter "h" to hit or "s" to stand, then press Submit.`;
+    myOutputValue += `Please press Hit to draw more card or press Stand to end your turn.`;
   }
   return myOutputValue;
 };
