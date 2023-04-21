@@ -131,7 +131,7 @@ const compareScores = function (
 
   // Gif for win cases
   const winGif =
-    '<img src="assets/cat.gif"/>';
+    '<img src="assets/cat.gif" style=" float: right; position: absolute; top: 60%; right: 30%;"/>';
 
   // --- Blackjack win ---
   // If both players have blackjack
