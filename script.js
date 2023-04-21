@@ -25,9 +25,9 @@ const createDeck = function () {
   // Create card suits emoji
   // Emoji for hearts and diamonds are represented by colored images
   const heartsEmoji =
-    '<img src="assets/heart-love.gif" width="18px" style="display: inline-block; vertical-align: middle;"/>';
+    '<img src="assets/heart-love.gif" width="18px"/>';
   const diamondsEmoji =
-    '<img src="assets/diamond.png" width="15px" style="display: inline-block; vertical-align: middle;"/>';
+    '<img src="assets/diamond.png" width="15px"/>';
   const suits = [heartsEmoji, diamondsEmoji, "♣️", "♠️"];
   // Outer loop for each of the 4 suits
   for (let suitIndex = 0; suitIndex < 4; suitIndex++) {
