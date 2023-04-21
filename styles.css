@@ -70,16 +70,6 @@ button {
   }
 }
 
-#background-video {
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  right: 0;
-  min-width: 100%;
-  min-height: 100%;
-  z-index: -1;
-}
-
 .buttons {
   text-align: center;
 }
