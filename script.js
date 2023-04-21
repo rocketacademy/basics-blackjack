@@ -127,11 +127,11 @@ const compareScores = function (
   WINNING_SCORE
 ) {
   // Initialize a string to store result info which will be combined with the standard output message later
-  let result = `<br> Please enter number of points to bet and press Submit to replay.`;
+  let result = `<hr> Please enter number of points to bet and press Submit to replay.`;
 
   // Gif for win cases
   const winGif =
-    '<img src="assets/cat.gif" style=" float: right; position: absolute; top: 60%; right: 30%;"/>';
+    '<img src="assets/cat.gif"/>';
 
   // --- Blackjack win ---
   // If both players have blackjack

@@ -52,11 +52,11 @@ button {
 }
 
 #output-div {
+  text-align: center;
   background-color: white;
   margin: 0px auto;
   padding: 15px;
   width: 100%;
-  overflow: auto;
 }
 
 .logo-img {
