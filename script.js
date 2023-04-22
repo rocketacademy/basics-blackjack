@@ -11,6 +11,7 @@
 //update1: tried attempting project on my own
 //update2: attempt it with walkthrough first version
 //update3: attempting to add hit or stand function for player and dealer
+//update4: ace values, added hit/stand button
 
 //establishing player and dealer's card to clean slate
 var gameStart = " Game Start";

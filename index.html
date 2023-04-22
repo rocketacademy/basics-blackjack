@@ -164,26 +164,102 @@
       <p>Input:</p>
       <input id="input-field" />
       <br />
-      <button id="submit-button">Submit</button>
-      <p>Output:</p>
-      <div id="output-div"></div>
+
+      <button
+        style="
+          background-color: #4681f4;
+          border-color: #4681f4;
+          color: black;
+          border-radius: 5px;
+        "
+        id="submit-button"
+      >
+        Submit
+      </button>
+      <button
+        style="
+          background-color: #5dbea3;
+          border-color: #5dbea3;
+          color: black;
+          border-radius: 5px;
+        "
+        id="hit-button"
+      >
+        Hit
+      </button>
+      <button
+        style="
+          background-color: #dd7973;
+          border-color: #dd7973;
+          color: black;
+          border-radius: 5px;
+        "
+        id="stand-button"
+      >
+        Stand
+      </button>
     </div>
+    <script>
+      var input = document.getElementById("myInput");
+      input.addEventListener("keypress", function (event) {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          document.getElementById("myBtn").click();
+        }
+      });
+    </script>
+    <p>Output:</p>
+    <div id="output-div">Click the submit button to start the game.</div>
     <!-- Import program logic -->
     <script src="script.js"></script>
     <!-- Define button click functionality -->
+    <!--make the submit button and the enter key work to trigger the submit -->
     <script>
+      var input = document.querySelector("#input-field");
       var button = document.querySelector("#submit-button");
-      button.addEventListener("click", function () {
+      var hitButton = document.querySelector("#hit-button");
+      var standButton = document.querySelector("#stand-button");
+      var output = document.querySelector("#output-div");
+
+      function submitForm() {
         // Set result to input value
-        var input = document.querySelector("#input-field");
         var result = main(input.value);
 
         // Display result in output element
-        var output = document.querySelector("#output-div");
         output.innerHTML = result;
 
         // Reset input value
         input.value = "";
+      }
+      function hit() {
+        // Set result to input value
+        var result = main("hit");
+
+        // Display result in output element
+        output.innerHTML = result;
+
+        // Reset input value
+        input.value = "";
+      }
+      function stand() {
+        // Set result to input value
+        var result = main("stand");
+
+        // Display result in output element
+        output.innerHTML = result;
+
+        // Reset input value
+        input.value = "";
+      }
+      button.addEventListener("click", submitForm);
+      hitButton.addEventListener("click", hit);
+      standButton.addEventListener("click", stand);
+
+      input.addEventListener("keydown", function (event) {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          submitForm();
+        }
       });
     </script>
   </body>
