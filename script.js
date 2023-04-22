@@ -112,9 +112,11 @@ let checkBlackjack = function () {
       arrayStore[COMPUTER].blackjack = true;
     } else {
       arrayStore[COMPUTER].sum = computerCard[0].rank + computerCard[1].rank;
+      console.log(`Computer total sum is: ${arrayStore[COMPUTER].sum}`);
     }
   } else {
     arrayStore[COMPUTER].sum = computerCard[0].rank + computerCard[1].rank;
+    console.log(`Computer total sum is: ${arrayStore[COMPUTER].sum}`);
   }
 
   if (playerCard[0].name == "ace" || playerCard[1].name == "ace") {
@@ -123,9 +125,11 @@ let checkBlackjack = function () {
       arrayStore[PLAYER].blackjack = true;
     } else {
       arrayStore[PLAYER].sum = playerCard[0].rank + playerCard[1].rank;
+      console.log(`Player total sum is: ${arrayStore[PLAYER].sum}`);
     }
   } else {
     arrayStore[PLAYER].sum = playerCard[0].rank + playerCard[1].rank;
+    console.log(`Player total sum is: ${arrayStore[PLAYER].sum}`);
   }
 
   return;
@@ -140,7 +144,7 @@ let displayCards = function () {
     }
     outputValue += `Computer's hand: <img class='card' src="${computerCard[0].imgSrc}"><img class='card' src="./cards/RED_BACK.svg">`;
   } else if (currentPlayer == "computer") {
-    outputValue = `Player's total points is ${arrayStore[PLAYER].sum}. <br>Player hand: `;
+    outputValue = `Player's total points is ${arrayStore[PLAYER].sum}. Computer's total points is ${arrayStore[COMPUTER].sum}. <br>Player hand: `;
     // prints player cards first
     for (let ctr = 0; ctr < playerCard.length; ctr += 1) {
       outputValue += `<img class='card' src="${playerCard[ctr].imgSrc}">`;
@@ -191,6 +195,8 @@ let displayFinalResults = function () {
     outputValue += `Oh no! You busted so computer wins! How did this happen? 😖 Please try again!  <br>`;
   } else if (arrayStore[COMPUTER].sum > 21) {
     outputValue += `Guess what? You are so lucky! The computer busted. Good on you! 🤗 <br>`;
+  } else if (arrayStore[PLAYER].sum == arrayStore[COMPUTER].sum) {
+    outputValue += `Are you twins? It's a tie! You both have the same points. 💕 <br>`;
   } else if (arrayStore[PLAYER].sum > arrayStore[COMPUTER].sum) {
     outputValue += `Way to go! 💪 Player wins! <br>`;
   } else {
@@ -222,11 +228,13 @@ let resetGame = function () {
     totalBlackjack: 0,
   };
   arrayStore = [computer, player];
+  shuffledDeck = shuffleCards(makeDeck());
 };
 
 let main = function (input) {
   let myOutputValue = "";
-  if (input == "deal") {
+  if (input == "deal" && gameMode == "first round") {
+    resetGame();
     gameMode = input;
     console.log(input);
     firstDrawCard();
@@ -237,11 +245,15 @@ let main = function (input) {
     ) {
       myOutputValue += displayFinalResults();
       myOutputValue = displayCards();
+      gameMode = "end game";
+      currentPlayer = "computer";
     } else {
       myOutputValue = displayCards();
       currentPlayer = "player;";
       gameMode = "player";
     }
+  } else if (input == "deal") {
+    myOutputValue = `You are in the middle of the game! Complete this round to deal new cards.`;
   }
 
   if (input == "hit") {
@@ -264,7 +276,7 @@ let main = function (input) {
     console.log(`Game mode ${gameMode}`);
     myOutputValue += displayFinalResults();
     myOutputValue += displayCards();
-    gameMode = "results";
+    gameMode = "first round";
   }
 
   return myOutputValue;
