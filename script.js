@@ -16,6 +16,51 @@ let availableBettingPoints = 100;
 let playerBet = 0;
 let highestPointRecord = 0;
 
+// --- Define buttons click and slider functionality ---
+
+// All 3 buttons will return output in the same output-div element
+const output = document.getElementById("output-div");
+
+// Play button
+const playButton = document.getElementById("play-button");
+playButton.addEventListener("click", function () {
+  // Call the main function with slider value and store the output in result
+  const slider = document.getElementById("slider-range");
+  const result = main(slider.value);
+
+  // Display result in output element
+  output.innerHTML = result;
+  // // Reset slider value
+  // slider.value = this.value;
+});
+
+// Hit button - off when the program 1st loads
+// All 3 buttons are calling the main function when clicked. Turn Hit button off at the start so it does not overlap with functionality of Play button
+const hitButton = document.getElementById("hit-button");
+hitButton.disabled = true;
+hitButton.addEventListener("click", function () {
+  output.innerHTML = main();
+});
+
+// Stand button - off when the program 1st loads
+// One of the main conditions to end each round is when Stand button is clicked. Turn Stand button off at the start so the program will not trigger the main function and return the final result message without dealing cards to dealer if needed
+const standButton = document.getElementById("stand-button");
+standButton.disabled = true;
+standButton.addEventListener("click", function () {
+  didPlayerStand = true;
+  output.innerHTML = main();
+});
+
+// Slider
+const slider = document.getElementById("slider-range");
+const betAmountOutput = document.getElementById("bet");
+betAmountOutput.innerHTML = slider.value; // Display the default slider value
+
+// Update the current slider value (each time the slider handle is dragged)
+slider.oninput = function () {
+  betAmountOutput.innerHTML = this.value;
+};
+
 // --- Helper functions ---
 
 // Function to make a blackjack deck
@@ -279,6 +324,7 @@ const main = function (input) {
       } // Set the maximum value of the slider based on the betting points left in each round
       else {
         slider.max = availableBettingPoints;
+        console.log("slider.max: " + slider.max);
       }
     });
     playerBet = Number(slider.value);

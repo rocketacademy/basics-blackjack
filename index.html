@@ -56,10 +56,7 @@
       property="og:description"
       content="A fun card game I made myself! 😄💪🌈"
     />
-    <meta
-      property="og:image"
-      content="https://i.imgur.com/i5d0NwE.png"
-    />
+    <meta property="og:image" content="https://i.imgur.com/i5d0NwE.png" />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
@@ -72,12 +69,9 @@
       name="twitter:description"
       content="A fun card game I made myself! 😄💪🌈"
     />
-    <meta
-      name="twitter:image"
-      content="https://i.imgur.com/i5d0NwE.png"
-    />
-    <meta name="twitter:site" content="@rocketacademyco" />
-    <meta name="twitter:creator" content="@rocketacademyco" />
+    <meta name="twitter:image" content="https://i.imgur.com/i5d0NwE.png" />
+    <meta name="twitter:site" content="@ryanler" />
+    <meta name="twitter:creator" content="@ryanler" />
 
     <!-- fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -103,9 +97,7 @@
       Your browser does not support the audio element.
     </audio>
 
-    <h1 class="header">
-      🚀 Rocket Academy 🚀
-    </h1>
+    <h1 class="header">🚀 Rocket Academy 🚀</h1>
     <h1 class="header">♣️ Blackjack ♠️</h1>
     <div id="container">
       <div class="slider-container">
@@ -128,54 +120,11 @@
       <div id="output-div">
         The player who is closer to, but not above 21 wins the hand. <br />
         <br />
-        Please drag the slider to bet (1 to 100) and press Play to
-        start.
+        Please drag the slider to bet (1 to 100) and press Play to start.
       </div>
     </div>
 
     <!-- Import program logic -->
     <script src="script.js"></script>
-
-    <!-- Define button click functionality -->
-    <script>
-      var playButton = document.querySelector("#play-button");
-      playButton.addEventListener("click", function () {
-        // Set result to slider value
-        var slider = document.querySelector("#slider-range");
-        var result = main(slider.value);
-
-        // Display result in output element
-        var output = document.querySelector("#output-div");
-        output.innerHTML = result;
-        // // Reset slider value
-        // slider.value = this.value;
-      });
-
-      var hitButton = document.querySelector("#hit-button");
-      hitButton.disabled = true;
-      hitButton.addEventListener("click", function () {
-        var output = document.querySelector("#output-div");
-        output.innerHTML = main();
-      });
-
-      var standButton = document.querySelector("#stand-button");
-      standButton.disabled = true;
-      standButton.addEventListener("click", function () {
-        didPlayerStand = true;
-        var output = document.querySelector("#output-div");
-        output.innerHTML = main();
-        // reset();
-      });
-
-      // Slider
-      var slider = document.getElementById("slider-range");
-      var output = document.getElementById("bet");
-      output.innerHTML = slider.value; // Display the default slider value
-
-      // Update the current slider value (each time the slider handle is dragged)
-      slider.oninput = function () {
-        output.innerHTML = this.value;
-      };
-    </script>
   </body>
 </html>
