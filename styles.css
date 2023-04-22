@@ -3,33 +3,42 @@
 }
 
 body {
-  font-family: "Open Sans", sans-serif;
+  font-family: BlackJack, sans-serif;
   margin-left: 30px;
   margin-right: 30px;
   background-color: white;
-  color: black; /* sets the font color */
-  background-image: url(""); /* The image used */
+  color: white; /* sets the font color */
+  background-image: url("https://games.netent.com/wp-content/uploads/2018/09/blackjack_background.jpg"); /* The image used */
   background-position: center; /* Center the image */
   background-repeat: no-repeat; /* Do not repeat the image */
   background-size: cover; /* Resize the background image to cover the entire container */
 }
 
+#button-container {
+  margin: 40px auto;
+  max-width: 800px;
+  height: fit-content;
+  padding: 10px 10px 10px 10px;
+}
+
 #output-div img {
-  display: block;
+  display: inline;
   max-width: 100%;
-  max-height: 200px;
+  max-height: 500px;
+  font-size: 80px;
 }
 .header {
   text-align: center;
-  font-size: 1.1rem;
-  margin-bottom: 3rem;
+  font-size: 1.4rem;
+  color: white;
+  margin-bottom: 1rem;
 }
 
 #container {
   background-color: pink;
   margin: 40px auto;
   max-width: 800px;
-  padding: 38px 31px;
+  padding: 10px 10px 10px 10px;
 }
 
 input {
@@ -37,7 +46,7 @@ input {
   line-height: 33px;
   margin: 0 0 23px 0;
   padding: 0 9px;
-  width: 100%;
+  width: 40%;
 }
 
 button {
@@ -48,10 +57,11 @@ button {
 }
 
 #output-div {
-  background-color: lightgrey;
+  background-color: rgba(0, 0, 0, 0.35);
   margin: 20px auto;
   padding: 20px;
   width: 100%;
+  color: white;
 }
 
 .logo-img {
