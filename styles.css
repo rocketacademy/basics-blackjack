@@ -3,7 +3,7 @@
 }
 
 body {
-  font-family: BlackJack, sans-serif;
+  font-family: PF DinDisplay Pro, sans-serif;
   margin-left: 30px;
   margin-right: 30px;
   background-color: white;
@@ -76,3 +76,5 @@ button {
     font-size: 2rem;
   }
 }
+/* fonts import */
+@import url(//db.onlinewebfonts.com/c/a4948cf83446d3d5cdb4bc57d80d02a2?family=PF+DinDisplay+Pro);
