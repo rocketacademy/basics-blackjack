@@ -1,41 +1,28 @@
-var button = document.querySelector("#submit-button");
+var button = document.querySelector("#deal-button");
 button.addEventListener("click", function () {
   // Set result to input value
-  var input = document.querySelector("#input-field");
-  var result = main(input.value);
+  var result = main("deal");
 
   // Display result in output element
   var output = document.querySelector("#output-div");
   output.innerHTML = result;
-
-  // Reset input value
-  input.value = "";
 });
 
 var button = document.querySelector("#hit-button");
 button.addEventListener("click", function () {
-  // Set result to input value
-  var input = document.querySelector("#input-field");
-  var result = main(input.value);
+  var result = main("hit");
 
   // Display result in output element
   var output = document.querySelector("#output-div");
   output.innerHTML = result;
-
-  // Reset input value
-  input.value = "";
 });
 
 var button = document.querySelector("#stand-button");
 button.addEventListener("click", function () {
   // Set result to input value
-  var input = document.querySelector("#input-field");
-  var result = main(input.value);
+  var result = main("stand");
 
   // Display result in output element
   var output = document.querySelector("#output-div");
   output.innerHTML = result;
-
-  // Reset input value
-  input.value = "";
 });
