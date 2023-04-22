@@ -268,15 +268,6 @@ const reset = function () {
 const main = function (input) {
   // Prompt player to bet
   if (programState === PROGRAM_STATE_BET) {
-    // if (!input) {
-    //   return `Please enter number of points to bet from 1 to ${availableBettingPoints} and press Submit.`;
-    // } else if (Number.isNaN(Number(input))) {
-    //   return `Invalid input! Please enter number of points to bet from 1 to ${availableBettingPoints} and press Submit.`;
-    // } else if (Number(input) > availableBettingPoints) {
-    //   return `Number is out of range! Please enter number of points to bet from 1 to ${availableBettingPoints} and press Submit.`;
-    // } else {
-    //   playerBet = Number(input);
-
     // Add an event listener for when the slider value changes
     slider.addEventListener("input", function () {
       // Get the current value of the slider

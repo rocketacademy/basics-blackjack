@@ -60,12 +60,6 @@ button {
   width: 100%;
 }
 
-.logo-img {
-  height: 49px;
-  position: relative;
-  top: 12px;
-}
-
 /* increase header font size on wider screens */
 @media screen and (min-width: 600px) {
   .header {
