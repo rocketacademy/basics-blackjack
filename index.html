@@ -81,31 +81,28 @@
 
     <!-- fonts -->
     <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="https://fonts.cdnfonts.com/css/blackjack" />
   </head>
 
   <body>
-    <h1 class="header">
-      <img
-        class="logo-img"
-        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT3WjkT2SWPbABOEb_DHtdhAO8paQpu8QrYsm3rkOAGgw&s"
-      />
-      Rocket Academy
-      <img
-        class="logo-img"
-        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT3WjkT2SWPbABOEb_DHtdhAO8paQpu8QrYsm3rkOAGgw&s"
-      />
-    </h1>
     <h1 class="header">♣️ Basics - Blackjack ♠️</h1>
-    <div id="container">
-      <p>Input:</p>
-      <input id="input-field" />
-      <br />
+    <div id="button-container">
       <button id="deal-button">Deal</button>
       <button id="hit-button">Hit</button>
       <button id="stand-button">Stand</button>
-      <p>Output:</p>
-      <div id="output-div"></div>
     </div>
+    <div id="output-div">
+      <div class="text">
+        <h1>Welcome to Blackjack! Click Deal to start the game!</h1>
+      </div>
+    </div>
+<! -- 
+    <div id="container">
+      <p>Input:</p>
+      <input id="input-field" width="40px" />
+      <br />
+    </div>
+
     <!-- Import program logic -->
     <script src="script.js"></script>
     <!-- Define button click functionality -->
