@@ -10,12 +10,13 @@
 
 //update1: tried attempting project on my own
 //update2: attempt it with walkthrough first version
+//update3: attempting to add hit or stand function for player and dealer
 
 //establishing player and dealer's card to clean slate
-var gameStart = "Game Start";
-var gameDrawn = "Cards drawn";
-var gameResults =
-  "Show results and click submit to reset and play Blackjack again";
+var gameStart = " Game Start";
+var gameDrawn = " Cards drawn";
+var gameResults = " Show results ";
+var gameHitStand = " Hit or Stand ";
 var currentGameState = gameStart;
 
 var playerCards = [];
@@ -250,7 +251,7 @@ var main = function (input) {
 
     return outputMessage;
   }
-  if ((currentGameState = gameDrawn)) {
+  if (currentGameState === gameDrawn) {
     var playerhasBlackjack = checkPlayerForBlackJack(playerCards);
     var dealerhasBlackjack = checkDealerForBlackJack(dealerCards);
     var playerHandTotalValue = calculatePlayerHandValue(playerCards);
@@ -277,13 +278,33 @@ var main = function (input) {
       console.log(outputMessage);
       return outputMessage;
     } else {
-      outputMessage = "there is no blackjack";
+      currentGameState = gameHitStand;
+      outputMessage =
+        displayHands(playerCards, dealerCards) +
+        "There is no blackjack<br> Player, please enter 'hit' or 'stand' to draw a card";
       console.log(outputMessage);
+      console.log("gamestate when no blackjack " + currentGameState);
+      return outputMessage;
+    }
+  }
+
+  if (currentGameState == gameHitStand) {
+    if (input == "hit") {
+      playerCards.push(gameDeck.pop());
+      outputMessage =
+        displayHands(playerCards, dealerCards) +
+        "You drew another card.<br> Please input 'hit' or 'stand'<br>";
+    } else if (input == "stand") {
       var playerHandTotalValue = calculatePlayerHandValue(playerCards);
       var dealerHandTotalValue = calculateDealerHandValue(dealerCards);
       console.log("player hand value " + playerHandTotalValue);
       console.log("dealer hand value " + dealerHandTotalValue);
-
+      while (dealerHandTotalValue < 17) {
+        dealerCards.push(gameDeck.pop());
+        dealerHandTotalValue =
+          calculateDealerHandValue(dealerCards) +
+          "<br>Dealer drew another card.";
+      }
       if (playerHandTotalValue == dealerHandTotalValue) {
         outputMessage =
           displayHands(playerCards, dealerCards) +
@@ -310,9 +331,12 @@ var main = function (input) {
           "Dealer wins!" +
           displayHandsValue(playerHandTotalValue, dealerHandTotalValue);
       }
-      currentGameState = gameResults;
-      return outputMessage;
+    } else {
+      outputMessage =
+        "Please enter only 'hit' or 'stand' only.<br>" +
+        displayHands(playerCards, dealerCards);
     }
+    return outputMessage;
   }
 };
 
