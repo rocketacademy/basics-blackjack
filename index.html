@@ -110,18 +110,27 @@
     </h1>
     <h1 class="header">♣️ Blackjack ♠️</h1>
     <div id="container">
-      <p>Your bet:</p>
-      <input id="input-field" />
+      <div class="slider-container">
+        <input
+          type="range"
+          min="1"
+          max="100"
+          value="50"
+          class="slider"
+          id="slider-range"
+        />
+        <p>Your bet: <span id="bet"></span></p>
+      </div>
       <br />
       <div class="buttons">
-        <button id="submit-button">Submit</button>
+        <button id="play-button">Play</button>
         <button id="hit-button">Hit</button>
         <button id="stand-button">Stand</button>
       </div>
       <div id="output-div">
         The player who is closer to, but not above 21 wins the hand. <br />
         <br />
-        Please enter number of points to bet (1 to 100) and press Submit to
+        Please drag the slider to bet (1 to 100) and press Play to
         start.
       </div>
     </div>
@@ -131,32 +140,44 @@
 
     <!-- Define button click functionality -->
     <script>
-      var submitButton = document.querySelector("#submit-button");
-      submitButton.addEventListener("click", function () {
-        // Set result to input value
-        var input = document.querySelector("#input-field");
-        var result = main(input.value);
+      var playButton = document.querySelector("#play-button");
+      playButton.addEventListener("click", function () {
+        // Set result to slider value
+        var slider = document.querySelector("#slider-range");
+        var result = main(slider.value);
 
         // Display result in output element
         var output = document.querySelector("#output-div");
         output.innerHTML = result;
-        // Reset input value
-        input.value = "";
+        // // Reset slider value
+        // slider.value = this.value;
       });
 
       var hitButton = document.querySelector("#hit-button");
+      hitButton.disabled = true;
       hitButton.addEventListener("click", function () {
         var output = document.querySelector("#output-div");
         output.innerHTML = main();
       });
 
       var standButton = document.querySelector("#stand-button");
+      standButton.disabled = true;
       standButton.addEventListener("click", function () {
         didPlayerStand = true;
         var output = document.querySelector("#output-div");
         output.innerHTML = main();
         reset();
       });
+
+      // Slider
+      var slider = document.getElementById("slider-range");
+      var output = document.getElementById("bet");
+      output.innerHTML = slider.value; // Display the default slider value
+
+      // Update the current slider value (each time the slider handle is dragged)
+      slider.oninput = function () {
+        output.innerHTML = this.value;
+      };
     </script>
   </body>
 </html>

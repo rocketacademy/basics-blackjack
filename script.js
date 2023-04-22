@@ -127,11 +127,10 @@ const compareScores = function (
   WINNING_SCORE
 ) {
   // Initialize a string to store result info which will be combined with the standard output message later
-  let result = `<hr> Please enter number of points to bet and press Submit to replay.`;
+  let result = `<hr> Please drag the slider to bet and press Play to replay.`;
 
   // Gif for win cases
-  const winGif =
-    '<img src="assets/cat.gif"/>';
+  const winGif = '<img src="assets/cat.gif"/>';
 
   // --- Blackjack win ---
   // If both players have blackjack
@@ -269,16 +268,36 @@ const reset = function () {
 const main = function (input) {
   // Prompt player to bet
   if (programState === PROGRAM_STATE_BET) {
-    if (!input) {
-      return `Please enter number of points to bet from 1 to ${availableBettingPoints} and press Submit.`;
-    } else if (Number.isNaN(Number(input))) {
-      return `Invalid input! Please enter number of points to bet from 1 to ${availableBettingPoints} and press Submit.`;
-    } else if (Number(input) > availableBettingPoints) {
-      return `Number is out of range! Please enter number of points to bet from 1 to ${availableBettingPoints} and press Submit.`;
-    } else {
-      playerBet = Number(input);
-      programState = PROGRAM_STATE_INITIAL_ROUND;
+    // if (!input) {
+    //   return `Please enter number of points to bet from 1 to ${availableBettingPoints} and press Submit.`;
+    // } else if (Number.isNaN(Number(input))) {
+    //   return `Invalid input! Please enter number of points to bet from 1 to ${availableBettingPoints} and press Submit.`;
+    // } else if (Number(input) > availableBettingPoints) {
+    //   return `Number is out of range! Please enter number of points to bet from 1 to ${availableBettingPoints} and press Submit.`;
+    // } else {
+    //   playerBet = Number(input);
+
+    // Add an event listener for when the slider value changes
+    slider.addEventListener("input", function () {
+      // Get the current value of the slider
+      const value = Number(slider.value);
+
+      // Reset the slider max value when the game restarts with 100 points
+      if (availableBettingPoints === 100) {
+        slider.max = 100;
+      } // Set the maximum value of the slider based on the betting points left in each round
+      else {
+        slider.max = availableBettingPoints;
+      }
+    });
+    playerBet = Number(slider.value);
+    // Input validation
+    if (playerBet > availableBettingPoints) {
+      return `Your amount is out of range! Please drag the slider to bet from 1 to ${availableBettingPoints} and press Play.`;
     }
+
+    programState = PROGRAM_STATE_INITIAL_ROUND;
+    // }
   }
 
   console.log("INITIAL availableBettingPoints: " + availableBettingPoints);
@@ -300,6 +319,10 @@ const main = function (input) {
     // --- The codes inside main function above this line will only run once until the game is reset in the end ---
 
     // Switch mode for user to draw more cards and update scores
+    playButton.disabled = true;
+    hitButton.disabled = false;
+    standButton.disabled = false;
+
     programState = PROGRAM_STATE_CHOOSE_HIT_OR_STAND;
   } else if (programState === PROGRAM_STATE_CHOOSE_HIT_OR_STAND) {
     // If player has chosen to hit and has not busted, add 1 or more cards to player and update player's score until player has chosen to stand and/ or has busted
@@ -311,7 +334,6 @@ const main = function (input) {
       playerScore = calculateScores(playerCards);
     }
     // If player has chosen to stand, add 1 or more cards to pc and update pc's score until pc's score is >= 17
-    // Global boolean variable below keeps track of when player has chosen to stand so that game will reset after displaying the result
     else if (didPlayerStand) {
       while (pcScore < 17) {
         pcCards.push(deck.pop());
@@ -355,6 +377,10 @@ const main = function (input) {
 
     // Update high score
     highestPointRecord = updateHighestRecord(availableBettingPoints);
+
+    playButton.disabled = false;
+    hitButton.disabled = true;
+    standButton.disabled = true;
 
     console.log("FINAL availableBettingPoints: " + availableBettingPoints);
     // Main output message when the game ends

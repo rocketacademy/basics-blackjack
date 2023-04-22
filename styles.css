@@ -22,9 +22,10 @@ body {
   margin: 0 auto;
 }
 .header {
+  margin: 0;
   text-align: center;
   font-size: 1.1rem;
-  margin-bottom: 1.2rem;
+  margin-bottom: 1.8rem;
 }
 
 #container {
@@ -75,7 +76,6 @@ button {
 #background-video {
   position: fixed;
   top: 0;
-  bottom: 0;
   right: 0;
   min-width: 100%;
   min-height: 100%;
@@ -88,4 +88,8 @@ button {
 
 p {
   text-align: center;
+}
+
+.slider {
+  margin: 0;
 }
