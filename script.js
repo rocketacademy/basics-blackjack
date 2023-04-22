@@ -11,6 +11,25 @@
 let numCards = 2;
 let computerCard = [];
 let playerCard = [];
+let gameMode = "first round";
+let currentPlayer = "player";
+let player = {
+  name: "",
+  sum: 0,
+  blackjack: false,
+  winner: false,
+  totalChips: 100,
+  totalBlackjack: 0,
+};
+let computer = {
+  name: "",
+  sum: 0,
+  blackjack: false,
+  winner: false,
+  totalChips: 100,
+  totalBlackjack: 0,
+};
+let arrayStore = [computer, player];
 const PLAYER = 1;
 const COMPUTER = 0;
 
@@ -27,21 +46,25 @@ let makeDeck = function () {
     let currentSuit = suits[suitIndex];
     for (let rankCounter = 1; rankCounter <= 13; rankCounter += 1) {
       let cardName = rankCounter;
+      let specialRank = rankCounter;
       if (cardName == 1) {
         cardName = "ace";
       } else if (cardName == 11) {
         cardName = "jack";
+        specialRank = 10;
       } else if (cardName == 12) {
         cardName = "queen";
+        specialRank = 10;
       } else if (cardName == 13) {
         cardName = "king";
+        specialRank = 10;
       }
 
       // Create a new card object with the current name, suit, and rank
       let card = {
         name: cardName,
         suit: currentSuit,
-        rank: rankCounter,
+        rank: specialRank,
         imgSrc: `./cards/${cardName}${currentSuit}.svg`,
       };
       // Add the new card to the deck
@@ -49,6 +72,7 @@ let makeDeck = function () {
     }
   }
   // Return the completed card deck, an array of objects
+  console.log(cardDeck);
   return cardDeck;
 };
 
@@ -68,10 +92,22 @@ let shuffleCards = function (cardDeck) {
   return cardDeck;
 };
 
-let checkBlackjack = function (arrayStore) {
+let shuffledDeck = shuffleCards(makeDeck());
+
+// first drawing of 2 cards
+let firstDrawCard = function () {
+  // draws computer's cards
+  for (let ctr = 0; ctr < numCards; ctr += 1) {
+    computerCard.push(shuffledDeck.pop());
+    playerCard.push(shuffledDeck.pop());
+  }
+  return;
+};
+
+let checkBlackjack = function () {
   //checks for black jack
   if (computerCard[0].name == "ace" || computerCard[1].name == "ace") {
-    if (computerCard[0].rank >= 10 || computerCard[1].rank >= 10) {
+    if (computerCard[0].rank == 10 || computerCard[1].rank == 10) {
       arrayStore[COMPUTER].winner = true;
       arrayStore[COMPUTER].blackjack = true;
     } else {
@@ -82,7 +118,7 @@ let checkBlackjack = function (arrayStore) {
   }
 
   if (playerCard[0].name == "ace" || playerCard[1].name == "ace") {
-    if (playerCard[0].rank >= 10 || playerCard[1].rank >= 10) {
+    if (playerCard[0].rank == 10 || playerCard[1].rank == 10) {
       arrayStore[PLAYER].winner = true;
       arrayStore[PLAYER].blackjack = true;
     } else {
@@ -92,50 +128,90 @@ let checkBlackjack = function (arrayStore) {
     arrayStore[PLAYER].sum = playerCard[0].rank + playerCard[1].rank;
   }
 
-  return arrayStore;
+  return;
 };
 
-let drawCard = function (shuffledDeck) {
-  // draws computer's cards
-  for (let ctr = 0; ctr < numCards; ctr += 1) {
-    computerCard.push(shuffledDeck.pop());
+let displayCards = function () {
+  let outputValue = "";
+  if (currentPlayer == "player") {
+    outputValue = `Current User is ${currentPlayer}. Total points: ${arrayStore[PLAYER].sum}. Select "Hit" or "Stand".<br>Player's hand: `;
+    for (let ctr = 0; ctr < playerCard.length; ctr += 1) {
+      outputValue += `<img class='card' src="${playerCard[ctr].imgSrc}">`;
+    }
+    outputValue += `Computer's hand: <img class='card' src="${computerCard[0].imgSrc}"><img class='card' src="./cards/RED_BACK.svg">`;
+  } else if (currentPlayer == "computer") {
+    outputValue = `Player's total points is ${arrayStore[PLAYER].sum}. <br>Player hand: `;
+    // prints player cards first
+    for (let ctr = 0; ctr < playerCard.length; ctr += 1) {
+      outputValue += `<img class='card' src="${playerCard[ctr].imgSrc}">`;
+    }
+    outputValue += `Computer's total points is ${arrayStore[COMPUTER].sum}. <br>Computer hand: `;
+    // prints computer cards
+    for (let ctr = 0; ctr < computerCard.length; ctr += 1) {
+      outputValue += `<img class='card' src="${computerCard[ctr].imgSrc}">`;
+    }
+  }
+  return outputValue;
+};
+
+// after user clicks hit
+let selectHit = function () {
+  if (currentPlayer == "player") {
     playerCard.push(shuffledDeck.pop());
+    let arrayLength = playerCard.length - 1;
+    console.log(playerCard);
+    arrayStore[PLAYER].sum += playerCard[arrayLength].rank;
+    console.log(`Player sum: ${arrayStore[PLAYER].sum}`);
+  } else if (currentPlayer == "computer") {
+    computerCard.push(shuffledDeck.pop());
+    let arrayLength = computerCard.length - 1;
+    arrayStore[COMPUTER].sum += computerCard[arrayLength].rank;
+    console.log(`Computer sum: ${arrayStore[COMPUTER].sum}`);
   }
   return;
 };
 
-let displayResults = function (arrayStore) {
-  let outputValue = "";
+let displayFinalResults = function () {
+  let outputValue = "Results!<br>";
   if (
     arrayStore[COMPUTER].blackjack == true &&
     arrayStore[PLAYER].blackjack == true
   ) {
-    outputValue += `Both computer and player has black jack! It's a tie! <br>`;
+    outputValue += `What are the odds!! 😲 Both computer and player has black jack! It's a tie! <br>`;
   } else if (arrayStore[COMPUTER].blackjack == true) {
-    outputValue += `Computer wins by black jack! <br>`;
+    outputValue += `Computer wins by black jack! 🤨 <br>`;
   } else if (arrayStore[PLAYER].blackjack == true) {
-    outputValue += `Player wins by black jack! <br>`;
-  } else if (arrayStore[PLAYER].sum == arrayStore[COMPUTER].sum) {
-    outputValue += `It's a tie! <br>`;
+    outputValue += `Hooray! 🤩🎉🎊 Player wins by black jack! <br>`;
+  } else if (
+    arrayStore[PLAYER].sum == arrayStore[COMPUTER].sum &&
+    arrayStore[PLAYER].sum > 21
+  ) {
+    outputValue += `Oh no! You both busted! It's sad but it's still a tie! 😹<br>`;
+  } else if (arrayStore[PLAYER].sum > 21) {
+    outputValue += `Oh no! You busted so computer wins! How did this happen? 😖 Please try again!  <br>`;
+  } else if (arrayStore[COMPUTER].sum > 21) {
+    outputValue += `Guess what? You are so lucky! The computer busted. Good on you! 🤗 <br>`;
   } else if (arrayStore[PLAYER].sum > arrayStore[COMPUTER].sum) {
-    outputValue += `Player wins!`;
+    outputValue += `Way to go! 💪 Player wins! <br>`;
   } else {
-    outputValue += `Computer wins! <br>`;
+    outputValue += `Computer wins! Let's try again!<br> Click "Deal" to restart the game. <br>`;
   }
-
-  outputValue += `<br>Player hand: <img class='card' src="${playerCard[0].imgSrc}"><img class='card' src="${playerCard[1].imgSrc}">`;
-  outputValue += `Computer hand: <img class='card' src="${computerCard[0].imgSrc}"><img class='card' src="${computerCard[1].imgSrc}">`;
-
   return outputValue;
 };
 
-let main = function (input) {
-  let player = {
+let resetGame = function () {
+  numCards = 2;
+  computerCard = [];
+  playerCard = [];
+  gameMode = "first round";
+  currentPlayer = "player";
+  player = {
     name: "",
     sum: 0,
     blackjack: false,
     winner: false,
     totalChips: 100,
+    totalBlackjack: 0,
   };
   let computer = {
     name: "",
@@ -143,14 +219,53 @@ let main = function (input) {
     blackjack: false,
     winner: false,
     totalChips: 100,
+    totalBlackjack: 0,
   };
+  arrayStore = [computer, player];
+};
+
+let main = function (input) {
   let myOutputValue = "";
-  let arrayStore = [computer, player];
-  let shuffledDeck = shuffleCards(makeDeck());
-  drawCard(shuffledDeck);
-  arrayStore = checkBlackjack(arrayStore);
-  myOutputValue = displayResults(arrayStore);
-  computerCard = [];
-  playerCard = [];
+  if (input == "deal") {
+    gameMode = input;
+    console.log(input);
+    firstDrawCard();
+    checkBlackjack();
+    if (
+      arrayStore[PLAYER].blackjack == true ||
+      arrayStore[COMPUTER].blackjack == true
+    ) {
+      myOutputValue += displayFinalResults();
+      myOutputValue = displayCards();
+    } else {
+      myOutputValue = displayCards();
+      currentPlayer = "player;";
+      gameMode = "player";
+    }
+  }
+
+  if (input == "hit") {
+    gameMode = input;
+    console.log(input);
+    selectHit();
+    myOutputValue = displayCards();
+    currentPlayer = "player";
+    return myOutputValue;
+  } else if (input == "stand" && currentPlayer == "player") {
+    gameMode = input;
+    console.log(`Game mode ${gameMode}`);
+    currentPlayer = "computer";
+    myOutputValue = "Player has chosen to stand. <br><br> ";
+    console.log(`Computer Sum is ${arrayStore[COMPUTER].sum}`);
+    for (let ctr = 0; arrayStore[COMPUTER].sum <= 16; ctr += 1) {
+      selectHit();
+      console.log(arrayStore[COMPUTER].sum);
+    }
+    console.log(`Game mode ${gameMode}`);
+    myOutputValue += displayFinalResults();
+    myOutputValue += displayCards();
+    gameMode = "results";
+  }
+
   return myOutputValue;
 };
