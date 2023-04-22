@@ -87,3 +87,12 @@ p {
 .slider {
   margin: 0;
 }
+
+a {
+  text-decoration: none;
+}
+
+audio {
+  display: block;
+  margin: auto;
+}
