@@ -13,6 +13,7 @@ let computerCard = [];
 let playerCard = [];
 let gameMode = "first round";
 let currentPlayer = "player";
+let noofRounds = 0;
 let player = {
   name: "",
   sum: 0,
@@ -138,21 +139,21 @@ let checkBlackjack = function () {
 let displayCards = function () {
   let outputValue = "";
   if (currentPlayer == "player") {
-    outputValue = `Current User is ${currentPlayer}. Total points: ${arrayStore[PLAYER].sum}. Select "Hit" or "Stand".<br>Player's hand: `;
+    outputValue = `<b><u>Round ${noofRounds}</u></b><br>Current User is ${currentPlayer}. Total points: ${arrayStore[PLAYER].sum}. Select "Hit" or "Stand".<br>Player's hand:<br> `;
     for (let ctr = 0; ctr < playerCard.length; ctr += 1) {
-      outputValue += `<img class='card' src="${playerCard[ctr].imgSrc}">`;
+      outputValue += `<img class='card' src="${playerCard[ctr].imgSrc}" height="150px">`;
     }
-    outputValue += `Computer's hand: <img class='card' src="${computerCard[0].imgSrc}"><img class='card' src="./cards/RED_BACK.svg">`;
+    outputValue += `<br>Computer's hand: <br><img class='card' src="${computerCard[0].imgSrc}" height="150px"><img class='card' src="./cards/RED_BACK.svg" height="150px">`;
   } else if (currentPlayer == "computer") {
-    outputValue = `Player's total points is ${arrayStore[PLAYER].sum}. Computer's total points is ${arrayStore[COMPUTER].sum}. <br>Player hand: `;
+    outputValue = `Player's total points is ${arrayStore[PLAYER].sum}. Computer's total points is ${arrayStore[COMPUTER].sum}. <br>Player hand: <br>`;
     // prints player cards first
     for (let ctr = 0; ctr < playerCard.length; ctr += 1) {
-      outputValue += `<img class='card' src="${playerCard[ctr].imgSrc}">`;
+      outputValue += `<img class='card' src="${playerCard[ctr].imgSrc}" height="150px">`;
     }
-    outputValue += `Computer's total points is ${arrayStore[COMPUTER].sum}. <br>Computer hand: `;
+    outputValue += `<br>Computer hand:<br> `;
     // prints computer cards
     for (let ctr = 0; ctr < computerCard.length; ctr += 1) {
-      outputValue += `<img class='card' src="${computerCard[ctr].imgSrc}">`;
+      outputValue += `<img class='card' src="${computerCard[ctr].imgSrc}" height="150px">`;
     }
   }
   return outputValue;
@@ -235,10 +236,13 @@ let main = function (input) {
   let myOutputValue = "";
   if (input == "deal" && gameMode == "first round") {
     resetGame();
+    noofRounds += 1;
     gameMode = input;
     console.log(input);
     firstDrawCard();
     checkBlackjack();
+    gameMode = "player";
+    currentPlayer = "player";
     if (
       arrayStore[PLAYER].blackjack == true ||
       arrayStore[COMPUTER].blackjack == true
@@ -249,8 +253,6 @@ let main = function (input) {
       currentPlayer = "computer";
     } else {
       myOutputValue = displayCards();
-      currentPlayer = "player;";
-      gameMode = "player";
     }
   } else if (input == "deal") {
     myOutputValue = `You are in the middle of the game! Complete this round to deal new cards.`;
@@ -269,7 +271,7 @@ let main = function (input) {
     currentPlayer = "computer";
     myOutputValue = "Player has chosen to stand. <br><br> ";
     console.log(`Computer Sum is ${arrayStore[COMPUTER].sum}`);
-    for (let ctr = 0; arrayStore[COMPUTER].sum <= 16; ctr += 1) {
+    for (let ctr = 0; arrayStore[COMPUTER].sum < 17; ctr += 1) {
       selectHit();
       console.log(arrayStore[COMPUTER].sum);
     }
