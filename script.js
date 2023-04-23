@@ -13,18 +13,17 @@
 
 let playerHand = [];
 let computerHand = [];
-let gamedeck = 'empty at start';
 
 
 //create a new deck of cards for the game
 
-let createNewDeck = function(){
+let createDeck = function(){
   let deck = [];
   //then create suits in the deck. Diamonds,Clubs,Hearts,Spades
 
   let suits = ['Diamonds', 'Clubs', 'Hearts', 'Spades'];
   let suitIndex = 0;
-  while (index < cardDeck.Length){
+  while (suitIndex < suits.Length){
     
     let currentSuit = suits[suitIndex];
     // then loop all the cards and create cards 1 thru 13
@@ -64,7 +63,7 @@ let createNewDeck = function(){
     suitIndex = suitIndex + 1;
   }
 
-  return deck;
+  return createDeck;
   
 
 
@@ -78,7 +77,7 @@ let getRandomIndex = function (size){
 
 // now write function to allow shuffling of the deck
 
-let shuffleDeck = function (cards){
+let shuffleCards = function (cards){
   let index = 0;
 
   while (index < cards.Length){
@@ -97,7 +96,7 @@ let shuffleDeck = function (cards){
   return cards;
 };
 
-let deck = shuffleCards(createNewDeck());
+let deck = shuffleCards(createDeck());
 
 let TwentyOne = 21;
 
@@ -121,7 +120,7 @@ let getHandSum = function(hand){
   let counter = 0;
 
   while(counter < hand.length){
-    var currentCard = hand[counter];
+    let currentCard = hand[counter];
 
     // ACE is 11 by default
     if (currentCard.rank == 1) {
