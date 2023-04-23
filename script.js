@@ -77,7 +77,7 @@ let main = function (input) {
     gameState = GAME_STATE_CARD_GENERATE;
     return (
       resetGame +
-      `Welcome! Let's play a game of Blackjack.<br /><br />Click submit to deal the cards. Let's see what you got!`
+      `Welcome! Let's play a game of Blackjack.<br /><br />Hit submit to deal the cards. Let's see what you got!`
     );
   }
 
@@ -100,20 +100,20 @@ let main = function (input) {
   if (gameState == GAME_STATE_PLAYER_CHOOSE) {
     let dealerRandomChoice = dealerChoice(input);
     output = playerChoice(input);
-    if (playerValue > 21 && dealerValue <= 21) {
+    if (playerValue > 21) {
       gameState = GAME_STATE_STARTING_POINT;
       return (
         `You lose! You went over 21.<br /><br />` +
         outputBothPlayersHand(playerHand, dealerHand) +
-        `<br /><br />Click submit to restart.`
+        `<br /><br />Hit submit to restart.`
       );
     }
-    if (dealerValue > 21 && playerValue <= 21) {
+    if (dealerValue > 21) {
       gameState = GAME_STATE_STARTING_POINT;
       return (
         `You win! Dealer has busted.<br /><br />` +
         outputBothPlayersHand(playerHand, dealerHand) +
-        `<br /><br />Click submit to restart.`
+        `<br /><br />Hit submit to restart.`
       );
     }
     return output + dealerRandomChoice;
@@ -196,21 +196,21 @@ let drawCard = function () {
     return (
       `You win! You got blackjack.<br /><br />` +
       outputBothPlayersHand(playerHand, dealerHand) +
-      `<br /><br />Click submit to restart.`
+      `<br /><br />Hit submit to restart.`
     );
   } else if (dealerValue == 21) {
     gameState = GAME_STATE_BLACKJACK;
     return (
       `You lost! Dealer got blackjack!<br /><br />` +
       outputBothPlayersHand(playerHand, dealerHand) +
-      `<br /><br />Click submit to restart.`
+      `<br /><br />Hit submit to restart.`
     );
   } else if (dealerValue == 21 && playerValue == 21) {
     gameState = GAME_STATE_BLACKJACK;
     return (
       `It's a tie! Both of you got blackjack!<br /><br />` +
       outputBothPlayersHand(playerHand, dealerHand) +
-      `<br /><br />Click submit to restart.`
+      `<br /><br />Hit submit to restart.`
     );
   } else {
     return (
@@ -286,7 +286,7 @@ let playerChoice = function (playerInput) {
   } else if (playerInput == `stand`) {
     gameState = GAME_STATE_RESULT;
     return (
-      `Click submit to find out who wins! <br /><br />` +
+      `Hit submit to find out who wins! <br /><br />` +
       outputBothPlayersHand(playerHand, dealerHand)
     );
   } else {
@@ -321,7 +321,7 @@ let dealerChoice = function (playerInput) {
 
 // set displays for player and dealer hand output
 let outputBothPlayersHand = function (playerHand, dealerHand) {
-  let playerMessage = `Player Hand:<br />`;
+  let playerMessage = `Your Hand:<br />`;
   for (let i = 0; i < playerHand.length; i += 1) {
     playerMessage = `${playerMessage}- ${playerHand[i].name} of ${playerHand[i].suit}<br />`;
   }
@@ -330,7 +330,7 @@ let outputBothPlayersHand = function (playerHand, dealerHand) {
   for (let i = 0; i < dealerHand.length; i += 1) {
     dealerMessage = `${dealerMessage}- ${dealerHand[i].name} of ${dealerHand[i].suit}<br />`;
   }
-  return `${playerMessage} <br />Player total hand value: ${playerValue}<br /><br /> ${dealerMessage} <br />Dealer total hand value: ${dealerValue}`;
+  return `${playerMessage} <br />Your total hand value: ${playerValue}<br /><br /> ${dealerMessage} <br />Dealer total hand value: ${dealerValue}`;
 };
 
 // find which player wins
@@ -339,19 +339,19 @@ let findwinner = function (playerValue, dealerValue) {
     return (
       `You win! You have a higher hand than the dealer.<br /><br />` +
       outputBothPlayersHand(playerHand, dealerHand) +
-      `<br /><br />Click submit to restart.`
+      `<br /><br />Hit submit to restart.`
     );
   } else if (playerValue < dealerValue && dealerValue <= 21) {
     return (
       `You lose! Dealer hand is higher than yours.<br /><br />` +
       outputBothPlayersHand(playerHand, dealerHand) +
-      `<br /><br />Click submit to restart.`
+      `<br /><br />Hit submit to restart.`
     );
   } else {
     return (
       `It's a tie! You both got the same hand value.<br /><br />` +
       outputBothPlayersHand(playerHand, dealerHand) +
-      `<br /><br />Click submit to restart.`
+      `<br /><br />Hit submit to restart.`
     );
   }
 };
