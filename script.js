@@ -14,7 +14,6 @@ var gameStart = "start game";
 var gameDrawnCards = "drawn two cards";
 var gameCheckBlackjack = "check blackjack winner";
 var gamePlayerHitStand = "player hit or stand";
-var gameEnd = "game end";
 var currentGameMode = gameStart;
 
 // Create a deck of cards
@@ -119,14 +118,6 @@ let getComputerCardArray = function (shuffledDeck) {
   return computerCards;
 };
 
-// Game end
-let gameEndMode = function (currentGameMode) {
-  if (currentGameMode == gameEnd) {
-    currentGameMode = gameStart;
-  }
-  return currentGameMode;
-};
-
 let deck = makeDeck();
 let shuffledDeck = shuffleCards(deck);
 let playerCards = getPlayerCardArray(shuffledDeck);
@@ -194,52 +185,82 @@ let main = function (input) {
         playerCards[playerCards.length - 1].name +
         " of " +
         playerCards[playerCards.length - 1].suit +
-        "<br><br>Player total hand is " +
+        "<br><br>Player current total hand is " +
         playerTotal;
-
-      // Check if the player's hand exceeds 21 and the player loses
-      if (playerTotal > 21) {
+    } else if (input.toLowerCase() == "stand") {
+      while (computerTotal < 17) {
+        computerCards.push(shuffledDeck.pop());
+        computerTotal = getTotalRank(computerCards);
         myOutputValue +=
-          "<br><br>Player busts with " +
+          "<br><br>Computer drew card:<br>- " +
+          computerCards[computerCards.length - 1].name +
+          " of " +
+          computerCards[computerCards.length - 1].suit +
+          "<br><br>Computer current total hand is " +
+          computerTotal;
+      }
+
+      if (computerTotal > 21 && playerTotal > 21) {
+        myOutputValue +=
+          "<br><br>Both computer & player busts!💥 " +
+          "<br>Player final hand: " +
           playerTotal +
-          "! 🤦‍♂️ Computer wins!<br>";
-        currentGameMode = gameEnd;
-      }
-    }
-
-    // Player choose to stand
-    else if (input.toLowerCase() == "stand" && computerTotal <= 17) {
-      // Computer draw card when player stand
-      computerCards.push(shuffledDeck.pop());
-      computerTotal = getTotalRank(computerCards);
-      myOutputValue +=
-        "<br><br>Computer drew card:<br>- " +
-        computerCards[computerCards.length - 1].name +
-        " of " +
-        computerCards[computerCards.length - 1].suit +
-        "<br><br>Computer total hand is " +
-        computerTotal;
-
-      // Check if the computer's hand exceeds 21 and the player wins
-      if (computerTotal > 21) {
+          "<br> Computer final hand: " +
+          computerTotal;
+        return myOutputValue;
+      } else if (playerTotal > 21 && computerTotal <= 21) {
         myOutputValue +=
-          "<br><br>Computer busts with " +
-          computerTotal +
-          "! 🎉 Player wins!<br>";
-        currentGameMode = gameEnd;
-      }
-      // Compare total hand and determine winner
-      if (playerTotal == computerTotal) {
-        myOutputValue += "<br><br>🎉It's a tie!";
-        currentGameMode = gameEnd;
+          "<br><br>💥 Player busts! " +
+          "<br>🎉 Computer wins!" +
+          "<br>Player final hand: " +
+          playerTotal +
+          "<br> Computer final hand: " +
+          computerTotal;
         return myOutputValue;
-      } else if (playerTotal > computerTotal && playerTotal <= 21) {
-        myOutputValue += "<br><br>🎉Player wins!";
-        currentGameMode = gameEnd;
+      } else if (computerTotal > 21 && playerTotal <= 21) {
+        myOutputValue +=
+          "<br><br>💥 Computer busts!" +
+          "<br>🎉 Player wins!" +
+          "<br>Player final hand: " +
+          playerTotal +
+          "<br> Computer final hand: " +
+          computerTotal;
         return myOutputValue;
-      } else if (playerTotal < computerTotal && computerTotal <= 21) {
-        myOutputValue += "<br><br>🎉Computer wins!";
-        currentGameMode = gameEnd;
+      } else if (
+        playerTotal <= 21 &&
+        computerTotal <= 21 &&
+        playerTotal > computerTotal
+      ) {
+        myOutputValue +=
+          "<br>🎉 Player win!" +
+          "<br>Player final hand: " +
+          playerTotal +
+          "<br> Computer final hand: " +
+          computerTotal;
+        return myOutputValue;
+      } else if (
+        playerTotal <= 21 &&
+        computerTotal <= 21 &&
+        computerTotal > playerTotal
+      ) {
+        myOutputValue +=
+          "<br>🎉 Computer win!" +
+          "<br>Player final hand: " +
+          playerTotal +
+          "<br> Computer final hand: " +
+          computerTotal;
+        return myOutputValue;
+      } else if (
+        playerTotal <= 21 &&
+        computerTotal <= 21 &&
+        playerTotal == computerTotal
+      ) {
+        myOutputValue +=
+          "<br>🎊 It's a tie!" +
+          "<br>Player final hand: " +
+          playerTotal +
+          "<br> Computer final hand: " +
+          computerTotal;
         return myOutputValue;
       }
     }
