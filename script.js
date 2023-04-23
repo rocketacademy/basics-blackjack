@@ -111,7 +111,7 @@ let main = function (input) {
     if (dealerValue > 21 && playerValue <= 21) {
       gameState = GAME_STATE_STARTING_POINT;
       return (
-        `You win! Dealer went over 21.<br /><br />` +
+        `You win! Dealer has busted.<br /><br />` +
         outputBothPlayersHand(playerHand, dealerHand) +
         `<br /><br />Click submit to restart.`
       );
@@ -223,6 +223,8 @@ let drawCard = function () {
 // calculate hand value
 let calCardValue = function (handArray) {
   let totalValue = 0;
+  let aceCounter = 0;
+
   for (let i = 0; i < handArray.length; i += 1) {
     let currentCard = handArray[i];
     if (
@@ -233,10 +235,18 @@ let calCardValue = function (handArray) {
       totalValue = totalValue + 10;
     } else if (currentCard.name == `Ace`) {
       totalValue = totalValue + 11;
+      aceCounter = aceCounter + 1;
     } else {
       totalValue = totalValue + currentCard.value;
     }
   }
+
+  for (let i = 0; i < aceCounter; i += 1) {
+    if (totalValue > 21) {
+      totalValue = totalValue - 10;
+    }
+  }
+
   return totalValue;
 };
 
