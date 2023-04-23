@@ -232,7 +232,7 @@ let main = function (input) {
         playerTotal > computerTotal
       ) {
         myOutputValue +=
-          "<br>🎉 Player win!" +
+          "<br><br>🎉 Player win!" +
           "<br>Player final hand: " +
           playerTotal +
           "<br> Computer final hand: " +
@@ -244,7 +244,7 @@ let main = function (input) {
         computerTotal > playerTotal
       ) {
         myOutputValue +=
-          "<br>🎉 Computer win!" +
+          "<br><br>🎉 Computer win!" +
           "<br>Player final hand: " +
           playerTotal +
           "<br> Computer final hand: " +
@@ -256,7 +256,7 @@ let main = function (input) {
         playerTotal == computerTotal
       ) {
         myOutputValue +=
-          "<br>🎊 It's a tie!" +
+          "<br><br>🎊 It's a tie!" +
           "<br>Player final hand: " +
           playerTotal +
           "<br> Computer final hand: " +
