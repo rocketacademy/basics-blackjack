@@ -76,10 +76,7 @@ button {
   z-index: -1;
 }
 
-.buttons {
-  text-align: center;
-}
-
+.buttons,
 p {
   text-align: center;
 }
@@ -95,4 +92,6 @@ a {
 audio {
   display: block;
   margin: auto;
+  height: 50px;
+  width: 200px;
 }
