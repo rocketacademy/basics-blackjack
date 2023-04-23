@@ -4,7 +4,7 @@ var makeDeck = function () {
   // Initialise an array of the 4 suits in our deck. We will loop over this array.
   var suits = ["♥", "🔸", "♣", "♠"];
 
-  //HELLO COMMENT TESTING!!!
+  // this is a test for commit
 
   // Loop over the suits array
   var suitIndex = 0;
