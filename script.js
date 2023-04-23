@@ -35,6 +35,12 @@ let computer = {
 let arrayStore = [computer, player];
 const PLAYER = 1;
 const COMPUTER = 0;
+const DEALBUTTON = document.querySelector("#deal-button");
+const HITBUTTON = document.querySelector("#hit-button");
+const STANDBUTTON = document.querySelector("#stand-button");
+
+HITBUTTON.disabled = true;
+STANDBUTTON.disabled = true;
 
 // define function to get random index
 let getRandomIndex = function (maxSize) {
@@ -121,6 +127,8 @@ let checkBlackjack = function () {
       console.log(`Computer total sum is: ${arrayStore[COMPUTER].sum}`);
       if (arrayStore[COMPUTER].sum > 21) {
         arrayStore[COMPUTER].busted = true;
+        HITBUTTON.disabled = true;
+        STANDBUTTON.disabled = false;
       }
     }
   } else {
@@ -128,6 +136,8 @@ let checkBlackjack = function () {
     console.log(`Computer total sum is: ${arrayStore[COMPUTER].sum}`);
     if (arrayStore[COMPUTER].sum > 21) {
       arrayStore[COMPUTER].busted = true;
+      HITBUTTON.disabled = true;
+      STANDBUTTON.disabled = false;
     }
   }
 
@@ -142,6 +152,8 @@ let checkBlackjack = function () {
       console.log(`Player total sum is: ${arrayStore[PLAYER].sum}`);
       if (arrayStore[PLAYER].sum > 21) {
         arrayStore[PLAYER].busted = true;
+        HITBUTTON.disabled = true;
+        STANDBUTTON.disabled = false;
       }
     }
   } else {
@@ -149,6 +161,8 @@ let checkBlackjack = function () {
     console.log(`Player total sum is: ${arrayStore[PLAYER].sum}`);
     if (arrayStore[PLAYER].sum > 21) {
       arrayStore[PLAYER].busted = true;
+      HITBUTTON.disabled = true;
+      STANDBUTTON.disabled = false;
     }
   }
 
@@ -202,6 +216,8 @@ let selectHit = function () {
     arrayStore[PLAYER].sum += playerCard[arrayLength].rank;
     if (arrayStore[PLAYER].sum > 21) {
       arrayStore[PLAYER].busted = true;
+      HITBUTTON.disabled = true;
+      STANDBUTTON.disabled = false;
     }
     console.log(`Player sum: ${arrayStore[PLAYER].sum}`);
   } else if (currentPlayer == "computer") {
@@ -210,6 +226,8 @@ let selectHit = function () {
     arrayStore[COMPUTER].sum += computerCard[arrayLength].rank;
     if (arrayStore[COMPUTER].sum > 21) {
       arrayStore[COMPUTER].busted = true;
+      HITBUTTON.disabled = true;
+      STANDBUTTON.disabled = false;
     }
     console.log(`Computer sum: ${arrayStore[COMPUTER].sum}`);
   }
@@ -217,6 +235,9 @@ let selectHit = function () {
 };
 
 let displayFinalResults = function () {
+  DEALBUTTON.disabled = false;
+  HITBUTTON.disabled = true;
+  STANDBUTTON.disabled = true;
   let outputValue = "Results!<br>";
   if (
     arrayStore[COMPUTER].blackjack == true &&
@@ -285,6 +306,9 @@ let main = function (input) {
     checkBlackjack();
     gameMode = "player";
     currentPlayer = "player";
+    DEALBUTTON.disabled = true;
+    HITBUTTON.disabled = false;
+    STANDBUTTON.disabled = false;
     if (
       arrayStore[PLAYER].blackjack == true ||
       arrayStore[COMPUTER].blackjack == true
@@ -296,8 +320,6 @@ let main = function (input) {
     } else {
       myOutputValue = displayCards();
     }
-  } else if (input == "deal") {
-    myOutputValue = `You are in the middle of the game! Complete this round to deal new cards.`;
   }
 
   if (
@@ -305,14 +327,14 @@ let main = function (input) {
     arrayStore[PLAYER].busted != true &&
     arrayStore[PLAYER].sum != 21
   ) {
+    HITBUTTON.disabled = false;
+    STANDBUTTON.disabled = false;
     gameMode = input;
     console.log(input);
     selectHit();
     myOutputValue = displayCards();
     currentPlayer = "player";
     return myOutputValue;
-  } else if (input == "hit" && arrayStore[PLAYER].busted == true) {
-    myOutputValue = `You have already busted and cannot add any more cards. You can only select "Stand".`;
   }
 
   if (input == "stand" && arrayStore[PLAYER].sum < 12) {
