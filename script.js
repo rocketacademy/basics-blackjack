@@ -73,8 +73,12 @@ let main = function (input) {
 
   // intro message to start the game
   if (gameState == GAME_STATE_STARTING_POINT) {
+    let resetGame = gameReset();
     gameState = GAME_STATE_CARD_GENERATE;
-    return `Welcome! Let's play a game of Blackjack.<br /><br />Click submit to deal the cards. Let's see what you got!`;
+    return (
+      resetGame +
+      `Welcome! Let's play a game of Blackjack.<br /><br />Click submit to deal the cards. Let's see what you got!`
+    );
   }
 
   // generate two cards for player and dealer
@@ -96,14 +100,29 @@ let main = function (input) {
   if (gameState == GAME_STATE_PLAYER_CHOOSE) {
     let dealerRandomChoice = dealerChoice(input);
     output = playerChoice(input);
+    if (playerValue > 21 && dealerValue <= 21) {
+      gameState = GAME_STATE_STARTING_POINT;
+      return (
+        `You lose! You went over 21.<br /><br />` +
+        outputBothPlayersHand(playerHand, dealerHand) +
+        `<br /><br />Click submit to restart.`
+      );
+    }
+    if (dealerValue > 21 && playerValue <= 21) {
+      gameState = GAME_STATE_STARTING_POINT;
+      return (
+        `You win! Dealer went over 21.<br /><br />` +
+        outputBothPlayersHand(playerHand, dealerHand) +
+        `<br /><br />Click submit to restart.`
+      );
+    }
     return output + dealerRandomChoice;
   }
 
   if (gameState == GAME_STATE_RESULT) {
     gameState = GAME_STATE_STARTING_POINT;
     let whoWins = findwinner(playerValue, dealerValue);
-    let resetGame = gameReset();
-    return whoWins + resetGame;
+    return whoWins;
   }
 
   return output;
@@ -306,13 +325,13 @@ let outputBothPlayersHand = function (playerHand, dealerHand) {
 
 // find which player wins
 let findwinner = function (playerValue, dealerValue) {
-  if (playerValue > dealerValue) {
+  if (playerValue > dealerValue && playerValue <= 21) {
     return (
       `You win! You have a higher hand than the dealer.<br /><br />` +
       outputBothPlayersHand(playerHand, dealerHand) +
       `<br /><br />Click submit to restart.`
     );
-  } else if (playerValue < dealerValue) {
+  } else if (playerValue < dealerValue && dealerValue <= 21) {
     return (
       `You lose! Dealer hand is higher than yours.<br /><br />` +
       outputBothPlayersHand(playerHand, dealerHand) +
