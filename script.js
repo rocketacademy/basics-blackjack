@@ -1,11 +1,10 @@
-// --- Base game with improved interface, DOM, and features of hiding dealer's 1st card and betting ---
+// --- Base game with improved interface, DOM, and features of hiding dealer's 2nd card and betting ---
 
 // --- Initialize global variables ---
 const WINNING_SCORE = 21;
-const PROGRAM_STATE_BET = "PROGRAM_STATE_BET";
 const PROGRAM_STATE_INITIAL_ROUND = "PROGRAM_STATE_INITIAL_ROUND";
 const PROGRAM_STATE_CHOOSE_HIT_OR_STAND = "PROGRAM_STATE_CHOOSE_HIT_OR_STAND";
-let programState = PROGRAM_STATE_BET;
+let programState = PROGRAM_STATE_INITIAL_ROUND;
 let deck = [];
 let playerCards = [];
 let pcCards = [];
@@ -14,7 +13,7 @@ let pcScore = 0;
 let didPlayerStand = false;
 let availableBettingPoints = 100;
 let playerBet = 0;
-let highestPointRecord = 0;
+let highestPointsRecord = 0;
 
 // --- Define buttons click and slider functionality ---
 
@@ -53,10 +52,10 @@ standButton.addEventListener("click", function () {
   output.innerHTML = main();
 });
 
-// Slider
+// Set up slider and its output value
 const slider = document.getElementById("slider-range");
 const betAmountOutput = document.getElementById("bet");
-betAmountOutput.innerHTML = slider.value; // Display the default slider value
+betAmountOutput.innerHTML = slider.value; // Display the current slider value
 
 // Update the current slider value (each time the slider handle is dragged)
 slider.oninput = function () {
@@ -173,8 +172,9 @@ const getAllCardsInfo = function (userCards) {
   return userCardsInfo;
 };
 
-// Function to compare scores
-const compareScores = function (
+// Function to analyze winning conditions and generate result output message
+// First check the strictest condition, i.e. if there is any immediate win by blackjack , then check if anyone has busted, then check the remaining normal conditions
+const getResult = function (
   playerCards,
   pcCards,
   playerScore,
@@ -182,21 +182,21 @@ const compareScores = function (
   WINNING_SCORE
 ) {
   // Initialize a string to store result info which will be combined with the standard output message later
-  let result = `<hr> Please drag the slider to bet and press Play to replay.`;
+  let result = `<hr> Please drag the slider to bet and press Play to continue playing.`;
 
-  // Video for win cases
-  const winVideo =
+  // Video for winning conditions
+  const winningVideo =
     '<video autoplay loop style="display: block; margin: 0 auto; max-width: 50%; height: 300px;"> <source src="assets/cat.mp4" type="video/mp4" /> </video>';
 
   // --- Blackjack win ---
-  // If both players have blackjack
+  // If both player and pc have blackjack, i.e. 2 cards on hand with sum of 21
   if (
     playerScore === WINNING_SCORE &&
     playerCards.length === 2 &&
     pcScore === WINNING_SCORE &&
     pcCards.length === 2
   ) {
-    result = `Both you and computer have a blackjack. It's a draw!!! ${result}`;
+    result = `Both you and computer have a blackjack. It's a push!!! ${result}`;
   } else if (
     // If only pc has blackjack
     pcScore === WINNING_SCORE &&
@@ -208,13 +208,13 @@ const compareScores = function (
     playerScore === WINNING_SCORE &&
     playerCards.length === 2
   ) {
-    result = `You have a blackjack. You win!!! ${winVideo} ${result}`;
+    result = `You have a blackjack. You win!!! ${winningVideo} ${result}`;
   }
 
   // --- No blackjack ---
   // If both player and pc have busted
   else if (playerScore > WINNING_SCORE && pcScore > WINNING_SCORE) {
-    result = `Both you and computer have busted. It's a draw!!! ${result}`;
+    result = `Both you and computer have busted. It's a tie!!! ${result}`;
   }
   // If only player has busted
   else if (playerScore > WINNING_SCORE) {
@@ -222,28 +222,23 @@ const compareScores = function (
   }
   // If only pc has busted
   else if (pcScore > WINNING_SCORE) {
-    result = `Computer has busted and lost. You win!!! ${winVideo} ${result}`;
+    result = `Computer has busted and lost. You win!!! ${winningVideo} ${result}`;
   }
   // Remaining conditions if there is no blackjack and no one has busted
   else if (playerScore > pcScore) {
-    result = `Your sum of card values is closer or equal to 21. You win!!!${winVideo} ${result}`;
+    result = `Your sum of card values is closer or equal to 21. You win!!!${winningVideo} ${result}`;
   } else if (playerScore < pcScore) {
     result = `Computer's sum of card values is closer or equal to 21. You lost!!! ${result}`;
   } else if (playerScore === pcScore) {
-    result = `Both you and computer have the same sum of card values. It's a draw!!! ${result}`;
+    result = `Both you and computer have the same sum of card values. It's a push!!! ${result}`;
   }
 
   return result;
 };
 
-// Function to calculate betting points balance left each round
-/* 
-Player wins by blackjack - gets back amount bet + 1.5x of amount bet
-Player wins normally - gets back amount bet + amount bet
-Player loses - forfeits amount bet
-Draw - gets back amount bet
-*/
-
+// Function to calculate the remaining betting points balance each round, on the basis that player bet is NOT deducted from the initial available betting points for easier calculations
+// The following calculations apply only if player bet is NOT deducted from the initial available betting points
+// Different calculations apply if player bet IS deducted from the initial balance
 const calculateBettingPoints = function (
   availableBettingPoints,
   playerBet,
@@ -255,6 +250,7 @@ const calculateBettingPoints = function (
 ) {
   // --- Blackjack win ---
   // If both players have blackjack
+  // Draw - player gets back amount bet or the balance remains the same
   if (
     playerScore === WINNING_SCORE &&
     playerCards.length === 2 &&
@@ -264,12 +260,14 @@ const calculateBettingPoints = function (
     availableBettingPoints = availableBettingPoints;
   } else if (
     // If only pc has blackjack
+    // Player loses - forfeits amount bet
     pcScore === WINNING_SCORE &&
     pcCards.length === 2
   ) {
     availableBettingPoints -= playerBet;
   } else if (
     // If only player has blackjack
+    // Player wins by blackjack - gets back amount bet + 1.5x of amount bet
     playerScore === WINNING_SCORE &&
     playerCards.length === 2
   ) {
@@ -278,124 +276,130 @@ const calculateBettingPoints = function (
 
   // --- No blackjack ---
   // If both player and pc have busted
+  // Draw - player gets back amount bet or the balance remains the same
   else if (playerScore > WINNING_SCORE && pcScore > WINNING_SCORE) {
     availableBettingPoints = availableBettingPoints;
   }
   // If only player has busted
+  // Player loses - forfeits amount bet
   else if (playerScore > WINNING_SCORE) {
     availableBettingPoints -= playerBet;
   }
   // If only pc has busted
+  // Player wins normally - gets back amount bet + amount bet
   else if (pcScore > WINNING_SCORE) {
     availableBettingPoints += playerBet;
   }
   // Remaining conditions if there is no blackjack and no one has busted
+  // Player wins normally - gets back amount bet + amount bet
   else if (playerScore > pcScore) {
     availableBettingPoints += playerBet;
-  } else if (playerScore < pcScore) {
+  }
+  // Player loses - forfeits amount bet
+  else if (playerScore < pcScore) {
     availableBettingPoints -= playerBet;
-  } else if (playerScore === pcScore) {
+  }
+  // Draw - player gets back amount bet or the balance remains the same
+  else if (playerScore === pcScore) {
     availableBettingPoints = availableBettingPoints;
   }
   return availableBettingPoints;
 };
 
 // Function to update highest record of betting points
-const updateHighestRecord = function (availableBettingPoints) {
-  if (highestPointRecord < availableBettingPoints) {
-    highestPointRecord = availableBettingPoints;
+const updateHighestPointsRecord = function (availableBettingPoints) {
+  if (highestPointsRecord < availableBettingPoints) {
+    highestPointsRecord = availableBettingPoints;
   }
-
-  return highestPointRecord;
+  return highestPointsRecord;
 };
 
-// Function to reset game
+// Function to allow multiple rounds without refreshing browser
 const reset = function () {
   deck = [];
   playerCards = [];
   pcCards = [];
   playerScore = 0;
   pcScore = 0;
-  programState = PROGRAM_STATE_BET;
+  programState = PROGRAM_STATE_INITIAL_ROUND;
   didPlayerStand = false;
 };
 
-// --- Main function ---
+// --- Main game logic ---
 const main = function (input) {
-  // Prompt player to bet
-  if (programState === PROGRAM_STATE_BET) {
-    // Add an event listener for when the slider value changes
-    slider.addEventListener("input", function () {
-      // Get the current value of the slider
-      const value = Number(slider.value);
+  if (programState === PROGRAM_STATE_INITIAL_ROUND) {
+    // --- Prompt player to bet ---
 
-      // Reset the slider max value when the game restarts with 100 points
+    // Wait for the player to drag the slider and set the max slider value
+    slider.addEventListener("input", function () {
+      // Reset the slider max value to 100 when the game restarts with 100 points
       if (availableBettingPoints === 100) {
         slider.max = 100;
-      } // Set the maximum value of the slider based on the betting points left in each round
+      }
+      // If the game is still running, set the maximum value of the slider based on the betting points left in each round
       else {
         slider.max = availableBettingPoints;
-        console.log("slider.max: " + slider.max);
       }
     });
+
+    // After getting the player's input, store the slider value, which is initally a string, to playerBet
+    // Player bet is NOT deducted from the initial available betting points for easier calculations of the final balance
     playerBet = Number(slider.value);
-    // Input validation
+
+    // If player's input is more than the max slider value set earlier
     if (playerBet > availableBettingPoints) {
       return `Your amount is out of range! Please drag the slider to bet from 1 to ${availableBettingPoints} and press Play.`;
     }
 
-    programState = PROGRAM_STATE_INITIAL_ROUND;
-    // }
-  }
+    // --- After player has bet, deal 2 cards to each player and calculate their initial scores ---
 
-  console.log("INITIAL availableBettingPoints: " + availableBettingPoints);
-  console.log("playerBet: " + playerBet);
-
-  // Initial round of dealing cards and calculating scores
-  if (programState === PROGRAM_STATE_INITIAL_ROUND) {
-    // Create a blackjack deck only at the start
+    // Create a blackjack deck only at the start of each round
     deck = shuffleDeck(createDeck());
 
-    // Each user gets 2 cards only at the start
+    // Each user gets 2 cards only at the start of each round
     playerCards = drawCards(2, playerCards, deck);
     pcCards = drawCards(2, pcCards, deck);
 
-    // Calculate each user's scores
+    // Calculate each user's initial scores
     playerScore = calculateScores(playerCards);
     pcScore = calculateScores(pcCards);
 
-    // --- The codes inside main function above this line will only run once until the game is reset in the end ---
-
-    // Switch mode for user to draw more cards and update scores
+    // Turn Play button off while the other buttons on for the next mode - also to avoid both Play and Hit buttons having overlapped functionality as clicking them will both run the main function and return the same final output when clicked
     playButton.disabled = true;
     hitButton.disabled = false;
     standButton.disabled = false;
 
+    // Switch mode for user to draw more cards and update scores if there is no blackjack win
     programState = PROGRAM_STATE_CHOOSE_HIT_OR_STAND;
+
+    // --- The codes inside main function above this line will only run once until the game is reset in the end ---
   } else if (programState === PROGRAM_STATE_CHOOSE_HIT_OR_STAND) {
     // If player has chosen to hit and has not busted, add 1 or more cards to player and update player's score until player has chosen to stand and/ or has busted
     if (!didPlayerStand && playerScore < WINNING_SCORE) {
       playerCards.push(deck.pop());
 
-      // Update the score with value(s) of extra card(s) hit
-      // Reassign with '=' instead of += below as calculateScores function calculates the sum of ALL the card values
+      // Update player's score including the value(s) of extra card(s) hit
+      // Reassign with '=' instead of increment by '+=' below as calculateScores function calculates the sum of ALL the card values
       playerScore = calculateScores(playerCards);
     }
     // If player has chosen to stand, add 1 or more cards to pc and update pc's score until pc's score is >= 17
     else if (didPlayerStand) {
-      while (pcScore < 17) {
+      const pcMinScoreToStand = 17;
+      while (pcScore < pcMinScoreToStand) {
         pcCards.push(deck.pop());
         pcScore = calculateScores(pcCards);
       }
     }
   }
 
-  // After drawing cards and calculating all the scores, initialize a standard message displaying player's cards drawn, one of the pc's card drawn and player's score.
+  // --- The codes below this line will always run regardless of program state, allowing for immediate win by blackjack to happen ---
+
+  // After drawing cards and calculating all the scores, initialize a standard output message displaying all player's cards, pc's 1st card and player's score.
   const allPlayerCardsInfo = getAllCardsInfo(playerCards);
   let myOutputValue = `You bet ${playerBet} points. <br> <br> You have:<br> ${allPlayerCardsInfo} with sum of <em>${playerScore}</em>.<br> <br> Computer has:<br> <em> ${pcCards[0].name} </em> of ${pcCards[0].suit} and a <em> hidden card</em>. <br><br>`;
 
-  // Update the standard output message for different cases
-  const resultMessage = compareScores(
+  // Get the result info for different cases (blackjack, busted or normal) to be displayed later
+  const resultMessage = getResult(
     playerCards,
     pcCards,
     playerScore,
@@ -403,16 +407,16 @@ const main = function (input) {
     WINNING_SCORE
   );
 
-  // Get all pc's cards
+  // Get all pc's cards info to be displayed later
   const allPcCardsInfo = getAllCardsInfo(pcCards);
 
-  // If someone has blackjack or player has chosen to stand, show the final result and reset the game.
+  // --- If someone has blackjack or player has chosen to stand, end and reset the game for the next round. ---
   if (
     (playerScore === WINNING_SCORE && playerCards.length === 2) ||
     (pcScore === WINNING_SCORE && pcCards.length === 2) ||
     didPlayerStand
   ) {
-    // Update betting points balance left
+    // Update betting points balance left at the end of each round
     availableBettingPoints = calculateBettingPoints(
       availableBettingPoints,
       playerBet,
@@ -424,26 +428,31 @@ const main = function (input) {
     );
 
     // Update high score
-    highestPointRecord = updateHighestRecord(availableBettingPoints);
+    highestPointsRecord = updateHighestPointsRecord(availableBettingPoints);
 
+    // Turn Play button on while the other buttons off
     playButton.disabled = false;
     hitButton.disabled = true;
     standButton.disabled = true;
 
-    console.log("FINAL availableBettingPoints: " + availableBettingPoints);
-    // Main output message when the game ends
-    myOutputValue = `You bet ${playerBet} points. <br> <br> You have:<br> ${allPlayerCardsInfo} with sum of <em>${playerScore}</em>.<br> <br> Computer has:<br> ${allPcCardsInfo} with sum of <em>${pcScore}</em>. <br> <br> ${resultMessage} <br> You have ${availableBettingPoints} points now. <br> <br> 🎆 HIGHEST RECORD: ${highestPointRecord} points 🎆`;
+    // Reassign the main standard output message with all pc's cards info etc. when the round ends
+    myOutputValue = `You bet ${playerBet} points. <br> <br> You have:<br> ${allPlayerCardsInfo} with sum of <em>${playerScore}</em>.<br> <br> Computer has:<br> ${allPcCardsInfo} with sum of <em>${pcScore}</em>. <br> <br> ${resultMessage} <br> You have ${availableBettingPoints} points now. <br> <br> 🎆 HIGHEST RECORD: ${highestPointsRecord} points 🎆`;
 
-    // When betting points are running out, reset the betting points
-    // Less than or equal to 1 as there may be rare cases of betting points balance being a decimal number between 0 and 1, where the game will stuck as the minimum slider value is set to 1
+    // When betting points are running out, reset the betting points to 100
+    /* Reset as long as the final betting points/ slider max value <= 1 as:
+    (1) there may be cases of betting points balance being a decimal number < 1, where the game will then stuck due to the minimum slider value being set to 1 initially and can no longer be dragged
+    (2) the slider may be stucked too when the slider min value is 1 while its max value is also set to 1 but player can no longer slide it to change the value
+    */
     if (availableBettingPoints <= 1) {
-      myOutputValue = `You bet ${playerBet} points. <br> <br> You have:<br> ${allPlayerCardsInfo} with sum of <em>${playerScore}</em>.<br> <br> Computer has:<br> ${allPcCardsInfo} with sum of <em>${pcScore}</em>. <br> <br> ${resultMessage} <br> You have ${availableBettingPoints} points now. <br> Game will restart from 100 points. <br> <br> 🎆 HIGHEST RECORD: ${highestPointRecord} points 🎆`;
+      myOutputValue = `You bet ${playerBet} points. <br> <br> You have:<br> ${allPlayerCardsInfo} with sum of <em>${playerScore}</em>.<br> <br> Computer has:<br> ${allPcCardsInfo} with sum of <em>${pcScore}</em>. <br> <br> ${resultMessage} <br> You have ${availableBettingPoints} points now. <br> Game will restart from 100 points. <br> <br> 🎆 HIGHEST RECORD: ${highestPointsRecord} points 🎆`;
       availableBettingPoints = 100;
     }
 
-    // Reset the game in the end while having the value of available betting points persisted
+    // Reset the game in the end while having the values of available betting points and highest record persisted across multiple rounds
     reset();
   }
+
+  // --- If no one has blackjack and player has not chosen to stand, update the initial standard output message which shows only pc's 1st card ---
 
   // If player has busted, prompt player to stand
   else if (playerScore > WINNING_SCORE) {
