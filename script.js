@@ -77,7 +77,11 @@ let main = function (input) {
     gameState = GAME_STATE_CARD_GENERATE;
     let myImage =
       '<img src="https://media.tenor.com/pS9palHuoq8AAAAC/evil-witch-laugh.gif"/>';
-    return resetGame + myImage + `<br />Let's see the cards we got!`;
+    return (
+      resetGame +
+      myImage +
+      `<br />Now that everyone has their cards... Hit submit to see the cards we got!`
+    );
   }
 
   // generate two cards for player and dealer
