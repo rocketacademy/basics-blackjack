@@ -60,6 +60,7 @@ let dealerHand = [];
 let playerValue = [];
 let dealerValue = [];
 
+let GAME_STATE_RESULT = `show who wins`;
 let GAME_STATE_BLACKJACK = `either/both players hit blackjack`;
 let GAME_STATE_STARTING_POINT = `game starting`;
 let GAME_STATE_PLAYER_CHOOSE = `player choose to hit or stand`;
@@ -69,7 +70,6 @@ let gameState = GAME_STATE_STARTING_POINT;
 // ==== MAIN FUNCTION ==== //
 let main = function (input) {
   let output = ``;
-  console.log(`game state starting point ==>`, gameState);
 
   // intro message to start the game
   if (gameState == GAME_STATE_STARTING_POINT) {
@@ -80,7 +80,6 @@ let main = function (input) {
   // generate two cards for player and dealer
   if (gameState == GAME_STATE_CARD_GENERATE) {
     let generateCards = drawCard();
-    console.log(`game state card generate ==>`, gameState);
 
     // if result is blackjack ==> restart game
     if (gameState == GAME_STATE_BLACKJACK) {
@@ -89,7 +88,6 @@ let main = function (input) {
     } else {
       // else switch game mode to let player choose
       gameState = GAME_STATE_PLAYER_CHOOSE;
-      console.log(gameState);
     }
     return generateCards;
   }
@@ -99,6 +97,13 @@ let main = function (input) {
     let dealerRandomChoice = dealerChoice(input);
     output = playerChoice(input);
     return output + dealerRandomChoice;
+  }
+
+  if (gameState == GAME_STATE_RESULT) {
+    gameState = GAME_STATE_STARTING_POINT;
+    let whoWins = findwinner(playerValue, dealerValue);
+    let resetGame = gameReset();
+    return whoWins + resetGame;
   }
 
   return output;
@@ -238,27 +243,28 @@ let playerChoice = function (playerInput) {
 
     // add new card into player array
     playerHand.push(chosenNewCardOne);
-    console.log(`playerhand:`, playerHand);
 
     // calculate new card value
     let newTotalPlayerHandValue = calCardValue(playerHand);
 
     // add new card value into player array
     playerValue.push(newTotalPlayerHandValue);
-    console.log(`playervalue:`, playerValue);
 
     return (
       outputBothPlayersHand(playerHand, dealerHand) +
       `<br /><br />Do you want to hit or stand?`
     );
   } else if (playerInput == `stand`) {
-    return outputBothPlayersHand(playerHand, dealerHand);
+    gameState = GAME_STATE_RESULT;
+    return (
+      `Click submit to find out who wins! <br /><br />` +
+      outputBothPlayersHand(playerHand, dealerHand)
+    );
   } else {
     output =
       `Please enter either hit or stand <br /><br />` +
       outputBothPlayersHand(playerHand, dealerHand);
   }
-  console.log(output);
   return output;
 };
 
@@ -266,7 +272,7 @@ let playerChoice = function (playerInput) {
 let dealerChoice = function (playerInput) {
   let output = ``;
 
-  if (playerInput == `stand` && dealerValue < 17) {
+  if (dealerValue < 17) {
     dealerValue = [];
 
     let dealerDrawOneCard = shuffledDeck(makeDeck());
@@ -278,9 +284,10 @@ let dealerChoice = function (playerInput) {
     let newTotalPlayerHandValue = calCardValue(dealerHand);
 
     dealerValue.push(newTotalPlayerHandValue);
+  } else if (playerInput == `stand` && dealerValue > 17) {
+    return output;
   }
-
-  return output + `<br / ><br />Click submit to see dealer's next card`;
+  return output;
 };
 
 // set displays for player and dealer hand output
