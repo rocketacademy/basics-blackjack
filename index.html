@@ -7,33 +7,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <!-- Favicon configuration -->
-    <link
-      rel="apple-touch-icon"
-      sizes="180x180"
-      href="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/favicons/apple-touch-icon.png?v=2"
-    />
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="32x32"
-      href="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/favicons/favicon-32x32.png?v=2"
-    />
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="16x16"
-      href="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/favicons/favicon-16x16.png?v=2"
-    />
+    <link rel="apple-touch-icon" sizes="180x180" href="" />
+    <link rel="icon" type="image/png" sizes="32x32" href="" />
+    <link rel="icon" type="image/png" sizes="16x16" href="" />
     <link rel="manifest" href="/site.webmanifest?v=2" />
-    <link
-      rel="mask-icon"
-      href="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/favicons/safari-pinned-tab.svg?v=2"
-      color="#e73c3e"
-    />
-    <link
-      rel="shortcut icon"
-      href="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/favicons/favicon.ico?v=2"
-    />
+    <link rel="mask-icon" href="" color="#e73c3e" />
+    <link rel="shortcut icon" href="" />
     <meta name="apple-mobile-web-app-title" content="Rocket Academy" />
     <meta name="application-name" content="Rocket Academy" />
     <meta name="msapplication-TileColor" content="#2b5797" />
@@ -42,7 +21,7 @@
     <!-- sharing configuration -->
     <!-- Primary Meta Tags -->
     <title>Blackjack - Basics - Rocket Academy</title>
-    <meta name="title" content="YOURNAME's BlackJack Game!" />
+    <meta name="title" content="Ash's BlackJack Game!" />
     <meta name="description" content="A fun card game I made myself! 😄💪🌈" />
 
     <!-- Open Graph / Facebook -->
@@ -51,7 +30,7 @@
       property="og:url"
       content="https://rocketacademy.github.io/basics-blackjack/index.html"
     />
-    <meta property="og:title" content="YOURNAME's BlackJack Game!" />
+    <meta property="og:title" content="Ash's BlackJack Game!" />
     <meta
       property="og:description"
       content="A fun card game I made myself! 😄💪🌈"
@@ -67,7 +46,7 @@
       name="twitter:url"
       content="https://rocketacademy.github.io/basics-blackjack/index.html"
     />
-    <meta name="twitter:title" content="YOURNAME's BlackJack Game!" />
+    <meta name="twitter:title" content="Ash's BlackJack Game!" />
     <meta
       name="twitter:description"
       content="A fun card game I made myself! 😄💪🌈"
@@ -82,7 +61,7 @@
     <!-- fonts -->
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css?family=Open+Sans"
+      href="https://fonts.googleapis.com/css?family=Rowdies"
     />
 
     <!-- CSS -->
@@ -92,19 +71,19 @@
       }
 
       body {
-        font-family: "Open Sans", sans-serif;
+        font-family: "Rowdies";
         margin-left: 30px;
         margin-right: 30px;
         background-color: #515c26;
-        background: "background.jpg";
         color: #edae4d; /* sets the font color */
-        background-image: url(""); /* The image used */
+        background-image: url("background.jpg"); /* The image used */
         background-position: center; /* Center the image */
         background-repeat: no-repeat; /* Do not repeat the image */
         background-size: cover; /* Resize the background image to cover the entire container */
       }
 
       #output-div img {
+        margin: auto;
         display: block;
         max-width: 100%;
         max-height: 200px;
@@ -116,15 +95,17 @@
       }
 
       #container {
+        text-align: center;
         background-color: #874c87;
         margin: 40px auto;
-        max-width: 800px;
+        max-width: 500px;
         padding: 38px 31px;
       }
 
       input {
         font-size: 21px;
         color: #874c87;
+        background-color: #ffc6d0;
         line-height: 33px;
         margin: 0 0 23px 0;
         padding: 0 9px;
@@ -132,6 +113,9 @@
       }
 
       button {
+        font-family: "Rowdies";
+        color: #f58a9b;
+        background-color: #1b1917;
         font-size: 21px;
         line-height: 33px;
         margin: 0 0 23px 0;
@@ -165,12 +149,19 @@
     <h1 class="header">Rocket Academy</h1>
     <h1 class="header">🔮 Blackjack 🔮</h1>
     <div id="container">
+      <h3>Feeling lucky today?</h3>
+      <h4>Hit submit to start dealing.</h4>
       <p>Input:</p>
       <input id="input-field" />
       <br />
       <button id="submit-button">Submit</button>
       <p>Output:</p>
-      <div id="output-div"></div>
+      <div id="output-div">
+        <img
+          src="https://media.tenor.com/te1bdTV4c9EAAAAC/cat-halloween.gif"
+          alt="it's a picture of salem brewing pot"
+        />
+      </div>
     </div>
     <!-- Import program logic -->
     <script src="script.js"></script>

@@ -75,10 +75,9 @@ let main = function (input) {
   if (gameState == GAME_STATE_STARTING_POINT) {
     let resetGame = gameReset();
     gameState = GAME_STATE_CARD_GENERATE;
-    return (
-      resetGame +
-      `Welcome! Let's play a game of Blackjack.<br /><br />Hit submit to deal the cards. Let's see what you got!`
-    );
+    let myImage =
+      '<img src="https://media.tenor.com/pS9palHuoq8AAAAC/evil-witch-laugh.gif"/>';
+    return resetGame + myImage + `<br />Let's see the cards we got!`;
   }
 
   // generate two cards for player and dealer
