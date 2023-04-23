@@ -80,7 +80,7 @@ let main = function (input) {
     return (
       resetGame +
       myImage +
-      `<br />Now that everyone has their cards... Hit submit to see the cards we got!`
+      `<br />Now that everyone has their cards... Hit submit to see what we've got!`
     );
   }
 
