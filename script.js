@@ -103,7 +103,7 @@ let main = function (input) {
       gameState = GAME_STATE_STARTING_POINT;
       return (
         `You lose! You went over 21.<br /><br />` +
-        outputBothPlayersHand(playerHand, dealerHand) +
+        outputPlayerHand(playerHand, dealerHand) +
         `<br /><br />Hit submit to restart.`
       );
     }
@@ -194,7 +194,7 @@ let drawCard = function () {
     gameState = GAME_STATE_BLACKJACK;
     return (
       `You win! You got blackjack.<br /><br />` +
-      outputBothPlayersHand(playerHand, dealerHand) +
+      outputPlayerHand(playerHand, dealerHand) +
       `<br /><br />Hit submit to restart.`
     );
   } else if (dealerValue == 21) {
@@ -213,7 +213,7 @@ let drawCard = function () {
     );
   } else {
     return (
-      outputBothPlayersHand(playerHand, dealerHand) +
+      outputPlayersHandOneDealerHand(playerHand, dealerHand) +
       `<br /><br />Do you want to hit or stand?`
     );
   }
@@ -279,19 +279,18 @@ let playerChoice = function (playerInput) {
     playerValue.push(newTotalPlayerHandValue);
 
     return (
-      outputBothPlayersHand(playerHand, dealerHand) +
+      outputPlayersHandOneDealerHand(playerHand, dealerHand) +
       `<br /><br />Do you want to hit or stand?`
     );
   } else if (playerInput == `stand`) {
+    let myImage =
+      '<img src="https://media.tenor.com/2CJn8jmHOTQAAAAC/ursula-little-mermaid.gif"/>';
     gameState = GAME_STATE_RESULT;
-    return (
-      `Hit submit to find out who wins! <br /><br />` +
-      outputBothPlayersHand(playerHand, dealerHand)
-    );
+    return `Hit submit to find out who wins! <br /><br/>` + myImage;
   } else {
     output =
       `Please enter either hit or stand <br /><br />` +
-      outputBothPlayersHand(playerHand, dealerHand);
+      outputPlayersHandOneDealerHand(playerHand, dealerHand);
   }
   return output;
 };
@@ -330,6 +329,29 @@ let outputBothPlayersHand = function (playerHand, dealerHand) {
     dealerMessage = `${dealerMessage}- ${dealerHand[i].name} of ${dealerHand[i].suit}<br />`;
   }
   return `${playerMessage} <br />Your total hand value: ${playerValue}<br /><br /> ${dealerMessage} <br />Dealer total hand value: ${dealerValue}`;
+};
+
+// set displays for player hand output only
+let outputPlayerHand = function (playerHand, dealerHand) {
+  let playerMessage = `Your Hand:<br />`;
+  for (let i = 0; i < playerHand.length; i += 1) {
+    playerMessage = `${playerMessage}- ${playerHand[i].name} of ${playerHand[i].suit}<br />`;
+  }
+  return `${playerMessage} <br />Your total hand value: ${playerValue}`;
+};
+
+// set displays for player hand output and only one dealer hand output
+let outputPlayersHandOneDealerHand = function (playerHand, dealerHand) {
+  let playerMessage = `Your Hand:<br />`;
+  for (let i = 0; i < playerHand.length; i += 1) {
+    playerMessage = `${playerMessage}- ${playerHand[i].name} of ${playerHand[i].suit}<br />`;
+  }
+
+  let dealerMessage = `Dealer Hand:<br />`;
+  for (let i = 0; i < 1; i += 1) {
+    dealerMessage = `${dealerMessage}- ${dealerHand[i].name} of ${dealerHand[i].suit}<br />`;
+  }
+  return `${playerMessage} <br />Your total hand value: ${playerValue}<br /><br /> ${dealerMessage}- ❔❔❔<br /><br />Dealer total hand value: ❔❔❔`;
 };
 
 // find which player wins
