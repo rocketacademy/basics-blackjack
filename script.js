@@ -18,7 +18,7 @@ var dealerCards = [];
 //Making a Card Deck
 var makeDeck = function () {
   var cardDeck = [];
-  var suits = ["Hearts", "Diamonds", "Clubs", "Spades"];
+  var suits = ["♥️", "♦️", "♣️", "♠️"];
 
   var suitIndex = 0;
   while (suitIndex < suits.length) {
