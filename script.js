@@ -361,66 +361,71 @@ let resetGame = function () {
   shuffledDeck = shuffleCards(makeDeck());
 };
 
+
+let deal = function () {
+  let myOutputValue = "";
+  resetGame();
+  noofRounds += 1;
+  gameMode = "deal";
+  firstDrawCard();
+  checkBlackjack();
+  gameMode = "player";
+  currentPlayer = "player";
+  DEALBUTTON.disabled = true;
+  if (
+    arrayStore[PLAYER].blackjack == true ||
+    arrayStore[COMPUTER].blackjack == true
+  ) {
+    myOutputValue += displayFinalResults();
+    myOutputValue += displayCards();
+    gameMode = "first round";
+    currentPlayer = "computer";
+  } else {
+    myOutputValue = displayCards();
+  }
+  return myOutputValue;
+};
+
+let hit = function () {
+  let outputValue = "";
+  HITBUTTON.disabled = false;
+  STANDBUTTON.disabled = false;
+  gameMode = "hit";
+  selectHit();
+  outputValue = displayCards();
+  currentPlayer = "player";
+  return outputValue;
+};
+
+let stand = function () {
+  let outputValue = "";
+  gameMode = "stand";
+  currentPlayer = "computer";
+  outputValue = "Player has chosen to stand. <br><br> ";
+  for (let ctr = 0; arrayStore[COMPUTER].sum < 17; ctr += 1) {
+    selectHit();
+  }
+  outputValue += displayFinalResults();
+  outputValue += displayCards();
+  gameMode = "first round";
+  return outputValue;
+};
+
 let main = function (input) {
   let myOutputValue = "";
   if (shuffledDeck.length <= 10) {
     shuffledDeck = shuffleCards(makeDeck());
   }
   if (input == "deal") {
-    resetGame();
-    noofRounds += 1;
-    gameMode = input;
-    console.log(input);
-    firstDrawCard();
-    checkBlackjack();
-    gameMode = "player";
-    currentPlayer = "player";
-    DEALBUTTON.disabled = true;
-    if (
-      arrayStore[PLAYER].blackjack == true ||
-      arrayStore[COMPUTER].blackjack == true
-    ) {
-      myOutputValue += displayFinalResults();
-      myOutputValue += displayCards();
-      gameMode = "first round";
-      currentPlayer = "computer";
-    } else {
-      myOutputValue = displayCards();
-    }
-  }
-
-  if (
+    myOutputValue = deal();
+  } else if (
     input == "hit" &&
     arrayStore[PLAYER].busted != true &&
     arrayStore[PLAYER].sum != 21
   ) {
-    HITBUTTON.disabled = false;
-    STANDBUTTON.disabled = false;
-    gameMode = input;
-    console.log(input);
-    selectHit();
-    myOutputValue = displayCards();
-    currentPlayer = "player";
-    return myOutputValue;
-  }
-
-  if (input == "stand" && arrayStore[PLAYER].sum < 12) {
-    myOutputValue = `Sorry, you have not met the minimum of 12 points. Please select "Hit".`;
+    myOutputValue = hit();
   } else if (input == "stand") {
-    gameMode = input;
-    console.log(`Game mode ${gameMode}`);
-    currentPlayer = "computer";
-    myOutputValue = "Player has chosen to stand. <br><br> ";
-    console.log(`Computer Sum is ${arrayStore[COMPUTER].sum}`);
-    for (let ctr = 0; arrayStore[COMPUTER].sum < 17; ctr += 1) {
-      selectHit();
-      console.log(arrayStore[COMPUTER].sum);
-    }
-    console.log(`Game mode ${gameMode}`);
-    myOutputValue += displayFinalResults();
-    myOutputValue += displayCards();
-    gameMode = "first round";
+    myOutputValue = stand();
   }
-
   return myOutputValue;
 };
