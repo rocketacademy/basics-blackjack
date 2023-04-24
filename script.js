@@ -378,7 +378,7 @@ Player wins by black jack!*/
         }
         //Dealer lose (Player won) when dealer busts and player not busts
         else if (handTotalOfPlayerInArray[0] < 21) {
-          myOutputValue += `<br>Player won! Because dealer busts (hand total: ${handTotalOfDealerInArray[0]}).<br>Please refresh the webpage to play again.<br>${imagePlayerWin}`;
+          myOutputValue += `<br>Player won! Because dealer busts (hand total: ${handTotalOfDealerInArray[0]}), hand total of player is ${handTotalOfPlayerInArray[0]}.<br>Please refresh the webpage to play again.<br>${imagePlayerWin}`;
         }
       }
     }
@@ -431,7 +431,7 @@ Player wins by black jack!*/
         }
         //Dealer lose (Player won) when dealer busts and player not busts
         else if (handTotalOfPlayerInArray[0] < 21) {
-          myOutputValue += `<br>Player won! Because dealer busts (hand total: ${handTotalOfDealerInArray[0]}).<br>Please refresh the webpage to play again.<br>${imagePlayerWin}`;
+          myOutputValue += `<br>Player won! Because dealer busts (hand total: ${handTotalOfDealerInArray[0]}), hand total of player is ${handTotalOfPlayerInArray[0]}.<br>Please refresh the webpage to play again.<br>${imagePlayerWin}`;
         }
       }
     }
@@ -481,7 +481,7 @@ Player wins by black jack!*/
         }
         //Dealer lose (Player won) when dealer busts and player not busts
         else if (handTotalOfPlayerInArray[0] < 21) {
-          myOutputValue += `<br>Player won! Because dealer busts (hand total: ${handTotalOfDealerInArray[0]}).<br>Please refresh the webpage to play again.<br>${imagePlayerWin}`;
+          myOutputValue += `<br>Player won! Because dealer busts (hand total: ${handTotalOfDealerInArray[0]}), hand total of player is ${handTotalOfPlayerInArray[0]}.<br>Please refresh the webpage to play again.<br>${imagePlayerWin}`;
         }
       }
     }
