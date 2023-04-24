@@ -22,6 +22,7 @@ let player = {
   busted: false,
   totalChips: 100,
   totalBlackjack: 0,
+  aceValueChanged: false,
 };
 let computer = {
   name: "",
@@ -31,6 +32,7 @@ let computer = {
   busted: false,
   totalChips: 100,
   totalBlackjack: 0,
+  aceValueChanged: false,
 };
 let arrayStore = [computer, player];
 const PLAYER = 1;
@@ -108,8 +110,24 @@ let shuffledDeck = shuffleCards(makeDeck());
 let firstDrawCard = function () {
   // draws computer's cards
   for (let ctr = 0; ctr < numCards; ctr += 1) {
-    computerCard.push(shuffledDeck.pop());
     playerCard.push(shuffledDeck.pop());
+    console.log(`Player card $[ctr] card is ${playerCard[ctr].rank}`);
+    computerCard.push(shuffledDeck.pop());
+    console.log(`Computer card $[ctr] card is ${computerCard[ctr].rank}`);
+  }
+
+  if (computerCard[0].name == "ace" && computerCard[1].name == "ace") {
+    computerCard[1].name = 1;
+    computerCard[1].rank = 1;
+    aceValueChanged = true;
+    console.log(`Computercard array is ${computerCard}`);
+  }
+
+  if (playerCard[0].name == "ace" && playerCard[1].name == "ace") {
+    playerCard[1].name = 1;
+    playerCard[1].rank = 1;
+    aceValueChanged = true;
+    console.log(`Playercard array is ${playerCard}`);
   }
   return;
 };
@@ -126,20 +144,10 @@ let checkBlackjack = function () {
     } else {
       arrayStore[COMPUTER].sum = computerCard[0].rank + computerCard[1].rank;
       console.log(`Computer total sum is: ${arrayStore[COMPUTER].sum}`);
-      if (arrayStore[COMPUTER].sum > 21) {
-        arrayStore[COMPUTER].busted = true;
-        HITBUTTON.disabled = true;
-        STANDBUTTON.disabled = false;
-      }
     }
   } else {
     arrayStore[COMPUTER].sum = computerCard[0].rank + computerCard[1].rank;
     console.log(`Computer total sum is: ${arrayStore[COMPUTER].sum}`);
-    if (arrayStore[COMPUTER].sum > 21) {
-      arrayStore[COMPUTER].busted = true;
-      HITBUTTON.disabled = true;
-      STANDBUTTON.disabled = false;
-    }
   }
 
   if (playerCard[0].name == "ace" || playerCard[1].name == "ace") {
@@ -168,7 +176,7 @@ let checkBlackjack = function () {
     console.log(`Player total sum is: ${arrayStore[PLAYER].sum}`);
     if (arrayStore[PLAYER].sum < 12) {
       HITBUTTON.disabled = false;
-      STANDBUTTON.disabled = false;
+      STANDBUTTON.disabled = true;
     } else if (arrayStore[PLAYER].sum > 21) {
       arrayStore[PLAYER].busted = true;
       HITBUTTON.disabled = true;
@@ -178,10 +186,8 @@ let checkBlackjack = function () {
       STANDBUTTON.disabled = false;
     }
   }
-
   return;
 };
-
 let displayCards = function () {
   let outputValue = "";
   if (
@@ -222,19 +228,36 @@ let displayCards = function () {
 
 let changeAceValue = function () {
   if (currentPlayer == "player" && arrayStore[PLAYER].sum > 21) {
-    for (let ctr = 0; ctr < playerCard.length; ctr += 1) {
+    for (
+      let ctr = 0;
+      ctr < playerCard.length && arrayStore[PLAYER].aceValueChanged == false;
+      ctr += 1
+    ) {
       if (playerCard[ctr].name == "ace") {
         playerCard[ctr].rank = 1;
-        arrayStore[PLAYER].sum -= 10;
+        arrayStore[PLAYER].sum = arrayStore[PLAYER].sum - 10;
+        arrayStore[PLAYER].aceValueChanged = true;
+        console.log(
+          `change ace value function activated for player<br>New Total is ${arrayStore[PLAYER].sum}.`
+        );
         ctr = playerCard.length;
       }
     }
   } else if (currentPlayer == "computer" && arrayStore[COMPUTER].sum > 21) {
-    for (let ctr = 0; ctr < computerCard.length; ctr += 1) {
+    for (
+      let ctr = 0;
+      ctr < computerCard.length &&
+      arrayStore[COMPUTER].aceValueChanged == false;
+      ctr += 1
+    ) {
       if (computerCard[ctr].name == "ace") {
         computerCard[ctr].rank = 1;
-        arrayStore[COMPUTER].sum -= 10;
+        arrayStore[COMPUTER].sum = arrayStore[COMPUTER].sum - 10;
+        arrayStore[COMPUTER].aceValueChanged = true;
         ctr = computerCard.length;
+        console.log(
+          `change ace value function activated for computer<br>New Total is ${arrayStore[COMPUTER].sum}.`
+        );
       }
     }
   }
@@ -247,25 +270,34 @@ let selectHit = function () {
     let arrayLength = playerCard.length - 1;
     console.log(playerCard);
     arrayStore[PLAYER].sum += playerCard[arrayLength].rank;
-    changeAceValue();
+    console.log(
+      `Select Hit - Arraystore[player]sum is ${arrayStore[PLAYER].sum}`
+    );
+    if (arrayStore[PLAYER].aceValueChanged == false) {
+      changeAceValue();
+      console.log(
+        `Select Hit After Change Ace - Arraystore[player]sum is ${arrayStore[PLAYER].sum}<br>Arraystore[computer].sum is ${arrayStore[COMPUTER].sum}. `
+      );
+    }
     if (arrayStore[PLAYER].sum > 21) {
       arrayStore[PLAYER].busted = true;
       HITBUTTON.disabled = true;
       STANDBUTTON.disabled = false;
+      console.log(`Player sum: ${arrayStore[PLAYER].sum}`);
     }
-    console.log(`Player sum: ${arrayStore[PLAYER].sum}`);
   } else if (currentPlayer == "computer") {
     computerCard.push(shuffledDeck.pop());
     let arrayLength = computerCard.length - 1;
     arrayStore[COMPUTER].sum += computerCard[arrayLength].rank;
-    changeAceValue();
     if (arrayStore[COMPUTER].sum > 21) {
-      arrayStore[COMPUTER].busted = true;
-      HITBUTTON.disabled = true;
-      STANDBUTTON.disabled = false;
+      if (arrayStore[COMPUTER].aceValueChanged == false) {
+        changeAceValue();
+      } else {
+        arrayStore[COMPUTER].busted = true;
+      }
     }
-    console.log(`Computer sum: ${arrayStore[COMPUTER].sum}`);
   }
+  console.log(`Computer sum: ${arrayStore[COMPUTER].sum}`);
   return;
 };
 
@@ -313,6 +345,7 @@ let resetGame = function () {
     busted: false,
     totalChips: 100,
     totalBlackjack: 0,
+    aceValueChanged: false,
   };
   let computer = {
     name: "",
@@ -322,6 +355,7 @@ let resetGame = function () {
     busted: false,
     totalChips: 100,
     totalBlackjack: 0,
+    aceValueChanged: false,
   };
   arrayStore = [computer, player];
   shuffledDeck = shuffleCards(makeDeck());
@@ -332,7 +366,7 @@ let main = function (input) {
   if (shuffledDeck.length <= 10) {
     shuffledDeck = shuffleCards(makeDeck());
   }
-  if (input == "deal" && gameMode == "first round") {
+  if (input == "deal") {
     resetGame();
     noofRounds += 1;
     gameMode = input;
