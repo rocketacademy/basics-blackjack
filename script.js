@@ -83,6 +83,12 @@ console.log("shuffledDeck", shuffledDeck);
 //CREATE MAIN FUNCTION TO COMPARE THE CARDS BETWEEN PLAYER AND COMPUTER
 let main = function (input) {
   let myOutputValue = "";
+  let imageTie =
+    '<img src="https://media.tenor.com/mFYsjkPJ_TwAAAAi/%E5%BC%95%E3%81%8D%E5%88%86%E3%81%91-draw.gif"/>';
+  let imagePlayerWin =
+    '<img src="https://media.tenor.com/ItjSOKnVjYkAAAAi/win-%E5%8B%9D%E3%81%A1.gif"/>';
+  let imagePlayerLose =
+    '<img src="https://media.tenor.com/LRKlbuGlNbEAAAAi/lose-%E8%B2%A0%E3%81%91.gif"/>';
   // pop removes and returns the last array element (i.e. draws a card from the top of the deck).
   // Draw 2 cards from the top of the deck
   let playerCard1 = shuffledDeck.pop();
@@ -143,23 +149,23 @@ Player wins by black jack!*/
     //COMPARE INITIAL HAND VALUE BTW PLAYER AND DEALER
     // A Blackjack win. When either player or dealer draw Blackjack.
     if (firstHandValueOfPlayer == 21 && firstHandValueOfDealer != 21) {
-      myOutputValue += `Player won by Blackjack! <br>Please refresh the webpage to play again.`;
+      myOutputValue += `Player won by Blackjack! <br>Please refresh the webpage to play again.<br>${imagePlayerWin}`;
     } else if (firstHandValueOfPlayer != 21 && firstHandValueOfDealer == 21) {
-      myOutputValue += `Dealer won by Blackjack! <br>Please refresh the webpage to play again.`;
+      myOutputValue += `Player lose! Dealer won by Blackjack! <br>Please refresh the webpage to play again.<br>${imagePlayerLose}`;
     }
     // A normal win. When neither draw Blackjack, the winner is decided by whomever has the higher hand total.
     else if (
       firstHandValueOfDealer >= 17 &&
       firstHandValueOfDealer < firstHandValueOfPlayer
     ) {
-      myOutputValue += `Player won! <br>Please refresh the webpage to play again.`;
+      myOutputValue += `Player won! <br>Please refresh the webpage to play again.<br>${imagePlayerWin}`;
       //It's a tie. Both draw Blackjack.
     } else if (firstHandValueOfPlayer == 21 && firstHandValueOfDealer == 21) {
-      myOutputValue += `It's a tie! Both dealer and player draw Blackjack! <br>Please refresh the webpage to play again.`;
+      myOutputValue += `It's a tie! Both dealer and player draw Blackjack! <br>Please refresh the webpage to play again.<br>${imageTie}`;
     }
     //Player choose to hit or stand
     else {
-      myOutputValue += `Wow, you're at ${firstHandValueOfPlayer} right now! Do you want to hit or stand? Type h for hit or s for stand, then click submit<br>`;
+      myOutputValue += `Wow, you're at ${firstHandValueOfPlayer} right now! Do you want to hit or stand?<br>`;
       gameState = "PLAYER HIT OR STAND";
     }
   }
