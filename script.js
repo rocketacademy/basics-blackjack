@@ -386,6 +386,7 @@ var main = function (input) {
 
   else if (gameState == PLAYER_HIT_OR_STAND) {
     // if player hit, add a card to array
+    var input = input.toLowerCase();
     if (input == "hit") {
       output = inputIsHit();
       }
