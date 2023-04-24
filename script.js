@@ -14,7 +14,7 @@ let dealerHandInArray = [];
 
 let makeDeck = function () {
   // Initialise an array of the 4 suits in our deck. We will loop over this array.
-  let suits = ["hearts", "diamonds", "clubs", "spades"];
+  let suits = ["💙", "💎", "♣️", "♠️"];
   // Loop over the suits array
   for (let suitIndex = 0; suitIndex < suits.length; suitIndex += 1) {
     // Store the current suit in a variable
@@ -32,18 +32,46 @@ let makeDeck = function () {
 
       // If rank is 1, 11, 12, or 13, set cardName to the ace or face card's name
       if (cardName == 1) {
-        card.name = "ace";
+        card.name = "🅰️ace";
         card.value = [1, 11];
+      } else if (cardName == 2) {
+        card.name = "2️⃣";
+        card.value = 2;
+      } else if (cardName == 3) {
+        card.name = "3️⃣";
+        card.value = 3;
+      } else if (cardName == 4) {
+        card.name = "4️⃣";
+        card.value = 4;
+      } else if (cardName == 5) {
+        card.name = "5️⃣";
+        card.value = 5;
+      } else if (cardName == 6) {
+        card.name = "6️⃣";
+        card.value = 6;
+      } else if (cardName == 7) {
+        card.name = "7️⃣";
+        card.value = 7;
+      } else if (cardName == 8) {
+        card.name = "8️⃣";
+        card.value = 8;
+      } else if (cardName == 9) {
+        card.name = "9️⃣";
+        card.value = 9;
+      } else if (cardName == 10) {
+        card.name = "🔟";
+        card.value = 10;
       } else if (cardName == 11) {
         card.name = "jack";
         card.value = 10;
       } else if (cardName == 12) {
-        card.name = "queen";
+        card.name = "👑queen";
         card.value = 10;
       } else if (cardName == 13) {
-        card.name = "king";
+        card.name = "👑king";
         card.value = 10;
       }
+      console.log("cards", card);
       // Add the new card to the deck
       cardDeck.push(card);
     }
@@ -109,15 +137,15 @@ Player wins by black jack!*/
     let firstHandValueOfDealer = 0;
     //DISPLAY THE CARDS OF PLAYER AND THE SUM
     //PUSH HAND VALUE TO ARRAY
-    if (playerCard1.name == "ace" && playerCard2.name != "ace") {
+    if (playerCard1.name == "🅰️ace" && playerCard2.name != "🅰️ace") {
       firstHandValueOfPlayer = playerCard1.value[1] + playerCard2.value;
       handTotalOfPlayerInArray.push(firstHandValueOfPlayer);
       myOutputValue = `Player hand: ${playerCard1.name} of ${playerCard1.suit}, ${playerCard2.name} of ${playerCard2.suit} with sum ${firstHandValueOfPlayer}.<br>`;
-    } else if (playerCard2.name == "ace" && playerCard1.name != "ace") {
+    } else if (playerCard2.name == "🅰️ace" && playerCard1.name != "🅰️ace") {
       firstHandValueOfPlayer = playerCard1.value + playerCard2.value[1];
       handTotalOfPlayerInArray.push(firstHandValueOfPlayer);
       myOutputValue = `Player hand: ${playerCard1.name} of ${playerCard1.suit}, ${playerCard2.name} of ${playerCard2.suit} with sum ${firstHandValueOfPlayer}.<br>`;
-    } else if (playerCard1.name == "ace" && playerCard2.name == "ace") {
+    } else if (playerCard1.name == "🅰️ace" && playerCard2.name == "🅰️ace") {
       firstHandValueOfPlayer = playerCard1.value[1] + playerCard2.value[0];
       handTotalOfPlayerInArray.push(firstHandValueOfPlayer);
       myOutputValue = `Player hand: ${playerCard1.name} of ${playerCard1.suit}, ${playerCard2.name} of ${playerCard2.suit} with sum ${firstHandValueOfPlayer}.<br>`;
@@ -128,15 +156,15 @@ Player wins by black jack!*/
     }
 
     //DISPLAY THE CARDS OF DEALER AND THE SUM
-    if (dealerCard1.name == "ace" && dealerCard2.name != "ace") {
+    if (dealerCard1.name == "🅰️ace" && dealerCard2.name != "🅰️ace") {
       firstHandValueOfDealer = dealerCard1.value[1] + dealerCard2.value;
       handTotalOfDealerInArray.push(firstHandValueOfDealer);
       myOutputValue += `Dealer hand: ${dealerCard1.name} of ${dealerCard1.suit}, ${dealerCard2.name} of ${dealerCard2.suit} with sum ${firstHandValueOfDealer}.<br>`;
-    } else if (dealerCard2.name == "ace" && dealerCard1.name != "ace") {
+    } else if (dealerCard2.name == "🅰️ace" && dealerCard1.name != "🅰️ace") {
       firstHandValueOfDealer = dealerCard1.value + dealerCard2.value[1];
       handTotalOfDealerInArray.push(firstHandValueOfDealer);
       myOutputValue += `Dealer hand: ${dealerCard1.name} of ${dealerCard1.suit}, ${dealerCard2.name} of ${dealerCard2.suit} with sum ${firstHandValueOfDealer}.<br>`;
-    } else if (dealerCard1.name == "ace" && dealerCard2.name == "ace") {
+    } else if (dealerCard1.name == "🅰️ace" && dealerCard2.name == "🅰️ace") {
       firstHandValueOfDealer = dealerCard1.value[1] + dealerCard2.value[0];
       handTotalOfDealerInArray.push(firstHandValueOfDealer);
       myOutputValue += `Dealer hand: ${dealerCard1.name} of ${dealerCard1.suit}, ${dealerCard2.name} of ${dealerCard2.suit} with sum ${firstHandValueOfDealer}.<br>`;
@@ -186,7 +214,7 @@ Player wins by black jack!*/
     //ONCE PLAYER HIT, NEXT CARD OF PLAYER IS ACE.
     //CHOOSE THE VALUE OF Ace TO AVOID BUST
     //AFTER PLAYER DEALT WITH 3rd card, HE STILL CAN CHOOSE EITHER HIT OR STAND.
-    if (playerNextCard.name == "ace" && handTotalOfPlayerInArray[0] >= 11) {
+    if (playerNextCard.name == "🅰️ace" && handTotalOfPlayerInArray[0] >= 11) {
       handTotalOfPlayerInArray[0] += playerNextCard.value[0];
       // A Blackjack win. When player draw Blackjack.
       if (handTotalOfPlayerInArray[0] == 21) {
@@ -216,7 +244,7 @@ Player wins by black jack!*/
       }
     }
     //ONCE PLAYER HIT, CURRENTLY, HAND TOTAL OF PLAYER IS LESS THAN 11 & NEXT CARD OF PLAYER IS ACE
-    if (playerNextCard.name == "ace" && handTotalOfPlayerInArray[0] < 11) {
+    if (playerNextCard.name == "🅰️ace" && handTotalOfPlayerInArray[0] < 11) {
       handTotalOfPlayerInArray[0] += playerNextCard.value[1];
       // A Blackjack win. When player draw Blackjack.
       if (handTotalOfPlayerInArray[0] == 21) {
@@ -246,7 +274,7 @@ Player wins by black jack!*/
       }
     }
     //ONCE PLAYER HIT, NEXT CARD OF PLAYER IS NOT ACE.
-    else if (playerNextCard.name != "ace") {
+    else if (playerNextCard.name != "🅰️ace") {
       handTotalOfPlayerInArray[0] += playerNextCard.value;
       // A Blackjack win. When player draw Blackjack.
       if (handTotalOfPlayerInArray[0] == 21) {
@@ -305,7 +333,7 @@ Player wins by black jack!*/
     let dealerNextCard = shuffledDeck.pop();
     console.log("dealerNextCard", dealerNextCard);
     //When hand total of dealer is more than or equal to 11, but his next card is ace.
-    if (handTotalOfDealerInArray[0] >= 11 && dealerNextCard.name == "ace") {
+    if (handTotalOfDealerInArray[0] >= 11 && dealerNextCard.name == "🅰️ace") {
       handTotalOfDealerInArray[0] += dealerNextCard.value[0];
       //Hand total of dealer is less than 17, then hit again.
       if (handTotalOfDealerInArray[0] < 17) {
@@ -355,7 +383,10 @@ Player wins by black jack!*/
       }
     }
     //ONCE DEALER HIT, CURRENTLY, HAND TOTAL OF DEALER IS LESS THAN 11 & NEXT CARD OF PLAYER IS ACE
-    else if (handTotalOfDealerInArray[0] < 11 && dealerNextCard.name == "ace") {
+    else if (
+      handTotalOfDealerInArray[0] < 11 &&
+      dealerNextCard.name == "🅰️ace"
+    ) {
       handTotalOfDealerInArray[0] += dealerNextCard.value[1];
       //Hand total of dealer is less than 17, then hit again.
       if (handTotalOfDealerInArray[0] < 17) {
@@ -405,7 +436,7 @@ Player wins by black jack!*/
       }
     }
     //When dealer's next card is not ace
-    else if (dealerNextCard.name != "ace") {
+    else if (dealerNextCard.name != "🅰️ace") {
       handTotalOfDealerInArray[0] += dealerNextCard.value;
       //Hand total of dealer is less than 17, then hit again.
       if (handTotalOfDealerInArray[0] < 17) {
