@@ -1,24 +1,22 @@
-// -- Basics --
-// 1.Deck is shuffled.
-// 2.User clicks Submit to deal cards.
-// 3.The cards are analysed for game winning conditions, e.g. Blackjack.
-// 4.The cards are displayed to the user.
-// 5.The user decides whether to hit or stand, using the submit button to submit their choice.
-// 6.The user's cards are analysed for winning or losing conditions.
-// 7.The dealer decides to hit or stand automatically based on game rules.
-// 8.The game either ends or continues.
+// reference HOW TO PLAY - video: https://www.youtube.com/watch?v=eyoh-Ku9TCI&ab_channel=wikiHow // 
 
 // global variables
 // game states
+var PLACE_BET = "place bet";
 var DEAL_CARDS = "deal cards";
 var PLAYER_HIT_OR_STAND = "player hit or stand";
-var COMPARED_RESULT = "compared result";
-var GameState = DEAL_CARDS;
+var gameState = PLACE_BET;
 
 var output;
 var playerCards = [];
 var dealerCards = [];
 var numberCountArray = ['1st','2nd','3rd','4th','5th','6th','7th','8th','9th','10th','11th']
+var sumOfPlayerCards;
+var sumOfDealerCards;
+
+var currentBet;
+var playerBankRoll = 100;
+var initialbet;
 
 // Make cards deck
 var makeDeck = function () {
@@ -52,7 +50,7 @@ var makeDeck = function () {
   return cardDeck;
 };
 
-// Get a random Number ranging from 0 (inclusive) to max (exclusive).
+// Get a random Number
 var getRandomNumber = function (max) {
   return Math.floor(Math.random() * max);
 };
@@ -72,232 +70,336 @@ var shuffleCards = function (cardDeck) {
   return cardDeck;
 };
 
-// the player & dealer get 2 cards
-var dealCards = function (shuffledDeck) {
-  for (counter = 0; counter < 2; counter += 1) {
-    // draw cards from deck
-    var playerDrawCards = shuffledDeck.pop();
-    var dealerDrawCards = shuffledDeck.pop();
-    console.log ('player card 1: ' + playerDrawCards[0],
-    'player card 2: ' + playerDrawCards[1],
-    'dealer card 1: ' + dealerDrawCards[0],
-    'dealer card 2: ' + dealerDrawCards[1])
-    // push card to array
-    playerCards.push(playerDrawCards);
-    dealerCards.push(dealerDrawCards);
-  }
-  output = `Type "hit" to deal another card or "stand" to pass. <br><br>
-  ${listPlayerCardsAndDealerFirstCards(playerCards, dealerCards)}`;
-  return output;
+// reset game
+var resetGame = function () {
+  playerCards = [];
+  dealerCards = [];
+  var deck = makeDeck();
+  shuffledDeck = shuffleCards(deck);
 };
 
-// if sum is not 21, the player choose to hit or stand
+// the player & dealer get 2 cards
+var dealCards = function (shuffledDeck) {
+  // draw cards from deck
+  playerCards = [shuffledDeck.pop(), shuffledDeck.pop()];
+  dealerCards = [shuffledDeck.pop(), shuffledDeck.pop()];
+  console.log(playerCards, dealerCards)
+};
+
+// Sum of player cards
 var getSumOfPlayerCards = function (playerCards) {
+  // calculate number of ace in the playercards.length
+  var aceCounter = 0;
   var sumOfPlayerCards = 0;
-  for (counter = 0; counter < playerCards.length; counter += 1) {
+  var counter = 0;
+  var counter1;
+  while (counter < playerCards.length) {
     var currentCard = playerCards[counter];
+    // count number of aces
+    if (currentCard.name == 'ace') {
+      aceCounter += 1;
+    }
+    console.log(aceCounter)
+    // jack queen king, add 10
     if (currentCard.name == 'jack' || currentCard.name == 'queen' || currentCard.name == 'king') {
       sumOfPlayerCards = sumOfPlayerCards + 10
-      console.log(sumOfPlayerCards);
-      }
-    else {
-      sumOfPlayerCards = sumOfPlayerCards + currentCard.rank;
-      console.log(sumOfPlayerCards);
+      console.log('sum of player cards JQK: ' + sumOfPlayerCards);
     }
-  };
+    // when ace & sum of cards is less than 21, add 11
+    if (currentCard.name == 'ace') {
+      sumOfPlayerCards = sumOfPlayerCards + 11
+      console.log('sum of player cards ACE + 11: ' + sumOfPlayerCards);
+    }
+    // others, add their rank
+    if (currentCard.name == '2' || currentCard.name == '3' || currentCard.name == '4' || currentCard.name == '5' || currentCard.name == '6' || currentCard.name == '7'|| currentCard.name == '8'|| currentCard.name == '9' || currentCard.name == '10') {
+      sumOfPlayerCards = sumOfPlayerCards + currentCard.rank;
+      console.log('sum of player cards + curr rank: ' + sumOfPlayerCards);
+    }
+    // when ace & sum of cards is larger than 21, minus 11 then add 1, then aceCounter - 1 so that it wont count next time
+    if (sumOfPlayerCards > 21 && aceCounter > 0) {
+      for (counter1 = 0; counter1 < aceCounter; counter1 += 1) {
+      sumOfPlayerCards = sumOfPlayerCards - 11 + 1
+      aceCounter = aceCounter - 1;
+      console.log('sum of player cards ACE -11 + 1: ' + sumOfPlayerCards);
+      }
+    }     
+    counter += 1
+  }
   return sumOfPlayerCards;
 };
 
-// if sum is not 21, the dealer cards automactically hit or stay
+// sum of dealer cards
 var getSumOfDealerCards = function (dealerCards) {
+  var aceCounter = 0;
   var sumOfDealerCards = 0;
   var counter;
-  // Calculate initial dealer cards sum first
+  var counter1;
   for (counter = 0; counter < dealerCards.length; counter += 1) {
+    // count number of aces
     var currentCard = dealerCards[counter];
+    if (currentCard.name == 'ace') {
+      aceCounter += 1;
+    }
+    console.log(aceCounter)
+    // jack queen king, add 10
     if (currentCard.name == 'jack' || currentCard.name == 'queen' || currentCard.name == 'king') {
       sumOfDealerCards = sumOfDealerCards + 10
-      console.log(sumOfDealerCards);
+      console.log('sum of dealer cards JQK: ' + sumOfDealerCards);
     }
-    else {
+    // when ace & sum of cards is less than 21, add 11
+    if (currentCard.name == 'ace') {
+      sumOfDealerCards = sumOfDealerCards + 11
+      console.log('sum of dealer cards ACE + 11: ' + sumOfDealerCards);     
+    }
+    // others, add their rank
+    if (currentCard.name == '2' || currentCard.name == '3' || currentCard.name == '4' || currentCard.name == '5' || currentCard.name == '6' || currentCard.name == '7'|| currentCard.name == '8'|| currentCard.name == '9' || currentCard.name == '10') {
       sumOfDealerCards = sumOfDealerCards + currentCard.rank;
-      console.log(sumOfDealerCards);
+      console.log('sum of dealer cards + curr rank: ' + sumOfDealerCards);
     }
+    // when ace & sum of cards is larger than 21, minus 11 then add 1, then aceCounter - 1 so that it wont count next time
+    if (sumOfDealerCards > 21 && aceCounter > 0) {
+      for (counter1 = 0; counter1 < aceCounter; counter1 += 1) {
+      sumOfDealerCards = sumOfDealerCards - 11 + 1
+      aceCounter = aceCounter - 1;
+      console.log('sum of Dealer cards ACE -11 + 1: ' + sumOfDealerCards);
+      }
+    } 
   }
   return sumOfDealerCards;
 };
 
-// if sum of dealer cards are larger or equal to 17, then dealer no need to deal
-// if sum of dealer cards are smaller than 17, dealer has to deal
-// ! Problem! wanna run this function in main
-var autoHitOrStandDealer = function () {
-  var sumOfDealerCards = getSumOfDealerCards();
-  while (sumOfDealerCards <= 16) {
-    var drawCards = shuffledDeck.pop();
-    dealerCards.push(drawCards);
-  };
-};
-
-// player input hit or stand
-var inputHitOrStand = function (input, shuffledDeck) {
-  if (input == "hit") {
-    drawCards = shuffledDeck.pop();
-    console.log(drawCards);
-    playerCards.push(drawCards);
-    console.log(playerCards);
-    output = `Type "hit" to deal another card or "stand" to pass. <br><br>
-    ${listPlayerCardsAndDealerFirstCards(playerCards, dealerCards)}`;
-    GameState = PLAYER_HIT_OR_STAND;
-  }
-  else if (input == "stand") {
-    GameState = COMPARED_RESULT;
-    output = `${getComparedResult()}`;
-  }
-  // else if (input !== "hit" || input !== "stand" ) {
-  //   output = `You can only type "hit" to deal another card or "stand" to pass. <br><br>
-  //   ${listPlayerCardsAndDealerFirstCards(playerCards, dealerCards)}`
-  // }
-  return output;
-};
-
 // output message showing player's and dealer's cards. Dealer's second card not shown.
-// ! Problem! only showing the last card
 var listPlayerCardsAndDealerFirstCards = function (playerCards, dealerCards) {
   var sumOfPlayerCards = getSumOfPlayerCards(playerCards);
   var playerMessage = '';
-  var playerCardMessage;
+  var playerCardMessage = '';
   var counter;
   for (counter = 0; counter < playerCards.length; counter += 1) {
-    playerCardMessage = `${numberCountArray[counter]}: ${playerCards[counter].name} ${playerCards[counter].suit} <br>
-    <b> Sum: ${sumOfPlayerCards} </b>`
+    playerCardMessage = playerCardMessage + `${numberCountArray[counter]}: ${playerCards[counter].name} ${playerCards[counter].suit} <br>`
   };
-  playerMessage = `<u> Your Cards </u> <br>` + playerCardMessage;
+  playerMessage = `<u> Your Cards </u> <br> ${playerCardMessage} Sum: ${sumOfPlayerCards}`;
   console.log(playerMessage)
   var dealerMessage = `<u> Dealer Cards </u> <br>
     ${numberCountArray[0]}: ${dealerCards[0].name} ${dealerCards[0].suit} <br>
     2nd: hidden <br>
-    <b> Sum: hidden </b> `;
+    Sum: hidden`;
   console.log(dealerMessage);
   return `${playerMessage} <br><br> ${dealerMessage}`;
 };
 
 // output message showing player's and dealer's cards. Dealer's second cards shown.
-// ! Problem! only showing the last card
 var listPlayerCardsAndDealerCards = function (playerCards, dealerCards) {
   var sumOfPlayerCards = getSumOfPlayerCards(playerCards);
   var sumOfDealerCards = getSumOfDealerCards(dealerCards);
   var playerMessage = ''
+  var playerCardMessage = ''
   var counter;
   for (counter = 0; counter < playerCards.length; counter += 1) {
-    playerMessage = `<u> Your Cards </u> <br>
-    ${numberCountArray[counter]}: ${playerCards[counter].name} ${playerCards[counter].suit} <br>
-    Sum: ${sumOfPlayerCards}`;
+    playerCardMessage = playerCardMessage + `${numberCountArray[counter]}: ${playerCards[counter].name} ${playerCards[counter].suit} <br>`
   };
+  playerMessage = `<u> Your Cards </u> <br> ${playerCardMessage} Sum: ${sumOfPlayerCards}`;
 
   var dealerMessage = ''
+  var dealerCardMessage = ''
+  var counter;
   for (counter = 0; counter < dealerCards.length; counter += 1) {
-    dealerMessage = `<u> Dealer Cards </u> <br>
-    ${numberCountArray[counter]}: ${dealerCards[counter].name} ${dealerCards[counter].suit} <br>
-    Sum: ${sumOfDealerCards}`;
+    dealerCardMessage = dealerCardMessage + `${numberCountArray[counter]}: ${dealerCards[counter].name} ${dealerCards[counter].suit} <br>`
   };
+  dealerMessage = `<u> Dealer Cards </u> <br> ${dealerCardMessage} Sum: ${sumOfDealerCards}`;
   return `${playerMessage} <br><br> ${dealerMessage}`;
 };
 
-// if sum of player's or dealer's card is 21 at anytime, the round of game ends
-// ! Problem! wanna run this function in main
-var sumOfCards21 = function (sumOfPlayerCards, sumOfDealerCards) {
-  var sumOfCardsIs21 = false;
-  if (sumOfPlayerCards == 21 && sumOfDealerCards == 21) {
-    output = `<b> It's a draw. Both the dealer and you got the black jack! </b> <br> <br>
-    ${listPlayerCardsAndDealerCards(playerCards, dealerCards)}}`;
-    sumOfCardsIs21 = true;
-  } else if (sumOfPlayerCards == 21) {
-    output = `<b> You win by black jack! </b> <br> <br>
-    ${listPlayerCardsAndDealerCards(playerCards, dealerCards)}}`
-    sumOfCardsIs21 = true;
-  } else if (sumOfDealerCards == 21) {
-    output = `<b> You lose! Dealer wins by black jack! </b> <br> <br>
-    ${listPlayerCardsAndDealerCards(playerCards, dealerCards)}}`
-    sumOfCardsIs21 = true;
-  }
-  return output;
-};
-
-// Compare Result of player and dealer
-// 21 case is mentioned on function sumOfCards21())
+// Compare Result of player and dealer except blackjack case
 var getComparedResult = function () {
-  var sumOfPlayerCards = getSumOfPlayerCards(playerCards);
-  var sumOfDealerCards = getSumOfDealerCards(dealerCards);
+  // Additional Images on output result
+  var myImagesWin = '<img src = "https://steamuserimages-a.akamaihd.net/ugc/911281516661117210/612F5F6EB1BF8F1618FDD41ACEA486B74609CBDC/?imw=5000&imh=5000&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=false"/ class="center">'
+  var myImagesLose = '<img src = "https://media.tenor.com/n4C8YTtBFrAAAAAC/howls-moving-castle-calcifer.gif"/ class="center">'
+  var myImagesTie = '<img src = "https://media.tenor.com/8VPQWQmFzZIAAAAC/howls-moving-castle-frying.gif"/ class="center">'
   // 1.player & dealer both smaller than 21 & player > dealer
   // 1.player wins
   if (sumOfPlayerCards < 21 && sumOfDealerCards < 21 && sumOfPlayerCards > sumOfDealerCards) {
-    output = `<b> You win! Dealer lose! </b> <br> <br>
+    currentBet = initialbet * 2;
+    playerBankRoll = playerBankRoll + currentBet;
+    output = `<b> You win! Dealer lose! </b> <br> Your bankroll is now ${playerBankRoll}. Input a number to continue betting. <br><br>
+    ${myImagesWin} <br> <br>
     ${listPlayerCardsAndDealerCards(playerCards, dealerCards)}`
   }
   // 2.player & dealer both smaller than 21 & dealer > player
   // 2.dealer wins
   else if (sumOfPlayerCards < 21 && sumOfDealerCards < 21 && sumOfDealerCards > sumOfPlayerCards) {
-    output = `<b> You lose! Dealer wins! </b> <br> <br>
+    currentBet = -initialbet;
+    playerBankRoll = playerBankRoll + currentBet;
+    output = `<b> You lose:( Dealer wins! </b> <br> Your bankroll is now ${playerBankRoll}. Input a number to continue betting. <br><br>
+    ${myImagesLose} <br> <br>
     ${listPlayerCardsAndDealerCards(playerCards, dealerCards)}`
   }
   // 3.player busts & dealer smaller to 21
   // 3.dealer wins
   else if (sumOfPlayerCards > 21 && sumOfDealerCards < 21) {
-    output = `<b> You bust! Dealer wins! </b> <br> <br>
-    ${listPlayerCardsAndDealerCards(playerCards, dealerCards)}`
+    currentBet = -initialbet;
+    playerBankRoll = playerBankRoll + currentBet;
+    output = `<b> You bust:( Dealer wins! </b> <br> Your bankroll is now ${playerBankRoll}. Input a number to continue betting.<br><br>
+    ${myImagesLose} <br> <br>
+    ${listPlayerCardsAndDealerCards(playerCards, dealerCards)} <br><br>`
   }
   // 4.player smaller than 21 & dealer busts
   // 4.player wins
   else if (sumOfPlayerCards < 21 && sumOfDealerCards > 21) {
-    output = `<b> You win! Dealer bust! </b> <br> <br>
+    currentBet = initialbet * 2;
+    playerBankRoll = playerBankRoll + currentBet;
+    output = `<b> You win! Dealer bust! </b> <br>Your bankroll is now ${playerBankRoll}. Input a number to continue betting. <br><br>
+    ${myImagesWin} <br> <br>
     ${listPlayerCardsAndDealerCards(playerCards, dealerCards)}`
   }
   // 5.both player busts
   // 5.tie
   else if (sumOfPlayerCards > 21 && sumOfDealerCards > 21) {
-    output = `<b> It's a tie! Dealer and you both bust! </b> <br> <br>
-    ${listPlayerCardsAndDealerCards(playerCards, dealerCards)}`
+    playerBankRoll = playerBankRoll;
+    output = `<b> It's a tie! Dealer and you both bust! </b> <br>Your bankroll is now ${playerBankRoll}. Input a number to continue betting.<br><br>
+    ${myImagesTie} <br> <br>
+    ${listPlayerCardsAndDealerCards(playerCards, dealerCards)} <br><br>`
   }
   // 6.both player same number but not 21
   // 6.tie
-  else if (sumOfPlayerCards == !21 && sumOfPlayerCards == sumOfDealerCards) {
-    output = `<b> It's a tie! Dealer and you both got the same sum of cards! </b> <br> <br>
-    ${listPlayerCardsAndDealerCards(playerCards, dealerCards)}`
+  else if (sumOfPlayerCards != 21 && sumOfPlayerCards == sumOfDealerCards) {
+    playerBankRoll = playerBankRoll;
+    output = `<b> It's a tie! Dealer and you both got the same sum of cards! </b> <br>Your bankroll is now ${playerBankRoll}. Input a number to continue betting. <br><br>
+    ${myImagesTie} <br> <br>
+    ${listPlayerCardsAndDealerCards(playerCards, dealerCards)} <br><br>`
   }
   return output;
 };
 
+// check if there is blackjack after pushing card
+var checkBlackJack = function () {
+  var isBlackJack = false;
+  if (sumOfPlayerCards == 21 && sumOfDealerCards == 21 || sumOfPlayerCards == 21 || sumOfDealerCards == 21) {
+    isBlackJack = true;
+  }
+  return isBlackJack;
+}
+
+// If there is blackjack, output blackjack message
+var outputBlackJackMessage = function () {
+  // 1.player and dealer both blackjack
+  if (sumOfPlayerCards == 21 && sumOfDealerCards == 21) {
+    playerBankRoll = playerBankRoll;
+    output =  `<b> It's a tie. Both the dealer and you got the black jack! </b> <br> Your bankroll is now ${playerBankRoll}. Input a number to continue betting. <br> <br>
+    ${myImagesTie} <br> <br>
+    ${listPlayerCardsAndDealerCards(playerCards, dealerCards)}`;
+    gameState = PLACE_BET;
+  }
+  // 2. only player blackjack
+  else if (sumOfPlayerCards == 21) {
+  currentBet = initialbet * 1.5;
+  playerBankRoll = playerBankRoll + currentBet;
+    output = `<b> You win by black jack! </b> <br> Your bankroll is now ${playerBankRoll}. Input a number to continue betting. <br> <br> 
+    ${myImagesWin} <br> <br>
+    ${listPlayerCardsAndDealerCards(playerCards, dealerCards)}`
+    gameState = PLACE_BET;
+  }
+  // 3. only dealer blackjack
+  else if (sumOfDealerCards == 21) {
+    currentBet = -initialbet;
+    playerBankRoll = playerBankRoll + currentBet;
+    output = `<b> You lose! Dealer wins by black jack! </b> <br> Your bankroll is now ${playerBankRoll}. Input a number to continue betting. <br> <br>
+    ${myImagesLose} <br> <br>
+    ${listPlayerCardsAndDealerCards(playerCards, dealerCards)}`
+    gameState = PLACE_BET;
+  }
+  return output;
+};
+
+// Additional Images on output result
+var myImagesWin = '<img src = "https://steamuserimages-a.akamaihd.net/ugc/911281516661117210/612F5F6EB1BF8F1618FDD41ACEA486B74609CBDC/?imw=5000&imh=5000&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=false"/ class="center">'
+var myImagesLose = '<img src = "https://media.tenor.com/n4C8YTtBFrAAAAAC/howls-moving-castle-calcifer.gif"/ class="center">'
+var myImagesTie = '<img src = "https://media.tenor.com/8VPQWQmFzZIAAAAC/howls-moving-castle-frying.gif"/ class="center">'
+
 // Main function Deck
 var main = function (input) {
-  var deck = makeDeck();
-  var shuffledDeck = shuffleCards(deck);
+  if (gameState == PLACE_BET) {
+    // if there isnt any input
+    if (input == "") {
+      return `<b> You didn't input any numbers. Your bankroll is ${playerBankRoll}. Please input a number to bet. </b>`;
+    }
+    // if input is not number
+    else if (isNaN(input) == true) {
+      return `<b> Your input is not a number. Your bankroll is ${playerBankRoll}. Please input a number to bet. </b>`;
+    }
+    // if input is a number
+    else {initialbet = input;
+    output = `<b> Your bet is ${initialbet}. Click the submit button to deal two cards! </b>`;
+    gameState = DEAL_CARDS;
+    }
+  }
+  else if (gameState == DEAL_CARDS) {
+    // deal two cards
+    resetGame();
+    dealCards(shuffledDeck);
+    sumOfPlayerCards = getSumOfPlayerCards(playerCards);
+    sumOfDealerCards = getSumOfDealerCards(dealerCards);
+    var isblackjack = checkBlackJack();
+    // check if there is blackjack after pushing card. If there is blackjack, output blackjack message
+    if (isblackjack == true) {
+      output = outputBlackJackMessage()
+    }
+    // 4. if there is no blackjack, game state -> player hit or stand
+    else {
+      output = `<b> Type "hit" to deal another card or "stand" to pass. </b> <br><br>
+      ${listPlayerCardsAndDealerFirstCards(playerCards, dealerCards)}`;
+      gameState = PLAYER_HIT_OR_STAND
+    }
+  }
   
-  if (GameState == DEAL_CARDS) {
-    output = dealCards(shuffledDeck);
-    GameState = PLAYER_HIT_OR_STAND;
-  }
-  var sumOfCardsEqualsTo21 = sumOfCards21(sumOfPlayerCards,sumOfDealerCards)
-  if (sumOfCardsEqualsTo21 == true) {
-    output = sumOfCardsEqualsTo21;
-    GameState = DEAL_CARDS;
-    // This is not working!
-    // please run this function TT!
-  }
-  else if (GameState == PLAYER_HIT_OR_STAND) {
-    var sumOfPlayerCards = getSumOfPlayerCards(playerCards);
-    var sumOfDealerCards = getSumOfDealerCards(dealerCards);
-    output = inputHitOrStand(input, shuffledDeck);
-    console.log(sumOfPlayerCards);
-    console.log(sumOfDealerCards);
-  }
-  else if (GameState == COMPARED_RESULT) {
-    var hitOrStandDealer = autoHitOrStandDealer();
-    if (hitOrStandDealer == true) {
-      // This is not working!
-      // please run this function TT!
-    };
-    output = getComparedResult();
-    GameState = DEAL_CARDS;
+  else if (gameState == PLAYER_HIT_OR_STAND) {
+    // if player hit, add a card to array
+    if (input == "hit") {
+      drawCards = shuffledDeck.pop();
+      console.log(drawCards);
+      playerCards.push(drawCards);
+      console.log(playerCards);
+      sumOfPlayerCards = getSumOfPlayerCards(playerCards);
+      sumOfDealerCards = getSumOfDealerCards(dealerCards);
+      var isblackjack = checkBlackJack();
+      // check if there is blackjack after pushing card. If there is blackjack, output blackjack message
+      if (isblackjack == true) {
+        output = outputBlackJackMessage()
+      }
+      else {
+      // 4. if there is no blackjack, ask player hit or stand again
+        output = `<b> Type "hit" to deal another card again or "stand" to pass. </b> <br><br>
+        ${listPlayerCardsAndDealerFirstCards(playerCards, dealerCards)}`;
+        gameState = PLAYER_HIT_OR_STAND;
+      }
+    }
+    // if player stand, game state -> compare result
+    else if (input == "stand") {
+      // if sum of dealer cards are larger or equal to 17, then dealer no need to deal
+      // if sum of dealer cards are smaller than 17, dealer has to deal
+      while (sumOfDealerCards < 17) {
+        drawCards = shuffledDeck.pop();
+        dealerCards.push(drawCards);
+        sumOfDealerCards = getSumOfDealerCards(dealerCards);
+      };
+      console.log(sumOfDealerCards);
+      // check if there is blackjack after pushing card. If there is blackjack, output blackjack message
+      var isblackjack = checkBlackJack();
+      if (isblackjack == true) {
+        output = outputBlackJackMessage()
+      }
+      else {
+      output = getComparedResult(sumOfPlayerCards, sumOfDealerCards);
+      gameState = PLACE_BET;
+      }
+    }
+    // wrong input
+    else {
+      output = `<b> Wrong input:( You can only type "hit" to deal another card or "stand" to pass. </b> <br><br>
+      ${listPlayerCardsAndDealerFirstCards(playerCards, dealerCards)}`
+      gameState = PLAYER_HIT_OR_STAND;
+    }
+    console.log('sum of player cards: ' + sumOfPlayerCards);
+    console.log('sum of dealer cards: ' + sumOfDealerCards);
   }
   return output;
 }

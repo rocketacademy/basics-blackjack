@@ -22,27 +22,27 @@
     <!-- sharing configuration -->
     <!-- Primary Meta Tags -->
     <title>Blackjack - Basics - Rocket Academy</title>
-    <meta name="title" content="YOURNAME's BlackJack Game!">
+    <meta name="title" content="Angel's BlackJack Game!">
     <meta name="description" content="A fun card game I made myself! 😄💪🌈">
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://rocketacademy.github.io/basics-blackjack/index.html">
-    <meta property="og:title" content="YOURNAME's BlackJack Game!">
+    <meta property="og:title" content="Angel's BlackJack Game!">
     <meta property="og:description" content="A fun card game I made myself! 😄💪🌈">
     <meta property="og:image" content="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/basics/basics-blackjack-share-small.jpeg">
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="https://rocketacademy.github.io/basics-blackjack/index.html">
-    <meta name="twitter:title" content="YOURNAME's BlackJack Game!">
+    <meta name="twitter:title" content="Angel's BlackJack Game!">
     <meta name="twitter:description" content="A fun card game I made myself! 😄💪🌈">
     <meta name="twitter:image" content="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/basics/basics-blackjack-share-small.jpeg">
     <meta name="twitter:site" content="@rocketacademyco">
     <meta name="twitter:creator" content="@rocketacademyco">
 
     <!-- fonts -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Secular+One">
 
     <!-- CSS -->
     <style>
@@ -51,12 +51,11 @@
       }
 
       body {
-        font-family: 'Open Sans', sans-serif;
+        font-family: 'Secular One', sans-serif;
         margin-left: 30px;
         margin-right: 30px;
-        background-color:white;
-        color: black; /* sets the font color */
-        background-image: url(""); /* The image used */
+        background-image: url("https://i.pinimg.com/originals/d7/41/b8/d741b8831a6dad105e3c0ab6526869ca.gif");
+        color: rgb(255, 255, 255); /* sets the font color */
         background-position: center; /* Center the image */
         background-repeat: no-repeat; /* Do not repeat the image */
         background-size: cover; /* Resize the background image to cover the entire container */
@@ -64,8 +63,9 @@
 
       #output-div img{
         display:block;
-        max-width:100%;
         max-height:200px;
+        text-align: center;
+        border-image-source: center;
       }
       .header {
         text-align: center;
@@ -73,11 +73,17 @@
         margin-bottom: 3rem;
       }
 
+      .body {
+        text-align: center;
+      }
+
       #container {
-        background-color: pink;
+        background-color: rgba(128, 224, 235, 0.552);
         margin: 40px auto;
         max-width: 800px;
         padding: 38px 31px;
+        font-family: "Lato", sans-serif;
+        text-align: center;
       }
 
       input {
@@ -86,9 +92,11 @@
         margin: 0 0 23px 0;
         padding: 0 9px;
         width: 100%;
+        text-align: center;
       }
 
       button {
+        background-color: rgb(255, 255, 255);
         font-size: 21px;
         line-height: 33px;
         margin: 0 0 23px 0;
@@ -96,10 +104,11 @@
       }
 
       #output-div {
-        background-color: lightgrey;
+        background-color: rgb(0, 69, 122);
         margin: 20px auto;
         padding: 20px;
-        width: 100%;
+        text-align: center;
+        border-image-source: center;
       }
 
       .logo-img {
@@ -120,6 +129,12 @@
 
   <body>
     <h1 class="header">♣️ Basics - Blackjack ♠️</h1>
+    <p class="body"> Welcome to Angel 👼 x ROCKET ACADEMY 🚀 BlackJack Cards! <br>
+      You need to beat the dealer by getting a count as close to 21 as possible, without going over 21. <br>
+      Ace can be 1 or 11.  Jack, Queen, and King are 10.<br>
+      You place a bet when the game starts. You win 1.5 times your bet if you get the blackjack (21). 2 times your bet if you win! <br>
+      You lose your bet if your number is smaller than dealer or you bust.
+    </p>
     <div id="container">
       <p>Input:</p>
       <input id="input-field" />
@@ -127,7 +142,7 @@
       <button id="submit-button">Submit</button>
       <p>Output:</p>
       <div id="output-div">
-        Welcome to Angel x BlackJack Cards! Click the submit button to get started!
+        <b> Your bankroll is 100. Please input a number to bet. </b>
       </div>
     </div>
     <!-- Import program logic -->
