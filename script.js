@@ -300,5 +300,160 @@ Player wins by black jack!*/
     }
   }
 
+  if (gameState == "DEALER HIT") {
+    //DEALER CONTINUE TO HIT UNTIL HAND TOTAL IS >= 17
+    let dealerNextCard = shuffledDeck.pop();
+    console.log("dealerNextCard", dealerNextCard);
+    //When hand total of dealer is more than or equal to 11, but his next card is ace.
+    if (handTotalOfDealerInArray[0] >= 11 && dealerNextCard.name == "ace") {
+      handTotalOfDealerInArray[0] += dealerNextCard.value[0];
+      //Hand total of dealer is less than 17, then hit again.
+      if (handTotalOfDealerInArray[0] < 17) {
+        myOutputValue = `Dealer get the card: ${dealerNextCard.name} of ${dealerNextCard.suit}.<br>Since hand total of dealer is ${handTotalOfDealerInArray}, which is less than 17. Dealer will hit. Please click submit to proceed.`;
+        gameState = "DEALER HIT";
+      }
+      //Hand total of dealer is greater than 16 and less than 21, then dealer must stand.
+      //COMPARE THE HAND TOTAL BTW PLAYER AND DEALER
+      else if (
+        handTotalOfDealerInArray[0] > 16 &&
+        handTotalOfDealerInArray[0] < 21
+      ) {
+        //A tie. When both the player and dealer have the same total hand values.
+        if (handTotalOfDealerInArray[0] == handTotalOfPlayerInArray[0]) {
+          myOutputValue += `<br>It's a tie in this round! <br>Hand total of Player: ${handTotalOfDealerInArray[0]}<br>Hand total of Dealer: ${handTotalOfDealerInArray}.<br>Please refresh the webpage to play again.<br>${imageTie}`;
+        }
+        // Player lose (DEALER WIN). Hand total of dealer is greater than player.
+        else if (handTotalOfDealerInArray[0] > handTotalOfPlayerInArray[0]) {
+          myOutputValue += `<br>Player lose! Because hand total of dealer is ${handTotalOfDealerInArray[0]}, which is greater than hand total of player: ${handTotalOfPlayerInArray[0]}<br>Please refresh the webpage to play again.<br>${imagePlayerLose}`;
+        }
+        //Player win (DEALER LOSE). Hand total of player is greater than dealer(WHEN HAND VALUES OF DEALER IS 17 OR MORE).
+        else if (
+          handTotalOfPlayerInArray[0] > handTotalOfDealerInArray[0] &&
+          handTotalOfPlayerInArray[0] < 21
+        ) {
+          myOutputValue += `<br>Player win! Because hand total of dealer is ${handTotalOfDealerInArray[0]}, which is lower than hand total of player: ${handTotalOfPlayerInArray[0]}.<br>Please refresh the webpage to play again.<br>${imagePlayerWin}`;
+        }
+        //Player lose (DEALER WIN). Player busts but dealer not busts.
+        else if (handTotalOfPlayerInArray[0] > 21) {
+          myOutputValue += `<br>Player lost! Because player busts(hand total:${handTotalOfPlayerInArray[0]}), but dealer not busts(hand total: ${handTotalOfDealerInArray[0]}).<br>Please refresh the webpage to play again.<br>${imagePlayerLose}`;
+        }
+      }
+      //Hand total of dealer is 21. Dealer win by BLACKJACK
+      else if (handTotalOfDealerInArray[0] == 21) {
+        myOutputValue += `<br>Player lose! Dealer won by Blackjack! <br>Please refresh the webpage to play again.<br>${imagePlayerLose}`;
+      }
+      //Hand total of dealer is greater than 21.
+      else if (handTotalOfDealerInArray[0] > 21) {
+        //It is tie if PLAYER AND DEALER ARE BUST
+        if (handTotalOfPlayerInArray[0] > 21) {
+          myOutputValue += `<br>It's a tie in this round! Because both player & dealer are busts.<br> Hand total of player: ${handTotalOfPlayerInArray[0]} & hand total of dealer: ${handTotalOfDealerInArray[0]}.<br>Please refresh the webpage to play again.<br>${imageTie}`;
+        }
+        //Dealer lose (Player won) when dealer busts and player not busts
+        else if (handTotalOfPlayerInArray[0] < 21) {
+          myOutputValue += `<br>Player won! Because dealer busts (hand total: ${handTotalOfDealerInArray[0]}).<br>Please refresh the webpage to play again.<br>${imagePlayerWin}`;
+        }
+      }
+    }
+    //ONCE DEALER HIT, CURRENTLY, HAND TOTAL OF DEALER IS LESS THAN 11 & NEXT CARD OF PLAYER IS ACE
+    else if (handTotalOfDealerInArray[0] < 11 && dealerNextCard.name == "ace") {
+      handTotalOfDealerInArray[0] += dealerNextCard.value[1];
+      //Hand total of dealer is less than 17, then hit again.
+      if (handTotalOfDealerInArray[0] < 17) {
+        myOutputValue = `Dealer get the card: ${dealerNextCard.name} of ${dealerNextCard.suit}.<br>Since hand total of dealer is ${handTotalOfDealerInArray}, which is less than 17. Dealer will hit. Please click submit to proceed.`;
+        gameState = "DEALER HIT";
+      }
+      //Hand total of dealer is greater than 16 and less than 21, then dealer must stand.
+      //COMPARE THE HAND TOTAL BTW PLAYER AND DEALER
+      else if (
+        handTotalOfDealerInArray[0] > 16 &&
+        handTotalOfDealerInArray[0] < 21
+      ) {
+        //A tie. When both the player and dealer have the same total hand values.
+        if (handTotalOfDealerInArray[0] == handTotalOfPlayerInArray[0]) {
+          myOutputValue += `<br>It's a tie in this round! <br>Hand total of Player: ${handTotalOfDealerInArray[0]}<br>Hand total of Dealer: ${handTotalOfDealerInArray}.<br>Please refresh the webpage to play again.<br>${imageTie}`;
+        }
+        // Player lose (DEALER WIN). Hand total of dealer is greater than player.
+        else if (handTotalOfDealerInArray[0] > handTotalOfPlayerInArray[0]) {
+          myOutputValue += `<br>Player lose! Because hand total of dealer is ${handTotalOfDealerInArray[0]}, which is greater than hand total of player: ${handTotalOfPlayerInArray[0]}<br>Please refresh the webpage to play again.<br>${imagePlayerLose}`;
+        }
+        //Player win (DEALER LOSE). Hand total of player is greater than dealer(WHEN HAND VALUES OF DEALER IS 17 OR MORE).
+        else if (
+          handTotalOfPlayerInArray[0] > handTotalOfDealerInArray[0] &&
+          handTotalOfPlayerInArray[0] < 21
+        ) {
+          myOutputValue += `<br>Player win! Because hand total of dealer is ${handTotalOfDealerInArray[0]}, which is lower than hand total of player: ${handTotalOfPlayerInArray[0]}.<br>Please refresh the webpage to play again.<br>${imagePlayerWin}`;
+        }
+        //Player lose (DEALER WIN). Player busts but dealer not busts.
+        else if (handTotalOfPlayerInArray[0] > 21) {
+          myOutputValue += `<br>Player lost! Because player busts(hand total:${handTotalOfPlayerInArray[0]}), but dealer not busts(hand total: ${handTotalOfDealerInArray[0]}).<br>Please refresh the webpage to play again.<br>${imagePlayerLose}`;
+        }
+      }
+      //Hand total of dealer is 21. Dealer win by BLACKJACK
+      else if (handTotalOfDealerInArray[0] == 21) {
+        myOutputValue += `<br> Player lose! Dealer won by Blackjack! <br>Please refresh the webpage to play again.<br>${imagePlayerLose}`;
+      }
+      //Hand total of dealer is greater than 21.
+      else if (handTotalOfDealerInArray[0] > 21) {
+        //It is tie if PLAYER AND DEALER ARE BUST
+        if (handTotalOfPlayerInArray[0] > 21) {
+          myOutputValue += `<br>It's a tie in this round! Because both player & dealer are busts.<br> Hand total of player: ${handTotalOfPlayerInArray[0]} & hand total of dealer: ${handTotalOfDealerInArray[0]}.<br>Please refresh the webpage to play again.<br>${imageTie}`;
+        }
+        //Dealer lose (Player won) when dealer busts and player not busts
+        else if (handTotalOfPlayerInArray[0] < 21) {
+          myOutputValue += `<br>Player won! Because dealer busts (hand total: ${handTotalOfDealerInArray[0]}).<br>Please refresh the webpage to play again.<br>${imagePlayerWin}`;
+        }
+      }
+    }
+    //When dealer's next card is not ace
+    else if (dealerNextCard.name != "ace") {
+      handTotalOfDealerInArray[0] += dealerNextCard.value;
+      //Hand total of dealer is less than 17, then hit again.
+      if (handTotalOfDealerInArray[0] < 17) {
+        myOutputValue = `Dealer get the card: ${dealerNextCard.name} of ${dealerNextCard.suit}.<br>Since hand total of dealer is ${handTotalOfDealerInArray}, which is less than 17. Dealer will hit. Please click submit to proceed.`;
+        gameState = "DEALER HIT";
+      }
+      //Hand total of dealer is greater than 16 and less than 21, then dealer must stand.
+      //COMPARE THE HAND TOTAL BTW PLAYER AND DEALER
+      else if (
+        handTotalOfDealerInArray[0] > 16 &&
+        handTotalOfDealerInArray[0] < 21
+      ) {
+        //A tie. When both the player and dealer have the same total hand values.
+        if (handTotalOfDealerInArray[0] == handTotalOfPlayerInArray[0]) {
+          myOutputValue += `<br>It's a tie in this round! <br>Hand total of Player: ${handTotalOfDealerInArray[0]}<br>Hand total of Dealer: ${handTotalOfDealerInArray}.<br>Please refresh the webpage to play again.<br>${imageTie}`;
+        }
+        // Player lose (DEALER WIN). Hand total of dealer is greater than player.
+        else if (handTotalOfDealerInArray[0] > handTotalOfPlayerInArray[0]) {
+          myOutputValue += `<br>Player lose! Because hand total of dealer is ${handTotalOfDealerInArray[0]}, which is greater than hand total of player: ${handTotalOfPlayerInArray[0]}.<br>Please refresh the webpage to play again.<br>${imagePlayerLose}`;
+        }
+        //Player win (DEALER LOSE). Hand total of player is greater than dealer(WHEN HAND VALUES OF DEALER IS 17 OR MORE).
+        else if (
+          handTotalOfPlayerInArray[0] > handTotalOfDealerInArray[0] &&
+          handTotalOfPlayerInArray[0] < 21
+        ) {
+          myOutputValue += `<br>Player win! Because hand total of dealer is ${handTotalOfDealerInArray[0]}, which is lower than hand total of player: ${handTotalOfPlayerInArray[0]}.<br>Please refresh the webpage to play again.<br>${imagePlayerWin}`;
+        }
+        //Player lose (DEALER WIN). Player busts but dealer not busts.
+        else if (handTotalOfPlayerInArray[0] > 21) {
+          myOutputValue += `<br>Player lose! Because player busts(hand total:${handTotalOfPlayerInArray[0]}), but dealer not busts(hand total: ${handTotalOfDealerInArray[0]}).<br>Please refresh the webpage to play again.<br>${imagePlayerLose}`;
+        }
+      }
+      //Hand total of dealer is 21. Dealer win by BLACKJACK
+      else if (handTotalOfDealerInArray[0] == 21) {
+        myOutputValue += `<br> Player lose! Dealer won by Blackjack! <br>Please refresh the webpage to play again.<br>${imagePlayerLose}`;
+      }
+      //Hand total of dealer is greater than 21.
+      else if (handTotalOfDealerInArray[0] > 21) {
+        //It is tie if PLAYER AND DEALER ARE BUST
+        if (handTotalOfPlayerInArray[0] > 21) {
+          myOutputValue += `<br>It's a tie in this round! Because both player & dealer are busts.<br> Hand total of player: ${handTotalOfPlayerInArray[0]} & hand total of dealer: ${handTotalOfDealerInArray[0]}.<br>Please refresh the webpage to play again.<br>${imageTie}`;
+        }
+        //Dealer lose (Player won) when dealer busts and player not busts
+        else if (handTotalOfPlayerInArray[0] < 21) {
+          myOutputValue += `<br>Player won! Because dealer busts (hand total: ${handTotalOfDealerInArray[0]}).<br>Please refresh the webpage to play again.<br>${imagePlayerWin}`;
+        }
+      }
+    }
+  }
   return myOutputValue;
 };
