@@ -74,3 +74,24 @@ let shuffleCards = function (cardDeck) {
 // to communicate that we have shuffled the deck.
 let shuffledDeck = shuffleCards(cardDeck);
 console.log("shuffledDeck", shuffledDeck);
+
+//CREATE MAIN FUNCTION TO COMPARE THE CARDS BETWEEN PLAYER AND COMPUTER
+let main = function (input) {
+  let myOutputValue = "";
+  // pop removes and returns the last array element (i.e. draws a card from the top of the deck).
+  // Draw 2 cards from the top of the deck
+  let playerCard1 = shuffledDeck.pop();
+  playerHandInArray.push(playerCard1);
+  let dealerCard1 = shuffledDeck.pop();
+  dealerHandInArray.push(dealerCard1);
+  let playerCard2 = shuffledDeck.pop();
+  playerHandInArray.push(playerCard2);
+  let dealerCard2 = shuffledDeck.pop();
+  dealerHandInArray.push(dealerCard2);
+  //=====PUT 1 MORE CONDITION, WHEN BOTH CARD OF PLAYER ARE "A". Value of 1pc of A will become 1. ===.
+  //Return appropriate messages
+  /*Player hand: Ace of Hearts, King of Spades
+Dealer hand: 8 of Clubs, 8 of Spades
+Player wins by black jack!*/
+  return myOutputValue;
+};
