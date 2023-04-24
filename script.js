@@ -297,6 +297,9 @@ let resetGame = function () {
 
 let main = function (input) {
   let myOutputValue = "";
+  if (shuffledDeck.length <= 10) {
+    shuffledDeck = shuffleCards(makeDeck());
+  }
   if (input == "deal" && gameMode == "first round") {
     resetGame();
     noofRounds += 1;
