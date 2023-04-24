@@ -97,9 +97,9 @@
         margin-right: 30px;
         background-color: white;
         color: black; /* sets the font color */
-        background-image: url(""); /* The image used */
+        background-image: url("https://www.crownmelbourne.com.au/getsydmedia/1ff6eae7-e99d-4a0e-b8ef-b23e1965ed69/220815-Crown-Melbourne-Gaming-Blackjack-1800x1200px-6.jpg?height=1199"); /* The image used */
         background-position: center; /* Center the image */
-        background-repeat: no-repeat; /* Do not repeat the image */
+        background-repeat: repeat-y; /* Do not repeat the image */
         background-size: cover; /* Resize the background image to cover the entire container */
       }
 
@@ -115,18 +115,10 @@
       }
 
       #container {
-        background-color: pink;
+        background-color: forestgreen;
         margin: 40px auto;
         max-width: 800px;
         padding: 38px 31px;
-      }
-
-      input {
-        font-size: 21px;
-        line-height: 33px;
-        margin: 0 0 23px 0;
-        padding: 0 9px;
-        width: 100%;
       }
 
       button {
@@ -134,6 +126,7 @@
         line-height: 33px;
         margin: 0 0 23px 0;
         padding: 0 6px;
+        background-color: wheat;
       }
 
       #output-div {
@@ -155,6 +148,14 @@
           font-size: 2rem;
         }
       }
+
+      h2 {
+        font-size: 35px;
+      }
+
+      h3 {
+        font-size: 18px;
+      }
     </style>
   </head>
 
@@ -166,10 +167,18 @@
     </h1>
     <h1 class="header">♣️ Basics - Blackjack ♠️</h1>
     <div id="container">
-      <p>Input:</p>
-      <input id="input-field" />
-      <br />
-      <button id="submit-button">Submit</button>
+      <center>
+        <h2>Welcome to the Game of Black Jack ♣︎♦︎♥︎♠︎ Casino Style</h2>
+        <h3>
+          Click "Start" to start, "Hit" to draw a card, "Stand" to end your
+          turn, "Reset" to start over.
+        </h3>
+        <br />
+        <button id="submit-button">Start</button>
+        <button id="hit-button">Hit</button>
+        <button id="stand-button">Stand</button>
+        <button id="reset-button">Reset</button>
+      </center>
       <p>Output:</p>
       <div id="output-div"></div>
     </div>
@@ -180,15 +189,57 @@
       var button = document.querySelector("#submit-button");
       button.addEventListener("click", function () {
         // Set result to input value
-        var input = document.querySelector("#input-field");
-        var result = main(input.value);
+        // var input = document.querySelector("#input-field");
+        var result = main("Start");
 
         // Display result in output element
         var output = document.querySelector("#output-div");
         output.innerHTML = result;
 
         // Reset input value
-        input.value = "";
+        //input.value = "";
+      });
+
+      var button = document.querySelector("#hit-button");
+      button.addEventListener("click", function () {
+        // Set result to input value
+        var input = document.querySelector("#input-field");
+        var result = main("Hit");
+
+        // Display result in output element
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
+
+        // Reset input value
+        //input.value = "";
+      });
+
+      var button = document.querySelector("#stand-button");
+      button.addEventListener("click", function () {
+        // Set result to input value
+        var input = document.querySelector("#input-field");
+        var result = main("Stand");
+
+        // Display result in output element
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
+
+        // Reset input value
+        //input.value = "";
+      });
+
+      var button = document.querySelector("#reset-button");
+      button.addEventListener("click", function () {
+        // Set result to input value
+        var input = document.querySelector("#input-field");
+        var result = main("Reset");
+
+        // Display result in output element
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
+
+        // Reset input value
+        //input.value = "";
       });
     </script>
   </body>
