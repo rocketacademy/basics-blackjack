@@ -193,7 +193,7 @@ var processGameStart = function () {
   if (currentGameMode == gameModeStart) {
     gameDeck = createNewDeck();
     dealCards();
-    myOutputValue = `Now that everyone has been dealt 2 cards, click "Submit" to proceed with the game!`;
+    myOutputValue = `Now that everyone has received 2 cards, click "Submit" to proceed with the game!`;
   }
 };
 
@@ -204,8 +204,7 @@ var processGameCards = function (playerCards, dealerCards) {
 
     var playerHandValue = totalHandValue(playerCards);
     var dealerHandValue = totalHandValue(dealerCards);
-
-    myOutputValue = `Dealer Hands: <br>${dealerHandMessage} = ${Number(
+    myOutputValue = `Snoopy's Hands: <br>${dealerHandMessage} = ${Number(
       String(dealerHandValue)
     )}<br><br> Player's Hands: <br>${playerHandMessage} = ${Number(
       String(playerHandValue)
@@ -216,27 +215,36 @@ var processGameCards = function (playerCards, dealerCards) {
     var dealerHasBlackj = checkForBlackj(dealerCards);
 
     console.log("player has blackjack: ", playerHasBlackj);
-    console.log("dealer has blackjack: ", dealerHasBlackj);
+    console.log("snoopy has blackjack: ", dealerHasBlackj);
 
     // 3. If dealer has BJ and player does not have BJ
     if (playerHasBlackj == true && dealerHasBlackj == true) {
       resultMessage = `Game Result: It's a tie. Let's play again!`;
-      myOutputValue = myOutputValue + resultMessage;
+      var snoopyTieImg =
+        '<img src="https://media.tenor.com/eNEGgBFm5rAAAAAd/snoopy-billycart.gif"/>';
+      myOutputValue = myOutputValue + resultMessage + "<br><br>" + snoopyTieImg;
       currentGameMode = gameModeReset;
     } else if (playerHasBlackj == true && dealerHasBlackj == false) {
       currentGameMode = gameModeResult;
-      resultMessage = `Game Result: Player has Blackjack! Player won! 🤑`;
-      myOutputValue = myOutputValue + resultMessage;
+      resultMessage = `Game Result: Player has Blackjack! Player won the game! 🤑`;
+      var snoopyLoseImg =
+        '<img src="https://media.tenor.com/m1TvHNAFXYcAAAAC/byuntear-snoopy.gif"/>';
+      myOutputValue =
+        myOutputValue + resultMessage + "<br><br>" + snoopyLoseImg;
       currentGameMode = gameModeReset;
     } else if (playerHasBlackj == false && dealerHasBlackj == true) {
       currentGameMode = gameModeResult;
-      resultMessage = `Game Result: Dealer has Blackjack! Player lost! 😢`;
-      myOutputValue = myOutputValue + resultMessage;
+      resultMessage = `Game Result: Snoopy has Blackjack! Player lost the game! 😢`;
+      var snoopyWinImg =
+        '<img src="https://media.tenor.com/GstVwcHZ-qEAAAAC/snoopy.gif"/>';
+      myOutputValue = myOutputValue + resultMessage + "<br><br>" + snoopyWinImg;
       currentGameMode = gameModeReset;
     } else {
       currentGameMode = gameModeHitStand;
-      resultMessage = `To continue, player please choose to "hit" or "stand"`;
-      myOutputValue = myOutputValue + resultMessage;
+      resultMessage = `To continue, player please input either "hit" or "stand".`;
+      var myShufflingImage =
+        '<img src="https://media.tenor.com/9nVvCPYBwe4AAAAC/snoopy-poker.gif"/>';
+      myOutputValue = myOutputValue + myShufflingImage + "<br>" + resultMessage;
     }
   }
 };
@@ -271,7 +279,7 @@ var processGameHitStand = function (playerInput) {
         dealerHandValue = totalHandValue(dealerCards);
       }
 
-      myOutputValue = `Dealer Hands: <br>${dealerHandMessage} = ${Number(
+      myOutputValue = `Snoopy's Hands: <br>${dealerHandMessage} = ${Number(
         String(dealerHandValue)
       )}<br><br> Player's Hands: <br>${playerHandMessage} = ${Number(
         String(playerHandValue)
@@ -280,37 +288,55 @@ var processGameHitStand = function (playerInput) {
       // scenario: same hand value => TIE
       if (playerHandValue == dealerHandValue) {
         resultMessage = `Game Result: It's a tie. Let's play again!`;
-        myOutputValue = myOutputValue + resultMessage;
+        var snoopyTieImg =
+          '<img src="https://media.tenor.com/eNEGgBFm5rAAAAAd/snoopy-billycart.gif"/>';
+        myOutputValue =
+          myOutputValue + resultMessage + "<br><br>" + snoopyTieImg;
         currentGameMode = gameModeReset;
       }
       // scenario: player > dealer (both values < 21) => PLAYER WINS
       if (playerHandValue <= 21 && playerHandValue > dealerHandValue) {
-        resultMessage = `Game Result: Player won! 🤑`;
-        myOutputValue = myOutputValue + resultMessage;
+        resultMessage = `Game Result: Player won the game! 🤑`;
+        var snoopyLoseImg =
+          '<img src="https://media.tenor.com/m1TvHNAFXYcAAAAC/byuntear-snoopy.gif"/>';
+        myOutputValue =
+          myOutputValue + resultMessage + "<br><br>" + snoopyLoseImg;
         currentGameMode = gameModeReset;
       }
       // scenario: player < dealer => player lost
       if (playerHandValue < dealerHandValue && dealerHandValue <= 21) {
-        resultMessage = `Game Result: Player lost! 😢`;
-        myOutputValue = myOutputValue + resultMessage;
+        resultMessage = `Game Result: Player lost the game! 😢`;
+        var snoopyWinImg =
+          '<img src="https://media.tenor.com/GstVwcHZ-qEAAAAC/snoopy.gif"/>';
+        myOutputValue =
+          myOutputValue + resultMessage + "<br><br>" + snoopyWinImg;
         currentGameMode = gameModeReset;
       }
       // scenario: both busted => TIE!
       if (playerHandValue > 21 && dealerHandValue > 21) {
-        resultMessage = `Game Result: Both player and dealer have busted! It's a tie, let's play again!`;
-        myOutputValue = myOutputValue + resultMessage;
+        resultMessage = `Game Result: It's a tie! Both player and snoopy have busted. Let's play again!`;
+        var snoopyTieImg =
+          '<img src="https://media.tenor.com/eNEGgBFm5rAAAAAd/snoopy-billycart.gif"/>';
+        myOutputValue =
+          myOutputValue + resultMessage + "<br><br>" + snoopyTieImg;
         currentGameMode = gameModeReset;
       }
       // senario: player <= 21, dealer > 21 => PLAYER WINS
       if (playerHandValue <= 21 && dealerHandValue > 21) {
-        resultMessage = `Game Result: Dealer has busted! Player won! 🤑`;
-        myOutputValue = myOutputValue + resultMessage;
+        resultMessage = `Game Result: Snoopy has busted! Player won the game! 🤑`;
+        var snoopyLoseImg =
+          '<img src="https://media.tenor.com/m1TvHNAFXYcAAAAC/byuntear-snoopy.gif"/>';
+        myOutputValue =
+          myOutputValue + resultMessage + "<br><br>" + snoopyLoseImg;
         currentGameMode = gameModeReset;
       }
       // scenario: player > 21, dealer < 21 => DEALER WINS
       if (playerHandValue > 21 && dealerHandValue <= 21) {
-        resultMessage = `Game Result: Player has busted! Player lost! 😢`;
-        myOutputValue = myOutputValue + resultMessage;
+        resultMessage = `Game Result: Player has busted! Player lost the game! 😢`;
+        var snoopyWinImg =
+          '<img src="https://media.tenor.com/GstVwcHZ-qEAAAAC/snoopy.gif"/>';
+        myOutputValue =
+          myOutputValue + resultMessage + "<br><br>" + snoopyWinImg;
         currentGameMode = gameModeReset;
       }
     }
@@ -336,7 +362,10 @@ var resetGame = function () {
   currentGameMode = gameModeStart;
   playerCards = [];
   dealerCards = [];
-  myOutputValue = `Press "Submit" to play again!`;
+  myOutputValue = `Press "Submit" to play with Snoopy again!`;
+  var restartImage =
+    '<img src="https://media.tenor.com/ODj9rPcREr0AAAAC/snoopy-snoops.gif"/>';
+  myOutputValue = myOutputValue + "<br><br>" + restartImage;
 };
 
 // ===== MAIN FUNCTION ===== //
