@@ -170,5 +170,15 @@ Player wins by black jack!*/
     }
   }
 
+  if (gameState == "PLAYER HIT OR STAND") {
+    if (input != "h" && input != "s") {
+      myOutputValue += `Hi Player, please enter h for hit or s for stand, then click submit.`;
+    } else if (input == "h") {
+      gameState = "PLAYER HIT";
+    } else if (input == "s") {
+      gameState = "PLAYER STAND";
+    }
+  }
+
   return myOutputValue;
 };
