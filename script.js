@@ -188,7 +188,7 @@ var dealCards = function () {
   dealerCards.push(gameDeck.pop());
 };
 
-// Helper Function #9: PROCESS PLAYER INPUT
+// Helper Function #9: START GAME LOGIC
 var processGameStart = function () {
   if (currentGameMode == gameModeStart) {
     gameDeck = createNewDeck();
@@ -197,6 +197,7 @@ var processGameStart = function () {
   }
 };
 
+// Helper Function #10: DISPLAY HANDS LOGIC
 var processGameCards = function (playerCards, dealerCards) {
   if (currentGameMode == gameModeCards) {
     var playerHandMessage = displayPlayerHand(playerCards);
@@ -249,6 +250,7 @@ var processGameCards = function (playerCards, dealerCards) {
   }
 };
 
+// Helper Function #11: DETERMINE WINNER
 var processGameHitStand = function (playerInput) {
   if (currentGameMode == gameModeHitStand) {
     // input = input.toLowerCase (to check again)
@@ -352,12 +354,7 @@ var processGameHitStand = function (playerInput) {
   }
 };
 
-// Helper Function #10: INCLUDE BETS
-var gameBet = function (playerBetAmount) {
-  playerBetAmount = input;
-};
-
-// Helper Function #11: RESET GAME
+// Helper Function #12: RESET GAME
 var resetGame = function () {
   currentGameMode = gameModeStart;
   playerCards = [];
