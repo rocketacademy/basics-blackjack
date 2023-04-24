@@ -1,0 +1,98 @@
+/*CSS for the header. */
+#header {
+  text-align: center;
+  color: #964b00;
+}
+* {
+  box-sizing: border-box;
+}
+/*CSS for the body tag*/
+body {
+  font-family: sans-serif;
+  margin-left: 30px;
+  margin-right: 30px;
+  text-align: center;
+}
+
+#header {
+  text-align: center;
+  color: #964b00;
+}
+
+#border {
+  background-color: #964b00;
+  margin: 20px 20px;
+  padding: 25px 25px;
+}
+#container {
+  background-color: #35654d;
+  max-width: 3800px;
+  max-height: 3000px;
+  padding: 10px 400px;
+}
+/*CSS for Dealer-Cards*/
+#dealer-cards img {
+  height: 270px;
+  width: 160px;
+  margin: 15px;
+  border-radius: 10px;
+}
+/*CSS for Player-Cards*/
+#player-cards img {
+  height: 270px;
+  width: 160px;
+  margin: 15px;
+  border-radius: 10px;
+}
+/*CSS for all paragrah*/
+#title {
+  color: red;
+  font-size: 20px;
+  text-align: center;
+}
+#outcome {
+  color: red;
+  font-weight: light;
+  font-size: 25px;
+}
+/*CSS for the Shuffle, Stand and hit button*/
+
+.button {
+  background-color: white;
+  font-size: 20px;
+  line-height: 40px;
+  margin: 10px 0 10px 0; /*Spacing between the margin*/
+  padding: 0 6px;
+  color: #964b00;
+  font-weight: bold;
+  border-radius: 20px;
+  margin-right: 50px;
+  margin-left: 50px;
+  width: 200px;
+}
+
+.button:hover {
+  background-color: #964b00;
+  color: white;
+}
+#output-div {
+  background-color: lightgrey;
+  margin: 20px auto;
+  padding: 20px;
+  width: 100%;
+  text-align: center;
+}
+
+#output-div img {
+  width: 70px;
+  height: 80px;
+  margin: 1px;
+}
+
+/*CSS for Game Rules*/
+#rules {
+  font-size: 15px;
+  text-align: left;
+  margin: 0px;
+  font-weight: bold;
+}
