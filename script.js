@@ -58,6 +58,7 @@ let makeDeck = function () {
       let specialRank = rankCounter;
       if (cardName == 1) {
         cardName = "ace";
+        specialRank = 11;
       } else if (cardName == 11) {
         cardName = "jack";
         specialRank = 10;
@@ -150,18 +151,30 @@ let checkBlackjack = function () {
     } else {
       arrayStore[PLAYER].sum = playerCard[0].rank + playerCard[1].rank;
       console.log(`Player total sum is: ${arrayStore[PLAYER].sum}`);
-      if (arrayStore[PLAYER].sum > 21) {
+      if (arrayStore[PLAYER].sum < 12) {
+        HITBUTTON.disabled = false;
+        STANDBUTTON.disabled = true;
+      } else if (arrayStore[PLAYER].sum > 21) {
         arrayStore[PLAYER].busted = true;
         HITBUTTON.disabled = true;
+        STANDBUTTON.disabled = false;
+      } else {
+        HITBUTTON.disabled = false;
         STANDBUTTON.disabled = false;
       }
     }
   } else {
     arrayStore[PLAYER].sum = playerCard[0].rank + playerCard[1].rank;
     console.log(`Player total sum is: ${arrayStore[PLAYER].sum}`);
-    if (arrayStore[PLAYER].sum > 21) {
+    if (arrayStore[PLAYER].sum < 12) {
+      HITBUTTON.disabled = false;
+      STANDBUTTON.disabled = false;
+    } else if (arrayStore[PLAYER].sum > 21) {
       arrayStore[PLAYER].busted = true;
       HITBUTTON.disabled = true;
+      STANDBUTTON.disabled = false;
+    } else {
+      HITBUTTON.disabled = false;
       STANDBUTTON.disabled = false;
     }
   }
@@ -207,6 +220,26 @@ let displayCards = function () {
   return outputValue;
 };
 
+let changeAceValue = function () {
+  if (currentPlayer == "player" && arrayStore[PLAYER].sum > 21) {
+    for (let ctr = 0; ctr < playerCard.length; ctr += 1) {
+      if (playerCard[ctr].name == "ace") {
+        playerCard[ctr].rank = 1;
+        arrayStore[PLAYER].sum -= 10;
+        ctr = playerCard.length;
+      }
+    }
+  } else if (currentPlayer == "computer" && arrayStore[COMPUTER].sum > 21) {
+    for (let ctr = 0; ctr < computerCard.length; ctr += 1) {
+      if (computerCard[ctr].name == "ace") {
+        computerCard[ctr].rank = 1;
+        arrayStore[COMPUTER].sum -= 10;
+        ctr = computerCard.length;
+      }
+    }
+  }
+};
+
 // after user clicks hit
 let selectHit = function () {
   if (currentPlayer == "player") {
@@ -214,6 +247,7 @@ let selectHit = function () {
     let arrayLength = playerCard.length - 1;
     console.log(playerCard);
     arrayStore[PLAYER].sum += playerCard[arrayLength].rank;
+    changeAceValue();
     if (arrayStore[PLAYER].sum > 21) {
       arrayStore[PLAYER].busted = true;
       HITBUTTON.disabled = true;
@@ -224,6 +258,7 @@ let selectHit = function () {
     computerCard.push(shuffledDeck.pop());
     let arrayLength = computerCard.length - 1;
     arrayStore[COMPUTER].sum += computerCard[arrayLength].rank;
+    changeAceValue();
     if (arrayStore[COMPUTER].sum > 21) {
       arrayStore[COMPUTER].busted = true;
       HITBUTTON.disabled = true;
@@ -248,10 +283,7 @@ let displayFinalResults = function () {
     outputValue += `Computer wins by black jack! 🤨 <br>`;
   } else if (arrayStore[PLAYER].blackjack == true) {
     outputValue += `Hooray! 🤩🎉🎊 Player wins by black jack! <br>`;
-  } else if (
-    arrayStore[PLAYER].sum == arrayStore[COMPUTER].sum &&
-    arrayStore[PLAYER].sum > 21
-  ) {
+  } else if (arrayStore[PLAYER].sum > 21 && arrayStore[COMPUTER].sum > 21) {
     outputValue += `Oh no! You both busted! It's sad but it's still a tie! 😹<br>`;
   } else if (arrayStore[PLAYER].sum > 21) {
     outputValue += `Oh no! You busted so computer wins! How did this happen? 😖 Please try again!  <br>`;
@@ -310,8 +342,6 @@ let main = function (input) {
     gameMode = "player";
     currentPlayer = "player";
     DEALBUTTON.disabled = true;
-    HITBUTTON.disabled = false;
-    STANDBUTTON.disabled = false;
     if (
       arrayStore[PLAYER].blackjack == true ||
       arrayStore[COMPUTER].blackjack == true
