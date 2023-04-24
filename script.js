@@ -162,9 +162,9 @@ var checkForBlackJack = function () {
 
 var hitOrStandPlayer = function () {
   if (playerCardValue < 12) {
-    output = `== PLAYER'S TURN == <br> Player, your current total card value is ${playerCardValue}, it is below 12, you can only input "Hit"`;
+    output = `== PLAYERS TURN == <br> Player, your current total card value is ${playerCardValue}, it is below 12, you can only input "Hit"`;
   } else if (12 < playerCardValue < 21) {
-    output = `== PLAYER'S TURN == <br> Player, your current total card value is ${playerCardValue}, it is between 12 and 21, you can choose to input "Hit" or "Stand"`;
+    output = `== PLAYERS TURN == <br> Player, your current total card value is ${playerCardValue}, it is between 12 and 21, you can choose to input "Hit" or "Stand"`;
   }
   return output;
 };
@@ -205,14 +205,14 @@ var dealersAction = function () {
     dealerCards.push(shuffledDeck.pop());
     cardTotalValue();
     if (dealerCardValue > 21) {
-      output = `${outputDisplay()} <br> Dealer's total value is ${dealerCardValue}. IT IS A BUST!! `;
+      output = `${outputDisplay()} <br> Dealers total value is ${dealerCardValue}. IT IS A BUST!! `;
       output += "<br><br> Game has reset";
       reset();
       return output;
     }
   }
   if (dealerCardValue >= 17) {
-    output = `${outputDisplay()} <br> Dealer's final total card value is ${dealerCardValue}`;
+    output = `${outputDisplay()} <br> Dealers total card value is ${dealerCardValue}`;
   }
   gameStatus = "valueComparer";
   output = `${valueComparison()}`;
@@ -221,14 +221,14 @@ var dealersAction = function () {
 
 var valueComparison = function () {
   if (playerCardValue > dealerCardValue) {
-    output = `${outputDisplay()} <br> == RESULT == <br> Player's Total Value: ${playerCardValue} <br> 
-    Dealer's Total Value: ${dealerCardValue} <br> Player WON`;
+    output = `${outputDisplay()} <br> == RESULT == <br> Players Total Value: ${playerCardValue} <br> 
+    Dealers Total Value: ${dealerCardValue} <br> Player WON`;
   } else if (playerCardValue < dealerCardValue) {
-    output = `${outputDisplay()} <br> == RESULT == <br> Player's Total Value: ${playerCardValue} <br> 
-    Dealer's Total Value: ${dealerCardValue} <br> Dealer WON`;
+    output = `${outputDisplay()} <br> == RESULT == <br> Players Total Value: ${playerCardValue} <br> 
+    Dealers Total Value: ${dealerCardValue} <br> Dealer WON`;
   } else {
-    output = `${outputDisplay()} <br> == RESULT == <br> Player's Total Value: ${playerCardValue} <br> 
-    Dealer's Total Value: ${dealerCardValue} <br> IT IS A DRAW!!`;
+    output = `${outputDisplay()} <br> == RESULT == <br> Players Total Value: ${playerCardValue} <br> 
+    Dealers Total Value: ${dealerCardValue} <br> IT IS A DRAW!!`;
   }
   dealerCards = [];
   playerCards = [];
@@ -250,14 +250,14 @@ var outputDisplay = function () {
   } else {
     dealerCardNO1 = `Card is faced down`;
   }
-  output += `Player's Draw: <br>`;
+  output += `Players Draw: <br>`;
   for (i = 0; i < playerCards.length; i += 1) {
     output += `CARD NO${i + 1}: ${playerCards[i].name} of ${
       playerCards[i].suit
     } <br>`;
   }
 
-  output += `<br> Dealer's Draw: <br>`;
+  output += `<br> Dealers Draw: <br>`;
   output += ` CARD NO1: ${dealerCardNO1} <br>`;
   for (i = 1; i < dealerCards.length; i += 1) {
     output += `CARD NO${i + 1}: ${dealerCards[i].name} of ${
@@ -297,13 +297,13 @@ var main = function (input) {
   } else if (gameStatus == "dealersTurn") {
     dealersAction();
   }
-  console.log(`player's card are`);
+  console.log(`players card are`);
   console.log(playerCards);
-  console.log(`player's card value is ${playerCardValue}`);
+  console.log(`players card value is ${playerCardValue}`);
 
-  console.log(`dealer's card are`);
+  console.log(`dealers card are`);
   console.log(dealerCards);
-  console.log(`dealer's card value is ${dealerCardValue}`);
+  console.log(`dealers card value is ${dealerCardValue}`);
 
   return myOutputValue;
 };
