@@ -188,12 +188,14 @@ let main = function (input) {
         if (playerHasBlackJack == true || dealerHasBlackJack == true) {
             if (playerHasBlackJack == true && dealerHasBlackJack == true) {
                 changeGameState(GAME_STATE_START);
+
                 outputMessage = showPlayerAndDealerHands(playerHand, dealerHand) + `<br> It's a tie! Both of you have <b>BLACKJACK</b>!`;
             } else if (playerHasBlackJack == true && dealerHasBlackJack == false) {
                 changeGameState(GAME_STATE_START);
                 outputMessage = showPlayerAndDealerHands(playerHand, dealerHand) + `<br> <b>BLACKJACK! You win!</b>`;
             } else {
                 changeGameState(GAME_STATE_START);
+
                 outputMessage = showPlayerAndDealerHands(playerHand, dealerHand) + `<br> <b>Dealer has BLACKJACK! You lose.</b>`;
             }
         } else {
