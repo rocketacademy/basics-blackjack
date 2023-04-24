@@ -196,7 +196,9 @@ let main = function (input) {
                 changeGameState(GAME_STATE_START);
                 outputMessage = showPlayerAndDealerHands(playerHand, dealerHand) + `<br> <b>Dealer has BLACKJACK! You lose.</b>`;
             }
-            console.log(outputMessage);
+            playerHand = [];
+            dealerHand = [];
+            handArray = [];
         } else {
             outputMessage =
                 `Your cards are ` + playerHand[0].name + ` of ` + playerHand[0].suit + ` and ` + playerHand[1].name + ` of ` + playerHand[0].suit + `.<br>Choose to <b>hit</b> or <b>stand</b>.`;
