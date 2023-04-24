@@ -172,7 +172,7 @@
   </head>
 
   <body>
-    <h1 class="header">♠️ CALVIN TAN - Blackjack ♠️</h1>
+    <h1 class="header">♣️ CALVIN TAN - Blackjack ♠️</h1>
     <div id="container">
       <p>Input:</p>
       <input id="input-field" />
@@ -221,7 +221,7 @@
         }
       });
     </script>
-
+    <p>Output:</p>
     <div id="output-div">Click the submit button to start the game.</div>
     <!-- Import program logic -->
     <script src="script.js"></script>
@@ -236,7 +236,7 @@
 
       function submitForm() {
         // Set result to input value
-        var result = main("submit", input.value);
+        var result = main(input.value);
 
         // Display result in output element
         output.innerHTML = result;
@@ -246,7 +246,7 @@
       }
       function hit() {
         // Set result to input value
-        var result = main("hit", input.value);
+        var result = main("hit");
 
         // Display result in output element
         output.innerHTML = result;
@@ -256,7 +256,7 @@
       }
       function stand() {
         // Set result to input value
-        var result = main("stand", input.value);
+        var result = main("stand");
 
         // Display result in output element
         output.innerHTML = result;

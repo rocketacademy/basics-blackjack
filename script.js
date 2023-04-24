@@ -4,16 +4,18 @@
 //update4: ace values, added hit/stand button
 //update5: multiplayer in progress
 //update5.1: fixing the hit input
+//final ver: removed multiplayer attempt and fixed looks and audio
+
+const hitSound = new Audio(
+  "https://raw.githubusercontent.com/calvinttg/basics-blackjack/master/givecard.mp3"
+);
 
 //establishing player and dealer's card to clean slate
 var gameStart = " Game Start";
-var gameNumberOfPlayers = "Input Number of Players";
 var gameDrawn = " Cards drawn";
 var gameResults = " Show results ";
 var gameHitStand = " Hit or Stand ";
 var currentGameState = gameStart;
-
-var numberOfPlayers = 1;
 
 var playerCards = [];
 var dealerCards = [];
@@ -70,15 +72,12 @@ var createDeck = function () {
   // Return the completed card deck
   return cardDeck;
 };
-/*//to initialise cardDeck to be used
-cardDeck = createDeck();*/
 
 // Get a random index ranging from 0 (inclusive) to max (exclusive).
 var getRandomIndex = function (max) {
   return Math.floor(Math.random() * max);
 };
 
-// Shuffle the elements in the cardDeck array
 var shuffleCards = function (cardDeck) {
   // Loop over the card deck array once
   var currentIndex = 0;
@@ -107,8 +106,7 @@ var createNewDeck = function () {
 var checkPlayerForBlackJack = function () {
   var playerTotalValue = 0;
   for (var i = 0; i < playerCards.length; i++) {
-    var cardValue = playerCards[i][0].rank;
-    var cardValue2 = playerCards[i][1].rank;
+    var cardValue = playerCards[i].rank;
     if (cardValue == 13 || cardValue == 12 || cardValue == 11) {
       cardValue = 10;
     } else if (cardValue === 1) {
@@ -118,17 +116,7 @@ var checkPlayerForBlackJack = function () {
         cardValue = 1;
       }
     }
-    if (cardValue2 == 13 || cardValue2 == 12 || cardValue2 == 11) {
-      cardValue2 = 10;
-    } else if (cardValue2 === 1) {
-      if (playerTotalValue + 11 <= 21) {
-        cardValue2 = 11;
-      } else {
-        cardValue2 = 1;
-      }
-    }
     playerTotalValue += Number(cardValue);
-    playerTotalValue += Number(cardValue2);
   }
   if (playerTotalValue == 21) {
     return true;
@@ -161,22 +149,14 @@ function calculatePlayerHandValue(playerCards) {
   var totalValue = 0;
   var aceCount = 0;
   for (var i = 0; i < playerCards.length; i++) {
-    var cardValue = playerCards[i][0].rank;
-    var cardValue2 = playerCards[i][1].rank;
+    var cardValue = playerCards[i].rank;
     if (cardValue == 13 || cardValue == 12 || cardValue == 11) {
       cardValue = 10;
-    } else if (cardValue2 == 13 || cardValue2 == 12 || cardValue2 == 11) {
-      cardValue2 = 10;
     } else if (cardValue === 1) {
       cardValue = 11;
-
-      aceCount++;
-    } else if (cardValue2 === 1) {
-      cardValue2 = 11;
       aceCount++;
     }
     totalValue += Number(cardValue);
-    totalValue += Number(cardValue2);
   }
   while (totalValue > 21 && aceCount > 0) {
     totalValue -= 10;
@@ -184,7 +164,6 @@ function calculatePlayerHandValue(playerCards) {
   }
   return totalValue;
 }
-
 function calculateDealerHandValue(dealerCards) {
   var totalValue = 0;
   var aceCount = 0;
@@ -205,29 +184,21 @@ function calculateDealerHandValue(dealerCards) {
   return totalValue;
 }
 
-var displayHands = function (playerCards, dealerCards, i) {
+//edit this for display blackjack
+var displayHands = function (playerCards, dealerCards) {
   console.log("Player's hand:");
+  var playerMessage = "Player's hand: <br>";
   var dealerMessage = "Dealer's hand: <br>";
-  for (let i = 0; i < numberOfPlayers; i++) {
-    var playerMessage = "Player " + (i + 1) + " hand: <br>";
-  }
-  for (let i = 0; i < numberOfPlayers; i++) {
+  for (let i = 0; i < playerCards.length; i++) {
     playerMessage =
       playerMessage +
       " - " +
-      playerCards[i][0].name +
+      playerCards[i].name +
       " of " +
-      playerCards[i][0].suit +
-      "<br>" +
-      " - " +
-      playerCards[i][1].name +
-      " of " +
-      playerCards[i][1].suit +
+      playerCards[i].suit +
       "<br>";
-    console.log(`${playerCards[i][0].rank} of ${playerCards[i][0].suit}`);
-    console.log(`${playerCards[i][1].rank} of ${playerCards[i][1].suit}`);
+    console.log(`${playerCards[i].rank} of ${playerCards[i].suit}`);
   }
-
   console.log("Dealers's hand:");
   for (let i = 0; i < dealerCards.length; i++) {
     dealerMessage =
@@ -239,7 +210,6 @@ var displayHands = function (playerCards, dealerCards, i) {
       "<br>";
     console.log(`${dealerCards[i].rank} of ${dealerCards[i].suit}`);
   }
-
   //future use
   /*console.log("\nDealer's hand:");
   console.log(`${dealerCards[0].rank} of ${dealerCards[0].suit}`);
@@ -254,64 +224,29 @@ var displayHandsValue = function (playerHandTotalValue, dealerHandTotalValue) {
     dealerHandTotalValue;
   return totalHandValueMessage;
 };
-//function to check input during gamestateNumberOfPlayers for numerals
-var checkInput = function (x) {
-  if (isNaN(x)) {
-    alert("Please input number of players");
-    return false;
-  }
-  return true;
-};
-
-var main = function (input, inputNumberOfPlayers) {
+var main = function (input) {
   var outputMessage = "";
-  //gameStart
-  if (currentGameState == gameStart && input == "submit") {
-    currentGameState = gameNumberOfPlayers;
-    outputMessage = "Please enter the number of players";
-    return outputMessage;
-  }
-  //edit this
-  //input validation before gameNumberOfPlayers
-  if (!checkInput(inputNumberOfPlayers)) {
-    return "Please input numerals only";
-  }
-
-  //gameNumberOfPlayers
-  if (currentGameState == gameNumberOfPlayers && input == "submit") {
-    numberOfPlayers = inputNumberOfPlayers;
+  if (currentGameState == gameStart) {
     gameDeck = createNewDeck();
-    console.log(
-      "game deck after input number assigned to numberOfPlayers" + gameDeck
-    );
-
-    //run interations based on the number of players entered
-    for (let i = 0; i < Number(numberOfPlayers); i++) {
-      playerCards.push([]);
-      playerCards[i].push(gameDeck.pop());
-      playerCards[i].push(gameDeck.pop());
-    }
+    console.log(gameDeck);
+    playerCards.push(gameDeck.pop());
+    playerCards.push(gameDeck.pop());
     dealerCards.push(gameDeck.pop());
     dealerCards.push(gameDeck.pop());
 
-    //check for loop above runs correctly ^
-    for (let i = 0; i < playerCards.length; i++) {
-      console.log("Player card " + (i + 1) + " is:");
-      console.log(playerCards[i][0]);
-      console.log(playerCards[i][1]);
-    }
-
+    console.log("Player cards is:");
+    console.log(playerCards);
     console.log("Dealer cards is:");
     console.log(dealerCards);
 
     currentGameState = gameDrawn;
-    console.log("gamestate cards delt:" + currentGameState);
+
     outputMessage =
       "Cards has been dealt. Please click submit to evaluate cards. ";
 
     return outputMessage;
   }
-  if (currentGameState === gameDrawn && input == "submit") {
+  if (currentGameState === gameDrawn) {
     var playerhasBlackjack = checkPlayerForBlackJack(playerCards);
     var dealerhasBlackjack = checkDealerForBlackJack(dealerCards);
     var playerHandTotalValue = calculatePlayerHandValue(playerCards);
@@ -350,11 +285,15 @@ var main = function (input, inputNumberOfPlayers) {
 
   if (currentGameState == gameHitStand) {
     if (input == "hit") {
+      const hitButton = document.querySelector("#hit-button");
+      hitButton.addEventListener("click", () => {
+        hitSound.play();
+      });
       playerCards.push(gameDeck.pop());
       outputMessage =
         displayHands(playerCards, dealerCards) +
         "You drew another card.<br> Please input 'hit' or 'stand'<br>";
-    } else if (input == "stand") {
+    } else if (input == "stand" || calculatePlayerHandValue(playerCards) < 21) {
       var playerHandTotalValue = calculatePlayerHandValue(playerCards);
       var dealerHandTotalValue = calculateDealerHandValue(dealerCards);
       console.log("player hand value " + playerHandTotalValue);
