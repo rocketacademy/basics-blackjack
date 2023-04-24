@@ -5,6 +5,9 @@ gameModeDrawnCards = "Game_Mode_Drawn_Cards";
 gameModePlayerSelection = "Game_Mode_Player_Selection";
 gameModePlayerHit = "Game_Mode_Player_Hit";
 gameModePlayerStand = "Game_Mode_Player_Stand";
+// Third Version: Add Dealer Hit or Stand
+gameModeDealerTurn = "Game_Mode_Dealer_Turn";
+gameModeScoreCompare = "Game_Mode_Score_Compare";
 currentGameMode = gameModeGameStart;
 
 var playerCards = [];
@@ -12,6 +15,10 @@ var dealerCards = [];
 
 var main = function (input) {
   var myOutputValue = "";
+  var totalPlayerHand = calculateHandTotal(playerCards);
+  console.log(totalPlayerHand);
+  var totalDealerHand = calculateHandTotal(dealerCards);
+  console.log(totalDealerHand);
   var shuffledDeck = shuffleCards(cardDeck);
 
   if (currentGameMode == gameModeGameStart) {
@@ -84,7 +91,7 @@ var main = function (input) {
     if (input == "stand" || input == "Stand") {
       currentGameMode = gameModePlayerStand;
       myOutputValue =
-        "Player has chosen stand.<br><br>Player's turn has ended.<br><br>It is now the dealer's turn.";
+        "Player has chosen stand.<br><br>Player's turn has ended.";
     }
 
     return myOutputValue;
@@ -93,19 +100,13 @@ var main = function (input) {
   if (currentGameMode == gameModePlayerHit) {
     playerCards.push(shuffledDeck.pop());
 
-    playerHitOutput =
-      "Player hand: " +
-      playerCards[0].name +
-      " of " +
-      playerCards[0].suit +
-      ", " +
-      playerCards[1].name +
-      " of " +
-      playerCards[1].suit +
-      ", " +
-      playerCards[2].name +
-      " of " +
-      playerCards[2].suit;
+    var playerOutput = "";
+    for (let i = 0; i < playerCards.length; i++) {
+      playerOutput =
+        playerOutput + `${playerCards[i].name} of ${playerCards[i].suit}, `;
+    }
+
+    playerHitOutput = "Player hand: " + playerOutput;
 
     dealerHitOutput =
       "<br><br>Dealer hand: " +
@@ -117,36 +118,31 @@ var main = function (input) {
       " of " +
       dealerCards[1].suit;
 
-    if (
-      playerCards[0].rank + playerCards[1].rank + playerCards[2].rank <
-        dealerCards[0].rank + dealerCards[1].rank &&
-      playerCards[0].rank + playerCards[1].rank + playerCards[2].rank <= 21
-    ) {
+    if (calculateHandTotal(playerCards) <= 21) {
       currentGameMode = gameModePlayerSelection;
       myOutputValue =
         playerHitOutput +
         "<br><br>Please enter 'hit' if you would like to draw another card or 'stand' to continue to the dealer's turn.";
-    } else if (
-      playerCards[0].rank + playerCards[1].rank + playerCards[2].rank >
-      21
-    ) {
+    } else if (calculateHandTotal(playerCards) > 21) {
+      currentGameMode = gameModeDealerTurn;
       myOutputValue =
-        playerHitOutput + "<br><br>Bust! It is now the dealer's turn.";
+        playerHitOutput +
+        "<br><br>Bust! It is now the dealer's turn to decide.";
     }
 
     return myOutputValue;
   }
 
   if (currentGameMode == gameModePlayerStand) {
-    playerHitOutput =
-      "Player hand: " +
-      playerCards[0].name +
-      " of " +
-      playerCards[0].suit +
-      ", " +
-      playerCards[1].name +
-      " of " +
-      playerCards[1].suit +
+    var playerOutput = "";
+    for (let i = 0; i < playerCards.length; i++) {
+      playerOutput =
+        playerOutput + `${playerCards[i].name} of ${playerCards[i].suit}, `;
+    }
+
+    playerStandOutput = "Player hand: " + playerOutput;
+
+    dealerStandOutput =
       "<br><br>Dealer hand: " +
       dealerCards[0].name +
       " of " +
@@ -156,32 +152,72 @@ var main = function (input) {
       " of " +
       dealerCards[1].suit;
 
-    if (
-      playerCards[0].rank + playerCards[1].rank >
-        dealerCards[0].rank + dealerCards[1].rank &&
-      playerCards[0].rank + playerCards[1].rank <= 21
-    ) {
-      myOutputValue = playerHitOutput + "<br><br>Player wins!";
-    } else if (
-      dealerCards[0].rank + dealerCards[1].rank >
-        playerCards[0].rank + playerCards[1].rank &&
-      dealerCards[0].rank + dealerCards[1].rank <= 21
-    ) {
-      myOutputValue = playerHitOutput + "<br><br>Dealer wins!";
-    } else if (
-      playerCards[0].rank + playerCards[1].rank ==
-      dealerCards[0].rank + dealerCards[1].rank
-    ) {
-      myOutputValue = playerHitOutput + "<br><br>It's a tie!";
-    }
+    currentGameMode = gameModeDealerTurn;
+
+    myOutputValue = "It is now the dealer's turn.";
 
     return myOutputValue;
   }
 
-  var totalPlayerHand = calculateHandTotal(playerCards);
-  console.log(totalPlayerHand);
-  var totalDealerHand = calculateHandTotal(dealerCards);
-  console.log(totalDealerHand);
+  if (currentGameMode == gameModeDealerTurn) {
+    var dealerOutput = "";
+    for (let i = 0; i < dealerCards.length; i++) {
+      dealerOutput =
+        dealerOutput + `${dealerCards[i].name} of ${dealerCards[i].suit}, `;
+    }
+
+    dealerTurnOutput = "<br><br>Dealer hand: " + dealerOutput;
+
+    if (totalDealerHand < 17 && totalDealerHand <= 21) {
+      dealerCards.push(shuffledDeck.pop());
+      myOutputValue = "The dealer has chosen to hit.";
+    } else {
+      currentGameMode = gameModeScoreCompare;
+      myOutputValue = "Let's see the scores!";
+    }
+    return myOutputValue;
+  }
+
+  if (currentGameMode == gameModeScoreCompare) {
+    if (
+      (totalPlayerHand > totalDealerHand && totalPlayerHand <= 21) ||
+      (totalPlayerHand <= 21 && totalDealerHand > 21)
+    ) {
+      myOutputValue =
+        playerStandOutput +
+        "<br>Player total: " +
+        calculateHandTotal(playerCards) +
+        dealerTurnOutput +
+        "<br>Dealer total: " +
+        calculateHandTotal(dealerCards) +
+        "<br><br><br>Player wins!";
+    } else if (
+      (totalDealerHand > totalPlayerHand && totalDealerHand <= 21) ||
+      (totalDealerHand <= 21 && totalPlayerHand > 21)
+    ) {
+      myOutputValue =
+        playerStandOutput +
+        "<br>Player total: " +
+        calculateHandTotal(playerCards) +
+        dealerTurnOutput +
+        "<br>Dealer total: " +
+        calculateHandTotal(dealerCards) +
+        "<br><br><br>Dealer wins!";
+    } else if (
+      totalPlayerHand == totalDealerHand ||
+      (totalPlayerHand > 21 && totalDealerHand > 21)
+    ) {
+      myOutputValue =
+        playerStandOutput +
+        "<br>Player total: " +
+        calculateHandTotal(playerCards) +
+        dealerTurnOutput +
+        "<br>Dealer total: " +
+        calculateHandTotal(dealerCards) +
+        "<br><br><br>It's a tie!";
+    }
+    return myOutputValue;
+  }
 };
 
 //Game Helper Functions
@@ -216,15 +252,9 @@ var makeDeck = function () {
         rank: rankCounter,
       };
 
-      console.log(card.rank);
-
       cardDeck.push(card);
 
       rankCounter += 1;
-
-      console.log(
-        "Card rank counter: " + rankCounter + "Card Name: " + cardName
-      );
     }
 
     suitIndex += 1;
