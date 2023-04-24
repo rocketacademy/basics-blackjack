@@ -217,7 +217,7 @@ var getComparedResult = function () {
   var myImagesTie = '<img src = "https://media.tenor.com/8VPQWQmFzZIAAAAC/howls-moving-castle-frying.gif"/ class="center">'
   // 1.player & dealer both smaller than 21 & player > dealer
   // 1.player wins
-  if (sumOfPlayerCards < 21 && sumOfDealerCards < 21 && sumOfPlayerCards > sumOfDealerCards) {
+  if (sumOfPlayerCards <= 21 && sumOfDealerCards <= 21 && sumOfPlayerCards > sumOfDealerCards) {
     currentBet = initialbet * 2;
     playerBankRoll = playerBankRoll + currentBet;
     output = `<b> You win! Dealer lose! </b> <br> Your bankroll is now ${playerBankRoll}. Input a number to continue betting. <br><br>
@@ -226,16 +226,16 @@ var getComparedResult = function () {
   }
   // 2.player & dealer both smaller than 21 & dealer > player
   // 2.dealer wins
-  else if (sumOfPlayerCards < 21 && sumOfDealerCards < 21 && sumOfDealerCards > sumOfPlayerCards) {
+  else if (sumOfPlayerCards <= 21 && sumOfDealerCards <= 21 && sumOfDealerCards > sumOfPlayerCards) {
     currentBet = -initialbet;
     playerBankRoll = playerBankRoll + currentBet;
     output = `<b> You lose:( Dealer wins! </b> <br> Your bankroll is now ${playerBankRoll}. Input a number to continue betting. <br><br>
     ${myImagesLose} <br> <br>
     ${listPlayerCardsAndDealerCards(playerCards, dealerCards)}`
   }
-  // 3.player busts & dealer smaller to 21
+  // 3.player busts
   // 3.dealer wins
-  else if (sumOfPlayerCards > 21 && sumOfDealerCards < 21) {
+  else if (sumOfPlayerCards > 21 && sumOfDealerCards <= 21) {
     currentBet = -initialbet;
     playerBankRoll = playerBankRoll + currentBet;
     output = `<b> You bust:( Dealer wins! </b> <br> Your bankroll is now ${playerBankRoll}. Input a number to continue betting.<br><br>
@@ -244,24 +244,16 @@ var getComparedResult = function () {
   }
   // 4.player smaller than 21 & dealer busts
   // 4.player wins
-  else if (sumOfPlayerCards < 21 && sumOfDealerCards > 21) {
+  else if (sumOfPlayerCards <= 21 && sumOfDealerCards > 21) {
     currentBet = initialbet * 2;
     playerBankRoll = playerBankRoll + currentBet;
     output = `<b> You win! Dealer bust! </b> <br>Your bankroll is now ${playerBankRoll}. Input a number to continue betting. <br><br>
     ${myImagesWin} <br> <br>
     ${listPlayerCardsAndDealerCards(playerCards, dealerCards)}`
   }
-  // 5.both player busts
-  // 5.tie
-  else if (sumOfPlayerCards > 21 && sumOfDealerCards > 21) {
-    playerBankRoll = playerBankRoll;
-    output = `<b> It's a tie! Dealer and you both bust! </b> <br>Your bankroll is now ${playerBankRoll}. Input a number to continue betting.<br><br>
-    ${myImagesTie} <br> <br>
-    ${listPlayerCardsAndDealerCards(playerCards, dealerCards)} <br><br>`
-  }
-  // 6.both player same number but not 21
+  // 6.both player same number
   // 6.tie
-  else if (sumOfPlayerCards != 21 && sumOfPlayerCards == sumOfDealerCards) {
+  else if (sumOfPlayerCards == sumOfDealerCards) {
     playerBankRoll = playerBankRoll;
     output = `<b> It's a tie! Dealer and you both got the same sum of cards! </b> <br>Your bankroll is now ${playerBankRoll}. Input a number to continue betting. <br><br>
     ${myImagesTie} <br> <br>
@@ -315,11 +307,51 @@ var myImagesWin = '<img src = "https://steamuserimages-a.akamaihd.net/ugc/911281
 var myImagesLose = '<img src = "https://media.tenor.com/n4C8YTtBFrAAAAAC/howls-moving-castle-calcifer.gif"/ class="center">'
 var myImagesTie = '<img src = "https://media.tenor.com/8VPQWQmFzZIAAAAC/howls-moving-castle-frying.gif"/ class="center">'
 
+var inputIsHit = function () {
+  drawCards = shuffledDeck.pop();
+  playerCards.push(drawCards);
+  sumOfPlayerCards = getSumOfPlayerCards(playerCards);
+  sumOfDealerCards = getSumOfDealerCards(dealerCards);
+  if (sumOfPlayerCards > 21) {
+    currentBet = -initialbet;
+    playerBankRoll = playerBankRoll + currentBet;
+    output = `<b> You bust:( Dealer wins! </b> <br> Your bankroll is now ${playerBankRoll}. Input a number to continue betting.<br><br>
+    ${myImagesLose} <br> <br>
+    ${listPlayerCardsAndDealerCards(playerCards, dealerCards)} <br><br>`
+    gameState = PLACE_BET;
+  }
+  else if (sumOfPlayerCards < 21) {
+    output = `<b> Type "hit" to deal another card again or "stand" to pass. </b> <br><br>
+    ${listPlayerCardsAndDealerFirstCards(playerCards, dealerCards)}`;
+    gameState = PLAYER_HIT_OR_STAND;
+  }
+  else if (sumOfPlayerCards == 21) {
+    while (sumOfDealerCards < 17) {
+      drawCards = shuffledDeck.pop();
+      dealerCards.push(drawCards);
+      sumOfDealerCards = getSumOfDealerCards(dealerCards);
+    };
+    output = getComparedResult(sumOfPlayerCards, sumOfDealerCards);
+    gameState = PLACE_BET;
+  }
+  return output;
+}
+
 // Main function Deck
 var main = function (input) {
   if (gameState == PLACE_BET) {
+    // if betting is less than player bank roll. Invalid
+    if (playerBankRoll == 0) {
+      return `<b> You lose all your money. Your bankroll is now 0. Please refresh the page to play the game again.</b>`;
+    }
+    else if (Number(input) > playerBankRoll) {
+      return `<b> You cannot input a number larger than your bankroll. Your bankroll is ${playerBankRoll}. </b>`;
+    }
+    else if (Number(input) < 0) {
+      return `<b> You cannot input a number smaller than 0. Your bankroll is ${playerBankRoll}. </b>`;
+    }
     // if there isnt any input
-    if (input == "") {
+    else if (input == "") {
       return `<b> You didn't input any numbers. Your bankroll is ${playerBankRoll}. Please input a number to bet. </b>`;
     }
     // if input is not number
@@ -332,6 +364,7 @@ var main = function (input) {
     gameState = DEAL_CARDS;
     }
   }
+
   else if (gameState == DEAL_CARDS) {
     // deal two cards
     resetGame();
@@ -350,28 +383,12 @@ var main = function (input) {
       gameState = PLAYER_HIT_OR_STAND
     }
   }
-  
+
   else if (gameState == PLAYER_HIT_OR_STAND) {
     // if player hit, add a card to array
     if (input == "hit") {
-      drawCards = shuffledDeck.pop();
-      console.log(drawCards);
-      playerCards.push(drawCards);
-      console.log(playerCards);
-      sumOfPlayerCards = getSumOfPlayerCards(playerCards);
-      sumOfDealerCards = getSumOfDealerCards(dealerCards);
-      var isblackjack = checkBlackJack();
-      // check if there is blackjack after pushing card. If there is blackjack, output blackjack message
-      if (isblackjack == true) {
-        output = outputBlackJackMessage()
+      output = inputIsHit();
       }
-      else {
-      // 4. if there is no blackjack, ask player hit or stand again
-        output = `<b> Type "hit" to deal another card again or "stand" to pass. </b> <br><br>
-        ${listPlayerCardsAndDealerFirstCards(playerCards, dealerCards)}`;
-        gameState = PLAYER_HIT_OR_STAND;
-      }
-    }
     // if player stand, game state -> compare result
     else if (input == "stand") {
       // if sum of dealer cards are larger or equal to 17, then dealer no need to deal
@@ -382,18 +399,11 @@ var main = function (input) {
         sumOfDealerCards = getSumOfDealerCards(dealerCards);
       };
       console.log(sumOfDealerCards);
-      // check if there is blackjack after pushing card. If there is blackjack, output blackjack message
-      var isblackjack = checkBlackJack();
-      if (isblackjack == true) {
-        output = outputBlackJackMessage()
-      }
-      else {
       output = getComparedResult(sumOfPlayerCards, sumOfDealerCards);
       gameState = PLACE_BET;
       }
-    }
     // wrong input
-    else {
+    else if (input != "hit" || input != "stand") {
       output = `<b> Wrong input:( You can only type "hit" to deal another card or "stand" to pass. </b> <br><br>
       ${listPlayerCardsAndDealerFirstCards(playerCards, dealerCards)}`
       gameState = PLAYER_HIT_OR_STAND;
