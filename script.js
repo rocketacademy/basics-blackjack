@@ -180,5 +180,102 @@ Player wins by black jack!*/
     }
   }
 
+  if (gameState == "PLAYER HIT") {
+    let playerNextCard = shuffledDeck.pop();
+    console.log("playerNextCard", playerNextCard);
+    //ONCE PLAYER HIT, NEXT CARD OF PLAYER IS ACE.
+    //CHOOSE THE VALUE OF Ace TO AVOID BUST
+    //AFTER PLAYER DEALT WITH 3rd card, HE STILL CAN CHOOSE EITHER HIT OR STAND.
+    if (playerNextCard.name == "ace" && handTotalOfPlayerInArray[0] >= 11) {
+      handTotalOfPlayerInArray[0] += playerNextCard.value[0];
+      // A Blackjack win. When player draw Blackjack.
+      if (handTotalOfPlayerInArray[0] == 21) {
+        myOutputValue = `Player won by Blackjack! <br>Please refresh the webpage to play again.<br>${imagePlayerWin}`;
+      }
+      // A normal win. the winner is decided by whomever has the higher hand total. If player get higher hand total & dealer must stand, player win.
+      else if (
+        handTotalOfPlayerInArray[0] > handTotalOfDealerInArray[0] &&
+        handTotalOfDealerInArray[0] >= 17 &&
+        handTotalOfPlayerInArray[0] < 21
+      ) {
+        myOutputValue = `Player won! Hand total of player is ${handTotalOfPlayerInArray[0]}, which is greater than hand total of dealer: ${handTotalOfDealerInArray[0]}.<br>Please refresh the webpage to play again.<br>${imagePlayerWin}`;
+      }
+      //player busts. Player will tie with the dealer if the dealer also busts.
+      else if (handTotalOfPlayerInArray[0] > 21) {
+        if (handTotalOfDealerInArray[0] >= 17) {
+          myOutputValue = `Player busts! You lose! Your hand total is ${handTotalOfPlayerInArray[0]}.<br>Please refresh the webpage to play again.<br>${imagePlayerLose}`;
+        } else if (handTotalOfDealerInArray[0] < 17) {
+          myOutputValue = `Player busts! Hand total of player: ${handTotalOfPlayerInArray[0]} ,which is higher than 21. Once dealer hit later, if dealer also busts, it's a tie. If dealer not busts, player lose.<br>Dealer will hit.<br>`;
+          gameState = "DEALER HIT";
+        }
+      }
+      //PLAYER choose hit or stand when hand total is still less than 21
+      else if (handTotalOfPlayerInArray[0] < 21) {
+        gameState = "PLAYER HIT OR STAND";
+        myOutputValue = `Hi player, your hand total is ${handTotalOfPlayerInArray[0]}.<br> Hand total of dealer is ${handTotalOfDealerInArray[0]}.<br> Please enter h for hit or s for stand, then click submit.`;
+      }
+    }
+    //ONCE PLAYER HIT, CURRENTLY, HAND TOTAL OF PLAYER IS LESS THAN 11 & NEXT CARD OF PLAYER IS ACE
+    if (playerNextCard.name == "ace" && handTotalOfPlayerInArray[0] < 11) {
+      handTotalOfPlayerInArray[0] += playerNextCard.value[1];
+      // A Blackjack win. When player draw Blackjack.
+      if (handTotalOfPlayerInArray[0] == 21) {
+        myOutputValue = `Player won by Blackjack! <br>Please refresh the webpage to play again.<br>${imagePlayerWin}`;
+      }
+      // A normal win. the winner is decided by whomever has the higher hand total. If player get higher hand total & dealer must stand, player win.
+      else if (
+        handTotalOfPlayerInArray[0] > handTotalOfDealerInArray[0] &&
+        handTotalOfDealerInArray[0] >= 17 &&
+        handTotalOfPlayerInArray[0] < 21
+      ) {
+        myOutputValue = `Player won! Hand total of player is ${handTotalOfPlayerInArray[0]}, which is greater than hand total of dealer: ${handTotalOfDealerInArray[0]}.<br>Please refresh the webpage to play again.<br>${imagePlayerWin}`;
+      }
+      //player busts. Player will tie with the dealer if the dealer also busts.
+      else if (handTotalOfPlayerInArray[0] > 21) {
+        if (handTotalOfDealerInArray[0] >= 17) {
+          myOutputValue = `Player busts! You lose! Your hand total is ${handTotalOfPlayerInArray[0]}.<br>Please refresh the webpage to play again.<br>${imagePlayerLose}`;
+        } else if (handTotalOfDealerInArray[0] < 17) {
+          myOutputValue = `Player busts! Hand total of player: ${handTotalOfPlayerInArray[0]} ,which is higher than 21. Once dealer hit later, if dealer also busts, it's a tie. If dealer not busts, player lose.<br>Dealer will hit.<br>`;
+          gameState = "DEALER HIT";
+        }
+      }
+      //PLAYER choose hit or stand when hand total is still less than 21
+      else if (handTotalOfPlayerInArray[0] < 21) {
+        gameState = "PLAYER HIT OR STAND";
+        myOutputValue = `Hi player, your hand total is ${handTotalOfPlayerInArray[0]}.<br> Hand total of dealer is ${handTotalOfDealerInArray[0]}.<br> Please enter h for hit or s for stand, then click submit.`;
+      }
+    }
+    //ONCE PLAYER HIT, NEXT CARD OF PLAYER IS NOT ACE.
+    else if (playerNextCard.name != "ace") {
+      handTotalOfPlayerInArray[0] += playerNextCard.value;
+      // A Blackjack win. When player draw Blackjack.
+      if (handTotalOfPlayerInArray[0] == 21) {
+        myOutputValue = `Player won by Blackjack! <br>Please refresh the webpage to play again.<br>${imagePlayerWin}`;
+      }
+      // A normal win. the winner is decided by whomever has the higher hand total. If player get higher hand total & dealer must stand, player win.
+      else if (
+        handTotalOfPlayerInArray[0] > handTotalOfDealerInArray[0] &&
+        handTotalOfDealerInArray[0] >= 17 &&
+        handTotalOfPlayerInArray[0] < 21
+      ) {
+        myOutputValue = `Player won! Hand total of player is ${handTotalOfPlayerInArray[0]}, which is greater than hand total of dealer: ${handTotalOfDealerInArray[0]}.<br>Please refresh the webpage to play again.<br>${imagePlayerWin}`;
+      }
+      //player busts. Player will tie with the dealer if the dealer also busts.
+      else if (handTotalOfPlayerInArray[0] > 21) {
+        if (handTotalOfDealerInArray[0] >= 17) {
+          myOutputValue = `Player busts! You lose! Your hand total is ${handTotalOfPlayerInArray[0]}.<br>Please refresh the webpage to play again.<br>${imagePlayerLose} `;
+        } else if (handTotalOfDealerInArray[0] < 17) {
+          myOutputValue = `Player busts! Hand total of player: ${handTotalOfPlayerInArray[0]} ,which is higher than 21. Once dealer hit later, if dealer also busts, it's a tie. If dealer not busts, player lose.<br>Dealer will hit.<br>`;
+          gameState = "DEALER HIT";
+        }
+      }
+      //PLAYER choose hit or stand when hand total is still less than 21
+      else if (handTotalOfPlayerInArray[0] < 21) {
+        gameState = "PLAYER HIT OR STAND";
+        myOutputValue = `Hi player, your hand total is ${handTotalOfPlayerInArray[0]}.<br> Hand total of dealer is ${handTotalOfDealerInArray[0]}.<br> Please enter h for hit or s for stand, then click submit.`;
+      }
+    }
+  }
+
   return myOutputValue;
 };
