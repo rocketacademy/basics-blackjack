@@ -7,7 +7,7 @@
 //final ver: removed multiplayer attempt and fixed looks and audio
 
 const hitSound = new Audio(
-  "https://raw.githubusercontent.com/calvinttg/basics-blackjack/master/givecard.mp3"
+  "https://raw.githubusercontent.com/calvinttg/basics-blackjack/master/givecard2.mp3"
 );
 
 //establishing player and dealer's card to clean slate
