@@ -279,16 +279,15 @@ var main = function (input) {
         "There is no blackjack<br> Player, please enter 'hit' or 'stand' to draw a card";
       console.log(outputMessage);
       console.log("gamestate when no blackjack " + currentGameState);
-      return outputMessage;
-    }
-  }
-
-  if (currentGameState == gameHitStand) {
-    if (input == "hit") {
       const hitButton = document.querySelector("#hit-button");
       hitButton.addEventListener("click", () => {
         hitSound.play();
       });
+      return outputMessage;
+    }
+  }
+  if (currentGameState == gameHitStand) {
+    if (input == "hit") {
       playerCards.push(gameDeck.pop());
       outputMessage =
         displayHands(playerCards, dealerCards) +
