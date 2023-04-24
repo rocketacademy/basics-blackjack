@@ -1,18 +1,9 @@
-//click submit to start
-//generate deck
-//assign cards to player and dealer
-//check for blackjack
-//show player 2 card and dealer first card
-//player hit/stand
-//dealer hit/stand
-//output winner
-//resetgame
-
 //update1: tried attempting project on my own
 //update2: attempt it with walkthrough first version
 //update3: attempting to add hit or stand function for player and dealer
 //update4: ace values, added hit/stand button
 //update5: multiplayer in progress
+//update5.1: fixing the hit input
 
 //establishing player and dealer's card to clean slate
 var gameStart = " Game Start";
@@ -116,7 +107,8 @@ var createNewDeck = function () {
 var checkPlayerForBlackJack = function () {
   var playerTotalValue = 0;
   for (var i = 0; i < playerCards.length; i++) {
-    var cardValue = playerCards[i].rank;
+    var cardValue = playerCards[i][0].rank;
+    var cardValue2 = playerCards[i][1].rank;
     if (cardValue == 13 || cardValue == 12 || cardValue == 11) {
       cardValue = 10;
     } else if (cardValue === 1) {
@@ -126,7 +118,17 @@ var checkPlayerForBlackJack = function () {
         cardValue = 1;
       }
     }
+    if (cardValue2 == 13 || cardValue2 == 12 || cardValue2 == 11) {
+      cardValue2 = 10;
+    } else if (cardValue2 === 1) {
+      if (playerTotalValue + 11 <= 21) {
+        cardValue2 = 11;
+      } else {
+        cardValue2 = 1;
+      }
+    }
     playerTotalValue += Number(cardValue);
+    playerTotalValue += Number(cardValue2);
   }
   if (playerTotalValue == 21) {
     return true;
@@ -161,18 +163,15 @@ function calculatePlayerHandValue(playerCards) {
   for (var i = 0; i < playerCards.length; i++) {
     var cardValue = playerCards[i][0].rank;
     var cardValue2 = playerCards[i][1].rank;
-    if (
-      cardValue == 13 ||
-      cardValue == 12 ||
-      cardValue == 11 ||
-      cardValue2 == 13 ||
-      cardValue2 == 12 ||
-      cardValue2 == 11
-    ) {
+    if (cardValue == 13 || cardValue == 12 || cardValue == 11) {
       cardValue = 10;
+    } else if (cardValue2 == 13 || cardValue2 == 12 || cardValue2 == 11) {
       cardValue2 = 10;
-    } else if (cardValue === 1 || cardValue2 === 1) {
+    } else if (cardValue === 1) {
       cardValue = 11;
+
+      aceCount++;
+    } else if (cardValue2 === 1) {
       cardValue2 = 11;
       aceCount++;
     }
@@ -185,6 +184,7 @@ function calculatePlayerHandValue(playerCards) {
   }
   return totalValue;
 }
+
 function calculateDealerHandValue(dealerCards) {
   var totalValue = 0;
   var aceCount = 0;
@@ -207,17 +207,25 @@ function calculateDealerHandValue(dealerCards) {
 
 var displayHands = function (playerCards, dealerCards, i) {
   console.log("Player's hand:");
-  var playerMessage = "Player's" + (i + 1) + " hand: <br>";
   var dealerMessage = "Dealer's hand: <br>";
-  for (let i = 0; i < playerCards.length; i++) {
+  for (let i = 0; i < numberOfPlayers; i++) {
+    var playerMessage = "Player " + (i + 1) + " hand: <br>";
+  }
+  for (let i = 0; i < numberOfPlayers; i++) {
     playerMessage =
       playerMessage +
       " - " +
       playerCards[i][0].name +
       " of " +
+      playerCards[i][0].suit +
+      "<br>" +
+      " - " +
+      playerCards[i][1].name +
+      " of " +
       playerCards[i][1].suit +
       "<br>";
-    console.log(`${playerCards[i][0].rank} of ${playerCards[i][1].suit}`);
+    console.log(`${playerCards[i][0].rank} of ${playerCards[i][0].suit}`);
+    console.log(`${playerCards[i][1].rank} of ${playerCards[i][1].suit}`);
   }
 
   console.log("Dealers's hand:");
@@ -246,32 +254,31 @@ var displayHandsValue = function (playerHandTotalValue, dealerHandTotalValue) {
     dealerHandTotalValue;
   return totalHandValueMessage;
 };
-
 //function to check input during gamestateNumberOfPlayers for numerals
-function checkInput(x) {
+var checkInput = function (x) {
   if (isNaN(x)) {
     alert("Please input number of players");
     return false;
   }
   return true;
-}
+};
 
 var main = function (input, inputNumberOfPlayers) {
   var outputMessage = "";
-
+  //gameStart
   if (currentGameState == gameStart && input == "submit") {
     currentGameState = gameNumberOfPlayers;
     outputMessage = "Please enter the number of players";
     return outputMessage;
   }
+  //edit this
+  //input validation before gameNumberOfPlayers
   if (!checkInput(inputNumberOfPlayers)) {
-    return "Please input number of players";
+    return "Please input numerals only";
   }
+
+  //gameNumberOfPlayers
   if (currentGameState == gameNumberOfPlayers && input == "submit") {
-    //this will run if input is not numerals
-    if (!checkInput(inputNumberOfPlayers)) {
-      return "Please input numerals only";
-    }
     numberOfPlayers = inputNumberOfPlayers;
     gameDeck = createNewDeck();
     console.log(
@@ -392,137 +399,3 @@ var main = function (input, inputNumberOfPlayers) {
     return outputMessage;
   }
 };
-
-//past attempt at making functions/code for my own reference//
-//displayHandsValue(playerHandTotalValue, dealerHandTotalValue);
-
-/*var calculateTotalHandValue = function (playerCards) {
-  var totalHandValue = 0;
-  var index = 0;
-  while (index < playerCards.length) {
-    var currentCard = playerCards[index];
-
-    if (
-      currentCard.name == "jack" ||
-      currentCard.name == "queen" ||
-      currentCard.name == "king"
-    ) {
-      totalHandValue = +10;
-    } else {
-      totalHandValue = totalHandValue + currentCard.rank;
-    }
-    index = +1;
-  }
-  return totalHandValue;
-};*/
-
-//assign cards to player and dealer
-/*var pickRandomNumber = function () {
-  // Generate a decimal from 0 through 52, inclusive of 0 and exclusive of 52.
-  var randomDecimal = Math.random() * 51;
-  var randomNumber = Math.floor(randomDecimal) + 1;
-  console.log("pickRandomNumber = " + randomNumber);
-  return randomNumber;
-};
-//for loop to deal one card to the player and one card to the dealer on each iteration
-var pickCardForPlayers = function () {
-  var playerCardValue = 0;
-  var dealerCardValue = 0;
-  for (var i = 0; i < 2; i++) {
-    var playerCard = gameDeck[pickRandomNumber()];
-    var dealerCard = gameDeck[pickRandomNumber()];
-
-    playerCards.push({
-      name: playerCard.name,
-      suit: playerCard.suit,
-      rank: playerCard.rank,
-    });
-
-    dealerCards.push({
-      name: dealerCard.name,
-      suit: dealerCard.suit,
-      rank: dealerCard.rank,
-    });
-
-    // Calculate player score
-    var playerCardValue = playerCard.rank;
-    if (playerCardValue > 10) {
-      playerCardValue = 10;
-    }
-    playerScore += playerCardValue;
-
-    // Calculate dealer score
-    var dealerCardValue = dealerCard.rank;
-    if (dealerCardValue > 10) {
-      dealerCardValue = 10;
-    }
-    dealerScore += dealerCardValue;
-  }
-
-  return (
-    "Player cards picked: " +
-    playerCards[0].name +
-    " of " +
-    playerCards[0].suit +
-    ", " +
-    playerCards[1].name +
-    " of " +
-    playerCards[1].suit +
-    "\nDealer cards picked: " +
-    dealerCards[0].name +
-    " of " +
-    dealerCards[0].suit +
-    ", [Hidden Card]"
-  );
-};
-
-/*var hit = function (playerInput) {
-  var outputMessage = "";
-  if (playerInput == "hit") {
-    var card = cardDeck[pickRandomNumber()];
-    playerCards.push({
-      name: card.name,
-      suit: card.suit,
-      rank: card.rank,
-    });
-  }
-  return "You drew the " + card.name + " of " + card.suit;
-};
-console.log(pickCardForPlayers());
-*/
-/* if ((gameState = checkFor21)) {
-    for (var i = 0; i < playerCards.length; i++) {
-      var cardValue = playerCards[i].rank;
-      if (cardValue == 13 || cardValue == 12 || cardValue == 11) {
-        cardValue = 10;
-      } else if (cardValue === 1) {
-        if (playerTotalValue + 11 <= 21) {
-          cardValue = 11;
-        } else {
-          cardValue = 1;
-        }
-      }
-      playerTotalValue += Number(cardValue);
-    }
-    if (playerTotalValue == 21) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-  if ((checkFor21 = false)) {
-    gameState = gameChoice;
-    myOutputValue = "Please enter hit or stand";
-    if (input == "hit") {
-      myOutputValue = "you drew" + hit();
-      playerScore = +hit();
-    }
-  } else if (input == "stand") {
-  } else {
-    myOutputValue = "You got Blackjack!";
-    return myOutputValue;
-  }
-
-  var myOutputValue = pickRandomNumber();
-  return myOutputValue;
-}*/
