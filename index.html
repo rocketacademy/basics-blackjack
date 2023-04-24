@@ -43,113 +43,90 @@
 
     <!-- fonts -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans">
-
     <!-- CSS -->
-    <style>
-      * {
-        box-sizing: border-box;
-      }
-
-      body {
-        font-family: 'Open Sans', sans-serif;
-        margin-left: 30px;
-        margin-right: 30px;
-        background-color:white;
-        color: black; /* sets the font color */
-        background-image: url(""); /* The image used */
-        background-position: center; /* Center the image */
-        background-repeat: no-repeat; /* Do not repeat the image */
-        background-size: cover; /* Resize the background image to cover the entire container */
-      }
-
-      #output-div img{
-        display:block;
-        max-width:100%;
-        max-height:200px;
-      }
-      .header {
-        text-align: center;
-        font-size: 1.1rem;
-        margin-bottom: 3rem;
-      }
-
-      #container {
-        background-color: pink;
-        margin: 40px auto;
-        max-width: 800px;
-        padding: 38px 31px;
-      }
-
-      input {
-        font-size: 21px;
-        line-height: 33px;
-        margin: 0 0 23px 0;
-        padding: 0 9px;
-        width: 100%;
-      }
-
-      button {
-        font-size: 21px;
-        line-height: 33px;
-        margin: 0 0 23px 0;
-        padding: 0 6px;
-      }
-
-      #output-div {
-        background-color: lightgrey;
-        margin: 20px auto;
-        padding: 20px;
-        width: 100%;
-      }
-
-      .logo-img {
-        height: 49px;
-        position: relative;
-        top: 22px;
-      }
-
-      /* increase header font size on wider screens */
-      @media screen and (min-width: 600px) {
-        .header {
-          font-size: 2rem;
-        }
-      }
-    </style>
-
+    <link rel="stylesheet" href="style.css"> 
+  
   </head>
 
   <body>
     <h1 class="header">
-      <img class="logo-img" src="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/brand/logo.png" />
-      Rocket Academy
-      <img class="logo-img" src="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/brand/logo.png" />
+      🚀Rocket Academy🚀 
     </h1>
     <h1 class="header">♣️ Basics - Blackjack ♠️</h1>
     <div id="container">
-      <p>Input:</p>
-      <input id="input-field" />
+      <p>Number of players:</p>
+      <input 
+      id="num-player"
+      type="number"
+      min="1"
+      max="9"
+      onkeydown="return false"
+      />
+      <!-- <p>Input:</p>
+      <input id="input-field" /> -->
       <br />
-      <button id="submit-button">Submit</button>
-      <p>Output:</p>
-      <div id="output-div"></div>
+      <button id="start-button">Start</button>
+      <button class="hide" id="hit-button">Hit</button>
+      <button class="hide" id="stay-button">Stay</button>
+      <button class="hide" id="reset-button">Reset</button>
+      <p class="hide" id="output-title">Output:</p>
+      <div class="hide" id="output-div"></div>
     </div>
     <!-- Import program logic -->
     <script src="script.js"></script>
     <!-- Define button click functionality -->
     <script>
-      var button = document.querySelector("#submit-button");
+      var button = document.querySelector("#start-button");
+      var outputTitle = document.querySelector("#output-title");
+      var outputDiv = document.querySelector("#output-div");
+      var output = document.querySelector("#output-div");
+
       button.addEventListener("click", function () {
         // Set result to input value
-        var input = document.querySelector("#input-field");
-        var result = main(input.value);
+        // var input = document.querySelector("#input-field");
+        generatePlayerDecks();
+        var result = main();
+        outputTitle.style.visibility = "visible";
+        outputDiv.style.visibility = "visible";
 
         // Display result in output element
-        var output = document.querySelector("#output-div");
         output.innerHTML = result;
 
-        // Reset input value
-        input.value = "";
+        //make hit & stay button appear
+        hit.style.visibility = "visible";
+        stay.style.visibility = "visible";
+        button.disabled = true;
       });
+
+      var hit = document.querySelector("#hit-button");
+      hit.addEventListener("click", function () {
+        var input = "hit";
+        var result = main(input);
+        output.innerHTML = result;
+        input.value = "";
+      })
+
+      var stay = document.querySelector("#stay-button");
+      stay.addEventListener("click", function () {
+        var input = "stay";
+        var result = main(input);
+        output.innerHTML = result;
+        input.value = "";
+      })
+
+      reset.addEventListener("click", function () {
+        resetGame();
+        button.disabled = false;
+        hit.style.visibility = "hidden";
+        stay.style.visibility = "hidden";
+        hit.disabled = false;
+        stay.disabled = false;
+        numPlayers.disabled = false;
+        output.innerHTML = "";
+        outputTitle.style.visibility  = "hidden";
+        outputDiv.style.visibility = "hidden";
+        reset.style.visibility = "hidden";
+      })
     </script>
   </body>
 </html>
