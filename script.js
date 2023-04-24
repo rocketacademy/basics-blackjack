@@ -98,5 +98,71 @@ let main = function (input) {
   /*Player hand: Ace of Hearts, King of Spades
 Dealer hand: 8 of Clubs, 8 of Spades
 Player wins by black jack!*/
+  if (gameState == "COMPARE INITIAL HANDS TO DETERMINE WINNER") {
+    let firstHandValueOfPlayer = 0;
+    let firstHandValueOfDealer = 0;
+    //DISPLAY THE CARDS OF PLAYER AND THE SUM
+    //PUSH HAND VALUE TO ARRAY
+    if (playerCard1.name == "ace" && playerCard2.name != "ace") {
+      firstHandValueOfPlayer = playerCard1.value[1] + playerCard2.value;
+      handTotalOfPlayerInArray.push(firstHandValueOfPlayer);
+      myOutputValue = `Player hand: ${playerCard1.name} of ${playerCard1.suit}, ${playerCard2.name} of ${playerCard2.suit} with sum ${firstHandValueOfPlayer}.<br>`;
+    } else if (playerCard2.name == "ace" && playerCard1.name != "ace") {
+      firstHandValueOfPlayer = playerCard1.value + playerCard2.value[1];
+      handTotalOfPlayerInArray.push(firstHandValueOfPlayer);
+      myOutputValue = `Player hand: ${playerCard1.name} of ${playerCard1.suit}, ${playerCard2.name} of ${playerCard2.suit} with sum ${firstHandValueOfPlayer}.<br>`;
+    } else if (playerCard1.name == "ace" && playerCard2.name == "ace") {
+      firstHandValueOfPlayer = playerCard1.value[1] + playerCard2.value[0];
+      handTotalOfPlayerInArray.push(firstHandValueOfPlayer);
+      myOutputValue = `Player hand: ${playerCard1.name} of ${playerCard1.suit}, ${playerCard2.name} of ${playerCard2.suit} with sum ${firstHandValueOfPlayer}.<br>`;
+    } else {
+      firstHandValueOfPlayer = playerCard1.value + playerCard2.value;
+      handTotalOfPlayerInArray.push(firstHandValueOfPlayer);
+      myOutputValue = `Player hand: ${playerCard1.name} of ${playerCard1.suit}, ${playerCard2.name} of ${playerCard2.suit} with sum ${firstHandValueOfPlayer}.<br>`;
+    }
+
+    //DISPLAY THE CARDS OF DEALER AND THE SUM
+    if (dealerCard1.name == "ace" && dealerCard2.name != "ace") {
+      firstHandValueOfDealer = dealerCard1.value[1] + dealerCard2.value;
+      handTotalOfDealerInArray.push(firstHandValueOfDealer);
+      myOutputValue += `Dealer hand: ${dealerCard1.name} of ${dealerCard1.suit}, ${dealerCard2.name} of ${dealerCard2.suit} with sum ${firstHandValueOfDealer}.<br>`;
+    } else if (dealerCard2.name == "ace" && dealerCard1.name != "ace") {
+      firstHandValueOfDealer = dealerCard1.value + dealerCard2.value[1];
+      handTotalOfDealerInArray.push(firstHandValueOfDealer);
+      myOutputValue += `Dealer hand: ${dealerCard1.name} of ${dealerCard1.suit}, ${dealerCard2.name} of ${dealerCard2.suit} with sum ${firstHandValueOfDealer}.<br>`;
+    } else if (dealerCard1.name == "ace" && dealerCard2.name == "ace") {
+      firstHandValueOfDealer = dealerCard1.value[1] + dealerCard2.value[0];
+      handTotalOfDealerInArray.push(firstHandValueOfDealer);
+      myOutputValue += `Dealer hand: ${dealerCard1.name} of ${dealerCard1.suit}, ${dealerCard2.name} of ${dealerCard2.suit} with sum ${firstHandValueOfDealer}.<br>`;
+    } else {
+      firstHandValueOfDealer = dealerCard1.value + dealerCard2.value;
+      handTotalOfDealerInArray.push(firstHandValueOfDealer);
+      myOutputValue += `Dealer hand: ${dealerCard1.name} of ${dealerCard1.suit}, ${dealerCard2.name} of ${dealerCard2.suit} with sum ${firstHandValueOfDealer}.<br>`;
+    }
+
+    //COMPARE INITIAL HAND VALUE BTW PLAYER AND DEALER
+    // A Blackjack win. When either player or dealer draw Blackjack.
+    if (firstHandValueOfPlayer == 21 && firstHandValueOfDealer != 21) {
+      myOutputValue += `Player won by Blackjack! <br>Please refresh the webpage to play again.`;
+    } else if (firstHandValueOfPlayer != 21 && firstHandValueOfDealer == 21) {
+      myOutputValue += `Dealer won by Blackjack! <br>Please refresh the webpage to play again.`;
+    }
+    // A normal win. When neither draw Blackjack, the winner is decided by whomever has the higher hand total.
+    else if (
+      firstHandValueOfDealer >= 17 &&
+      firstHandValueOfDealer < firstHandValueOfPlayer
+    ) {
+      myOutputValue += `Player won! <br>Please refresh the webpage to play again.`;
+      //It's a tie. Both draw Blackjack.
+    } else if (firstHandValueOfPlayer == 21 && firstHandValueOfDealer == 21) {
+      myOutputValue += `It's a tie! Both dealer and player draw Blackjack! <br>Please refresh the webpage to play again.`;
+    }
+    //Player choose to hit or stand
+    else {
+      myOutputValue += `Wow, you're at ${firstHandValueOfPlayer} right now! Do you want to hit or stand? Type h for hit or s for stand, then click submit<br>`;
+      gameState = "PLAYER HIT OR STAND";
+    }
+  }
+
   return myOutputValue;
 };
