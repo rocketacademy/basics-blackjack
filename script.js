@@ -46,3 +46,31 @@ let makeDeck = function () {
   // Return the completed card deck
   return cardDeck;
 };
+
+// Shuffle the elements in the cardDeck array
+let shuffleCards = function (cardDeck) {
+  makeDeck();
+  // Loop over the card deck array once
+  for (
+    let currentIndex = 0;
+    currentIndex < cardDeck.length;
+    currentIndex += 1
+  ) {
+    // Select a random index in the deck
+    let randomIndex = Math.floor(Math.random() * cardDeck.length);
+    // Select the card that corresponds to randomIndex
+    let randomCard = cardDeck[randomIndex];
+    // Select the card that corresponds to currentIndex
+    let currentCard = cardDeck[currentIndex];
+    // Swap positions of randomCard and currentCard in the deck
+    cardDeck[currentIndex] = randomCard;
+    cardDeck[randomIndex] = currentCard;
+  }
+  // Return the shuffled deck
+  return cardDeck;
+};
+
+// Shuffle the deck and save it in a new variable shuffledDeck
+// to communicate that we have shuffled the deck.
+let shuffledDeck = shuffleCards(cardDeck);
+console.log("shuffledDeck", shuffledDeck);
