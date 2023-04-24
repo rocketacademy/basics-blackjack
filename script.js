@@ -118,15 +118,17 @@ var main = function (input) {
       " of " +
       dealerCards[1].suit;
 
-    if (calculateHandTotal(playerCards) <= 21) {
+    if (totalPlayerHand <= 21) {
       currentGameMode = gameModePlayerSelection;
       myOutputValue =
         playerHitOutput +
+        dealerHitOutput +
         "<br><br>Please enter 'hit' if you would like to draw another card or 'stand' to continue to the dealer's turn.";
-    } else if (calculateHandTotal(playerCards) > 21) {
+    } else if (totalPlayerHand > 21) {
       currentGameMode = gameModeDealerTurn;
       myOutputValue =
         playerHitOutput +
+        dealerHitOutput +
         "<br><br>Bust! It is now the dealer's turn to decide.";
     }
 
@@ -140,17 +142,8 @@ var main = function (input) {
         playerOutput + `${playerCards[i].name} of ${playerCards[i].suit}, `;
     }
 
-    playerStandOutput = "Player hand: " + playerOutput;
-
-    dealerStandOutput =
-      "<br><br>Dealer hand: " +
-      dealerCards[0].name +
-      " of " +
-      dealerCards[0].suit +
-      ", " +
-      dealerCards[1].name +
-      " of " +
-      dealerCards[1].suit;
+    playerStandOutput =
+      "Player hand: " + playerOutput + "Player total: " + totalPlayerHand;
 
     currentGameMode = gameModeDealerTurn;
 
@@ -166,14 +159,19 @@ var main = function (input) {
         dealerOutput + `${dealerCards[i].name} of ${dealerCards[i].suit}, `;
     }
 
-    dealerTurnOutput = "<br><br>Dealer hand: " + dealerOutput;
+    dealerTurnOutput =
+      "<br><br>Dealer hand: " +
+      dealerOutput +
+      "<br>Dealer total: " +
+      totalDealerHand;
 
     if (totalDealerHand < 17 && totalDealerHand <= 21) {
       dealerCards.push(shuffledDeck.pop());
       myOutputValue = "The dealer has chosen to hit.";
     } else {
       currentGameMode = gameModeScoreCompare;
-      myOutputValue = "Let's see the scores!";
+      myOutputValue =
+        "The dealer has chosen stand.<br><br>Let's see the scores!";
     }
     return myOutputValue;
   }
@@ -184,37 +182,19 @@ var main = function (input) {
       (totalPlayerHand <= 21 && totalDealerHand > 21)
     ) {
       myOutputValue =
-        playerStandOutput +
-        "<br>Player total: " +
-        calculateHandTotal(playerCards) +
-        dealerTurnOutput +
-        "<br>Dealer total: " +
-        calculateHandTotal(dealerCards) +
-        "<br><br><br>Player wins!";
+        playerStandOutput + dealerTurnOutput + "<br><br><br>Player wins!";
     } else if (
       (totalDealerHand > totalPlayerHand && totalDealerHand <= 21) ||
       (totalDealerHand <= 21 && totalPlayerHand > 21)
     ) {
       myOutputValue =
-        playerStandOutput +
-        "<br>Player total: " +
-        calculateHandTotal(playerCards) +
-        dealerTurnOutput +
-        "<br>Dealer total: " +
-        calculateHandTotal(dealerCards) +
-        "<br><br><br>Dealer wins!";
+        playerStandOutput + dealerTurnOutput + "<br><br><br>Dealer wins!";
     } else if (
       totalPlayerHand == totalDealerHand ||
       (totalPlayerHand > 21 && totalDealerHand > 21)
     ) {
       myOutputValue =
-        playerStandOutput +
-        "<br>Player total: " +
-        calculateHandTotal(playerCards) +
-        dealerTurnOutput +
-        "<br>Dealer total: " +
-        calculateHandTotal(dealerCards) +
-        "<br><br><br>It's a tie!";
+        playerStandOutput + dealerTurnOutput + "<br><br><br>It's a tie!";
     }
     return myOutputValue;
   }
@@ -286,6 +266,7 @@ var shuffleCards = function (cardDeck) {
 //Calculate Hand Total
 var calculateHandTotal = function (cardsArray) {
   var handTotal = 0;
+  var countAce = 0;
 
   var index = 0;
   while (index < cardsArray.length) {
@@ -297,10 +278,21 @@ var calculateHandTotal = function (cardsArray) {
       currentCard.name == "King"
     ) {
       handTotal = handTotal + 10;
+    } else if (currentCard.name == "Ace") {
+      handTotal = handTotal + 11;
+      countAce = countAce + 1;
     } else {
       handTotal = handTotal + currentCard.rank;
     }
     index = index + 1;
   }
+
+  while (index < countAce) {
+    if (handTotal > 21) {
+      handTotal = handTotal - 10;
+    }
+    index = index + 1;
+  }
+
   return handTotal;
 };
