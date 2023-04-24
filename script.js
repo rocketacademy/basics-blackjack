@@ -9,31 +9,12 @@
 // 8) The game either ends or continues.
 // TIP: Create new game mode for each scenario.
 
-// ======== Pseudocode for Version 1 ======== //
-// 1. define player and dealer
-// 2. create and shuffle the game deck
-// 3. draw 2 cards for player and dealer respectively
-// 4. win conditions - A. Blackjack, B. Higher Hand Value
-// 5. display hands of both player and dealer and declare winner
-
-// ======== Pseudocode for Version 2 ======== //
-// 1. extra game mode "hit" or "stand"
-// 2. functionality for use to input hit or stand.
-
-// ======== Pseudocode for Version 3 ======== //
-// 1. dealer to hit or stand only AFTER player has chosen to stand
-// 2. if dealer's hand is less than 17, dealer has to HIT
-// 3. if dealer's hand is more than 17, dealer can choose to stand
-
-// ======== Pseudocode for Version 4 ======== //
-// 1. if total hand value, including ace is less than 21, ace = 11
-// 2. if total hand value, including ace is more than 21, ace = 1
-
 // Global Var: Declare Game Modes
 var gameModeStart = "GAME START";
 var gameModeCards = "CARDS DRAWN";
 var gameModeResult = "DISPLAY RESULTS";
 var gameModeHitStand = "HIT OR STAND";
+var gameModeReset = "GAME RESET";
 var currentGameMode = gameModeStart;
 
 // Global Var: Store Player and Dealer Cards
@@ -41,12 +22,9 @@ var playerCards = [];
 var dealerCards = [];
 var gameDeck = "EMPTY AT THE START";
 
-// Winning Conditions (Blackjack = 21pts or higher hand value)
-var winTwentyOne = 21;
-
 // Others
-var dealerMinCardNumber = 16;
 var myOutputValue = "";
+var resultMessage = "";
 
 // Helper Function #1: MAKE A CARD DECK
 var makeDeck = function () {
@@ -175,21 +153,7 @@ var totalHandValue = function (handArray) {
   return sumOfHand;
 }; // note to add bust if total hand value > 21
 
-// Helper Function #6: CHECK IF TOTAL HAND VALUE > 21 (BUST)
-var checkIfBust = function (handArray) {
-  var index = 0;
-  var handBusts = false;
-  // if hand busts return 'true'
-  // scenario: player/dealer > 21
-  while (index < handArray.length) {
-    if (totalHandValue(handArray) > 21) {
-      handBusts = true;
-    }
-  }
-  return handBusts;
-};
-
-// Helper Function #7: DISPLAY THE PLAYER HAND
+// Helper Function #6: DISPLAY THE PLAYER HAND
 var displayPlayerHand = function (playerHandArray) {
   var index = 0;
   var playerHandMessage = "";
@@ -202,7 +166,7 @@ var displayPlayerHand = function (playerHandArray) {
   return playerHandMessage;
 };
 
-// Helper Function #8: DISPLAY THE DEALER HAND
+// Helper Function #7: DISPLAY THE DEALER HAND
 var displayDealerHand = function (dealerHandArray) {
   var index = 0;
   var dealerHandMessage = "";
@@ -215,120 +179,78 @@ var displayDealerHand = function (dealerHandArray) {
   return dealerHandMessage;
 };
 
-var main = function (input) {
-  // FIRST CLICK OF THE SUBMIT BUTTON -- DEAL 2 CARDS
+// Helper Function #8: DEAL CARDS TO PLAYER AND DEALER
+var dealCards = function () {
+  // 2. deal 2 cards to player and dealer
+  playerCards.push(gameDeck.pop());
+  playerCards.push(gameDeck.pop());
+  dealerCards.push(gameDeck.pop());
+  dealerCards.push(gameDeck.pop());
+};
+
+// Helper Function #9: PROCESS PLAYER INPUT
+var processGameStart = function () {
   if (currentGameMode == gameModeStart) {
-    // 1. create & shuffle game deck
     gameDeck = createNewDeck();
-    // 2. deal 2 cards to player and dealer
-    playerCards.push(gameDeck.pop());
-    playerCards.push(gameDeck.pop());
-    dealerCards.push(gameDeck.pop());
-    dealerCards.push(gameDeck.pop());
-
-    // console.log("player's hand: ");
-    // console.log(playerCards);
-    // console.log("dealer's hand: ");
-    // console.log(dealerCards);
-    gameStartMessage = `Now that everyone has been dealt 2 cards, click "Submit" to proceed with the game!`;
-
-    currentGameMode = gameModeCards;
-    return gameStartMessage;
+    dealCards();
+    myOutputValue = `Now that everyone has been dealt 2 cards, click "Submit" to proceed with the game!`;
   }
-  // SECOND CLICK OF THE SUBMIT BUTTON -- COMPARE CARDS
+};
+
+var processGameCards = function (playerCards, dealerCards) {
   if (currentGameMode == gameModeCards) {
-    // 1. check for blackjack
+    var playerHandMessage = displayPlayerHand(playerCards);
+    var dealerHandMessage = displayDealerHand(dealerCards);
+
+    var playerHandValue = totalHandValue(playerCards);
+    var dealerHandValue = totalHandValue(dealerCards);
+
+    myOutputValue = `Dealer Hands: <br>${dealerHandMessage} = ${Number(
+      String(dealerHandValue)
+    )}<br><br> Player's Hands: <br>${playerHandMessage} = ${Number(
+      String(playerHandValue)
+    )}<br><br>`;
+
+    // 2. check for blackjack
     var playerHasBlackj = checkForBlackj(playerCards);
     var dealerHasBlackj = checkForBlackj(dealerCards);
 
-    if (playerHasBlackj == true || dealerHasBlackj == true) {
-      //    >> if both player and dealer has blackjack => TIE
-      if (playerHasBlackj == true && dealerHasBlackj == true) {
-        gameCardMessage = `Dealer: Blackjack! <br>${displayDealerHand(
-          dealerCards
-        )} <br>Player: Blackjack! <br>${displayPlayerHand(
-          playerCards
-        )} <br>Game Result: It's a tie. Let's play again!`;
-      }
+    console.log("player has blackjack: ", playerHasBlackj);
+    console.log("dealer has blackjack: ", dealerHasBlackj);
 
-      //    >> if only player has blackjack => PLAYER WINS
-      else if (playerHasBlackj == true && dealerHasBlackj == false) {
-        gameCardMessage = `Dealer: <br>${displayDealerHand(
-          dealerCards
-        )} <br>Player: Blackjack! <br>${displayPlayerHand(
-          playerCards
-        )} <br>Game Result: Player won!`;
-      }
-
-      //    >> if only dealer has blackjack => DEALER WINS
-      else {
-        gameCardMessage = `Dealer: Blackjack! <br>${displayDealerHand(
-          dealerCards
-        )} <br>Player: <br>${displayPlayerHand(
-          playerCards
-        )} <br>Game Result: Player lost!`;
-      }
-
-      // 2. if NO blackjack => game continues
+    // 3. If dealer has BJ and player does not have BJ
+    if (playerHasBlackj == true && dealerHasBlackj == true) {
+      resultMessage = `Game Result: It's a tie. Let's play again!`;
+      myOutputValue = myOutputValue + resultMessage;
+      currentGameMode = gameModeReset;
+    } else if (playerHasBlackj == true && dealerHasBlackj == false) {
+      currentGameMode = gameModeResult;
+      resultMessage = `Game Result: Player has Blackjack! Player won! 🤑`;
+      myOutputValue = myOutputValue + resultMessage;
+      currentGameMode = gameModeReset;
+    } else if (playerHasBlackj == false && dealerHasBlackj == true) {
+      currentGameMode = gameModeResult;
+      resultMessage = `Game Result: Dealer has Blackjack! Player lost! 😢`;
+      myOutputValue = myOutputValue + resultMessage;
+      currentGameMode = gameModeReset;
     } else {
-      //    >> calculate the total hand value of both player & dealer
+      currentGameMode = gameModeHitStand;
+      resultMessage = `To continue, player please choose to "hit" or "stand"`;
+      myOutputValue = myOutputValue + resultMessage;
+    }
+  }
+};
+
+var processGameHitStand = function (playerInput) {
+  if (currentGameMode == gameModeHitStand) {
+    // input = input.toLowerCase (to check again)
+    if (playerInput == "hit") {
+      playerCards.push(gameDeck.pop());
+
       var playerHandValue = totalHandValue(playerCards);
       var dealerHandValue = totalHandValue(dealerCards);
 
-      gameCardMessage = `Dealer: <br>${displayDealerHand(
-        dealerCards
-      )} = ${Number(
-        String(dealerHandValue)
-      )} <br><br>Player: <br>${displayPlayerHand(playerCards)} = ${Number(
-        String(playerHandValue)
-      )}. <br><br>To continue, player please choose to "hit" or "stand".`;
-
-      // // scenario one: same value => TIE
-      // if (playerHandValue == dealerHandValue) {
-      //   gameCardMessage = `Dealer: <br>${displayDealerHand(
-      //     dealerCards
-      //   )} = ${Number(
-      //     String(dealerHandValue)
-      //   )}<br><br>Player: <br>${displayPlayerHand(playerCards)} = ${Number(
-      //     String(playerHandValue)
-      //   )} <br><br>Game Result: It's a tie. Let's play again!`;
-      // }
-
-      // // scenario two: player > dealer => PLAYER WINS
-      // else if (playerHandValue > dealerHandValue) {
-      //   gameCardMessage = `Dealer: <br>${displayDealerHand(
-      //     dealerCards
-      //   )} = ${Number(
-      //     String(dealerHandValue)
-      //   )} <br><br>Player: <br>${displayPlayerHand(playerCards)} = ${Number(
-      //     String(playerHandValue)
-      //   )}<br><br>Game Result: Player won!`;
-      // }
-
-      // // scenario three: player < dealer => PLAYER LOSE
-      // else {
-      //   gameCardMessage = `Dealer: <br>${displayDealerHand(
-      //     dealerCards
-      //   )} = ${Number(
-      //     String(dealerHandValue)
-      //   )}<br><br>Player: <br>${displayPlayerHand(playerCards)} = ${Number(
-      //     String(playerHandValue)
-      //   )}<br><br>Game Result: Player lost!`;
-      // }
-    }
-    currentGameMode = gameModeHitStand;
-    return gameCardMessage;
-  }
-  // THIRD CLICK OF SUBMIT BUTTON -- CHOOSE HIT OR STAND
-  if (currentGameMode == gameModeHitStand) {
-    // player choose to HIT
-    if (input == "hit") {
-      playerCards.push(gameDeck.pop());
-
-      playerHandValue = totalHandValue(playerCards);
-      dealerHandValue = totalHandValue(dealerCards);
-
-      gameHitStandMessage = `Player drew ${
+      myOutputValue = `Player drew ${
         playerCards[playerCards.length - 1].name
       } of ${
         playerCards[playerCards.length - 1].suit
@@ -337,10 +259,9 @@ var main = function (input) {
       )} = ${Number(
         String(playerHandValue)
       )} <br><br>Input "hit" if you would like to draw another card. <br>Otherwise, input "stand" to find out if you have won 👀`;
-    }
-
-    // player choose to STAND
-    else if (input == "stand") {
+    } else if (playerInput == "stand") {
+      var playerHandMessage = displayPlayerHand(playerCards);
+      var dealerHandMessage = displayDealerHand(dealerCards);
       playerHandValue = totalHandValue(playerCards);
       dealerHandValue = totalHandValue(dealerCards);
 
@@ -350,45 +271,105 @@ var main = function (input) {
         dealerHandValue = totalHandValue(dealerCards);
       }
 
-      if (playerHandValue == dealerHandValue) {
-        gameHitStandMessage = `Dealer: <br>${displayDealerHand(
-          dealerCards
-        )} = ${Number(
-          String(dealerHandValue)
-        )}<br><br>Player: <br>${displayPlayerHand(playerCards)} = ${Number(
-          String(playerHandValue)
-        )} <br><br>Game Result: It's a tie. Let's play again!`;
-      } else if (playerHandValue > dealerHandValue) {
-        gameHitStandMessage = `Dealer: <br>${displayDealerHand(
-          dealerCards
-        )} = ${Number(
-          String(dealerHandValue)
-        )} <br><br>Player: <br>${displayPlayerHand(playerCards)} = ${Number(
-          String(playerHandValue)
-        )}<br><br>Game Result: Player won!`;
-      }
+      myOutputValue = `Dealer Hands: <br>${dealerHandMessage} = ${Number(
+        String(dealerHandValue)
+      )}<br><br> Player's Hands: <br>${playerHandMessage} = ${Number(
+        String(playerHandValue)
+      )}<br><br>`;
 
-      // scenario three: player < dealer => player lost
-      else {
-        gameHitStandMessage = `Dealer: <br>${displayDealerHand(
-          dealerCards
-        )} = ${Number(
-          String(dealerHandValue)
-        )}<br><br>Player: <br>${displayPlayerHand(playerCards)} = ${Number(
-          String(playerHandValue)
-        )}<br><br>Game Result: Player lost!`;
+      // scenario: same hand value => TIE
+      if (playerHandValue == dealerHandValue) {
+        resultMessage = `Game Result: It's a tie. Let's play again!`;
+        myOutputValue = myOutputValue + resultMessage;
+        currentGameMode = gameModeReset;
+      }
+      // scenario: player > dealer (both values < 21) => PLAYER WINS
+      if (playerHandValue <= 21 && playerHandValue > dealerHandValue) {
+        resultMessage = `Game Result: Player won! 🤑`;
+        myOutputValue = myOutputValue + resultMessage;
+        currentGameMode = gameModeReset;
+      }
+      // scenario: player < dealer => player lost
+      if (playerHandValue < dealerHandValue && dealerHandValue <= 21) {
+        resultMessage = `Game Result: Player lost! 😢`;
+        myOutputValue = myOutputValue + resultMessage;
+        currentGameMode = gameModeReset;
+      }
+      // scenario: both busted => TIE!
+      if (playerHandValue > 21 && dealerHandValue > 21) {
+        resultMessage = `Game Result: Both player and dealer have busted! It's a tie, let's play again!`;
+        myOutputValue = myOutputValue + resultMessage;
+        currentGameMode = gameModeReset;
+      }
+      // senario: player <= 21, dealer > 21 => PLAYER WINS
+      if (playerHandValue <= 21 && dealerHandValue > 21) {
+        resultMessage = `Game Result: Dealer has busted! Player won! 🤑`;
+        myOutputValue = myOutputValue + resultMessage;
+        currentGameMode = gameModeReset;
+      }
+      // scenario: player > 21, dealer < 21 => DEALER WINS
+      if (playerHandValue > 21 && dealerHandValue <= 21) {
+        resultMessage = `Game Result: Player has busted! Player lost! 😢`;
+        myOutputValue = myOutputValue + resultMessage;
+        currentGameMode = gameModeReset;
       }
     }
     // input validation: player did not indicate either hit or stand
     else {
       playerHandValue = totalHandValue(playerCards);
-      dealerHandValue = totalHandValue(dealerCards);
-      gameHitStandMessage = `✖️ Input Error ✖️<br><br>Player's Current Hand: <br>${displayPlayerHand(
+      myOutputValue = `✖️ Input Error ✖️<br><br>Player's Current Hand: <br>${displayPlayerHand(
         playerCards
       )} = ${Number(
         String(playerHandValue)
       )} <br><br>Please input either "hit" or "stand"!`;
     }
-    return gameHitStandMessage;
+  }
+};
+
+// Helper Function #10: INCLUDE BETS
+var gameBet = function (playerBetAmount) {
+  playerBetAmount = input;
+};
+
+// Helper Function #11: RESET GAME
+var resetGame = function () {
+  currentGameMode = gameModeStart;
+  playerCards = [];
+  dealerCards = [];
+  myOutputValue = `Press "Submit" to play again!`;
+};
+
+// ===== MAIN FUNCTION ===== //
+
+var main = function (input) {
+  // 1) GAME START MODE
+  if (currentGameMode == gameModeStart) {
+    processGameStart();
+    currentGameMode = gameModeCards;
+    return myOutputValue;
+  }
+  // 2) COMPARE HANDS + CHECK FOR BLACKJACK
+  if (currentGameMode == gameModeCards) {
+    processGameCards(playerCards, dealerCards);
+    if (currentGameMode == gameModeHitStand) {
+      return myOutputValue;
+    } else if (currentGameMode == gameModeReset) {
+      return myOutputValue;
+    }
+    return myOutputValue;
+  }
+  // 3) NO BLACKJACK -> PLAYER PROCEED TO CHOOSE HIT OR STAND
+  if (currentGameMode == gameModeHitStand) {
+    if (currentGameMode == gameModeHitStand) {
+      processGameHitStand(input);
+      return myOutputValue;
+    } else if (currentGameMode == gameModeReset) {
+      return myOutputValue;
+    }
+  }
+  // 4) RESTART GAME
+  if (currentGameMode == gameModeReset) {
+    resetGame();
+    return myOutputValue;
   }
 };
