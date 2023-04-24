@@ -277,5 +277,28 @@ Player wins by black jack!*/
     }
   }
 
+  if (gameState == "PLAYER STAND") {
+    //A tie. When both the player and dealer have the same total hand values(WHEN HAND VALUES OF DEALER IS 17 OR MORE)
+
+    if (
+      handTotalOfDealerInArray[0] == handTotalOfPlayerInArray[0] &&
+      handTotalOfDealerInArray[0] >= 17
+    ) {
+      myOutputValue = `It's a tie in this round! <br>Please refresh the webpage to play again.<br>${imageTie}`;
+    }
+    // Player lose. Hand total of dealer is greater than player(WHEN HAND VALUES OF DEALER IS 17 OR MORE).
+    else if (
+      handTotalOfDealerInArray[0] > handTotalOfPlayerInArray[0] &&
+      handTotalOfDealerInArray[0] >= 17
+    ) {
+      myOutputValue = `Player lose! Hand total of dealer: ${handTotalOfDealerInArray} is greater than hand total of player: ${handTotalOfPlayerInArray}.<br>Please refresh the webpage to play again. <br>${imagePlayerLose}`;
+    }
+    //If hand total of dealer is less than 17, will switch to gameState: DEALER HIT
+    else if (handTotalOfDealerInArray[0] < 17) {
+      myOutputValue = `Hand total of player: ${handTotalOfPlayerInArray}.<br>Hand total of dealer: ${handTotalOfDealerInArray}.<br>Dealer will hit.<br>`;
+      gameState = "DEALER HIT";
+    }
+  }
+
   return myOutputValue;
 };
