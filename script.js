@@ -13,193 +13,6 @@ currentGameMode = gameModeGameStart;
 var playerCards = [];
 var dealerCards = [];
 
-var main = function (input) {
-  var myOutputValue = "";
-  var totalPlayerHand = calculateHandTotal(playerCards);
-  console.log(totalPlayerHand);
-  var totalDealerHand = calculateHandTotal(dealerCards);
-  console.log(totalDealerHand);
-  var shuffledDeck = shuffleCards(cardDeck);
-
-  if (currentGameMode == gameModeGameStart) {
-    playerCards.push(shuffledDeck.pop());
-    playerCards.push(shuffledDeck.pop());
-    dealerCards.push(shuffledDeck.pop());
-    dealerCards.push(shuffledDeck.pop());
-
-    currentGameMode = gameModeDrawnCards;
-
-    myOutputValue = "Everyone has been dealt with 2 cards.";
-
-    return myOutputValue;
-  }
-
-  if (currentGameMode == gameModeDrawnCards) {
-    var cardDrawnOutput =
-      "Player hand: " +
-      playerCards[0].name +
-      " of " +
-      playerCards[0].suit +
-      ", " +
-      playerCards[1].name +
-      " of " +
-      playerCards[1].suit +
-      "<br><br>Dealer hand: " +
-      dealerCards[0].name +
-      " of " +
-      dealerCards[0].suit +
-      ", " +
-      dealerCards[1].name +
-      " of " +
-      dealerCards[1].suit;
-
-    if (
-      (playerCards[0].rank >= 10 && playerCards[1].name == "Ace") ||
-      (playerCards[1].rank >= 10 && playerCards[0].name == "Ace")
-    ) {
-      myOutputValue = cardDrawnOutput + "<br><br>Player wins by blackjack!";
-    } else if (
-      (dealerCards[0].rank >= 10 && dealerCards[1].name == "Ace") ||
-      (dealerCards[1].rank >= 10 && dealerCards[0].name == "Ace")
-    ) {
-      myOutputValue = cardDrawnOutput + "<br><br>Dealer wins by blackjack!";
-    } else {
-      currentGameMode = gameModePlayerSelection;
-      myOutputValue =
-        cardDrawnOutput +
-        "<br><br><br>Please enter 'hit' to draw a card or 'stand' to end your turn.<br><br>Click on the Submit button to proceed.";
-    }
-    return myOutputValue;
-  }
-
-  if (currentGameMode == gameModePlayerSelection) {
-    if (
-      input !== "hit" &&
-      input !== "Hit" &&
-      input !== "stand" &&
-      input !== "Stand"
-    ) {
-      myOutputValue = "Please enter 'hit' or 'stand' to continue.";
-    }
-
-    if (input == "hit" || input == "Hit") {
-      currentGameMode = gameModePlayerHit;
-      myOutputValue =
-        "Player has chosen hit.<br><br>Additional card has been drawn.";
-    }
-
-    if (input == "stand" || input == "Stand") {
-      currentGameMode = gameModePlayerStand;
-      myOutputValue =
-        "Player has chosen stand.<br><br>Player's turn has ended.";
-    }
-
-    return myOutputValue;
-  }
-
-  if (currentGameMode == gameModePlayerHit) {
-    playerCards.push(shuffledDeck.pop());
-
-    var playerOutput = "";
-    for (let i = 0; i < playerCards.length; i++) {
-      playerOutput =
-        playerOutput + `${playerCards[i].name} of ${playerCards[i].suit}, `;
-    }
-
-    playerHitOutput = "Player hand: " + playerOutput;
-
-    dealerHitOutput =
-      "<br><br>Dealer hand: " +
-      dealerCards[0].name +
-      " of " +
-      dealerCards[0].suit +
-      ", " +
-      dealerCards[1].name +
-      " of " +
-      dealerCards[1].suit;
-
-    if (totalPlayerHand <= 21) {
-      currentGameMode = gameModePlayerSelection;
-      myOutputValue =
-        playerHitOutput +
-        dealerHitOutput +
-        "<br><br>Please enter 'hit' if you would like to draw another card or 'stand' to continue to the dealer's turn.";
-    } else if (totalPlayerHand > 21) {
-      currentGameMode = gameModeDealerTurn;
-      myOutputValue =
-        playerHitOutput +
-        dealerHitOutput +
-        "<br><br>Bust! It is now the dealer's turn to decide.";
-    }
-
-    return myOutputValue;
-  }
-
-  if (currentGameMode == gameModePlayerStand) {
-    var playerOutput = "";
-    for (let i = 0; i < playerCards.length; i++) {
-      playerOutput =
-        playerOutput + `${playerCards[i].name} of ${playerCards[i].suit}, `;
-    }
-
-    playerStandOutput =
-      "Player hand: " + playerOutput + "Player total: " + totalPlayerHand;
-
-    currentGameMode = gameModeDealerTurn;
-
-    myOutputValue = "It is now the dealer's turn.";
-
-    return myOutputValue;
-  }
-
-  if (currentGameMode == gameModeDealerTurn) {
-    var dealerOutput = "";
-    for (let i = 0; i < dealerCards.length; i++) {
-      dealerOutput =
-        dealerOutput + `${dealerCards[i].name} of ${dealerCards[i].suit}, `;
-    }
-
-    dealerTurnOutput =
-      "<br><br>Dealer hand: " +
-      dealerOutput +
-      "<br>Dealer total: " +
-      totalDealerHand;
-
-    if (totalDealerHand < 17 && totalDealerHand <= 21) {
-      dealerCards.push(shuffledDeck.pop());
-      myOutputValue = "The dealer has chosen to hit.";
-    } else {
-      currentGameMode = gameModeScoreCompare;
-      myOutputValue =
-        "The dealer has chosen stand.<br><br>Let's see the scores!";
-    }
-    return myOutputValue;
-  }
-
-  if (currentGameMode == gameModeScoreCompare) {
-    if (
-      (totalPlayerHand > totalDealerHand && totalPlayerHand <= 21) ||
-      (totalPlayerHand <= 21 && totalDealerHand > 21)
-    ) {
-      myOutputValue =
-        playerStandOutput + dealerTurnOutput + "<br><br><br>Player wins!";
-    } else if (
-      (totalDealerHand > totalPlayerHand && totalDealerHand <= 21) ||
-      (totalDealerHand <= 21 && totalPlayerHand > 21)
-    ) {
-      myOutputValue =
-        playerStandOutput + dealerTurnOutput + "<br><br><br>Dealer wins!";
-    } else if (
-      totalPlayerHand == totalDealerHand ||
-      (totalPlayerHand > 21 && totalDealerHand > 21)
-    ) {
-      myOutputValue =
-        playerStandOutput + dealerTurnOutput + "<br><br><br>It's a tie!";
-    }
-    return myOutputValue;
-  }
-};
-
 //Game Helper Functions
 
 //Making a Card Deck
@@ -287,6 +100,7 @@ var calculateHandTotal = function (cardsArray) {
     index = index + 1;
   }
 
+  index = 0;
   while (index < countAce) {
     if (handTotal > 21) {
       handTotal = handTotal - 10;
@@ -295,4 +109,217 @@ var calculateHandTotal = function (cardsArray) {
   }
 
   return handTotal;
+};
+
+var main = function (input) {
+  var myOutputValue = "";
+  var shuffledDeck = shuffleCards(cardDeck);
+
+  if (currentGameMode == gameModeGameStart) {
+    playerCards.push(shuffledDeck.pop());
+    playerCards.push(shuffledDeck.pop());
+    dealerCards.push(shuffledDeck.pop());
+    dealerCards.push(shuffledDeck.pop());
+
+    currentGameMode = gameModeDrawnCards;
+
+    myOutputValue = "Everyone has been dealt with 2 cards.";
+
+    return myOutputValue;
+  }
+
+  if (currentGameMode == gameModeDrawnCards) {
+    var cardDrawnOutput =
+      "Player hand: " +
+      playerCards[0].name +
+      " of " +
+      playerCards[0].suit +
+      ", " +
+      playerCards[1].name +
+      " of " +
+      playerCards[1].suit +
+      "<br>Player total: " +
+      calculateHandTotal(playerCards) +
+      "<br><br>" +
+      "Dealer hand: " +
+      dealerCards[0].name +
+      " of " +
+      dealerCards[0].suit +
+      ", " +
+      dealerCards[1].name +
+      " of " +
+      dealerCards[1].suit +
+      "<br>Dealer total: " +
+      calculateHandTotal(dealerCards);
+
+    if (
+      (playerCards[0].rank >= 10 && playerCards[1].name == "Ace") ||
+      (playerCards[1].rank >= 10 && playerCards[0].name == "Ace")
+    ) {
+      myOutputValue = cardDrawnOutput + "<br><br>Player wins by blackjack!";
+    } else if (
+      (dealerCards[0].rank >= 10 && dealerCards[1].name == "Ace") ||
+      (dealerCards[1].rank >= 10 && dealerCards[0].name == "Ace")
+    ) {
+      myOutputValue = cardDrawnOutput + "<br><br>Dealer wins by blackjack!";
+    } else {
+      currentGameMode = gameModePlayerSelection;
+      myOutputValue =
+        cardDrawnOutput +
+        "<br><br><br>Please enter 'hit' to draw a card or 'stand' to end your turn.<br><br>Click on the Submit button to proceed.";
+    }
+    return myOutputValue;
+  }
+
+  if (currentGameMode == gameModePlayerSelection) {
+    if (
+      input !== "hit" &&
+      input !== "Hit" &&
+      input !== "stand" &&
+      input !== "Stand"
+    ) {
+      myOutputValue = "Please enter 'hit' or 'stand' to continue.";
+    }
+
+    if (input == "hit" || input == "Hit") {
+      currentGameMode = gameModePlayerHit;
+      myOutputValue =
+        "Player has chosen hit.<br><br>Additional card has been drawn.";
+    }
+
+    if (input == "stand" || input == "Stand") {
+      currentGameMode = gameModePlayerStand;
+      myOutputValue =
+        "Player has chosen stand.<br><br>Player's turn has ended.";
+    }
+
+    return myOutputValue;
+  }
+
+  if (currentGameMode == gameModePlayerHit) {
+    playerCards.push(shuffledDeck.pop());
+
+    var playerOutput = "";
+    for (let i = 0; i < playerCards.length; i++) {
+      playerOutput =
+        playerOutput + `${playerCards[i].name} of ${playerCards[i].suit}, `;
+    }
+
+    playerHitOutput =
+      "Player hand: " +
+      playerOutput +
+      "<br>Player total: " +
+      calculateHandTotal(playerCards);
+
+    dealerHitOutput =
+      "<br><br>" +
+      "Dealer hand: " +
+      dealerCards[0].name +
+      " of " +
+      dealerCards[0].suit +
+      ", " +
+      dealerCards[1].name +
+      " of " +
+      dealerCards[1].suit +
+      "<br>Dealer total: " +
+      calculateHandTotal(dealerCards);
+
+    if (calculateHandTotal(playerCards) <= 21) {
+      currentGameMode = gameModePlayerSelection;
+      myOutputValue =
+        playerHitOutput +
+        dealerHitOutput +
+        "<br><br>Please enter 'hit' if you would like to draw another card or 'stand' to continue to the dealer's turn.";
+    } else if (calculateHandTotal(playerCards) > 21) {
+      currentGameMode = gameModeDealerTurn;
+      myOutputValue =
+        playerHitOutput +
+        dealerHitOutput +
+        "<br><br>Bust! It is now the dealer's turn to decide.";
+    }
+
+    return myOutputValue;
+  }
+
+  if (currentGameMode == gameModePlayerStand) {
+    currentGameMode = gameModeDealerTurn;
+
+    myOutputValue = "It is now the dealer's turn.";
+
+    return myOutputValue;
+  }
+
+  if (currentGameMode == gameModeDealerTurn) {
+    var dealerOutput = "";
+    for (let i = 0; i < dealerCards.length; i++) {
+      dealerOutput =
+        dealerOutput + `${dealerCards[i].name} of ${dealerCards[i].suit}, `;
+    }
+
+    dealerTurnOutput =
+      "Dealer hand: " +
+      dealerOutput +
+      "<br>Dealer total: " +
+      calculateHandTotal(dealerCards);
+
+    if (
+      calculateHandTotal(dealerCards) < 17 &&
+      calculateHandTotal(dealerCards) <= 21
+    ) {
+      dealerCards.push(shuffledDeck.pop());
+      myOutputValue =
+        dealerTurnOutput + "<br><br>The dealer has chosen to hit.";
+    } else {
+      currentGameMode = gameModeScoreCompare;
+      myOutputValue = "Dealer's turn has ended.<br><br>Let's see the scores!";
+    }
+    return myOutputValue;
+  }
+
+  if (currentGameMode == gameModeScoreCompare) {
+    var playerOutput = "";
+    for (let i = 0; i < playerCards.length; i++) {
+      playerOutput =
+        playerOutput + `${playerCards[i].name} of ${playerCards[i].suit}, `;
+    }
+
+    var dealerOutput = "";
+    for (let i = 0; i < dealerCards.length; i++) {
+      dealerOutput =
+        dealerOutput + `${dealerCards[i].name} of ${dealerCards[i].suit}, `;
+    }
+
+    var totalPlayerHand = calculateHandTotal(playerCards);
+    var totalDealerHand = calculateHandTotal(dealerCards);
+
+    playerStandOutput =
+      "Player hand: " + playerOutput + "<br>Player total: " + totalPlayerHand;
+
+    dealerFinalOutput =
+      "<br><br>Dealer hand: " +
+      dealerOutput +
+      "<br>Dealer total: " +
+      totalDealerHand;
+
+    if (
+      (totalPlayerHand > totalDealerHand && totalPlayerHand <= 21) ||
+      (totalPlayerHand <= 21 && totalDealerHand > 21)
+    ) {
+      myOutputValue =
+        playerStandOutput + dealerFinalOutput + "<br><br><br>Player wins!";
+    } else if (
+      (totalDealerHand > totalPlayerHand && totalDealerHand <= 21) ||
+      (totalDealerHand <= 21 && totalPlayerHand > 21)
+    ) {
+      myOutputValue =
+        playerStandOutput + dealerFinalOutput + "<br><br><br>Dealer wins!";
+    } else if (
+      totalPlayerHand == totalDealerHand ||
+      (totalPlayerHand > 21 && totalDealerHand > 21)
+    ) {
+      myOutputValue =
+        playerStandOutput + dealerFinalOutput + "<br><br><br>It's a tie!";
+    }
+    return myOutputValue;
+  }
 };
