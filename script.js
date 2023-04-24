@@ -387,6 +387,7 @@ var main = function (input) {
   // 3) NO BLACKJACK -> PLAYER PROCEED TO CHOOSE HIT OR STAND
   if (currentGameMode == gameModeHitStand) {
     if (currentGameMode == gameModeHitStand) {
+      input = input.toLowerCase();
       processGameHitStand(input);
       return myOutputValue;
     } else if (currentGameMode == gameModeReset) {
