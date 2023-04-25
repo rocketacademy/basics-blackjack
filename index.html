@@ -1,17 +1,59 @@
 <!DOCTYPE html>
+<html lang="en">
 <html>
   <head>
+    <!-- Page setup configurations -->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- sharing configuration -->
+    <!-- Primary Meta Tags -->
+    <title>Blackjack - Basics - Rocket Academy</title>
+    <meta name="title" content="Farhan BlackJack Game!">
+    <meta name="description" content="A fun card game I made myself! 😄💪🌈">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://rocketacademy.github.io/basics-blackjack/index.html">
+    <meta property="og:title" content="Farhan's BlackJack Game!">
+    <meta property="og:description" content="A fun card game I made myself! 😄💪🌈">
+    <meta property="og:image" content="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/basics/basics-blackjack-share-small.jpeg">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://rocketacademy.github.io/basics-blackjack/index.html">
+    <meta name="twitter:title" content="YOURNAME's BlackJack Game!">
+    <meta name="twitter:description" content="A fun card game I made myself! 😄💪🌈">
+    <meta name="twitter:image" content="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/basics/basics-blackjack-share-small.jpeg">
+    <meta name="twitter:site" content="@rocketacademyco">
+    <meta name="twitter:creator" content="@rocketacademyco">
+
+    <!-- fonts -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans">
+
+    <!-- CSS -->
+    <style>
+
+
+      /* increase header font size on wider screens */
+      @media screen and (min-width: 600px) {
+        .header {
+          font-size: 2rem;
+        }
+      }
+    </style>
+
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Black Jack</title>
+    <title>Blackpinkjack</title>
     <link rel="stylesheet" href="blackpinkjack.css" />
     <script src="script.js"></script>
   </head>
 
   <body>
-    
     <div id="container">
-      <h1> &#128420 &#128150 Farhan's blackpinkjack &#128150 &#128420</h1>
+      <h1> &#128420 &#128150 Farhan's black<span id="pinkText">pink</span>jack &#128150 &#128420</h1>
       <h2>Dealer: <span id="dealer-sum"></span></h2>
       <div id="dealer-cards">
         <img id="hidden" src="./cards/Back.png" />
@@ -24,8 +66,8 @@
       <button id="hit">Hit</button>
       <button id="stay">Stay</button>
       <p id="results"></p>
-      <p>Wins: <span id="wins">0</span> Losses: <span id="losses">0</span> Draws: <span id="draws">0</span></p>
-      <button id="restart" onclick="restart()">Restart Game</button>
+      <p>Wins: <span id="wins">0</span> Losses: <span id="losses">0</span> Draws: <span id="draws">0</span><br></p>
+      <button id="restart" onclick="restart()">Play again</button>
       <div>
         <audio
           id="audioPlayer"
