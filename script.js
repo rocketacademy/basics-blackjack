@@ -1,262 +1,265 @@
-// to create a game of BlackJack
-// 1 human, 1 computer
-// Computer will be dealer
-// Each player will start with 2 cards
-// Player will then decide to hit or stay
-// Dealer cannot fold unless hand hits 17
-// Ace can be 1 or 11. Does not matter how many cards
-// Sequence of the game: Shuffle, Click Submit to deal 2 cards, Cards analyzed for winning combination. User decides if need to hit or stay  ( to use submit buttonf for choice)
-// computer decides to hit or pass based on what is dealt with 
+//1.
+// There will be only two players. One human and one computer (for the Base solution).
+// 2.
+// The computer will always be the dealer.
+// 3.
+// Each player gets dealt two cards to start.
+// 4.
+// The player goes first, and decides if they want to hit (draw a card) or stand (end their turn).
+// 5.
+// The dealer has to hit if their hand is below 17.
+// 6.
+// Each players' score is the total of their card ranks. Jacks/Queen/Kings are 10. Aces can be 1 or 11.
+// 7.
+// The player who is closer to, but not above 21 wins the hand.
 
-// there will be 3 different game modes. 
 
+var makeDeck = function () {
+  // create the empty deck 
+  var deck = [];
 
-let playerHand = [];
-let computerHand = [];
+  var suits = ['hearts', 'diamonds', 'clubs', 'spades'];
 
+  var suitIndex = 0;
+  while (suitIndex < suits.length) {
+    // make a variable of the current suit
+    var currentSuit = suits[suitIndex];
 
-//create a new deck of cards for the game
+    // loop to create all cards in this suit
+    // rank 1-13
+    var counter = 1;
+    while (counter <= 13) {
+      var rankCounter = counter;
+      var cardName = rankCounter;
 
-let createDeck = function(){
-  let deck = [];
-  //then create suits in the deck. Diamonds,Clubs,Hearts,Spades
-
-  let suits = ['Diamonds', 'Clubs', 'Hearts', 'Spades'];
-  let suitIndex = 0;
-  while (suitIndex < suits.Length){
-    
-    let currentSuit = suits[suitIndex];
-    // then loop all the cards and create cards 1 thru 13
-
-    let counter = 1;
-    while (counter <= 13){
-      let rankCounter = counter;
-      let cardName = rankCounter;
-
-      //define the card ranks
-
-      if (cardName == 1){
-        cardName == 'ACE';
-      } else if (cardName == 11){
-        rankCounter == 10;
-        cardName == 'JACK';
-      } else if (cardName == 12){
-        rankCounter == 10;
-        cardName == 'QUEEN';
-      } else if (cardName == 13){
-        rankCounter == 10;
-        cardName == 'KING';
+     
+      // for BlackJack only, change the card rank for the face cards to 10.
+      if (cardName == 1) {
+        cardName = 'ACE';
+      } else if (cardName == 11) {
+        rankCounter = 10;
+        cardName = 'JACK';
+      } else if (cardName == 12) {
+        rankCounter = 10;
+        cardName = 'QUEEN';
+      } else if (cardName == 13) {
+        rankCounter = 10;
+        cardName = 'KING';
       }
 
-      let card = {
+      
+      var card = {
         name: cardName,
         suit: currentSuit,
         rank: rankCounter,
       };
 
-      // push the card to deck so it can be drawn
-
+      // add the card to the deck
       deck.push(card);
+
       counter = counter + 1;
     }
-
     suitIndex = suitIndex + 1;
   }
 
-  return createDeck;
-  
-
-
+  return deck;
 };
 
-// get random numbers function
-
-let getRandomIndex = function (size){
-  return Math.floor(Math.Random() * size);
+var getRandomIndex = function (size) {
+  return Math.floor(Math.random() * size);
 };
 
-// now write function to allow shuffling of the deck
+var shuffleCards = function (cards) {
+  var index = 0;
 
-let shuffleCards = function (cards){
-  let index = 0;
+  while (index < cards.length) {
+    var randomIndex = getRandomIndex(cards.length);
 
-  while (index < cards.Length){
-    let randomIndex = getRandomIndex(cards.Length);
-    let currentItem = cards[index];
-    let randomItem = cards[randomIndex];
+    var currentItem = cards[index];
 
-    cards [index] = randomItem;
-    cards [randomIndex] = currentItem;
+    var randomItem = cards[randomIndex];
+
+    cards[index] = randomItem;
+    cards[randomIndex] = currentItem;
 
     index = index + 1;
-
-
-  };
+  }
 
   return cards;
 };
 
-let deck = shuffleCards(createDeck());
+var deck = shuffleCards(makeDeck());
 
-let TwentyOne = 21;
+// The maximum valid sum in Blackjack is 21.
+// the threshold is 15 
+var TWENTY_ONE = 21;
+// Dealer always hits until she reaches a sum greater than 15.
+var dealerHitThreshold = 15;
+// If player has chosen to stand, then player can no longer hit until game is over
+var playerHasChosenToStand = false;
 
-//set dealer min hit threshold
-let minDealerThreshold = 15;
+// Keep track of when the game ends to prevent further moves
+var gameOver = false;
 
-// set if player decides to stay his hand. subsequently no further cards will be drawn by Player
-let playerChoseToStay = false;
-let gameOver = false;
+// Store player's cards and computer's cards in separate arrays
+var playerHand = [];
+var computerHand = [];
 
-
-//deal a card to a given hand 
-let dealCardToHand = function (hand){
+// Deal a card to the given hand
+var dealCardToHand = function (hand) {
   hand.push(deck.pop());
-
 };
 
-let getHandSum = function(hand){
-  let numAcesInHand = 0;
-  let sum = 0;
-  let counter = 0;
-
-  while(counter < hand.length){
-    let currentCard = hand[counter];
-
-    // ACE is 11 by default
-    if (currentCard.rank == 1) {
+// Get sum of cards in hand
+var getHandSum = function (hand) {
+  var numAcesInHand = 0;
+  var sum = 0;
+  var counter = 0;
+  while( counter < hand.length ){
+    var currCard = hand[counter];
+    // If card is Ace, value is 11 by default
+    if (currCard.rank === 1) {
       numAcesInHand += 1;
       sum += 11;
-    } else {
-      sum += currentCard.rank;
+    }else{
+      sum += currCard.rank;
     }
 
     counter = counter + 1;
-  };
+  }
+  // If sum is greater than sum limit and hand contains Aces, convert Aces from value of 11
+  // to value of 1, until sum is less than or equal to sum limit or there are no more Aces.
+  if (sum > TWENTY_ONE && numAcesInHand > 0) {
+    var aceCounter = 0;
+    while( aceCounter < numAcesInHand){
+      sum -= 10;
+      // If the sum is less than TWENTY_ONE before converting all Ace values from
+      // 11 to 1, break out of the loop and return the current sum.
+      if (sum <= TWENTY_ONE) {
+        break; // break keyword causes the loop to finish
+      }
+      aceCounter = aceCounter + 1;
+    }
+  }
+  return sum;
 };
 
-
-//winning Combi of Black Jack
-let isBlackJack = function (hand){
-  return hand.Length == 2 && getHandSum (hand) == TwentyOne;
+// Return whether the hand contains a Blackjack combi
+var isBlackjack = function (hand) {
+  return hand.length === 2 && getHandSum(hand) === TWENTY_ONE;
 };
 
-let convertHandToString = function (hand) {
+// Convert hand to a string
+var convertHandToString = function (hand) {
 
-  let cards = '';
-  let handIndex = 0;
+  var cards = '';
+  var handIndex = 0;
 
   while (handIndex < hand.length) {
-    cards = cards + ',' + hand[handIndex].name;
+    cards = cards + '==> ' +  hand[handIndex].name;
     handIndex = handIndex + 1;
   }
 
   return cards;
 };
 
-//output a message to show what card player has and what computer has
-let  getDefaultOutput = function (){
-  return `YOU have ${convertHandToString(playerHand)} with a sum of ${getHandSum(playerHand)}. <br><br>
-  while COMPUTER have ${convertHandToString(computerHand)} with a sum of ${getHandSum(computerHand)}. `
+var getDefaultOutput = function () {
+  return `Player's hands: ${convertHandToString(playerHand)} with a total of ${getHandSum(playerHand)}! <br>
+    Computer's hands: ${convertHandToString(computerHand)} with a total of ${getHandSum(computerHand)}!`;
 };
-
-
-
-
-
-
 
 var main = function (input) {
-  if (gameOver){
-    return `The game is over. Thank you for playing Blackjack.`
+  if (gameOver) {
+    return 'The game is over. Please refresh to play again.';
   }
 
-  if (playerHand.Length == 0){
-    //click submit to deal a hand for player
-    dealCardToHand(playerHand);
-    //then deal to computer
-    dealCardToHand(computerHand);
-
-    //click submit again
+  // If initial hands have not been dealt, deal initial hands
+  if (playerHand.length === 0) {
+    // User clicks submit button to deal cards.
+    // Deal first card for player then computer
     dealCardToHand(playerHand);
     dealCardToHand(computerHand);
 
-  };
+    // Deal second card for player then computer
+    dealCardToHand(playerHand);
+    dealCardToHand(computerHand);
 
+    // The cards are analyzed for any game winning conditions. (Blackjack)
+    // If computer has Blackjack, computer auto wins because computer is dealer
+    if (isBlackjack(computerHand)) {
+      gameOver = true;
+      // Computer wins, return
+      return `${getDefaultOutput()} <br>
+        Computer has Blackjack. Try again next time...refresh to play again`;
+    }
 
+    // If player has Blackjack and computer does not, player wins
+    if (isBlackjack(playerHand)) {
+      gameOver = true;
+      // Player wins, return
+      return `${getDefaultOutput()} <br>
+        Player has Blackjack! Well done, refresh to play again? (:`;
+    }
 
+    // The cards are displayed to the user.
+    return `${getDefaultOutput()} <br>
+      Please enter "hit" or "stay", then press Submit`;
+  }
 
-  //if player has blackjack, the game is over 
-  if (isBlackJack(playerHand)){
+  // Then begins a new action, where the user has to decide something: do they hit or stand.
+  if (!playerHasChosenToStand) {
+    // If user input is neither "hit" nor "stand" prompt user
+    if (input !== 'hit' && input !== 'stay') {
+      return 'Please input either "hit" or "stay" as possible moves in Blackjack';
+    }
 
-    gameOver = true;
-
-    //output a winning message
-
-    return `${getDefaultOutput()} <br><br>
-    BLACKJACK! YOU have won!! <:)`;
-  };
-
-  //if computer has blackjack instead, the game is also over
-  if (isBlackJack(computerHand)){
-
-    gameOver = true;
-
-    return `${getDefaultOutput()} <br><br>  
-    BLACKJACK! COMPUTER has won... >:`;
-  ;}
-
-  if (playerChoseToStay){
-    //prompt user if they did not choose to hit or stay
-    if (input !== 'hit' && input !== 'stand'){
-      return `please input HIT or STAY`;
-    };
-
-    //set conditions for when player chooses to hit
-    if (input == 'hit'){
+    if (input === 'hit') {
       dealCardToHand(playerHand);
-      //set conditions when card combi over 21
-      if (getHandSum(playerHand) > TwentyOne){
+      // If bust, show player that she busts
+      if (getHandSum(playerHand) > TWENTY_ONE) {
         gameOver = true;
-        return `${getDefaultOutput()} <br><br>
-        Your hand has crossed 21. Better luck next time!`
-      };
-    };
-  // set conditions for when player choose to stay his current hand
-if (input == 'stay'){
-  playerChoseToStay = true;
-};
+        return `${getDefaultOutput()} <br>
+          Player bust O.O Press refresh to play again.`;
+      }
+    }
 
-}
-
-//set parameters for computer
-let computerHandSum = getHandSum(computerHand);
-if (computerHandSum <= minDealerThreshold){
-  dealCardToHand(computerHand);
-
-  //get the sum of the 2 cards in computer's hand
-  computerHandSum = getHandSum(computerHand);
-
-  //conditions for computer if computer is BUST
-
-  if (computerHand > TwentyOne){
-    gameOver = true;
-    return `${getDefaultOutput()} <br><br>
-    COMPUTER has more than 21. YOU WIN!`;
+    if (input === 'stay') {
+      playerHasChosenToStand = true;
+    }
   }
-};
 
-//when player hand greater than Computer hand, player will win
+  // The computer also decides to hit or stand.
+  // Computer hits if sum less than or equal to dealer hit threshold
+  // Otherwise, computer stays
+  var computerHandSum = getHandSum(computerHand);
+  if (computerHandSum <= dealerHitThreshold) {
+    dealCardToHand(computerHand);
+    // Update computer hand sum after dealing new card
+    computerHandSum = getHandSum(computerHand);
+    // If bust, show computer that she busts
+    if (computerHandSum > TWENTY_ONE) {
+      gameOver = true;
+      return `${getDefaultOutput()} <br>
+      Computer busted! You Win! Please refresh to play again.`;
+    }
+  }
 
-if (getHandSum(playerHand) > computerHandSum){
-  return `${getDefaultOutput()} <br><br>
-  YOU WIN!! CONGRATULATIONS! Would you like to play again? Press refresh to play again.`;
-};
+  // If player and computer have both not busted and chosen to stand, decide who wins
+  if (playerHasChosenToStand && computerHandSum > dealerHitThreshold) {
+    // The game is always over after this point
+    gameOver = true;
+    // If player hand sum is greater than computer hand sum, player wins!
+    if (getHandSum(playerHand) > computerHandSum) {
+      return `${getDefaultOutput()} <br>
+        Player wins! Please refresh to play again.`;
+    }
+    // Else, computer wins
+    return `${getDefaultOutput()} <br>
+      Computer wins! Please refresh to play again.`;
+  }
 
-if (getHandSum(playerHand) < computerHandSum){
-  return `${getDefaultOutput()} <br><br>
-  YOU LOSE!! Better Luck Next Time...Would you like to play again? Press refresh to play again.`;
-};
-
-
-
+  // If game is not yet over, show current game status
+  return `${getDefaultOutput()} <br>
+    You may choose to draw another card. Please enter "hit" or "stay". <br>
+    If not, press Submit to see Computer's next move.`;
 };
