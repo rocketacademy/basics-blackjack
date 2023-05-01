@@ -173,7 +173,7 @@ var main = function (input) {
     return 'The game is over. Please refresh to play again.';
   }
 
-  // If initial hands have not been dealt, deal initial hands
+  
   if (playerHand.length === 0) {
     // User clicks submit button to deal cards.
     // Deal first card for player then computer
@@ -206,9 +206,9 @@ var main = function (input) {
       Please enter "hit" or "stay", then press Submit`;
   }
 
-  // Then begins a new action, where the user has to decide something: do they hit or stand.
+  // Then begins a new mode
   if (!playerHasChosenToStand) {
-    // If user input is neither "hit" nor "stand" prompt user
+    // If user input is neither "hit" nor "stay" prompt user
     if (input !== 'hit' && input !== 'stay') {
       return 'Please input either "hit" or "stay" as possible moves in Blackjack';
     }
