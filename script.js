@@ -128,7 +128,7 @@ function main(gameInput) {
       ) {
         gameState = "scoreboard";
         playerWonTimes += 1;
-        return "You Win! You have a blackjack!";
+        return "You Win! You have a blackjack! Click on Submit to continue!";
       } else if (
         checkInitialHands(playerHand, computerHand) === "computer blackjack"
       ) {
