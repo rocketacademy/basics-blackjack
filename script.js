@@ -98,7 +98,7 @@ var shuffleCards = function (cardDeck) {
    if stand, move game phase to "computerMidgame"
   c) "computerMidgame" should basically make the cpu hit until the cpu is either bigger than player, or busts. then moves to "result" phase  
   d) "result" phase shows who has won. moves it to cleaning phase
-  e) "cleaning" phase will resets the deck, the hand and all required stuff on submit, moves it back to "initialize"
+  e) "scoreboard" phase will resets the deck, the hand and all required stuff on submit, moves it back to "initialize". also shows scoreboard
 */
 
 let deck = shuffleCards(makeDeck());
@@ -121,18 +121,20 @@ function main(gameInput) {
       dealInitialHands();
       console.log(playerHand, computerHand);
       if (checkInitialHands(playerHand, computerHand) === "double blackjack") {
-        gameState = "result";
-        return "It is a double blackjack! It is a draw!";
+        gameState = "scoreboard";
+        return `Both you and the Computer have gotten blackjacks! This is a draw! Click on Submit to continue!`;
       } else if (
         checkInitialHands(playerHand, computerHand) === "player blackjack"
       ) {
-        gameState = "result";
+        gameState = "scoreboard";
+        playerWonTimes += 1;
         return "You Win! You have a blackjack!";
       } else if (
         checkInitialHands(playerHand, computerHand) === "computer blackjack"
       ) {
-        gameState = "result";
-        return "You Lose! Computer has a blackjack! ";
+        gameState = "scoreboard";
+        computerWonTimes += 1;
+        return "You Lose! Computer scored a blackjack! Click on Submit to continue!";
       } else if (
         checkInitialHands(playerHand, computerHand === "game continue")
       ) {
