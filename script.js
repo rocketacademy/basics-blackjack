@@ -111,6 +111,7 @@ let playerBustStatus = false;
 let computerBustStatus = false;
 let playerWonTimes = 0;
 let computerWonTimes = 0;
+
 //main game
 function main(gameInput) {
   let input = gameInput.toLowerCase();
@@ -119,102 +120,34 @@ function main(gameInput) {
       return `Hello Player! Please do not type in anything and just press submit to start a game of Blackjack!`;
     } else {
       dealInitialHands();
-      console.log(playerHand, computerHand);
-      if (checkInitialHands(playerHand, computerHand) === "double blackjack") {
-        gameState = "scoreboard";
-        return `Both you and the Computer have gotten blackjacks! This is a draw! Click on Submit to continue!`;
-      } else if (
-        checkInitialHands(playerHand, computerHand) === "player blackjack"
-      ) {
-        gameState = "scoreboard";
-        playerWonTimes += 1;
-        return "You Win! You have a blackjack! Click on Submit to continue!";
-      } else if (
-        checkInitialHands(playerHand, computerHand) === "computer blackjack"
-      ) {
-        gameState = "scoreboard";
-        computerWonTimes += 1;
-        return "You Lose! Computer scored a blackjack! Click on Submit to continue!";
-      } else if (
-        checkInitialHands(playerHand, computerHand === "game continue")
-      ) {
-        // gameState = "playerHitOrStand";
-        checkForAces(playerHand);
-        playerScore = calculatePlayerScore(playerHand);
-        computerScore = calculateComputerScore(computerHand);
-        gameState = "playerMidgame";
-        console.log(playerScore);
-        console.log(computerScore);
-        return outputMessage();
-      }
+      let initializeWinnerMessage = checkInitialResults();
+      return initializeWinnerMessage;
     }
   } else if (gameState === "playerMidgame") {
     if (input !== "h" && input !== "s") {
       return `Please input only hit or stand!<br>${outputMessage()}`;
     } else if (input === "h") {
-      playerHand.push(deck.pop());
-      checkForAces(playerHand);
-      playerScore = calculatePlayerScore(playerHand);
-      console.log(playerScore, playerHand);
-      if (playerScore > 21) {
-        gameState = "computerMidgame";
-        playerBustStatus = true;
-        return `You drew a ${playerHand[playerHand.length - 1].name} of ${
-          playerHand[playerHand.length - 1].suit
-        }! You BUSTED at💣${playerScore}💣!<br><br> The Computer will now take it's turn!<br> ${outputMessageForCPU()} Click Submit to proceed! `;
-      }
-      return `${outputMessage()}`;
+      let playerMidGameAction = playerMidGameHitAction();
+      return playerMidGameAction;
     } else if (input === "s") {
       gameState = "computerMidgame";
       return `You have chosen to stand at ${playerScore} points!<br><br> The Computer will now take it's turn!<br> ${outputMessageForCPU()}`;
     }
   } else if (gameState === "computerMidgame") {
-    console.log(computerScore, computerHand);
-    if (computerScore > 21) {
-      gameState = "result";
-      computerBustStatus = true;
-      return `The Computer drew ${
-        computerHand[computerHand.length - 1].name
-      } of ${
-        computerHand[computerHand.length - 1].suit
-      }! The Computer BUSTED at 💣${computerScore}💣!<br><br> Click Submit to proceed!`;
-    } else if (computerScore < 17) {
-      computerHand.push(deck.pop());
-      checkForAces(computerHand);
-      computerScore = calculateComputerScore(computerHand);
-      return outputMessageForCPU();
-    } else if (computerScore > 16 && computerScore < 22) {
-      gameState = "result";
-      return `The Computer has chosen to stand at ${computerScore}! Click Submit to Proceed!`;
-    } else {
-      return "ERROR: LOGIC WRONG PLEASE CHECK";
-    }
+    let computerAction = checkComputerScoring();
+    return computerAction;
   } else if (gameState === "result") {
     gameState = "scoreboard";
-    if (playerBustStatus && computerBustStatus) {
-      return `Both players have 💣BUSTED💣! It is a draw!<br>You scored ${playerScore}!<br> The Computer scored ${computerScore}!<br>Click Submit to head to the scoreboard!`;
-    } else if (!playerBustStatus && computerBustStatus) {
-      playerWonTimes += 1;
-      return `You won!<br> You scored ${playerScore}!<br>The Computer scored 💣💣${computerScore}💣💣!<br>Click Submit to head to the scoreboard!`;
-    } else if (playerBustStatus && !computerBustStatus) {
-      computerWonTimes += 1;
-      return `The Computer won!<br> You scored 💣💣${playerScore}💣💣!<br>The Computer scored ${computerScore}!<br>Click Submit to head to the scoreboard!`;
-    } else if (playerScore === computerScore) {
-      return `Both players have scored ${playerScore}!<br> It is a draw!<br> Click Submit to head to the scoreboard!`;
-    } else if (playerScore > computerScore) {
-      playerWonTimes += 1;
-      return `You won!<br> You scored ${playerScore}!<br>The Computer scored ${computerScore}! Click Submit to head to the scoreboard!`;
-    } else if (playerScore < computerScore) {
-      computerWonTimes += 1;
-      return `The Computer won!<br> You scored ${playerScore}!<br>The Computer scored ${computerScore}! Click Submit to head to the scoreboard! `;
-    } else {
-      return "THE RESULT LOGIC WENT WRONG";
-    }
+    let endGameResult = checkEndGameScenario();
+    return endGameResult;
   } else if (gameState === "scoreboard") {
     refreshEverything();
     return `Scoreboard- You : Computer <br> ${playerWonTimes} : ${computerWonTimes}<br> Click Submit to start a new round!`;
   }
 }
+
+// end of main
+
 // dealing initial hands small function.
 function dealInitialHands() {
   for (let i = 0; i < 2; i++) {
@@ -314,4 +247,93 @@ function outputMessage() {
 //output message for computer turn
 function outputMessageForCPU() {
   return `The Cards that the CPU drew are as follows.. ${callCPUCards()}<br>The total sum is currently ${computerScore}. <br> Please click on submit to proceed!`;
+}
+
+//function to shorten main code when player hits
+function playerHits() {
+  playerHand.push(deck.pop());
+  checkForAces(playerHand);
+  playerScore = calculatePlayerScore(playerHand);
+  console.log(playerScore, playerHand);
+}
+
+function checkInitialResults() {
+  if (checkInitialHands(playerHand, computerHand) === "double blackjack") {
+    gameState = "scoreboard";
+    return `Both you and the Computer have gotten blackjacks! This is a draw! Click on Submit to continue!`;
+  } else if (
+    checkInitialHands(playerHand, computerHand) === "player blackjack"
+  ) {
+    gameState = "scoreboard";
+    playerWonTimes += 1;
+    return "You Win! You have a blackjack! Click on Submit to continue!";
+  } else if (
+    checkInitialHands(playerHand, computerHand) === "computer blackjack"
+  ) {
+    gameState = "scoreboard";
+    computerWonTimes += 1;
+    return "You Lose! Computer scored a blackjack! Click on Submit to continue!";
+  } else if (checkInitialHands(playerHand, computerHand === "game continue")) {
+    checkForAces(playerHand);
+    playerScore = calculatePlayerScore(playerHand);
+    computerScore = calculateComputerScore(computerHand);
+    gameState = "playerMidgame";
+    return outputMessage();
+  }
+}
+
+function checkComputerScoring() {
+  if (computerScore > 21) {
+    gameState = "result";
+    computerBustStatus = true;
+    return `The Computer drew ${
+      computerHand[computerHand.length - 1].name
+    } of ${
+      computerHand[computerHand.length - 1].suit
+    }! The Computer BUSTED at 💣${computerScore}💣!<br><br> Click Submit to proceed!`;
+  } else if (computerScore < 17) {
+    computerHand.push(deck.pop());
+    checkForAces(computerHand);
+    computerScore = calculateComputerScore(computerHand);
+    return outputMessageForCPU();
+  } else if (computerScore > 16 && computerScore < 22) {
+    gameState = "result";
+    return `The Computer has chosen to stand at ${computerScore}! Click Submit to Proceed!`;
+  } else {
+    return "ERROR: LOGIC WRONG PLEASE CHECK";
+  }
+}
+
+function playerMidGameHitAction() {
+  playerHits();
+  if (playerScore > 21) {
+    gameState = "computerMidgame";
+    playerBustStatus = true;
+    return `You drew a ${playerHand[playerHand.length - 1].name} of ${
+      playerHand[playerHand.length - 1].suit
+    }! You BUSTED at💣${playerScore}💣!<br><br> The Computer will now take it's turn!<br> ${outputMessageForCPU()} Click Submit to proceed! `;
+  }
+  return `${outputMessage()}`;
+}
+
+function checkEndGameScenario() {
+  if (playerBustStatus && computerBustStatus) {
+    return `Both players have 💣BUSTED💣! It is a draw!<br>You scored ${playerScore}!<br> The Computer scored ${computerScore}!<br>Click Submit to head to the scoreboard!`;
+  } else if (!playerBustStatus && computerBustStatus) {
+    playerWonTimes += 1;
+    return `You won!<br> You scored ${playerScore}!<br>The Computer scored 💣💣${computerScore}💣💣!<br>Click Submit to head to the scoreboard!`;
+  } else if (playerBustStatus && !computerBustStatus) {
+    computerWonTimes += 1;
+    return `The Computer won!<br> You scored 💣💣${playerScore}💣💣!<br>The Computer scored ${computerScore}!<br>Click Submit to head to the scoreboard!`;
+  } else if (playerScore === computerScore) {
+    return `Both players have scored ${playerScore}!<br> It is a draw!<br> Click Submit to head to the scoreboard!`;
+  } else if (playerScore > computerScore) {
+    playerWonTimes += 1;
+    return `You won!<br> You scored ${playerScore}!<br>The Computer scored ${computerScore}! Click Submit to head to the scoreboard!`;
+  } else if (playerScore < computerScore) {
+    computerWonTimes += 1;
+    return `The Computer won!<br> You scored ${playerScore}!<br>The Computer scored ${computerScore}! Click Submit to head to the scoreboard! `;
+  } else {
+    return "THE RESULT LOGIC WENT WRONG";
+  }
 }
