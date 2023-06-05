@@ -1,3 +1,4 @@
+//-------Global Variables-------
 const deck = {
   value: [2, 3, 4, 5, 6, 7, 8, 9, 10, `J`, `Q`, `K`, `A`],
   suit: ["♦️", "♣️", "♥️", "♠️"],
@@ -5,8 +6,12 @@ const deck = {
 
 let cardsDealt = [];
 let playerCards = [];
+let dealerCards = [];
 let playerTotal = 0;
+let dealerTotal = 0;
+//-------Global Variables-------
 
+//-------Helper Functions-------
 const cardPick = function () {
   let card = {
     value: 0,
@@ -16,9 +21,7 @@ const cardPick = function () {
   let suitsRNG = Math.floor(Math.random() * 4);
 
   card.value = deck.value[valuesRNG];
-  card.name = `<br>┏╾┓<br>\xa0│<b>${
-    deck.value[valuesRNG] + deck.suit[suitsRNG]
-  }</b>│<br>┗┻┛`;
+  card.name = deck.value[valuesRNG] + deck.suit[suitsRNG];
 
   if (
     card.name.includes(`J`) ||
@@ -47,13 +50,15 @@ const cardCheck = function (pick) {
     return pick;
   }
 };
+//-------Helper Functions-------
 
+//-------Main Function-------
 const main = function (input) {
   let dealtCard = cardCheck();
   playerCards.push(dealtCard.name);
   playerTotal = playerTotal + dealtCard.value;
 
-  let output1 = `Your cards are the ${playerCards.join(" and ")}.<br>`;
+  let output1 = `${playerCards.join("\xa0 ")}.<br>`;
   let output2 = `Your total count is ${playerTotal}`;
 
   if (playerTotal < 21) {
@@ -61,7 +66,6 @@ const main = function (input) {
       return `There are no more cards left to deal.`;
     }
     if (playerCards.length === 1) {
-      output1 = `Your card is the ${playerCards}.<br>`;
       output2 = `Your count is ${playerTotal}`;
       return output1 + output2;
     }
@@ -82,6 +86,7 @@ const main = function (input) {
   }
   return output1 + output2;
 };
+//-------Main Function-------
 
 //card name `⌈` + "‾‾‾‾‾" + `⌉` + `<br>` + ` |` + `\xa0 2♠️ ` + ` |` + `<br>` + `⌊___⌋`
 //improved name `┏╾┓<br>\xa0│<b>${dealtCard.name}</b> │<br>┗┻┛`
