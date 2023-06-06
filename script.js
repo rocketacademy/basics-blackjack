@@ -127,27 +127,15 @@ const dealerDraws = function () {
   ) {
     dealerTotal = dealerTotal - 10;
   }
-  if (dealerTotal < 17) {
-    if (
-      dealerTotal > 21 &&
-      (dealerCards.includes("A♦️") ||
-        dealerCards.includes("A♣️") ||
-        dealerCards.includes("A♥️") ||
-        dealerCards.includes("A♠️"))
-    ) {
-      dealerTotal = dealerTotal - 10;
-    }
+  while (dealerTotal < 17) {
     let dealerCard = cardCheck();
     dealerCards.push(dealerCard.name);
     dealerTotal = dealerTotal + dealerCard.value;
+    return output1 + output2;
   }
   if (dealerTotal >= 17) {
-    let dealerChoice = Math.floor(Math.random() * 2);
-    if (dealerChoice === 0) {
-      let dealerCard = cardCheck();
-      dealerCards.push(dealerCard.name);
-      dealerTotal = dealerTotal + dealerCard.value;
-    }
+    output1 = `The dealer has ${dealerCards}.<br>Their total count is ${dealerTotal}. They will stand here.`;
+    output3 = `Click the Deal button to move on to the results.`;
   }
 };
 
