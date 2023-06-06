@@ -54,11 +54,6 @@ const cardCheck = function (pick) {
 //-------Helper Functions-------
 
 //-------Game Modes-------
-let output1 = `The dealer has a ${dealerCards} and one face down card.<br><br>`;
-let output2 = `Your cards are ${playerCards.join(
-  "\xa0 "
-)}.<br>Your total count is ${playerTotal}.<br>`;
-let output3 = `Type in 'Hit' to draw another card.<br> Type in 'Stand' to end your turn.`;
 //-------Mode 0 Start-------
 const firstDraw = function (playerInput) {
   let dealtCard = cardCheck();
@@ -68,35 +63,14 @@ const firstDraw = function (playerInput) {
   dealerCards.push(dealerCard.name);
   dealerTotal = dealerTotal + dealerCard.value;
   mode++;
-  return +output1 + output2 + output3;
+  return `The dealer has a ${dealerCards} and one face down card.<br><br>Your cards are ${playerCards.join(
+    "\xa0 "
+  )}.<br>Your total count is ${playerTotal}.<br>Type in 'Hit' to draw another card.<br> Type in 'Stand' to end your turn.`;
 };
 //-------Mode 0 End-------
 //-------Mode 1 Start-------
-const playerChoice = function () {
-  if (
-    playerInput.toLowerCase().trim() !== `stand` ||
-    playerInput.toLowerCase().trim() !== `trim`
-  ) {
-    return `I'm sorry I don't understand.<br>` + output1 + output2 + output3;
-  }
+const playerChoice = function (playerInput) {
   //----if player hits----
-  if (playerTotal < 21)
-    if (playerInput.toLowerCase().trim() === `hit`) {
-      let dealtCard = cardCheck();
-      playerCards.push(dealtCard.name);
-      playerTotal = playerTotal + dealtCard.value;
-      if (
-        playerTotal > 21 &&
-        (playerCards.includes("A♦️") ||
-          playerCards.includes("A♣️") ||
-          playerCards.includes("A♥️") ||
-          playerCards.includes("A♠️"))
-      ) {
-        playerTotal = playerTotal - 10;
-      }
-      return +output1 + output2 + output3;
-    }
-  //----if player bust----
   if (
     playerTotal > 21 &&
     (playerCards.includes("A♦️") ||
@@ -106,18 +80,38 @@ const playerChoice = function () {
   ) {
     playerTotal = playerTotal - 10;
   }
+
+  if (playerInput.toLowerCase().trim() === `hit`) {
+    let dealtCard = cardCheck();
+    playerCards.push(dealtCard.name);
+    playerTotal = playerTotal + dealtCard.value;
+
+    return `The dealer has a ${dealerCards} and one face down card.<br><br>Your cards are ${playerCards.join(
+      "\xa0 "
+    )}.<br>Your total count is ${playerTotal}.<br>Type in 'Hit' to draw another card.<br> Type in 'Stand' to end your turn.`;
+  }
+
   //---- if player stands----
   if (playerInput.toLowerCase().trim() === `stand`) {
-    output2 = `Your cards are ${playerCards.join("\xa0 ")}.<br>`;
-    output3 = `You have chosen to stand with a total of ${playerTotal}.<br><br>The dealer will now draw their cards.`;
     mode++;
-    return output1 + output2 + output3;
+    console.log(mode);
+    return `The dealer has a ${dealerCards} and one face down card.<br><br>Your cards are ${playerCards.join(
+      "\xa0 "
+    )}.<br>You have chosen to stand with a total of ${playerTotal}.<br><br>The dealer will now draw their cards.`;
+  }
+
+  if (
+    playerInput.toLowerCase().trim() !== `stand` ||
+    playerInput.toLowerCase().trim() !== `hit`
+  ) {
+    return `I'm sorry I don't understand.<br>The dealer has a ${dealerCards} and one face down card.<br><br>Your cards are ${playerCards.join(
+      "\xa0 "
+    )}.<br>Your total count is ${playerTotal}.<br>Type in 'Hit' to draw another card.<br> Type in 'Stand' to end your turn.`;
   }
 };
 //-------Mode 1 End-------
 //-------Mode 2 Start-------
 const dealerDraws = function () {
-  output1 = `The dealer has ${dealerCards}.<br>Their total count is ${dealerTotal}`;
   if (
     dealerTotal > 21 &&
     (dealerCards.includes("A♦️") ||
@@ -131,40 +125,32 @@ const dealerDraws = function () {
     let dealerCard = cardCheck();
     dealerCards.push(dealerCard.name);
     dealerTotal = dealerTotal + dealerCard.value;
-    return output1 + output2;
+    return `The dealer has ${dealerCards}.<br>Their total count is ${dealerTotal}<br><br>Your cards are ${playerCards.join(
+      "\xa0 "
+    )}.<br>Your total count is ${playerTotal}.<br><br>Click Deal to continue.`;
   }
   if (dealerTotal >= 17) {
-    output1 = `The dealer has ${dealerCards}.<br>Their total count is ${dealerTotal}. They will stand here.`;
-    output3 = `Click the Deal button to move on to the results.`;
+    mode++;
+    return `The dealer has ${dealerCards}.<br>Their total count is ${dealerTotal}<br>They will stand here.<br><br>Your cards are ${playerCards.join(
+      "\xa0 "
+    )}.<br>Your total count is ${playerTotal}.<br><br>Click Deal to continue.`;
   }
 };
+///-------Mode 2 End-------
 
 //-------Main Function-------
 const main = function (input) {
-  if (playerTotal < 21) {
-    if (dealtCard === `There are no more cards left to deal.`) {
-      return `There are no more cards left to deal.`;
-    }
-    if (playerCards.length === 1) {
-      output2 = `Your count is ${playerTotal}`;
-      return output1 + output2;
-    }
-    if (playerCards.length > 1) {
-      return output1 + output2;
-    }
+  if (mode === 0) {
+    return firstDraw(input);
   }
-  if (playerTotal === 21 || playerTotal > 21) {
-    if (playerTotal === 21) {
-      output2 = `Your total count is ${playerTotal}<br><br> <b>BLACKJACK!</b>`;
-    }
-    if (playerTotal > 21) {
-      output2 = `Your total count is ${playerTotal}<br><br> Too bad.`;
-    }
-    cardsDealt = [];
-    playerTotal = 0;
-    playerCards = [];
+
+  if (mode === 1) {
+    return playerChoice(input);
   }
-  return output1 + output2;
+
+  if (mode === 2) {
+    return dealerDraws();
+  }
 };
 //-------Main Function-------
 
