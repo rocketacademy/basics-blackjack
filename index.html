@@ -3,7 +3,7 @@
   <head>
     <!-- Page setup configurations -->
     <meta charset="utf-8" />
-    <meta http-equiv="X-UA-compatible" content="IE=edge" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <!-- Favicon configuration -->
@@ -41,8 +41,8 @@
 
     <!-- sharing configuration -->
     <!-- Primary Meta Tags -->
-    <title>Blackjack Academy</title>
-    <meta name="title" content="Hamzah's BlackJack Game!" />
+    <title>Blackjack - Basics - Rocket Academy</title>
+    <meta name="title" content="YOURNAME's BlackJack Game!" />
     <meta name="description" content="A fun card game I made myself! 😄💪🌈" />
 
     <!-- Open Graph / Facebook -->
@@ -51,7 +51,7 @@
       property="og:url"
       content="https://rocketacademy.github.io/basics-blackjack/index.html"
     />
-    <meta property="og:title" content="Hamzah's BlackJack Game!" />
+    <meta property="og:title" content="YOURNAME's BlackJack Game!" />
     <meta
       property="og:description"
       content="A fun card game I made myself! 😄💪🌈"
@@ -67,7 +67,7 @@
       name="twitter:url"
       content="https://rocketacademy.github.io/basics-blackjack/index.html"
     />
-    <meta name="twitter:title" content="Hamzah's BlackJack Game!" />
+    <meta name="twitter:title" content="YOURNAME's BlackJack Game!" />
     <meta
       name="twitter:description"
       content="A fun card game I made myself! 😄💪🌈"
@@ -114,31 +114,9 @@
         margin-bottom: 3rem;
       }
 
-      .container {
-        background-color: pink;
-        margin-left: 50px auto;
-        max-width: 30%;
-        padding: 38px 31px;
-        float: left;
-      }
-
-      .p2-container {
+      #container {
         background-color: pink;
         margin: 40px auto;
-        max-width: 300px;
-        padding: 38px 31px;
-      }
-
-      #com-container {
-        background-color: pink;
-        margin: 30px auto;
-        max-width: 800px;
-        padding: 20px 31px;
-      }
-
-      #message-container {
-        background-color: pink;
-        margin: 10px auto;
         max-width: 800px;
         padding: 38px 31px;
       }
@@ -165,13 +143,6 @@
         width: 100%;
       }
 
-      #output-com {
-        background-color: lightgrey;
-        margin: 20px auto;
-        padding: 20px;
-        width: 100%;
-      }
-
       .logo-img {
         height: 49px;
         position: relative;
@@ -188,45 +159,26 @@
   </head>
 
   <body>
-    <h1 class="header">♣️ Blackjack Academy ♠️</h1>
-    <div id="com-container">
-      <p>Dealer:</p>
-      <div id="output-com"></div>
-    </div>
-
-    <br /><br />
-
-    <div id="message-container">
-      <p>message:</p>
-      <div id="output-com"></div>
-    </div>
-
-    <div class="p2-container">
+    <h1 class="header">Rocket Academy</h1>
+    <h1 class="header">♣️ Basics - Blackjack ♠️</h1>
+    <div id="container">
       <p>Input:</p>
-      <input
-        id="player2"
-        onkeypress="resetElement()"
-        placeholder="Enter Player 2 Name"
-      />
+      <input id="input-field" />
       <br />
-      <button id="submit-button">Submit</button>
+      <button id="deal-button">Deal</button>
       <p>Output:</p>
-      <div id="output-div"></div>
+      <div id="output-div">Click Deal to start the game</div>
     </div>
-
     <!-- Import program logic -->
     <script src="script.js"></script>
     <!-- Define button click functionality -->
     <script>
-      function resetElement() {
-        if (event.key === "Enter") {
-          document.getElementById("player2").style.display = "none";
-        }
-      }
-      var button = document.querySelector("#submit-button");
-      button.addEventListener("click", function () {
+      var deal = document.querySelector("#deal-button");
+      deal.addEventListener("click", function () {
         // Set result to input value
-        var result = main(button);
+        var input = deal;
+        var result = main(input.value);
+
         // Display result in output element
         var output = document.querySelector("#output-div");
         output.innerHTML = result;
@@ -238,7 +190,7 @@
         // If the user presses the "Enter" key on the keyboard
         if (event.key === "Enter") {
           // Set result to input value
-          var input = document.querySelector("#player2");
+          var input = document.querySelector("#input-field");
           // Store the output of main() in a new variable
           var result = main(input.value);
 
