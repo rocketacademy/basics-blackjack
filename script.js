@@ -1,3 +1,4 @@
+var deck;
 var computerCardDeck;
 var playerCardDeck;
 
