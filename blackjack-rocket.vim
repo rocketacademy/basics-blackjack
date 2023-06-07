@@ -13,8 +13,8 @@ if &shortmess =~ 'A'
 else
   set shortmess=aoO
 endif
-badd +54 script.js
-badd +0 index.html
+badd +51 script.js
+badd +100 index.html
 badd +0 live-server\ -\ 1
 argglobal
 %argdel
@@ -34,26 +34,16 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
+7,16fold
+23,51fold
+54,66fold
 let &fdl = &fdl
-let s:l = 40 - ((0 * winheight(0) + 16) / 33)
+let s:l = 77 - ((76 * winheight(0) + 16) / 32)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 40
-normal! 0
-tabnext
-argglobal
-enew
-file live-server\ -\ 1
-balt script.js
-setlocal fdm=manual
-setlocal fde=0
-setlocal fmr={{{,}}}
-setlocal fdi=#
-setlocal fdl=0
-setlocal fml=1
-setlocal fdn=20
-setlocal fen
+keepjumps 77
+normal! 022|
 tabnext
 edit index.html
 argglobal
@@ -68,13 +58,25 @@ setlocal fdn=20
 setlocal fen
 silent! normal! zE
 let &fdl = &fdl
-let s:l = 125 - ((7 * winheight(0) + 16) / 33)
+let s:l = 114 - ((0 * winheight(0) + 16) / 33)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 125
-normal! 045|
-tabnext 3
+keepjumps 114
+normal! 017|
+tabnext
+argglobal
+enew
+file live-server\ -\ 1
+setlocal fdm=manual
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=0
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+tabnext 1
 set stal=1
 if exists('s:wipebuf') && len(win_findbuf(s:wipebuf)) == 0 && getbufvar(s:wipebuf, '&buftype') isnot# 'terminal'
   silent exe 'bwipe ' . s:wipebuf
