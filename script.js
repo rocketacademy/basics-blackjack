@@ -265,8 +265,10 @@ var gameBustScore = 21;
 var gameMode = "shuffled cards";
 var numberOfCardsToDraw;
 var computerCardDeck = [];
+var doesComputerCardDeckHaveAce = false;
 var computerCurrentCardScore = 0;
 var playerCardDeck = [];
+var doesPlayerCardDeckHaveAce = false;
 var playerCurrentCardScore = 0;
 
 // cards 2 through 10 are scored using their face value
@@ -288,16 +290,21 @@ var main = function (input) {
     for (let i = 0; i < numberOfCardsToDraw; i++) {
       var currentCard = shuffledDeck.pop();
       computerCardDeck.push(currentCard);
+      doesComputerCardDeckHaveAce = checkForAce(currentCard);
     }
     console.log("computerCardDeck: ");
     console.log(computerCardDeck);
+    console.log(doesComputerCardDeckHaveAce);
+
     // assign 2 cards to player
     for (let i = 0; i < numberOfCardsToDraw; i++) {
       var currentCard = shuffledDeck.pop();
       playerCardDeck.push(currentCard);
+      doesPlayerCardDeckHaveAce = checkForAce(currentCard);
     }
     console.log("playerCardDeck: ");
     console.log(playerCardDeck);
+    console.log(doesPlayerCardDeckHaveAce);
 
     // calculate computer card score
     for (let i = 0; i < numberOfCardsToDraw; i++) {
@@ -328,15 +335,15 @@ var main = function (input) {
   return myOutputValue;
 };
 
-// 20230607 decided not to use this function
-// var assignTwoCards = function () {
-//   numberOfCardsToDraw = 2;
-//   for (let i = 0; i < numberOfCardsToDraw; i++) {
-//     var currentCard = shuffledDeck.pop();
-//     // computerCardDeck.push(currentCard);
-//     return currentCard;
-//   }
-// };
+var checkForAce = function (currentCard) {
+  if (currentCard.name == "ace") {
+    return true;
+  }
+
+  if (currentCard.name != "ace") {
+    return false;
+  }
+};
 
 // Shuffle the elements in the cardDeck array
 var shuffleCards = function (cardDeck) {
@@ -363,3 +370,13 @@ var shuffleCards = function (cardDeck) {
 var getRandomIndex = function (max) {
   return Math.floor(Math.random() * max);
 };
+
+// 20230607 decided not to use this function
+// var assignTwoCards = function () {
+//   numberOfCardsToDraw = 2;
+//   for (let i = 0; i < numberOfCardsToDraw; i++) {
+//     var currentCard = shuffledDeck.pop();
+//     // computerCardDeck.push(currentCard);
+//     return currentCard;
+//   }
+// };
