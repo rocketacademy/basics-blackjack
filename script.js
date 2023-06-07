@@ -51,23 +51,30 @@ const cardCheck = function (pick) {
     return pick;
   }
 };
+
 //-------Helper Functions-------
 
 //-------Game Modes-------
-//-------Mode 0 Start-------
-const firstDraw = function (playerInput) {
-  let dealtCard = cardCheck();
-  playerCards.push(dealtCard.name);
-  playerTotal = playerTotal + dealtCard.value;
-  let dealerCard = cardCheck();
+//-------Mode 0-------
+const firstDeal = function (firstCard, secondCard, dealerCard) {
+  firstCard = cardCheck();
+  secondCard = cardCheck();
+  dealerCard = cardCheck();
+  playerCards.push(firstCard.name, secondCard.name);
   dealerCards.push(dealerCard.name);
+  playerTotal = playerTotal + firstCard.value + secondCard.value;
   dealerTotal = dealerTotal + dealerCard.value;
   mode++;
-  return `The dealer has a ${dealerCards} and one face down card.<br><br>Your cards are ${playerCards.join(
+
+  return `The dealer deals you the ${
+    playerCards[0]
+  } and deals themselves the ${dealerCards}.<br><br>You then get a ${
+    playerCards[1]
+  } and the dealer places one card face down for themself.<br><br>Your cards are ${playerCards.join(
     "\xa0 "
-  )}.<br>Your total count is ${playerTotal}.<br>Type in 'Hit' to draw another card.<br> Type in 'Stand' to end your turn.`;
+  )} with a total count of ${playerTotal}.<br>The dealer's card is ${dealerCards}<br>Type in 'Hit' to draw another card.<br> Type in 'Stand' to end your turn.`;
 };
-//-------Mode 0 End-------
+//-------Mode 0-------
 //-------Mode 1 Start-------
 const playerChoice = function (playerInput) {
   //----if player hits----
@@ -112,7 +119,7 @@ const playerChoice = function (playerInput) {
 //-------Mode 1 End-------
 //-------Mode 2 Start-------
 const dealerDraws = function () {
-  while (dealerTotal < 17) {
+  while (dealerTotal < 17 || dealerTotal < playerTotal) {
     let dealerCard = cardCheck();
     dealerCards.push(dealerCard.name);
     dealerTotal = dealerTotal + dealerCard.value;
@@ -130,7 +137,7 @@ const dealerDraws = function () {
       "\xa0 "
     )}.<br>Your total count is ${playerTotal}.<br><br>Click Deal to continue.`;
   }
-  if (dealerTotal >= 17) {
+  if (dealerTotal >= 17 && dealerTotal > playerTotal) {
     mode++;
     return `The dealer has ${dealerCards}.<br>Their total count is ${dealerTotal}<br>They will stand here.<br><br>Your cards are ${playerCards.join(
       "\xa0 "
@@ -142,9 +149,10 @@ const dealerDraws = function () {
 const endResult = function () {};
 
 //-------Main Function-------
+
 const main = function (input) {
   if (mode === 0) {
-    return firstDraw(input);
+    return firstDeal();
   }
 
   if (mode === 1) {
