@@ -265,15 +265,17 @@ var gameBustScore = 21;
 var gameMode = "shuffled cards";
 var numberOfCardsToDraw;
 var computerCardDeck = [];
-var computerCurrentCardScore;
+var computerCurrentCardScore = 0;
 var playerCardDeck = [];
-var playerCurrentCardScore;
+var playerCurrentCardScore = 0;
 
 // cards 2 through 10 are scored using their face value
 // jack, queen and king are scored 10
 // ace can be scored 1 or 11
 
 var main = function (input) {
+  var myOutputValue = 1;
+
   if (gameMode == "shuffled cards") {
     shuffledDeck = shuffleCards(deck);
     gameMode = "compare card score";
@@ -287,17 +289,42 @@ var main = function (input) {
       var currentCard = shuffledDeck.pop();
       computerCardDeck.push(currentCard);
     }
-    // console.log(computerCardDeck);
+    console.log("computerCardDeck: ");
+    console.log(computerCardDeck);
     // assign 2 cards to player
     for (let i = 0; i < numberOfCardsToDraw; i++) {
       var currentCard = shuffledDeck.pop();
       playerCardDeck.push(currentCard);
     }
+    console.log("playerCardDeck: ");
     console.log(playerCardDeck);
 
-    // let's go into each array and add the score
+    // calculate computer card score
+    for (let i = 0; i < numberOfCardsToDraw; i++) {
+      computerCurrentCardScore =
+        computerCurrentCardScore + computerCardDeck[i].score;
+      console.log(computerCurrentCardScore);
+    }
+
+    // calculate player card score
+    for (let i = 0; i < numberOfCardsToDraw; i++) {
+      playerCurrentCardScore = playerCurrentCardScore + playerCardDeck[i].score;
+      console.log(playerCurrentCardScore);
+    }
+
+    if (computerCurrentCardScore < playerCurrentCardScore) {
+      myOutputValue = "Player won!";
+    }
+
+    if (computerCurrentCardScore > playerCurrentCardScore) {
+      myOutputValue = "Computer won!";
+    }
+
+    if (computerCurrentCardScore == playerCurrentCardScore) {
+      myOutputValue = "It's a tie!";
+    }
   }
-  var myOutputValue = 1;
+
   return myOutputValue;
 };
 
