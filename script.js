@@ -1,5 +1,5 @@
 var main = function (input) {
-  var myOutputValue = 'hello world';
+	var myOutputValue = formatDrawnCards(drawCard());
   return myOutputValue;
 };
 
@@ -15,17 +15,18 @@ document.addEventListener("keydown", function (event) {
 		
 	}})
 
-
+// Global variables
+let deck;
 
 
 // Deck generation
 let createDeck = () => {
 	let deck = [];
-	let suit = ['clubs', 'diamonds', 'hearts', 'spades'];
+	let suit = ['Clubs ♣️', 'Diamonds ♦️', 'Hearts ❤️', 'Spades ♠️'];
 	for (let i = 0; i < 4; i++) {
 		let currentSuit = suit[i];
 		let rankCounter = 1;
-		for (let j = 1; j < 13; j++) {
+		for (let j = 1; j < 14; j++) {
 			let cardName = rankCounter;
 			if (cardName === 1) {
 				cardName = 'Ace';
@@ -47,9 +48,9 @@ let createDeck = () => {
 	}
 	return deck;
 }
-console.log(createDeck()); //check if it works
+console.log("Initialized deck", createDeck()); //check if it works
 
-//shuffle deck 
+//Shuffle deck 
 let shuffleDeck = () => {
 	let deck = [...createDeck()];
 	let currentIndex = deck.length;
@@ -63,4 +64,18 @@ let shuffleDeck = () => {
 	}
 	return deck;
 }
-console.log(shuffleDeck());
+
+// So the deck will persist when cards are popped, and shuffled
+deck = [...shuffleDeck()];
+
+//Draw card
+let drawCard = () => {
+	console.log(deck)
+	let card = deck.pop();
+	return card;
+}
+// console.log(drawCard());
+
+let formatDrawnCards = (card) => {
+	return `${card.name} of ${card.suit}`;
+}
