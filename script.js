@@ -1,23 +1,74 @@
 var main = function (input) {
-	var myOutputValue = formatDrawnCards(drawCard());
+	var myOutputValue = formatDrawnCards(drawCard());  //gameFlow(input);
   return myOutputValue;
 };
 
+
 // Enter key to submit input value
-document.addEventListener("keydown", function (event) {
-	
+document.addEventListener("keydown", function(event){
 	if (event.key === "Enter") {
 		var input = document.querySelector("#input-field");
 		var result = main(input.value);
-		var output = document.querySelector("output-div");
+		var output = document.querySelector("#output-div");
 		output.innerHTML = result;
 		input.value = "";
 		
 	}})
 
+// document.getElementById("output-div").innerHTML = "please tell me how many players (2-4)";
+
 // Global variables
 let deck;
+let gameState = "start";
+let numOfPlayers = 0;
+let currentPlayer = 0;
+let playerNames = [];
+let playerHands = [];
 
+// Create game flow 
+let gameFlow = input => {
+	if (gameState === "start") {
+		return initiate(input);
+	}
+	else if (input.toLowerCase() === "quit"){
+    gameState = "start"
+	playerScore =[0,0,0,0];
+	playerNames =[];
+	playerNumCombo = [];
+	currentPlayer = 0;
+	round =0;
+    return `please tell me how many players (2-4)`;
+  }
+  else if (gameState == "input name"){
+    return storeNames(input);
+  }
+}
+
+// Initiate game
+let initiate = input => {
+	input = Number(input);
+	if (input >= 2 && input <= 4){
+		numOfPlayers = input;
+		gameState = "input name";
+		return `You have chosen a ${numOfPlayers}-player game. Please input player 1's name`;}
+	else{return `Please input a number between 2 and 4`}
+}
+
+
+// Store names
+let storeNames = input => {
+	input = input.trim()[0].toUpperCase() + input.trim().slice(1);
+	playerNames.push(input);
+	currentPlayer++;
+	if (currentPlayer === numOfPlayers) {
+		gameState = "start";
+		currentPlayer = 0;
+		return `Everyone has entered their names. ${playerNames[currentPlayer]} will go first`;
+	}
+	else {
+		return `Player ${currentPlayer + 1} please enter your name`;
+
+}}
 
 // Deck generation
 let createDeck = () => {
@@ -29,7 +80,7 @@ let createDeck = () => {
 		for (let j = 1; j < 14; j++) {
 			let cardName = rankCounter;
 			if (cardName === 1) {
-				cardName = 'Ace';
+				cardName = 'Ace'; //Aces will always equal to 1, if total is <= to 12, just add a value of 10 to the hand 
 			} else if (cardName === 11) {
 				cardName = 'Jack';
 			} else if (cardName === 12) {
@@ -70,7 +121,6 @@ deck = [...shuffleDeck()];
 
 //Draw card
 let drawCard = () => {
-	console.log(deck)
 	let card = deck.pop();
 	return card;
 }
@@ -80,4 +130,15 @@ let formatDrawnCards = (card) => {
 	return `${card.name} of ${card.suit}`;
 }
 
-//test
+numOfPlayers = 2; //for testing, it works.
+//Deal cards for each player and dealer
+let dealCards = () => {
+	playerHands = [];
+	for (let i = 0; i < numOfPlayers; i++) {
+		playerHands.push([drawCard(), drawCard()]);
+	}
+	console.log(playerHands);
+	return playerHands;
+}
+dealCards();
+console.log(deck.length)
