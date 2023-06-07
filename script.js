@@ -79,3 +79,5 @@ let drawCard = () => {
 let formatDrawnCards = (card) => {
 	return `${card.name} of ${card.suit}`;
 }
+
+//test
