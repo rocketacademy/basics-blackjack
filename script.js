@@ -262,13 +262,31 @@ var deck = [
 ];
 var shuffledDeck;
 var gameMode = "shuffled cards";
-var computerCardDeck;
-var playerCardDeck;
+var computerCardDeck = [];
+var numberOfCardsToDraw;
+var playerCardDeck = [];
 
 var main = function (input) {
   if (gameMode == "shuffled cards") {
     shuffledDeck = shuffleCards(deck);
+    gameMode = "compare results";
     console.log(shuffledDeck);
+  }
+
+  if (gameMode == "compare results") {
+    // assign 2 cards to computer
+    numberOfCardsToDraw = 2;
+    for (let i = 0; i < numberOfCardsToDraw; i++) {
+      var currentCard = shuffledDeck.pop();
+      computerCardDeck.push(currentCard);
+    }
+    console.log(computerCardDeck);
+    for (let i = 0; i < numberOfCardsToDraw; i++) {
+      var currentCard = shuffledDeck.pop();
+      playerCardDeck.push(currentCard);
+    }
+    console.log(playerCardDeck);
+    // assign 2 cards to player
   }
   var myOutputValue = 1;
   return myOutputValue;
