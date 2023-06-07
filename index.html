@@ -129,9 +129,11 @@
 	<img class="intro-blackjack-gif" src="https://media.giphy.com/media/l2Sq2mPVJr4tfk436/giphy.gif">
     <div id="container">
       <p>Input:</p>
-      <input id="input-field" />
+      <input id="input-field" autofocus/>
       <br />
       <button id="submit-button">Submit</button>
+	  <button id="hit-button">Hit</button>
+	  <button id="stand-button">Stand</button>
       <p>Output:</p>
       <div id="output-div"></div>
     </div>
@@ -152,6 +154,7 @@
         // Reset input value
         input.value = "";
       });
+
     </script>
   </body>
 </html>
