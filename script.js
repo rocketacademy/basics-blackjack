@@ -71,20 +71,20 @@ const firstDraw = function (playerInput) {
 //-------Mode 1 Start-------
 const playerChoice = function (playerInput) {
   //----if player hits----
-  if (
-    playerTotal > 21 &&
-    (playerCards.includes("A♦️") ||
-      playerCards.includes("A♣️") ||
-      playerCards.includes("A♥️") ||
-      playerCards.includes("A♠️"))
-  ) {
-    playerTotal = playerTotal - 10;
-  }
 
   if (playerInput.toLowerCase().trim() === `hit`) {
     let dealtCard = cardCheck();
     playerCards.push(dealtCard.name);
     playerTotal = playerTotal + dealtCard.value;
+    if (
+      playerTotal > 21 &&
+      (playerCards.includes("A♦️") ||
+        playerCards.includes("A♣️") ||
+        playerCards.includes("A♥️") ||
+        playerCards.includes("A♠️"))
+    ) {
+      playerTotal = playerTotal - 10;
+    }
 
     return `The dealer has a ${dealerCards} and one face down card.<br><br>Your cards are ${playerCards.join(
       "\xa0 "
@@ -112,19 +112,20 @@ const playerChoice = function (playerInput) {
 //-------Mode 1 End-------
 //-------Mode 2 Start-------
 const dealerDraws = function () {
-  if (
-    dealerTotal > 21 &&
-    (dealerCards.includes("A♦️") ||
-      dealerCards.includes("A♣️") ||
-      dealerCards.includes("A♥️") ||
-      dealerCards.includes("A♠️"))
-  ) {
-    dealerTotal = dealerTotal - 10;
-  }
   while (dealerTotal < 17) {
     let dealerCard = cardCheck();
     dealerCards.push(dealerCard.name);
     dealerTotal = dealerTotal + dealerCard.value;
+    if (
+      dealerTotal > 21 &&
+      (dealerCards.includes("A♦️") ||
+        dealerCards.includes("A♣️") ||
+        dealerCards.includes("A♥️") ||
+        dealerCards.includes("A♠️"))
+    ) {
+      dealerTotal = dealerTotal - 10;
+    }
+
     return `The dealer has ${dealerCards}.<br>Their total count is ${dealerTotal}<br><br>Your cards are ${playerCards.join(
       "\xa0 "
     )}.<br>Your total count is ${playerTotal}.<br><br>Click Deal to continue.`;
@@ -136,7 +137,9 @@ const dealerDraws = function () {
     )}.<br>Your total count is ${playerTotal}.<br><br>Click Deal to continue.`;
   }
 };
-///-------Mode 2 End-------
+//-------Mode 2 End-------
+//-------Mode 3 Start-------
+const endResult = function () {};
 
 //-------Main Function-------
 const main = function (input) {
