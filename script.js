@@ -260,10 +260,42 @@ var deck = [
     rank: 13,
   },
 ];
+var shuffledDeck;
+var gameMode = "shuffled cards";
 var computerCardDeck;
 var playerCardDeck;
 
 var main = function (input) {
-  var myOutputValue = "hello world";
+  if (gameMode == "shuffled cards") {
+    shuffledDeck = shuffleCards(deck);
+    console.log(shuffledDeck);
+  }
+  var myOutputValue = 1;
   return myOutputValue;
+};
+
+// Shuffle the elements in the cardDeck array
+var shuffleCards = function (cardDeck) {
+  // Loop over the card deck array once
+  var currentIndex = 0;
+  while (currentIndex < cardDeck.length) {
+    // Select a random index in the deck
+    var randomIndex = getRandomIndex(cardDeck.length);
+    // Select the card that corresponds to randomIndex
+    var randomCard = cardDeck[randomIndex];
+    // Select the card that corresponds to currentIndex
+    var currentCard = cardDeck[currentIndex];
+    // Swap positions of randomCard and currentCard in the deck
+    cardDeck[currentIndex] = randomCard;
+    cardDeck[randomIndex] = currentCard;
+    // Increment currentIndex
+    currentIndex = currentIndex + 1;
+  }
+  // Return the shuffled deck
+  return cardDeck;
+};
+
+// Get a random index ranging from 0 (inclusive) to max (exclusive).
+var getRandomIndex = function (max) {
+  return Math.floor(Math.random() * max);
 };
