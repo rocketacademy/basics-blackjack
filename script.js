@@ -52,9 +52,24 @@ const cardCheck = function (pick) {
   }
 };
 
+const restart = function () {
+  cardsDealt = [];
+  playerCards = [];
+  dealerCards = [];
+  playerTotal = 0;
+  dealerTotal = 0;
+  mode = `new game`;
+};
+
 //-------Helper Functions-------
 
 //-------Game Modes-------
+//-------New Game-------
+const newGame = function () {
+  mode = 0;
+  return `Ready for a new round? Click Deal to get your cards.🃏`;
+};
+//-------New Game-------
 //-------Mode 0-------
 const firstDeal = function (firstCard, secondCard, dealerCard) {
   firstCard = cardCheck();
@@ -64,15 +79,34 @@ const firstDeal = function (firstCard, secondCard, dealerCard) {
   dealerCards.push(dealerCard.name);
   playerTotal = playerTotal + firstCard.value + secondCard.value;
   dealerTotal = dealerTotal + dealerCard.value;
-  mode++;
-
-  return `The dealer deals you the ${
-    playerCards[0]
-  } and deals themselves the ${dealerCards}.<br><br>You then get a ${
-    playerCards[1]
-  } and the dealer places one card face down for themself.<br><br>Your cards are ${playerCards.join(
+  let output1 = `The dealer deals you the ${playerCards[0]} and deals themselves the ${dealerCards}.<br><br>You then get a ${playerCards[1]} and the dealer places one card face down for themself.<br><br>`;
+  let output2 = `Your cards are ${playerCards.join(
     "\xa0 "
-  )} with a total count of ${playerTotal}.<br>The dealer's card is ${dealerCards}<br>Type in 'Hit' to draw another card.<br> Type in 'Stand' to end your turn.`;
+  )} with a total count of ${playerTotal}.<br><br>`;
+  let output3 = `Type in 'Hit' to draw another card.<br> Type in 'Stand' to end your turn.`;
+
+  if (playerTotal === 21) {
+    if (dealerTotal === 10 || dealerTotal === 11) {
+      mode = 2;
+      output3 = `You have a <b>BLACKJACK!</b> If the dealer does not get a <b>BLACKJACK</b> immediately, you win.`;
+      console.log(playerTotal);
+      console.log(dealerTotal);
+      console.log(mode);
+      return output1 + output2 + output3;
+    }
+    if (dealerTotal !== 10 || dealerTotal !== 11) {
+      mode = 4;
+      return suddenDeath();
+    }
+  }
+
+  if (playerTotal > 21) {
+    mode = 4;
+    return suddenDeath();
+  }
+
+  mode++;
+  return output1 + output2 + output3;
 };
 //-------Mode 0-------
 //-------Mode 1 Start-------
@@ -92,7 +126,6 @@ const playerChoice = function (playerInput) {
     ) {
       playerTotal = playerTotal - 10;
     }
-
     return `The dealer has a ${dealerCards} and one face down card.<br><br>Your cards are ${playerCards.join(
       "\xa0 "
     )}.<br>Your total count is ${playerTotal}.<br>Type in 'Hit' to draw another card.<br> Type in 'Stand' to end your turn.`;
@@ -101,7 +134,6 @@ const playerChoice = function (playerInput) {
   //---- if player stands----
   if (playerInput.toLowerCase().trim() === `stand`) {
     mode++;
-    console.log(mode);
     return `The dealer has a ${dealerCards} and one face down card.<br><br>Your cards are ${playerCards.join(
       "\xa0 "
     )}.<br>You have chosen to stand with a total of ${playerTotal}.<br><br>The dealer will now draw their cards.`;
@@ -119,7 +151,7 @@ const playerChoice = function (playerInput) {
 //-------Mode 1 End-------
 //-------Mode 2 Start-------
 const dealerDraws = function () {
-  while (dealerTotal < 17 || dealerTotal < playerTotal) {
+  if (dealerTotal < 17 || dealerTotal < playerTotal) {
     let dealerCard = cardCheck();
     dealerCards.push(dealerCard.name);
     dealerTotal = dealerTotal + dealerCard.value;
@@ -133,24 +165,131 @@ const dealerDraws = function () {
       dealerTotal = dealerTotal - 10;
     }
 
-    return `The dealer has ${dealerCards}.<br>Their total count is ${dealerTotal}<br><br>Your cards are ${playerCards.join(
+    if (
+      playerCards.length === 2 &&
+      playerTotal === 21 &&
+      dealerCards.length === 2 &&
+      dealerTotal !== 21
+    ) {
+      mode = 4;
+      return suddenDeath();
+    }
+
+    if (dealerTotal > 21) {
+      mode = 4;
+      return suddenDeath();
+    }
+
+    if (
+      dealerCards.length === 2 &&
+      dealerTotal === 21 &&
+      playerCards.length !== 2
+    ) {
+      mode = 4;
+      console.log(mode);
+      return suddenDeath();
+    }
+
+    if (
+      dealerCards.length === 2 &&
+      dealerTotal === 21 &&
+      playerCards.length === 2
+    ) {
+      mode = 4;
+      console.log(mode);
+      return suddenDeath();
+    }
+
+    return `The dealer has ${dealerCards.join(
+      "\xa0 "
+    )}.<br>Their total count is ${dealerTotal}<br><br>Your cards are ${playerCards.join(
       "\xa0 "
     )}.<br>Your total count is ${playerTotal}.<br><br>Click Deal to continue.`;
   }
   if (dealerTotal >= 17 && dealerTotal > playerTotal) {
     mode++;
-    return `The dealer has ${dealerCards}.<br>Their total count is ${dealerTotal}<br>They will stand here.<br><br>Your cards are ${playerCards.join(
-      "\xa0 "
-    )}.<br>Your total count is ${playerTotal}.<br><br>Click Deal to continue.`;
+    return endResult();
   }
 };
 //-------Mode 2 End-------
 //-------Mode 3 Start-------
-const endResult = function () {};
+const endResult = function () {
+  let finalOutput1 = `The dealer has ${dealerCards.join(
+    "\xa0 "
+  )}.<br>Their total count is ${dealerTotal}<br>They will stand here.<br><br>Your cards are ${playerCards.join(
+    "\xa0 "
+  )}.<br>Your total count is ${playerTotal}.<br><br>`;
+  let finalOutput2 = `You have the higher total. You win!💰🤑💰<br><br>Click deal to start a new round.`;
+
+  if (dealerTotal > playerTotal) {
+    finalOutput2 = `Dealer has the higher total. Dealer wins this round.💸<br><br>Click deal to start a new round.`;
+  }
+
+  if (dealerTotal === playerTotal) {
+    finalOutput2 = `You both have the same total. Nobody wins this time.<br><br>Click deal to start a new round.`;
+  }
+  restart();
+  return finalOutput1 + finalOutput2;
+};
+//-------Mode 3 End-------
+//-------Mode 4 Start-------
+const suddenDeath = function () {
+  let finalOutput3 = `Your cards ${playerCards.join(
+    "\xa0 "
+  )} have given you a total of ${playerTotal}.<br><br>`;
+  let finalOutput4 = `That's a bust. Too bad.💸<br><br>Click deal to start a new round.`;
+
+  if (dealerTotal > 21) {
+    finalOutput3 = `<br>Dealer's cards ${dealerCards.join(
+      "\xa0 "
+    )} have given them a total of ${dealerTotal}.<br><br>Dealer busts!`;
+    finalOutput4 = `<br><br>You win with ${playerCards.join(
+      "\xa0 "
+    )} and a total of ${playerTotal}!💰🤑💰`;
+  }
+
+  if (dealerTotal === 21 && playerTotal === 21 && playerCards.length === 2) {
+    finalOutput4 = `Your cards ${playerCards.join(
+      "\xa0 "
+    )} have given you a <b>BLACKJACK</b>! But...<br><br>The Dealer's cards of ${dealerCards.join(
+      "\xa0 "
+    )} have given them a <b>BLACKJACK</b> as well. What are the odds.Too bad.<br><br>Click deal to start a new round.`;
+  }
+
+  if (dealerTotal === 21 && playerTotal === 21 && playerCards.length > 2) {
+    return `Your cards ${playerCards.join(
+      "\xa0 "
+    )} have given you a total of 21! But...<br><br>The Dealer's cards of ${dealerCards.join(
+      "\xa0 "
+    )} have given them a <b>BLACKJACK</b>. What are the odds.Too bad.<br>Maybe the next <b>BLACKJACK</b> could be yours?<br><br>Click deal to start a new round.`;
+  }
+
+  if (playerTotal === 21 && dealerTotal !== 21) {
+    finalOutput3 = `Your cards ${playerCards.join(
+      "\xa0 "
+    )} have given you a <b>BLACKJACK</b> and the Dealer's face down card is... ${
+      dealerCards[1]
+    }!<br><br>`;
+    finalOutput4 = `The dealer's ${dealerCards.join(
+      "\xa0 "
+    )} can not give them a <b>BLACKJACK</b>! Winner winner chicken dinner!💰🤑💰<br><br>Click deal to start a new round.`;
+  }
+
+  if (playerTotal !== 21 && dealerTotal === 21) {
+    finalOutput4 = `But the dealer's facedown ${dealerCards[1]} gives them a <b>BLACKJACK</b>... Too bad.💸<br><br>Maybe the next <b>BLACKJACK</b> could be yours?<br><br>Click deal to start a new round.`;
+  }
+
+  restart();
+  return finalOutput3 + finalOutput4;
+};
 
 //-------Main Function-------
 
 const main = function (input) {
+  if (mode === `new game`) {
+    return newGame();
+  }
+
   if (mode === 0) {
     return firstDeal();
   }
@@ -161,6 +300,14 @@ const main = function (input) {
 
   if (mode === 2) {
     return dealerDraws();
+  }
+
+  if (mode === 3) {
+    return endResult();
+  }
+
+  if (mode === 4) {
+    return suddenDeath();
   }
 };
 //-------Main Function-------
