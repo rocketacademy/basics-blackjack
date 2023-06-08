@@ -21,40 +21,16 @@ document.addEventListener("keydown", function(event){
 let deck;
 let gameState = "start";
 let playerHand = [];
+let playerHandValue = 0;
 let dealerHand = [];
+let dealerHandValue = 0;
 let playerHandFormat = "";
 let dealerHandFormat = "";
 let whoseTurn = "dealer";
 // Create game flow 
 
-// Initiate game
-// let initiate = input => {
-// 	input = Number(input);
-// 	if (input >= 2 && input <= 4){
-// 		numOfPlayers = input;
-// 		gameState = "input name";
-// 		return `You have chosen a ${numOfPlayers}-player game. Please input player 1's name`;}
-// 	else{return `Please input a number between 2 and 4`}
-// }
 
-
-// Store names, maybe later
-// let storeNames = input => {
-// 	input = input.trim()[0].toUpperCase() + input.trim().slice(1);
-// 	playerNames.push(input);
-// 	currentPlayer++;
-// 	if (currentPlayer === numOfPlayers) {
-// 		gameState = "start";
-// 		currentPlayer = 0;
-// 		gameState = "deal cards";
-// 		return `Everyone has entered their names. The cards will now be dealt`;
-// 	}
-// 	else {
-// 		return `Player ${currentPlayer + 1} please enter your name`;
-
-// }}
-
-// Deck generation
+// CREATE DECK
 let createDeck = () => {
 	let deck = [];
 	let suit = ['♣️', '♦️', '❤️', '♠️'];
@@ -109,24 +85,12 @@ let drawCard = () => {
 	let card = deck.pop();
 	return card;
 }
-// console.log(drawCard());
 
 let formatDrawnCards = (card) => {
 	return `${card.name} ${card.suit}`;
 }
 
-// numOfPlayers = 3; //for testing, it works.
-
-//Deal cards for each player and dealer
-// let dealCards = () => {
-// 	playerHand = [];
-// 	playerHand.push([formatDrawnCards(drawCard()), formatDrawnCards(drawCard())]);
-// 	dealerHand.push([formatDrawnCards(drawCard()), formatDrawnCards(drawCard())]);
-// 	console.log("playerHands:", playerHand);
-// 	return `Dealer's hand: ${dealerHand}  <br> Player's hand: ${playerHand}
-// 	`;
-// }
-
+// TO DEAL CARDS
 let dealCards = () => { 	
 	for (let i = 0; i < 2; i++){
 		  playerHand.push(drawCard());
@@ -141,21 +105,8 @@ let dealCards = () => {
 
 
 // console.log(dealCards())
-console.log("playerHand",playerHand)
 console.log("dealerHand", dealerHand);
-
-
-// Evaluate hands after being dealt.
-// let evaluateHands = () => {
-// 	for (let i = 0; i < playerHands.length; i++) {
-// 		console.log("playerHands[i]:", playerHands[i]);
-// 		for (let j = 0; j < playerHands[i].length; j++) {
-// 			console.log("playerHands[i][j]:", playerHands[i][j]);
-// 			playerRankValue[i] += playerHands[i][j].rank
-// 		}
-// 	}
-// 	return playerRankValue;
-// }
+console.log("playerHand",playerHand)
 
 
 let hit = () => {
@@ -186,3 +137,16 @@ document.getElementById("stand-button").onclick = () => {
   stand();
 	console.log(whoseTurn)
 };
+
+let calcHandValue = () => {
+	dealerHandValue = 0;
+	playerHandValue = 0; 
+	for (let i = 0; i < playerHand.length; i++) {
+		playerHandValue += playerHand[i].rank
+	}
+	for (let i = 0; i < dealerHand.length; i++){
+		dealerHandValue += dealerHand[i].rank
+	}
+	console.log("dealerHandValue", dealerHandValue);
+	console.log("playerHandValue", playerHandValue);
+  }
