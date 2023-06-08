@@ -1,22 +1,3 @@
-var main = function (input) {
-	var myOutputValue = dealCards() //gameFlow(input); 
-  return myOutputValue;
-};
-
-
-// Enter key to submit input value
-document.addEventListener("keydown", function(event){
-	if (event.key === "Enter") {
-		var input = document.querySelector("#input-field");
-		var result = main(input.value);
-		var output = document.querySelector("#output-div");
-		output.innerHTML = result;
-		input.value = "";
-		
-	}})
-
-// document.getElementById("output-div").innerHTML = "please tell me how many players (2-4)";
-
 // Global variables
 let deck;
 let gameState = "start";
@@ -27,8 +8,23 @@ let dealerHandValue = 0;
 let playerHandFormat = "";
 let dealerHandFormat = "";
 let whoseTurn = "player";
-// Create game flow 
+document.getElementById("hit-button").disabled = true;
+document.getElementById("stand-button").disabled = true;
 
+function reset() {
+  deck;
+  gameState = "start";
+  playerHand = [];
+  playerHandValue = 0;
+  dealerHand = [];
+  dealerHandValue = 0;
+  playerHandFormat = "";
+  dealerHandFormat = "";
+  whoseTurn = "player";
+	document.getElementById("deal-button").disabled = false;
+	document.getElementById("output-div").innerHTML = ""
+		document.getElementById("pg2").innerHTML = ``;
+};
 
 // CREATE DECK
 let createDeck = () => {
@@ -40,7 +36,7 @@ let createDeck = () => {
 		for (let j = 1; j < 14; j++) {
 			let cardName = rankCounter;
 			if (cardName === 1) {
-				cardName = 'Ace'; //Aces will always equal to 1, if total is <= to 12, just add a value of 10 to the hand 
+				cardName = 'Ace'; //Aces will always equal to 1, if total is < 12, just add a value of 10 to the hand 
 			} else if (cardName === 11) {
 				cardName = 'Jack';
 			} else if (cardName === 12) {
@@ -59,6 +55,7 @@ let createDeck = () => {
 	}
 	return deck;
 }
+
 
 console.log("Initialized deck", createDeck()); //check if it works
 
@@ -98,11 +95,15 @@ let dealCards = () => {
 			playerHandFormat += `${playerHand[i].name}${playerHand[i].suit}\t\t\t\t\t\t\t`;
 			dealerHandFormat += `${dealerHand[i].name}${dealerHand[i].suit}\t\t\t\t\t\t\t`;
 	}
-	document.getElementById("submit-button").disabled = true
-  return `dealer: ${dealerHandFormat}  <br><br> player: ${playerHandFormat}
-	`;
+	document.getElementById("deal-button").disabled = true
+	document.getElementById("hit-button").disabled = false;
+  document.getElementById("stand-button").disabled = false;
+  document.getElementById("output-div").innerHTML = `Dealer: ${dealerHandFormat}  <br><br> Player: ${playerHandFormat}`;
 };
 
+document.getElementById("deal-button").onclick = () => {
+  dealCards();
+};
 
 // console.log(dealCards())
 console.log("dealerHand", dealerHand);
@@ -112,14 +113,21 @@ console.log("playerHand",playerHand)
 let hit = () => {
 	if (whoseTurn == "player"){
 			playerHand.push(drawCard());
+			playerHandFormat += `${playerHand[playerHand.length - 1].name}${
+        playerHand[playerHand.length - 1].suit
+      }\t\t\t\t\t\t\t`;
+			document.getElementById("output-div").innerHTML = `Dealer: ${dealerHandFormat}  <br><br>Player: ${playerHandFormat}`;
 			console.log("playerHand",playerHand)
-      return playerHand;
 	}
 	else if (whoseTurn == "dealer"){
 			dealerHand.push(drawCard())
+			dealerHandFormat += `${dealerHand[dealerHand.length - 1].name}${
+        dealerHand[dealerHand.length - 1].suit
+      }\t\t\t\t\t\t\t`;
 			console.log("dealerHand",dealerHand)
-			return dealerHand
+			document.getElementById("output-div").innerHTML = `Dealer: ${dealerHandFormat}  <br><br>Player: ${playerHandFormat}`;
 	}
+	evaluateValues()
 }
 
 document.getElementById("hit-button").onclick = () => {
@@ -128,6 +136,13 @@ document.getElementById("hit-button").onclick = () => {
 let stand = () => {
 	if (whoseTurn == "player"){
       whoseTurn = "dealer";
+			if (dealerHandValue <= 16){
+				hit()
+				whoseTurn = "player"
+			}
+			else if (dealerHandValue > 16){
+				reveal()
+			}
 	}
 	else if (whoseTurn == "dealer"){
 			whoseTurn = "player";
@@ -168,8 +183,43 @@ let hasAce = hand => {
 	return false;
 }
 
-let checkBust = (handValue) => {
+let bustOr21 = (handValue) => {
 	if (handValue > 21){
-		return `${whoseTurn} has bust!`
+		document.getElementById("hit-button").disabled = true;
+		document.getElementById("stand-button").disabled = true;
+		setTimeout(reset, 5000)
+		console.log(`${whoseTurn} has bust!`);
+		document.getElementById("pg2").innerHTML = `${whoseTurn} busts! <br> game will reset in a while`;
+	}
+	else if (handValue == 21){
+		setTimeout(reset, 5000);
+		console.log(`${whoseTurn} won!!`);
+		document.getElementById("pg2").innerHTML = `${whoseTurn} won!!`;
+	}
+}
+
+let evaluateValues = () =>{
+		calcHandValue();
+    bustOr21(playerHandValue);
+    bustOr21(dealerHandValue);
+}
+
+let reveal = () => {
+	document.getElementById("hit-button").disabled = true;
+  document.getElementById("stand-button").disabled = true;
+	if (playerHandValue > dealerHandValue){
+		setTimeout(reset, 5000);
+		console.log(`Player wins this round!`);
+		document.getElementById("pg2").innerHTML = `Player wins this round!`;
+	}
+	else if (dealerHandValue > playerHandValue){
+		setTimeout(reset, 5000);
+		console.log(`Dealer wins this round!`);
+		document.getElementById("pg2").innerHTML = `Dealer wins this round!`
+	}
+	else if (dealerHandValue == playerHandValue){
+		setTimeout(reset, 5000);
+		console.log(`it's a draw!`);
+		document.getElementById("pg2").innerHTML = `it's a draw!`
 	}
 }
