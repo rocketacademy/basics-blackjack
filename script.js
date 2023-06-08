@@ -46,6 +46,7 @@ var main = function (input) {
   var myOutputValue = 1;
   // console.log(hardCodedDeck);
   makeDeck(); // this works
+  var inputLowerCase = input.toLowerCase();
 
   if (gameMode == "shuffled cards") {
     // shuffledDeck = shuffleCards(hardCodedDeck);
@@ -71,17 +72,52 @@ var main = function (input) {
     }
 
     calculateScore(numberOfCardsToDraw);
-    myOutputValue = checkWhoWon();
+    // in the event player reaches 21 with 2 cards, i.e. ACE + JACK/QUEEN/KING, declare player as winner
+    if (playerCurrentCardScore == 21) {
+      myOutputValue = messageWhenPlayerHit21();
+    } else {
+      // in the event player didn't reach 21 with 2 cards, i.e. ACE + JACK/QUEEN/KING, proceed to prompt to submit "hit" or "stand"
+      // "hit" means that I want more cards, "stand" means don't want
+      gameMode = "prompt player to submit";
+    }
+  }
 
-    // console.log("computerCardDeck: ");
-    // console.log(computerCardDeck);
-    // console.log(doesComputerCardDeckHaveAce);
-    // console.log(computerCurrentCardScore);
+  if (gameMode == "prompt player to submit") {
+    myOutputValue =
+      playerCardMessage() + playerScoreMessage() + promptDrawCardMessage();
+    gameMode = "await player hit or stand";
+    return myOutputValue;
+  }
 
-    // console.log("playerCardDeck: ");
-    // console.log(playerCardDeck);
-    // console.log(doesPlayerCardDeckHaveAce);
-    // console.log(playerCurrentCardScore);
+  if ((gameMode = "await player hit or stand")) {
+    if (inputLowerCase !== "hit" && inputLowerCase !== "stand") {
+      // I moved this portion before the "prompt player to submit" so that
+      myOutputValue =
+        promptErrorDrawCardMessage() +
+        playerCardMessage() +
+        promptDrawCardMessage();
+    }
+
+    // if player stand, calculate score and display who won
+    if (inputLowerCase == "stand") {
+      myOutputValue = checkWhoWon();
+    }
+
+    // determine if bust
+    // if yes, display player lost
+    // if no, set gameMode to prompt player to submit
+    if (inputLowerCase == "hit") {
+      // if player hit, assign 1 more card
+      var currentCard = shuffledDeck.pop();
+      playerCardDeck.push(currentCard);
+      doesPlayerCardDeckHaveAce = checkForAce(currentCard);
+      // calculate score
+
+      console.log("Console's here!");
+      consolelog();
+      numberOfCardsToDraw++;
+      calculateScore(numberOfCardsToDraw);
+    }
   }
 
   return myOutputValue;
@@ -91,7 +127,6 @@ var checkWhoWon = function () {
   if (computerCurrentCardScore < playerCurrentCardScore) {
     return (
       playerCardMessage() +
-      "<br><br>" +
       playerScoreMessage() +
       "<br><br>" +
       computerCardMessage() +
@@ -104,7 +139,6 @@ var checkWhoWon = function () {
   if (computerCurrentCardScore > playerCurrentCardScore) {
     return (
       playerCardMessage() +
-      "<br><br>" +
       playerScoreMessage() +
       "<br><br>" +
       computerCardMessage() +
@@ -117,7 +151,6 @@ var checkWhoWon = function () {
   if (computerCurrentCardScore == playerCurrentCardScore) {
     return (
       playerCardMessage() +
-      "<br><br>" +
       playerScoreMessage() +
       "<br><br>" +
       computerCardMessage() +
@@ -150,7 +183,15 @@ var computerCardMessage = function () {
 var playerScoreMessage = function () {
   if (doesPlayerCardDeckHaveAce && playerCurrentCardScore == 21) {
     return "Player's score: Won by Black Jack";
-  } else return "Player's score: " + playerCurrentCardScore;
+  } else return "<br><br>Player's score: " + playerCurrentCardScore;
+};
+
+var promptErrorDrawCardMessage = function () {
+  return "You have entered an unexpected input.<br><br>";
+};
+
+var promptDrawCardMessage = function () {
+  return "<br><br>Would you like to draw 1 more card to your deck?<br><br>If yes, please input 'Hit'.<br><br>If not, please input 'Stand'.";
 };
 
 var playerCardMessage = function () {
@@ -164,6 +205,19 @@ var playerCardMessage = function () {
       ", ";
   }
   return message;
+};
+
+var messageWhenPlayerHit21 = function () {
+  return (
+    playerCardMessage() +
+    "<br><br>" +
+    playerScoreMessage() +
+    "<br><br>" +
+    computerCardMessage() +
+    "<br><br>" +
+    computerScoreMessage() +
+    "<br><br>Player won by Black Jack!"
+  );
 };
 
 var calculateScore = function (numberOfCardsToDraw) {
@@ -187,6 +241,8 @@ var calculateScore = function (numberOfCardsToDraw) {
     }
     playerCurrentCardScore = playerCurrentCardScore + playerCardDeck[i].score;
   }
+  // use this when I need to hard code player score
+  // playerCurrentCardScore = 21;
 };
 
 var checkForAce = function (currentCard) {
@@ -269,6 +325,20 @@ var makeDeck = function () {
 
     suitsIndex = suitsIndex + 1;
   }
+};
+
+var consolelog = function () {
+  console.log("computerCardDeck: ");
+  console.log(computerCardDeck);
+  console.log(doesComputerCardDeckHaveAce);
+  console.log(computerCurrentCardScore);
+
+  console.log("playerCardDeck: ");
+  console.log(playerCardDeck);
+  console.log(doesPlayerCardDeckHaveAce);
+  console.log(playerCurrentCardScore);
+
+  console.log(gameMode);
 };
 
 // 20230607 decided not to use this function
