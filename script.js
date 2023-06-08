@@ -1,5 +1,5 @@
 var main = function (input) {
-	var myOutputValue = formatDrawnCards(drawCard());  //gameFlow(input);
+	var myOutputValue = dealCards() //gameFlow(input); 
   return myOutputValue;
 };
 
@@ -20,60 +20,43 @@ document.addEventListener("keydown", function(event){
 // Global variables
 let deck;
 let gameState = "start";
-let numOfPlayers = 0;
-let currentPlayer = 0;
-let playerNames = [];
-let playerHands = [];
-
+let playerHand = [];
+let dealerHand = [];
 // Create game flow 
-let gameFlow = input => {
-	if (gameState === "start") {
-		return initiate(input);
-	}
-	else if (input.toLowerCase() === "quit"){
-    gameState = "start"
-	playerScore =[0,0,0,0];
-	playerNames =[];
-	playerNumCombo = [];
-	currentPlayer = 0;
-	round =0;
-    return `please tell me how many players (2-4)`;
-  }
-  else if (gameState == "input name"){
-    return storeNames(input);
-  }
-}
+
+
 
 // Initiate game
-let initiate = input => {
-	input = Number(input);
-	if (input >= 2 && input <= 4){
-		numOfPlayers = input;
-		gameState = "input name";
-		return `You have chosen a ${numOfPlayers}-player game. Please input player 1's name`;}
-	else{return `Please input a number between 2 and 4`}
-}
+// let initiate = input => {
+// 	input = Number(input);
+// 	if (input >= 2 && input <= 4){
+// 		numOfPlayers = input;
+// 		gameState = "input name";
+// 		return `You have chosen a ${numOfPlayers}-player game. Please input player 1's name`;}
+// 	else{return `Please input a number between 2 and 4`}
+// }
 
 
-// Store names
-let storeNames = input => {
-	input = input.trim()[0].toUpperCase() + input.trim().slice(1);
-	playerNames.push(input);
-	currentPlayer++;
-	if (currentPlayer === numOfPlayers) {
-		gameState = "start";
-		currentPlayer = 0;
-		return `Everyone has entered their names. ${playerNames[currentPlayer]} will go first`;
-	}
-	else {
-		return `Player ${currentPlayer + 1} please enter your name`;
+// Store names, maybe later
+// let storeNames = input => {
+// 	input = input.trim()[0].toUpperCase() + input.trim().slice(1);
+// 	playerNames.push(input);
+// 	currentPlayer++;
+// 	if (currentPlayer === numOfPlayers) {
+// 		gameState = "start";
+// 		currentPlayer = 0;
+// 		gameState = "deal cards";
+// 		return `Everyone has entered their names. The cards will now be dealt`;
+// 	}
+// 	else {
+// 		return `Player ${currentPlayer + 1} please enter your name`;
 
-}}
+// }}
 
 // Deck generation
 let createDeck = () => {
 	let deck = [];
-	let suit = ['Clubs ♣️', 'Diamonds ♦️', 'Hearts ❤️', 'Spades ♠️'];
+	let suit = ['♣️', '♦️', '❤️', '♠️'];
 	for (let i = 0; i < 4; i++) {
 		let currentSuit = suit[i];
 		let rankCounter = 1;
@@ -91,7 +74,7 @@ let createDeck = () => {
 			let card = {
 				name: cardName,
 				suit: currentSuit,
-				rank: j,
+				rank: j == 11 || j == 12 || j == 13 ? 10 : j,
 			};
 			deck.push(card);
 			rankCounter++;
@@ -99,6 +82,7 @@ let createDeck = () => {
 	}
 	return deck;
 }
+
 console.log("Initialized deck", createDeck()); //check if it works
 
 //Shuffle deck 
@@ -118,7 +102,7 @@ let shuffleDeck = () => {
 
 // So the deck will persist when cards are popped, and shuffled
 deck = [...shuffleDeck()];
-
+console.log(deck)
 //Draw card
 let drawCard = () => {
 	let card = deck.pop();
@@ -127,18 +111,35 @@ let drawCard = () => {
 // console.log(drawCard());
 
 let formatDrawnCards = (card) => {
-	return `${card.name} of ${card.suit}`;
+	return `${card.name} ${card.suit}`;
 }
 
-numOfPlayers = 2; //for testing, it works.
+// numOfPlayers = 3; //for testing, it works.
+
 //Deal cards for each player and dealer
 let dealCards = () => {
-	playerHands = [];
-	for (let i = 0; i < numOfPlayers; i++) {
-		playerHands.push([drawCard(), drawCard()]);
-	}
-	console.log(playerHands);
-	return playerHands;
+	playerHand = [];
+	playerHand.push([formatDrawnCards(drawCard()), formatDrawnCards(drawCard())]);
+	dealerHand.push([formatDrawnCards(drawCard()), formatDrawnCards(drawCard())]);
+	console.log("playerHands:", playerHand);
+	return `Dealer's hand: ${dealerHand}  <br> Player's hand: ${playerHand}
+	`;
 }
-dealCards();
-console.log(deck.length)
+
+// Evaluate hands after being dealt.
+// let evaluateHands = () => {
+// 	for (let i = 0; i < playerHands.length; i++) {
+// 		console.log("playerHands[i]:", playerHands[i]);
+// 		for (let j = 0; j < playerHands[i].length; j++) {
+// 			console.log("playerHands[i][j]:", playerHands[i][j]);
+// 			playerRankValue[i] += playerHands[i][j].rank
+// 		}
+// 	}
+// 	return playerRankValue;
+// }
+
+
+let hit = () => {
+	playerHand[currentPlayer].push(drawCard());
+	return playerHand;
+}

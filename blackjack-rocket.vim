@@ -13,9 +13,10 @@ if &shortmess =~ 'A'
 else
   set shortmess=aoO
 endif
-badd +51 script.js
+badd +125 script.js
 badd +100 index.html
-badd +0 live-server\ -\ 1
+badd +4 live-server\ -\ 1
+badd +0 live-server\ -\ 2
 argglobal
 %argdel
 $argadd script.js
@@ -35,15 +36,21 @@ setlocal fdn=20
 setlocal fen
 silent! normal! zE
 7,16fold
-23,51fold
-54,66fold
+23,32fold
+36,49fold
+57,84fold
+89,101fold
 let &fdl = &fdl
-let s:l = 77 - ((76 * winheight(0) + 16) / 32)
+23
+normal! zo
+36
+normal! zo
+let s:l = 121 - ((75 * winheight(0) + 20) / 40)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 77
-normal! 022|
+keepjumps 121
+normal! 020|
 tabnext
 edit index.html
 argglobal
@@ -58,16 +65,17 @@ setlocal fdn=20
 setlocal fen
 silent! normal! zE
 let &fdl = &fdl
-let s:l = 114 - ((0 * winheight(0) + 16) / 33)
+let s:l = 126 - ((0 * winheight(0) + 20) / 40)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 114
+keepjumps 126
 normal! 017|
 tabnext
 argglobal
 enew
-file live-server\ -\ 1
+file live-server\ -\ 2
+balt index.html
 setlocal fdm=manual
 setlocal fde=0
 setlocal fmr={{{,}}}
