@@ -81,7 +81,10 @@ var faceValue = function (playCardGame) {
 };
 
 var addPlayerCard = function (playerCard) {
-  var totalplayerCard = playerCard[0].rank + playerCard[1].rank;
+  var totalplayerCard = 0;
+  for (i = 0; i < playerCard.length; i++) {
+    totalplayerCard = playerCard[i].rank + totalplayerCard;
+  }
   return totalplayerCard;
 };
 
@@ -101,18 +104,66 @@ var checkBlackJack = function (totalplayerCard, totaldealerCard) {
   } else return message;
 };
 
+/*cardBurstMessage = "Card Burst";
+var checkCardBurst= function(point){
+  var message = "";
+  if (point < 21){
+      message = cardBurstMessage;
+  }
+  else if() {
+    message;
+  }
+  return message;
+}*/
+var message1 = "";
+var message2 = [];
+var currentplayOneCardDeck = 2;
+var m = [];
+var playerDrawCard = function (input) {
+  //draw card from deck
+  if (input == "1") {
+    playerOneCard.push(playCardGame[cardDraw]);
+    totalplayerOneCard = addPlayerCard(playerOneCard);
+    for (i = 0; i < playerOneCard.length; i++) {
+      m[i] = `<br/> Your Card ${i + 1} ${playerOneCard[i].suit} of ${
+        playerOneCard[i].rank
+      } `;
+      message2.push(m[i]);
+    }
+
+    message1 =
+      `Player, You draw card ${playerOneCard[currentplayOneCardDeck].suit} of ${playerOneCard[currentplayOneCardDeck].rank}` +
+      message2.toString() +
+      "<br/> Enter 1 to Re-draw or Enter 2 to Stand?";
+    cardDraw += 1;
+    currentplayOneCardDeck += 1;
+  }
+
+  if (input == "2") {
+    for (i = 0; i < playerOneCard.length; i++) {
+      m[i] = `<br/> Your Card ${i + 1} ${playerOneCard[i].suit} of ${
+        playerOneCard[i].rank
+      } `;
+      message2.push(m[i]);
+    }
+    message1 = `Player, you choose to Stand, <br/>` + message2.toString();
+    gameMode = "dealerDrawCard";
+  }
+  return message1;
+};
+
 var gameMode = "ShuffleCard"; //initialize to initial mode
 var playCardGame = {};
 var winGameMessage = "BlackJack!";
 var blackJack = false;
+var cardDraw = 4;
+var playerOneCard = [];
+var dealerCard = [];
+var totalplayerOneCard = 0;
+var totaldealerCard = 0;
+var outPutMessage = "";
 
-var main = function () {
-  var playerOneCard = [];
-  var dealerCard = [];
-  var totalplayerOneCard = 0;
-  var totaldealerCard = 0;
-  var outPutMessage = "";
-
+var main = function (input) {
   if (gameMode === "ShuffleCard") {
     playCardGame = shuffleCards(makeDeck()); //inital stage
     playCardGame = faceValue(playCardGame); //reset Jacks/Queen/King to rank 10
@@ -144,6 +195,11 @@ var main = function () {
   }
 
   if (gameMode === "PlayerTurn") {
-    console.log("PlayTurn");
+    outPutMessage = playerDrawCard(input);
+    return outPutMessage;
+  }
+  if (gameMode === "dealerDrawCard") {
+    outPutMessage = "dealerDrawCard";
+    return outPutMessage;
   }
 };
