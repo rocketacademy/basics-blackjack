@@ -22,9 +22,10 @@ let deck;
 let gameState = "start";
 let playerHand = [];
 let dealerHand = [];
+let playerHandFormat = "";
+let dealerHandFormat = "";
+let whoseTurn = "dealer";
 // Create game flow 
-
-
 
 // Initiate game
 // let initiate = input => {
@@ -74,7 +75,7 @@ let createDeck = () => {
 			let card = {
 				name: cardName,
 				suit: currentSuit,
-				rank: j == 11 || j == 12 || j == 13 ? 10 : j,
+				rank: j == 11 || j == 12 || j == 13 ? 10 : j, //ternary operator
 			};
 			deck.push(card);
 			rankCounter++;
@@ -117,14 +118,32 @@ let formatDrawnCards = (card) => {
 // numOfPlayers = 3; //for testing, it works.
 
 //Deal cards for each player and dealer
-let dealCards = () => {
-	playerHand = [];
-	playerHand.push([formatDrawnCards(drawCard()), formatDrawnCards(drawCard())]);
-	dealerHand.push([formatDrawnCards(drawCard()), formatDrawnCards(drawCard())]);
-	console.log("playerHands:", playerHand);
-	return `Dealer's hand: ${dealerHand}  <br> Player's hand: ${playerHand}
+// let dealCards = () => {
+// 	playerHand = [];
+// 	playerHand.push([formatDrawnCards(drawCard()), formatDrawnCards(drawCard())]);
+// 	dealerHand.push([formatDrawnCards(drawCard()), formatDrawnCards(drawCard())]);
+// 	console.log("playerHands:", playerHand);
+// 	return `Dealer's hand: ${dealerHand}  <br> Player's hand: ${playerHand}
+// 	`;
+// }
+
+let dealCards = () => { 	
+	for (let i = 0; i < 2; i++){
+		  playerHand.push(drawCard());
+      dealerHand.push(drawCard());
+			playerHandFormat += `${playerHand[i].name}${playerHand[i].suit}\t\t\t\t\t\t\t`;
+			dealerHandFormat += `${dealerHand[i].name}${dealerHand[i].suit}\t\t\t\t\t\t\t`;
+	}
+	document.getElementById("submit-button").disabled = true
+  return `Dealer: ${dealerHandFormat}  <br><br> Player: ${playerHandFormat}
 	`;
-}
+};
+
+
+// console.log(dealCards())
+console.log("playerHand",playerHand)
+console.log("dealerHand", dealerHand);
+
 
 // Evaluate hands after being dealt.
 // let evaluateHands = () => {
@@ -140,6 +159,30 @@ let dealCards = () => {
 
 
 let hit = () => {
-	playerHand[currentPlayer].push(drawCard());
-	return playerHand;
+	if (whoseTurn == "player"){
+			playerHand.push(drawCard());
+			console.log("playerHand",playerHand)
+      return playerHand;
+	}
+	else if (whoseTurn == "dealer"){
+			dealerHand.push(drawCard())
+			console.log("dealerHand",dealerHand)
+			return dealerHand
+	}
 }
+
+document.getElementById("hit-button").onclick = () => {
+	hit();
+};
+let stand = () => {
+	if (whoseTurn == "player"){
+      whoseTurn = "dealer";
+	}
+	else if (whoseTurn == "dealer"){
+			whoseTurn = "player"
+	}
+}
+document.getElementById("stand-button").onclick = () => {
+  stand();
+	console.log(whoseTurn)
+};
