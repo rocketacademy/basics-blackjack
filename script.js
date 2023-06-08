@@ -33,9 +33,6 @@ var main = function (input) {
       computerCardDeck.push(currentCard);
       doesComputerCardDeckHaveAce = checkForAce(currentCard);
     }
-    console.log("computerCardDeck: ");
-    console.log(computerCardDeck);
-    console.log(doesComputerCardDeckHaveAce);
 
     // assign 2 cards to player
     for (let i = 0; i < numberOfCardsToDraw; i++) {
@@ -43,37 +40,120 @@ var main = function (input) {
       playerCardDeck.push(currentCard);
       doesPlayerCardDeckHaveAce = checkForAce(currentCard);
     }
+
+    calculateScore(numberOfCardsToDraw);
+    myOutputValue = checkWhoWon();
+
+    console.log("computerCardDeck: ");
+    console.log(computerCardDeck);
+    console.log(doesComputerCardDeckHaveAce);
+    console.log(computerCurrentCardScore);
+
     console.log("playerCardDeck: ");
     console.log(playerCardDeck);
     console.log(doesPlayerCardDeckHaveAce);
-
-    // calculate computer card score
-    for (let i = 0; i < numberOfCardsToDraw; i++) {
-      computerCurrentCardScore =
-        computerCurrentCardScore + computerCardDeck[i].score;
-      console.log(computerCurrentCardScore);
-    }
-
-    // calculate player card score
-    for (let i = 0; i < numberOfCardsToDraw; i++) {
-      playerCurrentCardScore = playerCurrentCardScore + playerCardDeck[i].score;
-      console.log(playerCurrentCardScore);
-    }
-
-    if (computerCurrentCardScore < playerCurrentCardScore) {
-      myOutputValue = "Player won!";
-    }
-
-    if (computerCurrentCardScore > playerCurrentCardScore) {
-      myOutputValue = "Computer won!";
-    }
-
-    if (computerCurrentCardScore == playerCurrentCardScore) {
-      myOutputValue = "It's a tie!";
-    }
+    console.log(playerCurrentCardScore);
   }
 
   return myOutputValue;
+};
+
+var checkWhoWon = function () {
+  if (computerCurrentCardScore < playerCurrentCardScore) {
+    return (
+      playerCardMessage() +
+      "<br><br>" +
+      playerScoreMessage() +
+      "<br><br>" +
+      computerCardMessage() +
+      "<br><br>" +
+      computerScoreMessage() +
+      "<br><br>Player won!"
+    );
+  }
+
+  if (computerCurrentCardScore > playerCurrentCardScore) {
+    return (
+      playerCardMessage() +
+      "<br><br>" +
+      playerScoreMessage() +
+      "<br><br>" +
+      computerCardMessage() +
+      "<br><br>" +
+      computerScoreMessage() +
+      "<br><br>Dealer won!"
+    );
+  }
+
+  if (computerCurrentCardScore == playerCurrentCardScore) {
+    return (
+      playerCardMessage() +
+      "<br><br>" +
+      playerScoreMessage() +
+      "<br><br>" +
+      computerCardMessage() +
+      "<br><br>" +
+      computerScoreMessage() +
+      "<br><br>It's a tie!"
+    );
+  }
+};
+
+var computerScoreMessage = function () {
+  return "Dealer's score: " + computerCurrentCardScore;
+};
+
+var computerCardMessage = function () {
+  let message = "Dealer hand: ";
+  for (let i = 0; i < computerCardDeck.length; i++) {
+    message =
+      message +
+      computerCardDeck[i].name +
+      " of " +
+      computerCardDeck[i].suits +
+      ", ";
+  }
+  return message;
+};
+
+var playerScoreMessage = function () {
+  return "Player's score: " + playerCurrentCardScore;
+};
+
+var playerCardMessage = function () {
+  let message = "Player hand: ";
+  for (let i = 0; i < playerCardDeck.length; i++) {
+    message =
+      message +
+      playerCardDeck[i].name +
+      " of " +
+      playerCardDeck[i].suits +
+      ", ";
+  }
+  return message;
+};
+
+var calculateScore = function (numberOfCardsToDraw) {
+  // calculate computer card score
+
+  for (let i = 0; i < numberOfCardsToDraw; i++) {
+    // if computer has ACE in 2 cards, score of ACE increase to 11
+    if (computerCardDeck[i].name == "Ace") {
+      computerCardDeck[i].score = 11;
+    }
+    computerCurrentCardScore =
+      computerCurrentCardScore + computerCardDeck[i].score;
+  }
+
+  // calculate player card score
+
+  for (let i = 0; i < numberOfCardsToDraw; i++) {
+    // if player has ACE in 2 cards, score of ACE increase to 11
+    if (playerCardDeck[i].name == "Ace") {
+      playerCardDeck[i].score = 11;
+    }
+    playerCurrentCardScore = playerCurrentCardScore + playerCardDeck[i].score;
+  }
 };
 
 var checkForAce = function (currentCard) {
@@ -114,7 +194,7 @@ var getRandomIndex = function (max) {
 
 var makeDeck = function () {
   // suits
-  var suits = ["diamonds", "hearts", "clubs", "spades"];
+  var suits = ["Diamonds", "Hearts", "Clubs", "Spades"];
   var suitsIndex = 0;
   while (suitsIndex < suits.length) {
     var currentSuit = suits[suitsIndex];
@@ -129,15 +209,15 @@ var makeDeck = function () {
       currentScore = nameIndex;
 
       if (nameIndex == 1) {
-        currentName = "ace";
+        currentName = "Ace";
       } else if (nameIndex == 11) {
-        currentName = "jack";
+        currentName = "Jack";
         currentScore = 10;
       } else if (nameIndex == 12) {
-        currentName = "queen";
+        currentName = "Queen";
         currentScore = 10;
       } else if (nameIndex == 13) {
-        currentName = "king";
+        currentName = "King";
         currentScore = 10;
       }
 
