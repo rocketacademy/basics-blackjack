@@ -26,7 +26,7 @@ let dealerHand = [];
 let dealerHandValue = 0;
 let playerHandFormat = "";
 let dealerHandFormat = "";
-let whoseTurn = "dealer";
+let whoseTurn = "player";
 // Create game flow 
 
 
@@ -99,7 +99,7 @@ let dealCards = () => {
 			dealerHandFormat += `${dealerHand[i].name}${dealerHand[i].suit}\t\t\t\t\t\t\t`;
 	}
 	document.getElementById("submit-button").disabled = true
-  return `Dealer: ${dealerHandFormat}  <br><br> Player: ${playerHandFormat}
+  return `dealer: ${dealerHandFormat}  <br><br> player: ${playerHandFormat}
 	`;
 };
 
@@ -130,12 +130,12 @@ let stand = () => {
       whoseTurn = "dealer";
 	}
 	else if (whoseTurn == "dealer"){
-			whoseTurn = "player"
+			whoseTurn = "player";
 	}
 }
 document.getElementById("stand-button").onclick = () => {
   stand();
-	console.log(whoseTurn)
+	console.log(whoseTurn);
 };
 
 let calcHandValue = () => {
@@ -147,6 +147,29 @@ let calcHandValue = () => {
 	for (let i = 0; i < dealerHand.length; i++){
 		dealerHandValue += dealerHand[i].rank
 	}
+	if (dealerHandValue < 12 && hasAce(dealerHand)){
+		console.log("something")
+		dealerHandValue += 10
+	}
+	if (playerHandValue < 12 && hasAce(playerHand)) {
+		console.log("next thing")
+		playerHandValue += 10;
+	}
 	console.log("dealerHandValue", dealerHandValue);
 	console.log("playerHandValue", playerHandValue);
   }
+
+let hasAce = hand => {
+	for (let card of hand) {
+		if (card.name === "Ace") {
+			return true;
+		}
+	}
+	return false;
+}
+
+let checkBust = (handValue) => {
+	if (handValue > 21){
+		return `${whoseTurn} has bust!`
+	}
+}
