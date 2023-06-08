@@ -1,3 +1,31 @@
+// var hardCodedDeck = [
+//   {
+//     name: "Ace",
+//     suits: "hearts",
+//     score: 1,
+//   },
+//   {
+//     name: "10",
+//     suits: "Hearts",
+//     score: 10,
+//   },
+//   {
+//     name: "Jack",
+//     suits: "Hearts",
+//     score: 10,
+//   },
+//   {
+//     name: "Queen",
+//     suits: "Hearts",
+//     score: 10,
+//   },
+//   {
+//     name: "King",
+//     suits: "Hearts",
+//     score: 10,
+//   },
+// ];
+
 var deck = [];
 var shuffledDeck;
 var gameBustScore = 21;
@@ -16,13 +44,14 @@ var playerCurrentCardScore = 0;
 
 var main = function (input) {
   var myOutputValue = 1;
-
+  // console.log(hardCodedDeck);
   makeDeck(); // this works
 
   if (gameMode == "shuffled cards") {
+    // shuffledDeck = shuffleCards(hardCodedDeck);
     shuffledDeck = shuffleCards(deck);
     gameMode = "compare card score";
-    console.log(shuffledDeck);
+    // console.log(shuffledDeck);
   }
 
   if (gameMode == "compare card score") {
@@ -44,15 +73,15 @@ var main = function (input) {
     calculateScore(numberOfCardsToDraw);
     myOutputValue = checkWhoWon();
 
-    console.log("computerCardDeck: ");
-    console.log(computerCardDeck);
-    console.log(doesComputerCardDeckHaveAce);
-    console.log(computerCurrentCardScore);
+    // console.log("computerCardDeck: ");
+    // console.log(computerCardDeck);
+    // console.log(doesComputerCardDeckHaveAce);
+    // console.log(computerCurrentCardScore);
 
-    console.log("playerCardDeck: ");
-    console.log(playerCardDeck);
-    console.log(doesPlayerCardDeckHaveAce);
-    console.log(playerCurrentCardScore);
+    // console.log("playerCardDeck: ");
+    // console.log(playerCardDeck);
+    // console.log(doesPlayerCardDeckHaveAce);
+    // console.log(playerCurrentCardScore);
   }
 
   return myOutputValue;
@@ -100,7 +129,9 @@ var checkWhoWon = function () {
 };
 
 var computerScoreMessage = function () {
-  return "Dealer's score: " + computerCurrentCardScore;
+  if (doesComputerCardDeckHaveAce && computerCurrentCardScore == 21) {
+    return "Dealer's score: Won by Black Jack";
+  } else return "Dealer's score: " + computerCurrentCardScore;
 };
 
 var computerCardMessage = function () {
@@ -117,7 +148,9 @@ var computerCardMessage = function () {
 };
 
 var playerScoreMessage = function () {
-  return "Player's score: " + playerCurrentCardScore;
+  if (doesPlayerCardDeckHaveAce && playerCurrentCardScore == 21) {
+    return "Player's score: Won by Black Jack";
+  } else return "Player's score: " + playerCurrentCardScore;
 };
 
 var playerCardMessage = function () {
@@ -168,6 +201,8 @@ var checkForAce = function (currentCard) {
 
 // Shuffle the elements in the cardDeck array
 var shuffleCards = function (cardDeck) {
+  // console.log("I'm inside shuffleCards");
+  // console.log(cardDeck);
   // Loop over the card deck array once
   var currentIndex = 0;
   while (currentIndex < cardDeck.length) {
