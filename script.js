@@ -1,265 +1,4 @@
-var deck = [
-  {
-    name: "ace",
-    suit: "hearts",
-    score: 1,
-  },
-  {
-    name: "2",
-    suit: "hearts",
-    score: 2,
-  },
-  {
-    name: "3",
-    suit: "hearts",
-    score: 3,
-  },
-  {
-    name: "4",
-    suit: "hearts",
-    score: 4,
-  },
-  {
-    name: "5",
-    suit: "hearts",
-    score: 5,
-  },
-  {
-    name: "6",
-    suit: "hearts",
-    score: 6,
-  },
-  {
-    name: "7",
-    suit: "hearts",
-    score: 7,
-  },
-  {
-    name: "8",
-    suit: "hearts",
-    score: 8,
-  },
-  {
-    name: "9",
-    suit: "hearts",
-    score: 9,
-  },
-  {
-    name: "10",
-    suit: "hearts",
-    score: 10,
-  },
-  {
-    name: "jack",
-    suit: "hearts",
-    score: 10,
-  },
-  {
-    name: "queen",
-    suit: "hearts",
-    score: 10,
-  },
-  {
-    name: "king",
-    suit: "hearts",
-    score: 10,
-  },
-  {
-    name: "ace",
-    suit: "diamonds",
-    score: 1,
-  },
-  {
-    name: "2",
-    suit: "diamonds",
-    score: 2,
-  },
-  {
-    name: "3",
-    suit: "diamonds",
-    score: 3,
-  },
-  {
-    name: "4",
-    suit: "diamonds",
-    score: 4,
-  },
-  {
-    name: "5",
-    suit: "diamonds",
-    score: 5,
-  },
-  {
-    name: "6",
-    suit: "diamonds",
-    score: 6,
-  },
-  {
-    name: "7",
-    suit: "diamonds",
-    score: 7,
-  },
-  {
-    name: "8",
-    suit: "diamonds",
-    score: 8,
-  },
-  {
-    name: "9",
-    suit: "diamonds",
-    score: 9,
-  },
-  {
-    name: "10",
-    suit: "diamonds",
-    score: 10,
-  },
-  {
-    name: "jack",
-    suit: "diamonds",
-    score: 10,
-  },
-  {
-    name: "queen",
-    suit: "diamonds",
-    score: 10,
-  },
-  {
-    name: "king",
-    suit: "diamonds",
-    score: 10,
-  },
-  {
-    name: "ace",
-    suit: "clubs",
-    score: 1,
-  },
-  {
-    name: "2",
-    suit: "clubs",
-    score: 2,
-  },
-  {
-    name: "3",
-    suit: "clubs",
-    score: 3,
-  },
-  {
-    name: "4",
-    suit: "clubs",
-    score: 4,
-  },
-  {
-    name: "5",
-    suit: "clubs",
-    score: 5,
-  },
-  {
-    name: "6",
-    suit: "clubs",
-    score: 6,
-  },
-  {
-    name: "7",
-    suit: "clubs",
-    score: 7,
-  },
-  {
-    name: "8",
-    suit: "clubs",
-    score: 8,
-  },
-  {
-    name: "9",
-    suit: "clubs",
-    score: 9,
-  },
-  {
-    name: "10",
-    suit: "clubs",
-    score: 10,
-  },
-  {
-    name: "jack",
-    suit: "clubs",
-    score: 10,
-  },
-  {
-    name: "queen",
-    suit: "clubs",
-    score: 10,
-  },
-  {
-    name: "king",
-    suit: "clubs",
-    score: 10,
-  },
-  {
-    name: "ace",
-    suit: "spades",
-    score: 1,
-  },
-  {
-    name: "2",
-    suit: "spades",
-    score: 2,
-  },
-  {
-    name: "3",
-    suit: "spades",
-    score: 3,
-  },
-  {
-    name: "4",
-    suit: "spades",
-    score: 4,
-  },
-  {
-    name: "5",
-    suit: "spades",
-    score: 5,
-  },
-  {
-    name: "6",
-    suit: "spades",
-    score: 6,
-  },
-  {
-    name: "7",
-    suit: "spades",
-    score: 7,
-  },
-  {
-    name: "8",
-    suit: "spades",
-    score: 8,
-  },
-  {
-    name: "9",
-    suit: "spades",
-    score: 9,
-  },
-  {
-    name: "10",
-    suit: "spades",
-    score: 10,
-  },
-  {
-    name: "jack",
-    suit: "spades",
-    score: 10,
-  },
-  {
-    name: "queen",
-    suit: "spades",
-    score: 10,
-  },
-  {
-    name: "king",
-    suit: "spades",
-    score: 10,
-  },
-];
+var deck = [];
 var shuffledDeck;
 var gameBustScore = 21;
 var gameMode = "shuffled cards";
@@ -277,6 +16,8 @@ var playerCurrentCardScore = 0;
 
 var main = function (input) {
   var myOutputValue = 1;
+
+  makeDeck(); // this works
 
   if (gameMode == "shuffled cards") {
     shuffledDeck = shuffleCards(deck);
@@ -369,6 +110,50 @@ var shuffleCards = function (cardDeck) {
 // Get a random index ranging from 0 (inclusive) to max (exclusive).
 var getRandomIndex = function (max) {
   return Math.floor(Math.random() * max);
+};
+
+var makeDeck = function () {
+  // suits
+  var suits = ["diamonds", "hearts", "clubs", "spades"];
+  var suitsIndex = 0;
+  while (suitsIndex < suits.length) {
+    var currentSuit = suits[suitsIndex];
+    var currentName = "";
+    var currentScore = "";
+    // name ace,2,3,4,5,6,7,8,9,10,jack,queen,king
+    // score
+
+    var nameIndex = 1;
+    while (nameIndex < 14) {
+      currentName = nameIndex;
+      currentScore = nameIndex;
+
+      if (nameIndex == 1) {
+        currentName = "ace";
+      } else if (nameIndex == 11) {
+        currentName = "jack";
+        currentScore = 10;
+      } else if (nameIndex == 12) {
+        currentName = "queen";
+        currentScore = 10;
+      } else if (nameIndex == 13) {
+        currentName = "king";
+        currentScore = 10;
+      }
+
+      var currentCard = {
+        suits: suits[suitsIndex],
+        name: currentName,
+        score: currentScore,
+      };
+
+      deck.push(currentCard);
+
+      nameIndex = nameIndex + 1;
+    }
+
+    suitsIndex = suitsIndex + 1;
+  }
 };
 
 // 20230607 decided not to use this function
