@@ -95,6 +95,7 @@ let dealCards = () => {
 			playerHandFormat += `${playerHand[i].name}${playerHand[i].suit}\t\t\t\t\t\t\t`;
 			dealerHandFormat += `${dealerHand[i].name}${dealerHand[i].suit}\t\t\t\t\t\t\t`;
 	}
+	evaluateValues()
 	document.getElementById("deal-button").disabled = true
 	document.getElementById("hit-button").disabled = false;
   document.getElementById("stand-button").disabled = false;
@@ -192,6 +193,8 @@ let bustOr21 = (handValue) => {
 		document.getElementById("pg2").innerHTML = `${whoseTurn} busts! <br> game will reset in a while`;
 	}
 	else if (handValue == 21){
+		document.getElementById("hit-button").disabled = true;
+		document.getElementById("stand-button").disabled = true;
 		setTimeout(reset, 5000);
 		console.log(`${whoseTurn} won!!`);
 		document.getElementById("pg2").innerHTML = `${whoseTurn} won!!`;
