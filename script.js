@@ -40,7 +40,7 @@ var computerCardDeck = [
   {
     name: "Queen",
     suits: "Hearts",
-    score: 10,
+    score: 12,
   },
 ];
 // var computerCardDeck = []
