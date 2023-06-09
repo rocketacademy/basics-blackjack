@@ -160,7 +160,7 @@
 
   <body>
     <h1 class="header">Rocket Academy</h1>
-    <h1 class="header">Blackjack real thing</h1>
+    <h1 class="header">Blackjack real thingvs</h1>
     <div id="container">
       <p>Input:</p>
       <input id="input-field" />
@@ -176,7 +176,7 @@
       var deal = document.querySelector("#deal-button");
       deal.addEventListener("click", function () {
         // Set result to input value
-        var input = deal;
+        var input = document.querySelector("#input-field");
         var result = main(input.value);
 
         // Display result in output element
