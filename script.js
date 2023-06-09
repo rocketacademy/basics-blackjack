@@ -25,40 +25,42 @@
 //     score: 10,
 //   },
 // ];
-
+// console.log(hardCodedDeck);
+// shuffledDeck = shuffleCards(hardCodedDeck);
 var deck = [];
 var shuffledDeck;
 var gameBustScore = 22;
 var gameMode = "shuffled cards";
-var numberOfCardsToDraw;
-var computerCardDeck = [
-  {
-    name: "Jack",
-    suits: "Hearts",
-    score: 10,
-  },
-  {
-    name: "Queen",
-    suits: "Hearts",
-    score: 12,
-  },
-];
-// var computerCardDeck = []
+var numberOfCardsToDrawForComputer;
+// var computerCardDeck = [
+//   {
+//     name: "2",
+//     suits: "Hearts",
+//     score: 12,
+//   },
+//   {
+//     name: "3",
+//     suits: "Hearts",
+//     score: 13,
+//   },
+// ];
+var computerCardDeck = [];
 var doesComputerCardDeckHaveAce = false;
 var computerCurrentCardScore = 0;
-var playerCardDeck = [
-  {
-    name: "Ace",
-    suits: "hearts",
-    score: 1,
-  },
-  {
-    name: "10",
-    suits: "Hearts",
-    score: 10,
-  },
-];
-// var playerCardDeck = []
+var numberOfCardsToDrawForPlayer;
+// var playerCardDeck = [
+//   {
+//     name: "Ace",
+//     suits: "hearts",
+//     score: 1,
+//   },
+//   {
+//     name: "10",
+//     suits: "Hearts",
+//     score: 10,
+//   },
+// ];
+var playerCardDeck = [];
 var doesPlayerCardDeckHaveAce = false;
 var playerCurrentCardScore = 0;
 
@@ -66,14 +68,12 @@ var playerCurrentCardScore = 0;
 // jack, queen and king are scored 10
 // ace can be scored 1 or 11
 
-var main = function (input) {
-  var myOutputValue = 1;
-  // console.log(hardCodedDeck);
+var playerMain = function (input) {
+  var myOutputValue = "playerMain";
   var inputLowerCase = input.toLowerCase();
 
   if (gameMode == "shuffled cards") {
     makeDeck();
-    // shuffledDeck = shuffleCards(hardCodedDeck);
     shuffledDeck = shuffleCards(deck);
     gameMode = "compare card score";
     // console.log(shuffledDeck);
@@ -81,33 +81,52 @@ var main = function (input) {
 
   if (gameMode == "compare card score") {
     // assign 2 cards to computer
-    numberOfCardsToDraw = 2;
-    for (let i = 0; i < numberOfCardsToDraw; i++) {
+    numberOfCardsToDrawForComputer = 2;
+    for (let i = 0; i < numberOfCardsToDrawForComputer; i++) {
       var currentCard = shuffledDeck.pop();
-      // computerCardDeck.push(currentCard);
+      computerCardDeck.push(currentCard);
       doesComputerCardDeckHaveAce = checkForAce(currentCard);
     }
 
     // assign 2 cards to player
-    for (let i = 0; i < numberOfCardsToDraw; i++) {
+    numberOfCardsToDrawForPlayer = 2;
+    for (let i = 0; i < numberOfCardsToDrawForPlayer; i++) {
       var currentCard = shuffledDeck.pop();
-      // playerCardDeck.push(currentCard);
+      playerCardDeck.push(currentCard);
       doesPlayerCardDeckHaveAce = checkForAce(currentCard);
     }
 
-    calculateComputerScore(numberOfCardsToDraw);
-    calculatePlayerScore(numberOfCardsToDraw);
+    calculateComputerScore(numberOfCardsToDrawForComputer);
+    calculatePlayerScore(numberOfCardsToDrawForPlayer);
 
     // in the event player reaches 21 with 2 cards, i.e. ACE + JACK/QUEEN/KING, declare player as winner
     if (playerCurrentCardScore == 21) {
-      // if computer score less than 21, draw
+      // if computer score less than 21, prompt computer to draw
       if (computerCurrentCardScore < 21) {
+        myOutputValue =
+          playerCardMessage() +
+          playerScoreMessage() +
+          "<br><br>" +
+          computerCardMessage() +
+          "<br><br>" +
+          computerScoreMessage() +
+          promptComputerDrawCardMessage();
+        gameMode = "await dealer hit or stand";
+        return myOutputValue;
       }
       // if computer score more than 21, show player won message
       if (computerCurrentCardScore > 21) {
-        myOutputValue = messageWhenPlayerHit21ComputerHitMoreThan21();
+        myOutputValue =
+          messageWhenPlayerHit21ComputerHitMoreThan21() + resetGameMessage();
+        gameMode = "end of game submit to restart";
+        return myOutputValue;
       }
       // if computer score also equal 21, show tie message
+      if (computerCurrentCardScore == 21) {
+        myOutputValue = checkWhoWon();
+        gameMode = "end of game submit to restart";
+        return myOutputValue;
+      }
     } else {
       // in the event player didn't reach 21 with 2 cards, i.e. ACE + JACK/QUEEN/KING, proceed to prompt to submit "hit" or "stand"
       // "hit" means that I want more cards, "stand" means don't want
@@ -117,7 +136,9 @@ var main = function (input) {
 
   if (gameMode == "1st prompt player to hit or stand") {
     myOutputValue =
-      playerCardMessage() + playerScoreMessage() + promptDrawCardMessage();
+      playerCardMessage() +
+      playerScoreMessage() +
+      promptPlayerDrawCardMessage();
     gameMode = "await player hit or stand";
     // console.log("Yes, I only expect this to happen 1 time.");
     // console.log(gameMode);
@@ -134,40 +155,66 @@ var main = function (input) {
         promptErrorDrawCardMessage() +
         playerCardMessage() +
         playerScoreMessage() +
-        promptDrawCardMessage();
+        promptPlayerDrawCardMessage();
+      return myOutputValue;
     }
 
-    // if player stand, calculate score and display who won
+    // if player stand, calculate player score
     if (inputLowerCase == "stand") {
-      myOutputValue = checkWhoWon();
-      gameMode = "end of game submit to restart";
-      return myOutputValue;
+      // check if computer score bust, if yes, display player won
+      if (computerCurrentCardScore >= 22) {
+        console.log("Yes, I expect this to happen when dealer bust.");
+        myOutputValue =
+          playerCardMessage() +
+          playerScoreMessage() +
+          "<br><br>" +
+          computerCardMessage() +
+          "<br><br>" +
+          computerScoreMessage() +
+          computerBust21() +
+          resetGameMessage();
+        return myOutputValue;
+      }
+      // check if player score bigger than computer score, if yes, prompt dealer to draw
+      if (playerCurrentCardScore >= computerCurrentCardScore) {
+        myOutputValue = "Prompt dealer to draw";
+        gameMode = "await dealer hit or stand";
+        return myOutputValue; // continue to work on myoutputvalue
+      }
+      // check if player score bigger than computer score, if no, proceed to check who won
+      if (playerCurrentCardScore < computerCurrentCardScore) {
+        myOutputValue = checkWhoWon();
+        gameMode = "end of game submit to restart";
+        return myOutputValue; // this works
+      }
     }
 
     // determine if bust
     // if yes, display player lost
-    // if no, set gameMode to prompt player to submit
+    // if no, set gameMode to await player hit or stand
     if (inputLowerCase == "hit") {
       // if player hit, assign 1 more card
       var currentCard = shuffledDeck.pop();
       playerCardDeck.push(currentCard);
       doesPlayerCardDeckHaveAce = checkForAce(currentCard);
       // calculate score
-      numberOfCardsToDraw = numberOfCardsToDraw + 1;
-      calculatePlayerScore(numberOfCardsToDraw);
+      numberOfCardsToDrawForPlayer = numberOfCardsToDrawForPlayer + 1;
+      calculatePlayerScore(numberOfCardsToDrawForPlayer);
 
-      // if 3rd card never, gameMode = prompt player to submit
+      // if 3rd card never, gameMode = await player hit or stand
       if (playerCurrentCardScore < gameBustScore) {
         gameMode = "await player hit or stand";
         myOutputValue =
-          playerCardMessage() + playerScoreMessage() + promptDrawCardMessage();
+          playerCardMessage() +
+          playerScoreMessage() +
+          promptPlayerDrawCardMessage();
         return myOutputValue;
       }
 
       // if 3rd card BUST, check if there's ACE
       // if 3rd card BUST, NO ACE
       // if 3rd card BUST, display player lost, rest game
-      if (playerCurrentCardScore > gameBustScore) {
+      if (playerCurrentCardScore >= gameBustScore) {
         myOutputValue =
           playerCardMessage() +
           playerScoreMessage() +
@@ -185,28 +232,138 @@ var main = function (input) {
   }
 
   if (gameMode == "end of game submit to restart") {
-    console.log("Yes, I expect this to appear when I restart.");
-    deck = [];
-    shuffledDeck = [];
-    gameMode = "shuffled cards";
-    numberOfCardsToDraw = 0;
-    computerCardDeck = [];
-    doesComputerCardDeckHaveAce = false;
-    computerCurrentCardScore = 0;
-    playerCardDeck = [];
-    doesPlayerCardDeckHaveAce = false;
-    playerCurrentCardScore = 0;
-    myOutputValue = "Game's been reset! Click Submit to deal again.";
-    return myOutputValue;
+    // console.log("Yes, I expect this to appear when I restart.");
+    // deck = [];
+    // shuffledDeck = [];
+    // gameMode = "shuffled cards";
+    // numberOfCardsToDrawForComputer = 0;
+    // computerCardDeck = [];
+    // doesComputerCardDeckHaveAce = false;
+    // computerCurrentCardScore = 0;
+    // numberOfCardsToDrawForPlayer = 0;
+    // // playerCardDeck = [];
+    // doesPlayerCardDeckHaveAce = false;
+    // playerCurrentCardScore = 0;
+    // myOutputValue = "Game's been reset! Click Submit to deal again.";
+    return resetEntireGame();
   }
 
-  console.log("Console's here!");
-  consolelog();
   return myOutputValue;
 };
 
+var dealerMain = function (input) {
+  var myOutputValue = "dealerMain";
+  var inputLowerCase = input.toLowerCase();
+  if (gameMode == "await dealer hit or stand") {
+    if (
+      inputLowerCase !== "hit" &&
+      inputLowerCase !== "stand" &&
+      inputLowerCase == ""
+    ) {
+      myOutputValue =
+        promptErrorDrawCardMessage() +
+        playerCardMessage() +
+        playerScoreMessage() +
+        "<br><br>" +
+        computerCardMessage() +
+        "<br><br>" +
+        computerScoreMessage() +
+        promptComputerDrawCardMessage();
+      return myOutputValue;
+    } // this works
+
+    // if computer stand, calculate score and display who won
+    if (inputLowerCase == "stand") {
+      myOutputValue = checkWhoWon();
+      gameMode = "end of game submit to restart";
+      return myOutputValue;
+    }
+
+    if (inputLowerCase == "hit") {
+      // if computer hit, assign 1 more card
+      var currentCard = shuffledDeck.pop();
+      // var currentCard = {
+      //   name: "Ace",
+      //   suits: "Hearts",
+      //   score: 1,
+      // };
+      computerCardDeck.push(currentCard);
+      doesComputerCardDeckHaveAce = checkForAce(currentCard);
+      // calculate score
+      numberOfCardsToDrawForComputer = numberOfCardsToDrawForComputer + 1;
+      calculateComputerScore(numberOfCardsToDrawForComputer);
+
+      // if 3rd card never BUST, gameMode = await dealer hit or stand
+      if (computerCurrentCardScore <= 20) {
+        gameMode = "await dealer hit or stand";
+        myOutputValue =
+          playerCardMessage() +
+          playerScoreMessage() +
+          "<br><br>" +
+          computerCardMessage() +
+          "<br><br>" +
+          computerScoreMessage() +
+          promptComputerDrawCardMessage();
+        console.log("Console's here!");
+        consolelog();
+        return myOutputValue;
+      }
+      // if 3rd card never BUST and also 21, show tie message
+      if (computerCurrentCardScore == 21) {
+        myOutputValue = checkWhoWon();
+        gameMode = "end of game submit to restart";
+        return myOutputValue;
+      }
+
+      // if 3rd card BUST, check if there's ACE
+      // if 3rd card BUST, NO ACE
+      // if 3rd card BUST, display player lost, rest game
+      if (computerCurrentCardScore >= 22) {
+        console.log("Yes, I expect this to happen when dealer bust.");
+        myOutputValue =
+          playerCardMessage() +
+          playerScoreMessage() +
+          "<br><br>" +
+          computerCardMessage() +
+          "<br><br>" +
+          computerScoreMessage() +
+          computerBust21() +
+          resetGameMessage();
+        gameMode = "end of game submit to restart";
+        return myOutputValue;
+      }
+    }
+  }
+
+  if (gameMode == "end of game submit to restart") {
+    return resetEntireGame();
+  }
+
+  return myOutputValue;
+};
+
+var resetEntireGame = function () {
+  console.log("Yes, I expect this to appear when I restart.");
+  deck = [];
+  shuffledDeck = [];
+  gameMode = "shuffled cards";
+  numberOfCardsToDrawForComputer = 0;
+  computerCardDeck = [];
+  doesComputerCardDeckHaveAce = false;
+  computerCurrentCardScore = 0;
+  numberOfCardsToDrawForPlayer = 0;
+  // playerCardDeck = [];
+  doesPlayerCardDeckHaveAce = false;
+  playerCurrentCardScore = 0;
+  return "Game's been reset! Player, please click Submit to deal again.";
+};
+
 var resetGameMessage = function () {
-  return "<br><br>Good game! Play your next round by clicking the Submit button.";
+  return "<br><br>Good game! Play your next round by clicking the Player Submit button.";
+};
+
+var computerBust21 = function () {
+  return "<br><br>Dealer, you busted!";
 };
 
 var playerBust21 = function () {
@@ -254,6 +411,10 @@ var checkWhoWon = function () {
   }
 };
 
+var promptComputerDrawCardMessage = function () {
+  return "<br><br>Dealer, would you like to draw 1 more card to your deck?<br><br>If yes, please input 'Hit'.<br><br>If not, please input 'Stand'.";
+};
+
 var computerScoreMessage = function () {
   if (doesComputerCardDeckHaveAce && computerCurrentCardScore == 21) {
     return "Dealer's score: Won by Black Jack";
@@ -277,8 +438,8 @@ var promptErrorDrawCardMessage = function () {
   return "You have entered an unexpected input.<br><br>";
 };
 
-var promptDrawCardMessage = function () {
-  return "<br><br>Would you like to draw 1 more card to your deck?<br><br>If yes, please input 'Hit'.<br><br>If not, please input 'Stand'.";
+var promptPlayerDrawCardMessage = function () {
+  return "<br><br>Player, would you like to draw 1 more card to your deck?<br><br>If yes, please input 'Hit'.<br><br>If not, please input 'Stand'.";
 };
 
 var playerScoreMessage = function () {
@@ -322,8 +483,6 @@ var calculatePlayerScore = function (numberOfCardsToDraw) {
     }
     playerCurrentCardScore = playerCurrentCardScore + playerCardDeck[i].score;
   }
-  // use this when I need to hard code player score
-  // playerCurrentCardScore = 21;
 };
 
 var calculateComputerScore = function (numberOfCardsToDraw) {
@@ -331,7 +490,11 @@ var calculateComputerScore = function (numberOfCardsToDraw) {
   // calculate computer card score
   for (let i = 0; i < numberOfCardsToDraw; i++) {
     // if computer has ACE in 2 cards, score of ACE increase to 11
-    if (computerCardDeck[i].name == "Ace" && gameMode == "compare card score") {
+    if (
+      (computerCardDeck[i].name == "Ace" && gameMode == "compare card score") ||
+      (computerCardDeck[i].name == "Ace" &&
+        gameMode == "await dealer hit or stand")
+    ) {
       computerCardDeck[i].score = 11;
     }
     computerCurrentCardScore =
@@ -380,7 +543,7 @@ var getRandomIndex = function (max) {
 var makeDeck = function () {
   // suits
   var suits = ["Diamonds", "Hearts", "Clubs", "Spades"];
-  var suitsIndex = 3;
+  var suitsIndex = 0;
   while (suitsIndex < suits.length) {
     var currentSuit = suits[suitsIndex];
     var currentName = "";
@@ -422,16 +585,21 @@ var makeDeck = function () {
 };
 
 var consolelog = function () {
-  console.log("computerCardDeck: ");
+  console.log("computerCardDeck:");
   console.log(computerCardDeck);
+  console.log("doesComputerCardDeckHaveAce:");
   console.log(doesComputerCardDeckHaveAce);
+  console.log("computerCurrentCardScore:");
   console.log(computerCurrentCardScore);
 
-  console.log("playerCardDeck: ");
+  console.log("playerCardDeck:");
   console.log(playerCardDeck);
+  console.log("doesPlayerCardDeckHaveAce:");
   console.log(doesPlayerCardDeckHaveAce);
+  console.log("playerCurrentCardScore:");
   console.log(playerCurrentCardScore);
 
+  console.log("gameMode:");
   console.log(gameMode);
 };
 
