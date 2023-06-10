@@ -129,8 +129,8 @@ var main = function (input) {
   var myOutputValue = "Here you go:";
   // Start the game
   if (gameMode === GAME_MODE_START) {
-    //playerHand = [];
-    //dealerHand = [];
+    playerHand = [];
+    dealerHand = [];
     // Draw 4 cards from the top of the deck
     var userCard1 = shuffledDeck.pop();
     var computerCard1 = shuffledDeck.pop();
