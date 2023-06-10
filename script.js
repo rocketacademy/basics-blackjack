@@ -362,7 +362,7 @@ var dealerMain = function (input) {
       calculateComputerScore(numberOfCardsToDrawForComputer);
 
       // if 3rd card never BUST, gameMode = await dealer hit or stand
-      if (computerCurrentCardScore <= 20) {
+      if (computerCurrentCardScore <= playerCurrentCardScore) {
         myOutputValue =
           playerCardMessage() +
           "<br><br>" +
@@ -374,14 +374,7 @@ var dealerMain = function (input) {
           "<br><br>" +
           promptComputerDrawCardMessage();
         gameMode = "await dealer hit or stand";
-        console.log("<=20");
-        return myOutputValue;
-      }
-      // if 3rd card never BUST and also 21, show tie message
-      if (computerCurrentCardScore == 21) {
-        myOutputValue = checkWhoWon();
-        gameMode = "end of game submit to restart";
-        console.log("==21");
+        console.log("<= playerCurrentCardScore");
         return myOutputValue;
       }
 
@@ -405,11 +398,26 @@ var dealerMain = function (input) {
         console.log(">= gameBustScore");
         return myOutputValue;
       }
+
+      // if 3rd card never BUST and also 21, show tie message
+      if (
+        computerCurrentCardScore >= playerCurrentCardScore ||
+        computerCurrentCardScore == 21
+      ) {
+        myOutputValue = checkWhoWon();
+        gameMode = "end of game submit to restart";
+        console.log(">= playerCurrentCardScore || ==21");
+        return myOutputValue;
+      }
     }
   }
 
   if (gameMode == "end of game submit to restart") {
     return resetEntireGame();
+  }
+
+  if (gameMode == "shuffled cards") {
+    return playerMain("");
   }
 
   return myOutputValue;
@@ -433,7 +441,7 @@ var resetEntireGame = function () {
 };
 
 var resetGameMessage = function () {
-  return "Good game! Play your next round by clicking the Player Submit button.";
+  return "Play your next round by clicking the Player Submit button.";
 };
 
 var computerBust21 = function () {
@@ -500,14 +508,10 @@ var computerScoreMessage = function () {
 };
 
 var computerCardMessage = function () {
-  let message = "Dealer hand: ";
+  let message = "Dealer has: ";
   for (let i = 0; i < computerCardDeck.length; i++) {
     message =
-      message +
-      computerCardDeck[i].name +
-      " of " +
-      computerCardDeck[i].suits +
-      ", ";
+      message + computerCardDeck[i].name + computerCardDeck[i].suits + ", ";
   }
   return message;
 };
@@ -524,18 +528,13 @@ var playerScoreMessage = function () {
   // if (doesPlayerCardDeckHaveAce && playerCurrentCardScore == 21) {
   //   return "Player's score: Won by Black Jack";
   // } else
-  return "Player's score: " + playerCurrentCardScore;
+  return "Your score: " + playerCurrentCardScore;
 };
 
 var playerCardMessage = function () {
-  let message = "Player hand: ";
+  let message = "Player, here's what you've now: ";
   for (let i = 0; i < playerCardDeck.length; i++) {
-    message =
-      message +
-      playerCardDeck[i].name +
-      " of " +
-      playerCardDeck[i].suits +
-      ", ";
+    message = message + playerCardDeck[i].name + playerCardDeck[i].suits + ", ";
   }
   return message;
 };
@@ -676,7 +675,7 @@ var getRandomIndex = function (max) {
 
 var makeDeck = function () {
   // suits
-  var suits = ["Diamonds", "Hearts", "Clubs", "Spades"];
+  var suits = ["♢", "♡", "♧", "♤"];
   var suitsIndex = 0;
   while (suitsIndex < suits.length) {
     var currentSuit = suits[suitsIndex];
