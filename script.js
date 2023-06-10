@@ -82,7 +82,7 @@ var shuffleCards = function (cardDeck) {
 };
 
 // *****************************************//
-// Function to calculate the score of a hand
+// Calculate the score of a hand
 function getScore(hand) {
   var score = 0;
   var hasAce = false;
@@ -122,6 +122,7 @@ var dealerScore;
 // *****************************************//
 // Main function
 var main = function (input) {
+  // generate the deck and shuffule it
   var deck = makeDeck();
   var shuffledDeck = shuffleCards(deck);
 
