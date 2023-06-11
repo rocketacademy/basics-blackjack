@@ -92,29 +92,34 @@
       }
 
       body {
-        font-family: "Open Sans", sans-serif;
+        font-family: sans-serif;
         margin-left: 30px;
         margin-right: 30px;
-        background-color: white;
-        color: black; /* sets the font color */
-        background-image: url(""); /* The image used */
-        background-position: center; /* Center the image */
-        background-repeat: no-repeat; /* Do not repeat the image */
-        background-size: cover; /* Resize the background image to cover the entire container */
       }
 
-      #output-div img {
-        display: block;
-        max-width: 100%;
-        max-height: 200px;
-      }
-      .header {
+      #header {
         text-align: center;
-        font-size: 1.1rem;
-        margin-bottom: 3rem;
       }
 
-      #container {
+      p {
+        font-size: 100%;
+      }
+
+      #dealer-container {
+        background-color: pink;
+        margin: 40px auto;
+        max-width: 800px;
+        padding: 38px 31px;
+      }
+
+      #msg-container {
+        background-color: pink;
+        margin: 40px auto;
+        max-width: 800px;
+        padding: 38px 31px;
+      }
+
+      #player-container {
         background-color: pink;
         margin: 40px auto;
         max-width: 800px;
@@ -136,6 +141,30 @@
         padding: 0 6px;
       }
 
+      .play-buttons {
+        display: none;
+      }
+
+      #dealer-out {
+        background-color: lightgrey;
+        margin: 20px auto;
+        padding: 20px;
+        width: 100%;
+      }
+
+      .circle {
+        background-color: lightgrey;
+        margin: auto;
+        padding: 20px;
+        width: 50px;
+        height: 50px;
+        border-radius: 25px;
+        font-weight: bold;
+        text-align: center;
+        color: black;
+        float: right;
+      }
+
       #output-div {
         background-color: lightgrey;
         margin: 20px auto;
@@ -143,62 +172,119 @@
         width: 100%;
       }
 
-      .logo-img {
-        height: 49px;
-        position: relative;
-        top: 22px;
+      #player-out {
+        background-color: lightgrey;
+        margin: 20px auto;
+        padding: 20px;
+        width: 100%;
       }
 
-      /* increase header font size on wider screens */
-      @media screen and (min-width: 600px) {
-        .header {
-          font-size: 2rem;
-        }
+      .centralize {
+        text-align: center;
       }
     </style>
   </head>
 
   <body>
-    <h1 class="header">Rocket Academy</h1>
-    <h1 class="header">Blackjack real thing</h1>
-    <div id="container">
-      <p>Input:</p>
-      <input id="input-field" />
+    <h1 id="header">Blackjack Academy</h1>
+    <!--Dealer's Div Start-->
+    <div id="dealer-container">
+      <div id="dealer-total" class="circle"></div>
+      <p>Dealer's Hand:</p>
       <br />
-      <button id="deal-button">Deal</button>
-      <p>Output:</p>
-      <div id="output-div">Feeling lucky? Click Deal to test your luck.</div>
+      <div id="dealer-out" class="centralize"></div>
     </div>
-    <!-- Import program logic -->
+    <!--Dealer's Div End-->
+
+    <!--Message Div Start-->
+    <div id="msg-container">
+      <div id="output-div" class="centralize">
+        Hello Player.<br /><br />Wanna tell me you name?
+      </div>
+    </div>
+    <!--Message Div End-->
+
+    <!--Player's Div Start-->
+    <div id="player-container">
+      <input
+        id="input-field"
+        placeholder="Enter Name"
+        onkeypress="inputPlaceholder()"
+      />
+
+      <button id="deal-button" class="play-buttons" value="hit">Deal</button>
+
+      <button id="stand-button" class="play-buttons" value="stand">
+        Stand
+      </button>
+      <br />
+      <div id="player-total" class="circle"></div>
+      <p id="player-name"></p>
+      <br /><br />
+      <div id="player-out" class="centralize"></div>
+    </div>
+    <!--Player's Div End-->
+
+    <!--script-->
     <script src="script.js"></script>
-    <!-- Define button click functionality -->
     <script>
-      var deal = document.querySelector("#deal-button");
-      deal.addEventListener("click", function () {
-        // Set result to input value
-        var input = document.querySelector("#input-field");
-        var result = main(input.value);
-
-        // Display result in output element
-        var output = document.querySelector("#output-div");
-        output.innerHTML = result;
-
-        // Reset input value
-        input.value = "";
+      document.addEventListener("DOMContentLoaded", function () {
+        document.getElementById("player-total").innerHTML = playerCount();
+        document.getElementById("dealer-total").innerHTML = dealerCount();
+        document.getElementById("player-name").innerHTML = player;
       });
-      input = document.addEventListener("keypress", function () {
-        // If the user presses the "Enter" key on the keyboard
+
+      function inputPlaceholder() {
+        let placeHolder = document.getElementById("input-field").placeholder;
+        if (mode === `new game`) {
+          placeHolder.innerHTML = "Enter Name";
+        }
+        if (mode === 0 || mode === 1) {
+          placeHolder.innerHTML =
+            "Will you <b>Hit</b> or will You <b>Stand</b>?";
+        }
+        if (mode > 1) {
+          placeHolder.innerHTML = "Press Enter to continue.";
+        }
+      }
+
+      // var dealButton = document.getElementById("deal-button");
+      // var standButton = document.getElementById("stand-button");
+
+      // function dealStandInput() {
+      //   if (event.key === "Enter") {
+      //     dealButton.style.display = "block";
+      //     standButton.style.display = "block";
+      //     document.getElementById("input-field").style.display = "none";
+      //   }
+      // }
+
+      // dealButton.addEventListener("click", function () {
+      //   var input = document.getElementById("input-field");
+      //   var result = main(input.value);
+      //   var output = document.getElementById("output-div");
+      //   output.innerHTML = result;
+
+      //   document.getElementById("player-total").innerHTML = playerCount();
+      //   document.getElementById("dealer-total").innerHTML = dealerCount();
+      //   document.getElementById("player-out").innerHTML = playerCards;
+      //   document.getElementById("dealer-out").innerHTML = dealerCards;
+      //   input.value = "";
+      // });
+
+      document.addEventListener("keypress", function () {
         if (event.key === "Enter") {
-          // Set result to input value
-          var input = document.querySelector("#input-field");
-          // Store the output of main() in a new variable
+          var input = document.getElementById("input-field");
           var result = main(input.value);
-
-          // Display result in output element
-          var output = document.querySelector("#output-div");
+          var output = document.getElementById("output-div");
           output.innerHTML = result;
-
-          // Reset input value
+          username = player;
+          document.getElementById("player-total").innerHTML = playerCount();
+          document.getElementById("dealer-total").innerHTML = dealerCount();
+          document.getElementById("player-out").innerHTML = playerCards;
+          document.getElementById("dealer-out").innerHTML = dealerCards;
+          document.getElementById("player-name").innerHTML =
+            player + "'s Hand:";
           input.value = "";
         }
       });

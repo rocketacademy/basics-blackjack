@@ -8,8 +8,8 @@ let playerCards = [];
 let dealerCards = [];
 let playerValues = [];
 let dealerValues = [];
-let player1 = `waiting`;
-let mode = 0;
+let player = "";
+let mode = `new game`;
 //-------Global Variables-------
 
 //-------Helper Functions-------
@@ -86,9 +86,20 @@ const restart = function () {
 
 //-------Game Modes-------
 //-------New Game-------
-const newGame = function () {
+const newGame = function (playerInput) {
+  let firstOutput = `No names then? Okay. Let's just call you Player.`;
+
+  playerInput.trim() !== "" ? (player = playerInput) : (player = "Player");
+  console.log(player);
+
+  if (player != "Player") {
+    firstOutput = `Well hello ${player}.`;
+  }
+
   mode = 0;
-  return `Ready for a new round? Click Deal to get your cards.🃏`;
+  return (
+    firstOutput + `<br>Ready to win some money? Click Deal to get your cards.🃏`
+  );
 };
 //-------New Game-------
 //-------Mode 0-------
@@ -123,7 +134,7 @@ const firstDeal = function (firstCard, secondCard, dealerCard) {
     mode = 2;
     return (
       output1 +
-      `<b>${playerValues[0]} BLACKJACK! ${playerValues[1]}</b><br><br>You win if the dealer doesn't have a <b>BLACKJACK</b>`
+      `${playerValues[0]} <b>BLACKJACK!</b> ${playerValues[1]}<br><br>You win if the dealer doesn't have a <b>BLACKJACK</b>`
     );
   }
 
@@ -238,10 +249,10 @@ const bust = function () {
   //--if player busts
   let suddenOutput1 = `You have a total of ${
     playerCount() - playerValues[playerValues.length - 1]
-  } and you draw a.. ${playerCards[playerCards.length - 1]}...<br><br>`;
+  } and you draw a... ${playerCards[playerCards.length - 1]}...<br><br>`;
   let suddenOutput2 = `Your cards ${playerCards.join(
     "\xa0 "
-  )} give you a total of ${playerCount()} That's a bust. Too bad.💸 Maybe next round?`;
+  )} give you a total of ${playerCount()} That's a bust. Too bad.💸 Maybe next round? Click deal to try again.`;
 
   //--if dealer busts
   if (dealerCount() > 21) {
@@ -256,23 +267,23 @@ const bust = function () {
   }
 
   restart();
-  mode = `new game`;
   return suddenOutput1 + suddenOutput2;
 };
 
 const blackjack = function () {
   //--if player has BLACKJACK and dealer does not
-  let suddenOutput3 = `Your cards  have give you a ${playerCards[0]} BLACKJACK! ${playerCards[1]}<br><br>`;
+  let suddenOutput3 = `Your cards  have given you a ${playerCards[0]} <b>BLACKJACK!</b> ${playerCards[1]}<br><br>`;
   let suddenOutput4 = `The dealer has a ${dealerCards[0]} and they reveal their facedown card to be... ${dealerCards[1]}!<br><br>Dealer doesn't have a <b>BLACKJACK!</b> You Win!💰🤑💰<br><br>Ready to win more? Click deal to start a new round.`;
 
   if (playerValues[0] + playerValues[1] === 21) {
     //--if both have BLACKJACKs
     if (dealerValues[0] + dealerValues[1] === 21) {
-      suddenOutput4 = `The dealer has a ${dealerCards[0]} and they reveal their facedown card to be... ${dealerCards[1]}...<br><br>You both have a <b>BLACKJACK</b> so nobody wins... What are the odds?<br><br>Maybe the next hand will be the winning hand?`;
+      suddenOutput4 = `The dealer has a ${dealerCards[0]} and they reveal their facedown card to be... ${dealerCards[1]}...<br><br>You both have a <b>BLACKJACK</b> so nobody wins... What are the odds?<br><br>Maybe the next hand will be the winning hand? Click deal to try again.`;
     }
+
     //--if dealer immediately cannot get a BLACKJACK
     if (dealerValues[0] < 10) {
-      suddenOutput3 = `The dealer deals you the ${playerCards[0]} and deals themselves the ${dealerCards[0]}.<br><br>You then get a ${playerCards[1]} and the dealer places one card face down for themself.<br><br>Your cards have give you a <b>${playerCards[0]} BLACKJACK! ${playerCards[1]}</b><br><br>`;
+      suddenOutput3 = `The dealer deals you the ${playerCards[0]} and deals themselves the ${dealerCards[0]}.<br><br>You then get a ${playerCards[1]} and the dealer places one card face down for themself.<br><br>Your cards have given you a <b>${playerCards[0]} BLACKJACK! ${playerCards[1]}</b><br><br>`;
       suddenOutput4 = `Dealer's ${dealerCards[0]} cannot give them a <b>BLACKJACK!</b> You Immediately Win!💰🤑💰<br><br>Ready to win more? Click deal to start a new round.`;
     }
   }
@@ -286,13 +297,14 @@ const blackjack = function () {
     suddenOutput4 = `Your ${playerCards} is the losing hand..<br><br>Too bad.💸 Maybe next round?`;
   }
   restart();
-  mode = `new game`;
   return suddenOutput3 + suddenOutput4;
 };
 
+const goAgain = function () {};
+
 const main = function (input) {
   return mode === `new game`
-    ? newGame()
+    ? newGame(input)
     : mode === 0
     ? firstDeal()
     : mode === 1
