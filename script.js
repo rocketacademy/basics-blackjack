@@ -140,18 +140,17 @@ var playerHand = [];
 var dealerHand = [];
 var playerScore;
 var dealerScore;
+var shuffledDeck = [];
 
 // ************ Main function *****************************//
 //
 var main = function (input) {
-  //
-  // generate the deck and shuffule it
-  var deck = makeDeck();
-  var shuffledDeck = shuffleCards(deck);
-
   var myOutputValue = "Here you go:";
   // Start the game
   if (gameMode === GAME_MODE_START) {
+    // generate the deck and shuffule it
+    var deck = makeDeck();
+    shuffledDeck = shuffleCards(deck);
     playerHand = [];
     dealerHand = [];
     // Draw 4 cards from the top of the deck

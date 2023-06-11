@@ -140,8 +140,6 @@ var playerHand = [];
 var dealerHand = [];
 var playerScore;
 var dealerScore;
-// Declare an empty variable to hold deck of cards
-//var gameDeck = [];
 
 // ************ Main function *****************************//
 //
