@@ -10,6 +10,7 @@ let playerValues = [];
 let dealerValues = [];
 let player = "";
 let mode = `new game`;
+let winLoss = 0;
 //-------Global Variables-------
 
 //-------Helper Functions-------
@@ -80,7 +81,8 @@ const restart = function () {
   dealerCards = [];
   playerValues = [];
   dealerValues = [];
-  mode = `new game`;
+  mode = 0;
+  winLoss = 0;
 };
 //-------Helper Functions-------
 
@@ -90,7 +92,6 @@ const newGame = function (playerInput) {
   let firstOutput = `No names then? Okay. Let's just call you Player.`;
 
   playerInput.trim() !== "" ? (player = playerInput) : (player = "Player");
-  console.log(player);
 
   if (player != "Player") {
     firstOutput = `Well hello ${player}.`;
@@ -114,7 +115,7 @@ const firstDeal = function (firstCard, secondCard, dealerCard) {
   playerCards.push(firstCard.name, secondCard.name);
   playerValues.push(firstCard.value, secondCard.value);
   dealerCard = cardCheck();
-  dealerCards.push(dealerCard.name);
+  dealerCards.push(dealerCard.name, "?");
   dealerValues.push(dealerCard.value);
 
   let output1 = `The dealer deals you the ${playerCards[0]} and deals themselves the ${dealerCards}.<br><br>You then get a ${playerCards[1]} and the dealer places one card face down for themself.<br><br>`;
@@ -134,7 +135,7 @@ const firstDeal = function (firstCard, secondCard, dealerCard) {
     mode = 2;
     return (
       output1 +
-      `${playerValues[0]} <b>BLACKJACK!</b> ${playerValues[1]}<br><br>You win if the dealer doesn't have a <b>BLACKJACK</b>`
+      `${playerCards[0]} <b>BLACKJACK!</b> ${playerCards[1]}<br><br>You win if the dealer doesn't have a <b>BLACKJACK</b>`
     );
   }
 
@@ -189,7 +190,9 @@ const playerChoice = function (playerInput) {
 //-------Mode 2-------
 const dealerDraws = function () {
   let dealerCard = cardCheck();
-  dealerCards.push(dealerCard.name);
+  dealerCards[1] === "?"
+    ? (dealerCards[1] = dealerCard.name)
+    : dealerCards.push(dealerCard.name);
   dealerValues.push(dealerCard.value);
 
   if (dealerCount() > 21) {
@@ -224,24 +227,26 @@ const dealerDraws = function () {
 //-------Mode 3-------
 const endResult = function () {
   //--if player wins
-  let finalOutput1 = `The dealer has ${dealerCards.join(
+  let standardOutput1 = `The dealer has ${dealerCards.join(
     "\xa0 "
   )}.<br>Their total count is ${dealerCount()}<br>They will stand here.<br><br>Your cards are ${playerCards.join(
     "\xa0 "
   )}.<br>Your total count is ${playerCount()}.<br><br>`;
-  let finalOutput2 = `You have the higher total. You win!💰🤑💰<br><br>Click deal to start a new round.`;
+  let standardOutput2 = `You have the higher total. You win!💰🤑💰<br><br>Click deal to start a new round.`;
+  playerCount() > dealerCount() ? winLoss++ : winLoss--;
 
   //--if dealer wins
   if (dealerCount() > playerCount()) {
-    finalOutput2 = `Dealer has the higher total. Dealer wins this round.💸<br><br>Maybe the next hand will be the winning hand? Click deal to start a new round.`;
+    standardOutput2 = `Dealer has the higher total. Dealer wins this round.💸<br><br>Maybe the next hand will be the winning hand? Click deal to start a new round.`;
   }
 
   //--tie game
   if (dealerCount() === playerCount()) {
-    finalOutput2 = `You both have the same total. Nobody wins this time.<br><br>Click deal to start a new round.`;
+    standardOutput2 = `You both have the same total. Nobody wins this time.<br><br>Click deal to start a new round.`;
   }
-  restart();
-  return finalOutput1 + finalOutput2;
+
+  mode = 6;
+  return standardOutput1 + standardOutput2;
 };
 //-------Mode 3 End-------
 //-------Mode 4-------
@@ -265,8 +270,8 @@ const bust = function () {
       "\xa0 "
     )}💰🤑💰<br><br>Winner Winner Chicken Dinner!<br><br>Ready to win more? Click deal to start a new round.`;
   }
-
-  restart();
+  playerCount() > 21 ? winLoss-- : winLoss++;
+  mode = 6;
   return suddenOutput1 + suddenOutput2;
 };
 
@@ -296,11 +301,27 @@ const blackjack = function () {
     suddenOutput3 = `Dealer has a ${dealerCards[0]} and they reveal their facedown card to be a... ${dealerCards[1]}!<br><br>Dealer's cards have given them a ${dealerCards[0]} BLACKJACK ${dealerCards[1]}<br><br>`;
     suddenOutput4 = `Your ${playerCards} is the losing hand..<br><br>Too bad.💸 Maybe next round?`;
   }
-  restart();
+  if (playerCount() === 21) {
+    if (dealerCount() === 21) {
+      winLoss--;
+    }
+    if (dealerCount() !== 21) {
+      winLoss++;
+    }
+  }
+  if (playerCount() !== 21) {
+    winLoss--;
+  }
+  mode++;
   return suddenOutput3 + suddenOutput4;
 };
 
-const goAgain = function () {};
+const goAgain = function () {
+  let winTry = ``;
+  winLoss > 0 ? (winTry = `win`) : (winTry = `try`);
+  restart();
+  return `Ready to ${winTry} again?<br>Press the Enter key to continue.`;
+};
 
 const main = function (input) {
   return mode === `new game`
@@ -315,5 +336,7 @@ const main = function (input) {
     ? endResult()
     : mode === 4
     ? bust()
-    : blackjack();
+    : mode === 5
+    ? blackjack()
+    : goAgain();
 };

@@ -281,8 +281,10 @@
           username = player;
           document.getElementById("player-total").innerHTML = playerCount();
           document.getElementById("dealer-total").innerHTML = dealerCount();
-          document.getElementById("player-out").innerHTML = playerCards;
-          document.getElementById("dealer-out").innerHTML = dealerCards;
+          document.getElementById("player-out").innerHTML =
+            playerCards.join(" \xa0");
+          document.getElementById("dealer-out").innerHTML =
+            dealerCards.join(" \xa0");
           document.getElementById("player-name").innerHTML =
             player + "'s Hand:";
           input.value = "";
