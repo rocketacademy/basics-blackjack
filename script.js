@@ -1,5 +1,5 @@
-//**********************************************/
-// Card Deck Generation with Loops
+//****** Card Deck Generation with Loops **********/
+//
 var makeDeck = function () {
   // Initialise an empty deck array
   var cardDeck = [];
@@ -53,8 +53,8 @@ var makeDeck = function () {
   return cardDeck;
 };
 
-// **********************************************//
-// Card Shuffling
+// ********* Card Shuffling ************//
+//
 // Get a random index ranging from 0 (inclusive) to max (exclusive).
 var getRandomIndex = function (max) {
   return Math.floor(Math.random() * max);
@@ -81,8 +81,8 @@ var shuffleCards = function (cardDeck) {
   return cardDeck;
 };
 
-// *****************************************//
-// Calculate the score of a hand
+// ********* Calculate the score of a hand ************//
+//
 function getScore(hand) {
   var score = 0;
   var hasAce = false;
@@ -106,6 +106,28 @@ function getScore(hand) {
   return score;
 }
 
+//  ************ Function that checks a hand for black jack  ************ //
+var checkForBlackJack = function (handArray) {
+  // Loop through player hand
+  // if there is a blackjack return true
+  // else return false
+  var playerCardOne = handArray[0];
+  var playerCardTwo = handArray[1];
+  var isBlackJack = false;
+
+  // Possible black jack scenerios
+  // First card is Ace +  Second card is 10 or suits
+  // Second card is Ace +  First card is 10 or suits
+  if (
+    (playerCardOne.name == "A" && playerCardTwo.rank >= 10) ||
+    (playerCardTwo.name == "A" && playerCardOne.rank >= 10)
+  ) {
+    isBlackJack = true;
+  }
+
+  return isBlackJack;
+};
+
 // *****************************************//
 // Game modes
 var GAME_MODE_START = "GAME_MODE_START";
@@ -119,14 +141,14 @@ var dealerHand = [];
 var playerScore;
 var dealerScore;
 
-// *****************************************//
-// Main function
+// ************ Main function *****************************//
+//
 var main = function (input) {
+  //
   // generate the deck and shuffule it
   var deck = makeDeck();
   var shuffledDeck = shuffleCards(deck);
 
-  //
   var myOutputValue = "Here you go:";
   // Start the game
   if (gameMode === GAME_MODE_START) {
@@ -152,23 +174,94 @@ var main = function (input) {
     console.log("Player's score: " + playerScore);
     console.log("Dealer's score: " + dealerScore);
 
-    myOutputValue =
-      myOutputValue +
-      "<br> --------------------------------------------------" +
-      "<br>As of now, Player drew the cards: " +
-      playerHand +
-      "<br> Player Score is " +
-      playerScore +
-      "<br> --------------------------------------------------" +
-      "<br>As of now, Dealer drew the cards: " +
-      dealerHand +
-      "<br> Dealer Score is " +
-      dealerScore +
-      "<br> --------------------------------------------------" +
-      "<br> Well done, Player! Do you want to hit or stand? Please type in hit or stand to continue!";
+    // check for blackjack
 
-    gameMode = GAME_MODE_PLAYER_HIT_STAND;
+    var userCards = [userCard1, userCard2];
+    console.log(userCards);
+    var computerCards = [computerCard1, computerCard2];
+    console.log(computerCards);
+    var playerHasBlackJack = checkForBlackJack(userCards);
+    var dealerHasBlackJack = checkForBlackJack(computerCards);
 
+    console.log("Does Player have Black Jack? ==>", playerHasBlackJack);
+    console.log("Does Dealer have Black Jack? ==>", dealerHasBlackJack);
+
+    // Condition when either player or dealer has black jack
+    if (playerHasBlackJack == true || dealerHasBlackJack == true) {
+      // Condition where both have black jack
+      if (playerHasBlackJack == true && dealerHasBlackJack == true) {
+        myOutputValue =
+          myOutputValue +
+          "<br> --------------------------------------------------" +
+          "<br>As of now, Player drew the cards: " +
+          playerHand +
+          "<br> Player Score is " +
+          playerScore +
+          "<br> --------------------------------------------------" +
+          "<br>As of now, Dealer drew the cards: " +
+          dealerHand +
+          "<br> Dealer Score is " +
+          dealerScore +
+          "<br> --------------------------------------------------" +
+          "<br>Its a Black Jack Tie!";
+      }
+      // Condition when only player has black jack
+      else if (playerHasBlackJack == true && dealerHasBlackJack == false) {
+        myOutputValue =
+          myOutputValue +
+          "<br> --------------------------------------------------" +
+          "<br>As of now, Player drew the cards: " +
+          playerHand +
+          "<br> Player Score is " +
+          playerScore +
+          "<br> --------------------------------------------------" +
+          "<br>As of now, Dealer drew the cards: " +
+          dealerHand +
+          "<br> Dealer Score is " +
+          dealerScore +
+          "<br> --------------------------------------------------" +
+          "<br>Player wins by Black Jack!";
+      }
+      // Condition when only dealer has black jack
+      else {
+        myOutputValue =
+          myOutputValue +
+          "<br> --------------------------------------------------" +
+          "<br>As of now, Player drew the cards: " +
+          playerHand +
+          "<br> Player Score is " +
+          playerScore +
+          "<br> --------------------------------------------------" +
+          "<br>As of now, Dealer drew the cards: " +
+          dealerHand +
+          "<br> Dealer Score is " +
+          dealerScore +
+          "<br> --------------------------------------------------" +
+          "<br>Dealer wins by Black Jack!";
+      }
+    }
+
+    // Condition where neither player nor dealer has black jack
+    // ask player to input 'hit' or 'stand'
+    else {
+      myOutputValue =
+        myOutputValue +
+        "<br> --------------------------------------------------" +
+        "<br>As of now, Player drew the cards: " +
+        playerHand +
+        "<br> Player Score is " +
+        playerScore +
+        "<br> --------------------------------------------------" +
+        "<br>As of now, Dealer drew the cards: " +
+        dealerHand +
+        "<br> Dealer Score is " +
+        dealerScore +
+        "<br> --------------------------------------------------" +
+        "<br> <br> There are no Black Jacks. Well done, Player! Do you want to hit or stand? Please type in hit or stand to continue!";
+
+      // update gameMode
+      gameMode = GAME_MODE_PLAYER_HIT_STAND;
+    }
     // Return the fully-constructed output string
     return myOutputValue;
   }

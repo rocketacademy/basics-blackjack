@@ -82,7 +82,7 @@ var shuffleCards = function (cardDeck) {
 };
 
 // *****************************************//
-// Function to calculate the score of a hand
+// Calculate the score of a hand
 function getScore(hand) {
   var score = 0;
   var hasAce = false;
@@ -122,15 +122,15 @@ var dealerScore;
 // *****************************************//
 // Main function
 var main = function (input) {
-  var deck = makeDeck();
-  var shuffledDeck = shuffleCards(deck);
-
   //
   var myOutputValue = "Here you go:";
   // Start the game
   if (gameMode === GAME_MODE_START) {
-    //playerHand = [];
-    //dealerHand = [];
+    // generate the deck and shuffule it
+    var deck = makeDeck();
+    var shuffledDeck = shuffleCards(deck);
+    playerHand = [];
+    dealerHand = [];
     // Draw 4 cards from the top of the deck
     var userCard1 = shuffledDeck.pop();
     var computerCard1 = shuffledDeck.pop();
