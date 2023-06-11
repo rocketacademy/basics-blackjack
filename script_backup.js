@@ -250,7 +250,7 @@ var main = function (input) {
         userCards[0].suit +
         " " +
         userCards[0].name +
-        ", " +
+        " and " +
         userCards[1].suit +
         " " +
         userCards[1].name +
@@ -261,7 +261,7 @@ var main = function (input) {
         computerCards[0].suit +
         " " +
         computerCards[0].name +
-        ", " +
+        " and " +
         computerCards[1].suit +
         " " +
         computerCards[1].name +
