@@ -136,6 +136,7 @@ var sumCards = function (inputCards) {
       for (i = 0; i < acePresent; i += 1) {
         sum = sum - 10;
       }
+      acePresent = acePresent - 1;
     }
   }
   return sum;
@@ -147,11 +148,29 @@ var computerPlay = function () {
   }
 };
 
+var resetGame = function () {
+  console.log("executed");
+  stage = "deal";
+  userCards = [];
+  computerCards = [];
+
+  myOutputValue = "";
+  userDrawValue = "You drew: <br>";
+  computerDrawValue = "Computer drew: <br>";
+};
+
 var main = function (input) {
   console.log(userCards);
   console.log(sumCards(userCards));
   console.log(computerCards);
   console.log(sumCards(computerCards));
+  console.log("stage: " + stage);
+
+  if (input == "reset") {
+    resetGame();
+  }
+  console.log("stage: " + stage);
+
   if (stage == "deal") {
     for (i = 0; i < 2; i += 1) {
       userDrawValue = dealCards(userCards, userDrawValue);
@@ -171,7 +190,10 @@ var main = function (input) {
         `<br>COMPUTER BLACKJACK. You lose ):`;
     } else {
       stage = "draw";
-      myOutputValue = userDrawValue + `<br>Input 'hit' or 'stand' to continue.`;
+      myOutputValue =
+        userDrawValue +
+        `You: ${sumCards(userCards)} <br> ` +
+        `<br>Input 'hit' or 'stand' to continue.`;
     }
     return myOutputValue;
   }
@@ -204,13 +226,27 @@ var main = function (input) {
       }
     } else if (input == "stand") {
       computerPlay();
-      if (sumCards(computerCards) > 21) {
+      if (sumCards(userCards) > 21 && sumCards(computerCards) > 21) {
+        myOutputValue =
+          userDrawValue +
+          "<br>" +
+          computerDrawValue +
+          "<br>" +
+          `Both BUST! It's a tie!`;
+      } else if (sumCards(computerCards) > 21) {
         myOutputValue =
           userDrawValue +
           "<br>" +
           computerDrawValue +
           "<br>" +
           `Computer BUST! You win!`;
+      } else if (sumCards(userCards) > 21) {
+        myOutputValue =
+          userDrawValue +
+          "<br>" +
+          computerDrawValue +
+          "<br>" +
+          `You BUST! You lose!`;
       } else if (sumCards(computerCards) > sumCards(userCards)) {
         myOutputValue =
           userDrawValue +
@@ -220,7 +256,7 @@ var main = function (input) {
           `You: ${sumCards(userCards)} <br> Computer:${sumCards(
             computerCards
           )}. <br> Computer wins!`;
-      } else {
+      } else if (sumCards(computerCards) < sumCards(userCards)) {
         myOutputValue =
           userDrawValue +
           "<br>" +
@@ -229,7 +265,17 @@ var main = function (input) {
           `You: ${sumCards(userCards)} <br> Computer: ${sumCards(
             computerCards
           )} <br> You win!`;
+      } else {
+        myOutputValue =
+          userDrawValue +
+          "<br>" +
+          computerDrawValue +
+          "<br>" +
+          `You: ${sumCards(userCards)} <br> Computer: ${sumCards(
+            computerCards
+          )} <br> It's a tie`;
       }
+      return myOutputValue;
     } else return `Input 'hit' or 'stand' to continue.`;
     return myOutputValue;
   }
