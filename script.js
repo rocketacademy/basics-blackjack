@@ -81,11 +81,27 @@ var faceValue = function (playCardGame) {
 };
 
 var addPlayerCard = function (playerCard) {
-  var totalplayerCard = 0;
+  var totalsumA = 0;
+  var totalsumB = 0;
+  var totalSum = 0;
+  var noOfAce = 0;
   for (i = 0; i < playerCard.length; i++) {
-    totalplayerCard = playerCard[i].rank + totalplayerCard;
+    if (playerCard[i].name == "ace" && noOfAce == 0) {
+      playerCard[i].rank = 11;
+      noOfAce += 1;
+    }
+    totalsumA = playerCard[i].rank + totalsumA;
   }
-  return totalplayerCard;
+  for (i = 0; i < playerCard.length; i++) {
+    if (playerCard[i].name == "ace" && noOfAce == 1) {
+      playerCard[i].rank = 1;
+    }
+    totalsumB = playerCard[i].rank + totalsumB;
+  }
+
+  totalSum = Math.max(totalsumA, totalsumB);
+
+  return totalSum;
 };
 
 var checkBlackJack = function (totalplayerCard, totaldealerCard) {
@@ -122,8 +138,15 @@ var m = [];
 var playerDrawCard = function (input) {
   //draw card from deck
   if (input == "1") {
+    m.length = 0; //empty ArrayList first first for new draw
+    message2.length = 0; //empty ArrayList first for new draw
+    console.log(m);
+    console.log(message2);
+    console.log("CardDraw: ", cardDraw);
     playerOneCard.push(playCardGame[cardDraw]);
+    console.log("playcardGame: ", playCardGame[cardDraw]);
     totalplayerOneCard = addPlayerCard(playerOneCard);
+
     for (i = 0; i < playerOneCard.length; i++) {
       m[i] = `<br/> Your Card ${i + 1} ${playerOneCard[i].suit} of ${
         playerOneCard[i].rank
@@ -134,19 +157,29 @@ var playerDrawCard = function (input) {
     message1 =
       `Player, You draw card ${playerOneCard[currentplayOneCardDeck].suit} of ${playerOneCard[currentplayOneCardDeck].rank}` +
       message2.toString() +
-      "<br/> Enter 1 to Re-draw or Enter 2 to Stand?";
+      `<br/>Total Sum: ${totalplayerOneCard}` +
+      `<br/> Enter 1 to Re-draw or Enter 2 to Stand?`;
     cardDraw += 1;
     currentplayOneCardDeck += 1;
   }
 
   if (input == "2") {
-    for (i = 0; i < playerOneCard.length; i++) {
-      m[i] = `<br/> Your Card ${i + 1} ${playerOneCard[i].suit} of ${
-        playerOneCard[i].rank
-      } `;
-      message2.push(m[i]);
-    }
-    message1 = `Player, you choose to Stand, <br/>` + message2.toString();
+    //initalize for two card
+    if (playerOneCard.length < 3) {
+      console.log(playerOneCard.length);
+      for (i = 0; i < playerOneCard.length; i++) {
+        m[i] = `<br/> Your Card ${i + 1} ${playerOneCard[i].suit} of ${
+          playerOneCard[i].rank
+        }`;
+        message2.push(m[i]);
+        message1 =
+          `Player, you choose to Stand, <br/>Total Sum: ${totalplayerOneCard} <br/>` +
+          message2.toString();
+      }
+    } else
+      message1 =
+        `Player, you choose to Stand, <br/> Total Sum: ${totalplayerOneCard} <br/>` +
+        message2.toString();
     gameMode = "dealerDrawCard";
   }
   return message1;
@@ -163,8 +196,22 @@ var totalplayerOneCard = 0;
 var totaldealerCard = 0;
 var outPutMessage = "";
 
+var initalizeAllvariable = function () {
+  m.length = 0;
+  message2.length = 0;
+  playerOneCard.length = 0;
+  playCardGame.length = 0;
+  totalplayerOneCard = 0;
+  totaldealerCard = 0;
+  dealerCard.length = 0;
+  cardDraw = 4;
+  message1 = "";
+  currentplayOneCardDeck = 2;
+};
+
 var main = function (input) {
   if (gameMode === "ShuffleCard") {
+    initalizeAllvariable();
     playCardGame = shuffleCards(makeDeck()); //inital stage
     playCardGame = faceValue(playCardGame); //reset Jacks/Queen/King to rank 10
     //playCardGame = faceValue(playCardGame);
@@ -189,13 +236,19 @@ var main = function (input) {
       //return outPutMessage;
     } //(totalplayerOneCard != 21 || totaldealerCard != 21) {
     else
-      outPutMessage = `Player, your cards are <br/> Card 1: ${playerOneCard[0].suit} of ${playerOneCard[0].rank} <br/> Card 2: ${playerOneCard[1].suit} of ${playerOneCard[1].rank} <br/> Total are ${totalplayerOneCard} <br/> Enter 1 to draw or Enter 2 to Stand?`;
+      outPutMessage = `Player, your cards are <br/> Card 1: ${playerOneCard[0].suit} of ${playerOneCard[0].rank} <br/> Card 2: ${playerOneCard[1].suit} of ${playerOneCard[1].rank} <br/> Total Sum: ${totalplayerOneCard} <br/> Enter 1 to draw or Enter 2 to Stand?`;
     gameMode = "PlayerTurn";
     return outPutMessage;
   }
 
   if (gameMode === "PlayerTurn") {
     outPutMessage = playerDrawCard(input);
+    if (totalplayerOneCard > 21) {
+      var burstMessage = "";
+      burstMessage = "<br/>Player Burst!<br/>";
+      outPutMessage = burstMessage;
+      gameMode = "ShuffleCard";
+    }
     return outPutMessage;
   }
   if (gameMode === "dealerDrawCard") {
