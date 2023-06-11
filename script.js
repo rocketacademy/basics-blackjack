@@ -118,7 +118,7 @@ const firstDeal = function (firstCard, secondCard, dealerCard) {
   dealerCards.push(dealerCard.name, "?");
   dealerValues.push(dealerCard.value);
 
-  let output1 = `The dealer deals you the ${playerCards[0]} and deals themselves the ${dealerCards}.<br><br>You then get a ${playerCards[1]} and the dealer places one card face down for themself.<br><br>`;
+  let output1 = `The dealer deals you the ${playerCards[0]} and deals themselves the ${dealerCards[0]}.<br><br>You then get a ${playerCards[1]} and the dealer places one card face down for themself.<br><br>`;
   let output2 = `Your cards are ${playerCards.join(
     "\xa0 "
   )} with a total count of ${playerCount()}.<br><br>`;
@@ -164,7 +164,9 @@ const playerChoice = function (playerInput) {
       mode = 4;
       return bust();
     }
-    return `The dealer has a ${dealerCards} and one face down card.<br><br>Your cards are ${playerCards.join(
+    return `The dealer has a ${
+      dealerCards[0]
+    } and one face down card.<br><br>Your cards are ${playerCards.join(
       "\xa0 "
     )}.<br>Your total count is ${playerCount()}.<br>Type in 'Hit' to draw another card.<br> Type in 'Stand' to end your turn.`;
   }
@@ -172,7 +174,9 @@ const playerChoice = function (playerInput) {
   //---- if player stands----
   if (playerInput.toLowerCase().trim() === `stand`) {
     mode++;
-    return `The dealer has a ${dealerCards} and one face down card.<br><br>Your cards are ${playerCards.join(
+    return `The dealer has a ${
+      dealerCards[0]
+    } and one face down card.<br><br>Your cards are ${playerCards.join(
       "\xa0 "
     )}.<br>You have chosen to stand with a total of ${playerCount()}.<br><br>The dealer will now draw their cards.`;
   }
@@ -181,7 +185,9 @@ const playerChoice = function (playerInput) {
     playerInput.toLowerCase().trim() !== `stand` ||
     playerInput.toLowerCase().trim() !== `hit`
   ) {
-    return `I'm sorry I don't understand.<br>The dealer has a ${dealerCards} and one face down card.<br><br>Your cards are ${playerCards.join(
+    return `I'm sorry I don't understand.<br>The dealer has a ${
+      dealerCards[0]
+    } and one face down card.<br><br>Your cards are ${playerCards.join(
       "\xa0 "
     )}.<br>Your total count is ${playerCount()}.<br>Type in 'Hit' to draw another card.<br> Type in 'Stand' to end your turn.`;
   }

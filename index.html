@@ -41,7 +41,7 @@
 
     <!-- sharing configuration -->
     <!-- Primary Meta Tags -->
-    <title>Blackjack real thing</title>
+    <title>Fundamental Blackjack</title>
     <meta name="title" content="YOURNAME's BlackJack Game!" />
     <meta name="description" content="A fun card game I made myself! 😄💪🌈" />
 
@@ -86,107 +86,11 @@
     />
 
     <!-- CSS -->
-    <style>
-      * {
-        box-sizing: border-box;
-      }
-
-      body {
-        font-family: sans-serif;
-        margin-left: 30px;
-        margin-right: 30px;
-      }
-
-      #header {
-        text-align: center;
-      }
-
-      p {
-        font-size: 100%;
-      }
-
-      #dealer-container {
-        background-color: pink;
-        margin: 40px auto;
-        max-width: 800px;
-        padding: 38px 31px;
-      }
-
-      #msg-container {
-        background-color: pink;
-        margin: 40px auto;
-        max-width: 800px;
-        padding: 38px 31px;
-      }
-
-      #player-container {
-        background-color: pink;
-        margin: 40px auto;
-        max-width: 800px;
-        padding: 38px 31px;
-      }
-
-      input {
-        font-size: 21px;
-        line-height: 33px;
-        margin: 0 0 23px 0;
-        padding: 0 9px;
-        width: 100%;
-      }
-
-      button {
-        font-size: 21px;
-        line-height: 33px;
-        margin: 0 0 23px 0;
-        padding: 0 6px;
-      }
-
-      .play-buttons {
-        display: none;
-      }
-
-      #dealer-out {
-        background-color: lightgrey;
-        margin: 20px auto;
-        padding: 20px;
-        width: 100%;
-      }
-
-      .circle {
-        background-color: lightgrey;
-        margin: auto;
-        padding: 20px;
-        width: 50px;
-        height: 50px;
-        border-radius: 25px;
-        font-weight: bold;
-        text-align: center;
-        color: black;
-        float: right;
-      }
-
-      #output-div {
-        background-color: lightgrey;
-        margin: 20px auto;
-        padding: 20px;
-        width: 100%;
-      }
-
-      #player-out {
-        background-color: lightgrey;
-        margin: 20px auto;
-        padding: 20px;
-        width: 100%;
-      }
-
-      .centralize {
-        text-align: center;
-      }
-    </style>
+    <link rel="stylesheet" href="style.css" />
   </head>
 
   <body>
-    <h1 id="header">Blackjack Academy</h1>
+    <h1 id="header">Blackjack<br />♦️ ♣️ ♥️ ♠️<br />Academy</h1>
     <!--Dealer's Div Start-->
     <div id="dealer-container">
       <div id="dealer-total" class="circle"></div>
@@ -199,7 +103,7 @@
     <!--Message Div Start-->
     <div id="msg-container">
       <div id="output-div" class="centralize">
-        Hello Player.<br /><br />Wanna tell me you name?
+        Hello Player.<br /><br />Wanna tell me your name?
       </div>
     </div>
     <!--Message Div End-->
@@ -208,7 +112,7 @@
     <div id="player-container">
       <input
         id="input-field"
-        placeholder="♦️                                      ♣️                                       ♥️                                     ♠️"
+        placeholder="♦️           Enter                   ♣️              Input                   ♥️             Here              ♠️"
         onkeypress="inputPlaceholder()"
       />
 
