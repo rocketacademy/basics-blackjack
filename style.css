@@ -3,22 +3,25 @@
 }
 
 body {
-  color: yellowgreen;
   font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
   margin-left: 30px;
   margin-right: 30px;
-  background-image: url("https://media.istockphoto.com/id/1218355494/vector/poker-table-background-in-green-color.jpg?s=612x612&w=0&k=20&c=qJ-IauRqbIhaeQ5CXZxwysghJUm1VE5wW0odCiFt4yg=");
-  background-size: 100%;
+  background-image: url("https://image.lexica.art/full_jpg/c6e910bb-c9be-4d6f-a9af-7275c1af94ce");
+  background-size: 100% auto;
   font-size: 125%;
   font-weight: bold;
 }
 
 #header {
-  color: yellowgreen;
-  font-size: 400%;
-  float: right;
+  color: white;
+  font-size: 150%;
+  font-size: 200%;
+  max-width: 50%;
+  margin-top: 10px;
+  margin-left: 300px;
   writing-mode: vertical-lr;
   text-orientation: upright;
+  float: left;
 }
 
 p {
@@ -26,19 +29,22 @@ p {
 }
 
 #dealer-container {
-  margin: 40px auto;
+  margin: 200px 500px 0 600px;
   max-width: 800px;
   padding: 38px 31px;
 }
 
 #msg-container {
-  margin: 40px auto;
-  max-width: 800px;
+  background-color: burlywood;
+  border-radius: 25%;
+  margin: 40px;
+  max-width: 400px;
   padding: 38px 31px;
+  float: right;
 }
 
 #player-container {
-  margin: 40px auto;
+  margin: 190px 500px 0 600px;
   max-width: 800px;
   padding: 38px 31px;
 }
@@ -46,7 +52,7 @@ p {
 input {
   font-size: 21px;
   line-height: 33px;
-  margin: 0 0 23px 0;
+  margin: 0;
   padding: 0 9px;
   width: 100%;
 }
@@ -64,7 +70,7 @@ button {
 
 #dealer-out {
   background-color: lightgrey;
-  margin: 20px auto;
+  margin: 0 auto;
   padding: 20px;
   width: 100%;
 }
@@ -83,14 +89,14 @@ button {
 }
 
 #output-div {
-  margin: 20px auto;
+  margin: 0 auto;
   padding: 20px;
   width: 100%;
 }
 
 #player-out {
   background-color: lightgrey;
-  margin: 20px auto;
+  margin: 0 auto;
   padding: 20px;
   width: 100%;
 }

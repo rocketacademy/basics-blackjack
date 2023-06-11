@@ -115,14 +115,8 @@ const firstDeal = function (firstCard, secondCard, dealerCard) {
   playerCards.push(firstCard.name, secondCard.name);
   playerValues.push(firstCard.value, secondCard.value);
   dealerCard = cardCheck();
-  dealerCards.push(dealerCard.name, "?");
+  dealerCards.push(dealerCard.name, "🂠");
   dealerValues.push(dealerCard.value);
-
-  let output1 = `The dealer deals you the ${playerCards[0]} and deals themselves the ${dealerCards[0]}.<br><br>You then get a ${playerCards[1]} and the dealer places one card face down for themself.<br><br>`;
-  let output2 = `Your cards are ${playerCards.join(
-    "\xa0 "
-  )} with a total count of ${playerCount()}.<br><br>`;
-  let output3 = `Type in 'Hit' to draw another card.<br> Type in 'Stand' to end your turn.`;
 
   if (firstCard.value === 11 && secondCard.value === 11) {
     secondCard.value = 1;
@@ -135,17 +129,17 @@ const firstDeal = function (firstCard, secondCard, dealerCard) {
     mode = 2;
     return (
       output1 +
-      `${playerCards[0]} <b>BLACKJACK!</b> ${playerCards[1]}<br><br>You win if the dealer doesn't have a <b>BLACKJACK</b>`
+      `WOW! You got a <b>BLACKJACK!</b> right there!<br><br>You win if I don't get a <b>BLACKJACK</b> now.`
     );
   }
 
   if (firstCard.value + secondCard.value === 21 && dealerCard.value < 10) {
-    mode = 4;
+    mode = 5;
     return blackjack();
   }
 
   mode++;
-  return output1 + output2 + output3;
+  return `Let's start then. This one's for you. Now me. Back to you and a facedown card for me.<br><br>What's it gonna be ${player}? Hit or Stand?`;
 };
 //-------Mode 0 End-------
 //-------Mode 1-------
@@ -164,21 +158,13 @@ const playerChoice = function (playerInput) {
       mode = 4;
       return bust();
     }
-    return `The dealer has a ${
-      dealerCards[0]
-    } and one face down card.<br><br>Your cards are ${playerCards.join(
-      "\xa0 "
-    )}.<br>Your total count is ${playerCount()}.<br>Type in 'Hit' to draw another card.<br> Type in 'Stand' to end your turn.`;
+    return `Alright then here's another one for ya'.`;
   }
 
   //---- if player stands----
   if (playerInput.toLowerCase().trim() === `stand`) {
     mode++;
-    return `The dealer has a ${
-      dealerCards[0]
-    } and one face down card.<br><br>Your cards are ${playerCards.join(
-      "\xa0 "
-    )}.<br>You have chosen to stand with a total of ${playerCount()}.<br><br>The dealer will now draw their cards.`;
+    return `Gonna Stand on that then? Okay I'm gonna draw my cards now.`;
   }
 
   if (
@@ -196,11 +182,12 @@ const playerChoice = function (playerInput) {
 //-------Mode 2-------
 const dealerDraws = function () {
   let dealerCard = cardCheck();
-  dealerCards[1] === "?"
-    ? (dealerCards[1] = dealerCard.name)
-    : dealerCards.push(dealerCard.name);
-  dealerValues.push(dealerCard.value);
-
+  while (dealerCount() < 17) {
+    dealerCards[1] === "🂠"
+      ? (dealerCards[1] = dealerCard.name)
+      : dealerCards.push(dealerCard.name);
+    dealerValues.push(dealerCard.value);
+  }
   if (dealerCount() > 21) {
     dealerValues[dealerValues.indexOf(11)] = 1;
   }
@@ -222,28 +209,22 @@ const dealerDraws = function () {
     mode++;
     return endResult();
   }
-
-  return `The dealer has ${dealerCards.join(
-    "\xa0 "
-  )}.<br>Their total count is ${dealerCount()}<br><br>Your cards are ${playerCards.join(
-    "\xa0 "
-  )}.<br>Your total count is ${playerCount()}.<br><br>Click Deal to continue.`;
 };
 //-------Mode 2 End-------
 //-------Mode 3-------
 const endResult = function () {
+  let tempArr = [];
   //--if player wins
-  let standardOutput1 = `The dealer has ${dealerCards.join(
-    "\xa0 "
-  )}.<br>Their total count is ${dealerCount()}<br>They will stand here.<br><br>Your cards are ${playerCards.join(
-    "\xa0 "
-  )}.<br>Your total count is ${playerCount()}.<br><br>`;
+  for (let k = 2; k < dealerCards.length; k++) {
+    tempArr.push(dealerCards[k]);
+  }
+  let standardOutput1 = `My facedown card is a ${dealerCards[1]} and I draw ${tempArr}...`;
   let standardOutput2 = `You have the higher total. You win!💰🤑💰<br><br>Click deal to start a new round.`;
   playerCount() > dealerCount() ? winLoss++ : winLoss--;
 
   //--if dealer wins
   if (dealerCount() > playerCount()) {
-    standardOutput2 = `Dealer has the higher total. Dealer wins this round.💸<br><br>Maybe the next hand will be the winning hand? Click deal to start a new round.`;
+    standardOutput2 = `Looks like I have the higher total💸 Maybe the next hand will be the winning hand?<br><br>Let's go again.Click deal to start a new round.`;
   }
 
   //--tie game
@@ -326,7 +307,7 @@ const goAgain = function () {
   let winTry = ``;
   winLoss > 0 ? (winTry = `win`) : (winTry = `try`);
   restart();
-  return `Ready to ${winTry} again?<br>Press the Enter key to continue.`;
+  return `Wanna go again ${winTry}?<br>Press the Enter key to continue.`;
 };
 
 const main = function (input) {

@@ -41,7 +41,7 @@
 
     <!-- sharing configuration -->
     <!-- Primary Meta Tags -->
-    <title>Fundamental Blackjack</title>
+    <title>test blackjack</title>
     <meta name="title" content="YOURNAME's BlackJack Game!" />
     <meta name="description" content="A fun card game I made myself! 😄💪🌈" />
 
@@ -94,7 +94,7 @@
     <!--Dealer's Div Start-->
     <div id="dealer-container">
       <div id="dealer-total" class="circle"></div>
-      <p>Dealer's Hand:</p>
+      <p style="color: white">Dealer's Hand:</p>
       <br />
       <div id="dealer-out" class="centralize"></div>
     </div>
@@ -115,6 +115,10 @@
         placeholder="♦️           Enter                   ♣️              Input                   ♥️             Here              ♠️"
         onkeypress="inputPlaceholder()"
       />
+      <div id="player-total" class="circle"></div>
+      <p id="player-name" style="color: white"></p>
+      <br /><br />
+      <div id="player-out" class="centralize"></div>
 
       <button id="deal-button" class="play-buttons" value="hit">Deal</button>
 
@@ -122,10 +126,6 @@
         Stand
       </button>
       <br />
-      <div id="player-total" class="circle"></div>
-      <p id="player-name"></p>
-      <br /><br />
-      <div id="player-out" class="centralize"></div>
     </div>
     <!--Player's Div End-->
 
