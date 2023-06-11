@@ -53,6 +53,8 @@ var makeDeck = function () {
 
       if (cardName > 10) {
         var cardValue = 10;
+      } else if (cardName == 1) {
+        cardValue = 11;
       } else cardValue = cardName;
 
       // If rank is 1, 11, 12, or 13, set cardName to the ace or face card's name
@@ -121,9 +123,20 @@ var blackJack = function (inputCards) {
 };
 
 var sumCards = function (inputCards) {
+  var acePresent = 0;
   var sum = 0;
   for (i = 0; i < inputCards.length; i += 1) {
+    if (inputCards[i].name == "ace") {
+      acePresent += 1;
+    }
     sum = sum + inputCards[i].value;
+  }
+  if (acePresent > 0 && sum > 21) {
+    while (sum > 21) {
+      for (i = 0; i < acePresent; i += 1) {
+        sum = sum - 10;
+      }
+    }
   }
   return sum;
 };
@@ -134,9 +147,11 @@ var computerPlay = function () {
   }
 };
 
-var winLose = function () {};
-
 var main = function (input) {
+  console.log(userCards);
+  console.log(sumCards(userCards));
+  console.log(computerCards);
+  console.log(sumCards(computerCards));
   if (stage == "deal") {
     for (i = 0; i < 2; i += 1) {
       userDrawValue = dealCards(userCards, userDrawValue);
@@ -145,11 +160,15 @@ var main = function (input) {
 
     if (blackJack(userCards) && blackJack(computerCards)) {
       myOutputValue =
-        userDrawValue + computerDrawValue`<br>2 BLACJACKS!! You tied!`;
+        userDrawValue + computerDrawValue + `<br>2 BLACJACKS!! You tied!`;
     } else if (blackJack(userCards)) {
-      myOutputValue = userDrawValue + `<br>BLACJACK!! You win!`;
+      myOutputValue =
+        userDrawValue + "<br>" + computerDrawValue + `<br>BLACJACK!! You win!`;
     } else if (blackJack(computerCards)) {
-      myOutputValue = userDrawValue + `<br>COMPUTER BLACKJACK. You lose ):`;
+      myOutputValue =
+        userDrawValue +
+        computerDrawValue +
+        `<br>COMPUTER BLACKJACK. You lose ):`;
     } else {
       stage = "draw";
       myOutputValue = userDrawValue + `<br>Input 'hit' or 'stand' to continue.`;
@@ -207,9 +226,9 @@ var main = function (input) {
           "<br>" +
           computerDrawValue +
           "<br>" +
-          `You: ${sumCards(userCards)} <br> Computer:${sumCards(
+          `You: ${sumCards(userCards)} <br> Computer: ${sumCards(
             computerCards
-          )}. <br> You win!`;
+          )} <br> You win!`;
       }
     } else return `Input 'hit' or 'stand' to continue.`;
     return myOutputValue;
