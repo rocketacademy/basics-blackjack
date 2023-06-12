@@ -1,8 +1,6 @@
 var dealerStatus = 0;
 var playerStatus = 0;
 var gameMode = "login";
-var playerHand = [];
-var dealerHand = [];
 
 // Card Generation
 var makeDeck = function () {
@@ -61,7 +59,6 @@ var main = function (input) {
   }
   if (gameMode == "drawCards") {
     var createDeck = makeDeck();
-
     var shuffledDeck = shuffleCards(createDeck);
 
     var playerCardOne = shuffledDeck.pop();
@@ -98,62 +95,63 @@ var main = function (input) {
       return (output = `player has ${playerCardOne.name} of ${playerCardOne.suit} & ${playerCardTwo.name} of ${playerCardTwo.suit}<br /> 
       dealer has ${dealerCardOne.name} of ${dealerCardOne.suit} & ${dealerCardTwo.name} of ${dealerCardTwo.suit}<br />
       Player & Dealer has gotten a blackjack! Ties!`);
-    }
-
-    if (playerblackjack != true && dealerblackjack != true) {
-      gameMode = "hit/Stand";
+    } else {
+      gameMode = "hitStand";
       return (output = `player has ${playerCardOne.name} of ${playerCardOne.suit} & ${playerCardTwo.name} of ${playerCardTwo.suit}<br /> 
-      dealer has ${dealerCardOne.name} of ${dealerCardOne.suit} & ${dealerCardTwo.name} of ${dealerCardTwo.suit} <br /> + "hit or stand?")`);
+      dealer has ${dealerCardOne.name} of ${dealerCardOne.suit} & ${dealerCardTwo.name} of ${dealerCardTwo.suit} <br /> "hit or stand?")`);
     }
-    if (gameMode == "hit/Stand") {
-      var pCardOne = playerCardOne.name;
-      var pCardTwo = playerCardTwo.name;
-      var dCardOne = dealerCardOne.name;
-      var dCardTwo = dealerCardTwo.name;
+  }
+  console.log(gameMode);
+  console.log(input);
+  if (gameMode == "hitStand" && input == "stand") {
+    console.log(playerCardOne);
+    var pCardOne = playerCardOne.name;
+    var pCardTwo = playerCardTwo.name;
+    var dCardOne = dealerCardOne.name;
+    var dCardTwo = dealerCardTwo.name;
 
-      // winning condition
-      if (pCardOne == "jack" || pCardOne == "queen" || pCardOne == "king") {
-        pCardOne = 10;
-      }
-      if (pCardTwo == "jack" || pCardTwo == "queen" || pCardTwo == "king") {
-        pCardTwo = 10;
-      }
-      if (dCardOne == "jack" || dCardOne == "queen" || dCardOne == "king") {
-        dCardOne = 10;
-      }
-      if (dCardTwo == "jack" || dCardTwo == "queen" || dCardTwo == "king") {
-        dCardTwo = 10;
-      }
-      if (pCardOne == "ace") {
-        pCardOne = 11;
-      }
-      if (pCardTwo == "ace") {
-        pCardTwo = 11;
-      }
-      if (dCardOne == "ace") {
-        dCardOne = 11;
-      }
-      if (dCardTwo == "ace") {
-        dCardTwo = 11;
-      }
-      playerStatus = pCardOne + pCardTwo;
-      dealerStatus = dCardOne + dCardTwo;
+    // winning condition
+    if (pCardOne == "jack" || pCardOne == "queen" || pCardOne == "king") {
+      pCardOne = 10;
+    }
+    if (pCardTwo == "jack" || pCardTwo == "queen" || pCardTwo == "king") {
+      pCardTwo = 10;
+    }
+    if (dCardOne == "jack" || dCardOne == "queen" || dCardOne == "king") {
+      dCardOne = 10;
+    }
+    if (dCardTwo == "jack" || dCardTwo == "queen" || dCardTwo == "king") {
+      dCardTwo = 10;
+    }
+    if (pCardOne == "ace") {
+      pCardOne = 11;
+    }
+    if (pCardTwo == "ace") {
+      pCardTwo = 11;
+    }
+    if (dCardOne == "ace") {
+      dCardOne = 11;
+    }
+    if (dCardTwo == "ace") {
+      dCardTwo = 11;
+    }
+    playerStatus = pCardOne + pCardTwo;
+    dealerStatus = dCardOne + dCardTwo;
 
-      var output = `dealer has ${dealerCardOne.name} of ${dealerCardOne.suit} & ${dealerCardTwo.name} of ${dealerCardTwo.suit}<br />
+    var output = `dealer has ${dealerCardOne.name} of ${dealerCardOne.suit} & ${dealerCardTwo.name} of ${dealerCardTwo.suit}<br />
   player has ${playerCardOne.name} of ${playerCardOne.suit} & ${playerCardTwo.name} of ${playerCardTwo.suit}<br />
   playerStatus = ${playerStatus}<br />
   dealerStatus = ${dealerStatus}<br /> `;
-      //if (dealerStatus == 21)
+    //if (dealerStatus == 21)
 
-      if (dealerStatus > playerStatus) {
-        output = output + "dealer wins";
-      } else if (dealerStatus < playerStatus) {
-        output = output + "player wins";
-      } else {
-        output = output + "Tie";
-      }
-
-      return output;
+    if (dealerStatus > playerStatus) {
+      output = output + "dealer wins";
+    } else if (dealerStatus < playerStatus) {
+      output = output + "player wins";
+    } else {
+      output = output + "Tie";
     }
+
+    return output;
   }
 };
