@@ -10,7 +10,7 @@ var main = function (input) {
 
   if (stateManager == "instructions") {
     stateManager = "drawPhase";
-    console.log(stateManager);
+
     myOutputValue = `Welcome to BlackJack! ♣ ♦ ♥ ♠<br><br>
 Click the "Submit" button to deal the cards`;
     return myOutputValue;
