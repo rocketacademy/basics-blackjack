@@ -108,12 +108,12 @@ var checkBlackJack = function (totalplayerCard, totaldealerCard) {
   var message = "";
   if (totalplayerCard == 21 || totaldealerCard == 21) {
     if (totalplayerCard == 21) {
-      message = `Player ${winGameMessage}`;
-      gameMode = "ShuffleCard";
+      message = `Player ${winGameMessage} <br/> Please Enter 1 to refresh the game or 2 to end game`;
+      gameMode = "endGame";
       blackJack = true;
     } else if (totaldealerCard == 21) {
-      message = `Dealer ${winGameMessage}`;
-      gameMode = "ShuffleCard";
+      message = `Dealer ${winGameMessage} <br/> Please Enter 1 to refresh the game or 2 to end game`;
+      gameMode = "endGame";
       blackJack = true;
     }
     return message;
@@ -204,23 +204,47 @@ var dealerDrawCard = function () {
 var comparedScore = function () {
   var finalMessage = "";
   if (totalplayerOneCard == totaldealerCard) {
-    finalMessage = `Both Scores are a tie.<br/>${message3.toString()}<br/> <br/>${message2.toString()}<br/> `;
+    finalMessage = `Both Scores are a tie.<br/>${message3.toString()}<br/> <br/>${message2.toString()}<br/> Please Enter 1 to refresh the game or 2 to end game `;
   } else {
     var winner = Math.max(totaldealerCard, totalplayerOneCard);
 
     if (winner == totaldealerCard) {
       finalMessage =
         "Dealer Win!" +
-        `<br/> --> Dealer card sum is ${totaldealerCard}. <br/>${message3.toString()}<br/> <br/> Player card sum is ${totalplayerOneCard}.<br/>${message2.toString()}<br/>`;
+        `<br/> --> Dealer card sum is ${totaldealerCard}. <br/>${message3.toString()}<br/> <br/> Player card sum is ${totalplayerOneCard}.<br/>${message2.toString()}<br/>Please Enter 1 to refresh the game or 2 to end game`;
     }
 
     if (winner == totalplayerOneCard) {
       finalMessage =
         "Player Win!" +
-        `<br/> --> Player card sum is ${totalplayerOneCard}.<br/>${message2.toString()} <br/> <br/> Dealer card sum is ${totaldealerCard}. ${message3.toString()}<br/>`;
+        `<br/> --> Player card sum is ${totalplayerOneCard}.<br/>${message2.toString()} <br/> <br/> Dealer card sum is ${totaldealerCard}. ${message3.toString()}<br/> Please Enter 1 to refresh the game or 2 to end game`;
     }
   }
+  gameMode = "endGame";
   return finalMessage;
+};
+
+var endGame = function (input) {
+  var message5 = "";
+  if (!input) {
+    if (!input) {
+      return "Please enter 1 or 2 instead of empty submission";
+    }
+    if (input != 1 || input != 2) {
+      console.log("Choose input : ", userInput);
+      return " System only accept 1 or 2 only!";
+    }
+  }
+
+  if (input == 1) {
+    message5 = "Game will restart once submit is pressed";
+    gameMode = "ShuffleCard";
+  }
+  if (input == 2) {
+    message5 = "End Game";
+  }
+
+  return message5;
 };
 
 var gameMode = "ShuffleCard"; //initialize to initial mode
@@ -296,8 +320,9 @@ var main = function (input) {
       outPutMessage =
         burstMessage +
         `-->Total Sum: ${totalplayerOneCard}<br/>` +
-        message2.toString();
-      gameMode = "ShuffleCard";
+        message2.toString() +
+        `<br/> Please Enter 1 to refresh the game or 2 to end game`;
+      gameMode = "endGame";
     }
     return outPutMessage;
   }
@@ -309,13 +334,18 @@ var main = function (input) {
       outPutMessage =
         burstMessage +
         `-->Total Sum: ${totaldealerCard}<br/>` +
-        message3.toString();
-      gameMode = "ShuffleCard";
+        message3.toString() +
+        `<br/> Please Enter 1 to refresh the game or 2 to end game`;
+      gameMode = "endGame";
     }
     return outPutMessage;
   }
   if (gameMode === "comparedScore") {
     outPutMessage = comparedScore();
+    return outPutMessage;
+  }
+  if (gameMode === "endGame") {
+    outPutMessage = endGame(input);
     return outPutMessage;
   }
 };
