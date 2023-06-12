@@ -79,10 +79,8 @@ var checkInstaWin = function (dealtCards) {
   if (dealtCards.playerHandSum == 11 && dealtCards.comHandSum == 11) {
     return "Draw as both Player and Computer have Blackjack!";
   } else if (dealtCards.playerHandSum == 11) {
-    dealtCards.playerHandSum == 21;
     return "Player wins with Blackjack!";
   } else if (dealtCards.comHandSum == 11) {
-    dealtCards.playerHandSum == 21;
     return "Computer wins with Blackjack!";
   } else {
     console.log(dealtCards.playerHandSum);
