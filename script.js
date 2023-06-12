@@ -12,7 +12,6 @@ let player = "";
 let mode = `new game`;
 let winLoss = 0;
 //-------Global Variables-------
-
 //-------Helper Functions-------
 const cardPick = function () {
   let card = {
@@ -120,7 +119,6 @@ const firstDeal = function (firstCard, secondCard, dealerCard) {
   dealerValues.push(dealerCard.value);
   playerCount();
   dealerCount();
-  console.log(dealerCount());
 
   if (
     firstCard.value + secondCard.value === 21 &&
@@ -186,8 +184,6 @@ const dealerDraws = function () {
     let nextCard = cardCheck();
     dealerCards.push(nextCard.name);
     dealerValues.push(nextCard.value);
-    console.log(dealerValues);
-    console.log(dealerCount());
   }
 
   if (dealerCount() > 21) {
