@@ -1,0 +1,103 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
+  color: burlywood;
+  margin-left: 30px;
+  margin-right: 30px;
+  background-image: url("https://image.lexica.art/full_jpg/c6e910bb-c9be-4d6f-a9af-7275c1af94ce");
+  background-size: 100% auto;
+  font-size: 125%;
+  font-weight: bold;
+}
+
+#header {
+  color: white;
+  font-size: 150%;
+  font-size: 200%;
+  max-width: 50%;
+  margin-left: 300px;
+  writing-mode: vertical-lr;
+  text-orientation: upright;
+  float: left;
+}
+
+p {
+  font-size: 100%;
+}
+
+#dealer-container {
+  margin: 200px 500px 0 600px;
+  max-width: 800px;
+  padding: 38px 31px;
+}
+
+#msg-container {
+  background-color: mediumslateblue;
+  border-radius: 25%;
+  margin: 40px;
+  max-width: 400px;
+  padding: 38px 31px;
+  float: right;
+}
+
+#player-container {
+  margin: 170px 500px 0 600px;
+  max-width: 800px;
+  padding: 38px 31px;
+}
+
+input {
+  font-size: 21px;
+  line-height: 33px;
+  margin: 0;
+  padding: 0 9px;
+  width: 100%;
+}
+
+button {
+  font-size: 21px;
+  line-height: 33px;
+  margin: 0 0 23px 0;
+  padding: 0 6px;
+  background-color: mediumslateblue;
+}
+
+#dealer-out {
+  background-color: mediumslateblue;
+  margin: 0 auto;
+  padding: 20px;
+  width: 100%;
+}
+
+.circle {
+  background-color: mediumslateblue;
+  margin: auto;
+  padding: 20px;
+  width: 50px;
+  height: 50px;
+  border-radius: 25px;
+  font-weight: bold;
+  text-align: center;
+  color: black;
+  float: right;
+}
+
+#output-div {
+  margin: 0 auto;
+  padding: 20px;
+  width: 100%;
+}
+
+#player-out {
+  background-color: mediumslateblue;
+  margin: 0 auto;
+  padding: 20px;
+  width: 100%;
+}
+
+.centralize {
+  text-align: center;
+}
