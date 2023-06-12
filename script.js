@@ -100,7 +100,7 @@ const newGame = function (playerInput) {
   mode = 0;
   return (
     firstOutput +
-    `<br>Ready to win some money? Click 'Hit' to get your cards.🃏`
+    `<br>Ready to win some money? Click 'Hit' to get your cards.🃏<br><br>Oh by the way, I have to Stand on 17 or more.`
   );
 };
 //-------New Game-------
@@ -174,6 +174,14 @@ const dealerDraws = function () {
   dealerCards[1] = dealerCard.name;
   dealerValues.push(dealerCard.value);
 
+  if (
+    playerValues[0] + playerValues[1] === 21 ||
+    dealerValues[0] + dealerValues[1] === 21
+  ) {
+    mode = 5;
+    return blackjack();
+  }
+
   while (dealerCount() < 17) {
     let nextCard = cardCheck();
     dealerCards.push(nextCard.name);
@@ -189,14 +197,6 @@ const dealerDraws = function () {
   if (dealerCount() > 21) {
     mode = 4;
     return bust();
-  }
-
-  if (
-    playerValues[0] + playerValues[1] === 21 ||
-    dealerValues[0] + dealerValues[1] === 21
-  ) {
-    mode = 4;
-    return blackjack();
   }
 
   if (dealerCount() >= 17) {
