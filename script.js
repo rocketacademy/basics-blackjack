@@ -256,6 +256,7 @@ const bust = function () {
   mode = 6;
   return suddenOutput1;
 };
+//-------Mode 4 End-------
 //-------Mode 5-------
 const blackjack = function () {
   //--if player has BLACKJACK and dealer does not
@@ -296,14 +297,15 @@ const blackjack = function () {
   mode++;
   return suddenOutput3 + suddenOutput4;
 };
-
+//-------Mode 5 End-------
+//-------Mode 6-------
 const goAgain = function () {
   let winTry = ``;
   winLoss > 0 ? (winTry = `win`) : (winTry = `try`);
   restart();
   return `Wanna ${winTry} again ${player}?<br>Click 'Hit' to start a new round.`;
 };
-
+//-------Mode 6 End-------
 const main = function (input) {
   return mode === `new game`
     ? newGame(input)
