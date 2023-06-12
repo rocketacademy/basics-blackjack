@@ -112,7 +112,7 @@ var checkBlackJack = function (totalplayerCard, totaldealerCard) {
       gameMode = "ShuffleCard";
       blackJack = true;
     } else if (totaldealerCard == 21) {
-      message = `Dealer${winGameMessage}`;
+      message = `Dealer ${winGameMessage}`;
       gameMode = "ShuffleCard";
       blackJack = true;
     }
@@ -120,17 +120,6 @@ var checkBlackJack = function (totalplayerCard, totaldealerCard) {
   } else return message;
 };
 
-/*cardBurstMessage = "Card Burst";
-var checkCardBurst= function(point){
-  var message = "";
-  if (point < 21){
-      message = cardBurstMessage;
-  }
-  else if() {
-    message;
-  }
-  return message;
-}*/
 var message1 = "";
 var message2 = [];
 var currentplayOneCardDeck = 2;
@@ -157,7 +146,7 @@ var playerDrawCard = function (input) {
     message1 =
       `Player, You draw card ${playerOneCard[currentplayOneCardDeck].suit} of ${playerOneCard[currentplayOneCardDeck].rank}` +
       message2.toString() +
-      `<br/>Total Sum: ${totalplayerOneCard}` +
+      `<br/>-->Total Sum: ${totalplayerOneCard}` +
       `<br/> Enter 1 to Re-draw or Enter 2 to Stand?`;
     cardDraw += 1;
     currentplayOneCardDeck += 1;
@@ -168,21 +157,70 @@ var playerDrawCard = function (input) {
     if (playerOneCard.length < 3) {
       console.log(playerOneCard.length);
       for (i = 0; i < playerOneCard.length; i++) {
-        m[i] = `<br/> Your Card ${i + 1} ${playerOneCard[i].suit} of ${
+        m[i] = `<br/> Player Card ${i + 1} ${playerOneCard[i].suit} of ${
           playerOneCard[i].rank
         }`;
         message2.push(m[i]);
         message1 =
-          `Player, you choose to Stand, <br/>Total Sum: ${totalplayerOneCard} <br/>` +
+          `Player choose to Stand, <br/>-->Total Sum: ${totalplayerOneCard} <br/>` +
           message2.toString();
       }
     } else
       message1 =
-        `Player, you choose to Stand, <br/> Total Sum: ${totalplayerOneCard} <br/>` +
+        `Player choose to Stand, <br/> Total Sum: ${totalplayerOneCard} <br/>` +
         message2.toString();
     gameMode = "dealerDrawCard";
   }
   return message1;
+};
+
+var message3 = [];
+var dealerDrawCard = function () {
+  var p = [];
+  var message4 = "";
+  while (totaldealerCard < 17) {
+    console.log("CardDraw: ", cardDraw);
+    dealerCard.push(playCardGame[cardDraw]);
+    totaldealerCard = addPlayerCard(dealerCard);
+    cardDraw += 1;
+    console.log("CardDraw: ", cardDraw);
+  }
+  for (i = 0; i < dealerCard.length; i++) {
+    p[i] = `<br/> Dealer Card ${i + 1} ${dealerCard[i].suit} of ${
+      dealerCard[i].rank
+    }`;
+    message3.push(p[i]);
+  }
+  if (totaldealerCard < 21) {
+    message4 =
+      `Dealer Stand, <br/> Total Sum: ${totaldealerCard} <br/>` +
+      message3.toString();
+    gameMode = "comparedScore";
+  }
+
+  return message4;
+};
+
+var comparedScore = function () {
+  var finalMessage = "";
+  if (totalplayerOneCard == totaldealerCard) {
+    finalMessage = `Both Scores are a tie.<br/>${message3.toString()}<br/> <br/>${message2.toString()}<br/> `;
+  } else {
+    var winner = Math.max(totaldealerCard, totalplayerOneCard);
+
+    if (winner == totaldealerCard) {
+      finalMessage =
+        "Dealer Win!" +
+        `<br/> --> Dealer card sum is ${totaldealerCard}. <br/>${message3.toString()}<br/> <br/> Player card sum is ${totalplayerOneCard}.<br/>${message2.toString()}<br/>`;
+    }
+
+    if (winner == totalplayerOneCard) {
+      finalMessage =
+        "Player Win!" +
+        `<br/> --> Player card sum is ${totalplayerOneCard}.<br/>${message2.toString()} <br/> <br/> Dealer card sum is ${totaldealerCard}. ${message3.toString()}<br/>`;
+    }
+  }
+  return finalMessage;
 };
 
 var gameMode = "ShuffleCard"; //initialize to initial mode
@@ -204,9 +242,11 @@ var initalizeAllvariable = function () {
   totalplayerOneCard = 0;
   totaldealerCard = 0;
   dealerCard.length = 0;
+  message3.length = 0;
   cardDraw = 4;
   message1 = "";
   currentplayOneCardDeck = 2;
+  blackJack = false;
 };
 
 var main = function (input) {
@@ -232,12 +272,19 @@ var main = function (input) {
     //totalplayerOneCard = 21; // testing purpose, remove if applicable
     if (totalplayerOneCard == 21 || totaldealerCard == 21) {
       outPutMessage = checkBlackJack(totalplayerOneCard, totaldealerCard);
-      console.log("CheckBlackJack Boolean working");
+
+      if (blackJack == true) {
+        gameMode = "ShuffleCard";
+        console.log("CheckBlackJack Boolean working", blackJack);
+      }
       //return outPutMessage;
     } //(totalplayerOneCard != 21 || totaldealerCard != 21) {
-    else
-      outPutMessage = `Player, your cards are <br/> Card 1: ${playerOneCard[0].suit} of ${playerOneCard[0].rank} <br/> Card 2: ${playerOneCard[1].suit} of ${playerOneCard[1].rank} <br/> Total Sum: ${totalplayerOneCard} <br/> Enter 1 to draw or Enter 2 to Stand?`;
-    gameMode = "PlayerTurn";
+    else {
+      outPutMessage = `Player cards are <br/> Card 1: ${playerOneCard[0].suit} of ${playerOneCard[0].rank} <br/> Card 2: ${playerOneCard[1].suit} of ${playerOneCard[1].rank} <br/> Total Sum: ${totalplayerOneCard} 
+      <br/> ---> Dealer card are <br/> Card 1: ${dealerCard[0].suit} of ${dealerCard[0].rank} <br/> Card 2: *HIDDEN*  
+      <br/> --->> Enter 1 to draw or Enter 2 to Stand?`;
+      gameMode = "PlayerTurn";
+    }
     return outPutMessage;
   }
 
@@ -245,14 +292,30 @@ var main = function (input) {
     outPutMessage = playerDrawCard(input);
     if (totalplayerOneCard > 21) {
       var burstMessage = "";
-      burstMessage = "<br/>Player Burst!<br/>";
-      outPutMessage = burstMessage;
+      burstMessage = "<br/>-->Player Burst!<br/>";
+      outPutMessage =
+        burstMessage +
+        `-->Total Sum: ${totalplayerOneCard}<br/>` +
+        message2.toString();
       gameMode = "ShuffleCard";
     }
     return outPutMessage;
   }
   if (gameMode === "dealerDrawCard") {
-    outPutMessage = "dealerDrawCard";
+    outPutMessage = dealerDrawCard();
+    if (totaldealerCard > 21) {
+      var burstMessage = "";
+      burstMessage = "<br/>Dealer Burst!<br/>";
+      outPutMessage =
+        burstMessage +
+        `-->Total Sum: ${totaldealerCard}<br/>` +
+        message3.toString();
+      gameMode = "ShuffleCard";
+    }
+    return outPutMessage;
+  }
+  if (gameMode === "comparedScore") {
+    outPutMessage = comparedScore();
     return outPutMessage;
   }
 };
