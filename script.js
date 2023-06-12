@@ -4,12 +4,12 @@ var createDeck = function () {
   var cardDeck = [];
   var suits = ["spades", "hearts", "clubs", "diamonds"];
   var suitIndex = 0;
-  while (suitIndex < suitIndex.length) {
+  while (suitIndex < suits.length) {
     var currentSuit = suits[suitIndex];
     var rankCounter = 1;
-    var cardVal = 0;
     while (rankCounter <= 13) {
       var cardName = rankCounter;
+      var cardVal = rankCounter;
       if (cardName == 11) {
         cardName = "Jack";
         cardVal = 10;
@@ -22,7 +22,6 @@ var createDeck = function () {
       } else if (cardName == 1) {
         cardName = "Ace";
       }
-      cardVal = rankCounter;
       var card = {
         name: cardName,
         suit: currentSuit,
@@ -62,7 +61,7 @@ var dealCards = function (currentDeck) {
   var comHandSum = comFirstCard.rank + comSecondCard.rank;
   if (comHandSum != 11) {
     while (comHandSum < 17) {
-      var nextComCard = cardDeck.pop();
+      var nextComCard = currentDeck.pop();
       comHandSum += nextComCard.rank;
     }
   }
@@ -70,58 +69,78 @@ var dealCards = function (currentDeck) {
     playerHandSum,
     comHandSum,
     currentDeck,
+    playerFirstCard,
+    playerSecondCard,
   };
-  playMode = "playing";
   return dealtCards;
 };
 
 var checkInstaWin = function (dealtCards) {
   if (dealtCards.playerHandSum == 11 && dealtCards.comHandSum == 11) {
     return "Draw as both Player and Computer have Blackjack!";
-  } else if ((dealtCards.playerHandSum = 11)) {
+  } else if (dealtCards.playerHandSum == 11) {
+    dealtCards.playerHandSum == 21;
     return "Player wins with Blackjack!";
   } else if (dealtCards.comHandSum == 11) {
+    dealtCards.playerHandSum == 21;
     return "Computer wins with Blackjack!";
   } else {
-    return "Type 'hit', to draw another card, or 'stand', to end the turn, in the input box and click submit";
+    console.log(dealtCards.playerHandSum);
+    console.log(dealtCards.comHandSum);
+    var playerFirstCard =
+      dealtCards.playerFirstCard.name +
+      " of " +
+      dealtCards.playerFirstCard.suit;
+    var playerSecondCard =
+      dealtCards.playerSecondCard.name +
+      " of " +
+      dealtCards.playerSecondCard.suit;
+    return `You got ${playerFirstCard} and ${playerSecondCard} <br> Type 'hit', to draw another card, or 'stand', to end the turn, in the input box and click submit`;
   }
 };
 
 var hitTurn = function (dealtCards) {
   var hitCard = dealtCards.currentDeck.pop();
   dealtCards.playerHandSum += hitCard.rank;
-  return { dealtCards };
+  return dealtCards;
 };
 
 var checkWin = function (dealtCards) {
   var playerScore = 21 - dealtCards.playerHandSum;
   var comScore = 21 - dealtCards.comHandSum;
   if (playerScore < 0 && comScore < 0) {
-    return "Draw as both Player and Computer go bust!";
+    return `Draw as both Player with score of ${dealtCards.playerHandSum} and Computer with score of ${dealtCards.comHandSum} go bust!`;
   } else if (playerScore < 0) {
-    return "Computer wins as Player goes bust!";
+    return `Computer wins with score of ${dealtCards.comHandSum} as Player goes bust with score of ${dealtCards.playerHandSum}!`;
   } else if (comScore < 0) {
-    return "Player wins as Computer goes bust!";
+    return `Player wins with score of ${dealtCards.playerHandSum} as Computer goes bust with score of ${dealtCards.comHandSum}!`;
   } else if (playerScore < comScore) {
-    return "Player wins!";
+    return `Player wins with score of ${dealtCards.playerHandSum} while Computer had a score of ${dealtCards.comHandSum}!`;
   } else if (playerScore > comScore) {
-    return "Computer loses!";
+    return `Computer wins with score of ${dealtCards.comHandSum} while Player had a score of ${dealtCards.playerHandSum}!`;
   }
 };
+
+var inPlayCards;
 
 var main = function (input) {
   if (gameMode == "start") {
     var toPlayDeck = createDeck();
     toPlayDeck = shuffleDeck(toPlayDeck);
-    var inPlayCards = dealCards(toPlayDeck);
+    inPlayCards = dealCards(toPlayDeck);
+    gameMode = "playing";
     return checkInstaWin(inPlayCards);
   }
   if (gameMode == "playing") {
     if (input == "hit") {
       inPlayCards = hitTurn(inPlayCards);
-      return "Type 'hit', to draw another card, or 'stand', to end the turn, in the input box and click submit";
+      console.log(inPlayCards.playerHandSum);
+      console.log(inPlayCards.comHandSum);
+      return `Your cards add up to ${inPlayCards.playerHandSum} <br> Type 'hit', to draw another card, or 'stand', to end the turn, in the input box and click submit`;
     } else if (input == "stand") {
-      return checkWin();
+      var gameResult = checkWin(inPlayCards);
+      gameMode = "start";
+      return gameResult;
     }
   }
 };
