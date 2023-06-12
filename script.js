@@ -260,7 +260,7 @@ const bust = function () {
   mode = 6;
   return suddenOutput1;
 };
-
+//-------Mode 5-------
 const blackjack = function () {
   //--if player has BLACKJACK and dealer does not
   let suddenOutput3 = `My facedown card is a... ${dealerCards[1]}!`;
