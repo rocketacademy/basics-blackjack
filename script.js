@@ -10,12 +10,11 @@ var main = function (input) {
 
   if (stateManager == "instructions") {
     stateManager = "drawPhase";
+    console.log(stateManager);
     myOutputValue = `Welcome to BlackJack! ♣ ♦ ♥ ♠<br><br>
 Click the "Submit" button to deal the cards`;
     return myOutputValue;
-  }
-
-  if (stateManager == "drawPhase") {
+  } else if (stateManager == "drawPhase") {
     stateManager = "hitOrStandPhase";
     for (var i = 0; i < 2; i += 1) {
       playerCards.push(shuffledDeck.pop());
@@ -30,9 +29,7 @@ Click the "Submit" button to deal the cards`;
     var myOutputValue = `Player drew, ${playerCards[0].name} of ${playerCards[0].suit}, ${playerCards[1].name} of ${playerCards[1].suit}. Total Hand Value is ${playerHandValue}<br><br>Computer drew, ${computerCards[0].name} of ${computerCards[0].suit}, ${computerCards[1].name} of ${computerCards[1].suit}. Total Hand Value is ${computerHandValue}<br><br>Please enter "hit" or "stand", then click Submit`;
 
     return myOutputValue;
-  }
-
-  if (stateManager == "hitOrStandPhase") {
+  } else if (stateManager == "hitOrStandPhase") {
     if (input == "hit") {
       playerCards.push(shuffledDeck.pop());
       var computerHandValue = calcHand(computerCards);
@@ -78,8 +75,7 @@ Click the "Submit" button to deal the cards`;
       )}. Total Hand Value is ${computerHandValue}<br><br>You have entered a wrong input. Please enter "hit" or "stand", then click Submit<br><br> Else, click submit to see Computer's next move.`;
     }
     return myOutputValue;
-  }
-  if (stateManager == "computerPhase") {
+  } else if (stateManager == "computerPhase") {
     var computerHandValue = calcHand(computerCards);
     var playerHandValue = calcHand(playerCards);
     while (computerHandValue <= playerHandValue) {
@@ -119,11 +115,11 @@ Click the "Submit" button to deal the cards`;
       )}. Total Hand Value is ${computerHandValue}<br><br> It's a draw!`;
     }
     return myOutputValue;
-  }
-  if (stateManager == "gameOver") {
-    if (input == "" || input == " " || input == isNaN || input != isNaN) {
-      myOutputValue = `Please click Refresh to play again`;
-    }
+  } else if (stateManager == "gameOver") {
+    playerCards = [];
+    computerCards = [];
+    myOutputValue = `Please click Submit to play again`;
+    stateManager = "instructions";
     return myOutputValue;
   }
 };
@@ -166,15 +162,15 @@ var convertComputerHandToString = function (hand) {
 
 var calcHand = function (hand) {
   var handValue = 0;
+  var hasAce = false;
   for (var k = 0; k < hand.length; k += 1) {
     handValue += hand[k].value;
-    for (var p = 0; p < hand.length; p += 1) {
-      if (hand[p].name == "Ace") {
-        if (handValue < 12) {
-          handValue = handValue + 10;
-        }
-      }
+    if (hand[k].name == "Ace") {
+      hasAce = true;
     }
+  }
+  if (handValue < 12 && hasAce == true) {
+    handValue = handValue + 10;
   }
   return handValue;
 };
