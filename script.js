@@ -1,6 +1,10 @@
-var dealerStatus = 0;
-var playerStatus = 0;
-var gameMode = "login";
+var gameMode = "welcome";
+var playerHand = [];
+var dealerHand = [];
+var shuffledDeck = "";
+var calculatePlayerHand = "";
+var calculateDealerHand = "";
+var aceCounter = "";
 
 // Card Generation
 var makeDeck = function () {
@@ -50,106 +54,174 @@ var shuffleCards = function (cardDeck) {
   return cardDeck;
 };
 
+var checkBlackjack = function (hand) {
+  var CardOne = hand[0];
+  var CardTwo = hand[1];
+  var isBlackjack = false;
+
+  if (
+    (CardOne.name == "ace" && CardTwo.rank >= 10) ||
+    (CardTwo.name == "ace" && CardOne.rank >= 10)
+  ) {
+    var isBlackjack = true;
+  }
+  return isBlackjack;
+};
+var calculateHand = function (hand) {
+  var handScore = 0;
+  for (var i = 0; i < hand.length; i += 1) {
+    var currentCard = hand[i];
+    if (
+      currentCard.name == "jack" ||
+      currentCard.name == "queen" ||
+      currentCard.name == "king"
+    ) {
+      handScore = handScore + 10;
+    }
+    if (currentCard.rank <= 10) {
+      handScore = handScore + currentCard.rank;
+    }
+    //add another 10 pt for ace card to become 11 if score didnt reach 21
+    if (currentCard.name == "ace") {
+      handScore = handScore + 10;
+      aceCounter = aceCounter + 1;
+    }
+  }
+  var index = 0;
+  while (index < aceCounter) {
+    if (handScore > 21) {
+      handScore = handScore - 10;
+    }
+  }
+  return handScore;
+};
+var showHand = function (playerShowHand, dealerShowHand) {
+  var showingPlayerHand = `Player Hand: <br/>`;
+  for (var j = 0; j < playerShowHand.length; j += 1) {
+    showingPlayerHand =
+      showingPlayerHand +
+      playerShowHand[j].name +
+      ` of ` +
+      playerShowHand[j].suit +
+      `<br/>`;
+  }
+
+  var showingDealerHand = `Dealer Hand: <br/>`;
+  for (var j = 0; j < dealerShowHand.length; j += 1) {
+    showingDealerHand =
+      showingDealerHand +
+      dealerShowHand[j].name +
+      ` of ` +
+      dealerShowHand[j].suit +
+      `<br/>`;
+  }
+  return showingPlayerHand + "<br/>" + showingDealerHand + "<br/>";
+};
+
+var showScore = function (playerScore, dealerScore) {
+  var displayPlayerScore = `<br/>Player Scores: ` + playerScore;
+  var displayDealerScore = `<br/>Dealer Scores: ` + dealerScore;
+  return displayPlayerScore + displayDealerScore;
+};
+
 var main = function (input) {
   var output = "";
+  if (gameMode == "welcome") {
+    var createDeck = makeDeck();
+    shuffledDeck = shuffleCards(createDeck);
+    playerHand.push(shuffledDeck.pop());
+    dealerHand.push(shuffledDeck.pop());
+    playerHand.push(shuffledDeck.pop());
+    dealerHand.push(shuffledDeck.pop());
 
-  if (gameMode == "login") {
+    console.log("playerhand: ");
+    console.log(playerHand);
+    console.log("dealerhand: ");
+    console.log(dealerHand);
+
     gameMode = "drawCards";
-    return (output = `Welcome Player to Blackjack!<br/> Click submit again to play!`);
+    return (output = `Welcome Player to Blackjack!<br/> Click submit again to view Hand!`);
   }
   if (gameMode == "drawCards") {
-    var createDeck = makeDeck();
-    var shuffledDeck = shuffleCards(createDeck);
+    var playerBlackJack = checkBlackjack(playerHand);
+    var dealerBlackJack = checkBlackjack(dealerHand);
 
-    var playerCardOne = shuffledDeck.pop();
-    var dealerCardOne = shuffledDeck.pop();
-    var playerCardTwo = shuffledDeck.pop();
-    var dealerCardTwo = shuffledDeck.pop();
-
-    //blackjack condition
-
-    if (
-      (playerCardOne.name == "ace" && playerCardTwo.name >= 10) ||
-      (playerCardTwo.name == "ace" && playerCardOne.name >= 10)
-    ) {
-      var playerblackjack = true;
-    }
-    if (
-      (dealerCardOne.name == "ace" && dealerCardTwo.name >= 10) ||
-      (dealerCardTwo.name == "ace" && dealerCardOne.name >= 10)
-    ) {
-      var dealerblackjack = true;
-    }
-
-    if (playerblackjack == true && dealerblackjack != true) {
-      return (output = `player has ${playerCardOne.name} of ${playerCardOne.suit} & ${playerCardTwo.name} of ${playerCardTwo.suit}<br /> 
-      dealer has ${dealerCardOne.name} of ${dealerCardOne.suit} & ${dealerCardTwo.name} of ${dealerCardTwo.suit}<br />
-      Player has gotten a blackjack! Player Wins!`);
-    }
-    if (playerblackjack != true && dealerblackjack == true) {
-      return (output = `player has ${playerCardOne.name} of ${playerCardOne.suit} & ${playerCardTwo.name} of ${playerCardTwo.suit}<br /> 
-      dealer has ${dealerCardOne.name} of ${dealerCardOne.suit} & ${dealerCardTwo.name} of ${dealerCardTwo.suit}<br />
-      Dealer has gotten a blackjack! Dealer Wins!`);
-    }
-    if (playerblackjack == true && dealerblackjack == true) {
-      return (output = `player has ${playerCardOne.name} of ${playerCardOne.suit} & ${playerCardTwo.name} of ${playerCardTwo.suit}<br /> 
-      dealer has ${dealerCardOne.name} of ${dealerCardOne.suit} & ${dealerCardTwo.name} of ${dealerCardTwo.suit}<br />
-      Player & Dealer has gotten a blackjack! Ties!`);
+    if (playerBlackJack == true || dealerBlackJack == true) {
+      if (playerBlackJack == true && dealerBlackJack == true) {
+        return (output = showHand(playerHand, dealerHand) + "<br/> TIE!");
+      } else if (playerBlackJack == true && dealerBlackJack != true) {
+        return (output =
+          showHand(playerHand, dealerHand) + "<br/> Player Blackjack!");
+      } else {
+        return (output =
+          showHand(playerHand, dealerHand) + "<br/> Dealer Blackjack!");
+      }
     } else {
-      gameMode = "hitStand";
-      return (output = `player has ${playerCardOne.name} of ${playerCardOne.suit} & ${playerCardTwo.name} of ${playerCardTwo.suit}<br /> 
-      dealer has ${dealerCardOne.name} of ${dealerCardOne.suit} & ${dealerCardTwo.name} of ${dealerCardTwo.suit} <br /> "hit or stand?")`);
+      calculatePlayerHand = calculateHand(playerHand);
+      calculateDealerHand = calculateHand(dealerHand);
+      console.log("player score: " + calculatePlayerHand);
+      console.log("dealer score: " + calculateDealerHand);
+      output =
+        showHand(playerHand, dealerHand) +
+        showScore(calculatePlayerHand, calculateDealerHand);
     }
+    gameMode = "hitStand";
+    return (output = output + "<br/> hit or stand?");
   }
-  console.log(gameMode);
-  console.log(input);
-  if (gameMode == "hitStand" && input == "stand") {
-    console.log(playerCardOne);
-    var pCardOne = playerCardOne.name;
-    var pCardTwo = playerCardTwo.name;
-    var dCardOne = dealerCardOne.name;
-    var dCardTwo = dealerCardTwo.name;
+  if (gameMode == "hitStand") {
+    if (input == "hit") {
+      playerHand.push(shuffledDeck.pop());
+      output =
+        showHand(playerHand, dealerHand) +
+        `<br/> You drew a card <br/> hit or stand?`;
+    } else if (input == "stand") {
+      calculatePlayerHand = calculateHand(playerHand);
+      calculateDealerHand = calculateHand(dealerHand);
 
-    // winning condition
-    if (pCardOne == "jack" || pCardOne == "queen" || pCardOne == "king") {
-      pCardOne = 10;
-    }
-    if (pCardTwo == "jack" || pCardTwo == "queen" || pCardTwo == "king") {
-      pCardTwo = 10;
-    }
-    if (dCardOne == "jack" || dCardOne == "queen" || dCardOne == "king") {
-      dCardOne = 10;
-    }
-    if (dCardTwo == "jack" || dCardTwo == "queen" || dCardTwo == "king") {
-      dCardTwo = 10;
-    }
-    if (pCardOne == "ace") {
-      pCardOne = 11;
-    }
-    if (pCardTwo == "ace") {
-      pCardTwo = 11;
-    }
-    if (dCardOne == "ace") {
-      dCardOne = 11;
-    }
-    if (dCardTwo == "ace") {
-      dCardTwo = 11;
-    }
-    playerStatus = pCardOne + pCardTwo;
-    dealerStatus = dCardOne + dCardTwo;
+      while (calculateDealerHand < 17) {
+        dealerHand.push(shuffledDeck.pop());
+        calculateDealerHand = calculateHand(dealerHand);
+      }
 
-    var output = `dealer has ${dealerCardOne.name} of ${dealerCardOne.suit} & ${dealerCardTwo.name} of ${dealerCardTwo.suit}<br />
-  player has ${playerCardOne.name} of ${playerCardOne.suit} & ${playerCardTwo.name} of ${playerCardTwo.suit}<br />
-  playerStatus = ${playerStatus}<br />
-  dealerStatus = ${dealerStatus}<br /> `;
-    //if (dealerStatus == 21)
-
-    if (dealerStatus > playerStatus) {
-      output = output + "dealer wins";
-    } else if (dealerStatus < playerStatus) {
-      output = output + "player wins";
+      if (
+        calculatePlayerHand == calculateDealerHand &&
+        calculatePlayerHand < 22
+      ) {
+        output =
+          showHand(playerHand, dealerHand) +
+          showScore(calculatePlayerHand, calculateDealerHand) +
+          "<br/> TIE!";
+      } else if (
+        calculatePlayerHand > calculateDealerHand &&
+        calculatePlayerHand < 22
+      ) {
+        output =
+          showHand(playerHand, dealerHand) +
+          showScore(calculatePlayerHand, calculateDealerHand) +
+          "<br/> Player Wins!";
+      } else if (
+        calculatePlayerHand > calculateDealerHand &&
+        calculatePlayerHand > 21
+      ) {
+        output =
+          showHand(playerHand, dealerHand) +
+          showScore(calculatePlayerHand, calculateDealerHand) +
+          "<br/> Player Bust!";
+      } else if (calculateDealerHand > 21) {
+        output =
+          showHand(playerHand, dealerHand) +
+          showScore(calculatePlayerHand, calculateDealerHand) +
+          "<br/> Dealer Bust!";
+      } else {
+        output =
+          showHand(playerHand, dealerHand) +
+          showScore(calculatePlayerHand, calculateDealerHand) +
+          "<br/> Dealer Wins!";
+      }
     } else {
-      output = output + "Tie";
+      output =
+        "wrong input, hit or stand" +
+        showScore(calculatePlayerHand, calculateDealerHand);
     }
 
     return output;
