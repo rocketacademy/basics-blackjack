@@ -41,7 +41,7 @@
 
     <!-- sharing configuration -->
     <!-- Primary Meta Tags -->
-    <title>test blackjack</title>
+    <title>Blackjack Fundamentals</title>
     <meta name="title" content="YOURNAME's BlackJack Game!" />
     <meta name="description" content="A fun card game I made myself! 😄💪🌈" />
 
@@ -94,7 +94,7 @@
     <!--Dealer's Div Start-->
     <div id="dealer-container">
       <div id="dealer-total" class="circle"></div>
-      <p style="color: white">Dealer's Hand:</p>
+      <p>Dealer's Hand:</p>
       <br />
       <div id="dealer-out" class="centralize"></div>
     </div>
@@ -112,19 +112,20 @@
     <div id="player-container">
       <input
         id="input-field"
-        placeholder="♦️           Enter                   ♣️              Input                   ♥️             Here              ♠️"
-        onkeypress="inputPlaceholder()"
+        placeholder="♦️         Enter                 ♣️             Name                 ♥️            Here             ♠️"
       />
+      <button id="submit-button" style="visibility: collapse" value="hit">
+        Hit
+      </button>
+      <button id="reject-button" style="visibility: collapse" value="stand">
+        Stand
+      </button>
+
       <div id="player-total" class="circle"></div>
-      <p id="player-name" style="color: white"></p>
+      <p id="player-name"></p>
       <br /><br />
       <div id="player-out" class="centralize"></div>
 
-      <button id="deal-button" class="play-buttons" value="hit">Deal</button>
-
-      <button id="stand-button" class="play-buttons" value="stand">
-        Stand
-      </button>
       <br />
     </div>
     <!--Player's Div End-->
@@ -135,63 +136,46 @@
       document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("player-total").innerHTML = playerCount();
         document.getElementById("dealer-total").innerHTML = dealerCount();
-        document.getElementById("player-name").innerHTML = player;
       });
 
-      function inputPlaceholder() {
-        let placeHolder = document.getElementById("input-field").placeholder;
-        if (mode === `new game`) {
-          placeHolder.innerHTML = "Enter Name";
-        }
-        if (mode === 0 || mode === 1) {
-          placeHolder.innerHTML =
-            "Will you <b>Hit</b> or will You <b>Stand</b>?";
-        }
-        if (mode > 1) {
-          placeHolder.innerHTML = "Press Enter to continue.";
-        }
-      }
+      var buttonSubmit = document.querySelector("#submit-button");
+      var buttonReject = document.querySelector("#reject-button");
+      var input = document.getElementById("input-field");
 
-      // var dealButton = document.getElementById("deal-button");
-      // var standButton = document.getElementById("stand-button");
+      buttonSubmit.addEventListener("click", function () {
+        var result = main(buttonSubmit.value);
 
-      // function dealStandInput() {
-      //   if (event.key === "Enter") {
-      //     dealButton.style.display = "block";
-      //     standButton.style.display = "block";
-      //     document.getElementById("input-field").style.display = "none";
-      //   }
-      // }
-
-      // dealButton.addEventListener("click", function () {
-      //   var input = document.getElementById("input-field");
-      //   var result = main(input.value);
-      //   var output = document.getElementById("output-div");
-      //   output.innerHTML = result;
-
-      //   document.getElementById("player-total").innerHTML = playerCount();
-      //   document.getElementById("dealer-total").innerHTML = dealerCount();
-      //   document.getElementById("player-out").innerHTML = playerCards;
-      //   document.getElementById("dealer-out").innerHTML = dealerCards;
-      //   input.value = "";
-      // });
-
-      document.addEventListener("keypress", function () {
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
+        document.getElementById("player-total").innerHTML = playerCount();
+        document.getElementById("dealer-total").innerHTML = dealerCount();
+        document.getElementById("player-out").innerHTML =
+          playerCards.join(" \xa0");
+        document.getElementById("dealer-out").innerHTML =
+          dealerCards.join(" \xa0");
+      });
+      buttonReject.addEventListener("click", function () {
+        var result = main(buttonReject.value);
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
+        document.getElementById("player-total").innerHTML = playerCount();
+        document.getElementById("dealer-total").innerHTML = dealerCount();
+        document.getElementById("player-out").innerHTML =
+          playerCards.join(" \xa0");
+        document.getElementById("dealer-out").innerHTML =
+          dealerCards.join(" \xa0");
+      });
+      input.addEventListener("keypress", function () {
         if (event.key === "Enter") {
-          var input = document.getElementById("input-field");
           var result = main(input.value);
-          var output = document.getElementById("output-div");
+          var output = document.querySelector("#output-div");
           output.innerHTML = result;
-          username = player;
-          document.getElementById("player-total").innerHTML = playerCount();
-          document.getElementById("dealer-total").innerHTML = dealerCount();
-          document.getElementById("player-out").innerHTML =
-            playerCards.join(" \xa0");
-          document.getElementById("dealer-out").innerHTML =
-            dealerCards.join(" \xa0");
           document.getElementById("player-name").innerHTML =
             player + "'s Hand:";
-          input.value = "";
+          input.disabled = true;
+          input.style.visibility = "collapse";
+          buttonSubmit.style.visibility = "visible";
+          buttonReject.style.visibility = "visible";
         }
       });
     </script>
