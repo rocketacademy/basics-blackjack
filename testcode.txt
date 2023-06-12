@@ -1,0 +1,113 @@
+// --- Make a deck 
+var makeDeck = function () {
+  var cardDeck = [];
+  var suits = ['hearts', 'diamonds', 'clubs', 'spades'];
+
+    var suitIndex = 0;
+    while (suitIndex < suits.length) {
+    var currentSuit = suits[suitIndex];
+
+    var rankCounter = 1;
+    while (rankCounter <= 13) {
+      var cardName = rankCounter;
+      // If rank is 1, 11, 12, or 13, set cardName to the ace or face card's name
+      if (cardName == 1) {
+        cardName = 'ace';
+      } else if (cardName == 11) {
+        cardName = 'jack';
+      } else if (cardName == 12) {
+        cardName = 'queen';
+      } else if (cardName == 13) {
+        cardName = 'king';
+      }
+      // Create a new card with the current name, suit, and rank
+      var card = {
+        name: cardName,
+        suit: currentSuit,
+        rank: rankCounter,
+      };
+      // Add the new card to the deck
+      cardDeck.push(card);
+      // Increment rankCounter to iterate over the next rank
+      rankCounter += 1;
+    }
+    // Increment the suit index to iterate over the next suit
+    suitIndex += 1;
+  }
+  return cardDeck;
+};
+// --- Shuffle the deck 
+var getRandomIndex = function (max) {
+  return Math.floor(Math.random() * max); // Get a random index ranging from 0 (inclusive) to max (exclusive).
+};
+var shuffleCards = function (cardDeck) {
+  var currentIndex = 0;
+  while (currentIndex < cardDeck.length) {
+    var randomIndex = getRandomIndex(cardDeck.length);
+    var randomCard = cardDeck[randomIndex];
+    var currentCard = cardDeck[currentIndex];
+    cardDeck[currentIndex] = randomCard;
+    cardDeck[randomIndex] = currentCard;
+    currentIndex = currentIndex + 1;
+  }
+  return cardDeck;
+};
+//--- Deal two cards
+// The player goes first and clicks Submit to deal the cards
+var dealTwoCards = function (deck) {
+  return [deck.pop(), deck.pop()];
+};
+//--- State 0: Function to start the game
+var startGame = function () {
+  var deck = makeDeck(); // create a new deck
+  shuffleCards(deck); // shuffle the created deck
+
+  var playerHand = dealTwoCards(deck); // deal two cards to player
+  var dealerHand = dealTwoCards(deck); // deal two cards to dealer
+
+  console.log('Player has cards', playerHand);
+  console.log('Dealer has cards', dealerHand);
+};
+// -- Global variable: playerHand, dealerHand 
+
+//-- Need to have Main function 
+// --- Call the function to start the game.
+startGame();
+// The player decides if they want to 'hit'/draw a card or stand
+// These are the two inputs. Need input validation here
+ // state1: player submits to deal 1 card each. If >21, forgo state 2&3, go to state4
+ // state1: player hits & stands. 
+ // state2: dealer has to get <17. Dealer doesn't need to hit or stand
+ // state3: comparing the hand
+// state 4: win/lose
+
+// -- state3: Determine the score or the 'hand'
+// -- var: playerScore, dealerScore, compare
+// After player's turn, it's the dealer's turn. 
+// The dealer has to hit if their hand is below 17. 
+// rank the cards first and add a value to the cards
+// aces are worth 1 or 11, Jack, Queen and King are 10
+
+// -- Game logic
+// Probably need to use more if else functions here 
+// aces: 11+1, 11+1+1, 1+1+1..start aces at 1, try to +10 to the value if less than 21 to enable player to win
+
+// Each players' score is the total of their card ranks. Jacks/Queen/Kings are 10. Aces can be 1 or 11.
+// The player who is closer to, but not above 21 wins the hand.
+// --- state 4: Determine the winner
+var determineWinner = function (playerHand, dealerHand) {
+  let playerValue = getHandValue(playerHand);
+  let dealerValue = getHandValue(dealerHand);
+
+  if (playerValue > 21) {
+      return 'Dealer wins!';
+  } else if (dealerValue > 21) {
+      return 'Player wins!';
+  } else if (playerValue > dealerValue) {
+      return 'Player wins!';
+  } else if (dealerValue > playerValue) {
+      return 'Dealer wins!';
+  } else {
+      return 'It is a tie!';
+  }
+}
