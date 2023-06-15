@@ -92,6 +92,7 @@ var calculateHand = function (hand) {
     if (handScore > 21) {
       handScore = handScore - 10;
     }
+    index += 1;
   }
   return handScore;
 };
@@ -148,13 +149,26 @@ var main = function (input) {
 
     if (playerBlackJack == true || dealerBlackJack == true) {
       if (playerBlackJack == true && dealerBlackJack == true) {
-        return (output = showHand(playerHand, dealerHand) + "<br/> TIE!");
+        setTimeout(() => {
+          document.location.reload();
+        }, 5000);
+        return (output =
+          showHand(playerHand, dealerHand) +
+          "<br/> TIE!  <br/>game will restart in 5s");
       } else if (playerBlackJack == true && dealerBlackJack != true) {
+        setTimeout(() => {
+          document.location.reload();
+        }, 5000);
         return (output =
-          showHand(playerHand, dealerHand) + "<br/> Player Blackjack!");
+          showHand(playerHand, dealerHand) +
+          "<br/> Player Blackjack!  <br/>game will restart in 5s");
       } else {
+        setTimeout(() => {
+          document.location.reload();
+        }, 5000);
         return (output =
-          showHand(playerHand, dealerHand) + "<br/> Dealer Blackjack!");
+          showHand(playerHand, dealerHand) +
+          "<br/> Dealer Blackjack!  <br/>game will restart in 5s");
       }
     } else {
       calculatePlayerHand = calculateHand(playerHand);
@@ -190,7 +204,7 @@ var main = function (input) {
         output =
           showHand(playerHand, dealerHand) +
           showScore(calculatePlayerHand, calculateDealerHand) +
-          "<br/> TIE!";
+          "<br/> TIE! <br/>  <br/>type in r and submit to restart!";
       } else if (
         calculatePlayerHand > calculateDealerHand &&
         calculatePlayerHand < 22
@@ -198,7 +212,7 @@ var main = function (input) {
         output =
           showHand(playerHand, dealerHand) +
           showScore(calculatePlayerHand, calculateDealerHand) +
-          "<br/> Player Wins!";
+          "<br/> Player Wins! <br/>  <br/>type in r and submit to restart!";
       } else if (
         calculatePlayerHand > calculateDealerHand &&
         calculatePlayerHand > 21
@@ -206,18 +220,20 @@ var main = function (input) {
         output =
           showHand(playerHand, dealerHand) +
           showScore(calculatePlayerHand, calculateDealerHand) +
-          "<br/> Player Bust!";
+          "<br/> Player Bust! <br/>  <br/>type in r and submit to restart!";
       } else if (calculateDealerHand > 21) {
         output =
           showHand(playerHand, dealerHand) +
           showScore(calculatePlayerHand, calculateDealerHand) +
-          "<br/> Dealer Bust!";
+          "<br/> Dealer Bust! <br/>  <br/>type in r and submit to restart!";
       } else {
         output =
           showHand(playerHand, dealerHand) +
           showScore(calculatePlayerHand, calculateDealerHand) +
-          "<br/> Dealer Wins!";
+          "<br/> Dealer Wins! <br/> <br/>type in r and submit to restart!";
       }
+    } else if (input == "r") {
+      document.location.reload();
     } else {
       output =
         "wrong input, hit or stand" +
