@@ -182,12 +182,12 @@ const dealerDraws = function () {
 
   while (dealerCount() < 17) {
     let nextCard = cardCheck();
+
     dealerCards.push(nextCard.name);
     dealerValues.push(nextCard.value);
-  }
-
-  if (dealerCount() > 21) {
-    dealerValues[dealerValues.indexOf(11)] = 1;
+    if (dealerCount() > 21) {
+      dealerValues[dealerValues.indexOf(11)] = 1;
+    }
   }
 
   if (dealerCount() > 21) {
