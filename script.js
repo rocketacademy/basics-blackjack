@@ -1,85 +1,55 @@
-player1card = [];
-dealerCard = [];
-gameModeStart = "GAME MODE START";
-gameMode = gameModeStart;
+var player1card = [];
+var dealerCard = [];
+var gameModeStart = "GAME MODE START";
+var gameMode2cards = "GAME MODE 2 CARDS";
+var gameModeHit = "hit";
+var gameMode = gameModeStart;
+var deck = [];
 
-function main(input) {
+var main = function (input) {
   var outputMessage = "";
 
+  //GAMEMODE IS START
   if (gameMode === gameModeStart) {
-    console.log("gamemode is:" + gameMode);
-    outputMessage = draw2cards();
-    //change gameMode for next player
-    // gameMode = gameMode_CHOOSE_DICE;
-
+    // Make Deck
+    startDeck = createDeck();
+    console.log("deck before dealing " + startDeck.length);
+    //Each player deals 2 cards one by one starting from the last card
+    player1card.push(startDeck.pop());
+    dealerCard.push(startDeck.pop());
+    player1card.push(startDeck.pop());
+    dealerCard.push(startDeck.pop());
+    console.log("deck after dealing 2 each " + startDeck.length);
+    deck.push(startDeck);
+    console.log(deck);
+    gameMode = gameMode2cards;
+    outputMessage =
+      "Both cards are drawn. Checking for blackjack.... Click 'Submit'";
     return outputMessage;
   }
-}
+  // Cards are analysed for winning conditions
 
-// User clicks submit to deal cards - 1st time
-function draw2cards() {
-  for (counter = 0; counter < 2; counter += 1) {
-    action = draw1Card();
-  }
-  outputMessage = `Player 1 card are ${player1card[0].name} ${player1card[0].suit} and ${player1card[1].name} ${player1card[1].suit}.<br> Dealer's card are ${dealerCard[0].name} ${dealerCard[0].suit} and ${dealerCard[1].name} ${dealerCard[1].suit}.`;
+  // cards are displayed to user
+  // return `Player 1's card are ${player1card[0].name} and ${player1card[1].name} <br> Dealer's card are ${dealerCard[0].name} and ${dealerCard[1].name} <br><br> Player 1 - type hit (draw a card) or stand (end their turn)`;
 
-  return outputMessage;
-}
+  // If no blackjack .. User decides whether to hit or stand
 
-var draw1Card = function () {
-  // Shuffle Deck
-  var deck = makeDeck();
-  var shuffledDeck = shuffleCards(deck);
-  /////take last card
-  var player1 = shuffledDeck[shuffledDeck.length - 1];
-  /////save card in array
-  player1card.push(player1);
-  /////remove the last card from the deck
-  shuffledDeck.pop(shuffledDeck.length - 1);
-  console.log("player 1 cards:" + player1card[0].name);
+  // User's cards are analysed for winning/losing conditions
 
-  /// For Dealer
-  var dealer = shuffledDeck[shuffledDeck.length - 1];
-  /////save card in array
-  dealerCard.push(dealer);
-  /////remove the last card from the deck
-  shuffledDeck.pop(shuffledDeck.length - 1);
+  // Computer decides to hit or stand automatically based on game rules
+
+  // The game either ends or continues
 };
 
-//console.log("Player1card:" + player1.name);
-
-// console.log("Shuffled deck before removal:" + shuffledDeck.length);
-
-// console.log("Shuffled deck afetr removal:" + shuffledDeck.length);
-// console.log(player1card[0]);
-
-// return player1.name;
-// var player2 = shuffleDeck[getRandomIndex(52)];
-// //console.log("Player2card:" + player2.name);
-// player2card.push(player2);
-// console.log(player2card[0]);
-
-// player1output = `Player 1 cards are ${player1card[0]} and  ${player1card[1]}`;
-// player2output = `Player 2 cards are ${player2card[0]} and  ${player2card[1]}`;
-
-// return player1output < br > player2output;
-
-// Cards are analysed for winning conditions
-
-// cards are displayed to user
-
-// User decides whether to hit or stand
-
-// User's cards are analysed for winning/losing conditions
-
-// Computer decides to hit or stand automatically based on game rules
-
-// The game either ends or continues
-
-/////
-//USER DEALS 2 CARDS
-//////
-//pick a random card for player 1 and player 2
+//////////
+// 01. CREATE A NEW DECK
+///////////
+var createDeck = function () {
+  var newDeck = makeDeck();
+  // Shuffle Deck and put into array
+  var shuffledDeck = shuffleCards(newDeck);
+  return shuffledDeck;
+};
 
 ///////////
 //// MAKE THE DECK
