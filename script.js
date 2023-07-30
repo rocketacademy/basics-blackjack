@@ -1,35 +1,68 @@
 player1card = [];
-player2card = [];
+dealerCard = [];
+gameModeStart = "GAME MODE START";
+gameMode = gameModeStart;
 
-var main = function (input) {
+function main(input) {
+  var outputMessage = "";
+
+  if (gameMode === gameModeStart) {
+    console.log("gamemode is:" + gameMode);
+    outputMessage = draw2cards();
+    //change gameMode for next player
+    // gameMode = gameMode_CHOOSE_DICE;
+
+    return outputMessage;
+  }
+}
+
+// User clicks submit to deal cards - 1st time
+function draw2cards() {
+  for (counter = 0; counter < 2; counter += 1) {
+    action = draw1Card();
+  }
+  outputMessage = `Player 1 card are ${player1card[0].name} ${player1card[0].suit} and ${player1card[1].name} ${player1card[1].suit}.<br> Dealer's card are ${dealerCard[0].name} ${dealerCard[0].suit} and ${dealerCard[1].name} ${dealerCard[1].suit}.`;
+
+  return outputMessage;
+}
+
+var draw1Card = function () {
   // Shuffle Deck
-
   var deck = makeDeck();
   var shuffledDeck = shuffleCards(deck);
-
-  // User clicks submit to deal cards - 1st time
-  //take last card
+  /////take last card
   var player1 = shuffledDeck[shuffledDeck.length - 1];
-  //console.log("Player1card:" + player1.name);
-  //save card in array
+  /////save card in array
   player1card.push(player1);
-  //remove the last card from the deck
-  console.log("Shuffled deck before removal:" + shuffledDeck.length);
+  /////remove the last card from the deck
   shuffledDeck.pop(shuffledDeck.length - 1);
-  console.log("Shuffled deck afetr removal:" + shuffledDeck.length);
-  console.log(player1card[0]);
+  console.log("player 1 cards:" + player1card[0].name);
 
-  return player1.name;
-  // var player2 = shuffleDeck[getRandomIndex(52)];
-  // //console.log("Player2card:" + player2.name);
-  // player2card.push(player2);
-  // console.log(player2card[0]);
-
-  // player1output = `Player 1 cards are ${player1card[0]} and  ${player1card[1]}`;
-  // player2output = `Player 2 cards are ${player2card[0]} and  ${player2card[1]}`;
-
-  // return player1output < br > player2output;
+  /// For Dealer
+  var dealer = shuffledDeck[shuffledDeck.length - 1];
+  /////save card in array
+  dealerCard.push(dealer);
+  /////remove the last card from the deck
+  shuffledDeck.pop(shuffledDeck.length - 1);
 };
+
+//console.log("Player1card:" + player1.name);
+
+// console.log("Shuffled deck before removal:" + shuffledDeck.length);
+
+// console.log("Shuffled deck afetr removal:" + shuffledDeck.length);
+// console.log(player1card[0]);
+
+// return player1.name;
+// var player2 = shuffleDeck[getRandomIndex(52)];
+// //console.log("Player2card:" + player2.name);
+// player2card.push(player2);
+// console.log(player2card[0]);
+
+// player1output = `Player 1 cards are ${player1card[0]} and  ${player1card[1]}`;
+// player2output = `Player 2 cards are ${player2card[0]} and  ${player2card[1]}`;
+
+// return player1output < br > player2output;
 
 // Cards are analysed for winning conditions
 
