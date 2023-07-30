@@ -139,6 +139,173 @@ var checkForBlackJack = function (handArray) {
   return isBlackjack;
 };
 
+var determineBlackjackOutcome = function (
+  playerHasBlackjack,
+  computerHasBlackjack
+) {
+  if (playerHasBlackjack && computerHasBlackjack) {
+    // Both player and dealer have blackjack -- it's a tie
+    return (
+      gameMessageDisplayPlayerandComputerHands(playerHand, computerHand) +
+      gameMessageDisplayHandTotalValue(
+        playerHandTotalValue,
+        computerHandTotalValue
+      ) +
+      GAME_MESSAGE_TIE
+    );
+  } else if (playerHasBlackjack) {
+    // Only player has blackjack -- player wins
+    return (
+      gameMessageDisplayPlayerandComputerHands(playerHand, computerHand) +
+      gameMessageDisplayHandTotalValue(
+        playerHandTotalValue,
+        computerHandTotalValue
+      ) +
+      GAME_MESSAGE_PLAYER_WINS
+    );
+  } else if (computerHasBlackjack) {
+    // Only dealer has blackjack -- dealer wins
+    return (
+      gameMessageDisplayPlayerandComputerHands(playerHand, computerHand) +
+      gameMessageDisplayHandTotalValue(
+        playerHandTotalValue,
+        computerHandTotalValue
+      ) +
+      GAME_MESSAGE_COMPUTER_WINS
+    );
+  }
+  {
+    // there is no blackjack (when the 2 cards are on hand)
+
+    // count the "value" of all the cards in each player hand
+    var playerHandTotalValue = calculateSumOfHandValue(playerHand);
+    var computerHandTotalValue = calculateSumOfHandValue(computerHand);
+
+    console.log("Player Hand - Total: ", playerHandTotalValue);
+    console.log("Dealer Hand - Total: ", computerHandTotalValue);
+
+    //compare player and computer hand value
+    // Both players have the same value -- it's a tie
+    if (playerHandTotalValue === computerHandTotalValue) {
+      outputMessage =
+        gameMessageDisplayPlayerandComputerHands(playerHand, computerHand) +
+        gameMessageDisplayHandTotalValue(
+          playerHandTotalValue,
+          computerHandTotalValue
+        ) +
+        GAME_MESSAGE_TIE;
+    }
+    // User's hand has the higher value -- player wins
+    else if (playerHandTotalValue > computerHandTotalValue) {
+      outputMessage =
+        gameMessageDisplayPlayerandComputerHands(playerHand, computerHand) +
+        gameMessageDisplayHandTotalValue(
+          playerHandTotalValue,
+          computerHandTotalValue
+        ) +
+        GAME_MESSAGE_PLAYER_WINS;
+    } else {
+      outputMessage =
+        gameMessageDisplayPlayerandComputerHands(playerHand, computerHand) +
+        gameMessageDisplayHandTotalValue(
+          playerHandTotalValue,
+          computerHandTotalValue
+        ) +
+        GAME_MESSAGE_COMPUTER_WINS;
+    }
+    // do i want to take a new card?
+    // burst or not?
+    return outputMessage;
+  }
+};
+
+var calculateSumOfHandValue = function (handArray) {
+  // create variable for the "total sum"
+  var totalHandValue = 0;
+
+  // go through player/computer hand, and add up the values in their hands.
+  var index = 0;
+  while (index < handArray.length) {
+    var currentCard = handArray[index];
+
+    // assign value (10) to Jack, Queen and King. Do not use their ranking for the calulation.
+
+    if (
+      currentCard.name === "Jack" ||
+      currentCard.name === "Queen" ||
+      currentCard.name === "King"
+    ) {
+      totalHandValue = totalHandValue + 10;
+    } else {
+      totalHandValue = totalHandValue + currentCard.rank;
+    }
+    index += 1;
+  }
+  return totalHandValue;
+};
+
+// GAME Messages
+
+var GAME_MESSAGE_TIE = "<br> It's a tie.";
+var GAME_MESSAGE_PLAYER_WINS = "<br> You win!";
+var GAME_MESSAGE_COMPUTER_WINS = "<br> Dealer wins";
+
+// 1. Show Player and Dealer Hand value.
+var gameMessageDisplayPlayerandComputerHands = function (
+  playerHandArray,
+  computerHandArray
+) {
+  //Player Hand
+  var displayPlayerMessage = userName + ", your hand: <br>";
+  var index = 0;
+  while (index < playerHandArray.length) {
+    displayPlayerMessage =
+      displayPlayerMessage +
+      playerHandArray[index].name +
+      " of " +
+      playerHandArray[index].suit +
+      ". <br>";
+    index += 1;
+  }
+  //Dealer Hand
+  index = 0;
+  var displayDealerMessage = "Dealer's hand: <br>";
+  while (index < computerHandArray.length) {
+    displayDealerMessage =
+      displayDealerMessage +
+      computerHandArray[index].name +
+      " of " +
+      computerHandArray[index].suit +
+      ". <br>";
+    index += 1;
+  }
+  return displayPlayerMessage + "<br>" + displayDealerMessage;
+};
+
+// 2. Show the total value on Player and Dealer Hand.
+var gameMessageDisplayHandTotalValue = function (
+  playerHandValue,
+  computerHandValue
+) {
+  var displayHandTotalValue =
+    "<br>" +
+    userName +
+    ", your total hand value: " +
+    playerHandValue +
+    "<br> Dealer has " +
+    computerHandValue +
+    ". <br>";
+  return displayHandTotalValue;
+};
+
+/*
+================================================================
+================================================================
+======================   MAIN FUNCTION =========================
+================================================================
+================================================================
+*/
+
 var main = function (input) {
   var outputMessage = "";
   if (currentGameMode === "Key in username") {
@@ -159,7 +326,8 @@ var main = function (input) {
 
     // progress
     currentGameMode = GAME_CARDS_DRAWN;
-    outputMessage = "Everyone has been dealt 2 cards. Sumit to evaluate cards.";
+    outputMessage =
+      "Everyone has been dealt 2 cards. Sumit to evaluate cards. More insturctions...";
     // write and return the output message
     return outputMessage;
   }
@@ -183,33 +351,16 @@ var main = function (input) {
     console.log("Does player has blackjack: ", playerHasBlackjack);
     console.log("Does dealer has blackjack: ", computerHasBlackjack);
 
-    // // testcheck for if there's a blackjack
-    // playerHasBlackjack = true;
-    // computerHasBlackjack = true;
+    // testcheck for if there's a blackjack and determine outcome.
 
-    var determineBlackjackOutcome = function (
+    outputMessage = determineBlackjackOutcome(
       playerHasBlackjack,
       computerHasBlackjack
-    ) {
-      if (playerHasBlackjack && computerHasBlackjack) {
-        // Both player and dealer have blackjack -- it's a tie
-        return "It's a tie!";
-      } else if (playerHasBlackjack) {
-        // Only player has blackjack -- player wins
-        return "You win!";
-      } else computerHasBlackjack;
-      // Only dealer has blackjack -- dealer wins
-      return "Dealer wins!";
-    };
-  }
+    );
+    return outputMessage;
 
-  // there is no blackjack (when all players have 2 cards only)
-  else {
-    outputMessage = "There is no blackjack.";
-    console.log(outputMessage);
+    //----
+    // change game mode
+    //appropriate output message
   }
-
-  //----
-  // change game mode
-  //appropriate output message
 };
