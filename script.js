@@ -13,10 +13,14 @@
 
 // set values to deck - how is ace 1 or 11?
 
+// game state - hit or stand
+// allow user to hit or stand
+
 //Game State
 var currentGameMode = "Key in username";
 var GAME_STARTS = "Game starts";
 var GAME_CARDS_DRAWN = "Game cards drawn";
+var GAME_HIT_OR_STAND = "Hit or Stand";
 var GAME_RESUTLS = "Results of both players";
 
 //Username
@@ -173,10 +177,8 @@ var determineBlackjackOutcome = function (
       ) +
       GAME_MESSAGE_COMPUTER_WINS
     );
-  }
-  {
+  } else {
     // there is no blackjack (when the 2 cards are on hand)
-
     // count the "value" of all the cards in each player hand
     var playerHandTotalValue = calculateSumOfHandValue(playerHand);
     var computerHandTotalValue = calculateSumOfHandValue(computerHand);
@@ -215,6 +217,7 @@ var determineBlackjackOutcome = function (
     }
     // do i want to take a new card?
     // burst or not?
+    currentGameMode = GAME_HIT_OR_STAND;
     return outputMessage;
   }
 };
@@ -244,11 +247,22 @@ var calculateSumOfHandValue = function (handArray) {
   return totalHandValue;
 };
 
-// GAME Messages
+/*
+================================================================
+================================================================
+====================== OUTPUT MESSAGES =========================
+================================================================
+================================================================
+*/
+var images = {
+  win: '<img src = "https://media.tenor.com/RBkfDOWuXYEAAAAi/chibi-cat-white-cat.gif"/>',
+  lose: '<img src = "https://media.tenor.com/Wf2tmMAhMcoAAAAi/chibi-cat-mochi-cat.gif"/>',
+  tie: '<img src = "https://media.tenor.com/dk-wSWullF0AAAAi/mochi-cat-chibi-cat.gif"/> ',
+};
 
-var GAME_MESSAGE_TIE = "<br> It's a tie.";
-var GAME_MESSAGE_PLAYER_WINS = "<br> You win!";
-var GAME_MESSAGE_COMPUTER_WINS = "<br> Dealer wins";
+var GAME_MESSAGE_TIE = "<br> " + images.tie + "<br> It's a tie.";
+var GAME_MESSAGE_PLAYER_WINS = "<br>" + images.win + "<br> You win!";
+var GAME_MESSAGE_COMPUTER_WINS = "<br>" + images.lose + "<br> Dealer wins.";
 
 // 1. Show Player and Dealer Hand value.
 var gameMessageDisplayPlayerandComputerHands = function (
@@ -331,7 +345,7 @@ var main = function (input) {
     // write and return the output message
     return outputMessage;
   }
-  if ((currentGameMode = GAME_CARDS_DRAWN)) {
+  if (currentGameMode === GAME_CARDS_DRAWN) {
     // //testcheck for checkForBlackjack function
     // playerHand = [
     //   { name: "Queen", suit: "Hearts ♥️", rank: 12 },
@@ -358,9 +372,57 @@ var main = function (input) {
       computerHasBlackjack
     );
     return outputMessage;
+  }
+  if (currentGameMode === GAME_HIT_OR_STAND) {
+    //player hit
+    if (input == "hit") {
+      playerHand.push(gameDeck.pop());
+      outputMessage =
+        gameMessageDisplayPlayerandComputerHands(playerHand, computerHand) +
+        "<br> You drew another card. <br> Please input 'hit' or 'stand'.";
+    } else if (input == "stand") {
+      // count the "value" of all the cards in each player hand
+      var playerHandTotalValue = calculateSumOfHandValue(playerHand);
+      var computerHandTotalValue = calculateSumOfHandValue(computerHand);
 
-    //----
-    // change game mode
-    //appropriate output message
+      console.log("Player Hand - Total: ", playerHandTotalValue);
+      console.log("Dealer Hand - Total: ", computerHandTotalValue);
+
+      //compare player and computer hand value
+      // Both players have the same value -- it's a tie
+      if (playerHandTotalValue === computerHandTotalValue) {
+        outputMessage =
+          gameMessageDisplayPlayerandComputerHands(playerHand, computerHand) +
+          gameMessageDisplayHandTotalValue(
+            playerHandTotalValue,
+            computerHandTotalValue
+          ) +
+          GAME_MESSAGE_TIE;
+      }
+      // User's hand has the higher value -- player wins
+      else if (playerHandTotalValue > computerHandTotalValue) {
+        outputMessage =
+          gameMessageDisplayPlayerandComputerHands(playerHand, computerHand) +
+          gameMessageDisplayHandTotalValue(
+            playerHandTotalValue,
+            computerHandTotalValue
+          ) +
+          GAME_MESSAGE_PLAYER_WINS;
+      } else {
+        outputMessage =
+          gameMessageDisplayPlayerandComputerHands(playerHand, computerHand) +
+          gameMessageDisplayHandTotalValue(
+            playerHandTotalValue,
+            computerHandTotalValue
+          ) +
+          GAME_MESSAGE_COMPUTER_WINS;
+      }
+    } //Input validation
+    else {
+      outputMessage =
+        "Please enter only 'hit' or 'stand'. <br><br>" +
+        gameMessageDisplayPlayerandComputerHands(playerHand, computerHand);
+    }
+    return outputMessage;
   }
 };
