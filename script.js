@@ -81,14 +81,33 @@ var dealFirstTwoCards = function () {
   playerCards.push(shuffledDeck.pop());
   dealerCards.push(shuffledDeck.pop());
 };
+//Function to check for blackjack with an input array of two cards
+var checkForBlackJack = function (cardArray) {
+  if (
+    (cardArray[0].cardName === "ace" &&
+      (cardArray[1].cardName === 10 ||
+        cardArray[1].cardName === "jack" ||
+        cardArray[1].cardName === "queen" ||
+        cardArray[1].cardName === "king")) ||
+    (cardArray[1].cardName === "ace" &&
+      (cardArray[0].cardName === 10 ||
+        cardArray[0].cardName === "jack" ||
+        cardArray[0].cardName === "queen" ||
+        cardArray[0].cardName === "king"))
+  ) {
+    return "yes";
+  }
+  return "no";
+};
 
 ///Global Variables
 var INTRO_MESSAGE = "INTRO_MESSAGE";
 var DEAL_CARDS = "DEAL_CARDS";
 var CHECK_FOR_BLACKJACK = "CHECK_FOR_BLACKJACK";
+var PLAYER_DECIDE_HIT_OR_STAND = "PLAYER_DECIDE_HIT_OR_STAND";
+var gamemode = INTRO_MESSAGE;
 var playerCards = [];
 var dealerCards = [];
-var gamemode = INTRO_MESSAGE;
 var shuffledDeck = shuffleCards(makeDeck());
 
 var main = function (input) {
@@ -104,11 +123,43 @@ var main = function (input) {
     console.log(`Current Game Mode: ${gamemode}`);
     dealFirstTwoCards();
     console.log(playerCards);
+    gamemode = CHECK_FOR_BLACKJACK;
   }
+
+  // Check for blackjack, if anyone has blackjack, display winner and restart game
+  if (gamemode === CHECK_FOR_BLACKJACK) {
+    console.log(`Current Game Mode: ${gamemode}`);
+    console.log(`Player Cards: ${playerCards}`);
+    console.log(`Player Blackjack?: ${checkForBlackJack(playerCards)}`);
+    console.log(`Dealer Cards: ${dealerCards}`);
+    console.log(`Dealer Blackjack?: ${checkForBlackJack(dealerCards)}`);
+    var outputMessage;
+    if (
+      checkForBlackJack(dealerCards) === "yes" &&
+      checkForBlackJack(playerCards) === "yes"
+    ) {
+      return "The game is a tie! Both Dealer and Player have Black Jack!!!";
+    }
+    if (
+      checkForBlackJack(dealerCards) === "yes" &&
+      checkForBlackJack(playerCards) === "no"
+    ) {
+      return "Dealer wins with Black Jack!";
+    }
+    if (
+      checkForBlackJack(dealerCards) === "no" &&
+      checkForBlackJack(playerCards) === "yes"
+    ) {
+      return "Player wins with Black Jack!";
+    }
+    gamemode = PLAYER_DECIDE_HIT_OR_STAND;
+  }
+  // Display cards to player
+  // The user decides whether to hit or stand, using the submit button to submit their choice.
+  if (gamemode === PLAYER_DECIDE_HIT_OR_STAND) {
+    console.log(`Current Game Mode: ${gamemode}`);
+  }
+  // The user's cards are analysed for winning or losing conditions.
+  // The computer decides to hit or stand automatically based on game rules.
+  // The game either ends or continues.
 };
-// Check for blackjack, if anyone has blackjack, display winner and restart game
-// Display cards to user
-// The user decides whether to hit or stand, using the submit button to submit their choice.
-// The user's cards are analysed for winning or losing conditions.
-// The computer decides to hit or stand automatically based on game rules.
-// The game either ends or continues.
