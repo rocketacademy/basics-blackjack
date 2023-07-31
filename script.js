@@ -1,5 +1,7 @@
 var player1card = [];
+var player1CardSum;
 var dealerCard = [];
+var dealerCardSum;
 var gameModeStart = "GAME MODE START";
 var gameMode2cards = "GAME MODE 2 CARDS";
 var gameModeHit = "hit";
@@ -27,12 +29,43 @@ var main = function (input) {
       "Both cards are drawn. Checking for blackjack.... Click 'Submit'";
     return outputMessage;
   }
-  // Cards are analysed for winning conditions
+  // Cards are analysed for winning conditions -- if player1 or player 2 wins, then blackjack
+  if (gameMode === gameMode2cards) {
+    //add sum for both dealt cards
+    player1CardSum = Number(player1card[0].rank) + Number(player1card[1].rank);
+    dealerCardSum = Number(dealerCard[0].rank) + Number(dealerCard[1].rank);
 
-  // cards are displayed to user
-  // return `Player 1's card are ${player1card[0].name} and ${player1card[1].name} <br> Dealer's card are ${dealerCard[0].name} and ${dealerCard[1].name} <br><br> Player 1 - type hit (draw a card) or stand (end their turn)`;
+    if (player1CardSum === 21 && dealerCardSum === 21) {
+      outputMessage = `Player 1 cards are ${player1CardSum} <br> Dealer cards are ${dealerCardSum}. <br> It's a tie!`;
+      return outputMessage;
+    }
 
-  // If no blackjack .. User decides whether to hit or stand
+    if (player1CardSum === 21) {
+      outputMessage = `Player 1 cards are ${player1CardSum} <br> Dealer cards are ${dealerCardSum}. <br> Player 1 wins!`;
+      return outputMessage;
+    }
+
+    if (dealerCardSum === 21) {
+      outputMessage = `Player 1 cards are ${player1CardSum} <br> Dealer cards are ${dealerCardSum}. <br> Player 1 wins!`;
+      return outputMessage;
+    }
+    console.log(
+      "Player 1 cards and sum:" +
+        player1card[0].rank +
+        " " +
+        player1card[1].rank +
+        " " +
+        player1CardSum +
+        "Dealer cards and sum:" +
+        dealerCard[0].rank +
+        " " +
+        dealerCard[1].rank +
+        " " +
+        dealerCardSum
+    );
+    // Cards are displayed to user if no black jack and player1 decides to hit or stand
+    return `No black jack yet.<br> <br> Player 1 cards are ${player1card[0].rank} and ${player1card[1].rank}. <br>Dealer's revealed card is ${dealerCard[1].rank}<br><br>Player 1 - type "hit" or "stand"`;
+  }
 
   // User's cards are analysed for winning/losing conditions
 
