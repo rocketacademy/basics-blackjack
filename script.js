@@ -138,7 +138,7 @@ var DEAL_CARDS = "DEAL_CARDS";
 var CHECK_FOR_BLACKJACK = "CHECK_FOR_BLACKJACK";
 var PLAYER_DECIDE_HIT_OR_STAND = "PLAYER_DECIDE_HIT_OR_STAND";
 var CALCULATE_SCORES = "CALCULATE_SCORES";
-var CHECK_FOR_PLAYER_MINIMUM_SCORE = "CHECK_FOR_PLAYER_MINIMUM_SCORE";
+var CHECK_FOR_DEALER_MINIMUM_SCORE = "CHECK_FOR_DEALER_MINIMUM_SCORE";
 var gamemode = INTRO_MESSAGE;
 var playerCards = [];
 var dealerCards = [];
@@ -196,7 +196,7 @@ var main = function (input) {
   }
   // Player decides to hit or stand
   if (gamemode === PLAYER_DECIDE_HIT_OR_STAND && input === "") {
-    return `You have drawn ${displayCards(
+    return `You have drawn <br>${displayCards(
       playerCards
     )}<br>Dealer face up card is ${dealerCards[0].name} ${
       dealerCards[1].suit
@@ -221,7 +221,7 @@ var main = function (input) {
   }
   //If player chooses "stand"
   if (gamemode === PLAYER_DECIDE_HIT_OR_STAND && input === "stand") {
-    gamemode = CHECK_FOR_PLAYER_MINIMUM_SCORE;
+    gamemode = CHECK_FOR_DEALER_MINIMUM_SCORE;
   }
   // Check for invalid input
   if (
@@ -235,6 +235,15 @@ var main = function (input) {
     } ${
       playerCards[playerCards.length - 1].suit
     } and your current score is ${playerScore}<br><br>! Type "hit" to draw another card or "stand" to continue with your current hand`;
+  }
+  //Check if dealer has minimum score of 17, otherwise draw card until minimum is hit
+  if ((gamemode = CHECK_FOR_DEALER_MINIMUM_SCORE)) {
+    dealerScore = calculateScore(dealerCards);
+    while (dealerScore < 17) {
+      drawCard(dealerCards);
+      dealerScore = calculateScore(dealerCards);
+    }
+    gamemode = CALCULATE_SCORES;
   }
   if (gamemode === CALCULATE_SCORES) {
     // The user's cards are analysed for winning or losing conditions.
@@ -281,8 +290,4 @@ var main = function (input) {
       }
     }
   }
-  // Display cards to player
-  // The user decides whether to hit or stand, using the submit button to submit their choice.
-  // The computer decides to hit or stand automatically based on game rules.
-  // The game either ends or continues.
 };
