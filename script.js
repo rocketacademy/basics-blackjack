@@ -99,16 +99,46 @@ var checkForBlackJack = function (cardArray) {
   }
   return "no";
 };
+//Function to calculate score
+var calculateScore = function (cardArray) {
+  var index = 0;
+  while (index <= cardArray[cardArray.length]) {
+    playerScore = playerScore + cardArray[index].cardScore;
+  }
+  index += 1;
+};
+//Function to check if bust
+var checkBust = function (score) {
+  if (score > 21) {
+    return "yes";
+  }
+  return "no";
+};
+//Function to display cards
+var displayCards = function (cardArray) {
+  var outputValue = "";
+  var index = 0;
+  while (index < cardArray.length) {
+    outputValue =
+      outputValue +
+      `${cardArray[index].cardName} ${cardArray[index].currentSuit}<br>`;
+    index += 1;
+  }
+  return outputValue;
+};
 
 ///Global Variables
 var INTRO_MESSAGE = "INTRO_MESSAGE";
 var DEAL_CARDS = "DEAL_CARDS";
 var CHECK_FOR_BLACKJACK = "CHECK_FOR_BLACKJACK";
 var PLAYER_DECIDE_HIT_OR_STAND = "PLAYER_DECIDE_HIT_OR_STAND";
+var CALCULATE_SCORES = "CALCULATE_SCORES";
 var gamemode = INTRO_MESSAGE;
 var playerCards = [];
 var dealerCards = [];
 var shuffledDeck = shuffleCards(makeDeck());
+var playerScore = 0;
+var dealerScore = 0;
 
 var main = function (input) {
   // Display intro message to ask Player to click Submit button to deal cards
@@ -122,18 +152,15 @@ var main = function (input) {
   if (gamemode === DEAL_CARDS) {
     console.log(`Current Game Mode: ${gamemode}`);
     dealFirstTwoCards();
+    console.log(`Player Cards:`);
     console.log(playerCards);
+    console.log(`Dealer Cards:`);
+    console.log(dealerCards);
     gamemode = CHECK_FOR_BLACKJACK;
   }
 
-  // Check for blackjack, if anyone has blackjack, display winner and restart game
+  // Check for blackjack
   if (gamemode === CHECK_FOR_BLACKJACK) {
-    console.log(`Current Game Mode: ${gamemode}`);
-    console.log(`Player Cards: ${playerCards}`);
-    console.log(`Player Blackjack?: ${checkForBlackJack(playerCards)}`);
-    console.log(`Dealer Cards: ${dealerCards}`);
-    console.log(`Dealer Blackjack?: ${checkForBlackJack(dealerCards)}`);
-    var outputMessage;
     if (
       checkForBlackJack(dealerCards) === "yes" &&
       checkForBlackJack(playerCards) === "yes"
@@ -152,12 +179,53 @@ var main = function (input) {
     ) {
       return "Player wins with Black Jack!";
     }
-    gamemode = PLAYER_DECIDE_HIT_OR_STAND;
+    gamemode = CALCULATE_SCORES;
   }
   // Display cards to player
   // The user decides whether to hit or stand, using the submit button to submit their choice.
-  if (gamemode === PLAYER_DECIDE_HIT_OR_STAND) {
+  if (gamemode === CALCULATE_SCORES) {
     console.log(`Current Game Mode: ${gamemode}`);
+    playerScore = calculateScore(playerCards);
+    dealerScore = calculateScore(dealerCards);
+    console.log(`Player Score:${playerScore}`);
+    console.log(`Dealer Score:${dealerScore}`);
+    if (checkBust(playerScore) === "yes" && checkBust(dealerScore) === "yes") {
+      return `Player Cards:<br>${displayCards(
+        playerCards
+      )}<br>Player Score:${playerScore}<br><br>Dealer Cards:<br>${displayCards(
+        dealerCards
+      )}<br>Dealer Score:${dealerScoreScore}<br><br>Both Player and Dealer bust!`;
+    }
+    if (checkBust(playerScore) === "yes" && checkBust(dealerScore) === "no") {
+      return `Player Cards:<br>${displayCards(
+        playerCards
+      )}<br>Player Score:${playerScore}<br><br>Dealer Cards:<br>${displayCards(
+        dealerCards
+      )}<br>Dealer Score:${dealerScoreScore}<br><br>Player Bust! Dealer Wins!!!`;
+    }
+    if (checkBust(playerScore) === "no" && checkBust(dealerScore) === "yes") {
+      return `Player Cards:<br>${displayCards(
+        playerCards
+      )}<br>Player Score:${playerScore}<br><br>Dealer Cards:<br>${displayCards(
+        dealerCards
+      )}<br>Dealer Score:${dealerScoreScore}<br><br>Dealer Bust! Player Wins!!!`;
+    }
+    if (checkBust(playerScore) === "no" && checkBust(dealerScore) === "no") {
+      if (playerScore > dealerScore) {
+        return `Player Cards:<br>${displayCards(
+          playerCards
+        )}<br>Player Score:${playerScore}<br><br>Dealer Cards:<br>${displayCards(
+          dealerCards
+        )}<br>Dealer Score:${dealerScoreScore}<br><br>Player Wins!!!`;
+      }
+      if (playerScore < dealerScore) {
+        return `Player Cards:<br>${displayCards(
+          playerCards
+        )}<br>Player Score:${playerScore}<br><br>Dealer Cards:<br>${displayCards(
+          dealerCards
+        )}<br>Dealer Score:${dealerScoreScore}<br><br>Dealer Wins!!!`;
+      }
+    }
   }
   // The user's cards are analysed for winning or losing conditions.
   // The computer decides to hit or stand automatically based on game rules.
