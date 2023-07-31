@@ -1,4 +1,4 @@
-///Helper Functions
+//////////////////////////////////////////////Helper Functions////////////////////////////////////////////////////////
 //Make a deck of cards
 var makeDeck = function () {
   // Initialise an empty deck array
@@ -102,10 +102,12 @@ var checkForBlackJack = function (cardArray) {
 //Function to calculate score
 var calculateScore = function (cardArray) {
   var index = 0;
-  while (index <= cardArray[cardArray.length]) {
-    playerScore = playerScore + cardArray[index].cardScore;
+  var score = 0;
+  while (index < cardArray.length) {
+    score = score + cardArray[index].score;
+    index += 1;
   }
-  index += 1;
+  return score;
 };
 //Function to check if bust
 var checkBust = function (score) {
@@ -120,26 +122,31 @@ var displayCards = function (cardArray) {
   var index = 0;
   while (index < cardArray.length) {
     outputValue =
-      outputValue +
-      `${cardArray[index].cardName} ${cardArray[index].currentSuit}<br>`;
+      outputValue + `${cardArray[index].name} ${cardArray[index].suit}<br>`;
     index += 1;
   }
   return outputValue;
 };
+//Function to draw one card
+var drawCard = function (cardArray) {
+  cardArray.push(shuffledDeck.pop());
+};
 
-///Global Variables
+//////////////////////////////////////////////Global Variables////////////////////////////////////////////////////////
 var INTRO_MESSAGE = "INTRO_MESSAGE";
 var DEAL_CARDS = "DEAL_CARDS";
 var CHECK_FOR_BLACKJACK = "CHECK_FOR_BLACKJACK";
 var PLAYER_DECIDE_HIT_OR_STAND = "PLAYER_DECIDE_HIT_OR_STAND";
 var CALCULATE_SCORES = "CALCULATE_SCORES";
+var CHECK_FOR_PLAYER_MINIMUM_SCORE = "CHECK_FOR_PLAYER_MINIMUM_SCORE";
 var gamemode = INTRO_MESSAGE;
 var playerCards = [];
 var dealerCards = [];
 var shuffledDeck = shuffleCards(makeDeck());
-var playerScore = 0;
-var dealerScore = 0;
+var playerScore;
+var dealerScore;
 
+//////////////////////////////////////////////Main Function////////////////////////////////////////////////////////
 var main = function (input) {
   // Display intro message to ask Player to click Submit button to deal cards
   if (gamemode === INTRO_MESSAGE) {
@@ -158,9 +165,9 @@ var main = function (input) {
     console.log(dealerCards);
     gamemode = CHECK_FOR_BLACKJACK;
   }
-
   // Check for blackjack
   if (gamemode === CHECK_FOR_BLACKJACK) {
+    console.log(`Current Game Mode: ${gamemode}`);
     if (
       checkForBlackJack(dealerCards) === "yes" &&
       checkForBlackJack(playerCards) === "yes"
@@ -179,11 +186,58 @@ var main = function (input) {
     ) {
       return "Player wins with Black Jack!";
     }
-    gamemode = CALCULATE_SCORES;
+    if (
+      checkForBlackJack(dealerCards) === "no" &&
+      checkForBlackJack(playerCards) === "no"
+    ) {
+      gamemode = PLAYER_DECIDE_HIT_OR_STAND;
+      return `Nobody got BlackJack! Click Submit to continue....`;
+    }
   }
-  // Display cards to player
-  // The user decides whether to hit or stand, using the submit button to submit their choice.
+  // Player decides to hit or stand
+  if (gamemode === PLAYER_DECIDE_HIT_OR_STAND && input === "") {
+    return `You have drawn ${displayCards(
+      playerCards
+    )}<br>Dealer face up card is ${dealerCards[0].name} ${
+      dealerCards[1].suit
+    }<br><br> Type "hit" to draw another card or "stand" to continue with your current hand`;
+  }
+  //If player chooses "hit"
+  if (gamemode === PLAYER_DECIDE_HIT_OR_STAND && input === "hit") {
+    playerScore = calculateScore(playerCards);
+    //Check if player bust. If bust, go to calculate scores
+    if (playerScore > 21) {
+      gamemode = CALCULATE_SCORES;
+      return `You bust:( Click Submit to see the results..............`;
+    }
+    //Display new drawn card to player
+    if (playerScore < 21) {
+      drawCard(playerCards);
+      playerScore = calculateScore(playerCards);
+      return `You have drawn ${playerCards[playerCards.length - 1].name} ${
+        playerCards[playerCards.length - 1].suit
+      } and your current score is ${playerScore}<br><br>! Type "hit" to draw another card or "stand" to continue with your current hand`;
+    }
+  }
+  //If player chooses "stand"
+  if (gamemode === PLAYER_DECIDE_HIT_OR_STAND && input === "stand") {
+    gamemode = CHECK_FOR_PLAYER_MINIMUM_SCORE;
+  }
+  // Check for invalid input
+  if (
+    gamemode === PLAYER_DECIDE_HIT_OR_STAND &&
+    input !== "stand" &&
+    input !== "hit" &&
+    input !== ""
+  ) {
+    return `Invalid Input!<br><br>You have drawn ${
+      playerCards[playerCards.length - 1].name
+    } ${
+      playerCards[playerCards.length - 1].suit
+    } and your current score is ${playerScore}<br><br>! Type "hit" to draw another card or "stand" to continue with your current hand`;
+  }
   if (gamemode === CALCULATE_SCORES) {
+    // The user's cards are analysed for winning or losing conditions.
     console.log(`Current Game Mode: ${gamemode}`);
     playerScore = calculateScore(playerCards);
     dealerScore = calculateScore(dealerCards);
@@ -194,21 +248,21 @@ var main = function (input) {
         playerCards
       )}<br>Player Score:${playerScore}<br><br>Dealer Cards:<br>${displayCards(
         dealerCards
-      )}<br>Dealer Score:${dealerScoreScore}<br><br>Both Player and Dealer bust!`;
+      )}<br>Dealer Score:${dealerScore}<br><br>Both Player and Dealer bust!`;
     }
     if (checkBust(playerScore) === "yes" && checkBust(dealerScore) === "no") {
       return `Player Cards:<br>${displayCards(
         playerCards
       )}<br>Player Score:${playerScore}<br><br>Dealer Cards:<br>${displayCards(
         dealerCards
-      )}<br>Dealer Score:${dealerScoreScore}<br><br>Player Bust! Dealer Wins!!!`;
+      )}<br>Dealer Score:${dealerScore}<br><br>Player Bust! Dealer Wins!!!`;
     }
     if (checkBust(playerScore) === "no" && checkBust(dealerScore) === "yes") {
       return `Player Cards:<br>${displayCards(
         playerCards
       )}<br>Player Score:${playerScore}<br><br>Dealer Cards:<br>${displayCards(
         dealerCards
-      )}<br>Dealer Score:${dealerScoreScore}<br><br>Dealer Bust! Player Wins!!!`;
+      )}<br>Dealer Score:${dealerScore}<br><br>Dealer Bust! Player Wins!!!`;
     }
     if (checkBust(playerScore) === "no" && checkBust(dealerScore) === "no") {
       if (playerScore > dealerScore) {
@@ -216,18 +270,19 @@ var main = function (input) {
           playerCards
         )}<br>Player Score:${playerScore}<br><br>Dealer Cards:<br>${displayCards(
           dealerCards
-        )}<br>Dealer Score:${dealerScoreScore}<br><br>Player Wins!!!`;
+        )}<br>Dealer Score:${dealerScore}<br><br>Player Wins!!!`;
       }
       if (playerScore < dealerScore) {
         return `Player Cards:<br>${displayCards(
           playerCards
         )}<br>Player Score:${playerScore}<br><br>Dealer Cards:<br>${displayCards(
           dealerCards
-        )}<br>Dealer Score:${dealerScoreScore}<br><br>Dealer Wins!!!`;
+        )}<br>Dealer Score:${dealerScore}<br><br>Dealer Wins!!!`;
       }
     }
   }
-  // The user's cards are analysed for winning or losing conditions.
+  // Display cards to player
+  // The user decides whether to hit or stand, using the submit button to submit their choice.
   // The computer decides to hit or stand automatically based on game rules.
   // The game either ends or continues.
 };
