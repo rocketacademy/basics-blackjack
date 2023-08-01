@@ -2,6 +2,7 @@
 var GAME_BEGINS = "game begins";
 var GAME_2_CARDS = "2 cards drawn";
 var GAME_RESULTS = "show results";
+var GAME_HIT_STAND = "Choose to hit or stand";
 var currentGame = GAME_BEGINS;
 // Player and Dealer arrays
 var playerCard = [];
@@ -33,19 +34,27 @@ var main = function (input) {
     if (playerHasBlackjack === true || dealerHasBlackjack === true) {
       // check for tie condition
       if (playerHasBlackjack === true && dealerHasBlackjack === true) {
-        outputMessage = "It's a blackjack tie! Game ends.";
+        outputMessage =
+          displayAllCardsPlayerDealer(playerCard, dealerCard) +
+          "It's a blackjack tie! Game ends.";
       }
       // player 1 has blackjack
       else if (playerHasBlackjack === true && dealerHasBlackjack === false) {
-        outputMessage = "Player wins blackjack!";
+        outputMessage =
+          displayAllCardsPlayerDealer(playerCard, dealerCard) +
+          "Player wins blackjack!";
       }
       // dealer has blackjack
       else {
-        outputMessage = "Dealer wins blackjack";
+        outputMessage =
+          displayAllCardsPlayerDealer(playerCard, dealerCard) +
+          "Dealer wins blackjack";
       }
       console.log(outputMessage);
     } else {
-      outputMessage = " There is no blackjack";
+      outputMessage =
+        displayAllCardsPlayerDealer(playerCard, dealerCard) +
+        "There is no blackjack";
       console.log(outputMessage);
 
       //since no blackjack, game continues
@@ -60,53 +69,57 @@ var main = function (input) {
 
       //if value is above 21, bust!
       if (playerCardSum > 21 && dealerCardSum > 21) {
-        outputMessage = `Player's cards are ${playerCardSum}, dealer's cards are ${dealerCardSum}.<br>Both player and dealers cards exceed 21<br> BUST!`;
+        outputMessage =
+          displayAllCardsPlayerDealer(playerCard, dealerCard) +
+          "Both player and dealers cards exceed 21<br> BUST!";
       } else if (playerCardSum > 21) {
-        outputMessage = `Player's cards are ${playerCardSum}, dealer's cards are ${dealerCardSum}.<br>Player's cards exceeds 21<br> Dealer wins!`;
+        outputMessage =
+          displayAllCardsPlayerDealer(playerCard, dealerCard) +
+          "Player cards exceeds 21<br> Dealer wins!";
       } else if (dealerCardSum > 21) {
-        outputMessage = `Player's cards are ${playerCardSum}, dealer's cards are ${dealerCardSum}.<br>Dealer's cards exceeds 21<br> Player wins!`;
+        outputMessage =
+          displayAllCardsPlayerDealer(playerCard, dealerCard) +
+          "Dealer cards exceeds 21<br> Player wins!";
       } //same value = tie
       else if (playerCardSum == dealerCardSum) {
-        outputMessage = `Player's cards are ${playerCardSum}, dealer's cards are ${dealerCardSum}.<br>Both player and dealer scored the same. <br> It's a tie!`;
+        outputMessage =
+          displayAllCardsPlayerDealer(playerCard, dealerCard) +
+          "Both player and dealer scored the same. <br> It is a tie!";
       }
       //player higher value = player wins
       else if (playerCardSum > dealerCardSum) {
-        outputMessage = `Player's cards are ${playerCardSum}, dealer's cards are ${dealerCardSum}.<br> Player wins!`;
+        outputMessage =
+          displayAllCardsPlayerDealer(playerCard, dealerCard) + "Player wins!";
       }
       //dealer higher value = dealer wins
       else {
-        outputMessage = `Player's cards are ${playerCardSum}, dealer's cards are ${dealerCardSum}.<br> Dealer wins!`;
+        outputMessage =
+          displayAllCardsPlayerDealer(playerCard, dealerCard) + "Dealer wins!";
       }
 
       //change game mode
-      currentGame = GAME_RESULTS;
-      //return output message
-      return outputMessage;
+      currentGame = GAME_HIT_STAND;
     }
+    //return output message
+    return outputMessage;
+  }
+
+  if (currentGame === GAME_HIT_STAND) {
+    //if input is hit, add another card from the deck
+    if (input === "hit") {
+      playerCard.push(startDeck.pop());
+      outputMessage = displayAllCardsPlayerDealer(playerCard, dealerCard);
+    }
+    //if input is stand, validate the values -- copy the comparison values earlier into here
+    //add input validation
+    if (input != "hit" && input != "stand") {
+      outputMessage =
+        "Please type only 'hit' or 'stand'.<br><br>" +
+        displayAllCardsPlayerDealer(playerCard, dealerCard);
+    }
+    return outputMessage;
   }
 };
-
-// // Cards are analysed for winning/losing conditions -- If player1 or player 2 scores 21, then Blackjack! If either scores above 21, then game ends
-// if (gameMode === gameModeDealtCards) {
-//   outputMessage = CHECKWINNINGCONDITIONS();
-//   return outputMessage;
-// }
-// // console.log("gamemode after gameModeDealtCards here:" + gameMode);
-// // User decides to hit
-// if (input === "hit") {
-//   startDeck = cardDeck;
-//   console.log("Deck values:" + startDeck);
-//   player1Card.push(startDeck.pop());
-//   console.log("Remain Deck values:" + startDeck);
-//   console.log("after hit" + player1Card[2].rank);
-//   outputMessage = `Player 1's cards are now:<br> ${player1Card[0].rank} <br> ${player1Card[1].rank} <br> ${player1Card[2].rank}`;
-//   return outputMessage;
-// }
-// User decides to stand
-
-// Computer decides to hit or stand automatically based on game rules
-
-// The game either ends or continues
 
 //////////
 // 01. CREATE A NEW DECK
@@ -186,67 +199,37 @@ var calcArray = function (playerArray) {
 };
 
 ///////////////////
-// 02. DEAL 2 CARDS FOR GAME -- CHECKWINNINGCONDITIONS
-////////////////////
-var CHECKWINNINGCONDITIONS = function () {
-  //add sum for both dealt cards
-  player1CardSum = Number(player1Card[0].rank) + Number(player1Card[1].rank);
-  dealerCardSum = Number(dealerCard[0].rank) + Number(dealerCard[1].rank);
-  gameMode = "";
-
-  //both player and dealer has 21 -- blackjack
-  if (player1CardSum === 21 && dealerCardSum === 21) {
-    outputMessage = `Player 1 cards are ${player1CardSum} <br> Dealer cards are ${dealerCardSum}. <br> It's a tie!`;
-    return outputMessage;
+// xx. DISPLAY CARDS OF BOTH PLAYER AND DEALER IN A NEAT MANNER
+//////////////////
+var displayAllCardsPlayerDealer = function (playerCard, dealerCard) {
+  //Player's cards
+  var playerMessage = "Player's Cards: <br>";
+  for (index = 0; index < playerCard.length; index += 1) {
+    playerMessage =
+      playerMessage +
+      "-" +
+      playerCard[index].name +
+      " of " +
+      playerCard[index].suit +
+      "<br>";
   }
-  //player 1 has blackjack
-  if (player1CardSum === 21) {
-    outputMessage = `Player 1 cards are ${player1CardSum} <br> Dealer cards are ${dealerCardSum}. <br> Player 1 wins!`;
-    return outputMessage;
-  }
-
-  //dealer has blackjack
-  if (dealerCardSum === 21) {
-    outputMessage = `Player 1 cards are ${player1CardSum} <br> Dealer cards are ${dealerCardSum}. <br> Dealer wins!`;
-    return outputMessage;
-  }
-
-  //if both hits above 21, both lost
-  if (dealerCardSum > 21 && player1CardSum > 21) {
-    outputMessage = `Player 1 cards are ${player1CardSum} <br> Dealer cards are ${dealerCardSum}. <br> Both Lost!`;
-    return outputMessage;
+  //Dealer's cards
+  var dealerMessage = "Dealer's Cards: <br>";
+  for (index = 0; index < dealerCard.length; index += 1) {
+    dealerMessage =
+      dealerMessage +
+      "-" +
+      dealerCard[index].name +
+      " of " +
+      dealerCard[index].suit +
+      "<br>";
   }
 
-  //if either hits above 21, it's bust
-  if (player1CardSum > 21) {
-    outputMessage = `Player 1 cards are ${player1CardSum} <br> Dealer cards are ${dealerCardSum}. <br> Player 1 Lost!`;
-    return outputMessage;
-  }
-  if (dealerCardSum > 21) {
-    outputMessage = `Player 1 cards are ${player1CardSum} <br> Dealer cards are ${dealerCardSum}. <br> Dealer Lost!`;
-    return outputMessage;
-  }
-
-  console.log(
-    "Player 1 cards and sum:" +
-      player1Card[0].rank +
-      " " +
-      player1Card[1].rank +
-      " " +
-      player1CardSum +
-      "Dealer cards and sum:" +
-      dealerCard[0].rank +
-      " " +
-      dealerCard[1].rank +
-      " " +
-      dealerCardSum
-  );
-  // Cards are displayed to user if no black jack and player1 decides to hit or stand
-  return `No black jack yet.<br> <br> Player 1 cards are ${player1Card[0].rank} and ${player1Card[1].rank}. <br>Dealer's revealed card is ${dealerCard[1].rank}<br><br>Player 1 - type "hit" or "stand"`;
+  return playerMessage + "<br>" + dealerMessage;
 };
 
 ///////////
-//// MAKE THE DECK
+//// xx. MAKE THE DECK
 ///////////
 var makeDeck = function () {
   // Initialise an empty deck array
@@ -301,13 +284,15 @@ var makeDeck = function () {
   return cardDeck;
 };
 
-// Get a random index ranging from 0 (inclusive) to max (exclusive).
+///////////
+//// xx. RANDOM INDEX TO HELP IN SHUFFLING DECK HELPER FUNCTION
+///////////
 var getRandomIndex = function (max) {
   return Math.floor(Math.random() * max);
 };
 
 ////////////
-/////SHUFFLE THE DECK
+//// xx. SHUFFLE THE DECK
 /////////////
 // Shuffle the elements in the cardDeck array
 var shuffleCards = function (cardDeck) {
