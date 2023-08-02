@@ -145,7 +145,16 @@ var dealerCards = [];
 var shuffledDeck = shuffleCards(makeDeck());
 var playerScore;
 var dealerScore;
-
+var outputMessage;
+//Function to restart game
+var restartGame = function () {
+  gamemode = INTRO_MESSAGE;
+  playerCards = [];
+  dealerCards = [];
+  shuffledDeck = shuffleCards(makeDeck());
+  playerScore;
+  dealerScore;
+};
 //////////////////////////////////////////////Main Function////////////////////////////////////////////////////////
 var main = function (input) {
   // Display intro message to ask Player to click Submit button to deal cards
@@ -216,7 +225,7 @@ var main = function (input) {
       playerScore = calculateScore(playerCards);
       return `You have drawn ${playerCards[playerCards.length - 1].name} ${
         playerCards[playerCards.length - 1].suit
-      } and your current score is ${playerScore}<br><br>! Type "hit" to draw another card or "stand" to continue with your current hand`;
+      } and your current score is ${playerScore}!<br><br>Type "hit" to draw another card or "stand" to continue with your current hand`;
     }
   }
   //If player chooses "stand"
@@ -253,41 +262,53 @@ var main = function (input) {
     console.log(`Player Score:${playerScore}`);
     console.log(`Dealer Score:${dealerScore}`);
     if (checkBust(playerScore) === "yes" && checkBust(dealerScore) === "yes") {
-      return `Player Cards:<br>${displayCards(
+      outputMessage = `Player Cards:<br>${displayCards(
         playerCards
       )}<br>Player Score:${playerScore}<br><br>Dealer Cards:<br>${displayCards(
         dealerCards
-      )}<br>Dealer Score:${dealerScore}<br><br>Both Player and Dealer bust!`;
+      )}<br>Dealer Score:${dealerScore}<br><br>Both Player and Dealer bust!<br><br> Click Submit to play again!`;
     }
     if (checkBust(playerScore) === "yes" && checkBust(dealerScore) === "no") {
-      return `Player Cards:<br>${displayCards(
+      outputMessage = `Player Cards:<br>${displayCards(
         playerCards
       )}<br>Player Score:${playerScore}<br><br>Dealer Cards:<br>${displayCards(
         dealerCards
-      )}<br>Dealer Score:${dealerScore}<br><br>Player Bust! Dealer Wins!!!`;
+      )}<br>Dealer Score:${dealerScore}<br><br>Player Bust! Dealer Wins!!!<br><br> Click Submit to play again!`;
     }
     if (checkBust(playerScore) === "no" && checkBust(dealerScore) === "yes") {
-      return `Player Cards:<br>${displayCards(
+      outputMessage = `Player Cards:<br>${displayCards(
         playerCards
       )}<br>Player Score:${playerScore}<br><br>Dealer Cards:<br>${displayCards(
         dealerCards
-      )}<br>Dealer Score:${dealerScore}<br><br>Dealer Bust! Player Wins!!!`;
+      )}<br>Dealer Score:${dealerScore}<br><br>Dealer Bust! Player Wins!!!<br><br> Click Submit to play again!`;
     }
     if (checkBust(playerScore) === "no" && checkBust(dealerScore) === "no") {
       if (playerScore > dealerScore) {
-        return `Player Cards:<br>${displayCards(
+        outputMessage = `Player Cards:<br>${displayCards(
           playerCards
         )}<br>Player Score:${playerScore}<br><br>Dealer Cards:<br>${displayCards(
           dealerCards
-        )}<br>Dealer Score:${dealerScore}<br><br>Player Wins!!!`;
+        )}<br>Dealer Score:${dealerScore}<br><br>Player Wins!!!<br><br> Click Submit to play again!`;
       }
       if (playerScore < dealerScore) {
-        return `Player Cards:<br>${displayCards(
+        outputMessage = `Player Cards:<br>${displayCards(
           playerCards
         )}<br>Player Score:${playerScore}<br><br>Dealer Cards:<br>${displayCards(
           dealerCards
-        )}<br>Dealer Score:${dealerScore}<br><br>Dealer Wins!!!`;
+        )}<br>Dealer Score:${dealerScore}<br><br>Dealer Wins!!!<br><br> Click Submit to play again!`;
+      }
+      if (playerScore === dealerScore) {
+        outputMessage = `Player Cards:<br>${displayCards(
+          playerCards
+        )}<br>Player Score:${playerScore}<br><br>Dealer Cards:<br>${displayCards(
+          dealerCards
+        )}<br>Dealer Score:${dealerScore}<br><br>Its a draw!!!<br><br> Click Submit to play again!`;
       }
     }
+    restartGame();
+    console.log(`Current Game Mode: ${gamemode}`);
+    return outputMessage;
   }
 };
+//Add function to restart game?
+//Recalculate score with Aces?
