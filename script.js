@@ -4,102 +4,40 @@ var GAME_2_CARDS = "2 cards drawn";
 var GAME_RESULTS = "show results";
 var GAME_HIT_STAND = "Choose to hit or stand";
 var currentGame = GAME_BEGINS;
+var resetMsg =
+  "<br> Care for another game? Go on, click 'Submit' to play again!";
 // Player and Dealer arrays
 var playerCard = [];
-// var playerCardSum;
 var dealerCard = [];
-// var dealerCardSum;
-// Card deck
-var cardDeck = "empty at the start";
+var cardDeck = [];
 
 var main = function (input) {
   var outputMessage = "";
   //Game begins with each player drawing 2 cards each
   if (currentGame === GAME_BEGINS) {
-    outputMessage = GAMEMODESTART();
+    outputMessage = gameStart();
+    currentGame = GAME_2_CARDS;
     return outputMessage;
   }
 
   //Cards are analysed for blackjack
   if (currentGame === GAME_2_CARDS) {
-    // dealerCard = [
-    //   { name: "ace", suit: "spades", rank: 11 },
-    //   { name: 10, suit: "spades", rank: 10 },
-    // ];
     outputMessage = checkForBlackjackMessage();
     //change game mode
-    currentGame = GAME_HIT_STAND;
+
     return outputMessage;
   }
 
   if (currentGame === GAME_HIT_STAND) {
     //if input is hit, add another card from the deck and then calculate
-    if (input === "hit") {
-      playerCard.push(startDeck.pop());
-      var dealerCardSum = calcArray(dealerCard);
-
-      outputMessage = checkForBlackjackMessage();
-      console.log("Dealer cards:", dealerCard);
-    }
-    //if input is stand, validate the values -- copy the comparison values earlier into here
-    else if (input === "stand") {
-      //once player stands, if dealer's cards are 16 and below, draw another card. If it isn't, dealer stand
-      var playerCardSum = calcArray(playerCard);
-      var dealerCardSum = calcArray(dealerCard);
-      // console.log("while loop dealer cards", dealerCardSum);
-      while (dealerCardSum < 17) {
-        dealerCard.push(startDeck.pop());
-        console.log("while loop dealer cards", dealerCard);
-        dealerCardSum = calcArray(dealerCard);
-      }
-      //calculate the total of both cards from each player and dealer
-      console.log("Player card sum:", playerCardSum);
-      console.log("Dealer card sum:", dealerCardSum);
-      // compare the totals
-
-      //if value is above 21, bust!
-      if (playerCardSum > 21 && dealerCardSum > 21) {
-        outputMessage =
-          displayAllCardsPlayerDealer(playerCard, dealerCard) +
-          "Both player and dealers cards exceed 21<br> BUST!";
-      } else if (playerCardSum > 21) {
-        outputMessage =
-          displayAllCardsPlayerDealer(playerCard, dealerCard) +
-          "Player cards exceeds 21<br> Dealer wins!";
-      } else if (dealerCardSum > 21) {
-        outputMessage =
-          displayAllCardsPlayerDealer(playerCard, dealerCard) +
-          "Dealer cards exceeds 21<br> Player wins!";
-      } //same value = tie
-      else if (playerCardSum == dealerCardSum) {
-        outputMessage =
-          displayAllCardsPlayerDealer(playerCard, dealerCard) +
-          "Both player and dealer scored the same. <br> It is a tie!";
-      }
-      //player higher value = player wins
-      else if (playerCardSum > dealerCardSum) {
-        outputMessage =
-          displayAllCardsPlayerDealer(playerCard, dealerCard) + "Player wins!";
-      }
-      //dealer higher value = dealer wins
-      else {
-        outputMessage =
-          displayAllCardsPlayerDealer(playerCard, dealerCard) + "Dealer wins!";
-      }
-    }
-    //add input validation
-    if (input != "hit" && input != "stand") {
-      outputMessage =
-        "Please type only 'hit' or 'stand'.<br><br>" +
-        displayAllCardsPlayer1Dealer(playerCard, dealerCard);
-    }
+    outputMessage = gameHitOrStand();
     return outputMessage;
   }
 };
 
-//////////
+///////////////////
 // 01. CREATE A NEW DECK
-///////////
+///////////////////
 var createShuffledDeck = function () {
   var newDeck = makeDeck();
   // Shuffle Deck and put into array
@@ -108,9 +46,9 @@ var createShuffledDeck = function () {
 };
 
 ///////////////////
-// 02. DEAL 2 CARDS FOR GAME -- GAMEMODESTART
+// 02. DEAL 2 CARDS FOR GAME -- GAME_BEGINS
 ////////////////////
-var GAMEMODESTART = function () {
+var gameStart = function () {
   // Make Deck
   startDeck = createShuffledDeck();
   console.log("deck before dealing " + startDeck.length);
@@ -126,7 +64,7 @@ var GAMEMODESTART = function () {
   console.log(dealerCard);
 
   console.log("deck after dealing 2 each " + startDeck.length);
-  currentGame = GAME_2_CARDS;
+
   outputMessage =
     "Both cards are drawn. Checking for blackjack.... Click 'Submit'";
   return outputMessage;
@@ -154,6 +92,7 @@ var checkForBlackjack = function (playerArray) {
 
 ////////////////////
 //03b. CHECK FOR BLACKJACK AND RETURN OUTPUT MESSAGE
+///////////////////
 var checkForBlackjackMessage = function () {
   var playerHasBlackjack = checkForBlackjack(playerCard);
   var dealerHasBlackjack = checkForBlackjack(dealerCard);
@@ -165,26 +104,31 @@ var checkForBlackjackMessage = function () {
     if (playerHasBlackjack === true && dealerHasBlackjack === true) {
       outputMessage =
         displayAllCardsPlayerDealer(playerCard, dealerCard) +
-        "It's a blackjack tie! Game ends.";
+        "<br> It's a blackjack tie!" +
+        resetMsg;
     }
     // player 1 has blackjack
     else if (playerHasBlackjack === true && dealerHasBlackjack === false) {
       outputMessage =
         displayAllCardsPlayerDealer(playerCard, dealerCard) +
-        "Player wins blackjack!";
+        "<br> Player wins blackjack! " +
+        resetMsg;
     }
     // dealer has blackjack
     else {
       outputMessage =
         displayAllCardsPlayerDealer(playerCard, dealerCard) +
-        "Dealer wins blackjack";
+        "<br> Dealer wins blackjack " +
+        resetMsg;
     }
-    console.log(outputMessage);
+    //clear all arrays and restart game
+    resetGame();
   } else {
     outputMessage =
       displayAllCardsPlayer1Dealer(playerCard, dealerCard) +
-      "There is no blackjack! <br><br> Hey Player 1, type hit' or 'stand'";
+      "<br> There is no blackjack! <br><br> Hey Player 1, type hit' or 'stand'";
     console.log(outputMessage);
+    currentGame = GAME_HIT_STAND;
 
     //since no blackjack, game continues
   }
@@ -193,22 +137,33 @@ var checkForBlackjackMessage = function () {
 };
 
 ///////////////////
-// 04. IF NOT BLACKJACK, CALCULATE PLAYER/DEALER CARD ARRAYS
+// 04. IF NOT BLACKJACK, CALCULATE PLAYER/DEALER CARD ARRAYS. THIS FUNCTION ALSO HANDLES ACE CARDS TO 11 OR 1 DEPENDING ON THE SUM OF THE ARRAY
 //////////////////
 var calcArray = function (playerArray) {
   var totalCardSum = 0;
+  var aceCount = 0;
   var index = 0;
   while (index < playerArray.length) {
     var currentCard = playerArray[index];
     //treat character cards as value 10
     if (
-      currentCard.name == "jack" ||
-      currentCard.name == "queen" ||
-      currentCard.name == "king"
+      currentCard.name === "jack" ||
+      currentCard.name === "queen" ||
+      currentCard.name === "king"
     ) {
       totalCardSum = totalCardSum + 10;
+    } else if (currentCard.name === "ace") {
+      totalCardSum = totalCardSum + 11;
+      aceCount = aceCount + 1;
     } else {
       totalCardSum = totalCardSum + currentCard.rank;
+    }
+    index += 1;
+  }
+  index = 0;
+  while (index < aceCount) {
+    if (totalCardSum > 21) {
+      totalCardSum = totalCardSum - 10;
     }
     index += 1;
   }
@@ -273,9 +228,124 @@ var displayAllCardsPlayer1Dealer = function (playerCard, dealerCard) {
   return playerMessage2 + "<br>" + dealerMessage2;
 };
 
-///////////
+///////////////////
+// 05. COMPARE TOTALS/SUM
+///////////////////
+var compareSum = function (playerCard, dealerCard) {
+  var playerCardSum = calcArray(playerCard);
+  var dealerCardSum = calcArray(dealerCard);
+
+  // compare the totals
+  //if value is above 21, bust!
+  if (playerCardSum > 21 && dealerCardSum > 21) {
+    outputMessage =
+      displayAllCardsPlayerDealer(playerCard, dealerCard) +
+      "<br>Both player and dealers cards exceed 21<br> BUST!" +
+      resetMsg;
+  } else if (playerCardSum > 21) {
+    outputMessage =
+      displayAllCardsPlayerDealer(playerCard, dealerCard) +
+      "<br> Player cards exceeds 21<br> Dealer wins!" +
+      resetMsg;
+  } else if (dealerCardSum > 21) {
+    outputMessage =
+      displayAllCardsPlayerDealer(playerCard, dealerCard) +
+      "<br>Dealer cards exceeds 21<br> Player wins! " +
+      resetMsg;
+  } //same value = tie
+  else if (playerCardSum == dealerCardSum) {
+    outputMessage =
+      displayAllCardsPlayerDealer(playerCard, dealerCard) +
+      "<br>Both player and dealer scored the same. <br> It is a tie!" +
+      resetMsg;
+  }
+  //player higher value = player wins
+  else if (playerCardSum > dealerCardSum) {
+    outputMessage =
+      displayAllCardsPlayerDealer(playerCard, dealerCard) +
+      "<br>Player wins! " +
+      resetMsg;
+  }
+  //dealer higher value = dealer wins
+  else {
+    outputMessage =
+      displayAllCardsPlayerDealer(playerCard, dealerCard) +
+      "<br>Dealer wins! " +
+      resetMsg;
+  }
+  resetGame();
+  return outputMessage;
+};
+
+//////////////////
+//// 6. GAME HIT OR STAND
+////////////////
+var gameHitOrStand = function () {
+  if (input.toLowerCase() === "hit") {
+    playerCard.push(startDeck.pop());
+    // var dealerCardSum = calcArray(dealerCard);
+    var playerCardSum = calcArray(playerCard);
+    console.log("sum of player 1 cards:", playerCardSum);
+    outputMessage =
+      displayAllCardsPlayer1Dealer(playerCard, dealerCard) +
+      " <br> Player 1, type hit' or 'stand'";
+
+    //if player hits above 21, bust!
+    if (playerCardSum > 21) {
+      outputMessage =
+        displayAllCardsPlayerDealer(playerCard, dealerCard) +
+        "<br> Player Lost! Dealer wins!" +
+        resetMsg;
+      resetGame();
+    }
+    // if player hits 21, blackjack!
+    if (playerCardSum === 21) {
+      outputMessage =
+        displayAllCardsPlayerDealer(playerCard, dealerCard) +
+        "<br> Player Wins by Blackjack!" +
+        resetMsg;
+      resetGame();
+    }
+    return outputMessage;
+  }
+  //if input is stand, validate the values -- copy the comparison values earlier into here
+  if (input.toLowerCase() === "stand") {
+    //once player stands, if dealer's cards are 16 and below, draw another card. If it isn't, dealer stand
+    // var playerCardSum = calcArray(playerCard);
+    var dealerCardSum = calcArray(dealerCard);
+    // console.log("while loop dealer cards", dealerCardSum);
+    while (dealerCardSum < 17) {
+      dealerCard.push(startDeck.pop());
+      dealerCardSum = calcArray(dealerCard);
+    }
+    //Check for blackjack first. If no blackjack, then compare higher value
+    outputMessage = compareSum(playerCard, dealerCard);
+  }
+
+  //add input validation
+  if (input.toLowerCase() != "hit" && input.toLowerCase() != "stand") {
+    outputMessage =
+      "Please type only 'hit' or 'stand'.<br><br>" +
+      displayAllCardsPlayer1Dealer(playerCard, dealerCard);
+  }
+  return outputMessage;
+};
+
+///////////////////
+// 7. RESET GAME AFTER WIN
+///////////////////
+var resetGame = function () {
+  playerCard = [];
+  playerCardSum = [];
+  dealerCard = [];
+  dealerCardSum = [];
+  cardDeck = [];
+  currentGame = GAME_BEGINS;
+};
+
+///////////////////
 //// xx. MAKE THE DECK
-///////////
+///////////////////
 var makeDeck = function () {
   // Initialise an empty deck array
   var cardDeck = [];
@@ -329,17 +399,16 @@ var makeDeck = function () {
   return cardDeck;
 };
 
-///////////
+///////////////////
 //// xx. RANDOM INDEX TO HELP IN SHUFFLING DECK HELPER FUNCTION
-///////////
+///////////////////
 var getRandomIndex = function (max) {
   return Math.floor(Math.random() * max);
 };
 
-////////////
+///////////////////
 //// xx. SHUFFLE THE DECK
-/////////////
-// Shuffle the elements in the cardDeck array
+///////////////////
 var shuffleCards = function (cardDeck) {
   // Loop over the card deck array once
   var currentIndex = 0;
