@@ -16,13 +16,18 @@ var DRAW_CARDS = "DRAW_CARDS";
 var HIT_OR_STAND = "HIT_OR_STAND";
 var ACE_CARD = "ACE_CARD";
 var DECLARE_WINNER = "DECLARE_WINNER";
-var EXCEEDING_NUMBER = "EXCEEDING_NUMBER";
 
 var gameMode = DRAW_CARDS;
 
 var HIT = "hit";
 var STAND = "stand";
 var button2;
+
+var playerCardArray = [];
+var computerCardArray = [];
+
+var playerFinalNumber;
+var computerFinalNumber;
 
 var main = function (input) {
   makeDeck();
@@ -31,16 +36,34 @@ var main = function (input) {
   // computer draws 2 cards but doesn't reveal it
   var computerCardOne = shuffledDeck.pop();
   var computerCardTwo = shuffledDeck.pop();
+  // computer draws extra card if the total is under 17
+  var computerCardThree = shuffledDeck.pop();
   // player draws 2 cards, these two cards are revealed to player
   var playerCardOne = shuffledDeck.pop();
   var playerCardTwo = shuffledDeck.pop();
   // additional card for when player chooses Hit
   var playerCardThree = shuffledDeck.pop();
   // combined number
-  var computerCombinedNumber =
-    Number(computerCardOne.rank) + Number(computerCardTwo.rank);
+  computerCardArray.push(computerCardOne.rank);
+  computerCardArray.push(computerCardTwo.rank);
+  var computerFinalNumber = computerCardArray[0] + computerCardArray[1];
+  // console.log(
+  //   `Computer Card One: ${computerCardOne.rank} & Computer Card Two: ${computerCardTwo.rank}, Computer Final Number: ${computerFinalNumber}`
+  // );
+  if (computerFinalNumber < 17) {
+    computerCardArray.push(computerCardThree.rank);
+    computerFinalNumber = computerFinalNumber + computerCardArray[2];
+    // console.log(`Computer Card Three: ${computerCardThree.rank}`);
+    // console.log(`Computer Final Number: ${computerFinalNumber}`);
+  }
   var playerCombinedNumber =
     Number(playerCardOne.rank) + Number(playerCardTwo.rank);
+  playerCardArray.push(playerCardOne.rank);
+  playerCardArray.push(playerCardTwo.rank);
+  // console.log(
+  //   `Player Card One: ${playerCardOne.rank}, Player Card Two: ${playerCardTwo.rank}`
+  // );
+  console.log(`GAME MODE: ${gameMode}`);
   // compare conditions
   if (gameMode === DRAW_CARDS && playerCombinedNumber < 21) {
     // button.innerText = "Hit";
@@ -48,23 +71,48 @@ var main = function (input) {
     // button2.innerText = "Stand";
     // document.body.appendChild(button2);
     gameMode = HIT_OR_STAND;
-    return `You drew ${playerCardOne.rank} & ${playerCardTwo.rank} with a combined number of ${playerCombinedNumber}. Input "Hit" to draw another card, or "Stand" to end your turn.`;
+    playerFinalNumber = playerCardArray[0] + playerCardArray[1];
+    myOutputValue = `You drew ${playerCardArray[0]} & ${playerCardArray[1]} with a combined number of ${playerFinalNumber}. Input "Hit" to draw another card, or "Stand" to end your turn.`;
   } else if (gameMode === DRAW_CARDS && playerCombinedNumber > 21) {
-    return `You exceeded the number of 21. Input "Stand" to end your turn.`;
+    myOutputValue = `You drew ${playerCardOne.rank} & ${playerCardTwo.rank} with a combined number of ${playerFinalNumber}. You have exceeded the number of 21. Input "Stand" to end your turn.`;
   }
+
   if (gameMode === HIT_OR_STAND && input === HIT) {
-    var playerCombinedNumber =
-      Number(playerCardOne.rank) +
-      Number(playerCardTwo.rank) +
-      Number(playerCardThree.rank);
-    if (playerCombinedNumber < 21) {
-      return `You drew an additional card of ${playerCardOne.rank}. Combined, your total number is ${playerCombinedNumber}. Input "Stand" to end your turn.`;
-    } else if (playerCombinedNumber > 21) {
-      return `You exceeded the number of 21. Input "Stand" to end your turn.`;
+    playerCardArray.push(playerCardThree.rank);
+    // console.log(`Player Card Three: ${playerCardThree.rank}`);
+    if (playerFinalNumber < 21) {
+      playerFinalNumber = playerFinalNumber + playerCardArray[2];
+      myOutputValue = `You drew an additional card of <b>${playerCardArray[2]}</b>. Combined, your total number is <b>${playerFinalNumber}</b>. Input "Stand" to end your turn.`;
+    } else if (playerFinalNumber > 21) {
+      playerFinalNumber = playerFinalNumber + playerCardArray[2];
+      myOutputValue = `You drew an additional card of ${playerCardThree.rank} & have a combined number of ${playerFinalNumber}. You have exceeded the number of 21. Input "Stand" to end your turn.`;
     }
-    if (gameMode === HIT_OR_STAND && input === STAND) {
-      gameMode = DECLARE_WINNER;
+  }
+  if (gameMode === HIT_OR_STAND && input == STAND) {
+    gameMode = DECLARE_WINNER;
+    console.log(`GAME MODE: ${gameMode}`);
+    if (computerFinalNumber < playerFinalNumber && playerFinalNumber <= 21) {
+      myOutputValue = `You drew a total of <b>${playerFinalNumber}</b> and the computer drew a total of <b>${computerFinalNumber}</b>. <br><h2>You win!</h2>`;
     }
+    if (
+      computerFinalNumber > playerFinalNumber &&
+      playerFinalNumber <= 21 &&
+      computerFinalNumber <= 21
+    ) {
+      myOutputValue = `You drew a total of <b>${playerFinalNumber}</b> and the computer drew a total of <b>${computerFinalNumber}</b>. <br><h2>The computer wins!</h2> <br> <br> Click Submit again to start over.`;
+    }
+    if (computerFinalNumber === 21 && playerFinalNumber === 21) {
+      myOutputValue = `You drew a total of ${playerFinalNumber} and the computer drew a total of ${computerFinalNumber}. As both of you drew 21, it's a tie!`;
+    }
+    if (computerFinalNumber > 21 && playerFinalNumber > 21) {
+      myOutputValue = `You drew a total of <b>${playerFinalNumber}</b> and the computer drew a total of <b>${computerFinalNumber}</b>. <br> <h2> As both of you have exceeded 21, it's a tie! </h2> <br> <br> Click Submit again to start over.`;
+    }
+    if (computerFinalNumber > 21) {
+      myOutputValue = `You drew a total of <b>${playerFinalNumber}</b> and the computer drew a total of <b>${computerFinalNumber}</b>. <br> <h2>As the computer has exceeded 21, you win! </h2> <br> <br> Click Submit again to start over.`;
+    } else if (playerFinalNumber > 21) {
+      myOutputValue = `The computer drew a total of <b>${computerFinalNumber}</b>.<br> <h2>As you have exceeded 21, the computer wins.</h2><br> <br> Click Submit again to start over.`;
+    }
+    resetGame();
   }
   return myOutputValue;
 };
@@ -84,34 +132,38 @@ var makeDeck = function () {
     // Store the current suit in a variable
     var currentSuit = suits[suitIndex];
 
-    console.log(`Current Suit: ${currentSuit}`);
-
     // Loop from 1 to 13 to create all cards for a given suit
     // Notice rankCounter starts at 1 and not 0, and ends at 13 and not 12.
     // This is an example of a loop without an array.
     var rankCounter = 1;
     while (rankCounter <= 13) {
-      console.log(`Current Card Number: ${rankCounter}`);
+      // Create a variable to store rankNumber
+      var rankNumber;
       // Create a variable to store the card names
       // By default, the card name is the same as rankCounter
       var cardName = rankCounter;
+      // By default, rankNumber is the same as rankCounter
+      var rankNumber = rankCounter;
       // create if conditions for the other cards
       if (cardName == 1) {
         // change card name to Ace
         cardName = "ace";
       } else if (cardName == 11) {
         cardName = "jack";
+        rankNumber = 10;
       } else if (cardName == 12) {
         cardName = "queen";
+        rankNumber = 10;
       } else if (cardName == 13) {
         cardName = "king";
+        rankNumber = 10;
       }
 
       // create a card with the current name, suit and rank
       var card = {
         name: cardName,
         suit: currentSuit,
-        rank: rankCounter,
+        rank: rankNumber,
       };
 
       // add the new card to the deck
@@ -143,8 +195,6 @@ while (index < cardDeck.length) {
   index = index + 1;
 }
 
-// Get a random index ranging from 0 (inclusive) to max (exclusive).
-// What does max mean?
 var getRandomIndex = function (max) {
   return Math.floor(Math.random() * max);
 };
@@ -169,4 +219,13 @@ var shuffleCards = function (cardDeck) {
   }
   // Return the shuffled deck
   return cardDeck;
+};
+
+// reset the game
+var resetGame = function () {
+  // reset to first mode
+  gameMode = DRAW_CARDS;
+  // clear arrays
+  computerCardArray = [];
+  playerCardArray = [];
 };
