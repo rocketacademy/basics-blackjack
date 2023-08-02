@@ -84,16 +84,16 @@ var dealFirstTwoCards = function () {
 //Function to check for blackjack with an input array of two cards
 var checkForBlackJack = function (cardArray) {
   if (
-    (cardArray[0].cardName === "ace" &&
-      (cardArray[1].cardName === 10 ||
-        cardArray[1].cardName === "jack" ||
-        cardArray[1].cardName === "queen" ||
-        cardArray[1].cardName === "king")) ||
-    (cardArray[1].cardName === "ace" &&
-      (cardArray[0].cardName === 10 ||
-        cardArray[0].cardName === "jack" ||
-        cardArray[0].cardName === "queen" ||
-        cardArray[0].cardName === "king"))
+    (cardArray[0].name === "ace" &&
+      (cardArray[1].name === 10 ||
+        cardArray[1].name === "jack" ||
+        cardArray[1].name === "queen" ||
+        cardArray[1].name === "king")) ||
+    (cardArray[1].name === "ace" &&
+      (cardArray[0].name === 10 ||
+        cardArray[0].name === "jack" ||
+        cardArray[0].name === "queen" ||
+        cardArray[0].ame === "king"))
   ) {
     return "yes";
   }
@@ -105,6 +105,10 @@ var calculateScore = function (cardArray) {
   var score = 0;
   while (index < cardArray.length) {
     score = score + cardArray[index].score;
+    if (score > 21 && countAces(cardArray) > 0) {
+      score = score - 10;
+      countAces(cardArray) - 1;
+    }
     index += 1;
   }
   return score;
@@ -131,6 +135,27 @@ var displayCards = function (cardArray) {
 var drawCard = function (cardArray) {
   cardArray.push(shuffledDeck.pop());
 };
+//Function to restart game
+var restartGame = function () {
+  gamemode = INTRO_MESSAGE;
+  playerCards = [];
+  dealerCards = [];
+  shuffledDeck = shuffleCards(makeDeck());
+  playerScore;
+  dealerScore;
+};
+//Function to count number of aces in hand
+var countAces = function (cardArray) {
+  index = 0;
+  var numberOfAces = 0;
+  while (index < cardArray.length) {
+    if (cardArray[index].name === "ace") {
+      numberOfAces = numberOfAces + 1;
+      index += 1;
+    }
+    return numberOfAces;
+  }
+};
 
 //////////////////////////////////////////////Global Variables////////////////////////////////////////////////////////
 var INTRO_MESSAGE = "INTRO_MESSAGE";
@@ -146,15 +171,7 @@ var shuffledDeck = shuffleCards(makeDeck());
 var playerScore;
 var dealerScore;
 var outputMessage;
-//Function to restart game
-var restartGame = function () {
-  gamemode = INTRO_MESSAGE;
-  playerCards = [];
-  dealerCards = [];
-  shuffledDeck = shuffleCards(makeDeck());
-  playerScore;
-  dealerScore;
-};
+
 //////////////////////////////////////////////Main Function////////////////////////////////////////////////////////
 var main = function (input) {
   // Display intro message to ask Player to click Submit button to deal cards
@@ -181,19 +198,22 @@ var main = function (input) {
       checkForBlackJack(dealerCards) === "yes" &&
       checkForBlackJack(playerCards) === "yes"
     ) {
-      return "The game is a tie! Both Dealer and Player have Black Jack!!!";
+      restartGame();
+      return "The game is a tie! Both Dealer and Player have Black Jack!!!<br><br> Click Submit to play again!";
     }
     if (
       checkForBlackJack(dealerCards) === "yes" &&
       checkForBlackJack(playerCards) === "no"
     ) {
-      return "Dealer wins with Black Jack!";
+      restartGame();
+      return "Dealer wins with Black Jack!<br><br> Click Submit to play again!";
     }
     if (
       checkForBlackJack(dealerCards) === "no" &&
       checkForBlackJack(playerCards) === "yes"
     ) {
-      return "Player wins with Black Jack!";
+      restartGame();
+      return "Player wins with Black Jack!<br><br> Click Submit to play again!";
     }
     if (
       checkForBlackJack(dealerCards) === "no" &&
@@ -310,5 +330,4 @@ var main = function (input) {
     return outputMessage;
   }
 };
-//Add function to restart game?
 //Recalculate score with Aces?
