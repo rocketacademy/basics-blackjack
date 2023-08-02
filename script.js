@@ -47,50 +47,69 @@ var main = function (input) {
   computerCardArray.push(computerCardOne.rank);
   computerCardArray.push(computerCardTwo.rank);
   var computerFinalNumber = computerCardArray[0] + computerCardArray[1];
-  // console.log(
-  //   `Computer Card One: ${computerCardOne.rank} & Computer Card Two: ${computerCardTwo.rank}, Computer Final Number: ${computerFinalNumber}`
-  // );
   if (computerFinalNumber < 17) {
     computerCardArray.push(computerCardThree.rank);
     computerFinalNumber = computerFinalNumber + computerCardArray[2];
-    // console.log(`Computer Card Three: ${computerCardThree.rank}`);
-    // console.log(`Computer Final Number: ${computerFinalNumber}`);
   }
   var playerCombinedNumber =
     Number(playerCardOne.rank) + Number(playerCardTwo.rank);
   playerCardArray.push(playerCardOne.rank);
   playerCardArray.push(playerCardTwo.rank);
-  // console.log(
-  //   `Player Card One: ${playerCardOne.rank}, Player Card Two: ${playerCardTwo.rank}`
-  // );
-  console.log(`GAME MODE: ${gameMode}`);
-  // compare conditions
+  console.log(
+    `Player Card One: ${playerCardArray[0]} Player Card Two: ${playerCardArray[1]}`
+  );
+  playerFinalNumber = playerCardArray[0] + playerCardArray[1];
+  if (
+    gameMode === DRAW_CARDS &&
+    (playerCardArray[0] === 1 || playerCardArray[1] === 1)
+  ) {
+    gameMode = ACE_CARD;
+    myOutputValue = `You have drawn <b>${playerCardArray[0]}</b> & <b>${playerCardArray[1]}</b>. <br> You have drawn an Ace card. <br><br> Input "<b>1</b>" or "<b>11</b>" to choose whether its value will be 1 or 11.`;
+  }
+  if (gameMode === ACE_CARD) {
+    if (playerCardArray[0] === 1 && input === "11") {
+      playerCardArray[0] = 11;
+      console.log(
+        `Player Card One: ${playerCardArray[0]} Player Card Two: ${playerCardArray[1]}`
+      );
+      playerFinalNumber = playerCardArray[0] + playerCardArray[1];
+      gameMode = HIT_OR_STAND;
+      return `You have chosen "<b>11</b>", and your combined drawn number is <b>${playerFinalNumber}</b>. <br><br> Input "<b>Hit</b>" to draw another card, or "<b>Stand</b>" to end your turn.`;
+    }
+    if (playerCardArray[1] === 1 && input === "11") {
+      playerCardArray[1] = 11;
+      console.log(
+        `Player Card One: ${playerCardArray[0]} Player Card Two: ${playerCardArray[1]}`
+      );
+      playerFinalNumber = playerCardArray[0] + playerCardArray[1];
+      gameMode = HIT_OR_STAND;
+      return `You have chosen "<b>11</b>", and your combined drawn number is <b>${playerFinalNumber}</b>. <br><br> Input "<b>Hit</b>" to draw another card, or "<b>Stand</b>" to end your turn.`;
+    } else if (input === "1") {
+      gameMode = HIT_OR_STAND;
+      return `You haven chosen "<b>1</b>", and your combined drawn number is <b>${playerFinalNumber}</b>. <br><br> Input "<b>Hit</b>" to draw another card, or "<b>Stand</b>" to end your turn.`;
+    }
+  }
+
   if (gameMode === DRAW_CARDS && playerCombinedNumber < 21) {
-    // button.innerText = "Hit";
-    // button2 = document.createElement("button");
-    // button2.innerText = "Stand";
-    // document.body.appendChild(button2);
     gameMode = HIT_OR_STAND;
-    playerFinalNumber = playerCardArray[0] + playerCardArray[1];
-    myOutputValue = `You drew ${playerCardArray[0]} & ${playerCardArray[1]} with a combined number of ${playerFinalNumber}. Input "Hit" to draw another card, or "Stand" to end your turn.`;
+    myOutputValue = `You drew <b>${playerCardArray[0]}</b> & <b>${playerCardArray[1]}</b> with a combined number of <b>${playerFinalNumber}</b>. <br><br> Input "<b>Hit</b>" to draw another card, or "<b>Stand</b>" to end your turn.`;
   } else if (gameMode === DRAW_CARDS && playerCombinedNumber > 21) {
-    myOutputValue = `You drew ${playerCardOne.rank} & ${playerCardTwo.rank} with a combined number of ${playerFinalNumber}. You have exceeded the number of 21. Input "Stand" to end your turn.`;
+    myOutputValue = `You drew <b>${playerCardOne.rank}</b> & <b>${playerCardTwo.rank}</b> with a combined number of <b>${playerFinalNumber}</b>.<br> You have exceeded the number of 21. <br><br> Input "<b>Stand</b>" to end your turn.`;
   }
 
   if (gameMode === HIT_OR_STAND && input === HIT) {
     playerCardArray.push(playerCardThree.rank);
-    // console.log(`Player Card Three: ${playerCardThree.rank}`);
     if (playerFinalNumber < 21) {
       playerFinalNumber = playerFinalNumber + playerCardArray[2];
-      myOutputValue = `You drew an additional card of <b>${playerCardArray[2]}</b>. Combined, your total number is <b>${playerFinalNumber}</b>. Input "Stand" to end your turn.`;
+      myOutputValue = `You drew an additional card of <b>${playerCardArray[2]}</b>. Combined, your total number is <b>${playerFinalNumber}</b>. <br><br>Input "<b>Stand</b>" to end your turn.`;
     } else if (playerFinalNumber > 21) {
       playerFinalNumber = playerFinalNumber + playerCardArray[2];
-      myOutputValue = `You drew an additional card of ${playerCardThree.rank} & have a combined number of ${playerFinalNumber}. You have exceeded the number of 21. Input "Stand" to end your turn.`;
+      myOutputValue = `You drew an additional card of <b>${playerCardThree.rank}</b> & have a combined number of <b>${playerFinalNumber}</b>. <br>You have exceeded the number of 21. <br><br> Input "<b>Stand</b>" to end your turn.`;
     }
   }
   if (gameMode === HIT_OR_STAND && input == STAND) {
+    console.log(`Player Final Number: ${playerFinalNumber}`);
     gameMode = DECLARE_WINNER;
-    console.log(`GAME MODE: ${gameMode}`);
     if (computerFinalNumber < playerFinalNumber && playerFinalNumber <= 21) {
       myOutputValue = `You drew a total of <b>${playerFinalNumber}</b> and the computer drew a total of <b>${computerFinalNumber}</b>. <br><h2>You win!</h2>`;
     }
@@ -99,18 +118,18 @@ var main = function (input) {
       playerFinalNumber <= 21 &&
       computerFinalNumber <= 21
     ) {
-      myOutputValue = `You drew a total of <b>${playerFinalNumber}</b> and the computer drew a total of <b>${computerFinalNumber}</b>. <br><h2>The computer wins!</h2> <br> <br> Click Submit again to start over.`;
+      myOutputValue = `You drew a total of <b>${playerFinalNumber}</b> and the computer drew a total of <b>${computerFinalNumber}</b>. <br><h2>The computer wins!</h2> <br> <br> Click <b>Submit</b> again to start over.`;
     }
     if (computerFinalNumber === 21 && playerFinalNumber === 21) {
-      myOutputValue = `You drew a total of ${playerFinalNumber} and the computer drew a total of ${computerFinalNumber}. As both of you drew 21, it's a tie!`;
+      myOutputValue = `You drew a total of <b>${playerFinalNumber}</b> and the computer drew a total of <b>${computerFinalNumber}.</b> <br><h2>As both of you drew 21, it's a tie!</h2> <br> <br> Click <b>Submit</b> again to start over.`;
     }
     if (computerFinalNumber > 21 && playerFinalNumber > 21) {
-      myOutputValue = `You drew a total of <b>${playerFinalNumber}</b> and the computer drew a total of <b>${computerFinalNumber}</b>. <br> <h2> As both of you have exceeded 21, it's a tie! </h2> <br> <br> Click Submit again to start over.`;
+      myOutputValue = `You drew a total of <b>${playerFinalNumber}</b> and the computer drew a total of <b>${computerFinalNumber}</b>. <br> <h2> As both of you have exceeded 21, it's a tie! </h2> <br> <br> Click <b>Submit</b> again to start over.`;
     }
     if (computerFinalNumber > 21) {
-      myOutputValue = `You drew a total of <b>${playerFinalNumber}</b> and the computer drew a total of <b>${computerFinalNumber}</b>. <br> <h2>As the computer has exceeded 21, you win! </h2> <br> <br> Click Submit again to start over.`;
+      myOutputValue = `You drew a total of <b>${playerFinalNumber}</b> and the computer drew a total of <b>${computerFinalNumber}</b>. <br> <h2>As the computer has exceeded 21, you win! </h2> <br> <br> Click <b>Submit</b> again to start over.`;
     } else if (playerFinalNumber > 21) {
-      myOutputValue = `The computer drew a total of <b>${computerFinalNumber}</b>.<br> <h2>As you have exceeded 21, the computer wins.</h2><br> <br> Click Submit again to start over.`;
+      myOutputValue = `The computer drew a total of <b>${computerFinalNumber}</b>.<br> <h2>As you have exceeded 21, the computer wins.</h2><br> <br> Click <b>Submit</b> again to start over.`;
     }
     resetGame();
   }
@@ -131,10 +150,6 @@ var makeDeck = function () {
   while (suitIndex < suits.length) {
     // Store the current suit in a variable
     var currentSuit = suits[suitIndex];
-
-    // Loop from 1 to 13 to create all cards for a given suit
-    // Notice rankCounter starts at 1 and not 0, and ends at 13 and not 12.
-    // This is an example of a loop without an array.
     var rankCounter = 1;
     while (rankCounter <= 13) {
       // Create a variable to store rankNumber
@@ -150,6 +165,7 @@ var makeDeck = function () {
         cardName = "ace";
       } else if (cardName == 11) {
         cardName = "jack";
+        // reassign rankNumber to 10
         rankNumber = 10;
       } else if (cardName == 12) {
         cardName = "queen";
