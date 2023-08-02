@@ -170,8 +170,10 @@ var main = function (input) {
       displayPlayerHand(playerHand) +
       "<br>" +
       "<br>" +
-      "Dealer's hand: " +
-      displayPlayerHand(dealerHand) +
+      "One card in Dealer's hand: " +
+      dealerHand[0].name +
+      " of " +
+      dealerHand[0].suit +
       "<br>" +
       "<br>";
 
@@ -182,20 +184,6 @@ var main = function (input) {
     return myOutputMessage;
   }
 
-  cardsShown =
-    "Player's hand: " +
-    displayPlayerHand(playerHand) +
-    "<br>" +
-    "Player's score: " +
-    calculateTotalHandValue(playerHand) +
-    "<br>" +
-    "<br>" +
-    "Dealer's hand: " +
-    displayPlayerHand(dealerHand) +
-    "<br>" +
-    "Deales's score: " +
-    calculateTotalHandValue(dealerHand) +
-    "<br>";
   if (gameState === CHECK_FOR_BLACKJACK) {
     //show the cards in the output message
     var blackjackInFirstHand = "";
@@ -241,12 +229,29 @@ var main = function (input) {
         blackjackInFirstHand = "Looks like Dealer got blackjack! They win!";
       }
 
-      myOutputMessage = cardsShown + blackjackInFirstHand;
+      myOutputMessage =
+        "Player's hand: " +
+        displayPlayerHand(playerHand) +
+        "<br>" +
+        "Player's score: " +
+        calculateTotalHandValue(playerHand) +
+        "<br>" +
+        "<br>" +
+        "Dealer's hand: " +
+        calculateTotalHandValue(dealerHand) +
+        "<br>" +
+        "<br>" +
+        "Deales's score: " +
+        calculateTotalHandValue(dealerHand) +
+        "<br>" +
+        "<br>" +
+        blackjackInFirstHand;
       gameState = GAME_OVER;
     } else {
       gameState = HIT_OR_STAND;
       console.log("game state", gameState);
-      myOutputMessage = "Please key in 'hit' or 'stand'.";
+      myOutputMessage =
+        "Please key in 'hit' if you'd like to draw one card or 'stand' if you think you got enough.";
     }
     return myOutputMessage;
   }
@@ -256,7 +261,7 @@ var main = function (input) {
     //validate input:
     if (input !== "hit" && input !== "stand") {
       var errorMessage =
-        "Oops,something went wrong! Please input either 'hit' or 'stand' to continue the game!";
+        "Oops, something went wrong! Please input either 'hit' or 'stand' to continue the game!";
       return errorMessage;
     }
     if (input === "hit") {
@@ -267,19 +272,37 @@ var main = function (input) {
         playerHand[lastPlayerCardIndex].name +
         " of " +
         playerHand[lastPlayerCardIndex].suit;
-      return (
+      myOutputMessage =
         "Player drew a " +
         newPlayerCard +
         "<br>" +
         "<br>" +
-        cardsShown +
+        "Player's hand: " +
+        displayPlayerHand(playerHand) +
+        "<br>" +
+        "Player's score: " +
+        calculateTotalHandValue(playerHand) +
         "<br>" +
         "<br>" +
-        "Please key in 'hit' or 'stand'. "
-      );
+        "One card in Dealer's hand: " +
+        dealerHand[0].name +
+        " of " +
+        dealerHand[0].suit +
+        "<br>" +
+        "<br>" +
+        "Please key in 'hit' if you'd like to draw one card or 'stand' if you think you got enough. ";
+      return myOutputMessage;
     } else {
+      var dealerHandValue = calculateTotalHandValue(dealerHand);
+      while (dealerHandValue < 17) {
+        dealerHand.push(cardDeck.pop());
+        dealerHandValue = calculateTotalHandValue(dealerHand);
+        console.log("dealer's hand value ", dealerHandValue);
+      }
       gameState = COMPARE_HAND_VALUES;
-      return "Please click 'Submit' to see the game result.";
+
+      myOutputMessage = "Please click 'Submit' to see the game result.";
+      return myOutputMessage;
     }
   }
   if (gameState === COMPARE_HAND_VALUES) {
@@ -287,25 +310,41 @@ var main = function (input) {
     console.log("Player's score:", totalPlayerScore);
     totalDealerScore = calculateTotalHandValue(dealerHand);
     console.log("Dealer's score", totalDealerScore);
+
+    myOutputMessage =
+      "Player's hand: " +
+      displayPlayerHand(playerHand) +
+      "<br>" +
+      "Player's score: " +
+      calculateTotalHandValue(playerHand) +
+      "<br>" +
+      "<br>" +
+      "Dealer's hand: " +
+      displayPlayerHand(dealerHand) +
+      "<br>" +
+      "Deales's score: " +
+      calculateTotalHandValue(dealerHand) +
+      "<br>" +
+      "<br>";
     //bust for both players:
     if (totalPlayerScore > 21 && totalPlayerScore === totalDealerScore) {
       firstRoundOutcome = "Oops! Both Player and Dealer busted! It's a tie!";
     }
-    //winning conditions:
+    //winning&losing conditions:
     //player wins if a) dealer's score is more that 21 and player's score is less
     if (totalPlayerScore < 21 && totalDealerScore > 21) {
-      firstRoundOutcome = "Dealer busted! Player wins!";
+      firstRoundOutcome = "Bad luck for Dealer: he busts! Player wins!";
     }
     // b) player's score is under 21 and greater than dealer's score
     if (totalPlayerScore < 21 && totalPlayerScore > totalDealerScore) {
-      firstRoundOutcome = "Player wins!";
+      firstRoundOutcome = "YAAY! Player wins!";
     }
     //dealer wins:
     if (totalDealerScore < 21 && totalPlayerScore > 21) {
-      firstRoundOutcome = "Player busted! Dealer wins!";
+      firstRoundOutcome = "Oh no! Player busts! Dealer wins!";
     }
     if (totalDealerScore < 21 && totalDealerScore > totalPlayerScore) {
-      firstRoundOutcome = "Dealer wins!";
+      firstRoundOutcome = "Sorry, Player, you lose! Dealer wins!";
     }
 
     // a tie
