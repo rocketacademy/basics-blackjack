@@ -26,43 +26,33 @@ var main = function (input) {
     //   { name: "ace", suit: "spades", rank: 11 },
     //   { name: 10, suit: "spades", rank: 10 },
     // ];
-    var playerHasBlackjack = checkForBlackjack(playerCard);
-    var dealerHasBlackjack = checkForBlackjack(dealerCard);
+    outputMessage = checkForBlackjackMessage();
+    //change game mode
+    currentGame = GAME_HIT_STAND;
+    return outputMessage;
+  }
 
-    // dealerHasBlackjack = true;
-    // playerHasBlackjack = true;
-    if (playerHasBlackjack === true || dealerHasBlackjack === true) {
-      // check for tie condition
-      if (playerHasBlackjack === true && dealerHasBlackjack === true) {
-        outputMessage =
-          displayAllCardsPlayerDealer(playerCard, dealerCard) +
-          "It's a blackjack tie! Game ends.";
-      }
-      // player 1 has blackjack
-      else if (playerHasBlackjack === true && dealerHasBlackjack === false) {
-        outputMessage =
-          displayAllCardsPlayerDealer(playerCard, dealerCard) +
-          "Player wins blackjack!";
-      }
-      // dealer has blackjack
-      else {
-        outputMessage =
-          displayAllCardsPlayerDealer(playerCard, dealerCard) +
-          "Dealer wins blackjack";
-      }
-      console.log(outputMessage);
-    } else {
-      outputMessage =
-        displayAllCardsPlayerDealer(playerCard, dealerCard) +
-        "There is no blackjack";
-      console.log(outputMessage);
-
-      //since no blackjack, game continues
-
-      //calculate the total of both cards from each player and dealer
-      var playerCardSum = calcArray(playerCard);
+  if (currentGame === GAME_HIT_STAND) {
+    //if input is hit, add another card from the deck and then calculate
+    if (input === "hit") {
+      playerCard.push(startDeck.pop());
       var dealerCardSum = calcArray(dealerCard);
 
+      outputMessage = checkForBlackjackMessage();
+      console.log("Dealer cards:", dealerCard);
+    }
+    //if input is stand, validate the values -- copy the comparison values earlier into here
+    else if (input === "stand") {
+      //once player stands, if dealer's cards are 16 and below, draw another card. If it isn't, dealer stand
+      var playerCardSum = calcArray(playerCard);
+      var dealerCardSum = calcArray(dealerCard);
+      // console.log("while loop dealer cards", dealerCardSum);
+      while (dealerCardSum < 17) {
+        dealerCard.push(startDeck.pop());
+        console.log("while loop dealer cards", dealerCard);
+        dealerCardSum = calcArray(dealerCard);
+      }
+      //calculate the total of both cards from each player and dealer
       console.log("Player card sum:", playerCardSum);
       console.log("Dealer card sum:", dealerCardSum);
       // compare the totals
@@ -96,26 +86,12 @@ var main = function (input) {
         outputMessage =
           displayAllCardsPlayerDealer(playerCard, dealerCard) + "Dealer wins!";
       }
-
-      //change game mode
-      currentGame = GAME_HIT_STAND;
     }
-    //return output message
-    return outputMessage;
-  }
-
-  if (currentGame === GAME_HIT_STAND) {
-    //if input is hit, add another card from the deck
-    if (input === "hit") {
-      playerCard.push(startDeck.pop());
-      outputMessage = displayAllCardsPlayerDealer(playerCard, dealerCard);
-    }
-    //if input is stand, validate the values -- copy the comparison values earlier into here
     //add input validation
     if (input != "hit" && input != "stand") {
       outputMessage =
         "Please type only 'hit' or 'stand'.<br><br>" +
-        displayAllCardsPlayerDealer(playerCard, dealerCard);
+        displayAllCardsPlayer1Dealer(playerCard, dealerCard);
     }
     return outputMessage;
   }
@@ -176,13 +152,53 @@ var checkForBlackjack = function (playerArray) {
   return isBlackJack;
 };
 
+////////////////////
+//03b. CHECK FOR BLACKJACK AND RETURN OUTPUT MESSAGE
+var checkForBlackjackMessage = function () {
+  var playerHasBlackjack = checkForBlackjack(playerCard);
+  var dealerHasBlackjack = checkForBlackjack(dealerCard);
+
+  // dealerHasBlackjack = true;
+  // playerHasBlackjack = true;
+  if (playerHasBlackjack === true || dealerHasBlackjack === true) {
+    // check for tie condition
+    if (playerHasBlackjack === true && dealerHasBlackjack === true) {
+      outputMessage =
+        displayAllCardsPlayerDealer(playerCard, dealerCard) +
+        "It's a blackjack tie! Game ends.";
+    }
+    // player 1 has blackjack
+    else if (playerHasBlackjack === true && dealerHasBlackjack === false) {
+      outputMessage =
+        displayAllCardsPlayerDealer(playerCard, dealerCard) +
+        "Player wins blackjack!";
+    }
+    // dealer has blackjack
+    else {
+      outputMessage =
+        displayAllCardsPlayerDealer(playerCard, dealerCard) +
+        "Dealer wins blackjack";
+    }
+    console.log(outputMessage);
+  } else {
+    outputMessage =
+      displayAllCardsPlayer1Dealer(playerCard, dealerCard) +
+      "There is no blackjack! <br><br> Hey Player 1, type hit' or 'stand'";
+    console.log(outputMessage);
+
+    //since no blackjack, game continues
+  }
+  //return output message
+  return outputMessage;
+};
+
 ///////////////////
 // 04. IF NOT BLACKJACK, CALCULATE PLAYER/DEALER CARD ARRAYS
 //////////////////
 var calcArray = function (playerArray) {
   var totalCardSum = 0;
-
-  for (index = 0; index < playerArray.length; index += 1) {
+  var index = 0;
+  while (index < playerArray.length) {
     var currentCard = playerArray[index];
     //treat character cards as value 10
     if (
@@ -194,8 +210,9 @@ var calcArray = function (playerArray) {
     } else {
       totalCardSum = totalCardSum + currentCard.rank;
     }
-    return totalCardSum;
+    index += 1;
   }
+  return totalCardSum;
 };
 
 ///////////////////
@@ -226,6 +243,34 @@ var displayAllCardsPlayerDealer = function (playerCard, dealerCard) {
   }
 
   return playerMessage + "<br>" + dealerMessage;
+};
+
+///////////////////
+// xx. DISPLAY CARDS OF BOTH PLAYER CARDS AND 1 DEALER CARD IN A NEAT MANNER
+//////////////////
+var displayAllCardsPlayer1Dealer = function (playerCard, dealerCard) {
+  //Player's cards
+  var playerMessage2 = "Player's Cards: <br>";
+  for (index = 0; index < playerCard.length; index += 1) {
+    playerMessage2 =
+      playerMessage2 +
+      "-" +
+      playerCard[index].name +
+      " of " +
+      playerCard[index].suit +
+      "<br>";
+  }
+  //Dealer's cards
+  var dealerMessage2 = "Dealer's Revealed Card: <br>";
+  dealerMessage2 =
+    dealerMessage2 +
+    "-" +
+    dealerCard[1].name +
+    " of " +
+    dealerCard[1].suit +
+    "<br>";
+
+  return playerMessage2 + "<br>" + dealerMessage2;
 };
 
 ///////////
