@@ -4,8 +4,11 @@ var GAME_2_CARDS = "2 cards drawn";
 var GAME_RESULTS = "show results";
 var GAME_HIT_STAND = "Choose to hit or stand";
 var currentGame = GAME_BEGINS;
+var resetImage =
+  '<img src="https://media.tenor.com/mH_JQs2ZpmEAAAAC/that-was-fun-well-that-was-fun.gif"/>';
 var resetMsg =
-  "<br> Care for another game? Go on, click 'Submit' to play again!";
+  "<br> Care for another game? Go on, click 'Submit' to play again!" +
+  resetImage;
 // Player and Dealer arrays
 var playerCard = [];
 var dealerCard = [];
@@ -30,7 +33,7 @@ var main = function (input) {
 
   if (currentGame === GAME_HIT_STAND) {
     //if input is hit, add another card from the deck and then calculate
-    outputMessage = gameHitOrStand();
+    outputMessage = gameHitOrStand(input);
     return outputMessage;
   }
 };
@@ -66,7 +69,7 @@ var gameStart = function () {
   console.log("deck after dealing 2 each " + startDeck.length);
 
   outputMessage =
-    "Both cards are drawn. Checking for blackjack.... Click 'Submit'";
+    "Both cards are drawn. Checking for Blackjack.... <br> Click 'Submit' to reveal your cards";
   return outputMessage;
 };
 ///////////////////
@@ -179,7 +182,7 @@ var displayAllCardsPlayerDealer = function (playerCard, dealerCard) {
   for (index = 0; index < playerCard.length; index += 1) {
     playerMessage =
       playerMessage +
-      "-" +
+      "> " +
       playerCard[index].name +
       " of " +
       playerCard[index].suit +
@@ -190,7 +193,7 @@ var displayAllCardsPlayerDealer = function (playerCard, dealerCard) {
   for (index = 0; index < dealerCard.length; index += 1) {
     dealerMessage =
       dealerMessage +
-      "-" +
+      "> " +
       dealerCard[index].name +
       " of " +
       dealerCard[index].suit +
@@ -209,7 +212,7 @@ var displayAllCardsPlayer1Dealer = function (playerCard, dealerCard) {
   for (index = 0; index < playerCard.length; index += 1) {
     playerMessage2 =
       playerMessage2 +
-      "-" +
+      ">  " +
       playerCard[index].name +
       " of " +
       playerCard[index].suit +
@@ -219,7 +222,7 @@ var displayAllCardsPlayer1Dealer = function (playerCard, dealerCard) {
   var dealerMessage2 = "Dealer's Revealed Card: <br>";
   dealerMessage2 =
     dealerMessage2 +
-    "-" +
+    "> " +
     dealerCard[1].name +
     " of " +
     dealerCard[1].suit +
@@ -280,7 +283,7 @@ var compareSum = function (playerCard, dealerCard) {
 //////////////////
 //// 6. GAME HIT OR STAND
 ////////////////
-var gameHitOrStand = function () {
+var gameHitOrStand = function (input) {
   if (input.toLowerCase() === "hit") {
     playerCard.push(startDeck.pop());
     // var dealerCardSum = calcArray(dealerCard);
