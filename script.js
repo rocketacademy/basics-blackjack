@@ -27,20 +27,18 @@ var KING = "king";
 var playerHand = [];
 var dealerHand = [];
 
-//1. create a card deck (helper function)
+//create a card deck (helper function)
 var createDeck = function () {
   var deck = []; //array for the card deck
-  console.log(deck);
+
   // 4 suits
   var suits = [HEARTS, DIAMONDS, SPADES, CLUBS];
   //create a loop so for each suit there's 13 cards of different rank
   var suitsCounter = 0;
   while (suitsCounter < 4) {
-    console.log("suitsCounter", suitsCounter);
     var currentSuit = suits[suitsCounter];
     var rankCounter = 1;
     while (rankCounter <= 13) {
-      console.log("rank counter", rankCounter);
       var cardName = rankCounter;
       if (rankCounter === 1) {
         cardName = ACE;
@@ -59,7 +57,7 @@ var createDeck = function () {
         suit: currentSuit,
         rank: rankCounter,
       };
-      console.log("card", card);
+
       deck.push(card);
       rankCounter = rankCounter + 1;
     }
@@ -69,33 +67,30 @@ var createDeck = function () {
   return deck;
 };
 
-//2. Get a random number for shuffling the deck
+//Get a random number for shuffling the deck
 var getRandomIndex = function (max) {
   return Math.floor(Math.random() * max);
 };
 
-//3. Shuffle the deck (helper function)
+// Shuffle the deck (helper function)
 var shuffleCards = function (deck) {
   //we need to swap the current card with a random card
   var currentIndex = 0;
   while (currentIndex < deck.length) {
-    console.log("currentIndex", currentIndex);
     var randomIndex = getRandomIndex(deck.length);
-    console.log("random index", randomIndex);
+
     var currentCard = deck[currentIndex];
     var randomCard = deck[randomIndex];
-    console.log(currentCard);
-    console.log(randomCard);
+
     deck[currentIndex] = randomCard;
     deck[randomIndex] = currentCard;
-    console.log("random card", randomCard);
-    console.log("current card", currentCard);
+
     currentIndex = currentIndex + 1;
   }
   return deck;
 };
+//Check if any of the players has a blackjack (helper function)
 var checkForBlackjack = function (playerHand) {
-  //5. Check if any of the players has a blackjack (helper function)
   // if both player and dealer got a score of 21, it's a blackjack tie
   //if the player gets a score of 21 and the dealer's score isn't 21, the player wins
   //if the dealer gets a score of 21 and the player's score isn't 21, the dealer wins
@@ -127,15 +122,13 @@ var calculateTotalHandValue = function (playerHand) {
     ) {
       newCard.rank = 10;
       totalHandValue = totalHandValue + newCard.rank;
-      console.log("total player hand value: ", totalHandValue);
     } else if (newCard.name === "ace") {
       newCard.rank = 11;
       totalHandValue = totalHandValue + newCard.rank;
-      console.log("total player hand value: ", totalHandValue);
+
       aceCounter = aceCounter + 1;
     } else {
       totalHandValue = totalHandValue + newCard.rank;
-      console.log("total player hand value: ", totalHandValue);
     }
 
     playerHandIndex = playerHandIndex + 1;
@@ -149,7 +142,7 @@ var calculateTotalHandValue = function (playerHand) {
   }
   return totalHandValue;
 };
-
+//display the hands value (helper function)
 var displayPlayerHand = function (playerHand) {
   playerHandCounter = 0;
   var playerCards = "";
@@ -166,11 +159,10 @@ var displayPlayerHand = function (playerHand) {
   return playerCards;
 };
 
+//show the game outcome (helper function)
 var showGameResult = function () {
   var totalPlayerScore = calculateTotalHandValue(playerHand);
-  console.log("Player's score:", totalPlayerScore);
   var totalDealerScore = calculateTotalHandValue(dealerHand);
-  console.log("Dealer's score", totalDealerScore);
 
   var myOutputMessage =
     "Player's hand: " +
@@ -256,14 +248,13 @@ var showGameResult = function () {
 var main = function (input) {
   var cardDeck = shuffleCards(createDeck());
   var myOutputMessage = "";
-  var cardsShown = "";
   if (gameState === GAME_START) {
     index = 0;
     while (index < 2) {
       playerHand.push(cardDeck.pop());
-      console.log("player hand: ", playerHand);
+
       dealerHand.push(cardDeck.pop());
-      console.log("dealer hand: ", dealerHand);
+
       index = index + 1;
     } //cards are dealt
 
@@ -311,9 +302,9 @@ var main = function (input) {
     //     rank: 4,
     //   });
     var playerHasBlackjack = checkForBlackjack(playerHand);
-    console.log("Player has blackjack", playerHasBlackjack);
+
     var dealerHasBlackjack = checkForBlackjack(dealerHand);
-    console.log("Dealer has blackjack", dealerHasBlackjack);
+
     if (playerHasBlackjack === true || dealerHasBlackjack === true) {
       //if they both have blackjack, it's a tie
       //if  only player has blackjack, player wins
@@ -346,7 +337,7 @@ var main = function (input) {
       gameState = GAME_OVER;
     } else {
       gameState = HIT_OR_STAND;
-      console.log("game state", gameState);
+
       myOutputMessage =
         "Please key in 'hit' if you'd like to draw one card or 'stand' if you think you got enough.";
     }
@@ -363,7 +354,7 @@ var main = function (input) {
     }
     if (input === "hit") {
       playerHand.push(cardDeck.pop());
-      console.log("player hand: ", playerHand);
+
       var lastPlayerCardIndex = playerHand.length - 1;
       var newPlayerCard =
         playerHand[lastPlayerCardIndex].name +
@@ -394,7 +385,6 @@ var main = function (input) {
       while (dealerHandValue < 17) {
         dealerHand.push(cardDeck.pop());
         dealerHandValue = calculateTotalHandValue(dealerHand);
-        console.log("dealer's hand value ", dealerHandValue);
       }
       gameState = COMPARE_HAND_VALUES;
 
