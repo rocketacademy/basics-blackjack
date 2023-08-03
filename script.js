@@ -23,6 +23,30 @@ var ACE = "ace";
 var JACK = "jack";
 var QUEEN = "queen";
 var KING = "king";
+var IMAGE_CARDS =
+  '<img src=" https://media.tenor.com/wVKBM8TMuisAAAAi/card-queen.gif"/>';
+var IMAGE_ERROR =
+  '<img src="https://media.tenor.com/CvC-Q-fIocgAAAAC/error404-page-not-found.gif"/>';
+var IMAGE_DOG_WINKS =
+  '<img src="https://media.tenor.com/ZgG35ixm1x4AAAAi/eyebrows-wink.gif"/>';
+var IMAGE_SPONGEBOB_THUMBSUP =
+  '<img src="https://media.tenor.com/35-j2Kya_18AAAAC/spongebob.gif"/>';
+var IMAGE_HAPPY_SPONGEBOB =
+  '<img src="https://media.tenor.com/OWzDHA8TCKcAAAAC/spongebob-spongebob-squarepants.gif"/>';
+var IMAGE_GAME_OVER =
+  '<img src="https://media.tenor.com/SlE6QEh8ha8AAAAC/spongebob-imma.gif"/>';
+var IMAGE_SAD_SPONGEBOB =
+  '<img src="https://media.tenor.com/1ZT-YB2du90AAAAC/spongebob-spongebob-meme.gif"/>';
+var IMAGE_SPONGEBOB_AND_PATRICK =
+  '<img src="https://media.tenor.com/cQhHOZji98AAAAAC/spongebob-patrick.gif"/>';
+var IMAGE_SPONGEBOB_AND_PATRICK_HUG =
+  '<img src="https://media.tenor.com/jb1EDjVD2AwAAAAC/hug-spongebob.gif"/>';
+var IMAGE_SPONGEBOB_AND_PATRICK_CRYING =
+  '<img src="https://media.tenor.com/rqRxV_Le82QAAAAC/sponge-bob-patrick-star.gif"/>';
+var IMAGE_SPONGEBOB_WOW =
+  '<img src="https://media.tenor.com/Ry3HRYMAflgAAAAC/wow-whoa.gif"/>';
+var IMAGE_SPONGEBOB_CRYING =
+  '<img src="https://media.tenor.com/cikARasodfgAAAAC/reverse-leak-spongebob-water.gif"/>';
 
 var playerHand = [];
 var dealerHand = [];
@@ -184,13 +208,25 @@ var showGameResult = function () {
   if (totalDealerScore === totalPlayerScore) {
     //blackjack tie
     if (totalPlayerScore === 21) {
-      gameOutcome = "Wooow! Both Player and Dealer got blackjack! It's a tie!";
+      gameOutcome =
+        "Wooow! Both Player and Dealer got blackjack! It's a tie!" +
+        "<br>" +
+        "<br>" +
+        IMAGE_SPONGEBOB_AND_PATRICK_HUG;
     } //bust tie
     else if (totalPlayerScore > 21) {
-      gameOutcome = "Oops! Both Player and Dealer busted! It's a tie!";
+      gameOutcome =
+        "Oops! Both Player and Dealer busted! It's a tie!" +
+        "<br>" +
+        "<br>" +
+        IMAGE_SPONGEBOB_AND_PATRICK_CRYING;
     } //regular tie
     else {
-      gameOutcome = "Both dealer and player got same score! It's a tie!";
+      gameOutcome =
+        "Both dealer and player got same score! It's a tie!" +
+        "<br>" +
+        "<br>" +
+        IMAGE_SPONGEBOB_AND_PATRICK;
     }
     return myOutputMessage + gameOutcome;
   }
@@ -200,39 +236,67 @@ var showGameResult = function () {
   //2) just blackjack
   if (totalPlayerScore === 21) {
     if (totalDealerScore > 21) {
-      gameOutcome = "What a game: Player got Blackjack and Dealer busts!";
+      gameOutcome =
+        "What a game: Player got Blackjack and Dealer busts!" +
+        "<br>" +
+        "<br>" +
+        IMAGE_SPONGEBOB_WOW;
     }
     if (totalDealerScore < 21) {
-      gameOutcome = "Looks like Player got Blackjack! They win!";
+      gameOutcome =
+        "Looks like Player got Blackjack! They win!" +
+        "<br>" +
+        "<br>" +
+        IMAGE_HAPPY_SPONGEBOB;
     }
   }
   if (totalDealerScore === 21) {
     if (totalPlayerScore > 21) {
-      gameOutcome = "What a game: Dealer got Blackjack and Player busts!";
+      gameOutcome =
+        "What a game: Dealer got Blackjack and Player busts!" +
+        "<br>" +
+        "<br>" +
+        IMAGE_SPONGEBOB_CRYING;
     }
 
     //non-blackjack wins and non-bust losses
     if (totalPlayerScore < 21) {
-      gameOutcome = "Looks like Dealer got Blackjack! They win!";
+      gameOutcome =
+        "Looks like Dealer got Blackjack! They win!" +
+        "<br>" +
+        IMAGE_SPONGEBOB_WOW;
     }
   }
 
   if (totalPlayerScore < 21) {
     if (totalDealerScore > 21) {
-      gameOutcome = "Bad luck for Dealer: he busts! Player wins!";
+      gameOutcome =
+        "Bad luck for Dealer: he busts! Player wins!" +
+        "<br>" +
+        "<br>" +
+        IMAGE_SPONGEBOB_THUMBSUP;
     }
 
     if (totalPlayerScore > totalDealerScore) {
-      gameOutcome = "YAAY! Player wins!";
+      gameOutcome =
+        "YAAY! Player wins!" + "<br>" + "<br>" + IMAGE_SPONGEBOB_THUMBSUP;
     }
   }
 
   if (totalDealerScore < 21) {
     if (totalPlayerScore > 21) {
-      gameOutcome = "Oh no! Player busts! Dealer wins!";
+      gameOutcome =
+        "Oh no! Player busts! Dealer wins!" +
+        "<br>" +
+        "<br>" +
+        IMAGE_SAD_SPONGEBOB;
     }
     if (totalDealerScore > totalPlayerScore) {
-      gameOutcome = "Sorry, Player, you lose! Dealer wins!";
+      gameOutcome =
+        "Sorry, Player, you lose! Dealer wins!" +
+        "<br>" +
+        "<br>" +
+        IMAGE_SAD_SPONGEBOB;
     }
   }
   myOutputMessage = myOutputMessage + gameOutcome;
@@ -263,13 +327,16 @@ var main = function (input) {
       displayPlayerHand(playerHand) +
       "<br>" +
       "<br>" +
-      "One card in Dealer's hand: " +
+      "One card in Dealer's hand is a " +
       dealerHand[0].name +
       " of " +
       dealerHand[0].suit +
       "<br>" +
       "<br>" +
-      "Now please click 'Submit' again to continue the game.";
+      "Now please click 'Submit' again to continue the game." +
+      "<br>" +
+      "<br>" +
+      IMAGE_DOG_WINKS;
     gameState = CHECK_FOR_BLACKJACK;
     //once the cards are dealt, change the game state
     return myOutputMessage;
@@ -311,11 +378,22 @@ var main = function (input) {
       //otherwise dealer wins
       if (playerHasBlackjack === true && dealerHasBlackjack === true) {
         blackjackInFirstHand =
-          "Wooow! Both Player and Dealer got blackjack! It's a tie!";
+          "Wooow! Both Player and Dealer got blackjack! It's a tie!" +
+          "<br>" +
+          "<br>" +
+          IMAGE_SPONGEBOB_AND_PATRICK_HUG;
       } else if (playerHasBlackjack === true) {
-        blackjackInFirstHand = "Looks like Player got blackjack! They win!";
+        blackjackInFirstHand =
+          "Looks like Player got blackjack! They win!" +
+          "<br>" +
+          "<br>" +
+          IMAGE_HAPPY_SPONGEBOB;
       } else {
-        blackjackInFirstHand = "Looks like Dealer got blackjack! They win!";
+        blackjackInFirstHand =
+          "Looks like Dealer got blackjack! They win!" +
+          "<br>" +
+          "<br>" +
+          IMAGE_SPONGEBOB_CRYING;
       }
 
       myOutputMessage =
@@ -339,6 +417,11 @@ var main = function (input) {
       gameState = HIT_OR_STAND;
 
       myOutputMessage =
+        "So far your score is " +
+        calculateTotalHandValue(playerHand) +
+        "." +
+        "<br>" +
+        "<br>" +
         "Please key in 'hit' if you'd like to draw one card or 'stand' if you think you got enough.";
     }
     return myOutputMessage;
@@ -349,7 +432,11 @@ var main = function (input) {
     //validate input:
     if (input !== "hit" && input !== "stand") {
       var errorMessage =
-        "Oops, something went wrong! Please input either 'hit' or 'stand' to continue the game!";
+        "Oops, something went wrong! Please input either 'hit' or 'stand' to continue the game!" +
+        "<br>" +
+        "<br>" +
+        "<br>" +
+        IMAGE_ERROR;
       return errorMessage;
     }
     if (input === "hit") {
@@ -372,7 +459,7 @@ var main = function (input) {
         calculateTotalHandValue(playerHand) +
         "<br>" +
         "<br>" +
-        "One card in Dealer's hand: " +
+        "One card in Dealer's hand is a " +
         dealerHand[0].name +
         " of " +
         dealerHand[0].suit +
@@ -388,7 +475,9 @@ var main = function (input) {
       }
       gameState = COMPARE_HAND_VALUES;
 
-      myOutputMessage = "Please click 'Submit' to see the game result.";
+      myOutputMessage =
+        "Alright! All cards are drawn, it's time to find out the winner! <br><br> Please click 'Submit' to see the game result whenever ready." +
+        IMAGE_CARDS;
       return myOutputMessage;
     }
   }
@@ -397,7 +486,9 @@ var main = function (input) {
     return showGameResult();
   }
   if (gameState === GAME_OVER) {
-    myOutputMessage = "Game over! Please refresh the page to restart the game.";
+    myOutputMessage =
+      "Game over! Please refresh the page to restart the game.<br><br>" +
+      IMAGE_GAME_OVER;
   }
   return myOutputMessage;
 };
