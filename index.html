@@ -83,7 +83,13 @@
     <link
       rel="stylesheet"
       href="https://fonts.googleapis.com/css?family=Open+Sans"
+      href="https://fonts.cdnfonts.com/css/public-pixel"
+      rel="stylesheet"
     />
+    <!-- Import fonts -->
+    <style>
+      @import url("https://fonts.cdnfonts.com/css/public-pixel");
+    </style>
 
     <!-- CSS -->
     <style>
@@ -92,7 +98,7 @@
       }
 
       body {
-        font-family: "Open Sans", sans-serif;
+        font-family: "Public Pixel", sans-serif;
         margin-left: 30px;
         margin-right: 30px;
         background-color: black;
@@ -115,34 +121,41 @@
       }
 
       #container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
         background-color: darkslategrey;
         margin: 40px auto;
         max-width: 800px;
         padding: 38px 31px;
       }
 
-      input {
-        font-size: 21px;
-        line-height: 33px;
-        margin: 0 0 23px 0;
-        padding: 0 9px;
-        width: 100%;
-      }
-
-      button {
-        font-size: 21px;
-        line-height: 33px;
-        margin: 0 0 23px 0;
-        padding: 0 6px;
+      #computer {
+        display: inline-block;
       }
 
       #output-div {
         background-color: lightgrey;
         color: black;
-        font-weight: bold;
-        margin: 20px auto;
+        margin: 0 auto;
         padding: 20px;
         width: 100%;
+      }
+
+      input {
+        font-size: 21px;
+        line-height: 33px;
+        width: 100%;
+      }
+
+      button {
+        font-family: "Public Pixel", sans-serif;
+        font-size: 21px;
+        line-height: 40px;
+        padding: 0 9px;
+      }
+
+      #button-container {
+        margin: 20px 0;
       }
 
       .logo-img {
@@ -163,19 +176,36 @@
   <body>
     <h1 class="header">👾 SPACE BLACKJACK 👾</h1>
     <div id="container">
-      <p>Input:</p>
-      <input id="input-field" />
-      <br />
-      <button id="submit-button">Submit</button>
-
-      <div id="output-div"></div>
+      <div id="left column">
+        <div id="computer">
+          <img
+            id="computer-img"
+            src="https://i.gifer.com/74xC.gif"
+            width="300"
+            height="300"
+          />
+          <div id="button-container">
+            <button id="start-button">Start</button>
+            <button id="bet-button">Bet</button>
+            <button id="hit-button">Hit Me!</button>
+            <button id="stand-button">I Stand</button>
+            <button id="restart-button">Restart Game</button>
+          </div>
+        </div>
+      </div>
+      <div id="right column">
+        <div id="output-div"></div>
+        <br />
+        <input id="input-field" />
+      </div>
     </div>
     <!-- Import program logic -->
     <script src="script.js"></script>
     <!-- Define button click functionality -->
     <script>
-      var button03 = document.querySelector("#submit-button");
-      button03.addEventListener("click", function () {
+      //Variables for buttons
+      var buttonStart = document.querySelector("#start-button");
+      buttonStart.addEventListener("click", function () {
         // Set result to input value
         var input = document.querySelector("#input-field");
         var result = main(input.value);
@@ -186,6 +216,50 @@
         // Reset input value
         input.value = "";
       });
+
+      var buttonBet = document.querySelector("#bet-button");
+      buttonBet.addEventListener("click", function () {
+        // Set result to input value
+        var input = document.querySelector("#input-field");
+        var result = main(input.value);
+        // Display result in output element
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
+
+        // Reset input value
+        input.value = "";
+      });
+
+      var buttonHit = document.querySelector("#hit-button");
+      buttonHit.addEventListener("click", function () {
+        var output = document.querySelector("#output-div");
+        output.innerHTML = hit();
+      });
+
+      var buttonStand = document.querySelector("#stand-button");
+      buttonStand.addEventListener("click", function () {
+        var output = document.querySelector("#output-div");
+        output.innerHTML = stand();
+      });
+
+      var buttonRestart = document.querySelector("#restart-button");
+      buttonRestart.addEventListener("click", function () {
+        // Set result to input value
+        var input = document.querySelector("#input-field");
+        var result = main(input.value);
+        // Display result in output element
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
+
+        // Reset input value
+        input.value = "";
+      });
+
+      // if (GAMEMODE === GAMEMODE_CARDS_DRAWN) {
+      // }
+
+      // if (GAMEMODE === GAMEMODE_HIT_OR_STAND) {
+      // }
     </script>
   </body>
 </html>
