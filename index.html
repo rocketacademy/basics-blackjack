@@ -1,155 +1,152 @@
-
 <!DOCTYPE html>
-<html lang="en">
+<html>
   <head>
-    <!-- Page setup configurations -->
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-    <!-- Favicon configuration -->
-    <link rel="apple-touch-icon" sizes="180x180" href="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/favicons/apple-touch-icon.png?v=2">
-    <link rel="icon" type="image/png" sizes="32x32" href="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/favicons/favicon-32x32.png?v=2">
-    <link rel="icon" type="image/png" sizes="16x16" href="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/favicons/favicon-16x16.png?v=2">
-    <link rel="manifest" href="/site.webmanifest?v=2">
-    <link rel="mask-icon" href="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/favicons/safari-pinned-tab.svg?v=2" color="#e73c3e">
-    <link rel="shortcut icon" href="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/favicons/favicon.ico?v=2">
-    <meta name="apple-mobile-web-app-title" content="Rocket Academy">
-    <meta name="application-name" content="Rocket Academy">
-    <meta name="msapplication-TileColor" content="#2b5797">
-    <meta name="theme-color" content="#ffffff">
-
-    <!-- sharing configuration -->
-    <!-- Primary Meta Tags -->
-    <title>Blackjack - Basics - Rocket Academy</title>
-    <meta name="title" content="YOURNAME's BlackJack Game!">
-    <meta name="description" content="A fun card game I made myself! 😄💪🌈">
-
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://rocketacademy.github.io/basics-blackjack/index.html">
-    <meta property="og:title" content="YOURNAME's BlackJack Game!">
-    <meta property="og:description" content="A fun card game I made myself! 😄💪🌈">
-    <meta property="og:image" content="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/basics/basics-blackjack-share-small.jpeg">
-
-    <!-- Twitter -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:url" content="https://rocketacademy.github.io/basics-blackjack/index.html">
-    <meta name="twitter:title" content="YOURNAME's BlackJack Game!">
-    <meta name="twitter:description" content="A fun card game I made myself! 😄💪🌈">
-    <meta name="twitter:image" content="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/basics/basics-blackjack-share-small.jpeg">
-    <meta name="twitter:site" content="@rocketacademyco">
-    <meta name="twitter:creator" content="@rocketacademyco">
-
-    <!-- fonts -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans">
-
-    <!-- CSS -->
+    <title>BlackJack Game</title>
     <style>
+      /* The top of my CSS styles ... */
       * {
+        /* output box control */
         box-sizing: border-box;
       }
 
       body {
-        font-family: 'Open Sans', sans-serif;
+        /* output box control */
+        font-family: sans-serif;
         margin-left: 30px;
         margin-right: 30px;
-        background-color:white;
-        color: black; /* sets the font color */
-        background-image: url(""); /* The image used */
-        background-position: center; /* Center the image */
-        background-repeat: no-repeat; /* Do not repeat the image */
-        background-size: cover; /* Resize the background image to cover the entire container */
       }
 
-      #output-div img{
-        display:block;
-        max-width:100%;
-        max-height:200px;
-      }
-      .header {
+      #header {
+        /* Page Title */
         text-align: center;
-        font-size: 1.1rem;
-        margin-bottom: 3rem;
+        color: white; /* Updated color to grey */
+        font-size: 60px; /* Updated font size to 60px */
+        font-weight: bold; /* Added font weight to make it bold */
+        text-decoration: underline; /* Added underline to the text */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      #header img {
+        margin: 0 10px;
       }
 
       #container {
-        background-color: pink;
+        /* buttons and output box large control */
+        background-color: transparent;
         margin: 40px auto;
         max-width: 800px;
         padding: 38px 31px;
       }
 
-      input {
-        font-size: 21px;
-        line-height: 33px;
-        margin: 0 0 23px 0;
-        padding: 0 9px;
-        width: 100%;
+      body {
+        background-image: url("blackjack_table.jpg");
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
       }
-
       button {
-        font-size: 21px;
-        line-height: 33px;
-        margin: 0 0 23px 0;
-        padding: 0 6px;
+        /* buttons control */
+        font-size: 40px;
+        margin: 0 0 30px 10px;
+        padding: 5px 6px;
+        background-color: transparent;
+        border: none;
+        color: white;
       }
 
       #output-div {
-        background-color: lightgrey;
-        margin: 20px auto;
-        padding: 20px;
+        /* output box control */
+        margin: 20px 0;
+        padding: 25px;
         width: 100%;
+        font-size: 50px;
+        text-align: left;
+        background-color: transparent;
+        color: white; /* Updated text color to white */
       }
 
-      .logo-img {
-        height: 49px;
-        position: relative;
-        top: 22px;
+      #gameinstructions {
+        /* control instruction block */
+
+        margin: 40px 0;
+        padding: 25px;
+        width: 85%;
+      }
+      card-spade,
+      .card-club {
+        color: black;
       }
 
-      /* increase header font size on wider screens */
-      @media screen and (min-width: 600px) {
-        .header {
-          font-size: 2rem;
-        }
+      .card-heart,
+      .card-diamond {
+        color: red;
       }
+      .card {
+        font-size: 30px;
+        padding: 5px;
+      }
+      /* The bottom of my CSS styles ... */
     </style>
-
   </head>
-
   <body>
-    <h1 class="header">
-      <img class="logo-img" src="https://firebasestorage.googleapis.com/v0/b/ftbc11-sample.appspot.com/o/images%2F1-PRIMARY_CRIMSON.png?alt=media&token=ce9e8333-2a45-44be-adb2-1f1bf054adf7" />
-      Rocket Academy
-      <img class="logo-img" src="https://firebasestorage.googleapis.com/v0/b/ftbc11-sample.appspot.com/o/images%2F1-PRIMARY_CRIMSON.png?alt=media&token=ce9e8333-2a45-44be-adb2-1f1bf054adf7" />
-    </h1>
-    <h1 class="header">♣️ Basics - Blackjack ♠️</h1>
+    <div id="header">
+      <img
+        src="d6ibf1c-07d45329-f934-420e-9242-e5c5c6e285d7.png"
+        alt="Blackjack Game"
+      />
+      <div>BlackJack Game</div>
+      <img
+        src="d6ibf1c-07d45329-f934-420e-9242-e5c5c6e285d7.png"
+        alt="Blackjack Game"
+      />
+    </div>
     <div id="container">
-      <p>Input:</p>
-      <input id="input-field" />
+      <!-- Buttons and Output Area -->
+      <button id="start-button">Start Game</button>
       <br />
-      <button id="submit-button">Submit</button>
-      <p>Output:</p>
+      <button
+        id="hit-button"
+        style="display: none; margin-left: 250px"
+        onclick="handleHitButtonClick()"
+      >
+        Hit
+      </button>
+      <button
+        id="hitx2-button"
+        style="display: none; margin-left: 10px"
+        onclick="handleHitx2ButtonClick()"
+      >
+        Hit x2
+      </button>
+      <button
+        id="stand-button"
+        style="display: none; margin-left: 10px"
+        onclick="handleStandButtonClick()"
+      >
+        Stand
+      </button>
+      <br />
+      <button id="refresh-button">Refresh</button>
+      <!-- Update the <p> element with id="output-div" -->
       <div id="output-div"></div>
     </div>
-    <!-- Import program logic -->
-    <script src="script.js"></script>
-    <!-- Define button click functionality -->
-    <script>
-      var button = document.querySelector("#submit-button");
-      button.addEventListener("click", function () {
-        // Set result to input value
-        var input = document.querySelector("#input-field");
-        var result = main(input.value);
-
-        // Display result in output element
-        var output = document.querySelector("#output-div");
-        output.innerHTML = result;
-
-        // Reset input value
-        input.value = "";
-      });
-    </script>
+    <div id="gameinstructions">
+      <!-- Game Instructions -->
+      <p style="font-size: large"></p>
+      <div style="color: white; font-size: 30px">
+        <b> ♡ ♢ ♤ ♧ How to play BlackJack❓ ♡ ♢ ♤ ♧ </b>
+      </div>
+      <p style="color: white; font-size: 30px">
+        1. Player and dealer gets 2 cards each.<br />2. If player or dealer gets
+        21 on first draw. It's BLACKJACK!<br />3. If player or dealer get 21
+        from second draw onwards its 21.<br />4. If player or dealer draws more
+        than 21 its a bust.<br />5. Closest hand to 21 wins.
+      </p>
+    </div>
+    <!-- Load the JavaScript code from the external file with defer attribute -->
+    <script src="script.js" defer></script>
   </body>
 </html>
