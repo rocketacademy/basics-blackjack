@@ -28,7 +28,6 @@ var myOutputValue;
 //Check right at the beginning if a hand has Blackjack
 //Accepts a Hand List
 //Returns a Boolean
-
 var blackjackCheck = function (hand) {
   var counter = 0;
   var rankValueSum = 0;
@@ -134,14 +133,13 @@ var makeDeck = function () {
 
 // Returns a string that has the full description of the card
 var cardType = function (card) {
-  console.log(card);
   var suitType = card.suit;
   var cardName = card.name;
-
-  // return `${cardName} of ${suitType}`;
   return cardName + " of " + suitType;
 };
 
+////////////////////
+//MAIN GAME FUNCTION
 var main = function (input) {
   input = input.toLowerCase();
 
@@ -150,13 +148,10 @@ var main = function (input) {
     // Make and Shuffle deck
     cardDeck = makeDeck();
     cardDeck = shuffleCards(cardDeck);
-    // console.log(cardDeck[0]);
-    // console.log(cardDeck[1]);
 
     // Initialise Player's Hands - i.e. each person draws two cards as a List. This goes into a playersHands.
     // playersHands[0][n] is always dealer's Hands
     // playersHands[n][n] is other players hands
-
     var initialCounter = 0;
     while (initialCounter < numOfPlayers) {
       var currentHand = [];
@@ -194,20 +189,20 @@ var main = function (input) {
       `.<br><br>` +
       "All cards Drawn. <br><br>Type Hit to draw again, or Pass for Dealer's turn.";
 
-    console.log(GAMEMODE + "initial");
-    console.log(CARDMODE + "initial");
+    // console.log(GAMEMODE + "initial");
+    // console.log(CARDMODE + "initial");
     GAMEMODE = "PLAY";
     CARDMODE = "PLAYER";
-    console.log(GAMEMODE);
-    console.log(CARDMODE);
-
+    // console.log(GAMEMODE);
+    // console.log(CARDMODE);
     // CARDMODE = "DRAWPHASE";
     // CARDMODE = "CHECKDEALERVALUE";
 
     return myOutputValue;
   }
 
-  //PLAYERS TURN
+  ////////////////////
+  // GAME MODE - PLAYERS TURN
   while (GAMEMODE == "PLAY" && CARDMODE == "PLAYER") {
     if (input == "hit") {
       var addnCard = cardDeck.pop();
@@ -224,8 +219,8 @@ var main = function (input) {
 
     if (input == "pass") {
       CARDMODE = "CHECKDEALERVALUE";
-      console.log(GAMEMODE + "check dealer");
-      console.log(CARDMODE + "check dealer");
+      console.log(GAMEMODE + " pass mode check dealer");
+      console.log(CARDMODE + " pass mode check dealer");
       return "Dealer's Turn.";
     } else {
       var outputMsg =
@@ -239,6 +234,8 @@ var main = function (input) {
         ` and ` +
         cardType(playersHands[1][1]) +
         `.<br><br>`;
+      console.log(GAMEMODE + "input error mode");
+      console.log(CARDMODE + "input error mode");
       return (
         outputMsg +
         "<b>Input error.<br><br>" +
@@ -247,26 +244,36 @@ var main = function (input) {
     }
   }
 
-  //Dealer Check
+  //Dealer Check PART 1
   //Dealer HAS to draw if score is below 17. Check lose condition for dealer as well.
-  if (
-    GAMEMODE == "PLAY" &&
-    CARDMODE == "CHECKDEALERVALUE" &&
-    calculateHandValue(playersHands[0]) < 17
-  ) {
-    console.log("Dealer Check Start");
-    CARDMODE = "DRAWPHASE";
-    console.log(GAMEMODE + "check dealer2");
-    console.log(CARDMODE + "check dealer2");
-    console.log(calculateHandValue(playersHands[0]) + "dealer initial value");
-    return (
-      `<b>Dealer's Turn</b><br><br>` +
-      "Dealer only has " +
-      calculateHandValue(playersHands[0]) +
-      ", under the 16 points required to start the game.<br><br> Press button for dealer to draw."
-    );
+  if (GAMEMODE == "PLAY" && CARDMODE == "CHECKDEALERVALUE") {
+    if (calculateHandValue(playersHands[0]) < 17) {
+      console.log("Dealer Check Start");
+      CARDMODE = "DRAWPHASE";
+      console.log(GAMEMODE + "check dealer2");
+      console.log(CARDMODE + "check dealer2");
+      console.log(calculateHandValue(playersHands[0]) + "dealer initial value");
+      return (
+        `<b>Dealer's Turn</b><br><br>` +
+        "Dealer only has " +
+        calculateHandValue(playersHands[0]) +
+        ", under the 16 points required to start the game.<br><br> Press button for dealer to draw."
+      );
+    } else {
+      console.log(
+        "Dealer Check Else Branch, GAMEMODE is " +
+          GAMEMODE +
+          " and CARDMODE is " +
+          CARDMODE
+      );
+      CARDMODE = "ENDGAME";
+      console.log("The cardmode has been changed to: " + CARDMODE);
+      return "Dealer has sufficient points to proceed with the game.<br><br>Press button to show hand.";
+    }
   }
 
+  ////////////////////
+  // Dealer Check PART 1
   var dealerCheckCounter = 0;
   while (
     GAMEMODE == "PLAY" &&
@@ -292,9 +299,12 @@ var main = function (input) {
     }
   }
 
-  //Code should only execute past here if Player is done and Dealer has > 16.
-  //Those conditions will prompt GAMEMODE == "PLAY" && CARDMODE == "DRAWPHASE"
-  //FINAL ENDGAME
+  ///////////////////
+  // Code should only execute past here if Player is done and Dealer has > 16.
+  // Those conditions will prompt GAMEMODE == "PLAY" && CARDMODE == "DRAWPHASE"
+  // FINAL ENDGAME
+  ///////////////////
+  // CALCULATING SCORES AND STRING FORMATTING FOR CARDS IN HAND.
   if (GAMEMODE == "PLAY" && CARDMODE == "ENDGAME") {
     playersScore = [];
 
@@ -322,7 +332,7 @@ var main = function (input) {
     }
 
     //PLAYER
-    myOutputValue = myOutputValue + `<b>Player:</b><br> `;
+    myOutputValue = myOutputValue + `<br><b>Player:</b><br> `;
     var playersCounter = 0;
     while (playersCounter < playersHands[1].length) {
       var drawnCard = "";
@@ -333,33 +343,76 @@ var main = function (input) {
       playersCounter += 1;
     }
 
-    //Win Conditions
+    ///////////////////
+    // Win Conditions
+    var dealerScore = playersScore[0];
+    var playerOneScore = playersScore[1];
+
+    console.log("dealer's score is: " + dealerScore);
+    console.log("player's score is: " + playerOneScore);
+
+    //Check if Player has bust or invalid hand
+    if (playerOneScore > 21) {
+      myOutputValue =
+        myOutputValue +
+        `<br>Dealer has a score of ${playersScore[0]}!<br>But Player has gone bust, with a score of ${playersScore[1]}!<br> Dealer Wins.<br><br>` +
+        "Press Submit to Restart the game";
+
+      CARDMODE = "RESET";
+      GAMEMODE = "RESET";
+    }
+
+    if (playerOneScore < 16) {
+      myOutputValue =
+        myOutputValue +
+        `<br>Dealer has a score of ${playersScore[0]}!<br>But Player is under 16 points, with a score of ${playersScore[1]}!<br> Dealer Wins.<br><br>` +
+        "Press Submit to Restart the game";
+      CARDMODE = "RESET";
+      GAMEMODE = "RESET";
+      return myOutputValue;
+    }
+
+    // Normal win conditions
     if (playersScore[0] > playersScore[1]) {
       myOutputValue =
         myOutputValue +
-        `Dealer has a score of ${playersScore[0]}!<br> Dealer Wins.<br><br>` +
+        `<br>Dealer has a score of ${playersScore[0]}!<br>Player has a score of ${playersScore[1]}!<br> Dealer Wins.<br><br>` +
         "Press Submit to Restart the game";
+      return myOutputValue;
     }
 
-    //other win conditions
     if (playersScore[0] < playersScore[1]) {
       myOutputValue =
         myOutputValue +
-        `Player has a score of ${playersScore[1]}!<br> Player Wins.<br><br>` +
+        `<br>Dealer has a score of ${playersScore[0]}!<br>Player has a score of ${playersScore[1]}!<br> Player Wins.<br><br>` +
         "Press Submit to Restart the game";
     }
 
-    if ((playersScore[0] = playersScore[1])) {
-      return "its a tie";
+    if (playersScore[0] == playersScore[1]) {
+      myOutputValue = "<br>its a tie mate...";
     }
 
-    // reset the variables
-    CARDMODE = "START";
-    GAMEMODE = "START";
-    playersScore = [];
-    playersHands = [];
-    cardDeck = [];
+    CARDMODE = "RESET";
+    GAMEMODE = "RESET";
+
+    console.log("final gamemode is: " + GAMEMODE);
+    console.log("final cardmode is: " + CARDMODE);
 
     return myOutputValue;
   }
+
+  if (CARDMODE == "RESET" && GAMEMODE == "RESET") {
+    resetGame();
+    return "Push Button To Start a New Game!";
+  }
+};
+
+//RESET GAME
+var resetGame = function () {
+  // reset the variables
+  CARDMODE = "START";
+  GAMEMODE = "START";
+  playersScore = [];
+  playersHands = [];
+  cardDeck = [];
 };
