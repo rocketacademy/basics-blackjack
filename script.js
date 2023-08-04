@@ -28,26 +28,44 @@ var myOutputValue;
 //Check right at the beginning if a hand has Blackjack
 //Accepts a Hand List
 //Returns a Boolean
-var blackjackCheck = function (hand) {
-  var counter = 0;
-  var rankValueSum = 0;
-  var blackjackStatement;
+var blackjackChecker = function (hand) {
+  console.log("check!!!!!");
+  console.log("check 1");
 
-  if (hand.length != 2) {
-    return false;
+  // If first card is Ace
+  if (hand[0].name == "ace") {
+    if (
+      hand[1].name == "jack" ||
+      hand[1].name == "queen" ||
+      hand[1].name == "king" ||
+      hand[1].name == "ace"
+    ) {
+      console.log("check A");
+      return Boolean(true);
+    } else {
+      console.log("check B");
+      return Boolean(false);
+    }
   }
+  console.log("check 1");
 
-  while (counter < hand.length) {
-    rankValueSum = rankValueSum + hand[counter].rank;
-    counter += 1;
+  // check inverse Permutation
+  if (
+    hand[0].name == "jack" ||
+    hand[0].name == "queen" ||
+    hand[0].name == "king"
+  ) {
+    if (hand[1].name == "ace") {
+      console.log("check A");
+      return Boolean(true);
+    } else {
+      console.log("check B");
+      return Boolean(false);
+    }
   }
+  console.log("check 2");
 
-  if (rankValueSum == 21) {
-    blackjackStatement = true; // Blackjack Condition
-  } else {
-    blackjackStatement = false;
-  }
-  return blackjackStatement;
+  return Boolean(false);
 };
 
 // Obtain and Sum the rank of all the cards in the hand
@@ -57,7 +75,26 @@ var calculateHandValue = function (hand) {
 
   // Adds the value of the rank for each card
   while (counter < hand.length) {
-    rankValueSum = rankValueSum + hand[counter].rank;
+    // Picture Card Logic
+    if (
+      hand[counter].name == "jack" ||
+      hand[counter].name == "queen" ||
+      hand[counter].name == "king"
+    ) {
+      rankValueSum = rankValueSum + 10;
+    }
+
+    // Ace Card Logic
+    else if (hand[counter].name == "ace") {
+      if (hand.length == 2) {
+        rankValueSum = rankValueSum + 11;
+      }
+      if (hand.length > 2) {
+        rankValueSum = rankValueSum + 1;
+      }
+    } else {
+      rankValueSum = rankValueSum + hand[counter].rank;
+    }
     counter += 1;
   }
   return Number(rankValueSum);
@@ -138,11 +175,32 @@ var cardType = function (card) {
   return cardName + " of " + suitType;
 };
 
+// Accepts a hand as an input
+// returns the full hand as individual cards, in a string
+var handDescription = function (hand) {
+  var outputValue = "";
+  var handCounter = 0;
+
+  while (handCounter < hand.length) {
+    var drawnCard = "";
+    drawnCard = cardType(hand[handCounter]);
+    outputValue = outputValue + drawnCard + "<br>";
+    handCounter += 1;
+  }
+
+  return outputValue;
+  //returns a string
+};
+
 ////////////////////
 //MAIN GAME FUNCTION
 var main = function (input) {
   input = input.toLowerCase();
 
+  if (GAMEMODE == "INTRO") {
+    GAMEMODE = "START";
+    return "Let's Begin A New Game!";
+  }
   if (GAMEMODE == "START" && CARDMODE == "START") {
     myOutputValue = "";
     // Make and Shuffle deck
@@ -162,41 +220,45 @@ var main = function (input) {
       initialCounter += 1;
     }
 
+    console.log("check blackjack");
+    console.log(playersHands[0] + "dealer hands BELOW");
+    console.log(blackjackChecker[playersHands[0]]);
+    console.log(playersHands[0][0] + "card1");
+    console.log(playersHands[0][1] + "card2");
+
+    // console.log(playersHands[1] + "player hands");
+
     //Check Blackjack for Dealer first, then Players.
-    if (blackjackCheck[0]) {
+    if (blackjackChecker[playersHands[0]] == true) {
       return `Dealer drew <br>${playersHands[0][0]} and ${playersHands[0][1]}! <br> You Lose.`;
     }
     //Check if Players have blackjack
     // Starts from 1 in the playersHands list
     var blackjackCount = 1;
     while (blackjackCount < numOfPlayers) {
-      if (blackjackCheck[blackjackCount]) {
+      console.log(
+        blackjackChecker[playersHands[blackjackCount]] + "player BJ check"
+      );
+      console.log(blackjackCount + "count");
+      if (blackjackChecker[playersHands[blackjackCount]] == true) {
         return `You drew <br>${playersHands[blackjackCount][0]} and ${playersHands[blackjackCount][1]}! <br> You Won!!`;
       }
       blackjackCount += 1;
     }
 
-    myOutputValue =
-      `Dealer has drawn ` +
-      cardType(playersHands[0][0]) +
-      ` and ` +
-      cardType(playersHands[0][1]) +
-      `.<br><br>` +
-      `Player 1 has drawn ` +
-      cardType(playersHands[1][0]) +
-      ` and ` +
-      cardType(playersHands[1][1]) +
-      `.<br><br>` +
-      "All cards Drawn. <br><br>Type Hit to draw again, or Pass for Dealer's turn.";
+    console.log("end blackjack check");
 
-    // console.log(GAMEMODE + "initial");
-    // console.log(CARDMODE + "initial");
+    myOutputValue =
+      `<b>Dealer has drawn:</b><br> ` +
+      handDescription(playersHands[0]) +
+      "<br><br>" +
+      `<b>Player has drawn:</b><br> ` +
+      handDescription(playersHands[1]) +
+      "<br><br>" +
+      "Starting Hands Dealt. <br><br>Type Hit to draw again, or Pass for Dealer's turn.";
+
     GAMEMODE = "PLAY";
     CARDMODE = "PLAYER";
-    // console.log(GAMEMODE);
-    // console.log(CARDMODE);
-    // CARDMODE = "DRAWPHASE";
-    // CARDMODE = "CHECKDEALERVALUE";
 
     return myOutputValue;
   }
@@ -204,14 +266,22 @@ var main = function (input) {
   ////////////////////
   // GAME MODE - PLAYERS TURN
   while (GAMEMODE == "PLAY" && CARDMODE == "PLAYER") {
+    // Standard Gameplay
     if (input == "hit") {
       var addnCard = cardDeck.pop();
       playersHands[1].push(addnCard);
 
       var outputMsg =
-        `Player has drawn ` +
+        `<b>Player has drawn...<br></b> ` +
         cardType(addnCard) +
-        ".<br><br> Type Hit to draw again, or Pass for Dealer's turn.";
+        `<br><br>` +
+        `You now have:<br>` +
+        handDescription(playersHands[1]) +
+        "<br><br>" +
+        "You have <b>" +
+        calculateHandValue(playersHands[1]) +
+        " points.</b><br><br>" +
+        " Type Hit to draw again, or Pass for Dealer's turn.";
       console.log(GAMEMODE + "player");
       console.log(CARDMODE + "player");
       return outputMsg;
@@ -222,20 +292,18 @@ var main = function (input) {
       console.log(GAMEMODE + " pass mode check dealer");
       console.log(CARDMODE + " pass mode check dealer");
       return "Dealer's Turn.";
-    } else {
+    }
+
+    //Input Error Message
+    else {
       var outputMsg =
-        `Dealer has drawn ` +
-        cardType(playersHands[0][0]) +
-        ` and ` +
-        cardType(playersHands[0][1]) +
-        `.<br><br>` +
-        `Player 1 has drawn ` +
-        cardType(playersHands[1][0]) +
-        ` and ` +
-        cardType(playersHands[1][1]) +
-        `.<br><br>`;
-      console.log(GAMEMODE + "input error mode");
-      console.log(CARDMODE + "input error mode");
+        `<b>Dealer has drawn:</b><br> ` +
+        handDescription(playersHands[0]) +
+        "<br><br>" +
+        `<b>Player has drawn:</b><br> ` +
+        handDescription(playersHands[1]) +
+        "<br><br>";
+
       return (
         outputMsg +
         "<b>Input error.<br><br>" +
@@ -248,10 +316,10 @@ var main = function (input) {
   //Dealer HAS to draw if score is below 17. Check lose condition for dealer as well.
   if (GAMEMODE == "PLAY" && CARDMODE == "CHECKDEALERVALUE") {
     if (calculateHandValue(playersHands[0]) < 17) {
-      console.log("Dealer Check Start");
+      // console.log("Dealer Check Start");
       CARDMODE = "DRAWPHASE";
-      console.log(GAMEMODE + "check dealer2");
-      console.log(CARDMODE + "check dealer2");
+      // console.log(GAMEMODE + "check dealer2");
+      // console.log(CARDMODE + "check dealer2");
       console.log(calculateHandValue(playersHands[0]) + "dealer initial value");
       return (
         `<b>Dealer's Turn</b><br><br>` +
@@ -284,10 +352,14 @@ var main = function (input) {
     playersHands[0].push(addnCard);
     dealerCheckCounter += 1;
 
+    console.log(playersHands[0] + "dealer check error Pre");
+
     if (calculateHandValue(playersHands[0]) > 21) {
+      var drawnPoints = calculateHandValue(playersHands[0]);
+      resetGame();
       return (
         "Dealer drew to " +
-        calculateHandValue(playersHands[0]) +
+        drawnPoints +
         " points, couldn't even survive the first round.<br><br>Player Wins!"
       );
     } else if (calculateHandValue(playersHands[0]) > 16) {
@@ -316,35 +388,25 @@ var main = function (input) {
     }
     console.log("Scores Calculated");
 
+    ///////////////////
     //Final Output String Formatting
-    //DEALER
-    var myOutputValue = `<b>Final Hands:</b> <br><br>` + `<b>Dealer:</b><br> `;
+    ///////////////////
+    var myOutputValue = `<b>Final Hands:</b> <br><br>`;
 
-    var dealerCounter = 0;
-    while (dealerCounter < playersHands[0].length) {
-      var drawnCard = "";
-      // console.log("length of dealer's hand: " + playersHands[0].length);
-      // console.log(playersHands[0][dealerCounter]);
+    var dealerHandStr = handDescription(playersHands[0]);
+    var playerHandStr = handDescription(playersHands[1]);
 
-      drawnCard = cardType(playersHands[0][dealerCounter]);
-      myOutputValue = myOutputValue + drawnCard + "<br>";
-      dealerCounter += 1;
-    }
-
-    //PLAYER
-    myOutputValue = myOutputValue + `<br><b>Player:</b><br> `;
-    var playersCounter = 0;
-    while (playersCounter < playersHands[1].length) {
-      var drawnCard = "";
-      // console.log("length of players's hand: " + playersHands[1].length);
-
-      drawnCard = cardType(playersHands[1][playersCounter]);
-      myOutputValue = myOutputValue + drawnCard + "<br>";
-      playersCounter += 1;
-    }
+    myOutputValue =
+      myOutputValue +
+      `<b>Dealer:</b><br> ` +
+      dealerHandStr +
+      "<br><br>" +
+      `<b>Player:</b><br> ` +
+      playerHandStr;
 
     ///////////////////
     // Win Conditions
+    ///////////////////
     var dealerScore = playersScore[0];
     var playerOneScore = playersScore[1];
 
@@ -355,11 +417,10 @@ var main = function (input) {
     if (playerOneScore > 21) {
       myOutputValue =
         myOutputValue +
-        `<br>Dealer has a score of ${playersScore[0]}!<br>But Player has gone bust, with a score of ${playersScore[1]}!<br> Dealer Wins.<br><br>` +
+        `<br>Dealer has a score of ${playersScore[0]}!<br>Player has gone bust, with a score of ${playersScore[1]}!<br> Dealer Wins.<br><br>` +
         "Press Submit to Restart the game";
-
-      CARDMODE = "RESET";
-      GAMEMODE = "RESET";
+      resetGame();
+      return myOutputValue;
     }
 
     if (playerOneScore < 16) {
@@ -367,8 +428,7 @@ var main = function (input) {
         myOutputValue +
         `<br>Dealer has a score of ${playersScore[0]}!<br>But Player is under 16 points, with a score of ${playersScore[1]}!<br> Dealer Wins.<br><br>` +
         "Press Submit to Restart the game";
-      CARDMODE = "RESET";
-      GAMEMODE = "RESET";
+      resetGame();
       return myOutputValue;
     }
 
@@ -378,6 +438,7 @@ var main = function (input) {
         myOutputValue +
         `<br>Dealer has a score of ${playersScore[0]}!<br>Player has a score of ${playersScore[1]}!<br> Dealer Wins.<br><br>` +
         "Press Submit to Restart the game";
+      resetGame();
       return myOutputValue;
     }
 
@@ -392,8 +453,7 @@ var main = function (input) {
       myOutputValue = "<br>its a tie mate...";
     }
 
-    CARDMODE = "RESET";
-    GAMEMODE = "RESET";
+    resetGame();
 
     console.log("final gamemode is: " + GAMEMODE);
     console.log("final cardmode is: " + CARDMODE);
@@ -411,7 +471,7 @@ var main = function (input) {
 var resetGame = function () {
   // reset the variables
   CARDMODE = "START";
-  GAMEMODE = "START";
+  GAMEMODE = "INTRO";
   playersScore = [];
   playersHands = [];
   cardDeck = [];
