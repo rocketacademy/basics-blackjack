@@ -115,11 +115,57 @@
       }
 
       #container {
+        display: flex;
+        align-content: center;
+        justify-content: center;
+        /* flex-direction: row; */
+        /* background-color: rgb(146, 146, 146);
+        border-radius: 20px;
+        margin: 40px auto;
+        max-width: 800px;
+        padding: 38px 31px; */
+      }
+
+      #container maincenter {
+        background-color: rgb(146, 146, 146);
+        align-items: center;
+        padding: 38px 31px;
+        border-radius: 20px;
+
+        margin: 20px;
+        min-width: 800px;
+        max-width: 800px;
+        width: 100%;
+        /* not sure why this width is 100%, but it works... */
+        /* I tried flex 2 as well to try to size it proportionately..  */
+        /* When shrinking the webpage, the text will shift to the next line...trying to make it responsive and not sure if flexbox is the best way to do it */
+
+        /* align-items: center;
         background-color: rgb(146, 146, 146);
         border-radius: 20px;
         margin: 40px auto;
         max-width: 800px;
         padding: 38px 31px;
+        flex: 2; */
+      }
+      #container gifexport {
+        /* background-color: rgb(191, 130, 130); keep it invisible*/
+        align-items: center;
+        padding: 5px 31px;
+        /* margin: 20px; */
+        width: 100%;
+
+        /* width: 100%;
+        flex: 1;
+
+        padding: 38px 31px;
+        border: 2px solid red; */
+        /* border-radius: 20px;
+        margin: 40px auto;
+        min-width: 200px;
+        max-width: 800px;
+        padding: 38px 31px;
+        flex: 1; */
       }
 
       input {
@@ -175,14 +221,39 @@
       />
     </h1>
     <h1 class="header">♣️ Basics - Blackjack ♠️</h1>
+    <!-- <gifexport>Hello</gifexport> -->
     <div id="container">
-      <p>Input:</p>
-      <input id="input-field" style="border-radius: 20px; border: 0px" />
-      <br />
-      <button id="submit-button">Submit</button>
-      <p>Output:</p>
-      <div id="output-div">Press Button to Play!</div>
+      <div id="container">
+        <gifexport id="gifexportingleft"></gifexport>
+      </div>
+
+      <maincenter>
+        <p style="font-size: 18px; font-weight: 700">Input:</p>
+        <input id="input-field" style="border-radius: 20px; border: 0px" />
+        <br />
+        <button id="submit-button">Submit</button>
+        <p style="font-size: 18px; font-weight: 700">Output:</p>
+        <div id="output-div">Press Button to Play!</div>
+      </maincenter>
+
+      <div id="container">
+        <gifexport id="gifexportingright"></gifexport>
+      </div>
     </div>
+
+    <audio
+      src="https://www.myinstants.com/media/sounds/audiocutter_ultra-instinct-theme-official-version.mp3"
+      id="blackjackAudio"
+    ></audio>
+    <audio
+      src="https://www.myinstants.com/media/sounds/nba02.mp3"
+      id="winAudio"
+    ></audio>
+    <audio
+      src="https://www.myinstants.com/media/sounds/noooo_ezag6q7.mp3"
+      id="loseAudio"
+    ></audio>
+
     <!-- Import program logic -->
     <script src="script.js"></script>
     <!-- Define button click functionality -->
