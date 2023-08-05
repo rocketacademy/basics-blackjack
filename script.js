@@ -14,6 +14,18 @@ var playersScore = [];
 var playersHands = [];
 var myOutputValue;
 
+// var TIEIMAGE =
+//   "https://i.pinimg.com/originals/a1/5b/7f/a15b7f361a8cee4bd62c10b55b895d53.gif"; // this doesnt work
+
+// From Esther's method of storing images, credit to her!
+var images = {
+  win: '<img src = "https://media.tenor.com/2nerD3zqcC4AAAAC/lebron-james-dunk.gif"/>',
+  lose: '<img src = "https://media.tenor.com/5Z0KOZ1aZZYAAAAC/blocked-bye-felicia.gif"/>',
+  tie: '<img src = "https://media.tenor.com/003djdkDDyYAAAAC/the-office-mexican-standoff.gif"/> ',
+  newgame:
+    '<img src = "https://64.media.tumblr.com/7cfaf9ff8d2c9ac88fdf0535f11401eb/238c6ea7d2a8953c-ea/s500x750/b2e3a61e899360f093190f47733205eea991d715.gif"/>',
+};
+
 //UTILITY FUNCTIONS
 //Pops two cards from the cardDeck, and returns them as a List.
 // var initialiseDrawTwo = function () {
@@ -29,8 +41,7 @@ var myOutputValue;
 //Accepts a Hand List
 //Returns a Boolean
 var blackjackChecker = function (hand) {
-  console.log("check!!!!!");
-  console.log("check 1");
+  console.log("BLACKJACKCHECKER STARTS!");
   console.log("the hand is: " + hand);
 
   var blackjackResult = false;
@@ -49,8 +60,8 @@ var blackjackChecker = function (hand) {
   ) {
     blackjackResult = true;
   }
-  console.log("check 1");
-  console.log("final result is: " + blackjackResult);
+  console.log("BLACKJACKCHECKER ENDS, IS RETURNING!");
+  console.log(blackjackResult);
   return blackjackResult;
 };
 
@@ -202,34 +213,78 @@ var main = function (input) {
       currentHand.push(cardDeck.pop());
       currentHand.push(cardDeck.pop());
       playersHands.push(currentHand);
-
       initialCounter += 1;
     }
 
-    console.log("check blackjack");
-    console.log(playersHands[0] + "dealer hands BELOW");
-    console.log(blackjackChecker([playersHands[0]]));
-    console.log(playersHands[0][0] + "card1");
-    console.log(playersHands[0][1] + "card2");
+    // console.log("check blackjack");
+    // console.log(playersHands[0] + " dealer hands BELOW");
+    // // console.log("BEGINNING TO CHECK!!" + blackjackChecker([playersHands[0]]));
+    // console.log("BEGINNING TO CHECK!!");
+    // console.log(playersHands[0][0] + "card1");
+    // console.log(playersHands[0][1] + "card2");
 
-    // console.log(playersHands[1] + "player hands");
+    //Check Blackjack Combinations
+    //Only enters this block of code if either player has blackjack.
+    if (
+      blackjackChecker(playersHands[0]) == true ||
+      blackjackChecker(playersHands[1]) == true
+    ) {
+      // If both Dealer and Player has blackjack
+      if (
+        blackjackChecker(playersHands[0]) == true &&
+        blackjackChecker(playersHands[1]) == true
+      ) {
+        var GifMsg = images.tie;
 
-    //Check Blackjack for Dealer first, then Players.
-    if (blackjackChecker([playersHands[0]]) == true) {
-      return `Dealer drew <br>${playersHands[0][0]} and ${playersHands[0][1]}! <br> You Lose.`;
-    }
-    //Check if Players have blackjack
-    // Starts from 1 in the playersHands list
-    var blackjackCount = 1;
-    while (blackjackCount < numOfPlayers) {
-      console.log(
-        blackjackChecker([playersHands[blackjackCount]]) + "player BJ check"
-      );
-      console.log(blackjackCount + "count");
-      if (blackjackChecker([playersHands[blackjackCount]]) == true) {
-        return `You drew <br>${playersHands[blackjackCount][0]} and ${playersHands[blackjackCount][1]}! <br> You Won!!`;
+        return (
+          `<b>Dealer has drawn:</b><br> ` +
+          handDescription(playersHands[0]) +
+          "<br><br>" +
+          `<b>Player has drawn:</b><br> ` +
+          handDescription(playersHands[1]) +
+          "<br><br>" +
+          `<br>You Both Got Blackjack! It's a tie!<br>` +
+          GifMsg
+          // images.tie
+        );
       }
-      blackjackCount += 1;
+      // if only dealer has blackjack
+      else if (
+        blackjackChecker(playersHands[0]) == true &&
+        blackjackChecker(playersHands[1]) == false
+      ) {
+        var GifMsg = images.lose;
+        return (
+          `<b>Dealer has drawn:</b><br> ` +
+          handDescription(playersHands[0]) +
+          "<br><br>" +
+          `<b>Player has drawn:</b><br> ` +
+          handDescription(playersHands[1]) +
+          "<br><br>" +
+          `Dealer got blackjack, Dealer Won!!<br>` +
+          GifMsg
+          //// +images.lose
+          // Not sure why i couldnt't directly put images.lose, instead I have to create a variable first! Not sure what is going on under the hood.
+        );
+      }
+      // if only player has blackjack
+      else if (
+        blackjackChecker(playersHands[1]) == true &&
+        blackjackChecker(playersHands[0]) == false
+      ) {
+        var GifMsg = images.win;
+        return (
+          `<b>Dealer has drawn:</b><br> ` +
+          handDescription(playersHands[0]) +
+          "<br><br>" +
+          `<b>Player has drawn:</b><br> ` +
+          handDescription(playersHands[1]) +
+          "<br><br>" +
+          `You got blackjack, You Won!!` +
+          GifMsg
+          // +images.win
+        );
+      }
     }
 
     console.log("end blackjack check");
@@ -268,16 +323,11 @@ var main = function (input) {
         calculateHandValue(playersHands[1]) +
         " points.</b><br><br>" +
         " Type Hit to draw again, or Pass for Dealer's turn.";
-
-      console.log(GAMEMODE + "player");
-      console.log(CARDMODE + "player");
       return outputMsg;
     }
 
     if (input == "pass") {
       CARDMODE = "CHECKDEALERVALUE";
-      console.log(GAMEMODE + " pass mode check dealer");
-      console.log(CARDMODE + " pass mode check dealer");
       return "Dealer's Turn.";
     }
 
@@ -303,10 +353,8 @@ var main = function (input) {
   //Dealer HAS to draw if score is below 17. Check lose condition for dealer as well.
   if (GAMEMODE == "PLAY" && CARDMODE == "CHECKDEALERVALUE") {
     if (calculateHandValue(playersHands[0]) < 17) {
-      // console.log("Dealer Check Start");
       CARDMODE = "DRAWPHASE";
-      // console.log(GAMEMODE + "check dealer2");
-      // console.log(CARDMODE + "check dealer2");
+
       console.log(calculateHandValue(playersHands[0]) + "dealer initial value");
       return (
         `<b>Dealer's Turn</b><br><br>` +
@@ -339,8 +387,6 @@ var main = function (input) {
     playersHands[0].push(addnCard);
     dealerCheckCounter += 1;
 
-    console.log(playersHands[0] + "dealer check error Pre");
-
     if (calculateHandValue(playersHands[0]) > 21) {
       var drawnPoints = calculateHandValue(playersHands[0]);
       resetGame();
@@ -351,8 +397,6 @@ var main = function (input) {
       );
     } else if (calculateHandValue(playersHands[0]) > 16) {
       CARDMODE = "ENDGAME";
-      console.log(CARDMODE + "Dealer Drawn");
-      console.log(calculateHandValue(playersHands[0]) + "dealer final value");
 
       return `Dealer has drawn ${dealerCheckCounter} cards and now has sufficient points.<br> Press button to continue.`;
     }
@@ -441,10 +485,6 @@ var main = function (input) {
     }
 
     resetGame();
-
-    console.log("final gamemode is: " + GAMEMODE);
-    console.log("final cardmode is: " + CARDMODE);
-
     return myOutputValue;
   }
 
