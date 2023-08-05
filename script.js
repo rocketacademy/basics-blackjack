@@ -31,41 +31,27 @@ var myOutputValue;
 var blackjackChecker = function (hand) {
   console.log("check!!!!!");
   console.log("check 1");
+  console.log("the hand is: " + hand);
+
+  var blackjackResult = false;
+
+  var cardOne = hand[0];
+  var cardTwo = hand[1];
+
+  console.log("cardOne is: " + cardOne);
+  console.log("cardTwo is: " + cardTwo);
 
   // If first card is Ace
-  if (hand[0].name == "ace") {
-    if (
-      hand[1].name == "jack" ||
-      hand[1].name == "queen" ||
-      hand[1].name == "king" ||
-      hand[1].name == "ace"
-    ) {
-      console.log("check A");
-      return Boolean(true);
-    } else {
-      console.log("check B");
-      return Boolean(false);
-    }
-  }
-  console.log("check 1");
-
   // check inverse Permutation
   if (
-    hand[0].name == "jack" ||
-    hand[0].name == "queen" ||
-    hand[0].name == "king"
+    (cardOne.name == "ace" && cardTwo.rank > 9) ||
+    (cardOne.rank > 9 && cardTwo.name == "ace")
   ) {
-    if (hand[1].name == "ace") {
-      console.log("check A");
-      return Boolean(true);
-    } else {
-      console.log("check B");
-      return Boolean(false);
-    }
+    blackjackResult = true;
   }
-  console.log("check 2");
-
-  return Boolean(false);
+  console.log("check 1");
+  console.log("final result is: " + blackjackResult);
+  return blackjackResult;
 };
 
 // Obtain and Sum the rank of all the cards in the hand
@@ -222,14 +208,14 @@ var main = function (input) {
 
     console.log("check blackjack");
     console.log(playersHands[0] + "dealer hands BELOW");
-    console.log(blackjackChecker[playersHands[0]]);
+    console.log(blackjackChecker([playersHands[0]]));
     console.log(playersHands[0][0] + "card1");
     console.log(playersHands[0][1] + "card2");
 
     // console.log(playersHands[1] + "player hands");
 
     //Check Blackjack for Dealer first, then Players.
-    if (blackjackChecker[playersHands[0]] == true) {
+    if (blackjackChecker([playersHands[0]]) == true) {
       return `Dealer drew <br>${playersHands[0][0]} and ${playersHands[0][1]}! <br> You Lose.`;
     }
     //Check if Players have blackjack
@@ -237,10 +223,10 @@ var main = function (input) {
     var blackjackCount = 1;
     while (blackjackCount < numOfPlayers) {
       console.log(
-        blackjackChecker[playersHands[blackjackCount]] + "player BJ check"
+        blackjackChecker([playersHands[blackjackCount]]) + "player BJ check"
       );
       console.log(blackjackCount + "count");
-      if (blackjackChecker[playersHands[blackjackCount]] == true) {
+      if (blackjackChecker([playersHands[blackjackCount]]) == true) {
         return `You drew <br>${playersHands[blackjackCount][0]} and ${playersHands[blackjackCount][1]}! <br> You Won!!`;
       }
       blackjackCount += 1;
@@ -282,6 +268,7 @@ var main = function (input) {
         calculateHandValue(playersHands[1]) +
         " points.</b><br><br>" +
         " Type Hit to draw again, or Pass for Dealer's turn.";
+
       console.log(GAMEMODE + "player");
       console.log(CARDMODE + "player");
       return outputMsg;
@@ -372,7 +359,7 @@ var main = function (input) {
   }
 
   ///////////////////
-  // Code should only execute past here if Player is done and Dealer has > 16.
+  // Code should only execute past here if Player is done and Dealer has > 16, And if No Blackjack Conditions
   // Those conditions will prompt GAMEMODE == "PLAY" && CARDMODE == "DRAWPHASE"
   // FINAL ENDGAME
   ///////////////////
