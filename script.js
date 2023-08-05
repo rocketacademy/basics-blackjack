@@ -24,6 +24,8 @@ var images = {
   tie: '<img src = "https://media.tenor.com/003djdkDDyYAAAAC/the-office-mexican-standoff.gif"/> ',
   newgame:
     '<img src = "https://media.tenor.com/Om5vDKW2-WEAAAAC/grenade-explosion.gif"/>',
+  oops: `<img src = "https://media.tenor.com/1B3KuSRuHRsAAAAC/embarrassing-fail.gif"/>`,
+  sillyloss: `<img src = "https://gifsec.com/wp-content/uploads/2022/10/anime-sad-gif-1.gif"/>`,
 };
 
 ///////////////////////////
@@ -264,6 +266,7 @@ var main = function (input) {
 
         var GifMsg = images.tie;
         gifFormat(images.tie);
+        playMyAudio("tieAudio");
 
         return (
           `<b>Dealer has drawn:</b><br> ` +
@@ -272,8 +275,8 @@ var main = function (input) {
           `<b>Player has drawn:</b><br> ` +
           handDescription(playersHands[1]) +
           "<br><br>" +
-          `You Both Got Blackjack! It's a tie!<br>Press Button To Play Again.<br><br>` +
-          GifMsg
+          `You Both Got Blackjack! It's a tie!<br>Press Button To Play Again.<br><br>`
+          // + GifMsg
           //+ images.tie // didnt work, not sure why. I had to create variable first.
         );
       }
@@ -287,6 +290,7 @@ var main = function (input) {
 
         var GifMsg = images.lose;
         gifFormat(images.lose);
+        playMyAudio("blackjackAudio");
 
         return (
           `<b>Dealer has drawn:</b><br> ` +
@@ -295,8 +299,8 @@ var main = function (input) {
           `<b>Player has drawn:</b><br> ` +
           handDescription(playersHands[1]) +
           "<br><br>" +
-          `Dealer got blackjack, Dealer Won!!<br>Press Button To Play Again.<br><br>` +
-          GifMsg
+          `Dealer got blackjack, Dealer Won!!<br>Press Button To Play Again.<br><br>`
+          // + GifMsg
           //// +images.lose
           // Not sure why i couldnt't directly put images.lose, instead I have to create a variable first i.e var GifMsg = images.lose! Not sure what is going on under the hood.
         );
@@ -312,6 +316,7 @@ var main = function (input) {
         var GifMsg = images.win;
 
         gifFormat(images.win);
+        playMyAudio("blackjackAudio");
 
         return (
           `<b>Dealer has drawn:</b><br> ` +
@@ -320,8 +325,7 @@ var main = function (input) {
           `<b>Player has drawn:</b><br> ` +
           handDescription(playersHands[1]) +
           "<br><br>" +
-          `You got blackjack, You Won!! <br>Press Button To Play Again.<br><br>` +
-          GifMsg
+          `You got blackjack, You Won!! <br>Press Button To Play Again.<br><br>`
         );
       }
     }
@@ -421,7 +425,9 @@ var main = function (input) {
     if (calculateHandValue(playersHands[0]) > 21) {
       var drawnPoints = calculateHandValue(playersHands[0]);
       resetGame();
-      gifFormat(images.win);
+      gifFormat(images.oops);
+
+      playMyAudio("winAudio");
 
       return (
         "Dealer drew to " +
@@ -479,14 +485,13 @@ var main = function (input) {
 
     //Check if Player has bust or invalid hand
     if (playerOneScore > 21) {
-      var GifMsg = images.lose;
-      gifFormat(images.lose);
+      var GifMsg = images.sillyloss;
+      gifFormat(images.sillyloss);
       console.log("OUTCOME 1");
 
       myOutputValue =
         myOutputValue +
-        `<br>Dealer has a score of ${playersScore[0]}!<br>Player has gone bust, with a score of ${playersScore[1]}!<br> Dealer Wins.<br><br>` +
-        GifMsg +
+        `<br>Dealer has a score of ${playersScore[0]}!<br>But Player has gone bust, with a score of ${playersScore[1]}!<br> Dealer Wins.<br><br>` +
         "Press Submit to Restart the game";
 
       playMyAudio("loseAudio");
@@ -502,8 +507,7 @@ var main = function (input) {
       myOutputValue =
         myOutputValue +
         `<br>Dealer has a score of ${playersScore[0]}!<br>But Player has a score of ${playersScore[1]}, which is under 16 points!<br> Dealer Wins.<br><br>` +
-        GifMsg +
-        "<br>Press Submit to Restart the game";
+        "Press Submit to Restart the game";
 
       playMyAudio("loseAudio");
 
@@ -519,8 +523,7 @@ var main = function (input) {
       myOutputValue =
         myOutputValue +
         `<br>Dealer has a score of ${playersScore[0]}!<br>Player has a score of ${playersScore[1]}!<br> Dealer Wins.<br><br>` +
-        GifMsg +
-        "<br>Press Submit to Restart the game";
+        "Press Submit to Restart the game";
 
       playMyAudio("loseAudio");
 
@@ -532,17 +535,19 @@ var main = function (input) {
       var GifMsg = images.win;
       gifFormat(images.win);
 
+      playMyAudio("winAudio");
+
       myOutputValue =
         myOutputValue +
         `<br>Dealer has a score of ${playersScore[0]}!<br>Player has a score of ${playersScore[1]}!<br> Player Wins.<br><br>` +
-        GifMsg +
-        "<br>Press Submit to Restart the game";
+        "Press Submit to Restart the game";
     }
 
     if (playersScore[0] == playersScore[1]) {
       var GifMsg = images.tie;
 
       gifFormat(images.tie);
+      playMyAudio("tieAudio");
 
       myOutputValue =
         GifMsg + "<br>Its a tie mate...<br><br>Press Submit to Restart";

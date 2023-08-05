@@ -132,10 +132,11 @@
         padding: 38px 31px;
         border-radius: 20px;
 
-        margin: 20px;
+        /* margin: 0px auto;  seems like I don't need any margins..*/
         min-width: 800px;
         max-width: 800px;
         width: 100%;
+
         /* not sure why this width is 100%, but it works... */
         /* I tried flex 2 as well to try to size it proportionately..  */
         /* When shrinking the webpage, the text will shift to the next line...trying to make it responsive and not sure if flexbox is the best way to do it */
@@ -207,20 +208,43 @@
       }
     </style>
   </head>
-
+  <!-- <img
+          src="https://thumbs.gfycat.com/AliveWellmadeAntbear-size_restricted.gif"
+          width="25%"
+          height="25%"
+      /> -->
   <body>
-    <h1 class="header">
+    <div id="container">
       <img
-        class="logo-img"
-        src="https://firebasestorage.googleapis.com/v0/b/ftbc11-sample.appspot.com/o/images%2F1-PRIMARY_CRIMSON.png?alt=media&token=ce9e8333-2a45-44be-adb2-1f1bf054adf7"
+        src="https://thumbs.gfycat.com/AliveWellmadeAntbear-size_restricted.gif"
+        width="12%"
+        height="12%"
+        style="padding: 40px 40px 0px 0px"
       />
-      Rocket Academy
+
+      <topbanner>
+        <h1 class="header">
+          <img
+            class="logo-img"
+            src="https://firebasestorage.googleapis.com/v0/b/ftbc11-sample.appspot.com/o/images%2F1-PRIMARY_CRIMSON.png?alt=media&token=ce9e8333-2a45-44be-adb2-1f1bf054adf7"
+          />
+          Rocket Academy
+          <img
+            class="logo-img"
+            src="https://firebasestorage.googleapis.com/v0/b/ftbc11-sample.appspot.com/o/images%2F1-PRIMARY_CRIMSON.png?alt=media&token=ce9e8333-2a45-44be-adb2-1f1bf054adf7"
+          />
+        </h1>
+        <h1 class="header">Basics - Blackjack ♠️</h1>
+      </topbanner>
+
       <img
-        class="logo-img"
-        src="https://firebasestorage.googleapis.com/v0/b/ftbc11-sample.appspot.com/o/images%2F1-PRIMARY_CRIMSON.png?alt=media&token=ce9e8333-2a45-44be-adb2-1f1bf054adf7"
+        src="https://thumbs.gfycat.com/AliveWellmadeAntbear-size_restricted.gif"
+        width="12%"
+        height="12%"
+        style="padding: 40px 0px 0px 40px"
       />
-    </h1>
-    <h1 class="header">♣️ Basics - Blackjack ♠️</h1>
+    </div>
+
     <!-- <gifexport>Hello</gifexport> -->
     <div id="container">
       <div id="container">
@@ -228,6 +252,7 @@
       </div>
 
       <maincenter>
+        <i>F11 for full screen with audio for best experience...<br /></i>
         <p style="font-size: 18px; font-weight: 700">Input:</p>
         <input id="input-field" style="border-radius: 20px; border: 0px" />
         <br />
@@ -246,12 +271,16 @@
       id="blackjackAudio"
     ></audio>
     <audio
-      src="https://www.myinstants.com/media/sounds/nba02.mp3"
+      src="https://www.myinstants.com/media/sounds/voice-2017-04-18-07-02.mp3"
       id="winAudio"
     ></audio>
     <audio
       src="https://www.myinstants.com/media/sounds/noooo_ezag6q7.mp3"
       id="loseAudio"
+    ></audio>
+    <audio
+      src="https://www.myinstants.com/media/sounds/okay-guy.mp3"
+      id="tieAudio"
     ></audio>
 
     <!-- Import program logic -->
