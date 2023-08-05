@@ -20,7 +20,7 @@ var myOutputValue;
 // From Esther's method of storing images, credit to her!
 var images = {
   win: '<img src = "https://media.tenor.com/2nerD3zqcC4AAAAC/lebron-james-dunk.gif"/>',
-  lose: '<img src = "https://media.tenor.com/5Z0KOZ1aZZYAAAAC/blocked-bye-felicia.gif"/>',
+  lose: '<img src = "https://thumbs.gfycat.com/BouncyBelovedDromaeosaur-size_restricted.gif/>',
   tie: '<img src = "https://media.tenor.com/003djdkDDyYAAAAC/the-office-mexican-standoff.gif"/> ',
   newgame:
     '<img src = "https://64.media.tumblr.com/7cfaf9ff8d2c9ac88fdf0535f11401eb/238c6ea7d2a8953c-ea/s500x750/b2e3a61e899360f093190f47733205eea991d715.gif"/>',
@@ -234,6 +234,8 @@ var main = function (input) {
         blackjackChecker(playersHands[0]) == true &&
         blackjackChecker(playersHands[1]) == true
       ) {
+        GAMEMODE = "RESET";
+        CARDMODE = "RESET";
         var GifMsg = images.tie;
 
         return (
@@ -243,9 +245,9 @@ var main = function (input) {
           `<b>Player has drawn:</b><br> ` +
           handDescription(playersHands[1]) +
           "<br><br>" +
-          `<br>You Both Got Blackjack! It's a tie!<br>` +
+          `You Both Got Blackjack! It's a tie!<br>Press Button To Play Again.<br><br>` +
           GifMsg
-          // images.tie
+          // images.tie // didnt work, not sure why. I had to create variable first.
         );
       }
       // if only dealer has blackjack
@@ -254,6 +256,8 @@ var main = function (input) {
         blackjackChecker(playersHands[1]) == false
       ) {
         var GifMsg = images.lose;
+        GAMEMODE = "RESET";
+        CARDMODE = "RESET";
         return (
           `<b>Dealer has drawn:</b><br> ` +
           handDescription(playersHands[0]) +
@@ -261,7 +265,7 @@ var main = function (input) {
           `<b>Player has drawn:</b><br> ` +
           handDescription(playersHands[1]) +
           "<br><br>" +
-          `Dealer got blackjack, Dealer Won!!<br>` +
+          `Dealer got blackjack, Dealer Won!!<br>Press Button To Play Again.<br><br>` +
           GifMsg
           //// +images.lose
           // Not sure why i couldnt't directly put images.lose, instead I have to create a variable first! Not sure what is going on under the hood.
@@ -272,6 +276,8 @@ var main = function (input) {
         blackjackChecker(playersHands[1]) == true &&
         blackjackChecker(playersHands[0]) == false
       ) {
+        GAMEMODE = "RESET";
+        CARDMODE = "RESET";
         var GifMsg = images.win;
         return (
           `<b>Dealer has drawn:</b><br> ` +
@@ -280,7 +286,7 @@ var main = function (input) {
           `<b>Player has drawn:</b><br> ` +
           handDescription(playersHands[1]) +
           "<br><br>" +
-          `You got blackjack, You Won!!` +
+          `You got blackjack, You Won!! <br>Press Button To Play Again.<br><br>` +
           GifMsg
           // +images.win
         );
@@ -355,7 +361,6 @@ var main = function (input) {
     if (calculateHandValue(playersHands[0]) < 17) {
       CARDMODE = "DRAWPHASE";
 
-      console.log(calculateHandValue(playersHands[0]) + "dealer initial value");
       return (
         `<b>Dealer's Turn</b><br><br>` +
         "Dealer only has " +
@@ -363,14 +368,7 @@ var main = function (input) {
         ", under the 16 points required to start the game.<br><br> Press button for dealer to draw."
       );
     } else {
-      console.log(
-        "Dealer Check Else Branch, GAMEMODE is " +
-          GAMEMODE +
-          " and CARDMODE is " +
-          CARDMODE
-      );
       CARDMODE = "ENDGAME";
-      console.log("The cardmode has been changed to: " + CARDMODE);
       return "Dealer has sufficient points to proceed with the game.<br><br>Press button to show hand.";
     }
   }
@@ -446,42 +444,57 @@ var main = function (input) {
 
     //Check if Player has bust or invalid hand
     if (playerOneScore > 21) {
+      var GifMsg = images.lose;
+
       myOutputValue =
         myOutputValue +
         `<br>Dealer has a score of ${playersScore[0]}!<br>Player has gone bust, with a score of ${playersScore[1]}!<br> Dealer Wins.<br><br>` +
+        GifMsg +
         "Press Submit to Restart the game";
       resetGame();
       return myOutputValue;
     }
 
     if (playerOneScore < 16) {
+      var GifMsg = images.lose;
+      var GifMsg = images.lose;
+
       myOutputValue =
         myOutputValue +
-        `<br>Dealer has a score of ${playersScore[0]}!<br>But Player is under 16 points, with a score of ${playersScore[1]}!<br> Dealer Wins.<br><br>` +
-        "Press Submit to Restart the game";
+        `<br>Dealer has a score of ${playersScore[0]}!<br>But Player has a score of ${playersScore[1]}, which is under 16 points!<br> Dealer Wins.<br><br>` +
+        GifMsg +
+        "<br>Press Submit to Restart the game";
       resetGame();
       return myOutputValue;
     }
 
     // Normal win conditions
     if (playersScore[0] > playersScore[1]) {
+      var GifMsg = images.lose;
+
       myOutputValue =
         myOutputValue +
         `<br>Dealer has a score of ${playersScore[0]}!<br>Player has a score of ${playersScore[1]}!<br> Dealer Wins.<br><br>` +
-        "Press Submit to Restart the game";
+        GifMsg +
+        "<br>Press Submit to Restart the game";
       resetGame();
       return myOutputValue;
     }
 
     if (playersScore[0] < playersScore[1]) {
+      var GifMsg = images.win;
+
       myOutputValue =
         myOutputValue +
         `<br>Dealer has a score of ${playersScore[0]}!<br>Player has a score of ${playersScore[1]}!<br> Player Wins.<br><br>` +
-        "Press Submit to Restart the game";
+        GifMsg +
+        "<br>Press Submit to Restart the game";
     }
 
     if (playersScore[0] == playersScore[1]) {
-      myOutputValue = "<br>its a tie mate...";
+      var GifMsg = images.tie;
+
+      myOutputValue = GifMsg + "<br>Its a tie mate...";
     }
 
     resetGame();
@@ -490,7 +503,9 @@ var main = function (input) {
 
   if (CARDMODE == "RESET" && GAMEMODE == "RESET") {
     resetGame();
-    return "Push Button To Start a New Game!";
+    var GifMsg = images.newgame;
+
+    return "Push Button To Start a New Game!" + GifMsg;
   }
 };
 
