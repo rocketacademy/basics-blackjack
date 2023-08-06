@@ -6,14 +6,17 @@
 // Each players' score is the total of their card ranks. Jacks/Queen/Kings are 10. Aces can be 1 or 11.
 // The player who is closer to, but not above 21 wins the hand.
 
-//Clobal variables
-
+//Global variables
+var playerHand = [];
+var dealerHand = [];
+var INPUT_USERNAME = "key in your username";
 var GAME_START = "start the game";
 var CHECK_FOR_BLACKJACK = "check if any player got blackjack";
 var HIT_OR_STAND = "players can choose to hit or stand";
 var COMPARE_HAND_VALUES = "compare the hand values";
-var GAME_OVER = "game over";
-var gameState = GAME_START;
+var GAME_RESET = "game reset";
+var gameState = INPUT_USERNAME;
+
 var cardDeck = "";
 var HEARTS = "♥️";
 var DIAMONDS = "♦️";
@@ -29,6 +32,8 @@ var IMAGE_ERROR =
   '<img src="https://media.tenor.com/CvC-Q-fIocgAAAAC/error404-page-not-found.gif"/>';
 var IMAGE_DOG_WINKS =
   '<img src="https://media.tenor.com/ZgG35ixm1x4AAAAi/eyebrows-wink.gif"/>';
+var IMAGE_SPONGEBOB_HI_THERE =
+  '<img src="https://media.tenor.com/MOLRXYOo0x8AAAAM/oh-hi-there-spongebob.gif"/>';
 var IMAGE_SPONGEBOB_THUMBSUP =
   '<img src="https://media.tenor.com/35-j2Kya_18AAAAC/spongebob.gif"/>';
 var IMAGE_HAPPY_SPONGEBOB =
@@ -47,10 +52,14 @@ var IMAGE_SPONGEBOB_WOW =
   '<img src="https://media.tenor.com/Ry3HRYMAflgAAAAC/wow-whoa.gif"/>';
 var IMAGE_SPONGEBOB_CRYING =
   '<img src="https://media.tenor.com/cikARasodfgAAAAC/reverse-leak-spongebob-water.gif"/>';
-
-var playerHand = [];
-var dealerHand = [];
-
+var IMAGE_SPONGEBOB_SMILE =
+  '<img src="https://media.tenor.com/tQWS9sBF3q0AAAAC/spongebob-square-pants.gif"/>';
+var IMAGE_SPONGEBOB_AND_PATRICK_SMILE =
+  '<img src="https://media.tenor.com/SFSw1jTCE-8AAAAC/spongebob-patrick.gif"/>';
+var IMAGE_SPONGEBOB_WAITING =
+  '<img src="https://media.tenor.com/PVITt9rBTt8AAAAC/spongebob-waiting.gif"/>';
+var IMAGE_SPONGEBOB_BELLYDANCE =
+  '<img src="https://media.tenor.com/WDBFSUV4UtQAAAAC/spongebob-spongebob-squarepants.gif"/>';
 //create a card deck (helper function)
 var createDeck = function () {
   var deck = []; //array for the card deck
@@ -212,13 +221,16 @@ var showGameResult = function () {
         "Wooow! Both Player and Dealer got blackjack! It's a tie!" +
         "<br>" +
         "<br>" +
+        "<center>" +
         IMAGE_SPONGEBOB_AND_PATRICK_HUG;
     } //bust tie
-    else if (totalPlayerScore > 21) {
+    if (totalPlayerScore > 21) {
+      console.log("total player score > 21", totalPlayerScore > 21);
       gameOutcome =
         "Oops! Both Player and Dealer busted! It's a tie!" +
         "<br>" +
         "<br>" +
+        "<center>" +
         IMAGE_SPONGEBOB_AND_PATRICK_CRYING;
     } //regular tie
     else {
@@ -226,11 +238,10 @@ var showGameResult = function () {
         "Both dealer and player got same score! It's a tie!" +
         "<br>" +
         "<br>" +
+        "<center>" +
         IMAGE_SPONGEBOB_AND_PATRICK;
     }
-    return myOutputMessage + gameOutcome;
   }
-
   // blackjack but not a tie:
   //1) blackjack + bust
   //2) just blackjack
@@ -240,6 +251,7 @@ var showGameResult = function () {
         "What a game: Player got Blackjack and Dealer busts!" +
         "<br>" +
         "<br>" +
+        "<center>" +
         IMAGE_SPONGEBOB_WOW;
     }
     if (totalDealerScore < 21) {
@@ -247,6 +259,7 @@ var showGameResult = function () {
         "Looks like Player got Blackjack! They win!" +
         "<br>" +
         "<br>" +
+        "<center>" +
         IMAGE_HAPPY_SPONGEBOB;
     }
   }
@@ -256,6 +269,7 @@ var showGameResult = function () {
         "What a game: Dealer got Blackjack and Player busts!" +
         "<br>" +
         "<br>" +
+        "<center>" +
         IMAGE_SPONGEBOB_CRYING;
     }
 
@@ -264,6 +278,8 @@ var showGameResult = function () {
       gameOutcome =
         "Looks like Dealer got Blackjack! They win!" +
         "<br>" +
+        "<br>" +
+        "<center>" +
         IMAGE_SPONGEBOB_WOW;
     }
   }
@@ -274,12 +290,17 @@ var showGameResult = function () {
         "Bad luck for Dealer: he busts! Player wins!" +
         "<br>" +
         "<br>" +
+        "<center>" +
         IMAGE_SPONGEBOB_THUMBSUP;
     }
 
     if (totalPlayerScore > totalDealerScore) {
       gameOutcome =
-        "YAAY! Player wins!" + "<br>" + "<br>" + IMAGE_SPONGEBOB_THUMBSUP;
+        "YAAY! Player wins!" +
+        "<br>" +
+        "<br>" +
+        "<center>" +
+        IMAGE_SPONGEBOB_THUMBSUP;
     }
   }
 
@@ -289,6 +310,7 @@ var showGameResult = function () {
         "Oh no! Player busts! Dealer wins!" +
         "<br>" +
         "<br>" +
+        "<center>" +
         IMAGE_SAD_SPONGEBOB;
     }
     if (totalDealerScore > totalPlayerScore) {
@@ -296,14 +318,20 @@ var showGameResult = function () {
         "Sorry, Player, you lose! Dealer wins!" +
         "<br>" +
         "<br>" +
+        "<center>" +
         IMAGE_SAD_SPONGEBOB;
     }
   }
   myOutputMessage = myOutputMessage + gameOutcome;
   return myOutputMessage;
 };
-
-//MAIN FUNCTION:
+var resetGame = function () {
+  gameState = INPUT_USERNAME;
+  playerHand = [];
+  dealerHand = [];
+  cardDeck = shuffleCards(createDeck());
+};
+//MAIN FUNCTION
 //Game mode = GAME_START
 //Deal the cards:
 //Player gets 2 cards
@@ -312,11 +340,32 @@ var showGameResult = function () {
 var main = function (input) {
   var cardDeck = shuffleCards(createDeck());
   var myOutputMessage = "";
+  if (gameState === INPUT_USERNAME && input === "") {
+    myOutputMessage =
+      "Hi Player, please key in your name and click 'PLAY' to continue!" +
+      "<br>" +
+      "<br>" +
+      "<center>" +
+      IMAGE_SPONGEBOB_HI_THERE;
+  }
+  if (gameState === INPUT_USERNAME && input !== "") {
+    var userName = input;
+    myOutputMessage =
+      "Hi, " +
+      userName +
+      ', are you ready to play some Blackjack? <br> If so, please click "PLAY" to start the game!' +
+      "<br>" +
+      "<br>" +
+      "<center>" +
+      IMAGE_SPONGEBOB_AND_PATRICK_SMILE;
+    gameState = GAME_START;
+    return myOutputMessage;
+  }
   if (gameState === GAME_START) {
     index = 0;
     while (index < 2) {
       playerHand.push(cardDeck.pop());
-
+      console.log(playerHand);
       dealerHand.push(cardDeck.pop());
 
       index = index + 1;
@@ -333,10 +382,11 @@ var main = function (input) {
       dealerHand[0].suit +
       "<br>" +
       "<br>" +
-      "Now please click 'Submit' again to continue the game." +
+      "Please click 'PLAY' again to see your current score." +
       "<br>" +
       "<br>" +
-      IMAGE_DOG_WINKS;
+      "<center>" +
+      IMAGE_SPONGEBOB_SMILE;
     gameState = CHECK_FOR_BLACKJACK;
     //once the cards are dealt, change the game state
     return myOutputMessage;
@@ -381,18 +431,21 @@ var main = function (input) {
           "Wooow! Both Player and Dealer got blackjack! It's a tie!" +
           "<br>" +
           "<br>" +
+          "<center>" +
           IMAGE_SPONGEBOB_AND_PATRICK_HUG;
       } else if (playerHasBlackjack === true) {
         blackjackInFirstHand =
           "Looks like Player got blackjack! They win!" +
           "<br>" +
           "<br>" +
+          "<center>" +
           IMAGE_HAPPY_SPONGEBOB;
       } else {
         blackjackInFirstHand =
           "Looks like Dealer got blackjack! They win!" +
           "<br>" +
           "<br>" +
+          "<center>" +
           IMAGE_SPONGEBOB_CRYING;
       }
 
@@ -412,7 +465,7 @@ var main = function (input) {
         "<br>" +
         "<br>" +
         blackjackInFirstHand;
-      gameState = GAME_OVER;
+      gameState = GAME_RESET;
     } else {
       gameState = HIT_OR_STAND;
 
@@ -422,7 +475,10 @@ var main = function (input) {
         "." +
         "<br>" +
         "<br>" +
-        "Please key in 'hit' if you'd like to draw one card or 'stand' if you think you got enough.";
+        "Please key in 'hit' to draw a card or 'stand' if you prefer not to. Click 'PLAY' again." +
+        "<br>" +
+        "<center>" +
+        IMAGE_SPONGEBOB_WAITING;
     }
     return myOutputMessage;
   }
@@ -436,6 +492,7 @@ var main = function (input) {
         "<br>" +
         "<br>" +
         "<br>" +
+        "<center>" +
         IMAGE_ERROR;
       return errorMessage;
     }
@@ -465,7 +522,11 @@ var main = function (input) {
         dealerHand[0].suit +
         "<br>" +
         "<br>" +
-        "Please key in 'hit' if you'd like to draw one card or 'stand' if you think you got enough. ";
+        "Please key in 'hit' to draw one more card or 'stand' if you prefer not to. Click 'PLAY' again." +
+        "<br>" +
+        "<br>" +
+        "<center>" +
+        IMAGE_SPONGEBOB_BELLYDANCE;
       return myOutputMessage;
     } else {
       var dealerHandValue = calculateTotalHandValue(dealerHand);
@@ -476,19 +537,23 @@ var main = function (input) {
       gameState = COMPARE_HAND_VALUES;
 
       myOutputMessage =
-        "Alright! All cards are drawn, it's time to find out the winner! <br><br> Please click 'Submit' to see the game result whenever ready." +
+        "Alright! All cards are drawn, it's time to find out the winner! <br><br> Please click 'PLAY' to see the game result whenever ready." +
+        "<br>" +
+        "<br>" +
+        "<center>" +
         IMAGE_CARDS;
       return myOutputMessage;
     }
   }
   if (gameState === COMPARE_HAND_VALUES) {
-    gameState = GAME_OVER;
+    gameState = GAME_RESET;
     return showGameResult();
   }
-  if (gameState === GAME_OVER) {
+  if (gameState === GAME_RESET) {
     myOutputMessage =
-      "Game over! Please refresh the page to restart the game.<br><br>" +
+      "Game over! Please click 'PLAY' again to restart the game.<br><br><center>" +
       IMAGE_GAME_OVER;
+    resetGame();
   }
   return myOutputMessage;
 };
