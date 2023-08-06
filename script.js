@@ -24,37 +24,25 @@ var main = function (input) {
   if (UNIVERSAL_GAME_MODE === ``) {
     //Generates deck of cards
     cardDeck = cardDeckGenerator();
-    console.log(cardDeck);
 
     //Shuffle deck of cards
     cardDeck = shuffleCardDeck(cardDeck);
-    console.log(cardDeck);
 
     //Start assigning hands to dealer then player
     dealerHands = assignCards(2);
-    console.log(`Starting dealer hand:` + JSON.stringify(dealerHands));
     playerHands = assignCards(2);
-
-    console.log(`Starting player hand:` + JSON.stringify(playerHands));
 
     //Calculate sum of dealer cards & check if need to vary ace values
     sumOfDealerHand = sumCards(dealerHands) + varyAceValues(dealerHands);
-    console.log(`Sum dealer cards: ` + sumOfDealerHand);
 
     //check if blackjack is met for dealer
     dealerBlackjack = checksForBlackjack(dealerHands);
-    console.log(`Check for blackjack: ` + dealerBlackjack);
 
     //Calculate sum of player cards
     sumOfPlayerHand = sumCards(playerHands) + varyAceValues(playerHands);
-    console.log(`Sum player cards: ` + sumOfPlayerHand);
-    console.log(
-      `Sum player cards: ` + sumOfPlayerHand + JSON.stringify(playerHands)
-    );
 
     //check if blackjack is met for player
     playerBlackjack = checksForBlackjack(playerHands);
-    console.log(`Check for blackjack: ` + dealerBlackjack);
 
     //if blackjack is met by player, change game mode since they win automatically
     if (playerBlackjack === `true` || dealerBlackjack === `true`) {
@@ -64,7 +52,6 @@ var main = function (input) {
 
     //Change game mode to allow player to choose to hit or stand
     UNIVERSAL_GAME_MODE = GAME_MODE_PLAYER_CHOICE;
-    console.log(`GAME MODE : ` + UNIVERSAL_GAME_MODE);
 
     //append deck images for player and dealer
     appendImagesWhenDeckHanded(`player`);
@@ -95,13 +82,9 @@ var main = function (input) {
 
       //Calculate sum of player cards
       sumOfPlayerHand = sumCards(playerHands) + varyAceValues(playerHands);
-      console.log(
-        `Sum player cards: ` + sumOfPlayerHand + JSON.stringify.playerHands
-      );
 
       //check if blackjack is met for player
       playerBlackjack = checksForBlackjack(playerHands);
-      console.log(`Check for blackjack: ` + dealerBlackjack);
 
       //if blackjack is met by player, change game mode since they win automatically
       if (playerBlackjack === `true` || dealerBlackjack === `true`) {
@@ -109,20 +92,17 @@ var main = function (input) {
         return winner;
       }
 
-      console.log(` HIT Player hand:` + JSON.stringify(playerHands));
-
       //append deck images for player
       appendImagesWhenHit(`player`);
 
       var myOutputValue = `You chose hit and have drawn a new card! <br> Player Total: ${sumOfPlayerHand}  <br> Dealer Total: ${sumOfDealerHand} <br> Enter hit to draw a card or stand to end your turn then click the Submit button!`;
 
       UNIVERSAL_GAME_MODE = GAME_MODE_PLAYER_CHOICE;
-      console.log(`UNIVERSAL_GAME_MODE:` + UNIVERSAL_GAME_MODE);
       return myOutputValue;
     } else if (userChoice === "stand") {
       var myOutputValue = `You chose stand so no cards were drawn! <br> Player Total: ${sumOfPlayerHand}  <br> Dealer Total: ${sumOfDealerHand}  <br> Click button again to see what dealer chooses! `;
       UNIVERSAL_GAME_MODE = GAME_MODE_DEALER_CHOICE;
-      console.log(`UNIVERSAL_GAME_MODE:` + UNIVERSAL_GAME_MODE);
+
       return myOutputValue;
     }
     return userChoice;
@@ -133,15 +113,12 @@ var main = function (input) {
     if (sumOfDealerHand < 17) {
       //Assign new card
       dealerHands = hit(dealerHands);
-      console.log(`Starting dealer hand:` + JSON.stringify(dealerHands));
 
       //Calculate sum of dealer cards and change ace variable if preset
       sumOfDealerHand = sumCards(dealerHands) + varyAceValues(dealerHands);
-      console.log(`Sum dealer cards: ` + sumOfDealerHand);
 
       //check if blackjack is met for dealer
       dealerBlackjack = checksForBlackjack(dealerHands);
-      console.log(`Check for blackjack: ` + dealerBlackjack);
 
       //if blackjack is met by dealer, change game mode since they win automatically
       if (playerBlackjack === `true` || dealerBlackjack === `true`) {
@@ -162,7 +139,6 @@ var main = function (input) {
       var myOutputValue = `Dealer chose stand and no new cards are drawn! <br> Player Total: ${sumOfPlayerHand}  <br> Dealer Total: ${sumOfDealerHand} `;
 
       UNIVERSAL_GAME_MODE = GAME_MODE_EVALUATE;
-      console.log(`Universal game mode` + UNIVERSAL_GAME_MODE);
     }
 
     return myOutputValue;
@@ -172,7 +148,6 @@ var main = function (input) {
     //evaluate if either player or dealer bust
     if (sumOfPlayerHand > 21 || sumOfDealerHand > 21) {
       var winner = declaresWinnerIfBustReturnsTrue();
-      console.log(`bust condition met- winner` + winner);
       return winner;
     }
 
@@ -186,9 +161,7 @@ var main = function (input) {
 var appendImagesWhenDeckHanded = function (playerOrDealer) {
   //tracks if the function should append for player or dealer
   var playerOrDealer = playerOrDealer;
-  console.log(`DECK` + playerOrDealer);
   counter = 0;
-  console.log(`full player hand` + JSON.stringify.fullPlayerHand);
 
   if (playerOrDealer === `player`) {
     while (counter < playerHands.length) {
@@ -197,7 +170,6 @@ var appendImagesWhenDeckHanded = function (playerOrDealer) {
       //adds images
       var cardImage = document.createElement(`img`);
       cardImage.src = `cards/` + playerHands[counter].image + `.png`;
-      console.log(`IMAGE` + cardImage.src);
       document.getElementById("player-cards").append(cardImage);
       counter += 1;
     }
@@ -206,7 +178,6 @@ var appendImagesWhenDeckHanded = function (playerOrDealer) {
       //adds images
       var cardImage = document.createElement(`img`);
       cardImage.src = `cards/` + dealerHands[counter].image + `.png`;
-      console.log(`IMAGE` + cardImage.src);
       document.getElementById("dealer-cards").append(cardImage);
       counter += 1;
     }
@@ -217,8 +188,6 @@ var appendImagesWhenDeckHanded = function (playerOrDealer) {
 var appendImagesWhenHit = function (playerOrDealer) {
   //tracks if the function should append for player or dealer
   var playerOrDealer = playerOrDealer;
-  console.log(`DECK` + playerOrDealer);
-  console.log(`full player hand` + JSON.stringify.playerHands);
   var counter = 0;
 
   if (playerOrDealer === `player`) {
@@ -226,7 +195,6 @@ var appendImagesWhenHit = function (playerOrDealer) {
     var number = playerHands.length - 1;
     var cardImage = document.createElement(`img`);
     cardImage.src = `cards/` + playerHands[number].image + `.png`;
-    console.log(`IMAGE` + cardImage.src);
     document.getElementById("player-cards").append(cardImage);
     counter += 1;
   } else {
@@ -235,7 +203,6 @@ var appendImagesWhenHit = function (playerOrDealer) {
     //adds images
     var cardImage = document.createElement(`img`);
     cardImage.src = `cards/` + dealerHands[number].image + `.png`;
-    console.log(`IMAGE` + cardImage.src);
     document.getElementById("dealer-cards").append(cardImage);
     counter += 1;
   }
@@ -255,8 +222,6 @@ var cardDeckGenerator = function () {
       var cardName = rankCounter;
       var score = rankCounter;
 
-      console.log(`Rank counter` + rankCounter);
-
       if (rankCounter === 1) {
         cardName = `ace`;
       } else if (rankCounter === 11) {
@@ -269,8 +234,6 @@ var cardDeckGenerator = function () {
         cardName = `king`;
         score = 10;
       }
-
-      console.log(`Card Name` + cardName);
 
       var card = {
         name: cardName,
@@ -322,11 +285,9 @@ var assignCards = function (numberOfCardsNeeded) {
   var cardHands = [];
   while (counter < numberOfCardsNeeded) {
     var newCard = cardDeck.pop();
-    console.log(`New card:` + newCard);
     cardHands.push(newCard);
     counter += 1;
   }
-  console.log(`Card hands:` + cardHands);
   return cardHands;
 };
 
@@ -355,18 +316,14 @@ var checksForBlackjack = function (deck) {
 
 //Function to sum values of hand using rank
 var sumCards = function (hands) {
-  console.log(`Hands: ` + hands);
   //captures position of array
   var index = 0;
-  console.log(`Index: ` + index);
   var sum = 0;
   while (index < hands.length) {
-    console.log(`Index: ` + index);
     var currentRank = hands[index].rank;
     sum = sum + currentRank;
     index += 1;
   }
-  console.log(`Sum: ` + sum);
   return sum;
 };
 
@@ -381,7 +338,6 @@ var checkIfHandBusts = function (hand) {
   } else {
     handBust = "false";
   }
-  console.log(`sum based on vary ace values` + sum);
   return handBust;
 };
 
@@ -389,10 +345,8 @@ var checkIfHandBusts = function (hand) {
 var captureWinner = function () {
   //First the sum of both dealer (computer) and player hands is calculated
   var sumOfDealerHands = sumCards(dealerHands) + varyAceValues(dealerHands);
-  console.log(`Sum of dealer hands rank:  ` + sumOfDealerHands);
 
   var sumOfPlayerHands = sumCards(playerHands) + varyAceValues(playerHands);
-  console.log(`Sum of player rank:  ` + sumOfPlayerHands);
 
   // If both players have the same value or draw blackjack causing tie
   if (
@@ -466,23 +420,19 @@ var declaresWinnerIfBustReturnsTrue = function () {
 //Function to check if hand contains ace and vary ace value
 var varyAceValues = function (fullHand) {
   //flatten array to remove bracket
-  console.log(`what is passed to array` + JSON.stringify(fullHand));
   var hand = [];
   hand = fullHand.map(getHands);
   function getHands(item) {
     return [item.name].join("  ");
   }
-  console.log(`Flattened array` + JSON.stringify(hand));
 
   var increaseSumOfHand = 0;
   //checks if array includes ace -> if yes= true / no = false
   var aceCondition = hand.includes("ace");
-  console.log("ace condition" + aceCondition);
 
   if (aceCondition === true) {
     //increases sum by 10 since ace was 1 and is now 11
     increaseSumOfHand = 10;
-    console.log(`Ace condition met, increase sum by:` + increaseSumOfHand);
   }
 
   return increaseSumOfHand;
