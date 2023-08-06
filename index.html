@@ -97,7 +97,7 @@
         margin-right: 30px;
         background-color: white;
         color: black; /* sets the font color */
-        background-image: url(""); /* The image used */
+        background-image: url("https://www.tinydecozone.com/wp-content/uploads/2021/12/bikini-bottom-9.jpg"); /* The image used */
         background-position: center; /* Center the image */
         background-repeat: no-repeat; /* Do not repeat the image */
         background-size: cover; /* Resize the background image to cover the entire container */
@@ -115,9 +115,8 @@
       }
 
       #container {
-        background-color: pink;
         margin: 40px auto;
-        max-width: 800px;
+        max-width: 500px;
         padding: 38px 31px;
       }
 
@@ -130,17 +129,21 @@
       }
 
       button {
+        font-family: "Gill Sans", sans-serif;
         font-size: 21px;
+        font-weight: 400;
         line-height: 33px;
         margin: 0 0 23px 0;
         padding: 0 6px;
+        background-color: rgb(198, 123, 198);
       }
 
       #output-div {
-        background-color: rgb(249, 228, 151);
+        background-color: rgba(120, 219, 138, 0.133);
         margin: 20px auto;
         padding: 20px;
         width: 100%;
+        text-align: center;
       }
 
       .logo-img {
@@ -170,20 +173,18 @@
         src="https://firebasestorage.googleapis.com/v0/b/ftbc11-sample.appspot.com/o/images%2F1-PRIMARY_CRIMSON.png?alt=media&token=ce9e8333-2a45-44be-adb2-1f1bf054adf7"
       />
     </h1>
-    <h1 class="header">♣️ Welcome to Blackjack game! ♠️</h1>
+    <h1 class="header">♣️ Blackjack with Sponge Bob! ♠️</h1>
     <div id="container">
-      <p>Input:</p>
       <input id="input-field" />
       <br />
-      <button id="submit-button">Submit</button>
-      <p>Output:</p>
+      <button id="play-button">PLAY</button>
       <div id="output-div"></div>
     </div>
     <!-- Import program logic -->
     <script src="script.js"></script>
     <!-- Define button click functionality -->
     <script>
-      var button = document.querySelector("#submit-button");
+      var button = document.querySelector("#play-button");
       button.addEventListener("click", function () {
         // Set result to input value
         var input = document.querySelector("#input-field");
