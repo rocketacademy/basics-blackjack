@@ -9,239 +9,363 @@
 // REQUIRED STATES
 // State 1 - Player draws 2 cards. Chooses to Hit or Stand
 // State 2 - Player chose to Hit, draw 1 card. Chooses to Hit or Stand. If Hit, draw an extra card
-// State 3 - Player chose an Ace, and can choose whether the Ace value is 1 or 11
+// State 3 - If player draws an Ace, they can choose whether the Ace value is 1 or 11
 // State 4 - Player chooses to Stand, compares scores and declares winner.
 // State 5 - If Player or Computer exceeds 21, they automatically lose
+// Declare Game modes
 var DRAW_CARDS = "DRAW_CARDS";
 var HIT_OR_STAND = "HIT_OR_STAND";
 var ACE_CARD = "ACE_CARD";
-var DECLARE_WINNER = "DECLARE_WINNER";
+var SHOW_RESULTS = "SHOW_RESULTS";
 
 var gameMode = DRAW_CARDS;
 
-var HIT = "hit";
-var STAND = "stand";
-var button2;
-
-var playerCardArray = [];
-var computerCardArray = [];
-
-var playerFinalNumber;
-var computerFinalNumber;
-
-var main = function (input) {
-  makeDeck();
-  var myOutputValue;
-  var shuffledDeck = shuffleCards(cardDeck);
-  // computer draws 2 cards but doesn't reveal it
-  var computerCardOne = shuffledDeck.pop();
-  var computerCardTwo = shuffledDeck.pop();
-  // computer draws extra card if the total is under 17
-  var computerCardThree = shuffledDeck.pop();
-  // player draws 2 cards, these two cards are revealed to player
-  var playerCardOne = shuffledDeck.pop();
-  var playerCardTwo = shuffledDeck.pop();
-  // additional card for when player chooses Hit
-  var playerCardThree = shuffledDeck.pop();
-  // combined number
-  computerCardArray.push(computerCardOne.rank);
-  computerCardArray.push(computerCardTwo.rank);
-  var computerFinalNumber = computerCardArray[0] + computerCardArray[1];
-  if (computerFinalNumber < 17) {
-    computerCardArray.push(computerCardThree.rank);
-    computerFinalNumber = computerFinalNumber + computerCardArray[2];
-  }
-  var playerCombinedNumber =
-    Number(playerCardOne.rank) + Number(playerCardTwo.rank);
-  playerCardArray.push(playerCardOne.rank);
-  playerCardArray.push(playerCardTwo.rank);
-  console.log(
-    `Player Card One: ${playerCardArray[0]} Player Card Two: ${playerCardArray[1]}`
-  );
-  playerFinalNumber = playerCardArray[0] + playerCardArray[1];
-  if (
-    gameMode === DRAW_CARDS &&
-    (playerCardArray[0] === 1 || playerCardArray[1] === 1)
-  ) {
-    gameMode = ACE_CARD;
-    myOutputValue = `You have drawn <b>${playerCardArray[0]}</b> & <b>${playerCardArray[1]}</b>. <br> You have drawn an Ace card. <br><br> Input "<b>1</b>" or "<b>11</b>" to choose whether its value will be 1 or 11.`;
-  }
-  if (gameMode === ACE_CARD) {
-    if (playerCardArray[0] === 1 && input === "11") {
-      playerCardArray[0] = 11;
-      console.log(
-        `Player Card One: ${playerCardArray[0]} Player Card Two: ${playerCardArray[1]}`
-      );
-      playerFinalNumber = playerCardArray[0] + playerCardArray[1];
-      gameMode = HIT_OR_STAND;
-      return `You have chosen "<b>11</b>", and your combined drawn number is <b>${playerFinalNumber}</b>. <br><br> Input "<b>Hit</b>" to draw another card, or "<b>Stand</b>" to end your turn.`;
-    }
-    if (playerCardArray[1] === 1 && input === "11") {
-      playerCardArray[1] = 11;
-      console.log(
-        `Player Card One: ${playerCardArray[0]} Player Card Two: ${playerCardArray[1]}`
-      );
-      playerFinalNumber = playerCardArray[0] + playerCardArray[1];
-      gameMode = HIT_OR_STAND;
-      return `You have chosen "<b>11</b>", and your combined drawn number is <b>${playerFinalNumber}</b>. <br><br> Input "<b>Hit</b>" to draw another card, or "<b>Stand</b>" to end your turn.`;
-    } else if (input === "1") {
-      gameMode = HIT_OR_STAND;
-      return `You haven chosen "<b>1</b>", and your combined drawn number is <b>${playerFinalNumber}</b>. <br><br> Input "<b>Hit</b>" to draw another card, or "<b>Stand</b>" to end your turn.`;
-    }
-  }
-
-  if (gameMode === DRAW_CARDS && playerCombinedNumber < 21) {
-    gameMode = HIT_OR_STAND;
-    myOutputValue = `You drew <b>${playerCardArray[0]}</b> & <b>${playerCardArray[1]}</b> with a combined number of <b>${playerFinalNumber}</b>. <br><br> Input "<b>Hit</b>" to draw another card, or "<b>Stand</b>" to end your turn.`;
-  } else if (gameMode === DRAW_CARDS && playerCombinedNumber > 21) {
-    myOutputValue = `You drew <b>${playerCardOne.rank}</b> & <b>${playerCardTwo.rank}</b> with a combined number of <b>${playerFinalNumber}</b>.<br> You have exceeded the number of 21. <br><br> Input "<b>Stand</b>" to end your turn.`;
-  }
-
-  if (gameMode === HIT_OR_STAND && input === HIT) {
-    playerCardArray.push(playerCardThree.rank);
-    if (playerFinalNumber < 21) {
-      playerFinalNumber = playerFinalNumber + playerCardArray[2];
-      myOutputValue = `You drew an additional card of <b>${playerCardArray[2]}</b>. Combined, your total number is <b>${playerFinalNumber}</b>. <br><br>Input "<b>Stand</b>" to end your turn.`;
-    } else if (playerFinalNumber > 21) {
-      playerFinalNumber = playerFinalNumber + playerCardArray[2];
-      myOutputValue = `You drew an additional card of <b>${playerCardThree.rank}</b> & have a combined number of <b>${playerFinalNumber}</b>. <br>You have exceeded the number of 21. <br><br> Input "<b>Stand</b>" to end your turn.`;
-    }
-  }
-  if (gameMode === HIT_OR_STAND && input == STAND) {
-    console.log(`Player Final Number: ${playerFinalNumber}`);
-    gameMode = DECLARE_WINNER;
-    if (computerFinalNumber < playerFinalNumber && playerFinalNumber <= 21) {
-      myOutputValue = `You drew a total of <b>${playerFinalNumber}</b> and the computer drew a total of <b>${computerFinalNumber}</b>. <br><h2>You win!</h2>`;
-    }
-    if (
-      computerFinalNumber > playerFinalNumber &&
-      playerFinalNumber <= 21 &&
-      computerFinalNumber <= 21
-    ) {
-      myOutputValue = `You drew a total of <b>${playerFinalNumber}</b> and the computer drew a total of <b>${computerFinalNumber}</b>. <br><h2>The computer wins!</h2> <br> <br> Click <b>Submit</b> again to start over.`;
-    }
-    if (computerFinalNumber === 21 && playerFinalNumber === 21) {
-      myOutputValue = `You drew a total of <b>${playerFinalNumber}</b> and the computer drew a total of <b>${computerFinalNumber}.</b> <br><h2>As both of you drew 21, it's a tie!</h2> <br> <br> Click <b>Submit</b> again to start over.`;
-    }
-    if (computerFinalNumber > 21 && playerFinalNumber > 21) {
-      myOutputValue = `You drew a total of <b>${playerFinalNumber}</b> and the computer drew a total of <b>${computerFinalNumber}</b>. <br> <h2> As both of you have exceeded 21, it's a tie! </h2> <br> <br> Click <b>Submit</b> again to start over.`;
-    }
-    if (computerFinalNumber > 21) {
-      myOutputValue = `You drew a total of <b>${playerFinalNumber}</b> and the computer drew a total of <b>${computerFinalNumber}</b>. <br> <h2>As the computer has exceeded 21, you win! </h2> <br> <br> Click <b>Submit</b> again to start over.`;
-    } else if (playerFinalNumber > 21) {
-      myOutputValue = `The computer drew a total of <b>${computerFinalNumber}</b>.<br> <h2>As you have exceeded 21, the computer wins.</h2><br> <br> Click <b>Submit</b> again to start over.`;
-    }
-    resetGame();
-  }
-  return myOutputValue;
-};
+// Create arrays to hold player &
+var playerHand = [];
+var computerHand = [];
 
 var cardDeck = [];
 
-// define card deck
-var makeDeck = function () {
-  // Initialise an empty deck array
+// ============================================================
+// ============================================================
+// ==================[ MAIN FUNCTION START ]===================
+// ============================================================
+// ============================================================
 
-  // Initialise an array of the 4 suits in our deck. We will loop over this array.
-  var suits = ["hearts", "diamonds", "clubs", "spades"];
+var main = function (input) {
+  var myOutputValue = "";
 
-  // Loop over the suits array
-  var suitIndex = 0;
-  while (suitIndex < suits.length) {
-    // Store the current suit in a variable
-    var currentSuit = suits[suitIndex];
-    var rankCounter = 1;
-    while (rankCounter <= 13) {
-      // Create a variable to store rankNumber
-      var rankNumber;
-      // Create a variable to store the card names
-      // By default, the card name is the same as rankCounter
-      var cardName = rankCounter;
-      // By default, rankNumber is the same as rankCounter
-      var rankNumber = rankCounter;
-      // create if conditions for the other cards
-      if (cardName == 1) {
-        // change card name to Ace
-        cardName = "ace";
-      } else if (cardName == 11) {
-        cardName = "jack";
-        // reassign rankNumber to 10
-        rankNumber = 10;
-      } else if (cardName == 12) {
-        cardName = "queen";
-        rankNumber = 10;
-      } else if (cardName == 13) {
-        cardName = "king";
-        rankNumber = 10;
+  // GAME STARTS FROM DRAWING CARDS
+  if (gameMode == DRAW_CARDS) {
+    // create a card cardDeck
+    cardDeck = createNewDeck();
+
+    // push 2 cards into each array from the deck
+    playerHand.push(cardDeck.pop());
+    playerHand.push(cardDeck.pop());
+    computerHand.push(cardDeck.pop());
+    computerHand.push(cardDeck.pop());
+
+    console.log(playerHand);
+    console.log(computerHand);
+
+    // check whether either player or computer draws a blackjack
+    var playerDrawsBlackJack = checkForBlackJack(playerHand);
+    var computerDrawsBlackJack = checkForBlackJack(computerHand);
+
+    // if either player or computer has a blackjack
+    if (playerDrawsBlackJack == true || computerDrawsBlackJack == true) {
+      // if both player and computer has a blackjack
+      if (playerDrawsBlackJack == true && computerDrawsBlackJack == true) {
+        myOutputValue = `${displayPlayerCards(
+          playerHand
+        )} <br><br> ${displayComputerCards(computerHand)}<br>
+          <h2>Its a Black Jack Tie!</h2> <br> <i><mark><b>Press Submit to restart the game</b></mark></i>`;
+        resetGame();
+      }
+      // if only player has a blackjack
+      else if (
+        playerDrawsBlackJack == true &&
+        computerDrawsBlackJack == false
+      ) {
+        myOutputValue = `
+          ${displayPlayerCards(playerHand)} <br><br>
+          ${displayComputerCards(computerHand)}<br>
+          <h2>Player wins by Black Jack!</h2> <br> <i><mark><b>Press Submit to restart the game</b></mark></i>`;
+        resetGame();
+      }
+      // else, if only computer has a blackjack
+      else {
+        myOutputValue = `
+          ${displayPlayerCards(playerHand)} <br><br>
+          ${displayComputerCards(computerHand)}<br>
+          <h2>Computer wins by Black Jack!</h2> <br> <i><mark><b>Press Submit to restart the game</b></mark></i>`;
+        resetGame();
+      }
+    }
+
+    // If neither player or computer has blackjac, ask player to input 'hit' or 'stand'
+    else {
+      myOutputValue = `<h4><i>No Blackjacks were drawn.</i></h4> <br> ${displayPlayerCards(
+        playerHand
+      )} <br> ${displayOneComputerCard(computerHand)} <br>
+      <br>  <br><br><i><mark><b>Please input either "hit" or "stand" to continue.</b></mark></i>`;
+
+      // change game mode
+      gameMode = HIT_OR_STAND;
+    }
+    return myOutputValue;
+  }
+
+  // GAME MODE BECOMES HIT OR STAND
+  if (gameMode == HIT_OR_STAND) {
+    // if player inputs "hit"
+    if (input == "hit") {
+      playerHand.push(cardDeck.pop());
+      myOutputValue = `
+        ${displayPlayerCards(playerHand)} <br> ${displayOneComputerCard(
+        computerHand
+      )}
+      <br><br><br><i><mark><b>Please input either "hit" or "stand" to continue.</b></mark></i>`;
+    }
+
+    // if player inputs "stand"
+    else if (input == "stand") {
+      var playerHandTotalValue = calculateTotalHandValue(playerHand);
+      var computerHandTotalValue = calculateTotalHandValue(computerHand);
+
+      // if computer draws less than 17, computer draws another card
+      while (computerHandTotalValue < 17) {
+        computerHand.push(cardDeck.pop());
+        console.log(computerHand);
+        computerHandTotalValue = calculateTotalHandValue(computerHand);
       }
 
-      // create a card with the current name, suit and rank
+      // if player and computer has the same total value, or if both player and computer exceeds 21
+      if (playerHandTotalValue == computerHandTotalValue) {
+        myOutputValue = `${displayPlayerCards(playerHand)} 
+          <br> ${displayComputerCards(computerHand)}
+          <br><h2>It's a Tie!</h2>
+          ${displayTotalValue(
+            playerHandTotalValue,
+            computerHandTotalValue
+          )} <br><br>
+          <i><mark><b>Press Submit to restart the game.</b></mark></i>`;
+      }
+      if (playerHandTotalValue > 21 && computerHandTotalValue > 21) {
+        myOutputValue = `${displayPlayerCards(playerHand)} 
+          <br> ${displayComputerCards(computerHand)}
+          <br><h2>As both players have exceeded 21, no one wins!</h2>
+          ${displayTotalValue(
+            playerHandTotalValue,
+            computerHandTotalValue
+          )} <br><br>
+          <i><mark><b>Press Submit to restart the game.</b></mark></i>`;
+      }
+
+      // player wins if:
+      // player total value is more than computer total value, and does not exceed 21
+      // player total value is less than 21, and computer exceeds 21
+      else if (
+        (playerHandTotalValue > computerHandTotalValue &&
+          playerHandTotalValue <= 21) ||
+        (playerHandTotalValue <= 21 && computerHandTotalValue > 21)
+      ) {
+        myOutputValue = `${displayPlayerCards(playerHand)} 
+          <br> ${displayComputerCards(computerHand)}
+          <br><h2>You win!</h2>
+          ${displayTotalValue(
+            playerHandTotalValue,
+            computerHandTotalValue
+          )} <br><br>
+          <i><mark><b>Press Submit to restart the game.</b></mark></i>`;
+      }
+
+      // else, computer wins
+      else {
+        myOutputValue = `${displayPlayerCards(playerHand)} 
+          <br> ${displayComputerCards(computerHand)}
+          <br><h2>Computer wins!</h2>
+          ${displayTotalValue(
+            playerHandTotalValue,
+            computerHandTotalValue
+          )}<br><br>
+          <i><mark><b>Press Submit to restart the game.</b></mark></i>`;
+      }
+      resetGame();
+    }
+
+    // if player inputs anything but "hit" or "stand"
+    else {
+      myOutputValue =
+        `<h3><i><b><mark>Please input either "hit" or "stand" to continue.</mark></b></i></h3> <br><br>` +
+        displayPlayerCards(playerHand);
+    }
+
+    // return output message
+    return myOutputValue;
+  }
+};
+
+// ============================================================
+// ============================================================
+// ===================[ MAIN FUNCTION END ]====================
+// ============================================================
+// ============================================================
+
+// create a function that creates a cardDeck of cards
+var createDeck = function () {
+  // array that stores the cards
+  var cardDeck = [];
+  var suits = ["◆ Diamonds ◆", "♣ Clubs ♣", "♥ Hearts ♥", "♠️ Spades ♠️"];
+  var index = 0;
+  while (index < suits.length) {
+    var currentSuit = suits[index];
+    var indexRanks = 1;
+
+    while (indexRanks <= 13) {
+      var cardName = indexRanks;
+      // create separate variable to manipulate the rankings
+      var cardRanking = indexRanks;
+      if (cardName == 1) {
+        cardName = "Ace";
+      }
+      if (cardName == 11) {
+        cardName = "Jack";
+        cardRanking = 10;
+      }
+      if (cardName == 12) {
+        cardName = "Queen";
+        cardRanking = 10;
+      }
+      if (cardName == 13) {
+        cardName = "King";
+        cardRanking = 10;
+      }
       var card = {
         name: cardName,
         suit: currentSuit,
-        rank: rankNumber,
+        rank: cardRanking,
       };
-
-      // add the new card to the deck
       cardDeck.push(card);
-
-      // Increment rankCounter to iterate over the next rank
-      rankCounter += 1;
+      indexRanks = indexRanks + 1;
     }
-
-    // Increment the suit index to iterate over the next suit
-    suitIndex += 1;
+    index += 1;
   }
-
-  // Return the completed card deck
   return cardDeck;
 };
 
-// Initialise index to 0 to start from the beginning of the array
-var index = 0;
-// Define loop condition to loop until index is the length of cardDeck
-while (index < cardDeck.length) {
-  // Access attributes of each card with dot notation.
-  console.log(cardDeck[index].name);
-  // Construct a string using attributes of each card object
-  var cardTitle = cardDeck[index].name + " of " + cardDeck[index].suit;
-  // Log the string
-  console.log(cardTitle);
-  // Increment the card index
-  index = index + 1;
-}
-
-var getRandomIndex = function (max) {
-  return Math.floor(Math.random() * max);
+// Function that generates a random number, used by shuffle cardDeck function
+var getRandomIndex = function (size) {
+  return Math.floor(Math.random() * size);
 };
 
-// Shuffle the elements in the cardDeck array
-var shuffleCards = function (cardDeck) {
-  // Loop over the card deck array once
-  var currentIndex = 0;
-  // shuffle each card as many times as there are cards in the deck
-  while (currentIndex < cardDeck.length) {
-    // Select a random index in the deck
-    var randomIndex = getRandomIndex(cardDeck.length);
-    // Select the card that corresponds to randomIndex
-    var randomCard = cardDeck[randomIndex];
-    // Select the card that corresponds to currentIndex
-    var currentCard = cardDeck[currentIndex];
-    // Swap positions of randomCard and currentCard in the deck
-    cardDeck[currentIndex] = randomCard;
-    cardDeck[randomIndex] = currentCard;
-    // Increment currentIndex
-    currentIndex = currentIndex + 1;
+// Function that shuffles a cardDeck, used by createNewDeck function
+var shuffleDeck = function (cards) {
+  var index = 0;
+  while (index < cards.length) {
+    var randomIndex = getRandomIndex(cards.length);
+    var currentItem = cards[index];
+    var randomItem = cards[randomIndex];
+    cards[index] = randomItem;
+    cards[randomIndex] = currentItem;
+    index += 1;
   }
-  // Return the shuffled deck
-  return cardDeck;
+  return cards;
 };
 
-// reset the game
+// Function that creates and shuffles a cardDeck
+var createNewDeck = function () {
+  var newDeck = createDeck();
+  var shuffledDeck = shuffleDeck(newDeck);
+  return shuffledDeck;
+};
+
+// Create a function that checks if a blackjack is drawn
+var checkForBlackJack = function (drawnCardsArray) {
+  var playerCardOne = drawnCardsArray[0];
+  var playerCardTwo = drawnCardsArray[1];
+  var wasBlackJackDrawn = false;
+  // blackjack can only be drawn is one card is an ace, and the other is a card with ranking 10
+  if (
+    (playerCardTwo.name == "ace" && playerCardOne.rank >= 10) ||
+    (playerCardOne.name == "ace" && playerCardTwo.rank >= 10)
+  ) {
+    wasBlackJackDrawn = true;
+  }
+
+  return wasBlackJackDrawn;
+};
+
+// Function that calculates a hand
+var calculateTotalHandValue = function (drawnCardsArray) {
+  var totalHandValue = 0;
+  // Counter to keep track of the number of aces
+  var aceCounter = 0;
+  var index = 0;
+  while (index < drawnCardsArray.length) {
+    var currentCard = drawnCardsArray[index];
+    // assign 10 to picture cards
+    if (
+      currentCard.name == "king" ||
+      currentCard.name == "queen" ||
+      currentCard.name == "jack"
+    ) {
+      totalHandValue = totalHandValue + 10;
+    }
+    // ace will be 11 by default due to the blackjack condition
+    else if (currentCard.name == "ace") {
+      totalHandValue = totalHandValue + 11;
+      aceCounter = aceCounter + 1;
+    } else {
+      // by default all other cards values are the same
+      totalHandValue = totalHandValue + currentCard.rank;
+    }
+    index += 1;
+  }
+
+  // reset index for ace counter
+  index = 0;
+  while (index < aceCounter) {
+    if (totalHandValue > 21) {
+      totalHandValue = totalHandValue - 10;
+    }
+    index += 1;
+  }
+
+  return totalHandValue;
+};
+
+// Function that displays player cards
+var displayPlayerCards = function (playerDrawnCardsArray) {
+  var playerMessage = "<h4>You drew:</h4>";
+  var index = 0;
+  while (index < playerDrawnCardsArray.length) {
+    playerMessage = `${playerMessage} 🂠 ${playerDrawnCardsArray[index].name} of ${playerDrawnCardsArray[index].suit} <br>`;
+    index += 1;
+  }
+  return playerMessage;
+};
+
+// Function that displays 1 computer card
+var displayOneComputerCard = function (computerDrawnCardsArray) {
+  var computerMessage = "<h4>The computer drew:</h4>";
+  computerMessage = `<b>${computerMessage}</b> 🂠
+    ${computerDrawnCardsArray[0].name} of ${computerDrawnCardsArray[0].suit} <br>
+    🂠 ⍰ of ⍰`;
+  return computerMessage;
+};
+
+// Function that displays all computer cards
+var displayComputerCards = function (computerDrawnCardsArray) {
+  index = 0;
+  var computerMessage = "<h4><b>The computer drew:</b></h4>";
+  while (index < computerDrawnCardsArray.length) {
+    computerMessage = `${computerMessage}
+      🂠 ${computerDrawnCardsArray[index].name} of 
+      ${computerDrawnCardsArray[index].suit} <br>`;
+    index += 1;
+  }
+
+  return computerMessage;
+};
+
+// function that displays both player and computer values
+var displayTotalValue = function (playerTotalValue, computerTotalValue) {
+  var totalValueDisplay = `<br><b>Player total hand value:
+    ${playerTotalValue}
+    <br>
+    Computer total hand value:
+    ${computerTotalValue}</b>`;
+  return totalValueDisplay;
+};
+
+// function to reset the game
 var resetGame = function () {
   // reset to first mode
   gameMode = DRAW_CARDS;
-  // clear arrays
-  computerCardArray = [];
-  playerCardArray = [];
+  // clear all arrays
+  playerHand = [];
+  computerHand = [];
+  cardDeck = [];
 };
