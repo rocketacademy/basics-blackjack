@@ -1,16 +1,23 @@
 var deck = [];
+var card = [];
 
 var main = function (input) {
   createDeck();
   shuffleDeck();
-  console.log(deck);
+  dealCard();
+
   deck = [];
-  return "Test";
+  console.log(JSON.stringify(card));
+  return `Your cards are ${card[0].name}`;
 };
 
 var addPlayer = function () {};
 
 var addComputerPlayer = function () {};
+
+var dealCard = function () {
+  card.push(deck.pop());
+};
 
 var createDeck = function () {
   let suits = ["diamonds", "clubs", "hearts", "spades"];
@@ -28,7 +35,6 @@ var createDeck = function () {
       } else if (j == 13) {
         card.name = `King of ${suits[i]}`;
       } else card.name = `${j} of ${suits[i]}`;
-      console.log(JSON.stringify(card));
       deck.push(card);
     }
   }
