@@ -106,6 +106,10 @@
       <input id="input-field" />
       <br />
       <button id="submit-button">Submit</button>
+      <button id="hit-button">hit!</button>
+      <button id="stand-button">stand!</button>
+      <button id="add-player">Add!</button>
+      <button id="add-computer">Add Computer!</button>
       <p>Output:</p>
       <div id="output-div"></div>
     </div>
@@ -113,18 +117,34 @@
     <script src="script.js"></script>
     <!-- Define button click functionality -->
     <script>
-      var button = document.querySelector("#submit-button");
-      button.addEventListener("click", function () {
-        // Set result to input value
-        var input = document.querySelector("#input-field");
-        var result = main(input.value);
+      var submit = document.querySelector("#submit-button");
+      var hitButton = document.querySelector("#hit-button");
+      var standButton = document.querySelector("#stand-button");
+      var input = document.querySelector("#input-field");
+      var output = document.querySelector("#output-div");
+      var addPlayerButton = document.querySelector("#add-player");
+      var addComputerButton = document.querySelector("#add-computer");
 
-        // Display result in output element
-        var output = document.querySelector("#output-div");
+      submit.addEventListener("click", function () {
+        let result = main();
         output.innerHTML = result;
-
-        // Reset input value
+      });
+      hitButton.addEventListener("click", function () {
+        let result = hit();
+        output.innerHTML = result;
+      });
+      standButton.addEventListener("click", function () {
+        let result = stand();
+        output.innerHTML = result;
+      });
+      addPlayerButton.addEventListener("click", function () {
+        let result = addPlayer(input.value);
+        output.innerHTML = result;
         input.value = "";
+      });
+      addComputerButton.addEventListener("click", function () {
+        let result = addComputer();
+        output.innerHTML = result;
       });
     </script>
   </body>

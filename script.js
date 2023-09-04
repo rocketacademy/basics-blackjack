@@ -1,22 +1,56 @@
 var deck = [];
-var card = [];
+//player contains name,coins,stand-check and array of cards.
+var player = [];
+var playerRound = 0;
+var gameOn = false;
 
 var main = function (input) {
   createDeck();
   shuffleDeck();
-  dealCard();
 
-  deck = [];
-  console.log(JSON.stringify(card));
-  return `Your cards are ${card[0].name}`;
+  submit.style.visibility = "hidden";
+  gameOn = true;
+  return `Game On`;
 };
 
-var addPlayer = function () {};
+var addPlayer = function (input) {
+  let name = input;
+  let playerInfo = {
+    name: name,
+    coin: 100,
+    stand: false,
+    card: [],
+  };
+  player.push(playerInfo);
+  return `${name} added`;
+};
 
-var addComputerPlayer = function () {};
+var addComputer = function () {
+  let nameTag = 1;
+  let name = `Computer ${nameTag}`;
+  for (let i = 1; i < player.length; i++) {
+    if (player[i].name == name) {
+      nameTag += 1;
+      name = `Computer ${nameTag}`;
+    }
+  }
+  addPlayer(name);
+  return `${name} Added`;
+};
+
+var hit = function () {
+  let cardDealt = dealCard();
+  player[playerRound].card.push(cardDealt);
+  return `Card Dealed`;
+};
+
+var stand = function () {
+  player[0].stand = true;
+  return `Stand`;
+};
 
 var dealCard = function () {
-  card.push(deck.pop());
+  return deck.pop();
 };
 
 var createDeck = function () {
