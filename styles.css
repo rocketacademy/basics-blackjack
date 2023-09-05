@@ -6,7 +6,7 @@ body {
   font-family: "Open Sans", sans-serif;
   margin-left: 30px;
   margin-right: 30px;
-  background-color: white;
+  background-color: grey;
   color: black; /* sets the font color */
   background-image: url(""); /* The image used */
   background-position: center; /* Center the image */
@@ -26,10 +26,13 @@ body {
 }
 
 #container {
-  background-color: pink;
+  background-color: rgb(52, 127, 52);
   margin: 40px auto;
-  max-width: 800px;
+  width: 800px;
+  height: 350px;
   padding: 38px 31px;
+  border-radius: 0px 0px 500px 500px;
+  position: relative;
 }
 
 input {
@@ -37,7 +40,7 @@ input {
   line-height: 33px;
   margin: 0 0 23px 0;
   padding: 0 9px;
-  width: 100%;
+  width: 20%;
 }
 
 button {
@@ -58,6 +61,12 @@ button {
   height: 49px;
   position: relative;
   top: 22px;
+}
+
+#delete-player {
+  font-size: 15px;
+  line-height: 20px;
+  margin: 0 0 23px 0;
 }
 
 /* increase header font size on wider screens */

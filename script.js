@@ -1,4 +1,4 @@
-//3hours
+//4hours
 
 //6 people at most
 //Add user/computer before play
@@ -6,28 +6,13 @@
 //computer will automaticlly hit/stand.(no button can be pressed)
 //After each round you can choose quit/play again.
 
-//Game button flow (Completed)
-//Play button, add player , add computer, delete player
-//bet hit, stand
-//play again, quit
-
-//Logic/Function Needed
-//player name validation(Complete)
-//Add player(Complete)
-//Delete Player(Complete)
-//hit (complete)
-//stand (complete)
-//chips select(complete)
-//Check if the user over 21 or not(Complete)
-
-//Comparing result(complete)
-//chips assigning
-//End Game Cal (complete)
-//hit/stand for computer awaits
-
 // setTimeout(() => {
 //   output.innerHTML = result;
 // }, 5000);
+
+//GameFlow
+//Add player and Delete player
+//Press Play
 
 var deck = [];
 //player contains name,chips,stand-check,value and array of cards.
@@ -63,6 +48,10 @@ var addPlayer = function (playerName) {
     value: 0,
   };
   player.push(playerInfo);
+
+  var newUser = document.createElement("p");
+  newUser.innerHTML = playerName;
+  container.appendChild(newUser);
   return `${playerName} added`;
 };
 

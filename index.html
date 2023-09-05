@@ -89,38 +89,32 @@
   </head>
 
   <body>
-    <h1 class="header">
-      <img
-        class="logo-img"
-        src="https://firebasestorage.googleapis.com/v0/b/ftbc11-sample.appspot.com/o/images%2F1-PRIMARY_CRIMSON.png?alt=media&token=ce9e8333-2a45-44be-adb2-1f1bf054adf7"
-      />
-      Rocket Academy
-      <img
-        class="logo-img"
-        src="https://firebasestorage.googleapis.com/v0/b/ftbc11-sample.appspot.com/o/images%2F1-PRIMARY_CRIMSON.png?alt=media&token=ce9e8333-2a45-44be-adb2-1f1bf054adf7"
-      />
-    </h1>
-    <h1 class="header">♣️ Basics - Blackjack ♠️</h1>
+    <h1 class="header">♣️ Blackjack ♠️</h1>
     <div id="container">
-      <p>Input:</p>
-      <input id="input-field" />
-      <br />
-      <button id="submit-button">Submit</button>
-      <button id="bet-button">Bet!</button>
-      <button id="hit-button">hit!</button>
-      <button id="stand-button">stand!</button>
-      <button id="add-player">Add!</button>
-      <button id="delete-player">Delete Player</button>
-      <button id="again-button">Again!</button>
-      <button id="quit-button">Quit!</button>
-      <p>Output:</p>
-      <div id="output-div"></div>
+      <center>Please type the player name!</center>
+      <center><input id="input-field" /><br /></center>
+      <div>
+        <center>
+          <button id="add-player">Add!</button>
+          <button id="delete-player">Delete Player</button>
+        </center>
+      </div>
+      <center><button id="play-button">Play</button></center>
     </div>
+
+    <button id="bet-button">Bet!</button>
+    <button id="hit-button">hit!</button>
+    <button id="stand-button">stand!</button>
+
+    <button id="again-button">Again!</button>
+    <button id="quit-button">Quit!</button>
+    <p>Output:</p>
+    <div id="output-div"></div>
     <!-- Import program logic -->
     <script src="script.js"></script>
     <!-- Define button click functionality -->
     <script>
-      var submit = document.querySelector("#submit-button");
+      var playButton = document.querySelector("#play-button");
       var betButton = document.querySelector("#bet-button");
       var hitButton = document.querySelector("#hit-button");
       var standButton = document.querySelector("#stand-button");
@@ -131,9 +125,19 @@
       var againButton = document.querySelector("#again-button");
       var quitButton = document.querySelector("#quit-button");
 
-      submit.addEventListener("click", function () {
+      playButton.addEventListener("click", function () {
         let result = main();
         output.innerHTML = result;
+      });
+      addPlayerButton.addEventListener("click", function () {
+        let result = addPlayer(input.value);
+        output.innerHTML = result;
+        input.value = "";
+      });
+      deleteButton.addEventListener("click", function () {
+        let result = playerDelete(input.value);
+        output.innerHTML = result;
+        input.value = "";
       });
       betButton.addEventListener("click", function () {
         let result = bet(input.value);
@@ -148,16 +152,7 @@
         let result = stand();
         output.innerHTML = result;
       });
-      addPlayerButton.addEventListener("click", function () {
-        let result = addPlayer(input.value);
-        output.innerHTML = result;
-        input.value = "";
-      });
-      deleteButton.addEventListener("click", function () {
-        let result = playerDelete(input.value);
-        output.innerHTML = result;
-        input.value = "";
-      });
+
       againButton.addEventListener("click", function () {
         let result = main();
         output.innerHTML = result;
