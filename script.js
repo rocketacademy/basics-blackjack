@@ -17,18 +17,20 @@
 //Delete Player(Complete)
 //hit (complete)
 //stand (complete)
-//Coins select(complete)
-//Check if the user over 21 or not
+//chips select(complete)
+//Check if the user over 21 or not(Complete)
 
-//Comparing result
-//End Game Cal
+//Comparing result(complete)
+//chips assigning
+//End Game Cal (complete)
 //hit/stand for computer awaits
+
 // setTimeout(() => {
 //   output.innerHTML = result;
 // }, 5000);
 
 var deck = [];
-//player contains name,coins,stand-check,value and array of cards.
+//player contains name,chips,stand-check,value and array of cards.
 //player[0] is the dealer(computer)
 var player = [
   {
@@ -37,15 +39,25 @@ var player = [
     value: 0,
   },
 ];
+var chipOnTable = [0];
 var playerRound = 0;
 
 var addPlayer = function (playerName) {
   if (player.length == 6) {
     return `At most 6 player`;
   }
+  if (playerName == "") {
+    return `I would like to know your name.👉👈`;
+  }
+  for (let i = 0; i < player.length; i++) {
+    if (playerName == player[i].name) {
+      return `${playerName} is already in the game.😉<br>New player may want to choose another name.`;
+    }
+  }
+
   let playerInfo = {
     name: playerName,
-    coin: 100,
+    chip: 100,
     stand: false,
     card: [],
     value: 0,
@@ -82,9 +94,11 @@ var main = function () {
 };
 
 var bet = function (input) {
-  if (player[playerRound].coin < input) {
-    return `you do not have enough coins`;
+  if (player[playerRound].chip < input) {
+    return `you do not have enough chips`;
   }
+  player[playerRound].chip -= input;
+  chipOnTable.push[input];
   return `you bet ${input}`;
 };
 
@@ -110,10 +124,27 @@ var calValue = function () {
       player[playerRound].value += player[playerRound].card[i].rank;
     }
   }
-  console.log(player[playerRound].value);
+  if (player[playerRound].value > 21) {
+    return `Bust`;
+  }
+  if (player[playerRound].value == 21) {
+    player[playerRound].stand = true;
+    return `Win`;
+  }
 };
 
-var compareValue = function () {};
+var compareValue = function () {
+  if (player[0].value > player[playerRound].value) {
+    return `you loss`;
+  }
+  if (player[0].value < player[playerRound].value) {
+    player[playerRound].chip += chipOnTable[playerRound] * 2;
+    return `you win`;
+  }
+  if (player[0].value == player[i].value) {
+    return `draw`;
+  }
+};
 
 var dealCard = function () {
   cardDealt = deck.pop();
@@ -151,4 +182,14 @@ var shuffleDeck = function () {
     deck[i] = deck[randomIndex];
     deck[randomIndex] = temp;
   }
+};
+
+var endGameCal = function () {
+  deck = [];
+  for (let i = 0; i < player.length; i++) {
+    player[i].value = 0;
+    player[i].card = [];
+    player[i].stand = false;
+  }
+  chipOnTable = [0];
 };
