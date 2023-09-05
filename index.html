@@ -106,10 +106,13 @@
       <input id="input-field" />
       <br />
       <button id="submit-button">Submit</button>
+      <button id="bet-button">Bet!</button>
       <button id="hit-button">hit!</button>
       <button id="stand-button">stand!</button>
       <button id="add-player">Add!</button>
-      <button id="add-computer">Add Computer!</button>
+      <button id="delete-player">Delete Player</button>
+      <button id="again-button">Again!</button>
+      <button id="quit-button">Quit!</button>
       <p>Output:</p>
       <div id="output-div"></div>
     </div>
@@ -118,16 +121,24 @@
     <!-- Define button click functionality -->
     <script>
       var submit = document.querySelector("#submit-button");
+      var betButton = document.querySelector("#bet-button");
       var hitButton = document.querySelector("#hit-button");
       var standButton = document.querySelector("#stand-button");
       var input = document.querySelector("#input-field");
       var output = document.querySelector("#output-div");
       var addPlayerButton = document.querySelector("#add-player");
-      var addComputerButton = document.querySelector("#add-computer");
+      var deleteButton = document.querySelector("#delete-player");
+      var againButton = document.querySelector("#again-button");
+      var quitButton = document.querySelector("#quit-button");
 
       submit.addEventListener("click", function () {
         let result = main();
         output.innerHTML = result;
+      });
+      betButton.addEventListener("click", function () {
+        let result = bet(input.value);
+        output.innerHTML = result;
+        input.value = "";
       });
       hitButton.addEventListener("click", function () {
         let result = hit();
@@ -142,8 +153,17 @@
         output.innerHTML = result;
         input.value = "";
       });
-      addComputerButton.addEventListener("click", function () {
-        let result = addComputer();
+      deleteButton.addEventListener("click", function () {
+        let result = playerDelete(input.value);
+        output.innerHTML = result;
+        input.value = "";
+      });
+      againButton.addEventListener("click", function () {
+        let result = main();
+        output.innerHTML = result;
+      });
+      quitButton.addEventListener("click", function () {
+        let result = quit();
         output.innerHTML = result;
       });
     </script>
