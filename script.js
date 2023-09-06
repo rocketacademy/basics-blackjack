@@ -77,6 +77,8 @@ var main = function () {
     betButton.classList.add("betButton");
     betButton.addEventListener("click", function () {
       bet(betChips.value, i);
+      betChips.disabled = "true";
+      betButton.disabled = "true";
     });
     playerTable.append(betChips, betButton);
   }
@@ -87,7 +89,7 @@ var bet = function (betChips, who) {
     return `you do not have enough chips`;
   }
   player[who].chip -= betChips;
-  chipOnTable.push[betChips];
+  chipOnTable.push(betChips);
 
   //Enter the game(not Completed)
   if (chipOnTable.length == player.length) {
