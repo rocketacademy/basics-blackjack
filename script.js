@@ -1,6 +1,8 @@
 //define global variables
 var cardDeck = [];
 var gameMode = "initial draw";
+var computerCardArray = [];
+var playerCardArray = [];
 var computerCardScore = 0;
 var playerCardScore = 0;
 
@@ -76,16 +78,116 @@ var shuffleCards = function (cardDeck) {
   return cardDeck;
 };
 
-var main = function (input) {
-  //make the deck
-  makeDeck();
-  //create shuffled deck
+var calcScoresComputer = function () {
+  //calculate the score of the cards on computer's hand
+  for (var j = 0; j < computerCardArray.length; j += 1) {
+    if (computerCardArray[j].name == "ace" && computerCardScore < 11) {
+      console.log(`Current Com Score = ${computerCardScore}`);
+      computerCardArray[j].score = 11;
+      console.log(
+        `Card is ${computerCardArray[j].name} Card score: ${computerCardArray[j].score}`
+      );
+    }
+    computerCardScore += computerCardArray[j].score;
+  }
+};
+
+var calcScoresPlayer = function () {
+  //calculate the score of the cards on player's hand
+  for (var k = 0; k < playerCardArray.length; k += 1) {
+    if (playerCardArray[k].name == "ace" && playerCardScore < 11) {
+      console.log(`Current Player Score = ${playerCardScore}`);
+      playerCardArray[k].score = 11;
+      console.log(
+        `Card is ${playerCardArray[k].name} Card score: ${playerCardArray[k].score}`
+      );
+    }
+    playerCardScore += playerCardArray[k].score;
+  }
+};
+
+var determineWinner = function () {
+  var whoWin = "";
+
+  if (playerCardScore > computerCardScore || playerCardScore == 21) {
+    whoWin = "Player wins!";
+  } else if (playerCardScore == computerCardScore) {
+    whoWin = "It's a draw!";
+  } else {
+    whoWin = "Computer wins!";
+  }
+
+  return `${whoWin}`;
+};
+
+var resetGame = function () {
+  cardDeck = [];
+  computerCardArray = [];
+  playerCardArray = [];
+  computerCardScore = 0;
+  playerCardScore = 0;
+  gameMode = "initial draw";
+};
+
+var shuffleAndIssueTwoCards = function () {
   var shuffledDeck = shuffleCards(cardDeck);
-  var computerCardOne = shuffledDeck.pop();
-  var playerCardOne = shuffledDeck.pop();
-  var computerCardTwo = shuffledDeck.pop();
-  var playerCardTwo = shuffledDeck.pop();
-  computerCardScore = computerCardOne.score + computerCardTwo.score;
-  playerCardScore = playerCardOne.score + playerCardTwo.score;
-  return `Computer drew ${computerCardOne.name} of ${computerCardOne.suit} & ${computerCardTwo.name} of ${computerCardTwo.suit}. Total of ${computerCardScore}. Player drew ${playerCardOne.name} of ${playerCardOne.suit} & ${playerCardTwo.name} of ${playerCardTwo.suit}. Total of ${playerCardScore}`;
+  //give out cards to computer and player and push into their arrays
+  for (var i = 0; i < 4; i += 1) {
+    if (i == 0 || i == 2) {
+      computerCardArray.push(shuffledDeck.pop());
+    } else if (i == 1 || i == 3) {
+      playerCardArray.push(shuffledDeck.pop());
+    }
+  }
+};
+
+var main = function (input) {
+  //if start of game, create a new shuffled deck and issue 2 cards each
+  if (gameMode == "initial draw") {
+    makeDeck();
+    shuffleAndIssueTwoCards();
+    //end game if either player or computer hits 21 straightaway
+    calcScoresComputer();
+    calcScoresPlayer();
+    if (computerCardScore == 21 || playerCardScore == 21) {
+      var findWinner = determineWinner();
+      return findWinner;
+    }
+    gameMode = "post initial draw";
+    return `Computer drew ${computerCardArray[0].name} & ${computerCardArray[1].name}. Total score is ${computerCardScore}. <br> Player drew ${playerCardArray[0].name} & ${playerCardArray[1].name}. Total score is ${playerCardScore}. <br> <br> Enter either "hit" or "stand".`;
+  }
+  if (gameMode == "post initial draw") {
+    gameMode = input;
+
+    if (gameMode == "hit") {
+      playerCardArray.push(cardDeck.pop());
+      calcScoresPlayer();
+      if (computerCardScore < 17) {
+        computerCardArray.push(cardDeck.pop());
+        calcScoresComputer();
+      }
+      gameMode = "determine winner";
+      return `You drew ${
+        playerCardArray[playerCardArray.length - 1].name
+      }. Player score is ${playerCardScore}.`;
+    } else if (gameMode == "stand") {
+      if (computerCardScore < 17) {
+        computerCardArray.push(cardDeck.pop());
+        calcScoresComputer();
+      }
+      gameMode = "determine winner";
+      return `Click submit to see who wins~`;
+    }
+  }
+
+  if (gameMode == "determine winner") {
+    //calcuate the scores and see who wins
+    findWinner = determineWinner();
+
+    //reset game
+    resetGame;
+
+    //output
+    return findWinner;
+  }
 };
