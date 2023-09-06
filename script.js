@@ -62,8 +62,10 @@ var main = function () {
   }
   mainMenu.style.visibility = "hidden";
 
-  //gen
   gameInstruct.innerHTML = "Please choose your bet";
+  makeBetButton();
+};
+var makeBetButton = function () {
   for (let i = 1; i < player.length; i++) {
     let playerTable = document.querySelector(`#player${i}Table`);
     let betChips = document.createElement("input");
@@ -75,19 +77,22 @@ var main = function () {
     betChips.classList.add("betChips");
     betButton.innerHTML = "Bet!";
     betButton.classList.add("betButton");
+    betChips.addEventListener("change", function () {
+      if (betChips.value > player[i].chip || betChips.value <= 0) {
+        betButton.disabled = true;
+      } else {
+        betButton.disabled = false;
+      }
+    });
     betButton.addEventListener("click", function () {
       bet(betChips.value, i);
-      betChips.disabled = "true";
-      betButton.disabled = "true";
+      betChips.disabled = true;
+      betButton.disabled = true;
     });
     playerTable.append(betChips, betButton);
   }
 };
-
 var bet = function (betChips, who) {
-  if (player[who].chip < input) {
-    return `you do not have enough chips`;
-  }
   player[who].chip -= betChips;
   chipOnTable.push(betChips);
 
@@ -198,7 +203,7 @@ var endGameCal = function () {
 var renewPlayerTable = function () {
   for (let i = 1; i < player.length; i++) {
     let playerTable = document.querySelector(`#player${i}Table`);
-    playerTable.innerHTML = `<center>${player[i].name}</center><center>Chips: ${player[i].chip}</center>`;
+    playerTable.innerHTML = `<center><font size="5">${player[i].name}</font></center><center>Chips: ${player[i].chip}</center>`;
   }
   let playerTable = document.querySelector(`#player${player.length}Table`);
   playerTable.innerHTML = ` `;
