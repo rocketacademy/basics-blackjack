@@ -5,6 +5,8 @@ var computerCardArray = [];
 var playerCardArray = [];
 var computerCardScore = 0;
 var playerCardScore = 0;
+var computerCardResults = [];
+var playerCardResults = [];
 
 //create deck
 var makeDeck = function () {
@@ -106,6 +108,17 @@ var calcScoresPlayer = function () {
   }
 };
 
+var pushCardsIntoResultsArray = function () {
+  for (var i = 0; i < computerCardArray.length; i += 1) {
+    var computerCardString = `${computerCardArray[i].suit} of ${computerCardArray[i].name}`;
+    computerCardResults.push(computerCardString);
+  }
+  for (var j = 0; j < playerCardArray.length; j += 1) {
+    var playerCardString = `${playerCardArray[j].suit} of ${playerCardArray[j].name}`;
+    playerCardResults.push(playerCardString);
+  }
+};
+
 var determineWinner = function () {
   var whoWin = "";
 
@@ -162,14 +175,10 @@ var main = function (input) {
     if (gameMode == "hit") {
       playerCardArray.push(cardDeck.pop());
       calcScoresPlayer();
-      if (computerCardScore < 17) {
-        computerCardArray.push(cardDeck.pop());
-        calcScoresComputer();
-      }
-      gameMode = "determine winner";
+      gameMode = "post initial draw";
       return `You drew ${
         playerCardArray[playerCardArray.length - 1].name
-      }. Player score is ${playerCardScore}.`;
+      }. Player score is ${playerCardScore}. Do you want to "hit" or "stand"?`;
     } else if (gameMode == "stand") {
       if (computerCardScore < 17) {
         computerCardArray.push(cardDeck.pop());
@@ -182,12 +191,13 @@ var main = function (input) {
 
   if (gameMode == "determine winner") {
     //calcuate the scores and see who wins
+    pushCardsIntoResultsArray();
     findWinner = determineWinner();
 
     //reset game
     resetGame;
 
     //output
-    return findWinner;
+    return `${findWinner}<br><br> Player hand: ${playerCardResults} <br> Dealers hand: ${computerCardResults}`;
   }
 };
