@@ -1,4 +1,5 @@
 //5.5hours
+//1830
 
 //6 people at most
 //Add user/computer before play
@@ -49,7 +50,6 @@ var addPlayer = function (playerName) {
   };
   player.push(playerInfo);
   let playerTable = document.querySelector(`#player${player.length - 1}Table`);
-  console.log(playerTable);
   playerTable.innerHTML = `<center>${playerInfo.name}</center>Chips: ${playerInfo.chip}`;
   return `${playerName} added`;
 };
@@ -58,7 +58,6 @@ var playerDelete = function (deletePlayer) {
   for (let i = 0; i < player.length; i++) {
     if (deletePlayer == player[i].name) {
       player.splice(i, 1);
-      playerTable.splice(i, 1);
       renewPlayerTable();
       return `${deletePlayer} deleted`;
     }
@@ -181,4 +180,13 @@ var endGameCal = function () {
     player[i].stand = false;
   }
   chipOnTable = [0];
+};
+
+var renewPlayerTable = function () {
+  for (let i = 1; i < player.length; i++) {
+    let playerTable = document.querySelector(`#player${i}Table`);
+    playerTable.innerHTML = `<center>${player[i].name}</center>Chips: ${player[i].chip}`;
+  }
+  let playerTable = document.querySelector(`#player${player.length}Table`);
+  playerTable.innerHTML = ` `;
 };
