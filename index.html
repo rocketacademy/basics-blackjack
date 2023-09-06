@@ -90,16 +90,29 @@
 
   <body>
     <h1 class="header">♣️ Blackjack ♠️</h1>
-    <div id="container">
-      <center>Please type the player name!</center>
+
+    <div id="gameTable">
+      <div class="playerArea" id="player1Table"></div>
+
+      <div class="playerArea" id="player2Table"></div>
+
+      <div class="playerArea" id="player3Table"></div>
+
+      <div class="playerArea" id="player4Table"></div>
+
+      <div class="playerArea" id="player5Table"></div>
+
+      <div class="playerArea" id="player6Table"></div>
+      <center><b>Please type the player name!</b></center>
       <center><input id="input-field" /><br /></center>
       <div>
         <center>
-          <button id="add-player">Add!</button>
+          <button id="add-player">Add Player!</button>
           <button id="delete-player">Delete Player</button>
         </center>
       </div>
       <center><button id="play-button">Play</button></center>
+      <div id="output-div"></div>
     </div>
 
     <button id="bet-button">Bet!</button>
@@ -108,8 +121,6 @@
 
     <button id="again-button">Again!</button>
     <button id="quit-button">Quit!</button>
-    <p>Output:</p>
-    <div id="output-div"></div>
     <!-- Import program logic -->
     <script src="script.js"></script>
     <!-- Define button click functionality -->
@@ -124,6 +135,8 @@
       var deleteButton = document.querySelector("#delete-player");
       var againButton = document.querySelector("#again-button");
       var quitButton = document.querySelector("#quit-button");
+
+      var gameTable = document.querySelector("#gameTable");
 
       playButton.addEventListener("click", function () {
         let result = main();

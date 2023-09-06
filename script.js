@@ -1,4 +1,4 @@
-//4hours
+//5.5hours
 
 //6 people at most
 //Add user/computer before play
@@ -28,7 +28,7 @@ var chipOnTable = [0];
 var playerRound = 0;
 
 var addPlayer = function (playerName) {
-  if (player.length == 6) {
+  if (player.length == 7) {
     return `At most 6 player`;
   }
   if (playerName == "") {
@@ -48,10 +48,9 @@ var addPlayer = function (playerName) {
     value: 0,
   };
   player.push(playerInfo);
-
-  var newUser = document.createElement("p");
-  newUser.innerHTML = playerName;
-  container.appendChild(newUser);
+  let playerTable = document.querySelector(`#player${player.length - 1}Table`);
+  console.log(playerTable);
+  playerTable.innerHTML = `<center>${playerInfo.name}</center>Chips: ${playerInfo.chip}`;
   return `${playerName} added`;
 };
 
@@ -59,9 +58,12 @@ var playerDelete = function (deletePlayer) {
   for (let i = 0; i < player.length; i++) {
     if (deletePlayer == player[i].name) {
       player.splice(i, 1);
+      playerTable.splice(i, 1);
+      renewPlayerTable();
       return `${deletePlayer} deleted`;
     }
   }
+
   return `Player name ${deletePlayer} cannot be found`;
 };
 
@@ -102,8 +104,6 @@ var stand = function () {
   playerRound += 1;
   return `Stand`;
 };
-
-var quit = function () {};
 
 var calValue = function () {
   for (let i = 0; i < player[playerRound].card.length; i++) {

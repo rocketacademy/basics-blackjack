@@ -25,12 +25,12 @@ body {
   margin-bottom: 3rem;
 }
 
-#container {
+#gameTable {
   background-color: rgb(52, 127, 52);
   margin: 40px auto;
   width: 800px;
   height: 350px;
-  padding: 38px 31px;
+  padding: 20px 20px;
   border-radius: 0px 0px 500px 500px;
   position: relative;
 }
@@ -46,15 +46,15 @@ input {
 button {
   font-size: 21px;
   line-height: 33px;
-  margin: 0 0 23px 0;
+  margin: 0 0 10px 0;
   padding: 0 6px;
 }
 
 #output-div {
-  background-color: lightgrey;
+  background-color: grey;
   margin: 20px auto;
-  padding: 20px;
-  width: 100%;
+  padding: 0px;
+  width: 40%;
 }
 
 .logo-img {
@@ -74,4 +74,42 @@ button {
   .header {
     font-size: 2rem;
   }
+}
+
+.playerArea {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  outline-style: solid;
+  outline-width: 5px;
+  outline-color: black;
+}
+
+#player1Table {
+  top: 20px;
+  left: -50px;
+}
+
+#player2Table {
+  top: 180px;
+  left: 50px;
+}
+#player3Table {
+  bottom: -50px;
+  left: 220px;
+}
+
+#player4Table {
+  bottom: -50px;
+  right: 220px;
+}
+
+#player5Table {
+  top: 180px;
+  right: 50px;
+}
+
+#player6Table {
+  top: 20px;
+  right: -50px;
 }
