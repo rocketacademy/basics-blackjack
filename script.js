@@ -1,21 +1,10 @@
-//5.5hours
-//1830
-
-//6 people at most
-//Add user/computer before play
-//After hitting to play button
-//computer will automaticlly hit/stand.(no button can be pressed)
-//After each round you can choose quit/play again.
+//6.5hours
+//2000
 
 // setTimeout(() => {
 //   output.innerHTML = result;
 // }, 5000);
 
-//GameFlow
-//Add player and Delete player
-//Press Play
-
-var deck = [];
 //player contains name,chips,stand-check,value and array of cards.
 //player[0] is the dealer(computer)
 var player = [
@@ -25,6 +14,7 @@ var player = [
     value: 0,
   },
 ];
+var deck = [];
 var chipOnTable = [0];
 var playerRound = 0;
 
@@ -50,7 +40,7 @@ var addPlayer = function (playerName) {
   };
   player.push(playerInfo);
   let playerTable = document.querySelector(`#player${player.length - 1}Table`);
-  playerTable.innerHTML = `<center>${playerInfo.name}</center>Chips: ${playerInfo.chip}`;
+  playerTable.innerHTML = `<center><font size="5">${playerInfo.name}</font></center><center>Chips: ${playerInfo.chip}</center>`;
   return `${playerName} added`;
 };
 
@@ -70,26 +60,47 @@ var main = function () {
   if (player.length == 1) {
     return `Please Add player first`;
   }
-  createDeck();
-  shuffleDeck();
+  mainMenu.style.visibility = "hidden";
 
-  for (let i = 0; i < player.length; i++, playerRound += 1) {
-    dealCard();
-    dealCard();
+  //gen
+  gameInstruct.innerHTML = "Please choose your bet";
+  for (let i = 1; i < player.length; i++) {
+    let playerTable = document.querySelector(`#player${i}Table`);
+    let betChips = document.createElement("input");
+    let betButton = document.createElement("button");
+    betChips.type = "number";
+    betChips.value = 1;
+    betChips.min = 1;
+    betChips.max = player[i].chip;
+    betChips.classList.add("betChips");
+    betButton.innerHTML = "Bet!";
+    betButton.classList.add("betButton");
+    betButton.addEventListener("click", function () {
+      bet(betChips.value, i);
+    });
+    playerTable.append(betChips, betButton);
   }
-  playerRound = 1;
-
-  calValue();
-  return `Game On`;
 };
 
-var bet = function (input) {
-  if (player[playerRound].chip < input) {
+var bet = function (betChips, who) {
+  if (player[who].chip < input) {
     return `you do not have enough chips`;
   }
-  player[playerRound].chip -= input;
-  chipOnTable.push[input];
-  return `you bet ${input}`;
+  player[who].chip -= betChips;
+  chipOnTable.push[betChips];
+
+  //Enter the game(not Completed)
+  if (chipOnTable.length == player.length) {
+    createDeck();
+    shuffleDeck();
+
+    for (let i = 0; i < player.length; i++, playerRound += 1) {
+      dealCard();
+      dealCard();
+    }
+    playerRound = 1;
+    calValue();
+  }
 };
 
 var hit = function () {
@@ -185,7 +196,7 @@ var endGameCal = function () {
 var renewPlayerTable = function () {
   for (let i = 1; i < player.length; i++) {
     let playerTable = document.querySelector(`#player${i}Table`);
-    playerTable.innerHTML = `<center>${player[i].name}</center>Chips: ${player[i].chip}`;
+    playerTable.innerHTML = `<center>${player[i].name}</center><center>Chips: ${player[i].chip}</center>`;
   }
   let playerTable = document.querySelector(`#player${player.length}Table`);
   playerTable.innerHTML = ` `;

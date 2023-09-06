@@ -103,22 +103,23 @@
       <div class="playerArea" id="player5Table"></div>
 
       <div class="playerArea" id="player6Table"></div>
-      <center><b>Please type the player name!</b></center>
-      <center><input id="input-field" /><br /></center>
-      <div>
-        <center>
-          <button id="add-player">Add Player!</button>
-          <button id="delete-player">Delete Player</button>
-        </center>
-      </div>
-      <center><button id="play-button">Play</button></center>
-      <div id="output-div"></div>
-    </div>
 
-    <button id="bet-button">Bet!</button>
+      <center><b id="gameInstruct">Please type the player name!</b></center>
+      <br />
+      <div id="mainMenu">
+        <center><input id="input-field" /><br /></center>
+        <div>
+          <center>
+            <button id="add-player">Add Player!</button>
+            <button id="delete-player">Delete Player</button>
+          </center>
+        </div>
+        <center><button id="play-button">Play</button></center>
+        <div id="output-div"></div>
+      </div>
+    </div>
     <button id="hit-button">hit!</button>
     <button id="stand-button">stand!</button>
-
     <button id="again-button">Again!</button>
     <button id="quit-button">Quit!</button>
     <!-- Import program logic -->
@@ -126,7 +127,6 @@
     <!-- Define button click functionality -->
     <script>
       var playButton = document.querySelector("#play-button");
-      var betButton = document.querySelector("#bet-button");
       var hitButton = document.querySelector("#hit-button");
       var standButton = document.querySelector("#stand-button");
       var input = document.querySelector("#input-field");
@@ -135,12 +135,12 @@
       var deleteButton = document.querySelector("#delete-player");
       var againButton = document.querySelector("#again-button");
       var quitButton = document.querySelector("#quit-button");
-
       var gameTable = document.querySelector("#gameTable");
+      var mainMenu = document.querySelector("#mainMenu");
+      var gameInstruct = document.querySelector("#gameInstruct");
 
       playButton.addEventListener("click", function () {
-        let result = main();
-        output.innerHTML = result;
+        main();
       });
       addPlayerButton.addEventListener("click", function () {
         let result = addPlayer(input.value);
@@ -149,11 +149,6 @@
       });
       deleteButton.addEventListener("click", function () {
         let result = playerDelete(input.value);
-        output.innerHTML = result;
-        input.value = "";
-      });
-      betButton.addEventListener("click", function () {
-        let result = bet(input.value);
         output.innerHTML = result;
         input.value = "";
       });

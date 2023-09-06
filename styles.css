@@ -78,8 +78,8 @@ button {
 
 .playerArea {
   position: absolute;
-  width: 100px;
-  height: 100px;
+  width: 150px;
+  height: 150px;
   outline-style: solid;
   outline-width: 5px;
   outline-color: black;
@@ -95,12 +95,12 @@ button {
   left: 50px;
 }
 #player3Table {
-  bottom: -50px;
+  bottom: -100px;
   left: 220px;
 }
 
 #player4Table {
-  bottom: -50px;
+  bottom: -100px;
   right: 220px;
 }
 
@@ -112,4 +112,22 @@ button {
 #player6Table {
   top: 20px;
   right: -50px;
+}
+
+.betButton {
+  position: absolute;
+  width: 50px;
+  bottom: 5px;
+  margin-left: -25px;
+  left: 50%;
+}
+
+.betChips {
+  position: absolute;
+  height: 30px;
+  width: 100px;
+  margin-bottom: -15px;
+  bottom: 50%;
+  margin-left: -50px;
+  left: 50%;
 }
