@@ -1,4 +1,4 @@
-//10 hours
+//12 hours
 
 // setTimeout(() => {
 //   output.innerHTML = result;
@@ -11,6 +11,7 @@ var player = [
     stand: false,
     card: [],
     value: 0,
+    winLose: "",
   },
 ];
 var deck = [];
@@ -39,6 +40,7 @@ var addPlayer = function (playerName) {
     stand: false,
     card: [],
     value: 0,
+    winLose: "",
   };
   player.push(playerInfo);
   playButton.disabled = false;
@@ -135,7 +137,6 @@ var bet = function (betChips, who) {
 };
 
 var inGame = function () {
-  renewPlayerTable();
   createDeck();
   shuffleDeck();
   dealCard(0);
@@ -146,41 +147,48 @@ var inGame = function () {
     dealCard(i);
     calValue(i);
   }
-  genCardAndCalValue();
-  //Check if the first player have a instant win
-  for (let i = 1; player[i].stand === true; i++) {
-    playerRound += 1;
-  }
   hitButton.style.visibility = "visible";
   standButton.style.visibility = "visible";
-
+  renewPlayerTable();
+  genCardAndCompareValue();
+  for (let i = playerRound; player[i].stand === true; i++) {
+    playerRound += 1;
+    break;
+  }
   gameInstruct.innerHTML = `${player[playerRound].name}, it's your turn. You hit or stand?`;
 };
 
-var genCardAndCalValue = function () {
-  for (let i = 1; i < player.length; i++) {
+var genCardAndCompareValue = function () {
+  for (let i = playerRound; i < player.length; i++) {
     let cardContainer = document.createElement("div");
     let playerTable = document.querySelector(`#player${i}Table`);
     let cardList = ``;
     for (let j = 0; j < player[i].card.length; j++) {
       cardList += player[i].card[j].name;
     }
-    cardContainer.innerHTML = `You bet ${chipOnTable[i]} chips<br>your cards are:<br>${cardList}<br>Value: ${player[i].value}`;
 
-    for (let j = 1; j < player[i].card.length; j++) {
+    for (let j = 0; j < player[i].card.length; j++) {
       if (player[i].card[j].rank === 1 && player[i].value > 21) {
         player[i].value -= 10;
       }
     }
-
     if (player[i].value === 21) {
-      cardContainer.innerHTML += "<br>Congrats, You Win!";
+      player[i].winLose = "win";
       player[i].stand = true;
+      cardContainer.innerHTML = `Congrats, You Win ${chipOnTable[i]} chips<br>your cards are:<br>${cardList}<br>Value: ${player[i].value}`;
     } else if (player[i].value > 21) {
-      cardContainer.innerHTML += "<br>You Bust!";
+      player[i].winLose = "lose";
+      player[i].stand = true;
+      cardContainer.innerHTML += `OH! You Bust!. You lose ${chipOnTable[i]} chips<br>your cards are:<br>${cardList}<br>Value: ${player[i].value}`;
+    } else if (player[i].stand === false) {
+      cardContainer.innerHTML = `You bet ${chipOnTable[i]} chips<br>your cards are:<br>${cardList}<br>Value: ${player[i].value}`;
     }
 
     playerTable.append(cardContainer);
+
+    if (player[playerRound].stand === true) {
+      playerRound += 1;
+    }
   }
 };
 
@@ -188,14 +196,31 @@ var hit = function () {
   dealCard(playerRound);
   calValue(playerRound);
   renewPlayerTable();
-  genCardAndCalValue();
+  genCardAndCompareValue();
+  if (playerRound === player.length) {
+    hitButton.style.visibility = "hidden";
+    standButton.style.visibility = "hidden";
+    computerTable.innerHTML = `<center>${player[0].card[0].name}${player[0].card[1].name}</center>`;
+    dealerTurn();
+  } else {
+    gameInstruct.innerHTML = `${player[playerRound].name}, it's your turn. You hit or stand?`;
+  }
 };
 
 var stand = function () {
   player[playerRound].stand = true;
   playerRound += 1;
-  gameInstruct.innerHTML = `${player[playerRound].name}, it's your turn. You hit or stand?`;
+  if (playerRound === player.length) {
+    hitButton.style.visibility = "hidden";
+    standButton.style.visibility = "hidden";
+    computerTable.innerHTML = `<center>${player[0].card[0].name}${player[0].card[1].name}</center>`;
+    dealerTurn();
+  } else {
+    gameInstruct.innerHTML = `${player[playerRound].name}, it's your turn. You hit or stand?`;
+  }
 };
+
+var dealerTurn = function () {};
 
 var calValue = function (who) {
   player[who].value = 0;
@@ -258,7 +283,7 @@ var endGameCal = function () {
 };
 
 var renewPlayerTable = function () {
-  for (let i = 1; i < player.length; i++) {
+  for (let i = playerRound; i < player.length; i++) {
     let playerTable = document.querySelector(`#player${i}Table`);
     playerTable.innerHTML = `<center><font size="5">${player[i].name}</font></center><center>Chips: ${player[i].chip}</center>`;
   }
