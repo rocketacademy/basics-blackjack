@@ -172,14 +172,14 @@ var main = function (input) {
     //end game if either player or computer hits 21 straightaway
     calcScoresComputer();
     calcScoresPlayer();
+    var handOutput = pushCardsIntoResultsArray();
     if (computerCardScore == 21 || playerCardScore == 21) {
-      var handOutput = pushCardsIntoResultsArray();
       var findWinner = determineWinner();
       resetGame();
       return `${findWinner} <br><br> ${handOutput}`;
     }
     gameMode = "post initial draw";
-    return `Computer drew ${computerCardArray[0].name} & ${computerCardArray[1].name}. Total score is ${computerCardScore}. <br> Player drew ${playerCardArray[0].name} & ${playerCardArray[1].name}. Total score is ${playerCardScore}. <br> <br> Do you want to "hit" or "stand"?`;
+    return `${handOutput} <br> Player's Score: ${playerCardScore} <br> Dealer's Score: ${computerCardScore} <br><br> Do you want to "hit" or "stand"?`;
   }
   if (gameMode == "post initial draw") {
     gameMode = input;
