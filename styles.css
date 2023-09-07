@@ -50,13 +50,6 @@ button {
   padding: 0 6px;
 }
 
-#output-div {
-  background-color: grey;
-  margin: 5px auto;
-  padding: 0px;
-  width: 40%;
-}
-
 .logo-img {
   height: 49px;
   position: relative;
@@ -86,7 +79,7 @@ button {
 }
 
 #player1Table {
-  top: 20px;
+  top: 10px;
   left: -50px;
 }
 
@@ -110,8 +103,16 @@ button {
 }
 
 #player6Table {
-  top: 20px;
+  top: 10px;
   right: -50px;
+}
+
+.deleteButton {
+  position: absolute;
+  top: 63px;
+  margin-left: -50px;
+  left: 50%;
+  width: 100px;
 }
 
 .betButton {
@@ -130,4 +131,9 @@ button {
   bottom: 50%;
   margin-left: -50px;
   left: 50%;
+}
+
+#hit-button,
+#stand-button {
+  visibility: hidden;
 }

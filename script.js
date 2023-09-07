@@ -1,5 +1,4 @@
-//6.5hours
-//2000
+//10 hours
 
 // setTimeout(() => {
 //   output.innerHTML = result;
@@ -16,18 +15,21 @@ var player = [
 ];
 var deck = [];
 var chipOnTable = [0];
-var playerRound = 0;
+var playerRound = 1;
 
 var addPlayer = function (playerName) {
-  if (player.length == 7) {
-    return `At most 6 player`;
+  if (player.length === 7) {
+    gameInstruct.innerHTML = `At most 6 player`;
+    return;
   }
-  if (playerName == "") {
-    return `I would like to know your name.👉👈`;
+  if (playerName === "") {
+    gameInstruct.innerHTML = `I would like to know your name.👉👈`;
+    return;
   }
   for (let i = 0; i < player.length; i++) {
-    if (playerName == player[i].name) {
-      return `${playerName} is already in the game.😉<br>New player may want to choose another name.`;
+    if (playerName === player[i].name) {
+      gameInstruct.innerHTML = `${playerName} is already in the game.😉<br>New player may want to choose another name.`;
+      return;
     }
   }
 
@@ -39,32 +41,62 @@ var addPlayer = function (playerName) {
     value: 0,
   };
   player.push(playerInfo);
+  playButton.disabled = false;
+  deleteButton.disabled = false;
   let playerTable = document.querySelector(`#player${player.length - 1}Table`);
   playerTable.innerHTML = `<center><font size="5">${playerInfo.name}</font></center><center>Chips: ${playerInfo.chip}</center>`;
-  return `${playerName} added`;
+  gameInstruct.innerHTML = "Welcome, who wants to play BlackJack?";
+  return;
 };
 
-var playerDelete = function (deletePlayer) {
-  for (let i = 0; i < player.length; i++) {
-    if (deletePlayer == player[i].name) {
+var genPlayerDelete = function () {
+  for (let i = 1; i < player.length; i++) {
+    let playerTable = document.querySelector(`#player${i}Table`);
+    let playerButton = document.createElement("button");
+    playerButton.addEventListener("click", function () {
+      input.disabled = false;
+      addPlayerButton.disabled = false;
+      playButton.disabled = false;
+      noOne.remove();
       player.splice(i, 1);
       renewPlayerTable();
-      return `${deletePlayer} deleted`;
-    }
+      gameInstruct.innerHTML = "Welcome, who wants to play BlackJack?";
+      if (player.length === 1) {
+        playButton.disabled = true;
+        deleteButton.disabled = true;
+      }
+    });
+    playerButton.innerHTML = player[i].name;
+    playerButton.classList.add("deleteButton");
+    playerTable.innerHTML = "";
+    playerTable.appendChild(playerButton);
   }
 
-  return `Player name ${deletePlayer} cannot be found`;
+  input.disabled = true;
+  addPlayerButton.disabled = true;
+  playButton.disabled = true;
+  gameInstruct.innerHTML = `Who wants to quit the game?`;
+  var noOne = document.createElement("button");
+  noOne.innerHTML = "No One";
+  noOne.classList.add("deleteButton");
+  noOne.addEventListener("click", function () {
+    renewPlayerTable();
+    gameInstruct.innerHTML = "Welcome, who wants to play BlackJack?";
+    input.disabled = false;
+    addPlayerButton.disabled = false;
+    playButton.disabled = false;
+    noOne.remove();
+  });
+  mainMenu.append(noOne);
 };
 
 var main = function () {
-  if (player.length == 1) {
-    return `Please Add player first`;
-  }
   mainMenu.style.visibility = "hidden";
 
-  gameInstruct.innerHTML = "Please choose your bet";
+  gameInstruct.innerHTML = "Please bet!";
   makeBetButton();
 };
+
 var makeBetButton = function () {
   for (let i = 1; i < player.length; i++) {
     let playerTable = document.querySelector(`#player${i}Table`);
@@ -92,50 +124,78 @@ var makeBetButton = function () {
     playerTable.append(betChips, betButton);
   }
 };
+
 var bet = function (betChips, who) {
   player[who].chip -= betChips;
   chipOnTable.push(betChips);
 
-  //Enter the game(not Completed)
-  if (chipOnTable.length == player.length) {
-    createDeck();
-    shuffleDeck();
+  if (chipOnTable.length === player.length) {
+    inGame();
+  }
+};
 
-    for (let i = 0; i < player.length; i++, playerRound += 1) {
-      dealCard();
-      dealCard();
+var inGame = function () {
+  renewPlayerTable();
+  createDeck();
+  shuffleDeck();
+  dealCard(0);
+  dealCard(0);
+  computerTable.innerHTML = `<center>Computer Hand.</center><center>${player[0].card[0].name}🂠</center>`;
+  for (let i = 1; i < player.length; i++) {
+    dealCard(i);
+    dealCard(i);
+    calValue(i);
+  }
+  genInGameComponent();
+  //Check if the first player have a instant win
+  for (let i = 1; player[i].stand === true; i++) {
+    playerRound += 1;
+  }
+  hitButton.style.visibility = "visible";
+  standButton.style.visibility = "visible";
+
+  gameInstruct.innerHTML = `${player[playerRound].name}, it's your turn. You hit or stand?`;
+};
+
+var genInGameComponent = function () {
+  for (let i = 1; i < player.length; i++) {
+    let cardContainer = document.createElement("div");
+    let playerTable = document.querySelector(`#player${i}Table`);
+    let cardList = ``;
+    for (let j = 0; j < player[i].card.length; j++) {
+      cardList += player[i].card[j].name;
     }
-    playerRound = 1;
-    calValue();
+    cardContainer.innerHTML = `You bet ${chipOnTable[i]} chips<br>your cards are:<br>${cardList}<br>Value: ${player[i].value}`;
+
+    if (player[i].value === 21) {
+      cardContainer.innerHTML += "<br>Congrats, You Win!";
+      player[i].stand = true;
+    }
+    playerTable.append(cardContainer);
   }
 };
 
 var hit = function () {
-  dealCard();
-  calValue();
-  return `Card Dealed`;
+  dealCard(playerRound);
+  calValue(playerRound);
+  renewPlayerTable();
+  genInGameComponent();
 };
 
 var stand = function () {
-  player[0].stand = true;
+  player[playerRound].stand = true;
   playerRound += 1;
-  return `Stand`;
+  gameInstruct.innerHTML = `${player[playerRound].name}, it's your turn. You hit or stand?`;
 };
 
-var calValue = function () {
-  for (let i = 0; i < player[playerRound].card.length; i++) {
-    if (player[playerRound].card[i].rank >= 11) {
-      player[playerRound].value += 10;
+var calValue = function (who) {
+  player[who].value = 0;
+  for (let i = 0; i < player[who].card.length; i++) {
+    if (player[who].card[i].rank >= 11) {
+      player[who].value += 10;
     } else {
-      player[playerRound].value += player[playerRound].card[i].rank;
+      player[who].value += player[who].card[i].rank;
     }
-  }
-  if (player[playerRound].value > 21) {
-    return `Bust`;
-  }
-  if (player[playerRound].value == 21) {
-    player[playerRound].stand = true;
-    return `Win`;
   }
 };
 
@@ -147,33 +207,32 @@ var compareValue = function () {
     player[playerRound].chip += chipOnTable[playerRound] * 2;
     return `you win`;
   }
-  if (player[0].value == player[i].value) {
+  if (player[0].value === player[i].value) {
     return `draw`;
   }
 };
 
-var dealCard = function () {
-  cardDealt = deck.pop();
-  player[playerRound].card.push(cardDealt);
-  return;
+var dealCard = function (who) {
+  let cardDealt = deck.pop();
+  player[who].card.push(cardDealt);
 };
 
 var createDeck = function () {
-  let suits = ["diamonds", "clubs", "hearts", "spades"];
+  let suits = ["♦", "♣", "♥", "♠"];
   for (let i = 0; i < 4; i++) {
     for (let j = 1; j <= 13; j++) {
       let card = {};
       card.rank = j;
       card.suit = suits[i];
-      if (j == 1) {
-        card.name = `Ace of ${suits[i]}`;
-      } else if (j == 11) {
-        card.name = `Jack of ${suits[i]}`;
-      } else if (j == 12) {
-        card.name = `Queen of ${suits[i]}`;
-      } else if (j == 13) {
-        card.name = `King of ${suits[i]}`;
-      } else card.name = `${j} of ${suits[i]}`;
+      if (j === 1) {
+        card.name = `[A${suits[i]}]`;
+      } else if (j === 11) {
+        card.name = `[J${suits[i]}]`;
+      } else if (j === 12) {
+        card.name = `[Q${suits[i]}]`;
+      } else if (j === 13) {
+        card.name = `[K${suits[i]}]`;
+      } else card.name = `[${j}${suits[i]}]`;
       deck.push(card);
     }
   }
@@ -205,6 +264,8 @@ var renewPlayerTable = function () {
     let playerTable = document.querySelector(`#player${i}Table`);
     playerTable.innerHTML = `<center><font size="5">${player[i].name}</font></center><center>Chips: ${player[i].chip}</center>`;
   }
-  let playerTable = document.querySelector(`#player${player.length}Table`);
-  playerTable.innerHTML = ` `;
+  if (player.length != 7) {
+    let playerTable = document.querySelector(`#player${player.length}Table`);
+    playerTable.innerHTML = ``;
+  }
 };

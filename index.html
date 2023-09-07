@@ -90,7 +90,7 @@
 
   <body>
     <h1 class="header">♣️ Blackjack ♠️</h1>
-
+    <div id="computerTable"></div>
     <div id="gameTable">
       <div class="playerArea" id="player1Table"></div>
 
@@ -113,15 +113,19 @@
         <div>
           <center>
             <button id="add-player">Add Player!</button>
-            <button id="delete-player">Delete Player</button>
+            <button id="delete-player" disabled>Delete Player</button>
           </center>
         </div>
-        <center><button id="play-button">Play</button></center>
-        <div id="output-div"></div>
+        <center><button id="play-button" disabled>Play</button></center>
+        <center>
+          <div id="hitStandPlacement">
+            <button id="hit-button">Hit!</button>
+            <button id="stand-button">Stand!</button>
+          </div>
+        </center>
       </div>
     </div>
-    <button id="hit-button">hit!</button>
-    <button id="stand-button">stand!</button>
+
     <button id="again-button">Again!</button>
     <button id="quit-button">Quit!</button>
     <!-- Import program logic -->
@@ -132,7 +136,6 @@
       var hitButton = document.querySelector("#hit-button");
       var standButton = document.querySelector("#stand-button");
       var input = document.querySelector("#input-field");
-      var output = document.querySelector("#output-div");
       var addPlayerButton = document.querySelector("#add-player");
       var deleteButton = document.querySelector("#delete-player");
       var againButton = document.querySelector("#again-button");
@@ -140,36 +143,30 @@
       var gameTable = document.querySelector("#gameTable");
       var mainMenu = document.querySelector("#mainMenu");
       var gameInstruct = document.querySelector("#gameInstruct");
+      var computerTable = document.querySelector("#computerTable");
 
       playButton.addEventListener("click", function () {
         main();
       });
       addPlayerButton.addEventListener("click", function () {
-        let result = addPlayer(input.value);
-        output.innerHTML = result;
+        addPlayer(input.value);
         input.value = "";
       });
       deleteButton.addEventListener("click", function () {
-        let result = playerDelete(input.value);
-        output.innerHTML = result;
-        input.value = "";
+        genPlayerDelete();
       });
       hitButton.addEventListener("click", function () {
-        let result = hit();
-        output.innerHTML = result;
+        hit();
       });
       standButton.addEventListener("click", function () {
         let result = stand();
-        output.innerHTML = result;
       });
 
       againButton.addEventListener("click", function () {
         let result = main();
-        output.innerHTML = result;
       });
       quitButton.addEventListener("click", function () {
         let result = quit();
-        output.innerHTML = result;
       });
     </script>
   </body>
