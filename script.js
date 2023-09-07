@@ -79,6 +79,7 @@ var shuffleCards = function (cardDeck) {
 };
 
 var calcScoresComputer = function () {
+  computerCardScore = 0;
   //calculate the score of the cards on computer's hand
   for (var j = 0; j < computerCardArray.length; j += 1) {
     if (computerCardArray[j].name == "ace" && computerCardScore < 11) {
@@ -94,6 +95,7 @@ var calcScoresComputer = function () {
 
 var calcScoresPlayer = function () {
   //calculate the score of the cards on player's hand
+  playerCardScore = 0;
   for (var k = 0; k < playerCardArray.length; k += 1) {
     if (playerCardArray[k].name == "ace" && playerCardScore < 11) {
       console.log(`Current Player Score = ${playerCardScore}`);
@@ -123,14 +125,23 @@ var pushCardsIntoResultsArray = function () {
 var determineWinner = function () {
   var whoWin = "";
 
-  if (playerCardScore > computerCardScore || playerCardScore == 21) {
+  if (playerCardScore == 21) {
+    whoWin = "BLACKJACK! Player wins!";
+  } else if (computerCardScore == 21) {
+    whoWin = "BLACKJACK! Computer wins!";
+  } else if (
+    (playerCardScore > computerCardScore && playerCardScore < 22) ||
+    (playerCardScore < 22 && computerCardScore > 22)
+  ) {
     whoWin = "Player wins!";
-  } else if (playerCardScore == computerCardScore) {
+  } else if (
+    playerCardScore == computerCardScore ||
+    (playerCardScore > 21 && computerCardScore > 21)
+  ) {
     whoWin = "It's a draw!";
   } else {
     whoWin = "Computer wins!";
   }
-
   return `${whoWin}`;
 };
 
@@ -138,10 +149,6 @@ var resetGame = function () {
   cardDeck = [];
   computerCardArray = [];
   playerCardArray = [];
-  computerCardScore = 0;
-  playerCardScore = 0;
-  computerCardResults = [];
-  playerCardResults = [];
   gameMode = "initial draw";
 };
 
@@ -166,11 +173,13 @@ var main = function (input) {
     calcScoresComputer();
     calcScoresPlayer();
     if (computerCardScore == 21 || playerCardScore == 21) {
+      var handOutput = pushCardsIntoResultsArray();
       var findWinner = determineWinner();
-      return findWinner;
+      resetGame();
+      return `${findWinner} <br><br> ${handOutput}`;
     }
     gameMode = "post initial draw";
-    return `Computer drew ${computerCardArray[0].name} & ${computerCardArray[1].name}. Total score is ${computerCardScore}. <br> Player drew ${playerCardArray[0].name} & ${playerCardArray[1].name}. Total score is ${playerCardScore}. <br> <br> Enter either "hit" or "stand".`;
+    return `Computer drew ${computerCardArray[0].name} & ${computerCardArray[1].name}. Total score is ${computerCardScore}. <br> Player drew ${playerCardArray[0].name} & ${playerCardArray[1].name}. Total score is ${playerCardScore}. <br> <br> Do you want to "hit" or "stand"?`;
   }
   if (gameMode == "post initial draw") {
     gameMode = input;
@@ -178,29 +187,38 @@ var main = function (input) {
     if (gameMode == "hit") {
       playerCardArray.push(cardDeck.pop());
       calcScoresPlayer();
-      gameMode = "post initial draw";
-      return `You drew ${
-        playerCardArray[playerCardArray.length - 1].name
-      }. Player score is ${playerCardScore}. Do you want to "hit" or "stand"?`;
-    } else if (gameMode == "stand") {
-      if (computerCardScore < 17) {
-        computerCardArray.push(cardDeck.pop());
-        calcScoresComputer();
+      if (playerCardScore > 22) {
+        gameMode = "stand";
+        return `You drew ${
+          playerCardArray[playerCardArray.length - 1].name
+        }. You've busted your cards. Let's see who wins~`;
+      } else {
+        gameMode = "post initial draw";
+        return `You drew ${
+          playerCardArray[playerCardArray.length - 1].name
+        }. Player score is ${playerCardScore}. Do you want to "hit" or "stand"?`;
       }
-      gameMode = "determine winner";
-      return `Click submit to see who wins~`;
     }
+  }
+
+  if (gameMode == "stand") {
+    //dealer continue to draw until at least 17points
+    while (computerCardScore < 17) {
+      computerCardArray.push(cardDeck.pop());
+      calcScoresComputer();
+    }
+    gameMode = "determine winner";
   }
 
   if (gameMode == "determine winner") {
     //calcuate the scores and see who wins
-    var handOutput = pushCardsIntoResultsArray();
+    handOutput = pushCardsIntoResultsArray();
     findWinner = determineWinner();
 
     //reset game
-    resetGame;
+    resetGame();
 
     //output
-    return `${findWinner}<br><br> ${handOutput}`;
+    return `${handOutput} <br> Player's Score: ${playerCardScore} <br> Dealer's Score: ${computerCardScore} <br><br> ${findWinner}`;
   }
 };

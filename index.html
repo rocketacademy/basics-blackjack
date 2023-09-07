@@ -186,6 +186,8 @@
     <!-- Define button click functionality -->
     <script>
       var button = document.querySelector("#submit-button");
+      var hitButton = document.querySelector("#hit-button");
+      var standButton = document.querySelector("#stand-button");
       button.addEventListener("click", function () {
         // Set result to input value
         var input = document.querySelector("#input-field");
@@ -197,6 +199,20 @@
 
         // Reset input value
         input.value = "";
+      });
+
+      hitButton.addEventListener("click", function () {
+        var result = main("hit");
+        // Display result in output element
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
+      });
+
+      standButton.addEventListener("click", function () {
+        var result = main("stand");
+        // Display result in output element
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
       });
     </script>
   </body>
