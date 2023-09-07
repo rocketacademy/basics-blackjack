@@ -146,7 +146,7 @@ var inGame = function () {
     dealCard(i);
     calValue(i);
   }
-  genInGameComponent();
+  genCardAndCalValue();
   //Check if the first player have a instant win
   for (let i = 1; player[i].stand === true; i++) {
     playerRound += 1;
@@ -157,7 +157,7 @@ var inGame = function () {
   gameInstruct.innerHTML = `${player[playerRound].name}, it's your turn. You hit or stand?`;
 };
 
-var genInGameComponent = function () {
+var genCardAndCalValue = function () {
   for (let i = 1; i < player.length; i++) {
     let cardContainer = document.createElement("div");
     let playerTable = document.querySelector(`#player${i}Table`);
@@ -167,10 +167,19 @@ var genInGameComponent = function () {
     }
     cardContainer.innerHTML = `You bet ${chipOnTable[i]} chips<br>your cards are:<br>${cardList}<br>Value: ${player[i].value}`;
 
+    for (let j = 1; j < player[i].card.length; j++) {
+      if (player[i].card[j].rank === 1 && player[i].value > 21) {
+        player[i].value -= 10;
+      }
+    }
+
     if (player[i].value === 21) {
       cardContainer.innerHTML += "<br>Congrats, You Win!";
       player[i].stand = true;
+    } else if (player[i].value > 21) {
+      cardContainer.innerHTML += "<br>You Bust!";
     }
+
     playerTable.append(cardContainer);
   }
 };
@@ -179,7 +188,7 @@ var hit = function () {
   dealCard(playerRound);
   calValue(playerRound);
   renewPlayerTable();
-  genInGameComponent();
+  genCardAndCalValue();
 };
 
 var stand = function () {
@@ -193,22 +202,11 @@ var calValue = function (who) {
   for (let i = 0; i < player[who].card.length; i++) {
     if (player[who].card[i].rank >= 11) {
       player[who].value += 10;
+    } else if (player[who].card[i].rank === 1) {
+      player[who].value += 11;
     } else {
       player[who].value += player[who].card[i].rank;
     }
-  }
-};
-
-var compareValue = function () {
-  if (player[0].value > player[playerRound].value) {
-    return `you loss`;
-  }
-  if (player[0].value < player[playerRound].value) {
-    player[playerRound].chip += chipOnTable[playerRound] * 2;
-    return `you win`;
-  }
-  if (player[0].value === player[i].value) {
-    return `draw`;
   }
 };
 
