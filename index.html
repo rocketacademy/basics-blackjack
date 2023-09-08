@@ -108,6 +108,24 @@
         top: 22px;
       }
 
+      .blink {
+        animation: blink 2.5s infinite;
+        color: black;
+        font-weight: bolder;
+        font-family:'Times New Roman', Times, serif;
+      }
+
+      @keyframes blink {
+        0% {
+          opacity: 1;
+        }
+
+        100% {
+          opacity: 0;
+          color: red;
+          font-weight: bold;
+        }
+      }
       /* increase header font size on wider screens */
       @media screen and (min-width: 600px) {
         .header {
@@ -119,17 +137,17 @@
   </head>
 
   <body>
-    <h1 class="header">
+     <h1 class="header">
       <img class="logo-img" src="https://firebasestorage.googleapis.com/v0/b/ftbc11-sample.appspot.com/o/images%2F1-PRIMARY_CRIMSON.png?alt=media&token=ce9e8333-2a45-44be-adb2-1f1bf054adf7" />
       Rocket Academy
       <img class="logo-img" src="https://firebasestorage.googleapis.com/v0/b/ftbc11-sample.appspot.com/o/images%2F1-PRIMARY_CRIMSON.png?alt=media&token=ce9e8333-2a45-44be-adb2-1f1bf054adf7" />
     </h1>
     <h1 class="header">♣️ Basics - Blackjack ♠️</h1>
     <div id="container">
-      <p>Input:</p>
+      <p class = "blink">Please input your name..</p>
       <input id="input-field" />
       <br />
-      <button id="submit-button">Submit</button>
+      <button id="start-button">Start </button>
       <p>Output:</p>
       <div id="output-div"></div>
     </div>
@@ -137,7 +155,7 @@
     <script src="script.js"></script>
     <!-- Define button click functionality -->
     <script>
-      var button = document.querySelector("#submit-button");
+      var button = document.querySelector("#start-button");
       button.addEventListener("click", function () {
         // Set result to input value
         var input = document.querySelector("#input-field");
