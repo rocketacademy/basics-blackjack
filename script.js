@@ -1,14 +1,9 @@
-//13 hours
-//1900
+//17 hours
 
 //logic add
 //what if blackjack at the start of the game?
 //what if everyone busted?
-
-//bug
-//bet button
-//playerRound bug
-//f player can hit/stand when they got backjack
+//What if player have no more chips?
 
 //player contains name,chips,stand-check,value and array of cards,winLoss(win/lose/draw/"").
 //player[0] is the dealer(computer)
@@ -107,6 +102,7 @@ var main = function () {
 
 var makeBetButton = function () {
   for (let i = 1; i < player.length; i++) {
+    chipOnTable.push(0);
     let playerTable = document.querySelector(`#player${i}Table`);
     let betChips = document.createElement("input");
     let betButton = document.createElement("button");
@@ -135,9 +131,16 @@ var makeBetButton = function () {
 
 var bet = function (betChips, who) {
   player[who].chip -= betChips;
-  chipOnTable.push(Number(betChips));
+  chipOnTable[who] = Number(betChips);
+  let check = true;
+  for (let i = 1; i < chipOnTable.length; i++) {
+    if (chipOnTable[i] === 0) {
+      check = false;
+      break;
+    }
+  }
 
-  if (chipOnTable.length === player.length) {
+  if (check) {
     inGame();
   }
 };
@@ -157,10 +160,21 @@ var inGame = function () {
   standButton.style.visibility = "visible";
   renewPlayerTable();
   genCardAndCompareValue();
-  for (let i = playerRound; player[i].stand === true; i++) {
-    playerRound += 1;
+  passPlayerRound();
+  if (playerRound === player.length) {
+    dealerTurn();
   }
   gameInstruct.innerHTML = `${player[playerRound].name}, it's your turn. You hit or stand?`;
+};
+
+var passPlayerRound = function () {
+  for (let i = playerRound; i < player.length; i++) {
+    if (player[i].stand === false) {
+      break;
+    } else {
+      playerRound += 1;
+    }
+  }
 };
 
 var genCardAndCompareValue = function () {
@@ -176,20 +190,17 @@ var genCardAndCompareValue = function () {
     if (player[i].value > 21) {
       player[i].winLose = "lose";
       player[i].stand = true;
-      cardContainer.innerHTML += `OH! You Bust! You lose ${chipOnTable[i]} chips<br>your cards are:<br>${cardList}<br>Value: ${player[i].value}`;
+      cardContainer.innerHTML = `OH! You Bust! You lose ${chipOnTable[i]} chips<br>your cards are:<br>${cardList}<br>Value: ${player[i].value}`;
     } else if (player[i].value === 21) {
       player[i].stand = true;
-      cardContainer.innerHTML = `Congrats, You <br>your cards are:<br>${cardList}<br>Value: ${player[i].value}`;
-    } else if (player[i].stand === false) {
+      cardContainer.innerHTML = `WoW you get 21!<br>You bet ${chipOnTable[i]} chips<br>your cards are:<br>${cardList}<br>Value: ${player[i].value}`;
+    } else {
       cardContainer.innerHTML = `You bet ${chipOnTable[i]} chips<br>your cards are:<br>${cardList}<br>Value: ${player[i].value}`;
     }
 
     playerTable.append(cardContainer);
-
-    if (player[playerRound].stand === true) {
-      playerRound += 1;
-    }
   }
+  passPlayerRound();
 };
 
 var aceVariation = function (who) {
@@ -214,7 +225,7 @@ var hit = function () {
 
 var stand = function () {
   player[playerRound].stand = true;
-  playerRound += 1;
+  passPlayerRound();
   if (playerRound === player.length) {
     dealerTurn();
   } else {
@@ -298,6 +309,7 @@ var calValue = function (who) {
       player[who].value += player[who].card[i].rank;
     }
   }
+  player[who].value = 60;
 };
 
 var dealCard = function (who) {
@@ -352,6 +364,7 @@ var endGameCal = function () {
 };
 
 var again = function () {
+  computerTable.innerHTML = ``;
   renewPlayerTable();
   againButton.style.visibility = "hidden";
   quitButton.style.visibility = "hidden";
@@ -359,6 +372,7 @@ var again = function () {
 };
 
 var quit = function () {
+  computerTable.innerHTML = ``;
   renewPlayerTable();
   gameInstruct.innerHTML = "Welcome, who wants to play BlackJack?";
   mainMenu.style.visibility = "visible";
