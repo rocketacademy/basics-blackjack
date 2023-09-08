@@ -88,12 +88,12 @@ button {
   left: 50px;
 }
 #player3Table {
-  bottom: -100px;
+  bottom: -120px;
   left: 220px;
 }
 
 #player4Table {
-  bottom: -100px;
+  bottom: -120px;
   right: 220px;
 }
 
@@ -134,6 +134,8 @@ button {
 }
 
 #hit-button,
-#stand-button {
+#stand-button,
+#again-button,
+#quit-button {
   visibility: hidden;
 }

@@ -123,11 +123,13 @@
             <button id="stand-button">Stand!</button>
           </div>
         </center>
+        <center>
+          <button id="again-button">Again!</button>
+          <button id="quit-button">Quit!</button>
+        </center>
       </div>
     </div>
 
-    <button id="again-button">Again!</button>
-    <button id="quit-button">Quit!</button>
     <!-- Import program logic -->
     <script src="script.js"></script>
     <!-- Define button click functionality -->
@@ -159,14 +161,14 @@
         hit();
       });
       standButton.addEventListener("click", function () {
-        let result = stand();
+        stand();
       });
 
       againButton.addEventListener("click", function () {
-        let result = main();
+        again();
       });
       quitButton.addEventListener("click", function () {
-        let result = quit();
+        quit();
       });
     </script>
   </body>
