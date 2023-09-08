@@ -1,18 +1,15 @@
 //17 hours
 
-//logic add
-//what if blackjack at the start of the game?
-//what if everyone busted?
+//logic need to add
 //What if player have no more chips?
 
 //player contains name,chips,stand-check,value and array of cards,winLoss(win/lose/draw/"").
-//player[0] is the dealer(computer)
+//player[0] is the dealer(computer)winLoss is "lose" for easy check if everyone bust (line240)
 var player = [
   {
-    stand: false,
     card: [],
     value: 0,
-    winLose: "",
+    winLose: "lose",
   },
 ];
 var deck = [];
@@ -21,10 +18,6 @@ var playerRound = 1;
 var time = 0;
 
 var addPlayer = function (playerName) {
-  if (player.length === 7) {
-    gameInstruct.innerHTML = `At most 6 player`;
-    return;
-  }
   if (playerName === "") {
     gameInstruct.innerHTML = `I would like to know your name.👉👈`;
     return;
@@ -35,7 +28,9 @@ var addPlayer = function (playerName) {
       return;
     }
   }
-
+  if (player.length === 6) {
+    addPlayerButton.disabled = true;
+  }
   let playerInfo = {
     name: playerName,
     chip: 100,
@@ -59,8 +54,8 @@ var genPlayerDelete = function () {
     let playerButton = document.createElement("button");
     playerButton.addEventListener("click", function () {
       input.disabled = false;
-      addPlayerButton.disabled = false;
       playButton.disabled = false;
+      addPlayerButton.disabled = false;
       noOne.remove();
       player.splice(i, 1);
       renewPlayerTable();
@@ -87,7 +82,10 @@ var genPlayerDelete = function () {
     renewPlayerTable();
     gameInstruct.innerHTML = "Welcome, who wants to play BlackJack?";
     input.disabled = false;
-    addPlayerButton.disabled = false;
+    if (player.length < 7) {
+      addPlayerButton.disabled = false;
+    }
+
     playButton.disabled = false;
     noOne.remove();
   });
@@ -239,8 +237,24 @@ var dealerTurn = function () {
   calValue(0);
   gameInstruct.innerHTML = `Dealer turn!`;
   computerTable.innerHTML = `<center>${player[0].card[0].name}${player[0].card[1].name}</center><center>Value: ${player[0].value}</center>`;
+
+  if (
+    player.every(function (a) {
+      return a.winLose === "lose";
+    })
+  ) {
+    setTimeout(() => {
+      gameInstruct.innerHTML = `Everyone is busted! Everyone lose!`;
+      compareValueAddChips();
+      endGameCal();
+      againButton.style.visibility = "visible";
+      quitButton.style.visibility = "visible";
+    }, (time += 3000));
+
+    return;
+  }
+
   while (player[0].value < 17) {
-    time += 3000;
     dealCard(0);
     calValue(0);
     aceVariation(0);
@@ -253,7 +267,7 @@ var dealerTurn = function () {
     setTimeout(() => {
       gameInstruct.innerHTML = `Dealer draw ${newDrawCard}`;
       computerTable.innerHTML = `<center>${cardList}</center><center>Value: ${currentValue}</center>`;
-    }, time);
+    }, (time += 3000));
   }
   setTimeout(() => {
     gameInstruct.innerHTML = `Dealer's final value is ${player[0].value}`;
