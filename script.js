@@ -1,4 +1,4 @@
-//17 hours
+//17.5 hours
 
 //logic need to add
 //What if player have no more chips?
@@ -85,7 +85,6 @@ var genPlayerDelete = function () {
     if (player.length < 7) {
       addPlayerButton.disabled = false;
     }
-
     playButton.disabled = false;
     noOne.remove();
   });
@@ -292,6 +291,7 @@ var dealerTurn = function () {
 };
 
 var compareValueAddChips = function () {
+  let loserIndex = [];
   for (let i = 1; i < player.length; i++) {
     let playerTable = document.querySelector(`#player${i}Table`);
     if (
@@ -308,7 +308,14 @@ var compareValueAddChips = function () {
       playerTable.innerHTML = `<center>It's a tie! ${player[i].name}.</center>You have returned ${chipOnTable[i]} chips, now you have ${player[i].chip} chips.`;
     } else {
       playerTable.innerHTML = `<center>Oh! ${player[i].name}.</center>You lose ${chipOnTable[i]} chips, now you have ${player[i].chip} chips.`;
+      if (player[i].chip === 0) {
+        playerTable.innerHTML = `<center>Hey! ${player[i].name}.</center> You don't have chips left.<br>Get out of my casino!!!`;
+        loserIndex.push(i);
+      }
     }
+  }
+  for (let i = 0; i < loserIndex.length; i++) {
+    player.splice(loserIndex[loserIndex.length - i - 1], 1);
   }
 };
 
@@ -323,7 +330,6 @@ var calValue = function (who) {
       player[who].value += player[who].card[i].rank;
     }
   }
-  player[who].value = 60;
 };
 
 var dealCard = function (who) {
@@ -399,8 +405,9 @@ var renewPlayerTable = function () {
     let playerTable = document.querySelector(`#player${i}Table`);
     playerTable.innerHTML = `<center><font size="5">${player[i].name}</font></center><center>Chips: ${player[i].chip}</center>`;
   }
-  if (player.length != 7) {
-    let playerTable = document.querySelector(`#player${player.length}Table`);
+
+  for (let i = 0; i < 7 - player.length; i++) {
+    let playerTable = document.querySelector(`#player${6 - i}Table`);
     playerTable.innerHTML = ``;
   }
 };
