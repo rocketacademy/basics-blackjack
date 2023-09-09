@@ -1,7 +1,7 @@
-//17.5 hours
+//18.5 hours
+//2230
 
 //logic need to add
-//What if player have no more chips?
 
 //player contains name,chips,stand-check,value and array of cards,winLoss(win/lose/draw/"").
 //player[0] is the dealer(computer)winLoss is "lose" for easy check if everyone bust (line240)
@@ -16,6 +16,7 @@ var deck = [];
 var chipOnTable = [0];
 var playerRound = 1;
 var time = 0;
+var splitPlayerAskIndex = [false];
 
 var addPlayer = function (playerName) {
   if (playerName === "") {
@@ -40,6 +41,7 @@ var addPlayer = function (playerName) {
     winLose: "",
   };
   player.push(playerInfo);
+  splitPlayerAskIndex.push(false);
   playButton.disabled = false;
   deleteButton.disabled = false;
   let playerTable = document.querySelector(`#player${player.length - 1}Table`);
@@ -58,7 +60,13 @@ var genPlayerDelete = function () {
       addPlayerButton.disabled = false;
       noOne.remove();
       player.splice(i, 1);
-      renewPlayerTable();
+      for (let i = 1; i < player.length; i++) {
+        renewPlayerTable(i);
+      }
+      for (let i = 0; i < 7 - player.length; i++) {
+        let playerTable = document.querySelector(`#player${6 - i}Table`);
+        playerTable.innerHTML = ``;
+      }
       gameInstruct.innerHTML = "Welcome, who wants to play BlackJack?";
       if (player.length === 1) {
         playButton.disabled = true;
@@ -79,7 +87,9 @@ var genPlayerDelete = function () {
   noOne.innerHTML = "No One";
   noOne.classList.add("deleteButton");
   noOne.addEventListener("click", function () {
-    renewPlayerTable();
+    for (let i = 1; i < player.length; i++) {
+      renewPlayerTable(i);
+    }
     gameInstruct.innerHTML = "Welcome, who wants to play BlackJack?";
     input.disabled = false;
     if (player.length < 7) {
@@ -143,6 +153,7 @@ var bet = function (betChips, who) {
 };
 
 var inGame = function () {
+  let splitAskList = ``;
   createDeck();
   shuffleDeck();
   dealCard(0);
@@ -152,17 +163,80 @@ var inGame = function () {
     dealCard(i);
     dealCard(i);
     calValue(i);
+    if (player[i].card[0].rank === player[i].card[1].rank) {
+      splitPlayerAskIndex[i] = true;
+      splitAskList += player[i].name + ` `;
+    }
+    renewPlayerTable(i);
+    genCardAndCompareValue(i);
+  }
+  if (splitPlayerAskIndex.includes(true)) {
+    splitPlayerAsk();
+    gameInstruct.innerHTML = `${splitAskList}, you have two card with same rank. <br>Do you want to split?`;
+    return;
   }
   hitButton.style.visibility = "visible";
   standButton.style.visibility = "visible";
-  renewPlayerTable();
-  genCardAndCompareValue();
+
   passPlayerRound();
   if (playerRound === player.length) {
     dealerTurn();
   }
   gameInstruct.innerHTML = `${player[playerRound].name}, it's your turn. You hit or stand?`;
 };
+
+var splitPlayerAsk = function () {
+  for (let i = 1; i < splitPlayerAskIndex.length; i++) {
+    if (splitPlayerAskIndex[i] === true) {
+      let playerTable = document.querySelector(`#player${i}Table`);
+      let splitButton = document.createElement("button");
+      let dontButton = document.createElement("button");
+      splitButton.classList.add("#betButton");
+      splitButton.innerHTML = `Split!`;
+      dontButton.classList.add("#betButton");
+      dontButton.innerHTML = `Dont!`;
+      splitButton.addEventListener("click", function () {
+        splitProcess(true, i);
+        splitButton.disabled = true;
+        dontButton.disabled = true;
+      });
+      dontButton.addEventListener("click", function () {
+        splitProcess(false, i);
+        splitButton.disabled = true;
+        dontButton.disabled = true;
+      });
+      playerTable.append(splitButton, dontButton);
+    }
+  }
+};
+
+// var splitProcess = function (split, who) {
+//   if (split) {
+
+//   }
+
+//   splitPlayerAskIndex[who] = false;
+//   if (
+//     splitPlayerAskIndex.every(function (a) {
+//       return a === false;
+//     })
+//   ) {
+//     for (let i = 0; i < player.length; i++) {
+//       if (player[i].card.length === 1) {
+//         dealCard(i);
+//         calValue(i);
+//       }
+//     }
+//     renewPlayerTable();
+//     genCardAndCompareValue();
+//     passPlayerRound();
+//     hitButton.style.visibility = "visible";
+//     standButton.style.visibility = "visible";
+//     if (playerRound === player.length) {
+//       dealerTurn();
+//     }
+//   }
+// };
 
 var passPlayerRound = function () {
   for (let i = playerRound; i < player.length; i++) {
@@ -174,29 +248,27 @@ var passPlayerRound = function () {
   }
 };
 
-var genCardAndCompareValue = function () {
-  for (let i = playerRound; i < player.length; i++) {
-    let cardContainer = document.createElement("div");
-    let playerTable = document.querySelector(`#player${i}Table`);
-    let cardList = ``;
-    for (let j = 0; j < player[i].card.length; j++) {
-      cardList += player[i].card[j].name;
-    }
-
-    aceVariation(i);
-    if (player[i].value > 21) {
-      player[i].winLose = "lose";
-      player[i].stand = true;
-      cardContainer.innerHTML = `OH! You Bust! You lose ${chipOnTable[i]} chips<br>your cards are:<br>${cardList}<br>Value: ${player[i].value}`;
-    } else if (player[i].value === 21) {
-      player[i].stand = true;
-      cardContainer.innerHTML = `WoW you get 21!<br>You bet ${chipOnTable[i]} chips<br>your cards are:<br>${cardList}<br>Value: ${player[i].value}`;
-    } else {
-      cardContainer.innerHTML = `You bet ${chipOnTable[i]} chips<br>your cards are:<br>${cardList}<br>Value: ${player[i].value}`;
-    }
-
-    playerTable.append(cardContainer);
+var genCardAndCompareValue = function (who) {
+  let cardContainer = document.createElement("div");
+  let playerTable = document.querySelector(`#player${who}Table`);
+  let cardList = ``;
+  for (let i = 0; i < player[who].card.length; i++) {
+    cardList += player[who].card[i].name;
   }
+
+  aceVariation(who);
+  if (player[who].value > 21) {
+    player[who].winLose = "lose";
+    player[who].stand = true;
+    cardContainer.innerHTML = `OH! You Bust! You lose ${chipOnTable[who]} chips<br>your cards are:<br>${cardList}<br>Value: ${player[who].value}`;
+  } else if (player[who].value === 21) {
+    player[who].stand = true;
+    cardContainer.innerHTML = `WoW you get 21!<br>You bet ${chipOnTable[who]} chips<br>your cards are:<br>${cardList}<br>Value: ${player[who].value}`;
+  } else {
+    cardContainer.innerHTML = `You bet ${chipOnTable[who]} chips<br>your cards are:<br>${cardList}<br>Value: ${player[who].value}`;
+  }
+
+  playerTable.append(cardContainer);
   passPlayerRound();
 };
 
@@ -211,8 +283,8 @@ var aceVariation = function (who) {
 var hit = function () {
   dealCard(playerRound);
   calValue(playerRound);
-  renewPlayerTable();
-  genCardAndCompareValue();
+  renewPlayerTable(playerRound);
+  genCardAndCompareValue(playerRound);
   if (playerRound === player.length) {
     dealerTurn();
   } else {
@@ -337,6 +409,11 @@ var dealCard = function (who) {
   player[who].card.push(cardDealt);
 };
 
+var renewPlayerTable = function (who) {
+  let playerTable = document.querySelector(`#player${who}Table`);
+  playerTable.innerHTML = `<center><font size="5">${player[who].name}</font></center><center>Chips: ${player[who].chip}</center>`;
+};
+
 var createDeck = function () {
   let suits = ["♦", "♣", "♥", "♠"];
   for (let i = 0; i < 4; i++) {
@@ -385,7 +462,9 @@ var endGameCal = function () {
 
 var again = function () {
   computerTable.innerHTML = ``;
-  renewPlayerTable();
+  for (let i = 0; i < player.length; i++) {
+    renewPlayerTable(i);
+  }
   againButton.style.visibility = "hidden";
   quitButton.style.visibility = "hidden";
   main();
@@ -393,21 +472,11 @@ var again = function () {
 
 var quit = function () {
   computerTable.innerHTML = ``;
-  renewPlayerTable();
+  for (let i = 1; i < player.length; i++) {
+    renewPlayerTable(i);
+  }
   gameInstruct.innerHTML = "Welcome, who wants to play BlackJack?";
   mainMenu.style.visibility = "visible";
   againButton.style.visibility = "hidden";
   quitButton.style.visibility = "hidden";
-};
-
-var renewPlayerTable = function () {
-  for (let i = playerRound; i < player.length; i++) {
-    let playerTable = document.querySelector(`#player${i}Table`);
-    playerTable.innerHTML = `<center><font size="5">${player[i].name}</font></center><center>Chips: ${player[i].chip}</center>`;
-  }
-
-  for (let i = 0; i < 7 - player.length; i++) {
-    let playerTable = document.querySelector(`#player${6 - i}Table`);
-    playerTable.innerHTML = ``;
-  }
 };
