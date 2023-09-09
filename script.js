@@ -1,5 +1,4 @@
-//18.5 hours
-//2230
+//23.5 hours
 
 //logic need to add
 
@@ -16,8 +15,6 @@ var deck = [];
 var chipOnTable = [0];
 var playerRound = 1;
 var time = 0;
-//splitProcess 0 means firstRound not completed, 1 means firstRound completed, 2 means secondRound completed.
-var splitProcess = 2;
 var splitPlayerAskIndex = [false];
 
 var addPlayer = function (playerName) {
@@ -116,7 +113,7 @@ var makeBetButton = function () {
     let betChips = document.createElement("input");
     let betButton = document.createElement("button");
     betChips.type = "number";
-    betChips.value = 1;
+    betChips.value = player[i].chip / 2;
     betChips.min = 1;
     betChips.max = player[i].chip;
     betChips.classList.add("betChips");
@@ -148,8 +145,6 @@ var bet = function (betChips, who) {
       break;
     }
   }
-  let betContainer = document.querySelector(`#bet${who}Container`);
-  betContainer.innerHTML = `Chips: ${chipOnTable[who]}`;
   if (check) {
     inGame();
   }
@@ -159,14 +154,15 @@ var inGame = function () {
   let splitAskList = ``;
   createDeck();
   shuffleDeck();
-  dealCard(0, player[0].card);
-  dealCard(0, player[0].card);
+  dealCard(player[0].card);
+  dealCard(player[0].card);
   computerTable.innerHTML = `<center>Computer Hand.</center><center>${player[0].card[0].name}🂠</center>`;
   for (let i = 1; i < player.length; i++) {
-    dealCard(i, player[i].card);
-    dealCard(i, player[i].card);
+    // let betContainer = document.querySelector(`#bet${who}Container`);
+    // betContainer.innerHTML = `Chips: ${chipOnTable[who]}`;
+    dealCard(player[i].card);
+    dealCard(player[i].card);
     calValue(i);
-    // calSplitValue(i);
     if (player[i].card[0].rank === player[i].card[1].rank) {
       splitPlayerAskIndex[i] = true;
       splitAskList += player[i].name + ` `;
@@ -200,9 +196,14 @@ var splitPlayerAsk = function () {
       dontButton.classList.add("#betButton");
       dontButton.innerHTML = `Dont!`;
       splitButton.addEventListener("click", function () {
-        processSpliting(true, i);
-        splitButton.disabled = true;
-        dontButton.disabled = true;
+        if (player[i].chip < chipOnTable[i]) {
+          gameInstruct.innerHTML = `${player[i].name}, you don't have enough chips.<br>You cannot split`;
+          splitButton.disabled = true;
+        } else {
+          processSpliting(true, i);
+          splitButton.disabled = true;
+          dontButton.disabled = true;
+        }
       });
       dontButton.addEventListener("click", function () {
         processSpliting(false, i);
@@ -219,8 +220,12 @@ var processSpliting = function (split, who) {
     player[who].splitCard = [];
     player[who].splitCard.push(player[who].card.pop());
     player[who].splitValue = 0;
-    player[who].splitWinLoss = "";
+    player[who].splitWinLose = "";
+    player[who].splitStand = false;
     player[who].chip -= chipOnTable[who];
+    chipOnTable[who] *= 2;
+    // let betContainer = document.querySelector(`#bet${who}Container`);
+    // betContainer.innerHTML = `Chips: ${chipOnTable[who]}`;
   }
 
   splitPlayerAskIndex[who] = false;
@@ -229,33 +234,33 @@ var processSpliting = function (split, who) {
       return a === false;
     })
   ) {
-    for (let i = 0; i < player.length; i++) {
+    for (let i = 1; i < player.length; i++) {
       if (player[i].card.length === 1) {
-        dealCard(i, player[i].card);
-        dealCard(i, player[i].split);
+        dealCard(player[i].card);
+        dealCard(player[i].splitCard);
         calValue(i);
+        calSplitValue(i);
         renewPlayerTable(i);
+        genCardAndCompareValue(i);
       }
     }
-    genCardAndCompareValue();
-
     passPlayerRound();
     hitButton.style.visibility = "visible";
     standButton.style.visibility = "visible";
-    if (playerRound === player.length && splitProcess === 2) {
+    if (playerRound === player.length) {
       dealerTurn();
     }
   }
+  gameInstruct.innerHTML = `${player[playerRound].name}, it's your turn. You hit or stand?`;
 };
 
-// splitRound?
 var passPlayerRound = function () {
   for (let i = playerRound; i < player.length; i++) {
-    if ("splitCard" in player[i] && player[i].splitValue < 21) {
-      splitProcess = 1;
-      break;
-    }
     if (player[i].stand === false) {
+      gameInstruct.innerHTML = `${player[playerRound].name}, it's your turn. You hit or stand?`;
+      break;
+    } else if (player[i].splitStand === false) {
+      gameInstruct.innerHTML = `${player[playerRound].name}, it's your turn for your second hand. You hit or stand?`;
       break;
     } else {
       playerRound += 1;
@@ -279,24 +284,24 @@ var genCardAndCompareValue = function (who) {
     player[who].stand = true;
     cardContainer.innerHTML = `WoW you get 21!<br> your cards are:<br>${cardList}<br>Value: ${player[who].value}`;
   } else {
-    cardContainer.innerHTML = `<br>your cards are:<br>${cardList}<br>Value: ${player[who].value}`;
+    cardContainer.innerHTML = `your cards are:<br>${cardList}<br>Value: ${player[who].value}`;
   }
 
   if ("splitCard" in player[who]) {
-    let splitCardList;
+    let splitCardList = "";
     for (let i = 0; i < player[who].splitCard.length; i++) {
       splitCardList += player[who].splitCard[i].name;
     }
-    aceVariation(who);
+    aceSplitVariation(who);
     if (player[who].splitValue > 21) {
       player[who].splitWinLose = "lose";
-      splitProcess = 2;
-      cardContainer.innerHTML += `<br>Second hand cards are:${splitCardList}<br>${player[who].splitValue}`;
+      player[who].splitStand = true;
+      cardContainer.innerHTML += `<br>Second hand is busted!<br>Cards are:${splitCardList}<br>Value :${player[who].splitValue}`;
     } else if (player[who].splitValue === 21) {
-      splitProcess = 2;
-      cardContainer.innerHTML += `<br>Second hand cards are:${splitCardList}<br>${player[who].splitValue}`;
+      player[who].splitStand = true;
+      cardContainer.innerHTML += `<br>Second hand get 21!<br>Cards are:${splitCardList}<br>Value :${player[who].splitValue}`;
     } else {
-      cardContainer.innerHTML += `<br>Second hand cards are:${splitCardList}<br>${player[who].splitValue}`;
+      cardContainer.innerHTML += `<br>Second hand cards are:${splitCardList}<br>Value :${player[who].splitValue}`;
     }
   }
   playerTable.append(cardContainer);
@@ -319,22 +324,35 @@ var aceSplitVariation = function (who) {
 };
 
 var hit = function () {
-  dealCard(playerRound, player[playerRound].card);
-  calValue(playerRound);
+  if (
+    player[playerRound].splitStand === false &&
+    player[playerRound].stand === true
+  ) {
+    dealCard(player[playerRound].splitCard);
+    calSplitValue(playerRound);
+  } else {
+    dealCard(player[playerRound].card);
+    calValue(playerRound);
+  }
   renewPlayerTable(playerRound);
   genCardAndCompareValue(playerRound);
   passPlayerRound();
-  if (playerRound === player.length && splitProcess === 2) {
+  if (playerRound === player.length) {
     dealerTurn();
-  } else {
-    gameInstruct.innerHTML = `${player[playerRound].name}, it's your turn. You hit or stand?`;
   }
 };
 
 var stand = function () {
-  player[playerRound].stand = true;
+  if (
+    player[playerRound].splitStand === false &&
+    player[playerRound].stand === true
+  ) {
+    player[playerRound].splitStand = true;
+  } else {
+    player[playerRound].stand = true;
+  }
   passPlayerRound();
-  if (playerRound === player.length && splitProcess === 2) {
+  if (playerRound === player.length) {
     dealerTurn();
   } else {
     gameInstruct.innerHTML = `${player[playerRound].name}, it's your turn. You hit or stand?`;
@@ -348,10 +366,30 @@ var dealerTurn = function () {
   gameInstruct.innerHTML = `Dealer turn!`;
   computerTable.innerHTML = `<center>${player[0].card[0].name}${player[0].card[1].name}</center><center>Value: ${player[0].value}</center>`;
 
+  let checkSplit = false;
+  for (let i = 0; i < player.length; i++) {
+    if ("splitCard" in player) {
+      checkSplit = true;
+      break;
+    }
+  }
+
   if (
-    player.every(function (a) {
+    (player.every(function (a) {
       return a.winLose === "lose";
-    })
+    }) &&
+      checkSplit === false) ||
+    (player.every(function (a) {
+      return a.winLose === "lose";
+    }) &&
+      checkSplit === true &&
+      player.every(function (a) {
+        if ("splitCard" in player) {
+          return a.splitWinLose;
+        } else {
+          return "lose";
+        }
+      }))
   ) {
     setTimeout(() => {
       gameInstruct.innerHTML = `Everyone is busted! Everyone lose!`;
@@ -360,12 +398,11 @@ var dealerTurn = function () {
       againButton.style.visibility = "visible";
       quitButton.style.visibility = "visible";
     }, (time += 3000));
-
     return;
   }
 
   while (player[0].value < 17) {
-    dealCard(0, player[0].card);
+    dealCard(player[0].card);
     calValue(0);
     aceVariation(0);
     let cardList = ``;
@@ -388,9 +425,12 @@ var dealerTurn = function () {
       if (player[i].winLose === "") {
         player[i].winLose = "win";
       }
+      if (player[i].splitWinLose === "") {
+        player[i].splitWinLose = "win";
+      }
     }
     setTimeout(() => {
-      gameInstruct.innerHTML = `Dealer is busted! Everyone who did not busted win!`;
+      gameInstruct.innerHTML = `Dealer is busted! Every hand which did not busted win!`;
     }, (time += 3000));
   }
   setTimeout(() => {
@@ -403,20 +443,56 @@ var dealerTurn = function () {
 
 var compareValueAddChips = function () {
   let loserIndex = [];
+
   for (let i = 1; i < player.length; i++) {
     let playerTable = document.querySelector(`#player${i}Table`);
+
+    if (player[i].winLose === "" && player[i].value === player[0].value) {
+      player[i].winLose === "tie";
+    } else if (player[i].winLose === "" && player[i].value > player[0].value) {
+      player[i].winLose = "win";
+    } else if (player[i].winLose === "" && player[i].value < player[0].value) {
+      player[i].winLose = "lose";
+    }
     if (
-      (player[i].winLose === "" && player[i].value > player[0].value) ||
-      player[i].winLose === "win"
+      player[i].splitWinLose === "" &&
+      player[i].splitValue === player[0].splitValue
+    ) {
+      player[i].splitWinLose === "tie";
+    } else if (
+      player[i].splitWinLose === "" &&
+      player[i].splitValue > player[0].splitValue
+    ) {
+      player[i].splitWinLose = "win";
+    } else if (
+      player[i].splitWinLose === "" &&
+      player[i].splitValue < player[0].splitValue
+    ) {
+      player[i].splitWinLose = "lose";
+    }
+
+    if (player[i].winLose === "win" && player[i].splitWinLose === "win") {
+      player[i].chip += chipOnTable[i] * 4;
+      playerTable.innerHTML = `<center>Congrats! ${
+        player[i].name
+      }.</center>You win ${chipOnTable[i] * 2} chips, now you have ${
+        player[i].chip
+      } chips.`;
+    } else if (
+      (player[i].splitWinLose === "tie" && player[i].winLose === "win") ||
+      (player[i].splitWinLose === "win" && player[i].winLose === "tie") ||
+      (player[i].splitWinLose === undefined && player[i].winLose === "win")
     ) {
       player[i].chip += chipOnTable[i] * 2;
       playerTable.innerHTML = `<center>Congrats! ${player[i].name}.</center>You win ${chipOnTable[i]} chips, now you have ${player[i].chip} chips.`;
     } else if (
-      player[i].winLose === "" &&
-      player[i].value === player[0].value
+      (player[i].splitWinLose === undefined && player[i].winLose === "tie") ||
+      (player[i].splitWinLose === "lose" && player[i].winLose === "win") ||
+      (player[i].splitWinLose === "tie" && player[i].winLose === "tie") ||
+      (player[i].splitWinLose === "win" && player[i].winLose === "loss")
     ) {
       player[i].chip += chipOnTable[i];
-      playerTable.innerHTML = `<center>It's a tie! ${player[i].name}.</center>You have returned ${chipOnTable[i]} chips, now you have ${player[i].chip} chips.`;
+      playerTable.innerHTML = `<center>It's a tie! ${player[i].name}.</center>You take back ${chipOnTable[i]} chips, now you have ${player[i].chip} chips.`;
     } else {
       playerTable.innerHTML = `<center>Oh! ${player[i].name}.</center>You lose ${chipOnTable[i]} chips, now you have ${player[i].chip} chips.`;
       if (player[i].chip === 0) {
@@ -456,8 +532,9 @@ var calSplitValue = function (who) {
   }
 };
 
-var dealCard = function (who, card) {
+var dealCard = function (card) {
   let cardDealt = deck.pop();
+
   card.push(cardDealt);
 };
 
@@ -506,6 +583,12 @@ var endGameCal = function () {
     player[i].card = [];
     player[i].stand = false;
     player[i].winLose = "";
+    if ("splitCard" in player) {
+      delete player[i].splitCard;
+      delete player[i].splitValue;
+      delete player[i].splitWinLose;
+      delete player[i].splitStand;
+    }
   }
   chipOnTable = [0];
   playerRound = 1;
@@ -514,7 +597,7 @@ var endGameCal = function () {
 
 var again = function () {
   computerTable.innerHTML = ``;
-  for (let i = 0; i < player.length; i++) {
+  for (let i = 1; i < player.length; i++) {
     renewPlayerTable(i);
   }
   againButton.style.visibility = "hidden";
