@@ -108,12 +108,21 @@ var calcScoresPlayer = function () {
   }
 };
 
-var pushCardsIntoResultsArray = function () {
-  var dealerOutput = `Dealer's Hand:<br>`;
-  var playerOutput = `Player's Hand:<br>`;
-  for (var i = 0; i < computerCardArray.length; i += 1) {
-    var computerCardString = `${computerCardArray[i].suit} of ${computerCardArray[i].name}`;
-    dealerOutput += `${computerCardString} <br>`;
+var outputHandsMsg = function () {
+  var dealerOutput = `<b>Dealer's Hand:</b><br>`;
+  var playerOutput = `<b>Player's Hand:</b><br>`;
+
+  if (gameMode == determineWinner) {
+    for (var i = 0; i < computerCardArray.length; i += 1) {
+      var computerCardString = `${computerCardArray[i].suit} of ${computerCardArray[i].name}`;
+      dealerOutput += `${computerCardString} <br>`;
+    }
+  } else {
+    for (var i = 1; i < computerCardArray.length; i += 1) {
+      dealerOutput = `<b>Dealer's Hand:</b><br> <i>UNKNOWN Card</i> <br>`;
+      var computerCardString = `${computerCardArray[i].suit} of ${computerCardArray[i].name}`;
+      dealerOutput += `${computerCardString} <br>`;
+    }
   }
   for (var j = 0; j < playerCardArray.length; j += 1) {
     var playerCardString = `${playerCardArray[j].suit} of ${playerCardArray[j].name}`;
@@ -172,14 +181,16 @@ var main = function (input) {
     //end game if either player or computer hits 21 straightaway
     calcScoresComputer();
     calcScoresPlayer();
-    var handOutput = pushCardsIntoResultsArray();
-    if (computerCardScore == 21 || playerCardScore == 21) {
+    var handOutput = outputHandsMsg();
+    if (playerCardScore == 21) {
+      gameMode = "determine winner";
+      handOutput = outputHandsMsg();
       var findWinner = determineWinner();
       resetGame();
       return `${findWinner} <br><br> ${handOutput}`;
     }
     gameMode = "post initial draw";
-    return `${handOutput} <br> Player's Score: ${playerCardScore} <br> Dealer's Score: ${computerCardScore} <br><br> Do you want to "hit" or "stand"?`;
+    return `${handOutput} <br> Dealer's Score: <i>UNKNOWN</i><br> Player's Score: ${playerCardScore} <br><br> Do you want to "hit" or "stand"?`;
   }
   if (gameMode == "post initial draw") {
     gameMode = input;
@@ -212,13 +223,13 @@ var main = function (input) {
 
   if (gameMode == "determine winner") {
     //calcuate the scores and see who wins
-    handOutput = pushCardsIntoResultsArray();
+    handOutput = outputHandsMsg();
     findWinner = determineWinner();
 
     //reset game
     resetGame();
 
     //output
-    return `${handOutput} <br> Player's Score: ${playerCardScore} <br> Dealer's Score: ${computerCardScore} <br><br> ${findWinner}`;
+    return `${handOutput} <br> Dealer's Score: ${computerCardScore} <br> Player's Score: ${playerCardScore} <br><br> ${findWinner}`;
   }
 };
