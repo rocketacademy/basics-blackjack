@@ -69,7 +69,9 @@ button {
   }
 }
 
-.playerArea {
+#player1Table {
+  top: 10px;
+  left: -50px;
   position: absolute;
   width: 150px;
   height: 150px;
@@ -78,33 +80,71 @@ button {
   outline-color: black;
 }
 
-#player1Table {
-  top: 10px;
-  left: -50px;
-}
-
 #player2Table {
   top: 180px;
   left: 50px;
+  position: absolute;
+  width: 150px;
+  height: 150px;
+  outline-style: solid;
+  outline-width: 5px;
+  outline-color: black;
 }
 #player3Table {
   bottom: -120px;
   left: 220px;
+  position: absolute;
+  width: 150px;
+  height: 150px;
+  outline-style: solid;
+  outline-width: 5px;
+  outline-color: black;
 }
 
 #player4Table {
   bottom: -120px;
   right: 220px;
+  position: absolute;
+  width: 150px;
+  height: 150px;
+  outline-style: solid;
+  outline-width: 5px;
+  outline-color: black;
 }
 
 #player5Table {
   top: 180px;
   right: 50px;
+  position: absolute;
+  width: 150px;
+  height: 150px;
+  outline-style: solid;
+  outline-width: 5px;
+  outline-color: black;
 }
 
 #player6Table {
   top: 10px;
   right: -50px;
+  position: absolute;
+  width: 150px;
+  height: 150px;
+  outline-style: solid;
+  outline-width: 5px;
+  outline-color: black;
+}
+
+#bet1Container,
+#bet2Container,
+#bet3Container,
+#bet4Container,
+#bet5Container,
+#bet6Container {
+  position: absolute;
+  width: 100px;
+  margin-left: -50px;
+  left: 50%;
+  top: -30px;
 }
 
 .deleteButton {

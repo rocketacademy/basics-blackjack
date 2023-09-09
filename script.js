@@ -16,6 +16,8 @@ var deck = [];
 var chipOnTable = [0];
 var playerRound = 1;
 var time = 0;
+//splitProcess 0 means firstRound not completed, 1 means firstRound completed, 2 means secondRound completed.
+var splitProcess = 2;
 var splitPlayerAskIndex = [false];
 
 var addPlayer = function (playerName) {
@@ -146,7 +148,8 @@ var bet = function (betChips, who) {
       break;
     }
   }
-
+  let betContainer = document.querySelector(`#bet${who}Container`);
+  betContainer.innerHTML = `Chips: ${chipOnTable[who]}`;
   if (check) {
     inGame();
   }
@@ -156,13 +159,14 @@ var inGame = function () {
   let splitAskList = ``;
   createDeck();
   shuffleDeck();
-  dealCard(0);
-  dealCard(0);
+  dealCard(0, player[0].card);
+  dealCard(0, player[0].card);
   computerTable.innerHTML = `<center>Computer Hand.</center><center>${player[0].card[0].name}🂠</center>`;
   for (let i = 1; i < player.length; i++) {
-    dealCard(i);
-    dealCard(i);
+    dealCard(i, player[i].card);
+    dealCard(i, player[i].card);
     calValue(i);
+    // calSplitValue(i);
     if (player[i].card[0].rank === player[i].card[1].rank) {
       splitPlayerAskIndex[i] = true;
       splitAskList += player[i].name + ` `;
@@ -179,7 +183,7 @@ var inGame = function () {
   standButton.style.visibility = "visible";
 
   passPlayerRound();
-  if (playerRound === player.length) {
+  if (playerRound === player.length && splitProcess === 2) {
     dealerTurn();
   }
   gameInstruct.innerHTML = `${player[playerRound].name}, it's your turn. You hit or stand?`;
@@ -196,12 +200,12 @@ var splitPlayerAsk = function () {
       dontButton.classList.add("#betButton");
       dontButton.innerHTML = `Dont!`;
       splitButton.addEventListener("click", function () {
-        splitProcess(true, i);
+        processSpliting(true, i);
         splitButton.disabled = true;
         dontButton.disabled = true;
       });
       dontButton.addEventListener("click", function () {
-        splitProcess(false, i);
+        processSpliting(false, i);
         splitButton.disabled = true;
         dontButton.disabled = true;
       });
@@ -210,36 +214,47 @@ var splitPlayerAsk = function () {
   }
 };
 
-// var splitProcess = function (split, who) {
-//   if (split) {
+var processSpliting = function (split, who) {
+  if (split) {
+    player[who].splitCard = [];
+    player[who].splitCard.push(player[who].card.pop());
+    player[who].splitValue = 0;
+    player[who].splitWinLoss = "";
+    player[who].chip -= chipOnTable[who];
+  }
 
-//   }
+  splitPlayerAskIndex[who] = false;
+  if (
+    splitPlayerAskIndex.every(function (a) {
+      return a === false;
+    })
+  ) {
+    for (let i = 0; i < player.length; i++) {
+      if (player[i].card.length === 1) {
+        dealCard(i, player[i].card);
+        dealCard(i, player[i].split);
+        calValue(i);
+        renewPlayerTable(i);
+      }
+    }
+    genCardAndCompareValue();
 
-//   splitPlayerAskIndex[who] = false;
-//   if (
-//     splitPlayerAskIndex.every(function (a) {
-//       return a === false;
-//     })
-//   ) {
-//     for (let i = 0; i < player.length; i++) {
-//       if (player[i].card.length === 1) {
-//         dealCard(i);
-//         calValue(i);
-//       }
-//     }
-//     renewPlayerTable();
-//     genCardAndCompareValue();
-//     passPlayerRound();
-//     hitButton.style.visibility = "visible";
-//     standButton.style.visibility = "visible";
-//     if (playerRound === player.length) {
-//       dealerTurn();
-//     }
-//   }
-// };
+    passPlayerRound();
+    hitButton.style.visibility = "visible";
+    standButton.style.visibility = "visible";
+    if (playerRound === player.length && splitProcess === 2) {
+      dealerTurn();
+    }
+  }
+};
 
+// splitRound?
 var passPlayerRound = function () {
   for (let i = playerRound; i < player.length; i++) {
+    if ("splitCard" in player[i] && player[i].splitValue < 21) {
+      splitProcess = 1;
+      break;
+    }
     if (player[i].stand === false) {
       break;
     } else {
@@ -255,21 +270,36 @@ var genCardAndCompareValue = function (who) {
   for (let i = 0; i < player[who].card.length; i++) {
     cardList += player[who].card[i].name;
   }
-
   aceVariation(who);
   if (player[who].value > 21) {
     player[who].winLose = "lose";
     player[who].stand = true;
-    cardContainer.innerHTML = `OH! You Bust! You lose ${chipOnTable[who]} chips<br>your cards are:<br>${cardList}<br>Value: ${player[who].value}`;
+    cardContainer.innerHTML = `OH! You Bust! <br>your cards are:<br>${cardList}<br>Value: ${player[who].value}`;
   } else if (player[who].value === 21) {
     player[who].stand = true;
-    cardContainer.innerHTML = `WoW you get 21!<br>You bet ${chipOnTable[who]} chips<br>your cards are:<br>${cardList}<br>Value: ${player[who].value}`;
+    cardContainer.innerHTML = `WoW you get 21!<br> your cards are:<br>${cardList}<br>Value: ${player[who].value}`;
   } else {
-    cardContainer.innerHTML = `You bet ${chipOnTable[who]} chips<br>your cards are:<br>${cardList}<br>Value: ${player[who].value}`;
+    cardContainer.innerHTML = `<br>your cards are:<br>${cardList}<br>Value: ${player[who].value}`;
   }
 
+  if ("splitCard" in player[who]) {
+    let splitCardList;
+    for (let i = 0; i < player[who].splitCard.length; i++) {
+      splitCardList += player[who].splitCard[i].name;
+    }
+    aceVariation(who);
+    if (player[who].splitValue > 21) {
+      player[who].splitWinLose = "lose";
+      splitProcess = 2;
+      cardContainer.innerHTML += `<br>Second hand cards are:${splitCardList}<br>${player[who].splitValue}`;
+    } else if (player[who].splitValue === 21) {
+      splitProcess = 2;
+      cardContainer.innerHTML += `<br>Second hand cards are:${splitCardList}<br>${player[who].splitValue}`;
+    } else {
+      cardContainer.innerHTML += `<br>Second hand cards are:${splitCardList}<br>${player[who].splitValue}`;
+    }
+  }
   playerTable.append(cardContainer);
-  passPlayerRound();
 };
 
 var aceVariation = function (who) {
@@ -280,12 +310,21 @@ var aceVariation = function (who) {
   }
 };
 
+var aceSplitVariation = function (who) {
+  for (let j = 0; j < player[who].splitCard.length; j++) {
+    if (player[who].splitCard[j].rank === 1 && player[who].splitValue > 21) {
+      player[who].splitValue -= 10;
+    }
+  }
+};
+
 var hit = function () {
-  dealCard(playerRound);
+  dealCard(playerRound, player[playerRound].card);
   calValue(playerRound);
   renewPlayerTable(playerRound);
   genCardAndCompareValue(playerRound);
-  if (playerRound === player.length) {
+  passPlayerRound();
+  if (playerRound === player.length && splitProcess === 2) {
     dealerTurn();
   } else {
     gameInstruct.innerHTML = `${player[playerRound].name}, it's your turn. You hit or stand?`;
@@ -295,7 +334,7 @@ var hit = function () {
 var stand = function () {
   player[playerRound].stand = true;
   passPlayerRound();
-  if (playerRound === player.length) {
+  if (playerRound === player.length && splitProcess === 2) {
     dealerTurn();
   } else {
     gameInstruct.innerHTML = `${player[playerRound].name}, it's your turn. You hit or stand?`;
@@ -326,7 +365,7 @@ var dealerTurn = function () {
   }
 
   while (player[0].value < 17) {
-    dealCard(0);
+    dealCard(0, player[0].card);
     calValue(0);
     aceVariation(0);
     let cardList = ``;
@@ -404,9 +443,22 @@ var calValue = function (who) {
   }
 };
 
-var dealCard = function (who) {
+var calSplitValue = function (who) {
+  player[who].splitValue = 0;
+  for (let i = 0; i < player[who].splitCard.length; i++) {
+    if (player[who].splitCard[i].rank >= 11) {
+      player[who].splitValue += 10;
+    } else if (player[who].splitCard[i].rank === 1) {
+      player[who].splitValue += 11;
+    } else {
+      player[who].splitValue += player[who].splitCard[i].rank;
+    }
+  }
+};
+
+var dealCard = function (who, card) {
   let cardDealt = deck.pop();
-  player[who].card.push(cardDealt);
+  card.push(cardDealt);
 };
 
 var renewPlayerTable = function (who) {
