@@ -114,18 +114,18 @@ var outputHandsMsg = function () {
 
   if (gameMode == "determine winner") {
     for (var i = 0; i < computerCardArray.length; i += 1) {
-      var computerCardString = `${computerCardArray[i].suit} of ${computerCardArray[i].name}`;
+      var computerCardString = `${computerCardArray[i].name} of ${computerCardArray[i].suit}`;
       dealerOutput += `${computerCardString} <br>`;
     }
   } else {
     for (var i = 1; i < computerCardArray.length; i += 1) {
       dealerOutput = `<b>Dealer's Hand:</b><br> * of *<br>`;
-      var computerCardString = `${computerCardArray[i].suit} of ${computerCardArray[i].name}`;
+      var computerCardString = `${computerCardArray[i].name} of ${computerCardArray[i].suit}`;
       dealerOutput += `${computerCardString} <br>`;
     }
   }
   for (var j = 0; j < playerCardArray.length; j += 1) {
-    var playerCardString = `${playerCardArray[j].suit} of ${playerCardArray[j].name}`;
+    var playerCardString = `${playerCardArray[j].name} of ${playerCardArray[j].suit}`;
     playerOutput += `${playerCardString} <br>`;
   }
   return `${dealerOutput} <br> ${playerOutput}`;
@@ -194,25 +194,19 @@ var checkIfBlackJackStart = function () {
   return `${handOutput} <br> ${dealerPlayerScores} <br><br> Do you want to "hit" or "stand"?`;
 };
 
-var playHitMode = function () {
+var playHitMode = function (lastDrawnPlayerCard) {
+  var handOutput = outputHandsMsg();
+  var playerDealerHands = `You drew ${lastDrawnPlayerCard.name} of ${lastDrawnPlayerCard.suit}.<br><br>${handOutput}<br>Dealer's Score: ???<br> Player's Score: ${playerCardScore}`;
   if (playerCardScore > 21 || playerCardScore == 21) {
     gameMode = "stand";
-    handOutput = outputHandsMsg();
     if (playerCardScore > 21) {
-      return `You drew ${
-        playerCardArray[playerCardArray.length - 1].name
-      }.<br><br>${handOutput}<br>Dealer's Score: ???<br> Player's Score: ${playerCardScore}<br><br>You've busted your cards. Let's see who wins~`;
+      return `${playerDealerHands}<br><br>You've busted your cards. Let's see who wins~`;
     } else if (playerCardScore == 21) {
-      return `You drew ${
-        playerCardArray[playerCardArray.length - 1].name
-      }.<br><br>${handOutput}<br>Dealer's Score: ???<br> Player's Score: ${playerCardScore}<br><br>You've gotten a BLACKJACK!<br><br>Let's see the dealer's cards~`;
+      return `${playerDealerHands}<br><br>You've gotten a BLACKJACK!<br><br>Let's see the dealer's cards~`;
     }
   } else {
     gameMode = "post initial draw";
-    handOutput = outputHandsMsg();
-    return `You drew ${
-      playerCardArray[playerCardArray.length - 1].name
-    }.<br><br>${handOutput}<br>Dealer's Score: ???<br> Player's Score: ${playerCardScore}<br><br>Do you want to "hit" or "stand"?`;
+    return `${playerDealerHands}<br><br>Do you want to "hit" or "stand"?`;
   }
 };
 
@@ -228,9 +222,10 @@ var main = function (input) {
   }
 
   if (gameMode == "hit") {
-    playerCardArray.push(cardDeck.pop());
+    var lastDrawnPlayerCard = cardDeck.pop();
+    playerCardArray.push(lastDrawnPlayerCard);
     calcScoresPlayer();
-    var startHitMode = playHitMode();
+    var startHitMode = playHitMode(lastDrawnPlayerCard);
     return startHitMode;
   }
 
