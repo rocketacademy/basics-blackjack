@@ -173,51 +173,65 @@ var shuffleAndIssueTwoCards = function () {
   }
 };
 
+var startNewGame = function () {
+  makeDeck();
+  shuffleAndIssueTwoCards();
+  calcScoresComputer();
+  calcScoresPlayer();
+};
+
+var checkIfBlackJackStart = function () {
+  var dealerPlayerScores = `Dealer's Score: ???<br> Player's Score: ${playerCardScore}`;
+  var handOutput = outputHandsMsg();
+  if (playerCardScore == 21) {
+    gameMode = "determine winner";
+    handOutput = outputHandsMsg();
+    var findWinner = determineWinner();
+    resetGame();
+    return `${findWinner} <br><br> ${handOutput}`;
+  }
+  gameMode = "post initial draw";
+  return `${handOutput} <br> ${dealerPlayerScores} <br><br> Do you want to "hit" or "stand"?`;
+};
+
+var playHitMode = function () {
+  if (playerCardScore > 21 || playerCardScore == 21) {
+    gameMode = "stand";
+    handOutput = outputHandsMsg();
+    if (playerCardScore > 21) {
+      return `You drew ${
+        playerCardArray[playerCardArray.length - 1].name
+      }.<br><br>${handOutput}<br>Dealer's Score: ???<br> Player's Score: ${playerCardScore}<br><br>You've busted your cards. Let's see who wins~`;
+    } else if (playerCardScore == 21) {
+      return `You drew ${
+        playerCardArray[playerCardArray.length - 1].name
+      }.<br><br>${handOutput}<br>Dealer's Score: ???<br> Player's Score: ${playerCardScore}<br><br>You've gotten a BLACKJACK!<br><br>Let's see the dealer's cards~`;
+    }
+  } else {
+    gameMode = "post initial draw";
+    handOutput = outputHandsMsg();
+    return `You drew ${
+      playerCardArray[playerCardArray.length - 1].name
+    }.<br><br>${handOutput}<br>Dealer's Score: ???<br> Player's Score: ${playerCardScore}<br><br>Do you want to "hit" or "stand"?`;
+  }
+};
+
 var main = function (input) {
   //if start of game, create a new shuffled deck and issue 2 cards each
   if (gameMode == "initial draw") {
-    makeDeck();
-    shuffleAndIssueTwoCards();
-    //end game if either player or computer hits 21 straightaway
-    calcScoresComputer();
-    calcScoresPlayer();
-    var handOutput = outputHandsMsg();
-    if (playerCardScore == 21) {
-      gameMode = "determine winner";
-      handOutput = outputHandsMsg();
-      var findWinner = determineWinner();
-      resetGame();
-      return `${findWinner} <br><br> ${handOutput}`;
-    }
-    gameMode = "post initial draw";
-    return `${handOutput} <br> Dealer's Score: ???<br> Player's Score: ${playerCardScore} <br><br> Do you want to "hit" or "stand"?`;
+    startNewGame();
+    var didPlayerBlackJack = checkIfBlackJackStart();
+    return didPlayerBlackJack;
   }
   if (gameMode == "post initial draw") {
     gameMode = input;
+  }
 
-    if (gameMode == "hit") {
-      playerCardArray.push(cardDeck.pop());
-      calcScoresPlayer();
-      if (playerCardScore > 21) {
-        gameMode = "stand";
-        handOutput = outputHandsMsg();
-        return `You drew ${
-          playerCardArray[playerCardArray.length - 1].name
-        }. <br><br> ${handOutput} <br> Dealer's Score: ???<br> Player's Score: ${playerCardScore} <br><br>You've busted your cards. Let's see who wins~`;
-      } else if (playerCardScore == 21) {
-        gameMode = "stand";
-        handOutput = outputHandsMsg();
-        return `You drew ${
-          playerCardArray[playerCardArray.length - 1].name
-        }. You've gotten a BLACKJACK! <br><br> ${handOutput} <br> Dealer's Score: ???<br> Player's Score: ${playerCardScore} <br><br>Let's see the dealer's cards~`;
-      } else {
-        gameMode = "post initial draw";
-        handOutput = outputHandsMsg();
-        return `You drew ${
-          playerCardArray[playerCardArray.length - 1].name
-        }.<br><br> ${handOutput} <br> Dealer's Score: ???<br> Player's Score: ${playerCardScore} <br><br> Do you want to "hit" or "stand"?`;
-      }
-    }
+  if (gameMode == "hit") {
+    playerCardArray.push(cardDeck.pop());
+    calcScoresPlayer();
+    var startHitMode = playHitMode();
+    return startHitMode;
   }
 
   if (gameMode == "stand") {
@@ -233,11 +247,7 @@ var main = function (input) {
     //calcuate the scores and see who wins
     handOutput = outputHandsMsg();
     findWinner = determineWinner();
-
-    //reset game
     resetGame();
-
-    //output
     return `${handOutput} <br> Dealer's Score: ${computerCardScore} <br> Player's Score: ${playerCardScore} <br><br> ${findWinner}`;
   }
 };
