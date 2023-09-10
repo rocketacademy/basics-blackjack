@@ -195,28 +195,43 @@ var calcScore = function (person) {
 };
 
 var blackJackCheck = function () {
-  if (player.score == 21 && dealer.score == 21) {
-    console.log("PLAYER AND DEALER BLACK JACKS. PUSH");
-  } else if (player.score == 21) {
-    console.log("PLAYER BLACKJACK");
-  } else if (dealer.score == 21) {
-    console.log("DEALER BLACKJACK");
+  if (player.score == 21 || dealer.score == 21) {
+    hideButtons();
+    var message = document.createElement("p");
+    if (player.score == 21 && dealer.score == 21) {
+      message.innerText = "PLAYER AND DEALER BLACK JACKS. PUSH";
+      console.log("PLAYER AND DEALER BLACK JACKS. PUSH");
+    } else if (player.score == 21) {
+      message.innerText = "PLAYER BLACKJACK";
+      console.log("PLAYER BLACKJACK");
+    } else if (dealer.score == 21) {
+      message.innerText = "DEALER BLACKJACK";
+      console.log("DEALER BLACKJACK");
+    }
+    document.querySelector("#container").appendChild(message);
   }
 };
 
 var gameOver = function () {
   hideButtons();
+  var message = document.createElement("p");
   if (player.score > 21) {
+    message.innerText = "PLAYER BUST";
     console.log("PLAYER BUST");
   } else if (dealer.score > 21) {
+    message.innerText = "DEALER BUST";
     console.log("DEALER BUST");
   } else if (player.score == dealer.score) {
+    message.innerText = "PUSH";
     console.log("PUSH");
   } else if (player.score > dealer.score) {
+    message.innerText = "PLAYER WINS";
     console.log("PLAYER WINS");
   } else if (player.score < dealer.score) {
+    message.innerText = "DEALER WINS";
     console.log("DEALER WINS");
   }
+  document.querySelector("#container").appendChild(message);
 };
 
 var playerDrawCard = function () {
@@ -225,8 +240,6 @@ var playerDrawCard = function () {
   var newCardImg = document.createElement("img");
   newCardImg.src = `cards/${newCard.imgSrc}.svg`;
   document.querySelector("#player-hand").appendChild(newCardImg);
-
-  // add card into player hand
 };
 
 var dealerDrawCard = function () {
@@ -285,9 +298,9 @@ var main = function (input) {
     calcScore(player);
     calcScore(dealer);
     output = `Player: ${player.cards[0].name} of ${player.cards[0].suit},${player.cards[1].name} of ${player.cards[1].suit}. ${player.score} <br>Dealer: ${dealer.cards[0].name} of ${dealer.cards[0].suit}, XX. ${dealer.cards[0].score}`;
-    blackJackCheck();
     showButtons();
     goButton.style.display = "none";
+    blackJackCheck();
   }
   return output;
 };
