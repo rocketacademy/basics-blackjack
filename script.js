@@ -78,10 +78,11 @@ var shuffleCards = function (cardDeck) {
   return cardDeck;
 };
 
+//calculate the score of the cards on computer's hand
 var calcScoresComputer = function () {
   computerCardScore = 0;
-  //calculate the score of the cards on computer's hand
   for (var j = 0; j < computerCardArray.length; j += 1) {
+    //if total card < 11 ace is 10 if not ace is 1
     if (computerCardArray[j].name == "ace" && computerCardScore < 11) {
       console.log(`Current Com Score = ${computerCardScore}`);
       computerCardArray[j].score = 11;
@@ -93,10 +94,11 @@ var calcScoresComputer = function () {
   }
 };
 
+//calculate the score of the cards on player's hand
 var calcScoresPlayer = function () {
-  //calculate the score of the cards on player's hand
   playerCardScore = 0;
   for (var k = 0; k < playerCardArray.length; k += 1) {
+    //if total card < 11 ace is 10 if not ace is 1
     if (playerCardArray[k].name == "ace" && playerCardScore < 11) {
       console.log(`Current Player Score = ${playerCardScore}`);
       playerCardArray[k].score = 11;
@@ -108,6 +110,7 @@ var calcScoresPlayer = function () {
   }
 };
 
+//run through each card array and return the card obj as strings
 var outputHandsMsg = function () {
   var dealerOutput = `<b>Dealer's Hand:</b><br>`;
   var playerOutput = `<b>Player's Hand:</b><br>`;
@@ -139,7 +142,7 @@ var determineWinner = function () {
   } else if (computerCardScore == 21) {
     whoWin = "BLACKJACK! Dealer wins!";
   } else if (
-    (playerCardScore > computerCardScore && playerCardScore < 22) ||
+    (playerCardScore > computerCardScore && playerCardScore < 22) || //check player not busted and if com busted
     (playerCardScore < 22 && computerCardScore > 21)
   ) {
     whoWin = "Player wins!";
@@ -161,9 +164,9 @@ var resetGame = function () {
   gameMode = "initial draw";
 };
 
+//first draw
 var shuffleAndIssueTwoCards = function () {
-  var shuffledDeck = shuffleCards(cardDeck);
-  //give out cards to computer and player and push into their arrays
+  var shuffledDeck = shuffleCards(cardDeck); //give out cards to computer and player and push into their arrays
   for (var i = 0; i < 4; i += 1) {
     if (i == 0 || i == 2) {
       computerCardArray.push(shuffledDeck.pop());
@@ -173,6 +176,7 @@ var shuffleAndIssueTwoCards = function () {
   }
 };
 
+//new game reset deck
 var startNewGame = function () {
   makeDeck();
   shuffleAndIssueTwoCards();
@@ -180,6 +184,7 @@ var startNewGame = function () {
   calcScoresPlayer();
 };
 
+//see if hit blackjack after first draw
 var checkIfBlackJackStart = function () {
   var dealerPlayerScores = `Dealer's Score: ???<br> Player's Score: ${playerCardScore}`;
   var handOutput = outputHandsMsg();
@@ -197,6 +202,7 @@ var checkIfBlackJackStart = function () {
 var playHitMode = function (lastDrawnPlayerCard) {
   var handOutput = outputHandsMsg();
   var playerDealerHands = `You drew ${lastDrawnPlayerCard.name} of ${lastDrawnPlayerCard.suit}.<br><br>${handOutput}<br>Dealer's Score: ???<br> Player's Score: ${playerCardScore}`;
+  //auto skip to stand if busted, auto skip to blackjack if 21
   if (playerCardScore > 21 || playerCardScore == 21) {
     gameMode = "stand";
     if (playerCardScore > 21) {
@@ -214,9 +220,10 @@ var main = function (input) {
   //if start of game, create a new shuffled deck and issue 2 cards each
   if (gameMode == "initial draw") {
     startNewGame();
-    var didPlayerBlackJack = checkIfBlackJackStart();
+    var didPlayerBlackJack = checkIfBlackJackStart(); //see if player win at first draw
     return didPlayerBlackJack;
   }
+  //choose hit or stand after first draw
   if (gameMode == "post initial draw") {
     gameMode = input;
   }
