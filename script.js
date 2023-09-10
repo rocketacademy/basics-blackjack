@@ -2,6 +2,11 @@
 Game rules are more like casino black jack
  */
 
+/*
+for gameover and blackjack scenarios, 
+run a function that adds/subtract from playerMoneyBalance, and update the html
+*/
+
 // make a shuffled deck
 var makeDeck = function () {
   var deck = [];
@@ -109,7 +114,7 @@ var sixDecks = shuffledDeckOne.concat(
 );
 
 // player starts with $1000
-var playerMoneyTotal = 1000;
+var playerMoneyBalance = 1000;
 var bet = 0;
 
 var dealer = {
@@ -194,6 +199,21 @@ var calcScore = function (person) {
   console.log(JSON.stringify(person, "", 2));
 };
 
+/*
+for gameover and blackjack scenarios, 
+run a function that adds/subtract from playerMoneyBalance, and update the html
+*/
+var updateBalance = function (outcome) {
+  if (outcome == "win") {
+    playerMoneyBalance += bet;
+  } else if (outcome == "big win") {
+    playerMoneyBalance += 1.5 * bet;
+  } else if (outcome == "lose") {
+    playerMoneyBalance -= bet;
+  }
+  document.querySelector("#player-balance").innerText = playerMoneyBalance;
+};
+
 var blackJackCheck = function () {
   if (player.score == 21 || dealer.score == 21) {
     hideButtons();
@@ -203,9 +223,11 @@ var blackJackCheck = function () {
       console.log("PLAYER AND DEALER BLACK JACKS. PUSH");
     } else if (player.score == 21) {
       message.innerText = "PLAYER BLACKJACK";
+      updateBalance("big win");
       console.log("PLAYER BLACKJACK");
     } else if (dealer.score == 21) {
       message.innerText = "DEALER BLACKJACK";
+      updateBalance("lose");
       console.log("DEALER BLACKJACK");
     }
     document.querySelector("#container").appendChild(message);
@@ -217,18 +239,22 @@ var gameOver = function () {
   var message = document.createElement("p");
   if (player.score > 21) {
     message.innerText = "PLAYER BUST";
+    updateBalance("lose");
     console.log("PLAYER BUST");
   } else if (dealer.score > 21) {
     message.innerText = "DEALER BUST";
+    updateBalance("win");
     console.log("DEALER BUST");
   } else if (player.score == dealer.score) {
     message.innerText = "PUSH";
     console.log("PUSH");
   } else if (player.score > dealer.score) {
     message.innerText = "PLAYER WINS";
+    updateBalance("win");
     console.log("PLAYER WINS");
   } else if (player.score < dealer.score) {
     message.innerText = "DEALER WINS";
+    updateBalance("lose");
     console.log("DEALER WINS");
   }
   document.querySelector("#container").appendChild(message);
