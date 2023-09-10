@@ -1,23 +1,5 @@
 /*
-
-player choose: hit or stand.
-if hit, draw card, player card total updates itself. loop back for player to choose.
-if player card total exceeds 21, BUST. player loses bet. end round.
-
-if player chooses stand,
-if dealer card total is less than 17, draw card until dealer card total is 17 or more.
-if dealer card total is 17 or more, expose all dealer's cards.
-if dealer card total exceeds 21, BUST. player wins bet. end round.
-if player card total = dealer card total, TIE. end round.
-if player card total > dealer card total, YOU WIN. player wins bet. end round.
-if player card total < dealer card total, DEALER WINS. player loses bet. end round.
-
-[if card rank = 1, and cardTotalValue doesn't exceed 21, count card value as 11.
-if card rank = 1, and cardTotalValue exceeds 21, count card value as 1.
-e.g.
-A,9. count as 11,9.
-5,9,A. count as 15.]
-
+Game rules are more like casino black jack
  */
 
 // make a shuffled deck
@@ -54,6 +36,46 @@ var makeDeck = function () {
   }
   return deck;
 };
+
+var fakeDeck = [
+  {
+    name: "ace",
+    rank: 1,
+    suit: "clubs",
+    score: 11,
+  },
+  {
+    name: "2",
+    rank: 2,
+    suit: "clubs",
+    score: 2,
+  },
+  {
+    name: "6",
+    rank: 6,
+    suit: "clubs",
+    score: 6,
+  },
+  {
+    name: "ace",
+    rank: 1,
+    suit: "clubs",
+    score: 11,
+  },
+  {
+    name: "10",
+    rank: 10,
+    suit: "clubs",
+    score: 10,
+  },
+  {
+    name: "ace",
+    rank: 1,
+    suit: "clubs",
+    score: 11,
+  },
+].reverse();
+
 var getRandomIndex = function (max) {
   return Math.floor(Math.random() * max);
 };
@@ -108,7 +130,7 @@ var output = "";
 // e.g.
 // A,9. count as 11,9.
 // 5,9,A. count as 15.]
-var calcScore = function (person) {
+var calcScoreOriginal = function (person) {
   person.score = 0;
   for (var i = 0; i < person.cards.length; i += 1) {
     person.score += person.cards[i].score;
@@ -126,6 +148,33 @@ var calcScore = function (person) {
     person.score += person.cards[i].score;
   }
   console.log(person.score);
+};
+
+var calcScore = function (person) {
+  var elevenCount = 0;
+  person.score = 0;
+  for (var i = 0; i < person.cards.length; i += 1) {
+    person.score += person.cards[i].score;
+    if (person.cards[i].score == 11) {
+      elevenCount += 1;
+    }
+  }
+  //console.log(JSON.stringify(person, "", 2));
+  // if score exceeds and there is still at least 1 ace that has score 11????
+  while (person.score > 21 && elevenCount > 0) {
+    for (var i = 0; i < person.cards.length; i += 1) {
+      if (person.cards[i].rank == 1 && person.cards[i].score == 11) {
+        person.cards[i].score = 1;
+        elevenCount -= 1;
+        break;
+      }
+    }
+    person.score = 0;
+    for (var i = 0; i < person.cards.length; i += 1) {
+      person.score += person.cards[i].score;
+    }
+  }
+  console.log(JSON.stringify(person, "", 2));
 };
 
 var blackJackCheck = function () {
@@ -153,7 +202,7 @@ var gameOver = function () {
 };
 
 var playerHit = function () {
-  player.cards.push(sixDecks.pop());
+  player.cards.push(fakeDeck.pop());
   calcScore(player);
   console.log(player.score);
   console.log(player.cards[player.cards.length - 1]);
@@ -187,10 +236,14 @@ var main = function (input) {
   } else {
     bet = input;
     // sequence of card drawing: player, dealer, player, dealer(face down).
-    player.cards.push(sixDecks.pop());
-    dealer.cards.push(sixDecks.pop());
-    player.cards.push(sixDecks.pop());
-    dealer.cards.push(sixDecks.pop());
+    // player.cards.push(sixDecks.pop());
+    // dealer.cards.push(sixDecks.pop());
+    // player.cards.push(sixDecks.pop());
+    // dealer.cards.push(sixDecks.pop());
+    player.cards.push(fakeDeck.pop());
+    dealer.cards.push(fakeDeck.pop());
+    player.cards.push(fakeDeck.pop());
+    dealer.cards.push(fakeDeck.pop());
 
     // display card totals for player and dealer
     calcScore(player);
