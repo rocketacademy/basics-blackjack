@@ -31,6 +31,7 @@ var makeDeck = function () {
         rank: rank,
         suit: currentSuit,
         score: score,
+        imgSrc: rank.toString() + currentSuit[0].toString(),
       });
     }
   }
@@ -125,6 +126,22 @@ var player = {
 
 var output = "";
 
+var goButton = document.querySelector("#go-button");
+var hitButton = document.querySelector("#hit-button");
+var standButton = document.querySelector("#stand-button");
+
+var hideButtons = function () {
+  hitButton.style.display = "none";
+  standButton.style.display = "none";
+};
+
+var showButtons = function () {
+  hitButton.style.display = "block";
+  standButton.style.display = "block";
+};
+
+hideButtons();
+
 // [if card rank = 1, and cardTotalValue doesn't exceed 21, count card value as 11.
 // if card rank = 1, and cardTotalValue exceeds 21, count card value as 1.
 // e.g.
@@ -188,6 +205,7 @@ var blackJackCheck = function () {
 };
 
 var gameOver = function () {
+  hideButtons();
   if (player.score > 21) {
     console.log("PLAYER BUST");
   } else if (dealer.score > 21) {
@@ -201,8 +219,26 @@ var gameOver = function () {
   }
 };
 
+var playerDrawCard = function () {
+  var newCard = sixDecks.pop();
+  player.cards.push(newCard);
+  var newCardImg = document.createElement("img");
+  newCardImg.src = `cards/${newCard.imgSrc}.svg`;
+  document.querySelector("#player-hand").appendChild(newCardImg);
+
+  // add card into player hand
+};
+
+var dealerDrawCard = function () {
+  var newCard = sixDecks.pop();
+  dealer.cards.push(newCard);
+  var newCardImg = document.createElement("img");
+  newCardImg.src = `cards/${newCard.imgSrc}.svg`;
+  document.querySelector("#dealer-hand").appendChild(newCardImg);
+};
+
 var playerHit = function () {
-  player.cards.push(fakeDeck.pop());
+  playerDrawCard();
   calcScore(player);
   console.log(player.score);
   console.log(player.cards[player.cards.length - 1]);
@@ -221,7 +257,7 @@ var playerHit = function () {
 // if player card total < dealer card total, DEALER WINS. player loses bet. end round.
 var playerStand = function () {
   while (dealer.score < 17) {
-    dealer.cards.push(sixDecks.pop());
+    dealerDrawCard();
     calcScore(dealer);
   }
   console.log(dealer.cards);
@@ -240,16 +276,18 @@ var main = function (input) {
     // dealer.cards.push(sixDecks.pop());
     // player.cards.push(sixDecks.pop());
     // dealer.cards.push(sixDecks.pop());
-    player.cards.push(fakeDeck.pop());
-    dealer.cards.push(fakeDeck.pop());
-    player.cards.push(fakeDeck.pop());
-    dealer.cards.push(fakeDeck.pop());
+    playerDrawCard();
+    dealerDrawCard();
+    playerDrawCard();
+    dealerDrawCard();
 
     // display card totals for player and dealer
     calcScore(player);
     calcScore(dealer);
     output = `Player: ${player.cards[0].name} of ${player.cards[0].suit},${player.cards[1].name} of ${player.cards[1].suit}. ${player.score} <br>Dealer: ${dealer.cards[0].name} of ${dealer.cards[0].suit}, XX. ${dealer.cards[0].score}`;
     blackJackCheck();
+    showButtons();
+    goButton.style.display = "none";
   }
   return output;
 };

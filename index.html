@@ -133,38 +133,31 @@
   </head>
 
   <body>
-    <h1 class="header">BLACK JACK PAYS 3 TO 2</h1>
-    <h2 class="header">Dealer must stand on 17 and must draw to 16</h2>
+    <div id="dealer-hand"></div>
     <div id="container">
-      <p>Input:</p>
-      <input id="input-field" />
-      <br />
-      <button id="submit-button">Submit</button>
+      <button id="go-button">Go!</button>
       <button id="hit-button">Hit</button>
       <button id="stand-button">Stand</button>
-      <p>Output:</p>
-      <div id="output-div"></div>
-      <p>
-        The king of spades is rendered as
-        <img class="card" src="cards/1c.svg" />.
-      </p>
+    </div>
+    <div id="player-hand">
+      <!-- <img src="cards/10c.svg" /> -->
     </div>
     <!-- Import program logic -->
     <script src="script.js"></script>
     <!-- Define button click functionality -->
     <script>
-      var button = document.querySelector("#submit-button");
+      var button = document.querySelector("#go-button");
       button.addEventListener("click", function () {
         // Set result to input value
-        var input = document.querySelector("#input-field");
-        var result = main(input.value);
+        // var input = document.querySelector("#input-field");
+        var result = main(2);
 
         // Display result in output element
-        var output = document.querySelector("#output-div");
+        //var output = document.querySelector("#output-div");
         output.innerHTML = result;
 
         // Reset input value
-        input.value = "";
+        //input.value = "";
       });
 
       var hitButton = document.querySelector("#hit-button");
