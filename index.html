@@ -172,7 +172,7 @@
     </h1>
     <h1 class="header">♣️ Basics - Blackjack ♠️</h1>
     <div id="container">
-      <p>Welcome to the BlackJack Table! Click the submit button to deal!</p>
+      <p>Welcome to the BlackJack Table! Enter your betting amount!</p>
       <input id="input-field" />
       <br />
       <button id="submit-button">Submit</button>
@@ -188,6 +188,8 @@
       var button = document.querySelector("#submit-button");
       var hitButton = document.querySelector("#hit-button");
       var standButton = document.querySelector("#stand-button");
+      hitButton.disabled = true;
+      standButton.disabled = true;
       button.addEventListener("click", function () {
         // Set result to input value
         var input = document.querySelector("#input-field");

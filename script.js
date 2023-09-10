@@ -1,10 +1,11 @@
 //define global variables
 var cardDeck = [];
-var gameMode = "initial draw";
+var gameMode = "betting";
 var computerCardArray = [];
 var playerCardArray = [];
 var computerCardScore = 0;
 var playerCardScore = 0;
+var playerBets = [100];
 
 //create deck
 var makeDeck = function () {
@@ -161,7 +162,7 @@ var resetGame = function () {
   cardDeck = [];
   computerCardArray = [];
   playerCardArray = [];
-  gameMode = "initial draw";
+  gameMode = "betting";
 };
 
 //first draw
@@ -205,6 +206,7 @@ var playHitMode = function (lastDrawnPlayerCard) {
   //auto skip to stand if busted, auto skip to blackjack if 21
   if (playerCardScore > 21 || playerCardScore == 21) {
     gameMode = "stand";
+    disableHitStandButton();
     if (playerCardScore > 21) {
       return `${playerDealerHands}<br><br>You've busted your cards. Let's see who wins~`;
     } else if (playerCardScore == 21) {
@@ -216,9 +218,49 @@ var playHitMode = function (lastDrawnPlayerCard) {
   }
 };
 
+var beginBetting = function (input) {
+  playerBets[1] = Number(input);
+  gameMode = "initial draw";
+  return `You've bet $${input}. Good luck!`;
+};
+
+var calcBettingResults = function (whoWin) {
+  if (whoWin == "BLACKJACK! Player wins!" || whoWin == "Player wins!") {
+    playerBets[0] = playerBets[0] + playerBets[1];
+    return `Your bet was $${playerBets[1]}<br>Your current winnings: $${playerBets[0]}`;
+  } else if (whoWin == "It's a draw!") {
+    return `Your current winnings: $${playerBets[0]}`;
+  } else {
+    playerBets[0] = playerBets[0] - playerBets[1];
+    return `Your bet was $${playerBets[1]}<br>Your current winnings: $${playerBets[0]}`;
+  }
+};
+
+var enableHitStandButton = function () {
+  document.getElementById("hit-button").disabled = false;
+  document.getElementById("stand-button").disabled = false;
+  document.getElementById("submit-button").disabled = true;
+  document.getElementById("input-field").disabled = true;
+};
+
+var disableHitStandButton = function () {
+  document.getElementById("hit-button").disabled = true;
+  document.getElementById("stand-button").disabled = true;
+  document.getElementById("submit-button").disabled = false;
+  document.getElementById("input-field").disabled = false;
+};
+
 var main = function (input) {
+  if (gameMode == "betting") {
+    if (isNaN(input) || input == "") {
+      return `Please enter a your betting amount!`;
+    }
+    var startBet = beginBetting(input);
+    return startBet;
+  }
   //if start of game, create a new shuffled deck and issue 2 cards each
   if (gameMode == "initial draw") {
+    enableHitStandButton();
     startNewGame();
     var didPlayerBlackJack = checkIfBlackJackStart(); //see if player win at first draw
     return didPlayerBlackJack;
@@ -237,6 +279,7 @@ var main = function (input) {
   }
 
   if (gameMode == "stand") {
+    disableHitStandButton();
     //dealer continue to draw until at least 17points
     while (computerCardScore < 17) {
       computerCardArray.push(cardDeck.pop());
@@ -246,10 +289,12 @@ var main = function (input) {
   }
 
   if (gameMode == "determine winner") {
+    disableHitStandButton();
     //calcuate the scores and see who wins
     handOutput = outputHandsMsg();
     findWinner = determineWinner();
+    bettingResults = calcBettingResults(findWinner);
     resetGame();
-    return `${handOutput} <br> Dealer's Score: ${computerCardScore} <br> Player's Score: ${playerCardScore} <br><br> ${findWinner}`;
+    return `${handOutput} <br> Dealer's Score: ${computerCardScore} <br> Player's Score: ${playerCardScore} <br><br> ${findWinner} <br><br>${bettingResults}`;
   }
 };
