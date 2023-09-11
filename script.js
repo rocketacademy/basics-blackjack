@@ -82,32 +82,44 @@ var shuffleCards = function (cardDeck) {
 //calculate the score of the cards on computer's hand
 var calcScoresComputer = function () {
   computerCardScore = 0;
-  for (var j = 0; j < computerCardArray.length; j += 1) {
-    //if total card < 11 ace is 10 if not ace is 1
-    if (computerCardArray[j].name == "ace" && computerCardScore < 11) {
-      console.log(`Current Com Score = ${computerCardScore}`);
-      computerCardArray[j].score = 11;
-      console.log(
-        `Card is ${computerCardArray[j].name} Card score: ${computerCardArray[j].score}`
-      );
+  for (var k = 0; k < computerCardArray.length; k += 1) {
+    if (computerCardArray[k].name == "ace") {
+      computerCardArray[k].score = 0;
     }
-    computerCardScore += computerCardArray[j].score;
+    computerCardScore += computerCardArray[k].score;
   }
+  //loop through again to calc ace is 11 or 1
+  for (var j = 0; j < computerCardArray.length; j += 1) {
+    if (computerCardArray[j].name == "ace" && computerCardScore < 11) {
+      computerCardArray[j].score = 11;
+      computerCardScore += computerCardArray[j].score;
+    } else if (computerCardArray[j].name == "ace" && computerCardScore > 10) {
+      computerCardArray[j].score = 1;
+      computerCardScore += computerCardArray[j].score;
+    }
+  }
+  console.log(computerCardArray);
 };
 
 //calculate the score of the cards on player's hand
 var calcScoresPlayer = function () {
   playerCardScore = 0;
+  //loop through the cards and exclude ace first to calc scores
   for (var k = 0; k < playerCardArray.length; k += 1) {
-    //if total card < 11 ace is 10 if not ace is 1
-    if (playerCardArray[k].name == "ace" && playerCardScore < 11) {
-      console.log(`Current Player Score = ${playerCardScore}`);
-      playerCardArray[k].score = 11;
-      console.log(
-        `Card is ${playerCardArray[k].name} Card score: ${playerCardArray[k].score}`
-      );
+    if (playerCardArray[k].name == "ace") {
+      playerCardArray[k].score = 0;
     }
     playerCardScore += playerCardArray[k].score;
+  }
+  //loop through again to calc ace is 11 or 1
+  for (var j = 0; j < playerCardArray.length; j += 1) {
+    if (playerCardArray[j].name == "ace" && playerCardScore < 11) {
+      playerCardArray[j].score = 11;
+      playerCardScore += playerCardArray[j].score;
+    } else if (playerCardArray[j].name == "ace" && playerCardScore > 10) {
+      playerCardArray[j].score = 1;
+      playerCardScore += playerCardArray[j].score;
+    }
   }
 };
 
@@ -193,8 +205,10 @@ var checkIfBlackJackStart = function () {
     gameMode = "determine winner";
     handOutput = outputHandsMsg();
     var findWinner = determineWinner();
+    var bettingResults = calcBettingResults(findWinner);
     resetGame();
-    return `${findWinner} <br><br> ${handOutput}`;
+    disableHitStandButton();
+    return `${findWinner} <br><br> ${handOutput}<br>${bettingResults}`;
   }
   gameMode = "post initial draw";
   return `${handOutput} <br> ${dealerPlayerScores} <br><br> Do you want to "hit" or "stand"?`;
