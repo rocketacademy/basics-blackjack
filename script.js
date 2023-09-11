@@ -129,19 +129,31 @@ var main = function (input) {
     outputValue = `Your cards are ${playerHand[0].name} and ${playerHand[1].name}. YOU WIN!!`;
     // end of winning validation on first two cards //
   }
-
   gameState = GAME_STATE_PLAYER_HIT_OR_STAND;
 
   outputValue = `You were dealt ${playerHand[0].name} of ${playerHand[0].suit} and ${playerHand[1].name} of ${playerHand[1].suit}.<br>The dealer has ${computerHand[0].name} of ${computerHand[0].suit}<br>Please enter HIT or STAND to continue.`;
+  console.log("control flow 1");
+  console.log(outputValue);
+  if (gameState == GAME_STATE_PLAYER_HIT_OR_STAND) {
+    var userGuess = input;
+    if (userGuess == "STAND") {
+      var playerHandRank = playerHand.reduce(
+        (total, card) => total + card.rank,
+        0
+      );
+      var computerHandRank = computerHand.reduce(
+        (total, card) => total + card.rank,
+        0
+      );
+      if (computerHandRank > playerHandRank) {
+        outputValue = `YOU LOSE!<br>Your Cards are: 1)${playerHand[0].name} of ${playerHand[0].suit} and 2)${playerHand[1].name} of ${playerHand[1].suit}<br>Dealer has 1)${computerHand[0].name} of ${computerHand[0].suit} and 2)${computerHand[1].name} of ${computerHand[1].suit}}`;
+      }
+      outputValue = `YOU WIN!<br>Your Cards are: 1)${playerHand[0].name} of ${playerHand[0].suit} and 2)${playerHand[1].name} of ${playerHand[1].suit}<br>Dealer has 1)${computerHand[0].name} of ${computerHand[0].suit} and 2)${computerHand[1].name} of ${computerHand[1].suit}}`;
+    }
+    var newCard = shuffledDeck.pop();
+    playerHand.push(newCard);
+    outputValue = `Your hand:<br>1)${playerHand[0].name} of ${playerHand[0].suit}<br>2)${playerHand[1].name} of ${playerHand[1].suit}<br>3)${playerHand[2].name} of ${playerHand[2].suit}<br><br><br>The Dealer has shown ${computerHand[0].name} of ${computerHand[0].suit}.`;
+  }
 
   return outputValue;
 };
-
-// var playerHandRank = playerHand.reduce(
-//       (total, card) => total + card.rank,
-//       0
-//     );
-//     var computerHandRank = computerHand.reduce(
-//       (total, card) => total + card.rank,
-//       0
-//     );
