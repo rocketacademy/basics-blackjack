@@ -1,6 +1,22 @@
 * {
   box-sizing: border-box;
 }
+#dealer {
+  display: block;
+  position: absolute;
+  margin-left: -150px;
+  left: 50%;
+  width: 300px;
+  top: -175px;
+}
+
+h1 {
+  position: absolute;
+  width: 500px;
+  margin-left: -250px;
+  left: 50%;
+  top: 0px;
+}
 
 .betContainer {
   position: absolute;
@@ -41,6 +57,7 @@ body {
   padding: 20px 20px;
   border-radius: 0px 0px 500px 500px;
   position: relative;
+  top: 200px;
 }
 
 input {
