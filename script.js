@@ -87,10 +87,80 @@ var checkForBlackjack = function (card) {
   return blackjack;
 };
 
+var blackjackWin = function () {
+  var playerBlackjack = checkForBlackjack(playerHand);
+  var dealerBlackjack = checkForBlackjack(dealerHand);
+  var outputMessage = "";
+  if (playerBlackjack == true || dealerBlackjack == true) {
+    if (playerBlackjack == true && dealerBlackjack == true) {
+      outputMessage += `${showHand(playerHand, dealerHand)}blackjack draw`;
+    } else if (playerBlackjack == false && dealerBlackjack == true) {
+      outputMessage += `${showHand(
+        playerHand,
+        dealerHand
+      )}dealer wins by blackjack`;
+    } else {
+      outputMessage += `${showHand(
+        playerHand,
+        dealerHand
+      )}player wins by blackjack`;
+    }
+  } else {
+    outputMessage += `${showHand(playerHand, dealerHand)}there is no blackjack`;
+  }
+  return outputMessage;
+};
+
+var checkHandTotalValue = function (hand) {
+  var handCounter = 0;
+  for (i = 0; i < hand.length; i += 1) {
+    var j = hand[i];
+    if (j.name == "jack" || j.name == "queen" || j.name == "king") {
+      handCounter += 10;
+    } else if (j.name == "ace") {
+      handCounter += 11;
+    } else {
+      handCounter += j.value;
+    }
+  }
+  return handCounter;
+};
+
+var normalWin = function () {
+  var playerHandTotalValue = checkHandTotalValue(playerHand);
+  var dealerHandTotalValue = checkHandTotalValue(dealerHand);
+  var outputMessage = "";
+  if (playerHandTotalValue == dealerHandTotalValue) {
+    outputMessage += `${showHand(playerHand, dealerHand)}it's a tie`;
+  } else if (playerHandTotalValue < dealerHandTotalValue) {
+    outputMessage += `${showHand(playerHand, dealerHand)}dealer wins`;
+  } else {
+    outputMessage += `${showHand(playerHand, dealerHand)}player wins`;
+  }
+  return outputMessage;
+};
+
+var showHand = function (player, dealer) {
+  var playerOutput = `player's hand:<br>`;
+  for (i = 0; i < player.length; i += 1) {
+    playerOutput += `- + ${player[i].name} of ${player[i].suit}<br>`;
+  }
+  var dealerOutput = `dealer's hand:<br>`;
+  for (i = 0; i < dealer.length; i += 1) {
+    dealerOutput += `- + ${dealer[i].name} of ${dealer[i].suit}<br>`;
+  }
+  return `${playerOutput}<br>${dealerOutput}`;
+};
+
 var main = function (input) {
-  var myOutputValue = "hello world";
+  var myOutputValue = "";
   console.log(dealCards());
   console.log(checkForBlackjack(playerHand));
   console.log(checkForBlackjack(dealerHand));
+  console.log(checkHandTotalValue(playerHand));
+  console.log(checkHandTotalValue(dealerHand));
+  console.log(blackjackWin());
+  console.log(normalWin());
+
   return myOutputValue;
 };
