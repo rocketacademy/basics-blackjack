@@ -89,11 +89,10 @@
   </head>
 
   <body>
-    <h1 class="header">♣️ Blackjack ♠️</h1>
-    <div id="computerTable"></div>
     <div id="gameTable">
+      <h1 class="header">♣️ Blackjack ♠️</h1>
       <img src="img/Dealer.png" id="dealer" />
-
+      <div id="computerTable"></div>
       <div id="player1Table"></div>
 
       <div id="player2Table"></div>
@@ -126,8 +125,10 @@
           </div>
         </center>
         <center>
-          <button id="again-button">One More Round!</button>
-          <button id="quit-button">Quit!</button>
+          <div id="endGameContainer">
+            <button id="again-button">One More Round!</button>
+            <button id="quit-button">Quit!</button>
+          </div>
         </center>
       </div>
     </div>

@@ -1,5 +1,4 @@
-//23.5 hours
-//2000
+//25 hours
 
 //player contains name,chips,stand-check,value and array of cards,winLoss(win/lose/draw/"").
 //player[0] is the dealer(computer)winLoss is "lose" for easy check if everyone bust (line240)
@@ -155,7 +154,7 @@ var inGame = function () {
   shuffleDeck();
   dealCard(player[0].card);
   dealCard(player[0].card);
-  computerTable.innerHTML = `<center>Computer Hand.</center><center>${player[0].card[0].name}🂠</center>`;
+  computerTable.innerHTML = `<center>Computer Hand.</center><center>${player[0].card[0].img}<img src ='img/back.png'></center>`;
   for (let i = 1; i < player.length; i++) {
     dealCard(player[i].card);
     dealCard(player[i].card);
@@ -541,7 +540,9 @@ var renewPlayerTable = function (who) {
   if (chipOnTable[who] !== undefined) {
     let betContainer = document.createElement(`div`);
     betContainer.classList.add("betContainer");
-    betContainer.innerHTML = `Chips: ${chipOnTable[who]}`;
+    chipsPhoto = `<img src="img/chips.png" width = "25px">`;
+
+    betContainer.innerHTML = `${chipsPhoto}bet: ${chipOnTable[who]}`;
     playerTable.append(betContainer);
   }
 };
@@ -554,14 +555,15 @@ var createDeck = function () {
       card.rank = j;
       card.suit = suits[i];
       if (j === 1) {
-        card.name = `[A${suits[i]}]`;
+        card.name = `A${suits[i]}`;
       } else if (j === 11) {
-        card.name = `[J${suits[i]}]`;
+        card.name = `J${suits[i]}`;
       } else if (j === 12) {
-        card.name = `[Q${suits[i]}]`;
+        card.name = `Q${suits[i]}`;
       } else if (j === 13) {
-        card.name = `[K${suits[i]}]`;
-      } else card.name = `[${j}${suits[i]}]`;
+        card.name = `K${suits[i]}`;
+      } else card.name = `${j}${suits[i]}`;
+      card.img = `<img src = "img/${card.name}.png"`;
       deck.push(card);
     }
   }
