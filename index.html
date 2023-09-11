@@ -69,7 +69,6 @@
         display: flex;
         flex-direction: column;
         font-family: "Open Sans", sans-serif;
-        width: 1000px;
         margin-top: 0;
         margin-bottom: 0;
         margin-left: auto;
@@ -82,11 +81,22 @@
       }
 
       .hand {
-        width: 100%;
         display: flex;
         justify-content: center;
         column-gap: 16px;
+        max-width: 50vw;
+        margin: 0 auto;
+        align-items: center;
+        height: 100%;
+      }
+
+      .hand img {
+        height: 32vh;
+      }
+
+      .section {
         flex-grow: 1;
+        position: relative;
       }
 
       #output-div img {
@@ -100,19 +110,33 @@
         margin-bottom: 3rem;
       }
 
-      #container {
+      #middle {
+        height: 100px;
         background-color: pink;
-        margin: 40px auto;
-        max-width: 800px;
-        padding: 38px 31px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: row;
+      }
+
+      #container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: row;
+        column-gap: 24px;
       }
 
       #betting-container {
-        width: 100%;
         display: flex;
         justify-content: center;
         column-gap: 16px;
+        position: absolute;
+        left: 0;
         align-self: center;
+        right: 0;
+        align-items: center;
+        height: 100%;
       }
 
       #player-balance {
@@ -132,8 +156,8 @@
       button {
         font-size: 21px;
         line-height: 33px;
-        margin: 0 0 23px 0;
         padding: 0 6px;
+        width: 100px;
       }
 
       #output-div {
@@ -160,15 +184,20 @@
 
   <body>
     <div id="player-balance">$1000</div>
-    <div class="hand" id="dealer-hand"></div>
-
-    <div id="container">
-      <button id="hit-button">Hit</button>
-      <button id="stand-button">Stand</button>
+    <div class="section">
+      <div class="hand" id="dealer-hand"></div>
     </div>
 
-    <div id="game-over-message"></div>
-    <div class="hand">
+    <div id="middle">
+      <div id="container">
+        <button id="hit-button">Hit</button>
+        <button id="stand-button">Stand</button>
+      </div>
+
+      <div id="game-over-message"></div>
+    </div>
+
+    <div class="section">
       <div id="betting-container">
         <div>
           <label>Bet:</label>
@@ -178,7 +207,7 @@
           </div>
         </div>
       </div>
-      <div id="player-hand">
+      <div class="hand" id="player-hand">
         <!-- <img src="cards/10c.svg" /> -->
       </div>
     </div>
