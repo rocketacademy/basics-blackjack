@@ -66,15 +66,27 @@
       }
 
       body {
+        display: flex;
+        flex-direction: column;
         font-family: "Open Sans", sans-serif;
-        margin-left: 30px;
-        margin-right: 30px;
+        width: 1000px;
+        margin-top: 0;
+        margin-bottom: 0;
+        margin-left: auto;
+        margin-right: auto;
         background-color: white;
-        color: black; /* sets the font color */
-        background-image: url(""); /* The image used */
-        background-position: center; /* Center the image */
-        background-repeat: no-repeat; /* Do not repeat the image */
-        background-size: cover; /* Resize the background image to cover the entire container */
+        color: white;
+        background-color: #034332;
+        position: relative;
+        height: 100vh;
+      }
+
+      .hand {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        column-gap: 16px;
+        flex-grow: 1;
       }
 
       #output-div img {
@@ -95,12 +107,26 @@
         padding: 38px 31px;
       }
 
+      #betting-container {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        column-gap: 16px;
+        align-self: center;
+      }
+
+      #player-balance {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        padding: 16px;
+      }
       input {
         font-size: 21px;
         line-height: 33px;
         margin: 0 0 23px 0;
         padding: 0 9px;
-        width: 100%;
+        width: 100px;
       }
 
       button {
@@ -133,15 +159,28 @@
   </head>
 
   <body>
-    <div id="dealer-hand"></div>
     <div id="player-balance">$1000</div>
+    <div class="hand" id="dealer-hand"></div>
+
     <div id="container">
-      <button id="go-button">Go!</button>
       <button id="hit-button">Hit</button>
       <button id="stand-button">Stand</button>
     </div>
-    <div id="player-hand">
-      <!-- <img src="cards/10c.svg" /> -->
+
+    <div id="game-over-message"></div>
+    <div class="hand">
+      <div id="betting-container">
+        <div>
+          <label>Bet:</label>
+          <div>
+            <input id="input-field" />
+            <button id="go-button">Go!</button>
+          </div>
+        </div>
+      </div>
+      <div id="player-hand">
+        <!-- <img src="cards/10c.svg" /> -->
+      </div>
     </div>
     <!-- Import program logic -->
     <script src="script.js"></script>
@@ -150,15 +189,15 @@
       var button = document.querySelector("#go-button");
       button.addEventListener("click", function () {
         // Set result to input value
-        // var input = document.querySelector("#input-field");
-        var result = main(2);
+        var input = document.querySelector("#input-field");
+        var result = main(input.value);
 
         // Display result in output element
         //var output = document.querySelector("#output-div");
         output.innerHTML = result;
 
         // Reset input value
-        //input.value = "";
+        input.value = "";
       });
 
       var hitButton = document.querySelector("#hit-button");

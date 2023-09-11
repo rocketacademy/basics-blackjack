@@ -3,8 +3,9 @@ Game rules are more like casino black jack
  */
 
 /*
-for gameover and blackjack scenarios, 
-run a function that adds/subtract from playerMoneyBalance, and update the html
+at the start, have bet, input field, and go button appear.
+then other than go button, also hide bet and input field.
+then gameover 5 secs later, reshow the 3 elements.
 */
 
 // make a shuffled deck
@@ -130,22 +131,34 @@ var player = {
 };
 
 var output = "";
-
+var bettingContainer = document.querySelector("#betting-container");
+//var hitStandContainer = document.querySelector("#hit-stand-container");
+var input = document.querySelector("#input-field");
 var goButton = document.querySelector("#go-button");
 var hitButton = document.querySelector("#hit-button");
 var standButton = document.querySelector("#stand-button");
+var gameOverMessage = document.querySelector("#game-over-message");
 
-var hideButtons = function () {
+var hideHitStandButtons = function () {
   hitButton.style.display = "none";
   standButton.style.display = "none";
 };
 
-var showButtons = function () {
+var showHitStandButtons = function () {
   hitButton.style.display = "block";
   standButton.style.display = "block";
 };
 
-hideButtons();
+var hideBetting = function () {
+  bettingContainer.style.display = "none";
+};
+
+var showBetting = function () {
+  bettingContainer.style.display = "flex";
+  //bettingContainer.style.visibility = "visible";
+};
+
+hideHitStandButtons();
 
 // [if card rank = 1, and cardTotalValue doesn't exceed 21, count card value as 11.
 // if card rank = 1, and cardTotalValue exceeds 21, count card value as 1.
@@ -214,50 +227,61 @@ var updateBalance = function (outcome) {
   document.querySelector("#player-balance").innerText = playerMoneyBalance;
 };
 
+var toNextRound = function () {
+  setTimeout(() => {
+    gameOverMessage.innerText = "";
+    bet = 0;
+    player.cards = [];
+    dealer.cards = [];
+    document.querySelector("#player-hand").innerHTML = "";
+    document.querySelector("#dealer-hand").innerHTML = "";
+    showBetting();
+  }, 4000);
+};
+
 var blackJackCheck = function () {
   if (player.score == 21 || dealer.score == 21) {
-    hideButtons();
-    var message = document.createElement("p");
+    hideHitStandButtons();
     if (player.score == 21 && dealer.score == 21) {
-      message.innerText = "PLAYER AND DEALER BLACK JACKS. PUSH";
+      gameOverMessage.innerText = "PLAYER AND DEALER BLACK JACKS. PUSH";
       console.log("PLAYER AND DEALER BLACK JACKS. PUSH");
     } else if (player.score == 21) {
-      message.innerText = "PLAYER BLACKJACK";
+      gameOverMessage.innerText = "PLAYER BLACKJACK";
       updateBalance("big win");
       console.log("PLAYER BLACKJACK");
     } else if (dealer.score == 21) {
-      message.innerText = "DEALER BLACKJACK";
+      gameOverMessage.innerText = "DEALER BLACKJACK";
       updateBalance("lose");
       console.log("DEALER BLACKJACK");
     }
-    document.querySelector("#container").appendChild(message);
+    toNextRound();
   }
 };
 
 var gameOver = function () {
-  hideButtons();
-  var message = document.createElement("p");
+  hideHitStandButtons();
   if (player.score > 21) {
-    message.innerText = "PLAYER BUST";
+    gameOverMessage.innerText = "PLAYER BUST";
     updateBalance("lose");
     console.log("PLAYER BUST");
   } else if (dealer.score > 21) {
-    message.innerText = "DEALER BUST";
+    gameOverMessage.innerText = "DEALER BUST";
     updateBalance("win");
     console.log("DEALER BUST");
   } else if (player.score == dealer.score) {
-    message.innerText = "PUSH";
+    gameOverMessage.innerText = "PUSH";
     console.log("PUSH");
   } else if (player.score > dealer.score) {
-    message.innerText = "PLAYER WINS";
+    gameOverMessage.innerText = "PLAYER WINS";
     updateBalance("win");
     console.log("PLAYER WINS");
   } else if (player.score < dealer.score) {
-    message.innerText = "DEALER WINS";
+    gameOverMessage.innerText = "DEALER WINS";
     updateBalance("lose");
     console.log("DEALER WINS");
   }
-  document.querySelector("#container").appendChild(message);
+
+  toNextRound();
 };
 
 var playerDrawCard = function () {
@@ -304,17 +328,13 @@ var playerStand = function () {
   gameOver();
 };
 
-var main = function (input) {
+var main = function (userInput) {
   // player input bet: $2-$500. clicks "Deal"
-  if (isNaN(input) || input < 2 || input > 500) {
+  if (isNaN(userInput) || userInput < 2 || userInput > 500) {
     output = "Please enter a number from 2 to 500.";
   } else {
-    bet = input;
-    // sequence of card drawing: player, dealer, player, dealer(face down).
-    // player.cards.push(sixDecks.pop());
-    // dealer.cards.push(sixDecks.pop());
-    // player.cards.push(sixDecks.pop());
-    // dealer.cards.push(sixDecks.pop());
+    bet = Number(userInput);
+    // sequence of card drawing: player, dealer, player, dealer(face down)
     playerDrawCard();
     dealerDrawCard();
     playerDrawCard();
@@ -323,9 +343,8 @@ var main = function (input) {
     // display card totals for player and dealer
     calcScore(player);
     calcScore(dealer);
-    output = `Player: ${player.cards[0].name} of ${player.cards[0].suit},${player.cards[1].name} of ${player.cards[1].suit}. ${player.score} <br>Dealer: ${dealer.cards[0].name} of ${dealer.cards[0].suit}, XX. ${dealer.cards[0].score}`;
-    showButtons();
-    goButton.style.display = "none";
+    hideBetting();
+    showHitStandButtons();
     blackJackCheck();
   }
   return output;
