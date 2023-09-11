@@ -1,6 +1,5 @@
 //23.5 hours
-
-//logic need to add
+//2000
 
 //player contains name,chips,stand-check,value and array of cards,winLoss(win/lose/draw/"").
 //player[0] is the dealer(computer)winLoss is "lose" for easy check if everyone bust (line240)
@@ -113,7 +112,7 @@ var makeBetButton = function () {
     let betChips = document.createElement("input");
     let betButton = document.createElement("button");
     betChips.type = "number";
-    betChips.value = player[i].chip / 2;
+    betChips.value = Math.floor(player[i].chip / 2);
     betChips.min = 1;
     betChips.max = player[i].chip;
     betChips.classList.add("betChips");
@@ -158,8 +157,6 @@ var inGame = function () {
   dealCard(player[0].card);
   computerTable.innerHTML = `<center>Computer Hand.</center><center>${player[0].card[0].name}🂠</center>`;
   for (let i = 1; i < player.length; i++) {
-    // let betContainer = document.querySelector(`#bet${who}Container`);
-    // betContainer.innerHTML = `Chips: ${chipOnTable[who]}`;
     dealCard(player[i].card);
     dealCard(player[i].card);
     calValue(i);
@@ -179,8 +176,9 @@ var inGame = function () {
   standButton.style.visibility = "visible";
 
   passPlayerRound();
-  if (playerRound === player.length && splitProcess === 2) {
+  if (playerRound === player.length) {
     dealerTurn();
+    return;
   }
   gameInstruct.innerHTML = `${player[playerRound].name}, it's your turn. You hit or stand?`;
 };
@@ -224,8 +222,6 @@ var processSpliting = function (split, who) {
     player[who].splitStand = false;
     player[who].chip -= chipOnTable[who];
     chipOnTable[who] *= 2;
-    // let betContainer = document.querySelector(`#bet${who}Container`);
-    // betContainer.innerHTML = `Chips: ${chipOnTable[who]}`;
   }
 
   splitPlayerAskIndex[who] = false;
@@ -249,6 +245,7 @@ var processSpliting = function (split, who) {
     standButton.style.visibility = "visible";
     if (playerRound === player.length) {
       dealerTurn();
+      return;
     }
   }
   gameInstruct.innerHTML = `${player[playerRound].name}, it's your turn. You hit or stand?`;
@@ -448,31 +445,32 @@ var compareValueAddChips = function () {
     let playerTable = document.querySelector(`#player${i}Table`);
 
     if (player[i].winLose === "" && player[i].value === player[0].value) {
-      player[i].winLose === "tie";
+      player[i].winLose = "tie";
     } else if (player[i].winLose === "" && player[i].value > player[0].value) {
       player[i].winLose = "win";
     } else if (player[i].winLose === "" && player[i].value < player[0].value) {
       player[i].winLose = "lose";
     }
+
     if (
       player[i].splitWinLose === "" &&
-      player[i].splitValue === player[0].splitValue
+      player[i].splitValue === player[0].value
     ) {
-      player[i].splitWinLose === "tie";
+      player[i].splitWinLose = "tie";
     } else if (
       player[i].splitWinLose === "" &&
-      player[i].splitValue > player[0].splitValue
+      player[i].splitValue > player[0].value
     ) {
       player[i].splitWinLose = "win";
     } else if (
       player[i].splitWinLose === "" &&
-      player[i].splitValue < player[0].splitValue
+      player[i].splitValue < player[0].value
     ) {
       player[i].splitWinLose = "lose";
     }
 
     if (player[i].winLose === "win" && player[i].splitWinLose === "win") {
-      player[i].chip += chipOnTable[i] * 4;
+      player[i].chip += chipOnTable[i] * 2;
       playerTable.innerHTML = `<center>Congrats! ${
         player[i].name
       }.</center>You win ${chipOnTable[i] * 2} chips, now you have ${
@@ -534,13 +532,18 @@ var calSplitValue = function (who) {
 
 var dealCard = function (card) {
   let cardDealt = deck.pop();
-
   card.push(cardDealt);
 };
 
 var renewPlayerTable = function (who) {
   let playerTable = document.querySelector(`#player${who}Table`);
   playerTable.innerHTML = `<center><font size="5">${player[who].name}</font></center><center>Chips: ${player[who].chip}</center>`;
+  if (chipOnTable[who] !== undefined) {
+    let betContainer = document.createElement(`div`);
+    betContainer.classList.add("betContainer");
+    betContainer.innerHTML = `Chips: ${chipOnTable[who]}`;
+    playerTable.append(betContainer);
+  }
 };
 
 var createDeck = function () {
@@ -593,6 +596,7 @@ var endGameCal = function () {
   chipOnTable = [0];
   playerRound = 1;
   time = 0;
+  splitPlayerAskIndex = [false];
 };
 
 var again = function () {

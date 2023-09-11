@@ -2,6 +2,14 @@
   box-sizing: border-box;
 }
 
+.betContainer {
+  position: absolute;
+  width: 100px;
+  left: 50%;
+  margin-left: -50px;
+  top: -30px;
+}
+
 body {
   font-family: "Open Sans", sans-serif;
   margin-left: 30px;
@@ -132,19 +140,6 @@ button {
   outline-style: solid;
   outline-width: 5px;
   outline-color: black;
-}
-
-#bet1Container,
-#bet2Container,
-#bet3Container,
-#bet4Container,
-#bet5Container,
-#bet6Container {
-  position: absolute;
-  width: 100px;
-  margin-left: -50px;
-  left: 50%;
-  top: -30px;
 }
 
 .deleteButton {
