@@ -55,6 +55,10 @@ var genPlayerDelete = function () {
       input.disabled = false;
       playButton.disabled = false;
       addPlayerButton.disabled = false;
+      gameInstruct.innerHTML = `Good Bye, ${player[i].name}. Have a nice day!`;
+      setTimeout(() => {
+        gameInstruct.innerHTML = "Welcome, who wants to play BlackJack?";
+      }, 3000);
       noOne.remove();
       player.splice(i, 1);
       for (let i = 1; i < player.length; i++) {
@@ -64,7 +68,7 @@ var genPlayerDelete = function () {
         let playerTable = document.querySelector(`#player${6 - i}Table`);
         playerTable.innerHTML = ``;
       }
-      gameInstruct.innerHTML = "Welcome, who wants to play BlackJack?";
+
       if (player.length === 1) {
         playButton.disabled = true;
         deleteButton.disabled = true;
@@ -154,7 +158,7 @@ var inGame = function () {
   shuffleDeck();
   dealCard(player[0].card);
   dealCard(player[0].card);
-  computerTable.innerHTML = `<center>Computer Hand.</center><center>${player[0].card[0].img}<img src ='img/back.png'></center>`;
+  computerTable.innerHTML = `<img${player[0].card[0].name}<img src ='img/back.png'>`;
   for (let i = 1; i < player.length; i++) {
     dealCard(player[i].card);
     dealCard(player[i].card);
@@ -539,10 +543,10 @@ var renewPlayerTable = function (who) {
   playerTable.innerHTML = `<center><font size="5">${player[who].name}</font></center><center>Chips: ${player[who].chip}</center>`;
   if (chipOnTable[who] !== undefined) {
     let betContainer = document.createElement(`div`);
-    betContainer.classList.add("betContainer");
-    chipsPhoto = `<img src="img/chips.png" width = "25px">`;
+    betContainer.classList.add(`bet${who}Container`);
+    chipsPhoto = `<img src="img/chips.png">`;
 
-    betContainer.innerHTML = `${chipsPhoto}bet: ${chipOnTable[who]}`;
+    betContainer.innerHTML = `${chipsPhoto}:${chipOnTable[who]}`;
     playerTable.append(betContainer);
   }
 };
@@ -563,7 +567,6 @@ var createDeck = function () {
       } else if (j === 13) {
         card.name = `K${suits[i]}`;
       } else card.name = `${j}${suits[i]}`;
-      card.img = `<img src = "img/${card.name}.png"`;
       deck.push(card);
     }
   }

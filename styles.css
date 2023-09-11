@@ -11,7 +11,7 @@
 }
 
 img {
-  width: 25px;
+  width: 50px;
 }
 
 h1 {
@@ -29,13 +29,6 @@ h1 {
 }
 #computerTable {
   padding: 5px;
-}
-.betContainer {
-  position: absolute;
-  width: 100px;
-  left: 50%;
-  margin-left: -50px;
-  top: -30px;
 }
 
 body {
@@ -64,7 +57,9 @@ body {
 
 #gameTable {
   background-color: rgb(52, 127, 52);
-  margin: 100px auto;
+  margin: auto;
+  margin-top: 50px;
+  margin-bottom: 150px;
   width: 800px;
   height: 350px;
   padding: 20px 20px;
@@ -179,6 +174,40 @@ button {
   outline-width: 3px;
   outline-color: black;
   background-color: rgba(52, 127, 52, 0.7);
+}
+.bet1Container {
+  position: absolute;
+  right: -120px;
+  font-size: 30px;
+}
+.bet2Container {
+  position: absolute;
+  top: -75px;
+  right: -100px;
+  font-size: 30px;
+}
+.bet3Container {
+  position: absolute;
+  right: 0px;
+  top: -80px;
+  font-size: 30px;
+}
+.bet4Container {
+  position: absolute;
+  left: 0px;
+  top: -80px;
+  font-size: 30px;
+}
+.bet5Container {
+  position: absolute;
+  top: -75px;
+  left: -100px;
+  font-size: 30px;
+}
+.bet6Container {
+  position: absolute;
+  left: -120px;
+  font-size: 30px;
 }
 
 .deleteButton {
