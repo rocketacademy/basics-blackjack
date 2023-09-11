@@ -228,6 +228,9 @@ var updateBalance = function (outcome) {
 };
 
 var toNextRound = function () {
+  var dealerSecondCard = document.querySelector("[src='cards/back.svg']");
+  var originalSource = dealerSecondCard.getAttribute("originalsrc");
+  dealerSecondCard.src = originalSource;
   setTimeout(() => {
     gameOverMessage.innerText = "";
     bet = 0;
@@ -296,7 +299,13 @@ var dealerDrawCard = function () {
   var newCard = sixDecks.pop();
   dealer.cards.push(newCard);
   var newCardImg = document.createElement("img");
-  newCardImg.src = `cards/${newCard.imgSrc}.svg`;
+  var isSecondCard = dealer.cards.length == 2;
+  if (isSecondCard) {
+    newCardImg.src = `cards/back.svg`;
+    newCardImg.setAttribute("originalSrc", `cards/${newCard.imgSrc}.svg`);
+  } else {
+    newCardImg.src = `cards/${newCard.imgSrc}.svg`;
+  }
   document.querySelector("#dealer-hand").appendChild(newCardImg);
 };
 
