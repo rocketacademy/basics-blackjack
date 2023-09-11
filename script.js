@@ -1,7 +1,14 @@
-//25 hours
+//28 hours
+
+//Container extend if split to 280 height
+//hit/bet button follow betContainer
+//playerRound boarder lighting
+//Result Layout Update(Win Loss tie depend)
+//animation of deal card
 
 //player contains name,chips,stand-check,value and array of cards,winLoss(win/lose/draw/"").
 //player[0] is the dealer(computer)winLoss is "lose" for easy check if everyone bust (line240)
+
 var player = [
   {
     card: [],
@@ -158,7 +165,7 @@ var inGame = function () {
   shuffleDeck();
   dealCard(player[0].card);
   dealCard(player[0].card);
-  computerTable.innerHTML = `<img${player[0].card[0].name}<img src ='img/back.png'>`;
+  computerTable.innerHTML = `<center><img src = "img/${player[0].card[0].name}.png"> <img src ='img/back.png'></center>`;
   for (let i = 1; i < player.length; i++) {
     dealCard(player[i].card);
     dealCard(player[i].card);
@@ -239,9 +246,9 @@ var processSpliting = function (split, who) {
         dealCard(player[i].splitCard);
         calValue(i);
         calSplitValue(i);
-        renewPlayerTable(i);
-        genCardAndCompareValue(i);
       }
+      renewPlayerTable(i);
+      genCardAndCompareValue(i);
     }
     passPlayerRound();
     hitButton.style.visibility = "visible";
@@ -250,8 +257,8 @@ var processSpliting = function (split, who) {
       dealerTurn();
       return;
     }
+    gameInstruct.innerHTML = `${player[playerRound].name}, it's your turn. You hit or stand?`;
   }
-  gameInstruct.innerHTML = `${player[playerRound].name}, it's your turn. You hit or stand?`;
 };
 
 var passPlayerRound = function () {
@@ -270,38 +277,39 @@ var passPlayerRound = function () {
 
 var genCardAndCompareValue = function (who) {
   let cardContainer = document.createElement("div");
+  cardContainer.style.padding = "5px";
   let playerTable = document.querySelector(`#player${who}Table`);
   let cardList = ``;
   for (let i = 0; i < player[who].card.length; i++) {
-    cardList += player[who].card[i].name;
+    cardList += ` <img src ="img/${player[who].card[i].name}.png">`;
   }
   aceVariation(who);
   if (player[who].value > 21) {
     player[who].winLose = "lose";
     player[who].stand = true;
-    cardContainer.innerHTML = `OH! You Bust! <br>your cards are:<br>${cardList}<br>Value: ${player[who].value}`;
+    cardContainer.innerHTML = `Busted! Value:${player[who].value}<br>${cardList}`;
   } else if (player[who].value === 21) {
     player[who].stand = true;
-    cardContainer.innerHTML = `WoW you get 21!<br> your cards are:<br>${cardList}<br>Value: ${player[who].value}`;
+    cardContainer.innerHTML = `<b style ="font-size":"9">21!</b> Value:${player[who].value}<br>${cardList}`;
   } else {
-    cardContainer.innerHTML = `your cards are:<br>${cardList}<br>Value: ${player[who].value}`;
+    cardContainer.innerHTML = `Value:${player[who].value}<br>${cardList}`;
   }
 
   if ("splitCard" in player[who]) {
-    let splitCardList = "";
+    let splitCardList = " ";
     for (let i = 0; i < player[who].splitCard.length; i++) {
-      splitCardList += player[who].splitCard[i].name;
+      splitCardList += ` <img src = "img/${player[who].splitCard[i].name}.png">`;
     }
     aceSplitVariation(who);
     if (player[who].splitValue > 21) {
       player[who].splitWinLose = "lose";
       player[who].splitStand = true;
-      cardContainer.innerHTML += `<br>Second hand is busted!<br>Cards are:${splitCardList}<br>Value :${player[who].splitValue}`;
+      cardContainer.innerHTML += `<br>Busted! Second Value :${player[who].splitValue}<br>${splitCardList}`;
     } else if (player[who].splitValue === 21) {
       player[who].splitStand = true;
-      cardContainer.innerHTML += `<br>Second hand get 21!<br>Cards are:${splitCardList}<br>Value :${player[who].splitValue}`;
+      cardContainer.innerHTML += `<br>21! Second Value :${player[who].splitValue}<br>${splitCardList}`;
     } else {
-      cardContainer.innerHTML += `<br>Second hand cards are:${splitCardList}<br>Value :${player[who].splitValue}`;
+      cardContainer.innerHTML += `<br> Second Value :${player[who].splitValue}<br>${splitCardList}`;
     }
   }
   playerTable.append(cardContainer);
@@ -364,7 +372,7 @@ var dealerTurn = function () {
   standButton.style.visibility = "hidden";
   calValue(0);
   gameInstruct.innerHTML = `Dealer turn!`;
-  computerTable.innerHTML = `<center>${player[0].card[0].name}${player[0].card[1].name}</center><center>Value: ${player[0].value}</center>`;
+  computerTable.innerHTML = `<center><img src = "img/${player[0].card[0].name}.png"> <img src = "img/${player[0].card[1].name}.png">`;
 
   let checkSplit = false;
   for (let i = 0; i < player.length; i++) {
@@ -407,7 +415,7 @@ var dealerTurn = function () {
     aceVariation(0);
     let cardList = ``;
     for (let j = 0; j < player[0].card.length; j++) {
-      cardList += player[0].card[j].name;
+      cardList += ` <img src = "img/${player[0].card[j].name}.png">`;
     }
     let newDrawCard = player[0].card[player[0].card.length - 1].name;
     let currentValue = player[0].value;
@@ -437,6 +445,9 @@ var dealerTurn = function () {
     compareValueAddChips();
     endGameCal();
     againButton.style.visibility = "visible";
+    if (player.length === 1) {
+      againButton.disabled = true;
+    }
     quitButton.style.visibility = "visible";
   }, (time += 3000));
 };
@@ -609,6 +620,10 @@ var again = function () {
   for (let i = 1; i < player.length; i++) {
     renewPlayerTable(i);
   }
+  for (let i = 0; i < 7 - player.length; i++) {
+    let playerTable = document.querySelector(`#player${6 - i}Table`);
+    playerTable.innerHTML = ``;
+  }
   againButton.style.visibility = "hidden";
   quitButton.style.visibility = "hidden";
   main();
@@ -619,8 +634,16 @@ var quit = function () {
   for (let i = 1; i < player.length; i++) {
     renewPlayerTable(i);
   }
+  for (let i = 0; i < 7 - player.length; i++) {
+    let playerTable = document.querySelector(`#player${6 - i}Table`);
+    playerTable.innerHTML = ``;
+  }
   gameInstruct.innerHTML = "Welcome, who wants to play BlackJack?";
   mainMenu.style.visibility = "visible";
+  if (player.length === 1) {
+    playButton.disabled = true;
+    deleteButton.disabled = true;
+  }
   againButton.style.visibility = "hidden";
   quitButton.style.visibility = "hidden";
 };
