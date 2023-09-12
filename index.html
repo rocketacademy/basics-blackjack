@@ -72,15 +72,38 @@
         display: flex;
         flex-direction: column;
         font-family: "EB Garamond", serif;
+        font-size: 34px;
+        color: white;
+        background-color: #033b2c;
+        position: relative;
+        margin: 0;
+      }
+
+      .texture {
+        background-image: url("cards/texture.png");
+        background-repeat: repeat;
+        opacity: 0.6;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        opacity: 1;
+        mix-blend-mode: overlay;
+      }
+
+      .higher-layer {
+        display: flex;
+        flex-direction: column;
+        font-family: "EB Garamond", serif;
         margin-top: 0;
         margin-bottom: 0;
         margin-left: auto;
         margin-right: auto;
-        background-color: white;
-        color: white;
-        background-color: #034332;
         position: relative;
         height: 100vh;
+        width: 100%;
       }
 
       .hand {
@@ -93,8 +116,35 @@
         height: 100%;
       }
 
+      .top-circle {
+        height: calc(150vh);
+        width: calc(150vh);
+        max-width: 80vw;
+        max-height: 80vw;
+        border-radius: 100%;
+        background-color: #1b3639;
+        position: fixed;
+        top: calc(-105vh);
+        align-self: center;
+        border: 2px solid white;
+      }
+
+      .bottom-circle {
+        height: calc(150vh);
+        width: calc(150vh);
+        max-width: 80vw;
+        max-height: 80vw;
+        border-radius: 100%;
+        background-color: #1b3639;
+        position: fixed;
+        bottom: calc(-105vh);
+        align-self: center;
+        border: 2px solid white;
+      }
+
       .hand img {
-        height: 32vh;
+        height: 28vh;
+        border-radius: 1vh;
       }
 
       .section {
@@ -102,23 +152,52 @@
         position: relative;
       }
 
-      #output-div img {
-        display: block;
-        max-width: 100%;
-        max-height: 200px;
-      }
       .header {
         text-align: center;
         font-size: 1.1rem;
         margin-bottom: 3rem;
       }
 
+      .group-of-text {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        z-index: auto;
+      }
+
+      h1 {
+        font-size: 48px;
+        font-weight: 500;
+        margin: 0;
+      }
+
+      h2 {
+        font-size: 34px;
+        font-weight: 500;
+        color: #f2e14c;
+        margin: 0;
+      }
+
       #middle {
-        height: 100px;
+        height: 160px;
         display: flex;
         justify-content: center;
         align-items: center;
-        flex-direction: row;
+        flex-direction: column;
+        margin-top: 50px;
+        margin-bottom: 50px;
+      }
+
+      #game-over-message {
+        color: #0d3337;
+        font-size: 88px;
+        letter-spacing: -3px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
       }
 
       #container {
@@ -144,30 +223,44 @@
       #player-balance {
         position: fixed;
         bottom: 0;
-        left: 0;
-        padding: 16px;
+        left: 10vw;
+        padding: 16px 40px;
+        background-color: rgba(255, 255, 255, 0.7);
+        color: #0d3337;
+        border-top-right-radius: 16px;
+        border-top-left-radius: 16px;
       }
+
       input {
-        font-size: 21px;
-        line-height: 33px;
-        margin: 0 0 23px 0;
+        font-family: "EB Garamond", serif;
+        font-size: 34px;
+        margin: 0;
         padding: 0 9px;
-        width: 100px;
+        width: 160px;
+        border-radius: 8px;
+        border: 2px solid #0d3337;
       }
 
       button {
         font-family: "EB Garamond", serif;
-        font-size: 21px;
-        line-height: 33px;
-        padding: 0 6px;
-        width: 100px;
+        font-size: 34px;
+        padding: 12px;
+        width: 200px;
+        background-color: #f2e14c;
+        color: #0d3337;
+        border: 0;
+        border-radius: 8px;
+        box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.25);
+        cursor: pointer;
+        font-weight: 500;
       }
 
       #output-div {
-        background-color: lightgrey;
-        margin: 20px auto;
-        padding: 20px;
+        font-size: 20px;
+        margin-top: 8px;
         width: 100%;
+        height: auto;
+        color: rgb(255, 121, 121);
       }
 
       .logo-img {
@@ -186,61 +279,47 @@
   </head>
 
   <body>
-    <div id="player-balance">$1000</div>
-    <div class="section">
-      <div class="hand" id="dealer-hand"></div>
+    <div class="top-circle"></div>
+    <div class="bottom-circle"></div>
+    <div class="texture" alt=""></div>
+    <div class="group-of-text">
+      <h1>BLACK JACK PAYS 3 TO 2</h1>
+      <h2>Dealer must stand on 17 and must draw to 16</h2>
     </div>
 
-    <div id="middle">
-      <div id="container">
-        <button id="hit-button">Hit</button>
-        <button id="stand-button">Stand</button>
+    <div id="player-balance">$1000</div>
+
+    <div class="higher-layer">
+      <div class="section">
+        <div class="hand" id="dealer-hand"></div>
       </div>
 
-      <div id="game-over-message"></div>
-    </div>
+      <div id="middle">
+        <div id="container">
+          <button id="hit-button">+ Hit</button>
+          <button id="stand-button">🖐️ Stand</button>
+        </div>
 
-    <div class="section">
-      <div id="betting-container">
-        <div>
-          <label>Bet:</label>
+        <div id="game-over-message"></div>
+      </div>
+
+      <div class="section">
+        <div id="betting-container">
           <div>
-            <input id="input-field" />
-            <button id="go-button">Go!</button>
+            <label>Bet:</label>
+            <div style="display: flex; flex-direction: row; column-gap: 16px">
+              <input id="input-field" />
+              <button id="go-button" style="width: 120px">Go!</button>
+            </div>
+            <div id="output-div"></div>
           </div>
         </div>
-      </div>
-      <div class="hand" id="player-hand">
-        <!-- <img src="cards/10c.svg" /> -->
+        <div class="hand" id="player-hand">
+          <!-- <img src="cards/10c.svg" /> -->
+        </div>
       </div>
     </div>
     <!-- Import program logic -->
     <script src="script.js"></script>
-    <!-- Define button click functionality -->
-    <script>
-      var button = document.querySelector("#go-button");
-      button.addEventListener("click", function () {
-        // Set result to input value
-        var input = document.querySelector("#input-field");
-        var result = main(input.value);
-
-        // Display result in output element
-        //var output = document.querySelector("#output-div");
-        output.innerHTML = result;
-
-        // Reset input value
-        input.value = "";
-      });
-
-      var hitButton = document.querySelector("#hit-button");
-      hitButton.addEventListener("click", function () {
-        playerHit();
-      });
-
-      var standButton = document.querySelector("#stand-button");
-      standButton.addEventListener("click", function () {
-        playerStand();
-      });
-    </script>
   </body>
 </html>

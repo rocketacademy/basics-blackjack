@@ -132,11 +132,13 @@ var player = {
 
 var output = "";
 var bettingContainer = document.querySelector("#betting-container");
+var errorMessage = document.querySelector("#output-div");
 //var hitStandContainer = document.querySelector("#hit-stand-container");
 var input = document.querySelector("#input-field");
 var goButton = document.querySelector("#go-button");
 var hitButton = document.querySelector("#hit-button");
 var standButton = document.querySelector("#stand-button");
+var middle = document.querySelector("#middle");
 var gameOverMessage = document.querySelector("#game-over-message");
 
 var hideHitStandButtons = function () {
@@ -224,10 +226,15 @@ var updateBalance = function (outcome) {
   } else if (outcome == "lose") {
     playerMoneyBalance -= bet;
   }
-  document.querySelector("#player-balance").innerText = playerMoneyBalance;
+  document.querySelector(
+    "#player-balance"
+  ).innerText = `$${playerMoneyBalance}`;
 };
 
 var toNextRound = function () {
+  middle.style.background =
+    "linear-gradient(113deg, #EAD307 6.67%, #F2E14C 86.34%)";
+  middle.style.boxShadow = "0px 0px 40px 0px rgba(0, 0, 0, 0.25)";
   var dealerSecondCard = document.querySelector("[src='cards/back.svg']");
   var originalSource = dealerSecondCard.getAttribute("originalsrc");
   dealerSecondCard.src = originalSource;
@@ -239,6 +246,9 @@ var toNextRound = function () {
     document.querySelector("#player-hand").innerHTML = "";
     document.querySelector("#dealer-hand").innerHTML = "";
     showBetting();
+    errorMessage.innerText = "";
+    middle.style.background = "";
+    middle.style.boxShadow = "";
   }, 4000);
 };
 
@@ -246,16 +256,16 @@ var blackJackCheck = function () {
   if (player.score == 21 || dealer.score == 21) {
     hideHitStandButtons();
     if (player.score == 21 && dealer.score == 21) {
-      gameOverMessage.innerText = "PLAYER AND DEALER BLACK JACKS. PUSH";
-      console.log("PLAYER AND DEALER BLACK JACKS. PUSH");
+      gameOverMessage.innerText = "PLAYER AND DEALER BLACK JACK! PUSH!";
+      console.log("PLAYER AND DEALER BLACK JACK. PUSH");
     } else if (player.score == 21) {
-      gameOverMessage.innerText = "PLAYER BLACKJACK";
+      gameOverMessage.innerText = "PLAYER BLACK JACK!";
       updateBalance("big win");
       console.log("PLAYER BLACKJACK");
     } else if (dealer.score == 21) {
-      gameOverMessage.innerText = "DEALER BLACKJACK";
+      gameOverMessage.innerText = "DEALER BLACK JACK!";
       updateBalance("lose");
-      console.log("DEALER BLACKJACK");
+      console.log("DEALER BLACK JACK");
     }
     toNextRound();
   }
@@ -264,22 +274,22 @@ var blackJackCheck = function () {
 var gameOver = function () {
   hideHitStandButtons();
   if (player.score > 21) {
-    gameOverMessage.innerText = "PLAYER BUST";
+    gameOverMessage.innerText = "PLAYER BUST!";
     updateBalance("lose");
     console.log("PLAYER BUST");
   } else if (dealer.score > 21) {
-    gameOverMessage.innerText = "DEALER BUST";
+    gameOverMessage.innerText = "DEALER BUST!";
     updateBalance("win");
     console.log("DEALER BUST");
   } else if (player.score == dealer.score) {
-    gameOverMessage.innerText = "PUSH";
+    gameOverMessage.innerText = "PUSH!";
     console.log("PUSH");
   } else if (player.score > dealer.score) {
-    gameOverMessage.innerText = "PLAYER WINS";
+    gameOverMessage.innerText = "PLAYER WINS!";
     updateBalance("win");
     console.log("PLAYER WINS");
   } else if (player.score < dealer.score) {
-    gameOverMessage.innerText = "DEALER WINS";
+    gameOverMessage.innerText = "DEALER WINS!";
     updateBalance("lose");
     console.log("DEALER WINS");
   }
@@ -340,7 +350,7 @@ var playerStand = function () {
 var main = function (userInput) {
   // player input bet: $2-$500. clicks "Deal"
   if (isNaN(userInput) || userInput < 2 || userInput > 500) {
-    output = "Please enter a number from 2 to 500.";
+    return "Please enter a number from 2 to 500.";
   } else {
     bet = Number(userInput);
     // sequence of card drawing: player, dealer, player, dealer(face down)
@@ -356,5 +366,29 @@ var main = function (userInput) {
     showHitStandButtons();
     blackJackCheck();
   }
-  return output;
 };
+var button = document.querySelector("#go-button");
+button.addEventListener("click", function () {
+  // Set result to input value
+  var input = document.querySelector("#input-field");
+  var result = main(input.value);
+
+  // Display result in output element
+  if (result !== null) {
+    var output = document.querySelector("#output-div");
+    output.innerHTML = result;
+  }
+
+  // Reset input value
+  input.value = "";
+});
+
+var hitButton = document.querySelector("#hit-button");
+hitButton.addEventListener("click", function () {
+  playerHit();
+});
+
+var standButton = document.querySelector("#stand-button");
+standButton.addEventListener("click", function () {
+  playerStand();
+});
