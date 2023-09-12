@@ -140,15 +140,24 @@ var hitButton = document.querySelector("#hit-button");
 var standButton = document.querySelector("#stand-button");
 var middle = document.querySelector("#middle");
 var gameOverMessage = document.querySelector("#game-over-message");
+var groupOfText = document.querySelector(".group-of-text");
+var betDisplay = document.querySelector("#bet-display");
+
+betDisplay.style.display = "none";
 
 var hideHitStandButtons = function () {
   hitButton.style.display = "none";
   standButton.style.display = "none";
+  groupOfText.style.opacity = "";
+  betDisplay.style.display = "none";
 };
 
 var showHitStandButtons = function () {
   hitButton.style.display = "block";
   standButton.style.display = "block";
+  groupOfText.style.opacity = "0.2";
+  betDisplay.style.display = "block";
+  betDisplay.innerText = `$${bet}`;
 };
 
 var hideBetting = function () {
@@ -234,7 +243,7 @@ var updateBalance = function (outcome) {
 var toNextRound = function () {
   middle.style.background =
     "linear-gradient(113deg, #EAD307 6.67%, #F2E14C 86.34%)";
-  middle.style.boxShadow = "0px 0px 40px 0px rgba(0, 0, 0, 0.25)";
+  middle.style.boxShadow = "0px 0px 40px 5px rgba(0, 0, 0, 0.25)";
   var dealerSecondCard = document.querySelector("[src='cards/back.svg']");
   var originalSource = dealerSecondCard.getAttribute("originalsrc");
   dealerSecondCard.src = originalSource;

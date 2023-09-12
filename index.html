@@ -124,9 +124,15 @@
         border-radius: 100%;
         background-color: #1b3639;
         position: fixed;
-        top: calc(-105vh);
+        bottom: calc(50vh + 100px);
         align-self: center;
-        border: 2px solid white;
+        border: 2px solid #042d32;
+        text-align: center;
+        display: flex;
+        flex-direction: column-reverse;
+        padding-bottom: 12px;
+        font-size: 20px;
+        color: #001e22;
       }
 
       .bottom-circle {
@@ -137,13 +143,19 @@
         border-radius: 100%;
         background-color: #1b3639;
         position: fixed;
-        bottom: calc(-105vh);
+        top: calc(50vh + 100px);
         align-self: center;
-        border: 2px solid white;
+        border: 2px solid #042d32;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        padding-top: 12px;
+        font-size: 20px;
+        color: #001e22;
       }
 
       .hand img {
-        height: 28vh;
+        height: 24vh;
         border-radius: 1vh;
       }
 
@@ -171,6 +183,7 @@
         font-size: 48px;
         font-weight: 500;
         margin: 0;
+        line-height: 120%;
       }
 
       h2 {
@@ -178,22 +191,22 @@
         font-weight: 500;
         color: #f2e14c;
         margin: 0;
+        line-height: 90%;
       }
 
       #middle {
-        height: 160px;
+        height: 120px;
         display: flex;
         justify-content: center;
         align-items: center;
         flex-direction: column;
-        margin-top: 50px;
-        margin-bottom: 50px;
+        margin-top: 60px;
+        margin-bottom: 60px;
       }
 
       #game-over-message {
         color: #0d3337;
-        font-size: 88px;
-        letter-spacing: -3px;
+        font-size: 64px;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -244,8 +257,8 @@
       button {
         font-family: "EB Garamond", serif;
         font-size: 34px;
-        padding: 12px;
-        width: 200px;
+        padding: 16px;
+        width: 180px;
         background-color: #f2e14c;
         color: #0d3337;
         border: 0;
@@ -261,6 +274,14 @@
         width: 100%;
         height: auto;
         color: rgb(255, 121, 121);
+      }
+
+      #bet-display {
+        padding: 16px 40px;
+        background-color: rgba(255, 255, 255, 0.7);
+        color: #0d3337;
+        border-radius: 16px;
+        font-size: 64px;
       }
 
       .logo-img {
@@ -279,8 +300,8 @@
   </head>
 
   <body>
-    <div class="top-circle"></div>
-    <div class="bottom-circle"></div>
+    <div class="top-circle">DEALER</div>
+    <div class="bottom-circle">PLAYER</div>
     <div class="texture" alt=""></div>
     <div class="group-of-text">
       <h1>BLACK JACK PAYS 3 TO 2</h1>
@@ -296,8 +317,9 @@
 
       <div id="middle">
         <div id="container">
-          <button id="hit-button">+ Hit</button>
-          <button id="stand-button">🖐️ Stand</button>
+          <button id="hit-button">💥 Hit</button>
+          <div id="bet-display"></div>
+          <button id="stand-button">🙅‍♂️ Stand</button>
         </div>
 
         <div id="game-over-message"></div>
