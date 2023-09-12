@@ -1,6 +1,5 @@
 //28 hours
 
-//Container extend if split to 280 height
 //hit/bet button follow betContainer
 //playerRound boarder lighting
 //Result Layout Update(Win Loss tie depend)
@@ -49,9 +48,7 @@ var addPlayer = function (playerName) {
   splitPlayerAskIndex.push(false);
   playButton.disabled = false;
   deleteButton.disabled = false;
-  let playerTable = document.querySelector(`#player${player.length - 1}Table`);
-  playerTable.innerHTML = `<center><font size="5">${playerInfo.name}</font></center><center>Chips: ${playerInfo.chip}</center>`;
-  gameInstruct.innerHTML = "Welcome, who wants to play BlackJack?";
+  renewPlayerTable(player.length - 1);
   return;
 };
 
@@ -201,9 +198,9 @@ var splitPlayerAsk = function () {
       let playerTable = document.querySelector(`#player${i}Table`);
       let splitButton = document.createElement("button");
       let dontButton = document.createElement("button");
-      splitButton.classList.add("#betButton");
+      splitButton.classList.add("splitButton");
       splitButton.innerHTML = `Split!`;
-      dontButton.classList.add("#betButton");
+      dontButton.classList.add("dontButton");
       dontButton.innerHTML = `Dont!`;
       splitButton.addEventListener("click", function () {
         if (player[i].chip < chipOnTable[i]) {
@@ -234,6 +231,8 @@ var processSpliting = function (split, who) {
     player[who].splitStand = false;
     player[who].chip -= chipOnTable[who];
     chipOnTable[who] *= 2;
+    let playerTable = document.querySelector(`#player${who}Table`);
+    playerTable.style.height = "280px";
   }
 
   splitPlayerAskIndex[who] = false;
@@ -289,12 +288,12 @@ var genCardAndCompareValue = function (who) {
   if (player[who].value > 21) {
     player[who].winLose = "lose";
     player[who].stand = true;
-    cardContainer.innerHTML = `Busted! Value:${player[who].value}<br>${cardList}`;
+    cardContainer.innerHTML = `Busted! Value: ${player[who].value}<br>${cardList}`;
   } else if (player[who].value === 21) {
     player[who].stand = true;
-    cardContainer.innerHTML = `<b style ="font-size":"9">21!</b> Value:${player[who].value}<br>${cardList}`;
+    cardContainer.innerHTML = `<b style ="font-size":"9">21!</b> Value: ${player[who].value}<br>${cardList}`;
   } else {
-    cardContainer.innerHTML = `Value:${player[who].value}<br>${cardList}`;
+    cardContainer.innerHTML = `Value: ${player[who].value}<br>${cardList}`;
   }
 
   if ("splitCard" in player[who]) {
@@ -306,12 +305,12 @@ var genCardAndCompareValue = function (who) {
     if (player[who].splitValue > 21) {
       player[who].splitWinLose = "lose";
       player[who].splitStand = true;
-      cardContainer.innerHTML += `<br>Busted! Second Value :${player[who].splitValue}<br>${splitCardList}`;
+      cardContainer.innerHTML += `<br>Busted! Second Value: ${player[who].splitValue}<br>${splitCardList}`;
     } else if (player[who].splitValue === 21) {
       player[who].splitStand = true;
-      cardContainer.innerHTML += `<br>21! Second Value :${player[who].splitValue}<br>${splitCardList}`;
+      cardContainer.innerHTML += `<br>21! Second Value: ${player[who].splitValue}<br>${splitCardList}`;
     } else {
-      cardContainer.innerHTML += `<br> Second Value :${player[who].splitValue}<br>${splitCardList}`;
+      cardContainer.innerHTML += `<br> Second Value: ${player[who].splitValue}<br>${splitCardList}`;
     }
   }
   playerTable.append(cardContainer);
@@ -378,7 +377,7 @@ var dealerTurn = function () {
 
   let checkSplit = false;
   for (let i = 0; i < player.length; i++) {
-    if ("splitCard" in player) {
+    if ("splitCard" in player[i]) {
       checkSplit = true;
       break;
     }
@@ -394,7 +393,7 @@ var dealerTurn = function () {
     }) &&
       checkSplit === true &&
       player.every(function (a) {
-        if ("splitCard" in player) {
+        if ("splitCard" in player[i]) {
           return a.splitWinLose;
         } else {
           return "lose";
@@ -553,7 +552,11 @@ var dealCard = function (card) {
 
 var renewPlayerTable = function (who) {
   let playerTable = document.querySelector(`#player${who}Table`);
-  playerTable.innerHTML = `<center><font size="5">${player[who].name}</font></center><center>Chips: ${player[who].chip}</center>`;
+  playerTable.innerHTML = "";
+  let playerInfoDiv = document.createElement("div");
+  playerInfoDiv.classList.add("playerInfo");
+  playerInfoDiv.innerHTML = `<font size="5">${player[who].name}</font></center><center>Chips: ${player[who].chip}`;
+  playerTable.append(playerInfoDiv);
   if (chipOnTable[who] !== undefined) {
     let betContainer = document.createElement(`div`);
     betContainer.classList.add(`bet${who}Container`);
@@ -604,7 +607,7 @@ var endGameCal = function () {
     player[i].card = [];
     player[i].stand = false;
     player[i].winLose = "";
-    if ("splitCard" in player) {
+    if ("splitCard" in player[i]) {
       delete player[i].splitCard;
       delete player[i].splitValue;
       delete player[i].splitWinLose;
@@ -621,6 +624,8 @@ var again = function () {
   computerTable.innerHTML = ``;
   for (let i = 1; i < player.length; i++) {
     renewPlayerTable(i);
+    let playerTable = document.querySelector(`#player${i}Table`);
+    playerTable.style.height = "200px";
   }
   for (let i = 0; i < 7 - player.length; i++) {
     let playerTable = document.querySelector(`#player${6 - i}Table`);
@@ -635,6 +640,8 @@ var quit = function () {
   computerTable.innerHTML = ``;
   for (let i = 1; i < player.length; i++) {
     renewPlayerTable(i);
+    let playerTable = document.querySelector(`#player${i}Table`);
+    playerTable.style.height = "200px";
   }
   for (let i = 0; i < 7 - player.length; i++) {
     let playerTable = document.querySelector(`#player${6 - i}Table`);

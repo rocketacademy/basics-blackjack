@@ -10,6 +10,16 @@
   top: -150px;
 }
 
+#play-button {
+  margin-top: 40px;
+  width: 100px;
+  height: 50px;
+  font-size: 30px;
+  border-radius: 20%;
+  background-color: rgb(248, 248, 98);
+  box-shadow: 5px 5px 10px black;
+}
+
 img {
   margin-top: 8px;
   width: 55px;
@@ -116,6 +126,8 @@ button {
   outline-width: 3px;
   background-color: rgba(52, 127, 52, 0.7);
   outline-color: black;
+  border-top-left-radius: auto;
+  border-top-right-radius: auto;
 }
 
 #player2Table {
@@ -130,7 +142,7 @@ button {
   background-color: rgba(52, 127, 52, 0.7);
 }
 #player3Table {
-  bottom: -200px;
+  top: 330px;
   left: 130px;
   position: absolute;
   width: 310px;
@@ -142,7 +154,7 @@ button {
 }
 
 #player4Table {
-  bottom: -200px;
+  top: 330px;
   right: 130px;
   position: absolute;
   width: 310px;
@@ -179,6 +191,7 @@ button {
 .bet1Container {
   position: absolute;
   right: -120px;
+  top: 80px;
   font-size: 30px;
 }
 .bet2Container {
@@ -208,7 +221,16 @@ button {
 .bet6Container {
   position: absolute;
   left: -120px;
+  top: 80px;
   font-size: 30px;
+}
+
+.playerInfo {
+  text-align: center;
+  outline: 3px solid black;
+  border-top-left-radius: 20%;
+  border-top-right-radius: 20%;
+  background-color: rgb(255, 255, 92);
 }
 
 .deleteButton {
@@ -219,6 +241,18 @@ button {
   width: 200px;
 }
 
+.splitButton {
+  position: absolute;
+  width: 100px;
+  top: 90px;
+  right: 50px;
+}
+.dontButton {
+  position: absolute;
+  width: 100px;
+  top: 130px;
+  right: 50px;
+}
 .betButton {
   position: absolute;
   width: 50px;
