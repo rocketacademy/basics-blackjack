@@ -9,8 +9,21 @@
   width: 250px;
   top: -150px;
 }
+.winnerOutline {
+  border: 5px solid transparent;
+  border-image: linear-gradient(
+    to bottom right,
+    #b827fc 0%,
+    #2c90fc 25%,
+    #b8fd33 50%,
+    #fec837 75%,
+    #fd1892 100%
+  );
+  border-image-slice: 1;
+}
 
 #play-button {
+  position: absolute;
   margin-top: 40px;
   width: 100px;
   height: 50px;
@@ -35,11 +48,14 @@ h1 {
 
 #gameInstruct {
   background-color: antiquewhite;
+  width: 350px;
   border-radius: 30%;
   padding: 5px;
+  font-weight: bold;
 }
 #computerTable {
   padding: 5px;
+  color: white;
 }
 
 body {
@@ -122,12 +138,9 @@ button {
   position: absolute;
   width: 310px;
   height: 200px;
-  outline-style: solid;
-  outline-width: 3px;
+  outline: solid 3px black;
   background-color: rgba(52, 127, 52, 0.7);
-  outline-color: black;
-  border-top-left-radius: auto;
-  border-top-right-radius: auto;
+  color: white;
 }
 
 #player2Table {
@@ -136,10 +149,9 @@ button {
   position: absolute;
   width: 310px;
   height: 200px;
-  outline-style: solid;
-  outline-width: 3px;
-  outline-color: black;
+  outline: solid 3px black;
   background-color: rgba(52, 127, 52, 0.7);
+  color: white;
 }
 #player3Table {
   top: 330px;
@@ -147,10 +159,9 @@ button {
   position: absolute;
   width: 310px;
   height: 200px;
-  outline-style: solid;
-  outline-width: 3px;
-  outline-color: black;
+  outline: solid 3px black;
   background-color: rgba(52, 127, 52, 0.7);
+  color: white;
 }
 
 #player4Table {
@@ -159,10 +170,9 @@ button {
   position: absolute;
   width: 310px;
   height: 200px;
-  outline-style: solid;
-  outline-width: 3px;
-  outline-color: black;
+  outline: solid 3px black;
   background-color: rgba(52, 127, 52, 0.7);
+  color: white;
 }
 
 #player5Table {
@@ -171,10 +181,9 @@ button {
   position: absolute;
   width: 310px;
   height: 200px;
-  outline-style: solid;
-  outline-width: 3px;
-  outline-color: black;
+  outline: solid 3px black;
   background-color: rgba(52, 127, 52, 0.7);
+  color: white;
 }
 
 #player6Table {
@@ -183,10 +192,9 @@ button {
   position: absolute;
   width: 310px;
   height: 200px;
-  outline-style: solid;
-  outline-width: 3px;
-  outline-color: black;
+  outline: solid 3px black;
   background-color: rgba(52, 127, 52, 0.7);
+  color: white;
 }
 .bet1Container {
   position: absolute;
@@ -227,15 +235,15 @@ button {
 
 .playerInfo {
   text-align: center;
-  outline: 3px solid black;
-  border-top-left-radius: 20%;
-  border-top-right-radius: 20%;
   background-color: rgb(255, 255, 92);
+  color: black;
+  outline: 3px black solid;
+  border-radius: 20% 20% 0 0;
 }
 
 .deleteButton {
   position: absolute;
-  top: 72px;
+  top: 82px;
   margin-left: -100px;
   left: 50%;
   width: 200px;

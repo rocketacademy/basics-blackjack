@@ -1,9 +1,6 @@
-//31 hours
+//34 hours
 
-//playerRound boarder lighting
-//Result Layout Update(Win Loss tie depend)
 //animation of deal card
-//gameInstruct sentences
 
 //player contains name,chips,stand-check,value and array of cards,winLoss(win/lose/draw/"").
 //player[0] is the dealer(computer)winLoss is "lose" for easy check if everyone bust (line240)
@@ -50,6 +47,7 @@ var addPlayer = function (playerName) {
   playButton.disabled = false;
   deleteButton.disabled = false;
   renewPlayerTable(player.length - 1);
+
   return;
 };
 
@@ -61,6 +59,7 @@ var genPlayerDelete = function () {
       input.disabled = false;
       playButton.disabled = false;
       addPlayerButton.disabled = false;
+      deleteButton.disabled = false;
       gameInstruct.innerHTML = `Good Bye, ${player[i].name}. Have a nice day!`;
       deleteDelay = setTimeout(() => {
         gameInstruct.innerHTML = "Welcome, who wants to play BlackJack?";
@@ -74,7 +73,6 @@ var genPlayerDelete = function () {
         playerTable = document.querySelector(`#player${6 - i}Table`);
         playerTable.innerHTML = ``;
       }
-
       if (player.length === 1) {
         playButton.disabled = true;
         deleteButton.disabled = true;
@@ -89,6 +87,7 @@ var genPlayerDelete = function () {
   input.disabled = true;
   addPlayerButton.disabled = true;
   playButton.disabled = true;
+  deleteButton.disabled = true;
   gameInstruct.innerHTML = `Who wants to quit the game?`;
   var noOne = document.createElement("button");
   noOne.innerHTML = "No One";
@@ -102,6 +101,7 @@ var genPlayerDelete = function () {
     if (player.length < 7) {
       addPlayerButton.disabled = false;
     }
+    deleteButton.disabled = false;
     playButton.disabled = false;
     noOne.remove();
   });
@@ -111,7 +111,7 @@ var genPlayerDelete = function () {
 var main = function () {
   clearTimeout(deleteDelay);
   mainMenu.style.visibility = "hidden";
-  gameInstruct.innerHTML = "Please bet!";
+  gameInstruct.innerHTML = "Please decide how many chips you want to bet.";
   makeBetButton();
 };
 
@@ -172,14 +172,14 @@ var inGame = function () {
     calValue(i);
     if (player[i].card[0].rank === player[i].card[1].rank) {
       splitPlayerAskIndex[i] = true;
-      splitAskList += player[i].name + ` `;
+      splitAskList += player[i].name + `, `;
     }
     renewPlayerTable(i);
     genCardAndCompareValue(i);
   }
   if (splitPlayerAskIndex.includes(true)) {
     splitPlayerAsk();
-    gameInstruct.innerHTML = `${splitAskList}, you have two card with same rank. <br>Do you want to split?`;
+    gameInstruct.innerHTML = `${splitAskList}you have two card with same rank. <br>Do you want to split? <br>Please place addtional same bet if you split.`;
     return;
   } else {
     for (let i = 1; i < player.length; i++) {
@@ -188,12 +188,20 @@ var inGame = function () {
   }
 
   passPlayerRound();
-
+  makeBetContainer(playerRound);
   if (playerRound === player.length) {
     dealerTurn();
     return;
   }
-  gameInstruct.innerHTML = `${player[playerRound].name}, it's your turn. You hit or stand?`;
+  playerRoundOutline();
+  gameInstruct.innerHTML = `${player[playerRound].name}, it's your turn.<br>You hit or stand?`;
+};
+
+var playerRoundOutline = function () {
+  playerTable = document.querySelector(`#player${playerRound}Table`);
+  playerTable.style.outlineColor = "lightgreen";
+  playerTable.style.outlineWidth = "10px";
+  playerTable.style.outlineStyle = "double";
 };
 
 var splitPlayerAsk = function () {
@@ -208,7 +216,7 @@ var splitPlayerAsk = function () {
       dontButton.innerHTML = `Dont!`;
       splitButton.addEventListener("click", function () {
         if (player[i].chip < chipOnTable[i]) {
-          gameInstruct.innerHTML = `${player[i].name}, you don't have enough chips.<br>You cannot split`;
+          gameInstruct.innerHTML = `${player[i].name}, you don't have enough chips.<br>Sorry, You cannot split.`;
           splitButton.disabled = true;
         } else {
           processSpliting(true, i);
@@ -258,23 +266,24 @@ var processSpliting = function (split, who) {
     }
     passPlayerRound();
 
-    hitButton.style.visibility = "visible";
-    standButton.style.visibility = "visible";
     if (playerRound === player.length) {
       dealerTurn();
       return;
     }
-    gameInstruct.innerHTML = `${player[playerRound].name}, it's your turn. You hit or stand?`;
+    playerRoundOutline();
+    gameInstruct.innerHTML = `${player[playerRound].name}, it's your turn.<br>You hit or stand?`;
   }
 };
 
 var passPlayerRound = function () {
   for (let i = playerRound; i < player.length; i++) {
     if (player[i].stand === false) {
-      gameInstruct.innerHTML = `${player[playerRound].name}, it's your turn. You hit or stand?`;
+      playerRoundOutline();
+      gameInstruct.innerHTML = `${player[playerRound].name}, it's your turn.<br>You hit or stand?`;
       break;
     } else if (player[i].splitStand === false) {
-      gameInstruct.innerHTML = `${player[playerRound].name}, it's your turn for your second hand. You hit or stand?`;
+      playerRoundOutline();
+      gameInstruct.innerHTML = `${player[playerRound].name}, it's your turn for your second hand.<br>You hit or stand?`;
       break;
     } else {
       playerRound += 1;
@@ -297,7 +306,7 @@ var genCardAndCompareValue = function (who) {
     cardContainer.innerHTML = `Busted! Value: ${player[who].value}<br>${cardList}`;
   } else if (player[who].value === 21) {
     player[who].stand = true;
-    cardContainer.innerHTML = `<b style ="font-size":"9">21!</b> Value: ${player[who].value}<br>${cardList}`;
+    cardContainer.innerHTML = `<b>21!</b> Value: ${player[who].value}<br>${cardList}`;
   } else {
     cardContainer.innerHTML = `Value: ${player[who].value}<br>${cardList}`;
   }
@@ -385,7 +394,7 @@ var stand = function () {
 var dealerTurn = function () {
   calValue(0);
   gameInstruct.innerHTML = `Dealer turn!`;
-  computerTable.innerHTML = `<center><img src = "img/${player[0].card[0].name}.png"> <img src = "img/${player[0].card[1].name}.png">`;
+  computerTable.innerHTML = `<center>Value: ${player[0].value}</ceneter><center><img src = "img/${player[0].card[0].name}.png"> <img src = "img/${player[0].card[1].name}.png"></center>`;
 
   let checkSplit = false;
   for (let i = 0; i < player.length; i++) {
@@ -413,9 +422,8 @@ var dealerTurn = function () {
       }))
   ) {
     setTimeout(() => {
-      gameInstruct.innerHTML = `Everyone is busted! Everyone lose!`;
+      gameInstruct.innerHTML = `Everyone is busted!<br>Everyone lose!`;
       compareValueAddChips();
-      endGameCal();
       againButton.style.visibility = "visible";
       quitButton.style.visibility = "visible";
     }, (time += 3000));
@@ -451,12 +459,11 @@ var dealerTurn = function () {
       }
     }
     setTimeout(() => {
-      gameInstruct.innerHTML = `Dealer is busted! Every hand which did not busted win!`;
+      gameInstruct.innerHTML = `Dealer is busted!<br>Every hand which did not busted win!`;
     }, (time += 3000));
   }
   setTimeout(() => {
     compareValueAddChips();
-    endGameCal();
     againButton.style.visibility = "visible";
     if (player.length === 1) {
       againButton.disabled = true;
@@ -470,6 +477,7 @@ var compareValueAddChips = function () {
 
   for (let i = 1; i < player.length; i++) {
     playerTable = document.querySelector(`#player${i}Table`);
+    playerTable.innerHTML = "";
 
     if (player[i].winLose === "" && player[i].value === player[0].value) {
       player[i].winLose = "tie";
@@ -496,33 +504,52 @@ var compareValueAddChips = function () {
       player[i].splitWinLose = "lose";
     }
 
+    let endingPhase = document.createElement("p");
+    let playerInfoDiv = document.createElement("div");
+    playerInfoDiv.classList.add("playerInfo");
+
     if (player[i].winLose === "win" && player[i].splitWinLose === "win") {
+      playerTable.classList.add("winnerOutline");
       player[i].chip += chipOnTable[i] * 2;
-      playerTable.innerHTML = `<center>Congrats! ${
-        player[i].name
-      }.</center>You win ${chipOnTable[i] * 2} chips, now you have ${
-        player[i].chip
-      } chips.`;
+      endingPhase.innerHTML = `Congrats! ${player[i].name}.<br>You win ${
+        chipOnTable[i] * 2
+      } chips, now you have ${player[i].chip} chips.`;
+      playerInfoDiv.innerHTML = `<font size="5">${player[i].name}</font></center><center>Chips: ${player[i].chip}`;
+      playerTable.append(playerInfoDiv);
+      playerTable.append(endingPhase);
     } else if (
       (player[i].splitWinLose === "tie" && player[i].winLose === "win") ||
       (player[i].splitWinLose === "win" && player[i].winLose === "tie") ||
       (player[i].splitWinLose === undefined && player[i].winLose === "win")
     ) {
+      playerTable.classList.add("winnerOutline");
       player[i].chip += chipOnTable[i] * 2;
-      playerTable.innerHTML = `<center>Congrats! ${player[i].name}.</center>You win ${chipOnTable[i]} chips, now you have ${player[i].chip} chips.`;
+      endingPhase.innerHTML = `Congrats! ${player[i].name}.<br>You win ${chipOnTable[i]} chips, now you have ${player[i].chip} chips.`;
+      playerInfoDiv.innerHTML = `<font size="5">${player[i].name}</font></center><center>Chips: ${player[i].chip}`;
+      playerTable.append(playerInfoDiv);
+      playerTable.append(endingPhase);
     } else if (
       (player[i].splitWinLose === undefined && player[i].winLose === "tie") ||
       (player[i].splitWinLose === "lose" && player[i].winLose === "win") ||
       (player[i].splitWinLose === "tie" && player[i].winLose === "tie") ||
-      (player[i].splitWinLose === "win" && player[i].winLose === "loss")
+      (player[i].splitWinLose === "win" && player[i].winLose === "lose")
     ) {
+      playerTable.style.outline = "solid 3px black";
       player[i].chip += chipOnTable[i];
-      playerTable.innerHTML = `<center>It's a tie! ${player[i].name}.</center>You take back ${chipOnTable[i]} chips, now you have ${player[i].chip} chips.`;
+      endingPhase.innerHTML = `It's a tie! ${player[i].name}.<br>You take back ${chipOnTable[i]} chips, now you have ${player[i].chip} chips.`;
+      playerInfoDiv.innerHTML = `<font size="5">${player[i].name}</font></center><center>Chips: ${player[i].chip}`;
+      playerTable.append(playerInfoDiv);
+      playerTable.append(endingPhase);
     } else {
-      playerTable.innerHTML = `<center>Oh! ${player[i].name}.</center>You lose ${chipOnTable[i]} chips, now you have ${player[i].chip} chips.`;
+      playerTable.style.outline = "5px solid rgb(81, 9, 81)";
+      endingPhase.innerHTML = `Oh! ${player[i].name}.<br>You lose ${chipOnTable[i]} chips, now you have ${player[i].chip} chips.`;
+      playerInfoDiv.innerHTML = `<font size="5">${player[i].name}</font></center><center>Chips: ${player[i].chip}`;
+      playerTable.append(playerInfoDiv);
+      playerTable.append(endingPhase);
       if (player[i].chip === 0) {
-        playerTable.innerHTML = `<center>Hey! ${player[i].name}.</center> You don't have chips left.<br>Get out of my casino!!!`;
+        playerTable.innerHTML = `<b style="font-size:30px;">Hey! ${player[i].name}.</b><br>You don't have chips left.<br>Get out of my casino!!!`;
         loserIndex.push(i);
+        playerTable.style.outline = "5px solid red";
       }
     }
   }
@@ -565,6 +592,10 @@ var dealCard = function (card) {
 var renewPlayerTable = function (who) {
   playerTable = document.querySelector(`#player${who}Table`);
   playerTable.innerHTML = "";
+  playerTable.style.outlineStyle = "solid";
+  playerTable.style.outlineColor = "black";
+  playerTable.style.outlineWidth = "3px";
+  playerTable.classList.remove("winnerOutline");
   let playerInfoDiv = document.createElement("div");
   playerInfoDiv.classList.add("playerInfo");
   playerInfoDiv.innerHTML = `<font size="5">${player[who].name}</font></center><center>Chips: ${player[who].chip}`;
@@ -640,11 +671,17 @@ var shuffleDeck = function () {
 
 var endGameCal = function () {
   deck = [];
-  for (let i = 0; i < player.length; i++) {
+  player[0].value = 0;
+  player[0].card = [];
+  player[0].stand = false;
+  player[0].winLose = "";
+  for (let i = 1; i < player.length; i++) {
+    playerTable = document.querySelector(`#player${i}Table`);
     player[i].value = 0;
     player[i].card = [];
     player[i].stand = false;
     player[i].winLose = "";
+    playerTable.style.height = "200px";
     if ("splitCard" in player[i]) {
       delete player[i].splitCard;
       delete player[i].splitValue;
@@ -662,13 +699,16 @@ var again = function () {
   computerTable.innerHTML = ``;
   for (let i = 1; i < player.length; i++) {
     renewPlayerTable(i);
-    layerTable = document.querySelector(`#player${i}Table`);
-    playerTable.style.height = "200px";
   }
   for (let i = 0; i < 7 - player.length; i++) {
     playerTable = document.querySelector(`#player${6 - i}Table`);
     playerTable.innerHTML = ``;
+    playerTable.style.outlineStyle = "solid";
+    playerTable.style.outlineColor = "black";
+    playerTable.style.outlineWidth = "3px";
+    playerTable.classList.remove("winnerOutline");
   }
+  endGameCal();
   againButton.style.visibility = "hidden";
   quitButton.style.visibility = "hidden";
   main();
@@ -678,19 +718,27 @@ var quit = function () {
   computerTable.innerHTML = ``;
   for (let i = 1; i < player.length; i++) {
     renewPlayerTable(i);
-    playerTable = document.querySelector(`#player${i}Table`);
-    playerTable.style.height = "200px";
   }
   for (let i = 0; i < 7 - player.length; i++) {
     playerTable = document.querySelector(`#player${6 - i}Table`);
     playerTable.innerHTML = ``;
+    playerTable.style.outlineStyle = "solid";
+    playerTable.style.outlineColor = "black";
+    playerTable.style.outlineWidth = "3px";
+    playerTable.classList.remove("winnerOutline");
   }
   gameInstruct.innerHTML = "Welcome, who wants to play BlackJack?";
   mainMenu.style.visibility = "visible";
+
+  if (player.length === 7) {
+    addPlayerButton.disabled = true;
+  }
+  addPlayerButton.disabled = false;
   if (player.length === 1) {
     playButton.disabled = true;
     deleteButton.disabled = true;
   }
+  endGameCal();
   againButton.style.visibility = "hidden";
   quitButton.style.visibility = "hidden";
 };
