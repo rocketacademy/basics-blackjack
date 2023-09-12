@@ -1,9 +1,9 @@
-//28 hours
+//31 hours
 
-//hit/bet button follow betContainer
 //playerRound boarder lighting
 //Result Layout Update(Win Loss tie depend)
 //animation of deal card
+//gameInstruct sentences
 
 //player contains name,chips,stand-check,value and array of cards,winLoss(win/lose/draw/"").
 //player[0] is the dealer(computer)winLoss is "lose" for easy check if everyone bust (line240)
@@ -21,6 +21,7 @@ var playerRound = 1;
 var time = 0;
 var splitPlayerAskIndex = [false];
 var deleteDelay;
+var playerTable;
 
 var addPlayer = function (playerName) {
   if (playerName === "") {
@@ -54,7 +55,7 @@ var addPlayer = function (playerName) {
 
 var genPlayerDelete = function () {
   for (let i = 1; i < player.length; i++) {
-    let playerTable = document.querySelector(`#player${i}Table`);
+    playerTable = document.querySelector(`#player${i}Table`);
     let playerButton = document.createElement("button");
     playerButton.addEventListener("click", function () {
       input.disabled = false;
@@ -70,7 +71,7 @@ var genPlayerDelete = function () {
         renewPlayerTable(i);
       }
       for (let i = 0; i < 7 - player.length; i++) {
-        let playerTable = document.querySelector(`#player${6 - i}Table`);
+        playerTable = document.querySelector(`#player${6 - i}Table`);
         playerTable.innerHTML = ``;
       }
 
@@ -117,7 +118,7 @@ var main = function () {
 var makeBetButton = function () {
   for (let i = 1; i < player.length; i++) {
     chipOnTable.push(0);
-    let playerTable = document.querySelector(`#player${i}Table`);
+    playerTable = document.querySelector(`#player${i}Table`);
     let betChips = document.createElement("input");
     let betButton = document.createElement("button");
     betChips.type = "number";
@@ -180,11 +181,14 @@ var inGame = function () {
     splitPlayerAsk();
     gameInstruct.innerHTML = `${splitAskList}, you have two card with same rank. <br>Do you want to split?`;
     return;
+  } else {
+    for (let i = 1; i < player.length; i++) {
+      makeBetContainer(i);
+    }
   }
-  hitButton.style.visibility = "visible";
-  standButton.style.visibility = "visible";
 
   passPlayerRound();
+
   if (playerRound === player.length) {
     dealerTurn();
     return;
@@ -195,7 +199,7 @@ var inGame = function () {
 var splitPlayerAsk = function () {
   for (let i = 1; i < splitPlayerAskIndex.length; i++) {
     if (splitPlayerAskIndex[i] === true) {
-      let playerTable = document.querySelector(`#player${i}Table`);
+      playerTable = document.querySelector(`#player${i}Table`);
       let splitButton = document.createElement("button");
       let dontButton = document.createElement("button");
       splitButton.classList.add("splitButton");
@@ -231,7 +235,7 @@ var processSpliting = function (split, who) {
     player[who].splitStand = false;
     player[who].chip -= chipOnTable[who];
     chipOnTable[who] *= 2;
-    let playerTable = document.querySelector(`#player${who}Table`);
+    playerTable = document.querySelector(`#player${who}Table`);
     playerTable.style.height = "280px";
   }
 
@@ -250,8 +254,10 @@ var processSpliting = function (split, who) {
       }
       renewPlayerTable(i);
       genCardAndCompareValue(i);
+      makeBetContainer(i);
     }
     passPlayerRound();
+
     hitButton.style.visibility = "visible";
     standButton.style.visibility = "visible";
     if (playerRound === player.length) {
@@ -279,7 +285,7 @@ var passPlayerRound = function () {
 var genCardAndCompareValue = function (who) {
   let cardContainer = document.createElement("div");
   cardContainer.style.padding = "5px";
-  let playerTable = document.querySelector(`#player${who}Table`);
+  playerTable = document.querySelector(`#player${who}Table`);
   let cardList = ``;
   for (let i = 0; i < player[who].card.length; i++) {
     cardList += ` <img src ="img/${player[who].card[i].name}.png">`;
@@ -343,11 +349,15 @@ var hit = function () {
     dealCard(player[playerRound].card);
     calValue(playerRound);
   }
+  let lastRound = playerRound;
   renewPlayerTable(playerRound);
   genCardAndCompareValue(playerRound);
   passPlayerRound();
+  makeBetContainer(lastRound);
+  makeBetContainer(playerRound);
   if (playerRound === player.length) {
     dealerTurn();
+    return;
   }
 };
 
@@ -360,17 +370,19 @@ var stand = function () {
   } else {
     player[playerRound].stand = true;
   }
+  let lastRound = playerRound;
+  renewPlayerTable(playerRound);
+  genCardAndCompareValue(playerRound);
   passPlayerRound();
+  makeBetContainer(lastRound);
+  makeBetContainer(playerRound);
   if (playerRound === player.length) {
     dealerTurn();
-  } else {
-    gameInstruct.innerHTML = `${player[playerRound].name}, it's your turn. You hit or stand?`;
+    return;
   }
 };
 
 var dealerTurn = function () {
-  hitButton.style.visibility = "hidden";
-  standButton.style.visibility = "hidden";
   calValue(0);
   gameInstruct.innerHTML = `Dealer turn!`;
   computerTable.innerHTML = `<center><img src = "img/${player[0].card[0].name}.png"> <img src = "img/${player[0].card[1].name}.png">`;
@@ -457,7 +469,7 @@ var compareValueAddChips = function () {
   let loserIndex = [];
 
   for (let i = 1; i < player.length; i++) {
-    let playerTable = document.querySelector(`#player${i}Table`);
+    playerTable = document.querySelector(`#player${i}Table`);
 
     if (player[i].winLose === "" && player[i].value === player[0].value) {
       player[i].winLose = "tie";
@@ -551,19 +563,45 @@ var dealCard = function (card) {
 };
 
 var renewPlayerTable = function (who) {
-  let playerTable = document.querySelector(`#player${who}Table`);
+  playerTable = document.querySelector(`#player${who}Table`);
   playerTable.innerHTML = "";
   let playerInfoDiv = document.createElement("div");
   playerInfoDiv.classList.add("playerInfo");
   playerInfoDiv.innerHTML = `<font size="5">${player[who].name}</font></center><center>Chips: ${player[who].chip}`;
   playerTable.append(playerInfoDiv);
+};
+
+var makeBetContainer = function (who) {
+  playerTable = document.querySelector(`#player${who}Table`);
   if (chipOnTable[who] !== undefined) {
     let betContainer = document.createElement(`div`);
     betContainer.classList.add(`bet${who}Container`);
     chipsPhoto = `<img src="img/chips.png">`;
-
     betContainer.innerHTML = `${chipsPhoto}:${chipOnTable[who]}`;
     playerTable.append(betContainer);
+    if (
+      (player[who].stand === false || player[who].splitStand === false) &&
+      playerRound === who
+    ) {
+      let hitButton = document.createElement(`button`);
+      hitButton.innerHTML = "Hit!";
+      hitButton.classList.add("hit-button");
+      hitButton.addEventListener("click", function () {
+        hitButton.remove();
+        standButton.remove();
+        hit();
+      });
+      let standButton = document.createElement("button");
+      standButton.innerHTML = "Stand!";
+      standButton.classList.add("stand-button");
+      standButton.addEventListener("click", function () {
+        hitButton.remove();
+        standButton.remove();
+        stand();
+      });
+      betContainer.append(hitButton);
+      betContainer.append(standButton);
+    }
   }
 };
 
@@ -624,11 +662,11 @@ var again = function () {
   computerTable.innerHTML = ``;
   for (let i = 1; i < player.length; i++) {
     renewPlayerTable(i);
-    let playerTable = document.querySelector(`#player${i}Table`);
+    layerTable = document.querySelector(`#player${i}Table`);
     playerTable.style.height = "200px";
   }
   for (let i = 0; i < 7 - player.length; i++) {
-    let playerTable = document.querySelector(`#player${6 - i}Table`);
+    playerTable = document.querySelector(`#player${6 - i}Table`);
     playerTable.innerHTML = ``;
   }
   againButton.style.visibility = "hidden";
@@ -640,11 +678,11 @@ var quit = function () {
   computerTable.innerHTML = ``;
   for (let i = 1; i < player.length; i++) {
     renewPlayerTable(i);
-    let playerTable = document.querySelector(`#player${i}Table`);
+    playerTable = document.querySelector(`#player${i}Table`);
     playerTable.style.height = "200px";
   }
   for (let i = 0; i < 7 - player.length; i++) {
-    let playerTable = document.querySelector(`#player${6 - i}Table`);
+    playerTable = document.querySelector(`#player${6 - i}Table`);
     playerTable.innerHTML = ``;
   }
   gameInstruct.innerHTML = "Welcome, who wants to play BlackJack?";

@@ -271,8 +271,18 @@ button {
   left: 50%;
 }
 
-#hit-button,
-#stand-button,
+.hit-button {
+  position: absolute;
+  width: 100px;
+  top: -70px;
+  left: 0px;
+}
+.stand-button {
+  position: absolute;
+  width: 100px;
+  top: -30px;
+  left: 0px;
+}
 #again-button,
 #quit-button {
   visibility: hidden;

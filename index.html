@@ -119,12 +119,6 @@
         </div>
         <center><button id="play-button" disabled>Play</button></center>
         <center>
-          <div id="hitStandPlacement">
-            <button id="hit-button">Hit!</button>
-            <button id="stand-button">Stand!</button>
-          </div>
-        </center>
-        <center>
           <div id="endGameContainer">
             <button id="again-button">One More Round!</button>
             <button id="quit-button">Quit!</button>
@@ -138,8 +132,6 @@
     <!-- Define button click functionality -->
     <script>
       var playButton = document.querySelector("#play-button");
-      var hitButton = document.querySelector("#hit-button");
-      var standButton = document.querySelector("#stand-button");
       var input = document.querySelector("#input-field");
       var addPlayerButton = document.querySelector("#add-player");
       var deleteButton = document.querySelector("#delete-player");
@@ -159,12 +151,6 @@
       });
       deleteButton.addEventListener("click", function () {
         genPlayerDelete();
-      });
-      hitButton.addEventListener("click", function () {
-        hit();
-      });
-      standButton.addEventListener("click", function () {
-        stand();
       });
 
       againButton.addEventListener("click", function () {
