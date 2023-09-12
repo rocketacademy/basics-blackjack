@@ -5,19 +5,23 @@
 // User clicks Submit to deal cards. - done
 // The cards are analysed for game winning conditions, e.g. Blackjack. - done
 // The cards are displayed to the user. - done
-// The user decides whether to hit or stand, using the submit button to submit their choice.
-// The user's cards are analysed for winning or losing conditions.
+// The user decides whether to hit or stand, using the submit button to submit their choice. - done
+// The user's cards are analysed for winning or losing conditions. - done
 // The computer decides to hit or stand automatically based on game rules.
 // The game either ends or continues.
 
 // declare game state
-var gameState1 = "";
-var gameState2 = "";
+var gameState1 = "game start";
+var gameState2 = "cards dealt";
+var gameState3 = "hit or stand";
 var currentGameState = gameState1;
 
 // store player's and dealer's hand
 var playerHand = [];
 var dealerHand = [];
+
+// initialize deck
+var deckConstruct = "";
 
 // a deck of cards
 var deckBuilder = function () {
@@ -60,15 +64,20 @@ var shuffleDeck = function (deck) {
   return deck;
 };
 
+// a deck of cards that's been shuffled
+var shuffled = function () {
+  return shuffleDeck(deckBuilder());
+};
+
 // user clicks submit to deal cards.
 var dealCards = function () {
-  var outputMessage = "player's turn<br>";
-  var shuffled = shuffleDeck(deckBuilder());
+  var outputMessage = "";
+  deckConstruct = shuffled();
   console.log(`shuffling deck . . .`);
-  console.log(shuffled);
+  console.log(deckConstruct);
   for (var i = 0; i < 2; i += 1) {
-    var player = shuffled.pop();
-    var dealer = shuffled.pop();
+    var player = deckConstruct.pop();
+    var dealer = deckConstruct.pop();
     playerHand.push(player);
     dealerHand.push(dealer);
   }
@@ -100,20 +109,20 @@ var blackjackWin = function () {
   var outputMessage = "";
   if (playerBlackjack == true || dealerBlackjack == true) {
     if (playerBlackjack == true && dealerBlackjack == true) {
-      outputMessage += `${showHand(playerHand, dealerHand)}blackjack draw<br>`;
+      outputMessage = `${showHand(playerHand, dealerHand)}blackjack draw<br>`;
     } else if (playerBlackjack == false && dealerBlackjack == true) {
-      outputMessage += `${showHand(
+      outputMessage = `${showHand(
         playerHand,
         dealerHand
       )}dealer wins by blackjack<br>`;
     } else {
-      outputMessage += `${showHand(
+      outputMessage = `${showHand(
         playerHand,
         dealerHand
       )}player wins by blackjack<br>`;
     }
   } else {
-    outputMessage += `${showHand(
+    outputMessage = `${showHand(
       playerHand,
       dealerHand
     )}there is no blackjack<br>`;
@@ -138,24 +147,46 @@ var checkHandTotalValue = function (hand) {
 };
 
 // win by hand value without exceeding 21 points
-var normalWin = function () {
-  var playerHandTotalValue = checkHandTotalValue(playerHand);
-  var dealerHandTotalValue = checkHandTotalValue(dealerHand);
+var normalWin = function (input) {
   var outputMessage = "";
-  if (playerHandTotalValue == dealerHandTotalValue) {
-    outputMessage += `it's a tie ${showHandValue(
-      playerHandTotalValue,
-      dealerHandTotalValue
-    )}`;
-  } else if (playerHandTotalValue < dealerHandTotalValue) {
-    outputMessage += `dealer wins ${showHandValue(
-      playerHandTotalValue,
-      dealerHandTotalValue
-    )}`;
+  if (input == "z") {
+    playerHand.push(deckConstruct.pop());
+    outputMessage = `${showHand(
+      playerHand,
+      dealerHand
+    )}card drawn from pile.<br>input: "z" - hit or "x" - stand`;
+  } else if (input == "x") {
+    var playerHandTotalValue = checkHandTotalValue(playerHand);
+    var dealerHandTotalValue = checkHandTotalValue(dealerHand);
+    if (playerHandTotalValue == dealerHandTotalValue) {
+      outputMessage = `${showHand(
+        playerHand,
+        dealerHand
+      )}it's a tie<br> ${showHandValue(
+        playerHandTotalValue,
+        dealerHandTotalValue
+      )}`;
+    } else if (playerHandTotalValue < dealerHandTotalValue) {
+      outputMessage = `${showHand(
+        playerHand,
+        dealerHand
+      )}dealer wins<br> ${showHandValue(
+        playerHandTotalValue,
+        dealerHandTotalValue
+      )}`;
+    } else {
+      outputMessage = `${showHand(
+        playerHand,
+        dealerHand
+      )}player wins<br> ${showHandValue(
+        playerHandTotalValue,
+        dealerHandTotalValue
+      )}`;
+    }
   } else {
-    outputMessage += `player wins ${showHandValue(
-      playerHandTotalValue,
-      dealerHandTotalValue
+    outputMessage = `input: "z" - hit or "x" - stand<br><br>${showHand(
+      playerHand,
+      dealerHand
     )}`;
   }
   return outputMessage;
@@ -163,7 +194,7 @@ var normalWin = function () {
 
 // print output message
 var showHand = function (player, dealer) {
-  var playerOutput = `<br>player's hand:<br>`;
+  var playerOutput = `player's hand:<br>`;
   for (i = 0; i < player.length; i += 1) {
     playerOutput += `${player[i].name} of ${player[i].suit}<br>`;
   }
@@ -182,21 +213,25 @@ var showHandValue = function (player, dealer) {
 
 var main = function (input) {
   var myOutputValue = "";
-  if (gameState1 == "") {
+  if (currentGameState == gameState1) {
     console.log(`gameState: 1`);
-    myOutputValue += dealCards();
-    gameState2 == "";
+    myOutputValue = dealCards();
+    currentGameState = gameState2;
     console.log(`gameState: 2`);
   }
-  if (gameState2 == "") {
+  if (currentGameState == gameState2) {
     console.log(checkForBlackjack(playerHand));
-    console.log(checkForBlackjack(dealerHand));
     console.log(checkHandTotalValue(playerHand));
+    console.log(checkForBlackjack(dealerHand));
     console.log(checkHandTotalValue(dealerHand));
     myOutputValue += blackjackWin();
-    myOutputValue += normalWin();
     console.log(blackjackWin());
-    console.log(normalWin());
+    currentGameState = gameState3;
+    console.log(`gameState: 3`);
+  }
+  if (currentGameState == gameState3) {
+    myOutputValue += normalWin(input);
+    console.log(normalWin(input));
   }
   return myOutputValue;
 };
