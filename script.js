@@ -70,6 +70,38 @@ var shuffled = function () {
   return shuffleDeck(deckBuilder());
 };
 
+// function to load and display card images
+var displayPlayerHand = function () {
+  var playerHandContainer = document.getElementById("player-hand");
+
+  // clear existing cards
+  playerHandContainer.innerHTML = "";
+
+  for (var i = 0; i < playerHand.length; i += 1) {
+    var card = playerHand[i];
+    var cardImage = document.createElement("img");
+    cardImage.src = `./cards/${card.name}-${card.suit}.png`;
+    cardImage.alt = `${card.name} of ${card.suit}`;
+    playerHandContainer.appendChild(cardImage);
+  }
+};
+
+// function to load and display card images
+var displayDealerHand = function () {
+  var dealerHandContainer = document.getElementById("dealer-hand");
+
+  // clear existing cards
+  dealerHandContainer.innerHTML = "";
+
+  for (var i = 0; i < dealerHand.length; i += 1) {
+    var card = dealerHand[i];
+    var cardImage = document.createElement("img");
+    cardImage.src = `./cards/${card.name}-${card.suit}.png`;
+    cardImage.alt = `${card.name} of ${card.suit}`;
+    dealerHandContainer.appendChild(cardImage);
+  }
+};
+
 // user clicks submit to deal cards.
 var dealCards = function () {
   var outputMessage = "";
@@ -86,6 +118,8 @@ var dealCards = function () {
   console.log(playerHand);
   console.log(`dealer's hand:`);
   console.log(dealerHand);
+  displayPlayerHand();
+  displayDealerHand();
   return outputMessage;
 };
 
@@ -94,6 +128,7 @@ var checkForBlackjack = function (card) {
   var cardIndexOne = card[0];
   var cardIndexTwo = card[1];
   var blackjack = false;
+
   // check if cardIndexOne and cardIndexTwo are defined and have the 'name' and 'value' properties
   if (
     cardIndexOne &&
@@ -170,6 +205,7 @@ var normalWin = function (input) {
   deckConstruct = shuffled();
   if (input == "z") {
     playerHand.push(deckConstruct.pop());
+    displayPlayerHand();
     outputMessage = `${showHand(
       playerHand,
       dealerHand
@@ -180,6 +216,7 @@ var normalWin = function (input) {
 
     while (dealerHandTotalValue < 17) {
       dealerHand.push(deckConstruct.pop());
+      displayDealerHand();
       dealerHandTotalValue = checkHandTotalValue(dealerHand);
     }
 
@@ -235,12 +272,12 @@ var showHand = function (player, dealer) {
   for (i = 0; i < dealer.length; i += 1) {
     dealerOutput += `${dealer[i].name} of ${dealer[i].suit}<br>`;
   }
-  return `${playerOutput}<br>${dealerOutput}<br>`;
+  return `${dealerOutput}<br>${playerOutput}<br>`;
 };
 
 // print output value message
 var showHandValue = function (player, dealer) {
-  var returnOutput = `<br>player's total hand value: ${player}<br>dealer's total hand value: ${dealer}`;
+  var returnOutput = `<br>dealer's total hand value: ${dealer}<br>player's total hand value: ${player}`;
   return returnOutput;
 };
 
