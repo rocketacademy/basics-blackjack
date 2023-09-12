@@ -21,6 +21,7 @@ var chipOnTable = [0];
 var playerRound = 1;
 var time = 0;
 var splitPlayerAskIndex = [false];
+var deleteDelay;
 
 var addPlayer = function (playerName) {
   if (playerName === "") {
@@ -63,7 +64,7 @@ var genPlayerDelete = function () {
       playButton.disabled = false;
       addPlayerButton.disabled = false;
       gameInstruct.innerHTML = `Good Bye, ${player[i].name}. Have a nice day!`;
-      setTimeout(() => {
+      deleteDelay = setTimeout(() => {
         gameInstruct.innerHTML = "Welcome, who wants to play BlackJack?";
       }, 3000);
       noOne.remove();
@@ -110,6 +111,7 @@ var genPlayerDelete = function () {
 };
 
 var main = function () {
+  clearTimeout(deleteDelay);
   mainMenu.style.visibility = "hidden";
   gameInstruct.innerHTML = "Please bet!";
   makeBetButton();
