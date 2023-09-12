@@ -4,7 +4,7 @@
 // Deck is shuffled. - done
 // User clicks Submit to deal cards. - done
 // The cards are analysed for game winning conditions, e.g. Blackjack. - done
-// The cards are displayed to the user.
+// The cards are displayed to the user. - done
 // The user decides whether to hit or stand, using the submit button to submit their choice.
 // The user's cards are analysed for winning or losing conditions.
 // The computer decides to hit or stand automatically based on game rules.
