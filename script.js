@@ -10,6 +10,11 @@
 // The computer decides to hit or stand automatically based on game rules.
 // The game either ends or continues.
 
+// declare game state
+var gameState1 = "";
+var gameState2 = "";
+var currentGameState = gameState1;
+
 // store player's and dealer's hand
 var playerHand = [];
 var dealerHand = [];
@@ -57,7 +62,7 @@ var shuffleDeck = function (deck) {
 
 // user clicks submit to deal cards.
 var dealCards = function () {
-  var outputMessage = "player's turn";
+  var outputMessage = "player's turn<br>";
   var shuffled = shuffleDeck(deckBuilder());
   console.log(`shuffling deck . . .`);
   console.log(shuffled);
@@ -74,6 +79,7 @@ var dealCards = function () {
   return outputMessage;
 };
 
+// check hand for blackjack (21 points on first two cards)
 var checkForBlackjack = function (card) {
   var cardIndexOne = card[0];
   var cardIndexTwo = card[1];
@@ -87,30 +93,35 @@ var checkForBlackjack = function (card) {
   return blackjack;
 };
 
+// win by natural blackjack (21 points on first two cards)
 var blackjackWin = function () {
   var playerBlackjack = checkForBlackjack(playerHand);
   var dealerBlackjack = checkForBlackjack(dealerHand);
   var outputMessage = "";
   if (playerBlackjack == true || dealerBlackjack == true) {
     if (playerBlackjack == true && dealerBlackjack == true) {
-      outputMessage += `${showHand(playerHand, dealerHand)}blackjack draw`;
+      outputMessage += `${showHand(playerHand, dealerHand)}blackjack draw<br>`;
     } else if (playerBlackjack == false && dealerBlackjack == true) {
       outputMessage += `${showHand(
         playerHand,
         dealerHand
-      )}dealer wins by blackjack`;
+      )}dealer wins by blackjack<br>`;
     } else {
       outputMessage += `${showHand(
         playerHand,
         dealerHand
-      )}player wins by blackjack`;
+      )}player wins by blackjack<br>`;
     }
   } else {
-    outputMessage += `${showHand(playerHand, dealerHand)}there is no blackjack`;
+    outputMessage += `${showHand(
+      playerHand,
+      dealerHand
+    )}there is no blackjack<br>`;
   }
   return outputMessage;
 };
 
+// sum up individual's hand
 var checkHandTotalValue = function (hand) {
   var handCounter = 0;
   for (i = 0; i < hand.length; i += 1) {
@@ -126,41 +137,66 @@ var checkHandTotalValue = function (hand) {
   return handCounter;
 };
 
+// win by hand value without exceeding 21 points
 var normalWin = function () {
   var playerHandTotalValue = checkHandTotalValue(playerHand);
   var dealerHandTotalValue = checkHandTotalValue(dealerHand);
   var outputMessage = "";
   if (playerHandTotalValue == dealerHandTotalValue) {
-    outputMessage += `${showHand(playerHand, dealerHand)}it's a tie`;
+    outputMessage += `it's a tie ${showHandValue(
+      playerHandTotalValue,
+      dealerHandTotalValue
+    )}`;
   } else if (playerHandTotalValue < dealerHandTotalValue) {
-    outputMessage += `${showHand(playerHand, dealerHand)}dealer wins`;
+    outputMessage += `dealer wins ${showHandValue(
+      playerHandTotalValue,
+      dealerHandTotalValue
+    )}`;
   } else {
-    outputMessage += `${showHand(playerHand, dealerHand)}player wins`;
+    outputMessage += `player wins ${showHandValue(
+      playerHandTotalValue,
+      dealerHandTotalValue
+    )}`;
   }
   return outputMessage;
 };
 
+// print output message
 var showHand = function (player, dealer) {
-  var playerOutput = `player's hand:<br>`;
+  var playerOutput = `<br>player's hand:<br>`;
   for (i = 0; i < player.length; i += 1) {
-    playerOutput += `- + ${player[i].name} of ${player[i].suit}<br>`;
+    playerOutput += `${player[i].name} of ${player[i].suit}<br>`;
   }
   var dealerOutput = `dealer's hand:<br>`;
   for (i = 0; i < dealer.length; i += 1) {
-    dealerOutput += `- + ${dealer[i].name} of ${dealer[i].suit}<br>`;
+    dealerOutput += `${dealer[i].name} of ${dealer[i].suit}<br>`;
   }
-  return `${playerOutput}<br>${dealerOutput}`;
+  return `${playerOutput}<br>${dealerOutput}<br>`;
+};
+
+// print output value message
+var showHandValue = function (player, dealer) {
+  var returnOutput = `<br>player's total hand value: ${player}<br>dealer's total hand value: ${dealer}`;
+  return returnOutput;
 };
 
 var main = function (input) {
   var myOutputValue = "";
-  console.log(dealCards());
-  console.log(checkForBlackjack(playerHand));
-  console.log(checkForBlackjack(dealerHand));
-  console.log(checkHandTotalValue(playerHand));
-  console.log(checkHandTotalValue(dealerHand));
-  console.log(blackjackWin());
-  console.log(normalWin());
-
+  if (gameState1 == "") {
+    console.log(`gameState: 1`);
+    myOutputValue += dealCards();
+    gameState2 == "";
+    console.log(`gameState: 2`);
+  }
+  if (gameState2 == "") {
+    console.log(checkForBlackjack(playerHand));
+    console.log(checkForBlackjack(dealerHand));
+    console.log(checkHandTotalValue(playerHand));
+    console.log(checkHandTotalValue(dealerHand));
+    myOutputValue += blackjackWin();
+    myOutputValue += normalWin();
+    console.log(blackjackWin());
+    console.log(normalWin());
+  }
   return myOutputValue;
 };
