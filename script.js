@@ -142,8 +142,12 @@ var middle = document.querySelector("#middle");
 var gameOverMessage = document.querySelector("#game-over-message");
 var groupOfText = document.querySelector(".group-of-text");
 var betDisplay = document.querySelector("#bet-display");
+var dealerScoreAttachment = document.querySelector("#dealer-score-attachment");
+var playerScoreAttachment = document.querySelector("#player-score-attachment");
 
 betDisplay.style.display = "none";
+dealerScoreAttachment.style.display = "none";
+playerScoreAttachment.style.display = "none";
 
 var hideHitStandButtons = function () {
   hitButton.style.display = "none";
@@ -158,6 +162,26 @@ var showHitStandButtons = function () {
   groupOfText.style.opacity = "0.2";
   betDisplay.style.display = "block";
   betDisplay.innerText = `$${bet}`;
+};
+
+var isThereAnyBlackJack = false;
+var isItEndOfRound = false;
+
+var showScore = function (person) {
+  playerScoreAttachment.style.display = "block";
+  dealerScoreAttachment.style.display = "block";
+  if (person == player) {
+    playerScoreAttachment.innerText = player.score;
+  } else if (person == dealer) {
+    if (isThereAnyBlackJack || isItEndOfRound) {
+      dealerScoreAttachment.innerText = dealer.score;
+      isThereAnyBlackJack = false;
+    } else if (dealer.cards.length == 2) {
+      dealerScoreAttachment.innerText = dealer.cards[0].score;
+    } else {
+      dealerScoreAttachment.innerText = dealer.score;
+    }
+  }
 };
 
 var hideBetting = function () {
@@ -176,25 +200,6 @@ hideHitStandButtons();
 // e.g.
 // A,9. count as 11,9.
 // 5,9,A. count as 15.]
-var calcScoreOriginal = function (person) {
-  person.score = 0;
-  for (var i = 0; i < person.cards.length; i += 1) {
-    person.score += person.cards[i].score;
-  }
-  console.log(person.score);
-  for (var i = 0; i < person.cards.length; i += 1) {
-    if (person.cards[i].rank == 1) {
-      if (person.score > 21) {
-        person.cards[i].score = 1;
-      }
-    }
-  }
-  person.score = 0;
-  for (var i = 0; i < person.cards.length; i += 1) {
-    person.score += person.cards[i].score;
-  }
-  console.log(person.score);
-};
 
 var calcScore = function (person) {
   var elevenCount = 0;
@@ -247,6 +252,9 @@ var toNextRound = function () {
   var dealerSecondCard = document.querySelector("[src='cards/back.svg']");
   var originalSource = dealerSecondCard.getAttribute("originalsrc");
   dealerSecondCard.src = originalSource;
+
+  showScore(dealer);
+  showScore(player);
   setTimeout(() => {
     gameOverMessage.innerText = "";
     bet = 0;
@@ -254,15 +262,20 @@ var toNextRound = function () {
     dealer.cards = [];
     document.querySelector("#player-hand").innerHTML = "";
     document.querySelector("#dealer-hand").innerHTML = "";
+    dealerScoreAttachment.style.display = "none";
+    playerScoreAttachment.style.display = "none";
     showBetting();
     errorMessage.innerText = "";
     middle.style.background = "";
     middle.style.boxShadow = "";
+    isItEndOfRound = false;
   }, 4000);
 };
 
 var blackJackCheck = function () {
   if (player.score == 21 || dealer.score == 21) {
+    isThereAnyBlackJack = true;
+    isItEndOfRound = true;
     hideHitStandButtons();
     if (player.score == 21 && dealer.score == 21) {
       gameOverMessage.innerText = "PLAYER AND DEALER BLACK JACK! PUSH!";
@@ -281,6 +294,7 @@ var blackJackCheck = function () {
 };
 
 var gameOver = function () {
+  isItEndOfRound = true;
   hideHitStandButtons();
   if (player.score > 21) {
     gameOverMessage.innerText = "PLAYER BUST!";
@@ -331,6 +345,7 @@ var dealerDrawCard = function () {
 var playerHit = function () {
   playerDrawCard();
   calcScore(player);
+  showScore(player);
   console.log(player.score);
   console.log(player.cards[player.cards.length - 1]);
   if (player.score > 21) {
@@ -351,6 +366,7 @@ var playerStand = function () {
     dealerDrawCard();
     calcScore(dealer);
   }
+  showScore(dealer);
   console.log(dealer.cards);
   console.log(dealer.score);
   gameOver();
@@ -371,6 +387,8 @@ var main = function (userInput) {
     // display card totals for player and dealer
     calcScore(player);
     calcScore(dealer);
+    showScore(player);
+    showScore(dealer);
     hideBetting();
     showHitStandButtons();
     blackJackCheck();
