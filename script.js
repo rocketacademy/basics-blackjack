@@ -14,12 +14,15 @@
 var gameState1 = "game start";
 var gameState2 = "cards dealt";
 var gameState3 = "hit or stand";
-var gameState4 = "game reset";
 var currentGameState = gameState1;
 
 // store player's and dealer's hand
 var playerHand = [];
 var dealerHand = [];
+
+// track if the player hit or stand
+var playerStand = false;
+var playerHit = true;
 
 // initialize deck
 var deckConstruct = [];
@@ -156,16 +159,19 @@ var blackjackWin = function () {
   if (playerBlackjack == true || dealerBlackjack == true) {
     if (playerBlackjack == true && dealerBlackjack == true) {
       outputMessage = `${showHand(playerHand, dealerHand)}blackjack draw<br>`;
+      disableHitStandButtons();
     } else if (playerBlackjack == false && dealerBlackjack == true) {
       outputMessage = `${showHand(
         playerHand,
         dealerHand
       )}dealer wins by blackjack<br>`;
+      disableHitStandButtons();
     } else {
       outputMessage = `${showHand(
         playerHand,
         dealerHand
       )}player wins by blackjack<br>`;
+      disableHitStandButtons();
     }
   } else {
     outputMessage = `${showHand(
@@ -203,61 +209,80 @@ var checkHandTotalValue = function (hand) {
 var normalWin = function (input) {
   var outputMessage = "";
   deckConstruct = shuffled();
-  if (input == "z") {
-    playerHand.push(deckConstruct.pop());
-    displayPlayerHand();
-    outputMessage = `${showHand(
-      playerHand,
-      dealerHand
-    )}card drawn from pile.<br>input: "z" - hit or "x" - stand`;
-  } else if (input == "x") {
-    var playerHandTotalValue = checkHandTotalValue(playerHand);
-    var dealerHandTotalValue = checkHandTotalValue(dealerHand);
-
-    while (dealerHandTotalValue < 17) {
-      dealerHand.push(deckConstruct.pop());
-      displayDealerHand();
-      dealerHandTotalValue = checkHandTotalValue(dealerHand);
-    }
-
-    if (
-      playerHandTotalValue == dealerHandTotalValue ||
-      (playerHandTotalValue > 21 && dealerHandTotalValue > 21)
-    ) {
-      outputMessage = `${showHand(
-        playerHand,
-        dealerHand
-      )}it's a tie<br> ${showHandValue(
-        playerHandTotalValue,
-        dealerHandTotalValue
-      )}<br>click "submit" to reset game`;
-    } else if (
-      (playerHandTotalValue < dealerHandTotalValue &&
-        dealerHandTotalValue <= 21) ||
-      (playerHandTotalValue > 21 && dealerHandTotalValue <= 21)
-    ) {
-      outputMessage = `${showHand(
-        playerHand,
-        dealerHand
-      )}dealer wins<br> ${showHandValue(
-        playerHandTotalValue,
-        dealerHandTotalValue
-      )}<br>click "submit" to reset game`;
+  if (input == "hit") {
+    // player already stand or can't hit
+    if (playerStand || !playerHit) {
+      document.getElementById("hit-button").disabled = true;
     } else {
+      playerHand.push(deckConstruct.pop());
+      displayPlayerHand();
+      outputMessage = `${showHand(playerHand, dealerHand)} hit 👆🏼 / stand ✋🏼`;
+      if (checkHandTotalValue(playerHand) >= 21) {
+        // disable the "stand" button if player's hand exceeds or equals 21
+        document.getElementById("stand-button").disabled = true;
+      }
+      // Automatically determine if the player busts
+      if (checkHandTotalValue(playerHand) > 21) {
+        outputMessage = `${showHand(
+          playerHand,
+          dealerHand
+        )}bust 🏳️<br>click "new" to start over`;
+        disableHitStandButtons();
+      }
+    }
+  } else if (input == "stand") {
+    // player already stand
+    if (playerStand) {
       outputMessage = `${showHand(
         playerHand,
         dealerHand
-      )}player wins<br> ${showHandValue(
-        playerHandTotalValue,
-        dealerHandTotalValue
-      )}<br>click "submit" to reset game`;
+      )}click "new" to start over`;
+    } else {
+      playerStand = true;
+      playerHit = false;
+      var playerHandTotalValue = checkHandTotalValue(playerHand);
+      var dealerHandTotalValue = checkHandTotalValue(dealerHand);
+      while (dealerHandTotalValue < 17) {
+        dealerHand.push(deckConstruct.pop());
+        displayDealerHand();
+        dealerHandTotalValue = checkHandTotalValue(dealerHand);
+      }
+      if (
+        playerHandTotalValue == dealerHandTotalValue ||
+        (playerHandTotalValue > 21 && dealerHandTotalValue > 21)
+      ) {
+        outputMessage = `${showHand(
+          playerHand,
+          dealerHand
+        )}it's a tie<br> ${showHandValue(
+          playerHandTotalValue,
+          dealerHandTotalValue
+        )}<br>click "new" to start over`;
+        disableHitStandButtons();
+      } else if (
+        (playerHandTotalValue < dealerHandTotalValue &&
+          dealerHandTotalValue <= 21) ||
+        (playerHandTotalValue > 21 && dealerHandTotalValue <= 21)
+      ) {
+        outputMessage = `${showHand(
+          playerHand,
+          dealerHand
+        )}dealer wins<br> ${showHandValue(
+          playerHandTotalValue,
+          dealerHandTotalValue
+        )}<br>click "new" to start over`;
+        disableHitStandButtons();
+      } else {
+        outputMessage = `${showHand(
+          playerHand,
+          dealerHand
+        )}player wins<br> ${showHandValue(
+          playerHandTotalValue,
+          dealerHandTotalValue
+        )}<br>click "new" to start over`;
+        disableHitStandButtons();
+      }
     }
-    resetGame();
-  } else {
-    outputMessage = `input: "z" - hit or "x" - stand<br><br>${showHand(
-      playerHand,
-      dealerHand
-    )}`;
   }
   return outputMessage;
 };
@@ -287,6 +312,16 @@ var resetGame = function () {
   playerHand = [];
   dealerHand = [];
   deckConstruct = [];
+  playerStand = false;
+  playerHit = true;
+  document.getElementById("hit-button").disabled = false;
+  document.getElementById("stand-button").disabled = false;
+};
+
+// function to disable "hit" and "stand" buttons
+var disableHitStandButtons = function () {
+  document.getElementById("hit-button").disabled = true;
+  document.getElementById("stand-button").disabled = true;
 };
 
 var main = function (input) {
