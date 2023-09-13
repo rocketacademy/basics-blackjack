@@ -241,10 +241,13 @@ var beginBetting = function (input) {
 };
 
 var calcBettingResults = function (whoWin) {
-  if (whoWin == "BLACKJACK! Player wins!" || whoWin == "Player wins!") {
+  if (
+    whoWin == "<b>🥂 BLACKJACK! Player wins! 🥂</b>" ||
+    whoWin == "<b>🥂 Player wins! 🥂</b>"
+  ) {
     playerBets[0] = playerBets[0] + playerBets[1];
     return `Your bet was $${playerBets[1]}<br>Your current winnings: $${playerBets[0]}`;
-  } else if (whoWin == "It's a draw!") {
+  } else if (whoWin == "<b>It's a draw!</b>") {
     return `Your current winnings: $${playerBets[0]}`;
   } else {
     playerBets[0] = playerBets[0] - playerBets[1];
