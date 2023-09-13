@@ -107,9 +107,13 @@ var genPlayerDelete = function () {
 
 var main = function () {
   clearTimeout(deleteDelay);
-  mainMenu.style.visibility = "hidden";
-  gameInstruct.innerHTML = "Please decide how many chips you want to bet.";
-  makeBetButton();
+  playButton.style.marginTop = "28px";
+  playButton.style.boxShadow = null;
+  setTimeout(() => {
+    mainMenu.style.visibility = "hidden";
+    gameInstruct.innerHTML = "Please decide how many chips you want to bet.";
+    makeBetButton();
+  }, 100);
 };
 
 var makeBetButton = function () {
@@ -369,6 +373,7 @@ var hit = function () {
       player[playerRound].stand === true
     ) {
       dealCard(player[playerRound].splitCard);
+      calValue(playerRound);
       calSplitValue(playerRound);
     } else {
       dealCard(player[playerRound].card);
@@ -460,7 +465,7 @@ var dealerTurn = function () {
     let currentValue = player[0].value;
     setTimeout(() => {
       gameInstruct.innerHTML = `Dealer draw ${newDrawCard}`;
-      computerTable.innerHTML = `<center>${cardList}</center><center>Value: ${currentValue}</center>`;
+      computerTable.innerHTML = `<center>Value: ${currentValue}</center><center>${cardList}</center>`;
     }, (time += 3000));
   }
   setTimeout(() => {
@@ -681,7 +686,7 @@ var endGameCal = function () {
   player[0].value = 0;
   player[0].card = [];
   player[0].stand = false;
-  player[0].winLose = "";
+  player[0].winLose = "lose";
   for (let i = 1; i < player.length; i++) {
     playerTable = document.querySelector(`#player${i}Table`);
     player[i].value = 0;
