@@ -41,8 +41,8 @@
 
     <!-- sharing configuration -->
     <!-- Primary Meta Tags -->
-    <title>Blackjack - Basics - Rocket Academy</title>
-    <meta name="title" content="YOURNAME's BlackJack Game!" />
+    <title>Blackjack - Basics</title>
+    <meta name="title" content="HY's BlackJack Game!" />
     <meta name="description" content="A fun card game I made myself! 😄💪🌈" />
 
     <!-- Open Graph / Facebook -->
@@ -51,7 +51,7 @@
       property="og:url"
       content="https://rocketacademy.github.io/basics-blackjack/index.html"
     />
-    <meta property="og:title" content="YOURNAME's BlackJack Game!" />
+    <meta property="og:title" content="HY's BlackJack Game!" />
     <meta
       property="og:description"
       content="A fun card game I made myself! 😄💪🌈"
@@ -67,7 +67,7 @@
       name="twitter:url"
       content="https://rocketacademy.github.io/basics-blackjack/index.html"
     />
-    <meta name="twitter:title" content="YOURNAME's BlackJack Game!" />
+    <meta name="twitter:title" content="HY's BlackJack Game!" />
     <meta
       name="twitter:description"
       content="A fun card game I made myself! 😄💪🌈"
@@ -82,7 +82,7 @@
     <!-- fonts -->
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css?family=Open+Sans"
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400&family=Space+Mono:wght@400;700&display=swap"
     />
 
     <!-- CSS -->
@@ -92,10 +92,10 @@
       }
 
       body {
-        font-family: "Open Sans", sans-serif;
+        font-family: "Montserrat", sans-serif;
         margin-left: 30px;
         margin-right: 30px;
-        background-color: white;
+        background-color: whitesmoke;
         color: black; /* sets the font color */
         background-image: url(""); /* The image used */
         background-position: center; /* Center the image */
@@ -108,45 +108,99 @@
         max-width: 100%;
         max-height: 200px;
       }
+
       .header {
+        font-family: "Space Mono", sans-serif;
         text-align: center;
+        letter-spacing: 5px;
         font-size: 1.1rem;
-        margin-bottom: 3rem;
+        font-weight: 700;
+      }
+
+      .descriptive {
+        font-family: "Space Mono", sans-serif;
+        text-align: center;
+        letter-spacing: 5px;
       }
 
       #container {
-        background-color: pink;
+        background-color: blanchedalmond;
         margin: 40px auto;
         max-width: 800px;
         padding: 38px 31px;
+        border-radius: 35px;
+        text-align: center;
+      }
+
+      label {
+        font-size: 40px;
       }
 
       input {
-        font-size: 21px;
-        line-height: 33px;
-        margin: 0 0 23px 0;
+        font-size: 40px;
+        line-height: 60px;
+        margin: 0 0 40px 0;
         padding: 0 9px;
-        width: 100%;
-      }
-
-      button {
-        font-size: 21px;
-        line-height: 33px;
-        margin: 0 0 23px 0;
-        padding: 0 6px;
+        width: 30%;
+        border-radius: 35px;
+        border: 3px solid #422800;
+        text-align: center;
+        text-decoration: none;
+        outline: none;
       }
 
       #output-div {
-        background-color: lightgrey;
         margin: 20px auto;
         padding: 20px;
-        width: 100%;
+        width: 60%;
       }
 
       .logo-img {
         height: 49px;
         position: relative;
         top: 22px;
+      }
+
+      .button-74 {
+        background-color: #fbeee0;
+        border: 2px solid #422800;
+        border-radius: 30px;
+        box-shadow: #422800 4px 4px 0 0;
+        color: #422800;
+        cursor: pointer;
+        display: inline-block;
+        font-weight: 600;
+        font-size: 18px;
+        padding: 0 18px;
+        line-height: 50px;
+        text-align: center;
+        text-decoration: none;
+        user-select: none;
+        -webkit-user-select: none;
+        touch-action: manipulation;
+        margin: 5px;
+        margin-bottom: 20px;
+      }
+
+      .button-74:hover {
+        background-color: #fff;
+      }
+
+      .button-74:active {
+        box-shadow: #422800 2px 2px 0 0;
+        transform: translate(2px, 2px);
+      }
+
+      .button-74:disabled {
+        pointer-events: none;
+        box-shadow: 0px 0px 0 0;
+      }
+
+      @media (min-width: 768px) {
+        .button-74 {
+          min-width: 120px;
+          padding: 0 25px;
+        }
       }
 
       /* increase header font size on wider screens */
@@ -159,26 +213,16 @@
   </head>
 
   <body>
-    <h1 class="header">
-      <img
-        class="logo-img"
-        src="https://firebasestorage.googleapis.com/v0/b/ftbc11-sample.appspot.com/o/images%2F1-PRIMARY_CRIMSON.png?alt=media&token=ce9e8333-2a45-44be-adb2-1f1bf054adf7"
-      />
-      Rocket Academy
-      <img
-        class="logo-img"
-        src="https://firebasestorage.googleapis.com/v0/b/ftbc11-sample.appspot.com/o/images%2F1-PRIMARY_CRIMSON.png?alt=media&token=ce9e8333-2a45-44be-adb2-1f1bf054adf7"
-      />
-    </h1>
-    <h1 class="header">♣️ Basics - Blackjack ♠️</h1>
+    <div class="header">♣️ basics x blackjack ♠️</div>
+    <div class="descriptive">created by hong yun</div>
     <div id="container">
-      <p>Welcome to the BlackJack Table! Enter your betting amount!</p>
+      <p>Welcome to the Blackjack Table! Enter your betting amount!</p>
+      <label for="input-field">$ </label>
       <input id="input-field" />
       <br />
-      <button id="submit-button">Submit</button>
-      <button id="hit-button">Hit</button>
-      <button id="stand-button">Stand</button>
-      <p>Results:</p>
+      <button id="submit-button" class="button-74">Submit</button>
+      <button id="hit-button" class="button-74">Hit</button>
+      <button id="stand-button" class="button-74">Stand</button>
       <div id="output-div"></div>
     </div>
     <!-- Import program logic -->
