@@ -125,8 +125,8 @@ var calcScoresPlayer = function () {
 
 //run through each card array and return the card obj as strings
 var outputHandsMsg = function () {
-  var dealerOutput = `<b>Dealer's Hand:</b><br>`;
-  var playerOutput = `<b>Player's Hand:</b><br>`;
+  var dealerOutput = `<ins>Dealer's Hand</ins><br>`;
+  var playerOutput = `<ins>Player's Hand</ins><br>`;
 
   if (gameMode == "determine winner") {
     for (var i = 0; i < computerCardArray.length; i += 1) {
@@ -135,7 +135,7 @@ var outputHandsMsg = function () {
     }
   } else {
     for (var i = 1; i < computerCardArray.length; i += 1) {
-      dealerOutput = `<b>Dealer's Hand:</b><br> * of *<br>`;
+      dealerOutput = `<ins>Dealer's Hand</ins><br> * of *<br>`;
       var computerCardString = `${computerCardArray[i].name} of ${computerCardArray[i].suit}`;
       dealerOutput += `${computerCardString} <br>`;
     }
@@ -151,21 +151,21 @@ var determineWinner = function () {
   var whoWin = "";
 
   if (playerCardScore == 21) {
-    whoWin = "BLACKJACK! Player wins!";
+    whoWin = "<b>🥂 BLACKJACK! Player wins! 🥂</b>";
   } else if (computerCardScore == 21) {
-    whoWin = "BLACKJACK! Dealer wins!";
+    whoWin = "<b>BLACKJACK! Dealer wins!</b>";
   } else if (
     (playerCardScore > computerCardScore && playerCardScore < 22) || //check player not busted and if com busted
     (playerCardScore < 22 && computerCardScore > 21)
   ) {
-    whoWin = "Player wins!";
+    whoWin = "<b>🥂 Player wins! 🥂</b>";
   } else if (
     playerCardScore == computerCardScore ||
     (playerCardScore > 21 && computerCardScore > 21)
   ) {
-    whoWin = "It's a draw!";
+    whoWin = "<b>It's a draw!</b>";
   } else {
-    whoWin = "Dealer wins!";
+    whoWin = "<b>Dealer wins!</b>";
   }
   return `${whoWin}`;
 };
@@ -199,7 +199,7 @@ var startNewGame = function () {
 
 //see if hit blackjack after first draw
 var checkIfBlackJackStart = function () {
-  var dealerPlayerScores = `Dealer's Score: ???<br> Player's Score: ${playerCardScore}`;
+  var dealerPlayerScores = `Dealer's Score: ???<br> <b>Player's Score: ${playerCardScore}</b>`;
   var handOutput = outputHandsMsg();
   if (playerCardScore == 21) {
     gameMode = "determine winner";
@@ -211,25 +211,25 @@ var checkIfBlackJackStart = function () {
     return `${findWinner} <br><br> ${handOutput}<br>${bettingResults}`;
   }
   gameMode = "post initial draw";
-  return `${handOutput} <br> ${dealerPlayerScores} <br><br> Do you want to "hit" or "stand"?`;
+  return `${handOutput} <br> ${dealerPlayerScores} <br><br>Do you want to <b>"hit"</b> or <b>"stand"</b>?`;
 };
 
 var playHitMode = function (lastDrawnPlayerCard) {
   var handOutput = outputHandsMsg();
-  var playerDealerHands = `You drew ${lastDrawnPlayerCard.name} of ${lastDrawnPlayerCard.suit}.<br><br>${handOutput}<br>Dealer's Score: ???<br> Player's Score: ${playerCardScore}`;
+  var playerDealerHands = `You drew ${lastDrawnPlayerCard.name} of ${lastDrawnPlayerCard.suit}.<br><br>${handOutput}<br>Dealer's Score: ???<br> <b>Player's Score: ${playerCardScore}</b>`;
   //auto skip to stand if busted, auto skip to blackjack if 21
   if (playerCardScore > 21 || playerCardScore == 21) {
     gameMode = "stand";
     disableHitStandButton();
     document.getElementById("intro").hidden = true;
     if (playerCardScore > 21) {
-      return `${playerDealerHands}<br><br>You've busted your cards. Let's see who wins~`;
+      return `${playerDealerHands}<br><br>You've <b>busted</b> your cards. Let's see who wins~`;
     } else if (playerCardScore == 21) {
-      return `${playerDealerHands}<br><br>You've gotten a BLACKJACK!<br><br>Let's see the dealer's cards~`;
+      return `${playerDealerHands}<br><br>You've gotten a <b>BLACKJACK!</b><br><br>Let's see the dealer's cards~`;
     }
   } else {
     gameMode = "post initial draw";
-    return `${playerDealerHands}<br><br>Do you want to "hit" or "stand"?`;
+    return `${playerDealerHands}<br><br>Do you want to <b>"hit" or "stand"</b>?`;
   }
 };
 
