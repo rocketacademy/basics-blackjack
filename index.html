@@ -89,12 +89,17 @@
     <style>
       * {
         box-sizing: border-box;
-        font-family: fantasy;
+        font-family: "PokemonGb-RAeo";
         color: black;
       }
 
+      @font-face {
+        font-family: "PokemonGb-RAeo"; /* Specify the desired font-family name */
+        src: url("cards/PokemonGb-RAeo.ttf") format("truetype"); /* Replace 'MyCustomFont.ttf' with your font file name */
+        /* You can include additional font formats (e.g., woff, woff2) for better cross-browser compatibility */
+      }
+
       body {
-        font-family: "Open Sans", sans-serif;
         margin-left: 30px;
         margin-right: 30px;
         background-color: black;
@@ -127,16 +132,15 @@
       }
       .header {
         text-align: center;
-        font-size: 2rem;
+        font-size: 1rem;
         margin-bottom: 3rem;
-        font-family: fantasy;
         color: white;
       }
 
       #container {
         position: relative;
         margin: 40px auto;
-        max-height: 768px;
+        min-height: 768px;
         max-width: 1024px;
         padding: 8px 11px;
         border-image: url("./cards/frame-hd.png") 42 round;
@@ -145,7 +149,7 @@
         background-color: white;
       }
 
-      input {
+      /* input {
         font-size: 21px;
         line-height: 33px;
         margin: 0 0 23px 0;
@@ -154,14 +158,33 @@
         border-image: url("./cards/frame-hd.png") 42 round;
         border-width: 21px;
         border-style: solid;
-      }
+      } */
 
       #button-container {
         position: absolute;
-        text-align: right;
-        margin-top: 10px;
-        bottom: -10px;
-        right: 10px;
+        bottom: 0;
+        right: 0;
+        padding: 10px;
+      }
+
+      .button-group {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: repeat(2, 1fr);
+        gap: 0;
+        line-height: 33px;
+        margin: 0 0 23px 0;
+        padding: 0 6px;
+        border-image: url("./cards/frame-hd.png") 42 round;
+        border-width: 21px;
+        border-style: solid;
+      }
+
+      button {
+        font-size: 1rem;
+        border: none;
+        background: none;
+        cursor: pointer;
       }
 
       #hit-button:hover {
@@ -176,27 +199,17 @@
         background-color: firebrick;
       }
 
-      button {
-        font-size: 21px;
-        line-height: 33px;
-        margin: 0 0 23px 0;
-        padding: 0 6px;
-        border-image: url("./cards/frame-hd.png") 42 round;
-        border-width: 21px;
-        border-style: solid;
-      }
-
       #output-div {
-        max-height: 200px;
+        max-height: 300px;
         overflow-y: auto;
         background-color: white;
         margin: 20px auto;
         padding: 20px;
         width: 100%;
-        font-family: monospace;
         border-image: url("./cards/frame-hd.png") 42 round;
         border-width: 21px;
         border-style: solid;
+        font-size: 0.7rem;
       }
 
       .logo-img {
@@ -236,9 +249,11 @@
       <br />
       <!-- <input id="input-field" /> -->
       <div id="button-container">
-        <button id="new-button">New 🆕</button>
-        <button id="hit-button">Hit 👆🏼</button>
-        <button id="stand-button">Stand ✋🏼</button>
+        <div class="button-group">
+          <button id="new-button">New 🆕</button>
+          <button id="hit-button">Hit 👆🏼</button>
+          <button id="stand-button">Stand ✋🏼</button>
+        </div>
       </div>
     </div>
     <!-- Import program logic -->
