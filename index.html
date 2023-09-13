@@ -122,6 +122,19 @@
         margin-bottom: 1rem;
       }
 
+      .cashHeader {
+        color: indianred;
+        background-color: lightgrey;
+        opacity: 0.8;
+        border-radius: 12.5px;
+        margin: auto;
+        max-width: 800px;
+        padding: 5px;
+        text-align: center;
+        font-size: 1.2rem;
+        margin-bottom: 1rem;
+      }
+
       #container {
         background-color: lightgrey;
         border-radius: 10px;
@@ -165,6 +178,7 @@
   <body>
     <br />
     <h1 class="header">🃏🃏 Let's Play Blackjack! 🃏🃏</h1>
+    <h2 id="moneyCount" class="cashHeader">🏦 Your Money: $5000 🏦</h2>
     <div id="container">
       <p><b>Please type here:</b></p>
       <input id="input-field" />
@@ -176,17 +190,18 @@
         <ol>
           <li>You start with $5000.</li>
           <li>
-            At the beginning of each round, you will be asked how much you would
-            like to bet in the current round.
+            Before each round, you will be asked how much you would like to bet
+            for that round.
           </li>
           <li>
             If you...
             <ul>
               <li>Win 🙂: You earn the amount of your bet!</li>
               <li>Lose 😔: You forfeit the amount of your bet.</li>
-              <li>Tie 😐: You neither earn nor forfet your bet.</li>
+              <li>Tie 😐: You neither earn nor forfeit your bet.</li>
             </ul>
           </li>
+          <li>If you lose all your money, it's game over.</li>
         </ol>
         <b>Rules for Each Round:</b> <br />
         <ol>

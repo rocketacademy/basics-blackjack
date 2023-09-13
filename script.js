@@ -22,10 +22,13 @@ var playerName = "";
 var playerWinCount = 0;
 var playerRoundsPlayed = 0;
 
+// DOM
+var moneyCountHeader = document.querySelector("#moneyCount");
+
 var main = function (input) {
   if (modeEnterPlayerName) {
     if (input == "") {
-      return "Hey, I'm sure you have a name! <br> To start, enter your name above.";
+      return "You can't be nameless 😶. <br> To start, enter your name above please.";
     }
     playerName = input;
     modeEnterPlayerName = false;
@@ -40,13 +43,19 @@ var main = function (input) {
   }
   if (modeEnterBet) {
     if (Number.isNaN(Number(input))) {
-      return `That's not a number... Please enter how much you would like to bet.`;
+      return `Sorry, that's not a number. <br> Please enter how much you would like to bet in Round ${
+        playerRoundsPlayed + 1
+      }.`;
     }
     if (input > cash) {
-      return `You only have $${cash}... You can't bet more than what you have!`;
+      return `Sorry, you only have $${cash}. You can't bet more than what you have. <br> Please enter how much you would like to bet in Round ${
+        playerRoundsPlayed + 1
+      }!`;
     }
     if (input < 1) {
-      return "You must bet at least $1... Please enter how much you would like to bet.";
+      return `Sorry, you must bet at least $1. <br> Please enter how much you would like to bet in Round ${
+        playerRoundsPlayed + 1
+      }.`;
     }
     currentBetAmount = input;
     modeEnterBet = false;
@@ -285,13 +294,16 @@ var compareHands = function () {
   outputValue += `<br> You have won ${playerWinCount} out of the ${playerRoundsPlayed} rounds you have played so far. <br>
   You now have: <b>$${cash}</b>. <br><br>`;
 
+  moneyCountHeader.innerText = `🏦 Your Money: $${cash} 🏦`;
+
   // Check if cash = 0. If so, then the game ends.
   if (cash > 0) {
-    outputValue += "How much money in $ would you like to bet the next round?";
+    outputValue += `How much money in $ would you like to bet in Round ${
+      playerRoundsPlayed + 1
+    }?`;
   } else {
     modeEscortOut = true;
     outputValue += `<b>Unfortunately, you ran out of money. 😔 <br>
-    We do not tolerate poor people in this casino. <br>
     ${playerName}, you will be escorted out shortly. <br>
     Better luck next time!<b>`;
   }
