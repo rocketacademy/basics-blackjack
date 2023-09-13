@@ -221,7 +221,7 @@ var playHitMode = function (lastDrawnPlayerCard) {
   if (playerCardScore > 21 || playerCardScore == 21) {
     gameMode = "stand";
     disableHitStandButton();
-    document.getElementById("input-field").disabled = true;
+    document.getElementById("intro").hidden = true;
     if (playerCardScore > 21) {
       return `${playerDealerHands}<br><br>You've busted your cards. Let's see who wins~`;
     } else if (playerCardScore == 21) {
@@ -236,7 +236,7 @@ var playHitMode = function (lastDrawnPlayerCard) {
 var beginBetting = function (input) {
   playerBets[1] = Number(input);
   gameMode = "initial draw";
-  document.getElementById("input-field").disabled = true;
+  document.getElementById("intro").hidden = true;
   return `You've bet $${input}. Good luck!`;
 };
 
@@ -257,6 +257,7 @@ var enableHitStandButton = function () {
   document.getElementById("stand-button").disabled = false;
   document.getElementById("submit-button").disabled = true;
   document.getElementById("input-field").disabled = true;
+  document.getElementById("intro").hidden = true;
 };
 
 var disableHitStandButton = function () {
@@ -264,6 +265,7 @@ var disableHitStandButton = function () {
   document.getElementById("stand-button").disabled = true;
   document.getElementById("submit-button").disabled = false;
   document.getElementById("input-field").disabled = false;
+  document.getElementById("intro").hidden = false;
 };
 
 var main = function (input) {
