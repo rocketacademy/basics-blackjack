@@ -105,25 +105,21 @@
         background-size: cover; /* Resize the background image to cover the entire container */
       }
 
-      #player-hand img {
-        height: 175px;
-        width: 125px;
+      #player-hand img,
+      #dealer-hand img {
+        height: 150px;
+        width: 100px;
         margin: 1px;
       }
 
-      #dealer-hand img {
-        height: 175px;
-        width: 125px;
-        margin: 1px;
+      #player-name {
+        text-align: right;
       }
 
       #dealer-hand {
         text-align: right;
       }
 
-      button:hover {
-        background-color: lemonchiffon;
-      }
       #output-div img {
         display: block;
         max-width: 100%;
@@ -138,9 +134,11 @@
       }
 
       #container {
+        position: relative;
         margin: 40px auto;
-        max-width: 800px;
-        padding: 38px 31px;
+        max-height: 768px;
+        max-width: 1024px;
+        padding: 8px 11px;
         border-image: url("./cards/frame-hd.png") 42 round;
         border-width: 21px;
         border-style: solid;
@@ -158,6 +156,26 @@
         border-style: solid;
       }
 
+      #button-container {
+        position: absolute;
+        text-align: right;
+        margin-top: 10px;
+        bottom: -10px;
+        right: 10px;
+      }
+
+      #hit-button:hover {
+        background-color: forestgreen;
+      }
+
+      #new-button:hover {
+        background-color: goldenrod;
+      }
+
+      #stand-button:hover {
+        background-color: firebrick;
+      }
+
       button {
         font-size: 21px;
         line-height: 33px;
@@ -169,6 +187,8 @@
       }
 
       #output-div {
+        max-height: 200px;
+        overflow-y: auto;
         background-color: white;
         margin: 20px auto;
         padding: 20px;
@@ -208,23 +228,32 @@
     </h1>
     <h1 class="header">THE BASICS EDITION</h1>
     <div id="container">
-      <p>DEALER:</p>
+      <div id="dealer-name"><p>DEALER:</p></div>
       <div id="dealer-hand"></div>
       <div id="output-div"></div>
-      <p>YOU:</p>
+      <div id="player-name"><p>YOU:</p></div>
       <div id="player-hand"></div>
-      <input id="input-field" />
-      <button id="submit-button">Submit</button>
+      <br />
+      <!-- <input id="input-field" /> -->
+      <div id="button-container">
+        <button id="new-button">New 🆕</button>
+        <button id="hit-button">Hit 👆🏼</button>
+        <button id="stand-button">Stand ✋🏼</button>
+      </div>
     </div>
     <!-- Import program logic -->
     <script src="script.js"></script>
     <!-- Define button click functionality -->
     <script>
-      var button = document.querySelector("#submit-button");
-      button.addEventListener("click", function () {
+      // modified event listener for "submit" button
+      var newButton = document.querySelector("#new-button");
+      newButton.addEventListener("click", function () {
+        if (currentGameState !== gameState1) {
+          resetGame();
+        }
         // Set result to input value
         var input = document.querySelector("#input-field");
-        var result = main(input.value);
+        var result = main("new");
 
         // Display result in output element
         var output = document.querySelector("#output-div");
@@ -232,6 +261,28 @@
 
         // Reset input value
         input.value = "";
+      });
+
+      // add event listener to the button
+      var hitButton = document.querySelector("#hit-button");
+      hitButton.addEventListener("click", function () {
+        if (currentGameState == gameState3) {
+          var result = main("hit");
+          // simulate hitting when the "hit" button is clicked
+          var output = document.querySelector("#output-div");
+          output.innerHTML = result;
+        }
+      });
+
+      // add event listener to the button
+      var standButton = document.querySelector("#stand-button");
+      standButton.addEventListener("click", function () {
+        if (currentGameState == gameState3) {
+          var result = main("stand");
+          // simulate hitting when the "stand" button is clicked
+          var output = document.querySelector("#output-div");
+          output.innerHTML = result;
+        }
       });
     </script>
   </body>
