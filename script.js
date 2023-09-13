@@ -1,6 +1,13 @@
+// Game modes
 var modeEnterPlayerName = true;
+var modeEnterBet = false;
 var modeDrawFirstTwoCards = false;
 var modeHitOrStand = false;
+var modeEscortOut = false;
+
+// Global variables
+var cash = 5000;
+var currentBetAmount = 0;
 
 var remainingCardsInDeck = [];
 var currentCard = {};
@@ -17,10 +24,36 @@ var playerRoundsPlayed = 0;
 
 var main = function (input) {
   if (modeEnterPlayerName) {
+    if (input == "") {
+      return "Hey, I'm sure you have a name! <br> To start, enter your name above.";
+    }
     playerName = input;
     modeEnterPlayerName = false;
+    modeEnterBet = true;
+    return `Welcome, ${playerName}! We are starting <b> Round ${
+      playerRoundsPlayed + 1
+    }</b>. <br>
+    How much money in $ would you like to bet on this round?`;
+  }
+  if (modeEscortOut) {
+    window.close();
+  }
+  if (modeEnterBet) {
+    if (Number.isNaN(Number(input))) {
+      return `That's not a number... Please enter how much you would like to bet.`;
+    }
+    if (input > cash) {
+      return `You only have $${cash}... You can't bet more than what you have!`;
+    }
+    if (input < 1) {
+      return "You must bet at least $1... Please enter how much you would like to bet.";
+    }
+    currentBetAmount = input;
+    modeEnterBet = false;
     modeDrawFirstTwoCards = true;
-    return `Welcome to the game of blackjack, ${playerName}! To draw your first two cards, press the button.`;
+    return `You have chosen to bet <b>$${currentBetAmount}</b> on <b>Round ${
+      playerRoundsPlayed + 1
+    }</b>! Click on the button to draw two cards.`;
   }
   if (modeDrawFirstTwoCards) {
     remainingCardsInDeck = makeThenShuffleDeck();
@@ -30,7 +63,7 @@ var main = function (input) {
     drawOneCardByComputer();
     modeDrawFirstTwoCards = false;
     modeHitOrStand = true;
-    return `🎆✨ Round ${playerRoundsPlayed + 1} ✨🎆 <br><br>
+    return `🎆 <b>Round ${playerRoundsPlayed + 1}</b> 🎆 <br><br>
     ♥️♦️♠️♣️ ${playerName}, you drew the following two cards ♥️♦️♠️♣️: <br>
     Card 1: ${playerCardsArray[0].name} of ${playerCardsArray[0].suit} <br>
     Card 2: ${playerCardsArray[1].name} of ${playerCardsArray[1].suit} <br><br>
@@ -172,7 +205,7 @@ var chooseHitOrStandByComputer = function () {
 
 // Compare hand of player and computer
 var compareHands = function () {
-  var outputValue = "";
+  var outputValue = `🎆 <b>Round ${playerRoundsPlayed + 1}</b>: `;
 
   // Calculate computer's hand
   var computerHandIfAceIsOne = 0;
@@ -229,12 +262,13 @@ var compareHands = function () {
     outputValue += `It is a tie! 😐 <br><br>`;
   } else if (playerBestHand > computerBestHand) {
     outputValue += `You win!! 🙂 <br><br>`;
+    cash += Number(currentBetAmount);
     playerWinCount += 1;
   } else {
     outputValue += `You lose... 😔 <br><br>`;
+    cash -= currentBetAmount;
   }
   playerRoundsPlayed += 1;
-
   // Show both hands
   outputValue += "♥️♦️♠️♣️ These are your cards ♥️♦️♠️♣️: <br>";
   for (var i = 0; i < playerCardsArray.length; i += 1) {
@@ -248,11 +282,24 @@ var compareHands = function () {
       computerCardsArray[i].suit
     } <br>`;
   }
-  outputValue += `<br> You have won ${playerWinCount} out of the ${playerRoundsPlayed} rounds you have played so far. <br> Press the button to play again!`;
+  outputValue += `<br> You have won ${playerWinCount} out of the ${playerRoundsPlayed} rounds you have played so far. <br>
+  You now have: <b>$${cash}</b>. <br><br>`;
+
+  // Check if cash = 0. If so, then the game ends.
+  if (cash > 0) {
+    outputValue += "How much money in $ would you like to bet the next round?";
+  } else {
+    modeEscortOut = true;
+    outputValue += `<b>Unfortunately, you ran out of money. 😔 <br>
+    We do not tolerate poor people in this casino. <br>
+    ${playerName}, you will be escorted out shortly. <br>
+    Better luck next time!<b>`;
+  }
 
   // Reset game mode
-  modeDrawFirstTwoCards = true;
+  modeEnterBet = true;
   modeHitOrStand = false;
+  currentBetAmount = 0;
   remainingCardsInDeck = [];
   currentCard = {};
   playerCardsArray = [];
