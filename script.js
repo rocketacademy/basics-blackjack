@@ -109,18 +109,12 @@ var displayDealerHand = function () {
 var dealCards = function () {
   var outputMessage = "";
   deckConstruct = shuffled();
-  console.log(`shuffling deck . . .`);
-  console.log(deckConstruct);
   for (var i = 0; i < 2; i += 1) {
     var player = deckConstruct.pop();
     var dealer = deckConstruct.pop();
     playerHand.push(player);
     dealerHand.push(dealer);
   }
-  console.log(`player's hand:`);
-  console.log(playerHand);
-  console.log(`dealer's hand:`);
-  console.log(dealerHand);
   displayPlayerHand();
   displayDealerHand();
   return outputMessage;
@@ -174,10 +168,7 @@ var blackjackWin = function () {
       disableHitStandButtons();
     }
   } else {
-    outputMessage = `${showHand(
-      playerHand,
-      dealerHand
-    )}there is no blackjack<br>`;
+    outputMessage = `${showHand(playerHand, dealerHand)}`;
   }
   return outputMessage;
 };
@@ -327,20 +318,12 @@ var disableHitStandButtons = function () {
 var main = function (input) {
   var myOutputValue = "";
   if (currentGameState == gameState1) {
-    console.log(`gameState: 1`);
     outputMessage = dealCards();
     currentGameState = gameState2;
-    console.log(`gameState: 2`);
   }
   if (currentGameState == gameState2) {
-    console.log(checkForBlackjack(playerHand));
-    console.log(checkHandTotalValue(playerHand));
-    console.log(checkForBlackjack(dealerHand));
-    console.log(checkHandTotalValue(dealerHand));
     outputMessage = blackjackWin();
     currentGameState = gameState3;
-    console.log(blackjackWin());
-    console.log(`gameState: 3`);
     return outputMessage;
   }
   if (currentGameState == gameState3) {
