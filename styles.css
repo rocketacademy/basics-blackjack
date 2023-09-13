@@ -1,6 +1,118 @@
 * {
   box-sizing: border-box;
 }
+
+@keyframes deal1 {
+  from {
+    top: -75px;
+    left: 50%;
+  }
+  to {
+    left: 10px;
+    top: 0px;
+  }
+}
+
+@keyframes deal2 {
+  from {
+    top: -75px;
+    left: 50%;
+  }
+  to {
+    left: 80px;
+    top: 180px;
+  }
+}
+
+@keyframes deal3 {
+  from {
+    top: -75px;
+    left: 50%;
+  }
+  to {
+    left: 300px;
+    top: 280px;
+  }
+}
+
+@keyframes deal4 {
+  from {
+    top: -75px;
+    left: 50%;
+  }
+  to {
+    left: 610px;
+    top: 280px;
+  }
+}
+
+@keyframes deal5 {
+  from {
+    top: -75px;
+    left: 50%;
+  }
+  to {
+    left: 820px;
+    top: 180px;
+  }
+}
+
+@keyframes deal6 {
+  from {
+    top: -75px;
+    left: 50%;
+  }
+  to {
+    left: 890px;
+    top: 0px;
+  }
+}
+
+.deal {
+  position: absolute;
+  margin-left: -27.5px;
+  top: -75px;
+  left: 50%;
+  width: 55px;
+  animation-duration: 1s;
+}
+
+@keyframes busted {
+  from {
+    width: 400px;
+  }
+  to {
+    width: 250px;
+  }
+}
+
+.busted {
+  position: absolute;
+  margin-left: auto;
+  margin-right: auto;
+  width: 400px;
+  animation-name: busted;
+  animation-duration: 2s;
+}
+
+@keyframes wow {
+  from {
+    width: 100px;
+  }
+  to {
+    width: 250px;
+  }
+}
+
+.wow {
+  position: absolute;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100px;
+  animation-name: wow;
+  animation-duration: 2s;
+}
+
 #dealer {
   display: block;
   position: absolute;
@@ -24,6 +136,8 @@
 
 #play-button {
   position: absolute;
+  margin-left: -50px;
+  left: 50%;
   margin-top: 40px;
   width: 100px;
   height: 50px;

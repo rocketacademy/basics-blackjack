@@ -1,7 +1,3 @@
-//34 hours
-
-//animation of deal card
-
 //player contains name,chips,stand-check,value and array of cards,winLoss(win/lose/draw/"").
 //player[0] is the dealer(computer)winLoss is "lose" for easy check if everyone bust (line240)
 
@@ -52,6 +48,7 @@ var addPlayer = function (playerName) {
 };
 
 var genPlayerDelete = function () {
+  clearTimeout(deleteDelay);
   for (let i = 1; i < player.length; i++) {
     playerTable = document.querySelector(`#player${i}Table`);
     let playerButton = document.createElement("button");
@@ -183,12 +180,12 @@ var inGame = function () {
     return;
   } else {
     for (let i = 1; i < player.length; i++) {
-      makeBetContainer(i);
+      makeHitStandContainer(i);
     }
   }
 
   passPlayerRound();
-  makeBetContainer(playerRound);
+  makeHitStandContainer(playerRound);
   if (playerRound === player.length) {
     dealerTurn();
     return;
@@ -262,9 +259,10 @@ var processSpliting = function (split, who) {
       }
       renewPlayerTable(i);
       genCardAndCompareValue(i);
-      makeBetContainer(i);
+      makeHitStandContainer(i);
     }
     passPlayerRound();
+    makeHitStandContainer(playerRound);
 
     if (playerRound === player.length) {
       dealerTurn();
@@ -302,9 +300,15 @@ var genCardAndCompareValue = function (who) {
   aceVariation(who);
   if (player[who].value > 21) {
     player[who].winLose = "lose";
+    if (player[who].stand === false) {
+      animationBusted(playerTable);
+    }
     player[who].stand = true;
     cardContainer.innerHTML = `Busted! Value: ${player[who].value}<br>${cardList}`;
   } else if (player[who].value === 21) {
+    if (player[who].stand === false) {
+      animationWow(playerTable);
+    }
     player[who].stand = true;
     cardContainer.innerHTML = `<b>21!</b> Value: ${player[who].value}<br>${cardList}`;
   } else {
@@ -319,10 +323,18 @@ var genCardAndCompareValue = function (who) {
     aceSplitVariation(who);
     if (player[who].splitValue > 21) {
       player[who].splitWinLose = "lose";
+      if (player[who].splitStand === false) {
+        animationBusted(playerTable);
+      }
       player[who].splitStand = true;
+
       cardContainer.innerHTML += `<br>Busted! Second Value: ${player[who].splitValue}<br>${splitCardList}`;
     } else if (player[who].splitValue === 21) {
+      if (player[who].splitStand === false) {
+        animationWow(playerTable);
+      }
       player[who].splitStand = true;
+
       cardContainer.innerHTML += `<br>21! Second Value: ${player[who].splitValue}<br>${splitCardList}`;
     } else {
       cardContainer.innerHTML += `<br> Second Value: ${player[who].splitValue}<br>${splitCardList}`;
@@ -348,26 +360,31 @@ var aceSplitVariation = function (who) {
 };
 
 var hit = function () {
-  if (
-    player[playerRound].splitStand === false &&
-    player[playerRound].stand === true
-  ) {
-    dealCard(player[playerRound].splitCard);
-    calSplitValue(playerRound);
-  } else {
-    dealCard(player[playerRound].card);
-    calValue(playerRound);
-  }
-  let lastRound = playerRound;
   renewPlayerTable(playerRound);
   genCardAndCompareValue(playerRound);
-  passPlayerRound();
-  makeBetContainer(lastRound);
-  makeBetContainer(playerRound);
-  if (playerRound === player.length) {
-    dealerTurn();
-    return;
-  }
+  animationDealCard(playerRound);
+  setTimeout(() => {
+    if (
+      player[playerRound].splitStand === false &&
+      player[playerRound].stand === true
+    ) {
+      dealCard(player[playerRound].splitCard);
+      calSplitValue(playerRound);
+    } else {
+      dealCard(player[playerRound].card);
+      calValue(playerRound);
+    }
+    let lastRound = playerRound;
+    renewPlayerTable(playerRound);
+    genCardAndCompareValue(playerRound);
+    passPlayerRound();
+    makeHitStandContainer(lastRound);
+    makeHitStandContainer(playerRound);
+    if (playerRound === player.length) {
+      dealerTurn();
+      return;
+    }
+  }, 1000);
 };
 
 var stand = function () {
@@ -383,8 +400,8 @@ var stand = function () {
   renewPlayerTable(playerRound);
   genCardAndCompareValue(playerRound);
   passPlayerRound();
-  makeBetContainer(lastRound);
-  makeBetContainer(playerRound);
+  makeHitStandContainer(lastRound);
+  makeHitStandContainer(playerRound);
   if (playerRound === player.length) {
     dealerTurn();
     return;
@@ -392,6 +409,7 @@ var stand = function () {
 };
 
 var dealerTurn = function () {
+  time = 0;
   calValue(0);
   gameInstruct.innerHTML = `Dealer turn!`;
   computerTable.innerHTML = `<center>Value: ${player[0].value}</ceneter><center><img src = "img/${player[0].card[0].name}.png"> <img src = "img/${player[0].card[1].name}.png"></center>`;
@@ -508,16 +526,8 @@ var compareValueAddChips = function () {
     let playerInfoDiv = document.createElement("div");
     playerInfoDiv.classList.add("playerInfo");
 
-    if (player[i].winLose === "win" && player[i].splitWinLose === "win") {
-      playerTable.classList.add("winnerOutline");
-      player[i].chip += chipOnTable[i] * 2;
-      endingPhase.innerHTML = `Congrats! ${player[i].name}.<br>You win ${
-        chipOnTable[i] * 2
-      } chips, now you have ${player[i].chip} chips.`;
-      playerInfoDiv.innerHTML = `<font size="5">${player[i].name}</font></center><center>Chips: ${player[i].chip}`;
-      playerTable.append(playerInfoDiv);
-      playerTable.append(endingPhase);
-    } else if (
+    if (
+      (player[i].winLose === "win" && player[i].splitWinLose === "win") ||
       (player[i].splitWinLose === "tie" && player[i].winLose === "win") ||
       (player[i].splitWinLose === "win" && player[i].winLose === "tie") ||
       (player[i].splitWinLose === undefined && player[i].winLose === "win")
@@ -602,7 +612,7 @@ var renewPlayerTable = function (who) {
   playerTable.append(playerInfoDiv);
 };
 
-var makeBetContainer = function (who) {
+var makeHitStandContainer = function (who) {
   playerTable = document.querySelector(`#player${who}Table`);
   if (chipOnTable[who] !== undefined) {
     let betContainer = document.createElement(`div`);
@@ -614,20 +624,17 @@ var makeBetContainer = function (who) {
       (player[who].stand === false || player[who].splitStand === false) &&
       playerRound === who
     ) {
-      let hitButton = document.createElement(`button`);
+      var hitButton = document.createElement(`button`);
       hitButton.innerHTML = "Hit!";
       hitButton.classList.add("hit-button");
-      hitButton.addEventListener("click", function () {
-        hitButton.remove();
-        standButton.remove();
-        hit();
-      });
-      let standButton = document.createElement("button");
+      var standButton = document.createElement("button");
       standButton.innerHTML = "Stand!";
       standButton.classList.add("stand-button");
+
+      hitButton.addEventListener("click", function () {
+        hit();
+      });
       standButton.addEventListener("click", function () {
-        hitButton.remove();
-        standButton.remove();
         stand();
       });
       betContainer.append(hitButton);
@@ -741,4 +748,41 @@ var quit = function () {
   endGameCal();
   againButton.style.visibility = "hidden";
   quitButton.style.visibility = "hidden";
+};
+
+var animationBusted = function (table) {
+  let bustedImage = document.createElement("img");
+  bustedImage.src = "img/busted.png";
+  bustedImage.classList.add("busted");
+  table.append(bustedImage);
+  setTimeout(() => {
+    bustedImage.style.width = "250px";
+  }, 2000);
+  setTimeout(() => {
+    bustedImage.remove();
+  }, 3000);
+};
+
+var animationWow = function (table) {
+  let wow = document.createElement("img");
+  wow.src = "img/wow.png";
+  wow.classList.add("wow");
+  table.append(wow);
+  setTimeout(() => {
+    wow.style.width = "250px";
+  }, 2000);
+  setTimeout(() => {
+    wow.remove();
+  }, 3000);
+};
+
+var animationDealCard = function (who) {
+  let card = document.createElement("img");
+  card.src = "img/Back.png";
+  card.style.animationName = `deal${who}`;
+  card.classList.add("deal");
+  gameTable.append(card);
+  setTimeout(() => {
+    card.remove();
+  }, 1000);
 };
