@@ -94,9 +94,8 @@
       }
 
       @font-face {
-        font-family: "PokemonGb-RAeo"; /* Specify the desired font-family name */
-        src: url("cards/PokemonGb-RAeo.ttf") format("truetype"); /* Replace 'MyCustomFont.ttf' with your font file name */
-        /* You can include additional font formats (e.g., woff, woff2) for better cross-browser compatibility */
+        font-family: "PokemonGb-RAeo";
+        src: url("cards/PokemonGb-RAeo.ttf") format("truetype");
       }
 
       body {
@@ -108,6 +107,18 @@
         background-position: center; /* Center the image */
         background-repeat: no-repeat; /* Do not repeat the image */
         background-size: cover; /* Resize the background image to cover the entire container */
+      }
+
+      #instructions {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #ccc;
+        padding: 20px;
+        border-radius: 5px;
+        text-align: center;
       }
 
       #player-hand img,
@@ -199,6 +210,10 @@
         background-color: firebrick;
       }
 
+      #toggle-instructions-button:hover {
+        background-color: cornflowerblue;
+      }
+
       #output-div {
         max-height: 300px;
         overflow-y: auto;
@@ -250,9 +265,27 @@
       <!-- <input id="input-field" /> -->
       <div id="button-container">
         <div class="button-group">
-          <button id="new-button">New 🆕</button>
           <button id="hit-button">Hit 👆🏼</button>
+          <button id="new-button">New 🆕</button>
           <button id="stand-button">Stand ✋🏼</button>
+          <button id="toggle-instructions-button">Instructions</button>
+        </div>
+
+        <div id="instructions" style="display: none">
+          <h2>Instructions</h2>
+          <p>1. There will be only two players. One human and one computer.</p>
+          <p>2. The computer will always be the dealer.</p>
+          <p>3. Each player gets dealt two cards to start.</p>
+          <p>
+            4. The player goes first, and decides if they want to hit (draw a
+            card) or stand (end their turn).
+          </p>
+          <p>5. The dealer has to hit if their hand is below 17.</p>
+          <p>
+            6. Each players' score is the total of their card ranks.
+            Jacks/Queen/Kings are 10. Aces can be 1 or 11.
+          </p>
+          <p>7. The player who is closer to, but not above 21 wins the hand.</p>
         </div>
       </div>
     </div>
@@ -267,7 +300,7 @@
           resetGame();
         }
         // Set result to input value
-        var input = document.querySelector("#input-field");
+        // var input = document.querySelector("#input-field");
         var result = main("new");
 
         // Display result in output element
@@ -297,6 +330,20 @@
           // simulate hitting when the "stand" button is clicked
           var output = document.querySelector("#output-div");
           output.innerHTML = result;
+        }
+      });
+
+      // get references to the button and instructions div
+      var toggleButton = document.getElementById("toggle-instructions-button");
+      var instructionsDiv = document.getElementById("instructions");
+
+      // add click event listener to the button
+      toggleButton.addEventListener("click", function () {
+        // toggle the display of the instructions div
+        if (instructionsDiv.style.display == "none") {
+          instructionsDiv.style.display = "block";
+        } else {
+          instructionsDiv.style.display = "none";
         }
       });
     </script>
