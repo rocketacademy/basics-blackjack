@@ -90,6 +90,7 @@
         margin: 0 0 23px 0;
         padding: 0 9px;
         width: 40%;
+    
       }
 
       button {
@@ -147,43 +148,66 @@
       <br />
       <button id="submit-button">Submit </button> 
       <button id ="results-button">Results</button> <!-- newly added-->
+      <button id ="continue-button">Continue</button> <!-- newly added-->
+      <button id ="exit-button">Exit</button> <!-- newly added-->
     </div>
     <!-- Import program logic -->
     <script src="script.js"></script>
     <!-- Define button click functionality -->
     <script>
-      var button = document.querySelector("#submit-button");
-      button.addEventListener("click", function () {
-        // Set result to input value
-        var input = document.querySelector("#input-field");
-        var result = main(input.value);
+    
+    document.getElementById("output-div").innerHTML = "Welcome to Blackjack!<br><br>Please enter your name";
+    document.getElementById("submit-button").disabled = false;
+    document.getElementById("results-button").disabled = true;
+    document.getElementById("continue-button").disabled = true;
+    document.getElementById("exit-button").disabled = true;
+   
+    var button = document.querySelector("#submit-button");
+    button.addEventListener("click", function () {
+      // Set result to input value
+      var input = document.querySelector("#input-field");
+      var result = main(input.value);
 
-        // Display result in output element
-        var output = document.querySelector("#output-div");
-        output.innerHTML = result;
+      // Display result in output element
+      var output = document.querySelector("#output-div");
+      output.innerHTML = result;
 
-        // Reset input value
-        input.value = "";
-      });
+      // Reset input value
+      input.value = "";
+    });
 
+
+    standResultButton.addEventListener("click", function(){
+      let outputMessageOne = determineResults ();
+      let output = document.querySelector("#output-div");
+      standResultButton.disabled = true;
+      document.getElementById("hit-button").disabled = true;
+      document.getElementById("continue-button").disabled = false;
+      document.getElementById("exit-button").disabled = false;
+      output.innerHTML = outputMessageOne;
+    })
+
+
+
+    let exitButtons = document.getElementById("exit-button");
+    exitButton.addEventListener("click", function(){
+      let outputMessageTwo = exiting ();
+      document.getElementById("continue-button").disabled = true;
+      document.getElementById("exit-button").disabled = true;
+      inputField.style.display="inline-block"
+      document.getElementById("hit-button").disabled = false;
       document.getElementById("output-div").innerHTML = "Welcome to Blackjack!<br><br>Please enter your name";
-
-      let dealButton = document.getElementById("bets-button"); // to initiate deal 
-      dealButton.addEventListener("click", function (){
-        let result = startDeal();
-        let output = document.querySelector("#output-div"); 
-        output.innerHTML = result;
-        
-      })
-
-      let hitButton = document.getElementById("hit-button"); // to repeat hit
-      hitButton.addEventListener("click", function(){
-        let result = hitPlayer();
-        var output = document.querySelector("#output-div");
-        output.innerHTML = result;
-      });
-
-
+    })
+  
+    let continueButtons = document.getElementById("continue-button");
+    continueButton.addEventListener("click", function(){
+      let outputMessageThree = continueBetting ();
+      document.getElementById("continue-button").disabled = true;
+      document.getElementById("exit-button").disabled = true;
+      inputField.style.display="inline-block"
+      document.getElementById("hit-button").disabled = false;
+      document.getElementById("output-div").innerHTML = outputMessageThree;
+    })
     </script>
   </body>
 </html>
