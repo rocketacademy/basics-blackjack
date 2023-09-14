@@ -71,6 +71,9 @@
       <source src="godofgamblersost.m4a" type="audio/mp4" />
       Your browser does not support the audio element.
     </audio>
+    <audio id="blackjack-audio" src="godofgamblersost.m4a" preload="auto">
+      <source src="godofgamblersost.m4a" type="audio/mp4" />
+    </audio>
     <p class="jackblack">
       <img
         src="jackedjackblack.jpg"
@@ -87,6 +90,8 @@
       <br />
 
       <button id="submit-button">Submit</button>
+      <br />
+      <button id="reset-button">Reset</button>
       <p>Output:</p>
       <div id="player-hand"></div>
       <div id="computer-hand"></div>
@@ -96,10 +101,15 @@
     </div>
 
     <script>
+      const resetButton = document.getElementById("reset-button");
+      resetButton.addEventListener("click", function () {
+        location.reload();
+      });
+
       var audio = document.getElementById("looping-audio");
       audio.addEventListener("ended", function () {
-        this.currentTime = 0; // Reset the audio to the beginning
-        this.play(); // Start playing the audio again
+        this.currentTime = 0;
+        this.play();
       });
 
       var button = document.querySelector("#submit-button");
