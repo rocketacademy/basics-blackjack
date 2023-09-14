@@ -138,7 +138,6 @@
     </style>
 
   </head>
-
   <body  id="background-img">
     <div>
      <h1 class="header">
@@ -162,11 +161,11 @@
     <!-- Define button click functionality -->
     <script>
     
-    document.getElementById("output-div").innerHTML = "Welcome to Blackjack!<br><br>Please enter your name";
-    document.getElementById("submit-button").disabled = false;
-    document.getElementById("results-button").disabled = true;
-    document.getElementById("continue-button").disabled = true;
-    document.getElementById("exit-button").disabled = true;
+    document.getElementById("output-div").innerHTML = "Welcome to Blackjack!<br><br>♠️♣️♥️♦️<br><br>Please enter your name.";
+    document.getElementById("submit-button").disabled = false; 
+    document.getElementById("results-button").disabled = true; // disable Results button
+    document.getElementById("continue-button").disabled = true; // disable Continue button
+    document.getElementById("exit-button").disabled = true; // disable Exit button
    
     var button = document.querySelector("#submit-button");
     button.addEventListener("click", function () {
@@ -182,37 +181,38 @@
       input.value = "";
     });
 
-
+    // stand/results button
     standResultButton.addEventListener("click", function(){
       let outputMessageOne = determineResults ();
       let output = document.querySelector("#output-div");
       standResultButton.disabled = true;
-      document.getElementById("hit-button").disabled = true;
+      document.getElementById("submit-button").disabled = true; // was hit button
       document.getElementById("continue-button").disabled = false;
       document.getElementById("exit-button").disabled = false;
       output.innerHTML = outputMessageOne;
     })
   
-    let continueButtons = document.getElementById("continue-button");
-    continueButton.addEventListener("click", function(){
-      let outputMessageThree = continueBetting ();
+    // continue button
+    let continuingButton = document.getElementById("continue-button");
+    continuingButton.addEventListener("click", function(){
+      let outputMessageTwo = continueBetting ();
       document.getElementById("continue-button").disabled = true;
       document.getElementById("exit-button").disabled = true;
       inputField.style.display="inline-block"
-      document.getElementById("hit-button").disabled = false;
-      document.getElementById("output-div").innerHTML = outputMessageThree;
+      document.getElementById("submit-button").disabled = false; // was hit button
+      document.getElementById("output-div").innerHTML = outputMessageTwo;
     })
 
 
-
-    let exitButtons = document.getElementById("exit-button");
-    exitButton.addEventListener("click", function(){
-      let outputMessageTwo = exiting ();
+    // exit button
+    let exitingButton = document.getElementById("exit-button");
+    exitingButton.addEventListener("click", function(){
+      exiting ();
       document.getElementById("continue-button").disabled = true;
       document.getElementById("exit-button").disabled = true;
       inputField.style.display="inline-block"
-      document.getElementById("hit-button").disabled = false;
-      document.getElementById("output-div").innerHTML = "Welcome to Blackjack!<br><br>Please enter your name";
+      document.getElementById("submit-button").disabled = false; // was hit button
+      document.getElementById("output-div").innerHTML = "Welcome to Blackjack!<br><br>♠️♣️♥️♦️<br><br>Please enter your name";
     })
 
     </script>
