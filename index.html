@@ -55,7 +55,7 @@
         font-family: 'Open Sans', sans-serif;
         margin-left: 30px;
         margin-right: 30px;
-        background-color: burlywood;
+        background-color: darkolivegreen;
         color: black; /* sets the font color */
         background-image: url(""); /* The image used */
         background-position: center; /* Center the image */
@@ -102,7 +102,7 @@
 
       #output-div {
         border-radius: 40px ; /* newly added */
-        background-color: blanchedalmond;
+        background-color: lightgray;
         margin: 20px auto;
         padding: 20px;
         width: 80%;
@@ -114,7 +114,7 @@
         top: 22px;
       }
 
-      ::placeholder {
+      ::placeholder { /* newly added */
         font-style: italic;
         font-size: 14px;
 
@@ -127,15 +127,20 @@
         }
       }
 
-      body {
-        background-image: url(https://static.vecteezy.com/system/resources/previews/002/082/622/original/poker-background-with-playing-cards-and-chips-on-green-casino-background-modern-poker-widescreen-wallpaper-vector.jpg);
-        padding: 150px
+      #background-img { /* newly added */
+        background-image: url(https://images.unsplash.com/photo-1655159428752-c700435e9983?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8YmxhY2tqYWNrfGVufDB8fDB8fHww&w=1000&q=80);
+        padding: 105px;
+        backdrop-filter: blur(8px);
+        background-attachment: fixed;
       }
+
+
     </style>
 
   </head>
 
-  <body>
+  <body  id="background-img">
+    <div>
      <h1 class="header">
       <img class="logo-img" src="https://firebasestorage.googleapis.com/v0/b/ftbc11-sample.appspot.com/o/images%2F1-PRIMARY_CRIMSON.png?alt=media&token=ce9e8333-2a45-44be-adb2-1f1bf054adf7" />
       Rocket Academy
@@ -150,6 +155,7 @@
       <button id ="results-button">Results</button> <!-- newly added-->
       <button id ="continue-button">Continue</button> <!-- newly added-->
       <button id ="exit-button">Exit</button> <!-- newly added-->
+
     </div>
     <!-- Import program logic -->
     <script src="script.js"></script>
@@ -186,6 +192,16 @@
       document.getElementById("exit-button").disabled = false;
       output.innerHTML = outputMessageOne;
     })
+  
+    let continueButtons = document.getElementById("continue-button");
+    continueButton.addEventListener("click", function(){
+      let outputMessageThree = continueBetting ();
+      document.getElementById("continue-button").disabled = true;
+      document.getElementById("exit-button").disabled = true;
+      inputField.style.display="inline-block"
+      document.getElementById("hit-button").disabled = false;
+      document.getElementById("output-div").innerHTML = outputMessageThree;
+    })
 
 
 
@@ -198,16 +214,8 @@
       document.getElementById("hit-button").disabled = false;
       document.getElementById("output-div").innerHTML = "Welcome to Blackjack!<br><br>Please enter your name";
     })
-  
-    let continueButtons = document.getElementById("continue-button");
-    continueButton.addEventListener("click", function(){
-      let outputMessageThree = continueBetting ();
-      document.getElementById("continue-button").disabled = true;
-      document.getElementById("exit-button").disabled = true;
-      inputField.style.display="inline-block"
-      document.getElementById("hit-button").disabled = false;
-      document.getElementById("output-div").innerHTML = outputMessageThree;
-    })
+
     </script>
+       
   </body>
 </html>
