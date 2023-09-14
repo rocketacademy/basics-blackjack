@@ -125,22 +125,11 @@ var checkForBlackjack = function (card) {
   var cardIndexOne = card[0];
   var cardIndexTwo = card[1];
   var blackjack = false;
-
-  // check if cardIndexOne and cardIndexTwo are defined and have the 'name' and 'value' properties
   if (
-    cardIndexOne &&
-    cardIndexTwo &&
-    cardIndexOne.name &&
-    cardIndexOne.value &&
-    cardIndexTwo.name &&
-    cardIndexTwo.value
+    (cardIndexOne.name == "ace" && cardIndexTwo.value >= 10) ||
+    (cardIndexOne.value >= 10 && cardIndexTwo.name == "ace")
   ) {
-    if (
-      (cardIndexOne.name == "ace" && cardIndexTwo.value >= 10) ||
-      (cardIndexOne.value >= 10 && cardIndexTwo.name == "ace")
-    ) {
-      blackjack = true;
-    }
+    blackjack = true;
   }
   return blackjack;
 };
