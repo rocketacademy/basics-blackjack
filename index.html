@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -8,98 +7,224 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <!-- Favicon configuration -->
-    <link rel="apple-touch-icon" sizes="180x180" href="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/favicons/apple-touch-icon.png?v=2">
-    <link rel="icon" type="image/png" sizes="32x32" href="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/favicons/favicon-32x32.png?v=2">
-    <link rel="icon" type="image/png" sizes="16x16" href="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/favicons/favicon-16x16.png?v=2">
-    <link rel="manifest" href="/site.webmanifest?v=2">
-    <link rel="mask-icon" href="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/favicons/safari-pinned-tab.svg?v=2" color="#e73c3e">
-    <link rel="shortcut icon" href="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/favicons/favicon.ico?v=2">
-    <meta name="apple-mobile-web-app-title" content="Rocket Academy">
-    <meta name="application-name" content="Rocket Academy">
-    <meta name="msapplication-TileColor" content="#2b5797">
-    <meta name="theme-color" content="#ffffff">
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/favicons/apple-touch-icon.png?v=2"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/favicons/favicon-32x32.png?v=2"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/favicons/favicon-16x16.png?v=2"
+    />
+    <link rel="manifest" href="/site.webmanifest?v=2" />
+    <link
+      rel="mask-icon"
+      href="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/favicons/safari-pinned-tab.svg?v=2"
+      color="#e73c3e"
+    />
+    <link
+      rel="shortcut icon"
+      href="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/favicons/favicon.ico?v=2"
+    />
+    <meta name="apple-mobile-web-app-title" content="Rocket Academy" />
+    <meta name="application-name" content="Rocket Academy" />
+    <meta name="msapplication-TileColor" content="#2b5797" />
+    <meta name="theme-color" content="#ffffff" />
 
     <!-- sharing configuration -->
     <!-- Primary Meta Tags -->
     <title>Blackjack - Basics - Rocket Academy</title>
-    <meta name="title" content="YOURNAME's BlackJack Game!">
-    <meta name="description" content="A fun card game I made myself! 😄💪🌈">
+    <meta name="title" content="YOURNAME's BlackJack Game!" />
+    <meta name="description" content="A fun card game I made myself! 😄💪🌈" />
 
     <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://rocketacademy.github.io/basics-blackjack/index.html">
-    <meta property="og:title" content="YOURNAME's BlackJack Game!">
-    <meta property="og:description" content="A fun card game I made myself! 😄💪🌈">
-    <meta property="og:image" content="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/basics/basics-blackjack-share-small.jpeg">
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:url"
+      content="https://rocketacademy.github.io/basics-blackjack/index.html"
+    />
+    <meta property="og:title" content="YOURNAME's BlackJack Game!" />
+    <meta
+      property="og:description"
+      content="A fun card game I made myself! 😄💪🌈"
+    />
+    <meta
+      property="og:image"
+      content="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/basics/basics-blackjack-share-small.jpeg"
+    />
 
     <!-- Twitter -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:url" content="https://rocketacademy.github.io/basics-blackjack/index.html">
-    <meta name="twitter:title" content="YOURNAME's BlackJack Game!">
-    <meta name="twitter:description" content="A fun card game I made myself! 😄💪🌈">
-    <meta name="twitter:image" content="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/basics/basics-blackjack-share-small.jpeg">
-    <meta name="twitter:site" content="@rocketacademyco">
-    <meta name="twitter:creator" content="@rocketacademyco">
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:url"
+      content="https://rocketacademy.github.io/basics-blackjack/index.html"
+    />
+    <meta name="twitter:title" content="YOURNAME's BlackJack Game!" />
+    <meta
+      name="twitter:description"
+      content="A fun card game I made myself! 😄💪🌈"
+    />
+    <meta
+      name="twitter:image"
+      content="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/basics/basics-blackjack-share-small.jpeg"
+    />
+    <meta name="twitter:site" content="@rocketacademyco" />
+    <meta name="twitter:creator" content="@rocketacademyco" />
 
     <!-- fonts -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans">
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=Open+Sans"
+    />
 
     <!-- CSS -->
     <style>
       * {
         box-sizing: border-box;
+        font-family: "PokemonGb-RAeo";
+        color: black;
+      }
+
+      @font-face {
+        font-family: "PokemonGb-RAeo";
+        src: url("cards/PokemonGb-RAeo.ttf") format("truetype");
       }
 
       body {
-        font-family: 'Open Sans', sans-serif;
         margin-left: 30px;
         margin-right: 30px;
-        background-color:white;
-        color: black; /* sets the font color */
+        background-color: black;
+        color: white; /* sets the font color */
         background-image: url(""); /* The image used */
         background-position: center; /* Center the image */
         background-repeat: no-repeat; /* Do not repeat the image */
         background-size: cover; /* Resize the background image to cover the entire container */
       }
 
-      #output-div img{
-        display:block;
-        max-width:100%;
-        max-height:200px;
+      #instructions {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #ccc;
+        padding: 20px;
+        border-radius: 5px;
+        text-align: center;
+      }
+
+      #player-hand img,
+      #dealer-hand img {
+        height: 150px;
+        width: 100px;
+        margin: 1px;
+      }
+
+      #player-name {
+        text-align: right;
+      }
+
+      #dealer-hand {
+        text-align: right;
+      }
+
+      #output-div img {
+        display: block;
+        max-width: 100%;
+        max-height: 200px;
       }
       .header {
         text-align: center;
-        font-size: 1.1rem;
+        font-size: 1rem;
         margin-bottom: 3rem;
+        color: white;
       }
 
       #container {
-        background-color: pink;
+        position: relative;
         margin: 40px auto;
-        max-width: 800px;
-        padding: 38px 31px;
+        min-height: 768px;
+        max-width: 1024px;
+        padding: 8px 11px;
+        border-image: url("./cards/frame-hd.png") 42 round;
+        border-width: 21px;
+        border-style: solid;
+        background-color: white;
       }
 
-      input {
+      /* input {
         font-size: 21px;
         line-height: 33px;
         margin: 0 0 23px 0;
         padding: 0 9px;
         width: 100%;
+        border-image: url("./cards/frame-hd.png") 42 round;
+        border-width: 21px;
+        border-style: solid;
+      } */
+
+      #button-container {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        padding: 10px;
       }
 
-      button {
-        font-size: 21px;
+      .button-group {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: repeat(2, 1fr);
+        gap: 0;
         line-height: 33px;
         margin: 0 0 23px 0;
         padding: 0 6px;
+        border-image: url("./cards/frame-hd.png") 42 round;
+        border-width: 21px;
+        border-style: solid;
+      }
+
+      button {
+        font-size: 1rem;
+        border: none;
+        background: none;
+        cursor: pointer;
+      }
+
+      #hit-button:hover {
+        background-color: forestgreen;
+      }
+
+      #new-button:hover {
+        background-color: goldenrod;
+      }
+
+      #stand-button:hover {
+        background-color: firebrick;
+      }
+
+      #toggle-instructions-button:hover {
+        background-color: cornflowerblue;
       }
 
       #output-div {
-        background-color: lightgrey;
+        max-height: 300px;
+        overflow-y: auto;
+        background-color: white;
         margin: 20px auto;
         padding: 20px;
         width: 100%;
+        border-image: url("./cards/frame-hd.png") 42 round;
+        border-width: 21px;
+        border-style: solid;
+        font-size: 0.7rem;
       }
 
       .logo-img {
@@ -115,33 +240,68 @@
         }
       }
     </style>
-
   </head>
 
   <body>
     <h1 class="header">
-      <img class="logo-img" src="https://firebasestorage.googleapis.com/v0/b/ftbc11-sample.appspot.com/o/images%2F1-PRIMARY_CRIMSON.png?alt=media&token=ce9e8333-2a45-44be-adb2-1f1bf054adf7" />
-      Rocket Academy
-      <img class="logo-img" src="https://firebasestorage.googleapis.com/v0/b/ftbc11-sample.appspot.com/o/images%2F1-PRIMARY_CRIMSON.png?alt=media&token=ce9e8333-2a45-44be-adb2-1f1bf054adf7" />
+      <img
+        class="logo-img"
+        src="https://firebasestorage.googleapis.com/v0/b/ftbc11-sample.appspot.com/o/images%2F1-PRIMARY_CRIMSON.png?alt=media&token=ce9e8333-2a45-44be-adb2-1f1bf054adf7"
+      />
+      BLACKJACK
+      <img
+        class="logo-img"
+        src="https://firebasestorage.googleapis.com/v0/b/ftbc11-sample.appspot.com/o/images%2F1-PRIMARY_CRIMSON.png?alt=media&token=ce9e8333-2a45-44be-adb2-1f1bf054adf7"
+      />
     </h1>
-    <h1 class="header">♣️ Basics - Blackjack ♠️</h1>
+    <h1 class="header">THE BASICS EDITION</h1>
     <div id="container">
-      <p>Input:</p>
-      <input id="input-field" />
-      <br />
-      <button id="submit-button">Submit</button>
-      <p>Output:</p>
+      <div id="dealer-name"><p>DEALER:</p></div>
+      <div id="dealer-hand"></div>
       <div id="output-div"></div>
+      <div id="player-name"><p>YOU:</p></div>
+      <div id="player-hand"></div>
+      <br />
+      <!-- <input id="input-field" /> -->
+      <div id="button-container">
+        <div class="button-group">
+          <button id="hit-button">Hit 👆🏼</button>
+          <button id="new-button">New 🆕</button>
+          <button id="stand-button">Stand ✋🏼</button>
+          <button id="toggle-instructions-button">Instructions</button>
+        </div>
+
+        <div id="instructions" style="display: none">
+          <h2>Instructions</h2>
+          <p>1. There will be only two players. One human and one computer.</p>
+          <p>2. The computer will always be the dealer.</p>
+          <p>3. Each player gets dealt two cards to start.</p>
+          <p>
+            4. The player goes first, and decides if they want to hit (draw a
+            card) or stand (end their turn).
+          </p>
+          <p>5. The dealer has to hit if their hand is below 17.</p>
+          <p>
+            6. Each players' score is the total of their card ranks.
+            Jacks/Queen/Kings are 10. Aces can be 1 or 11.
+          </p>
+          <p>7. The player who is closer to, but not above 21 wins the hand.</p>
+        </div>
+      </div>
     </div>
     <!-- Import program logic -->
     <script src="script.js"></script>
     <!-- Define button click functionality -->
     <script>
-      var button = document.querySelector("#submit-button");
-      button.addEventListener("click", function () {
+      // modified event listener for "submit" button
+      var newButton = document.querySelector("#new-button");
+      newButton.addEventListener("click", function () {
+        if (currentGameState !== gameState1) {
+          resetGame();
+        }
         // Set result to input value
-        var input = document.querySelector("#input-field");
-        var result = main(input.value);
+        // var input = document.querySelector("#input-field");
+        var result = main("new");
 
         // Display result in output element
         var output = document.querySelector("#output-div");
@@ -149,6 +309,42 @@
 
         // Reset input value
         input.value = "";
+      });
+
+      // add event listener to the button
+      var hitButton = document.querySelector("#hit-button");
+      hitButton.addEventListener("click", function () {
+        if (currentGameState == gameState3) {
+          var result = main("hit");
+          // simulate hitting when the "hit" button is clicked
+          var output = document.querySelector("#output-div");
+          output.innerHTML = result;
+        }
+      });
+
+      // add event listener to the button
+      var standButton = document.querySelector("#stand-button");
+      standButton.addEventListener("click", function () {
+        if (currentGameState == gameState3) {
+          var result = main("stand");
+          // simulate hitting when the "stand" button is clicked
+          var output = document.querySelector("#output-div");
+          output.innerHTML = result;
+        }
+      });
+
+      // get references to the button and instructions div
+      var toggleButton = document.getElementById("toggle-instructions-button");
+      var instructionsDiv = document.getElementById("instructions");
+
+      // add click event listener to the button
+      toggleButton.addEventListener("click", function () {
+        // toggle the display of the instructions div
+        if (instructionsDiv.style.display == "none") {
+          instructionsDiv.style.display = "block";
+        } else {
+          instructionsDiv.style.display = "none";
+        }
       });
     </script>
   </body>
