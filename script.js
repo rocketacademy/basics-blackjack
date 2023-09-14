@@ -14,7 +14,7 @@ var playerHand = [];
 var computerHand = [];
 var playerHandLessThan21 = true;
 var gameMode = "start";
-
+var computerHandRank = 0;
 // Helper Functions Needed //
 // 1) Deck generating function //
 var makeDeck = function () {
@@ -81,6 +81,8 @@ var shuffleCards = function (cardDeck) {
 var main = function (input) {
   var shuffledDeck = shuffleCards(deck);
   var outputValue = "";
+  const hitButton = document.getElementById("hitbutton");
+  const standButton = document.getElementById("standbutton");
 
   if (gameMode == "start") {
     for (i = 0; i < 2; i += 1) {
@@ -176,7 +178,7 @@ var main = function (input) {
       const blackJackAudio = document.getElementById("blackjack-audio");
       blackJackAudio.play();
       outputValue = `Your cards are 1) ${playerHand[0].name} of ${playerHand[0].suit} and 2) ${playerHand[1].name} of ${playerHand[1].suit}. YOU WIN!!`;
-      console.log("player wins on first hand");
+
       return outputValue;
       // end of winning validation on first two cards //
     } else if (
@@ -192,104 +194,197 @@ var main = function (input) {
           computerHand[0].name == 10))
     ) {
       outputValue = `Your cards are 1) ${playerHand[0].name} of ${playerHand[0].suit} and 2) ${playerHand[1].name} of ${playerHand[1].suit}.<br>The computer has 1) ${computerHand[0].name} of ${computerHand[0].suit} and 2) ${computerHand[1].name} of ${computerHand[1].suit}<br>YOU LOST!!`;
-      console.log(`Dealer wins on first hand`);
+
       return outputValue;
     }
-    gameMode = "HIT";
-    outputValue = `You were dealt ${playerHand[0].name} of ${playerHand[0].suit} and ${playerHand[1].name} of ${playerHand[1].suit}.<br>The dealer has ${computerHand[0].name} of ${computerHand[0].suit}<br>Please enter HIT or STAND to continue.`;
-    console.log(
-      "no first hand winner, program will now switch to game mode player turn, awaiting HIT or STAND"
-    );
-  } else if (gameMode == input) {
-    var userGuess = input;
-    console.log(`player turn, player keyed in ${userGuess}`);
-    var playerHandRank = playerHand[0].rank + playerHand[1].rank;
-    var computerHandRank = computerHand[0].rank + computerHand[1].rank;
-    console.log(
-      `Player hand rank: ${playerHandRank} Computer hand rank ${computerHandRank}`
-    );
+    outputValue = `You were dealt ${playerHand[0].name} of ${playerHand[0].suit} and ${playerHand[1].name} of ${playerHand[1].suit}.<br>The dealer has ${computerHand[0].name} of ${computerHand[0].suit}<br>Please click HIT or STAND to continue.`;
 
-    while (playerHandLessThan21) {
-      console.log(`playerhand less than 21`);
-      if (userGuess == "HIT") {
-        const newCard = shuffledDeck.pop();
-        playerHand.push(newCard);
+    hitButton.addEventListener("click", function () {
+      // Add a new card to the player's hand
+      const newCard = shuffledDeck.pop();
+      playerHand.push(newCard);
 
-        const newCardElement = document.createElement("img");
-        newCardElement.src = newCard.imagePath;
-        newCardElement.alt = `${newCard.name} of ${newCard.suit}`;
-        newCardElement.width = 100;
-        newCardElement.height = 140;
+      // Create and display the new card as an image
+      const newCardElement = document.createElement("img");
+      newCardElement.src = newCard.imagePath;
+      newCardElement.alt = `${newCard.name} of ${newCard.suit}`;
+      newCardElement.width = 100;
+      newCardElement.height = 140;
+      const playerHandContainer = document.getElementById("player-hand");
+      playerHandContainer.appendChild(newCardElement);
 
-        const playerHandContainer = document.getElementById("player-hand");
-        playerHandContainer.appendChild(newCardElement);
-        console.log(`card added to the player hand`);
+      // Recalculate the player's hand rank
+      let playerHandRank = 0;
+      for (let i = 0; i < playerHand.length; i++) {
+        playerHandRank += playerHand[i].rank;
+      }
 
-        for (i = 0; i < playerHand.length; i++) {
-          if (
-            playerHand[i].name == "Jack" ||
-            playerHand[i].name == "Queen" ||
-            playerHand[i].name == "King"
-          ) {
-            playerHand[i].rank = 10;
-            computerHand[i].rank = 10;
+      // Check if player's hand rank is over 21
+      if (playerHandRank > 21) {
+        // Player busted, switch to the computer's turn
+        gameMode = "computer-turn";
+        const computerHandRank = computerHand[0].rank + computerHand[1].rank;
+
+        // Implement computer's turn logic here
+
+        // Update the output
+        const outputValue = `Your hand went over 21, it's a bust!`;
+        const output = document.querySelector("#output-div");
+        output.innerHTML = outputValue;
+      } else {
+        // Player can continue to HIT or STAND
+        const outputValue = `Your hand rank: ${playerHandRank}<br>Would you like to "HIT" or "STAND"?`;
+        const output = document.querySelector("#output-div");
+        output.innerHTML = outputValue;
+      }
+    });
+
+    standButton.addEventListener("click", function () {
+      // Switch to the computer's turn
+      gameMode = "computer-turn";
+      handleComputerTurn();
+
+      // Update the output
+      const outputValue = `You chose to STAND. It's now the computer's turn.`;
+      const output = document.querySelector("#output-div");
+      output.innerHTML = outputValue;
+    });
+    function handleComputerTurn() {
+      // Implement computer's turn logic here
+      if (gameMode == "computer-turn") {
+        while (computerHandRank < 17) {
+          const newDealerCard = shuffledDeck.pop();
+          computerHand.push(newDealerCard);
+          const newDealerCardElement = document.createElement("img");
+          newDealerCardElement.src = newDealerCard.imagePath;
+          newDealerCardElement.alt = `${newDealerCard.name} of ${newDealerCard.suit}`;
+          newDealerCardElement.width = 100;
+          newDealerCardElement.height = 140;
+          const computerHandContainer =
+            document.getElementById("computer-hand");
+          computerHandContainer.appendChild(newDealerCardElement);
+
+          // Recalculate the computer's hand rank
+          computerHandRank = 0;
+          for (let i = 0; i < computerHand.length; i++) {
+            computerHandRank += computerHand[i].rank;
           }
         }
-        playerHandRank += newCard.rank;
-        outputValue = `Your hand:<br>1) ${playerHand[0].name} of ${playerHand[0].suit}<br>2) ${playerHand[1].name} of ${playerHand[1].suit}<br>3) ${playerHand[2].name} of ${playerHand[2].suit}<br>The Dealer has ${computerHand[0].name} of ${computerHand[0].suit}<br><br>Would you like to "HIT" or "STAND"?`;
-      }
-      for (i = 0; i < playerHand.length; i++) {
-        if (
-          playerHand[i].name == "Jack" ||
-          playerHand[i].name == "Queen" ||
-          playerHand[i].name == "King"
-        ) {
-          playerHand[i].rank = 10;
-          console.log(`${playerHand[i].name} of ${player[i].suit}`);
-        }
-        if (playerHand[i].name === "Ace") {
-          playerHand[i].rank = 11;
-        }
-      }
-      for (j = 0; j < computerHand.length; j++) {
-        if (
-          computerHand[j].name == "Jack" ||
-          computerHand[j].name == "Queen" ||
-          computerHand[j].name == "King"
-        ) {
-          computerHand[j].rank = 10;
-        }
 
-        if (computerHand[j].name == "Ace") {
-          computerHand[j].rank = 11;
+        if (computerHandRank > 21) {
+          const outputValue = `Dealer's hand is a bust, you win this round.`;
+          const output = document.querySelector("#output-div");
+          output.innerHTML = outputValue;
+        } else {
+          if (computerHandRank > playerHandRank) {
+            const outputValue = `The dealer's card score of ${computerHandRank} is higher than your card score of ${playerHandRank}, YOU LOSE!`;
+            const output = document.querySelector("#output-div");
+            output.innerHTML = outputValue;
+          } else if (computerHandRank < playerHandRank) {
+            const outputValue = `Player's card score of ${playerHandRank} is higher than the dealer's card score of ${computerHandRank}, YOU WIN!`;
+            const output = document.querySelector("#output-div");
+            output.innerHTML = outputValue;
+          } else {
+            const outputValue = `It's a tie! Your card score is ${playerHandRank} and the dealer's card score is ${computerHandRank}.`;
+            const output = document.querySelector("#output-div");
+            output.innerHTML = outputValue;
+          }
         }
       }
-
-      console.log(playerHand);
-      console.log(computerHand);
-      playerHandRank =
-        playerHand[0].rank + playerHand[1].rank + playerHand[2].rank;
-      computerHandRank = computerHand[0].rank + computerHand[1].rank;
-      console.log(playerHandRank);
-      console.log(computerHandRank);
-      if (computerHandRank > playerHandRank) {
-        console.log("control flow 2");
-
-        outputValue = `YOU LOSE!<br>Your Cards are: 1) ${playerHand[0].name} of ${playerHand[0].suit} and 2) ${playerHand[1].name} of ${playerHand[1].suit}<br>Dealer has 1) ${computerHand[0].name} of ${computerHand[0].suit} and 2) ${computerHand[1].name} of ${computerHand[1].suit}<br>Player card rank: ${playerHandRank} || Computer card rank ${computerHandRank}`;
-        return outputValue;
-      } else if (computerHandRank == 21 && playerHandRank == 21) {
-        outputValue = `Its a TIE`;
-        return outputValue;
-      }
-      console.log("control flow 3");
-
-      outputValue = `YOU WIN!<br>Your Cards are: 1) ${playerHand[0].name} of ${playerHand[0].suit} and 2) ${playerHand[1].name} of ${playerHand[1].suit}<br>Dealer has 1) ${computerHand[0].name} of ${computerHand[0].suit} and 2) ${computerHand[1].name} of ${computerHand[1].suit}<br>Player card rank: ${playerHandRank} || Computer card rank: ${computerHandRank}`;
     }
-    outputValue = `Your hand went over 21, it's a bust! YOU LOSE!`;
   }
-
   return outputValue;
 };
+//   } else if (gameMode == input) {
+//     var userGuess = input;
+//     console.log(`player turn, player keyed in ${userGuess}`);
+//     var playerHandRank = playerHand[0].rank + playerHand[1].rank;
+//     var computerHandRank = computerHand[0].rank + computerHand[1].rank;
+//     console.log(
+//       `Player hand rank: ${playerHandRank} Computer hand rank ${computerHandRank}`
+//     );
+
+//     while (playerHandLessThan21) {
+//       console.log(`playerhand less than 21`);
+//       if (userGuess == "HIT") {
+//         const newCard = shuffledDeck.pop();
+//         playerHand.push(newCard);
+
+//         const newCardElement = document.createElement("img");
+//         newCardElement.src = newCard.imagePath;
+//         newCardElement.alt = `${newCard.name} of ${newCard.suit}`;
+//         newCardElement.width = 100;
+//         newCardElement.height = 140;
+
+//         const playerHandContainer = document.getElementById("player-hand");
+//         playerHandContainer.appendChild(newCardElement);
+//         console.log(`card added to the player hand`);
+
+//         for (i = 0; i < playerHand.length; i++) {
+//           if (
+//             playerHand[i].name == "Jack" ||
+//             playerHand[i].name == "Queen" ||
+//             playerHand[i].name == "King"
+//           ) {
+//             playerHand[i].rank = 10;
+//             computerHand[i].rank = 10;
+//           }
+//         }
+
+//         outputValue = `Your hand:<br>1) ${playerHand[0].name} of ${playerHand[0].suit}<br>2) ${playerHand[1].name} of ${playerHand[1].suit}<br>3) ${playerHand[2].name} of ${playerHand[2].suit}<br>The Dealer has ${computerHand[0].name} of ${computerHand[0].suit}<br><br>Would you like to "HIT" or "STAND"?`;
+//       }
+//       for (i = 0; i < playerHand.length; i++) {
+//         if (
+//           playerHand[i].name == "Jack" ||
+//           playerHand[i].name == "Queen" ||
+//           playerHand[i].name == "King"
+//         ) {
+//           playerHand[i].rank = 10;
+//           console.log(`${playerHand[i].name} of ${player[i].suit}`);
+//         }
+//         if (playerHand[i].name === "Ace") {
+//           playerHand[i].rank = 11;
+//         }
+//       }
+//       for (j = 0; j < computerHand.length; j++) {
+//         if (
+//           computerHand[j].name == "Jack" ||
+//           computerHand[j].name == "Queen" ||
+//           computerHand[j].name == "King"
+//         ) {
+//           computerHand[j].rank = 10;
+//         }
+
+//         if (computerHand[j].name == "Ace") {
+//           computerHand[j].rank = 11;
+//         }
+//       }
+
+//       console.log(playerHand);
+//       console.log(computerHand);
+//       playerHandRank =
+//         playerHand[0].rank + playerHand[1].rank + playerHand[2].rank;
+//       computerHandRank = computerHand[0].rank + computerHand[1].rank;
+//       console.log(playerHandRank);
+//       console.log(computerHandRank);
+//       if (computerHandRank > playerHandRank) {
+//         console.log("control flow 2");
+
+//         outputValue = `YOU LOSE!<br>Your Cards are: 1) ${playerHand[0].name} of ${playerHand[0].suit} and 2) ${playerHand[1].name} of ${playerHand[1].suit}<br>Dealer has 1) ${computerHand[0].name} of ${computerHand[0].suit} and 2) ${computerHand[1].name} of ${computerHand[1].suit}<br>Player card rank: ${playerHandRank} || Computer card rank ${computerHandRank}`;
+//         return outputValue;
+//       } else if (computerHandRank == 21 && playerHandRank == 21) {
+//         outputValue = `Its a TIE`;
+//         return outputValue;
+//       }
+//       console.log("control flow 3");
+
+//       outputValue = `YOU WIN!<br>Your Cards are: 1) ${playerHand[0].name} of ${playerHand[0].suit} and 2) ${playerHand[1].name} of ${playerHand[1].suit}<br>Dealer has 1) ${computerHand[0].name} of ${computerHand[0].suit} and 2) ${computerHand[1].name} of ${computerHand[1].suit}<br>Player card rank: ${playerHandRank} || Computer card rank: ${computerHandRank}`;
+//     }
+//     outputValue = `Your hand went over 21, it's a bust! YOU LOSE!`;
+//   }
+
+//   return outputValue;
+// };
 //   } else if (gameMode == "GAME STATE PLAYER HIT OR STAND") {
 //     var userGuess = input;
 //     if (userGuess == "STAND") {
