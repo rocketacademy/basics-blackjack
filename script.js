@@ -8,6 +8,7 @@ let standResultButton = document.getElementById("results-button");
 let continueButton = document.getElementById("continue-button")
 let exitButton = document.getElementById("exit-button")
 
+// global variables
 let gameMode = 'waiting for user name';
 let userName = " ";
 let currentBets = 100;
@@ -95,17 +96,16 @@ let userInputName = function (user){
   gameMode = 'place bets';
   submitButton.innerHTML = "Place bets";
   inputField.setAttribute("placeholder", "Enter bet amount");
-  // submitButton.id = "bets-button"
   return `♠️♣️♥️♦️<br><br>Hey ${userName}! How much would you like to bet?`;
 };
 
 
 // set a function to record player's bet amount 
 let placeBets = function (betAmount){
-  if (betAmount == '' || isNaN(Number(betAmount))){
+  if (betAmount == '' || isNaN(Number(betAmount))){   // if bet amount input is empty or not numerical
     return `Please place your bets. You currently have $${currentBets}.`;
   }
-  if (betAmount > currentBets){
+  if (betAmount > currentBets){   // if player bets more than its current bets
     return `Insufficient bets. You currently have $${currentBets}, ${userName}.`;
   }
   submitButton.innerHTML = "Deal";
@@ -119,7 +119,7 @@ let placeBets = function (betAmount){
 let calculateHandValue = function (hand){
   let totalHandValue = 0;
   for (let handIndex = 0; handIndex < hand.length; handIndex += 1){
-    let currentCard = hand[handIndex]; // define current card in the array
+    let currentCard = hand[handIndex]; // define current card 
     if (currentCard.name == 'Jack' || currentCard.name == 'Queen' || currentCard.name == 'King'){
       totalHandValue += 10;
     } else if (currentCard.name == 'Ace'){
@@ -157,6 +157,7 @@ let outputStringMessageWithEmoji = function (playerHand, dealerHand){
   return `Player Score: ${playerScore}<br>${playerString}<hr>${dealerString}`;
 };
 
+
 // set a function to enable and disable buttons during bust and blackjack
 let disableEnableButtons = function (){
   submitButton.disabled = true;
@@ -164,6 +165,7 @@ let disableEnableButtons = function (){
   continueButton.disabled = false;
   exitButton.disabled = false;
 };
+
 
 // set a function to evaluate blackjack
 let evaluateBlackjack = function (playerValue, dealerValue){
@@ -173,7 +175,6 @@ let evaluateBlackjack = function (playerValue, dealerValue){
     return `Player wins blackjack! 🎊`;
   }
   if (dealerValue == 21 && !(playerValue == 21)){
-    // currentBets -= Number(betAmount)
     disableEnableButtons();
     return `Dealer wins blackjack!`;
   }
@@ -189,7 +190,6 @@ let evaluateBlackjack = function (playerValue, dealerValue){
 // set a function to evaluate bust
 let evaluateBust = function (playerValue, dealerValue){
   if (playerValue > 21 && dealerValue < 21){
-    // currentBets -= Number(betAmount)
     disableEnableButtons();
     return `Player busts!`;
   }
@@ -199,7 +199,6 @@ let evaluateBust = function (playerValue, dealerValue){
     return `Dealer busts`;
   }
   if (dealerValue > 21 && playerValue > 21){
-    // currentBets -= Number(betAmount)
     disableEnableButtons();
     return `Both bust!`;
   }
@@ -223,28 +222,25 @@ let startGame = function(){
   return blackjackWin;
 };
 
+
 // set a function to edit button characteristics, i.e. id and innerhtml
 let amendButtonCharacteristics = function (){
   submitButton.innerHTML = "Hit";
-  // submitButton.id = "hit-button";
   standResultButton.innerHTML = "Stand";
-  // standResultButton.id = 'stand-button';
   standResultButton.disabled = false;
 };
+
 
 // set a function to deal
 let startDeal = function (){
   let outputResult = " ";
   amendButtonCharacteristics();
-  // submitButton.id = "hit-button"
   outputResult = startGame(); 
   let outputCards = outputStringMessageWithEmoji(playerHand, dealerHand); // to evaluate only blackjack at the start 
-  
-  if (!outputResult){
+
+  if (!outputResult){   // if scores do not result in any blackjack wins/losses/ties, proceed to hit or stand gamemode
     gameMode = 'hit or stand';
     return `♠️♣️♥️♦️<br><br>Bet amount: $${betAmount}<hr>${outputCards}`;
-    // inputField.setAttribute("placeholder", "Enter 'hit' or 'stand'");
-    // outputResult = `Proceed by entering 'Hit' or 'Stand'`;
   } else {
     return `♠️♣️♥️♦️<br><br>Bet amount: $${betAmount}<br>${outputResult}<hr>${outputCards}`;
   }
@@ -272,11 +268,12 @@ let hitDealer = function (){
 
 // set a function to evaluate final result after player hit or stand
 let outputResultString = function (){
-  if (dealerScore < 16){
+ 
+  if (dealerScore < 16){  // dealer will deal only if his score is less than 16
     hitDealer();
-    dealerScore = calculateHandValue(dealerHand); // update global variable in subsequent rounds in backend
+    dealerScore = calculateHandValue(dealerHand); // update global variable in subsequent rounds 
   } else {
-    dealerScore = calculateHandValue(dealerHand); // update global variable in subsequent rounds in backend
+    dealerScore = calculateHandValue(dealerHand); // update global variable in subsequent rounds 
   }
   let outputCards = outputStringMessageWithEmoji(playerHand, dealerHand);
   return outputCards;
@@ -289,7 +286,6 @@ let compareNormalResults = function(playerScore, dealerScore){
     return `Player wins!`;
   }
   if (dealerScore > playerScore){
-    // currentBets -= Number(betAmount)
     return `Dealer wins!`;
   }
   remainingBets += Number(betAmount)
