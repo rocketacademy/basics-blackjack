@@ -3,15 +3,11 @@ var gameStateDealCards = "InitialCardDealing";
 var gameStateDealNextCard = "NextCardDealing";
 var gameStateEnd = "gameEnds";
 var gameState = gameStateDealCards;
-// var playerScore = 0;
 var playerCardsRankArr = [];
-// var compScore = 0;
 var compCardsRankArr = [];
 var unshuffledCardDeck = [];
 var shuffledCardDeck = [];
 var playerAceCounter = 0;
-// var playerAceCounterFn = 0;
-// var compAceCounter = 0;
 
 var main = function (input) {
   if (gameState == gameStateEnd && (input == true || input == false)) {
@@ -46,8 +42,8 @@ var main = function (input) {
       var compNextCard = shuffledCardDeck.pop();
       compScore = compScore + compNextCard.rank;
       compCardsRankArr.push(compNextCard);
-      var compAceCounterFn = aceCounterComp(compCardsRankArr);
-      var compScoreCalculatorFn = compScoreCalculator(compAceCounterFn);
+      aceCounterComp(compCardsRankArr);
+      var compScoreCalculatorFn = compScoreCalculator();
       compScore = compScoreCalculatorFn;
     }
     gameState = gameStateEnd;
@@ -292,21 +288,23 @@ var playerScoreCalculator = function () {
 // };
 
 var aceCounterComp = function (compCardsRankArr) {
-  var compAceCounter = 0;
-  for (card of compCardsRankArr) {
+  if (compCardsRankArr.length == 2) {
+    for (card of compCardsRankArr) {
+      if (card.name == "ace") {
+        compAceCounter += 1;
+      }
+    }
+  } else {
+    var card = compCardsRankArr.at(-1);
     if (card.name == "ace") {
       compAceCounter += 1;
     }
   }
-  return compAceCounter;
 };
-
 var compScoreCalculator = function (compAceCounter) {
-  while (compAceCounter > 0) {
-    if (compScore > 21) {
-      compScore = compScore - 10;
-      compAceCounter = compAceCounter - 1;
-    }
+  if (compScore > 21 && compAceCounter > 0) {
+    compScore = compScore - 10;
+    compAceCounter -= 1;
   }
   return compScore;
 };
