@@ -1,10 +1,21 @@
 //Global Variables
-const deck = [];
+const deck = [],
+  playerHand = [],
+  dealerHand = [];
 
 function main(input, myOutputValue) {
-  initDeck();
-  shuffleDeck();
-  myOutputValue = printDeck();
+  if (input === "S") {
+    initDeck();
+    shuffleDeck();
+  }
+  if (input === "D") {
+    initGame();
+  }
+  myOutputValue = `${printDeck()}<br><br><br>Player:<br>${printHand(
+    playerHand
+  )} Score: ${calculateScore(playerHand)}<br><br>Dealer:<br>${printHand(
+    dealerHand
+  )} Score: ${calculateScore(dealerHand)}`;
   return myOutputValue;
 }
 
@@ -62,10 +73,36 @@ function shuffleDeck() {
 //   return array;
 // }
 
-function printDeck() {
+function initGame() {
+  for (let i = 0; i < 2; i++) {
+    hit(playerHand);
+    hit(dealerHand);
+  }
+}
+
+function printHand(hand) {
   let output = "";
-  for (let i = 0; i < deck.length; i++) {
-    output += `${deck[i].Name} of ${deck[i].Suit}<br>`;
+  for (let i = 0; i < hand.length; i++) {
+    output += `${hand[i].Name} (${hand[i].Rank}) of ${hand[i].Suit}<br>`;
   }
   return output;
 }
+
+function printDeck() {
+  let output = "";
+  for (let i = 0; i < deck.length; i++) {
+    output += `${deck[i].Name} (${deck[i].Rank}) of ${deck[i].Suit}<br>`;
+  }
+  return output;
+}
+
+function calculateScore(hand) {
+  let score = 0;
+  for (i = 0; i < hand.length; i++) {
+    let point = hand[i].Rank >= 10 ? 10 : hand[i].Rank;
+    score += point;
+  }
+  return score;
+}
+
+const hit = (hand) => hand.push(deck.pop());
