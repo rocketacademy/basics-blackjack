@@ -39,7 +39,7 @@ function initDeck() {
 function shuffleDeck() {
   let i, j, holdIndex;
   for (i = deck.length - 1; i > 0; i--) {
-    j = Math.floor(Math.random() * i);
+    j = Math.floor(Math.random() * (i + 1));
     holdIndex = deck[i];
     deck[i] = deck[j];
     deck[j] = holdIndex;
