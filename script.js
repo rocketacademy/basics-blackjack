@@ -4,47 +4,52 @@ const deck = [],
   dealerHand = [];
 
 function main(input, myOutputValue) {
-  if (input === "S") {
+  if (deck.length <= 0) {
     initDeck(1);
     shuffleDeck();
-  }
-  if (input === "D") {
     initGame();
   }
-  myOutputValue = `${printDeck()}<br><br><br>Player:<br>${printHand(
-    playerHand
-  )} Score: ${calculateScore(playerHand)}<br><br>Dealer:<br>${printHand(
-    dealerHand
-  )} Score: ${calculateScore(dealerHand)}<br><br>${gameEvaluation()}`;
+  if (input === "H") {
+    hit(playerHand);
+  } else if (input === "S") {
+    dealerAI();
+  }
+  myOutputValue =
+    `Player:<br>${print(playerHand)} Score: ${calculateScore(
+      playerHand
+    )}<br><br>Dealer:<br>${print(dealerHand)} Score: ${calculateScore(
+      dealerHand
+    )}<br><br>${gameEvaluation()}` + `<br><br><br>${print(deck)}`;
   return myOutputValue;
 }
 
 //Create decks
 function initDeck(numberOfDecks) {
-  if (deck.length <= 0) {
-    const nameConstruct = [
-      "Ace",
-      "Two",
-      "Three",
-      "Four",
-      "Five",
-      "Six",
-      "Seven",
-      "Eight",
-      "Nine",
-      "Ten",
-      "Jack",
-      "Queen",
-      "King",
-    ];
-    const suits = ["Diamonds", "Clubs", "Hearts", "Spades"];
-    const indexName = Object.entries({ ...nameConstruct });
-    for (i = 0; i < numberOfDecks; i++) {
-      for (const [index, name] of indexName) {
-        for (const suit of suits) {
-          const card = { Name: name, Suit: suit, Rank: Number(index) + 1 };
-          deck.push(card);
-        }
+  const nameConstruct = [
+    "Ace",
+    "Two",
+    "Three",
+    "Four",
+    "Five",
+    "Six",
+    "Seven",
+    "Eight",
+    "Nine",
+    "Ten",
+    "Jack",
+    "Queen",
+    "King",
+  ];
+  const suitConstruct = ["Diamonds", "Clubs", "Hearts", "Spades"];
+  for (let i = 0; i < numberOfDecks; i++) {
+    for (const name of nameConstruct) {
+      for (const suit of suitConstruct) {
+        const card = {
+          Name: name,
+          Suit: suit,
+          Rank: nameConstruct.indexOf(name) + 1,
+        };
+        deck.push(card);
       }
     }
   }
@@ -85,26 +90,10 @@ function initGame() {
   }
 }
 
-function printHand(hand) {
-  let output = "";
-  for (let i = 0; i < hand.length; i++) {
-    output += `${hand[i].Name} (${hand[i].Rank}) of ${hand[i].Suit}<br>`;
-  }
-  return output;
-}
-
-function printDeck() {
-  let output = "";
-  for (let i = 0; i < deck.length; i++) {
-    output += `${deck[i].Name} (${deck[i].Rank}) of ${deck[i].Suit}<br>`;
-  }
-  return output;
-}
-
 function calculateScore(hand) {
   let totalPoints = 0;
-  for (i = 0; i < hand.length; i++) {
-    let point = hand[i].Rank >= 10 ? 10 : hand[i].Rank;
+  for (const card of hand) {
+    let point = card.Rank >= 10 ? 10 : card.Rank;
     totalPoints += point;
   }
   const ace = (card) => card.Rank === 1;
@@ -117,14 +106,31 @@ function calculateScore(hand) {
 
 const hit = (hand) => hand.push(deck.pop());
 
+function dealerAI() {
+  while (calculateScore(dealerHand) < 17) {
+    hit(dealerHand);
+  }
+}
+
 //Evaluation if draw
 const drawEvaluation = () =>
-  calculateScore(playerHand) === calculateScore(dealerHand);
+  calculateScore(playerHand) === calculateScore(dealerHand) ||
+  (calculateScore(playerHand) > 21 && calculateScore(dealerHand) > 21);
 
 //Evaluate if win
 const winEvaluation = () =>
-  calculateScore(playerHand) > calculateScore(dealerHand);
+  21 >= calculateScore(playerHand) &&
+  (calculateScore(playerHand) > calculateScore(dealerHand) ||
+    calculateScore(dealerHand) > 21);
 
 //Evaluate game
 const gameEvaluation = () =>
   drawEvaluation() ? "You tied!" : winEvaluation() ? "You won!" : "You lost!";
+
+function print(hand) {
+  let output = "";
+  for (const card of hand) {
+    output += `${card.Name} (${card.Rank}) of ${card.Suit}<br>`;
+  }
+  return output;
+}
