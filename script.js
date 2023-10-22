@@ -5,7 +5,7 @@ const deck = [],
 
 function main(input, myOutputValue) {
   if (input === "S") {
-    initDeck();
+    initDeck(1);
     shuffleDeck();
   }
   if (input === "D") {
@@ -15,11 +15,12 @@ function main(input, myOutputValue) {
     playerHand
   )} Score: ${calculateScore(playerHand)}<br><br>Dealer:<br>${printHand(
     dealerHand
-  )} Score: ${calculateScore(dealerHand)}`;
+  )} Score: ${calculateScore(dealerHand)}<br><br>${gameEvaluation()}`;
   return myOutputValue;
 }
 
-function initDeck() {
+//Create decks
+function initDeck(numberOfDecks) {
   if (deck.length <= 0) {
     const nameConstruct = [
       "Ace",
@@ -38,15 +39,18 @@ function initDeck() {
     ];
     const suits = ["Diamonds", "Clubs", "Hearts", "Spades"];
     const indexName = Object.entries({ ...nameConstruct });
-    for (const [index, name] of indexName) {
-      for (const suit of suits) {
-        const card = { Name: name, Suit: suit, Rank: Number(index) + 1 };
-        deck.push(card);
+    for (i = 0; i < numberOfDecks; i++) {
+      for (const [index, name] of indexName) {
+        for (const suit of suits) {
+          const card = { Name: name, Suit: suit, Rank: Number(index) + 1 };
+          deck.push(card);
+        }
       }
     }
   }
 }
 
+//Fisher-Yates Shuffle, Durstenfeld variation
 function shuffleDeck() {
   let i, j, holdIndex;
   for (i = deck.length - 1; i > 0; i--) {
@@ -56,7 +60,8 @@ function shuffleDeck() {
     deck[j] = holdIndex;
   }
 }
-//Fisher-Yates Shuffle, Durstenfeld variation
+
+// //Fisher-Yates Shuffle, Durstenfeld variation
 // function shuffle(array) {
 //   var m = array.length,
 //     t,
@@ -97,12 +102,29 @@ function printDeck() {
 }
 
 function calculateScore(hand) {
-  let score = 0;
+  let totalPoints = 0;
   for (i = 0; i < hand.length; i++) {
     let point = hand[i].Rank >= 10 ? 10 : hand[i].Rank;
-    score += point;
+    totalPoints += point;
   }
-  return score;
+  const ace = (card) => card.Rank === 1;
+  return !hand.some(ace)
+    ? totalPoints
+    : totalPoints > 11
+    ? totalPoints
+    : (totalPoints += 10);
 }
 
 const hit = (hand) => hand.push(deck.pop());
+
+//Evaluation if draw
+const drawEvaluation = () =>
+  calculateScore(playerHand) === calculateScore(dealerHand);
+
+//Evaluate if win
+const winEvaluation = () =>
+  calculateScore(playerHand) > calculateScore(dealerHand);
+
+//Evaluate game
+const gameEvaluation = () =>
+  drawEvaluation() ? "You tied!" : winEvaluation() ? "You won!" : "You lost!";
