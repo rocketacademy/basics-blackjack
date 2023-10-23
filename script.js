@@ -2,27 +2,31 @@
 const deck = [],
   playerHand = [],
   dealerHand = [];
+let gameState = 0,
+  gameMessage = "";
 
+//Main function
 function main(input, myOutputValue) {
-  if (deck.length <= 0) {
-    initDeck(1);
-    shuffleDeck();
-    initGame();
-  }
-  if (input === "H") {
-    hit(playerHand);
-  } else if (input === "S") {
-    dealerAI();
-  }
-  if (input === "R") {
-    resetGame();
-  }
-  myOutputValue =
-    `Player:<br>${print(playerHand)} Score: ${calculateScore(
+  if (gameState === 1) {
+    playRound(input);
+  } else if (gameState === 2) {
+    resetRound();
+    initRound();
+    gameState = 1;
+  } else if (gameState === 0) {
+    if (Number.isInteger(Number(input)) && Number(input) > 0) {
+      numberOfDecks = Number(input);
+      initGame(numberOfDecks);
+      gameState = 1;
+    } else gameMessage = "Please type in number of decks (integer).";
+  } else gameMessage = "Error in main function";
+  let tracker =
+    `<br>Player:<br>${print(playerHand)} Score: ${calculateScore(
       playerHand
     )}<br><br>Dealer:<br>${print(dealerHand)} Score: ${calculateScore(
       dealerHand
     )}<br><br>${gameEvaluation()}` + `<br><br><br>${print(deck)}`;
+  myOutputValue = gameMessage + tracker;
   return myOutputValue;
 }
 
@@ -30,11 +34,16 @@ function main(input, myOutputValue) {
 const hit = (hand) => hand.push(deck.pop());
 
 //Start game
-function initGame() {
+function initRound() {
   for (let i = 0; i < 2; i++) {
     hit(playerHand);
     hit(dealerHand);
   }
+  gameMessage = `You opened with:<br>${print(
+    playerHand
+  )}<br>Score: ${calculateScore(
+    playerHand
+  )}<br><br>Type "H" to Hit and "S" to Stand`;
 }
 
 //Helper function for checking ace
@@ -81,7 +90,7 @@ const gameEvaluation = () =>
 function print(hand) {
   let output = "";
   for (const card of hand) {
-    output += `${card.Name} (${card.Rank}) of ${card.Suit}<br>`;
+    output += `${card.Name} of ${card.Suit}<br>`;
   }
   return output;
 }
@@ -129,29 +138,48 @@ function shuffleDeck() {
   }
 }
 
-// //Fisher-Yates Shuffle, Durstenfeld variation
-// function shuffle(array) {
-//   var m = array.length,
-//     t,
-//     i;
-//   // While there remain elements to shuffle…
-//   while (m) {
-//     // Pick a remaining element…
-//     i = Math.floor(Math.random() * m--);
-//     // And swap it with the current element.
-//     t = array[m];
-//     array[m] = array[i];
-//     array[i] = t;
-//   }
-//   return array;
-// }
-
 //Reset game
-function resetGame() {
+function resetRound() {
   deck.push(...playerHand);
   playerHand.length = 0;
   deck.push(...dealerHand);
   dealerHand.length = 0;
   shuffleDeck();
-  initGame();
+}
+
+function initGame(numberOfDecks) {
+  initDeck(numberOfDecks);
+  shuffleDeck();
+  initRound();
+}
+
+function playRound(input) {
+  switch (input) {
+    case "H":
+      hit(playerHand);
+      gameMessage = `Your Hand:<br>${print(
+        playerHand
+      )}<br>Score: ${calculateScore(
+        playerHand
+      )}<br><br>Type "H" to Hit and "S" to Stand`;
+      gameState = 1;
+      break;
+    case "S":
+      dealerAI();
+      gameMessage =
+        `Your Hand:<br>${print(playerHand)}<br>Score: ${calculateScore(
+          playerHand
+        )}<br><br>Dealer Hand:<br>${print(
+          dealerHand
+        )}<br>Score: ${calculateScore(dealerHand)}` +
+        `<br><br>${gameEvaluation()}`;
+      gameState = 2;
+      break;
+    default:
+      gameMessage = `Your Hand:<br>${print(
+        playerHand
+      )}<br>Score: ${calculateScore(
+        playerHand
+      )}<br><br>Type "H" to Hit and "S" to Stand`;
+  }
 }
