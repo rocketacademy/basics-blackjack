@@ -24,7 +24,7 @@ function main(input, myOutputValue) {
   return myOutputValue;
 }
 
-//Print hand
+//Print array
 function print(hand) {
   let output = "";
   for (const card of hand) {
@@ -42,11 +42,28 @@ function initRound() {
     hit(playerHand);
     hit(dealerHand);
   }
-  gameMessage = `You opened with:<br>${print(
-    playerHand
-  )}Score: ${calculateScore(
-    playerHand
-  )}<br><br>Type "H" to Hit and "S" to Stand`;
+  if (calculateScore(playerHand) === 21 && calculateScore(dealerHand === 21)) {
+    gameMessage =
+      `${displayHand(playerHand)}<br><br>${displayHand(dealerHand)}` +
+      `<br><br>${gameEvaluation()}` +
+      `<br>Push!`;
+    resetRound();
+  } else if (calculateScore(dealerHand) === 21) {
+    gameMessage =
+      `${displayHand(playerHand)}<br><br>${displayHand(dealerHand)}` +
+      `<br><br>${gameEvaluation()}` +
+      `<br>Dealer has Blackjack`;
+    resetRound();
+  } else if (calculateScore(playerHand) === 21) {
+    gameMessage =
+      `${displayHand(playerHand)}<br><br>${displayHand(dealerHand)}` +
+      `<br><br>${gameEvaluation()}` +
+      `<br>You have Blackjack`;
+    resetRound();
+  } else
+    gameMessage = `${displayHand(
+      playerHand
+    )}<br><br>Type "H" to Hit and "S" to Stand`;
 }
 
 //Game flow for Hit and Stand
@@ -54,7 +71,7 @@ function playRound(input) {
   switch (input) {
     case "H":
       hit(playerHand);
-      gameMessage = `Your Hand:<br>${print(playerHand)}Score: ${calculateScore(
+      gameMessage = `${displayHand(
         playerHand
       )}<br><br>Type "H" to Hit and "S" to Stand`;
       gameState = 1;
@@ -62,19 +79,13 @@ function playRound(input) {
     case "S":
       dealerAI();
       gameMessage =
-        `Your Hand:<br>${print(playerHand)}Score: ${calculateScore(
-          playerHand
-        )}<br><br>Dealer Hand:<br>${print(dealerHand)}Score: ${calculateScore(
-          dealerHand
-        )}` +
+        `${displayHand(playerHand)}<br><br>${displayHand(dealerHand)}` +
         `<br><br>${gameEvaluation()}` +
         `<br><br>Press submit to play another round`;
       gameState = 2;
       break;
     default:
-      gameMessage = `Invalid input!<br><br>Your Hand:<br>${print(
-        playerHand
-      )}Score: ${calculateScore(
+      gameMessage = `Invalid input!<br><br>${displayHand(
         playerHand
       )}<br><br>Type "H" to Hit and "S" to Stand`;
   }
@@ -129,6 +140,12 @@ function calculateScore(hand) {
     ? totalPoints
     : (totalPoints += 10);
 }
+
+//Display hand and score
+const displayHand = (hand) =>
+  hand == dealerHand
+    ? `Dealer's Hand:<br>${print(hand)}Score: ${calculateScore(hand)}`
+    : `Player's Hand:<br>${print(hand)}Score: ${calculateScore(hand)}`;
 
 //Dealer logic
 function dealerAI() {
