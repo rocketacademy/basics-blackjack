@@ -14,11 +14,10 @@ function main(input, myOutputValue) {
     initRound();
     gameState = 1;
   } else if (gameState === 0) {
-    if (Number.isInteger(Number(input)) && Number(input) > 0) {
-      numberOfDecks = Number(input);
-      initGame(numberOfDecks);
-      gameState = 1;
-    } else gameMessage = "Please type in number of decks (integer).";
+    numberOfDecks =
+      Number.isInteger(Number(input)) && Number(input) > 0 ? Number(input) : 1;
+    initGame(numberOfDecks);
+    gameState = 1;
   } else gameMessage = "Error in main function";
   myOutputValue = gameMessage;
   return myOutputValue;
@@ -47,19 +46,19 @@ function initRound() {
       `${displayHand(playerHand)}<br><br>${displayHand(dealerHand)}` +
       `<br><br>${gameEvaluation()}` +
       `<br>Push!`;
-    resetRound();
+    gameState = 2;
   } else if (calculateScore(dealerHand) === 21) {
     gameMessage =
       `${displayHand(playerHand)}<br><br>${displayHand(dealerHand)}` +
       `<br><br>${gameEvaluation()}` +
-      `<br>Dealer has Blackjack`;
-    resetRound();
+      `<br>Dealer has Blackjack!`;
+    gameState = 2;
   } else if (calculateScore(playerHand) === 21) {
     gameMessage =
       `${displayHand(playerHand)}<br><br>${displayHand(dealerHand)}` +
       `<br><br>${gameEvaluation()}` +
-      `<br>You have Blackjack`;
-    resetRound();
+      `<br>You have Blackjack!`;
+    gameState = 2;
   } else
     gameMessage = `${displayHand(
       playerHand
@@ -128,17 +127,21 @@ function resetRound() {
 const ace = (card) => card.Rank === 1;
 
 //Calculate points of current hand
-function calculateScore(hand) {
+const calculateScore = (hand) =>
+  !hand.some(ace)
+    ? hardScore(hand)
+    : hardScore(hand) > 11
+    ? hardScore(hand)
+    : hardScore(hand) + 10;
+
+//Helper function for hard values
+function hardScore(hand) {
   let totalPoints = 0;
   for (const card of hand) {
     let point = card.Rank >= 10 ? 10 : card.Rank;
     totalPoints += point;
   }
-  return !hand.some(ace)
-    ? totalPoints
-    : totalPoints > 11
-    ? totalPoints
-    : (totalPoints += 10);
+  return totalPoints;
 }
 
 //Display hand and score
@@ -149,11 +152,8 @@ const displayHand = (hand) =>
 
 //Dealer logic
 function dealerAI() {
-  while (calculateScore(dealerHand) < 17) {
+  while (calculateScore(dealerHand) < 17 || hardScore(dealerHand) + 10 <= 17) {
     hit(dealerHand);
-    if (dealerHand.some(ace) && calculateScore(dealerHand) <= 17) {
-      hit(dealerHand);
-    }
   }
 }
 
