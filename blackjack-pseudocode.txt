@@ -14,32 +14,55 @@ There will be only two players. One human and one computer (for the Base solutio
 
 ** Remember if you want to have a different output statement, then go to another gameState ** 
 
-Initial thougts
-<initial draw state>
-- global var playerDrawsArray and dealerDrawsArray arrays to store the card objects that each entity draws
-- a deck needs to be initialised
-- the deck needs to be shuffled
-- player draws first card, dealer draws first card - push them into the respective draws arrays
-- player draws second card, dealer draws second card - pupsh them into the respective draws arrays
-* chheck for ace in player * 
-- if there is an ace in the player's draw, then need to ask player what value they want to assign to ace first. 
-- gameState change to player ace
-- else, just ask player if they want to hit or pass
-- output statement is what two cards the player drew, and the first card that the dealer drew. Then, ask player if they want to hit or pass
-- change the gameState based on their input
+flow of the game
+- player draws
+- dealer draws
+- player draws
+- dealer draws
+- check if blackjack in either of the hands
+- if have, then display the cards drawn and the winner
+- else, ask player if they want to hit or stand
+- after player hits finish/chooses stand,
+- dealer to choose whether hit or stand
+- then compare the score to choose a winner
 
-<player ace state>
-- after player submits whether their ace value
-- ask them if they want to hit or pass
-- change gameState based on input
+* how to deal with ace? *
 
-<player hit state>
-- after player submitted hit, come to this block of code
-- push a card from the shuffled deck into the playerDrawsArray
-- again do a check for ace
-- if got ace, need to ask them for their ace assignment value
-- cahnge gameState to player ace
-- else, hit or pass again
+Implement basic working version first where ace is default value of 1
+- global var gameState = "INITIAL"
+- global var playerDrawsArray and dealerDrawsArray
+- global var playerScore and dealerScore
+- initialise deck
+- shuffle deck and assign it as shuffled
+- draw two cards sequentially for player and dealer
+for (var i = 0; i < 2; i++) {
+	playerDrawsArray[i] = shuffled.pop();
+	dealerDrawsArray[i] = shuffled.pop();
+} 
+- checkBlackjack function
+var checkBlackjack = function (playerDraws, dealerDraws) {
+	var blackjack = "";
+	playerScore = playerDrawsArrays[0].rank + playerDrawsArrays[1].rank;
+	update player to dealer in VS: playerScore = playerDrawsArrays[0].rank + playerDrawsArrays[1].rank;
+	if (playerScore == 21 && dealerScore == 21) blackjack = "Both";
+	else if (playerScore == 21) blackjack = "Player";
+	else if (dealerScore == 21) blackjack = "Dealer";
+	else blackjack = "Nil";
+	return blackjack;
+}
+- blackjackResult = checkBlackjack (playerDrawsArrays, dealerDrawsArrays);
+if bjresult = "Nil", output will need to display player's both cards, dealer's first card, player's scores, and ask whether want to hit or stand
+gameState will change to what the input is
+return output
+else if bjresult = "Player", output will display the player's cards and say Blackjack. Press Submit to restart
+else if bjresult = "Dealer", output will display the dealer's cards and say Blackjack. Press Submit to restart
+else if bjresult = "Both", output will display both player and dealer's cards and say tied. Press Submit to restart
 
-<player pass state>
-- this part probably is to do dealer computation?? 
+
+
+
+
+
+
+
+

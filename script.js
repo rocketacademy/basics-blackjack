@@ -1,3 +1,23 @@
+/*
+
+						                    INITIAL STATE
+- global var gameState = "INITIAL"
+- global var playerDrawsArray and dealerDrawsArray
+- global var playerScore and dealerScore
+- initialise deck
+- shuffle deck and assign it as shuffled
+- draw two cards sequentially for player and dealer
+- checkBlackjack function
+- blackjackResult = checkBlackjack (playerDrawsArrays, dealerDrawsArrays);
+if bjresult = "Nil", output will need to display player's both cards, dealer's first card, player's scores, and ask whether want to hit or stand
+gameState will change to what the input is -- do user validation
+return output
+else if bjresult = "Player", output will display the player's cards and say Blackjack. Press Submit to restart
+else if bjresult = "Dealer", output will display the dealer's cards and say Blackjack. Press Submit to restart
+else if bjresult = "Both", output will display both player and dealer's cards and say tied. Press Submit to restart
+
+*/
+
 var main = function (input) {
   var myOutputValue = "hello world";
   return myOutputValue;
