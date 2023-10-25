@@ -18,9 +18,41 @@ else if bjresult = "Both", output will display both player and dealer's cards an
 
 */
 
+var gameState = "INITIAL";
+
+var shuffled = []; // an array of objects. Initialised globally so we can track back in the later gameStates
+
+var playerDrawsArray = [];
+var playerScore = 0;
+
+var dealerDrawsArray = [];
+var dealerScore = 0;
+
 var main = function (input) {
-  var myOutputValue = "hello world";
-  return myOutputValue;
+  var output = ""; // output initialised outside of the gameState blocks to always refresh it no matter what gameState
+  if (gameState == "INITIAL") {
+    var deck = makeDeck();
+    shuffled = shuffleDeck(deck);
+    for (var i = 0; i < 2; i++) {
+      playerDrawsArray[i] = shuffled.pop();
+      dealerDrawsArray[i] = shuffled.pop();
+    }
+    var blackjackResult = checkBlackjack(playerDrawsArray, dealerDrawsArray);
+    if (blackjackResult == "Nil") {
+      output = `Player drew ${playerDrawsArray[0].name} and ${playerDrawsArray[1].name}. <br> Score is ${playerScore} <br><br>
+    Dealer drew ${dealerDrawsArray[0].name} as the first card. <br><br>
+    Please input whether you'd like to hit or stand`;
+      var hitOrStand = input;
+      var nextGameState = hitOrStand.toUpperCase();
+      gameState = nextGameState;
+    } else if (blackjackResult == "Player")
+      output = `Player drew ${playerDrawsArray[0].name} and ${playerDrawsArray[1].name}. Player blackjack!`;
+    else if (blackjackResult == "Dealer")
+      output = `Dealer drew ${dealerDrawsArray[0].name} and ${dealerDrawsArray[1].name}. Dealer blackjack!`;
+    else if (blackjackResult == "Both")
+      output = `Player drew ${playerDrawsArray[0].name} and ${playerDrawsArray[1].name}. <br><br>Dealer drew ${dealerDrawsArray[0].name} and ${dealerDrawsArray[1].name}. <br><br> Tie!`;
+  }
+  return output;
 };
 
 // helper function to make deck
@@ -49,10 +81,24 @@ var makeDeck = function () {
         suit: currentSuit,
         rank: currentRank,
       };
+      // additional line to convert J Q K rank to 10
+      if (
+        currentCard.name == "jack" ||
+        currentCard.name == "queen" ||
+        currentCard.name == "king"
+      )
+        currentCard.rank = 10;
+      // make ace default value 11
+      if (currentCard.name == "ace") currentCard.rank = 11;
       createdDeck.push(currentCard);
     }
   }
   return createdDeck;
+};
+
+var getRandomIndex = function (cardDeckLength) {
+  var randomIndex = Math.floor(Math.random() * cardDeckLength); //returns a value from 0 to 51
+  return randomIndex;
 };
 
 var shuffleDeck = function (cardDeck) {
@@ -72,4 +118,15 @@ var shuffleDeck = function (cardDeck) {
     // randomCard = currentCard;
   }
   return cardDeck;
+};
+
+var checkBlackjack = function (playerDraws, dealerDraws) {
+  var blackjack = "";
+  playerScore = playerDraws[0].rank + playerDraws[1].rank;
+  dealerScore = dealerDraws[0].rank + dealerDraws[1].rank;
+  if (playerScore == 21 && dealerScore == 21) blackjack = "Both";
+  else if (playerScore == 21) blackjack = "Player";
+  else if (dealerScore == 21) blackjack = "Dealer";
+  else blackjack = "Nil";
+  return blackjack;
 };
