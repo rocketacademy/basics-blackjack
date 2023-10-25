@@ -15,7 +15,9 @@ function main(input, myOutputValue) {
     gameState = 1;
   } else if (gameState === 0) {
     let numberOfDecks =
-      Number.isInteger(Number(input)) && Number(input) > 0 ? Number(input) : 1;
+      Number.isInteger(Number(input)) && Number(input) > 0 && Number(input) < 9
+        ? Number(input)
+        : 1;
     initGame(numberOfDecks);
     gameState = 1;
   } else gameMessage = "Error in main function";
