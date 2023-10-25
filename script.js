@@ -4,7 +4,7 @@ var main = function (input) {
 };
 
 // helper function to make deck
-var makeDeck = function (suits) {
+var makeDeck = function () {
   // create the empty array that will be used to store the card objects
   var createdDeck = [];
 
@@ -33,4 +33,23 @@ var makeDeck = function (suits) {
     }
   }
   return createdDeck;
+};
+
+var shuffleDeck = function (cardDeck) {
+  for (var i = 0; i < cardDeck.length; i++) {
+    var currentCardIndex = i;
+    var currentCard = cardDeck[currentCardIndex];
+    var randomCardIndex = getRandomIndex(cardDeck.length);
+    var randomCard = cardDeck[randomCardIndex];
+    // reassign the currentCard as the randomCard
+    // problem with the below code is i never go back to the index and reassign. Im just reassigning the variables
+    // currentCard = randomCard;
+    // instead, I should reassign the value at the currentCard's index with the randomCard value
+    cardDeck[currentCardIndex] = randomCard;
+    // likewise we reassign the value at the randomCard index with the currentCard value
+    cardDeck[randomCardIndex] = currentCard;
+    // and randomCard as currentCard
+    // randomCard = currentCard;
+  }
+  return cardDeck;
 };
