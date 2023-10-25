@@ -1,0 +1,45 @@
+blackjack-pseudocode
+
+2 to 10 face value
+jack, queen and king 10
+ace can either be 1 or 11
+
+There will be only two players. One human and one computer (for the Base solution).
+- The computer will always be the dealer.
+- Each player gets dealt two cards to start.
+- The player goes first, and decides if they want to hit (draw a card) or stand (end their turn).
+- The dealer has to hit if their hand is below 17.
+- Each players' score is the total of their card ranks. Jacks/Queen/Kings are 10. Aces can be 1 or 11.
+- The player who is closer to, but not above 21 wins the hand.
+
+** Remember if you want to have a different output statement, then go to another gameState ** 
+
+Initial thougts
+<initial draw state>
+- global var playerDrawsArray and dealerDrawsArray arrays to store the card objects that each entity draws
+- a deck needs to be initialised
+- the deck needs to be shuffled
+- player draws first card, dealer draws first card - push them into the respective draws arrays
+- player draws second card, dealer draws second card - pupsh them into the respective draws arrays
+* chheck for ace in player * 
+- if there is an ace in the player's draw, then need to ask player what value they want to assign to ace first. 
+- gameState change to player ace
+- else, just ask player if they want to hit or pass
+- output statement is what two cards the player drew, and the first card that the dealer drew. Then, ask player if they want to hit or pass
+- change the gameState based on their input
+
+<player ace state>
+- after player submits whether their ace value
+- ask them if they want to hit or pass
+- change gameState based on input
+
+<player hit state>
+- after player submitted hit, come to this block of code
+- push a card from the shuffled deck into the playerDrawsArray
+- again do a check for ace
+- if got ace, need to ask them for their ace assignment value
+- cahnge gameState to player ace
+- else, hit or pass again
+
+<player pass state>
+- this part probably is to do dealer computation?? 
