@@ -14,7 +14,7 @@ function main(input, myOutputValue) {
     initRound();
     gameState = 1;
   } else if (gameState === 0) {
-    numberOfDecks =
+    let numberOfDecks =
       Number.isInteger(Number(input)) && Number(input) > 0 ? Number(input) : 1;
     initGame(numberOfDecks);
     gameState = 1;
@@ -41,23 +41,11 @@ function initRound() {
     hit(playerHand);
     hit(dealerHand);
   }
-  if (calculateScore(playerHand) === 21 && calculateScore(dealerHand === 21)) {
+  if (calculateScore(playerHand) === 21 || calculateScore(dealerHand) === 21) {
     gameMessage =
       `${displayHand(playerHand)}<br><br>${displayHand(dealerHand)}` +
       `<br><br>${gameEvaluation()}` +
-      `<br>Push!`;
-    gameState = 2;
-  } else if (calculateScore(dealerHand) === 21) {
-    gameMessage =
-      `${displayHand(playerHand)}<br><br>${displayHand(dealerHand)}` +
-      `<br><br>${gameEvaluation()}` +
-      `<br>Dealer has Blackjack!`;
-    gameState = 2;
-  } else if (calculateScore(playerHand) === 21) {
-    gameMessage =
-      `${displayHand(playerHand)}<br><br>${displayHand(dealerHand)}` +
-      `<br><br>${gameEvaluation()}` +
-      `<br>You have Blackjack!`;
+      `<br>${bjEvaluation()}`;
     gameState = 2;
   } else
     gameMessage = `${displayHand(
@@ -102,6 +90,13 @@ const winEvaluation = () =>
 //Evaluate game
 const gameEvaluation = () =>
   drawEvaluation() ? "You tied!" : winEvaluation() ? "You won!" : "You lost!";
+//Evaluate Blackjack
+const bjEvaluation = () =>
+  drawEvaluation()
+    ? "Push!"
+    : winEvaluation()
+    ? "Player has Blackjack"
+    : "Dealer has Blackjack";
 
 //Fisher-Yates Shuffle, Durstenfeld variation
 function shuffleDeck() {
@@ -123,12 +118,9 @@ function resetRound() {
   shuffleDeck();
 }
 
-//Helper function for checking ace
-const ace = (card) => card.Rank === 1;
-
 //Calculate points of current hand
 const calculateScore = (hand) =>
-  !hand.some(ace)
+  !hand.some((card) => card.Rank === 1)
     ? hardScore(hand)
     : hardScore(hand) > 11
     ? hardScore(hand)
