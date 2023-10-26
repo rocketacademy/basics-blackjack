@@ -64,24 +64,34 @@ var main = function (input) {
     playerDrawsArray[playerArrayIndexNewDraw] = shuffled.pop();
     // recheck the score
     playerScore = checkScore(playerDrawsArray);
-    output = `Player has drawn: `;
-    for (var i = 0; i < playerDrawsArray.length; i++) {
-      if (i != playerArrayIndexNewDraw) {
-        // if statement to help control the comma and space
-        output = output + `${playerDrawsArray[i].name}, `;
-      }
-      // for when it is the last element
-      else {
-        output = output + `${playerDrawsArray[i].name}.<br>`;
-      }
-    }
     output =
-      output +
+      `Player has drawn: ` +
+      outputStatementForCardsDrawn(
+        playerDrawsArray,
+        playerArrayIndexNewDraw,
+        output
+      ) +
       `Player's score is now ${playerScore}. Please input whether you'd like to hit or stand`;
   }
   // STAND gameState
   else if (gameState == "STAND") {
-    output = "Stand";
+    while (dealerScore < 17) {
+      var dealerArrayIndexNewDraw = checkIndexForNewDraw(dealerDrawsArray);
+      dealerDrawsArray[dealerArrayIndexNewDraw] = shuffled.pop();
+      // recheck the score
+      dealerScore = checkScore(dealerDrawsArray);
+    }
+    result = checkResult(playerScore, dealerScore);
+    output =
+      `Dealer has drawn: ` +
+      outputStatementForCardsDrawn(
+        dealerDrawsArray,
+        dealerArrayIndexNewDraw,
+        output
+      ) +
+      `<br><br>
+      Based on Player's score of ${playerScore} and Dealer's score of ${dealerScore}, result is ${result}! Press Submit to play again`;
+    gameState = "INITIAL";
   }
   return output;
 };
@@ -171,4 +181,42 @@ var checkBlackjack = function (playerDraws, dealerDraws) {
 var checkIndexForNewDraw = function (drawsArray) {
   var indexNewDraw = drawsArray.length;
   return indexNewDraw;
+};
+
+var outputStatementForCardsDrawn = function (
+  drawsArray,
+  indexNewDraw,
+  outputStatement
+) {
+  for (var i = 0; i < drawsArray.length; i++) {
+    if (i != indexNewDraw) {
+      // if statement to help control the comma and space
+      outputStatement = outputStatement + `${drawsArray[i].name}, `;
+    }
+    // for when it is the last element
+    else {
+      outputStatement = outputStatement + `${drawsArray[i].name}.<br>`;
+    }
+  }
+  return outputStatement;
+};
+
+var checkResult = function (playerScoreParameter, dealerScoreParameter) {
+  var result = "";
+  // Case 1 if player < 22 and dealer > 22 i.e. dealer bao
+  if (playerScoreParameter < 22 && dealerScoreParameter > 22)
+    result = "Player wins";
+  // Case 2 if dealer < 22 and player > 22 i.e. player bao
+  else if (dealerScoreParameter < 22 && playerScoreParameter > 22)
+    result = "Dealer wins";
+  // Case 3 if both scores are < 22 i.e. never bao, go into another logic to check who is highest
+  else if (playerScoreParameter < 22 && dealerScoreParameter < 22) {
+    if (playerScoreParameter > dealerScoreParameter) result = "Player wins";
+    else if (dealerScoreParameter > playerScoreParameter)
+      result = "Dealer wins";
+    else result = "Tie";
+  }
+  // Case 4 if both bao
+  else if (playerScore > 22 && dealerScoreParameter > 22) result = "Tie";
+  return result;
 };
