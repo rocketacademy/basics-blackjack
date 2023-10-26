@@ -30,7 +30,13 @@ var dealerScore = 0;
 
 var main = function (input) {
   var output = ""; // output initialised outside of the gameState blocks to always refresh it no matter what gameState
+  // statement below is to help convert the gameState to HIT or STAND based on player input
+  if (input == "hit" || input == "stand") {
+    gameState = input.toUpperCase();
+  }
+  // INITIAL gameState
   if (gameState == "INITIAL") {
+    console.log(gameState);
     var deck = makeDeck();
     shuffled = shuffleDeck(deck);
     for (var i = 0; i < 2; i++) {
@@ -44,15 +50,20 @@ var main = function (input) {
       output = `Player drew ${playerDrawsArray[0].name} and ${playerDrawsArray[1].name}. <br> Score is ${playerScore} <br><br>
     Dealer drew ${dealerDrawsArray[0].name} as the first card. <br><br>
     Please input whether you'd like to hit or stand`;
-      var hitOrStand = input;
-      var nextGameState = hitOrStand.toUpperCase();
-      gameState = nextGameState;
     } else if (blackjackResult == "Player")
       output = `Player drew ${playerDrawsArray[0].name} and ${playerDrawsArray[1].name}. Player blackjack!`;
     else if (blackjackResult == "Dealer")
       output = `Dealer drew ${dealerDrawsArray[0].name} and ${dealerDrawsArray[1].name}. Dealer blackjack!`;
     else if (blackjackResult == "Both")
       output = `Player drew ${playerDrawsArray[0].name} and ${playerDrawsArray[1].name}. <br><br>Dealer drew ${dealerDrawsArray[0].name} and ${dealerDrawsArray[1].name}. <br><br> Tie!`;
+  }
+  // HIT gameState
+  else if (gameState == "HIT") {
+    output = "Hit";
+  }
+  // STAND gameState
+  else if (gameState == "STAND") {
+    output = "Stand";
   }
   return output;
 };
