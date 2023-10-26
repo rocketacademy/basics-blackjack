@@ -19,7 +19,6 @@ function main(input, myOutputValue) {
         ? Number(input)
         : 1;
     initGame(numberOfDecks);
-    gameState = 1;
   } else gameMessage = "Error in main function";
   myOutputValue = gameMessage;
   return myOutputValue;
@@ -53,6 +52,7 @@ function initRound() {
     gameMessage = `${displayHand(
       playerHand
     )}<br><br>Type "H" to Hit and "S" to Stand`;
+  gameState = 1;
 }
 
 //Game flow for Hit and Stand
