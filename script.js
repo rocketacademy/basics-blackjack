@@ -37,7 +37,9 @@ var main = function (input) {
       playerDrawsArray[i] = shuffled.pop();
       dealerDrawsArray[i] = shuffled.pop();
     }
-    var blackjackResult = checkBlackjack(playerDrawsArray, dealerDrawsArray);
+    playerScore = checkScore(playerDrawsArray, playerScore);
+    dealerScore = checkScore(dealerDrawsArray, dealerScore);
+    var blackjackResult = checkBlackjack(playerScore, dealerScore);
     if (blackjackResult == "Nil") {
       output = `Player drew ${playerDrawsArray[0].name} and ${playerDrawsArray[1].name}. <br> Score is ${playerScore} <br><br>
     Dealer drew ${dealerDrawsArray[0].name} as the first card. <br><br>
@@ -120,10 +122,16 @@ var shuffleDeck = function (cardDeck) {
   return cardDeck;
 };
 
+var checkScore = function (drawsArray, score) {
+  score = 0; // we set it to zero because for future taking care of ace 11 or 1
+  for (var i = 0; i < drawsArray.length; i++) {
+    score = score + drawsArray[i].rank;
+  }
+  return score;
+};
+
 var checkBlackjack = function (playerDraws, dealerDraws) {
   var blackjack = "";
-  playerScore = playerDraws[0].rank + playerDraws[1].rank;
-  dealerScore = dealerDraws[0].rank + dealerDraws[1].rank;
   if (playerScore == 21 && dealerScore == 21) blackjack = "Both";
   else if (playerScore == 21) blackjack = "Player";
   else if (dealerScore == 21) blackjack = "Dealer";
