@@ -43,8 +43,8 @@ var main = function (input) {
       playerDrawsArray[i] = shuffled.pop();
       dealerDrawsArray[i] = shuffled.pop();
     }
-    playerScore = checkScore(playerDrawsArray, playerScore);
-    dealerScore = checkScore(dealerDrawsArray, dealerScore);
+    playerScore = checkScore(playerDrawsArray);
+    dealerScore = checkScore(dealerDrawsArray);
     var blackjackResult = checkBlackjack(playerScore, dealerScore);
     if (blackjackResult == "Nil") {
       output = `Player drew ${playerDrawsArray[0].name} and ${playerDrawsArray[1].name}. <br> Score is ${playerScore} <br><br>
@@ -59,7 +59,25 @@ var main = function (input) {
   }
   // HIT gameState
   else if (gameState == "HIT") {
-    output = "Hit";
+    var playerArrayIndexNewDraw = checkIndexForNewDraw(playerDrawsArray);
+    // add the drawn card to the last index of playerDrawsArray
+    playerDrawsArray[playerArrayIndexNewDraw] = shuffled.pop();
+    // recheck the score
+    playerScore = checkScore(playerDrawsArray);
+    output = `Player has drawn: `;
+    for (var i = 0; i < playerDrawsArray.length; i++) {
+      if (i != playerArrayIndexNewDraw) {
+        // if statement to help control the comma and space
+        output = output + `${playerDrawsArray[i].name}, `;
+      }
+      // for when it is the last element
+      else {
+        output = output + `${playerDrawsArray[i].name}.<br>`;
+      }
+    }
+    output =
+      output +
+      `Player's score is now ${playerScore}. Please input whether you'd like to hit or stand`;
   }
   // STAND gameState
   else if (gameState == "STAND") {
@@ -133,8 +151,8 @@ var shuffleDeck = function (cardDeck) {
   return cardDeck;
 };
 
-var checkScore = function (drawsArray, score) {
-  score = 0; // we set it to zero because for future taking care of ace 11 or 1
+var checkScore = function (drawsArray) {
+  var score = 0; // we set it to zero because for future taking care of ace 11 or 1
   for (var i = 0; i < drawsArray.length; i++) {
     score = score + drawsArray[i].rank;
   }
@@ -148,4 +166,9 @@ var checkBlackjack = function (playerDraws, dealerDraws) {
   else if (dealerScore == 21) blackjack = "Dealer";
   else blackjack = "Nil";
   return blackjack;
+};
+
+var checkIndexForNewDraw = function (drawsArray) {
+  var indexNewDraw = drawsArray.length;
+  return indexNewDraw;
 };
