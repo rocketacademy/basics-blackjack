@@ -60,11 +60,19 @@ function playRound(input) {
   switch (input) {
     case "H":
       hit(playerHand);
-      gameMessage = `${displayHand(
-        playerHand
-      )}<br><br>Type "H" to Hit and "S" to Stand`;
-      gameState = 1;
-      break;
+      if (calculateScore(playerHand) > 21) {
+        gameMessage =
+          `${displayHand(playerHand)}<br><br>${displayHand(dealerHand)}` +
+          `<br><br>${gameEvaluation()}` +
+          `<br><br>Press submit to play another round`;
+        gameState = 2;
+      } else {
+        gameMessage = `${displayHand(
+          playerHand
+        )}<br><br>Type "H" to Hit and "S" to Stand`;
+        gameState = 1;
+        break;
+      }
     case "S":
       dealerAI();
       gameMessage =
@@ -102,12 +110,9 @@ const bjEvaluation = () =>
 
 //Fisher-Yates Shuffle, Durstenfeld variation
 function shuffleDeck() {
-  let i, j, holdIndex;
-  for (i = deck.length - 1; i > 0; i--) {
-    j = Math.floor(Math.random() * (i + 1));
-    holdIndex = deck[i];
-    deck[i] = deck[j];
-    deck[j] = holdIndex;
+  for (let i = deck.length - 1; i > 0; i--) {
+    let j = Math.floor(Math.random() * (i + 1));
+    [deck[i], deck[j]] = [deck[j], deck[i]];
   }
 }
 
