@@ -66,7 +66,9 @@ var main = function (input) {
     // playerDrawsArray[0] = aceDeck[0];
     // playerDrawsArray[1] = aceDeck[1];
     // playerDrawsArray[2] = aceDeck[2];
-
+    // dealerDrawsArray[0] = aceDeck[0];
+    // dealerDrawsArray[1] = aceDeck[1];
+    // dealerDrawsArray[2] = aceDeck[2];
     playerScore = checkScore(playerDrawsArray, playerScore);
     dealerScore = checkScore(dealerDrawsArray, dealerScore);
     // player: do check for ace ace draw and reassign ace value accordingly
@@ -139,6 +141,12 @@ var main = function (input) {
       dealerDrawsArray[dealerArrayIndexNewDraw] = shuffled.pop();
       // recheck the score
       dealerScore = checkScore(dealerDrawsArray, dealerScore);
+      // input the ace logic in the while loop. Cos this will ensure that the draw and score gets updated to properly reflect the correct score
+      if (checkIfAceInDrawAndScoreBurst(dealerDrawsArray, dealerScore)) {
+        dealerDrawsArray = reassignAceValue(dealerDrawsArray, dealerScore);
+        // update the score after the reassignment
+        dealerScore = checkScore(dealerDrawsArray, dealerScore);
+      }
     }
     result = checkResult(playerScore, dealerScore);
     output =
