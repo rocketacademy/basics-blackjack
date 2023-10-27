@@ -2,13 +2,12 @@
 const deck = [],
   playersHands = [],
   dealerHand = [];
-let numberOfDecks, numberOfPlayers;
 const startingGame = 0,
   playingRound = 1,
   endingRound = 2;
-
 let gameState = startingGame,
-  gameMessage = "";
+  gameMessage = "",
+  numberOfDecks;
 
 //Main function
 function main(input, myOutputValue) {
@@ -18,24 +17,16 @@ function main(input, myOutputValue) {
     resetRound();
     initRound();
   } else if (gameState === startingGame) {
-    if (!numberOfDecks) {
+    if (numberOfDecks == null) {
       numberOfDecks =
         Number.isInteger(Number(input)) &&
         Number(input) > 0 &&
         Number(input) <= 8
           ? Number(input)
           : 1;
-      gameMessage = `${numberOfDecks} decks! Type in number of players`;
-    } else if (!numberOfPlayers) {
-      numberOfPlayers =
-        Number.isInteger(Number(input)) &&
-        Number(input) > 0 &&
-        Number(input) <= 7
-          ? Number(input)
-          : 1;
-      gameMessage = `${numberOfPlayers} players! Press submit to start!`;
-    } else if (numberOfDecks && numberOfPlayers) {
-      initDeck(numberOfDecks);
+      gameMessage = `You selected ${numberOfDecks} decks! Press submit to play!`;
+    } else if (numberOfDecks != null) {
+      initDeck();
       shuffleDeck();
       initRound();
     }
@@ -61,70 +52,81 @@ const hit = (hand) => hand.push(deck.pop());
 //Start round
 function initRound() {
   for (let i = 0; i < 2; i++) {
-    hit(playersHands);
+    for (j = 0; j < numberOfPlayers; j++) {
+      playersHands.push([]);
+      hit(playersHands[j]);
+    }
     hit(dealerHand);
   }
-  if (
-    calculateScore(playersHands) === 21 ||
-    calculateScore(dealerHand) === 21
-  ) {
-    gameMessage =
-      `${displayHand(playersHands)}<br><br>${displayHand(dealerHand)}` +
-      `<br><br>${gameEvaluation()}` +
-      `<br>${bjEvaluation()}`;
-    gameState = endingRound;
-  } else {
-    gameMessage = `${displayHand(
-      playersHands
-    )}<br><br>Dealer's Face up:<br>${dealerFaceUp()}<br>Type "H" to Hit and "S" to Stand`;
-    gameState = playingRound;
+  for (let individualPlayerHand of playersHands) {
+    if (
+      calculateScore(individualPlayerHand) === 21 ||
+      calculateScore(dealerHand) === 21
+    ) {
+      gameMessage +=
+        `${displayHand(individualPlayerHand)}<br><br>${displayHand(
+          dealerHand
+        )}` +
+        `<br><br>${gameEvaluation()}` +
+        `<br>${bjEvaluation()}`;
+      gameState = endingRound;
+    } else {
+      gameMessage += `${displayHand(
+        individualPlayerHand
+      )}<br><br>Dealer's Face up:<br>${dealerFaceUp()}<br>Type "H" to Hit and "S" to Stand`;
+      gameState = playingRound;
+    }
   }
 }
 
 //Game flow for Hit and Stand
 function playRound(input) {
-  switch (input) {
-    case "H":
-      hit(playersHands);
-      if (calculateScore(playersHands) < 21) {
-        gameMessage = `${displayHand(
-          playersHands
-        )}<br><br>Dealer's Face up:<br>${dealerFaceUp()}<br>Type "H" to Hit and "S" to Stand`;
-        gameState = playingRound;
+  for (let individualPlayerHand of playersHands) {
+    switch (input) {
+      case "H":
+        hit(individualPlayerHand);
+        if (calculateScore(individualPlayerHand) < 21) {
+          gameMessage += `${displayHand(
+            individualPlayerHand
+          )}<br><br>Dealer's Face up:<br>${dealerFaceUp()}<br>Type "H" to Hit and "S" to Stand`;
+          gameState = playingRound;
+          break;
+        }
+      case "S":
+        dealerAI();
+        gameMessage +=
+          `${displayHand(individualPlayerHand)}<br><br>${displayHand(
+            dealerHand
+          )}` +
+          `<br><br>${gameEvaluation()}` +
+          `<br><br>Press submit to play another round`;
+        gameState = endingRound;
         break;
-      }
-    case "S":
-      dealerAI();
-      gameMessage =
-        `${displayHand(playersHands)}<br><br>${displayHand(dealerHand)}` +
-        `<br><br>${gameEvaluation()}` +
-        `<br><br>Press submit to play another round`;
-      gameState = endingRound;
-      break;
-    default:
-      gameMessage = `Invalid input!<br><br>${displayHand(
-        playersHands
-      )}<br><br>Dealer's Face up:<br>${dealerFaceUp()}<br>Type "H" to Hit and "S" to Stand`;
+      default:
+        gameMessage += `Invalid input!<br><br>${displayHand(
+          individualPlayerHand
+        )}<br><br>Dealer's Face up:<br>${dealerFaceUp()}<br>Type "H" to Hit and "S" to Stand`;
+    }
   }
 }
 
 //Evaluation if draw
-const drawEvaluation = () =>
-  calculateScore(playersHands) === calculateScore(dealerHand) ||
-  (calculateScore(playersHands) > 21 && calculateScore(dealerHand) > 21);
+const drawEvaluation = (i) =>
+  calculateScore(playersHands[i]) === calculateScore(dealerHand) ||
+  (calculateScore(playersHands[i]) > 21 && calculateScore(dealerHand) > 21);
 //Evaluate if win
-const winEvaluation = () =>
-  21 >= calculateScore(playersHands) &&
-  (calculateScore(playersHands) > calculateScore(dealerHand) ||
+const winEvaluation = (i) =>
+  21 >= calculateScore(playersHands[i]) &&
+  (calculateScore(playersHands[i]) > calculateScore(dealerHand) ||
     calculateScore(dealerHand) > 21);
 //Evaluate game
-const gameEvaluation = () =>
-  drawEvaluation() ? "You tied!" : winEvaluation() ? "You won!" : "You lost!";
+const gameEvaluation = (i) =>
+  drawEvaluation(i) ? "You tied!" : winEvaluation(i) ? "You won!" : "You lost!";
 //Evaluate Blackjack
-const bjEvaluation = () =>
-  drawEvaluation()
+const bjEvaluation = (i) =>
+  drawEvaluation(i)
     ? "Push!"
-    : winEvaluation()
+    : winEvaluation(i)
     ? "Player has Blackjack"
     : "Dealer has Blackjack";
 
@@ -138,7 +140,9 @@ function shuffleDeck() {
 
 //Reset round
 function resetRound() {
-  deck.push(...playersHands);
+  for (let individualPlayerHand of playersHands) {
+    deck.push(...individualPlayerHand);
+  }
   playersHands.length = 0;
   deck.push(...dealerHand);
   dealerHand.length = 0;
@@ -177,7 +181,7 @@ function dealerAI() {
 }
 
 //Create decks
-function initDeck(numberOfDecks) {
+function initDeck() {
   const nameConstruct = [
     "Ace",
     "Two",
