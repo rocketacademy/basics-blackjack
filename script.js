@@ -39,21 +39,45 @@ var main = function (input) {
     // "refresh" the player and dealer draws everytime we start a new game
     playerDrawsArray = [];
     dealerDrawsArray = [];
+    // var aceDeck = [
+    //   {
+    //     name: "ace",
+    //     suit: "hearts",
+    //     rank: 11,
+    //   },
+    //   {
+    //     name: "ace",
+    //     suit: "spades",
+    //     rank: 11,
+    //   },
+    //   {
+    //     name: "ace",
+    //     suit: "hearts",
+    //     rank: 11,
+    //   },
+    // ];
     var deck = makeDeck();
     shuffled = shuffleDeck(deck);
     for (var i = 0; i < 2; i++) {
       playerDrawsArray[i] = shuffled.pop();
       dealerDrawsArray[i] = shuffled.pop();
     }
+    // // for ace testing purposes
+    // playerDrawsArray[0] = aceDeck[0];
+    // playerDrawsArray[1] = aceDeck[1];
+    // playerDrawsArray[2] = aceDeck[2];
+
     playerScore = checkScore(playerDrawsArray, playerScore);
     dealerScore = checkScore(dealerDrawsArray, dealerScore);
     // player: do check for ace ace draw and reassign ace value accordingly
     if (checkIfAceInDrawAndScoreBurst(playerDrawsArray, playerScore)) {
       playerDrawsArray = reassignAceValue(playerDrawsArray, playerScore);
+      playerScore = checkScore(playerDrawsArray, playerScore);
     }
     // dealer: do check for ace ace draw and reassign ace value accordingly
     if (checkIfAceInDrawAndScoreBurst(dealerDrawsArray, dealerScore)) {
       dealerDrawsArray = reassignAceValue(dealerDrawsArray, dealerScore);
+      dealerScore = checkScore(dealerDrawsArray, dealerScore);
     }
     var blackjackResult = checkBlackjack(playerScore, dealerScore);
     if (blackjackResult == "Nil") {
@@ -81,6 +105,8 @@ var main = function (input) {
     );
     if (checkIfAceInDrawAndScoreBurst(playerDrawsArray, playerScore)) {
       playerDrawsArray = reassignAceValue(playerDrawsArray, playerScore);
+      // update the score after the reassignment
+      playerScore = checkScore(playerDrawsArray, playerScore);
     }
     // condition that if playerScore burst, then dont let them hit or stand already
     if (playerScore > 21) {
@@ -266,21 +292,37 @@ var checkResult = function (playerScoreParameter, dealerScoreParameter) {
 // if there is ace in the draw and the score is > 21, this function will help to reassign the ace value from 11 to 1 and return the respective drawsArray
 function reassignAceValue(drawsArray, score) {
   console.log("Starting reassignmenet of ace");
-  while (score > 21) {
-    // finds the index of the ace with rank 11 in the drawsArray. This helps to assign the right number of aces in the event of multiple aces
-    var aceIndex = drawsArray.findIndex(
-      (card) => card.name == "ace" && card.rank == 11
-    );
-    console.log("Ace index " + aceIndex);
-    // reassign this ace card's rank value from 11 to 1
-    drawsArray[aceIndex].rank = 1;
-    console.log("Reassigned ace rank " + drawsArray[aceIndex].rank);
-    // recheck the score
-    score = checkScore(drawsArray, score);
-    console.log("Updated score" + score);
+  var validAceIndex = drawsArray.findIndex(
+    (card) => card.name == "ace" && card.rank == 11
+  );
+  console.log("validAceIndex " + validAceIndex);
+  // if there is no ace with rank 11, then don't even bother to reassign cos will be undefined. If findIndex can't find an ace with rank 11, it will return -1. Then we will just return drawsArray without any reassignment
+  if (validAceIndex == -1) {
+    console.log("No valid ace index");
+    return drawsArray;
   }
-  // return the new drawsArray once completed
-  return drawsArray;
+  // else if validAceIndex != -1, then we carry on with the reassignment
+  else if (validAceIndex != -1) {
+    console.log("Have valid ace index");
+
+    while (score > 21) {
+      console.log("Starting while loop");
+
+      // finds the index of the ace with rank 11 in the drawsArray. This helps to assign the right number of aces in the event of multiple aces
+      var validAceIndex = drawsArray.findIndex(
+        (card) => card.name == "ace" && card.rank == 11
+      );
+      console.log("Ace index " + validAceIndex);
+      // reassign this ace card's rank value from 11 to 1
+      drawsArray[validAceIndex].rank = 1;
+      console.log("Reassigned ace rank " + drawsArray[validAceIndex].rank);
+      // recheck the score
+      score = checkScore(drawsArray, score);
+      console.log("Updated score" + score);
+    }
+    // return the new drawsArray once completed
+    return drawsArray;
+  }
 }
 
 function checkIfAceInDrawAndScoreBurst(drawsArray, score) {
