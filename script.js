@@ -23,10 +23,10 @@ var gameState = "INITIAL";
 var shuffled = []; // an array of objects. Initialised globally so we can track back in the later gameStates
 
 var playerDrawsArray = [];
-var playerScore = 0;
+var playerScore;
 
 var dealerDrawsArray = [];
-var dealerScore = 0;
+var dealerScore;
 
 var main = function (input) {
   var output = ""; // output initialised outside of the gameState blocks to always refresh it no matter what gameState
@@ -36,19 +36,23 @@ var main = function (input) {
   }
   // INITIAL gameState
   if (gameState == "INITIAL") {
-    console.log(gameState);
+    // "refresh" the player and dealer draws everytime we start a new game
+    playerDrawsArray = [];
+    dealerDrawsArray = [];
     var deck = makeDeck();
     shuffled = shuffleDeck(deck);
     for (var i = 0; i < 2; i++) {
       playerDrawsArray[i] = shuffled.pop();
       dealerDrawsArray[i] = shuffled.pop();
+      console.log("Number of Player draw " + playerDrawsArray[i].rank);
+      console.log("Number of dealer draw " + dealerDrawsArray[i].rank);
     }
-    playerScore = checkScore(playerDrawsArray);
-    dealerScore = checkScore(dealerDrawsArray);
+    playerScore = checkScore(playerDrawsArray, playerScore);
+    dealerScore = checkScore(dealerDrawsArray, dealerScore);
     var blackjackResult = checkBlackjack(playerScore, dealerScore);
     if (blackjackResult == "Nil") {
       output = `Player drew ${playerDrawsArray[0].name} and ${playerDrawsArray[1].name}. <br> Score is ${playerScore} <br><br>
-    Dealer drew ${dealerDrawsArray[0].name} as the first card. <br><br>
+    Dealer drew ${dealerDrawsArray[0].name} and ${dealerDrawsArray[1].name}. Score is ${dealerScore} <br><br>
     Please input whether you'd like to hit or stand`;
     } else if (blackjackResult == "Player")
       output = `Player drew ${playerDrawsArray[0].name} and ${playerDrawsArray[1].name}. Player blackjack!`;
@@ -63,7 +67,7 @@ var main = function (input) {
     // add the drawn card to the last index of playerDrawsArray
     playerDrawsArray[playerArrayIndexNewDraw] = shuffled.pop();
     // recheck the score
-    playerScore = checkScore(playerDrawsArray);
+    playerScore = checkScore(playerDrawsArray, playerScore);
     output =
       `Player has drawn: ` +
       outputStatementForCardsDrawn(
@@ -79,7 +83,7 @@ var main = function (input) {
       var dealerArrayIndexNewDraw = checkIndexForNewDraw(dealerDrawsArray);
       dealerDrawsArray[dealerArrayIndexNewDraw] = shuffled.pop();
       // recheck the score
-      dealerScore = checkScore(dealerDrawsArray);
+      dealerScore = checkScore(dealerDrawsArray, dealerScore);
     }
     result = checkResult(playerScore, dealerScore);
     output =
@@ -161,7 +165,7 @@ var shuffleDeck = function (cardDeck) {
   return cardDeck;
 };
 
-var checkScore = function (drawsArray) {
+var checkScore = function (drawsArray, score) {
   var score = 0; // we set it to zero because for future taking care of ace 11 or 1
   for (var i = 0; i < drawsArray.length; i++) {
     score = score + drawsArray[i].rank;
@@ -169,7 +173,7 @@ var checkScore = function (drawsArray) {
   return score;
 };
 
-var checkBlackjack = function (playerDraws, dealerDraws) {
+var checkBlackjack = function (playerScore, dealerScore) {
   var blackjack = "";
   if (playerScore == 21 && dealerScore == 21) blackjack = "Both";
   else if (playerScore == 21) blackjack = "Player";
@@ -203,11 +207,11 @@ var outputStatementForCardsDrawn = function (
 
 var checkResult = function (playerScoreParameter, dealerScoreParameter) {
   var result = "";
-  // Case 1 if player < 22 and dealer > 22 i.e. dealer bao
-  if (playerScoreParameter < 22 && dealerScoreParameter > 22)
+  // Case 1 if player < 22 and dealer > 21 i.e. dealer bao
+  if (playerScoreParameter < 22 && dealerScoreParameter > 21)
     result = "Player wins";
-  // Case 2 if dealer < 22 and player > 22 i.e. player bao
-  else if (dealerScoreParameter < 22 && playerScoreParameter > 22)
+  // Case 2 if dealer < 22 and player > 21 i.e. player bao
+  else if (dealerScoreParameter < 22 && playerScoreParameter > 21)
     result = "Dealer wins";
   // Case 3 if both scores are < 22 i.e. never bao, go into another logic to check who is highest
   else if (playerScoreParameter < 22 && dealerScoreParameter < 22) {
@@ -217,6 +221,7 @@ var checkResult = function (playerScoreParameter, dealerScoreParameter) {
     else result = "Tie";
   }
   // Case 4 if both bao
-  else if (playerScore > 22 && dealerScoreParameter > 22) result = "Tie";
+  else if (playerScoreParameter > 22 && dealerScoreParameter > 22)
+    result = "Tie";
   return result;
 };
