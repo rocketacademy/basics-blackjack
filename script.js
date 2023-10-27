@@ -2,14 +2,13 @@
 const deck = [],
   playersHands = [],
   dealerHand = [];
-
+let numberOfDecks, numberOfPlayers;
 const startingGame = 0,
   playingRound = 1,
   endingRound = 2;
 
 let gameState = startingGame,
-  gameMessage = "",
-  numberOfPlayers = 1;
+  gameMessage = "";
 
 //Main function
 function main(input, myOutputValue) {
@@ -19,15 +18,27 @@ function main(input, myOutputValue) {
     resetRound();
     initRound();
   } else if (gameState === startingGame) {
-    let numberOfDecks =
-      Number.isInteger(Number(input)) && Number(input) > 0 && Number(input) <= 8
-        ? Number(input)
-        : 1;
-    if (numberOfDecks) {
+    if (!numberOfDecks) {
+      numberOfDecks =
+        Number.isInteger(Number(input)) &&
+        Number(input) > 0 &&
+        Number(input) <= 8
+          ? Number(input)
+          : 1;
+      gameMessage = `${numberOfDecks} decks! Type in number of players`;
+    } else if (!numberOfPlayers) {
+      numberOfPlayers =
+        Number.isInteger(Number(input)) &&
+        Number(input) > 0 &&
+        Number(input) <= 7
+          ? Number(input)
+          : 1;
+      gameMessage = `${numberOfPlayers} players! Press submit to start!`;
+    } else if (numberOfDecks && numberOfPlayers) {
+      initDeck(numberOfDecks);
+      shuffleDeck();
+      initRound();
     }
-    initDeck(numberOfDecks);
-    shuffleDeck();
-    initRound();
   } else gameMessage = "Error in main function";
   myOutputValue = gameMessage;
   return myOutputValue;
@@ -62,11 +73,12 @@ function initRound() {
       `<br><br>${gameEvaluation()}` +
       `<br>${bjEvaluation()}`;
     gameState = endingRound;
-  } else
+  } else {
     gameMessage = `${displayHand(
       playersHands
     )}<br><br>Dealer's Face up:<br>${dealerFaceUp()}<br>Type "H" to Hit and "S" to Stand`;
-  gameState = playingRound;
+    gameState = playingRound;
+  }
 }
 
 //Game flow for Hit and Stand
