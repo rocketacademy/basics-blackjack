@@ -44,11 +44,17 @@ var main = function (input) {
     for (var i = 0; i < 2; i++) {
       playerDrawsArray[i] = shuffled.pop();
       dealerDrawsArray[i] = shuffled.pop();
-      console.log("Number of Player draw " + playerDrawsArray[i].rank);
-      console.log("Number of dealer draw " + dealerDrawsArray[i].rank);
     }
     playerScore = checkScore(playerDrawsArray, playerScore);
     dealerScore = checkScore(dealerDrawsArray, dealerScore);
+    // player: do check for ace ace draw and reassign ace value accordingly
+    if (checkIfAceInDrawAndScoreBurst(playerDrawsArray, playerScore)) {
+      playerDrawsArray = reassignAceValue(playerDrawsArray, playerScore);
+    }
+    // dealer: do check for ace ace draw and reassign ace value accordingly
+    if (checkIfAceInDrawAndScoreBurst(dealerDrawsArray, dealerScore)) {
+      dealerDrawsArray = reassignAceValue(dealerDrawsArray, dealerScore);
+    }
     var blackjackResult = checkBlackjack(playerScore, dealerScore);
     if (blackjackResult == "Nil") {
       output = `Player drew ${playerDrawsArray[0].name} and ${playerDrawsArray[1].name}. <br> Score is ${playerScore} <br><br>
@@ -68,6 +74,14 @@ var main = function (input) {
     playerDrawsArray[playerArrayIndexNewDraw] = shuffled.pop();
     // recheck the score
     playerScore = checkScore(playerDrawsArray, playerScore);
+    // After hitting, if playerScore burst AND there is an ace, we need to reassign ace
+    console.log(
+      "Is ace in draw and score > 21? " +
+        checkIfAceInDrawAndScoreBurst(playerDrawsArray, playerScore)
+    );
+    if (checkIfAceInDrawAndScoreBurst(playerDrawsArray, playerScore)) {
+      playerDrawsArray = reassignAceValue(playerDrawsArray, playerScore);
+    }
     // condition that if playerScore burst, then dont let them hit or stand already
     if (playerScore > 21) {
       output =
@@ -120,6 +134,8 @@ var main = function (input) {
   }
   return output;
 };
+
+// HELPER FUNCTIONS
 
 // helper function to make deck
 var makeDeck = function () {
@@ -242,7 +258,31 @@ var checkResult = function (playerScoreParameter, dealerScoreParameter) {
     else result = "Tie";
   }
   // Case 4 if both bao
-  else if (playerScoreParameter > 22 && dealerScoreParameter > 22)
+  else if (playerScoreParameter > 21 && dealerScoreParameter > 21)
     result = "Tie";
   return result;
 };
+
+// if there is ace in the draw and the score is > 21, this function will help to reassign the ace value from 11 to 1 and return the respective drawsArray
+function reassignAceValue(drawsArray, score) {
+  console.log("Starting reassignmenet of ace");
+  while (score > 21) {
+    // finds the index of the ace with rank 11 in the drawsArray. This helps to assign the right number of aces in the event of multiple aces
+    var aceIndex = drawsArray.findIndex(
+      (card) => card.name == "ace" && card.rank == 11
+    );
+    console.log("Ace index " + aceIndex);
+    // reassign this ace card's rank value from 11 to 1
+    drawsArray[aceIndex].rank = 1;
+    console.log("Reassigned ace rank " + drawsArray[aceIndex].rank);
+    // recheck the score
+    score = checkScore(drawsArray, score);
+    console.log("Updated score" + score);
+  }
+  // return the new drawsArray once completed
+  return drawsArray;
+}
+
+function checkIfAceInDrawAndScoreBurst(drawsArray, score) {
+  return drawsArray.some((card) => card.name == "ace") && score > 21;
+}
