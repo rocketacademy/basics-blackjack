@@ -1,24 +1,35 @@
 //Global Variables
 const deck = [],
-  playerHand = [],
+  playersHands = [],
   dealerHand = [];
-let gameState = 0,
-  gameMessage = "";
+const startingGame = 0,
+  playingRound = 1,
+  endingRound = 2;
+let gameState = startingGame,
+  gameMessage = "",
+  numberOfDecks = 0;
 
 //Main function
 function main(input, myOutputValue) {
-  if (gameState === 1) {
+  if (gameState === playingRound) {
     playRound(input);
-  } else if (gameState === 2) {
+  } else if (gameState === endingRound) {
     resetRound();
     initRound();
-    gameState = 1;
-  } else if (gameState === 0) {
-    let numberOfDecks =
-      Number.isInteger(Number(input)) && Number(input) > 0 && Number(input) < 9
-        ? Number(input)
-        : 1;
-    initGame(numberOfDecks);
+  } else if (gameState === startingGame) {
+    if (numberOfDecks === 0) {
+      numberOfDecks =
+        Number.isInteger(Number(input)) &&
+        Number(input) > 0 &&
+        Number(input) <= 8
+          ? Number(input)
+          : 1;
+      gameMessage = `You selected ${numberOfDecks} decks! Press submit to play!`;
+    } else if (numberOfDecks > 0) {
+      initDeck();
+      shuffleDeck();
+      initRound();
+    }
   } else gameMessage = "Error in main function";
   myOutputValue = gameMessage;
   return myOutputValue;
@@ -33,69 +44,69 @@ function print(hand) {
   return output;
 }
 
+dealerFaceUp = () => `${dealerHand[0].Name} of ${dealerHand[0].Suit}<br>`;
+
 //Draw a card
 const hit = (hand) => hand.push(deck.pop());
 
 //Start round
 function initRound() {
   for (let i = 0; i < 2; i++) {
-    hit(playerHand);
+    hit(playersHands);
     hit(dealerHand);
   }
-  if (calculateScore(playerHand) === 21 || calculateScore(dealerHand) === 21) {
+  if (
+    calculateScore(playersHands) === 21 ||
+    calculateScore(dealerHand) === 21
+  ) {
     gameMessage =
-      `${displayHand(playerHand)}<br><br>${displayHand(dealerHand)}` +
+      `${displayHand(playersHands)}<br><br>${displayHand(dealerHand)}` +
       `<br><br>${gameEvaluation()}` +
       `<br>${bjEvaluation()}`;
-    gameState = 2;
-  } else
+    gameState = endingRound;
+  } else {
     gameMessage = `${displayHand(
-      playerHand
-    )}<br><br>Type "H" to Hit and "S" to Stand`;
-  gameState = 1;
+      playersHands
+    )}<br><br>Dealer's Face up:<br>${dealerFaceUp()}<br>Type "H" to Hit and "S" to Stand`;
+    gameState = playingRound;
+  }
 }
 
 //Game flow for Hit and Stand
 function playRound(input) {
   switch (input) {
     case "H":
-      hit(playerHand);
-      if (calculateScore(playerHand) > 21) {
-        gameMessage =
-          `${displayHand(playerHand)}<br><br>${displayHand(dealerHand)}` +
-          `<br><br>${gameEvaluation()}` +
-          `<br><br>Press submit to play another round`;
-        gameState = 2;
-      } else {
+      hit(playersHands);
+      if (calculateScore(playersHands) < 21) {
         gameMessage = `${displayHand(
-          playerHand
-        )}<br><br>Type "H" to Hit and "S" to Stand`;
-        gameState = 1;
+          playersHands
+        )}<br><br>Dealer's Face up:<br>${dealerFaceUp()}<br>Type "H" to Hit and "S" to Stand`;
+        gameState = playingRound;
         break;
       }
     case "S":
       dealerAI();
       gameMessage =
-        `${displayHand(playerHand)}<br><br>${displayHand(dealerHand)}` +
+        `${displayHand(playersHands)}<br><br>${displayHand(dealerHand)}` +
         `<br><br>${gameEvaluation()}` +
         `<br><br>Press submit to play another round`;
-      gameState = 2;
+      gameState = endingRound;
       break;
     default:
       gameMessage = `Invalid input!<br><br>${displayHand(
-        playerHand
-      )}<br><br>Type "H" to Hit and "S" to Stand`;
+        playersHands
+      )}<br><br>Dealer's Face up:<br>${dealerFaceUp()}<br>Type "H" to Hit and "S" to Stand`;
   }
 }
 
 //Evaluation if draw
 const drawEvaluation = () =>
-  calculateScore(playerHand) === calculateScore(dealerHand) ||
-  (calculateScore(playerHand) > 21 && calculateScore(dealerHand) > 21);
+  calculateScore(playersHands) === calculateScore(dealerHand) ||
+  (calculateScore(playersHands) > 21 && calculateScore(dealerHand) > 21);
 //Evaluate if win
 const winEvaluation = () =>
-  21 >= calculateScore(playerHand) &&
-  (calculateScore(playerHand) > calculateScore(dealerHand) ||
+  21 >= calculateScore(playersHands) &&
+  (calculateScore(playersHands) > calculateScore(dealerHand) ||
     calculateScore(dealerHand) > 21);
 //Evaluate game
 const gameEvaluation = () =>
@@ -118,8 +129,8 @@ function shuffleDeck() {
 
 //Reset round
 function resetRound() {
-  deck.push(...playerHand);
-  playerHand.length = 0;
+  deck.push(playersHands);
+  playersHands.length = 0;
   deck.push(...dealerHand);
   dealerHand.length = 0;
   shuffleDeck();
@@ -149,22 +160,15 @@ const displayHand = (hand) =>
     ? `Dealer's Hand:<br>${print(hand)}Score: ${calculateScore(hand)}`
     : `Player's Hand:<br>${print(hand)}Score: ${calculateScore(hand)}`;
 
-//Dealer logic
+//Dealer hits soft 17, H17 rules
 function dealerAI() {
   while (calculateScore(dealerHand) < 17 || hardScore(dealerHand) + 10 <= 17) {
     hit(dealerHand);
   }
 }
 
-//Sets the game up with the indicated number of decks
-function initGame(numberOfDecks) {
-  initDeck(numberOfDecks);
-  shuffleDeck();
-  initRound();
-}
-
 //Create decks
-function initDeck(numberOfDecks) {
+function initDeck() {
   const nameConstruct = [
     "Ace",
     "Two",
