@@ -7,7 +7,7 @@ const startingGame = 0,
   endingRound = 2;
 let gameState = startingGame,
   gameMessage = "",
-  numberOfDecks;
+  numberOfDecks = 0;
 
 //Main function
 function main(input, myOutputValue) {
@@ -17,7 +17,7 @@ function main(input, myOutputValue) {
     resetRound();
     initRound();
   } else if (gameState === startingGame) {
-    if (numberOfDecks == null) {
+    if (numberOfDecks === 0) {
       numberOfDecks =
         Number.isInteger(Number(input)) &&
         Number(input) > 0 &&
@@ -25,7 +25,7 @@ function main(input, myOutputValue) {
           ? Number(input)
           : 1;
       gameMessage = `You selected ${numberOfDecks} decks! Press submit to play!`;
-    } else if (numberOfDecks != null) {
+    } else if (numberOfDecks > 0) {
       initDeck();
       shuffleDeck();
       initRound();
@@ -52,10 +52,7 @@ const hit = (hand) => hand.push(deck.pop());
 //Start round
 function initRound() {
   for (let i = 0; i < 2; i++) {
-    for (j = 0; j < numberOfPlayers; j++) {
-      playersHands.push([]);
-      hit(playersHands[j]);
-    }
+    hit(playersHands);
     hit(dealerHand);
   }
   if (
@@ -67,61 +64,58 @@ function initRound() {
       `<br><br>${gameEvaluation()}` +
       `<br>${bjEvaluation()}`;
     gameState = endingRound;
-  } else
+  } else {
     gameMessage = `${displayHand(
       playersHands
     )}<br><br>Dealer's Face up:<br>${dealerFaceUp()}<br>Type "H" to Hit and "S" to Stand`;
-  gameState = playingRound;
+    gameState = playingRound;
+  }
 }
 
 //Game flow for Hit and Stand
 function playRound(input) {
-  for (let individualPlayerHand of playersHands) {
-    switch (input) {
-      case "H":
-        hit(individualPlayerHand);
-        if (calculateScore(individualPlayerHand) < 21) {
-          gameMessage += `${displayHand(
-            individualPlayerHand
-          )}<br><br>Dealer's Face up:<br>${dealerFaceUp()}<br>Type "H" to Hit and "S" to Stand`;
-          gameState = playingRound;
-          break;
-        }
-      case "S":
-        dealerAI();
-        gameMessage +=
-          `${displayHand(individualPlayerHand)}<br><br>${displayHand(
-            dealerHand
-          )}` +
-          `<br><br>${gameEvaluation()}` +
-          `<br><br>Press submit to play another round`;
-        gameState = endingRound;
-        break;
-      default:
-        gameMessage += `Invalid input!<br><br>${displayHand(
-          individualPlayerHand
+  switch (input) {
+    case "H":
+      hit(playersHands);
+      if (calculateScore(playersHands) < 21) {
+        gameMessage = `${displayHand(
+          playersHands
         )}<br><br>Dealer's Face up:<br>${dealerFaceUp()}<br>Type "H" to Hit and "S" to Stand`;
-    }
+        gameState = playingRound;
+        break;
+      }
+    case "S":
+      dealerAI();
+      gameMessage =
+        `${displayHand(playersHands)}<br><br>${displayHand(dealerHand)}` +
+        `<br><br>${gameEvaluation()}` +
+        `<br><br>Press submit to play another round`;
+      gameState = endingRound;
+      break;
+    default:
+      gameMessage = `Invalid input!<br><br>${displayHand(
+        playersHands
+      )}<br><br>Dealer's Face up:<br>${dealerFaceUp()}<br>Type "H" to Hit and "S" to Stand`;
   }
 }
 
 //Evaluation if draw
-const drawEvaluation = (i) =>
-  calculateScore(playersHands[i]) === calculateScore(dealerHand) ||
-  (calculateScore(playersHands[i]) > 21 && calculateScore(dealerHand) > 21);
+const drawEvaluation = () =>
+  calculateScore(playersHands) === calculateScore(dealerHand) ||
+  (calculateScore(playersHands) > 21 && calculateScore(dealerHand) > 21);
 //Evaluate if win
-const winEvaluation = (i) =>
-  21 >= calculateScore(playersHands[i]) &&
-  (calculateScore(playersHands[i]) > calculateScore(dealerHand) ||
+const winEvaluation = () =>
+  21 >= calculateScore(playersHands) &&
+  (calculateScore(playersHands) > calculateScore(dealerHand) ||
     calculateScore(dealerHand) > 21);
 //Evaluate game
-const gameEvaluation = (i) =>
-  drawEvaluation(i) ? "You tied!" : winEvaluation(i) ? "You won!" : "You lost!";
+const gameEvaluation = () =>
+  drawEvaluation() ? "You tied!" : winEvaluation() ? "You won!" : "You lost!";
 //Evaluate Blackjack
-const bjEvaluation = (i) =>
-  drawEvaluation(i)
+const bjEvaluation = () =>
+  drawEvaluation()
     ? "Push!"
-    : winEvaluation(i)
+    : winEvaluation()
     ? "Player has Blackjack"
     : "Dealer has Blackjack";
 
@@ -135,9 +129,7 @@ function shuffleDeck() {
 
 //Reset round
 function resetRound() {
-  for (let individualPlayerHand of playersHands) {
-    deck.push(...individualPlayerHand);
-  }
+  deck.push(playersHands);
   playersHands.length = 0;
   deck.push(...dealerHand);
   dealerHand.length = 0;
