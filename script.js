@@ -58,25 +58,20 @@ function initRound() {
     }
     hit(dealerHand);
   }
-  for (let individualPlayerHand of playersHands) {
-    if (
-      calculateScore(individualPlayerHand) === 21 ||
-      calculateScore(dealerHand) === 21
-    ) {
-      gameMessage +=
-        `${displayHand(individualPlayerHand)}<br><br>${displayHand(
-          dealerHand
-        )}` +
-        `<br><br>${gameEvaluation()}` +
-        `<br>${bjEvaluation()}`;
-      gameState = endingRound;
-    } else {
-      gameMessage += `${displayHand(
-        individualPlayerHand
-      )}<br><br>Dealer's Face up:<br>${dealerFaceUp()}<br>Type "H" to Hit and "S" to Stand`;
-      gameState = playingRound;
-    }
-  }
+  if (
+    calculateScore(playersHands) === 21 ||
+    calculateScore(dealerHand) === 21
+  ) {
+    gameMessage =
+      `${displayHand(playersHands)}<br><br>${displayHand(dealerHand)}` +
+      `<br><br>${gameEvaluation()}` +
+      `<br>${bjEvaluation()}`;
+    gameState = endingRound;
+  } else
+    gameMessage = `${displayHand(
+      playersHands
+    )}<br><br>Dealer's Face up:<br>${dealerFaceUp()}<br>Type "H" to Hit and "S" to Stand`;
+  gameState = playingRound;
 }
 
 //Game flow for Hit and Stand
