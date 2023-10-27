@@ -68,14 +68,29 @@ var main = function (input) {
     playerDrawsArray[playerArrayIndexNewDraw] = shuffled.pop();
     // recheck the score
     playerScore = checkScore(playerDrawsArray, playerScore);
-    output =
-      `Player has drawn: ` +
-      outputStatementForCardsDrawn(
-        playerDrawsArray,
-        playerArrayIndexNewDraw,
-        output
-      ) +
-      `Player's score is now ${playerScore}. Please input whether you'd like to hit or stand`;
+    // condition that if playerScore burst, then dont let them hit or stand already
+    if (playerScore > 21) {
+      output =
+        `Player has drawn: ` +
+        outputStatementForCardsDrawn(
+          playerDrawsArray,
+          playerArrayIndexNewDraw,
+          output
+        ) +
+        `Player's score is now ${playerScore}. You have BAO and will now stand. Press Submit to see results`;
+      gameState = "STAND";
+    }
+    // if playerScore within boundaries, go to this code
+    else {
+      output =
+        `Player has drawn: ` +
+        outputStatementForCardsDrawn(
+          playerDrawsArray,
+          playerArrayIndexNewDraw,
+          output
+        ) +
+        `Player's score is now ${playerScore}. Please input whether you'd like to hit or stand`;
+    }
   }
   // STAND gameState
   else if (gameState == "STAND") {
@@ -87,7 +102,13 @@ var main = function (input) {
     }
     result = checkResult(playerScore, dealerScore);
     output =
-      `Dealer has drawn: ` +
+      `Player has drawn: ` +
+      outputStatementForCardsDrawn(
+        playerDrawsArray,
+        playerArrayIndexNewDraw,
+        output
+      ) +
+      `<br><br>Dealer has drawn: ` +
       outputStatementForCardsDrawn(
         dealerDrawsArray,
         dealerArrayIndexNewDraw,
