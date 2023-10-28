@@ -1,21 +1,25 @@
 //Global Variables
-const deck = [],
-  playersHands = [],
-  dealerHand = [];
 const startingGame = 0,
   playingRound = 1,
-  endingRound = 2;
-let gameState = startingGame,
+  playingSplitRound = 2,
+  endingRound = 3;
+let playersHands = [],
+  gameState = startingGame,
   gameMessage = "",
-  numberOfDecks = 0;
+  numberOfDecks = 0,
+  handCounter = 0;
+const deck = [],
+  dealerHand = [];
 
 //Main function
 function main(input, myOutputValue) {
   if (gameState === playingRound) {
-    playRound(input);
+    playNormalRound(input);
   } else if (gameState === endingRound) {
     resetRound();
     initRound();
+  } else if (gameState === playingSplitRound) {
+    playSplitRound(input);
   } else if (gameState === startingGame) {
     if (numberOfDecks === 0) {
       numberOfDecks =
@@ -33,6 +37,53 @@ function main(input, myOutputValue) {
   } else gameMessage = "Error in main function";
   myOutputValue = gameMessage;
   return myOutputValue;
+}
+
+function playSplitRound(input) {
+  if (handCounter < 2) {
+    switch (input) {
+      case "H":
+        hit(playersHands[handCounter]);
+        if (calculateScore(playersHands[handCounter + 1]) < 21) {
+          gameMessage = `Current Hand: ${handCounter}<br>${displayHand(
+            playersHands[handCounter]
+          )}<br><br>${displayHand(playersHands[0])}<br><br>${displayHand(
+            playersHands[1]
+          )}<br><br>Dealer's Face up:<br>${dealerFaceUp()}<br>Type "H" to Hit and "S" to Stand`;
+          break;
+        }
+      case "S":
+        handCounter++;
+        if (handCounter === 2) {
+          dealerAI();
+          gameMessage =
+            `${displayHand(playersHands[0])}` +
+            `<br><br>${gameEvaluation(
+              playersHands[0],
+              dealerHand
+            )} with this hand<br><br>` +
+            `${displayHand(playersHands[1])}` +
+            `<br><br>${gameEvaluation(
+              playersHands[1],
+              dealerHand
+            )} with this hand<br><br>${displayHand(dealerHand)}` +
+            `<br><br>Press submit to play another round`;
+          gameState = endingRound;
+          break;
+        }
+        gameMessage = `Current Hand: ${handCounter + 1}<br>${displayHand(
+          playersHands[handCounter]
+        )}<br><br>${displayHand(playersHands[0])}<br><br>${displayHand(
+          playersHands[1]
+        )}<br><br>Dealer's Face up:<br>${dealerFaceUp()}<br>Type "H" to Hit and "S" to Stand`;
+        break;
+      default:
+        gameMessage = `Invalid input!<br><br>${displayHand(
+          playersHands[handCounter]
+        )}<br><br>Dealer's Face up:<br>${dealerFaceUp()}<br>Type "H" to Hit and "S" to Stand`;
+    }
+  } else {
+  }
 }
 
 //Print array
@@ -61,9 +112,16 @@ function initRound() {
   ) {
     gameMessage =
       `${displayHand(playersHands)}<br><br>${displayHand(dealerHand)}` +
-      `<br><br>${gameEvaluation()}` +
-      `<br>${bjEvaluation()}`;
+      `<br><br>${gameEvaluation(playersHands, dealerHand)}` +
+      `<br>${bjEvaluation(playersHands, dealerHand)}`;
     gameState = endingRound;
+  } else if (playersHands[0].Rank === playersHands[1].Rank) {
+    gameMessage = `${displayHand(
+      playersHands
+    )}<br><br>Dealer's Face up:<br>${dealerFaceUp()}<br>You have a pair of ${
+      playersHands[0].Name
+    }s! Type "Y" to Split, "H" to Hit and "S" to Stand`;
+    gameState = playingRound;
   } else {
     gameMessage = `${displayHand(
       playersHands
@@ -73,49 +131,63 @@ function initRound() {
 }
 
 //Game flow for Hit and Stand
-function playRound(input) {
-  switch (input) {
-    case "H":
-      hit(playersHands);
-      if (calculateScore(playersHands) < 21) {
-        gameMessage = `${displayHand(
+function playNormalRound(input) {
+  if (playersHands[0].Rank === playersHands[1].Rank && input === "Y") {
+    playersHands = playersHands.map((card) => [card]);
+    hit(playersHands[0]);
+    hit(playersHands[1]);
+    gameMessage = `${displayHand(playersHands[0])}<br><br>${displayHand(
+      playersHands[1]
+    )}<br><br>Dealer's Face up:<br>${dealerFaceUp()}<br>Type "H" to Hit and "S" to Stand for first hand`;
+    gameState = playingSplitRound;
+  } else {
+    switch (input) {
+      case "H":
+        hit(playersHands);
+        if (calculateScore(playersHands) < 21) {
+          gameMessage = `${displayHand(
+            playersHands
+          )}<br><br>Dealer's Face up:<br>${dealerFaceUp()}<br>Type "H" to Hit and "S" to Stand`;
+          break;
+        }
+      case "S":
+        dealerAI();
+        gameMessage =
+          `${displayHand(playersHands)}<br><br>${displayHand(dealerHand)}` +
+          `<br><br>${gameEvaluation(playersHands, dealerHand)}` +
+          `<br><br>Press submit to play another round`;
+        gameState = endingRound;
+        break;
+      default:
+        gameMessage = `Invalid input!<br><br>${displayHand(
           playersHands
         )}<br><br>Dealer's Face up:<br>${dealerFaceUp()}<br>Type "H" to Hit and "S" to Stand`;
-        gameState = playingRound;
-        break;
-      }
-    case "S":
-      dealerAI();
-      gameMessage =
-        `${displayHand(playersHands)}<br><br>${displayHand(dealerHand)}` +
-        `<br><br>${gameEvaluation()}` +
-        `<br><br>Press submit to play another round`;
-      gameState = endingRound;
-      break;
-    default:
-      gameMessage = `Invalid input!<br><br>${displayHand(
-        playersHands
-      )}<br><br>Dealer's Face up:<br>${dealerFaceUp()}<br>Type "H" to Hit and "S" to Stand`;
+    }
   }
 }
 
 //Evaluation if draw
-const drawEvaluation = () =>
-  calculateScore(playersHands) === calculateScore(dealerHand) ||
-  (calculateScore(playersHands) > 21 && calculateScore(dealerHand) > 21);
+const drawEvaluation = (individualPlayerHand, dealerHand) =>
+  calculateScore(individualPlayerHand) === calculateScore(dealerHand) ||
+  (calculateScore(individualPlayerHand) > 21 &&
+    calculateScore(dealerHand) > 21);
 //Evaluate if win
-const winEvaluation = () =>
-  21 >= calculateScore(playersHands) &&
-  (calculateScore(playersHands) > calculateScore(dealerHand) ||
+const winEvaluation = (individualPlayerHand, dealerHand) =>
+  21 >= calculateScore(individualPlayerHand) &&
+  (calculateScore(individualPlayerHand) > calculateScore(dealerHand) ||
     calculateScore(dealerHand) > 21);
 //Evaluate game
-const gameEvaluation = () =>
-  drawEvaluation() ? "You tied!" : winEvaluation() ? "You won!" : "You lost!";
+const gameEvaluation = (individualPlayerHand, dealerHand) =>
+  drawEvaluation(individualPlayerHand, dealerHand)
+    ? "You tied!"
+    : winEvaluation(individualPlayerHand, dealerHand)
+    ? "You won!"
+    : "You lost!";
 //Evaluate Blackjack
-const bjEvaluation = () =>
-  drawEvaluation()
+const bjEvaluation = (individualPlayerHand, dealerHand) =>
+  drawEvaluation(individualPlayerHand, dealerHand)
     ? "Push!"
-    : winEvaluation()
+    : winEvaluation(individualPlayerHand, dealerHand)
     ? "Player has Blackjack"
     : "Dealer has Blackjack";
 
@@ -129,7 +201,7 @@ function shuffleDeck() {
 
 //Reset round
 function resetRound() {
-  deck.push(playersHands);
+  deck.push(...playersHands.flat());
   playersHands.length = 0;
   deck.push(...dealerHand);
   dealerHand.length = 0;
