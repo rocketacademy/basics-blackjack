@@ -60,8 +60,8 @@ function hardScore(hand) {
 }
 //Calculate points of current hand
 const calculateScore = (hand) =>
-  hand.some((card) => card.Rank === 1)
-    ? hardScore(hand) > 11 || hardScore(hand) + 10
+  hand.some((card) => card.Rank === 1) && hardScore(hand) < 11
+    ? hardScore(hand) + 10
     : hardScore(hand);
 //Display hand and score
 const displayHand = (hand) =>
