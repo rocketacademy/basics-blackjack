@@ -23,11 +23,10 @@ function main(input, myOutputValue) {
   } else if (gameState === startingGame) {
     if (numberOfDecks === 0) {
       numberOfDecks =
-        Number.isInteger(Number(input)) &&
-        Number(input) > 0 &&
-        Number(input) <= 8
-          ? Number(input)
-          : 1;
+        (Number.isInteger(Number(input)) &&
+          Number(input) > 0 &&
+          Number(input) <= 8) ||
+        1;
       gameMessage = `You selected ${numberOfDecks} decks! Press submit to play!`;
     } else if (numberOfDecks > 0) {
       initDeck();
@@ -60,11 +59,10 @@ function hardScore(hand) {
 }
 //Calculate points of current hand
 const calculateScore = (hand) =>
-  !hand.some((card) => card.Rank === 1)
-    ? hardScore(hand)
-    : hardScore(hand) > 11
-    ? hardScore(hand)
-    : hardScore(hand) + 10;
+  hand.some((card) => card.Rank === 1)
+    ? hardScore(hand) > 11 || hardScore(hand) + 10
+    : hardScore(hand);
+
 //Display hand and score
 const displayHand = (hand) =>
   hand == dealerHand
