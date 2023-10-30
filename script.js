@@ -1,30 +1,35 @@
-//Global Variables
+//Gamestate variables (idk what to assign to them so i just gave them random numbers)
 const startingGame = 0,
   playingRound = 1,
   playingSplitRound = 2,
   endingRound = 3;
-let playersHands = [],
-  gameState = startingGame,
-  gameMessage = "",
-  numberOfDecks = 0,
-  handCounter = 0;
-const deck = [],
-  dealerHand = [];
+let gameState = startingGame;
+
+//Global Variables
+const deck = [];
+const dealerHand = [];
+let playersHands = []; //let instead of const because of reassignment during Split
+let gameMessage = "";
+let numberOfDecks = 0;
+let handCounter = 0;
 
 //Main function
 function main(input, myOutputValue) {
   if (gameState === playingRound) {
     playNormalRound(input);
+    consoleCheck();
   } else if (gameState === endingRound) {
     resetRound();
     initRound();
+    consoleCheck();
   } else if (gameState === playingSplitRound) {
     playSplitRound(input);
+    consoleCheck();
   } else if (gameState === startingGame) {
     if (numberOfDecks === 0) {
       numberOfDecks =
         Number.isInteger(Number(input)) &&
-        Number(input) > 0 &&
+        Number(input) >= 1 &&
         Number(input) <= 8
           ? Number(input)
           : 1;
@@ -33,12 +38,20 @@ function main(input, myOutputValue) {
       initDeck();
       shuffleDeck();
       initRound();
+      consoleCheck();
     }
   } else gameMessage = "Error in main function";
   myOutputValue = gameMessage;
   return myOutputValue;
 }
 
+//Prints first card of dealer face up
+const dealerFaceUp = () => `${dealerHand[0].Name} of ${dealerHand[0].Suit}<br>`;
+//Display hand and score
+const displayHand = (hand) =>
+  hand == dealerHand
+    ? `Dealer's Hand:<br>${print(hand)}Score: ${calculateScore(hand)}`
+    : `Hand:<br>${print(hand)}Score: ${calculateScore(hand)}`;
 //Print any hand
 function print(hand) {
   let output = "";
@@ -47,36 +60,30 @@ function print(hand) {
   }
   return output;
 }
-//Prints first card of dealer face up
-dealerFaceUp = () => `${dealerHand[0].Name} of ${dealerHand[0].Suit}<br>`;
+
+//Calculate points of current hand
+const calculateScore = (hand) =>
+  hand.some((card) => card.Rank === 1) && hardScore(hand) <= 11
+    ? hardScore(hand) + 10
+    : hardScore(hand);
 //Helper function for hard values
 function hardScore(hand) {
   let totalPoints = 0;
   for (const card of hand) {
-    let point = card.Rank >= 10 ? 10 : card.Rank;
+    let point = card.Rank > 10 ? 10 : card.Rank;
     totalPoints += point;
   }
   return totalPoints;
 }
-//Calculate points of current hand
-const calculateScore = (hand) =>
-  hand.some((card) => card.Rank === 1) && hardScore(hand) < 11
-    ? hardScore(hand) + 10
-    : hardScore(hand);
-//Display hand and score
-const displayHand = (hand) =>
-  hand == dealerHand
-    ? `Dealer's Hand:<br>${print(hand)}Score: ${calculateScore(hand)}`
-    : `Hand:<br>${print(hand)}Score: ${calculateScore(hand)}`;
 
 //Evaluation if draw
 const drawEvaluation = (individualPlayerHand, dealerHand) =>
-  calculateScore(individualPlayerHand) === calculateScore(dealerHand) ||
   (calculateScore(individualPlayerHand) > 21 &&
-    calculateScore(dealerHand) > 21);
+    calculateScore(dealerHand) > 21) ||
+  calculateScore(individualPlayerHand) === calculateScore(dealerHand);
 //Evaluate if win
 const winEvaluation = (individualPlayerHand, dealerHand) =>
-  21 >= calculateScore(individualPlayerHand) &&
+  calculateScore(individualPlayerHand) <= 21 &&
   (calculateScore(individualPlayerHand) > calculateScore(dealerHand) ||
     calculateScore(dealerHand) > 21);
 //Evaluate game
@@ -152,7 +159,7 @@ function playNormalRound(input) {
           `Your ${displayHand(playersHands)}<br><br>${displayHand(
             dealerHand
           )}` +
-          `<br><br>${gameEvaluation(playersHands, dealerHand)}` +
+          `<br><br>${gameEvaluation(playersHands, dealerHand)}!` +
           `<br><br>Press submit to play another round`;
         gameState = endingRound;
         break;
@@ -196,7 +203,6 @@ function playSplitRound(input) {
           )} with second hand<br><br>${displayHand(dealerHand)}` +
           `<br><br>Press submit to play another round`;
         gameState = endingRound;
-        break;
       } else {
         gameMessage = `Curent ${displayHand(
           playersHands[handCounter]
@@ -262,7 +268,7 @@ function initDeck() {
     "Queen",
     "King",
   ];
-  const suitConstruct = ["Diamonds", "Clubs", "Hearts", "Spades"];
+  const suitConstruct = ["Diamonds ♦️", "Clubs ♣️", "Hearts ♥️", "Spades ♠️"];
   for (let i = 0; i < numberOfDecks; i++) {
     for (const name of nameConstruct) {
       for (const suit of suitConstruct) {
@@ -275,4 +281,11 @@ function initDeck() {
       }
     }
   }
+}
+
+//Check state of hand and deck
+function consoleCheck() {
+  console.clear();
+  console.table([playersHands, dealerHand]);
+  console.table(deck);
 }
