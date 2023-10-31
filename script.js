@@ -13,18 +13,75 @@ let gameMessage = "";
 let numberOfDecks = 0;
 let handCounter = 0;
 
+//Button variables
+//Hit button
+const hitButton = document.createElement("button");
+const hitButtonSpan = document.createElement("span");
+hitButtonSpan.textContent = "Hit (H)";
+hitButton.appendChild(hitButtonSpan);
+hitButton.id = "hit-button";
+hitButton.className = "button";
+//Stand button
+const standButton = document.createElement("button");
+const standButtonSpan = document.createElement("span");
+standButtonSpan.textContent = "Stand (S)";
+standButton.appendChild(standButtonSpan);
+standButton.id = "stand-button";
+standButton.className = "button";
+//Split button
+const splitButton = document.createElement("button");
+const splitButtonSpan = document.createElement("span");
+splitButtonSpan.textContent = "Split (Y)";
+splitButton.appendChild(splitButtonSpan);
+splitButton.id = "split-button";
+splitButton.className = "button";
+//Inserting elements
+function insertButton(splitEvent) {
+  if (splitEvent === 1) {
+    document.querySelector("#container").append(splitButton);
+  }
+  document.querySelector("#container").append(hitButton, standButton);
+}
+//Removing elements
+function removeButton() {
+  document.getElementById("hit-button").remove();
+  document.getElementById("stand-button").remove();
+}
+//Listen for Event function
+function detect(button, keypress) {
+  button.addEventListener("click", () => {
+    const input = keypress;
+    const result = main(input);
+    const output = document.querySelector("#output-div");
+    output.innerHTML = result;
+    input.value = "";
+  });
+  //Keydown functionality
+  document.addEventListener("keydown", (e) => {
+    if (e.key.toUpperCase() === keypress.toUpperCase()) {
+      button.click();
+    }
+  });
+}
+
+//Listen for Event
+detect(hitButton, "H");
+detect(standButton, "S");
+detect(splitButton, "Y");
+
 //Main function
 function main(input, myOutputValue) {
   if (gameState === playingRound) {
     playNormalRound(input);
-    consoleCheck();
+    // consoleCheck();
   } else if (gameState === endingRound) {
     resetRound();
+    shuffleDeck();
     initRound();
-    consoleCheck();
+    // consoleCheck();
   } else if (gameState === playingSplitRound) {
     playSplitRound(input);
-    consoleCheck();
+    // consoleCheck();
   } else if (gameState === startingGame) {
     if (numberOfDecks === 0) {
       numberOfDecks =
@@ -33,12 +90,14 @@ function main(input, myOutputValue) {
         Number(input) <= 8
           ? Number(input)
           : 1;
-      gameMessage = `You selected ${numberOfDecks} decks! Press submit to play!`;
+      gameMessage =
+        `You selected ${numberOfDecks} decks! Press submit to play!` +
+        '<img src="https://media.tenor.com/y-26Qmqp42cAAAAC/monday-duel.gif"/>';
     } else if (numberOfDecks > 0) {
       initDeck();
       shuffleDeck();
       initRound();
-      consoleCheck();
+      // consoleCheck();
     }
   } else gameMessage = "Error in main function";
   myOutputValue = gameMessage;
@@ -46,10 +105,11 @@ function main(input, myOutputValue) {
 }
 
 //Prints first card of dealer face up
-const dealerFaceUp = () => `${dealerHand[0].Name} of ${dealerHand[0].Suit}<br>`;
+const dealerFaceUp = () =>
+  `Dealer's Face up:<br>${dealerHand[0].Name} of ${dealerHand[0].Suit}<br><br>Type "H" to Hit and "S" to Stand`;
 //Display hand and score
 const displayHand = (hand) =>
-  hand == dealerHand
+  hand === dealerHand
     ? `Dealer's Hand:<br>${print(hand)}Score: ${calculateScore(hand)}`
     : `Hand:<br>${print(hand)}Score: ${calculateScore(hand)}`;
 //Print any hand
@@ -70,7 +130,7 @@ const calculateScore = (hand) =>
 function hardScore(hand) {
   let totalPoints = 0;
   for (const card of hand) {
-    let point = card.Rank > 10 ? 10 : card.Rank;
+    const point = card.Rank > 10 ? 10 : card.Rank;
     totalPoints += point;
   }
   return totalPoints;
@@ -89,10 +149,10 @@ const winEvaluation = (individualPlayerHand, dealerHand) =>
 //Evaluate game
 const gameEvaluation = (individualPlayerHand, dealerHand) =>
   drawEvaluation(individualPlayerHand, dealerHand)
-    ? "You tied"
+    ? `You tied!<br><img src="https://media.tenor.com/QXVs4QWLlzkAAAAC/spider-man.gif"`
     : winEvaluation(individualPlayerHand, dealerHand)
-    ? "You won"
-    : "You lost";
+    ? `You won!<br><img src="https://media.tenor.com/M05wGouvJsgAAAAi/money-throwing.gif"/>`
+    : `You lost!<br><img src="https://media.tenor.com/YbFJ0cXy6P0AAAAi/tkthao219-capoo.gif"/>`;
 //Evaluate Blackjack
 const bjEvaluation = (individualPlayerHand, dealerHand) =>
   drawEvaluation(individualPlayerHand, dealerHand)
@@ -113,27 +173,34 @@ function initRound() {
   ) {
     gameMessage =
       `Your ${displayHand(playersHands)}<br><br>${displayHand(dealerHand)}` +
-      `<br><br>${gameEvaluation(playersHands, dealerHand)}` +
-      `<br>${bjEvaluation(playersHands, dealerHand)}`;
+      `<br><br><b>${gameEvaluation(playersHands, dealerHand)}</b>` +
+      `<br>${bjEvaluation(playersHands, dealerHand)}` +
+      '<img src="https://media.tenor.com/ckwiG8tPdsYAAAAi/tkthao219-capoo.gif"/>' +
+      `<br><br>Press submit to play another round`;
     gameState = endingRound;
   } else if (playersHands[0].Rank === playersHands[1].Rank) {
-    gameMessage = `Your ${displayHand(
-      playersHands
-    )}<br><br>Dealer's Face up:<br>${dealerFaceUp()}<br>You have a pair of ${
-      playersHands[0].Name
-    }s! Type "Y" to Split, "H" to Hit and "S" to Stand`;
+    insertButton(1);
+    gameMessage =
+      `Your ${displayHand(
+        playersHands
+      )}<br><br>${dealerFaceUp()}<br>You have a pair of ${
+        playersHands[0].Name
+      }s Type "Y" to Split` +
+      `<img src="https://media.tenor.com/ECW8CBXO4ToAAAAi/twist-street-split.gif"/>`;
     gameState = playingRound;
   } else {
-    gameMessage = `Your ${displayHand(
-      playersHands
-    )}<br><br>Dealer's Face up:<br>${dealerFaceUp()}<br>Type "H" to Hit and "S" to Stand`;
+    insertButton(0);
+    gameMessage = `Your ${displayHand(playersHands)}<br><br>${dealerFaceUp()}`;
     gameState = playingRound;
   }
 }
 
 //Game flow for Hit and Stand and Split
 function playNormalRound(input) {
-  if (playersHands[0].Rank === playersHands[1].Rank && input === "Y") {
+  if (
+    playersHands[0].Rank === playersHands[1].Rank &&
+    (input === "Y" || input === "y")
+  ) {
     playersHands = playersHands.map((card) => [card]);
     hit(playersHands[0]);
     hit(playersHands[1]);
@@ -141,32 +208,39 @@ function playNormalRound(input) {
       playersHands[0]
     )}<br><br>Second ${displayHand(
       playersHands[1]
-    )}<br><br>Dealer's Face up:<br>${dealerFaceUp()}<br>Type "H" to Hit and "S" to Stand for first hand`;
+    )}<br><br>${dealerFaceUp()} for first hand`;
     gameState = playingSplitRound;
+    document.getElementById("split-button").remove();
   } else {
+    if (document.getElementById("split-button")) {
+      document.getElementById("split-button").remove();
+    }
     switch (input) {
       case "H":
+      case "h":
         hit(playersHands);
         if (calculateScore(playersHands) < 21) {
           gameMessage = `Your ${displayHand(
             playersHands
-          )}<br><br>Dealer's Face up:<br>${dealerFaceUp()}<br>Type "H" to Hit and "S" to Stand`;
+          )}<br><br>${dealerFaceUp()}`;
           break;
         }
       case "S":
+      case "s":
         dealerAI();
         gameMessage =
           `Your ${displayHand(playersHands)}<br><br>${displayHand(
             dealerHand
           )}` +
-          `<br><br>${gameEvaluation(playersHands, dealerHand)}!` +
+          `<br><br><b>${gameEvaluation(playersHands, dealerHand)}</b>` +
           `<br><br>Press submit to play another round`;
         gameState = endingRound;
+        removeButton();
         break;
       default:
         gameMessage = `Invalid input!<br><br>Your ${displayHand(
           playersHands
-        )}<br><br>Dealer's Face up:<br>${dealerFaceUp()}<br>Type "H" to Hit and "S" to Stand`;
+        )}<br><br>${dealerFaceUp()}`;
     }
   }
 }
@@ -175,6 +249,7 @@ function playNormalRound(input) {
 function playSplitRound(input) {
   switch (input) {
     case "H":
+    case "h":
       hit(playersHands[handCounter]);
       if (calculateScore(playersHands[handCounter]) < 21) {
         gameMessage = `Curent ${displayHand(
@@ -183,26 +258,28 @@ function playSplitRound(input) {
           playersHands[0]
         )}<br><br>Second ${displayHand(
           playersHands[1]
-        )}<br><br>Dealer's Face up:<br>${dealerFaceUp()}<br>Type "H" to Hit and "S" to Stand`;
+        )}<br><br>${dealerFaceUp()}`;
         break;
       }
     case "S":
+    case "s":
       handCounter++;
       if (handCounter === 2) {
         dealerAI();
         gameMessage =
           `First ${displayHand(playersHands[0])}` +
-          `<br><br>${gameEvaluation(
+          `<br><br><b>${gameEvaluation(
             playersHands[0],
             dealerHand
-          )} with first hand<br><br>` +
-          `Second ${displayHand(playersHands[1])}` +
-          `<br><br>${gameEvaluation(
+          )}<br><br></b>Second ${displayHand(
+            playersHands[1]
+          )}<br><br><b>${gameEvaluation(
             playersHands[1],
             dealerHand
-          )} with second hand<br><br>${displayHand(dealerHand)}` +
+          )}<br><br></b>${displayHand(dealerHand)}` +
           `<br><br>Press submit to play another round`;
         gameState = endingRound;
+        removeButton();
       } else {
         gameMessage = `Curent ${displayHand(
           playersHands[handCounter]
@@ -210,7 +287,7 @@ function playSplitRound(input) {
           playersHands[0]
         )}<br><br>Second ${displayHand(
           playersHands[1]
-        )}<br><br>Dealer's Face up:<br>${dealerFaceUp()}<br>Type "H" to Hit and "S" to Stand`;
+        )}<br><br>${dealerFaceUp()}`;
       }
       break;
     default:
@@ -220,7 +297,7 @@ function playSplitRound(input) {
         playersHands[0]
       )}<br><br>Second ${displayHand(
         playersHands[1]
-      )}<br><br>Dealer's Face up:<br>${dealerFaceUp()}<br>Type "H" to Hit and "S" to Stand`;
+      )}<br><br>${dealerFaceUp()}<br>Type "H" to Hit and "S" to Stand`;
   }
 }
 
@@ -240,13 +317,12 @@ function resetRound() {
   playersHands.length = 0;
   deck.push(...dealerHand);
   dealerHand.length = 0;
-  shuffleDeck();
 }
 
 //Fisher-Yates Shuffle, Durstenfeld variation
 function shuffleDeck() {
   for (let i = deck.length - 1; i > 0; i--) {
-    let j = Math.floor(Math.random() * (i + 1));
+    const j = Math.floor(Math.random() * (i + 1));
     [deck[i], deck[j]] = [deck[j], deck[i]];
   }
 }
