@@ -7,17 +7,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <!-- fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&display=swap"
-      rel="stylesheet"
-    />
     <link rel="preconnect" href="https://rsms.me/" />
     <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
 
     <!-- CSS -->
     <style>
+      @import url("https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&display=swap");
+
       * {
         box-sizing: border-box;
       }
@@ -29,12 +25,13 @@
           font-family: "Inter var", sans-serif;
         }
       }
+
       body {
         font-family: "Inter", "Noto Color Emoji", sans-serif;
         margin-left: 30px;
         margin-right: 30px;
         background-color: #1f2a25;
-        color: #dfdfdf; /* sets the font color */
+        color: #e5e4e2; /* sets the font color */
         background-image: url(""); /* The image used */
         background-position: center; /* Center the image */
         background-repeat: no-repeat; /* Do not repeat the image */
@@ -57,6 +54,7 @@
         margin: 40px auto;
         max-width: 800px;
         padding: 38px 31px;
+        border-radius: 8px;
       }
 
       input {
@@ -74,11 +72,51 @@
         padding: 0 6px;
       }
 
+      .button {
+        display: inline-block;
+        border-radius: 9px;
+        background-color: #003153;
+        border: none;
+        color: #e5e4e2;
+        text-align: center;
+        font-size: 21px;
+        padding: 18px;
+        width: 150px;
+        transition: all 0.69s;
+        cursor: pointer;
+        margin: 5px;
+      }
+
+      .button span {
+        cursor: pointer;
+        display: inline-block;
+        position: relative;
+        transition: 0.69s;
+      }
+
+      .button span:after {
+        content: "\00bb";
+        position: absolute;
+        opacity: 0;
+        top: 0;
+        right: -20px;
+        transition: 0.69s;
+      }
+
+      .button:hover span {
+        padding-right: 24px;
+      }
+
+      .button:hover span:after {
+        opacity: 1;
+        right: 0;
+      }
       #output-div {
         background-color: #475c89;
         margin: 20px auto;
         padding: 20px;
         width: 100%;
+        border-radius: 6px;
       }
 
       .logo-img {
