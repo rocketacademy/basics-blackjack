@@ -13,6 +13,34 @@ let gameMessage = "";
 let numberOfDecks = 0;
 let handCounter = 0;
 
+//Button variables
+const hitButton = document.createElement("button");
+hitButton.textContent = "Hit (H)";
+hitButton.id = "hit-button";
+const standButton = document.createElement("button");
+standButton.textContent = "Stand (S)";
+standButton.id = "stand-button";
+const splitButton = document.createElement("button");
+splitButton.textContent = "Split (Y)";
+splitButton.id = "split-button";
+//Inserting elements
+function insertButton(splitEvent) {
+  if (splitEvent === 1) {
+    document.querySelector("#container").append(splitButton);
+  }
+  document.querySelector("#container").append(hitButton);
+  document.querySelector("#container").append(standButton);
+}
+//Removing elements
+function removeButton() {
+  document.getElementById("hit-button").remove();
+  document.getElementById("stand-button").remove();
+}
+//Listen for Event
+detect(hitButton, "H");
+detect(standButton, "S");
+detect(splitButton, "Y");
+
 //Main function
 function main(input, myOutputValue) {
   if (gameState === playingRound) {
@@ -20,6 +48,7 @@ function main(input, myOutputValue) {
     consoleCheck();
   } else if (gameState === endingRound) {
     resetRound();
+    shuffleDeck();
     initRound();
     consoleCheck();
   } else if (gameState === playingSplitRound) {
@@ -33,7 +62,9 @@ function main(input, myOutputValue) {
         Number(input) <= 8
           ? Number(input)
           : 1;
-      gameMessage = `You selected ${numberOfDecks} decks! Press submit to play!`;
+      gameMessage =
+        `You selected ${numberOfDecks} decks! Press submit to play!` +
+        '<img alt="" src="https://media.tenor.com/y-26Qmqp42cAAAAC/monday-duel.gif"/>';
     } else if (numberOfDecks > 0) {
       initDeck();
       shuffleDeck();
@@ -49,7 +80,7 @@ function main(input, myOutputValue) {
 const dealerFaceUp = () => `${dealerHand[0].Name} of ${dealerHand[0].Suit}<br>`;
 //Display hand and score
 const displayHand = (hand) =>
-  hand == dealerHand
+  hand === dealerHand
     ? `Dealer's Hand:<br>${print(hand)}Score: ${calculateScore(hand)}`
     : `Hand:<br>${print(hand)}Score: ${calculateScore(hand)}`;
 //Print any hand
@@ -70,7 +101,7 @@ const calculateScore = (hand) =>
 function hardScore(hand) {
   let totalPoints = 0;
   for (const card of hand) {
-    let point = card.Rank > 10 ? 10 : card.Rank;
+    const point = card.Rank > 10 ? 10 : card.Rank;
     totalPoints += point;
   }
   return totalPoints;
@@ -113,17 +144,22 @@ function initRound() {
   ) {
     gameMessage =
       `Your ${displayHand(playersHands)}<br><br>${displayHand(dealerHand)}` +
-      `<br><br>${gameEvaluation(playersHands, dealerHand)}` +
-      `<br>${bjEvaluation(playersHands, dealerHand)}`;
+      `<br><br><b>${gameEvaluation(playersHands, dealerHand)}!</b>` +
+      `<br>${bjEvaluation(playersHands, dealerHand)}` +
+      '<img alt="" src="https://media.tenor.com/ckwiG8tPdsYAAAAi/tkthao219-capoo.gif"/>';
     gameState = endingRound;
   } else if (playersHands[0].Rank === playersHands[1].Rank) {
-    gameMessage = `Your ${displayHand(
-      playersHands
-    )}<br><br>Dealer's Face up:<br>${dealerFaceUp()}<br>You have a pair of ${
-      playersHands[0].Name
-    }s! Type "Y" to Split, "H" to Hit and "S" to Stand`;
+    insertButton(1);
+    gameMessage =
+      `Your ${displayHand(
+        playersHands
+      )}<br><br>Dealer's Face up:<br>${dealerFaceUp()}<br>You have a pair of ${
+        playersHands[0].Name
+      }s! Type "Y" to Split, "H" to Hit and "S" to Stand` +
+      `<img alt="" src="https://media.tenor.com/ECW8CBXO4ToAAAAi/twist-street-split.gif"/>`;
     gameState = playingRound;
   } else {
+    insertButton(0);
     gameMessage = `Your ${displayHand(
       playersHands
     )}<br><br>Dealer's Face up:<br>${dealerFaceUp()}<br>Type "H" to Hit and "S" to Stand`;
@@ -133,7 +169,10 @@ function initRound() {
 
 //Game flow for Hit and Stand and Split
 function playNormalRound(input) {
-  if (playersHands[0].Rank === playersHands[1].Rank && input === "Y") {
+  if (
+    playersHands[0].Rank === playersHands[1].Rank &&
+    (input === "Y" || input === "y")
+  ) {
     playersHands = playersHands.map((card) => [card]);
     hit(playersHands[0]);
     hit(playersHands[1]);
@@ -143,9 +182,14 @@ function playNormalRound(input) {
       playersHands[1]
     )}<br><br>Dealer's Face up:<br>${dealerFaceUp()}<br>Type "H" to Hit and "S" to Stand for first hand`;
     gameState = playingSplitRound;
+    document.getElementById("split-button").remove();
   } else {
+    if (document.getElementById("split-button")) {
+      document.getElementById("split-button").remove();
+    }
     switch (input) {
       case "H":
+      case "h":
         hit(playersHands);
         if (calculateScore(playersHands) < 21) {
           gameMessage = `Your ${displayHand(
@@ -154,14 +198,16 @@ function playNormalRound(input) {
           break;
         }
       case "S":
+      case "s":
         dealerAI();
         gameMessage =
           `Your ${displayHand(playersHands)}<br><br>${displayHand(
             dealerHand
           )}` +
-          `<br><br>${gameEvaluation(playersHands, dealerHand)}!` +
+          `<br><br><b>${gameEvaluation(playersHands, dealerHand)}!</b>` +
           `<br><br>Press submit to play another round`;
         gameState = endingRound;
+        removeButton();
         break;
       default:
         gameMessage = `Invalid input!<br><br>Your ${displayHand(
@@ -175,6 +221,7 @@ function playNormalRound(input) {
 function playSplitRound(input) {
   switch (input) {
     case "H":
+    case "h":
       hit(playersHands[handCounter]);
       if (calculateScore(playersHands[handCounter]) < 21) {
         gameMessage = `Curent ${displayHand(
@@ -187,22 +234,24 @@ function playSplitRound(input) {
         break;
       }
     case "S":
+    case "s":
       handCounter++;
       if (handCounter === 2) {
         dealerAI();
         gameMessage =
           `First ${displayHand(playersHands[0])}` +
-          `<br><br>${gameEvaluation(
+          `<br><br><b>${gameEvaluation(
             playersHands[0],
             dealerHand
-          )} with first hand<br><br>` +
+          )} with first hand!</b><br><br>` +
           `Second ${displayHand(playersHands[1])}` +
-          `<br><br>${gameEvaluation(
+          `<br><br><b>${gameEvaluation(
             playersHands[1],
             dealerHand
-          )} with second hand<br><br>${displayHand(dealerHand)}` +
+          )} with second hand!</b><br><br>${displayHand(dealerHand)}` +
           `<br><br>Press submit to play another round`;
         gameState = endingRound;
+        removeButton();
       } else {
         gameMessage = `Curent ${displayHand(
           playersHands[handCounter]
@@ -240,13 +289,12 @@ function resetRound() {
   playersHands.length = 0;
   deck.push(...dealerHand);
   dealerHand.length = 0;
-  shuffleDeck();
 }
 
 //Fisher-Yates Shuffle, Durstenfeld variation
 function shuffleDeck() {
   for (let i = deck.length - 1; i > 0; i--) {
-    let j = Math.floor(Math.random() * (i + 1));
+    const j = Math.floor(Math.random() * (i + 1));
     [deck[i], deck[j]] = [deck[j], deck[i]];
   }
 }
@@ -289,3 +337,62 @@ function consoleCheck() {
   console.table([playersHands, dealerHand]);
   console.table(deck);
 }
+
+//Listen for Event function
+function detect(button, keypress) {
+  button.addEventListener("click", () => {
+    const input = keypress;
+    const result = main(input);
+    const output = document.querySelector("#output-div");
+    output.innerHTML = result;
+    input.value = "";
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key.toLowerCase() === keypress.toLowerCase()) {
+      button.click();
+    }
+  });
+}
+
+// function detectHit() {
+//   hitButton.addEventListener("click", () => {
+//     const input = "H";
+//     const result = main(input);
+//     const output = document.querySelector("#output-div");
+//     output.innerHTML = result;
+//     input.value = "";
+//   });
+//   document.addEventListener("keydown", (e) => {
+//     if (e.key === "h" || e.key === "H") {
+//       hitButton.click();
+//     }
+//   });
+// }
+// function detectStand() {
+//   standButton.addEventListener("click", () => {
+//     const input = "S";
+//     const result = main(input);
+//     const output = document.querySelector("#output-div");
+//     output.innerHTML = result;
+//     input.value = "";
+//   });
+//   document.addEventListener("keydown", (e) => {
+//     if (e.key === "s" || e.key === "S") {
+//       standButton.click();
+//     }
+//   });
+// }
+// function detectSplit() {
+//   splitButton.addEventListener("click", () => {
+//     const input = "Y";
+//     const result = main(input);
+//     const output = document.querySelector("#output-div");
+//     output.innerHTML = result;
+//     input.value = "";
+//   });
+//   document.addEventListener("keydown", (e) => {
+//     if (e.key === "y" || e.key === "Y") {
+//       splitButton.click();
+//     }
+//   });
+// }
