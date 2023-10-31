@@ -14,20 +14,21 @@ let numberOfDecks = 0;
 let handCounter = 0;
 
 //Button variables
+//Hit button
 const hitButton = document.createElement("button");
 const hitButtonSpan = document.createElement("span");
 hitButtonSpan.textContent = "Hit (H)";
 hitButton.appendChild(hitButtonSpan);
 hitButton.id = "hit-button";
 hitButton.className = "button";
-
+//Stand button
 const standButton = document.createElement("button");
 const standButtonSpan = document.createElement("span");
 standButtonSpan.textContent = "Stand (S)";
 standButton.appendChild(standButtonSpan);
 standButton.id = "stand-button";
 standButton.className = "button";
-
+//Split button
 const splitButton = document.createElement("button");
 const splitButtonSpan = document.createElement("span");
 splitButtonSpan.textContent = "Split (Y)";
@@ -39,14 +40,30 @@ function insertButton(splitEvent) {
   if (splitEvent === 1) {
     document.querySelector("#container").append(splitButton);
   }
-  document.querySelector("#container").append(hitButton);
-  document.querySelector("#container").append(standButton);
+  document.querySelector("#container").append(hitButton, standButton);
 }
 //Removing elements
 function removeButton() {
   document.getElementById("hit-button").remove();
   document.getElementById("stand-button").remove();
 }
+//Listen for Event function
+function detect(button, keypress) {
+  button.addEventListener("click", () => {
+    const input = keypress;
+    const result = main(input);
+    const output = document.querySelector("#output-div");
+    output.innerHTML = result;
+    input.value = "";
+  });
+  //Keydown functionality
+  document.addEventListener("keydown", (e) => {
+    if (e.key.toUpperCase() === keypress.toUpperCase()) {
+      button.click();
+    }
+  });
+}
+
 //Listen for Event
 detect(hitButton, "H");
 detect(standButton, "S");
@@ -56,15 +73,15 @@ detect(splitButton, "Y");
 function main(input, myOutputValue) {
   if (gameState === playingRound) {
     playNormalRound(input);
-    consoleCheck();
+    // consoleCheck();
   } else if (gameState === endingRound) {
     resetRound();
     shuffleDeck();
     initRound();
-    consoleCheck();
+    // consoleCheck();
   } else if (gameState === playingSplitRound) {
     playSplitRound(input);
-    consoleCheck();
+    // consoleCheck();
   } else if (gameState === startingGame) {
     if (numberOfDecks === 0) {
       numberOfDecks =
@@ -80,7 +97,7 @@ function main(input, myOutputValue) {
       initDeck();
       shuffleDeck();
       initRound();
-      consoleCheck();
+      // consoleCheck();
     }
   } else gameMessage = "Error in main function";
   myOutputValue = gameMessage;
@@ -132,10 +149,10 @@ const winEvaluation = (individualPlayerHand, dealerHand) =>
 //Evaluate game
 const gameEvaluation = (individualPlayerHand, dealerHand) =>
   drawEvaluation(individualPlayerHand, dealerHand)
-    ? `You tied<br><img src="https://media.tenor.com/QXVs4QWLlzkAAAAC/spider-man.gif"`
+    ? `You tied!<br><img src="https://media.tenor.com/QXVs4QWLlzkAAAAC/spider-man.gif"`
     : winEvaluation(individualPlayerHand, dealerHand)
-    ? `You won<br><img src="https://media.tenor.com/M05wGouvJsgAAAAi/money-throwing.gif"/>`
-    : `You lost<br><img src="https://media.tenor.com/YbFJ0cXy6P0AAAAi/tkthao219-capoo.gif"/>`;
+    ? `You won!<br><img src="https://media.tenor.com/M05wGouvJsgAAAAi/money-throwing.gif"/>`
+    : `You lost!<br><img src="https://media.tenor.com/YbFJ0cXy6P0AAAAi/tkthao219-capoo.gif"/>`;
 //Evaluate Blackjack
 const bjEvaluation = (individualPlayerHand, dealerHand) =>
   drawEvaluation(individualPlayerHand, dealerHand)
@@ -158,7 +175,8 @@ function initRound() {
       `Your ${displayHand(playersHands)}<br><br>${displayHand(dealerHand)}` +
       `<br><br><b>${gameEvaluation(playersHands, dealerHand)}</b>` +
       `<br>${bjEvaluation(playersHands, dealerHand)}` +
-      '<img src="https://media.tenor.com/ckwiG8tPdsYAAAAi/tkthao219-capoo.gif"/>';
+      '<img src="https://media.tenor.com/ckwiG8tPdsYAAAAi/tkthao219-capoo.gif"/>' +
+      `<br><br>Press submit to play another round`;
     gameState = endingRound;
   } else if (playersHands[0].Rank === playersHands[1].Rank) {
     insertButton(1);
@@ -346,20 +364,4 @@ function consoleCheck() {
   console.clear();
   console.table([playersHands, dealerHand]);
   console.table(deck);
-}
-
-//Listen for Event function
-function detect(button, keypress) {
-  button.addEventListener("click", () => {
-    const input = keypress;
-    const result = main(input);
-    const output = document.querySelector("#output-div");
-    output.innerHTML = result;
-    input.value = "";
-  });
-  // document.addEventListener("keydown", (e) => {
-  //   if (e.key.toUpperCase() === keypress.toUpperCase()) {
-  //     button.click();
-  //   }
-  // });
 }
