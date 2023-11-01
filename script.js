@@ -25,19 +25,22 @@ detect(splitButton, "Y");
 
 //Main function
 function main(input, myOutputValue) {
-  if (gameState === playingRound) {
+  if (playerGold <= 0) {
+    betGold = null;
+    gameMessage = `You are broke! Get out!<br><img src="https://media.tenor.com/sSc5Pt_FdjUAAAAC/rainbow-spongebob.gif"/>`;
+  } else if (gameState === playingRound) {
     playNormalRound(input);
-    // consoleCheck();
+    consoleCheck();
   } else if (gameState === endingRound) {
     resetRound();
     shuffleDeck();
     betGold =
       Number(input) > 0 && Number(input) <= playerGold ? Number(input) : 10;
     initRound();
-    // consoleCheck();
+    consoleCheck();
   } else if (gameState === playingSplitRound) {
     playSplitRound(input);
-    // consoleCheck();
+    consoleCheck();
   } else if (gameState === startingGame) {
     if (numberOfDecks === 0) {
       numberOfDecks =
@@ -55,7 +58,7 @@ function main(input, myOutputValue) {
       betGold =
         Number(input) > 0 && Number(input) <= playerGold ? Number(input) : 10;
       initRound();
-      // consoleCheck();
+      consoleCheck();
     }
   } else gameMessage = "Error in main function";
   myOutputValue = gameMessage + `<b>${displayGold()}</b>`;
@@ -370,9 +373,9 @@ function detect(button, keypress) {
   });
 }
 
-// //Check state of hand and deck
-// function consoleCheck() {
-//   console.clear();
-//   console.table([playersHands, dealerHand]);
-//   console.table(deck);
-// }
+//Check state of hand and deck
+function consoleCheck() {
+  console.clear();
+  console.table([playersHands, dealerHand]);
+  console.table(deck);
+}
