@@ -374,7 +374,6 @@ function detect(button, keypress) {
     output.innerHTML = result;
     document.querySelector("#input-field").value = "";
   });
-  //Keydown functionality
   document.addEventListener("keydown", (e) => {
     if (e.key.toUpperCase() === keypress.toUpperCase()) {
       button.click();
