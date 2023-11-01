@@ -95,7 +95,6 @@
         font-family: "Open Sans", sans-serif;
         margin-left: 30px;
         margin-right: 30px;
-        text-align: center;
         background-color: white;
         color: black; /* sets the font color */
         background-image: url("https://i.ytimg.com/vi/FDNY_z5xFZc/maxresdefault.jpg"); /* The image used */
@@ -109,19 +108,6 @@
         max-width: 100%;
         max-height: 200px;
       }
-
-      #dealer-cards img {
-        height: 170px;
-        width: 125px;
-        margin: 1px;
-      }
-
-      #player-cards img {
-        height: 170px;
-        width: 125px;
-        margin: 1px;
-      }
-
       .header {
         text-align: center;
         font-size: 1.1rem;
@@ -129,9 +115,10 @@
       }
 
       #container {
-        background-color: rgba(255, 255, 255, 0);
+        background-color: pink;
         margin: 40px auto;
-        max-width: 800px;        
+        max-width: 800px;
+        padding: 38px 31px;
       }
 
       input {
@@ -142,46 +129,18 @@
         width: 100%;
       }
 
-      #go-button {
-        font-size: 25px;
+      button {
+        font-size: 21px;
         line-height: 33px;
         margin: 0 0 23px 0;
         padding: 0 6px;
-        width: 150px;
-        height: 50px;
-        border-radius: 8px;
       }
 
-      #hit-button {
-        font-size: 25px;
-        line-height: 33px;
-        margin: 0 0 23px 0;
-        padding: 0 6px;
-        width: 150px;
-        height: 50px;
-        background-color: green;
-        color: aliceblue;
-        border-radius: 8px
-      }
-      
-      #stand-button {
-        font-size: 25px;
-        line-height: 33px;
-        margin: 0 0 23px 0;
-        padding: 0 6px;
-        width: 150px;
-        height: 50px;
-        background-color: rgb(210, 32, 32);
-        color: aliceblue;
-        border-radius: 8px
-      }
       #output-div {
-        background-color: bisque;
+        background-color: lightgrey;
         margin: 20px auto;
         padding: 20px;
         width: 100%;
-        color: rgb(0, 0, 0);
-        font-size: 25px;
       }
 
       .logo-img {
@@ -201,58 +160,40 @@
   </head>
 
   <body>
-    
     <h1 class="header">
       <img
-        src="/images/lorong-88.png"
+        src="/images/geyland-lorong-sign-edited.png"
         alt="Lorong 69 Geylang"
-        height="250px"
       />
     </h1>
-    <h1 class="header" style="background-color: #0D7366; color: white">
-      8️⃣8️⃣♠️♥️♣️♦️ BAN LAK! PRESS GO AND TRY TO WIN AH CHOW FOR YOUR LIFE ♠️♥️♣️♦️8️⃣8️⃣
+    <h1 class="header" style="background-color: grey; color: white">
+      HUAT HUAT BAN LAK
     </h1>
-    <div id = "container">
-    <img id = "ah-chow" src = "https://media.tenor.com/EX6You2MNyUAAAAC/chowyunfat-godofgamblers.gif"/>
-    <div id="dealer-cards"></div>
-    <div id="output-div"></div>
-    <div id="player-cards"></div>
-
-    <button id="go-button">GO</button>
-    <button id="hit-button">HIT</button>
-    <button id="stand-button">STAND</button>
-
+    <div id="container">
+      <p>Input:</p>
+      <input id="input-field" />
+      <br />
+      <button id="submit-button">Submit</button>
+      <p>Output:</p>
+      <div id="output-div"></div>
+    </div>
     <!-- Import program logic -->
-    <script src="script-final.js"></script>
+    <script src="script.js"></script>
     <!-- Define button click functionality -->
     <script>
-      // reference the START button element to make a variable to do addEventListener
-      var goButton = document.querySelector("#go-button");
-      // when goButton is clicked, initiate game
-      goButton.addEventListener("click", function () {
-        // dont need input field cos my gameState is already INITIAL
-        var result = main("");
+      var button = document.querySelector("#submit-button");
+      button.addEventListener("click", function () {
+        // Set result to input value
+        var input = document.querySelector("#input-field");
+        var result = main(input.value);
 
         // Display result in output element
         var output = document.querySelector("#output-div");
         output.innerHTML = result;
-      });
 
-      // when HIT button is pressed
-      var hitButton = document.querySelector("#hit-button");
-      hitButton.addEventListener("click", function () {
-        var result = main("hit"); // pass "hit" into main to activate HIT gameState
-        var output = document.querySelector("#output-div");
-        output.innerHTML = result;
-      });
-      // STAND button
-      var standButton = document.querySelector("#stand-button");
-      standButton.addEventListener("click", function () {
-        var result = main("stand"); // pass "stand" into main to activate STAND gameState
-        var output = document.querySelector("#output-div");
-        output.innerHTML = result;
+        // Reset input value
+        input.value = "";
       });
     </script>
   </body>
-  </div>
 </html>
