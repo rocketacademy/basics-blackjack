@@ -15,6 +15,8 @@ let playersHands = []; //let instead of const because of reassignment during Spl
 let gameMessage = "";
 let numberOfDecks = 0;
 let handCounter = 0;
+let playerGold = 1000;
+let betGold = null;
 
 //Listen for button click and keypress
 detect(hitButton, "H");
@@ -25,15 +27,17 @@ detect(splitButton, "Y");
 function main(input, myOutputValue) {
   if (gameState === playingRound) {
     playNormalRound(input);
-    // consoleCheck();
+    consoleCheck();
   } else if (gameState === endingRound) {
     resetRound();
     shuffleDeck();
+    betGold =
+      Number(input) > 0 && Number(input) <= playerGold ? Number(input) : 10;
     initRound();
-    // consoleCheck();
+    consoleCheck();
   } else if (gameState === playingSplitRound) {
     playSplitRound(input);
-    // consoleCheck();
+    consoleCheck();
   } else if (gameState === startingGame) {
     if (numberOfDecks === 0) {
       numberOfDecks =
@@ -43,22 +47,29 @@ function main(input, myOutputValue) {
           ? Number(input)
           : 1;
       gameMessage =
-        `You selected ${numberOfDecks} decks! Press submit to play!` +
-        '<img src="https://media.tenor.com/y-26Qmqp42cAAAAC/monday-duel.gif"/>';
+        `You selected ${numberOfDecks} decks! Type in your bet amount and press submit to play!<br>Default is 10 gold` +
+        '<br><img src="https://media.tenor.com/aiHuleZkUYMAAAAC/poker-cards.gif"/>';
     } else if (numberOfDecks > 0) {
       initDeck();
       shuffleDeck();
+      betGold =
+        Number(input) > 0 && Number(input) <= playerGold ? Number(input) : 10;
       initRound();
-      // consoleCheck();
+      consoleCheck();
     }
   } else gameMessage = "Error in main function";
-  myOutputValue = gameMessage;
+  myOutputValue = gameMessage + `<b>${displayGold()}</b>`;
   return myOutputValue;
 }
 
 //Prints first card of dealer face up
 const dealerFaceUp = () =>
   `Dealer's Face up:<br>${dealerHand[0].Name} of ${dealerHand[0].Suit}<br><br>Type "H" to Hit and "S" to Stand`;
+//Display total gold and bet amount
+const displayGold = () =>
+  betGold == null
+    ? `<br><br>You have ${playerGold} gold`
+    : `<br><br>You have ${playerGold} gold. Your bet: ${betGold} gold`;
 //Display hand and score
 const displayHand = (hand) =>
   hand === dealerHand
@@ -99,20 +110,29 @@ const winEvaluation = (individualPlayerHand, dealerHand) =>
   (calculateScore(individualPlayerHand) > calculateScore(dealerHand) ||
     calculateScore(dealerHand) > 21);
 //Evaluate game
-const gameEvaluation = (individualPlayerHand, dealerHand) =>
-  drawEvaluation(individualPlayerHand, dealerHand)
-    ? `You tied!<br><img src="https://media.tenor.com/QXVs4QWLlzkAAAAC/spider-man.gif"`
-    : winEvaluation(individualPlayerHand, dealerHand)
-    ? `You won!<br><img src="https://media.tenor.com/M05wGouvJsgAAAAi/money-throwing.gif"/>`
-    : `You lost!<br><img src="https://media.tenor.com/hlWE3gT84GUAAAAi/tkthao219-capoo.gif"/>`;
+function gameEvaluation(individualPlayerHand, dealerHand) {
+  if (drawEvaluation(individualPlayerHand, dealerHand)) {
+    return `You tied!<br><img src="https://media.tenor.com/QXVs4QWLlzkAAAAC/spider-man.gif"`;
+  } else if (winEvaluation(individualPlayerHand, dealerHand)) {
+    playerGold += betGold;
+    return `You won!<br><img src="https://media.tenor.com/M05wGouvJsgAAAAi/money-throwing.gif"/>`;
+  } else {
+    playerGold -= betGold;
+    return `You lost!<br><img src="https://media.tenor.com/hlWE3gT84GUAAAAi/tkthao219-capoo.gif"/>`;
+  }
+}
 //Evaluate Blackjack
-const bjEvaluation = (individualPlayerHand, dealerHand) =>
-  drawEvaluation(individualPlayerHand, dealerHand)
-    ? "Push!"
-    : winEvaluation(individualPlayerHand, dealerHand)
-    ? "Player has Blackjack"
-    : "Dealer has Blackjack";
-
+function bjEvaluation(individualPlayerHand, dealerHand) {
+  if (drawEvaluation(individualPlayerHand, dealerHand)) {
+    return "Push!";
+  } else if (winEvaluation(individualPlayerHand, dealerHand)) {
+    playerGold += 0.5 * betGold;
+    return "Player has Blackjack";
+  } else {
+    playerGold -= 0.5 * betGold;
+    return "Dealer has Blackjack";
+  }
+}
 //Start round
 function initRound() {
   for (let i = 0; i < 2; i++) {
@@ -125,10 +145,10 @@ function initRound() {
   ) {
     gameMessage =
       `Your ${displayHand(playersHands)}<br><br>${displayHand(dealerHand)}` +
-      `<br><br><b>${gameEvaluation(playersHands, dealerHand)}</b>` +
+      `<br><br>${gameEvaluation(playersHands, dealerHand)}` +
       `<br>${bjEvaluation(playersHands, dealerHand)}` +
       '<img src="https://media.tenor.com/ckwiG8tPdsYAAAAi/tkthao219-capoo.gif"/>' +
-      `<br><br>Press submit to play another round`;
+      `<br><br>Type in bet amount and press submit to play another round`;
     gameState = endingRound;
   } else if (playersHands[0].Rank === playersHands[1].Rank) {
     insertButton(1);
@@ -137,7 +157,7 @@ function initRound() {
         playersHands
       )}<br><br>${dealerFaceUp()}<br>You have a pair of ${
         playersHands[0].Name
-      }s Type "Y" to Split` +
+      }s type "Y" to Split` +
       `<br><img src="https://media.tenor.com/ECW8CBXO4ToAAAAi/twist-street-split.gif"/>`;
     gameState = playingRound;
   } else {
@@ -184,8 +204,8 @@ function playNormalRound(input) {
           `Your ${displayHand(playersHands)}<br><br>${displayHand(
             dealerHand
           )}` +
-          `<br><br><b>${gameEvaluation(playersHands, dealerHand)}</b>` +
-          `<br><br>Press submit to play another round`;
+          `<br><br>${gameEvaluation(playersHands, dealerHand)}` +
+          `<br><br>Type in bet amount and press submit to play another round`;
         gameState = endingRound;
         removeButton();
         break;
@@ -220,16 +240,16 @@ function playSplitRound(input) {
         dealerAI();
         gameMessage =
           `First ${displayHand(playersHands[0])}` +
-          `<br><br><b>${gameEvaluation(
+          `<br><br>${gameEvaluation(
             playersHands[0],
             dealerHand
-          )}<br><br></b>Second ${displayHand(
+          )}<br><br>Second ${displayHand(
             playersHands[1]
-          )}<br><br><b>${gameEvaluation(
+          )}<br><br>${gameEvaluation(
             playersHands[1],
             dealerHand
-          )}<br><br></b>${displayHand(dealerHand)}` +
-          `<br><br>Press submit to play another round`;
+          )}<br><br>${displayHand(dealerHand)}` +
+          `<br><br>Type in bet amount and press submit to play another round`;
         gameState = endingRound;
         removeButton();
       } else {
@@ -249,7 +269,7 @@ function playSplitRound(input) {
         playersHands[0]
       )}<br><br>Second ${displayHand(
         playersHands[1]
-      )}<br><br>${dealerFaceUp()}<br>Type "H" to Hit and "S" to Stand`;
+      )}<br><br>${dealerFaceUp()}`;
   }
 }
 
