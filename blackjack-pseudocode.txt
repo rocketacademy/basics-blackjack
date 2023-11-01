@@ -1,0 +1,193 @@
+blackjack-pseudocode
+
+2 to 10 face value
+jack, queen and king 10
+ace can either be 1 or 11
+
+There will be only two players. One human and one computer (for the Base solution).
+- The computer will always be the dealer.
+- Each player gets dealt two cards to start.
+- The player goes first, and decides if they want to hit (draw a card) or stand (end their turn).
+- The dealer has to hit if their hand is below 17.
+- Each players' score is the total of their card ranks. Jacks/Queen/Kings are 10. Aces can be 1 or 11.
+- The player who is closer to, but not above 21 wins the hand.
+
+** Remember if you want to have a different output statement, then go to another gameState ** 
+
+flow of the game
+- player draws
+- dealer draws
+- player draws
+- dealer draws
+- check if blackjack in either of the hands
+- if have, then display the cards drawn and the winner
+- else, ask player if they want to hit or stand
+- after player hits finish/chooses stand,
+- dealer to choose whether hit or stand
+- then compare the score to choose a winner
+
+* how to deal with ace? *
+
+Implement basic working version first where ace is default value of 1
+
+/*
+
+						INITIAL STATE
+- global var gameState = "INITIAL"
+- global var playerDrawsArray and dealerDrawsArray
+- global var playerScore and dealerScore
+- initialise deck
+- shuffle deck and assign it as shuffled
+- draw two cards sequentially for player and dealer
+for (var i = 0; i < 2; i++) {
+	playerDrawsArray[i] = shuffled.pop();
+	dealerDrawsArray[i] = shuffled.pop();
+} 
+- need to have a checkScore function before checkBlackjack
+var checkScore = function (drawsArray, score) {
+for (var i = 0; i < drawsArray.length; i++) {
+	score = 0; // we set it to zero because for future taking care of ace 11 or 1
+	score = score + drawsArray[i].rank;
+}
+return score;
+}
+- checkBlackjack function
+var checkBlackjack = function (playerScore, dealerScore) {
+	var blackjack = "";
+	if (playerScore == 21 && dealerScore == 21) blackjack = "Both";
+	else if (playerScore == 21) blackjack = "Player";
+	else if (dealerScore == 21) blackjack = "Dealer";
+	else blackjack = "Nil";
+	return blackjack;
+}
+- blackjackResult = checkBlackjack (playerDrawsArrays, dealerDrawsArrays);
+if bjresult = "Nil", output will need to display player's both cards, dealer's first card, player's scores, and ask whether want to hit or stand
+gameState will change to what the input is -- do user validation
+return output
+else if bjresult = "Player", output will display the player's cards and say Blackjack. Press Submit to restart
+else if bjresult = "Dealer", output will display the dealer's cards and say Blackjack. Press Submit to restart
+else if bjresult = "Both", output will display both player and dealer's cards and say tied. Press Submit to restart
+
+*/
+
+- next up, need to look at the HIT and PASS states for player first
+
+/* 
+- Realised i need to have a checkInputHitOrStand function to switch the gameState accordingly
+- This is cos i cannot switch the gameState ulssing the input within INITIAL - why? - when i press Submit without inputting anything and this would initiate INITIAL, the input is blank. So, after the output asks hit or stand and user puts their choice, we need to restart the function to check whether input is "hit" or "stand" and then switch the gameState accordingly
+
+*/
+
+/* 
+					HIT STATE
+- gameState == "HIT"
+- we want to pop a card from shuffled to the playerDrawsArray
+- how to access the last element in an array? use array.length - 1
+- code will look something like:
+var lastIndex = playerDrawsArray.length - 1
+// insert hit card in the last index of playerDrawsArray
+playerDrawsArray[lastIndex] = shuffled.pop();
+- need to recheck the scores by calling checkScore
+- output to show player their cards, the score and whether they want to hit or stand 
+
+- should add a feature that if the player score burst, then dont let them add anymore
+- will also tell player that they burst and move to STAND state
+*/
+
+/*					STAND STATE
+- actually here is where we deal with what the dealer needs to do 
+- from the rules: The dealer has to hit if their hand is below 17.
+- set this as the condition for what dealer needs to do
+while (dealerScore < 17) then dealer needs to hit. which is copy pasting the lines we used for player hitting
+- we should also declare the winner here
+player win conditions:
+- playerScore < 22 and dealerScore > 22
+- if playerScore and dealerScore < 22, then check which is bigger
+
+tie condition:
+- both scores > 22
+
+*/
+
+/* 					ACE LOGIC
+- default value 11 is correct because if we get ace in the first draw, I will want to keep it at 11
+- i will only change it to 1 when having it at 11 will bao 
+
+what are the cases that i will need to reassign ace value from 11 to 1?
+
+1. if i have ace ace in my starting hand
+2. if i have X amt of cards and having ace as 11 will cause me to burst
+
+e.g. if i draw 2 and have 15, and i draw ace, i will want to reassign ace as 1 instead of 11
+e.g. if i have ace and 4 as the starting hand and i draw 7. I will want to reassing ace as 1
+e.g. if i have ace and 4 and i draw another ace. I will want to keep one ace as 11 and another as 1
+
+after receiving the cards, check if the score is > 21.
+if it is, look thru the draws to see if ace(s) is a problem.
+
+the logic here is to help convert ace from 11 to 1 if ace is making the score > 22
+- if there is an ace in the draws, go into this code
+- while the score is > 22 i.e. burst
+find the first ace that the rank is 11,
+reassign that ace rank to 1,
+check again if score is > 22,
+if still is, then find another ace taht the rank is 11 and reassign to 1
+if no more ace, then break out
+
+if draws have ace && score > 21, - to check if ace is causing the > 21 problem
+	while score > 21 - keep looping the code to reassign ace from 11 to 1 until score < 22
+		find the index of the card that has name "ace" and rank 11 - account for multiple aces
+		reassign that ace card rank to 1
+		re-update the score
+		return the updated drawsArray
+
+need to implement this changeAceRank function:
+- after the first draw for ace ace possibility,
+- after user hits,
+
+Uncaught TypeError: Cannot set properties of undefined (setting 'rank')
+    at reassignAceValue (script.js:280:31)
+* happens if the ace value has been reassigned and i press hit again. likely because the var aceIndex = drawsArray.findIndex(
+      (card) => card.name == "ace" && card.rank == 11
+    ); code can't find aceIndex as there is no more card.rank == 11 hence undefined 
+		
+
+- then recalculate playerScore
+* amend the bao code to put >= 21 instead of >22 cos no point to take more cards if they are at 21
+
+HTML:
+
+Initial button is start,
+
+Then remove the start button and provide hit or stand only
+
+revert back to start button after completion of game
+
+putting card images for dealer next few draws works
+
+need to put the image for dealer 2nd draw only
+
+then later at stand, change the 1st draw pic from BACK to whatever was drawn
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
