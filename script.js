@@ -4,7 +4,10 @@ const startingGame = 0,
   playingSplitRound = 2,
   endingRound = 3;
 let gameState = startingGame;
-
+//Button variables
+const hitButton = buttonMaker("Hit (H)");
+const standButton = buttonMaker("Stand (S)");
+const splitButton = buttonMaker("Split (Y)");
 //Global Variables
 const deck = [];
 const dealerHand = [];
@@ -13,58 +16,7 @@ let gameMessage = "";
 let numberOfDecks = 0;
 let handCounter = 0;
 
-//Button variables
-//Hit button
-const hitButton = document.createElement("button");
-const hitButtonSpan = document.createElement("span");
-hitButtonSpan.textContent = "Hit (H)";
-hitButton.appendChild(hitButtonSpan);
-hitButton.id = "hit-button";
-hitButton.className = "button";
-//Stand button
-const standButton = document.createElement("button");
-const standButtonSpan = document.createElement("span");
-standButtonSpan.textContent = "Stand (S)";
-standButton.appendChild(standButtonSpan);
-standButton.id = "stand-button";
-standButton.className = "button";
-//Split button
-const splitButton = document.createElement("button");
-const splitButtonSpan = document.createElement("span");
-splitButtonSpan.textContent = "Split (Y)";
-splitButton.appendChild(splitButtonSpan);
-splitButton.id = "split-button";
-splitButton.className = "button";
-//Inserting elements
-function insertButton(splitEvent) {
-  if (splitEvent === 1) {
-    document.querySelector("#container").append(splitButton);
-  }
-  document.querySelector("#container").append(hitButton, standButton);
-}
-//Removing elements
-function removeButton() {
-  document.getElementById("hit-button").remove();
-  document.getElementById("stand-button").remove();
-}
-//Listen for Event function
-function detect(button, keypress) {
-  button.addEventListener("click", () => {
-    const input = keypress;
-    const result = main(input);
-    const output = document.querySelector("#output-div");
-    output.innerHTML = result;
-    input.value = "";
-  });
-  //Keydown functionality
-  document.addEventListener("keydown", (e) => {
-    if (e.key.toUpperCase() === keypress.toUpperCase()) {
-      button.click();
-    }
-  });
-}
-
-//Listen for Event
+//Listen for button click and keypress
 detect(hitButton, "H");
 detect(standButton, "S");
 detect(splitButton, "Y");
@@ -152,7 +104,7 @@ const gameEvaluation = (individualPlayerHand, dealerHand) =>
     ? `You tied!<br><img src="https://media.tenor.com/QXVs4QWLlzkAAAAC/spider-man.gif"`
     : winEvaluation(individualPlayerHand, dealerHand)
     ? `You won!<br><img src="https://media.tenor.com/M05wGouvJsgAAAAi/money-throwing.gif"/>`
-    : `You lost!<br><img src="https://media.tenor.com/YbFJ0cXy6P0AAAAi/tkthao219-capoo.gif"/>`;
+    : `You lost!<br><img src="https://media.tenor.com/hlWE3gT84GUAAAAi/tkthao219-capoo.gif"/>`;
 //Evaluate Blackjack
 const bjEvaluation = (individualPlayerHand, dealerHand) =>
   drawEvaluation(individualPlayerHand, dealerHand)
@@ -186,7 +138,7 @@ function initRound() {
       )}<br><br>${dealerFaceUp()}<br>You have a pair of ${
         playersHands[0].Name
       }s Type "Y" to Split` +
-      `<img src="https://media.tenor.com/ECW8CBXO4ToAAAAi/twist-street-split.gif"/>`;
+      `<br><img src="https://media.tenor.com/ECW8CBXO4ToAAAAi/twist-street-split.gif"/>`;
     gameState = playingRound;
   } else {
     insertButton(0);
@@ -210,10 +162,10 @@ function playNormalRound(input) {
       playersHands[1]
     )}<br><br>${dealerFaceUp()} for first hand`;
     gameState = playingSplitRound;
-    document.getElementById("split-button").remove();
+    splitButton.remove();
   } else {
-    if (document.getElementById("split-button")) {
-      document.getElementById("split-button").remove();
+    if (splitButton) {
+      splitButton.remove();
     }
     switch (input) {
       case "H":
@@ -317,6 +269,7 @@ function resetRound() {
   playersHands.length = 0;
   deck.push(...dealerHand);
   dealerHand.length = 0;
+  handCounter = 0;
 }
 
 //Fisher-Yates Shuffle, Durstenfeld variation
@@ -357,6 +310,44 @@ function initDeck() {
       }
     }
   }
+}
+
+//Button Factory
+function buttonMaker(buttonText) {
+  const button = document.createElement("button");
+  button.className = "button";
+  const buttonSpan = document.createElement("span");
+  buttonSpan.textContent = buttonText;
+  button.append(buttonSpan);
+  return button;
+}
+//Inserting elements
+function insertButton(splitEvent) {
+  if (splitEvent === 1) {
+    document.querySelector("#container").append(splitButton);
+  }
+  document.querySelector("#container").append(hitButton, standButton);
+}
+//Removing elements
+function removeButton() {
+  hitButton.remove();
+  standButton.remove();
+}
+//Listen for Event function
+function detect(button, keypress) {
+  button.addEventListener("click", () => {
+    const input = keypress;
+    const result = main(input);
+    const output = document.querySelector("#output-div");
+    output.innerHTML = result;
+    document.querySelector("#input-field").value = "";
+  });
+  //Keydown functionality
+  document.addEventListener("keydown", (e) => {
+    if (e.key.toUpperCase() === keypress.toUpperCase()) {
+      button.click();
+    }
+  });
 }
 
 //Check state of hand and deck
