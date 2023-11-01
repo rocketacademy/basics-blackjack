@@ -28,41 +28,50 @@ function main(input, myOutputValue) {
   if (playerGold <= 0) {
     betGold = null;
     gameMessage = `You are broke! Get out!<br><img src="https://media.tenor.com/sSc5Pt_FdjUAAAAC/rainbow-spongebob.gif"/>`;
-  } else if (gameState === playingRound) {
-    playNormalRound(input);
-    consoleCheck();
-  } else if (gameState === endingRound) {
-    resetRound();
-    shuffleDeck();
-    betGold =
-      Number(input) > 0 && Number(input) <= playerGold ? Number(input) : 10;
-    initRound();
-    consoleCheck();
-  } else if (gameState === playingSplitRound) {
-    playSplitRound(input);
-    consoleCheck();
-  } else if (gameState === startingGame) {
-    if (numberOfDecks === 0) {
-      numberOfDecks =
-        Number.isInteger(Number(input)) &&
-        Number(input) >= 1 &&
-        Number(input) <= 8
-          ? Number(input)
-          : 1;
-      gameMessage =
-        `You selected ${numberOfDecks} decks! Type in your bet amount and press submit to play!<br>Default is 10 gold` +
-        '<br><img src="https://media.tenor.com/aiHuleZkUYMAAAAC/poker-cards.gif"/>';
-    } else if (numberOfDecks > 0) {
-      initDeck();
-      shuffleDeck();
-      betGold =
-        Number(input) > 0 && Number(input) <= playerGold ? Number(input) : 10;
-      initRound();
-      consoleCheck();
+  } else {
+    switch (gameState) {
+      case playingRound:
+        playNormalRound(input);
+        consoleCheck();
+        break;
+      case playingSplitRound:
+        playSplitRound(input);
+        consoleCheck();
+        break;
+      case endingRound:
+        resetRound();
+        shuffleDeck();
+        betGold =
+          Number(input) > 0 && Number(input) <= playerGold ? Number(input) : 10;
+        initRound();
+        consoleCheck();
+        break;
+      case startingGame:
+        if (numberOfDecks === 0) {
+          numberOfDecks =
+            Number.isInteger(Number(input)) &&
+            Number(input) >= 1 &&
+            Number(input) <= 8
+              ? Number(input)
+              : 1;
+          gameMessage =
+            `You selected ${numberOfDecks} decks! Type in your bet amount and press submit to play!<br>Default is 10 gold` +
+            '<br><img src="https://media.tenor.com/aiHuleZkUYMAAAAC/poker-cards.gif"/>';
+        } else if (numberOfDecks > 0) {
+          initDeck();
+          shuffleDeck();
+          betGold =
+            Number(input) > 0 && Number(input) <= playerGold
+              ? Number(input)
+              : 10;
+          initRound();
+          consoleCheck();
+        }
+        break;
     }
-  } else gameMessage = "Error in main function";
-  myOutputValue = gameMessage + `<b>${displayGold()}</b>`;
-  return myOutputValue;
+    myOutputValue = gameMessage + `<b>${displayGold()}</b>`;
+    return myOutputValue;
+  }
 }
 
 //Prints first card of dealer face up
