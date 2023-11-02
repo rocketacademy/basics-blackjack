@@ -27,7 +27,7 @@ detect(splitButton, "Y");
 function main(input, myOutputValue) {
   if (playerGold <= 0) {
     betGold = null;
-    gameMessage = `You are broke! Get out!<br><img src="https://media.tenor.com/sSc5Pt_FdjUAAAAC/rainbow-spongebob.gif"/>`;
+    gameMessage = `You are broke! Get out!<br><br><img src="https://media.tenor.com/sSc5Pt_FdjUAAAAC/rainbow-spongebob.gif"/>`;
   } else {
     switch (gameState) {
       case playingRound:
@@ -55,7 +55,7 @@ function main(input, myOutputValue) {
               ? Number(input)
               : 1;
           gameMessage =
-            `You selected ${numberOfDecks} decks! Type in your bet amount and press submit to play!<br>Default is 10 gold` +
+            `You selected ${numberOfDecks} decks! Type in your bet amount and press submit to play!<br>Default is 10 gold<br>` +
             '<br><img src="https://media.tenor.com/aiHuleZkUYMAAAAC/poker-cards.gif"/>';
         } else if (numberOfDecks > 0) {
           initDeck();
@@ -69,9 +69,10 @@ function main(input, myOutputValue) {
         }
         break;
     }
-    myOutputValue = gameMessage + `<b>${displayGold()}</b>`;
-    return myOutputValue;
   }
+  myOutputValue =
+    gameMessage + `<b style="font-weight:600;">${displayGold()}</b>`;
+  return myOutputValue;
 }
 
 //Prints first card of dealer face up

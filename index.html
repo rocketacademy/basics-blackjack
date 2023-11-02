@@ -36,6 +36,8 @@
 
       body {
         font-family: "Inter", "Noto Color Emoji", sans-serif;
+        font-weight: 300;
+        letter-spacing: -0.18px;
         margin-left: 30px;
         margin-right: 30px;
         background-color: #1f2a25;
@@ -54,6 +56,8 @@
       .header {
         text-align: center;
         font-size: 1.1rem;
+        font-weight: 800;
+        letter-spacing: -0.014em;
         margin-bottom: 3rem;
       }
 
@@ -69,9 +73,14 @@
         text-align: center;
         font-style: oblique;
         font-optical-sizing: auto;
-        font-size: 18px;
-        letter-spacing: -0.26px;
+        font-size: 19px;
+        letter-spacing: -0.3px;
+        font-weight: 500;
         color: #ebf6f7;
+      }
+      .rules > :first-child {
+        font-size: 21px;
+        letter-spacing: -0.37px;
       }
 
       input {
@@ -84,7 +93,8 @@
 
       button {
         font-family: "Inter", sans-serif;
-        font-size: 21px;
+        font-size: 20px;
+        letter-spacing: -0.33px;
         line-height: 33px;
         margin: 0 0 23px 0;
         padding: 0 6px;
@@ -98,6 +108,8 @@
         color: #e5e4e2;
         text-align: center;
         font-size: 21px;
+        letter-spacing: -0.37px;
+        font-weight: 500;
         padding: 18px;
         width: 169px;
         transition: all 0.69s;
@@ -130,6 +142,9 @@
         right: 0;
       }
       #output-div {
+        font-size: 17px;
+        font-weight: 400;
+        letter-spacing: -0.22px;
         background-color: #475c89;
         margin: 20px auto;
         padding: 20px;
@@ -138,7 +153,7 @@
       }
 
       .logo-img {
-        height: 49px;
+        height: 60px;
         position: relative;
         top: 22px;
       }
@@ -146,7 +161,8 @@
       /* increase header font size on wider screens */
       @media screen and (min-width: 600px) {
         .header {
-          font-size: 2rem;
+          font-size: 2.5rem;
+          letter-spacing: -0.022em;
         }
       }
     </style>
