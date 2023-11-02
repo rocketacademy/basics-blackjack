@@ -24,7 +24,7 @@ detect(standButton, "S");
 detect(splitButton, "Y");
 
 //Main function
-function main(input, myOutputValue) {
+function main(input) {
   if (playerGold <= 0) {
     betGold = null;
     gameMessage = `You are broke! Get out!<br><br><img src="https://media.tenor.com/sSc5Pt_FdjUAAAAC/rainbow-spongebob.gif"/>`;
@@ -70,7 +70,7 @@ function main(input, myOutputValue) {
         break;
     }
   }
-  myOutputValue =
+  let myOutputValue =
     gameMessage + `<b style="font-weight:600;">${displayGold()}</b>`;
   return myOutputValue;
 }
