@@ -36,23 +36,41 @@ var main = function (input) {
   }
   // INITIAL gameState
   if (gameState == "INITIAL") {
+    //re-enable hit and stand buttons if the user baos
+    var hitBtn = document.getElementById("hit-button");
+    var standBtn = document.getElementById("stand-button");
+    hitBtn.disabled = false;
+    standBtn.disabled = false;
+    // need to wipe the slate clean for dealer-cards and player-cards
+    document.getElementById("dealer-cards").innerHTML = "";
+    document.getElementById("player-cards").innerHTML = "";
+    // create a image element to add the hidden card everytime INITIAL is called
+    var hiddenImage = document.createElement("img");
+    // then add the id and src
+    hiddenImage.id = "hidden";
+    hiddenImage.src = "./cards/BACK.png";
+    // append it in the dealer-cards div
+    document.getElementById("dealer-cards").append(hiddenImage);
+    // change ah-chow src back to original one
+    document.getElementById("ah-chow").src =
+      "https://media.tenor.com/EX6You2MNyUAAAAC/chowyunfat-godofgamblers.gif";
     // "refresh" the player and dealer draws everytime we start a new game
     playerDrawsArray = [];
     dealerDrawsArray = [];
     // var aceDeck = [
     //   {
-    //     name: "ace",
-    //     suit: "hearts",
+    //     name: "A",
+    //     suit: "H",
     //     rank: 11,
     //   },
     //   {
-    //     name: "ace",
-    //     suit: "spades",
+    //     name: "A",
+    //     suit: "S",
     //     rank: 11,
     //   },
     //   {
-    //     name: "ace",
-    //     suit: "hearts",
+    //     name: "A",
+    //     suit: "C",
     //     rank: 11,
     //   },
     // ];
@@ -61,7 +79,25 @@ var main = function (input) {
     for (var i = 0; i < 2; i++) {
       playerDrawsArray[i] = shuffled.pop();
       dealerDrawsArray[i] = shuffled.pop();
+      // PLAYER: can show both card images
+      var cardImg = document.createElement("img");
+      cardImg.src =
+        "./cards/" +
+        playerDrawsArray[i].name +
+        "-" +
+        playerDrawsArray[i].suit +
+        ".png";
+      document.getElementById("player-cards").append(cardImg);
     }
+    // DEALER: only showing the card image for the 2nd drawn card and keeping BACK image for the first drawn card. We will show the first drawn card in STAY
+    var cardImg = document.createElement("img");
+    cardImg.src =
+      "./cards/" +
+      dealerDrawsArray[1].name +
+      "-" +
+      dealerDrawsArray[1].suit +
+      ".png";
+    document.getElementById("dealer-cards").append(cardImg);
     // // for ace testing purposes
     // playerDrawsArray[0] = aceDeck[0];
     // playerDrawsArray[1] = aceDeck[1];
@@ -83,28 +119,31 @@ var main = function (input) {
     }
     var blackjackResult = checkBlackjack(playerScore, dealerScore);
     if (blackjackResult == "Nil") {
-      output = `Player drew ${playerDrawsArray[0].name} and ${playerDrawsArray[1].name}. <br> Score is ${playerScore} <br><br>
-    Dealer drew ${dealerDrawsArray[0].name} and ${dealerDrawsArray[1].name}. Score is ${dealerScore} <br><br>
-    Please input whether you'd like to hit or stand`;
+      output = `<br>
+    Player Score is ${playerScore}. Hit or Stand?`;
     } else if (blackjackResult == "Player")
-      output = `Player drew ${playerDrawsArray[0].name} and ${playerDrawsArray[1].name}. Player blackjack!`;
+      output = `Player drew ${playerDrawsArray[0].name} and ${playerDrawsArray[1].name}. Player BAN LAK! Press GO to play again!`;
     else if (blackjackResult == "Dealer")
-      output = `Dealer drew ${dealerDrawsArray[0].name} and ${dealerDrawsArray[1].name}. Dealer blackjack!`;
+      output = `Dealer drew ${dealerDrawsArray[0].name} and ${dealerDrawsArray[1].name}. Dealer BAN LAK! YOU DIE! Press GO to play again!`;
     else if (blackjackResult == "Both")
-      output = `Player drew ${playerDrawsArray[0].name} and ${playerDrawsArray[1].name}. <br><br>Dealer drew ${dealerDrawsArray[0].name} and ${dealerDrawsArray[1].name}. <br><br> Tie!`;
+      output = `BOTH BAN LAK! Tie! Press GO to play again!`;
   }
   // HIT gameState
   else if (gameState == "HIT") {
     var playerArrayIndexNewDraw = checkIndexForNewDraw(playerDrawsArray);
     // add the drawn card to the last index of playerDrawsArray
     playerDrawsArray[playerArrayIndexNewDraw] = shuffled.pop();
+    var cardImg = document.createElement("img");
+    cardImg.src =
+      "./cards/" +
+      playerDrawsArray[playerArrayIndexNewDraw].name +
+      "-" +
+      playerDrawsArray[playerArrayIndexNewDraw].suit +
+      ".png";
+    document.getElementById("player-cards").append(cardImg);
     // recheck the score
     playerScore = checkScore(playerDrawsArray, playerScore);
     // After hitting, if playerScore burst AND there is an ace, we need to reassign ace
-    console.log(
-      "Is ace in draw and score > 21? " +
-        checkIfAceInDrawAndScoreBurst(playerDrawsArray, playerScore)
-    );
     if (checkIfAceInDrawAndScoreBurst(playerDrawsArray, playerScore)) {
       playerDrawsArray = reassignAceValue(playerDrawsArray, playerScore);
       // update the score after the reassignment
@@ -112,26 +151,17 @@ var main = function (input) {
     }
     // condition that if playerScore burst, then dont let them hit or stand already
     if (playerScore > 21) {
-      output =
-        `Player has drawn: ` +
-        outputStatementForCardsDrawn(
-          playerDrawsArray,
-          playerArrayIndexNewDraw,
-          output
-        ) +
-        `Player's score is now ${playerScore}. You have BAO and will now stand. Press Submit to see results`;
+      output = `<br>Player's score is now ${playerScore}. You have BAO and will now stand. Press GO to see results`;
       gameState = "STAND";
+      // disable hit and stand buttons
+      var hitBtn = document.getElementById("hit-button");
+      var standBtn = document.getElementById("stand-button");
+      hitBtn.disabled = true;
+      standBtn.disabled = true;
     }
     // if playerScore within boundaries, go to this code
     else {
-      output =
-        `Player has drawn: ` +
-        outputStatementForCardsDrawn(
-          playerDrawsArray,
-          playerArrayIndexNewDraw,
-          output
-        ) +
-        `Player's score is now ${playerScore}. Please input whether you'd like to hit or stand`;
+      output = `<br>Player's score is now ${playerScore}. Hit or Stand?`;
     }
   }
   // STAND gameState
@@ -139,6 +169,14 @@ var main = function (input) {
     while (dealerScore < 17) {
       var dealerArrayIndexNewDraw = checkIndexForNewDraw(dealerDrawsArray);
       dealerDrawsArray[dealerArrayIndexNewDraw] = shuffled.pop();
+      var cardImg = document.createElement("img");
+      cardImg.src =
+        "./cards/" +
+        dealerDrawsArray[dealerArrayIndexNewDraw].name +
+        "-" +
+        dealerDrawsArray[dealerArrayIndexNewDraw].suit +
+        ".png";
+      document.getElementById("dealer-cards").append(cardImg);
       // recheck the score
       dealerScore = checkScore(dealerDrawsArray, dealerScore);
       // input the ace logic in the while loop. Cos this will ensure that the draw and score gets updated to properly reflect the correct score
@@ -148,22 +186,20 @@ var main = function (input) {
         dealerScore = checkScore(dealerDrawsArray, dealerScore);
       }
     }
+    // after dealer has finished drawing, open the BACK card by re-assigning the hidden ID in the html file to the first card name
+    document.getElementById("hidden").src =
+      "./cards/" +
+      dealerDrawsArray[0].name +
+      "-" +
+      dealerDrawsArray[0].suit +
+      ".png";
     result = checkResult(playerScore, dealerScore);
-    output =
-      `Player has drawn: ` +
-      outputStatementForCardsDrawn(
-        playerDrawsArray,
-        playerArrayIndexNewDraw,
-        output
-      ) +
-      `<br><br>Dealer has drawn: ` +
-      outputStatementForCardsDrawn(
-        dealerDrawsArray,
-        dealerArrayIndexNewDraw,
-        output
-      ) +
-      `<br><br>
-      Based on Player's score of ${playerScore} and Dealer's score of ${dealerScore}, result is ${result}! Press Submit to play again`;
+    output = `Ah Chow's score ${dealerScore}<br>Player's score ${playerScore}<br>Result is ${result}! Press GO to play again`;
+    // disable hit and stand buttons
+    var hitBtn = document.getElementById("hit-button");
+    var standBtn = document.getElementById("stand-button");
+    hitBtn.disabled = true;
+    standBtn.disabled = true;
     gameState = "INITIAL";
   }
   return output;
@@ -177,7 +213,7 @@ var makeDeck = function () {
   var createdDeck = [];
 
   // create an array to store the suits
-  var suits = ["spades", "hearts", "clubs", "diamonds"];
+  var suits = ["S", "H", "C", "D"];
 
   for (var i = 0; i < suits.length; i++) {
     // for each suit, create the name and rank of the card
@@ -188,10 +224,10 @@ var makeDeck = function () {
     var lastRank = 13;
     for (var currentRank = 1; currentRank <= lastRank; currentRank++) {
       var cardName = currentRank;
-      if (currentRank == 1) cardName = "ace";
-      else if (currentRank == 11) cardName = "jack";
-      else if (currentRank == 12) cardName = "queen";
-      else if (currentRank == 13) cardName = "king";
+      if (currentRank == 1) cardName = "A";
+      else if (currentRank == 11) cardName = "J";
+      else if (currentRank == 12) cardName = "Q";
+      else if (currentRank == 13) cardName = "K";
       var currentCard = {
         name: cardName,
         suit: currentSuit,
@@ -199,13 +235,13 @@ var makeDeck = function () {
       };
       // additional line to convert J Q K rank to 10
       if (
-        currentCard.name == "jack" ||
-        currentCard.name == "queen" ||
-        currentCard.name == "king"
+        currentCard.name == "J" ||
+        currentCard.name == "Q" ||
+        currentCard.name == "K"
       )
         currentCard.rank = 10;
       // make ace default value 11
-      if (currentCard.name == "ace") currentCard.rank = 11;
+      if (currentCard.name == "A") currentCard.rank = 11;
       createdDeck.push(currentCard);
     }
   }
@@ -279,15 +315,23 @@ var outputStatementForCardsDrawn = function (
 var checkResult = function (playerScoreParameter, dealerScoreParameter) {
   var result = "";
   // Case 1 if player < 22 and dealer > 21 i.e. dealer bao
-  if (playerScoreParameter < 22 && dealerScoreParameter > 21)
+  if (playerScoreParameter < 22 && dealerScoreParameter > 21) {
+    // change the ah-chow element to the losing gif
+    document.getElementById("ah-chow").src =
+      "https://media.tenor.com/1B3KuSRuHRsAAAAC/embarrassing-fail.gif";
     result = "Player wins";
+  }
   // Case 2 if dealer < 22 and player > 21 i.e. player bao
   else if (dealerScoreParameter < 22 && playerScoreParameter > 21)
     result = "Dealer wins";
   // Case 3 if both scores are < 22 i.e. never bao, go into another logic to check who is highest
   else if (playerScoreParameter < 22 && dealerScoreParameter < 22) {
-    if (playerScoreParameter > dealerScoreParameter) result = "Player wins";
-    else if (dealerScoreParameter > playerScoreParameter)
+    if (playerScoreParameter > dealerScoreParameter) {
+      // change the ah-chow element to the losing gif
+      document.getElementById("ah-chow").src =
+        "https://media.tenor.com/1B3KuSRuHRsAAAAC/embarrassing-fail.gif";
+      result = "Player wins";
+    } else if (dealerScoreParameter > playerScoreParameter)
       result = "Dealer wins";
     else result = "Tie";
   }
@@ -299,34 +343,24 @@ var checkResult = function (playerScoreParameter, dealerScoreParameter) {
 
 // if there is ace in the draw and the score is > 21, this function will help to reassign the ace value from 11 to 1 and return the respective drawsArray
 function reassignAceValue(drawsArray, score) {
-  console.log("Starting reassignmenet of ace");
   var validAceIndex = drawsArray.findIndex(
-    (card) => card.name == "ace" && card.rank == 11
+    (card) => card.name == "A" && card.rank == 11
   );
-  console.log("validAceIndex " + validAceIndex);
   // if there is no ace with rank 11, then don't even bother to reassign cos will be undefined. If findIndex can't find an ace with rank 11, it will return -1. Then we will just return drawsArray without any reassignment
   if (validAceIndex == -1) {
-    console.log("No valid ace index");
     return drawsArray;
   }
   // else if validAceIndex != -1, then we carry on with the reassignment
   else if (validAceIndex != -1) {
-    console.log("Have valid ace index");
-
     while (score > 21) {
-      console.log("Starting while loop");
-
       // finds the index of the ace with rank 11 in the drawsArray. This helps to assign the right number of aces in the event of multiple aces
       var validAceIndex = drawsArray.findIndex(
-        (card) => card.name == "ace" && card.rank == 11
+        (card) => card.name == "A" && card.rank == 11
       );
-      console.log("Ace index " + validAceIndex);
       // reassign this ace card's rank value from 11 to 1
       drawsArray[validAceIndex].rank = 1;
-      console.log("Reassigned ace rank " + drawsArray[validAceIndex].rank);
       // recheck the score
       score = checkScore(drawsArray, score);
-      console.log("Updated score" + score);
     }
     // return the new drawsArray once completed
     return drawsArray;
@@ -334,5 +368,5 @@ function reassignAceValue(drawsArray, score) {
 }
 
 function checkIfAceInDrawAndScoreBurst(drawsArray, score) {
-  return drawsArray.some((card) => card.name == "ace") && score > 21;
+  return drawsArray.some((card) => card.name == "A") && score > 21;
 }
