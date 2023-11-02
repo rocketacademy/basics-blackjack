@@ -70,7 +70,7 @@ function main(input) {
         break;
     }
   }
-  let myOutputValue =
+  const myOutputValue =
     gameMessage + `<b style="font-weight:600;">${displayGold()}</b>`;
   return myOutputValue;
 }
