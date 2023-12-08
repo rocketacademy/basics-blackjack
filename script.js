@@ -26,6 +26,7 @@ The game either ends or continues.
 
 var CARDS_TAKEN = 0;
 var NUM_OF_PLAYER = 2;
+var PLAYER_DRAW
 
 // deck algorithm
 var makeDeck = function () {
@@ -161,5 +162,19 @@ var playersDraw = function (input) {
     player = {player : playerInGame, drawn: playerCard()} 
     playerResult.push(player)
   }
+  PLAYER_DRAW = playerResult;
   return playerResult;
 };
+
+var getDealerDraw = function(){
+  var draw = PLAYER_DRAW, dealersDraw,  i = 0;
+  console.log(draw)
+  while(i <= draw.length){ 
+    console.log(draw[i])
+    if(draw[i].player == 2){
+      dealersDraw = draw
+      i += 1
+      return dealersDraw
+    }
+  }
+}
