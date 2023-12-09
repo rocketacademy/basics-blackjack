@@ -167,14 +167,41 @@ var playersDraw = function (input) {
 };
 
 var getDealerDraw = function(){
-  var draw = PLAYER_DRAW, dealersDraw,  i = 0;
-  console.log(draw)
-  while(i <= draw.length){ 
-    console.log(draw[i])
+  var draw = PLAYER_DRAW, dealersDraw = [],  i = 0;
+  for(i=1;i < NUM_OF_PLAYER *2; i++){
     if(draw[i].player == 2){
-      dealersDraw = draw
-      i += 1
-      return dealersDraw
+      dealersDraw.push(draw[i])
     }
   }
+  return dealersDraw;
+}
+// need to also return player id here. 
+var getPlayerDraw = function(){
+  var draw = PLAYER_DRAW, playersDraw = [],  i = 0;
+  for(i=0;i < NUM_OF_PLAYER *2; i++){
+    if(draw[i].player != 2){
+      playersDraw.push(draw[i])
+    }
+  }
+  return playersDraw;
+}
+
+var getResult = function(){
+  // player draw cards
+  playersDraw()
+  //get dealers draw card
+  var dealerDraw = getDealerDraw()
+  //get players draw card
+  var playerDraw = getPlayerDraw()
+  //get dealer and player value
+  var dealerValue = [dealerDraw[0].drawn.value, dealerDraw[1].drawn.value] 
+  var dealerSuit = [dealerDraw[0].drawn.card, dealerDraw[1].drawn.card] 
+  //
+  var playerValue = [playerDraw[0].drawn.value, playerDraw[1].drawn.value]
+  var playerSuit = [playerDraw[0].drawn.card, playerDraw[1].drawn.card]
+  //
+  console.log(dealerValue)
+  console.log(dealerSuit)
+  console.log(playerValue)
+  console.log(playerSuit)
 }
