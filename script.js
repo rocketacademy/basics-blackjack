@@ -25,10 +25,11 @@ The game either ends or continues.
 */
 
 var CARDS_TAKEN = 0;
-var NUM_OF_PLAYER = 2;
+var NUM_OF_PLAYER = 3;
 var PLAYER_DRAW
 var CARDS_DRAW_DROM_DECK = []
-var DECK
+var DEALER_DRAW = []
+var PLAYER_DRAW = []
 
 // deck algorithm
 var makeDeck = function () {
@@ -63,15 +64,11 @@ var makeDeck = function () {
       }
 
       // Create a new card with the current name, suit, and rank
-      var card = {
-        name: cardName,
-        suit: currentSuit,
-        rank: rankCounter,
-        player: ""
+      var cards = {player : "", card: {name: cardName,suit: currentSuit,rank: rankCounter}
       };
 
       // Add the new card to the deck
-      cardDeck.push(card);
+      cardDeck.push(cards);
 
       // Increment rankCounter to iterate over the next rank
       rankCounter += 1;
@@ -129,89 +126,90 @@ var stand = function(){
   return NaN
 }
 
-// i need a way to process a card drawn let function "play" go first
-// 
-// var playerCard = function(){
-//   var val_cards = drawCard(), value
-//   console.log(val_cards)
-//   //by default
-//   value = val_cards.rank;
-//   //unless
-//   // if card drawn == ace
-//   if (val_cards.rank == 1){
-//     value = 11;
-//   }
-//   // if card drawn == face
-//   if(val_cards.rank > 10){
-//     value = 10;
-//   }
-//   //return value
-//   return {'value': value, 'card': val_cards.suit};
-// }
 
-//dealer block
-/*
-The dealer has to hit if their hand is below 17.
-*/
+function evaluateCards(name){
+  // var suits = ['jack', 'queen', 'king'];
+  if(name == 'jack' || name == 'queen' || name == 'king'){
+    return 10;
+  }
+  else if(name == 'ace'){
+    return 11;
+  }
+  else{
+    return name;
+  }
+}
+
+function alternate(num01, num02){
+  if(num01 == num02 ){
+    num01 = 0
+    return num01
+  } 
+  else {
+    return num01
+  }
+}
 
 var playersDraw = function (input) {
-  var playerCounter = 0, playerResult = [], initalCardsDrawn = NUM_OF_PLAYER * 2, playerInGame = 0, player = {}, draw2Cards;
-  while(playerCounter != initalCardsDrawn){
-    // player draws 2 cards here
-    // let it be that the last in the array is the dealers draw
-    playerInGame += 1
-    // get the distribution order or player 1 player 2 player 1 player 2 
-    if(playerInGame > NUM_OF_PLAYER){
-      playerInGame = 1
-    }
-    //console.log(playerInGame)
-    draw2Cards = drawCard()
-    draw2Cards[0].player = playerInGame
-    console.table(draw2Cards)
-    //player = {player : playerInGame, drawn: drawCard()} 
-    playerResult.push(draw2Cards)
-    playerCounter += 1
+  //local var
+  var draw01 = [], player = 0, dealerIndex = [], playerIndex = [], playerArray = [], playerTotal = 0;
+  //player draw
+  for(i = 0; i < NUM_OF_PLAYER * 2; i++){
+    for(j = 0; j < 1; j++){
+      draw01.push(drawCard())
+      console.log(i)
+      player += 1
+      if(player == NUM_OF_PLAYER + 1){
+        player = 1  
+      }
+      draw01[i][0].player = player 
+      // 
+      if(draw01[i][0].player == NUM_OF_PLAYER){
+        draw01[i][0].player = 'dealer'  
+      }
+        // PLAYER_DRAW.push({total : 0, first: draw01[player - 1], second: draw01[(player * 2) - 1]})
+      // console.log(draw01)
+      // console.log(draw01.length) 
+    }  
   }
-  PLAYER_DRAW = playerResult;
-  return playerResult;
-};
+  for(i = 0; i < draw01.length; i++){
+    if(draw01[i][0].player == 'dealer' ){
+      console.log("Dealer Index: " + draw01.indexOf(draw01[i]))
+      dealerIndex.push(draw01.indexOf(draw01[i]))    
+    }
+    else{
+      console.log("Player Index: " + draw01.indexOf(draw01[i]))
+      playerIndex.push(draw01.indexOf(draw01[i]))    
+    }
+  }
+  // console.log(dealerIndex)
+  // console.log(playerIndex)
+  // console.log(draw01)
+  var total = evaluateCards(draw01[dealerIndex[0]][0].card.name) + evaluateCards(draw01[dealerIndex[1]][0].card.name) 
+  DEALER_DRAW.push({total : total, first: draw01[dealerIndex[0]], second: draw01[dealerIndex[1]]})
+  players = NUM_OF_PLAYER -1
+  for(i = 0; i < playerIndex.length / 2; i++){
+    playerTotal = evaluateCards(draw01[playerIndex[i]][0].card.name) + evaluateCards(draw01[playerIndex[i + players]][0].card.name)
+    console.log(i)
+    console.log(playerTotal)
+    //i have to put this in a player : "", index: []
+    PLAYER_DRAW.push({total : playerTotal, first: draw01[playerIndex[i]], second: draw01[playerIndex[i + players]]})
+  }
+}
 
-var getDealerDraw = function(){
-  var draw = PLAYER_DRAW,  dealerDraw = [], i = 0;
-  for(i=1;i < NUM_OF_PLAYER *2; i++){
-    if(draw[i].player == NUM_OF_PLAYER){
-      draw[i].player = 'dealer'
-      dealerDraw.push(draw[i]);
-    }
-  }
-  return dealerDraw;
-}
-// need to also return player id here. 
-var getPlayerDraw = function(){
-  var draw = PLAYER_DRAW, playerDraw = [],  i = 0;
-  for(i=0;i < NUM_OF_PLAYER *2; i++){
-    if(draw[i].player != 'dealer'){
-      //playerDraw.push(draw[i])
-      playerDraw.push(draw[i]);
-    }
-  }
-  return playerDraw;
-}
 
 var getResult = function(){
-  // local var
-  var playerValue = 0, active_players = []
-  // player draw cards
+  //local var
+  var playerResult;
+  // initiate draw
   playersDraw()
-  //get dealers draw card
-  var dealerDraw = getDealerDraw()
-  //get players draw card
-  var playerDraw = getPlayerDraw()
-
-  console.log('Dealers result: ')
-  console.table(dealerDraw)
-  console.log('Player result:')
-  console.table(playerDraw)
-
-return 'end of getResult'
+  // 
+  for(i = 0; i < PLAYER_DRAW.length; i++){
+    // console.log(PLAYER_DRAW[i])
+    // traverse to player total
+    playerResult = PLAYER_DRAW[i].total
+    console.log(playerResult) 
+    // traverse to dealer total
+    // dealer will always be at [0] since its the same "player"
+  }
 }
