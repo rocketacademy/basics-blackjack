@@ -27,6 +27,8 @@ The game either ends or continues.
 var CARDS_TAKEN = 0;
 var NUM_OF_PLAYER = 2;
 var PLAYER_DRAW
+var CARDS_DRAW_DROM_DECK = []
+var DECK
 
 // deck algorithm
 var makeDeck = function () {
@@ -65,6 +67,7 @@ var makeDeck = function () {
         name: cardName,
         suit: currentSuit,
         rank: rankCounter,
+        player: ""
       };
 
       // Add the new card to the deck
@@ -94,7 +97,11 @@ var shuffledDeck = function(){
 //draw card. draw from the top array CARDS_TAKEN + 1 // i have to find a way to get alternating cards
 var drawCard = function(){
   CARDS_TAKEN += 1
-  return shuffledDeck()[CARDS_TAKEN];
+  shuffle = shuffledDeck()
+  draw = shuffle.splice(0, 1)
+  DECK = shuffle
+  CARDS_DRAW_DROM_DECK.push(draw)
+  return draw;
 }
 
 //player block
@@ -124,23 +131,23 @@ var stand = function(){
 
 // i need a way to process a card drawn let function "play" go first
 // 
-var playerCard = function(){
-  var val_cards = drawCard(), value
-  console.log(val_cards)
-  //by default
-  value = val_cards.rank;
-  //unless
-  // if card drawn == ace
-  if (val_cards.rank == 1){
-    value = 11;
-  }
-  // if card drawn == face
-  if(val_cards.rank > 10){
-    value = 10;
-  }
-  //return value
-  return {'value': value, 'card': val_cards.suit};
-}
+// var playerCard = function(){
+//   var val_cards = drawCard(), value
+//   console.log(val_cards)
+//   //by default
+//   value = val_cards.rank;
+//   //unless
+//   // if card drawn == ace
+//   if (val_cards.rank == 1){
+//     value = 11;
+//   }
+//   // if card drawn == face
+//   if(val_cards.rank > 10){
+//     value = 10;
+//   }
+//   //return value
+//   return {'value': value, 'card': val_cards.suit};
+// }
 
 //dealer block
 /*
@@ -148,60 +155,63 @@ The dealer has to hit if their hand is below 17.
 */
 
 var playersDraw = function (input) {
-  var playerCounter = 0, playerResult = [], initalCardsDrawn = NUM_OF_PLAYER * 2, playerInGame = 0, player = {};
+  var playerCounter = 0, playerResult = [], initalCardsDrawn = NUM_OF_PLAYER * 2, playerInGame = 0, player = {}, draw2Cards;
   while(playerCounter != initalCardsDrawn){
     // player draws 2 cards here
     // let it be that the last in the array is the dealers draw
-    playerCounter += 1
     playerInGame += 1
     // get the distribution order or player 1 player 2 player 1 player 2 
     if(playerInGame > NUM_OF_PLAYER){
       playerInGame = 1
     }
-    console.log(playerInGame)
-    player = {player : playerInGame, drawn: playerCard()} 
-    playerResult.push(player)
+    //console.log(playerInGame)
+    draw2Cards = drawCard()
+    draw2Cards[0].player = playerInGame
+    console.table(draw2Cards)
+    //player = {player : playerInGame, drawn: drawCard()} 
+    playerResult.push(draw2Cards)
+    playerCounter += 1
   }
   PLAYER_DRAW = playerResult;
   return playerResult;
 };
 
 var getDealerDraw = function(){
-  var draw = PLAYER_DRAW, dealersDraw = [],  i = 0;
+  var draw = PLAYER_DRAW,  dealerDraw = [], i = 0;
   for(i=1;i < NUM_OF_PLAYER *2; i++){
-    if(draw[i].player == 2){
-      dealersDraw.push(draw[i])
+    if(draw[i].player == NUM_OF_PLAYER){
+      draw[i].player = 'dealer'
+      dealerDraw.push(draw[i]);
     }
   }
-  return dealersDraw;
+  return dealerDraw;
 }
 // need to also return player id here. 
 var getPlayerDraw = function(){
-  var draw = PLAYER_DRAW, playersDraw = [],  i = 0;
+  var draw = PLAYER_DRAW, playerDraw = [],  i = 0;
   for(i=0;i < NUM_OF_PLAYER *2; i++){
-    if(draw[i].player != 2){
-      playersDraw.push(draw[i])
+    if(draw[i].player != 'dealer'){
+      //playerDraw.push(draw[i])
+      playerDraw.push(draw[i]);
     }
   }
-  return playersDraw;
+  return playerDraw;
 }
 
 var getResult = function(){
+  // local var
+  var playerValue = 0, active_players = []
   // player draw cards
   playersDraw()
   //get dealers draw card
   var dealerDraw = getDealerDraw()
   //get players draw card
   var playerDraw = getPlayerDraw()
-  //get dealer and player value
-  var dealerValue = [dealerDraw[0].drawn.value, dealerDraw[1].drawn.value] 
-  var dealerSuit = [dealerDraw[0].drawn.card, dealerDraw[1].drawn.card] 
-  //
-  var playerValue = [playerDraw[0].drawn.value, playerDraw[1].drawn.value]
-  var playerSuit = [playerDraw[0].drawn.card, playerDraw[1].drawn.card]
-  //
-  console.log(dealerValue)
-  console.log(dealerSuit)
-  console.log(playerValue)
-  console.log(playerSuit)
+
+  console.log('Dealers result: ')
+  console.table(dealerDraw)
+  console.log('Player result:')
+  console.table(playerDraw)
+
+return 'end of getResult'
 }
