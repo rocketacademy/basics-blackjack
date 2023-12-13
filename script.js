@@ -21,6 +21,13 @@ The computer decides to hit or stand automatically based on game rules.
 The game either ends or continues.
 */
 var deck = makeDeck();
+var playerHandArr = [];
+var dealerHandsArr = [];
+
+let isPlayerBlackJack = false;
+let isPlayerBusted = false;
+let isDealerBlackJack = false;
+let isDealerBusted = false;
 
 function makeDeck() {
   var cardDeck = [];
@@ -90,7 +97,7 @@ function printHands(cardInHandsArr) {
   }
   return outputString;
 }
-function sumInHands(cardInHandsArr) {
+function sumInHandsPlayer(cardInHandsArr) {
   let sum = 0;
   let numOfAces = 0;
   for (let i = 0; i < cardInHandsArr.length; i++) {
@@ -100,8 +107,8 @@ function sumInHands(cardInHandsArr) {
       numOfAces += 1;
       sum += 10;
     }
-    console.log("test");
-    console.log("card rank:", cardInHandsArr[i].rank);
+    // console.log("test");
+    // console.log("card rank:", cardInHandsArr[i].rank);
     sum += cardInHandsArr[i].rank;
   }
   if (sum > 21 && numOfAces > 0) {
@@ -112,23 +119,143 @@ function sumInHands(cardInHandsArr) {
       }
     }
   }
-
+  if (sum == 21) {
+    isPlayerBlackJack = true;
+  }
+  if (sum > 21) {
+    isPlayerBusted = true;
+  }
   return sum;
 }
-var main = function (input) {
-  if (!input) {
-    let shuffledDeck = shuffleCards(deck);
+function sumInHandsDealer(cardInHandsArr) {
+  let sum = 0;
+  let numOfAces = 0;
+  for (let i = 0; i < cardInHandsArr.length; i++) {
+    if (cardInHandsArr[i].rank == 1) {
+      console.log("test ace");
 
-    let playerStartHandsArr = startingHands(shuffledDeck);
-    // console.table(playerStartHandsArr);
-    let dealerStartHandsArr = startingHands(shuffledDeck);
-    let playerHandTotal = sumInHands(playerStartHandsArr);
-    let dealerHandTotal = sumInHands(dealerStartHandsArr);
+      numOfAces += 1;
+      sum += 10;
+    }
+    // console.log("test");
+    // console.log("card rank:", cardInHandsArr[i].rank);
+    sum += cardInHandsArr[i].rank;
+  }
+  if (sum > 21 && numOfAces > 0) {
+    for (let i = 0; i < numOfAces.length; i++) {
+      sum -= 9;
+      if (sum <= 21) {
+        break;
+      }
+    }
+  }
+  if (sum == 21) {
+    isDealerBlackJack = true;
+  }
+  if (sum > 21) {
+    isDealerBusted = true;
+  }
+  return sum;
+}
+//  Dealer hands are: <br> ${printHands(dealerHandsArr)}
+//             Dealer hand totals to: ${dealerHandTotal}
 
-    return `Your hands are:<br> ${printHands(playerStartHandsArr)}
+function resultDisplay(playerHandTotal) {
+  if (isPlayerBlackJack && !isDealerBlackJack) {
+    return `Your hands are:<br> ${printHands(playerHandArr)}
+            Your hand totals to: ${playerHandTotal}
+            <br><br>
+            Dealer hands are: <br> ${printHands(dealerHandsArr)}
+            Dealer hand totals to: ${dealerHandTotal}
+            <br><br>
+            Black Jack! You won the game!`;
+  } else if (isPlayerBusted) {
+    return `Your hands are:<br> ${printHands(playerHandArr)}
+            Your hand totals to: ${playerHandTotal}
+            <br><br>
+            
+            You have busted the game! You lose!`;
+  } else if (isPlayerBlackJack && isDealerBlackJack) {
+    return `Your hands are:<br> ${printHands(playerHandArr)}
+            Your hand totals to: ${playerHandTotal}
+            <br><br>
+            Dealer hands are: <br> ${printHands(dealerHandsArr)}
+            Dealer hand totals to: ${dealerHandTotal}
+            <br><br>
+            It's a tie`;
+  }
+  return ` Your hands are:<br> ${printHands(playerHandArr)}
             Your hand totals to: ${playerHandTotal}
           <br><br>
-          Dealer hands are: <br> ${printHands(dealerStartHandsArr)}
-            Dealer hand totals to: ${dealerHandTotal}`;
+          Enter "hit" to deal another card<br><br>
+          Enter "stand" to end your turn`;
+}
+function resultDisplayStand(playerHandTotal, dealerHandTotal) {
+  if (isDealerBlackJack && !isPlayerBlackJack) {
+    return `Your hands are:<br> ${printHands(playerHandArr)}
+            Your hand totals to: ${playerHandTotal}
+            <br><br>
+            Dealer hands are: <br> ${printHands(dealerHandsArr)}
+            Dealer hand totals to: ${dealerHandTotal}
+            <br><br>
+            You lose the game`;
+  } else if (playerHandTotal > dealerHandTotal && playerHandTotal < 21) {
+    return `Your hands are:<br> ${printHands(playerHandArr)}
+            Your hand totals to: ${playerHandTotal}
+            <br><br>
+            Dealer hands are: <br> ${printHands(dealerHandsArr)}
+            Dealer hand totals to: ${dealerHandTotal}
+            <br><br>
+            Black Jack! You won the game!`;
+  } else if (dealerHandTotal > playerHandTotal && dealerHandTotal < 21) {
+    return `Your hands are:<br> ${printHands(playerHandArr)}
+            Your hand totals to: ${playerHandTotal}
+            <br><br>
+            Dealer hands are: <br> ${printHands(dealerHandsArr)}
+            Dealer hand totals to: ${dealerHandTotal}
+            <br><br>
+            You lose the game`;
+  } else if (playerHandTotal < 21 && dealerHandTotal > 21) {
+    return `Your hands are:<br> ${printHands(playerHandArr)}
+            Your hand totals to: ${playerHandTotal}
+            <br><br>
+            Dealer hands are: <br> ${printHands(dealerHandsArr)}
+            Dealer hand totals to: ${dealerHandTotal}
+            <br><br>
+            Black Jack! You won the game!`;
+  }
+}
+
+let playerHandTotal = 0;
+let dealerHandTotal = 0;
+
+var main = function (input) {
+  let shuffledDeck = shuffleCards(deck);
+
+  if (playerHandArr.length == 0) {
+    playerHandArr = startingHands(shuffledDeck);
+    dealerHandsArr = startingHands(shuffledDeck);
+    playerHandTotal = sumInHandsPlayer(playerHandArr);
+    dealerHandTotal = sumInHandsDealer(dealerHandsArr);
+    console.log("dealer hand sum:", dealerHandTotal);
+    return resultDisplay(playerHandTotal, dealerHandTotal);
+  }
+  let userInput = input.toLowerCase();
+  if (userInput == "hit") {
+    let drawCard = shuffledDeck.pop();
+    playerHandArr.push(drawCard);
+    playerHandTotal = sumInHandsPlayer(playerHandArr);
+
+    return resultDisplay(playerHandTotal);
+  }
+  if (userInput == "stand") {
+    if (dealerHandTotal < 17) {
+      dealerHandsArr.push(shuffledDeck.pop());
+      console.log("dealer hands arr:", dealerHandsArr);
+      dealerHandTotal = sumInHandsDealer(dealerHandsArr);
+      console.log("dealer hands total:", dealerHandTotal);
+      return resultDisplayStand(playerHandTotal, dealerHandTotal);
+    }
+    return resultDisplayStand(playerHandTotal, dealerHandTotal);
   }
 };
