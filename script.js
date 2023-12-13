@@ -31,6 +31,15 @@ var CARDS_DRAW_DROM_DECK = []
 var DEALER_DRAW = []
 var PLAYER_DRAW = []
 
+function reset (){
+  //CARDS_TAKEN = 0;
+  //NUM_OF_PLAYER = 3;
+  //PLAYER_DRAW
+  //CARDS_DRAW_DROM_DECK = []
+  DEALER_DRAW = []
+  PLAYER_DRAW = []  
+}
+
 // deck algorithm
 var makeDeck = function () {
   // Initialise an empty deck array
@@ -157,7 +166,6 @@ var playersDraw = function (input) {
   for(i = 0; i < NUM_OF_PLAYER * 2; i++){
     for(j = 0; j < 1; j++){
       draw01.push(drawCard())
-      console.log(i)
       player += 1
       if(player == NUM_OF_PLAYER + 1){
         player = 1  
@@ -174,11 +182,11 @@ var playersDraw = function (input) {
   }
   for(i = 0; i < draw01.length; i++){
     if(draw01[i][0].player == 'dealer' ){
-      console.log("Dealer Index: " + draw01.indexOf(draw01[i]))
+      // console.log("Dealer Index: " + draw01.indexOf(draw01[i]))
       dealerIndex.push(draw01.indexOf(draw01[i]))    
     }
     else{
-      console.log("Player Index: " + draw01.indexOf(draw01[i]))
+      // console.log("Player Index: " + draw01.indexOf(draw01[i]))
       playerIndex.push(draw01.indexOf(draw01[i]))    
     }
   }
@@ -190,8 +198,8 @@ var playersDraw = function (input) {
   players = NUM_OF_PLAYER -1
   for(i = 0; i < playerIndex.length / 2; i++){
     playerTotal = evaluateCards(draw01[playerIndex[i]][0].card.name) + evaluateCards(draw01[playerIndex[i + players]][0].card.name)
-    console.log(i)
-    console.log(playerTotal)
+    // console.log(i)
+    // console.log(playerTotal)
     //i have to put this in a player : "", index: []
     PLAYER_DRAW.push({total : playerTotal, first: draw01[playerIndex[i]], second: draw01[playerIndex[i + players]]})
   }
@@ -200,7 +208,7 @@ var playersDraw = function (input) {
 
 var getResult = function(){
   //local var
-  var playerResult;
+  var playerResult, output = [];
   // initiate draw
   playersDraw()
   // 
@@ -208,8 +216,32 @@ var getResult = function(){
     // console.log(PLAYER_DRAW[i])
     // traverse to player total
     playerResult = PLAYER_DRAW[i].total
-    console.log(playerResult) 
+    console.log(playerResult)
+    dealerResult = DEALER_DRAW[0].total
+    console.log(dealerResult)
+    if (playerResult == 21){
+      player = PLAYER_DRAW[0].first[0].player
+      output.push(`player ${player} wins`)
+    }
+    if(dealerResult == 21){
+      // dealer = DEALER_DRAW[i].first[0].player
+      player = PLAYER_DRAW[0].first[0].player
+      output.push(`Dealer wins over Player ${player}`)
+    }
+    //
+    if (playerResult > dealerResult && playerResult < 21){
+      player = PLAYER_DRAW[0].first[0].player
+      output.push(`player ${player} wins`)
+    }
+    if (dealerResult > playerResult && dealerResult < 21){
+      // dealer = DEALER_DRAW[i].first[0].player
+      player = PLAYER_DRAW[0].first[0].player
+      output.push(`Dealer wins over Player ${player}`)
+    }
     // traverse to dealer total
     // dealer will always be at [0] since its the same "player"
   }
+  //reset hand
+  reset()
+  return output;
 }
