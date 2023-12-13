@@ -98,7 +98,7 @@ var calcHandValue = function (array) {
     ) {
       value = value + 10;
       //ace value = 11 if >21
-    } else if (latestCard.name == "ace" && value > 21) {
+    } else if (latestCard.name == "ace" && value < 21) {
       value = value + 11;
     } else {
       //the rest: = rank number
@@ -171,10 +171,9 @@ var main = function (input) {
         showHandsAndValue +
         "<br>Dealer wins by blackjack. Refresh to play again.";
     }
-    if ((playerValue == dealerValue) == 21) {
+    if (playerValue == dealerValue) {
       myOutputValue =
-        showHandsAndValue +
-        "<br>Its a tie with blackjack. Refresh to play again.";
+        showHandsAndValue + "<br>Its a tie. Refresh to play again.";
     } else {
       currentGameMode = gameMode2;
       myOutputValue =
@@ -185,29 +184,55 @@ var main = function (input) {
   if (currentGameMode == gameMode2) {
     if (input == "h") {
       playerArray.push(shuffledCardDeck.pop());
+      var dealerHandValue = calcHandValue(dealerArray);
       var playerHandValue = calcHandValue(playerArray);
       if (playerHandValue > 21) {
+        currentGameMode = gameMode3;
         myOutputValue =
           showPlayerHand(playerArray) +
           playerHandValue +
           "<br><br>" +
           showDealerHand(dealerArray) +
-          "<br> You bust.";
+          dealerHandValue +
+          "<br><br> You bust. Click submit to see results.";
       } else {
         myOutputValue =
           showPlayerHand(playerArray) +
           playerHandValue +
           "<br><br>" +
           showDealerHand(dealerArray) +
+          dealerHandValue +
           "<br> Type 'h' to hit or 's' to stand.";
       }
     } else if (input == "s") {
-      var dealerHandValue = calcHandValue(dealerArray);
-
-      while (dealerHandValue < 17) {
-        dealerArray.push(shuffledCardDeck.pop());
-        dealerHandValue = calcHandValue(dealerArray);
-      }
+      currentGameMode = gameMode3;
+      myOutputValue = "Dealer's turn now. Click submit to see results.";
+    }
+    return myOutputValue;
+  }
+  if (currentGameMode == gameMode3) {
+    var dealerHandValue = calcHandValue(dealerArray);
+    while (dealerHandValue < 17) {
+      dealerArray.push(shuffledCardDeck.pop());
+      dealerHandValue = calcHandValue(dealerArray);
+    }
+    var playerHandValue = calcHandValue(playerArray);
+    var showHandsAndValue =
+      showPlayerHand(playerArray) +
+      calcHandValue(playerArray) +
+      "<br><br>" +
+      showDealerHand(dealerArray) +
+      calcHandValue(dealerArray);
+    if (dealerHandValue > 21 && playerHandValue > 21) {
+      myOutputValue = showHandsAndValue + "<br><br>Its a tie, both bust.";
+    } else if (dealerHandValue > 21 && playerHandValue < 21) {
+      myOutputValue = showHandsAndValue + "<br><br>Dealer bust. Player wins.";
+    } else if (playerHandValue > 21 && dealerHandValue < 21) {
+      myOutputValue = showHandsAndValue + "<br><br>Player bust. Dealer wins.";
+    } else if (playerHandValue > dealerHandValue && playerHandValue <= 21) {
+      myOutputValue = showHandsAndValue + "<br><br>Player wins.";
+    } else if (playerHandValue < dealerHandValue && dealerHandValue <= 21) {
+      myOutputValue = showHandsAndValue + "<br><br>Dealer wins.";
     }
     return myOutputValue;
   }
