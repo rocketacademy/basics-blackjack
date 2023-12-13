@@ -1,4 +1,11 @@
+var gameMode1 = "Compare initial hands";
+var gameMode2 = "Player hit or stand";
+var gameMode3 = "Dealer hit or stand";
+var currentGameMode = gameMode1;
+
 var cardDeck = [];
+var playerArray = [];
+var dealerArray = [];
 
 var makeDeck = function () {
   // Initialise an array of the 4 suits in our deck. We will loop over this array.
@@ -77,52 +84,131 @@ var shuffleCards = function (cardDeck) {
   return cardDeck;
 };
 
+var calcHandValue = function (array) {
+  var value = 0;
+  var index = 0;
+  // no of cards = how many times the loop runs
+  while (index < array.length) {
+    var latestCard = array[index];
+    // queen king jack values = 10
+    if (
+      latestCard.name == "queen" ||
+      latestCard.name == "king" ||
+      latestCard.name == "jack"
+    ) {
+      value = value + 10;
+      //ace value = 11 if >21
+    } else if (latestCard.name == "ace" && value > 21) {
+      value = value + 11;
+    } else {
+      //the rest: = rank number
+      value = value + latestCard.rank;
+    } //last line of while loop: increment index
+    index = index + 1;
+  }
+  return value;
+};
+
+var showPlayerHand = function (playerArray) {
+  message = "Player Hand: <br>";
+  index = 0;
+  while (index < playerArray.length) {
+    message =
+      message +
+      playerArray[index].name +
+      " of " +
+      playerArray[index].suit +
+      "<br>";
+    index = index + 1;
+  }
+  return message;
+};
+
+var showDealerHand = function (dealerArray) {
+  message = "Dealer Hand: <br>";
+  index = 0;
+  while (index < dealerArray.length) {
+    message =
+      message +
+      dealerArray[index].name +
+      " of " +
+      dealerArray[index].suit +
+      "<br>";
+    index = index + 1;
+  }
+  return message;
+};
+
 var main = function (input) {
   var myOutputValue = "";
-  //A deck of cards.
   var shuffledCardDeck = shuffleCards(makeDeck());
-  //A starting hand of 2 cards for each player.
-  var dealerCard1 = shuffledCardDeck.pop();
-  var playerCard1 = shuffledCardDeck.pop();
-  var dealerCard2 = shuffledCardDeck.pop();
-  var playerCard2 = shuffledCardDeck.pop();
-  //print cards
-  var printCards =
-    "Dealer cards are: " +
-    dealerCard1.name +
-    dealerCard1.suit +
-    " and " +
-    dealerCard2.name +
-    dealerCard2.suit +
-    "<br>Player cards are: " +
-    playerCard1.name +
-    playerCard1.suit +
-    " and " +
-    playerCard2.name +
-    playerCard2.suit;
-  //A tie. When both the player and dealer have the same total hand values - or if both draw Blackjack
-  if (
-    dealerCard1.rank + dealerCard2.rank ==
-    playerCard1.rank + playerCard2.rank
-  ) {
-    myOutputValue = printCards + "<br>Its a tie!";
-  } //A Blackjack win. When either player or dealer draw Blackjack
-  else if (dealerCard1.rank + dealerCard2.rank == 21) {
-    myOutputValue = printCards + "<br>Dealer wins by blackjack.";
-  } else if (playerCard1.rank + playerCard2.rank == 21) {
-    myOutputValue = printCards + "<br>Player wins by blackjack.";
-  } //A normal win. When neither draw Blackjack, the winner is decided by whomever has the higher hand total.
-  else if (
-    dealerCard1.rank + dealerCard2.rank >
-    playerCard1.rank + playerCard2.rank
-  ) {
-    myOutputValue = printCards + "<br>Dealer wins.";
-  } else if (
-    playerCard1.rank + playerCard2.rank >
-    dealerCard1.rank + dealerCard2.rank
-  ) {
-    myOutputValue = printCards + "<br>Player wins.";
+  var showHandsAndValue =
+    showPlayerHand(playerArray) +
+    calcHandValue(playerArray) +
+    "<br><br>" +
+    showDealerHand(dealerArray) +
+    calcHandValue(dealerArray);
+  if (currentGameMode == gameMode1) {
+    playerArray.push(shuffledCardDeck.pop());
+    playerArray.push(shuffledCardDeck.pop());
+    dealerArray.push(shuffledCardDeck.pop());
+    dealerArray.push(shuffledCardDeck.pop());
+    var playerValue = calcHandValue(playerArray);
+    var dealerValue = calcHandValue(dealerArray);
+    var showHandsAndValue =
+      showPlayerHand(playerArray) +
+      calcHandValue(playerArray) +
+      "<br><br>" +
+      showDealerHand(dealerArray) +
+      calcHandValue(dealerArray);
+    if (playerValue == 21) {
+      myOutputValue =
+        showHandsAndValue +
+        "<br>Player wins by blackjack. Refresh to play again.";
+    }
+    if (dealerValue == 21) {
+      myOutputValue =
+        showHandsAndValue +
+        "<br>Dealer wins by blackjack. Refresh to play again.";
+    }
+    if ((playerValue == dealerValue) == 21) {
+      myOutputValue =
+        showHandsAndValue +
+        "<br>Its a tie with blackjack. Refresh to play again.";
+    } else {
+      currentGameMode = gameMode2;
+      myOutputValue =
+        showHandsAndValue + "<br><br> Type 'h' to hit or 's' to stand.";
+    }
+    return myOutputValue;
   }
+  if (currentGameMode == gameMode2) {
+    if (input == "h") {
+      playerArray.push(shuffledCardDeck.pop());
+      var playerHandValue = calcHandValue(playerArray);
+      if (playerHandValue > 21) {
+        myOutputValue =
+          showPlayerHand(playerArray) +
+          playerHandValue +
+          "<br><br>" +
+          showDealerHand(dealerArray) +
+          "<br> You bust.";
+      } else {
+        myOutputValue =
+          showPlayerHand(playerArray) +
+          playerHandValue +
+          "<br><br>" +
+          showDealerHand(dealerArray) +
+          "<br> Type 'h' to hit or 's' to stand.";
+      }
+    } else if (input == "s") {
+      var dealerHandValue = calcHandValue(dealerArray);
 
-  return myOutputValue;
+      while (dealerHandValue < 17) {
+        dealerArray.push(shuffledCardDeck.pop());
+        dealerHandValue = calcHandValue(dealerArray);
+      }
+    }
+    return myOutputValue;
+  }
 };
