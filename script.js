@@ -1,31 +1,34 @@
-/*
-Gameplay Description
-The main function runs on each player's turn. The sequence of actions in the game might be the following.
-Deck is shuffled.
-User clicks Submit to deal cards.
-The cards are analysed for game winning conditions, e.g. Blackjack.
-The cards are displayed to the user.
-The user decides whether to hit or stand, using the submit button to submit their choice.
-The user's cards are analysed for winning or losing conditions.
-The computer decides to hit or stand automatically based on game rules.
-The game either ends or continues.
-*/
+//1. playable game: creating deck, shuffling, dealing cards, evaluating winner
+//2. ability for player to hit or stand
+//3. ability for dealer to hit or stand
+//4. variable value of Ace - '1' or '11'
 
-// GLOBAL STATES
-var gameState = "drawCards";
-var gameStatePlayerHit = "playerHit";
-var gameStateComputerHit = "computerHit";
-var playerCards = [];
-var computerCards = [];
+// ---Pseudocode---
+//1. define player and dealer
+//2. create and shuffle a game deck
+//3. draw 2 cards for player and dealer respectively
+//4. win conditions
+// --- black jack
+// -- higher hand value
 
-// HELPER FUNCTIONS
+//5. display hands of both player
 
-// Function that makes the deck
+// ~~~~~~~~~~~~~~~~~~~~~~~~~GLOBAL VARIABLES~~~~~~~~~~~~~~~~~~~~~~~~~
+var gameStateStart = "Start game";
+var gameStateDrawCard = "Draw cards";
+var gameStateShowCard = "Show cards";
+var currentGameState = gameStateStart;
+var playerHand = [];
+var dealerHand = [];
+
+// Declare variable to hold deck of cards
+var gameDeck = "empty at the start";
+// Make deck
 var makeDeck = function () {
   // Initialise an empty deck array
   var cardDeck = [];
   // Initialise an array of the 4 suits in our deck. We will loop over this array.
-  var suits = ["Hearts", "Diamonds", "Clubs", "Spades"];
+  var suits = ["hearts", "diamonds", "clubs", "spades"];
 
   // Loop over the suits array
   var suitIndex = 0;
@@ -43,13 +46,13 @@ var makeDeck = function () {
 
       // If rank is 1, 11, 12, or 13, set cardName to the ace or face card's name
       if (cardName == 1) {
-        cardName = "Ace";
+        cardName = "ace";
       } else if (cardName == 11) {
-        cardName = "Jack";
+        cardName = "jack";
       } else if (cardName == 12) {
-        cardName = "Queen";
+        cardName = "queen";
       } else if (cardName == 13) {
-        cardName = "King";
+        cardName = "king";
       }
 
       // Create a new card with the current name, suit, and rank
@@ -73,13 +76,10 @@ var makeDeck = function () {
   // Return the completed card deck
   return cardDeck;
 };
-
-// Function that shuffles the deck
 // Get a random index ranging from 0 (inclusive) to max (exclusive).
 var getRandomIndex = function (max) {
   return Math.floor(Math.random() * max);
 };
-
 // Shuffle the elements in the cardDeck array
 var shuffleCards = function (cardDeck) {
   // Loop over the card deck array once
@@ -100,28 +100,122 @@ var shuffleCards = function (cardDeck) {
   // Return the shuffled deck
   return cardDeck;
 };
+// Function that creates and shuffles a deck
+var createNewDeck = function () {
+  var newDeck = makeDeck();
+  var shuffleDeck = shuffleCards(newDeck);
+  return shuffleDeck;
+};
 
-var deck = makeDeck();
-console.log(`Make deck`);
+// ~~~~~~~~~~~~~~~~~~~~~~~~~GAME FUNCTIONS~~~~~~~~~~~~~~~~~~~~~~~~~
+var blackJackCheck = function (array) {
+  var cardOne = array[0];
+  var cardTwo = array[1];
+  var blackJack = false;
 
-// MAIN FUNCTION
-var main = function (input) {
-  console.log(`Shuffle deck`);
-  var shuffledDeck = shuffleCards(deck);
+  if (
+    (cardOne.name == "ace" && cardTwo.rank >= 10) ||
+    (cardOne.rank >= 10 && cardTwo.name == "ace")
+  ) {
+    blackJack = true;
+  }
+  return blackJack;
+};
 
-  var myOutputValue = "";
+var totalValue = function (array) {
+  var totalValue = 0;
 
-  // Start game to draw the cards
-  if (gameState == "drawCards") {
-    while (playerCards < 2) {
-      playerCards.push(shuffledDeck.pop());
-      computerCards.push(shuffledDeck.pop());
-      playerCards.push(shuffledDeck.pop());
-      computerCards.push(shuffledDeck.pop());
-
-      console.log(`Deal player and computer cards`);
-      myOutputValue = `Player hand: ${playerCards[0].name} of ${playerCards[0].suit}, ${playerCards[1].name} of ${playerCards[1].suit} <br> Computer hand: ${computerCards[0].name} of ${computerCards[0].suit}, ${computerCards[1].name} of ${computerCards[1].suit} `;
+  var index = 0;
+  // player value
+  while (index < array.length) {
+    var currentCard = array[index];
+    if (
+      currentCard.name == "jack" ||
+      currentCard.name == "queen" ||
+      currentCard.name == "king"
+    ) {
+      totalValue = totalValue + 10;
+    } else {
+      totalValue = totalValue + currentCard.rank;
     }
+
+    index += 1;
+  }
+  return totalValue;
+};
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~MAIN FUNCTIONS~~~~~~~~~~~~~~~~~~~~~~~~~
+var main = function (input) {
+  var myOutputValue = "";
+  // Game state to draw cards
+  if (currentGameState == gameStateStart) {
+    // Create deck
+    gameDeck = createNewDeck();
+    console.log(gameDeck);
+
+    // Deal 2 cards to player and dealer
+    playerHand.push(gameDeck.pop());
+    playerHand.push(gameDeck.pop());
+    dealerHand.push(gameDeck.pop());
+    dealerHand.push(gameDeck.pop());
+    console.log("Player hand");
+    console.log(playerHand);
+    console.log("Dealer hand");
+    console.log(dealerHand);
+
+    // change game states
+    currentGameState = gameStateDrawCard;
+
+    myOutputValue = `Cards has been drawn. Click the Submit button to evaluate cards`;
+
+    return myOutputValue;
+  }
+
+  if (currentGameState == gameStateDrawCard) {
+    // test checkForBlackJack function
+    // playerHand = [
+    //   { name: "queen", suit: "clubs", rank: 12 },
+    //   { name: "ace", suit: "diamonds", rank: 1 },
+    // ];
+    // dealerHand = [
+    //   { name: "ace", suit: "diamonds", rank: 1 },
+    //   { name: 10, suit: "spades", rank: 10 },
+    // ];
+
+    //BLACKJACK SCENARIOS
+    var playerBlackJack = blackJackCheck(playerHand);
+    var dealerBlackJack = blackJackCheck(dealerHand);
+
+    // -- blackjack tie
+    if (playerBlackJack == true || dealerBlackJack == true) {
+      myOutputValue = `It is a blackjack tie!`;
+    }
+    // -- player blackjack
+    else if (playerBlackJack == true && dealerBlackJack == false) {
+      myOutputValue = `Player wins by blackjack!`;
+    }
+    // -- dealer blackjack
+    else {
+      myOutputValue = `Dealer wins by blackjack!`;
+    }
+
+    var playerValue = totalValue(playerHand);
+    var dealerValue = totalValue(dealerHand);
+    console.log(playerValue);
+    console.log(dealerValue);
+    // Win condition
+    if (playerValue == dealerValue) {
+      myOutputValue = `It is a tie!`;
+    } else if (playerValue > dealerValue) {
+      myOutputValue = `Player wins`;
+    } else {
+      myOutputValue = `Dealer wins`;
+    }
+
+    // -- tie
+    // -- player win
+    // -- dealer win
+    // change game state
   }
 
   return myOutputValue;
