@@ -70,14 +70,26 @@
       .header {
         text-align: center;
         font-size: 1.1rem;
-        margin-bottom: 3rem;
+        /* margin-bottom: 3rem; */
       }
 
       #container {
         background-color: pink;
-        margin: 40px auto;
+        margin: 10px auto 40px;
         max-width: 800px;
-        padding: 38px 31px;
+        padding: 20px;
+      }
+
+      #cardFace {
+        display: flex;
+        flex-direction: column;
+        outline: 1px solid grey;
+        padding: 0px 8px;
+        height: 90px;
+        width: 70px;
+        border-radius: 5px;
+        background-color: white;
+        box-shadow: -2px 0px 6px -4px;
       }
 
       input {
@@ -119,26 +131,59 @@
   </head>
 
   <body>
-    <h1 class="header">
+    <h1 class="header" style="margin-top: 0px">
       <img class="logo-img" src="https://firebasestorage.googleapis.com/v0/b/ftbc11-sample.appspot.com/o/images%2F1-PRIMARY_CRIMSON.png?alt=media&token=ce9e8333-2a45-44be-adb2-1f1bf054adf7" />
       Rocket Academy
       <img class="logo-img" src="https://firebasestorage.googleapis.com/v0/b/ftbc11-sample.appspot.com/o/images%2F1-PRIMARY_CRIMSON.png?alt=media&token=ce9e8333-2a45-44be-adb2-1f1bf054adf7" />
     </h1>
     <h1 class="header">♣️ Basics - Blackjack ♠️</h1>
+
+    <!-- dealer card display -->
+    <div style="width: 330px; margin: 0px auto; display: flex; align-items: center; gap: 20px; height: 100%;">
+      <div style="width: 100px; text-align: center;">
+        <img style="aspect-ratio: auto; height: 5rem;" src="./images/Casino_Dealer.png" alt="Logo of a blackjack dealer"/>
+        <p style="margin: 0px;">Dealer</p>
+      </div>
+      <div id="dealerHand" style="flex: 1; display: flex; flex-direction: row; height: 100%; justify-content: start;"></div>
+    </div>
+
+    <!-- player card display -->
+    <div style="display: flex; flex-wrap: wrap; width: 100%; padding: 0px 130px; justify-content: center; gap: 20px">
+      <div style="width: 330px; margin: 10px 20px 0px; display: flex; align-items: center; gap: 20px;">
+        <div style="width: 100px; text-align: center;">
+          <img style="aspect-ratio: auto; height: 5rem;" src="./images/Player.png" alt="Logo of a blackjack player"/>
+          <p style="margin: 0px;">Player <br><span id="player-1-bet"></span>/<span id="player-1-pot"></span><br> Chips</p>
+          <input type="range" min="1" max="100" value="1" id="player-1-slider" />
+        </div>
+        <div id="playerHand" style="flex: 1; display: flex; flex-direction: row; height: 100%; justify-content: start;">
+        </div>
+      </div>
+    </div>
+
     <div id="container">
       <p>Input:</p>
-      <input id="input-field" />
-      <br />
-      <button id="submit-button">Submit</button>
+      <div style="display: flex; align-items: center; gap: 10px">
+        <div style="flex: 1">
+          <input id="input-field" style="width: 100%;" />
+        </div>
+        <button id="submit-button">Submit</button>
+        <!-- <button id="deal-button">Deal</button>
+        <button id="hit-button">Hit</button>
+        <button id="stand-button">Stand</button>
+        <button id="reset-button">Reset</button> -->
+      </div>
       <p>Output:</p>
       <div id="output-div"></div>
     </div>
+    
     <!-- Import program logic -->
     <script src="script.js"></script>
-    <!-- Define button click functionality -->
+
     <script>
-      var button = document.querySelector("#submit-button");
-      button.addEventListener("click", function () {
+      
+      // Define button click functionality
+      var buttonSubmit = document.querySelector("#submit-button");
+      buttonSubmit.addEventListener("click", function () {
         // Set result to input value
         var input = document.querySelector("#input-field");
         var result = main(input.value);
@@ -150,6 +195,14 @@
         // Reset input value
         input.value = "";
       });
+
+      // define slider functionality
+      var sliderOne = document.getElementById("player-1-slider");
+      var output = document.getElementById("player-1-bet");
+      output.innerHTML = sliderOne.value;
+      sliderOne.oninput = function() {
+        output.innerHTML = this.value
+      }
 
       // QOL function, clicking enter will click the submit button
       var input = document.getElementById("input-field");

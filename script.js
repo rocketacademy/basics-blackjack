@@ -6,13 +6,7 @@
 var makeDeck = function () {
   // create the empty deck at the beginning
   var deck = [];
-  var suits = [
-    `<span style="font-size: larger; color: crimson">♥️</span>`,
-    `<span style="font-size: larger; color: crimson">♦️</span>`,
-    `<span style="font-size: larger;">♠️</span>`, 
-    `<span style="font-size: larger;">♣️</span>`,
-  ];
-  // var suits = ['hearts', 'diamonds', 'clubs', 'spades'];
+  var suits = [`♥️`, `♦️`, `♠️`, `♣️`];
 
   var suitIndex = 0;
   while (suitIndex < suits.length) {
@@ -24,23 +18,35 @@ var makeDeck = function () {
     var rankCounter = 1;
     while (rankCounter <= 13) {
       var cardName = rankCounter;
+      var cardLabel = rankCounter;
 
       // 1, 11, 12 ,13
       if (cardName == 1) {
         cardName = 'ace';
+        cardLabel = 'A';
       } else if (cardName == 11) {
         cardName = 'jack';
+        cardLabel = 'J';
       } else if (cardName == 12) {
         cardName = 'queen';
+        cardLabel = 'Q';
       } else if (cardName == 13) {
         cardName = 'king';
+        cardLabel = 'K';
+      }
+
+      var suitStyle = "font-size: larger;";
+      if (currentSuit == '♥️' || currentSuit == '♦️') {
+        cardLabel = `<span style="color: crimson">${cardLabel}</span>`;
+        suitStyle += " color: crimson";
       }
 
       // make a single card object variable
       var card = {
         name: cardName,
-        suit: currentSuit,
+        suit: `<span style="${suitStyle}">${currentSuit}</span>`,
         rank: rankCounter,
+        label: cardLabel,
       };
 
       // add the card to the deck
@@ -51,6 +57,8 @@ var makeDeck = function () {
     suitIndex = suitIndex + 1;
   }
 
+  console.log('new deck generated')
+  console.log(deck)
   return deck;
 };
 
@@ -128,8 +136,28 @@ var calScore = function (userHands) {
   }
 }
 
+// function for recording player's bet
+// var bettingPhase = function (input) {
+//   playerBet = input * 1;
+//   if (!isNaN(playerBet)) {
+//     if (playerBet <= 0) {
+//       return lastSystemMsg + '<br><br>Player! you cannot bet less than 0 credits! Try again!'
+//     } else if (playerBet < playerPot) {
+//       playerOneBet = playerBet;
+//       gamePhase = DEALING_PHASE;
+//       document.getElementById("player-1-bet").innerHTML = playerBet;
+//       lastSystemMsg = `Player has bet ${playerBet} credits for the round!<br><br>Click "Deal" to start the round!`;
+//       return lastSystemMsg;
+//     } else {
+//       return lastSystemMsg + '<br><br>You do not have sufficient credit in your pot! Try again!'
+//     }
+//   } else {
+//     return lastSystemMsg + '<br><br>Invalid input! Please enter the amount you want to bet for the round!'
+//   }
+// }
+
 // function for dealing cards at the start of a round
-var dealingPhase = function (playingDeck) {
+var dealingPhase = function (playingDeck, playerBet) {
   dealCards('player', playingDeck);
   dealCards('dealer', playingDeck);
   dealCards('player', playingDeck);
@@ -141,14 +169,16 @@ var dealingPhase = function (playingDeck) {
   console.log(dealerHands);
   console.log('next dealing card')
   console.log(playingDeck[playingDeck.length - 1])
-  // playerHands = [{name: 'ace', rank: 1, suit: '♦'}, {name: 10, rank: 10, suit: '♦'}];
-  // dealerHands = [{name: 'ace', rank: 1, suit: '♠'}, {name: 'queen', rank: 11, suit: '♠'}];
+  // playerHands = [{name: 'ace', label: 'A', rank: 1, suit: '♦'}, {name: 2, label: 2, rank: 1, suit: '♦'}, {name: 3, label: 3, rank: 1, suit: '♦'}, {name: 4, label: 4, rank: 1, suit: '♦'}, {name: 5, label: 5, rank: 1, suit: '♦'}];
+  // dealerHands = [{name: 'ace', label: 'A', rank: 1, suit: '♦'}, {name: 2, label: 2, rank: 2, suit: '♦'}];
 
   var playerScore = calScore(playerHands);
   var dealerScore = calScore(dealerHands);
 
   if (dealerScore == 'Blackjack!' && playerScore == 'Blackjack!') {
     isGameEnded = true;
+    displayDealerCard(dealerHands, 'full');
+    displayPlayerCard(playerHands);
     return `
       ${revealPlayerHands()}
       <br>${revealDealerHands()}
@@ -156,6 +186,15 @@ var dealingPhase = function (playingDeck) {
     `
   } else if (dealerScore == 'Blackjack!') {
     isGameEnded = true;
+    displayDealerCard(dealerHands, 'full');
+    displayPlayerCard(playerHands);
+    playerPot -= playerBet;
+    document.getElementById("player-1-slider").max = playerPot;
+    document.getElementById("player-1-pot").innerHTML = playerPot;
+    if (playerPot < playerBet) {
+      document.getElementById("player-1-slider").value = playerPot;
+      document.getElementById("player-1-bet").innerHTML = playerPot;
+    }
     return `
       ${revealPlayerHands()}
       <br>${revealDealerHands()}
@@ -163,6 +202,11 @@ var dealingPhase = function (playingDeck) {
     `
   } else if (playerScore == 'Blackjack!') {
     isGameEnded = true;
+    displayDealerCard(dealerHands, 'full');
+    displayPlayerCard(playerHands);
+    playerPot += playerBet;
+    document.getElementById("player-1-slider").max = playerPot;
+    document.getElementById("player-1-pot").innerHTML = playerPot;
     return `
       ${revealPlayerHands()}
       <br>${revealDealerHands()}
@@ -170,6 +214,8 @@ var dealingPhase = function (playingDeck) {
     `
   }
 
+  displayDealerCard(dealerHands, 'partial');
+  displayPlayerCard(playerHands);
   return `
     ${revealPlayerHands()}
     <br><br>Player's Move: type "hit" to draw another card or "stand" to stop!
@@ -181,6 +227,7 @@ var playerHitPhase = function () {
   // player draw card
   var playerScore = calScore(playerHands);
   dealCards('player', playingDeck);
+  displayPlayerCard(playerHands);
 
   console.log('player drew')
   console.log(playerHands[playerHands.length - 1])
@@ -199,15 +246,15 @@ var playerHitPhase = function () {
     isGameEnded = true;
     resultsText = `Player has won with a hand of 5 cards!`;
   } else if (playerScore == 21) {
-      resultsText = `Player's Move: type "hit" to draw another card or "stand" to stop!<br>Warning: You already hit a hand of 21! Drawing more cards will result in a busted hand!`;
+      resultsText = `Player's Move: type "hit" to draw another card or "stand" to stop!<br>Hint: You already hit a hand of 21! Drawing more cards will result in a busted hand!`;
   }else if (playerHands.length == 4) {
     var remainingScore = 21 - playerScore;
     if (remainingScore == 1) {
-      resultsText = `Player's Move: type "hit" to draw another card or "stand" to stop!<br>Warning: You already have 4 cards on hand, the next card you draw will be your final card! If you draw an Ace you win!`;
+      resultsText = `Player's Move: type "hit" to draw another card or "stand" to stop!<br>Hint: You already have 4 cards on hand, the next card you draw will be your final card! If you draw an Ace you win!`;
     } else if (remainingScore >= 10) {
-      resultsText = `Player's Move: type "hit" to draw another card or "stand" to stop!<br>Warning: You already have 4 cards on hand, the next card you draw will be your final card! You will win regardless of any card you draw!`;
+      resultsText = `Player's Move: type "hit" to draw another card or "stand" to stop!<br>Hint: You already have 4 cards on hand, the next card you draw will be your final card! You will win regardless of any card you draw!`;
     } else {
-      resultsText = `Player's Move: type "hit" to draw another card or "stand" to stop!<br>Warning: You already have 4 cards on hand, the next card you draw will be your final card! If you draw a ${remainingScore} or below!`;
+      resultsText = `Player's Move: type "hit" to draw another card or "stand" to stop!<br>Hint: You already have 4 cards on hand, the next card you draw will be your final card! If you draw a ${remainingScore} or below, you win!`;
     }
   } else {
     resultsText = `Player's Move: type "hit" to draw another card or "stand" to stop!`
@@ -221,7 +268,7 @@ var playerHitPhase = function () {
 }
 
 // function for dealer's phase
-var dealerPhase = function () {
+var dealerPhase = function (playerBet) {
   var dealerScore = calScore(dealerHands);
   var playerScore = calScore(playerHands);
   var didDealerDrew = false;
@@ -240,6 +287,7 @@ var dealerPhase = function () {
       didDealerDrew = true;
       dealerDrewText += `${dealerHands[dealerHands.length - 1].name}${dealerHands[dealerHands.length - 1].suit}; `;
       dealerScore = calScore(dealerHands)
+      displayDealerCard(dealerHands, 'partial')
 
       console.log('dealer drew')
       console.log(dealerHands[dealerHands.length - 1])
@@ -265,18 +313,40 @@ var dealerPhase = function () {
   if (isDealerBusted && isPlayerBusted) {
     resultsText = `Both Dealer and Player has busted! No one wins!`;
   } else if (isDealerBusted) {
-    resultsText = `Dealer has busted! Player wins!`;
+    resultsText = `Dealer has busted! Player wins ${playerBet} credits!`;
+    playerPot += playerBet;
+    document.getElementById("player-1-slider").max = playerPot;
+    document.getElementById("player-1-pot").innerHTML = playerPot;
   } else if (isPlayerBusted) {
-    resultsText = `Player has busted! Dealer wins!`;
+    resultsText = `Player has busted! Player lose ${playerBet} credits!`;
+    playerPot -= playerBet;
+    document.getElementById("player-1-slider").max = playerPot;
+    document.getElementById("player-1-pot").innerHTML = playerPot;
+    if (playerPot < playerBet) {
+      document.getElementById("player-1-slider").value = playerPot;
+      document.getElementById("player-1-bet").innerHTML = playerPot;
+    }
   } else if (playerScore > dealerScore) {
-    resultsText = `Player wins!`;
+    playerPot += playerBet;
+    resultsText = `Player wins ${playerBet} credits!`;
+    document.getElementById("player-1-slider").max = playerPot;
+    document.getElementById("player-1-pot").innerHTML = playerPot;
   } else if (dealerScore > playerScore) {
-    resultsText = `Dealer wins!`;
+    playerPot -= playerBet;
+    resultsText = `Player lose ${playerBet} credits!`;
+    document.getElementById("player-1-slider").max = playerPot;
+    document.getElementById("player-1-pot").innerHTML = playerPot;
+    if (playerPot < playerBet) {
+      document.getElementById("player-1-slider").value = playerPot;
+      document.getElementById("player-1-bet").innerHTML = playerPot;
+    }
   }
 
+  console.log({playerPot})
   isGameEnded = true;
 
   // reveal dealer's hands
+  displayDealerCard(dealerHands, 'full');
   return `
     ${dealerDrewText}
     <br><br>${revealDealerHands()}
@@ -295,11 +365,83 @@ var resetGame = function () {
   isDealerBusted = false;
   playingDeck = makeDeck();
   playingDeck = shuffleDeck(playingDeck);
+  
+  document.getElementById("dealerHand").innerHTML = '';
+  document.getElementById("playerHand").innerHTML = '';
+  document.getElementById("player-1-pot").innerHTML = playerPot;
 }
+
+// function to display player's hand for html
+var displayPlayerCard = function (cards) {
+  var userHands = cards;
+  var placeholderDisplay = ``
+  for (let i = 0; i < userHands.length; i++) {
+    let margin = -40;
+    if (i == 0) {
+      margin = 0;
+    }
+    placeholderDisplay += `
+      <div id="cardFace" style="margin-left: ${margin}px;">
+        <p style="margin: 0px">${userHands[i].label}</p>
+        <p style="margin: -8px 0px 0px">${userHands[i].suit}</p>
+      </div>
+    `
+  }
+  document.getElementById("playerHand").innerHTML = placeholderDisplay;
+}
+
+// function to display dealer's hand for html
+var displayDealerCard = function (cards, show) {
+  var userHands = cards;
+  var dealerHandDisplay = ``;
+  var index = 0;
+
+  if (show == 'partial') {
+    dealerHandDisplay = `
+      <div
+        id="cardFace"
+        style="
+          background:
+            conic-gradient(from 150deg at 50% 33%,#0000,#ff4753 .5deg 60deg,#0000 60.5deg) 
+            calc(10px/2) calc(10px/1.4),
+            conic-gradient(from -30deg at 50% 66%,#0000,#ff4753 .5deg 60deg,#ffdede 60.5deg);
+          background-size: 10px calc(10px/1.154);
+          border: 5px solid white;
+        "
+      ></div>
+    `;
+    index = 1;
+  }
+
+  for (let i = index; i < userHands.length; i++) {
+    let margin = -40;
+    if (i == 0) {
+      margin = 0;
+    }
+    dealerHandDisplay += `
+      <div id="cardFace" style="margin-left: ${margin}px;">
+        <p style="margin: 0px">${userHands[i].label}</p>
+        <p style="margin: -8px 0px 0px">${userHands[i].suit}</p>
+      </div>
+    `
+  }
+  document.getElementById("dealerHand").innerHTML = dealerHandDisplay;
+}
+
+// ====================================================
+// ================= BUTTON VARIABLE ==================
+// ====================================================
+var btnSubmit = document.getElementById("submit-button");
+// var btnSubmit = document.getElementById("deal-button");
+// var btnSubmit = document.getElementById("hit-button");
+// var btnSubmit = document.getElementById("stand-button");
+// var btnSubmit = document.getElementById("reset-button");
+// var inputField = document.getElementById("input-field");
 
 // ====================================================
 // ================= GLOBAL VARIABLE ==================
 // ====================================================
+var BETTING_PHASE = 'betting phase';
 var DEALING_PHASE = 'dealing phase';
 var PLAYER_PHASE = 'player phase';
 
@@ -307,9 +449,14 @@ var playingDeck = shuffleDeck(makeDeck());
 var isGameEnded = false;
 var gamePhase = DEALING_PHASE;
 var playerHands = [];
+var playerPot = 100;
 var dealerHands = [];
 var isPlayerBusted = false;
 var isDealerBusted = false;
+
+var lastSystemMsg = 'Hi Player! Welcome to the Blackjack Game!<br>Please adjust the amount of chips you want to bet before starting the game!';
+document.querySelector("#output-div").innerHTML = lastSystemMsg;
+document.getElementById("player-1-pot").innerHTML = playerPot;
 
 // ====================================================
 // ================== MAIN FUNCTIONS ==================
@@ -317,33 +464,52 @@ var isDealerBusted = false;
 
 var main = function (input) {
   var myOutputValue = '';
+  var playerBet = document.getElementById("player-1-slider").value * 1;
+  console.log(`player has bet:`)
+  console.log(playerBet)
+
+  // if player has no credits left
+  if (playerPot == 0) {
+    return `You have no credit left! Thanks for playing Blackjack! Hope to see you again!`
+  }
 
   // if game has ended
   if (isGameEnded) {
     resetGame();
-    return `Game has been reset!<br>Press play to start the game!`
+    lastSystemMsg = `Game has been reset!<br>Press play to start the game!`;
+    return lastSystemMsg;
+  }
+
+  if (gamePhase == BETTING_PHASE) {
+    return bettingPhase(input);
   }
 
   // if current phase is dealing phase
   if (gamePhase == DEALING_PHASE) {
-    console.log({ playingDeck })
+    lastSystemMsg = dealingPhase(playingDeck, playerBet);
     gamePhase = PLAYER_PHASE;
-    return myOutputValue = dealingPhase(playingDeck);
+    return myOutputValue = lastSystemMsg;
   }
 
   // if current phase is player action phase
   if (gamePhase == PLAYER_PHASE) {
     if (isPlayerBusted) {
       // if player has busted
-      return myOutputValue = dealerPhase();
+      lastSystemMsg = dealerPhase(playerBet);
+      return myOutputValue = lastSystemMsg;
     } else if (input == 'hit') {
       // if player is not busted and wants to hit
-      return myOutputValue = playerHitPhase();
+      lastSystemMsg = playerHitPhase();
+      return myOutputValue = lastSystemMsg;
     } else if (input == 'stand') {
       // if player is not busted and wants to stand
-      return myOutputValue = dealerPhase();
+      lastSystemMsg = dealerPhase(playerBet)
+      return myOutputValue = lastSystemMsg;
     } else {
-      return myOutputValue = 'invalid input'
+      return myOutputValue = lastSystemMsg + '<br><br>invalid input'
     }
   }
 };
+
+document.getElementById("player-1-bet");
+document.getElementById("player-1-slider").max;
