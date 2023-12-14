@@ -20,6 +20,7 @@ The user's cards are analysed for winning or losing conditions.
 The computer decides to hit or stand automatically based on game rules.
 The game either ends or continues.
 */
+
 var deck = makeDeck();
 var playerHandArr = [];
 var dealerHandsArr = [];
@@ -159,31 +160,35 @@ function sumInHandsDealer(cardInHandsArr) {
 }
 //  Dealer hands are: <br> ${printHands(dealerHandsArr)}
 //             Dealer hand totals to: ${dealerHandTotal}
-
+let replayMsg = "<br><br>Click submit to replay the game!";
 function resultDisplay(playerHandTotal) {
   if (isPlayerBlackJack && !isDealerBlackJack) {
+    gameOver = true;
     return `Your hands are:<br> ${printHands(playerHandArr)}
             Your hand totals to: ${playerHandTotal}
             <br><br>
             Dealer hands are: <br> ${printHands(dealerHandsArr)}
             Dealer hand totals to: ${dealerHandTotal}
             <br><br>
-            Black Jack! You won the game!`;
+            Black Jack! You won the game! ${replayMsg}`;
   } else if (isPlayerBusted) {
+    gameOver = true;
     return `Your hands are:<br> ${printHands(playerHandArr)}
             Your hand totals to: ${playerHandTotal}
             <br><br>
             
-            You have busted the game! You lose!`;
+            You have busted the game! You lose!${replayMsg}`;
   } else if (isPlayerBlackJack && isDealerBlackJack) {
+    gameOver = true;
     return `Your hands are:<br> ${printHands(playerHandArr)}
             Your hand totals to: ${playerHandTotal}
             <br><br>
             Dealer hands are: <br> ${printHands(dealerHandsArr)}
             Dealer hand totals to: ${dealerHandTotal}
             <br><br>
-            It's a tie`;
+            It's a tie${replayMsg}`;
   }
+
   return ` Your hands are:<br> ${printHands(playerHandArr)}
             Your hand totals to: ${playerHandTotal}
           <br><br>
@@ -191,6 +196,7 @@ function resultDisplay(playerHandTotal) {
           Enter "stand" to end your turn`;
 }
 function resultDisplayStand(playerHandTotal, dealerHandTotal) {
+  gameOver = true;
   if (isDealerBlackJack && !isPlayerBlackJack) {
     return `Your hands are:<br> ${printHands(playerHandArr)}
             Your hand totals to: ${playerHandTotal}
@@ -198,7 +204,7 @@ function resultDisplayStand(playerHandTotal, dealerHandTotal) {
             Dealer hands are: <br> ${printHands(dealerHandsArr)}
             Dealer hand totals to: ${dealerHandTotal}
             <br><br>
-            You lose the game`;
+            You lose the game ${replayMsg}`;
   } else if (playerHandTotal > dealerHandTotal && playerHandTotal < 21) {
     return `Your hands are:<br> ${printHands(playerHandArr)}
             Your hand totals to: ${playerHandTotal}
@@ -206,7 +212,7 @@ function resultDisplayStand(playerHandTotal, dealerHandTotal) {
             Dealer hands are: <br> ${printHands(dealerHandsArr)}
             Dealer hand totals to: ${dealerHandTotal}
             <br><br>
-            Black Jack! You won the game!`;
+            Black Jack! You won the game!${replayMsg}`;
   } else if (dealerHandTotal > playerHandTotal && dealerHandTotal < 21) {
     return `Your hands are:<br> ${printHands(playerHandArr)}
             Your hand totals to: ${playerHandTotal}
@@ -214,7 +220,7 @@ function resultDisplayStand(playerHandTotal, dealerHandTotal) {
             Dealer hands are: <br> ${printHands(dealerHandsArr)}
             Dealer hand totals to: ${dealerHandTotal}
             <br><br>
-            You lose the game`;
+            You lose the game${replayMsg}`;
   } else if (playerHandTotal < 21 && dealerHandTotal > 21) {
     return `Your hands are:<br> ${printHands(playerHandArr)}
             Your hand totals to: ${playerHandTotal}
@@ -222,16 +228,28 @@ function resultDisplayStand(playerHandTotal, dealerHandTotal) {
             Dealer hands are: <br> ${printHands(dealerHandsArr)}
             Dealer hand totals to: ${dealerHandTotal}
             <br><br>
-            Black Jack! You won the game!`;
+            Black Jack! You won the game!${replayMsg}`;
   }
 }
 
 let playerHandTotal = 0;
 let dealerHandTotal = 0;
-
+let gameOver = false;
 var main = function (input) {
   let shuffledDeck = shuffleCards(deck);
+  console.log("game over is:", gameOver);
+  if (gameOver != false) {
+    console.log("game over is:", gameOver);
+    console.log("test 1231234");
+    playerHandArr = [];
+    dealerHandsArr = [];
 
+    isPlayerBlackJack = false;
+    isPlayerBusted = false;
+    isDealerBlackJack = false;
+    isDealerBusted = false;
+    gameOver = false;
+  }
   if (playerHandArr.length == 0) {
     playerHandArr = startingHands(shuffledDeck);
     dealerHandsArr = startingHands(shuffledDeck);
