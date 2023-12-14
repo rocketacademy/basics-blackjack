@@ -213,7 +213,7 @@ function resultDisplay(playerHandTotal) {
   document.querySelector("#hit-button").disabled = false;
   document.querySelector("#stand-button").disabled = false;
   document.querySelector("#submit-button").disabled = true;
-  return ` Your hands are:<br> ${printHands(playerHandArr)}
+  return ` Your hands:<br> ${printHands(playerHandArr)}
             Your hand totals to: ${playerHandTotal}
           <br><br>
           Choose to "Hit" or "Stand"`;
@@ -228,16 +228,16 @@ function resultDisplayStand(playerHandTotal, dealerHandTotal) {
     Your hands:<br> ${printHands(playerHandArr)}
             Your hand totals to: ${playerHandTotal}
             <br><br>
-            Dealer hands are: <br> ${printHands(dealerHandsArr)}
+            Dealer's hands: <br> ${printHands(dealerHandsArr)}
             Dealer hand totals to: ${dealerHandTotal}
             <br><br>
             You lose the game ${replayMsg}`;
   } else if (playerHandTotal > dealerHandTotal && playerHandTotal < 21) {
     return `${imageWin}Your hands:<br> ${printHands(playerHandArr)}
             Your hand totals to: ${playerHandTotal}
-            <br>
-            Dealer hands: <br> ${printHands(dealerHandsArr)}
-            Dealer hand totals to: ${dealerHandTotal}
+            <br><br>
+            Dealer's hands: <br> ${printHands(dealerHandsArr)}
+            Dealer's hands totals to: ${dealerHandTotal}
             <br><br>
             Black Jack! You won the game!${replayMsg}`;
   } else if (dealerHandTotal > playerHandTotal && dealerHandTotal < 21) {
