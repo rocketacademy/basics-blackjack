@@ -20,8 +20,10 @@ The user's cards are analysed for winning or losing conditions.
 The computer decides to hit or stand automatically based on game rules.
 The game either ends or continues.
 */
+document.querySelector("#hit-button").disabled = true;
+document.querySelector("#stand-button").disabled = true;
+document.querySelector("#submit-button").disabled = false;
 
-var deck = makeDeck();
 var playerHandArr = [];
 var dealerHandsArr = [];
 
@@ -30,10 +32,18 @@ let isPlayerBusted = false;
 let isDealerBlackJack = false;
 let isDealerBusted = false;
 
+let playerHandTotal = 0;
+let dealerHandTotal = 0;
+
+let gameOver = false;
+let gameState = "";
+
+var deck = makeDeck();
+
 function makeDeck() {
   var cardDeck = [];
   //var suits = ["hearts", "diamonds", "clubs", "spades"];
-  var suits = ["♡", "♦️", "♣️", "♠️"];
+  var suits = ["❤️", "♦️", "♣️", "♠️"];
   for (let i = 0; i < suits.length; i++) {
     var currentSuit = suits[i];
     // console.log("suit: ", currentSuit);
@@ -158,13 +168,19 @@ function sumInHandsDealer(cardInHandsArr) {
   }
   return sum;
 }
-//  Dealer hands are: <br> ${printHands(dealerHandsArr)}
-//             Dealer hand totals to: ${dealerHandTotal}
-let replayMsg = "<br><br>Click submit to replay the game!";
+
+let replayMsg = "<br><br>Click deal to play again!";
+let imageLose =
+  '<div style="width:480px"><iframe allow="fullscreen" frameBorder="" height="200" src="https://giphy.com/embed/oZJbVLZhpUoGoNgWW5/video" width="700"></iframe></div>';
+let imageWin =
+  '<div style="width:480px"><iframe allow="fullscreen" frameBorder="" height="200" src="https://giphy.com/embed/Id1Ay5MD5IsF6Or51v" width="700"></iframe></div>';
 function resultDisplay(playerHandTotal) {
   if (isPlayerBlackJack && !isDealerBlackJack) {
     gameOver = true;
-    return `Your hands are:<br> ${printHands(playerHandArr)}
+    document.querySelector("#hit-button").disabled = true;
+    document.querySelector("#stand-button").disabled = true;
+    document.querySelector("#submit-button").disabled = false;
+    return `${imageWin} Your hands are:<br> ${printHands(playerHandArr)}
             Your hand totals to: ${playerHandTotal}
             <br><br>
             Dealer hands are: <br> ${printHands(dealerHandsArr)}
@@ -173,13 +189,19 @@ function resultDisplay(playerHandTotal) {
             Black Jack! You won the game! ${replayMsg}`;
   } else if (isPlayerBusted) {
     gameOver = true;
-    return `Your hands are:<br> ${printHands(playerHandArr)}
+    document.querySelector("#hit-button").disabled = true;
+    document.querySelector("#stand-button").disabled = true;
+    document.querySelector("#submit-button").disabled = false;
+    return `${imageLose}<br>Your hands:<br> ${printHands(playerHandArr)}
             Your hand totals to: ${playerHandTotal}
             <br><br>
             
             You have busted the game! You lose!${replayMsg}`;
   } else if (isPlayerBlackJack && isDealerBlackJack) {
     gameOver = true;
+    document.querySelector("#hit-button").disabled = true;
+    document.querySelector("#stand-button").disabled = true;
+    document.querySelector("#submit-button").disabled = false;
     return `Your hands are:<br> ${printHands(playerHandArr)}
             Your hand totals to: ${playerHandTotal}
             <br><br>
@@ -188,17 +210,22 @@ function resultDisplay(playerHandTotal) {
             <br><br>
             It's a tie${replayMsg}`;
   }
-
+  document.querySelector("#hit-button").disabled = false;
+  document.querySelector("#stand-button").disabled = false;
+  document.querySelector("#submit-button").disabled = true;
   return ` Your hands are:<br> ${printHands(playerHandArr)}
             Your hand totals to: ${playerHandTotal}
           <br><br>
-          Enter "hit" to deal another card<br><br>
-          Enter "stand" to end your turn`;
+          Choose to "Hit" or "Stand"`;
 }
 function resultDisplayStand(playerHandTotal, dealerHandTotal) {
   gameOver = true;
+  document.querySelector("#hit-button").disabled = true;
+  document.querySelector("#stand-button").disabled = true;
+  document.querySelector("#submit-button").disabled = false;
   if (isDealerBlackJack && !isPlayerBlackJack) {
-    return `Your hands are:<br> ${printHands(playerHandArr)}
+    return `${imageLose}<br>
+    Your hands:<br> ${printHands(playerHandArr)}
             Your hand totals to: ${playerHandTotal}
             <br><br>
             Dealer hands are: <br> ${printHands(dealerHandsArr)}
@@ -206,49 +233,64 @@ function resultDisplayStand(playerHandTotal, dealerHandTotal) {
             <br><br>
             You lose the game ${replayMsg}`;
   } else if (playerHandTotal > dealerHandTotal && playerHandTotal < 21) {
-    return `Your hands are:<br> ${printHands(playerHandArr)}
+    return `${imageWin}Your hands:<br> ${printHands(playerHandArr)}
             Your hand totals to: ${playerHandTotal}
-            <br><br>
-            Dealer hands are: <br> ${printHands(dealerHandsArr)}
+            <br>
+            Dealer hands: <br> ${printHands(dealerHandsArr)}
             Dealer hand totals to: ${dealerHandTotal}
             <br><br>
             Black Jack! You won the game!${replayMsg}`;
   } else if (dealerHandTotal > playerHandTotal && dealerHandTotal < 21) {
-    return `Your hands are:<br> ${printHands(playerHandArr)}
+    return `${imageLose}<br><br>
+            Your hands:<br> ${printHands(playerHandArr)}
             Your hand totals to: ${playerHandTotal}
             <br><br>
             Dealer hands are: <br> ${printHands(dealerHandsArr)}
             Dealer hand totals to: ${dealerHandTotal}
             <br><br>
-            You lose the game${replayMsg}`;
+            You lose the game${replayMsg} `;
   } else if (playerHandTotal < 21 && dealerHandTotal > 21) {
-    return `Your hands are:<br> ${printHands(playerHandArr)}
+    return `${imageWin}Your hands:<br> ${printHands(playerHandArr)}
             Your hand totals to: ${playerHandTotal}
             <br><br>
-            Dealer hands are: <br> ${printHands(dealerHandsArr)}
+            Dealer hands: <br> ${printHands(dealerHandsArr)}
             Dealer hand totals to: ${dealerHandTotal}
             <br><br>
             Black Jack! You won the game!${replayMsg}`;
+  } else if (playerHandTotal == dealerHandTotal && playerHandTotal < 21) {
+    return `Your hands:<br> ${printHands(playerHandArr)}
+            Your hand totals to: ${playerHandTotal}
+            <br><br>
+            Dealer hands are: <br> ${printHands(dealerHandsArr)}
+            Dealer hand totals to: ${dealerHandTotal}
+            <br><br>
+            It's a tie${replayMsg}`;
   }
 }
 
-let playerHandTotal = 0;
-let dealerHandTotal = 0;
-let gameOver = false;
+function playerHit() {
+  gameState = "player hit";
+}
+
+function playerStand() {
+  gameState = "player stand";
+}
+function reset() {
+  playerHandArr = [];
+  dealerHandsArr = [];
+
+  isPlayerBlackJack = false;
+  isPlayerBusted = false;
+  isDealerBlackJack = false;
+  isDealerBusted = false;
+  gameOver = false;
+}
+
 var main = function (input) {
   let shuffledDeck = shuffleCards(deck);
   console.log("game over is:", gameOver);
   if (gameOver != false) {
-    console.log("game over is:", gameOver);
-    console.log("test 1231234");
-    playerHandArr = [];
-    dealerHandsArr = [];
-
-    isPlayerBlackJack = false;
-    isPlayerBusted = false;
-    isDealerBlackJack = false;
-    isDealerBusted = false;
-    gameOver = false;
+    reset();
   }
   if (playerHandArr.length == 0) {
     playerHandArr = startingHands(shuffledDeck);
@@ -258,15 +300,14 @@ var main = function (input) {
     console.log("dealer hand sum:", dealerHandTotal);
     return resultDisplay(playerHandTotal, dealerHandTotal);
   }
-  let userInput = input.toLowerCase();
-  if (userInput == "hit") {
-    let drawCard = shuffledDeck.pop();
-    playerHandArr.push(drawCard);
-    playerHandTotal = sumInHandsPlayer(playerHandArr);
 
+  if (gameState == "player hit") {
+    playerHandArr.push(shuffledDeck.pop());
+    playerHandTotal = sumInHandsPlayer(playerHandArr);
     return resultDisplay(playerHandTotal);
   }
-  if (userInput == "stand") {
+  //let userInput = input.toLowerCase();
+  if ((gameState = "player stand")) {
     if (dealerHandTotal < 17) {
       dealerHandsArr.push(shuffledDeck.pop());
       console.log("dealer hands arr:", dealerHandsArr);
