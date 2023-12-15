@@ -144,6 +144,47 @@ var totalValue = function (array) {
   return totalValue;
 };
 
+var messageDisplay = function (playerArray, dealerArray) {
+  var index = 0;
+  var playerTotalValue = totalValue(playerArray);
+  var playerMessage =
+    "---PLAYER HAND TOTAL VALUE IS " +
+    playerTotalValue +
+    "---" +
+    " <br> Player cards drawn: <br>";
+  // hand message
+  while (index < playerArray.length) {
+    playerMessage =
+      playerMessage +
+      playerArray[index].name +
+      " of " +
+      playerArray[index].suit +
+      "<br>";
+
+    index += 1;
+  }
+
+  var dealerTotalValue = totalValue(dealerArray);
+  var dealerMessage =
+    "---DEALER HAND TOTAL VALUE IS " +
+    dealerTotalValue +
+    "---" +
+    "<br>Dealer cards drawn: <br>";
+  var index = 0;
+  // dealer message
+  while (index < dealerArray.length) {
+    dealerMessage =
+      dealerMessage +
+      dealerArray[index].name +
+      " of " +
+      dealerArray[index].suit +
+      "<br>";
+
+    index += 1;
+  }
+
+  return playerMessage + "<br>" + dealerMessage;
+};
 // ~~~~~~~~~~~~~~~~~~~~~~~~~MAIN FUNCTIONS~~~~~~~~~~~~~~~~~~~~~~~~~
 var main = function (input) {
   var myOutputValue = "";
@@ -170,7 +211,7 @@ var main = function (input) {
 
     return myOutputValue;
   }
-
+  // Game state to show card
   if (currentGameState == gameStateDrawCard) {
     // test checkForBlackJack function
     // playerHand = [
@@ -188,15 +229,18 @@ var main = function (input) {
 
     // -- blackjack tie
     if (playerBlackJack == true || dealerBlackJack == true) {
-      myOutputValue = `It is a blackjack tie!`;
+      myOutputValue =
+        messageDisplay(playerHand, dealerHand) + `<br> IT IS A BLACKJACK TIE!!`;
     }
     // -- player blackjack
     else if (playerBlackJack == true && dealerBlackJack == false) {
-      myOutputValue = `Player wins by blackjack!`;
+      myOutputValue =
+        messageDisplay(playerHand, dealerHand) + `<br> BLACKJACK! PLAYER WINS!`;
     }
     // -- dealer blackjack
     else {
-      myOutputValue = `Dealer wins by blackjack!`;
+      myOutputValue =
+        messageDisplay(playerHand, dealerHand) + `<br> BLACKJACK! DEALER WINS!`;
     }
 
     var playerValue = totalValue(playerHand);
@@ -204,18 +248,23 @@ var main = function (input) {
     console.log(playerValue);
     console.log(dealerValue);
     // Win condition
+    // -- tie
     if (playerValue == dealerValue) {
-      myOutputValue = `It is a tie!`;
-    } else if (playerValue > dealerValue) {
-      myOutputValue = `Player wins`;
-    } else {
-      myOutputValue = `Dealer wins`;
+      myOutputValue =
+        messageDisplay(playerHand, dealerHand) + `<br> IT IS A TIE!`;
+    }
+    // -- player win
+    else if (playerValue > dealerValue) {
+      myOutputValue =
+        messageDisplay(playerHand, dealerHand) + `<br> PLAYER WINS`;
+    } // -- dealer win
+    else {
+      myOutputValue =
+        messageDisplay(playerHand, dealerHand) + `<br> DEALER WINS`;
     }
 
-    // -- tie
-    // -- player win
-    // -- dealer win
     // change game state
+    currentGameState = gameStateShowCard;
   }
 
   return myOutputValue;
