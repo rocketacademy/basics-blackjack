@@ -14,16 +14,23 @@ var makeDeck = function () {
       var rankCounter = 1;
       while (rankCounter <= 13) {
           var cardName = rankCounter;
-
+          var cardValue = rankCounter;
+          
           if (cardName == 1) {
               cardName = `Ace`;
+              cardValue = [1, 11];
           } else if (cardName == 11) {
               cardName = `Jack`;
+              cardValue = 10;
           } else if (cardName == 12) {
               cardName = `Queen`;
+              cardValue = 10;
           } else if (cardName == 13) {
               cardName = `King`;
+              cardValue = 10;
           }
+          
+        
           var card = {
               name: cardName,
               suit: currentSuit,
@@ -85,6 +92,8 @@ var main = function(input){
       console.log(shuffleDCard);
       console.log(PlayerHand);
       console.log(DealerHand);
+      console.log(cardDeck[0]);
+      console.log(cardDeck[0].value);
 
       mode = "game";
       
