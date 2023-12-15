@@ -1,22 +1,7 @@
-//1. playable game: creating deck, shuffling, dealing cards, evaluating winner
-//2. ability for player to hit or stand
-//3. ability for dealer to hit or stand
-//4. variable value of Ace - '1' or '11'
-
-// ---Pseudocode---
-//1. define player and dealer
-//2. create and shuffle a game deck
-//3. draw 2 cards for player and dealer respectively
-//4. win conditions
-// --- black jack
-// -- higher hand value
-
-//5. display hands of both player
-
 // ~~~~~~~~~~~~~~~~~~~~~~~~~GLOBAL VARIABLES~~~~~~~~~~~~~~~~~~~~~~~~~
 var gameStateStart = "Start game";
 var gameStateDrawCard = "Draw cards";
-var gameStateShowCard = "Show cards";
+var gameStateHitOrStand = "Hit or stand";
 var currentGameState = gameStateStart;
 var playerHand = [];
 var dealerHand = [];
@@ -121,9 +106,9 @@ var blackJackCheck = function (array) {
   }
   return blackJack;
 };
-
 var totalValue = function (array) {
   var totalValue = 0;
+  var aceCount = 0;
 
   var index = 0;
   // player value
@@ -135,12 +120,22 @@ var totalValue = function (array) {
       currentCard.name == "king"
     ) {
       totalValue = totalValue + 10;
+    } else if (currentCard.name == "ace") {
+      totalValue = totalValue + 11;
+      aceCount += 1;
     } else {
       totalValue = totalValue + currentCard.rank;
     }
-
     index += 1;
   }
+
+  index = 0;
+  while (index < aceCount) {
+    if (totalValue > 21) {
+      totalValue = totalValue - 10;
+    }
+  }
+
   return totalValue;
 };
 
@@ -185,6 +180,7 @@ var messageDisplay = function (playerArray, dealerArray) {
 
   return playerMessage + "<br>" + dealerMessage;
 };
+
 // ~~~~~~~~~~~~~~~~~~~~~~~~~MAIN FUNCTIONS~~~~~~~~~~~~~~~~~~~~~~~~~
 var main = function (input) {
   var myOutputValue = "";
@@ -211,6 +207,7 @@ var main = function (input) {
 
     return myOutputValue;
   }
+
   // Game state to show card
   if (currentGameState == gameStateDrawCard) {
     // test checkForBlackJack function
@@ -227,45 +224,75 @@ var main = function (input) {
     var playerBlackJack = blackJackCheck(playerHand);
     var dealerBlackJack = blackJackCheck(dealerHand);
 
-    // -- blackjack tie
     if (playerBlackJack == true || dealerBlackJack == true) {
-      myOutputValue =
-        messageDisplay(playerHand, dealerHand) + `<br> IT IS A BLACKJACK TIE!!`;
+      // -- blackjack tie
+      if (playerBlackJack == true && dealerBlackJack == true) {
+        myOutputValue =
+          messageDisplay(playerHand, dealerHand) +
+          `<br> IT IS A BLACKJACK TIE!!`;
+      }
+      // -- player blackjack
+      else if (playerBlackJack == true || dealerBlackJack == false) {
+        myOutputValue =
+          messageDisplay(playerHand, dealerHand) +
+          `<br> BLACKJACK! PLAYER WINS!`;
+      }
+      // -- dealer blackjack
+      else if (playerBlackJack == false || dealerBlackJack == true) {
+        myOutputValue =
+          messageDisplay(playerHand, dealerHand) +
+          `<br> BLACKJACK! DEALER WINS!`;
+      }
+    } else {
+      myOutputValue = messageDisplay(playerHand, dealerHand) + "No blackjack";
+      // change game state
+      currentGameState = gameStateHitOrStand;
     }
-    // -- player blackjack
-    else if (playerBlackJack == true && dealerBlackJack == false) {
-      myOutputValue =
-        messageDisplay(playerHand, dealerHand) + `<br> BLACKJACK! PLAYER WINS!`;
-    }
-    // -- dealer blackjack
-    else {
-      myOutputValue =
-        messageDisplay(playerHand, dealerHand) + `<br> BLACKJACK! DEALER WINS!`;
-    }
-
-    var playerValue = totalValue(playerHand);
-    var dealerValue = totalValue(dealerHand);
-    console.log(playerValue);
-    console.log(dealerValue);
-    // Win condition
-    // -- tie
-    if (playerValue == dealerValue) {
-      myOutputValue =
-        messageDisplay(playerHand, dealerHand) + `<br> IT IS A TIE!`;
-    }
-    // -- player win
-    else if (playerValue > dealerValue) {
-      myOutputValue =
-        messageDisplay(playerHand, dealerHand) + `<br> PLAYER WINS`;
-    } // -- dealer win
-    else {
-      myOutputValue =
-        messageDisplay(playerHand, dealerHand) + `<br> DEALER WINS`;
-    }
-
-    // change game state
-    currentGameState = gameStateShowCard;
   }
 
-  return myOutputValue;
+  // HIT OR STAND
+  if (currentGameState == gameStateHitOrStand) {
+    // player hit
+    if (input == "hit") {
+      playerHand.push(gameDeck.pop());
+      myOutputValue =
+        "You have draw a new card. Enter 'hit' or  'stand' to continue. <br><br>" +
+        messageDisplay(playerHand, dealerHand);
+    }
+
+    // player stand
+    else if (input == "stand") {
+      var playerValue = totalValue(playerHand);
+      var dealerValue = totalValue(dealerHand);
+
+      while (dealerValue < 17) {
+        dealerHand.push(gameDeck.pop());
+        dealerValue = calculateTotalHandValue(dealerHand);
+      }
+
+      // Win condition
+      // -- tie
+      if (playerValue == dealerValue) {
+        myOutputValue =
+          messageDisplay(playerHand, dealerHand) + `<br> IT IS A TIE!`;
+      }
+      // -- player win
+      else if (playerValue > dealerValue) {
+        myOutputValue =
+          messageDisplay(playerHand, dealerHand) + `<br> PLAYER WINS`;
+      } // -- dealer win
+      else {
+        myOutputValue =
+          messageDisplay(playerHand, dealerHand) + `<br> DEALER WINS`;
+      }
+    }
+
+    // input validation
+    else {
+      myOutputValue =
+        'Wrong input. Please input only "hit" or "stand". <br><br>' +
+        messageDisplay(playerHand, dealerHand);
+    }
+    return myOutputValue;
+  }
 };
