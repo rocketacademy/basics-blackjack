@@ -9,7 +9,7 @@ var dealerArray = [];
 
 var makeDeck = function () {
   // Initialise an array of the 4 suits in our deck. We will loop over this array.
-  var suits = ["hearts", "diamonds", "clubs", "spades"];
+  var suits = ["♥️", "♦️", "♣️", "♠️"];
 
   // Loop over the suits array
   var suitIndex = 0;
@@ -29,7 +29,7 @@ var makeDeck = function () {
       if (cardName == 1) {
         cardName = "ace";
       } else if (cardName == 11) {
-        cardName = "jack";
+        cardName = "🃏";
       } else if (cardName == 12) {
         cardName = "queen";
       } else if (cardName == 13) {
@@ -94,11 +94,11 @@ var calcHandValue = function (array) {
     if (
       latestCard.name == "queen" ||
       latestCard.name == "king" ||
-      latestCard.name == "jack"
+      latestCard.name == "🃏"
     ) {
       value = value + 10;
       //ace value = 11 if >21
-    } else if (latestCard.name == "ace" && value < 21) {
+    } else if (latestCard.name == "ace" && value <= 20) {
       value = value + 11;
     } else {
       //the rest: = rank number
@@ -110,7 +110,7 @@ var calcHandValue = function (array) {
 };
 
 var showPlayerHand = function (playerArray) {
-  message = "Player Hand: <br>";
+  message = "Your Hand: <br>";
   index = 0;
   while (index < playerArray.length) {
     message =
@@ -141,7 +141,7 @@ var showDealerHand = function (dealerArray) {
 
 var main = function (input) {
   var myOutputValue = "";
-  var shuffledCardDeck = shuffleCards(makeDeck());
+  var cardDeck = shuffleCards(makeDeck());
   var showHandsAndValue =
     showPlayerHand(playerArray) +
     calcHandValue(playerArray) +
@@ -149,10 +149,11 @@ var main = function (input) {
     showDealerHand(dealerArray) +
     calcHandValue(dealerArray);
   if (currentGameMode == gameMode1) {
-    playerArray.push(shuffledCardDeck.pop());
-    playerArray.push(shuffledCardDeck.pop());
-    dealerArray.push(shuffledCardDeck.pop());
-    dealerArray.push(shuffledCardDeck.pop());
+    playerArray.push(cardDeck.pop());
+    playerArray.push(cardDeck.pop());
+    dealerArray.push(cardDeck.pop());
+    dealerArray.push(cardDeck.pop());
+    console.log("deal cards");
     var playerValue = calcHandValue(playerArray);
     var dealerValue = calcHandValue(dealerArray);
     var showHandsAndValue =
@@ -161,29 +162,47 @@ var main = function (input) {
       "<br><br>" +
       showDealerHand(dealerArray) +
       calcHandValue(dealerArray);
-    if (playerValue == 21) {
+    console.log("hands: ", showHandsAndValue);
+    if (playerValue === 21) {
+      console.log("P win");
+      var cheeringSanta =
+        '<img src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExNWlpOXNxdXByZnF6c3BocGttOHF5NzF2eWY4djdlcXhmd29yN3QwZCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/wuMue3qGESHbrM8ps9/giphy.gif"/>';
       myOutputValue =
         showHandsAndValue +
-        "<br>Player wins by blackjack. Refresh to play again.";
+        "<br>You won! Refresh to play again.<br>" +
+        cheeringSanta;
     }
-    if (dealerValue == 21) {
+    if (dealerValue === 21) {
+      console.log("D win");
+      var shockedSanta =
+        '<img src="https://i.giphy.com/m8XKBTQdYrvbj7dTXX.webp"/>';
       myOutputValue =
         showHandsAndValue +
-        "<br>Dealer wins by blackjack. Refresh to play again.";
+        "<br>Dealer won. Refresh to play again.<br>" +
+        shockedSanta;
     }
-    if (playerValue == dealerValue) {
+    if (playerValue == 21 && dealerValue == 21) {
+      console.log("tie");
+      var heartSanta =
+        '<img src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExZWpkNno5dnU5cHJra2R4cnB6dXduYXR1dmdhMW11djBlZ3gzb2J2ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/gmi3WAWRLIRzR63lIU/giphy_s.gif"/>';
       myOutputValue =
-        showHandsAndValue + "<br>Its a tie. Refresh to play again.";
+        showHandsAndValue +
+        "<br>Its a tie. Refresh to play again.<br>" +
+        heartSanta;
     } else {
       currentGameMode = gameMode2;
+      var chimneySanta =
+        '<img src="https://media3.giphy.com/media/6LWgndjhVe1HTb0pQi/200w.webp?cid=ecf05e472if9q1t6kike3whspu7s0v3prrjn93zr0leml8r4&ep=v1_gifs_related&rid=200w.webp&ct=g"/>';
       myOutputValue =
-        showHandsAndValue + "<br><br> Type 'h' to hit or 's' to stand.";
+        showHandsAndValue +
+        "<br><br> Were you naughty(stand) or nice(hit) this year? <br>" +
+        chimneySanta;
     }
     return myOutputValue;
   }
   if (currentGameMode == gameMode2) {
     if (input == "h") {
-      playerArray.push(shuffledCardDeck.pop());
+      playerArray.push(cardDeck.pop());
       var dealerHandValue = calcHandValue(dealerArray);
       var playerHandValue = calcHandValue(playerArray);
       if (playerHandValue > 21) {
@@ -194,7 +213,7 @@ var main = function (input) {
           "<br><br>" +
           showDealerHand(dealerArray) +
           dealerHandValue +
-          "<br><br> You bust. Click submit to see results.";
+          "<br><br> You bust. Click ♠️♥️♣️♦️ to see results.";
       } else {
         myOutputValue =
           showPlayerHand(playerArray) +
@@ -202,18 +221,18 @@ var main = function (input) {
           "<br><br>" +
           showDealerHand(dealerArray) +
           dealerHandValue +
-          "<br> Type 'h' to hit or 's' to stand.";
+          "<br> Were you naughty(stand) or nice(hit) this year? ";
       }
     } else if (input == "s") {
       currentGameMode = gameMode3;
-      myOutputValue = "Dealer's turn now. Click submit to see results.";
+      myOutputValue = "Dealer's turn now. Click ♠️♥️♣️♦️ to see results.";
     }
     return myOutputValue;
   }
   if (currentGameMode == gameMode3) {
     var dealerHandValue = calcHandValue(dealerArray);
     while (dealerHandValue < 17) {
-      dealerArray.push(shuffledCardDeck.pop());
+      dealerArray.push(cardDeck.pop());
       dealerHandValue = calcHandValue(dealerArray);
     }
     var playerHandValue = calcHandValue(playerArray);
@@ -224,16 +243,145 @@ var main = function (input) {
       showDealerHand(dealerArray) +
       calcHandValue(dealerArray);
     if (dealerHandValue > 21 && playerHandValue > 21) {
-      myOutputValue = showHandsAndValue + "<br><br>Its a tie, both bust.";
+      var presentpresentSanta =
+        '<img src= "https://im3.ezgif.com/tmp/ezgif-3-d9b68612c3.gif"/>';
+      myOutputValue =
+        showHandsAndValue +
+        "<br><br>Its a tie, both bust. Refresh to play again!<br>" +
+        presentpresentSanta;
     } else if (dealerHandValue > 21 && playerHandValue < 21) {
-      myOutputValue = showHandsAndValue + "<br><br>Dealer bust. Player wins.";
+      var pointingSanta =
+        '<img src= "https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExYXhjZGI0dzNlZXdscHNxeG4xdGRtbW05a3ZuN2F4ZGJsdzNqcGgzdyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/aJehSiEgLb76Dikq7T/giphy.gif"/>';
+      myOutputValue =
+        showHandsAndValue +
+        "<br><br>Dealer bust. You won! Refresh to play again!<br>" +
+        pointingSanta;
     } else if (playerHandValue > 21 && dealerHandValue < 21) {
-      myOutputValue = showHandsAndValue + "<br><br>Player bust. Dealer wins.";
+      var disapprovingSanta =
+        '<img src= "https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExNTljYnY5NmZ5aTFldm8wams1cDFnbDdqa3M4bWU4ZjhndTZ2dm84cyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/zsa730TRwOF8O4UoAJ/giphy.gif"/>';
+      myOutputValue =
+        showHandsAndValue +
+        "<br><br>You bust. Dealer won. Refresh to play again!<br>" +
+        disapprovingSanta;
     } else if (playerHandValue > dealerHandValue && playerHandValue <= 21) {
-      myOutputValue = showHandsAndValue + "<br><br>Player wins.";
+      var cheeringSanta =
+        '<img src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExbTk3MmR0eHNuem84bXZyaG1hejdiN2Jwa2h0bnc4cGw3Y2tqYm84eSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/wuMue3qGESHbrM8ps9/giphy_s.gif"/>';
+      myOutputValue =
+        showHandsAndValue +
+        "<br><br>You won! Refresh to play again!<br>" +
+        cheeringSanta;
     } else if (playerHandValue < dealerHandValue && dealerHandValue <= 21) {
-      myOutputValue = showHandsAndValue + "<br><br>Dealer wins.";
+      var noNoSanta =
+        '<img src= "https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExZ3Y3eTI2bGFlc3E4NDN6NTEyYXRwbGxzcDJ5c3l2Z2Y1ZTVuOGV5diZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/N3eZflDS4BZvAC0Ai5/giphy.gif"/>';
+      myOutputValue =
+        showHandsAndValue +
+        "<br><br>Dealer won. Refresh to play again!<br>" +
+        noNoSanta;
     }
     return myOutputValue;
   }
+};
+
+var hit = function () {
+  playerArray.push(cardDeck.pop());
+  var dealerHandValue = calcHandValue(dealerArray);
+  var playerHandValue = calcHandValue(playerArray);
+  if (playerHandValue > 21) {
+    currentGameMode = gameMode3;
+    var knockingSanta =
+      '<img src= "https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExdmpnZ3hjbTg3ZWt2dmhkNjNhNWhzODN4bThrZmhtcHkwcjJ2aXF6ciZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/Z0MMLLRmzNbfPHT4Gn/giphy.gif"/>';
+    myOutputValue =
+      showPlayerHand(playerArray) +
+      playerHandValue +
+      "<br><br>" +
+      showDealerHand(dealerArray) +
+      dealerHandValue +
+      "<br><br> You bust. Click ♠️♥️♣️♦️ to see results.<br>" +
+      knockingSanta;
+  } else if (playerHandValue == 21) {
+    var twoThumbsUpSanta =
+      '<img src= "https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExaW4xa2IxcGR1YjA0OGtmbXlwaHlrc3VsOWkwbDE1MTBvbnZ1eWQybiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/VxylsapmBSnf01keYg/giphy.gif"/>';
+    myOutputValue =
+      showPlayerHand(playerArray) +
+      playerHandValue +
+      "<br><br>" +
+      showDealerHand(dealerArray) +
+      dealerHandValue +
+      "<br><br> You won! Refresh to play again.<br>" +
+      twoThumbsUpSanta;
+  } else {
+    var presentsSanta =
+      '<img src= "https://media1.giphy.com/media/yP2MOlgfnip51GutHT/200w.webp?cid=ecf05e472if9q1t6kike3whspu7s0v3prrjn93zr0leml8r4&ep=v1_gifs_related&rid=200w.webp&ct=g"/>';
+    myOutputValue =
+      showPlayerHand(playerArray) +
+      playerHandValue +
+      "<br><br>" +
+      showDealerHand(dealerArray) +
+      dealerHandValue +
+      "<br><br> Were you naughty(stand) or nice(hit) this year? <br>" +
+      presentsSanta;
+  }
+  return myOutputValue;
+  // check sum and display
+  //loop through array
+};
+
+var stand = function () {
+  var myOutputValue = "";
+  var dealerHandValue = calcHandValue(dealerArray);
+  while (dealerHandValue < 17) {
+    dealerArray.push(cardDeck.pop());
+    dealerHandValue = calcHandValue(dealerArray);
+  }
+  var playerHandValue = calcHandValue(playerArray);
+  var showHandsAndValue =
+    showPlayerHand(playerArray) +
+    calcHandValue(playerArray) +
+    "<br><br>" +
+    showDealerHand(dealerArray) +
+    calcHandValue(dealerArray);
+  if (dealerHandValue > 21 && playerHandValue > 21) {
+    var presentpresentSanta =
+      '<img src= "https://im3.ezgif.com/tmp/ezgif-3-d9b68612c3.gif"/>';
+    myOutputValue =
+      showHandsAndValue +
+      "<br><br>Its a tie, both bust. Refresh to play again!<br>" +
+      presentpresentSanta;
+  } else if (dealerHandValue > 21 && playerHandValue < 21) {
+    var pointingSanta =
+      '<img src= "https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExYXhjZGI0dzNlZXdscHNxeG4xdGRtbW05a3ZuN2F4ZGJsdzNqcGgzdyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/aJehSiEgLb76Dikq7T/giphy.gif"/>';
+    myOutputValue =
+      showHandsAndValue +
+      "<br><br>Dealer bust. You won! Refresh to play again!<br>" +
+      pointingSanta;
+  } else if (playerHandValue > 21 && dealerHandValue < 21) {
+    var disapprovingSanta =
+      '<img src= "https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExNTljYnY5NmZ5aTFldm8wams1cDFnbDdqa3M4bWU4ZjhndTZ2dm84cyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/zsa730TRwOF8O4UoAJ/giphy.gif"/>';
+    myOutputValue =
+      showHandsAndValue +
+      "<br><br>You bust. Dealer won. Refresh to play again!<br>" +
+      disapprovingSanta;
+  } else if (playerHandValue > dealerHandValue && playerHandValue <= 21) {
+    var cheeringSanta =
+      '<img src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExNWlpOXNxdXByZnF6c3BocGttOHF5NzF2eWY4djdlcXhmd29yN3QwZCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/wuMue3qGESHbrM8ps9/giphy.gif"/>';
+    myOutputValue =
+      showHandsAndValue +
+      "<br><br>You won! Refresh to play again!<br>" +
+      cheeringSanta;
+  } else if (playerHandValue < dealerHandValue && dealerHandValue <= 21) {
+    var noNoSanta =
+      '<img src= "https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExZ3Y3eTI2bGFlc3E4NDN6NTEyYXRwbGxzcDJ5c3l2Z2Y1ZTVuOGV5diZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/N3eZflDS4BZvAC0Ai5/giphy.gif"/>';
+    myOutputValue =
+      showHandsAndValue +
+      "<br><br>Dealer won. Refresh to play again!<br>" +
+      noNoSanta;
+  } else if (dealerHandValue == playerHandValue) {
+    var presentpresentSanta =
+      '<img src= "https://im3.ezgif.com/tmp/ezgif-3-d9b68612c3.gif"/>';
+    myOutputValue =
+      showHandsAndValue +
+      "<br><br>Its a tie. Refresh to play again!<br>" +
+      presentpresentSanta;
+  }
+  return myOutputValue;
 };
