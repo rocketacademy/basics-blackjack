@@ -30,6 +30,22 @@ var PLAYER_DRAW
 var CARDS_DRAW_DROM_DECK = []
 var DEALER_DRAW = []
 var PLAYER_DRAW = []
+var GAME_STATE = 1
+var HIT_CARD = []
+
+/* game state  
+  1. player_draw = 1
+  2. player decide to hit of stand = 2
+  2. player_hit = 3
+  3. player_stand = 4
+  4. calculate = 5
+*/
+var PLAYER_TURN = 0
+/*
+player turn will determine]p which player's turn to hit or stand
+*/
+
+
 
 function reset (){
   //CARDS_TAKEN = 0;
@@ -126,13 +142,51 @@ var drawCard = function(){
 //   return [card_A, card_B]
 // if player hit
 var hit = function(){
-  let hit_card = drawCard()
-  console.log(hit_card)
-  return [hit_card]
+  /* 
+  if player hit then draw a card
+  after drawing a card, that card gets assigned to the player card data(their object)
+  after that, print the new card in hand, 
+  */
+ var hitTotal = 0
+  draw = drawCard()
+  
+  // assign card player using PLAYER_TURN
+  draw[0].player = PLAYER_TURN
+  HIT_CARD.push(draw)
+  PLAYER_DRAW[PLAYER_TURN - 1].hit = HIT_CARD
+  // console.log(draw)
+  console.log('Hit Length')
+  console.log(PLAYER_DRAW[PLAYER_TURN - 1].hit.length)
+  hitCardLength = HIT_CARD.length
+  // count total
+  for(i = 0; i < hitCardLength; i++){
+    if(HIT_CARD[i][0].player == PLAYER_TURN){
+      console.log('Hello')
+      hitTotal += evaluateCards(HIT_CARD[i][0].card.name)
+      console.log('Hit Total')
+      console.log(hitTotal)
+    }
+  }
+  PLAYER_DRAW[PLAYER_TURN - 1].total += hitTotal
+  // return PLAYER_DRAW[PLAYER_TURN - 1] HIT_CARD[0][0].card HIT_CARD[1][0].card
+  // return PLAYER_DRAW[PLAYER_TURN - 1].total
+  // add more card info here
+  return `Player ${PLAYER_TURN}, hit or stand?`
 }
 
+
 var stand = function(){
-  return NaN
+  // when stand is hit, change player, change PLAYER_TURN += 1
+  if(PLAYER_TURN == 'DEALER'){
+    //PLAYER_TURN = "DEALER"
+    GAME_STATE = 5
+    return getResult()
+  }
+  else{
+    PLAYER_TURN +=1
+  }
+  
+  return getResult()
 }
 
 
@@ -210,38 +264,62 @@ var getResult = function(){
   //local var
   var playerResult, output = [];
   // initiate draw
-  playersDraw()
-  // 
-  for(i = 0; i < PLAYER_DRAW.length; i++){
-    // console.log(PLAYER_DRAW[i])
-    // traverse to player total
-    playerResult = PLAYER_DRAW[i].total
-    console.log(playerResult)
-    dealerResult = DEALER_DRAW[0].total
-    console.log(dealerResult)
-    if (playerResult == 21){
-      player = PLAYER_DRAW[0].first[0].player
-      output.push(`player ${player} wins`)
-    }
-    if(dealerResult == 21){
-      // dealer = DEALER_DRAW[i].first[0].player
-      player = PLAYER_DRAW[0].first[0].player
-      output.push(`Dealer wins over Player ${player}`)
-    }
-    //
-    if (playerResult > dealerResult && playerResult < 21){
-      player = PLAYER_DRAW[0].first[0].player
-      output.push(`player ${player} wins`)
-    }
-    if (dealerResult > playerResult && dealerResult < 21){
-      // dealer = DEALER_DRAW[i].first[0].player
-      player = PLAYER_DRAW[0].first[0].player
-      output.push(`Dealer wins over Player ${player}`)
-    }
-    // traverse to dealer total
-    // dealer will always be at [0] since its the same "player"
+  if(GAME_STATE == 1){
+    playersDraw()
+    GAME_STATE = 2
+    PLAYER_TURN = 1
+    
   }
-  //reset hand
-  reset()
-  return output;
+  if(GAME_STATE == 2){
+    if(PLAYER_TURN == NUM_OF_PLAYER){
+      PLAYER_TURN = "DEALER"
+      return `${PLAYER_TURN}, hit or stand?`
+    } 
+  return `Player ${PLAYER_TURN}, hit or stand?`
+  }
+  if(GAME_STATE == 5){ 
+    GAME_STATE = 1
+    for(i = 0; i < PLAYER_DRAW.length; i++){
+      // console.log(PLAYER_DRAW[i])
+      // traverse to player total
+      playerResult = PLAYER_DRAW[i].total
+      console.log(playerResult)
+      dealerResult = DEALER_DRAW[0].total
+      console.log(dealerResult)
+      if (playerResult == 21){
+        player = PLAYER_DRAW[i].first[0].player
+        output.push(`Blackjack!, Player ${player} wins`)
+      }
+      if (playerResult > 21){
+        player = PLAYER_DRAW[i].first[0].player
+        output.push(`Player ${player} busted`)
+      }
+      if(dealerResult == 21){
+        // dealer = DEALER_DRAW[i].first[0].player
+        player = PLAYER_DRAW[i].first[0].player
+        output.push(`Blackjack!, Dealer wins over Player ${player}`)
+      }
+      if(dealerResult > 21){
+        // dealer = DEALER_DRAW[i].first[0].player
+        player = PLAYER_DRAW[i].first[0].player
+        output.push(`Dealer lose, Player ${player} gets the win`)
+      }
+      //
+      if (playerResult > dealerResult && playerResult < 21){
+        player = PLAYER_DRAW[i].first[0].player
+        output.push(`Player ${player} wins over Dealer`)
+      }
+      if (dealerResult > playerResult && dealerResult < 21){
+        // dealer = DEALER_DRAW[i].first[0].player
+        player = PLAYER_DRAW[i].first[0].player
+        output.push(`Dealer wins over Player ${player}`)
+      }
+      // traverse to dealer total
+      // dealer will always be at [0] since its the same "player"
+    }
+    //reset hand
+    reset()
+  joinOutput = output.join('<br>')
+  return joinOutput;
+  }
 }
