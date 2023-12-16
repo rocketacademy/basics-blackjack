@@ -54,7 +54,7 @@
         font-family: 'Open Sans', sans-serif;
         margin-left: 30px;
         margin-right: 30px;
-        background-color:white;
+        background-color:rgb(160, 211, 20);
         color: black; /* sets the font color */
         background-image: url(""); /* The image used */
         background-position: center; /* Center the image */
@@ -74,7 +74,7 @@
       }
 
       #container {
-        background-color: pink;
+        background-color: rgb(255, 255, 255);
         margin: 40px auto;
         max-width: 800px;
         padding: 38px 31px;
@@ -126,30 +126,102 @@
     </h1>
     <h1 class="header">♣️ Basics - Blackjack ♠️</h1>
     <div id="container">
-      <p>Input:</p>
-      <input id="input-field" />
+      <div class="row">
+        <div class="column">
+      <img style="width:100%" src="https://www.gamblingnews.com/wp-content/uploads/2020/11/alan-garner-the-hangover-meme.jpg"/>
+      <div class="column">
+      </div>
+      <p>Number of players:
+      </p><button onclick="clicked(-1)">Decrease</button>
+      <font style="border:rgb(35, 242, 70); border-width:10px; border-style:outset; font-size:20px" id="no_players"> -- </font>
+      <button onclick="clicked(1)">Increase</button>
       <br />
-      <button id="submit-button">Submit</button>
+      <div>
+        <button id="restart-button">Restart</button>
+        <button id="play-button">Play</button>
+        <button id="hit-button">Hit</button>
+        <button id="stand-button">Stand</button>
+        <!-- <button id="split-button">Split</button> -->
+      </div>
       <p>Output:</p>
-      <div id="output-div"></div>
+      <div id="output-div">
+      </div>
+      <div id="players" class="players">
+      </div>
+    </div>
+    <div id="players" class="players">
     </div>
     <!-- Import program logic -->
     <script src="script.js"></script>
     <!-- Define button click functionality -->
     <script>
-      var button = document.querySelector("#submit-button");
-      button.addEventListener("click", function () {
+      var i = 0;
+      function clicked(n) {
+          var no_players = document.getElementById("no_players");
+          i = i + n;
+          no_players.innerHTML = i;
+      };
+      var restart_button = document.querySelector("#restart-button");
+      restart_button.addEventListener("click", function () {
         // Set result to input value
-        var input = document.querySelector("#input-field");
-        var result = main(input.value);
-
+        var input = document.querySelector("#no_players");
+        var result = restart();
         // Display result in output element
         var output = document.querySelector("#output-div");
         output.innerHTML = result;
-
         // Reset input value
         input.value = "";
       });
+
+      var play_button = document.querySelector("#play-button");
+      play_button.addEventListener("click", function () {
+        // Set result to input value
+        var input = Number(document.querySelector("#no_players").innerHTML);
+        console.log(input)
+        var result = main(input);
+        // Display result in output element
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
+        // Reset input value
+        input.value = "";
+      });
+
+      var hit_button = document.querySelector("#hit-button");
+      hit_button.addEventListener("click", function () {
+        // Set result to input value
+        var input = document.querySelector("#input-field");
+        var result = hit();
+        // Display result in output element
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
+        // Reset input value
+        input.value = "";
+      });
+
+      var stand_button = document.querySelector("#stand-button");
+      stand_button.addEventListener("click", function () {
+        // Set result to input value
+        var input = document.querySelector("#input-field");
+        var result = stand();
+        // Display result in output element
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
+        // Reset input value
+        input.value = "";
+      });
+      play_button.addEventListener('click',function(){
+        var output = document.querySelector("#output-div");
+        if (mainGameFunction == "computers turn"){
+          for (var i = 0; i<computers.length; i++){
+            while (computers[i].points < 17) {
+              result = computer_turn()
+              output.innerHTML = result;
+              wait(1000)
+            }
+          }
+        }
+      })
+      
     </script>
   </body>
 </html>
