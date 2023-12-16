@@ -52,6 +52,13 @@ var shuffledDeck = shuffleCards(makeDeck());
 
 var main = function (input) {
   if (state == "") {
+    player1Cards = [];
+    player1String = [];
+    dealerCards = [];
+    dealerString = [];
+    message = "";
+    player1Score = 0;
+    dealerScore = 0;
     myOutputValue = "Welcome to the card game!";
     state = "start";
   } else if (state == "start") {
@@ -90,7 +97,7 @@ var main = function (input) {
     }
 
     if (player1Score < 21) {
-      state = "hos";
+      state = "hosp";
     }
 
     if (
@@ -123,8 +130,8 @@ var main = function (input) {
       dealerString.join(", ") +
       "<br>" +
       message;
-  } else if (state == "hos") {
-    if (/hit/.test(input) || /stand/.test(input)) {
+  } else if (state == "hosp") {
+    if (/hit/.test(input)) {
       player1Cards.push(shuffledDeck.pop());
       var newCard = player1Cards[player1Cards.length - 1];
 
@@ -156,18 +163,70 @@ var main = function (input) {
         dealerString.join(", ") +
         "<br>" +
         message;
-    } else if (input == "stand") {
+    } else if (/stand/.test(input)) {
+      state = "hosd";
+      myOutputValue = "Dealer is your turn!";
+    } else {
+      myOutputValue =
+        "Please enter" +
+        (player1Score <= 21 ? " hit or stand." : " stand.") +
+        "<br><br>" +
+        "Player hand: " +
+        player1String.join(", ") +
+        "<br>" +
+        "Dealer hand: " +
+        dealerString.join(", ") +
+        "<br>" +
+        message;
+    }
+  } else if (state == "hosd") {
+    if (/hit/.test(input) && dealerScore <= 21) {
+      dealerCards.push(shuffledDeck.pop());
+      var newCard = dealerCards[dealerCards.length - 1];
+
+      if (newCard.rank > 9) {
+        newCard.rank = 10;
+      }
+      dealerScore += newCard.rank;
+
+      console.log(dealerScore);
+
+      if (dealerScore > 21) {
+        message = "Dealer burst!";
+      } else if (player1Score > dealerScore && player1Score <= 21) {
+        message = "Player wins!";
+      } else if (dealerScore < player1Score && player1Score > 21) {
+        message = "Dealer wins!";
+      } else if (dealerScore == player1Score) {
+        message = "It is a tie!";
+      } else {
+        message = "";
+      }
+      joined = newCard.name + " of " + newCard.suit;
+      dealerString.push(joined);
+      myOutputValue =
+        "Player hand: " +
+        player1String.join(", ") +
+        "<br>" +
+        "Dealer hand: " +
+        dealerString.join(", ") +
+        "<br>" +
+        message;
+    } else if (/stand/.test(input)) {
       state = "";
-      player1Cards = [];
-      player1String = [];
-      dealerCards = [];
-      dealerString = [];
-      message = "";
-      player1Score = 0;
-      dealerScore = 0;
       myOutputValue = "Thank you for playing!";
     } else {
-      myOutputValue = "Please enter hit or stand.";
+      myOutputValue =
+        "Please enter" +
+        (dealerScore <= 21 ? " hit or stand." : " stand.") +
+        "<br><br>" +
+        "Player hand: " +
+        player1String.join(", ") +
+        "<br>" +
+        "Dealer hand: " +
+        dealerString.join(", ") +
+        "<br>" +
+        message;
     }
   }
   return myOutputValue;
