@@ -125,31 +125,82 @@
       <img class="logo-img" src="https://firebasestorage.googleapis.com/v0/b/ftbc11-sample.appspot.com/o/images%2F1-PRIMARY_CRIMSON.png?alt=media&token=ce9e8333-2a45-44be-adb2-1f1bf054adf7" />
     </h1>
     <h1 class="header">♣️ Basics - Blackjack ♠️</h1>
+    <h3> 
+    Rules <br> <br>
+    - If your card is more than 21, you will lose regardless of any other conditions <br>
+    - If your card is less than 21, you will be compared against the dealer. You will not be compared against other players <br> 
+    - if your card is equal to the dealers' hand, it is a tie <br>
+    <br>
+    Let's start! Input the number of players in the Input field and follow the instructions in the Output section. 
+    Recommended number of players is up to 7 <br> 
+  </h3>
     <div id="container">
       <p>Input:</p>
       <input id="input-field" />
       <br />
-      <button id="submit-button">Submit</button>
+
+      <button id="submit-button">Submit
+      </button>
+
+      <button id="hit-button">
+        Hit
+      </button>
+
+      <button id="stand-button">
+        Stand
+      </button>
+
+      <button id="result-button">
+        Display Results
+      </button>
+
       <p>Output:</p>
       <div id="output-div"></div>
     </div>
-    <!-- Import program logic -->
+    <!-- Everything below this is incorporating JavaScript programming logic into the webpage. -->
+    <!-- The script tag encloses JavaScript syntax for the browser to interpret programtically -->
+    <!-- The following line imports all code written in the script.js file -->
     <script src="script.js"></script>
     <!-- Define button click functionality -->
     <script>
-      var button = document.querySelector("#submit-button");
-      button.addEventListener("click", function () {
+      // Declare and define a variable that represents the Submit Button
+      var submit_button = document.querySelector("#submit-button");
+      // When the submit button is clicked, access the text entered by the user in the input field
+      // And pass it as an input parameter to the main function as defined in script.js
+      submit_button.addEventListener("click", function () {
         // Set result to input value
         var input = document.querySelector("#input-field");
+        // Store the output of main() in a new variable
         var result = main(input.value);
-
         // Display result in output element
         var output = document.querySelector("#output-div");
         output.innerHTML = result;
 
         // Reset input value
         input.value = "";
+      })
+
+      var hit_button = document.querySelector("#hit-button");
+      hit_button.addEventListener("click", function(){
+        var result = main(`hit`)
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result
+      })
+
+      var stand_button = document.querySelector("#stand-button")
+      stand_button.addEventListener("click", function(){
+        var result = main(`stand`);
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result
+      })
+
+      var stand_button = document.querySelector("#result-button")
+      stand_button.addEventListener("click", function(){
+        var result = main(`result`);
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result
       });
     </script>
   </body>
 </html>
+
