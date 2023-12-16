@@ -170,6 +170,7 @@ var main = function (input) {
       myOutputValue =
         "Please enter" +
         (player1Score <= 21 ? " hit or stand." : " stand.") +
+        " Player turn." +
         "<br><br>" +
         "Player hand: " +
         player1String.join(", ") +
@@ -219,6 +220,7 @@ var main = function (input) {
       myOutputValue =
         "Please enter" +
         (dealerScore <= 21 ? " hit or stand." : " stand.") +
+        " Dealer turn." +
         "<br><br>" +
         "Player hand: " +
         player1String.join(", ") +
