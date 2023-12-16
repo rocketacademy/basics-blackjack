@@ -1,6 +1,6 @@
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" style="min-width: 1500px; overflow: auto; zoom: 0.7; background-color: darkolivegreen;">
   <head>
     <!-- Page setup configurations -->
     <meta charset="utf-8" />
@@ -52,14 +52,20 @@
 
       body {
         font-family: 'Open Sans', sans-serif;
-        margin-left: 30px;
-        margin-right: 30px;
         background-color:white;
         color: black; /* sets the font color */
         background-image: url(""); /* The image used */
         background-position: center; /* Center the image */
         background-repeat: no-repeat; /* Do not repeat the image */
         background-size: cover; /* Resize the background image to cover the entire container */
+        background-image: url("images/wallpaper.jpg");
+        height: 1200px;
+        display: flex;
+        flex-direction: column;
+        overflow: auto;
+        margin: 0px;
+        padding: 10px 30px;
+        min-width: 1500px;
       }
 
       #output-div img{
@@ -74,10 +80,15 @@
       }
 
       #container {
-        background-color: pink;
-        margin: 10px auto 40px;
-        max-width: 800px;
+        background-color: rgb(52, 109, 71);
+        margin: 40px 40px;
+        width: 680px;
+        height: 400px;
         padding: 20px;
+        border: 20px solid #733509;
+        border-radius: 45px;
+        background-image: url("images/table.jpg");
+        background-position: center;
       }
 
       #cardFace {
@@ -108,10 +119,13 @@
       }
 
       #output-div {
-        background-color: lightgrey;
-        margin: 20px auto;
+        background-color: #00000063;
+        color: white;
         padding: 20px;
         width: 100%;
+        height: 200px;
+        overflow: auto;
+        border-radius: 20px;
       }
 
       .logo-img {
@@ -131,49 +145,109 @@
   </head>
 
   <body>
-    <h1 class="header" style="margin-top: 0px">
+    <h1 class="header" style="margin-top: 0px; color: white;">
       <img class="logo-img" src="https://firebasestorage.googleapis.com/v0/b/ftbc11-sample.appspot.com/o/images%2F1-PRIMARY_CRIMSON.png?alt=media&token=ce9e8333-2a45-44be-adb2-1f1bf054adf7" />
       Rocket Academy
       <img class="logo-img" src="https://firebasestorage.googleapis.com/v0/b/ftbc11-sample.appspot.com/o/images%2F1-PRIMARY_CRIMSON.png?alt=media&token=ce9e8333-2a45-44be-adb2-1f1bf054adf7" />
     </h1>
-    <h1 class="header">♣️ Basics - Blackjack ♠️</h1>
+    <h1 class="header" style="color: white; margin-top: 0px;">♣️ Basics - Blackjack ♠️</h1>
 
     <!-- dealer card display -->
-    <div style="width: 330px; margin: 0px auto; display: flex; align-items: center; gap: 20px; height: 100%;">
+    <div style="width: 330px; padding: 40px 20px; margin: 0px auto; display: flex; align-items: center; gap: 20px; border-radius: 50px; background-color: #ffffffd1;">
       <div style="width: 100px; text-align: center;">
         <img style="aspect-ratio: auto; height: 5rem;" src="./images/Casino_Dealer.png" alt="Logo of a blackjack dealer"/>
         <p style="margin: 0px;">Dealer</p>
       </div>
-      <div id="dealerHand" style="flex: 1; display: flex; flex-direction: row; height: 100%; justify-content: start;"></div>
+      <div id="dealerHand" style="flex: 1; display: flex; flex-direction: row-reverse; height: 100%; justify-content: start;"></div>
+    </div>
+
+    <div style="display: flex; flex-direction: row; align-items: center; justify-content: center;">
+
+      <!-- player 4 -->
+      <div style="display: flex; flex: 1; justify-content: end;">
+        <div id="player-4-container" style="width: 330px; padding: 10px 20px 0px; display: flex; align-items: center; gap: 20px; display: none; border-radius: 50px; background-color: #ffffffd1;">
+          <div style="width: 100px; text-align: center;">
+            <img style="aspect-ratio: auto; height: 5rem;" src="./images/Player.png" alt="Logo of a blackjack player"/>
+            <p style="margin: 0px;"><span id="player-4-name"></span><br><span id="player-4-bet"></span>/<span id="player-4-pot"></span><br>Chips</p>
+            <input type="range" min="1" max="100" value="1" id="player-4-slider" />
+          </div>
+          <div id="playerHand4" style="flex: 1; display: flex; flex-direction: row-reverse; height: 100%; justify-content: start; align-items: center;">
+          </div>
+        </div>
+      </div>
+ 
+      <div id="container">
+        <p style="margin-top: 0px; color: white;">Input:</p>
+        <div style="display: flex; align-items: center; gap: 10px">
+          <div style="flex: 1">
+            <input id="input-field" style="width: 100%; margin: 0px;" />
+          </div>
+          <button id="submit-button" style="margin: 0px;">Submit</button>
+          <button id="deal-button" style="margin: 0px; min-width: 100px">Deal</button>
+          <button id="hit-button" style="margin: 0px;">Hit</button>
+          <button id="stand-button" style="margin: 0px;">Stand</button>
+        </div>
+        <p style="color: white;">Output:</p>
+        <div id="output-div"></div>
+      </div>
+
+      <!-- player 5 -->
+      <div style="display: flex; flex: 1; justify-content: start;">
+        <div id="player-5-container" style="width: 330px; padding: 10px 20px 0px; display: flex; align-items: center; gap: 20px; display: none; border-radius: 50px; background-color: #ffffffd1;">
+          <div style="width: 100px; text-align: center;">
+            <img style="aspect-ratio: auto; height: 5rem;" src="./images/Player.png" alt="Logo of a blackjack player"/>
+            <p style="margin: 0px;"><span id="player-5-name"></span><br><span id="player-5-bet"></span>/<span id="player-5-pot"></span><br>Chips</p>
+            <input type="range" min="1" max="100" value="1" id="player-5-slider" />
+          </div>
+          <div id="playerHand5" style="flex: 1; display: flex; flex-direction: row-reverse; height: 100%; justify-content: start; align-items: center;">
+          </div>
+        </div>
+      </div>
+      
     </div>
 
     <!-- player card display -->
-    <div style="display: flex; flex-wrap: wrap; width: 100%; padding: 0px 130px; justify-content: center; gap: 20px">
-      <div style="width: 330px; margin: 10px 20px 0px; display: flex; align-items: center; gap: 20px;">
+    <div id="players-container" style="display: flex; width: 100%; justify-content: center; gap: 40px">
+      <!-- player 0 -->
+      <div id="player-0-container" style="width: 330px; padding: 10px 20px 0px; display: flex; align-items: center; gap: 20px; display: none; border-radius: 50px; background-color: #ffffffd1;">
         <div style="width: 100px; text-align: center;">
           <img style="aspect-ratio: auto; height: 5rem;" src="./images/Player.png" alt="Logo of a blackjack player"/>
-          <p style="margin: 0px;">Player <br><span id="player-1-bet"></span>/<span id="player-1-pot"></span><br> Chips</p>
+          <p style="margin: 0px;"><span id="player-0-name"></span><br><span id="player-0-bet"></span>/<span id="player-0-pot"></span><br>Chips</p>
+          <input type="range" min="1" max="100" value="1" id="player-0-slider" />
+        </div>
+        <div id="playerHand0" style="flex: 1; display: flex; flex-direction: row-reverse; height: 100%; justify-content: start; align-items: center;">
+        </div>
+      </div>
+      <!-- player 1 -->
+      <div id="player-1-container" style="width: 330px; padding: 10px 20px 0px; display: flex; align-items: center; gap: 20px; display: none; border-radius: 50px; background-color: #ffffffd1;">
+        <div style="width: 100px; text-align: center;">
+          <img style="aspect-ratio: auto; height: 5rem;" src="./images/Player.png" alt="Logo of a blackjack player"/>
+          <p style="margin: 0px;"><span id="player-1-name"></span><br><span id="player-1-bet"></span>/<span id="player-1-pot"></span><br>Chips</p>
           <input type="range" min="1" max="100" value="1" id="player-1-slider" />
         </div>
-        <div id="playerHand" style="flex: 1; display: flex; flex-direction: row; height: 100%; justify-content: start;">
+        <div id="playerHand1" style="flex: 1; display: flex; flex-direction: row-reverse; height: 100%; justify-content: start; align-items: center;">
         </div>
       </div>
-    </div>
-
-    <div id="container">
-      <p>Input:</p>
-      <div style="display: flex; align-items: center; gap: 10px">
-        <div style="flex: 1">
-          <input id="input-field" style="width: 100%;" />
+      <!-- player 2 -->
+      <div id="player-2-container" style="width: 330px; padding: 10px 20px 0px; display: flex; align-items: center; gap: 20px; display: none; border-radius: 50px; background-color: #ffffffd1;">
+        <div style="width: 100px; text-align: center;">
+          <img style="aspect-ratio: auto; height: 5rem;" src="./images/Player.png" alt="Logo of a blackjack player"/>
+          <p style="margin: 0px;"><span id="player-2-name"></span><br><span id="player-2-bet"></span>/<span id="player-2-pot"></span><br>Chips</p>
+          <input type="range" min="1" max="100" value="1" id="player-2-slider" />
         </div>
-        <button id="submit-button">Submit</button>
-        <!-- <button id="deal-button">Deal</button>
-        <button id="hit-button">Hit</button>
-        <button id="stand-button">Stand</button>
-        <button id="reset-button">Reset</button> -->
+        <div id="playerHand2" style="flex: 1; display: flex; flex-direction: row-reverse; height: 100%; justify-content: start; align-items: center;">
+        </div>
       </div>
-      <p>Output:</p>
-      <div id="output-div"></div>
+      <!-- player 3 -->
+      <div id="player-3-container" style="width: 330px; padding: 10px 20px 0px; display: flex; align-items: center; gap: 20px; display: none; border-radius: 50px; background-color: #ffffffd1;">
+        <div style="width: 100px; text-align: center;">
+          <img style="aspect-ratio: auto; height: 5rem;" src="./images/Player.png" alt="Logo of a blackjack player"/>
+          <p style="margin: 0px;"><span id="player-3-name"></span><br><span id="player-3-bet"></span>/<span id="player-3-pot"></span><br>Chips</p>
+          <input type="range" min="1" max="100" value="1" id="player-3-slider" />
+        </div>
+        <div id="playerHand3" style="flex: 1; display: flex; flex-direction: row-reverse; height: 100%; justify-content: start; align-items: center;">
+        </div>
+      </div>
     </div>
     
     <!-- Import program logic -->
@@ -181,7 +255,7 @@
 
     <script>
       
-      // Define button click functionality
+      // Define submit button click functionality
       var buttonSubmit = document.querySelector("#submit-button");
       buttonSubmit.addEventListener("click", function () {
         // Set result to input value
@@ -195,13 +269,86 @@
         // Reset input value
         input.value = "";
       });
+      
+      // Define deal button click functionality
+      var buttonDeal = document.querySelector("#deal-button");
+      buttonDeal.addEventListener("click", function () {
+        // Set result to input value
+        // var input = document.querySelector("#input-field");
+        var resultDeal = main('');
+
+        // Display result in output element
+        var outputDeal = document.querySelector("#output-div");
+        outputDeal.innerHTML = resultDeal;
+
+        // Reset input value
+        input.value = "";
+      });
+      
+      // Define hit button click functionality
+      var buttonHit = document.querySelector("#hit-button");
+      buttonHit.addEventListener("click", function () {
+        // Set result to input value
+        var resultHit = main('hit');
+
+        // Display result in output element
+        var outputHit = document.querySelector("#output-div");
+        outputHit.innerHTML = resultHit;
+      });
+      
+      // Define stand button click functionality
+      var buttonStand = document.querySelector("#stand-button");
+      buttonStand.addEventListener("click", function () {
+        // Set result to input value
+        var resultStand = main('stand');
+
+        // Display result in output element
+        var outputStand = document.querySelector("#output-div");
+        outputStand.innerHTML = resultStand;
+      });
 
       // define slider functionality
-      var sliderOne = document.getElementById("player-1-slider");
-      var output = document.getElementById("player-1-bet");
-      output.innerHTML = sliderOne.value;
-      sliderOne.oninput = function() {
-        output.innerHTML = this.value
+      // slider 0
+      var slider0 = document.getElementById("player-0-slider");
+      var output0 = document.getElementById("player-0-bet");
+      output0.innerHTML = slider0.value;
+      slider0.oninput = function() {
+        output0.innerHTML = this.value
+      }
+      // slider 1
+      var slider1 = document.getElementById("player-1-slider");
+      var output1 = document.getElementById("player-1-bet");
+      output1.innerHTML = slider1.value;
+      slider1.oninput = function() {
+        output1.innerHTML = this.value
+      }
+      // slider 2
+      var slider2 = document.getElementById("player-2-slider");
+      var output2 = document.getElementById("player-2-bet");
+      output2.innerHTML = slider2.value;
+      slider2.oninput = function() {
+        output2.innerHTML = this.value
+      }
+      // slider 3
+      var slider3 = document.getElementById("player-3-slider");
+      var output3 = document.getElementById("player-3-bet");
+      output3.innerHTML = slider3.value;
+      slider3.oninput = function() {
+        output3.innerHTML = this.value
+      }
+      // slider 4
+      var slider4 = document.getElementById("player-4-slider");
+      var output4 = document.getElementById("player-4-bet");
+      output4.innerHTML = slider4.value;
+      slider4.oninput = function() {
+        output4.innerHTML = this.value
+      }
+      // slider 5
+      var slider5 = document.getElementById("player-5-slider");
+      var output5 = document.getElementById("player-5-bet");
+      output5.innerHTML = slider5.value;
+      slider5.oninput = function() {
+        output5.innerHTML = this.value
       }
 
       // QOL function, clicking enter will click the submit button
