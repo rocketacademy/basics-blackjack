@@ -1,6 +1,10 @@
 var mode = "start";
-var mode = "game";
+// var mode = "game";
 var myoutputvalue = "";
+var coins = "";
+
+var PlayerHand = [];
+var DealerHand = [];
 
 
 var makeDeck = function () {
@@ -63,16 +67,17 @@ var shuffleCards = function (cardDeck) {
   return cardDeck;
 };
 var cardDeck = makeDeck();
+
 // console.table(cardDeck);
 
 mode = "start";
 
 var main = function(input){
+  
+
   if (mode == "start") {
     var shuffleDCard = shuffleCards(cardDeck);
-    
-    var PlayerHand =[];
-    var DealerHand = [];
+
     counterPlayer = 0;
     counterDealer = 0;
     
@@ -95,15 +100,44 @@ var main = function(input){
       console.log(cardDeck[0]);
       console.log(cardDeck[0].value);
 
-      mode = "game";
+      mode = "BetCoins";
+      console.log(mode);
+      myoutputvalue = `You got 10 Coins- Enter How much you want lose 🤣.`;
+      return myoutputvalue;
+      }
+            
+    
+    
+    if (mode == "BetCoins") {
+        inputBet = Number(input);
+        if (inputBet == 1) {
+            coins = coins + input;
+            myoutputvalue = `You are Betting ${coins} Coin. To see Cards press <b>Submit</b>.`;
+            mode = "game";
+        } else if (inputBet > 1 && inputBet <= 10) {
+            coins = coins + input;
+            myoutputvalue = `You are Betting ${coins} Coins. To see Cards press <b>Submit</b>.`;
+            mode = "game";
+        } else {
+            myoutputvalue =`Player can only start with 10 coins. Please input again.`;
+            return myoutputvalue;
+        }
+        mode = "game";
+        return myoutputvalue;
+
+    }
+    if (mode == "game") {
+        console.log(DealerHand[0]);
+        myoutputvalue = `Dealer's Hand <br>${DealerHand[0].name} ${DealerHand[0].suit} | ${DealerHand[1].name} ${DealerHand[1].suit}
+                          <br> <br> Player's Hand <br>${PlayerHand[0].name} ${PlayerHand[0].suit} | ${PlayerHand[1].name} ${PlayerHand[1].suit}`;
       
-    } else if (mode == "game") {
-      myoutputvalue = "hello!";
       return myoutputvalue;
     }
+// check the values 
+// if totals to 21 is Black Jack and wins or tie.
+// both Player and Dealer cards should be <=20 to continue.
+// if less <= 20, Player can Hit or stand. Anything aboove 21 is Bust!! Lose!!
+// if Dealer is less than 17 must Hit. Anything above 21 is Bust!! Lose!!
+// final showdown, Player has to have higher cards then Dealer to win.
 
-
-
-
-
-  }
+  };
