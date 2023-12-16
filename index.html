@@ -45,76 +45,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans">
 
     <!-- CSS -->
-    <style>
-      * {
-        box-sizing: border-box;
-      }
-
-      body {
-        font-family: 'Open Sans', sans-serif;
-        margin-left: 30px;
-        margin-right: 30px;
-        background-color:white;
-        color: black; /* sets the font color */
-        background-image: url(""); /* The image used */
-        background-position: center; /* Center the image */
-        background-repeat: no-repeat; /* Do not repeat the image */
-        background-size: cover; /* Resize the background image to cover the entire container */
-      }
-
-      #output-div img{
-        display:block;
-        max-width:100%;
-        max-height:200px;
-      }
-      .header {
-        text-align: center;
-        font-size: 1.1rem;
-        margin-bottom: 3rem;
-      }
-
-      #container {
-        background-color: pink;
-        margin: 40px auto;
-        max-width: 800px;
-        padding: 38px 31px;
-      }
-
-      input {
-        font-size: 21px;
-        line-height: 33px;
-        margin: 0 0 23px 0;
-        padding: 0 9px;
-        width: 100%;
-      }
-
-      button {
-        font-size: 21px;
-        line-height: 33px;
-        margin: 0 0 23px 0;
-        padding: 0 6px;
-      }
-
-      #output-div {
-        background-color: lightgrey;
-        margin: 20px auto;
-        padding: 20px;
-        width: 100%;
-      }
-
-      .logo-img {
-        height: 49px;
-        position: relative;
-        top: 22px;
-      }
-
-      /* increase header font size on wider screens */
-      @media screen and (min-width: 600px) {
-        .header {
-          font-size: 2rem;
-        }
-      }
-    </style>
+    <link rel="stylesheet" href="style.css">
 
   </head>
 
@@ -126,30 +57,20 @@
     </h1>
     <h1 class="header">♣️ Basics - Blackjack ♠️</h1>
     <div id="container">
-      <p>Input:</p>
-      <input id="input-field" />
+      <p>Hello! Welcome to Ranay's Blackjack! Click New Game to start the game.</p>
+      <p>Good luck!</p>
+      <p>===================================================</p>
+      <input id="input-field" value="" hidden/>
       <br />
-      <button id="submit-button">Submit</button>
+      <button id="hit-button" value="hit" disabled>Hit</button>
+      <button id="stand-button" value="stand" disabled>Stand</button>
+      <button id="newgame-button">New Game</button>
       <p>Output:</p>
       <div id="output-div"></div>
     </div>
     <!-- Import program logic -->
     <script src="script.js"></script>
     <!-- Define button click functionality -->
-    <script>
-      var button = document.querySelector("#submit-button");
-      button.addEventListener("click", function () {
-        // Set result to input value
-        var input = document.querySelector("#input-field");
-        var result = main(input.value);
-
-        // Display result in output element
-        var output = document.querySelector("#output-div");
-        output.innerHTML = result;
-
-        // Reset input value
-        input.value = "";
-      });
-    </script>
+    <script src="buttonselector.js"></script>
   </body>
 </html>
