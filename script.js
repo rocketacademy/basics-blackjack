@@ -145,7 +145,7 @@ var displayPlayerHands = function (cards, index) {
       margin = 0;
     }
     placeholderDisplay += `
-      <div id="cardFace" style="margin-right: ${margin}px;">
+      <div id="cardFace" style="margin-left: ${margin}px;">
         <p style="margin: 0px">${userHands[i].label}</p>
         <p style="margin: -8px 0px 0px">${userHands[i].suit}</p>
       </div>
@@ -190,7 +190,7 @@ var displayDealerCard = function (cards, type) {
       margin = 0;
     }
     dealerHandDisplay += `
-      <div id="cardFace" style="margin-right: ${margin}px;">
+      <div id="cardFace" style="margin-left: ${margin}px;">
         <p style="margin: 0px">${userHands[i].label}</p>
         <p style="margin: -8px 0px 0px">${userHands[i].suit}</p>
       </div>
