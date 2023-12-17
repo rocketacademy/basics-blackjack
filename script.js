@@ -26,7 +26,6 @@ The game either ends or continues.
 
 var CARDS_TAKEN = 0;
 var NUM_OF_PLAYER = 3;
-var PLAYER_DRAW
 var CARDS_DRAW_DROM_DECK = []
 var DEALER_DRAW = []
 var PLAYER_DRAW = []
@@ -42,7 +41,7 @@ var HIT_CARD = []
 */
 var PLAYER_TURN = 0
 /*
-player turn will determine]p which player's turn to hit or stand
+player turn will determinep which player's turn to hit or stand
 */
 
 
@@ -147,7 +146,8 @@ var hit = function(){
   after drawing a card, that card gets assigned to the player card data(their object)
   after that, print the new card in hand, 
   */
- var hitTotal = 0
+ 
+ var hitTotal = 0, hitCard = [], hitSuit = []
   draw = drawCard()
   
   // assign card player using PLAYER_TURN
@@ -161,8 +161,15 @@ var hit = function(){
   // count total
   for(i = 0; i < hitCardLength; i++){
     if(HIT_CARD[i][0].player == PLAYER_TURN){
-      console.log('Hello')
-      hitTotal += evaluateCards(HIT_CARD[i][0].card.name)
+      if(PLAYER_DRAW[PLAYER_TURN - 1].first[0].card.name == 'ace' || PLAYER_DRAW[PLAYER_TURN - 1].second[0].card.name == 'ace' && HIT_CARD[i][0].card.name == 'ace'){
+      //PLAYER_DRAW[PLAYER_TURN - 1].total -= 10
+      hitTotal += 1
+    } 
+      else{
+        hitTotal += evaluateCards(HIT_CARD[i][0].card.name)
+    }
+      hitCard.push(HIT_CARD[i][0].card.name)
+      hitSuit.push(HIT_CARD[i][0].card.suit)
       console.log('Hit Total')
       console.log(hitTotal)
     }
@@ -170,12 +177,24 @@ var hit = function(){
   PLAYER_DRAW[PLAYER_TURN - 1].total += hitTotal
   // return PLAYER_DRAW[PLAYER_TURN - 1] HIT_CARD[0][0].card HIT_CARD[1][0].card
   // return PLAYER_DRAW[PLAYER_TURN - 1].total
-  // add more card info here
-  return `Player ${PLAYER_TURN}, hit or stand?`
+  // TODO add more card info here
+  // player first
+  firstCard = PLAYER_DRAW[PLAYER_TURN - 1].first[0].card.name
+  firstSuit = PLAYER_DRAW[PLAYER_TURN - 1].first[0].card.suit
+  // player second
+  secondCard = PLAYER_DRAW[PLAYER_TURN - 1].second[0].card.name
+  secondSuit = PLAYER_DRAW[PLAYER_TURN - 1].second[0].card.suit
+  // hits join()
+  hitCardJoin = hitCard.join(' & ')
+  hitSuitJoin = hitSuit.join(' & ')
+  output = `<center>Player ${PLAYER_TURN}</center> <br>FIRST CARD: <br>Card: ${firstCard}<br>Suit: ${firstSuit}<br>SECOND CARD: <br>Card: ${secondCard}<br>Suit: ${secondSuit}<br>HIT CARD(s): <br>Card: ${hitCardJoin}<br>Suit: ${hitSuitJoin}<br>Would you like to hit or stand?`
+  return output
 }
 
 
 var stand = function(){
+  // there need to be a part where if any of the players (including the dealer), total less than 15, they need to draw another card
+  // The dealer has to hit if their hand is below 17.
   // when stand is hit, change player, change PLAYER_TURN += 1
   if(PLAYER_TURN == 'DEALER'){
     //PLAYER_TURN = "DEALER"
@@ -187,6 +206,10 @@ var stand = function(){
   }
   
   return getResult()
+}
+
+function thirdCardAce(){
+  // this function is to re-evaluate hand, if card 
 }
 
 
@@ -273,9 +296,13 @@ var getResult = function(){
   if(GAME_STATE == 2){
     if(PLAYER_TURN == NUM_OF_PLAYER){
       PLAYER_TURN = "DEALER"
-      return `${PLAYER_TURN}, hit or stand?`
+      // get cards here
+      output = `<center>${PLAYER_TURN}</center> <br> hit or stand?`
+      return output
     } 
-  return `Player ${PLAYER_TURN}, hit or stand?`
+  // get cards here
+  output = `<center>Player ${PLAYER_TURN}</center> <br> hit or stand?`
+  return output
   }
   if(GAME_STATE == 5){ 
     GAME_STATE = 1
@@ -314,11 +341,14 @@ var getResult = function(){
         player = PLAYER_DRAW[i].first[0].player
         output.push(`Dealer wins over Player ${player}`)
       }
+      // TODO add a condition if dealer and player equals
       // traverse to dealer total
       // dealer will always be at [0] since its the same "player"
+      
     }
     //reset hand
     reset()
+  // get cards here
   joinOutput = output.join('<br>')
   return joinOutput;
   }
