@@ -4,6 +4,7 @@
 var GAME_START = "game start";
 var GAME_CARDS_DRAWN = "cards drawn";
 var GAME_RESULTS_SHOWN = "results shown";
+var GAME_HIT_OR_STAND = "hit or stand";
 var currentGameMode = GAME_START;
 
 //variables to store player and dealer hand
@@ -159,7 +160,7 @@ var displayPlayerAndDealerhands = function (playerHandArray, dealerHandArray) {
   var dealerMessage = "Dealer Hand: <br>";
   var index = 0;
 
-  while (index < playerHandArray.length) {
+  while (index < dealerHandArray.length) {
     dealerMessage =
       dealerMessage +
       "- " +
@@ -235,6 +236,28 @@ var main = function (input) {
         "There is no blackjack!";
       console.log(outputMessage);
 
+      //change game mode
+      currentGameMode = GAME_HIT_OR_STAND;
+      console.log(currentGameMode);
+
+      // appropriate output message
+      return outputMessage;
+    }
+  }
+
+  // THIRD CLICK HIT OR STAND
+  if (currentGameMode == GAME_HIT_OR_STAND) {
+    //PLayer hit
+    if (input == "hit") {
+      console.log(currentGameMode);
+      playerHand.push(gameDeck.pop());
+      console.log(playerHand);
+      outputMessage =
+        displayPlayerAndDealerhands(playerHand, dealerHand) +
+        "<br> You drew another card. <br>Please input 'hit' or 'stand'.";
+    }
+    //Player Stand
+    else if (input == "stand") {
       var playerHandTotalValue = calculateTotalHandValue(playerHand);
       var dealerHandTotalValue = calculateTotalHandValue(dealerHand);
       console.log("player total hand value ==> ");
@@ -267,12 +290,14 @@ var main = function (input) {
           "<br>Dealer wins!" +
           displayHandTotalValues(playerHandTotalValue, dealerHandTotalValue);
       }
-
-      //change game mode
-      currentGameMode = GAME_RESULTS_SHOWN;
-
-      // appropriate output message
-      return outputMessage;
     }
+
+    //Input validation
+    else {
+      outputMessage =
+        "Wrong input ... only 'hit' or ' stand' are valid. <br><br>" +
+        displayPlayerAndDealerhands(playerHand, dealerHand);
+    }
+    return outputMessage;
   }
 };
