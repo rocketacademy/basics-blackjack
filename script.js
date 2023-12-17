@@ -44,6 +44,9 @@ let imageLose =
 let imageWin =
   '<div style="width:480px"><iframe allow="fullscreen" frameBorder="" height="200" src="https://giphy.com/embed/Id1Ay5MD5IsF6Or51v" width="700"></iframe></div>';
 
+let imageTie =
+  '<div style="width:480px"><iframe allow="fullscreen" frameBorder="" height="200" src="https://giphy.com/embed/xT3i0P4CYQcdmFZQkM" width="700"></iframe></div>';
+
 var deck = makeDeck();
 
 function makeDeck() {
@@ -204,7 +207,7 @@ function resultDisplay(playerHandTotal) {
     document.querySelector("#hit-button").disabled = true;
     document.querySelector("#stand-button").disabled = true;
     document.querySelector("#submit-button").disabled = false;
-    return `Your hands are:<br> ${printHands(playerHandArr)}
+    return `${imageTie}Your hands are:<br> ${printHands(playerHandArr)}
             Your hand totals to: ${playerHandTotal}
             <br><br>
             Dealer hands are: <br> ${printHands(dealerHandsArr)}
@@ -260,7 +263,7 @@ function resultDisplayStand(playerHandTotal, dealerHandTotal) {
             <br><br>
             Black Jack! You won the game!${replayMsg}`;
   } else if (playerHandTotal == dealerHandTotal && playerHandTotal < 21) {
-    return `Your hands:<br> ${printHands(playerHandArr)}
+    return `${imageTie}Your hands:<br> ${printHands(playerHandArr)}
             Your hand totals to: ${playerHandTotal}
             <br><br>
             Dealer hands are: <br> ${printHands(dealerHandsArr)}
