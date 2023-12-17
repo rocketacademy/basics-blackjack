@@ -265,6 +265,11 @@ var main = function (input) {
       console.log("dealer total hand value ==> ");
       console.log(dealerHandTotalValue);
 
+      while (dealerHandTotalValue < 17) {
+        dealerHand.push(gameDeck.pop());
+        dealerHandTotalValue = calculateTotalHandValue(dealerHand);
+      }
+
       //compare total hand value
       // same value -> tie
       if (playerHandTotalValue == dealerHandTotalValue) {
