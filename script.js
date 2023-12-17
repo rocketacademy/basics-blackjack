@@ -109,6 +109,7 @@ var calcHandValue = function (array) {
   return value;
 };
 
+// display the player's hand
 var showPlayerHand = function (playerArray) {
   message = "Your Hand: <br>";
   index = 0;
@@ -124,9 +125,27 @@ var showPlayerHand = function (playerArray) {
   return message;
 };
 
+// dealer's full hand only to be shown upon results generation
 var showDealerHand = function (dealerArray) {
   message = "Dealer Hand: <br>";
   index = 0;
+  while (index < dealerArray.length) {
+    message =
+      message +
+      dealerArray[index].name +
+      " of " +
+      dealerArray[index].suit +
+      "<br>";
+    index = index + 1;
+  }
+  return message;
+};
+
+var showDealerHandWithCoveredCard = function (dealerArray) {
+  // reserve space to display covered card
+  message = "Dealer Hand: <br>🫥 Covered card 🫥<br>";
+  // skip the first card [0] and start at [1]
+  index = 1;
   while (index < dealerArray.length) {
     message =
       message +
@@ -146,7 +165,7 @@ var main = function (input) {
     showPlayerHand(playerArray) +
     calcHandValue(playerArray) +
     "<br><br>" +
-    showDealerHand(dealerArray) +
+    showDealerHandWithCoveredCard(dealerArray) +
     calcHandValue(dealerArray);
   if (currentGameMode == gameMode1) {
     playerArray.push(cardDeck.pop());
@@ -193,9 +212,14 @@ var main = function (input) {
       currentGameMode = gameMode2;
       var chimneySanta =
         '<img src="https://media3.giphy.com/media/6LWgndjhVe1HTb0pQi/200w.webp?cid=ecf05e472if9q1t6kike3whspu7s0v3prrjn93zr0leml8r4&ep=v1_gifs_related&rid=200w.webp&ct=g"/>';
+      // keep first card covered
+      // also cover dealer hand value
       myOutputValue =
-        showHandsAndValue +
-        "<br><br> Were you naughty(stand) or nice(hit) this year? <br>" +
+        showPlayerHand(playerArray) +
+        calcHandValue(playerArray) +
+        "<br><br>" +
+        showDealerHandWithCoveredCard(dealerArray) +
+        "<br><br> Were you naughty or nice this year? <br>" +
         chimneySanta;
     }
     return myOutputValue;
@@ -211,17 +235,15 @@ var main = function (input) {
           showPlayerHand(playerArray) +
           playerHandValue +
           "<br><br>" +
-          showDealerHand(dealerArray) +
-          dealerHandValue +
+          showDealerHandWithCoveredCard(dealerArray) +
           "<br><br> You bust. Click ♠️♥️♣️♦️ to see results.";
       } else {
         myOutputValue =
           showPlayerHand(playerArray) +
           playerHandValue +
           "<br><br>" +
-          showDealerHand(dealerArray) +
-          dealerHandValue +
-          "<br> Were you naughty(stand) or nice(hit) this year? ";
+          showDealerHandWithCoveredCard(dealerArray) +
+          "<br> Were you naughty or nice this year? ";
       }
     } else if (input == "s") {
       currentGameMode = gameMode3;
@@ -244,19 +266,19 @@ var main = function (input) {
       calcHandValue(dealerArray);
     if (dealerHandValue > 21 && playerHandValue > 21) {
       var presentpresentSanta =
-        '<img src= "https://im3.ezgif.com/tmp/ezgif-3-d9b68612c3.gif"/>';
+        '<img src= "https://media1.giphy.com/media/Stuz0v7wzyUvaqzvst/giphy.gif?cid=ecf05e470qdw6zv5ah0l0mlfx5y4m2twko27w7k2pbz5ou32&ep=v1_gifs_related&rid=giphy.gif&ct=s"/>';
       myOutputValue =
         showHandsAndValue +
         "<br><br>Its a tie, both bust. Refresh to play again!<br>" +
         presentpresentSanta;
-    } else if (dealerHandValue > 21 && playerHandValue < 21) {
+    } else if (dealerHandValue > 21 && playerHandValue <= 21) {
       var pointingSanta =
         '<img src= "https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExYXhjZGI0dzNlZXdscHNxeG4xdGRtbW05a3ZuN2F4ZGJsdzNqcGgzdyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/aJehSiEgLb76Dikq7T/giphy.gif"/>';
       myOutputValue =
         showHandsAndValue +
         "<br><br>Dealer bust. You won! Refresh to play again!<br>" +
         pointingSanta;
-    } else if (playerHandValue > 21 && dealerHandValue < 21) {
+    } else if (playerHandValue > 21 && dealerHandValue <= 21) {
       var disapprovingSanta =
         '<img src= "https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExNTljYnY5NmZ5aTFldm8wams1cDFnbDdqa3M4bWU4ZjhndTZ2dm84cyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/zsa730TRwOF8O4UoAJ/giphy.gif"/>';
       myOutputValue =
@@ -282,7 +304,12 @@ var main = function (input) {
   }
 };
 
+// check sum and display
+//loop through array
+// display when player clicks 'hit'
+// call this function in html
 var hit = function () {
+  console.log("hit is selected. card:" + cardDeck.pop);
   playerArray.push(cardDeck.pop());
   var dealerHandValue = calcHandValue(dealerArray);
   var playerHandValue = calcHandValue(playerArray);
@@ -294,8 +321,7 @@ var hit = function () {
       showPlayerHand(playerArray) +
       playerHandValue +
       "<br><br>" +
-      showDealerHand(dealerArray) +
-      dealerHandValue +
+      showDealerHandWithCoveredCard(dealerArray) +
       "<br><br> You bust. Click ♠️♥️♣️♦️ to see results.<br>" +
       knockingSanta;
   } else if (playerHandValue == 21) {
@@ -316,17 +342,18 @@ var hit = function () {
       showPlayerHand(playerArray) +
       playerHandValue +
       "<br><br>" +
-      showDealerHand(dealerArray) +
-      dealerHandValue +
-      "<br><br> Were you naughty(stand) or nice(hit) this year? <br>" +
+      showDealerHandWithCoveredCard(dealerArray) +
+      "<br><br> Were you naughty or nice this year? <br>" +
       presentsSanta;
   }
   return myOutputValue;
-  // check sum and display
-  //loop through array
 };
 
+// after player choose to stand, dealer will draw if hand value is below 17
+// winner will be determined here so show dealer's full hand and dealer's hand value
+// call this function in html to display when player clicks 'stand'
 var stand = function () {
+  console.log("stand is selected.");
   var myOutputValue = "";
   var dealerHandValue = calcHandValue(dealerArray);
   while (dealerHandValue < 17) {
@@ -342,19 +369,19 @@ var stand = function () {
     calcHandValue(dealerArray);
   if (dealerHandValue > 21 && playerHandValue > 21) {
     var presentpresentSanta =
-      '<img src= "https://im3.ezgif.com/tmp/ezgif-3-d9b68612c3.gif"/>';
+      '<img src= "https://media1.giphy.com/media/Stuz0v7wzyUvaqzvst/giphy.gif?cid=ecf05e470qdw6zv5ah0l0mlfx5y4m2twko27w7k2pbz5ou32&ep=v1_gifs_related&rid=giphy.gif&ct=s"/>';
     myOutputValue =
       showHandsAndValue +
       "<br><br>Its a tie, both bust. Refresh to play again!<br>" +
       presentpresentSanta;
-  } else if (dealerHandValue > 21 && playerHandValue < 21) {
+  } else if (dealerHandValue > 21 && playerHandValue <= 21) {
     var pointingSanta =
       '<img src= "https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExYXhjZGI0dzNlZXdscHNxeG4xdGRtbW05a3ZuN2F4ZGJsdzNqcGgzdyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/aJehSiEgLb76Dikq7T/giphy.gif"/>';
     myOutputValue =
       showHandsAndValue +
       "<br><br>Dealer bust. You won! Refresh to play again!<br>" +
       pointingSanta;
-  } else if (playerHandValue > 21 && dealerHandValue < 21) {
+  } else if (playerHandValue > 21 && dealerHandValue <= 21) {
     var disapprovingSanta =
       '<img src= "https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExNTljYnY5NmZ5aTFldm8wams1cDFnbDdqa3M4bWU4ZjhndTZ2dm84cyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/zsa730TRwOF8O4UoAJ/giphy.gif"/>';
     myOutputValue =
@@ -377,7 +404,7 @@ var stand = function () {
       noNoSanta;
   } else if (dealerHandValue == playerHandValue) {
     var presentpresentSanta =
-      '<img src= "https://im3.ezgif.com/tmp/ezgif-3-d9b68612c3.gif"/>';
+      '<img src= "https://media1.giphy.com/media/yP2MOlgfnip51GutHT/200w.webp?cid=ecf05e472if9q1t6kike3whspu7s0v3prrjn93zr0leml8r4&ep=v1_gifs_related&rid=200w.webp&ct=g"/>';
     myOutputValue =
       showHandsAndValue +
       "<br><br>Its a tie. Refresh to play again!<br>" +
