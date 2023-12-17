@@ -105,17 +105,19 @@ var main = function (input) {
       player1Cards.find((jqk) => jqk.rank > 9)
     ) {
       message = "Player wins by black jack!";
+      state = "";
     } else if (
       dealerCards.find((ace) => ace.name == "Ace") &&
       dealerCards.find((jqk) => jqk.rank > 9)
     ) {
       message = "Dealer wins by black jack!";
+      state = "";
     } else if (player1Score > dealerScore) {
-      message = "Player wins!";
+      message = "Player wins! Player please enter hit or stand to continue.";
     } else if (dealerScore > player1Score) {
-      message = "Dealer wins!";
+      message = "Dealer wins! Player please enter hit or stand to continue.";
     } else if (dealerScore == player1Score) {
-      message = "It is a tie!";
+      message = "It is a tie! Player please enter hit or stand to continue.";
     } else {
       message = "";
     }
@@ -125,9 +127,15 @@ var main = function (input) {
     var myOutputValue =
       "Player hand: " +
       player1String.join(", ") +
+      " (" +
+      player1Score +
+      ")" +
       "<br>" +
       "Dealer hand: " +
       dealerString.join(", ") +
+      " (" +
+      dealerScore +
+      ")" +
       "<br>" +
       message;
   } else if (state == "hosp") {
@@ -143,13 +151,17 @@ var main = function (input) {
       console.log(player1Score);
 
       if (player1Score > 21) {
-        message = "Player 1 burst!";
+        message = "Player 1 burst! Please enter stand to continue.";
       } else if (player1Score > dealerScore) {
-        message = "Player wins!";
+        message =
+          "Player wins!" +
+          (player1Score < 21
+            ? " Player please enter hit or stand to continue."
+            : "");
       } else if (dealerScore > player1Score) {
-        message = "Dealer wins!";
+        message = "Dealer wins! Player please enter hit or stand to continue.";
       } else if (dealerScore == player1Score) {
-        message = "It is a tie!";
+        message = "It is a tie! Player please enter hit or stand to continue.";
       } else {
         message = "";
       }
@@ -158,14 +170,35 @@ var main = function (input) {
       myOutputValue =
         "Player hand: " +
         player1String.join(", ") +
+        " (" +
+        player1Score +
+        ")" +
         "<br>" +
         "Dealer hand: " +
         dealerString.join(", ") +
+        " (" +
+        dealerScore +
+        ")" +
         "<br>" +
         message;
     } else if (/stand/.test(input)) {
       state = "hosd";
-      myOutputValue = "Dealer is your turn!";
+      myOutputValue =
+        "Dealer is your turn!" +
+        "<br>" +
+        "Player hand: " +
+        player1String.join(", ") +
+        " (" +
+        player1Score +
+        ")" +
+        "<br>" +
+        "Dealer hand: " +
+        dealerString.join(", ") +
+        " (" +
+        dealerScore +
+        ")" +
+        "<br>" +
+        "Please enter hit or stand to continue.";
     } else {
       myOutputValue =
         "Please enter" +
@@ -174,9 +207,15 @@ var main = function (input) {
         "<br><br>" +
         "Player hand: " +
         player1String.join(", ") +
+        " (" +
+        player1Score +
+        ")" +
         "<br>" +
         "Dealer hand: " +
         dealerString.join(", ") +
+        " (" +
+        dealerScore +
+        ")" +
         "<br>" +
         message;
     }
@@ -194,6 +233,7 @@ var main = function (input) {
 
       if (dealerScore > 21) {
         message = "Dealer burst!";
+        state = "";
       } else if (player1Score > dealerScore && player1Score <= 21) {
         message = "Player wins!";
       } else if (dealerScore < player1Score && player1Score > 21) {
@@ -208,15 +248,22 @@ var main = function (input) {
       myOutputValue =
         "Player hand: " +
         player1String.join(", ") +
+        " (" +
+        player1Score +
+        ")" +
         "<br>" +
         "Dealer hand: " +
         dealerString.join(", ") +
+        " (" +
+        dealerScore +
+        ")" +
         "<br>" +
         message;
     } else if (/stand/.test(input)) {
       state = "";
       myOutputValue = "Thank you for playing!";
     } else {
+      message = "Dealer please enter hit or stand to continue.";
       myOutputValue =
         "Please enter" +
         (dealerScore <= 21 ? " hit or stand." : " stand.") +
@@ -224,9 +271,15 @@ var main = function (input) {
         "<br><br>" +
         "Player hand: " +
         player1String.join(", ") +
+        " (" +
+        player1Score +
+        ")" +
         "<br>" +
         "Dealer hand: " +
         dealerString.join(", ") +
+        " (" +
+        dealerScore +
+        ")" +
         "<br>" +
         message;
     }
