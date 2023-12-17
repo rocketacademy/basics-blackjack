@@ -118,6 +118,7 @@ var checkForBlackJack = function (handArray) {
 
 var calculateTotalHandValue = function (handArray) {
   var totalHandValue = 0;
+  var aceCounter = 0;
 
   var index = 0;
 
@@ -130,8 +131,18 @@ var calculateTotalHandValue = function (handArray) {
       currentCard.name == "king"
     ) {
       totalHandValue = totalHandValue + 10;
+    } else if (currentCard.name == "ace") {
+      totalHandValue = totalHandValue + 11;
+      aceCounter = aceCounter + 1;
     } else {
       totalHandValue = totalHandValue + currentCard.rank;
+    }
+    index = index + 1;
+  }
+  index = 0;
+  while (index < aceCounter) {
+    if (totalHandValue > 21) {
+      totalHandValue = totalHandValue - 10;
     }
     index = index + 1;
   }
@@ -265,6 +276,7 @@ var main = function (input) {
       console.log("dealer total hand value ==> ");
       console.log(dealerHandTotalValue);
 
+      //dealer logic
       while (dealerHandTotalValue < 17) {
         dealerHand.push(gameDeck.pop());
         dealerHandTotalValue = calculateTotalHandValue(dealerHand);
