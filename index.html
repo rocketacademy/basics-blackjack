@@ -8,7 +8,9 @@ The <html> element is known as the root element of a HTML page. All other elemen
   <!-- The <head> element contains meta information about the HTML page, information that is not rendered or displayed by the browser -->
   <head>
     <!-- The <title> element specifies a title for the HTML page (which is shown in the browser's title bar or in the page's tab) and is the default name given to a bookmark of a webpage. -->
-    <title>🎅🏻 Santa's 21st</title>
+    <title>Santa's 21st</title>
+    <!--add favicon-->
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
     <!-- The <style> element contains information relating to the layout and style of the webpage. The syntax within a <style> tag is referred to as CSS - Cascading Style Sheets. -->
     <style>
       * {
@@ -38,9 +40,11 @@ The <html> element is known as the root element of a HTML page. All other elemen
       button {
         font-family: cursive;
         font-size: 21px;
-        line-height: 33px;
+        line-height: 40px;
         margin: 0 0 5px 0;
         padding: 0 15px;
+        border-radius: 5px;
+        border-color: rgb(251, 251, 251);
       }
 
       #output-div {
@@ -230,6 +234,7 @@ The <html> element is known as the root element of a HTML page. All other elemen
 
       <p></p>
       <div id="output-div">
+        <!--Starting Instructions: Add instructions on how to start the game-->
         Welcome to Santa's 21st! Click ♠️♥️♣️♦️ to deck the halls!
         <img
           src="https://media3.giphy.com/media/o1oHZU0CMRGAecB0hT/giphy.gif?cid=ecf05e47sphrdambyquc87st1lufpplp7351tglvqb6vl463&ep=v1_gifs_related&rid=giphy.gif&ct=g"
@@ -243,6 +248,7 @@ The <html> element is known as the root element of a HTML page. All other elemen
     <!-- Define button click functionality -->
     <script>
       // Declare and define a variable that represents the Submit Button
+      // add button for 'Hit' and 'Stand'
       var button = document.querySelector("#submit-button");
       var button2 = document.querySelector("#hit-button");
       var button3 = document.querySelector("#stand-button");
