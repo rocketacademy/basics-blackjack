@@ -38,6 +38,12 @@ let dealerHandTotal = 0;
 let gameOver = false;
 let gameState = "";
 
+let replayMsg = "<br><br>Click deal to play again!";
+let imageLose =
+  '<div style="width:480px"><iframe allow="fullscreen" frameBorder="" height="200" src="https://giphy.com/embed/oZJbVLZhpUoGoNgWW5/video" width="700"></iframe></div>';
+let imageWin =
+  '<div style="width:480px"><iframe allow="fullscreen" frameBorder="" height="200" src="https://giphy.com/embed/Id1Ay5MD5IsF6Or51v" width="700"></iframe></div>';
+
 var deck = makeDeck();
 
 function makeDeck() {
@@ -138,6 +144,7 @@ function sumInHandsPlayer(cardInHandsArr) {
   }
   return sum;
 }
+
 function sumInHandsDealer(cardInHandsArr) {
   let sum = 0;
   let numOfAces = 0;
@@ -169,11 +176,6 @@ function sumInHandsDealer(cardInHandsArr) {
   return sum;
 }
 
-let replayMsg = "<br><br>Click deal to play again!";
-let imageLose =
-  '<div style="width:480px"><iframe allow="fullscreen" frameBorder="" height="200" src="https://giphy.com/embed/oZJbVLZhpUoGoNgWW5/video" width="700"></iframe></div>';
-let imageWin =
-  '<div style="width:480px"><iframe allow="fullscreen" frameBorder="" height="200" src="https://giphy.com/embed/Id1Ay5MD5IsF6Or51v" width="700"></iframe></div>';
 function resultDisplay(playerHandTotal) {
   if (isPlayerBlackJack && !isDealerBlackJack) {
     gameOver = true;
