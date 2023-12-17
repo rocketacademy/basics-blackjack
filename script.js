@@ -1,17 +1,23 @@
+//to change game modes
 var gameMode1 = "Compare initial hands";
 var gameMode2 = "Player hit or stand";
 var gameMode3 = "Dealer hit or stand";
 var currentGameMode = gameMode1;
 
+//to store cards
 var cardDeck = [];
 var playerArray = [];
 var dealerArray = [];
+
+//to disable or enable buttons
+const submitButton = document.getElementById("submit-button");
+const hitButton = document.getElementById("hit-button");
+const standButton = document.getElementById("stand-button");
 
 var makeDeck = function () {
   // Initialise an array of the 4 suits in our deck. We will loop over this array.
   // Use more emoji
   var suits = ["♥️", "♦️", "♣️", "♠️"];
-
   // Loop over the suits array
   var suitIndex = 0;
   while (suitIndex < suits.length) {
@@ -163,7 +169,14 @@ var showDealerHandWithCoveredCard = function (dealerArray) {
 var main = function (input) {
   var myOutputValue = "";
   if (currentGameMode == gameMode1) {
+    //reset buttons
+    hitButton.disabled = false;
+    standButton.disabled = false;
+    submitButton.disabled = false;
+    //reset card deck
+    cardDeck = [];
     cardDeck = shuffleCards(makeDeck());
+    console.log("card deck:", cardDeck);
     playerArray.push(cardDeck.pop());
     playerArray.push(cardDeck.pop());
     dealerArray.push(cardDeck.pop());
@@ -179,6 +192,9 @@ var main = function (input) {
       calcHandValue(dealerArray);
     console.log("hands: ", showHandsAndValue);
     if (playerValue == 21 && dealerValue != 21) {
+      hitButton.disabled = true;
+      standButton.disabled = true;
+      submitButton.disabled = false;
       console.log("P win");
       var cheeringSanta =
         '<img src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExNWlpOXNxdXByZnF6c3BocGttOHF5NzF2eWY4djdlcXhmd29yN3QwZCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/wuMue3qGESHbrM8ps9/giphy.gif"/>';
@@ -192,6 +208,9 @@ var main = function (input) {
       return myOutputValue;
     }
     if (playerValue == 21 && dealerValue == 21) {
+      hitButton.disabled = true;
+      standButton.disabled = true;
+      submitButton.disabled = false;
       console.log("tie");
       var heartSanta =
         '<img src="https://media2.giphy.com/media/m8XKBTQdYrvbj7dTXX/200w.webp?cid=ecf05e47wxxds42erx8xo7804e39xbd229viz0sound7bbnv&ep=v1_gifs_related&rid=200w.webp&ct=s"/>';
@@ -205,6 +224,9 @@ var main = function (input) {
       return myOutputValue;
     } else {
       currentGameMode = gameMode2;
+      hitButton.disabled = false;
+      standButton.disabled = false;
+      submitButton.disabled = true;
       var chimneySanta =
         '<img src="https://media3.giphy.com/media/6LWgndjhVe1HTb0pQi/200w.webp?cid=ecf05e472if9q1t6kike3whspu7s0v3prrjn93zr0leml8r4&ep=v1_gifs_related&rid=200w.webp&ct=g"/>';
       // keep first card covered
@@ -227,6 +249,9 @@ var main = function (input) {
       var playerHandValue = calcHandValue(playerArray);
       if (playerHandValue > 21) {
         currentGameMode = gameMode3;
+        hitButton.disabled = true;
+        standButton.disabled = true;
+        submitButton.disabled = false;
         // The player should not immediately lose if he busts - there is a possibility he will tie with the dealer if the dealer also busts.
         // logic for when the player busts (has a total score of >21).
         myOutputValue =
@@ -236,6 +261,9 @@ var main = function (input) {
           showDealerHandWithCoveredCard(dealerArray) +
           "<br><br> You bust. Click ♠️♥️♣️♦️ to see results.";
       } else {
+        hitButton.disabled = false;
+        standButton.disabled = false;
+        submitButton.disabled = true;
         myOutputValue =
           showPlayerHand(playerArray) +
           playerHandValue +
@@ -245,12 +273,18 @@ var main = function (input) {
       }
     } else if (input == "s") {
       currentGameMode = gameMode3;
+      hitButton.disabled = true;
+      standButton.disabled = true;
+      submitButton.disabled = false;
       myOutputValue = "Dealer's turn now. Click ♠️♥️♣️♦️ to see results.";
     }
     return myOutputValue;
   }
   //The rules state that the dealer hits after the player is done.
   if (currentGameMode == gameMode3) {
+    hitButton.disabled = true;
+    standButton.disabled = true;
+    submitButton.disabled = false;
     var dealerHandValue = calcHandValue(dealerArray);
     while (dealerHandValue < 17) {
       dealerArray.push(cardDeck.pop());
@@ -307,7 +341,7 @@ var main = function (input) {
 };
 
 // check sum and display
-//loop through array
+// loop through array
 // display when player clicks 'hit'
 // call this function in html
 var hit = function () {
@@ -319,6 +353,9 @@ var hit = function () {
     currentGameMode = gameMode3;
     var knockingSanta =
       '<img src= "https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExdmpnZ3hjbTg3ZWt2dmhkNjNhNWhzODN4bThrZmhtcHkwcjJ2aXF6ciZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/Z0MMLLRmzNbfPHT4Gn/giphy.gif"/>';
+    hitButton.disabled = true;
+    standButton.disabled = true;
+    submitButton.disabled = false;
     myOutputValue =
       showPlayerHand(playerArray) +
       playerHandValue +
@@ -329,6 +366,9 @@ var hit = function () {
   } else if (playerHandValue == 21) {
     var twoThumbsUpSanta =
       '<img src= "https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExaW4xa2IxcGR1YjA0OGtmbXlwaHlrc3VsOWkwbDE1MTBvbnZ1eWQybiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/VxylsapmBSnf01keYg/giphy.gif"/>';
+    hitButton.disabled = true;
+    standButton.disabled = true;
+    submitButton.disabled = false;
     myOutputValue =
       showPlayerHand(playerArray) +
       playerHandValue +
@@ -341,6 +381,9 @@ var hit = function () {
     dealerArray = [];
     currentGameMode = gameMode1;
   } else {
+    hitButton.disabled = false;
+    standButton.disabled = false;
+    submitButton.disabled = true;
     var presentsSanta =
       '<img src= "https://media1.giphy.com/media/yP2MOlgfnip51GutHT/200w.webp?cid=ecf05e472if9q1t6kike3whspu7s0v3prrjn93zr0leml8r4&ep=v1_gifs_related&rid=200w.webp&ct=g"/>';
     myOutputValue =
@@ -354,10 +397,13 @@ var hit = function () {
   return myOutputValue;
 };
 
-// after player choose to stand, dealer will draw if hand value is below 17
-// winner will be determined here so show dealer's full hand and dealer's hand value
 // call this function in html to display when player clicks 'stand'
+// after player choose to stand, dealer will draw if hand value is below 17
+// winner will be determined here so I have to show dealer's full hand and dealer's hand value
 var stand = function () {
+  hitButton.disabled = true;
+  standButton.disabled = true;
+  submitButton.disabled = false;
   console.log("stand is selected.");
   var myOutputValue = "";
   var dealerHandValue = calcHandValue(dealerArray);
