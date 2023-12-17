@@ -46,13 +46,14 @@ player turn will determinep which player's turn to hit or stand
 
 
 
-function reset (){
-  //CARDS_TAKEN = 0;
-  //NUM_OF_PLAYER = 3;
-  //PLAYER_DRAW
-  //CARDS_DRAW_DROM_DECK = []
-  DEALER_DRAW = []
-  PLAYER_DRAW = []  
+function reset(){
+  DEALER_DRAW = [];
+  PLAYER_DRAW = [];
+  HIT_CARD = [];
+  GAME_STATE = 1;
+  PLAYER_TURN = 0;
+  CARDS_DRAW_DROM_DECK = [] 
+  CARDS_TAKEN = 0; 
 }
 
 // deck algorithm
@@ -153,63 +154,106 @@ var hit = function(){
   // assign card player using PLAYER_TURN
   draw[0].player = PLAYER_TURN
   HIT_CARD.push(draw)
-  PLAYER_DRAW[PLAYER_TURN - 1].hit = HIT_CARD
-  // console.log(draw)
-  console.log('Hit Length')
-  console.log(PLAYER_DRAW[PLAYER_TURN - 1].hit.length)
-  hitCardLength = HIT_CARD.length
-  // count total
-  for(i = 0; i < hitCardLength; i++){
-    if(HIT_CARD[i][0].player == PLAYER_TURN){
-      if(PLAYER_DRAW[PLAYER_TURN - 1].first[0].card.name == 'ace' || PLAYER_DRAW[PLAYER_TURN - 1].second[0].card.name == 'ace' && HIT_CARD[i][0].card.name == 'ace'){
-      //PLAYER_DRAW[PLAYER_TURN - 1].total -= 10
-      hitTotal += 1
-    } 
-      else{
-        hitTotal += evaluateCards(HIT_CARD[i][0].card.name)
+  if(PLAYER_TURN != 'DEALER'){
+    PLAYER_DRAW[PLAYER_TURN - 1].hit = HIT_CARD
+    // console.log(draw)
+    console.log('Player Hit Length')
+    console.log(PLAYER_DRAW[PLAYER_TURN - 1].hit.length)
+    hitCardLength = HIT_CARD.length
+    // count total
+    for(i = 0; i < hitCardLength; i++){
+      if(HIT_CARD[i][0].player == PLAYER_TURN){
+        if(PLAYER_DRAW[PLAYER_TURN - 1].first[0].card.name == 'ace' || PLAYER_DRAW[PLAYER_TURN - 1].second[0].card.name == 'ace' && HIT_CARD[i][0].card.name == 'ace'){
+        //PLAYER_DRAW[PLAYER_TURN - 1].total -= 10
+        hitTotal += 1
+      } 
+        else{
+          hitTotal += evaluateCards(HIT_CARD[i][0].card.name)
+      }
+        hitCard.push(HIT_CARD[i][0].card.name)
+        hitSuit.push(HIT_CARD[i][0].card.suit)
+        console.log('Hit Total')
+        console.log(hitTotal)
+      }
     }
-      hitCard.push(HIT_CARD[i][0].card.name)
-      hitSuit.push(HIT_CARD[i][0].card.suit)
-      console.log('Hit Total')
-      console.log(hitTotal)
+    PLAYER_DRAW[PLAYER_TURN - 1].total += hitTotal
+    
+    // return PLAYER_DRAW[PLAYER_TURN - 1] HIT_CARD[0][0].card HIT_CARD[1][0].card
+    // return PLAYER_DRAW[PLAYER_TURN - 1].totalfcurrent
+    // TODO add more card info here
+    // player first
+    firstCard = PLAYER_DRAW[PLAYER_TURN - 1].first[0].card.name
+    firstSuit = PLAYER_DRAW[PLAYER_TURN - 1].first[0].card.suit
+    // player second
+    secondCard = PLAYER_DRAW[PLAYER_TURN - 1].second[0].card.name
+    secondSuit = PLAYER_DRAW[PLAYER_TURN - 1].second[0].card.suit
+    // hits join()
+    hitCardJoin = hitCard.join(' & ')
+    hitSuitJoin = hitSuit.join(' & ')
+    if(PLAYER_DRAW[PLAYER_TURN - 1].total > 21){
+      output = `<center>Player ${PLAYER_TURN}</center>Current card Value: ${PLAYER_DRAW[PLAYER_TURN - 1].total} <br>FIRST CARD: <br>Card: ${firstCard}<br>Suit: ${firstSuit}<br>SECOND CARD: <br>Card: ${secondCard}<br>Suit: ${secondSuit}<br>HIT CARD(s): <br>Card: ${hitCardJoin}<br>Suit: ${hitSuitJoin}<br>Proceed to stand`
+    }
+    else{
+      output = `<center>Player ${PLAYER_TURN}</center>Current card Value: ${PLAYER_DRAW[PLAYER_TURN - 1].total} <br>FIRST CARD: <br>Card: ${firstCard}<br>Suit: ${firstSuit}<br>SECOND CARD: <br>Card: ${secondCard}<br>Suit: ${secondSuit}<br>HIT CARD(s): <br>Card: ${hitCardJoin}<br>Suit: ${hitSuitJoin}<br>Would you like to hit or stand?`
     }
   }
-  PLAYER_DRAW[PLAYER_TURN - 1].total += hitTotal
-  // return PLAYER_DRAW[PLAYER_TURN - 1] HIT_CARD[0][0].card HIT_CARD[1][0].card
-  // return PLAYER_DRAW[PLAYER_TURN - 1].total
-  // TODO add more card info here
-  // player first
-  firstCard = PLAYER_DRAW[PLAYER_TURN - 1].first[0].card.name
-  firstSuit = PLAYER_DRAW[PLAYER_TURN - 1].first[0].card.suit
-  // player second
-  secondCard = PLAYER_DRAW[PLAYER_TURN - 1].second[0].card.name
-  secondSuit = PLAYER_DRAW[PLAYER_TURN - 1].second[0].card.suit
-  // hits join()
-  hitCardJoin = hitCard.join(' & ')
-  hitSuitJoin = hitSuit.join(' & ')
-  output = `<center>Player ${PLAYER_TURN}</center> <br>FIRST CARD: <br>Card: ${firstCard}<br>Suit: ${firstSuit}<br>SECOND CARD: <br>Card: ${secondCard}<br>Suit: ${secondSuit}<br>HIT CARD(s): <br>Card: ${hitCardJoin}<br>Suit: ${hitSuitJoin}<br>Would you like to hit or stand?`
+  if(PLAYER_TURN == 'DEALER'){
+    draw = drawCard()
+    HIT_CARD.push(draw)
+    DEALER_DRAW[0].hit = HIT_CARD
+    console.log('Dealer Hit Length')
+    console.log(DEALER_DRAW[0].hit.length)
+    hitCardLength = HIT_CARD.length
+    for(i = 0; i < hitCardLength; i++){
+      if(HIT_CARD[i][0].player == PLAYER_TURN){
+        if(DEALER_DRAW[0].first[0].card.name == 'ace' || DEALER_DRAW[0].second[0].card.name == 'ace' && HIT_CARD[i][0].card.name == 'ace'){
+        //PLAYER_DRAW[PLAYER_TURN - 1].total -= 10
+        hitTotal += 1
+      } else if(DEALER_DRAW[0].first[0].card.name == 'ace' && DEALER_DRAW[0].second[0].card.name == 'ace'){
+        DEALER_DRAW[0].total = 2
+
+      }
+        else{
+          hitTotal += evaluateCards(HIT_CARD[i][0].card.name)
+      }
+        hitCard.push(HIT_CARD[i][0].card.name)
+        hitSuit.push(HIT_CARD[i][0].card.suit)
+        console.log('Hit Total')
+        console.log(hitTotal)
+      }
+    }
+    DEALER_DRAW[0].total += hitTotal
+    output = 'Dealer drew a card'
+    getResult()
+     
+  }
   return output
 }
 
 
 var stand = function(){
-  // there need to be a part where if any of the players (including the dealer), total less than 15, they need to draw another card
+  // there need to be a part where if any of the players  total less than 16, they need to draw another card
   // The dealer has to hit if their hand is below 17.
   // when stand is hit, change player, change PLAYER_TURN += 1
   if(PLAYER_TURN == 'DEALER'){
-    //PLAYER_TURN = "DEALER"
-    GAME_STATE = 5
-    return getResult()
+    if(DEALER_DRAW[0].total <= 17){
+      // or maybe just HIT? to keep dealer card a secret
+      return `Dealer total is: ${DEALER_DRAW[0].total}, press HIT to draw another card.`
+    }
+    // else{
+    //   //PLAYER_TURN = "DEALER"
+    //   return getResult()
+    // }
   }
   else{
-    PLAYER_TURN +=1
+    if(PLAYER_DRAW[0].total <= 16){
+      return `Player ${PLAYER_TURN} total is: ${DEALER_DRAW[0].total}, press HIT to draw another card.`
+    }
+    else{
+      PLAYER_TURN +=1
+      return getResult()
+    }
   }
-  
-  return getResult()
-}
-
-function thirdCardAce(){
-  // this function is to re-evaluate hand, if card 
 }
 
 
@@ -282,28 +326,96 @@ var playersDraw = function (input) {
   }
 }
 
+function chance(total){
+  var intensity = 2
+  var giveChance = Math.floor(Math.random() * intensity)
+  console.log(giveChance)
+  if(total >= 17 && total < 19){
+    intensity = 45
+    giveChance = Math.floor(Math.random() * intensity)
+    if(giveChance == 1){
+      return true
+    }
+  }
+  if(total == 20){
+    intensity = 90
+    giveChance = Math.floor(Math.random() * intensity)
+    if(giveChance == 1){
+      return true
+    }
+  }
+  if (giveChance == 1){
+    return true
+  }
+}
+
 
 var getResult = function(){
   //local var
   var playerResult, output = [];
   // initiate draw
   if(GAME_STATE == 1){
+    reset()
     playersDraw()
+    console.log(DEALER_DRAW)
     GAME_STATE = 2
     PLAYER_TURN = 1
-    
+    for(i = 0; i < PLAYER_DRAW.length; i++){
+      if(PLAYER_DRAW[i].total == 21){
+        PLAYER_TURN += 1
+        reset()
+        return `Player ${PLAYER_DRAW[i].first[0].player}, Natural 21! press Play`
+      }
+    }
+    if(DEALER_DRAW[0].total == 21){
+      reset()
+      return `Dealer drew Natural 21!, press Play to start new game`
+    } 
   }
+
+
   if(GAME_STATE == 2){
     if(PLAYER_TURN == NUM_OF_PLAYER){
       PLAYER_TURN = "DEALER"
-      // get cards here
-      output = `<center>${PLAYER_TURN}</center> <br> hit or stand?`
-      return output
-    } 
-  // get cards here
-  output = `<center>Player ${PLAYER_TURN}</center> <br> hit or stand?`
-  return output
+      // while(DEALER_DRAW[0].total <= 17 ){
+      //   // var getChance = chance(DEALER_DRAW[0].total)
+      //   // if(getChance){
+      //   doHit = hit()
+      //   }
+      //   //return getResult()
+      // }
+    }
+    if(PLAYER_TURN == 'DEALER'){
+      if(DEALER_DRAW[0].total <= 17 ){
+        //var getChance = chance(DEALER_DRAW[0].total)
+        hit()
+        // if(getChance){
+        //   hit()
+        // }
+        //return getResult()
+      }
+      if(DEALER_DRAW[0].total > 17 ){
+        GAME_STATE = 5
+        return getResult()
+      }
+    }
   }
+  if(PLAYER_TURN != 'DEALER'){
+    // if()
+    console.log(PLAYER_DRAW)
+    firstCard = PLAYER_DRAW[PLAYER_TURN - 1].first[0].card.name
+    firstSuit = PLAYER_DRAW[PLAYER_TURN - 1].first[0].card.suit
+    // player second
+    secondCard = PLAYER_DRAW[PLAYER_TURN - 1].second[0].card.name
+    secondSuit = PLAYER_DRAW[PLAYER_TURN - 1].second[0].card.suit
+      // player first
+    // get cards here
+    //output = `<center>Player ${PLAYER_TURN}</center> <br> hit or stand?
+    output = `<center>Player ${PLAYER_TURN}<br>Hit or Stand?</center><br>Current card Value: ${PLAYER_DRAW[PLAYER_TURN - 1].total} <br>FIRST CARD: <br>Card: ${firstCard}<br>Suit: ${firstSuit}<br>SECOND CARD: <br>Card: ${secondCard}<br>Suit: ${secondSuit}<br>`
+    
+    return output
+  }
+    
   if(GAME_STATE == 5){ 
     GAME_STATE = 1
     for(i = 0; i < PLAYER_DRAW.length; i++){
@@ -315,41 +427,47 @@ var getResult = function(){
       console.log(dealerResult)
       if (playerResult == 21){
         player = PLAYER_DRAW[i].first[0].player
-        output.push(`Blackjack!, Player ${player} wins`)
+        output.push(`<center>Blackjack! Player ${player} wins<center>`)
       }
       if (playerResult > 21){
         player = PLAYER_DRAW[i].first[0].player
-        output.push(`Player ${player} busted`)
+        output.push(`<center>Player ${player} busted<center><br>`)
       }
       if(dealerResult == 21){
         // dealer = DEALER_DRAW[i].first[0].player
         player = PLAYER_DRAW[i].first[0].player
-        output.push(`Blackjack!, Dealer wins over Player ${player}`)
+        output.push(`<center>Blackjack! Dealer wins over Player ${player}<center>`)
       }
-      if(dealerResult > 21){
+      if(dealerResult > 21 && playerResult < 21){
         // dealer = DEALER_DRAW[i].first[0].player
         player = PLAYER_DRAW[i].first[0].player
-        output.push(`Dealer lose, Player ${player} gets the win`)
+        output.push(`<center>Dealer Busted, Player ${player} gets the win<enter><br>Player ${player} Total: ${PLAYER_DRAW[i].total}<br>Dealer Total: ${DEALER_DRAW[0].total}<br>`)
       }
       //
       if (playerResult > dealerResult && playerResult < 21){
         player = PLAYER_DRAW[i].first[0].player
-        output.push(`Player ${player} wins over Dealer`)
+        output.push(`<center>Player ${player} wins over Dealer<center><br>Player ${player} Total: ${PLAYER_DRAW[i].total}<br>Dealer Total: ${DEALER_DRAW[0].total}<br>`)
       }
       if (dealerResult > playerResult && dealerResult < 21){
         // dealer = DEALER_DRAW[i].first[0].player
         player = PLAYER_DRAW[i].first[0].player
-        output.push(`Dealer wins over Player ${player}`)
+        output.push(`<center>Dealer wins over Player ${player}<center><br>Player ${player} Total: ${PLAYER_DRAW[i].total}<br>Dealer Total: ${DEALER_DRAW[0].total}<br>`)
       }
-      // TODO add a condition if dealer and player equals
+      //add a condition if dealer and player equals
+      // TODO add more card info 
       // traverse to dealer total
       // dealer will always be at [0] since its the same "player"
-      
+      if (dealerResult == playerResult){
+        // use largest card suit to see who is the winner
+        // dealer = DEALER_DRAW[i].first[0].player
+        player = PLAYER_DRAW[i].first[0].player
+        output.push(`<center>Player ${player} and Dealer ends with a Tie<center>`)
+      }
     }
-    //reset hand
-    reset()
-  // get cards here
-  joinOutput = output.join('<br>')
-  return joinOutput;
+    //reset()
+    joinOutput = output.join('<br>')
+    console.log(joinOutput)
+    
+    return joinOutput;
   }
 }
