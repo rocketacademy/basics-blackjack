@@ -105,8 +105,12 @@ var calcHandValue = function (array) {
     ) {
       value = value + 10;
       //ace value = 11 if <=21
-    } else if (latestCard.name == "Ace" && value < 20) {
+    } else if (latestCard.name == "Ace" && value <= 10) {
       value = value + 11;
+    } else if (latestCard.name == "Ace" && value >= 11 && value < 21) {
+      value = value + 1;
+    } else if (latestCard.name == "Ace" && value > 21) {
+      value = value - 10;
     } else {
       //the rest: = rank number
       value = value + latestCard.rank;
@@ -176,7 +180,7 @@ var main = function (input) {
     //reset card deck
     cardDeck = [];
     cardDeck = shuffleCards(makeDeck());
-    console.log("card deck:", cardDeck);
+    console.table(cardDeck);
     playerArray.push(cardDeck.pop());
     playerArray.push(cardDeck.pop());
     dealerArray.push(cardDeck.pop());
@@ -200,7 +204,7 @@ var main = function (input) {
         '<img src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExNWlpOXNxdXByZnF6c3BocGttOHF5NzF2eWY4djdlcXhmd29yN3QwZCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/wuMue3qGESHbrM8ps9/giphy.gif"/>';
       myOutputValue =
         showHandsAndValue +
-        "<br>You won! Click ♠️♥️♣️♦️ to play again.<br>" +
+        "<br><br>You won! Click ♠️♥️♣️♦️ to play again.<br>" +
         cheeringSanta;
       playerArray = [];
       dealerArray = [];
@@ -361,7 +365,7 @@ var hit = function () {
       playerHandValue +
       "<br><br>" +
       showDealerHandWithCoveredCard(dealerArray) +
-      "<br><br> You bust. Click ♠️♥️♣️♦️ to see results.<br>" +
+      "<br> You bust. Click ♠️♥️♣️♦️ to see results.<br>" +
       knockingSanta;
   } else if (playerHandValue == 21) {
     var twoThumbsUpSanta =
@@ -375,7 +379,7 @@ var hit = function () {
       "<br><br>" +
       showDealerHand(dealerArray) +
       dealerHandValue +
-      "<br><br> You won! Click ♠️♥️♣️♦️ to play again.<br>" +
+      "<br>You won! Click ♠️♥️♣️♦️ to play again.<br>" +
       twoThumbsUpSanta;
     playerArray = [];
     dealerArray = [];
