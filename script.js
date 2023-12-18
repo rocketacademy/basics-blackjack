@@ -833,6 +833,7 @@ var playerGameChoice = function (input) {
           // if there are players that still needs a turn
         } else {
           document.getElementById(`player-${currentPlayerIndex}-container`).style.backgroundColor = "#fff3d3"
+          document.getElementById(`player-${currentPlayerIndex}-container`).style.boxShadow = "0px 0px 30px 10px white"
           return lastSystemMsg = `
             ${currentPlayerInfo.name} has chose to 'Stand'!
             <br>${playersData[currentPlayerIndex].name}'s turn! Click 'Hit' to draw a card or 'Stand' to stop!
