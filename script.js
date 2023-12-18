@@ -77,6 +77,7 @@ var makeDeck = function () {
 
 // Store the Deck cards into a global variable
 var cardDeck = makeDeck();
+console.log(cardDeck);
 
 var shuffleCards = function () {
   var deckNum = cardDeck.length;
@@ -127,9 +128,21 @@ var totalScores = function () {
   player1SumCards = 0;
   dealerSumCards = 0;
   for (var i = 0; i < player1.length; i++) {
+    if (player1[i].name == "ace") {
+      if (player1SumCards + 11 > 21) {
+        player1SumCards += 1;
+        break;
+      }
+    }
     player1SumCards += player1[i].rank;
   }
   for (var j = 0; j < dealer.length; j++) {
+    if (dealer[j].name == "ace") {
+      if (dealerSumCards + 11 > 21) {
+        dealerSumCards += 1;
+        break;
+      }
+    }
     dealerSumCards += dealer[j].rank;
   }
 };
@@ -221,13 +234,6 @@ var main = function (input) {
 
     return `Player Stands. Dealer's Move!<br>` + printHands();
   }
-
-  // mode = GAME_SCORE;
-  // // Set player's hands
-  // if (mode == GAME_SCORE) {
-  //   var printHandsOutput = printHands();
-  //   return printHandsOutput;
-  // }
 
   var myOutputValue = "hello world";
   return myOutputValue;
