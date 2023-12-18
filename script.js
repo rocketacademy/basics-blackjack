@@ -76,29 +76,35 @@ var main = function (input) {
       var joined = Object.values(player1Cards[card]);
       var joined = joined[0] + " of " + joined[1];
       player1String.push(joined);
+
       if (player1Cards[card].rank > 9) {
         player1Cards[card].rank = 10;
       } else if (player1Cards[card].name == "Ace") {
         player1Score += 10;
       }
       player1Score += player1Cards[card].rank;
+      if (player1Score > 21) {
+        player1Score -= 1;
+      }
     }
-
     for (var card in dealerCards) {
       var joined = Object.values(dealerCards[card]);
       var joined = joined[0] + " of " + joined[1];
       dealerString.push(joined);
+
       if (dealerCards[card].rank > 9) {
         dealerCards[card].rank = 10;
       } else if (dealerCards[card].name == "Ace") {
         dealerScore += 10;
       }
       dealerScore += dealerCards[card].rank;
+
+      if (dealerScore > 21) {
+        dealerScore -= 1;
+      }
     }
 
-    if (player1Score < 21) {
-      state = "hosp";
-    }
+    state = "hosp";
 
     if (
       player1Cards.find((ace) => ace.name == "Ace") &&
@@ -140,24 +146,34 @@ var main = function (input) {
       message;
   } else if (state == "hosp") {
     if (/hit/.test(input)) {
+      player1Score = 0;
       player1Cards.push(shuffledDeck.pop());
       var newCard = player1Cards[player1Cards.length - 1];
 
       if (newCard.rank > 9) {
         newCard.rank = 10;
       }
-      player1Score += newCard.rank;
 
-      console.log(player1Score);
+      for (card in player1Cards) {
+        player1Score += player1Cards[card].rank;
+        console.log(player1Score);
+      }
+
+      if (player1Score < 21 && player1Cards.find((ace) => ace.name == "Ace")) {
+        player1Score += 10;
+        if (player1Score > 21) {
+          player1Score -= 10;
+        }
+      }
 
       if (player1Score > 21) {
-        message = "Player 1 burst! Please enter stand to continue.";
+        message = "Player 1 burst! Player please enter stand to continue.";
       } else if (player1Score > dealerScore) {
         message =
           "Player wins!" +
           (player1Score < 21
             ? " Player please enter hit or stand to continue."
-            : "");
+            : " Player please enter stand to continue");
       } else if (dealerScore > player1Score) {
         message = "Dealer wins! Player please enter hit or stand to continue.";
       } else if (dealerScore == player1Score) {
@@ -221,25 +237,41 @@ var main = function (input) {
     }
   } else if (state == "hosd") {
     if (/hit/.test(input) && dealerScore <= 21) {
+      dealerScore = 0;
       dealerCards.push(shuffledDeck.pop());
       var newCard = dealerCards[dealerCards.length - 1];
 
       if (newCard.rank > 9) {
         newCard.rank = 10;
       }
-      dealerScore += newCard.rank;
 
-      console.log(dealerScore);
+      for (card in dealerCards) {
+        dealerScore += dealerCards[card].rank;
+        console.log(dealerScore);
+      }
+
+      if (dealerScore < 21 && dealerCards.find((ace) => ace.name == "Ace")) {
+        dealerScore += 10;
+        if (dealerScore > 21) {
+          dealerScore -= 10;
+        }
+      }
 
       if (dealerScore > 21) {
         message = "Dealer burst!";
         state = "";
-      } else if (player1Score > dealerScore && player1Score <= 21) {
-        message = "Player wins!";
-      } else if (dealerScore < player1Score && player1Score > 21) {
-        message = "Dealer wins!";
+      } else if (player1Score > dealerScore) {
+        if (player1Score > 21) {
+          message =
+            "Dealer wins! Dealer please enter hit or stand to continue.";
+        } else {
+          message =
+            "Player wins! Dealer please enter hit or stand to continue.";
+        }
+      } else if (dealerScore > player1Score) {
+        message = "Dealer wins! Dealer please enter hit or stand to continue.";
       } else if (dealerScore == player1Score) {
-        message = "It is a tie!";
+        message = "It is a tie! Dealer please enter hit or stand to continue.";
       } else {
         message = "";
       }
