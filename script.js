@@ -535,7 +535,8 @@ var checkBlackjack = function (input) {
 
     // change game mode to player phase
     gameStage = PLAYER_PHASE;
-    document.getElementById(`player-${currentPlayerIndex}-container`).style.backgroundColor = "#f0bd8cbf"
+    document.getElementById(`player-${currentPlayerIndex}-container`).style.backgroundColor = "#fff3d3";
+    document.getElementById(`player-${currentPlayerIndex}-container`).style.boxShadow = "0px 0px 30px 10px white"
     
     btnDeal.disabled = true;
     btnHit.disabled = false;
@@ -613,6 +614,7 @@ var playerGameChoice = function (input) {
       console.log({currentPlayerInfo})
 
       document.getElementById(`player-${currentPlayerIndex - 1}-container`).style.backgroundColor = "#ffffffd1"
+      document.getElementById(`player-${currentPlayerIndex - 1}-container`).style.boxShadow = "none"
   
       
       // if this is the last player, change game mode to dealer's turn 
@@ -662,7 +664,8 @@ var playerGameChoice = function (input) {
           // if there are players that still needs a turn 
         } else {
           
-          document.getElementById(`player-${currentPlayerIndex}-container`).style.backgroundColor = "#f0bd8cbf"
+          document.getElementById(`player-${currentPlayerIndex}-container`).style.backgroundColor = "#fff3d3";
+          document.getElementById(`player-${currentPlayerIndex}-container`).style.boxShadow = "0px 0px 30px 10px white"
 
           return lastSystemMsg = `
             ${currentPlayerInfo.name} has drawn ${drawnCard.name}${drawnCard.suit}, ${currentPlayerInfo.name} has busted!
@@ -708,6 +711,7 @@ var playerGameChoice = function (input) {
           btnDeal.innerHTML = 'Proceed'
 
           document.getElementById(`player-${currentPlayerIndex - 1}-container`).style.backgroundColor = "#ffffffd1"
+          document.getElementById(`player-${currentPlayerIndex - 1}-container`).style.boxShadow = "none"
 
           return lastSystemMsg = `
             ${currentPlayerInfo.name} has drawn ${drawnCard.name}${drawnCard.suit}!
@@ -719,7 +723,9 @@ var playerGameChoice = function (input) {
         } else {
 
           document.getElementById(`player-${currentPlayerIndex - 1}-container`).style.backgroundColor = "#ffffffd1"
-          document.getElementById(`player-${currentPlayerIndex}-container`).style.backgroundColor = "#f0bd8cbf"
+          document.getElementById(`player-${currentPlayerIndex - 1}-container`).style.boxShadow = "none"
+          document.getElementById(`player-${currentPlayerIndex}-container`).style.backgroundColor = "#fff3d3";
+          document.getElementById(`player-${currentPlayerIndex}-container`).style.boxShadow = "0px 0px 30px 10px white"
           
           return lastSystemMsg = `
             ${currentPlayerInfo.name} has drawn ${drawnCard.name}${drawnCard.suit}!
@@ -780,6 +786,7 @@ var playerGameChoice = function (input) {
       // determine which player is next OR dealer's turn
       currentPlayerIndex++
       document.getElementById(`player-${currentPlayerIndex - 1}-container`).style.backgroundColor = "#ffffffd1"
+      document.getElementById(`player-${currentPlayerIndex - 1}-container`).style.boxShadow = "none"
   
       // if this is the last player, change game mode to dealer's turn 
       if (currentPlayerIndex == playerCount) {
@@ -825,7 +832,7 @@ var playerGameChoice = function (input) {
 
           // if there are players that still needs a turn
         } else {
-          document.getElementById(`player-${currentPlayerIndex}-container`).style.backgroundColor = "#f0bd8cbf"
+          document.getElementById(`player-${currentPlayerIndex}-container`).style.backgroundColor = "#fff3d3"
           return lastSystemMsg = `
             ${currentPlayerInfo.name} has chose to 'Stand'!
             <br>${playersData[currentPlayerIndex].name}'s turn! Click 'Hit' to draw a card or 'Stand' to stop!
@@ -948,6 +955,11 @@ var calculateResults = function () {
           if (playerInfo.score == dealerData.score) {
             playerInfo.gameResult = 'draw'
           } 
+
+          // if dealer got 5 cards in hand
+          if (dealerData.cards.length == 5) {
+            playerInfo.gameResult = 'lose'
+          }
         }
       }
     }
