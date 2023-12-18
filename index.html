@@ -1,154 +1,280 @@
-
+<!--  All HTML files begin with the following line: -->
 <!DOCTYPE html>
-<html lang="en">
+<!-- This indicates that the rest of the lines that follow are to be interpreted as HTML. It tells the browser about what document type to expect. -->
+
+<!-- All text enclosed in angled brackets are known as HTML element tags. There are usually, but not always, starting and closing element "tags", each representing a HTML element.
+The <html> element is known as the root element of a HTML page. All other elements are encased within it. -->
+<html>
+  <!-- The <head> element contains meta information about the HTML page, information that is not rendered or displayed by the browser -->
   <head>
-    <!-- Page setup configurations -->
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-    <!-- Favicon configuration -->
-    <link rel="apple-touch-icon" sizes="180x180" href="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/favicons/apple-touch-icon.png?v=2">
-    <link rel="icon" type="image/png" sizes="32x32" href="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/favicons/favicon-32x32.png?v=2">
-    <link rel="icon" type="image/png" sizes="16x16" href="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/favicons/favicon-16x16.png?v=2">
-    <link rel="manifest" href="/site.webmanifest?v=2">
-    <link rel="mask-icon" href="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/favicons/safari-pinned-tab.svg?v=2" color="#e73c3e">
-    <link rel="shortcut icon" href="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/favicons/favicon.ico?v=2">
-    <meta name="apple-mobile-web-app-title" content="Rocket Academy">
-    <meta name="application-name" content="Rocket Academy">
-    <meta name="msapplication-TileColor" content="#2b5797">
-    <meta name="theme-color" content="#ffffff">
-
-    <!-- sharing configuration -->
-    <!-- Primary Meta Tags -->
-    <title>Blackjack - Basics - Rocket Academy</title>
-    <meta name="title" content="YOURNAME's BlackJack Game!">
-    <meta name="description" content="A fun card game I made myself! 😄💪🌈">
-
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://rocketacademy.github.io/basics-blackjack/index.html">
-    <meta property="og:title" content="YOURNAME's BlackJack Game!">
-    <meta property="og:description" content="A fun card game I made myself! 😄💪🌈">
-    <meta property="og:image" content="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/basics/basics-blackjack-share-small.jpeg">
-
-    <!-- Twitter -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:url" content="https://rocketacademy.github.io/basics-blackjack/index.html">
-    <meta name="twitter:title" content="YOURNAME's BlackJack Game!">
-    <meta name="twitter:description" content="A fun card game I made myself! 😄💪🌈">
-    <meta name="twitter:image" content="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/basics/basics-blackjack-share-small.jpeg">
-    <meta name="twitter:site" content="@rocketacademyco">
-    <meta name="twitter:creator" content="@rocketacademyco">
-
-    <!-- fonts -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans">
-
-    <!-- CSS -->
+    <!-- The <title> element specifies a title for the HTML page (which is shown in the browser's title bar or in the page's tab) and is the default name given to a bookmark of a webpage. -->
+    <title>Santa's 21st</title>
+    <!--add favicon-->
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <!-- The <style> element contains information relating to the layout and style of the webpage. The syntax within a <style> tag is referred to as CSS - Cascading Style Sheets. -->
     <style>
       * {
         box-sizing: border-box;
       }
 
       body {
-        font-family: 'Open Sans', sans-serif;
+        font-family: cursive;
         margin-left: 30px;
         margin-right: 30px;
-        background-color:white;
-        color: black; /* sets the font color */
-        background-image: url(""); /* The image used */
-        background-position: center; /* Center the image */
-        background-repeat: no-repeat; /* Do not repeat the image */
-        background-size: cover; /* Resize the background image to cover the entire container */
       }
 
-      #output-div img{
-        display:block;
-        max-width:100%;
-        max-height:200px;
-      }
-      .header {
+      #header {
         text-align: center;
-        font-size: 1.1rem;
-        margin-bottom: 3rem;
+        font-family: cursive;
       }
 
       #container {
-        background-color: pink;
-        margin: 40px auto;
-        max-width: 800px;
-        padding: 38px 31px;
-      }
-
-      input {
-        font-size: 21px;
-        line-height: 33px;
-        margin: 0 0 23px 0;
-        padding: 0 9px;
-        width: 100%;
+        background-image: url("xmasbackground.png");
+        margin: 5px auto;
+        width: 1200px;
+        height: 645px;
+        padding: 5px 5px;
+        text-align: center;
       }
 
       button {
+        font-family: cursive;
         font-size: 21px;
-        line-height: 33px;
-        margin: 0 0 23px 0;
-        padding: 0 6px;
+        line-height: 40px;
+        margin: 0 0 5px 0;
+        padding: 0 15px;
+        border-radius: 5px;
+        border-color: rgb(251, 251, 251);
       }
 
       #output-div {
-        background-color: lightgrey;
-        margin: 20px auto;
+        background-color: rgb(211, 211, 211, 0.7);
+        margin: 5px auto;
         padding: 20px;
-        width: 100%;
-      }
-
-      .logo-img {
-        height: 49px;
-        position: relative;
-        top: 22px;
-      }
-
-      /* increase header font size on wider screens */
-      @media screen and (min-width: 600px) {
-        .header {
-          font-size: 2rem;
-        }
+        width: 45%;
       }
     </style>
+    <style>
+      /* customizable snowflake styling */
+      .snowflake {
+        color: #fff;
+        font-size: 1em;
+        font-family: Arial, sans-serif;
+        text-shadow: 0 0 5px #000;
+      }
 
+      .snowflake,
+      .snowflake .inner {
+        animation-iteration-count: infinite;
+        animation-play-state: running;
+      }
+      @keyframes snowflakes-fall {
+        0% {
+          transform: translateY(0);
+        }
+        100% {
+          transform: translateY(110vh);
+        }
+      }
+      @keyframes snowflakes-shake {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        50% {
+          transform: translateX(80px);
+        }
+      }
+      .snowflake {
+        position: fixed;
+        top: -10%;
+        z-index: 9999;
+        -webkit-user-select: none;
+        user-select: none;
+        cursor: default;
+        animation-name: snowflakes-shake;
+        animation-duration: 3s;
+        animation-timing-function: ease-in-out;
+      }
+      .snowflake .inner {
+        animation-duration: 10s;
+        animation-name: snowflakes-fall;
+        animation-timing-function: linear;
+      }
+      .snowflake:nth-of-type(0) {
+        left: 1%;
+        animation-delay: 0s;
+      }
+      .snowflake:nth-of-type(0) .inner {
+        animation-delay: 0s;
+      }
+      .snowflake:first-of-type {
+        left: 10%;
+        animation-delay: 1s;
+      }
+      .snowflake:first-of-type .inner,
+      .snowflake:nth-of-type(8) .inner {
+        animation-delay: 1s;
+      }
+      .snowflake:nth-of-type(2) {
+        left: 20%;
+        animation-delay: 0.5s;
+      }
+      .snowflake:nth-of-type(2) .inner,
+      .snowflake:nth-of-type(6) .inner {
+        animation-delay: 6s;
+      }
+      .snowflake:nth-of-type(3) {
+        left: 30%;
+        animation-delay: 2s;
+      }
+      .snowflake:nth-of-type(11) .inner,
+      .snowflake:nth-of-type(3) .inner {
+        animation-delay: 4s;
+      }
+      .snowflake:nth-of-type(4) {
+        left: 40%;
+        animation-delay: 2s;
+      }
+      .snowflake:nth-of-type(10) .inner,
+      .snowflake:nth-of-type(4) .inner {
+        animation-delay: 2s;
+      }
+      .snowflake:nth-of-type(5) {
+        left: 50%;
+        animation-delay: 3s;
+      }
+      .snowflake:nth-of-type(5) .inner {
+        animation-delay: 8s;
+      }
+      .snowflake:nth-of-type(6) {
+        left: 60%;
+        animation-delay: 2s;
+      }
+      .snowflake:nth-of-type(7) {
+        left: 70%;
+        animation-delay: 1s;
+      }
+      .snowflake:nth-of-type(7) .inner {
+        animation-delay: 2.5s;
+      }
+      .snowflake:nth-of-type(8) {
+        left: 80%;
+        animation-delay: 0s;
+      }
+      .snowflake:nth-of-type(9) {
+        left: 90%;
+        animation-delay: 1.5s;
+      }
+      .snowflake:nth-of-type(9) .inner {
+        animation-delay: 3s;
+      }
+      .snowflake:nth-of-type(10) {
+        left: 25%;
+        animation-delay: 0s;
+      }
+      .snowflake:nth-of-type(11) {
+        left: 65%;
+        animation-delay: 2.5s;
+      }
+    </style>
+    <div class="snowflakes" aria-hidden="true">
+      <div class="snowflake">
+        <div class="inner">❅</div>
+      </div>
+      <div class="snowflake">
+        <div class="inner">❅</div>
+      </div>
+      <div class="snowflake">
+        <div class="inner">❅</div>
+      </div>
+      <div class="snowflake">
+        <div class="inner">❅</div>
+      </div>
+      <div class="snowflake">
+        <div class="inner">❅</div>
+      </div>
+      <div class="snowflake">
+        <div class="inner">❅</div>
+      </div>
+      <div class="snowflake">
+        <div class="inner">❅</div>
+      </div>
+      <div class="snowflake">
+        <div class="inner">❅</div>
+      </div>
+      <div class="snowflake">
+        <div class="inner">❅</div>
+      </div>
+      <div class="snowflake">
+        <div class="inner">❅</div>
+      </div>
+      <div class="snowflake">
+        <div class="inner">❅</div>
+      </div>
+      <div class="snowflake">
+        <div class="inner">❅</div>
+      </div>
+    </div>
   </head>
 
+  <!-- The <body> element defines the document's body, and is a container for all the visible contents that will be rendered by the browser.  -->
   <body>
-    <h1 class="header">
-      <img class="logo-img" src="https://firebasestorage.googleapis.com/v0/b/ftbc11-sample.appspot.com/o/images%2F1-PRIMARY_CRIMSON.png?alt=media&token=ce9e8333-2a45-44be-adb2-1f1bf054adf7" />
-      Rocket Academy
-      <img class="logo-img" src="https://firebasestorage.googleapis.com/v0/b/ftbc11-sample.appspot.com/o/images%2F1-PRIMARY_CRIMSON.png?alt=media&token=ce9e8333-2a45-44be-adb2-1f1bf054adf7" />
-    </h1>
-    <h1 class="header">♣️ Basics - Blackjack ♠️</h1>
+    <!-- The <h1> element defines a large heading. There are 6 pre-set header elements, <h1> to <h6> -->
+    <h1 id="header">✨🎅🏻 Santa's 21st 🎅🏻✨</h1>
+    <!-- The <div> tag defines a division or a section in an HTML document, and is commonly use as a "container" for nested HTML elements. -->
+
     <div id="container">
-      <p>Input:</p>
-      <input id="input-field" />
-      <br />
-      <button id="submit-button">Submit</button>
-      <p>Output:</p>
-      <div id="output-div"></div>
+      <!-- The <p> tag defines a paragraph element. -->
+
+      <!-- The <button> tag represents.. you guessed it! a button. -->
+      <button id="submit-button">♠️♥️♣️♦️</button>
+      <button id="hit-button">NICE - hit</button>
+      <button id="stand-button">NAUGHTY - stand</button>
+
+      <p></p>
+      <div id="output-div">
+        <!--Starting Instructions: Add instructions on how to start the game-->
+        Welcome to Santa's 21st! Click ♠️♥️♣️♦️ to deck the halls!
+        <img
+          src="https://media3.giphy.com/media/o1oHZU0CMRGAecB0hT/giphy.gif?cid=ecf05e47sphrdambyquc87st1lufpplp7351tglvqb6vl463&ep=v1_gifs_related&rid=giphy.gif&ct=g"
+        />
+      </div>
     </div>
-    <!-- Import program logic -->
+    <!-- Everything below this is incorporating JavaScript programming logic into the webpage. -->
+    <!-- The script tag encloses JavaScript syntax for the browser to interpret programtically -->
+    <!-- The following line imports all code written in the script.js file -->
     <script src="script.js"></script>
     <!-- Define button click functionality -->
     <script>
+      // Declare and define a variable that represents the Submit Button
+      // add button for 'Hit' and 'Stand'
       var button = document.querySelector("#submit-button");
+      var button2 = document.querySelector("#hit-button");
+      var button3 = document.querySelector("#stand-button");
+
+      // When the submit button is clicked, access the text entered by the user in the input field
+      button2.addEventListener("click", function () {
+        var output = document.querySelector("#output-div");
+        output.innerHTML = hit();
+      });
+      button3.addEventListener("click", function () {
+        var output = document.querySelector("#output-div");
+        output.innerHTML = stand();
+      });
+
+      // And pass it as an input parameter to the main function as defined in script.js
       button.addEventListener("click", function () {
         // Set result to input value
         var input = document.querySelector("#input-field");
-        var result = main(input.value);
+        // Store the output of main() in a new variable
+        var result = main();
 
         // Display result in output element
         var output = document.querySelector("#output-div");
         output.innerHTML = result;
 
         // Reset input value
-        input.value = "";
       });
     </script>
   </body>
