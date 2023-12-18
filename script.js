@@ -3,10 +3,8 @@ var myoutputvalue = "";
 var totalCoins = 10;
 var mode = "end";
 var coins = 0;
-
 var PlayerHand = [];
 var DealerHand = [];
-
 var makeDeck = function () {
   var cardDeck = [];
   var suits = ['♥','♦', '♣', '♠'];
@@ -33,9 +31,7 @@ var makeDeck = function () {
               cardName = `King`;
               cardValue = 10;
           }
-          
-        
-          var card = {
+              var card = {
               name: cardName,
               suit: currentSuit,
               rank: rankCounter,
@@ -55,7 +51,6 @@ var getRandomIndex = function () {
   console.log("makeeee", (makeDeck().length)-4);
   return Math.floor(Math.random()* ((makeDeck().length)-4) );
 };
-
 var shuffleCards = function (cardDeck) {
   var currentIndex = 0;
   while (currentIndex < cardDeck.length) {
@@ -70,7 +65,7 @@ var shuffleCards = function (cardDeck) {
 };
 var cardDeck = makeDeck();
 
-function calculateValue(hand) {
+var calculate = function (hand) {
     var total = 0;
     var hasAce = false;
 
@@ -90,13 +85,8 @@ function calculateValue(hand) {
     }
     return total;
   }
-
-
 mode = "start";
-
-
 var main = function(input){
-  
   var inputBet = parseInt(input);
   var Alpinput = input.toLowerCase();
   console.log("ALPha Input",Alpinput)
@@ -121,87 +111,71 @@ var main = function(input){
       myoutputvalue =`You can bet upto ${totalCoins} coins. Please enter again.`;
       } return myoutputvalue;
     }
-  
   }
-  
-  
   if (mode == "start") {
     var shuffleDCard = shuffleCards(cardDeck);
     console.log(shuffleDCard);
     counterPlayer = 0;
     counterDealer = 0;
-    
     while (counterPlayer < 2) {
       PlayerHand.push(shuffleDCard.pop());
       counterPlayer++;
-    }
-
-    while (counterDealer < 2) {
+    }    while (counterDealer < 2) {
       DealerHand.push(shuffleDCard.pop());
       counterDealer++;
     }
-    
-    
-    console.log(calculateValue(PlayerHand));
-    console.log(calculateValue(DealerHand));
-      // console.log("Player hand:",playerTotal);
-      
+    console.log(calculate(PlayerHand));
+    console.log(calculate(DealerHand));
       mode = "BetCoins";
       console.log(mode);
       console.log('cardd', cardDeck.length);
       myoutputvalue = `You got ${totalCoins}- Enter How much you want to lose 🤣.`;
       return myoutputvalue;
       }
-var PlayerHandValue = calculateValue(PlayerHand);
-var DealerHandValue = calculateValue(DealerHand);
-
-  var showBothHands = function() {      
-    var Dealeroutput = []
-    var DealerHandValue = 0;
-    var hasAceDealer = false;
-    for (var i = 0; i < DealerHand.length; i++) {
-        var card = DealerHand[i];
-        Dealeroutput.push(`${card.name},${card.suit}`);
-        if (card.name == "Ace") {
-            hasAceDealer = true;
-        } else {
-          DealerHandValue += card.value;
-        }
-    }
-    if (hasAceDealer && DealerHandValue + 11 <= 21) {
-        DealerHandValue += 11;
-    } else if (hasAceDealer) {
-        DealerHandValue += 1;
-    }
-
-    var Playeroutput = []
-    var PlayerHandValue = 0;
-    var hasAcePlayer = false;
-    for (var i = 0; i < PlayerHand.length; i++) {
-        var card = PlayerHand[i];
-        Playeroutput.push(`${card.name},${card.suit}`);
-        if (card.name == "Ace") {
-            hasAcePlayer = true;
-        } else {
-          PlayerHandValue += card.value;
-        }
-      }
-      if (hasAcePlayer && PlayerHandValue + 11 <= 21) {
-          hasAcePlayer += 11;
-      } else if (hasAcePlayer) {
-          PlayerHandValue += 1;
-      }
-      myoutputvalue = `Dealer: ${Dealeroutput}| Total: ${DealerHandValue} <br> Player: ${Playeroutput} | Total: ${PlayerHandValue}`;
-      return myoutputvalue;
-        
-    }
     
+    var showBothHands = function() {      
+        var Dealeroutput = []
+        var DealerHandValue = 0;
+        var hasAceDealer = false;
+        for (var i = 0; i < DealerHand.length; i++) {
+            var card = DealerHand[i];
+            Dealeroutput.push(`${card.name},${card.suit}`);
+            if (card.name == "Ace") {
+                hasAceDealer = true;
+            } else {
+            DealerHandValue += card.value;
+            }
+        }
+        if (hasAceDealer && DealerHandValue + 11 <= 21) {
+            DealerHandValue += 11;
+        } else if (hasAceDealer) {
+            DealerHandValue += 1;
+        }
+        var Playeroutput = []
+        var PlayerHandValue = 0;
+        var hasAcePlayer = false;
+        for (var i = 0; i < PlayerHand.length; i++) {
+            var card = PlayerHand[i];
+            Playeroutput.push(`${card.name},${card.suit}`);
+            if (card.name == "Ace") {
+                hasAcePlayer = true;
+            } else {
+            PlayerHandValue += card.value;
+            }
+        }
+        if (hasAcePlayer && PlayerHandValue + 11 <= 21) {
+            hasAcePlayer += 11;
+        } else if (hasAcePlayer) {
+            PlayerHandValue += 1;
+        }
+        myoutputvalue = `Dealer: ${Dealeroutput}| Total: ${DealerHandValue} <br> Player: ${Playeroutput} | Total: ${PlayerHandValue}`;
+        return myoutputvalue;
+        }
+        PlayerHandValue = calculate(PlayerHand);
+        DealerHandValue = calculate(DealerHand);
 
+        if (mode == "BetCoins") {
     
-      
-
-    if (mode == "BetCoins") {
-        // Calculate hand value
         if(inputBet <= totalCoins){
           if (inputBet == 1) {
             coins = coins + inputBet;
@@ -212,19 +186,13 @@ var DealerHandValue = calculateValue(DealerHand);
             myoutputvalue = `You are Betting ${coins} Coins. To see Cards press <b>Submit</b>.`;
             mode = "Evaluation";
         } 
-
         } else {
           myoutputvalue =`Player can only bet ${totalCoins} coins. Please input again.`;
           return myoutputvalue;
       }
-
         mode = "Evaluation";
         return myoutputvalue;
-
-    }
-
-    
-    
+        }
     if (mode == "Evaluation") {
       if ((((DealerHand[0].name)== "Ace" && (DealerHand[1].value)== 10) || ((DealerHand[0].value)== 10 && (DealerHand[1].name)== "Ace")) || 
       (((PlayerHand[0].name)== "Ace" && (PlayerHand[1].value)== 10) && ((PlayerHand[0].value)== 10 && (PlayerHand[1].name)== "Ace"))){
@@ -247,26 +215,15 @@ var DealerHandValue = calculateValue(DealerHand);
           mode = "end";
           coins=0;
           return myoutputvalue;
-
     } else {
-        
-        
-
         myoutputvalue = `Dealer's Hand <br>${DealerHand[0].name} ${DealerHand[0].suit} | "Guess!!" <br> <br> Player's Hand 
                         <br>${PlayerHand[0].name} ${PlayerHand[0].suit} | ${PlayerHand[1].name} ${PlayerHand[1].suit} 
                         <br> [Total => ${PlayerHandValue}] *Press <b>'h'</b> for Hit || Press <b>Submit</b> for Stand`;
-        
-    
-    
     mode = "game";
     console.log("game", mode);
-    
-
     }  return myoutputvalue;
-    } 
-    
-    if (mode == "game") {
-        
+    }  
+    if (mode == "game") { 
         var onlyPlayerHand = function() {             
             var Playeroutput = []
             var PlayerHandValue = 0;
@@ -290,9 +247,10 @@ var DealerHandValue = calculateValue(DealerHand);
                 
             }
         
-        
-        if (Alpinput == "h") {
+        DealerHandValue = calculate(DealerHand);
+         if (Alpinput == "h") {
             PlayerHand.push(cardDeck.pop());
+            PlayerHandValue = calculate(PlayerHand);
             onlyPlayerHand();
             myoutputvalue =`You draw a card ${onlyPlayerHand()} <br>
             *Press <b>'h'</b> for Hit || Press <b>Submit</b> for Stand`;
@@ -311,21 +269,16 @@ var DealerHandValue = calculateValue(DealerHand);
                 mode = "end";
                 coins=0;
                 return myoutputvalue;
-
             }
+            console.log(calculate(PlayerHand));
+            console.log(calculate(DealerHand));
+            
             return myoutputvalue;
-
-
         } else {
             mode = "DealerHit";
-            myoutputvalue = `${onlyPlayerHand} Dealer's turn.. Press Submit to show hands.`
-            
+            myoutputvalue = `${onlyPlayerHand} Dealer's turn.. Press Submit to show hands.`;  
         } 
-      
-    
     }
-
-
     if (mode == "DealerHit"){
         if (DealerHandValue < 17) {
             DealerHand.push(cardDeck.pop());
@@ -346,7 +299,6 @@ var DealerHandValue = calculateValue(DealerHand);
             }
 
         } mode = "Show Hands";
-
     }
     if (mode == "Show Hands") {
         console.log(PlayerHandValue);
@@ -374,9 +326,5 @@ var DealerHandValue = calculateValue(DealerHand);
             coins=0;
             return myoutputvalue;
           }
-
-
-    }
-    
-    
+        }  
 };
