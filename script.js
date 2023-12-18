@@ -247,10 +247,10 @@ var main = function(input){
                 
             }
         
-        DealerHandValue = calculate(DealerHand);
+        
          if (Alpinput == "h") {
             PlayerHand.push(cardDeck.pop());
-            PlayerHandValue = calculate(PlayerHand);
+            var PlayerHandValue = calculate(PlayerHand);
             onlyPlayerHand();
             myoutputvalue =`You draw a card ${onlyPlayerHand()} <br>
             *Press <b>'h'</b> for Hit || Press <b>Submit</b> for Stand`;
@@ -270,8 +270,9 @@ var main = function(input){
                 coins=0;
                 return myoutputvalue;
             }
-            console.log(calculate(PlayerHand));
             console.log(calculate(DealerHand));
+            console.log(calculate(PlayerHand));
+            
             
             return myoutputvalue;
         } else {
@@ -282,6 +283,7 @@ var main = function(input){
     if (mode == "DealerHit"){
         if (DealerHandValue < 17) {
             DealerHand.push(cardDeck.pop());
+            var DealerHandValue = calculate(DealerHand);
             if (DealerHandValue  == 21) {
                 totalCoins = totalCoins - coins;
 
@@ -301,8 +303,9 @@ var main = function(input){
         } mode = "Show Hands";
     }
     if (mode == "Show Hands") {
-        console.log(PlayerHandValue);
-        console.log(DealerHandValue);
+      console.log(DealerHandValue);
+      console.log(PlayerHandValue);
+        
         if (PlayerHandValue > DealerHandValue) {
             totalCoins= totalCoins + coins;
         
