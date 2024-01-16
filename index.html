@@ -129,7 +129,9 @@
       <p>Input:</p>
       <input id="input-field" />
       <br />
-      <button id="submit-button">Submit</button>
+      <button id="play-button">Play</button>
+      <button id="hit-button">Hit</button>
+      <button id="stand-button">Stand</button>
       <p>Output:</p>
       <div id="output-div"></div>
     </div>
@@ -137,11 +139,39 @@
     <script src="script.js"></script>
     <!-- Define button click functionality -->
     <script>
-      var button = document.querySelector("#submit-button");
+      var button = document.querySelector("#play-button");
       button.addEventListener("click", function () {
         // Set result to input value
         var input = document.querySelector("#input-field");
-        var result = main(input.value);
+        var result = getResult(input.value);
+
+        // Display result in output element
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
+
+        // Reset input value
+        input.value = "";
+      });
+      //
+      // 
+      var button = document.querySelector("#hit-button");
+      button.addEventListener("click", function () {
+        // Set result to input value
+        var input = document.querySelector("#input-field");
+        var result = hit(input.value);
+
+        // Display result in output element
+        var output = document.querySelector("#output-div");
+        output.innerHTML = result;
+
+        // Reset input value
+        input.value = "";
+      });
+      var button = document.querySelector("#stand-button");
+      button.addEventListener("click", function () {
+        // Set result to input value
+        var input = document.querySelector("#input-field");
+        var result = stand(input.value);
 
         // Display result in output element
         var output = document.querySelector("#output-div");
