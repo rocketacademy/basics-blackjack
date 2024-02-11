@@ -46,8 +46,6 @@ var computerDeck = {
 
 var player_draw_card = "PLAYER_DRAW_CARD";
 var player_card_decision = "PLAYER_CARD_DECISION";
-var computer_draw_card = "COMPUTER_DRAW_CARD";
-var computer_card_decision = "COMPUTER_CARD_DECISION";
 var scoring_mode = "SCORING_MODE";
 
 var currentGameMode = "PLAYER_DRAW_CARD";
