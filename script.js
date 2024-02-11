@@ -31,6 +31,7 @@ var playerDeck = {
   totalscore: 0,
   win: 0,
   loss: 0,
+  turn: false,
 };
 
 var computerDeck = {
@@ -40,6 +41,7 @@ var computerDeck = {
   totalscore: 0,
   win: 0,
   loss: 0,
+  turn: false,
 };
 
 var player_draw_card = "PLAYER_DRAW_CARD";
@@ -65,7 +67,9 @@ var main = function (input) {
       randCardDrawn2 = drawCardFunc(currentPlayer);
       console.log(currentPlayer["cards"]);
 
-      var myOutputValue = `Player has drawn ${captializeString(
+      var myOutputValue = `${
+        currentPlayer["playerName"]
+      } has drawn ${captializeString(
         String(randCardDrawn1["name"])
       )} of ${captializeString(
         String(randCardDrawn1["suit"])
@@ -77,7 +81,9 @@ var main = function (input) {
     } else {
       console.log("PLAYER DECIDED TO DRAW ANOTHER CARD");
       randCardDrawn1 = drawCardFunc(currentPlayer);
-      var myOutputValue = `Player has drawn ${captializeString(
+      var myOutputValue = `${
+        currentPlayer["playerName"]
+      } has drawn ${captializeString(
         String(randCardDrawn1["name"])
       )} of ${captializeString(String(randCardDrawn1["suit"]))}`;
       currentGameMode = player_card_decision;
@@ -86,93 +92,77 @@ var main = function (input) {
 
     //ENTERING PLAYER'S DECISION
   } else if (currentGameMode == player_card_decision && input.length == 0) {
-    console.log("CHECKING PLAYER'S TOTAL SCORE.");
+    console.log(`CHECKING ${currentPlayer["playerName"]}'S TOTAL SCORE.`);
 
     var currentcardmessage = checkCurrentPlayerCards(currentPlayer)[0];
     var totalscore = currentPlayer["totalscore"];
     var blackjackstatus = currentPlayer["blackjack"];
 
     if (blackjackstatus == true) {
-      var myOutputValue = `${currentcardmessage} <br>You have a total score of ${totalscore}. You have attain BLACKJACK. Moving on to the next player.`;
-      currentGameMode = computer_draw_card;
+      var myOutputValue = `${currentcardmessage} <br>${currentPlayer["playerName"]} have a total score of ${totalscore}. ${currentPlayer["playerName"]} have attain BLACKJACK. Moving on to the next player.`;
+      if (currentPlayer == computerDeck && playerDeck["turn"] == true) {
+        currentGameMode = scoring_mode;
+        computerDeck["turn"] = true;
+      } else {
+        playerDeck["turn"] = true;
+        currentPlayer = computerDeck;
+        currentGameMode = player_draw_card;
+      }
     } else if (totalscore < 18) {
-      var myOutputValue = `${currentcardmessage} <br><br>You have a total score of ${totalscore} which is less than 18. <br><br>You have to draw another card. <br><br>Hit 'Submit' to draw another card.`;
+      var myOutputValue = `${currentcardmessage} <br><br>${currentPlayer["playerName"]} have a total score of ${totalscore} which is less than 18. <br><br>${currentPlayer["playerName"]} have to draw another card. <br><br>Hit 'Submit' to draw another card.`;
       currentGameMode = player_draw_card;
     } else if (totalscore >= 18 && totalscore <= 21) {
       currentGameMode = player_card_decision;
-      var myOutputValue = `${currentcardmessage} <br>You have a total score of ${totalscore}. <br><br>Would you like to draw another card?. <br><br>Type 'hit' to draw another card.<br>or<br>Type 'stand' to move on to the next player.<br><br>Hit 'Submit' to continue`;
+      if (currentPlayer == computerDeck) {
+        var genRandChoice = genRandomValue(2);
+        console.log(`COMPUTER RANDOM DECISION: ${genRandChoice}`);
+        if (genRandChoice == 1) {
+          var myOutputValue = `${currentcardmessage} <br>Computer have a total score of ${totalscore}. <br><br>Computer has decided to draw another card.<br><br>Hit 'Submit' to continue`;
+          currentGameMode = player_draw_card;
+        } else {
+          var myOutputValue = `${currentcardmessage} <br>Computer have a total score of ${totalscore}. <br><br>Computer has decided not to draw another card.<br><br>Hit 'Submit' to continue`;
+          currentGameMode = scoring_mode;
+          computerDeck["turn"] = true;
+        }
+      } else {
+        var myOutputValue = `${currentcardmessage} <br>${currentPlayer["playerName"]} have a total score of ${totalscore}. <br><br>Would ${currentPlayer["playerName"]} like to draw another card?. <br><br>Type 'hit' to draw another card.<br>or<br>Type 'stand' to move on to the next player.<br><br>Hit 'Submit' to continue`;
+      }
     } else {
-      currentGameMode = computer_draw_card;
-      var myOutputValue = `${currentcardmessage} <br>You have a total score of ${totalscore}. <br><br>You have more than 21. Moving on to the next player.<br><br>Hit 'Submit' to continue`;
+      if (currentPlayer == computerDeck && playerDeck["turn"] == true) {
+        var myOutputValue = `${currentcardmessage} <br>Computer have a total score of ${totalscore}. <br><br>Computer have more than 21. Moving on to scoring.<br><br>Hit 'Submit' to continue`;
+        currentGameMode = scoring_mode;
+        computerDeck["turn"] = true;
+      } else {
+        var myOutputValue = `${currentcardmessage} <br>${currentPlayer["playerName"]} have a total score of ${totalscore}. <br><br>${currentPlayer["playerName"]} have more than 21. Moving on to the next player.<br><br>Hit 'Submit' to continue`;
+        playerDeck["turn"] = true;
+        currentPlayer = computerDeck;
+        currentGameMode = player_draw_card;
+      }
     }
     return myOutputValue;
   } else if (currentGameMode == player_card_decision && input.length != 0) {
-    console.log(`PLAYER DECIDES TO HIT OR STAND MODE: ${currentGameMode}`);
+    console.log(
+      `${currentPlayer["playerName"]} DECIDES TO HIT OR STAND MODE: ${currentGameMode}`
+    );
     var totalscore = currentPlayer["totalscore"];
+    if (currentPlayer == computerDeck) {
+      input.value = "";
+    }
     if (input.toLowerCase() == "hit" || input.toLowerCase() == "h") {
-      var myOutputValue = `Player has decided to draw a card. <br><br>Hit 'Submit' to continue`;
+      var myOutputValue = `${currentPlayer["playerName"]} has decided to draw a card. <br><br>Hit 'Submit' to continue`;
       currentGameMode = player_draw_card;
     } else if (input.toLowerCase() == "stand" || input.toLowerCase() == "s") {
-      var myOutputValue = `Player has decided not to draw a card. <br><br>Hit 'Submit' to continue`;
-      currentGameMode = computer_draw_card;
-    } else {
-      var myOutputValue = `You have a ${totalscore}. <br>Would you like to draw another card?. <br>Type 'hit' to draw another card.<br>or<br>Type 'stand' to move on to the next player.<br>Hit 'Submit' to continue`;
-    }
-    return myOutputValue;
-  } else if (currentGameMode == computer_draw_card) {
-    currentPlayer = computerDeck;
-    console.log(`IT'S ${currentPlayer["playerName"]} TURN TO DRAW THE CARD`);
-
-    if (currentPlayer["totalscore"] == 0) {
-      console.log("COMPUTER TURN TO DRAW THE CARD");
-      randCardDrawn1 = drawCardFunc(currentPlayer);
-      randCardDrawn2 = drawCardFunc(currentPlayer);
-      console.log(currentPlayer["cards"]);
-
-      var myOutputValue = `Computer has drawn ${captializeString(
-        String(randCardDrawn1["name"])
-      )} of ${captializeString(
-        String(randCardDrawn1["suit"])
-      )} & ${captializeString(
-        String(randCardDrawn2["name"])
-      )} of ${captializeString(String(randCardDrawn2["suit"]))}`;
-      currentGameMode = computer_card_decision;
-      return myOutputValue;
-    } else {
-      console.log("COMPUTER DECIDED TO DRAW ANOTHER CARD");
-      randCardDrawn1 = drawCardFunc(currentPlayer);
-      var myOutputValue = `Computer has drawn ${randCardDrawn1["name"]} of ${randCardDrawn1["suit"]}`;
-      currentGameMode = computer_card_decision;
-      return myOutputValue;
-    }
-
-    //ENTERING COMPUTER'S DECISION
-  } else if (currentGameMode == computer_card_decision) {
-    console.log("COMPUTER'S TIME TO DECIDE WHETHER TO HIT OR STAND");
-
-    var currentcardmessage = checkCurrentPlayerCards(currentPlayer)[0];
-    var totalscore = currentPlayer["totalscore"];
-    var blackjackstatus = currentPlayer["blackjack"];
-
-    if (blackjackstatus == true) {
-      var myOutputValue = `${currentcardmessage} <br>Computer have a total score of ${totalscore}. Computer have attain BLACKJACK. Moving on to the next player.`;
-      currentGameMode = computer_draw_card;
-    } else if (totalscore < 18) {
-      var myOutputValue = `${currentcardmessage} <br><br>Computer have a total score of ${totalscore} which is less than 18. <br><br>Computer have to draw another card. <br><br>Hit 'Submit' to draw another card.`;
-      currentGameMode = computer_draw_card;
-    } else if (totalscore >= 18 && totalscore <= 21) {
-      var genRandChoice = genRandomValue(2);
-      console.log(`COMPUTER RANDOM DECISION: ${genRandChoice}`);
-      if (genRandChoice == 1) {
-        var myOutputValue = `${currentcardmessage} <br>Computer have a total score of ${totalscore}. <br><br>Computer has decided to draw another card.<br><br>Hit 'Submit' to continue`;
-        currentGameMode = computer_draw_card;
-      } else {
-        var myOutputValue = `${currentcardmessage} <br>Computer have a total score of ${totalscore}. <br><br>Computer has decided not to draw another card.<br><br>Hit 'Submit' to continue`;
+      var myOutputValue = `${currentPlayer["playerName"]} has decided not to draw a card. <br><br>Hit 'Submit' to continue`;
+      if (currentPlayer == computerDeck && playerDeck["turn"] == true) {
         currentGameMode = scoring_mode;
+        computerDeck["turn"] = true;
+      } else {
+        playerDeck["turn"] = true;
+        currentPlayer = computerDeck;
+        currentGameMode = player_draw_card;
       }
     } else {
-      currentGameMode = scoring_mode;
-      var myOutputValue = `${currentcardmessage} <br>Computer have a total score of ${totalscore}. <br><br>Computer have more than 21. Moving on to scoring.<br><br>Hit 'Submit' to continue`;
+      var myOutputValue = `${currentPlayer["playerName"]} have a ${totalscore}. <br>Would ${currentPlayer["playerName"]} like to draw another card?. <br>Type 'hit' to draw another card.<br>or<br>Type 'stand' to move on to the next player.<br>Hit 'Submit' to continue`;
     }
     return myOutputValue;
 
@@ -259,10 +249,12 @@ var resetGame = function () {
   playerDeck["cards"] = [];
   playerDeck["blackjack"] = false;
   playerDeck["totalscore"] = 0;
+  playerDeck["turn"] = false;
 
   computerDeck["cards"] = [];
   computerDeck["blackjack"] = false;
   computerDeck["totalscore"] = 0;
+  computerDeck["turn"] = false;
 };
 
 //Capitalize first word of string given
@@ -289,6 +281,7 @@ var checkCurrentPlayerCards = function (playerCards) {
 
   //Check for blackjack
   if (
+    //IF INDEX 1 IS A PICTURE CARD AND INDEX 0 IS AN ACE
     (playerCards["cards"][1]["rank"] == 11 ||
       (playerCards["cards"][1]["rank"] == 12) |
         (playerCards["cards"][1]["rank"] == 13)) &&
@@ -297,6 +290,7 @@ var checkCurrentPlayerCards = function (playerCards) {
     playerCards["cards"][0]["rank"] = 11;
     playerCards["blackjack"] = true;
   } else if (
+    //IF INDEX 1 IS AN ACE AND INDEX 0 IS A PICTURE CARD
     (playerCards["cards"][0]["rank"] == 11 ||
       (playerCards["cards"][0]["rank"] == 12) |
         (playerCards["cards"][0]["rank"] == 13)) &&
@@ -304,11 +298,16 @@ var checkCurrentPlayerCards = function (playerCards) {
   ) {
     playerCards["cards"][1]["rank"] = 11;
     playerCards["blackjack"] = true;
+  } else if (
+    //IF BOTH ARE ACES
+    playerCards["cards"][0]["rank"] == 0 &&
+    playerCards["cards"][1]["rank"] == 0
+  ) {
+    playerCards["cards"][0]["rank"] = 11;
   }
-
   //Going through the cards of player provided
   for (card in playerCards["cards"]) {
-    console.log(card);
+    //console.log(card);
     //Concentanate card details into the initial message
     var currentCardName = `${captializeString(
       String(playerCards["cards"][card]["name"])
@@ -325,7 +324,7 @@ var checkCurrentPlayerCards = function (playerCards) {
     }
   }
   playerCards["totalscore"] = totalamount;
-  console.log(allCardsMessage, playerCards["totalscore"]);
+  //console.log(allCardsMessage, playerCards["totalscore"]);
   return [allCardsMessage];
 };
 
@@ -340,9 +339,9 @@ var genDeck = function () {
     var currentSuit = suits[suitIndex];
 
     var rankCounter = 1;
-    console.log(`Current suit: ${currentSuit}`);
+    //console.log(`Current suit: ${currentSuit}`);
     while (rankCounter <= 13) {
-      console.log(`Current rank: ${rankCounter}`);
+      //console.log(`Current rank: ${rankCounter}`);
       var cardName = rankCounter;
 
       if (cardName == 1) {
@@ -354,7 +353,7 @@ var genDeck = function () {
       } else if (cardName == 13) {
         cardName = "king";
       }
-      console.log(`Current card name: ${cardName}`);
+      //console.log(`Current card name: ${cardName}`);
 
       var newCard = {
         name: cardName,
@@ -387,30 +386,18 @@ var shuffleDeck = function (cardDeck) {
     if (randomIndex != currentIndex) {
       var currentCard = cardDeck[currentIndex];
       var randomCard = cardDeck[randomIndex];
-      console.log(
-        `Current card: ${currentCard["name"]} of ${currentCard["suit"]}`
-      );
-      console.log(
-        `Shuffled with: ${randomCard["name"]} of ${randomCard["suit"]}`
-      );
+      //console.log(`Current card: ${currentCard["name"]} of ${currentCard["suit"]}`);
+      //console.log(`Shuffled with: ${randomCard["name"]} of ${randomCard["suit"]}`);
     } else {
       while (randomIndex == currentIndex) {
-        console.log(
-          `NOTE: Current Index ${currentIndex} and Random Index detected ${randomIndex}.`
-        );
+        //console.log(`NOTE: Current Index ${currentIndex} and Random Index detected ${randomIndex}.`);
         randomIndex = genRandomValue(cardDeck.length);
-        console.log(
-          `Current Index ${currentIndex} and Random Index detected. Reshuffled random index to: ${randomIndex}`
-        );
+        //console.log(`Current Index ${currentIndex} and Random Index detected. Reshuffled random index to: ${randomIndex}`);
       }
       var currentCard = cardDeck[currentIndex];
       var randomCard = cardDeck[randomIndex];
-      console.log(
-        `Current card: ${currentCard["name"]} of ${currentCard["suit"]}`
-      );
-      console.log(
-        `Shuffled with: ${randomCard["name"]} of ${randomCard["suit"]}`
-      );
+      //console.log(`Current card: ${currentCard["name"]} of ${currentCard["suit"]}`);
+      //console.log(`Shuffled with: ${randomCard["name"]} of ${randomCard["suit"]}`);
     }
     cardDeck[currentIndex] = randomCard;
     cardDeck[randomIndex] = currentCard;
