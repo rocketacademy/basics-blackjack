@@ -22,7 +22,7 @@ var main = function (input) {
   dealerHand = hands.dealerHand;
   console.log(playerHand);
   currPlayerScore = calcCardRank(playerHand);
-  currDealerScore = calcCardRank(dealerHand);
+  //currDealerScore = calcCardRank(dealerHand);
   console.log(currPlayerScore);
   return myOutputValue;
 };
@@ -30,17 +30,35 @@ var main = function (input) {
 //HELPER FUNCTIONS//
 function calcCardRank(arr) {
   //loops through the hand
-  var handScore = 0;
+  var scores = [];
+  var score1 = 0;
+  var score2 = 0;
+
   for (var i = 0; i < arr.length; i++) {
     //checks if have face card and set score to 10
     if (arr[i].rank > 10) {
-      handScore += 10;
+      score1 += 10;
+      score2 += 10;
+    } else if (containsAce(arr[i])) {
+      score1 += 1;
+      score2 += 11;
+    } else {
+      //sums up the score
+      score1 += arr[i].rank;
+      score2 += arr[i].rank;
     }
-
-    //sums up the score
-    handScore += arr[i].rank;
   }
-  return handScore;
+  scores.push(score1, score2);
+  console.log(typeof score1);
+  console.log(typeof score2);
+  console.log(scores);
+  var score = evalScore(scores);
+  return score;
+}
+
+function evalScore(scores) {
+  //returns the highest score less than and closest to 21
+  return Math.max(...scores);
 }
 
 function containsAce(card) {
