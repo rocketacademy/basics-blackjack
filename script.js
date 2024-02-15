@@ -75,6 +75,18 @@ function checkForBlackJack(hand) {
   return isBlackJack;
 }
 
+function displayHands(playerHand, dealerHand) {
+  let playerHandMsg = `Player Hand: <br>`;
+  for (let i = 0; i < playerHand.length; i += 1) {
+    playerHandMsg += `- ${playerHand[i].name} of ${playerHand[i].suit} <br>`;
+  }
+  let dealerHandMsg = `Dealer Hand: <br>`;
+  for (let i = 0; i < dealerHand.length; i += 1) {
+    dealerHandMsg += `- ${dealerHand[i].name} of ${dealerHand[i].suit} <br>`;
+  }
+  return `${playerHandMsg} <br> ${dealerHandMsg}`;
+}
+
 var main = function (input) {
   if (mode == INIT_GAME) {
     generateNewDeck();
@@ -89,17 +101,18 @@ var main = function (input) {
   if (mode == EVAL_OPTIONS) {
     const playerBlackJack = checkForBlackJack(playerHand);
     const dealerBlackJack = checkForBlackJack(dealerHand);
+    const cardsDrawn = displayHands(playerHand, dealerHand);
     if (playerBlackJack || dealerBlackJack) {
       if (playerBlackJack && dealerBlackJack) {
-        return `Both players got a black jack ✌. It's a tie!`;
+        return `${cardsDrawn} <br> Both players got a black jack ✌. It's a tie!`;
       }
       if (playerBlackJack && !dealerBlackJack) {
-        return `Player wins by black jack! 🏆`;
+        return `${cardsDrawn} <br> Player wins by black jack! 🏆`;
       }
       if (!playerBlackJack && dealerBlackJack) {
-        return `Dealer wins by black jack! 🏆`;
+        return `${cardsDrawn} <br> Dealer wins by black jack! 🏆`;
       }
     }
-    return `No one scored a black jack.`;
+    return `${cardsDrawn} <br> No one scored a black jack.`;
   }
 };
