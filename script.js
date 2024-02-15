@@ -55,7 +55,9 @@ function shuffleDeck(cardDeck) {
 function generateNewDeck() {
   const newDeck = createDeck();
   const shuffledDeck = shuffleDeck(newDeck);
-  return shuffledDeck;
+  for (let i = 0; i < shuffledDeck.length; i += 1) {
+    gameDeck.push(shuffledDeck[i]);
+  }
 }
 
 //game functions
@@ -65,8 +67,8 @@ function checkForBlackJack(hand) {
   const playerCardOne = hand[0];
   const playerCardTwo = hand[1];
   if (
-    (playerCardOne.name = `Ace` && playerCardTwo.rank >= 10) ||
-    (playerCardTwo.name = `Ace` && playerCardOne.rank >= 10)
+    (playerCardOne.name == `Ace` && playerCardTwo.rank >= 10) ||
+    (playerCardTwo.name == `Ace` && playerCardOne.rank >= 10)
   ) {
     isBlackJack = true;
   }
@@ -74,6 +76,30 @@ function checkForBlackJack(hand) {
 }
 
 var main = function (input) {
-  var myOutputValue = "hello world";
-  return myOutputValue;
+  if (mode == INIT_GAME) {
+    generateNewDeck();
+    playerHand.push(gameDeck.pop());
+    playerHand.push(gameDeck.pop());
+    dealerHand.push(gameDeck.pop());
+    dealerHand.push(gameDeck.pop());
+    mode = EVAL_OPTIONS;
+    return `Both the player and dealer has been dealt two cards. Click the submit button to evaluate the hands.`;
+  }
+
+  if (mode == EVAL_OPTIONS) {
+    const playerBlackJack = checkForBlackJack(playerHand);
+    const dealerBlackJack = checkForBlackJack(dealerHand);
+    if (playerBlackJack || dealerBlackJack) {
+      if (playerBlackJack && dealerBlackJack) {
+        return `Both players got a black jack ✌. It's a tie!`;
+      }
+      if (playerBlackJack && !dealerBlackJack) {
+        return `Player wins by black jack! 🏆`;
+      }
+      if (!playerBlackJack && dealerBlackJack) {
+        return `Dealer wins by black jack! 🏆`;
+      }
+    }
+    return `No one scored a black jack.`;
+  }
 };
