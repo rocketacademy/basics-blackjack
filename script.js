@@ -44,12 +44,14 @@ var computerDeck = {
   turn: false,
 };
 
+var ace_check = "ACE_CHECKER";
 var player_draw_card = "PLAYER_DRAW_CARD";
 var player_card_decision = "PLAYER_CARD_DECISION";
 var scoring_mode = "SCORING_MODE";
 
 var currentGameMode = "PLAYER_DRAW_CARD";
 var currentPlayer = playerDeck;
+var currentAce = [];
 
 //MAIN FUNCTION
 var main = function (input) {
@@ -63,41 +65,130 @@ var main = function (input) {
       console.log("NEW GAME STARTED: PLAYERS TURN TO DRAW THE CARD");
       randCardDrawn1 = drawCardFunc(currentPlayer);
       randCardDrawn2 = drawCardFunc(currentPlayer);
-      console.log(currentPlayer["cards"]);
 
-      var myOutputValue = `${
-        currentPlayer["playerName"]
-      } has drawn ${captializeString(
-        String(randCardDrawn1["name"])
-      )} of ${captializeString(
-        String(randCardDrawn1["suit"])
-      )} & ${captializeString(
-        String(randCardDrawn2["name"])
-      )} of ${captializeString(String(randCardDrawn2["suit"]))}`;
-      currentGameMode = player_card_decision;
+      blackJackStatus = checkBlackJack(currentPlayer);
+
+      //FIRST CARD DRAWN IS ACE
+      if (
+        blackJackStatus == "none" &&
+        randCardDrawn1["rank"] == 1 &&
+        randCardDrawn2["rank"] != 1
+      ) {
+        addPointstoPlayer(randCardDrawn2);
+        currentGameMode = ace_check;
+        var myOutputValue = outputAceMessage(
+          currentPlayer,
+          "playerFirstCardDrawn"
+        );
+        //SECOND CARD DRAWN IS ACE
+      } else if (
+        blackJackStatus == "none" &&
+        randCardDrawn1["rank"] != 1 &&
+        randCardDrawn2["rank"] == 1
+      ) {
+        addPointstoPlayer(randCardDrawn1);
+        currentGameMode = ace_check;
+        var myOutputValue = outputAceMessage(
+          currentPlayer,
+          "playerSecondCardDrawn"
+        );
+      } else if (blackJackStatus == "BLACKJACK") {
+        addPointstoPlayer("BLACKJACK");
+        var myOutputValue = outputCardDrawnMessage(
+          currentPlayer,
+          randCardDrawn1,
+          randCardDrawn2
+        );
+        currentGameMode = player_card_decision;
+      } else if (blackJackStatus == "DOUBLE ACES") {
+        addPointstoPlayer("DOUBLE ACES");
+        var myOutputValue = outputCardDrawnMessage(
+          currentPlayer,
+          randCardDrawn1,
+          randCardDrawn2
+        );
+        currentGameMode = player_card_decision;
+      } else {
+        addPointstoPlayer(randCardDrawn1);
+        addPointstoPlayer(randCardDrawn2);
+        var myOutputValue = outputCardDrawnMessage(
+          currentPlayer,
+          randCardDrawn1,
+          randCardDrawn2
+        );
+        currentGameMode = player_card_decision;
+      }
+
       return myOutputValue;
     } else {
       console.log("PLAYER DECIDED TO DRAW ANOTHER CARD");
       randCardDrawn1 = drawCardFunc(currentPlayer);
-      var myOutputValue = `${
-        currentPlayer["playerName"]
-      } has drawn ${captializeString(
-        String(randCardDrawn1["name"])
-      )} of ${captializeString(String(randCardDrawn1["suit"]))}`;
-      currentGameMode = player_card_decision;
+      if (randCardDrawn1["rank"] == 1) {
+        currentGameMode = ace_check;
+        var myOutputValue = outputAceMessage(currentPlayer, "oneMoreCard");
+      } else {
+        addPointstoPlayer(randCardDrawn1);
+        var myOutputValue = outputCardDrawnMessage(
+          currentPlayer,
+          randCardDrawn1,
+          "none"
+        );
+        currentGameMode = player_card_decision;
+      }
       return myOutputValue;
     }
-
+    //CHECK ACE HERE
+  } else if (currentGameMode == ace_check && input.length == 0) {
+    console.log("ENTERED ACE CHECK MODE");
+    if (currentPlayer == computerDeck) {
+      var genCpuRandChoice = genRandomValue(2);
+      console.log(`COMPUTER RANDOM DECISION: ${genCpuRandChoice}`);
+      if (genCpuRandChoice == 1) {
+        addPointstoPlayer("bigAce");
+        currentGameMode = player_card_decision;
+        var myOutputValue = outputAceMessage(currentPlayer, "chose11");
+      } else {
+        addPointstoPlayer("smallAce");
+        currentGameMode = player_card_decision;
+        var myOutputValue = outputAceMessage(currentPlayer, "chose1");
+      }
+    } else {
+      var myOutputValue = `${checkCurrentPlayerCards(
+        currentPlayer
+      )} ${outputAceMessage(currentPlayer, "aceQuery")}`;
+      currentGameMode = ace_check;
+    }
+    return myOutputValue;
+  } else if (currentGameMode == ace_check && input.length != 0) {
+    if (input == 1) {
+      addPointstoPlayer("smallAce");
+      currentGameMode = player_card_decision;
+      var myOutputValue = outputAceMessage(currentPlayer, "chose1");
+    } else if (input == 11) {
+      addPointstoPlayer("bigAce");
+      currentGameMode = player_card_decision;
+      var myOutputValue = outputAceMessage(currentPlayer, "chose11");
+    } else {
+      var myOutputValue = `${checkCurrentPlayerCards(
+        currentPlayer
+      )} <br><br>You have drawn an Ace. Please input 1 or 11 in the Input field?`;
+      currentGameMode = ace_check;
+    }
+    return myOutputValue;
     //ENTERING PLAYER'S DECISION
   } else if (currentGameMode == player_card_decision && input.length == 0) {
     console.log(`CHECKING ${currentPlayer["playerName"]}'S TOTAL SCORE.`);
 
-    var currentcardmessage = checkCurrentPlayerCards(currentPlayer)[0];
+    var currentcardmessage = checkCurrentPlayerCards(currentPlayer);
     var totalscore = currentPlayer["totalscore"];
     var blackjackstatus = currentPlayer["blackjack"];
 
-    if (blackjackstatus == true) {
-      var myOutputValue = `${currentcardmessage} <br>${currentPlayer["playerName"]} have a total score of ${totalscore}. ${currentPlayer["playerName"]} have attain BLACKJACK. Moving on to the next player.`;
+    if (blackjackstatus == "BLACKJACK") {
+      var myOutputValue = `${currentcardmessage} <br><br>${outputPlayerMessage(
+        "blackjack",
+        currentPlayer,
+        totalscore
+      )}`;
       if (currentPlayer == computerDeck && playerDeck["turn"] == true) {
         currentGameMode = scoring_mode;
         computerDeck["turn"] = true;
@@ -107,31 +198,55 @@ var main = function (input) {
         currentGameMode = player_draw_card;
       }
     } else if (totalscore < 18) {
-      var myOutputValue = `${currentcardmessage} <br><br>${currentPlayer["playerName"]} have a total score of ${totalscore} which is less than 18. <br><br>${currentPlayer["playerName"]} have to draw another card. <br><br>Hit 'Submit' to draw another card.`;
+      var myOutputValue = `${currentcardmessage} <br>${outputPlayerMessage(
+        "under18",
+        currentPlayer,
+        totalscore
+      )}`;
       currentGameMode = player_draw_card;
     } else if (totalscore >= 18 && totalscore <= 21) {
       currentGameMode = player_card_decision;
       if (currentPlayer == computerDeck) {
-        var genRandChoice = genRandomValue(2);
-        console.log(`COMPUTER RANDOM DECISION: ${genRandChoice}`);
-        if (genRandChoice == 1) {
-          var myOutputValue = `${currentcardmessage} <br>Computer have a total score of ${totalscore}. <br><br>Computer has decided to draw another card.<br><br>Hit 'Submit' to continue`;
+        var genCpuRandChoice = genRandomValue(2);
+        console.log(`COMPUTER RANDOM DECISION: ${genCpuRandChoice}`);
+        if (genCpuRandChoice == 1) {
+          var myOutputValue = `${currentcardmessage} <br>${outputPlayerMessage(
+            "computerDrawCard",
+            currentPlayer,
+            totalscore
+          )}`;
           currentGameMode = player_draw_card;
         } else {
-          var myOutputValue = `${currentcardmessage} <br>Computer have a total score of ${totalscore}. <br><br>Computer has decided not to draw another card.<br><br>Hit 'Submit' to continue`;
+          var myOutputValue = `${currentcardmessage} <br>${outputPlayerMessage(
+            "computerNotDrawCard",
+            currentPlayer,
+            totalscore
+          )}`;
           currentGameMode = scoring_mode;
           computerDeck["turn"] = true;
         }
       } else {
-        var myOutputValue = `${currentcardmessage} <br>${currentPlayer["playerName"]} have a total score of ${totalscore}. <br><br>Would ${currentPlayer["playerName"]} like to draw another card?. <br><br>Type 'hit' to draw another card.<br>or<br>Type 'stand' to move on to the next player.<br><br>Hit 'Submit' to continue`;
+        var myOutputValue = `${currentcardmessage} <br>${outputPlayerMessage(
+          "playerDrawCardQuery",
+          currentPlayer,
+          totalscore
+        )}`;
       }
     } else {
       if (currentPlayer == computerDeck && playerDeck["turn"] == true) {
-        var myOutputValue = `${currentcardmessage} <br>Computer have a total score of ${totalscore}. <br><br>Computer have more than 21. Moving on to scoring.<br><br>Hit 'Submit' to continue`;
+        var myOutputValue = `${currentcardmessage} <br>${outputPlayerMessage(
+          "moreThan21",
+          currentPlayer,
+          totalscore
+        )}`;
         currentGameMode = scoring_mode;
         computerDeck["turn"] = true;
       } else {
-        var myOutputValue = `${currentcardmessage} <br>${currentPlayer["playerName"]} have a total score of ${totalscore}. <br><br>${currentPlayer["playerName"]} have more than 21. Moving on to the next player.<br><br>Hit 'Submit' to continue`;
+        var myOutputValue = `${currentcardmessage} <br>${outputPlayerMessage(
+          "moreThan21",
+          currentPlayer,
+          totalscore
+        )}`;
         playerDeck["turn"] = true;
         currentPlayer = computerDeck;
         currentGameMode = player_draw_card;
@@ -160,7 +275,11 @@ var main = function (input) {
         currentGameMode = player_draw_card;
       }
     } else {
-      var myOutputValue = `${currentPlayer["playerName"]} have a ${totalscore}. <br>Would ${currentPlayer["playerName"]} like to draw another card?. <br>Type 'hit' to draw another card.<br>or<br>Type 'stand' to move on to the next player.<br>Hit 'Submit' to continue`;
+      var myOutputValue = `${currentcardmessage} <br>${outputPlayerMessage(
+        "playerDrawCardQuery",
+        currentPlayer,
+        totalscore
+      )}`;
     }
     return myOutputValue;
 
@@ -241,6 +360,7 @@ HELPER FUNCTIONS
 ===================================================================================================================
 */
 
+//RESET GAME
 var resetGame = function () {
   currentGameMode = player_draw_card;
   currentPlayer = playerDeck;
@@ -261,69 +381,82 @@ var captializeString = function capitalizeFirstLetter(inputString) {
 };
 
 //Draw random card of give deck
-var drawCardFunc = function (currentDeck) {
+var drawCardFunc = function (currentPlayerDeck) {
   var randCardDrawn = newDeckShuffled[genRandomValue(newDeckShuffled.length)];
-  currentDeck["cards"].push(randCardDrawn);
+  currentPlayerDeck["cards"].push(randCardDrawn);
 
   return randCardDrawn;
 };
 
-//CHECK CURRENT PLAYERS CARDS
-//Function to return message of what cards are in player's hand and total sum. Changes Blackjack status if conditions are met.
+//CHECKS FOR BLACKJACK
+var checkBlackJack = function (currentPlayer) {
+  var currentStatus = "none";
+  if (
+    //IF INDEX 1 IS A PICTURE CARD AND INDEX 0 IS AN ACE
+    (currentPlayer["cards"][1]["rank"] == 11 ||
+      currentPlayer["cards"][1]["rank"] == 12 ||
+      currentPlayer["cards"][1]["rank"] == 13) &&
+    currentPlayer["cards"][0]["rank"] == 1
+  ) {
+    currentPlayer["cards"][0]["rank"] = 11;
+    currentPlayer["blackjack"] = true;
+    currentStatus = "BLACKJACK";
+  } else if (
+    //IF INDEX 1 IS AN ACE AND INDEX 0 IS A PICTURE CARD
+    (currentPlayer["cards"][0]["rank"] == 11 ||
+      currentPlayer["cards"][0]["rank"] == 12 ||
+      currentPlayer["cards"][0]["rank"] == 13) &&
+    currentPlayer["cards"][1]["rank"] == 1
+  ) {
+    currentPlayer["cards"][1]["rank"] = 11;
+    currentPlayer["blackjack"] = true;
+    currentStatus = "BLACKJACK";
+  } else if (
+    //IF BOTH ARE ACES
+    currentPlayer["cards"][0]["rank"] == 1 &&
+    currentPlayer["cards"][1]["rank"] == 1
+  ) {
+    currentPlayer["cards"][0]["rank"] = 11;
+    currentStatus = "DOUBLE ACES";
+  }
+  return currentStatus;
+};
+
+var addPointstoPlayer = function (inputCard) {
+  if (inputCard == "bigAce") {
+    currentPlayer["totalscore"] += 11;
+  } else if (inputCard == "smallAce") {
+    currentPlayer["totalscore"] += 1;
+  } else if (inputCard == "BLACKJACK") {
+    currentPlayer["totalscore"] += 21;
+  } else if (inputCard == "DOUBLE ACES") {
+    currentPlayer["totalscore"] += 12;
+  } else {
+    currentAmount = inputCard["rank"];
+    if (currentAmount == 11 || currentAmount == 12 || currentAmount == 13) {
+      currentPlayer["totalscore"] += 10;
+    } else {
+      currentPlayer["totalscore"] += currentAmount;
+    }
+  }
+};
+
+//CONSOLIDATES AND SHOWS ALL PLAYERS CARD INTO A STRING
 var checkCurrentPlayerCards = function (playerCards) {
   console.log("Enter check current player cards function.");
   //Initial Message
   var allCardsMessage = `${playerCards["playerName"]} hand: `;
 
-  totalamount = 0;
-
-  //Check for blackjack
-  if (
-    //IF INDEX 1 IS A PICTURE CARD AND INDEX 0 IS AN ACE
-    (playerCards["cards"][1]["rank"] == 11 ||
-      (playerCards["cards"][1]["rank"] == 12) |
-        (playerCards["cards"][1]["rank"] == 13)) &&
-    playerCards["cards"][0]["rank"] == 0
-  ) {
-    playerCards["cards"][0]["rank"] = 11;
-    playerCards["blackjack"] = true;
-  } else if (
-    //IF INDEX 1 IS AN ACE AND INDEX 0 IS A PICTURE CARD
-    (playerCards["cards"][0]["rank"] == 11 ||
-      (playerCards["cards"][0]["rank"] == 12) |
-        (playerCards["cards"][0]["rank"] == 13)) &&
-    playerCards["cards"][1]["rank"] == 0
-  ) {
-    playerCards["cards"][1]["rank"] = 11;
-    playerCards["blackjack"] = true;
-  } else if (
-    //IF BOTH ARE ACES
-    playerCards["cards"][0]["rank"] == 0 &&
-    playerCards["cards"][1]["rank"] == 0
-  ) {
-    playerCards["cards"][0]["rank"] = 11;
-  }
   //Going through the cards of player provided
   for (card in playerCards["cards"]) {
     //console.log(card);
     //Concentanate card details into the initial message
     var currentCardName = `${captializeString(
       String(playerCards["cards"][card]["name"])
-    )} of ${captializeString(playerCards["cards"][card]["suit"])}`;
+    )} of ${captializeString(String(playerCards["cards"][card]["suit"]))}`;
     allCardsMessage = allCardsMessage + currentCardName + ", ";
-
-    currentAmount = playerCards["cards"][card]["rank"];
-
-    //Calculating current score in player's hand
-    if (currentAmount == 11 || currentAmount == 12 || currentAmount == 13) {
-      totalamount += 10;
-    } else {
-      totalamount += currentAmount;
-    }
   }
-  playerCards["totalscore"] = totalamount;
-  //console.log(allCardsMessage, playerCards["totalscore"]);
-  return [allCardsMessage];
+  return allCardsMessage;
 };
 
 //GENERATE NEW DECK
@@ -402,4 +535,62 @@ var shuffleDeck = function (cardDeck) {
     currentIndex = currentIndex + 1;
   }
   return cardDeck;
+};
+
+/*
+===================================================================================================================
+MESSAGE FUNCTIONS
+===================================================================================================================
+*/
+
+//MESSAGES FOR PLAYER SCORING & DECISION
+var outputPlayerMessage = function (mode, player, totalscore) {
+  if (mode == "blackjack") {
+    var outputMessage = `${player["playerName"]} have a total score of ${totalscore}. ${player["playerName"]} have attain BLACKJACK. Moving on to the next player.`;
+  } else if (mode == "under18") {
+    var outputMessage = `${player["playerName"]} have a total score of ${totalscore} which is less than 18. <br><br>${player["playerName"]} have to draw another card. <br><br>Hit 'Submit' to draw another card.`;
+  } else if (mode == "computerDrawCard") {
+    var outputMessage = `${player["playerName"]} have a total score of ${totalscore}. <br><br>${player["playerName"]} has decided to draw another card.<br><br>Hit 'Submit' to continue`;
+  } else if (mode == "computerNotDrawCard") {
+    var outputMessage = `${player["playerName"]} have a total score of ${totalscore}. <br><br>${player["playerName"]} has decided not to draw another card.<br><br>Hit 'Submit' to continue`;
+  } else if (mode == "playerDrawCardQuery") {
+    var outputMessage = `${player["playerName"]} have a total score of ${totalscore}. <br><br>Would ${player["playerName"]} like to draw another card?. <br><br>Type 'hit' to draw another card.<br>or<br>Type 'stand' to move on to the next player.<br><br>Hit 'Submit' to continue`;
+  } else if (mode == "moreThan21") {
+    var outputMessage = `${player["playerName"]} have a total score of ${totalscore}. <br><br>${player["playerName"]} have more than 21. Moving on to scoring.<br><br>Hit 'Submit' to continue`;
+  }
+  return outputMessage;
+};
+
+//MESSAGES FOR CARD DRAWING
+var outputCardDrawnMessage = function (player, cardDrawn1, cardDrawn2) {
+  if (cardDrawn2 != "none") {
+    var outputMessage = `${player["playerName"]} has drawn ${captializeString(
+      String(cardDrawn1["name"])
+    )} of ${captializeString(String(cardDrawn1["suit"]))} & ${captializeString(
+      String(cardDrawn2["name"])
+    )} of ${captializeString(String(cardDrawn2["suit"]))}`;
+  } else {
+    var outputMessage = `${player["playerName"]} has drawn ${captializeString(
+      String(cardDrawn1["name"])
+    )} of ${captializeString(String(randCardDrawn1["suit"]))}`;
+  }
+  return outputMessage;
+};
+
+//MESSAGES FOR ACE CARDS
+var outputAceMessage = function (player, mode) {
+  if (mode == "playerFirstCardDrawn") {
+    var outputMessage = `${player["playerName"]} first card is an Ace! Hit 'Submit' to continue`;
+  } else if (mode == "playerSecondCardDrawn") {
+    var outputMessage = `${player["playerName"]} seconds card is an Ace! Hit 'Submit' to continue`;
+  } else if (mode == "oneMoreCard") {
+    var outputMessage = `${player["playerName"]} got an Ace! Hit 'Submit' to continue`;
+  } else if (mode == "chose11") {
+    var outputMessage = `${player["playerName"]} has decided Ace to be 11.`;
+  } else if (mode == "chose1") {
+    var outputMessage = `${player["playerName"]} has decided Ace to be 1.`;
+  } else if (mode == "aceQuery") {
+    var outputMessage = `<br><br>${player["playerName"]} have drawn an Ace. Would you like it to be 1 or 11?`;
+  }
+  return outputMessage;
 };
