@@ -199,7 +199,7 @@ var evaluateResults = function (playerHandTotalValue, dealerHandTotalValue) {
     )}<br>Player busts! Dealer wins!. ${displayHandTotalValues(
       playerHandTotalValue,
       dealerHandTotalValue
-    )}<br>Enter "reset" to start a new game`;
+    )}<br><br>Enter "reset" to start a new game`;
   } else if (
     playerHandTotalValue == dealerHandTotalValue ||
     (playerHandTotalValue > 21 && dealerHandTotalValue > 21)
@@ -210,7 +210,7 @@ var evaluateResults = function (playerHandTotalValue, dealerHandTotalValue) {
     )}<br>It's a Tie! ${displayHandTotalValues(
       playerHandTotalValue,
       dealerHandTotalValue
-    )}<br>Enter "reset" to start a new game`;
+    )}<br><br>Enter "reset" to start a new game`;
   } else if (
     (playerHandTotalValue > dealerHandTotalValue &&
       playerHandTotalValue <= 21) ||
@@ -222,7 +222,7 @@ var evaluateResults = function (playerHandTotalValue, dealerHandTotalValue) {
     )}<br>Player wins! ${displayHandTotalValues(
       playerHandTotalValue,
       dealerHandTotalValue
-    )}<br>Enter "reset" to start a new game`;
+    )}<br><br>Enter "reset" to start a new game`;
   } else {
     outputMessage = `${displayPlayerAndDealerHands(
       playerHand,
@@ -230,7 +230,7 @@ var evaluateResults = function (playerHandTotalValue, dealerHandTotalValue) {
     )}<br>Dealer wins! ${displayHandTotalValues(
       playerHandTotalValue,
       dealerHandTotalValue
-    )}<br>Enter "reset" to start a new game`;
+    )}<br><br>Enter "reset" to start a new game`;
   }
 
   return outputMessage;
