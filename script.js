@@ -2,6 +2,11 @@
 //set up players - hands, cards
 var playerHand = [];
 var dealerHand = [];
+var currPlayerScore = 0;
+var currDealerScore = 0;
+
+const playerPrefix = "Player's ";
+const dealerPrefix = "Dealer's ";
 
 //GAME MODES//
 var GAME_OVER = false;
@@ -24,16 +29,6 @@ shuffledDeck = shuffleCards(deck);
 var myOutputValue = "Hit 'Deal' to start playing.";
 displayInstructions(myOutputValue);
 
-var counter = 0;
-
-while (GAME_OVER !== true) {
-  console.log("game running...");
-  counter++;
-  if (counter == 2) {
-    GAME_OVER = true;
-    console.log("Game Over.");
-  }
-}
 //MAIN FN//
 var main = function () {
   return myOutputValue;
@@ -46,21 +41,21 @@ function displayInstructions(myOutputValue) {
   return output;
 }
 
-function displayHand(playerHand) {
+function displayHand(hand) {
   var output = "";
-  output += `Your current hand is:<br><br>`;
-  for (var i = 0; i < playerHand.length; i++) {
-    output += `${playerHand[i].name} of ${playerHand[i].suit}<br>`;
+  output += `current hand is:<br><br>`;
+  for (var i = 0; i < hand.length; i++) {
+    output += `${hand[i].name} of ${hand[i].suit}<br>`;
   }
   return output;
 }
 
-function getPlayerRes() {
+function getPlayerRes(currPlayerScore) {
   if (currPlayerScore < 17) {
-    myOutputValue += `<br>Your current score is less than 17. Please 'Hit'.`;
+    myOutputValue += `<br>Your current score of ${currPlayerScore} is less than 17. Please 'Hit'.`;
     player_response = true;
-  } else if (currPlayerScore >= 17) {
-    myOutputValue += `<br>Would you like to 'Hit' or 'Stand'?`;
+  } else if (17 <= currPlayerScore && currPlayerScore <= 21) {
+    myOutputValue += `<br>Your current score is ${currPlayerScore}. Would you like to 'Hit' or 'Stand'?`;
     player_response = true;
   } else {
     myOutputValue += `<br> Press 'Stand' to get result.`;
@@ -68,79 +63,158 @@ function getPlayerRes() {
   }
 }
 
+///////////////
+//DEAL BUTTON//
 var dealButton = document.querySelector("#deal-button");
 dealButton.addEventListener("click", function () {
+  playerHand = [];
+  dealerHand = [];
+  currPlayerScore = 0;
+  currDealerScore = 0;
   var hands = dealCards();
   playerHand = hands.playerHand;
   dealerHand = hands.dealerHand;
   //playerHand[0].rank = 1; //for checking Ace Values
   console.log("Player Hand:", playerHand);
-  currPlayerScore = calcCardRank(playerHand);
-  currDealerScore = calcCardRank(dealerHand);
-  //console.log(currPlayerScore);
+  currPlayerScore = Math.abs(calcCardRank(playerHand));
+  currDealerScore = Math.abs(calcCardRank(dealerHand));
+  console.log("Player Score:", currPlayerScore);
+  console.log("Dealer Score:", currDealerScore);
   //myOutputValue = `Your current hand is:<br><br>`;
-  myOutputValue = displayHand(playerHand);
-  console.log(myOutputValue);
-  getPlayerRes();
+  var output = displayHand(playerHand);
+  myOutputValue = playerPrefix + output;
+  //console.log(myOutputValue);
+  getPlayerRes(currPlayerScore);
   displayInstructions(myOutputValue);
 });
 
+///////////////
+//HIT BUTTON//
 var hitButton = document.querySelector("#hit-button");
 hitButton.addEventListener("click", function () {
   // Set result to input value
   hit_button = true;
   if (hit_button == true && player_response == true) {
     dealCards();
-    myOutputValue = displayHand(playerHand);
+    var output = displayHand(playerHand);
+    myOutputValue = playerPrefix + output;
     console.log(playerHand);
-    calcCardRank(playerHand);
-    //myOutputValue = displayInstructions(output);
-    getPlayerRes();
-    displayInstructions(myOutputValue);
+    currPlayerScore = Math.abs(calcCardRank(playerHand));
+    getPlayerRes(currPlayerScore);
   } else {
+    player_response = false;
     myOutputValue = "You can't hit now.";
   }
+  displayInstructions(myOutputValue);
   return myOutputValue;
 });
 
+////////////////
+//STAND BUTTON//
 var standButton = document.querySelector("#stand-button");
 standButton.addEventListener("click", function () {
   // Set result to input value
   stand_button = true;
+  console.log("STAND pressed!");
+
   if (stand_button == true && player_response == true) {
-    console.log("calls check winner function"); //getWinner();
+    getDealerPlay(); //getDealerPlay() function
+    var playerHandMsg = displayHand(playerHand);
+    var playerMsg = playerPrefix + playerHandMsg;
+    var dealerHandMsg = displayHand(dealerHand);
+    var dealerMsg = dealerPrefix + dealerHandMsg;
+    var finalMsg = `<br><br> Hit 'stand' again to get the result.`;
+    myOutputValue = displayInstructions(
+      playerMsg + "<br> " + dealerMsg + finalMsg
+    );
     player_response = false;
   }
+
+  if (stand_button == true && player_response == false) {
+    myOutputValue = displayInstructions(checkWinner()); //console.log("calls check winner function")
+    console.log(myOutputValue);
+  }
+
+  return myOutputValue;
 });
+
+function getDealerPlay() {
+  if (currDealerScore < 16) {
+    dealDealerCards();
+    currDealerScore = Math.abs(calcCardRank(dealerHand));
+  }
+  return;
+}
+
+function checkWinner() {
+  var results = [];
+  var resultOutput = `${playerPrefix} score: ${currPlayerScore} vs. ${dealerPrefix} score: ${currDealerScore}.<br>`;
+  myOutputValue = "";
+  results.push(currPlayerScore, currDealerScore);
+
+  //Scenario 1A - player wins
+  if (!isOver21(currPlayerScore) && currPlayerScore > currDealerScore) {
+    resultOutput += "Player Wins.<br>";
+  }
+
+  if (!isOver21(currDealerScore) && currDealerScore > currPlayerScore) {
+    resultOutput += "Dealer Wins.<br>";
+  }
+  if (isOver21(currDealerScore) && currPlayerScore <= 21) {
+    resultOutput += "Player Wins.<br>";
+  }
+  //Scernario 2 - dealer wins
+  if (isOver21(currPlayerScore) && currDealerScore <= 21) {
+    resultOutput += "Dealer Wins.<br>";
+  }
+  //scenario 3 - draw
+  if (currDealerScore == currPlayerScore) {
+    resultOutput += "It's a draw.<br>";
+  }
+  //scenario 4 - both bust - draw
+  if (isOver21(currPlayerScore) && isOver21(currDealerScore)) {
+    resultOutput += "Both went bust!";
+  }
+
+  myOutputValue += resultOutput;
+  console.log(resultOutput);
+  return myOutputValue;
+}
+
+function dealDealerCards() {
+  if (dealerHand.length > 0) {
+    dealerHand.push(shuffledDeck.pop());
+  }
+  return dealerHand;
+}
 
 function calcCardRank(arr) {
   //loops through the hand
   var scores = [];
-  var score1 = 0;
-  var score2 = 0;
+  var scoreAce1 = 0;
+  var scoreAce11 = 0;
 
   for (var i = 0; i < arr.length; i++) {
     //checks if have face card and set score to 10
     //else if checks if contains ace, sets score to either 1 or 11
     //else uses rank as score
     if (arr[i].rank > 10) {
-      score1 += 10; //score if ace is 1
-      score2 += 10; //score if ace is 10
+      scoreAce1 += 10; //score if ace is 1
+      scoreAce11 += 10; //score if ace is 10
     } else if (containsAce(arr[i])) {
-      score1 += 1; //score if ace is 1
-      score2 += 11; //score if ace is 10
+      scoreAce1 += 1; //score if ace is 1
+      scoreAce11 += 11; //score if ace is 10
     } else {
       //sums up the score
-      score1 += arr[i].rank;
-      score2 += arr[i].rank;
+      scoreAce1 += arr[i].rank;
+      scoreAce11 += arr[i].rank;
     }
   }
-  scores.push(score1, score2);
-  //console.log(typeof score1);
-  //console.log(typeof score2);
+  scores.push(scoreAce1, scoreAce11);
   console.log("Scores:", scores);
   //runs scores through the eval score function to determine what the best hand should be
   var score = evalScore(scores);
+  console.log("Hand score:", score);
   return score;
 }
 
@@ -149,7 +223,7 @@ function evalScore(scores) {
   var scoreChecker = [];
   for (var i = 0; i < scores.length; i++) {
     if (isOver21(scores[i])) {
-      scoreChecker.push(0);
+      scoreChecker.push(-1 * scores[i]);
     } else {
       scoreChecker.push(scores[i]);
     }
@@ -157,8 +231,6 @@ function evalScore(scores) {
   console.log("Score Checker:", scoreChecker);
   return Math.max(...scoreChecker);
 }
-
-function checkWinner() {}
 
 function containsAce(card) {
   if (card.rank == 1) {
