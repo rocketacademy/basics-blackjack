@@ -90,14 +90,14 @@ var calculateTotalHandValue = function (handArray) {
 };
 
 var displayPlayerAndDealerHands = function (playerHandArray, dealerHandArray) {
-  var playerMessage = "Player Hand:<br>";
+  var playerMessage = "🙆‍♂️ Player Hand:<br>";
   var index = 0;
   while (index < playerHandArray.length) {
     playerMessage = `${playerMessage} - ${playerHandArray[index].name} of ${playerHandArray[index].suit} <br>`;
     index += 1;
   }
 
-  var dealerMessage = "Dealer Hand:<br>";
+  var dealerMessage = "🤵 Dealer Hand:<br>";
   var index = 0;
   while (index < dealerHandArray.length) {
     dealerMessage = `${dealerMessage} - ${dealerHandArray[index].name} of ${dealerHandArray[index].suit} <br>`;
@@ -132,7 +132,7 @@ var checkBlackJack = function () {
     outputMessage = `${displayPlayerAndDealerHands(
       playerHand,
       dealerHand
-    )}<br>It's a Black Jack Tie!`;
+    )}<br>It's a Black Jack Tie!<br><br>Enter "reset" to start a new game`;
   } else if (playerHasBlackJack) {
     outputMessage = `${displayPlayerAndDealerHands(
       playerHand,
