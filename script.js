@@ -75,7 +75,7 @@ dealButton.addEventListener("click", function () {
   playerHand = hands.playerHand;
   dealerHand = hands.dealerHand;
   //playerHand[0].rank = 1; //for checking Ace Values
-  console.log("Player Hand:", playerHand);
+  //console.log("Player Hand:", playerHand);
   currPlayerScore = Math.abs(calcCardRank(playerHand));
   currDealerScore = Math.abs(calcCardRank(dealerHand));
   console.log("Player Score:", currPlayerScore);
@@ -98,7 +98,7 @@ hitButton.addEventListener("click", function () {
     dealCards();
     var output = displayHand(playerHand);
     myOutputValue = playerPrefix + output;
-    console.log(playerHand);
+    console.log("Player's new hand:", playerHand);
     currPlayerScore = Math.abs(calcCardRank(playerHand));
     getPlayerRes(currPlayerScore);
   } else {
@@ -132,7 +132,7 @@ standButton.addEventListener("click", function () {
 
   if (stand_button == true && player_response == false) {
     myOutputValue = displayInstructions(checkWinner()); //console.log("calls check winner function")
-    console.log(myOutputValue);
+    //console.log(myOutputValue);
   }
 
   return myOutputValue;
@@ -177,7 +177,7 @@ function checkWinner() {
   }
 
   myOutputValue += resultOutput;
-  console.log(resultOutput);
+  //console.log(resultOutput);
   return myOutputValue;
 }
 
