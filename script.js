@@ -11,15 +11,14 @@ var dealerHand = [];
 var gameDeck = [];
 
 //Modes to run the game
-//1) Start game, 2) Draw cards, 3) Player decides hit or stand 4) Dealer decides hit or stand, 5) Show results
+//1) Start game, 2) Calculate cards, 3) Player decides hit or stand, 4) Show results
 var modeGameStart = "start game";
-var modeDrawCards = "draw cards";
+var modeCalculateCards = "calculate cards";
 var modePlayerHitStand = "player hit or stand";
-var modeDealerHitStand = "dealer hit or stand";
 var modeShowResults = "show results";
 
 //Start the game
-var gameMode = modeGameStart;
+var currentGameMode = modeGameStart;
 
 //<----- DECK FUNCTIONS ----->
 
@@ -96,6 +95,15 @@ var prepareDeck = function () {
   return shuffledDeck;
 };
 
+//Function to deal cards
+//Use pop to hand out cards from deck (gameDeck)
+//Use push to add to respective arrays (hand)
+var dealCards = function (hand, numCards) {
+  for (var i = 0; i < numCards; i++) {
+    hand.push(gameDeck.pop());
+  }
+};
+
 //<----- GAME FUNCTIONS ----->
 
 //Check for Blackjack scenario first, because if player or dealer has Blackjack, automatically wins the game
@@ -142,28 +150,106 @@ var calculateHandValue = function (handArray) {
 };
 
 //Function to show player and dealer's hands respectively
-
 var displayHands = function (playerHandArray, dealerHandArray) {
   var playerCardOne = playerHandArray[0];
   var playerCardTwo = playerHandArray[1];
   var dealerCardOne = dealerHandArray[0];
   var dealerCardTwo = dealerHandArray[1];
 
-  var playerHand = `Player's hand:<br>${playerCardOne.rank} of ${playerCardOne.suit}<br>${playerCardTwo.rank} of ${playerCardTwo.suit}<br>`;
-  var dealerHand = `Dealer's hand:<br>${dealerCardOne.rank} of ${dealerCardOne.suit}<br>${dealerCardTwo.rank} of ${dealerCardTwo.suit}<br>`;
+  var playerHandMessage = `Player's hand:<br>${playerCardOne.rank} of ${playerCardOne.suit}<br>${playerCardTwo.rank} of ${playerCardTwo.suit}<br><br>`;
+  var dealerHandMessage = `Dealer's hand:<br>${dealerCardOne.rank} of ${dealerCardOne.suit}<br>${dealerCardTwo.rank} of ${dealerCardTwo.suit}<br>`;
 
-  return playerHand + dealerHand;
+  return playerHandMessage + dealerHandMessage;
 };
 
 //Function to show player and dealer's values respectively
-
 var displayValue = function (playerHandArray, dealerHandArray) {
-  var playerValue = `Player's value: ${calculateHandValue(
-    playerHandArray
-  )}<br>`;
-  var dealerValue = `Dealer's value: ${calculateHandValue(
-    dealerHandArray
-  )}<br>`;
+  var playerValue = calculateHandValue(playerHandArray);
+  var dealerValue = calculateHandValue(dealerHandArray);
 
-  return playerValue + dealerValue;
+  var playerValueMessage = `Players's value: ${playerValue}`;
+  var dealerValueMessage = `Dealer's value: ${dealerValue}`;
+  return playerValueMessage + dealerValueMessage;
+};
+
+//<----- MAIN FUNCTION (YAY!) ----->
+
+var main = function (input) {
+  var outputMessage = "";
+
+  //Create and shuffle deck of cards
+  if (currentGameMode === modeGameStart) {
+    gameDeck = prepareDeck();
+    //Deal cards
+    dealCards(playerHand, 2);
+    dealCards(dealerHand, 2);
+
+    currentGameMode = modeCalculateCards;
+
+    outputMessage =
+      "Two cards have been dealt. Click again to view and evaluate your cards.";
+    return outputMessage;
+  }
+
+  //Run cards for Blackjack first
+  if (currentGameMode === modeCalculateCards) {
+    var playerBlackjack = checkForBlackjack(playerHand);
+    var dealerBlackjack = checkForBlackjack(dealerHand);
+    var handsMessage = displayHands(playerHand, dealerHand);
+    var valueMessage = displayValue(playerHand, dealerHand);
+
+    //console.log: check if either user has Blackjack
+    console.log("Player hit Blackjack? " + playerBlackjack);
+    console.log("Dealer hit Blackjack? " + dealerBlackjack);
+
+    //if only player has Blackjack, player wins
+    if (playerBlackjack && !dealerBlackjack) {
+      outputMessage =
+        handsMessage + valueMessage + "<br> Player has Blackjack! Player wins!";
+    }
+    //if only dealer has Blackjack, dealer wins
+    else if (!playerBlackjack && dealerBlackjack) {
+      outputMessage =
+        handsMessage + valueMessage + "<br> Dealer has Blackjack! Dealer wins!";
+    }
+    //if both has Blackjack, it's a tie
+    else if (playerBlackjack && dealerBlackjack) {
+      outputMessage =
+        handsMessage +
+        valueMessage +
+        "<br> It's a tie! Both of dealer and player has Blackjack!";
+    }
+
+    //if neither has Blackjack, continue to hit or stand
+    else {
+      outputMessage =
+        handsMessage +
+        valueMessage +
+        "<br> No one has Blackjack.<br>Please enter 'hit' or 'stand'.";
+      currentGameMode = modePlayerHitStand;
+    }
+    return outputMessage;
+  }
+
+  //Let player decide to hit or stand
+  if (currentGameMode === modePlayerHitStand) {
+    if (input == "hit") {
+      playerHand.push(gameDeck.pop());
+      outputMessage =
+        handsMessage +
+        "<br> You drew another card. Input 'hit' for another card or else, input 'stand' to end your turn.";
+    }
+    //If player chooses to "stand", then dealer's turn to decide push or stand
+    //Dealer to draw extra card if value is 16 and below
+    else if (input == "stand") {
+      while (dealerValue <= 16) {
+        dealerHand.push(gameDeck.pop());
+      }
+      //Once dealer's hand value is 17 or higher, the dealer stansd
+      var playerFinalValue = calculateHandValue(playerHand);
+      var dealerFinalValue = calculateHandValue(dealerHand);
+    }
+  }
+  //Time to decide a winner!
+  //If player wins
 };
