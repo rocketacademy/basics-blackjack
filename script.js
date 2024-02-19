@@ -17,6 +17,15 @@
 // 1. extra game mode "hit or stand"
 // 2. functionality for user to input hit or stand.
 
+// ===== ===== Pseudocode for Version 3 ===== ===== //
+// 1. Dear to hit or stand ONLY AFTER player choose to stand
+// 2. if dealer hand value is less than 17, dealer hits
+// 3. if dealer hand value is more than 17, dealer stands
+
+// ===== ===== Pseudocode for Version 4 ===== ===== //
+// if totalHandValue, including an ace, is less than 21, ace value is 11
+// when totalHandValue, including an ace, is more than 21, ace value is reduced to 1.
+
 /* ================================================== */
 /* =========== GLOBAL VARIABLES ======================= */
 /* ================================================== */
@@ -133,9 +142,11 @@ var checkForBlackjack = function (handArray) {
 /* =========== GAME FUNCTIONS ======================= */
 /* ================================================== */
 
-// Function that calculate a hand
+// Function that calculates a hand
 var calculateTotalHandValue = function (handArray) {
   var totalHandValue = 0;
+  var aceCounter = 0;
+
   // loop through player or dealer hand and add up the values
   var index = 0;
   while (index < handArray.length) {
@@ -148,8 +159,19 @@ var calculateTotalHandValue = function (handArray) {
       currentCard.name == "king"
     ) {
       totalHandValue = totalHandValue + 10;
+    } else if (currentCard.name == "ace") {
+      totalHandValue = totalHandValue + 11;
+      aceCounter = aceCounter + 1;
     } else {
       totalHandValue = totalHandValue + currentCard.rank;
+    }
+    index = index + 1;
+  }
+
+  index = 0;
+  while (index < aceCounter) {
+    if (totalHandValue > 21) {
+      totalHandValue = totalHandValue - 10;
     }
     index = index + 1;
   }
@@ -277,6 +299,11 @@ var main = function (input) {
       // calculate the total hand value of both player and dealer
       var playerHandTotalValue = calculateTotalHandValue(playerHand);
       var dealerHandTotalValue = calculateTotalHandValue(dealerHand);
+
+      while (dealerHandTotalValue < 17) {
+        dealerHand.push(gameDeck.pop());
+        dealerHandTotalValue = calculateTotalHandValue(dealerHand);
+      }
 
       // compare total hand value
       // same value -> tie
