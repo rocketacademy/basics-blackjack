@@ -120,7 +120,7 @@ var checkForBlackjack = function (handArray) {
     (userCardOne.rank === "A" && isTenCard(userCardTwo.rank)) ||
     (userCardTwo.rank === "A" && isTenCard(userCardOne.rank))
   ) {
-    isBlackJack = true;
+    isBlackjack = true;
   }
   return isBlackjack;
 };
@@ -219,7 +219,8 @@ var main = function (input) {
     currentGameMode = modeGameStart;
 
     // Inform the player that the game has been reset
-    outputMessage = "Game has been reset. Please click to start a new game.";
+    outputMessage =
+      "Game has been reset. Please click 'submit' to start a new game.";
     return outputMessage;
   }
 
@@ -251,19 +252,23 @@ var main = function (input) {
     //if only player has Blackjack, player wins
     if (playerBlackjack && !dealerBlackjack) {
       outputMessage =
-        playerMessage + dealerMessage + "Player has Blackjack! Player wins!";
+        "Player has Blackjack! Player wins! <br>" +
+        playerMessage +
+        dealerMessage;
     }
     //if only dealer has Blackjack, dealer wins
     else if (!playerBlackjack && dealerBlackjack) {
       outputMessage =
-        playerMessage + dealerMessage + "Dealer has Blackjack! Dealer wins!";
+        "Dealer has Blackjack! Dealer wins! <br>" +
+        playerMessage +
+        dealerMessage;
     }
     //if both has Blackjack, it's a tie
     else if (playerBlackjack && dealerBlackjack) {
       outputMessage =
+        "It's a tie! Both of dealer and player has Blackjack! <br>" +
         playerMessage +
-        dealerMessage +
-        "It's a tie! Both of dealer and player has Blackjack!";
+        dealerMessage;
     }
 
     //if neither has Blackjack, player will only get to view his cards to decide
@@ -291,13 +296,13 @@ var main = function (input) {
       playerMessage = displayPlayerHandValue(playerHand);
       outputMessage =
         playerMessage +
-        "<br> You drew another card.<br> Please input 'hit' for another card or else, input 'stand' to end your turn and see the results of this game.";
+        "You drew another card.<br> Please input 'hit' for another card or else, input 'stand' to end your turn and see the results of this game.";
       return outputMessage;
     }
     //If player chooses to "stand", then dealer's turn to decide push or stand
     //Dealer to draw extra card if value is 16 and below
     else if (input === "stand") {
-      while (calculateHandValue(dealerHand) <= 16) {
+      while (calculateHandValue(dealerHand) < 17) {
         dealerHand.push(gameDeck.pop());
         dealerMessage = displayDealerHandValue(dealerHand);
         //console.log check dealer's hand as of now
