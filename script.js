@@ -157,7 +157,18 @@ var displayPlayerHandValue = function (playerHandArray) {
   // Loop through each card in the player's hand
   for (var i = 0; i < playerHandArray.length; i++) {
     var card = playerHandArray[i];
-    playerHandMessage += `${card.rank} of ${card.suit}<br>`;
+    playerHandMessage += `${card.rank} of ${card.suit}`;
+    // Add emoji based on the suit
+    if (card.suit === "Hearts") {
+      playerHandMessage += "❤️";
+    } else if (card.suit === "Diamonds") {
+      playerHandMessage += "💎";
+    } else if (card.suit === "Clubs") {
+      playerHandMessage += "🍀";
+    } else if (card.suit === "Spades") {
+      playerHandMessage += "🧹";
+    }
+    playerHandMessage += "<br>";
     playerValue += card.value;
   }
   // Calculate total value of hand
@@ -174,7 +185,18 @@ var displayDealerHandValue = function (dealerHandArray) {
   // Loop through each card in the dealer's hand
   for (var i = 0; i < dealerHandArray.length; i++) {
     var card = dealerHandArray[i];
-    dealerHandMessage += `${card.rank} of ${card.suit}<br>`;
+    dealerHandMessage += `${card.rank} of ${card.suit}`;
+    // Add emoji based on the suit
+    if (card.suit === "Hearts") {
+      dealerHandMessage += " ❤️";
+    } else if (card.suit === "Diamonds") {
+      dealerHandMessage += "💎";
+    } else if (card.suit === "Clubs") {
+      dealerHandMessage += "🍀";
+    } else if (card.suit === "Spades") {
+      dealerHandMessage += "🧹";
+    }
+    dealerHandMessage += "<br>";
     dealerValue += card.value;
   }
   //Calculate total value of hand
@@ -273,7 +295,7 @@ var main = function (input) {
     //If player chooses to "stand", then dealer's turn to decide push or stand
     //Dealer to draw extra card if value is 16 and below
     else if (input === "stand") {
-      while (calculateHandValue(dealerHand) < 17) {
+      while (calculateHandValue(dealerHand) <= 16) {
         dealerHand.push(gameDeck.pop());
         dealerMessage = displayDealerHandValue(dealerHand);
         //console.log check dealer's hand as of now
