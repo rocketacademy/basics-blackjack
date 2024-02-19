@@ -2,13 +2,14 @@
 const INIT_GAME = `initialize game`;
 const EVAL_OPTIONS = `evaluate options after drawing cards`;
 const HIT_OR_STAND = `players decide to hit or stand`;
-
+const RESET_GAME = `reset game`;
 let mode = INIT_GAME;
 
 //global variables
 const playerHand = [];
 const dealerHand = [];
 const gameDeck = [];
+let endGameState = false;
 
 //deck functions
 
@@ -62,16 +63,16 @@ function generateNewDeck() {
 
 function printSuitsIcon(suit) {
   if (suit == `Hearts`) {
-    return `❤`;
+    return `♥️`;
   }
   if (suit == `Diamonds`) {
-    return `🔷`;
+    return `♦️`;
   }
   if (suit == `Clubs`) {
-    return `♣`;
+    return `♣️`;
   }
   if (suit == `Spades`) {
-    return `♠`;
+    return `♠️`;
   }
 }
 
@@ -85,6 +86,7 @@ function checkForBlackJack(hand) {
     (playerCardOne.name == `Ace` && playerCardTwo.rank >= 10) ||
     (playerCardTwo.name == `Ace` && playerCardOne.rank >= 10)
   ) {
+    endGameState = true;
     isBlackJack = true;
   }
   return isBlackJack;
@@ -103,6 +105,13 @@ function displayHands(playerHand, dealerHand) {
       dealerHand[i].suit
     )} <br>`;
   }
+
+  if (endGameState == false) {
+    dealerHandMsg = `Player Hand: <br> (hidden card) <br> ${
+      dealerHand[1].name
+    } of ${printSuitsIcon(dealerHand[1].suit)} <br>`;
+  }
+
   return `${playerHandMsg} <br> ${dealerHandMsg}`;
 }
 
@@ -174,6 +183,7 @@ var main = function (input) {
         dealerHandTotal = calcHandTotal(dealerHand);
       }
       const cardValuesMsg = `<br> Player's hand value: ${playerHandTotal} <br> Dealer's hand value: ${dealerHandTotal}`;
+      endGameState = true;
       const cardsDrawn = displayHands(playerHand, dealerHand);
 
       //draw scenario
@@ -181,6 +191,7 @@ var main = function (input) {
         playerHandTotal == dealerHandTotal ||
         (playerHandTotal > 21 && dealerHandTotal > 21)
       ) {
+        mode = RESET_GAME;
         return `${cardsDrawn} <br> It's a tie! <br> ${cardValuesMsg}`;
       }
       //loss scenario
@@ -188,13 +199,24 @@ var main = function (input) {
         (playerHandTotal < dealerHandTotal && dealerHandTotal <= 21) ||
         (playerHandTotal > 21 && dealerHandTotal <= 21)
       ) {
+        mode = RESET_GAME;
         return `${cardsDrawn} <br> Dealer wins! 💸💸💸 <br> ${cardValuesMsg}`;
       }
       //win scenario
+      mode = RESET_GAME;
       return `${cardsDrawn} <br> Player wins! 🤑🤑🤑 <br> ${cardValuesMsg}`;
     } else {
       const cardsDrawn = displayHands(playerHand, dealerHand);
       return `This is an invalid input. Please input h for Hit or s for Stand. <br> <br> ${cardsDrawn}`;
     }
+  }
+
+  if (mode == RESET_GAME) {
+    playerHand.length = 0;
+    dealerHand.length = 0;
+    gameDeck.length = 0;
+    endGameState = false;
+    mode = INIT_GAME;
+    return `Please press submit to start a new round of black jack.`;
   }
 };
