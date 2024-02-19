@@ -27,6 +27,10 @@ A normal win. When neither draw Blackjack, the winner is decided by whomever has
 // 2. If dealer hand value is less than 17, dealer hits
 // 3. If dealer hand value is more than 17, dealer stands
 
+// -- Version 4 with Tutorial -- //
+// If totalHandValue, including an ace, is less than 21, ace value is 11
+// When totalHandValue, including an ace, is more than 21, ace value is reduced to 1
+
 /* ================================ GLOBAL VARIABLES ================================ */
 
 // declare game modes
@@ -145,6 +149,8 @@ var checkForBlackjack = function (handArray) {
 // function that calculates a hand
 var calculateTotalHandValue = function (handArray) {
   var totalHandValue = 0;
+  var aceCounter = 0;
+
   // loop through player or dealer hand and add up the values
   var index = 0;
   while (index < handArray.length) {
@@ -157,11 +163,23 @@ var calculateTotalHandValue = function (handArray) {
       currentCard.name == "king"
     ) {
       totalHandValue = totalHandValue + 10;
+    } else if (currentCard.name == "ace") {
+      totalHandValue = totalHandValue + 11;
+      aceCounter = aceCounter + 1;
     } else {
       totalHandValue = totalHandValue + currentCard.rank;
     }
     index = index + 1;
   }
+
+  index = 0;
+  while (index < aceCounter) {
+    if (totalHandValue > 21) {
+      totalHandValue = totalHandValue - 10;
+    }
+    index = index + 1;
+  }
+
   return totalHandValue;
 };
 
