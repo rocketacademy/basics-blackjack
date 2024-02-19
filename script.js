@@ -251,30 +251,26 @@ var main = function (input) {
     //if only player has Blackjack, player wins
     if (playerBlackjack && !dealerBlackjack) {
       outputMessage =
-        playerMessage +
-        dealerMessage +
-        "<br> Player has Blackjack! Player wins!";
+        playerMessage + dealerMessage + "Player has Blackjack! Player wins!";
     }
     //if only dealer has Blackjack, dealer wins
     else if (!playerBlackjack && dealerBlackjack) {
       outputMessage =
-        playerMessage +
-        dealerMessage +
-        "<br> Dealer has Blackjack! Dealer wins!";
+        playerMessage + dealerMessage + "Dealer has Blackjack! Dealer wins!";
     }
     //if both has Blackjack, it's a tie
     else if (playerBlackjack && dealerBlackjack) {
       outputMessage =
         playerMessage +
         dealerMessage +
-        "<br> It's a tie! Both of dealer and player has Blackjack!";
+        "It's a tie! Both of dealer and player has Blackjack!";
     }
 
     //if neither has Blackjack, player will only get to view his cards to decide
     else {
       outputMessage =
         playerMessage +
-        "<br> No one has Blackjack. The game continues! <br> Please input 'hit' for another card or else, input 'stand' to end your turn and see the results of this game.";
+        "No one has Blackjack. The game continues! <br> Please input 'hit' for another card or else, input 'stand' to end your turn and see the results of this game.";
       currentGameMode = modePlayerHitStand;
     }
     return outputMessage;
@@ -283,6 +279,12 @@ var main = function (input) {
   //Let player decide to hit or stand
   if (currentGameMode === modePlayerHitStand) {
     input = input.toLowerCase();
+
+    // Check if input is empty or not "hit" or "stand"
+    if (!input || (input !== "hit" && input !== "stand")) {
+      outputMessage = "Invalid input. Please input 'hit' or 'stand'.";
+      return outputMessage;
+    }
     var playerMessage = displayPlayerHandValue(playerHand);
     if (input === "hit") {
       playerHand.push(gameDeck.pop());
