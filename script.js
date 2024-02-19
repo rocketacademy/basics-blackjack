@@ -108,7 +108,7 @@ function displayHands(playerHand, dealerHand) {
   }
 
   if (endGameState == false) {
-    dealerHandMsg = `Player Hand: <br> (hidden card) <br> ${
+    dealerHandMsg = `Dealer Hand: <br> (hidden card) <br> ${
       dealerHand[1].name
     } of ${printSuitsIcon(dealerHand[1].suit)} <br>`;
   }
