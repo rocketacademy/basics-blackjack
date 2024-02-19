@@ -186,7 +186,7 @@ var calculateTotalHandValue = function (handArray) {
 // function that displayers the player and dealer hands in a message
 var displayPlayerAndDealerHands = function (playerHandArray, dealerHandArray) {
   // player hand
-  var playerMessage = "<b>Player Hand:</b><br>";
+  var playerMessage = "<b>✋ Player Hand:</b><br>";
   var index = 0;
   while (index < playerHandArray.length) {
     playerMessage =
@@ -199,7 +199,7 @@ var displayPlayerAndDealerHands = function (playerHandArray, dealerHandArray) {
     index = index + 1;
   }
   // dealer hand
-  var dealerMessage = "<b>Dealer Hand:</b><br>";
+  var dealerMessage = "<b>👨‍💼 Dealer Hand:</b><br>";
   var index = 0;
   while (index < dealerHandArray.length) {
     dealerMessage =
@@ -248,7 +248,7 @@ var main = function (input) {
     // change to game cards drawn mode
     currentGameMode = GAME_CARDS_DRAWN;
     outputMessage =
-      "Everyone has been dealt a card. Click the submit button to check out the cards!";
+      "<p>Everyone has been dealt a card.</p> ☝️ Click on the submit button to check out the cards!";
     return outputMessage;
   }
 
@@ -296,7 +296,7 @@ var main = function (input) {
     } else {
       outputMessage =
         displayPlayerAndDealerHands(playerHand, dealerHand) +
-        "<br>There is no blackjack!";
+        '<br>There is no blackjack! <br> Please input "hit" or "stand"';
       console.log(outputMessage);
       // no blackjack, game continues
 
@@ -329,29 +329,26 @@ var main = function (input) {
         dealerHandTotalValue = calculateTotalHandValue(dealerHand);
       }
 
-      playerHandTotalValue = 11;
-      dealerHandTotalValue = 9;
-
       // compare total hand value
       // same value: tie
       if (playerHandTotalValue == dealerHandTotalValue) {
         outputMessage =
           displayPlayerAndDealerHands(playerHand, dealerHand) +
-          "<br>🃏 It is a tie!" +
+          "<br>🏆 It is a tie!" +
           displayHandTotalValues(playerHandTotalValue, dealerHandTotalValue);
       }
       // player higher value: player wins
       else if (playerHandTotalValue > dealerHandTotalValue) {
         outputMessage =
           displayPlayerAndDealerHands(playerHand, dealerHand) +
-          "<br>🃏 Player wins!" +
+          "<br>🏆 Player wins!" +
           displayHandTotalValues(playerHandTotalValue, dealerHandTotalValue);
       }
       // dealer higher value: dealer wins
       else {
         outputMessage =
           displayPlayerAndDealerHands(playerHand, dealerHand) +
-          "<br>🃏 Dealer wins!" +
+          "<br>🏆 Dealer wins!" +
           displayHandTotalValues(playerHandTotalValue, dealerHandTotalValue);
       }
     }
