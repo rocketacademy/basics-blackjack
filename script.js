@@ -10,6 +10,7 @@ const playerHand = [];
 const dealerHand = [];
 const gameDeck = [];
 let endGameState = false;
+let didPlayerBust = false;
 
 //deck functions
 
@@ -174,8 +175,13 @@ var main = function (input) {
     if (input == `h`) {
       playerHand.push(gameDeck.pop());
       const cardsDrawn = displayHands(playerHand, dealerHand);
+      const checkPlayerValue = calcHandTotal(playerHand);
+      if (checkPlayerValue > 21) {
+        didPlayerBust = true;
+        return `Player's hand has exceeded 21. Time for the reckoning!`;
+      }
       return `Player has drawn another card. Press h to Hit or s to Stand. <br> <br> ${cardsDrawn}`;
-    } else if (input == `s`) {
+    } else if (input == `s` || didPlayerBust == true) {
       const playerHandTotal = calcHandTotal(playerHand);
       let dealerHandTotal = calcHandTotal(dealerHand);
       while (dealerHandTotal < 17) {
@@ -216,6 +222,7 @@ var main = function (input) {
     dealerHand.length = 0;
     gameDeck.length = 0;
     endGameState = false;
+    didPlayerBust = false;
     mode = INIT_GAME;
     return `Please press submit to start a new round of black jack.`;
   }
