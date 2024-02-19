@@ -152,7 +152,7 @@ var calculateHandValue = function (handArray) {
 //Function to show player's hands and value
 var displayPlayerHandValue = function (playerHandArray) {
   var playerHandMessage = "Player's hand:<br>";
-  var playerValue = 0;
+  var playerValue = calculateHandValue(playerHandArray);
 
   // Loop through each card in the player's hand
   for (var i = 0; i < playerHandArray.length; i++) {
@@ -169,9 +169,8 @@ var displayPlayerHandValue = function (playerHandArray) {
       playerHandMessage += "🧹";
     }
     playerHandMessage += "<br>";
-    playerValue += card.value;
   }
-  // Calculate total value of hand
+  // Shows total value of hand
   var playerValueMessage = `Player's value: ${playerValue}<br>`;
 
   return playerHandMessage + "<br>" + playerValueMessage + "<br>";
@@ -180,7 +179,7 @@ var displayPlayerHandValue = function (playerHandArray) {
 //Function to show dealer's hands and values
 var displayDealerHandValue = function (dealerHandArray) {
   var dealerHandMessage = "Dealer's hand:<br>";
-  var dealerValue = 0;
+  var dealerValue = calculateHandValue(dealerHandArray);
 
   // Loop through each card in the dealer's hand
   for (var i = 0; i < dealerHandArray.length; i++) {
@@ -197,9 +196,8 @@ var displayDealerHandValue = function (dealerHandArray) {
       dealerHandMessage += "🧹";
     }
     dealerHandMessage += "<br>";
-    dealerValue += card.value;
   }
-  //Calculate total value of hand
+  //Shows total value of hand
   var dealerValueMessage = `Dealer's value: ${dealerValue}`;
 
   return dealerHandMessage + "<br>" + dealerValueMessage;
@@ -291,6 +289,8 @@ var main = function (input) {
       return outputMessage;
     }
     var playerMessage = displayPlayerHandValue(playerHand);
+    var dealerMessage = displayDealerHandValue(dealerHand);
+
     if (input === "hit") {
       playerHand.push(gameDeck.pop());
       playerMessage = displayPlayerHandValue(playerHand);
@@ -301,17 +301,19 @@ var main = function (input) {
     }
     //If player chooses to "stand", then dealer's turn to decide push or stand
     //Dealer to draw extra card if value is 16 and below
+    //Once dealer's value is 17 or higher, the dealer stands
     else if (input === "stand") {
       while (calculateHandValue(dealerHand) < 17) {
         dealerHand.push(gameDeck.pop());
         dealerMessage = displayDealerHandValue(dealerHand);
-        //console.log check dealer's hand as of now
-        console.log(dealerMessage);
       }
-      //Once dealer's value is 17 or higher, the dealer stands
-      currentGameMode = modeShowResults;
+      // Calculate final values after each draw
       var playerFinalValue = calculateHandValue(playerHand);
       var dealerFinalValue = calculateHandValue(dealerHand);
+      console.log("Player's final value:" + playerFinalValue);
+      console.log("Dealer's final value:" + dealerFinalValue);
+
+      currentGameMode = modeShowResults;
     }
   }
   //Check for bust (more than 21 in value)
@@ -341,7 +343,7 @@ var main = function (input) {
     }
   }
   //Time to decide a winner!
-  if (playerFinalValue == dealerFinalValue) {
+  if (playerFinalValue === dealerFinalValue) {
     outputMessage =
       "It's a tie! Both player and dealer has the same value. <br> Please input 'reset' to restart the game!<br><br>" +
       playerMessage +
@@ -353,6 +355,9 @@ var main = function (input) {
       dealerMessage;
   } else {
     outputMessage =
-      "Player wins! Player has a higher value than dealer. <br> Please input 'reset' to restart the game!<br>";
+      "Player wins! Player has a higher value than dealer. <br> Please input 'reset' to restart the game!<br>" +
+      playerMessage +
+      dealerMessage;
   }
+  return outputMessage;
 };
