@@ -18,13 +18,17 @@ A normal win. When neither draw Blackjack, the winner is decided by whomever has
 */
 
 // -- Version 1 with Tutorial -- //
+// -- Version 2 with Tutorial -- //
+// 1. extra game mode "hit or stand"
+// 2. functionaity for user to input hit or stand.
 
-/* ================================ VARIABLES ================================ */
+/* ================================ GLOBAL VARIABLES ================================ */
 
 // declare game modes
 var GAME_START = "game start";
 var GAME_CARDS_DRAWN = "cards drawn";
 var GAME_RESULTS_SHOWN = "results shown";
+var GAME_HIT_OR_STAND = "hit or stand";
 var currentGameMode = GAME_START;
 
 // declare variables to store player and dealer hands by using arrays as each hand will be holding multiple card objects
@@ -273,6 +277,26 @@ var main = function (input) {
       console.log(outputMessage);
       // no blackjack, game continues
 
+      // change game mode
+      currentGameMode = GAME_HIT_OR_STAND;
+
+      // appropriate output message
+      return outputMessage;
+    }
+  }
+
+  // hit or stand
+  if (currentGameMode == GAME_HIT_OR_STAND) {
+    // player hit
+    if (input == "hit") {
+      playerHand.push(gameDeck.pop());
+      outputMessage =
+        displayPlayerAndDealerHands(playerHand, dealerHand) +
+        '<br> You drew another card. <br>Please input "hit" or "stand". ';
+    }
+
+    // player stand
+    else if (input == "stand") {
       // calculate the total hand value of both player and dealer
       var playerHandTotalValue = calculateTotalHandValue(playerHand);
       var dealerHandTotalValue = calculateTotalHandValue(dealerHand);
@@ -302,12 +326,15 @@ var main = function (input) {
           "<br>🃏 Dealer wins!" +
           displayHandTotalValues(playerHandTotalValue, dealerHandTotalValue);
       }
-
-      // change game mode
-      currentGameMode = GAME_RESULTS_SHOWN;
-
-      // appropriate output message
-      return outputMessage;
     }
+
+    // input validation
+    else {
+      outputMessage =
+        'Please input only "hit" or "stand" in the box. <br><br>' +
+        displayPlayerAndDealerHands(playerHand, dealerHand);
+    }
+
+    return outputMessage;
   }
 };
