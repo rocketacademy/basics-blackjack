@@ -149,27 +149,28 @@ var calculateHandValue = function (handArray) {
   return handValue;
 };
 
-//Function to show player and dealer's hands respectively
-var displayHands = function (playerHandArray, dealerHandArray) {
+//Function to show player's hands and value
+var displayPlayerHandValue = function (playerHandArray) {
   var playerCardOne = playerHandArray[0];
   var playerCardTwo = playerHandArray[1];
-  var dealerCardOne = dealerHandArray[0];
-  var dealerCardTwo = dealerHandArray[1];
+  var playerValue = calculateHandValue(playerHandArray);
 
   var playerHandMessage = `Player's hand:<br>${playerCardOne.rank} of ${playerCardOne.suit}<br>${playerCardTwo.rank} of ${playerCardTwo.suit}<br><br>`;
-  var dealerHandMessage = `Dealer's hand:<br>${dealerCardOne.rank} of ${dealerCardOne.suit}<br>${dealerCardTwo.rank} of ${dealerCardTwo.suit}<br>`;
+  var playerValueMessage = `Players's value: ${playerValue} <br>`;
 
-  return playerHandMessage + dealerHandMessage;
+  return playerHandMessage + playerValueMessage;
 };
 
-//Function to show player and dealer's values respectively
-var displayValue = function (playerHandArray, dealerHandArray) {
-  var playerValue = calculateHandValue(playerHandArray);
+//Function to show dealer's hands and values
+var displayDealerHandValue = function (dealerHandArray) {
+  var dealerCardOne = dealerHandArray[0];
+  var dealerCardTwo = dealerHandArray[1];
   var dealerValue = calculateHandValue(dealerHandArray);
 
-  var playerValueMessage = `Players's value: ${playerValue}`;
+  var dealerHandMessage = `Dealer's hand:<br>${dealerCardOne.rank} of ${dealerCardOne.suit}<br>${dealerCardTwo.rank} of ${dealerCardTwo.suit}<br>`;
   var dealerValueMessage = `Dealer's value: ${dealerValue}`;
-  return playerValueMessage + dealerValueMessage;
+
+  return dealerHandMessage + dealerValueMessage;
 };
 
 //<----- MAIN FUNCTION (YAY!) ----->
@@ -195,8 +196,8 @@ var main = function (input) {
   if (currentGameMode === modeCalculateCards) {
     var playerBlackjack = checkForBlackjack(playerHand);
     var dealerBlackjack = checkForBlackjack(dealerHand);
-    var handsMessage = displayHands(playerHand, dealerHand);
-    var valueMessage = displayValue(playerHand, dealerHand);
+    var playerMessage = displayPlayerHandValue(playerHand);
+    var dealerMessage = displayDealerHandValue(dealerHand);
 
     //console.log: check if either user has Blackjack
     console.log("Player hit Blackjack? " + playerBlackjack);
@@ -205,27 +206,30 @@ var main = function (input) {
     //if only player has Blackjack, player wins
     if (playerBlackjack && !dealerBlackjack) {
       outputMessage =
-        handsMessage + valueMessage + "<br> Player has Blackjack! Player wins!";
+        playerMessage +
+        dealerMessage +
+        "<br> Player has Blackjack! Player wins!";
     }
     //if only dealer has Blackjack, dealer wins
     else if (!playerBlackjack && dealerBlackjack) {
       outputMessage =
-        handsMessage + valueMessage + "<br> Dealer has Blackjack! Dealer wins!";
+        playerMessage +
+        dealerMessage +
+        "<br> Dealer has Blackjack! Dealer wins!";
     }
     //if both has Blackjack, it's a tie
     else if (playerBlackjack && dealerBlackjack) {
       outputMessage =
-        handsMessage +
-        valueMessage +
+        playerMessage +
+        dealerMessage +
         "<br> It's a tie! Both of dealer and player has Blackjack!";
     }
 
-    //if neither has Blackjack, continue to hit or stand
+    //if neither has Blackjack, player will only get to view his cards to decide
     else {
       outputMessage =
-        handsMessage +
-        valueMessage +
-        "<br> No one has Blackjack.<br>Please enter 'hit' or 'stand'.";
+        playerMessage +
+        "<br> No one has Blackjack. The game continues! <br>Please input 'hit' for another card or else, input 'stand' to end your turn.";
       currentGameMode = modePlayerHitStand;
     }
     return outputMessage;
@@ -237,7 +241,7 @@ var main = function (input) {
       playerHand.push(gameDeck.pop());
       outputMessage =
         handsMessage +
-        "<br> You drew another card. Input 'hit' for another card or else, input 'stand' to end your turn.";
+        "<br> You drew another card.<br> Please input 'hit' for another card or else, input 'stand' to end your turn.";
     }
     //If player chooses to "stand", then dealer's turn to decide push or stand
     //Dealer to draw extra card if value is 16 and below
