@@ -90,7 +90,7 @@ var calculateTotalHandValue = function (handArray) {
 };
 
 var displayPlayerAndDealerHands = function (playerHandArray, dealerHandArray) {
-  var playerMessage = "🙆‍♂️ Player Hand:<br>";
+  var playerMessage = `🙆‍♂️ Player Hand:<br>`;
   var index = 0;
   while (index < playerHandArray.length) {
     playerMessage = `${playerMessage} - ${playerHandArray[index].name} of ${playerHandArray[index].suit} <br>`;
@@ -256,8 +256,7 @@ var main = function (input) {
   if (currentGameMode == GAME_START) {
     dealCards();
     currentGameMode = GAME_CARDS_DRAWN;
-    outputMessage =
-      "Everyone has been dealt a card. Click button to calculate cards!";
+    outputMessage = `Everyone has been dealt a card. Click button to calculate cards!`;
   } else if (currentGameMode == GAME_CARDS_DRAWN) {
     outputMessage = checkBlackJack();
   } else if (currentGameMode == GAME_HIT_OR_STAND) {
