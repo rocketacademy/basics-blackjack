@@ -359,7 +359,7 @@ var main = function (input) {
     // input validation
     else {
       outputMessage =
-        'Please input only "hit" or "stand" in the box. <br><br>' +
+        '⚠️ Please input only "hit" or "stand" in the box. <br><br>' +
         displayPlayerAndDealerHands(playerHand, dealerHand);
     }
 
