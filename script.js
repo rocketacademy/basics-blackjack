@@ -3,7 +3,7 @@
 //Allows player and dealer to hit or stand
 //Calculates Blackjack win
 
-//2 users
+//2 users; player vs. dealer (computer)
 var player = "Player";
 var dealer = "Dealer";
 var playerHand = [];
@@ -20,6 +20,8 @@ var modeShowResults = "show results";
 
 //Start the game
 var gameMode = modeGameStart;
+
+//<----- DECK FUNCTIONS ----->
 
 //Function to create a deck of cards
 var createDeck = function () {
@@ -49,7 +51,6 @@ var createDeck = function () {
       };
 
       //Assign value to the card
-      //Ace is assigned value of 11 unless total score becomes > 21, then assume value of 1
       if (
         ranks[rankIndex] === "J" ||
         ranks[rankIndex] === "Q" ||
@@ -93,4 +94,76 @@ var prepareDeck = function () {
   var myDeck = createDeck();
   var shuffledDeck = shuffleDeck(myDeck);
   return shuffledDeck;
+};
+
+//<----- GAME FUNCTIONS ----->
+
+//Check for Blackjack scenario first, because if player or dealer has Blackjack, automatically wins the game
+var checkForBlackjack = function (handArray) {
+  var userCardOne = handArray[0];
+  var userCardTwo = handArray[1];
+  var isBlackjack = false;
+
+  var isTenCard = function (rank) {
+    return rank === "10" || rank === "J" || rank === "Q" || rank === "K";
+  };
+
+  if (
+    (userCardOne.rank === "A" && isTenCard(userCardTwo.rank)) ||
+    (userCardTwo.rank === "A" && isTenCard(userCardOne.rank))
+  ) {
+    isBlackJack = true;
+  }
+  return isBlackjack;
+};
+
+//Calculate total value of hand
+//Ace has assigned value of 11 unless total score becomes > 21, then assume value of 1
+
+var calculateHandValue = function (handArray) {
+  var handValue = 0;
+  var hasAce = false;
+
+  // Calculate the initial hand value
+  for (var i = 0; i < handArray.length; i++) {
+    var cardValue = handArray[i].value;
+    handValue += cardValue;
+    if (handArray[i].rank === "A") {
+      hasAce = true;
+    }
+  }
+
+  // If hand value exceeds 21 and there's an Ace, reduce Ace's value from 11 to 1
+  if (handValue > 21 && hasAce) {
+    handValue -= 10;
+  }
+
+  return handValue;
+};
+
+//Function to show player and dealer's hands respectively
+
+var displayHands = function (playerHandArray, dealerHandArray) {
+  var playerCardOne = playerHandArray[0];
+  var playerCardTwo = playerHandArray[1];
+  var dealerCardOne = dealerHandArray[0];
+  var dealerCardTwo = dealerHandArray[1];
+
+  var playerHand = `Player's hand:<br>${playerCardOne.rank} of ${playerCardOne.suit}<br>${playerCardTwo.rank} of ${playerCardTwo.suit}<br>`;
+  var dealerHand = `Dealer's hand:<br>${dealerCardOne.rank} of ${dealerCardOne.suit}<br>${dealerCardTwo.rank} of ${dealerCardTwo.suit}<br>`;
+
+  return playerHand + dealerHand;
+};
+
+//Function to show player and dealer's values respectively
+
+var displayValue = function (playerHandArray, dealerHandArray) {
+  var playerValue = `Player's value: ${calculateHandValue(
+    playerHandArray
+  )}<br>`;
+  var dealerValue = `Dealer's value: ${calculateHandValue(
+    dealerHandArray
+  )}<br>`;
+
+  return playerValue + dealerValue;
 };
