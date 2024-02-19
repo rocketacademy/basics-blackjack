@@ -22,6 +22,11 @@ A normal win. When neither draw Blackjack, the winner is decided by whomever has
 // 1. extra game mode "hit or stand"
 // 2. functionaity for user to input hit or stand.
 
+// -- Version 3 with Tutorial -- //
+// 1. Dealer to hit or stand only after player choose to stand
+// 2. If dealer hand value is less than 17, dealer hits
+// 3. If dealer hand value is more than 17, dealer stands
+
 /* ================================ GLOBAL VARIABLES ================================ */
 
 // declare game modes
@@ -273,7 +278,7 @@ var main = function (input) {
     } else {
       outputMessage =
         displayPlayerAndDealerHands(playerHand, dealerHand) +
-        "There is no blackjack!";
+        "<br>There is no blackjack!";
       console.log(outputMessage);
       // no blackjack, game continues
 
@@ -300,6 +305,11 @@ var main = function (input) {
       // calculate the total hand value of both player and dealer
       var playerHandTotalValue = calculateTotalHandValue(playerHand);
       var dealerHandTotalValue = calculateTotalHandValue(dealerHand);
+
+      while (dealerHandTotalValue < 17) {
+        dealerHand.push(gameDeck.pop());
+        dealerHandTotalValue = calculateTotalHandValue(dealerHand);
+      }
 
       playerHandTotalValue = 11;
       dealerHandTotalValue = 9;
